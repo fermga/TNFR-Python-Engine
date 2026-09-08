@@ -815,9 +815,16 @@ class ContextualSequenceGenerator:
             )
 
         # Specific metric improvements
-        if improved_health.coherence_index > original_health.coherence_index + 0.05:
+        if (
+            improved_health.flow_quality_score
+            > original_health.flow_quality_score + 0.05
+        ):
+            flow_delta = (
+                improved_health.flow_quality_score
+                - original_health.flow_quality_score
+            )
             recommendations.append(
-                f"Coherence improved by {improved_health.coherence_index - original_health.coherence_index:.2f}"
+                f"Flow quality improved by {flow_delta:.2f}"
             )
 
         if improved_health.balance_score > original_health.balance_score + 0.05:

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import math
 
+from tnfr.metrics.common import structural_coherence
 from tnfr.navier_stokes import (
     CascadeFrontierCertificate,
     TNFRNavierStokes,
@@ -112,17 +113,18 @@ def test_moment_ladder_closure_interpolation_bound():
     assert c["closure_ratio"] == c["closure_ratio"]  # finite (not NaN)
 
 
-def test_flow_coherence_is_the_universal_emergent_geometry_attractor():
-    # The flow is read through the ONE universal coherence kernel (nothing NS-
-    # specific added): C = 1/(1+|DeltaNFR|) with DeltaNFR = -L_rw.|omega|, and the
-    # DeltaNFR=0 fixed-point predicate -- the same attractor as graph/primes/chem.
+def test_flow_coherence_is_an_explicit_static_pressure_snapshot():
+    # The vorticity pressure uses the shared scalar map with dEPI held at zero.
+    # This checks the declared snapshot semantics, not a common-domain attractor.
     flow = TNFRNavierStokes(10, 0.03, 1.0)
     for _ in range(30):
         flow.step(0.02)
     h = flow_coherence(flow)
     assert 0.0 < h["coherence"] <= 1.0
-    assert h["coherent"]  # in the coherent band C > 1/(pi+1)
-    # exact universal kernel identity C = 1/(1+mean|DeltaNFR|) (no NS formula)
-    assert abs(h["coherence"] - 1.0 / (1.0 + h["mean_abs_dnfr"])) < 1e-12
-    assert isinstance(h["at_equilibrium"], bool)
+    assert h["coherent"]  # selected static-score band C > 1/(pi+1)
+    assert h["coherence"] == structural_coherence(h["mean_abs_dnfr"], 0.0)
+    assert h["coherence_kind"] == "static_pressure_only_structural_coherence"
+    assert h["depi_assumption"] == 0.0
+    assert h["dynamic_equilibrium_assessed"] is False
+    assert h["at_equilibrium"] is h["mean_pressure_within_tolerance"]
     assert isinstance(h["strong"], bool)

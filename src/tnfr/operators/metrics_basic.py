@@ -10,16 +10,20 @@ from .metrics_core import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from .metrics_core import EMISSION_TIMESTAMP_TUPLE as _ALIAS_EMISSION_TIMESTAMP_TUPLE
 from .metrics_core import HAS_EMISSION_TIMESTAMP_ALIAS as _HAS_EMISSION_TIMESTAMP_ALIAS
 from .metrics_core import get_node_attr as _get_node_attr
+from ._diagnostic_scores import (
+    mean_unit_score,
+    nonnegative_magnitude,
+    sum_nonnegative_magnitudes,
+)
 
 
 def emission_metrics(G, node, epi_before: float, vf_before: float) -> dict[str, Any]:
     """AL - Emission metrics with structural fidelity indicators.
 
-    Collects emission-specific metrics that reflect canonical AL effects:
-    - EPI: Increments (form activation)
-    - vf: Activates/increases (Hz_str)
-    - DELTA_NFR: Initializes positive reorganization
-    - theta: Influences phase alignment
+    Collects emission-specific metrics for AL's EPI-only contract:
+    - EPI: receives a positive source proposal and cannot decrease
+    - vf: remains at its pre-existing basal value
+    - DELTA_NFR and theta: observed as context, not written by AL
 
     Parameters
     ----------
@@ -38,11 +42,14 @@ def emission_metrics(G, node, epi_before: float, vf_before: float) -> dict[str, 
         Emission-specific metrics including:
         - Core deltas (delta_epi, delta_vf, dnfr_initialized, theta_current)
         - AL-specific quality indicators:
-          - emission_quality: "valid" if both EPI and νf increased, else "weak"
-          - activation_from_latency: True if node was latent (EPI < 0.3)
-          - form_emergence_magnitude: Absolute EPI increment
-          - frequency_activation: True if νf increased
-          - reorganization_positive: True if ΔNFR > 0
+          - emission_quality: "valid" when EPI did not decrease
+          - emission_effective: True when the bounded EPI source increased EPI
+          - activation_from_latency: True if node was latent (EPI < 0.35)
+          - form_emergence_magnitude: signed EPI source increment
+          - frequency_preserved: True when AL left νf unchanged
+          - capacity_active: True when the retained νf is positive
+          - frequency_activation: legacy νf-change flag, expected False for AL
+          - reorganization_positive: observed ΔNFR sign, not an AL effect
         - Traceability markers:
           - emission_timestamp: ISO UTC timestamp of activation
           - irreversibility_marker: True if node was activated
@@ -68,13 +75,20 @@ def emission_metrics(G, node, epi_before: float, vf_before: float) -> dict[str, 
     delta_epi = epi_after - epi_before
     delta_vf = vf_after - vf_before
 
-    # AL-specific quality indicators
-    emission_quality = "valid" if (delta_epi > 0 and delta_vf > 0) else "weak"
-    # Import canonical constants
+    # AL's source proposal can saturate at the configured EPI boundary.
+    # Non-decrease is therefore the runtime contract; νf is a read-only
+    # precondition rather than a success signal.
+    tolerance = 1e-12
+    epi_contract_satisfied = delta_epi >= -tolerance
+    emission_quality = "valid" if epi_contract_satisfied else "invalid"
+    emission_effective = delta_epi > tolerance
 
     latency_threshold = 0.35  # ≈ 0.357 (latency)
     activation_from_latency = epi_before < latency_threshold
-    frequency_activation = delta_vf > 0
+    frequency_preserved = abs(delta_vf) <= tolerance
+    capacity_active = vf_after > 0.0
+    # Backward-compatible observation: canonical AL leaves this False.
+    frequency_activation = delta_vf > tolerance
     reorganization_positive = dnfr > 0
 
     # Irreversibility marker
@@ -96,8 +110,11 @@ def emission_metrics(G, node, epi_before: float, vf_before: float) -> dict[str, 
         "is_activated": epi_after > 0.5,
         # AL-specific (NEW)
         "emission_quality": emission_quality,
+        "emission_effective": emission_effective,
         "activation_from_latency": activation_from_latency,
         "form_emergence_magnitude": delta_epi,
+        "frequency_preserved": frequency_preserved,
+        "capacity_active": capacity_active,
         "frequency_activation": frequency_activation,
         "reorganization_positive": reorganization_positive,
         # Traceability (NEW)
@@ -107,11 +124,11 @@ def emission_metrics(G, node, epi_before: float, vf_before: float) -> dict[str, 
 
 
 def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
-    """EN - Reception metrics: EPI integration, source tracking, integration efficiency.
+    """EN EPI-intake, source-activity and phase-compatibility diagnostics.
 
-    Extended metrics for Reception (EN) operator that track emission sources,
-    phase compatibility, and integration efficiency as specified in TNFR.pdf
-    §2.2.1 (EN - Structural reception).
+    These operational readouts include a signed activity ratio and a bounded
+    phase score. They do not read dEPI and DeltaNFR as the shared C(t) kernel
+    requires, so none certifies canonical structural coherence.
 
     Parameters
     ----------
@@ -130,10 +147,11 @@ def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
         - Legacy metrics: neighbor_count, neighbor_epi_mean, integration_strength
         - EN-specific (NEW):
           - num_sources: Number of detected emission sources
-          - integration_efficiency: Ratio of integrated to available coherence
+          - total_source_emission_activity: Unbounded activity sum
+          - epi_delta_per_source_activity: Signed, unbounded intake ratio
           - most_compatible_source: Most phase-compatible source node
-          - phase_compatibility_avg: Average phase compatibility with sources
-          - coherence_received: Total coherence integrated (delta_epi)
+          - mean_phase_compatibility_score: Bounded score mean
+          - legacy compatibility aliases for the renamed fields
           - stabilization_effective: Whether ΔNFR reduced below threshold
     """
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
@@ -149,28 +167,37 @@ def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
         neighbor_epi_sum += _get_node_attr(G, n, ALIAS_EPI)
     neighbor_epi_mean = neighbor_epi_sum / neighbor_count if neighbor_count > 0 else 0.0
 
-    # Compute delta EPI (coherence received)
+    # Compute the signed EPI change. This is form change, not C(t).
     delta_epi = epi_after - epi_before
 
     # EN-specific: Source tracking and integration efficiency
     sources = G.nodes[node].get("_reception_sources", [])
     num_sources = len(sources)
 
-    # Calculate total available coherence from sources
-    total_available_coherence = sum(strength for _, _, strength in sources)
-
-    # Integration efficiency: ratio of integrated to available coherence
-    # Only meaningful if coherence was actually available
-    integration_efficiency = (
-        delta_epi / total_available_coherence if total_available_coherence > 0 else 0.0
+    source_activities = tuple(
+        nonnegative_magnitude(
+            activity, label="EN source emission activity"
+        )
+        for _, _, activity in sources
+    )
+    total_source_emission_activity = sum_nonnegative_magnitudes(
+        source_activities,
+        label="EN total source emission activity",
+    )
+    epi_delta_per_source_activity = (
+        delta_epi / total_source_emission_activity
+        if total_source_emission_activity > 0.0
+        else 0.0
     )
 
     # Most compatible source (first in sorted list)
     most_compatible_source = sources[0][0] if sources else None
 
-    # Average phase compatibility across all sources
-    phase_compatibility_avg = (
-        sum(compat for _, compat, _ in sources) / num_sources
+    mean_phase_compatibility_score = (
+        mean_unit_score(
+            (score for _, score, _ in sources),
+            label="EN mean phase compatibility",
+        )
         if num_sources > 0
         else 0.0
     )
@@ -191,9 +218,14 @@ def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
         "integration_strength": abs(delta_epi),
         # EN-specific (NEW)
         "num_sources": num_sources,
-        "integration_efficiency": integration_efficiency,
+        "total_source_emission_activity": total_source_emission_activity,
+        "epi_delta_per_source_activity": epi_delta_per_source_activity,
         "most_compatible_source": most_compatible_source,
-        "phase_compatibility_avg": phase_compatibility_avg,
+        "mean_phase_compatibility_score": mean_phase_compatibility_score,
+        "canonical_coherence_certified": False,
+        # Public compatibility aliases. None denotes structural C(t).
+        "integration_efficiency": epi_delta_per_source_activity,
+        "phase_compatibility_avg": mean_phase_compatibility_score,
         "coherence_received": delta_epi,
         "stabilization_effective": stabilization_effective,
     }
@@ -221,8 +253,8 @@ def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
         Coherence-specific metrics including:
         - dnfr_before: ΔNFR value before operator
         - dnfr_after: ΔNFR value after operator
-        - dnfr_reduction: Absolute reduction (before - after)
-        - dnfr_reduction_pct: Percentage reduction relative to before
+        - dnfr_reduction: Reduction in |ΔNFR|
+        - dnfr_reduction_pct: Percentage reduction relative to |before|
         - stability_gain: Improvement in stability (reduction of |ΔNFR|)
         - is_stabilized: Coarse operator-effectiveness flag (|ΔNFR| < 0.1) --
           NOT the structural-equilibrium fixed point (|ΔNFR| <= 1e-3; see
@@ -243,10 +275,14 @@ def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
     epi = _get_node_attr(G, node, ALIAS_EPI)
     vf = _get_node_attr(G, node, ALIAS_VF)
 
-    # Compute reduction metrics
-    dnfr_reduction = dnfr_before - dnfr_after
+    # IL contracts pressure magnitude while preserving its sign.
+    magnitude_before = abs(dnfr_before)
+    magnitude_after = abs(dnfr_after)
+    dnfr_reduction = magnitude_before - magnitude_after
     dnfr_reduction_pct = (
-        (dnfr_reduction / dnfr_before * 100.0) if dnfr_before > 0 else 0.0
+        dnfr_reduction / magnitude_before * 100.0
+        if magnitude_before > 0.0
+        else 0.0
     )
 
     # Compute global coherence using shared common implementation
@@ -266,12 +302,13 @@ def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
         "dnfr_reduction": dnfr_reduction,
         "dnfr_reduction_pct": dnfr_reduction_pct,
         "dnfr_final": dnfr_after,
-        "stability_gain": abs(dnfr_before) - abs(dnfr_after),
+        "stability_gain": dnfr_reduction,
         "C_global": C_global,
         "C_local": C_local,
         "phase_alignment": phase_alignment,
         "phase_coherence_quality": phase_alignment,  # Alias for clarity
-        "stabilization_quality": C_local * (1.0 - dnfr_after),  # Combined metric
+        "stabilization_quality": C_local
+        * max(0.0, 1.0 - magnitude_after),
         "epi_final": epi,
         "vf_final": vf,
         # Coarse operator-effectiveness flag, NOT structural equilibrium (the

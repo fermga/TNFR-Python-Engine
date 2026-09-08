@@ -1,30 +1,9 @@
-"""Canonical transform contracts for TNFR coherence tooling.
+"""Transform contracts and composite EPI regularity diagnostics.
 
-This module intentionally provides *contracts* rather than concrete
-implementations.  Phase 2 of the mathematics roadmap will plug the actual
-algorithms into these helpers.  Until then, the functions below raise
-``NotImplementedError`` with descriptive guidance so downstream modules know
-which structural guarantees each helper must provide.
-
-The three exposed contracts cover:
-
-``build_isometry_factory``
-    Expected to output callables that embed or project states while preserving
-    the TNFR structural metric.  Implementations must return operators whose
-    adjoint composes to identity inside the target Hilbert or Banach space so
-    no coherence is lost during modal changes.
-
-``validate_norm_preservation``
-    Should perform diagnostic checks that a provided transform keeps the
-    νf-aligned norm invariant (within tolerance) across representative states.
-    Validation must surface informative errors so simulation pipelines can
-    gate potentially destructive transforms before they act on an EPI.
-
-``ensure_coherence_monotonicity``
-    Designed to assert that a transform (or sequence thereof) does not break
-    the monotonic coherence requirements captured in the repo-wide invariants.
-    Implementations should report any drop in ``C(t)`` outside authorised
-    dissonance windows and annotate the offending timestep to ease triage.
+The isometry helpers describe structural metric contracts that remain pending.
+The implemented trend helper evaluates the unbounded composite EPI regularity
+functional.  That diagnostic is separate from canonical TNFR structural
+coherence ``C(t)`` and from its operator postconditions.
 """
 
 from __future__ import annotations
@@ -42,7 +21,11 @@ from typing import (
 )
 
 from ..errors import TNFRValueError
-from .epi import BEPIElement
+from .epi import (
+    BEPIElement,
+    COMPOSITE_EPI_REGULARITY_KIND,
+    COMPOSITE_EPI_REGULARITY_PROVENANCE,
+)
 from .unified_numerical import np
 
 if TYPE_CHECKING:
@@ -51,11 +34,15 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 __all__ = [
-    "CoherenceMonotonicityReport",
-    "CoherenceViolation",
+    "CompositeEPIRegularityTrendReport",
+    "RegularityTrendViolation",
+    "assess_composite_epi_regularity_trend",
     "IsometryFactory",
     "build_isometry_factory",
     "validate_norm_preservation",
+    # Historical compatibility aliases; none denotes canonical C(t).
+    "CoherenceMonotonicityReport",
+    "CoherenceViolation",
     "ensure_coherence_monotonicity",
 ]
 
@@ -65,11 +52,8 @@ class IsometryFactory(Protocol):
     """Callable creating isometric transforms aligned with TNFR semantics.
 
     Implementations produced by :func:`build_isometry_factory` must accept a
-    structural basis (modal decomposition, eigenvectors, or similar spectral
-    anchors) and return a transform that preserves both the vector norm and the
-    encoded coherence structure.  The returned callable should accept the raw
-    state data and emit the mapped state in the target representation while
-    guaranteeing ``T* · T == I`` on the relevant space.
+    structural basis and return a transform whose adjoint composes to identity
+    on the relevant space.
     """
 
     def __call__(
@@ -94,18 +78,10 @@ def build_isometry_factory(
     source_dimension:
         Dimensionality of the input structural space.
     target_dimension:
-        Dimensionality of the destination structural space.  When the target
-        dimension is larger than the source, implementations must specify how
-        coherence is embedded without dilution.
+        Dimensionality of the destination structural space.
     allow_expansion:
-        Flag indicating whether the isometry may expand into a higher
-        dimensional space (still norm-preserving via padding and phase guards).
-
-    Returns
-    -------
-    IsometryFactory
-        A callable that can produce concrete isometries on demand once a basis
-        or spectral frame is available.
+        Whether the isometry may expand into a higher-dimensional space while
+        preserving the declared metric.
     """
 
     raise NotImplementedError(
@@ -121,13 +97,10 @@ def validate_norm_preservation(
     metric: Callable[[Sequence[complex]], float],
     atol: float = 1e-9,
 ) -> None:
-    """Assert that a transform preserves the TNFR structural norm.
+    """Assert that a transform preserves the explicitly supplied metric.
 
-    The validator should iterate through ``probes`` (representative EPI states)
-    and confirm that applying ``transform`` leaves the provided ``metric``
-    unchanged within ``atol``.  Any detected drift must be reported via
-    exceptions that include the offending probe and the measured deviation so
-    callers can attribute potential coherence loss to specific conditions.
+    This pending generic contract does not identify the supplied metric with
+    canonical structural coherence ``C(t)``.
     """
 
     raise NotImplementedError(
@@ -137,8 +110,8 @@ def validate_norm_preservation(
 
 
 @dataclass(frozen=True)
-class CoherenceViolation:
-    """Details about a monotonicity violation detected in a coherence trace."""
+class RegularityTrendViolation:
+    """A decrease or forbidden plateau in a regularity trace."""
 
     index: int
     previous_value: float
@@ -146,73 +119,187 @@ class CoherenceViolation:
     tolerated_drop: float
     drop: float
     kind: str
+    metric_kind: str = COMPOSITE_EPI_REGULARITY_KIND
+    provenance: str = COMPOSITE_EPI_REGULARITY_PROVENANCE
 
 
 @dataclass(frozen=True)
-class CoherenceMonotonicityReport:
-    """Structured report generated by :func:`ensure_coherence_monotonicity`."""
+class CompositeEPIRegularityTrendReport:
+    """Trend report for the unbounded composite EPI regularity functional."""
 
-    coherence_values: tuple[float, ...]
-    violations: tuple[CoherenceViolation, ...]
+    regularity_values: tuple[float, ...]
+    violations: tuple[RegularityTrendViolation, ...]
     allow_plateaus: bool
     tolerated_drop: float
     atol: float
+    metric_kind: str = COMPOSITE_EPI_REGULARITY_KIND
+    provenance: str = COMPOSITE_EPI_REGULARITY_PROVENANCE
 
     @property
     def is_monotonic(self) -> bool:
-        """Return ``True`` when no violations were recorded."""
+        """Return ``True`` when no trend violations were recorded."""
 
         return not self.violations
 
+    @property
+    def coherence_values(self) -> tuple[float, ...]:
+        """Compatibility alias for :attr:`regularity_values`.
 
-def _as_coherence_values(
-    coherence_series: Sequence[float | BEPIElement],
+        The historical property name does not denote canonical ``C(t)``.
+        """
+
+        return self.regularity_values
+
+
+def _as_regularity_values(
+    regularity_series: Sequence[float | BEPIElement],
     *,
     space: "BanachSpaceEPI | None",
-    norm_kwargs: Mapping[str, float],
+    regularity_kwargs: Mapping[str, float],
 ) -> tuple[float, ...]:
-    if not coherence_series:
+    if not regularity_series:
         raise TNFRValueError(
-            "coherence_series must contain at least one entry.",
+            "regularity_series must contain at least one entry.",
             context={"series_length": 0},
-            suggestion="Provide a non-empty sequence of coherence values.",
+            suggestion="Provide a non-empty regularity sequence.",
         )
 
-    first = coherence_series[0]
+    first = regularity_series[0]
     if isinstance(first, BEPIElement):
-        from .spaces import BanachSpaceEPI  # Local import to avoid circular dependency
+        from .spaces import BanachSpaceEPI  # Local import avoids circular dependency.
 
         working_space = space if space is not None else BanachSpaceEPI()
         values = []
-        for element in coherence_series:
+        for element in regularity_series:
             if not isinstance(element, BEPIElement):
                 raise TypeError(
-                    "All entries must be BEPIElement instances when the series contains BEPI data.",
+                    "All entries must be BEPIElement instances when the series "
+                    "contains BEPI data."
                 )
-            value = working_space.coherence_norm(
+            value = working_space.composite_epi_regularity(
                 element.f_continuous,
                 element.a_discrete,
                 x_grid=element.x_grid,
-                **norm_kwargs,
+                **regularity_kwargs,
             )
             values.append(float(value))
         return tuple(values)
 
     values = []
-    for value in coherence_series:
+    for value in regularity_series:
         if isinstance(value, BEPIElement):
             raise TypeError(
-                "All entries must be numeric when the series is treated as coherence values.",
+                "All entries must be numeric when the series is treated as "
+                "regularity values."
             )
         numeric = float(value)
         if not np.isfinite(numeric):
             raise TNFRValueError(
-                "Coherence values must be finite numbers.",
+                "Regularity values must be finite numbers.",
                 context={"value": numeric},
-                suggestion="Check for NaN or Inf values in the coherence series.",
+                suggestion="Check for NaN or Inf values in the regularity series.",
             )
         values.append(numeric)
     return tuple(values)
+
+
+def assess_composite_epi_regularity_trend(
+    regularity_series: Sequence[float | BEPIElement],
+    *,
+    allow_plateaus: bool = True,
+    tolerated_drop: float = 0.0,
+    atol: float = 1e-9,
+    space: "BanachSpaceEPI | None" = None,
+    regularity_kwargs: Mapping[str, float] | None = None,
+) -> CompositeEPIRegularityTrendReport:
+    """Assess a nondecreasing composite EPI regularity trace.
+
+    Numeric inputs are interpreted as already computed regularity values;
+    :class:`BEPIElement` inputs are evaluated with
+    :meth:`BanachSpaceEPI.composite_epi_regularity`.  The functional is
+    unbounded, and an increase can be caused by additional derivative energy.
+    Consequently this trend is descriptive and does not enforce, estimate, or
+    certify canonical structural coherence ``C(t)``.
+    """
+
+    if not np.isfinite(tolerated_drop) or tolerated_drop < 0:
+        raise TNFRValueError(
+            "tolerated_drop must be finite and non-negative.",
+            context={"tolerated_drop": tolerated_drop},
+            suggestion="Provide a finite, non-negative tolerated_drop.",
+        )
+    if not np.isfinite(atol) or atol < 0:
+        raise TNFRValueError(
+            "atol must be finite and non-negative.",
+            context={"atol": atol},
+            suggestion="Provide a finite, non-negative atol.",
+        )
+
+    if regularity_kwargs is None:
+        regularity_kwargs = {}
+
+    values = _as_regularity_values(
+        regularity_series,
+        space=space,
+        regularity_kwargs=regularity_kwargs,
+    )
+    violations: list[RegularityTrendViolation] = []
+
+    for index in range(1, len(values)):
+        previous_value = values[index - 1]
+        current_value = values[index]
+        drop = previous_value - current_value
+
+        if current_value + tolerated_drop + atol < previous_value:
+            violation = RegularityTrendViolation(
+                index=index,
+                previous_value=previous_value,
+                current_value=current_value,
+                tolerated_drop=tolerated_drop,
+                drop=drop,
+                kind="drop",
+            )
+            violations.append(violation)
+            logger.warning(
+                "Composite EPI regularity drop at step %s: "
+                "previous=%s current=%s tolerated_drop=%s",
+                index,
+                previous_value,
+                current_value,
+                tolerated_drop,
+            )
+            continue
+
+        if not allow_plateaus and current_value <= previous_value + atol:
+            violation = RegularityTrendViolation(
+                index=index,
+                previous_value=previous_value,
+                current_value=current_value,
+                tolerated_drop=tolerated_drop,
+                drop=max(0.0, drop),
+                kind="plateau",
+            )
+            violations.append(violation)
+            logger.warning(
+                "Composite EPI regularity plateau at step %s: "
+                "previous=%s current=%s",
+                index,
+                previous_value,
+                current_value,
+            )
+
+    return CompositeEPIRegularityTrendReport(
+        regularity_values=values,
+        violations=tuple(violations),
+        allow_plateaus=allow_plateaus,
+        tolerated_drop=tolerated_drop,
+        atol=atol,
+    )
+
+
+# Historical type aliases.  They now refer to explicitly named regularity data.
+CoherenceViolation = RegularityTrendViolation
+CoherenceMonotonicityReport = CompositeEPIRegularityTrendReport
 
 
 def ensure_coherence_monotonicity(
@@ -223,98 +310,19 @@ def ensure_coherence_monotonicity(
     atol: float = 1e-9,
     space: "BanachSpaceEPI | None" = None,
     norm_kwargs: Mapping[str, float] | None = None,
-) -> CoherenceMonotonicityReport:
-    """Validate monotonic behaviour of coherence measurements ``C(t)``.
+) -> CompositeEPIRegularityTrendReport:
+    """Compatibility alias for composite EPI regularity trend assessment.
 
-    Parameters
-    ----------
-    coherence_series:
-        Ordered sequence of coherence measurements (as floats) or
-        :class:`BEPIElement` instances recorded after each transform
-        application.
-    allow_plateaus:
-        When ``True`` the contract tolerates flat segments, otherwise every
-        subsequent value must strictly increase.
-    tolerated_drop:
-        Maximum allowed temporary decrease in coherence, representing approved
-        dissonance windows.  Values greater than zero should only appear when a
-        higher-level scenario explicitly references controlled dissonance tests.
-
-    Returns
-    -------
-    CoherenceMonotonicityReport
-        Structured report describing the evaluated coherence trajectory and any
-        detected violations.  Callers can inspect ``report.is_monotonic`` to
-        determine whether the constraint holds.
+    The historical name and parameter names remain callable, but this function
+    does not inspect canonical ``C(t)`` or its history and does not interpret a
+    rising regularity value as rising structural coherence.
     """
 
-    if tolerated_drop < 0:
-        raise TNFRValueError(
-            "tolerated_drop must be non-negative.",
-            context={"tolerated_drop": tolerated_drop},
-            suggestion="Provide a non-negative value for tolerated_drop.",
-        )
-    if atol < 0:
-        raise TNFRValueError(
-            "atol must be non-negative.",
-            context={"atol": atol},
-            suggestion="Provide a non-negative value for atol.",
-        )
-
-    if norm_kwargs is None:
-        norm_kwargs = {}
-
-    values = _as_coherence_values(
-        coherence_series, space=space, norm_kwargs=norm_kwargs
-    )
-
-    violations: list[CoherenceViolation] = []
-
-    for index in range(1, len(values)):
-        previous_value = values[index - 1]
-        current_value = values[index]
-        drop = previous_value - current_value
-
-        if current_value + tolerated_drop + atol < previous_value:
-            violation = CoherenceViolation(
-                index=index,
-                previous_value=previous_value,
-                current_value=current_value,
-                tolerated_drop=tolerated_drop,
-                drop=drop,
-                kind="drop",
-            )
-            violations.append(violation)
-            logger.warning(
-                "Coherence drop detected at step %s: previous=%s current=%s tolerated_drop=%s",
-                index,
-                previous_value,
-                current_value,
-                tolerated_drop,
-            )
-            continue
-
-        if not allow_plateaus and current_value <= previous_value + atol:
-            violation = CoherenceViolation(
-                index=index,
-                previous_value=previous_value,
-                current_value=current_value,
-                tolerated_drop=tolerated_drop,
-                drop=max(0.0, drop),
-                kind="plateau",
-            )
-            violations.append(violation)
-            logger.warning(
-                "Coherence plateau detected at step %s: previous=%s current=%s",
-                index,
-                previous_value,
-                current_value,
-            )
-
-    return CoherenceMonotonicityReport(
-        coherence_values=values,
-        violations=tuple(violations),
+    return assess_composite_epi_regularity_trend(
+        coherence_series,
         allow_plateaus=allow_plateaus,
         tolerated_drop=tolerated_drop,
         atol=atol,
+        space=space,
+        regularity_kwargs=norm_kwargs,
     )

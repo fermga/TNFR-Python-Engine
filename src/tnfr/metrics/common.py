@@ -6,6 +6,7 @@ import math
 from types import MappingProxyType
 from typing import Any, Iterable, Mapping, Sequence
 
+from .._coherence_validation import validate_structural_coherence
 from ..alias import collect_attr, get_attr, multi_recompute_abs_max
 from ..constants import DEFAULTS
 from ..constants.aliases import ALIAS_D2EPI, ALIAS_DEPI, ALIAS_DNFR, ALIAS_VF
@@ -20,6 +21,8 @@ from ..utils import (
 
 __all__ = (
     "GraphLike",
+    "finite_mean_absolute",
+    "validate_structural_coherence",
     "compute_coherence",
     "structural_coherence",
     "is_structural_equilibrium",
@@ -60,13 +63,21 @@ def _finite_scalar(value: float, *, name: str) -> float:
     return normalized
 
 
-def _finite_mean_absolute(values: Iterable[float], *, name: str) -> float:
+def finite_mean_absolute(values: Iterable[float], *, name: str) -> float:
     """Return a finite mean magnitude without overflowing the intermediate sum.
 
     Scaling by the largest magnitude keeps the reduction in ``[0, count]``.
     This matters when several valid binary64 inputs are close to the maximum
     finite value: their mathematical mean is representable even though their
     unscaled sum is not.
+
+    Parameters
+    ----------
+    values : iterable of float
+        Real scalar values to reduce. Truth values and non-finite values are
+        rejected rather than silently converted.
+    name : str
+        Channel label included in validation errors.
     """
     magnitudes = tuple(abs(_finite_scalar(value, name=name)) for value in values)
     if not magnitudes:
@@ -81,6 +92,7 @@ def _finite_mean_absolute(values: Iterable[float], *, name: str) -> float:
     if not math.isfinite(result):
         raise ValueError(f"mean absolute {name} exceeds finite range")
     return result
+
 
 
 def structural_coherence(dnfr: Any, depi: Any = 0.0) -> Any:
@@ -226,8 +238,8 @@ def compute_coherence(
     dnfr_values = collect_attr(G, nodes, ALIAS_DNFR, 0.0)
     depi_values = collect_attr(G, nodes, ALIAS_DEPI, 0.0)
 
-    dnfr_mean = _finite_mean_absolute(dnfr_values, name="dnfr")
-    depi_mean = _finite_mean_absolute(depi_values, name="depi")
+    dnfr_mean = finite_mean_absolute(dnfr_values, name="dnfr")
+    depi_mean = finite_mean_absolute(depi_values, name="depi")
 
     coherence = structural_coherence(dnfr_mean, depi_mean)
     return (coherence, dnfr_mean, depi_mean) if return_means else coherence

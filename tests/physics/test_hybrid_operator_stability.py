@@ -9,6 +9,8 @@ import networkx as nx
 import numpy as np
 import pytest
 
+import tnfr._exact_time as exact_time
+import tnfr.physics.hybrid_operator_stability as hybrid_stability
 from tnfr.physics.hybrid_operator_stability import (
     certify_affine_epi_jump_gain,
     compose_hybrid_epi_stability,
@@ -56,8 +58,14 @@ def test_local_reception_separates_sharp_estimate_from_rational_proof_bound():
     assert result.sharp_quotient_energy_gain_estimate == pytest.approx(sharp)
     assert result.exact_weighted_frobenius_energy_bound == Fraction(41, 32)
     assert result.weighted_frobenius_energy_bound == 41.0 / 32.0
-    assert result.energy_gain_bound_for_composition == 41.0 / 32.0
-    assert result.weighted_frobenius_energy_bound > sharp
+    assert result.exact_quotient_energy_gain_upper_bound < Fraction(41, 32)
+    assert result.quotient_energy_gain_upper_bound == pytest.approx(sharp)
+    assert result.energy_gain_bound_for_composition == (
+        result.quotient_energy_gain_upper_bound
+    )
+    assert result.weighted_frobenius_energy_bound > (
+        result.quotient_energy_gain_upper_bound
+    )
     assert result.supports_global_gain_theorem
     assert not result.exact_weighted_mean_preservation
 
@@ -112,14 +120,16 @@ def test_declared_bounds_are_metadata_and_never_change_internal_proof_bound():
     looser = _local_reception(flow, declared=2)
 
     assert too_small.declared_bound_within_tolerance
+    assert too_small.declared_energy_gain_bound_certified
     assert not too_small.declared_bound_certified_by_frobenius
+    assert looser.declared_energy_gain_bound_certified
     assert looser.declared_bound_certified_by_frobenius
     assert (
         internal.energy_gain_bound_for_composition
         == too_small.energy_gain_bound_for_composition
         == looser.energy_gain_bound_for_composition
-        == 41.0 / 32.0
     )
+    assert internal.energy_gain_bound_for_composition < 41.0 / 32.0
     assert too_small.supports_global_gain_theorem
 
 
@@ -152,6 +162,95 @@ def test_certificate_arrays_are_immutable():
         result.metric_weights[0] = 7.0
 
 
+def test_identity_and_consensus_projection_have_exact_unit_quotient_gain():
+    flow = _path_flow()
+    weights = tuple(Fraction.from_float(float(value)) for value in flow.metric_weights)
+    total = sum(weights, Fraction(0))
+    projection = np.asarray(
+        [
+            [
+                float(Fraction(i == j) - weights[j] / total)
+                for j in range(len(weights))
+            ]
+            for i in range(len(weights))
+        ]
+    )
+
+    identity = certify_affine_epi_jump_gain(
+        "Reception",
+        np.eye(3),
+        flow.metric_weights,
+        nodes=flow.nodes,
+        declared_energy_gain_bound=1,
+    )
+    projected = certify_affine_epi_jump_gain(
+        "Coherence", projection, flow.metric_weights, nodes=flow.nodes
+    )
+
+    assert identity.exact_quotient_energy_gain_upper_bound == 1
+    assert identity.energy_gain_bound_for_composition == 1.0
+    assert identity.exact_weighted_frobenius_energy_bound == 2
+    assert identity.declared_energy_gain_bound_certified
+    assert not identity.declared_bound_certified_by_frobenius
+    assert projected.exact_consensus_subspace_preservation
+    assert projected.exact_quotient_energy_gain_upper_bound == 1
+    assert projected.energy_gain_bound_for_composition == 1.0
+
+
+def test_affine_theorem_properties_reject_replaced_decisive_fields():
+    result = _local_reception(_path_flow())
+
+    forged_gain = replace(
+        result,
+        exact_quotient_energy_gain_upper_bound=Fraction(0),
+        energy_gain_bound_for_composition=0.0,
+    )
+    forged_mean = replace(result, exact_weighted_mean_preservation=True)
+
+    assert not forged_gain.supports_global_gain_theorem
+    assert not forged_mean.preserves_initial_weighted_consensus
+
+
+def test_exact_gain_survives_ill_conditioned_positive_metric():
+    tiny = sys.float_info.min
+    result = certify_affine_epi_jump_gain(
+        "Reception", np.eye(2), [tiny, 1.0]
+    )
+
+    assert result.exact_quotient_energy_gain_upper_bound == 1
+    assert result.energy_gain_bound_for_composition == 1.0
+    assert result.supports_global_gain_theorem
+
+
+def test_non_scalar_exact_gain_handles_near_singular_metric_without_svd(monkeypatch):
+    def unavailable(*_args, **_kwargs):
+        raise np.linalg.LinAlgError("diagnostic eigensolver unavailable")
+
+    monkeypatch.setattr(np.linalg, "norm", unavailable)
+    linear_map = np.asarray(
+        [
+            [0.75, 0.25, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 0.5, 0.5],
+            [0.25, 0.0, 0.0, 0.75],
+        ]
+    )
+    result = certify_affine_epi_jump_gain(
+        "Reception", linear_map, [2.0**-900, 1.0, 2.0, 4.0]
+    )
+
+    assert result.sharp_quotient_operator_norm_estimate is None
+    assert result.sharp_quotient_energy_gain_estimate is None
+    assert result.exact_consensus_subspace_preservation
+    assert 0 < result.exact_quotient_energy_gain_upper_bound
+    assert (
+        result.exact_quotient_energy_gain_upper_bound
+        < result.exact_weighted_frobenius_energy_bound
+    )
+    assert math.isfinite(result.energy_gain_bound_for_composition)
+    assert result.supports_global_gain_theorem
+
+
 def test_fixed_flow_composes_against_raw_metric_before_normalized_display():
     graph = nx.Graph()
     graph.add_edge(0, 1, weight=2.0)
@@ -168,7 +267,7 @@ def test_fixed_flow_composes_against_raw_metric_before_normalized_display():
     assert result.finite_horizon_disagreement_bound_certified
     np.testing.assert_allclose(result.normalized_metric_weights, [0.4, 0.6])
     assert result.exact_cumulative_jump_energy_gain_bound == (
-        jump.exact_weighted_frobenius_energy_bound
+        jump.exact_quotient_energy_gain_upper_bound
     )
     assert result.exact_flow_log_energy_decay_lower_bound == (
         Fraction.from_float(flow.certified_exponential_rate_lower_bound)
@@ -212,6 +311,90 @@ def test_hybrid_reception_converges_in_disagreement_but_not_to_initial_mean():
     assert not (
         result.repeated_schedule_initial_weighted_consensus_convergence_certified
     )
+
+
+def test_composition_gain_quantization_has_exact_relative_inflation_bound():
+    """The 32-bit policy has a rigorous per-factor and cumulative bound."""
+
+    precision_bits = hybrid_stability._COMPOSITION_GAIN_SIGNIFICAND_BITS
+    assert precision_bits == 32
+    relative_limit = Fraction(
+        (1 << (precision_bits - 1)) + 1,
+        1 << (precision_bits - 1),
+    )
+    precise_gains = (
+        Fraction(1, 3),
+        Fraction((1 << 80) + 1, 1 << 77),
+        Fraction((1 << 80) - 1, 1 << 140),
+        Fraction(1 << 200, 3),
+        Fraction(999_999_937, 1_000_000_007),
+    )
+    composition_factors = tuple(
+        hybrid_stability._bounded_composition_gain_factor(gain)
+        for gain in precise_gains
+    )
+
+    # For g in [2**e, 2**(e+1)), the exact ceiling error is below one
+    # quantum, 2**(e-(p-1)) <= g*2**(-(p-1)).
+    for precise, factor in zip(precise_gains, composition_factors):
+        assert precise <= factor
+        assert factor < precise * relative_limit
+
+    precise_product = math.prod(precise_gains, start=Fraction(1))
+    composition_product = math.prod(composition_factors, start=Fraction(1))
+    assert precise_product <= composition_product
+    assert composition_product < precise_product * relative_limit ** len(
+        precise_gains
+    )
+
+
+def test_hybrid_log_composition_bounds_transcendental_input_complexity(
+    monkeypatch,
+):
+    flow = _path_flow()
+    jump = _local_reception(flow)
+    precise_gain = jump.exact_quotient_energy_gain_upper_bound
+    binary64_bits = sys.float_info.mant_dig
+    assert max(
+        precise_gain.numerator.bit_length(),
+        precise_gain.denominator.bit_length(),
+    ) > binary64_bits
+    composition_factor = hybrid_stability._bounded_composition_gain_factor(
+        precise_gain
+    )
+    assert composition_factor >= precise_gain
+
+    observed_log_bit_lengths = []
+    observed_exp_inputs = []
+    exact_log_series = exact_time.atanh_log_bounds
+    exact_exp_series = exact_time.exp_unit_bounds
+
+    def bounded_log_series(value):
+        bit_length = max(
+            value.numerator.bit_length(), value.denominator.bit_length()
+        )
+        observed_log_bit_lengths.append(bit_length)
+        assert bit_length <= hybrid_stability._COMPOSITION_GAIN_SIGNIFICAND_BITS
+        return exact_log_series(value)
+
+    def bounded_exp_series(value):
+        observed_exp_inputs.append(value)
+        assert value == Fraction.from_float(float(value))
+        assert value.numerator.bit_length() <= binary64_bits
+        assert value.denominator.bit_length() <= 1075
+        return exact_exp_series(value)
+
+    monkeypatch.setattr(exact_time, "atanh_log_bounds", bounded_log_series)
+    monkeypatch.setattr(exact_time, "exp_unit_bounds", bounded_exp_series)
+    result = compose_hybrid_epi_stability(
+        flow, [jump], [0.0, 0.2], repeat_schedule=True
+    )
+
+    assert observed_log_bit_lengths
+    assert observed_exp_inputs
+    assert result.exact_cumulative_jump_energy_gain_bound == precise_gain
+    assert result.exact_log_composition_gain_factors == (composition_factor,)
+    assert result.disagreement_contracts_over_declared_horizon
 
 
 def test_uniform_translation_can_contract_disagreement_while_mean_drifts():
@@ -310,17 +493,17 @@ def test_finite_time_exponential_underflow_never_claims_exact_extinction():
 
 def test_near_zero_log_budget_is_decided_by_the_exact_log_enclosure():
     flow = _path_flow()
-    identity = certify_affine_epi_jump_gain(
-        "Reception", np.eye(3), flow.metric_weights, nodes=flow.nodes
+    expansion = certify_affine_epi_jump_gain(
+        "Expansion", 2.0 * np.eye(3), flow.metric_weights, nodes=flow.nodes
     )
     duration = math.nextafter(
-        math.log(identity.energy_gain_bound_for_composition)
+        math.log(expansion.energy_gain_bound_for_composition)
         / flow.certified_exponential_rate_lower_bound,
         0.0,
     )
 
     result = compose_hybrid_epi_stability(
-        flow, [identity], [0.0, duration], repeat_schedule=True
+        flow, [expansion], [0.0, duration], repeat_schedule=True
     )
 
     assert abs(result.net_log_energy_gain_bound) < 1e-12
@@ -336,6 +519,9 @@ def test_extreme_finite_coefficients_do_not_produce_an_unsafe_finite_bound():
     )
 
     assert result.exact_consensus_subspace_preservation
+    assert result.exact_quotient_energy_gain_upper_bound == (
+        Fraction.from_float(huge) ** 2
+    )
     assert math.isinf(result.weighted_frobenius_energy_bound)
     assert math.isinf(result.energy_gain_bound_for_composition)
     assert not result.supports_global_gain_theorem
@@ -344,11 +530,11 @@ def test_extreme_finite_coefficients_do_not_produce_an_unsafe_finite_bound():
 
 def test_composition_rebuilds_a_jump_instead_of_trusting_replaced_proof_fields():
     flow = _path_flow()
-    identity = certify_affine_epi_jump_gain(
-        "Reception", np.eye(3), flow.metric_weights, nodes=flow.nodes
+    expansion = certify_affine_epi_jump_gain(
+        "Expansion", 2.0 * np.eye(3), flow.metric_weights, nodes=flow.nodes
     )
     forged = replace(
-        identity,
+        expansion,
         finite_global_energy_gain=True,
         energy_gain_bound_for_composition=0.0,
     )
@@ -358,7 +544,7 @@ def test_composition_rebuilds_a_jump_instead_of_trusting_replaced_proof_fields()
     )
 
     assert result.jumps[0] is not forged
-    assert result.jumps[0].energy_gain_bound_for_composition == 2.0
+    assert result.jumps[0].energy_gain_bound_for_composition == 4.0
     assert result.energy_multiplier_bound > 1.0
     assert not result.repeated_schedule_disagreement_convergence_certified
 

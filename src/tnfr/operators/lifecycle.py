@@ -21,7 +21,14 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
-from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ..constants.aliases import (
+    ALIAS_DEPI,
+    ALIAS_DNFR,
+    ALIAS_EPI,
+    ALIAS_THETA,
+    ALIAS_VF,
+)
+from ..metrics.common import structural_coherence
 from ..metrics.trig import neighbor_phase_mean
 from ..utils import angle_diff
 
@@ -164,6 +171,7 @@ def get_lifecycle_state(
     vf = _get_node_attr(G, node, ALIAS_VF)
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
     epi = _get_node_attr(G, node, ALIAS_EPI)
+    depi = _get_node_attr(G, node, ALIAS_DEPI)
     theta = _get_node_attr(G, node, ALIAS_THETA)
 
     # Check for collapse conditions first
@@ -194,9 +202,10 @@ def get_lifecycle_state(
     if phase_coupling > propagation_coupling and vf > activation_threshold:
         return LifecycleState.PROPAGATION
 
-    # Stabilization: High coherence, low dissonance
-    # Note: C(t) computation would require full graph state, using EPI as proxy
-    if abs(dnfr) < stabilization_dnfr and epi > stabilization_coherence:
+    # Stabilization: high node coherence and low dissonance. This is the
+    # radius-zero constitutive read-out, not a proxy based on EPI magnitude.
+    coherence = structural_coherence(dnfr, depi)
+    if abs(dnfr) < stabilization_dnfr and coherence > stabilization_coherence:
         return LifecycleState.STABILIZATION
 
     # Activation: Above activation threshold but not yet stabilized
@@ -255,6 +264,7 @@ def check_collapse_conditions(
     vf = _get_node_attr(G, node, ALIAS_VF)
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
     epi = _get_node_attr(G, node, ALIAS_EPI)
+    depi = _get_node_attr(G, node, ALIAS_DEPI)
     theta = _get_node_attr(G, node, ALIAS_THETA)
 
     # Check frequency failure (most fundamental)

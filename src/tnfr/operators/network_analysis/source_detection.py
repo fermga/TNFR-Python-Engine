@@ -1,16 +1,16 @@
-"""Source detection for Reception (EN) operator.
+"""Source-activity detection for the Reception (EN) operator.
 
-This module implements emission source detection for the Reception operator,
-enabling active reorganization through identification of compatible coherence
-sources in the network.
+The returned diagnostics are phase compatibility and capacity-weighted EPI
+activity. Neither quantity is canonical structural coherence C(t) because the
+calculation reads neither DeltaNFR nor dEPI.
 
-TNFR Context
-------------
-According to TNFR.pdf §2.2.1, EN (Reception) requires:
+Operational Source-Discovery Policy
+-----------------------------------
+The engine's EN source-discovery helper applies:
 
-1. **Source Detection**: Identify nodes emitting coherence (active EPI)
+1. **Source Detection**: Identify nodes above the selected EPI activity cut
 2. **Phase Compatibility**: Validate θᵢ ≈ θⱼ for effective coupling
-3. **Coherence Strength**: Measure available coherence (EPI × νf)
+3. **Emission Activity**: Measure capacity-weighted form (EPI × nu_f)
 4. **Network Distance**: Respect structural proximity in network
 
 These functions enable Reception to operate as "active reorganization from
@@ -24,6 +24,12 @@ from typing import TYPE_CHECKING, Any
 
 from ...constants.operational import ACTIVE_EMISSION_THRESHOLD
 from ...utils import angle_diff
+from .._diagnostic_scores import (
+    finite_real,
+    nonnegative_magnitude,
+    unit_score,
+)
+from .._epi_domain import require_real_scalar_epi
 
 try:
     import networkx as nx
@@ -45,11 +51,10 @@ def detect_emission_sources(
 ) -> list[tuple[Any, float, float]]:
     """Detect potential emission sources for EN receiver node.
 
-    Identifies nodes in the network that can serve as coherence sources for
-    the receiving node, ranked by phase compatibility. This implements the
-    "active reception" principle from TNFR.pdf §2.2.1 where EN must detect
-    and validate compatible emission sources before integrating external
-    coherence.
+    Identifies nodes in the network that can serve as active sources for
+    the receiving node, ranked by phase compatibility. This operational
+    prefilter validates candidate sources before EN integrates resonance
+    intake.
 
     Parameters
     ----------
@@ -65,12 +70,13 @@ def detect_emission_sources(
     Returns
     -------
     list[tuple[Any, float, float]]
-        list of (source_node, phase_compatibility, coherence_strength) tuples,
+        List of (source_node, phase_compatibility_score,
+        emission_activity) tuples,
         sorted by phase compatibility (most compatible first).
 
         - source_node: Node identifier
-        - phase_compatibility: 0.0 (incompatible) to 1.0 (perfect sync)
-        - coherence_strength: Available coherence (EPI × νf)
+        - phase_compatibility_score: bounded score in [0, 1]
+        - emission_activity: unbounded nonnegative EPI * nu_f product
 
     TNFR Structural Logic
     ---------------------
@@ -81,22 +87,21 @@ def detect_emission_sources(
     .. code-block:: text
 
         phase_diff = |wrap(θ_r - θ_s)|
-        normalized_diff = phase_diff / π  # angle_diff already bounds this in [0, 1]
-        compatibility = 1.0 - normalized_diff
+        normalized_diff = phase_diff / π  # phase_diff lies in [0, π]
+        phase_compatibility_score = 1.0 - normalized_diff
 
     ``phase_diff`` is the shortest-arc distance on the phase circle. Arbitrary
     representatives that differ by complete turns therefore remain equivalent.
 
-    **Coherence Strength:**
+    **Emission Activity:**
 
-    Coherence strength represents the emission capacity of the source:
+    The unbounded activity readout weights source form by reorganization rate:
 
     .. code-block:: text
 
-        coherence_strength = EPI × νf
+        emission_activity = EPI * nu_f
 
-    Higher values indicate stronger emission that can be more effectively
-    integrated by the receiver.
+    This product is not C(t) and has no [0, 1] bound.
 
     **Active Emission Threshold:**
 
@@ -119,12 +124,12 @@ def detect_emission_sources(
     >>> sources = detect_emission_sources(G, receiver)
     >>> len(sources)
     1
-    >>> source_node, compatibility, strength = sources[0]
+    >>> source_node, compatibility_score, activity = sources[0]
     >>> source_node == emitter
     True
-    >>> 0.9 <= compatibility <= 1.0  # High phase compatibility
+    >>> 0.9 <= compatibility_score <= 1.0
     True
-    >>> strength > 0.4  # Strong coherence (0.5 * 1.0)
+    >>> activity > 0.4
     True
 
     See Also
@@ -135,8 +140,17 @@ def detect_emission_sources(
     from ...constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
     # Get receiver phase
-    receiver_theta = float(get_attr(G.nodes[receiver_node], ALIAS_THETA, 0.0))
-    sources = []
+    receiver_theta = finite_real(
+        get_attr(
+            G.nodes[receiver_node],
+            ALIAS_THETA,
+            0.0,
+            strict=True,
+            conv=lambda value: value,
+        ),
+        label=f"EN receiver phase {receiver_node!r}",
+    )
+    sources: list[tuple[Any, float, float]] = []
 
     # Scan network for potential sources
     for source in G.nodes():
@@ -156,23 +170,56 @@ def detect_emission_sources(
             if source not in G.neighbors(receiver_node):
                 continue
 
-        # Check if source is active (has coherent EPI)
-        source_epi = float(get_attr(G.nodes[source], ALIAS_EPI, 0.0))
+        # Apply the selected EPI activity threshold.
+        source_epi = require_real_scalar_epi(
+            get_attr(
+                G.nodes[source],
+                ALIAS_EPI,
+                0.0,
+                strict=True,
+                conv=lambda value: value,
+            ),
+            operator="Reception",
+            label=f"source EPI {source!r}",
+        )
         if source_epi < ACTIVE_EMISSION_THRESHOLD:
             continue
 
         # Calculate phase compatibility
-        source_theta = float(get_attr(G.nodes[source], ALIAS_THETA, 0.0))
+        source_theta = finite_real(
+            get_attr(
+                G.nodes[source],
+                ALIAS_THETA,
+                0.0,
+                strict=True,
+                conv=lambda value: value,
+            ),
+            label=f"EN source phase {source!r}",
+        )
         # Phase difference normalized to [0, 1] scale
         phase_diff = abs(angle_diff(receiver_theta, source_theta))
         normalized_diff = phase_diff / math.pi
-        phase_compatibility = 1.0 - normalized_diff
+        phase_compatibility_score = unit_score(
+            1.0 - normalized_diff,
+            label=f"EN phase compatibility {source!r}->{receiver_node!r}",
+        )
 
-        # Coherence strength (EPI × νf)
-        source_vf = float(get_attr(G.nodes[source], ALIAS_VF, 0.0))
-        coherence_strength = source_epi * source_vf
+        source_vf = nonnegative_magnitude(
+            get_attr(
+                G.nodes[source],
+                ALIAS_VF,
+                0.0,
+                strict=True,
+                conv=lambda value: value,
+            ),
+            label=f"EN source structural frequency {source!r}",
+        )
+        emission_activity = nonnegative_magnitude(
+            source_epi * source_vf,
+            label=f"EN source emission activity {source!r}",
+        )
 
-        sources.append((source, phase_compatibility, coherence_strength))
+        sources.append((source, phase_compatibility_score, emission_activity))
 
     # Sort by phase compatibility (most compatible first)
     sources.sort(key=lambda x: x[1], reverse=True)

@@ -62,10 +62,13 @@ def test_example_recovery_uses_the_exact_hybrid_decision(example_and_protocol):
     baseline = protocol["baseline"]
     recovered = protocol["recovered"]
 
-    assert baseline.recovery_break_even_duration_estimate is not None
-    assert protocol["recovery_duration"] == pytest.approx(
-        2.0 * baseline.recovery_break_even_duration_estimate
-    )
+    jump = baseline.affine_jump_certificate
+    assert jump is not None
+    assert jump.exact_quotient_energy_gain_upper_bound == Fraction(1)
+    assert baseline.recovery_break_even_duration_estimate == 0.0
+    rate = baseline.diffusion_certificate.certified_exponential_rate_lower_bound
+    assert protocol["recovery_duration"] == pytest.approx(1.0 / rate)
+    assert protocol["recovery_duration"] > 0.0
     assert recovered.hybrid_certificate is not None
     assert recovered.represented_hybrid_recovery_certified is True
     assert recovered.hybrid_certificate.disagreement_contracts_over_declared_horizon
@@ -91,6 +94,7 @@ def test_example_report_is_finite_and_declares_scope(
     assert report["runtime"]["conductance_weighted_neighbor_mean"] == pytest.approx(
         0.9
     )
+    assert report["affine_boundary"]["exact_quotient_gain_upper_bound"] == "1/1"
     assert report["consensus_and_pressure"]["pressure_refresh_required"]
     assert report["recovery"]["exact_hybrid_contraction_decision"]
     assert report["scope"]["uniform_real_scalar_embedding"]

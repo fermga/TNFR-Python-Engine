@@ -70,10 +70,11 @@ at NETWORK scale; the other twelve act at NODE scale:
 
 Public naming
 -------------
-At the public level the **English structural-operator name** is canonical
-(Emission, Reception, Coherence, …). The glyph code (AL, EN, IL, …) is the
-internal symbolic layer. Every public-facing accessor in this module exposes the
-English name; ``glyph`` is available for symbolic/telemetry use.
+The lowercase English token is the canonical public executable identifier
+(``emission``, ``reception``, ``coherence``, …). ``english_name`` stores the
+title-case public display/class name (Emission, Reception, Coherence, …), while
+``glyph`` stores the internal symbolic code (AL, EN, IL, …). Contract lookup
+accepts all three layers without conflating their roles.
 
 Self-consistency
 ----------------
@@ -201,10 +202,9 @@ class OperatorContract:
     Attributes
     ----------
     name : str
-        Canonical function name (the internal identifier, e.g. ``"emission"``).
+        Canonical lowercase public executable identifier (e.g. ``"emission"``).
     english_name : str
-        Public structural-operator name (e.g. ``"Emission"``). This is the name
-        that must appear at the public level — NOT the glyph code.
+        Title-case public display/class name (e.g. ``"Emission"``).
     glyph : str
         Internal symbolic glyph code (e.g. ``"AL"``).
     purpose : str
@@ -287,7 +287,7 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         primary_channel=StateChannel.EPI,
         primary_direction=EffectDirection.INCREASE,
         scale=OperatorScale.NODE,
-        postcondition="EPI not decreased (∂EPI/∂t ≥ 0)",
+        postcondition="EPI not decreased; νf, phase and ΔNFR unchanged",
         context=ContractContext.NETWORK,
         nodal_expression="A'L ⇒ ∂EPI/∂t > 0, νf ≈ ν₀⁺",
         pdf_reference="TNFR.pdf §2.2.1 (1) A'L — Emisión fundacional",
@@ -462,14 +462,15 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# Public accessors (English-name first)
+# Contract accessors and display labels
 # ════════════════════════════════════════════════════════════════════════════
 
 
 def contract_for(identifier: str) -> OperatorContract:
-    """Return the contract for a function name, English name, or glyph code.
+    """Return the contract for an executable name, display name, or glyph.
 
-    Resolution order: canonical function name → English name → glyph code.
+    Resolution order: lowercase public executable identifier → title-case
+    display/class name → internal glyph code.
     Raises :class:`KeyError` if not found.
     """
     c = OPERATOR_CONTRACTS.get(identifier)
@@ -487,7 +488,7 @@ def iter_contracts() -> tuple[OperatorContract, ...]:
 
 
 def operators_in_channel(channel: StateChannel) -> tuple[str, ...]:
-    """English names of the operators whose primary channel is ``channel``."""
+    """Title-case display names for operators in ``channel``."""
     return tuple(
         c.english_name
         for c in OPERATOR_CONTRACTS.values()
@@ -496,14 +497,14 @@ def operators_in_channel(channel: StateChannel) -> tuple[str, ...]:
 
 
 def operators_at_scale(scale: OperatorScale) -> tuple[str, ...]:
-    """English names of the operators that act at ``scale`` (U5 fractality axis)."""
+    """Title-case display names for operators at ``scale`` (the U5 axis)."""
     return tuple(
         c.english_name for c in OPERATOR_CONTRACTS.values() if c.scale is scale
     )
 
 
 def english_name(identifier: str) -> str:
-    """Public English structural-operator name for any operator identifier."""
+    """Return the title-case public display/class name for an identifier."""
     return contract_for(identifier).english_name
 
 

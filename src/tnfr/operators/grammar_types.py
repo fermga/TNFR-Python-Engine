@@ -155,7 +155,7 @@ CANONICAL_STRUCTURAL_TYPES = frozenset(
 # Glyph-Function Name Mappings
 # ============================================================================
 
-# Mapping from Glyph to canonical function name
+# Mapping from Glyph to canonical lowercase executable identifier
 GLYPH_TO_FUNCTION = {
     Glyph.AL: "emission",
     Glyph.EN: "reception",
@@ -172,7 +172,7 @@ GLYPH_TO_FUNCTION = {
     Glyph.REMESH: "recursivity",
 }
 
-# Reverse mapping from function name to Glyph
+# Reverse mapping from canonical lowercase executable identifier to Glyph
 FUNCTION_TO_GLYPH = {v: k for k, v in GLYPH_TO_FUNCTION.items()}
 
 
@@ -181,19 +181,19 @@ def glyph_function_name(
     *,
     default: Any = None,
 ) -> Any:
-    """Convert glyph to canonical function name.
+    """Convert a supported name or glyph to the executable identifier.
 
     Parameters
     ----------
     val : Glyph | str | None
-        Glyph enum, glyph string value ('IL', 'OZ'), or function name to convert
+        Glyph enum, glyph string value ('IL', 'OZ'), or operator name to convert
     default : str | None, optional
         Default value if conversion fails
 
     Returns
     -------
     str | None
-        Canonical function name or default
+        Canonical lowercase executable identifier or default
 
     Notes
     -----
@@ -202,9 +202,9 @@ def glyph_function_name(
     will be returned unchanged instead of being converted.
 
     The function handles three input types:
-    1. Glyph enum (e.g., Glyph.IL) → function name (e.g., 'coherence')
-    2. Glyph string value (e.g., 'IL') → function name (e.g., 'coherence')
-    3. Function name (e.g., 'coherence') → returned as-is
+    1. Glyph enum (e.g., Glyph.IL) → executable identifier (e.g., 'coherence')
+    2. Glyph string value (e.g., 'IL') → executable identifier
+    3. Executable identifier (including direct case variants) → canonical form
     """
     if val is None:
         return default
@@ -218,8 +218,8 @@ def glyph_function_name(
             glyph_function_name._glyph_value_map = {
                 g.value: func for g, func in GLYPH_TO_FUNCTION.items()
             }
-        # Serialized histories may contain Glyph.VAL, lowercase codes or
-        # public English names. Every consumer resolves these consistently.
+        # Serialized histories may contain Glyph.VAL or lowercase executable
+        # identifiers; direct case variants normalize through the same map.
         token = val.strip()
         if token.startswith("Glyph."):
             token = token.rsplit(".", 1)[-1]
@@ -228,7 +228,7 @@ def glyph_function_name(
             return func_name
         if token.lower() in FUNCTION_TO_GLYPH:
             return token.lower()
-        # Otherwise assume it's already a function name
+        # Otherwise preserve the unknown token for the caller to reject.
         return val
     # Unknown type: cannot map safely
     return default

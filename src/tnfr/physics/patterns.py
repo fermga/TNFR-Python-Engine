@@ -4,7 +4,7 @@ Each constructor initializes node attributes
 (theta/phase, delta_nfr/dnfr, coherence)
 consistent with TNFR semantics:
 - Phases wrapped to [0, 2π)
-- ΔNFR controls local structural pressure; coherence = 1 / (1 + |ΔNFR|)
+- ΔNFR controls local structural pressure; the shared coherence kernel uses dEPI=0.
 - No dynamics here; these are static initializations to study field signatures.
 
 Note: These are TNFR-native patterns, not SM postulates. They provide
@@ -19,6 +19,7 @@ import networkx as nx
 
 from ..constants.canonical import DELTA_PHI_MAX
 from ..mathematics.unified_numerical import np
+from ..metrics.common import structural_coherence
 
 _TWO_PI = 2.0 * math.pi
 
@@ -37,7 +38,7 @@ def _set_baseline(G: nx.Graph, base_dnfr: float = 0.05) -> None:
         G.nodes[n]["phase"] = 0.0
         G.nodes[n]["delta_nfr"] = float(base_dnfr)
         G.nodes[n]["dnfr"] = float(base_dnfr)
-        G.nodes[n]["coherence"] = 1.0 / (1.0 + abs(base_dnfr))
+        G.nodes[n]["coherence"] = float(structural_coherence(base_dnfr))
 
 
 def reset_baseline(G: nx.Graph, base_dnfr: float = 0.05) -> nx.Graph:
@@ -92,7 +93,7 @@ def apply_vortex(
         G.nodes[n]["phase"] = float(phi)
         G.nodes[n]["delta_nfr"] = float(dnfr)
         G.nodes[n]["dnfr"] = float(dnfr)
-        G.nodes[n]["coherence"] = 1.0 / (1.0 + abs(dnfr))
+        G.nodes[n]["coherence"] = float(structural_coherence(dnfr))
     return (cx, cy)
 
 
@@ -134,7 +135,7 @@ def apply_helical_packet(
         G.nodes[n]["phase"] = float(phi)
         G.nodes[n]["delta_nfr"] = float(dnfr)
         G.nodes[n]["dnfr"] = float(dnfr)
-        G.nodes[n]["coherence"] = 1.0 / (1.0 + abs(dnfr))
+        G.nodes[n]["coherence"] = float(structural_coherence(dnfr))
     return (cx, cy)
 
 
@@ -185,7 +186,7 @@ def apply_scalar_bump(
         G.nodes[n]["phase"] = float(phi)
         G.nodes[n]["delta_nfr"] = float(dnfr)
         G.nodes[n]["dnfr"] = float(dnfr)
-        G.nodes[n]["coherence"] = 1.0 / (1.0 + abs(dnfr))
+        G.nodes[n]["coherence"] = float(structural_coherence(dnfr))
     return (cx, cy)
 
 
@@ -256,7 +257,7 @@ def apply_color_domain_lattice(
         G.nodes[n]["phase"] = float(phi)
         G.nodes[n]["delta_nfr"] = float(dnfr)
         G.nodes[n]["dnfr"] = float(dnfr)
-        G.nodes[n]["coherence"] = 1.0 / (1.0 + abs(dnfr))
+        G.nodes[n]["coherence"] = float(structural_coherence(dnfr))
 
 
 __all__ = [

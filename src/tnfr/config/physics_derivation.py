@@ -151,10 +151,10 @@ def derive_u2_debt_capacity_from_physics(
 def can_generate_epi_from_null(operator: str) -> bool:
     """Check if operator can generate EPI from null/zero state.
 
-    According to TNFR physics, an operator can generate EPI from nothing
-    when it can:
-    1. Create positive νf from νf=0 (initiate reorganization capacity)
-    2. Generate positive ΔNFR from equilibrium (create structural pressure)
+    This predicate concerns the EPI coordinate: an operator generates from
+    null when it can source positive form at ``EPI = 0``. It does not claim
+    that the same operator creates capacity or pressure. In particular, AL
+    requires pre-existing basal νf and leaves νf and ΔNFR unchanged.
 
     Parameters
     ----------

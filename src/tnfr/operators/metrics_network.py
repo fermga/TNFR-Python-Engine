@@ -86,7 +86,7 @@ def coupling_metrics(
         - delta_dnfr: Change in ΔNFR
         - dnfr_stabilization: Reduction of reorganization pressure (positive if stabilized)
         - dnfr_final: Post-coupling ΔNFR
-        - dnfr_reduction: Absolute reduction (before - after)
+        - dnfr_reduction: Reduction in absolute pressure magnitude
         - dnfr_reduction_pct: Percentage reduction
 
         **EPI Invariance metrics:**
@@ -163,9 +163,13 @@ def coupling_metrics(
 
     # ΔNFR reduction metrics (if dnfr_before provided)
     if dnfr_before is not None:
-        dnfr_reduction = dnfr_before - dnfr_after
-        dnfr_reduction_pct = (dnfr_reduction / (abs(dnfr_before) + 1e-9)) * 100.0
-        dnfr_stabilization = dnfr_before - dnfr_after  # Positive if stabilized
+        magnitude_before = abs(dnfr_before)
+        magnitude_after = abs(dnfr_after)
+        dnfr_reduction = magnitude_before - magnitude_after
+        dnfr_reduction_pct = (
+            dnfr_reduction / (magnitude_before + 1e-9)
+        ) * 100.0
+        dnfr_stabilization = dnfr_reduction
         metrics.update(
             {
                 "dnfr_before": dnfr_before,
@@ -210,8 +214,17 @@ def coupling_metrics(
     coupling_strength_total = 0.0
     for neighbor in neighbors:
         edge_data = G.get_edge_data(node, neighbor)
-        if edge_data and isinstance(edge_data, dict):
-            coupling_strength_total += edge_data.get("coupling", 0.0)
+        if not edge_data or not isinstance(edge_data, dict):
+            continue
+        records = (
+            edge_data.values() if G.is_multigraph() else (edge_data,)
+        )
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            coupling_strength_total += float(
+                record.get("weight", record.get("coupling", 0.0))
+            )
     metrics["coupling_strength_total"] = coupling_strength_total
 
     # Phase dispersion around the circular mean, using shortest-arc residuals.

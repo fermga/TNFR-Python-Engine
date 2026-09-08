@@ -21,7 +21,7 @@ OPERATOR_METADATA: dict[str, OperatorMeta]
 
 Fields
 ------
-OperatorMeta.name          English class name (e.g. Emission)
+OperatorMeta.name          Title-case display/class name (e.g. Emission)
 OperatorMeta.mnemonic      Glyph code (AL, EN, ...)
 OperatorMeta.category      High-level functional category
 OperatorMeta.grammar_roles list of grammar rule roles (U1a, U1b, U2, ...)
@@ -212,11 +212,11 @@ OPERATOR_METADATA = _centralize_contracts(OPERATOR_METADATA)
 
 
 def get_operator_meta(identifier: str) -> OperatorMeta:
-    """Return metadata for glyph mnemonic or class name.
+    """Return metadata for an internal glyph or title-case display/class name.
 
     Resolution order:
     1. Exact mnemonic key (AL, EN, ...)
-    2. Search by English name (Emission, Coherence, ...)
+    2. Search by title-case display/class name (Emission, Coherence, ...)
     Raises KeyError if not found.
     """
 
@@ -224,7 +224,7 @@ def get_operator_meta(identifier: str) -> OperatorMeta:
     meta = OPERATOR_METADATA.get(identifier)
     if meta is not None:
         return meta
-    # English name lookup
+    # Title-case display/class-name lookup
     for m in OPERATOR_METADATA.values():
         if m.name == identifier:
             return m

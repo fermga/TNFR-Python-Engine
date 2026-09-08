@@ -1,4 +1,8 @@
-"""Spectral validation helpers aligned with the TNFR canonical interface."""
+"""Validation of auxiliary Hermitian spectral expectations.
+
+These checks are separate from canonical structural coherence ``C(t)`` and
+never certify or populate ``history['C_steps']``.
+"""
 
 from __future__ import annotations
 
@@ -7,7 +11,9 @@ from typing import Any, Mapping, Sequence
 from ..compat.dataclass import dataclass
 from ..errors import TNFRValueError
 from ..mathematics.operators import CoherenceOperator, FrequencyOperator
-from ..mathematics.runtime import coherence as runtime_coherence
+from ..mathematics.runtime import (
+    meets_spectral_expectation_threshold as runtime_spectral_threshold,
+)
 from ..mathematics.runtime import frequency_positive as runtime_frequency_positive
 from ..mathematics.runtime import normalized as runtime_normalized
 from ..mathematics.runtime import stable_unitary as runtime_stable_unitary
@@ -20,13 +26,31 @@ __all__ = ("NFRValidator",)
 
 @dataclass(slots=True)
 class NFRValidator(Validator[np.ndarray]):
-    """Validate spectral states against TNFR canonical invariants."""
+    """Validate a normalized state against auxiliary spectral contracts.
+
+    ``coherence_operator`` and ``coherence_threshold`` are retained public
+    compatibility names.  Their canonical meanings are ``spectral_operator``
+    and ``spectral_expectation_threshold``; the resulting expectation is an
+    unbounded Hermitian observable and is not structural ``C(t)``.
+    """
 
     hilbert_space: HilbertSpace
     coherence_operator: CoherenceOperator
     coherence_threshold: float
     frequency_operator: FrequencyOperator | None = None
     atol: float = 1e-9
+
+    @property
+    def spectral_operator(self) -> CoherenceOperator:
+        """Return the operator under its canonical auxiliary name."""
+
+        return self.coherence_operator
+
+    @property
+    def spectral_expectation_threshold(self) -> float:
+        """Return the unbounded auxiliary comparison floor."""
+
+        return self.coherence_threshold
 
     def _compute_summary(
         self,
@@ -47,7 +71,7 @@ class NFRValidator(Validator[np.ndarray]):
             )
         normalised_vector = vector / norm_value
 
-        coherence_passed, coherence_value = runtime_coherence(
+        expectation_passed, expectation_value = runtime_spectral_threshold(
             normalised_vector,
             self.coherence_operator,
             self.coherence_threshold,
@@ -89,13 +113,21 @@ class NFRValidator(Validator[np.ndarray]):
             atol=self.atol,
         )
 
+        expectation_summary: dict[str, Any] = {
+            "passed": bool(expectation_passed),
+            "value": expectation_value,
+            "threshold": self.coherence_threshold,
+            "metric_kind": "spectral_operator_expectation",
+            "range": "unbounded_real",
+            "canonical_coherence_certified": False,
+            "records_to_C_steps": False,
+        }
         summary: dict[str, Any] = {
             "normalized": bool(normalized_passed),
-            "coherence": {
-                "passed": bool(coherence_passed),
-                "value": coherence_value,
-                "threshold": self.coherence_threshold,
-            },
+            "spectral_operator_expectation": expectation_summary,
+            # Historical result key retained for callers.  It points to the
+            # explicitly scoped auxiliary payload above, never to C(t).
+            "coherence": expectation_summary,
             "frequency": frequency_summary,
             "unitary_stability": {
                 "passed": bool(unitary_passed),
@@ -104,7 +136,7 @@ class NFRValidator(Validator[np.ndarray]):
         }
 
         overall = bool(
-            normalized_passed and coherence_passed and freq_ok and unitary_passed
+            normalized_passed and expectation_passed and freq_ok and unitary_passed
         )
         return overall, summary, normalised_vector
 
@@ -149,9 +181,9 @@ class NFRValidator(Validator[np.ndarray]):
         if not summary.get("normalized", False):
             failed_checks.append("normalization")
 
-        coherence_summary = summary.get("coherence", {})
-        if not coherence_summary.get("passed", False):
-            failed_checks.append("coherence threshold")
+        expectation_summary = summary.get("spectral_operator_expectation", {})
+        if not expectation_summary.get("passed", False):
+            failed_checks.append("spectral expectation threshold")
 
         frequency_summary = summary.get("frequency")
         if isinstance(frequency_summary, Mapping) and not frequency_summary.get(

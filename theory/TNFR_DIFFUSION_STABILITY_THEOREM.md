@@ -6,10 +6,19 @@ away from zero, and for
 fixed-node-set symmetric switching families with a common metric. A directed
 fixed-capacity pressure-transient criterion is also exact. Affine EPI resets
 now have an exact finite-gain criterion in the same common metric and a
-conservative hybrid-word bound. Local Reception and Resonance are the first two
-catalog realizations connected to that theorem under explicit affine domains;
-the other runtime operators, nonlinear regimes, and catalog-wide stability
-remain open.
+conservative hybrid-word bound. Reception and Resonance are the first two
+catalog realizations connected to that theorem at local and all-target stage
+boundaries, with fixed-map repetition under explicit domains. Emission, Silence,
+Expansion, Contraction, Mutation and Transition additionally have a conditional
+internal frozen-proposal realization/gain certificate; Coherence has an
+immutable execution contract without such a gain. Coupling has an explicit
+simultaneous circular/topological merge, Dissonance has a snapshot-bound
+local/propagated pressure reduction, and Self-organization has a collision-safe
+snapshot-bound child-support and hierarchy merge. Recursivity has an immutable
+advisory-only glyph stage. The separate delayed REMESH operation now has an
+exact three-input recurrence, graph-state atomic execution and scoped one-step
+convex and fixed-history gain evidence. Stability of history-updated repetition,
+mixed words, nonlinear regimes and the full catalog remains open.
 
 ## Question and hypotheses
 
@@ -318,9 +327,10 @@ count is the first `n` satisfying
 reports the actual heterogeneous spectrum, stability limit and modal step
 count. At `dt=0.5`, `nu_f=1` and `epsilon=1/(pi+1)`, the 21-node path requires
 231 solver steps while `K4` requires 2. The canonical U4 window remains 3
-**operator positions** in both cases. These quantities expose different clocks
-and cannot be substituted for one another without defining how operator events
-map to elapsed integration time. Stationary-mode resolution uses a reported
+**operator positions** in both cases. The operator-event contract now supplies
+the missing physical timeline—zero-duration jumps separated by declared flow
+intervals—but it does not convert the positional U4 policy into a spectral one.
+Stationary-mode resolution uses a reported
 dimensionless tolerance times the fastest decay rate. It is not an absolute
 frequency threshold and is kept separate from any scaled EPI-update tolerance.
 
@@ -415,20 +425,30 @@ gamma_sharp = ||H^(1/2) Q A Q H^(-1/2)||_2^2.
 ```
 
 The sharp formula is an exact mathematical characterization. Its binary64 SVD
-evaluation is only a diagnostic. The executable theorem instead forms, with
-rational arithmetic on the represented coefficients, the certified bound
+evaluation is only a diagnostic. The executable theorem instead works with
+rational arithmetic on the represented coefficients. It always forms the
+weighted-Frobenius fallback
 
 ```text
 Gamma_F = sum_ij (h_i/h_j) (QAQ)_ij^2 >= gamma_sharp.
 ```
 
-`Gamma_F` is the squared weighted Frobenius norm. Its published binary64 value
-is rounded upward, so it remains a conservative upper bound. A failure of this
-bound to prove contraction does not show that the sharp gain is at least one.
-Likewise, a caller-declared bound is reported as certified by this Frobenius
-argument only when it is no smaller than `Gamma_F`; it never replaces the
-internally derived compositional bound. A smaller declared bound may be true,
-but this conservative argument does not establish it.
+`Gamma_F` is the squared weighted Frobenius norm. The certificate then tightens
+this value on the disagreement quotient without using a floating eigensolver.
+If `QAQ=cQ`, the gain is exactly `c^2`. One- and two-dimensional quotient
+problems use exact rational reduction, with a rational upper enclosure for the
+quadratic root in the two-dimensional case. Other small quotient problems use
+exact positive-semidefinite tests and rational bisection of the generalized
+Rayleigh quotient. Larger non-scalar problems retain `Gamma_F`. The resulting
+`Gamma_Q <= Gamma_F` is therefore always a proved rational upper bound; its
+published binary64 value is rounded upward. In particular, the identity map has
+`Gamma_Q=1` instead of the dimension-dependent Frobenius value `N-1`.
+
+A failure of either bound to prove contraction does not show that the sharp
+gain is at least one. A caller-declared bound is certified when it is no smaller
+than `Gamma_Q`; the stronger legacy diagnostic records independently whether it
+also dominates `Gamma_F`. A declared value never replaces the internally
+derived compositional bound.
 
 Now interleave affine resets `J_k` with continuous common-metric diffusion for
 durations whose sum is `T_flow`. If the represented diffusion certificate gives
@@ -449,21 +469,35 @@ sum_k log(Gamma_k) - r_cert T_flow < 0.
 ```
 
 The executable decision does not use rounded logarithms or a caller tolerance.
-It forms an exact rational lower bound for the represented flow decay and a
-rational upper enclosure for each required logarithm; strict negativity of the
-resulting rational upper bound is the decision. The published multiplier uses
-an upward-rounded rational exponential enclosure. The compatibility field
+It forms an exact rational lower bound for the represented flow decay. Each
+precise rational quotient-gain bound remains certificate data; for log-space
+composition alone, the implementation rounds that gain upward to an exact
+32-bit-significand dyadic rational. This conservatively bounds the gain while
+limiting every logarithm-series input. The actual factors remain visible in
+`exact_log_composition_gain_factors`, separately from the precise product in
+`exact_cumulative_jump_energy_gain_bound`. A rational upper enclosure for each
+resulting logarithm is summed, and strict negativity of that rational upper
+budget is the decision. The published multiplier uses an upward-rounded
+rational exponential enclosure. The compatibility field
 `log_contraction_decision_margin` is zero; `tolerance` affects only numerical
-diagnostics. Duration inputs, including integers and `Fraction` values, are
-first materialized as binary64; the exact budget then rationalizes those
-represented duration values. It therefore certifies the declared executable
-timeline, rather than the pre-conversion source rational. Nonzero durations
-that underflow to zero are rejected. The finite-horizon multiplicative bound only needs valid flow and
-reset proofs. Asymptotic fields remain `None` unless
+diagnostics.
+
+Duration inputs, including integers and `Fraction` values, are first
+materialized as binary64; the exact budget then rationalizes those represented
+duration values. It therefore certifies the declared executable timeline,
+rather than the pre-conversion source rational. Nonzero durations that
+underflow to zero are rejected. `build_operator_event_schedule` centralizes the
+same `m` jumps/`m + 1` intervals convention, exact prefix offsets and explicit
+ordering for coincident events. Absolute float timestamps are display fields and
+are never subtracted to obtain duration. The separate fixed-flow diagnostic uses
+the exact quotient-rate lower bound plus rational log/exp enclosures to decide a
+sufficient duration for a requested energy fraction. Neither interface executes
+the operator word or the continuous solver. The finite-horizon multiplicative bound only
+needs valid flow and reset proofs. Asymptotic fields remain `None` unless
 `repeat_schedule=True`; a repeated schedule must have positive total flow time
-to exclude Zeno accumulation. Under those conditions a negative certified budget
-certifies exponential disagreement decay at the word boundaries. Preservation
-of the initial weighted consensus is a separate property:
+to exclude Zeno accumulation. Under those conditions a negative certified
+budget certifies exponential disagreement decay at the word boundaries.
+Preservation of the initial weighted consensus is a separate property:
 
 ```text
 h^T A_k = h^T,       h^T b_k = 0
@@ -477,8 +511,10 @@ consensus dynamics to possess some other fixed point.
 
 [`certify_affine_epi_jump_gain`](../src/tnfr/physics/hybrid_operator_stability.py)
 returns the exact subspace and mean-preservation decisions, the sharp numerical
-estimate, the rational Frobenius certificate and a zero-to-positive witness
-when finite gain is impossible.
+estimate, the rational quotient bound, the Frobenius fallback and a
+zero-to-positive witness when finite gain is impossible. Its proof stamp covers
+the decisive affine inputs and conclusions, so ordinary replacement or mutation
+cannot promote a forged certificate property.
 [`compose_hybrid_epi_stability`](../src/tnfr/physics/hybrid_operator_stability.py)
 combines those certificates with either the fixed heterogeneous-flow theorem or
 the exact-common-metric switching theorem. It requires the same persistent node
@@ -500,14 +536,16 @@ maps, not identifications of the named operators' runtime implementations.
 
 ### Reception and Resonance runtime realizations
 
-Local Reception (EN) and Resonance (RA) now supply the first two catalog
-bridges. The Reception graph-backed handler reads one target, forms the
-unweighted binary64 `fmean` of its runtime neighbours, blends with the configured
-factor `m`, scalarizes the target's EPI representation, and applies structural
-clipping. This is not globally the matrix multiplication used above: uniform
-real BEPI embeddings retain their signed scalar value, genuinely non-scalar or
-complex BEPI values use the maximum-component magnitude, the mean and blend
-round in separate stages, and soft or active hard clipping is nonlinear.
+Reception (EN) and Resonance (RA) now supply the first two catalog bridges at
+both the local and all-target stage boundaries. The Reception graph-backed
+handler reads one target, forms the unweighted binary64 `fmean` of its runtime
+neighbours, blends with the configured factor `m`, reads the target in the
+canonical real-scalar EPI domain, and applies structural clipping. Raw finite
+real values and uniform-real BEPI embeddings retain their signed scalar value.
+Genuinely nonuniform or complex BEPI values have a maximum-component magnitude
+for generic read-only diagnostics, but EN rejects them before proposing a blend.
+The runtime is not globally the matrix multiplication used above: the mean and
+blend round in separate stages, and soft or active hard clipping is nonlinear.
 
 On a declared fixed connected undirected support, the EN bridge therefore
 requires a uniform real scalar embedding, `0<=m<=1`, values inside the
@@ -584,7 +622,7 @@ proportional. Optional recovery composes the represented jump with this fixed
 post-RA flow; the displayed break-even duration is only an estimate, while the
 Boolean recovery decision uses the exact hybrid composer.
 
-Neither EN nor RA recomputes the stored pressure field as part of its EPI write.
+The node-local EN and RA writes do not recompute the stored pressure field.
 If the pre-event pure-EPI pressure is `p=-L_rw x` and an accepted target update
 changes EPI by `delta`, retaining `p` gives the exact post-event manifold defect
 
@@ -594,19 +632,108 @@ p + L_rw(x+delta e_i) = delta L_rw e_i.
 
 On connected positive conductance this defect vanishes exactly iff the update
 is trivial. Pressure refresh is therefore required before the next segment is
-interpreted as pure-EPI flow. The exact support theorem and the observed
-binary64 defect norm are separate certificate fields.
+interpreted as pure-EPI flow. The shared all-target executor invokes the graph's
+configured `compute_delta_nfr` callback after structural commit and keeps that
+refresh inside the same rollback boundary. The exact support theorem and the
+observed binary64 defect norm are separate certificate fields.
 
 [`certify_reception_epi_realization`](../src/tnfr/physics/reception_realization.py)
 and
 [`certify_resonance_epi_realization`](../src/tnfr/physics/resonance_realization.py)
 perform these audits without mutating the graph.
 
+[`certify_all_target_neighbor_stage`](../src/tnfr/physics/network_stage_stability.py)
+assembles every local EN or RA row from one stage snapshot and records a finite
+repeated trace. For a convex factor and an initial field inside finite hard
+bounds, every ideal-real row is a convex combination; the interval is forward
+invariant, so hard clipping remains inactive for arbitrarily many ideal-real
+stages. A fixed-map EN theorem additionally requires declared fixed support. RA
+also requires declared fixed U3 neighbour sets and a forward-invariant common
+sign/kind domain. The certificate checks the observed neighbour sets, maps,
+identity admissions and pre/post diffusion metrics at every requested stage.
+
+The represented fixed map is promoted only when its rational row sums preserve
+the consensus subspace exactly. Its repeated disagreement bound is
+`Gamma_Q^k`; weighted-mean drift and RA metric drift remain separate outputs.
+Regression tests compare every finite structural-trace step with the public
+all-target runtime, but no global binary64 runtime-affinity theorem is asserted:
+the two-stage
+`fmean`/blend evaluation can differ from matrix multiplication even when every
+snapshot agrees within tolerance. Soft or active clipping, changing RA gate
+sets, identity rejection and metric changes therefore produce explicit
+observations or abstentions rather than being hidden inside the affine claim.
+
+[`compose_neighbor_stage_diffusion_stability`](../src/tnfr/physics/network_stage_stability.py)
+closes the finite one-stage boundary. It accepts exactly one certified
+all-target EN or RA stage and a binary64-representable strictly positive flow
+duration. It rebuilds every reconstructible local domain condition, validates
+node order, represented coefficients, exact row algebra, nested proof stamps and
+the post-stage metric, then composes the stage map with the fixed post-stage flow
+using `repeat_schedule=False`. The raw scalar EPI embedding cannot be revisited
+after the graph has been discarded and remains an explicit carried observation.
+Honest support, clipping or gate failures return an abstention; inconsistent
+records are rejected.
+
+The resulting finite disagreement bound and strict-contraction decision do not
+assert weighted-mean preservation. The exact represented-map identity, the
+observed runtime mean shift and any RA pre/post metric change are separate
+fields. Linearity of pure-EPI pressure allows the single-target defects from the
+common snapshot to be summed into an all-target binary64 diagnostic. This is not
+the local exact refresh-iff-nontrivial theorem, and RA phase or capacity may
+require a full runtime pressure refresh even when EPI does not change. The bridge
+therefore leaves stored-pressure refresh, global binary64 runtime affinity and
+repetition of the stage-flow schedule explicitly uncertified.
+
+The scheduler result is broader than this theorem. AL, IL, OZ, SHA, VAL, NUL,
+THOL, ZHIR, NAV, UM and REMESH join EN/RA in the implemented thirteen-stage
+two-phase set: every
+target proposal is derived from one stage-start snapshot and the complete stage
+is failure-atomic. Their committed primary channels are target-order invariant
+before the opaque pressure-refresh callback. IL contracts signed pressure
+magnitude and locks phase through one direct/stage kernel; its canonical
+structural `C(t)` fields remain distinct from auxiliary pressure-dispersion
+telemetry. OZ reduces snapshot-bound local and propagated pressure and advances
+per-node RNG progress independently of target order. ZHIR binds phase and
+structural-acceleration telemetry to
+snapshot-bound temporal evidence and U4 context; AL/SHA share one timestamp
+across the stage. NAV binds `nu_f`, phase, `DeltaNFR` and per-node RNG progress
+to the snapshot, resolves a missing graph seed within the transaction and uses
+one shared latency-observation instant. The seed is restored on rollback and
+persists on success. Ordered lifecycle, audit/telemetry and monitor streams
+retain requested target order. IL warnings are the final transactional effect;
+cache state and the opaque pressure refresh are excluded. Identity-bearing
+caches remain tied to their live graph and node objects. UM uses a deterministic
+snapshot-rank circular-displacement reducer, final U3 validation and
+deterministic functional-link coalescing; this is an execution policy rather
+than a Lyapunov result. THOL allocates cross-parent child-ID collisions and
+commits `d2EPI`, `DeltaNFR`, child nodes, `sub_nodes`, `sub_epis` and
+graph `hierarchy` in snapshot-node rank after detached validation. REMESH leaves structural channels unchanged and deduplicates one advisory event per telemetry step.
+
+For AL/SHA/VAL/NUL/ZHIR/NAV, the shared pointwise stage executor can request a
+certificate computed from the same detached snapshot and frozen proposals used
+by its commit. A successful `NetworkStageResult` conditionally proves exact
+runtime EPI realization, a consensus-preserving affine gain in the pre-flow
+metric, and an aligned pre/post diffusion metric. NUL's pressure channel
+remains separate. Unsupported, empty and grammar-replaced stages reject the
+request before live mutation. This seam does not certify future repetition;
+IL, OZ and THOL receive no affine gain from their execution contracts.
+
+OZ nevertheless has an immutable all-target execution contract: local actions
+and outgoing propagation read the stage snapshot, and overlapping incoming
+increments are summed with `math.fsum` in snapshot-node rank. Its local
+pressure-magnitude postcondition is distinct from the final signed field, where
+positive propagation can partially cancel a negative pressure. REMESH has an
+immutable advisory proposal and deterministic graph-event merge; it does not
+invoke the separate delayed EPI operation. Multi-target IL historically used
+the sequential schedule; the canonical word path now uses its immutable
+proposal.
+
 Canonical names remain metadata outside such a realization proof. Neither a
-U2 role nor a legacy policy multiplier supplies a runtime gain. Clipping outside
-the stated domains, branching, richer BEPI, multichannel pressure updates,
-topology or history mutation, REMESH, state-dependent maps, repeated operators,
-and arbitrary grammar words remain outside this theorem. The RA bridge also
+U2 role nor a legacy policy multiplier supplies a runtime gain. Branching,
+richer BEPI, arbitrary multichannel pressure laws, topology or history mutation,
+non-EN/RA gain theorems, mixed operator words and global binary64 runtime
+affinity remain outside this theorem. Repetition is covered only for the
+explicitly certified fixed ideal-real or represented EN/RA map. The RA bridge also
 requires finite positive capacities on a fixed connected undirected
 positive-conductance support; it does not certify finite-step integration or a
 general phase/nonlinear trajectory.

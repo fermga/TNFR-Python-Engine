@@ -124,6 +124,64 @@ def test_simulation_seed_makes_generated_graph_statistics_reproducible():
     first = engine.simulate_large_network(20, 0.2, [], chunk_size=5, seed=17)
     second = engine.simulate_large_network(20, 0.2, [], chunk_size=5, seed=17)
     assert first["network_stats"] == second["network_stats"]
+def test_partitioner_exposes_affinity_name_and_legacy_alias():
+    partitioner = FractalPartitioner(affinity_threshold=0.7)
+    assert partitioner.affinity_threshold == pytest.approx(0.7)
+    assert partitioner.coherence_threshold == pytest.approx(0.7)
+
+    partitioner.coherence_threshold = 0.4
+    assert partitioner.affinity_threshold == pytest.approx(0.4)
+
+    with pytest.raises(ValueError, match="must agree"):
+        FractalPartitioner(
+            coherence_threshold=0.2,
+            affinity_threshold=0.8,
+        )
+
+
+@pytest.mark.parametrize("threshold", [-0.1, 1.1, math.nan, math.inf, True, "0.3"])
+def test_partitioner_rejects_invalid_affinity_threshold(threshold):
+    with pytest.raises(ValueError, match=r"finite real in \[0, 1\]"):
+        FractalPartitioner(affinity_threshold=threshold)
+
+
+def test_partitioner_affinity_alias_matches_canonical_method():
+    graph = nx.path_graph(2)
+    nx.set_node_attributes(graph, 1.0, ALIAS_VF[0])
+    nx.set_node_attributes(graph, 0.0, ALIAS_THETA[0])
+    partitioner = FractalPartitioner(use_spatial_index=False)
+
+    affinity = partitioner._compute_community_affinity(graph, {0}, 1)
+    assert affinity == pytest.approx(1.0)
+    assert partitioner._compute_community_coherence(
+        graph, {0}, 1
+    ) == pytest.approx(affinity)
+
+
+def test_partitioner_spatial_index_respects_phase_wrap():
+    partitioner = FractalPartitioner()
+    if not partitioner.use_spatial_index:
+        pytest.skip("SciPy KDTree is unavailable")
+
+    graph = nx.empty_graph(3)
+    phases = {0: math.pi - 0.01, 1: -math.pi + 0.01, 2: 0.0}
+    nx.set_node_attributes(graph, 1.0, ALIAS_VF[0])
+    nx.set_node_attributes(graph, phases, ALIAS_THETA[0])
+    partitioner._build_spatial_index(graph)
+
+    index_by_node = {
+        node: index for index, node in partitioner._node_index_map.items()
+    }
+    coords = partitioner._kdtree.data
+    wrap_distance = math.dist(
+        coords[index_by_node[0]], coords[index_by_node[1]]
+    )
+    opposite_distance = math.dist(
+        coords[index_by_node[0]], coords[index_by_node[2]]
+    )
+    assert wrap_distance < opposite_distance
+
+
 @pytest.mark.parametrize("threshold", [-0.1, 1.1, math.nan, math.inf, True, "0.3"])
 def test_partitioner_rejects_invalid_coherence_threshold(threshold):
     with pytest.raises(ValueError, match="finite real in \\[0, 1\\]"):

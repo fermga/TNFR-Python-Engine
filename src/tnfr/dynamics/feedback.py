@@ -41,6 +41,7 @@ from ..constants.canonical import (
     FEEDBACK_TARGET_COHERENCE,
     FEEDBACK_TAU_ADAPTIVE,
 )
+from ..metrics.local_coherence import compute_radius_structural_coherence
 from ..operators.registry import get_operator_class
 
 __all__ = ["StructuralFeedbackLoop"]
@@ -185,7 +186,7 @@ class StructuralFeedbackLoop:
         elif coherence > self.target_coherence + self.COHERENCE_TOL_HIGH:
             # High coherence → explore
             return DISSONANCE
-        elif dnfr > self.DNFR_THRESHOLD:
+        elif abs(dnfr) > self.DNFR_THRESHOLD:
             # High reorganization pressure → self-organize
             return SELF_ORGANIZATION
         elif epi < self.EPI_THRESHOLD:
@@ -196,19 +197,14 @@ class StructuralFeedbackLoop:
             return SILENCE
 
     def _compute_local_coherence(self) -> float:
-        """Estimate local coherence from ΔNFR.
+        """Return the node's canonical radius-zero structural coherence.
 
-        Coherence is inversely proportional to reorganization pressure.
-        When ΔNFR is low, coherence is high (structure is stable).
-
-        Returns
-        -------
-        float
-            Estimated coherence in [0, 1]
+        The constitutive kernel includes both ``|DeltaNFR|`` and the recorded
+        ``|dEPI/dt|`` channel. Missing rate telemetry has the explicit static
+        interpretation ``dEPI/dt = 0`` supplied by the shared local reader.
         """
-        dnfr = get_attr(self.G.nodes[self.node], ALIAS_DNFR, 0.0)
-        # Coherence inversely proportional to |ΔNFR|
-        return max(0.0, min(1.0, 1.0 - abs(dnfr)))
+
+        return compute_radius_structural_coherence(self.G, self.node, radius=0)
 
     def adapt_thresholds(self, performance_metric: float) -> None:
         """Adapt thresholds based on achieved performance.

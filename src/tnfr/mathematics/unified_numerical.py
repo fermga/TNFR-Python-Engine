@@ -1,36 +1,19 @@
-"""TNFR Unified Numerical Utilities - Consolidated NumPy and Constants Module.
+"""Shared numerical imports, constants and small deterministic utilities.
 
-CONSOLIDATION ACHIEVEMENT: This module unifies all numerical operations and
-constants across TNFR codebase under a single coherent interface.
-
-Theoretical Foundation:
-Grounded in the nodal equation ∂EPI/∂t = νf · ΔNFR(t). The four structural
-fields (Φ_s, |∇φ|, K_φ, ξ_C) are the orders of the derivative tower. Note
-(audit 2026): only π (phase wrap) is a genuine structural scale — the other
-threshold parameters are an operational convention, NOT derived scales.
-
-Unified Architecture:
-- Standardized NumPy imports with consistent aliasing (np)
-- Centralized mathematical constants (π and TNFR-derived values)
-- Unified numerical operations with fallback mechanisms
-- Consistent random number generation with seed management
-- Optimized array operations for TNFR structural computations
-
-Consolidates:
-- Scattered numpy imports across 50+ modules
-- Mathematical constants from config/, engines/, mathematics/ modules
-- Random number generators and seed management
-- Array utility functions duplicated across codebase
-- Numerical precision and error handling
-
-Status: NUMERICAL CONSOLIDATION - All numerical operations centralized
+The module supplies the package-wide NumPy alias and a narrow collection of
+phase, random-generation and accumulation helpers. Domain-specific TNFR
+operators and metrics remain in their respective modules. Of the parameters
+exposed here, only pi is the exact phase-wrap scale; other bounds and telemetry
+cuts retain their documented operational scope.
 """
 
 from __future__ import annotations
 
 import logging
 import math
+import random
 from dataclasses import dataclass
+from numbers import Integral, Real
 from typing import Any, Iterable, Sequence
 
 from ..constants.canonical import (
@@ -99,7 +82,7 @@ class TNFRConstants:
     # Deprecated, inert compatibility alias. This is the fragmentation-risk
     # cut, not THOL amplitude alignment or an implicit U5 threshold.
     THOL_MIN_COLLECTIVE_COHERENCE: float = float(FRAGMENTATION_THRESHOLD)
-    HIGH_CORRELATION_THRESHOLD: float = 0.8  # Excellent stability threshold
+    HIGH_CORRELATION_THRESHOLD: float = 0.8  # Selected generic correlation cut
 
     # Phase and frequency bounds
     MAX_PHASE: float = 2.0 * PI  # Phase normalization bound
@@ -136,57 +119,77 @@ CONSTANTS = TNFRConstants()
 # ============================================================================
 
 
+def _validated_seed(seed: Any, *, label: str = "seed") -> int:
+    """Return an integer RandomState seed in the supported closed interval."""
+    if (
+        isinstance(seed, bool)
+        or not isinstance(seed, Integral)
+        or not 0 <= int(seed) <= CONSTANTS.SEED_RANGE_MAX
+    ):
+        raise TNFRValueError(
+            f"{label} must be an integer in [0, {CONSTANTS.SEED_RANGE_MAX}]",
+            context={label: seed},
+        )
+    return int(seed)
+
+
+def _validated_random_size(
+    size: int | tuple[int, ...],
+) -> int | tuple[int, ...]:
+    """Return a nonnegative integer size accepted by both RNG backends."""
+    dimensions = (size,) if isinstance(size, Integral) else size
+    if (
+        isinstance(size, bool)
+        or not isinstance(dimensions, tuple)
+        or any(
+            isinstance(dimension, bool)
+            or not isinstance(dimension, Integral)
+            or int(dimension) < 0
+            for dimension in dimensions
+        )
+    ):
+        raise TNFRValueError(
+            "size must be a nonnegative integer or tuple of nonnegative integers"
+        )
+    normalized = tuple(int(dimension) for dimension in dimensions)
+    return normalized[0] if isinstance(size, Integral) else normalized
+
+
+def _finite_real(value: Any, *, label: str) -> float:
+    """Return one finite non-boolean real scalar."""
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise TNFRValueError(f"{label} must be a finite real")
+    resolved = float(value)
+    if not math.isfinite(resolved):
+        raise TNFRValueError(f"{label} must be a finite real")
+    return resolved
+
+
 class TNFRNumericalUtilities:
-    """Unified Numerical Utilities - Consolidated Mathematical Operations.
+    """Small numerical utilities with reproducible instance-local randomness.
 
-    ARCHITECTURE: Provides unified interface for all numerical operations
-    across TNFR codebase with intelligent fallbacks and optimization.
-
-    Features:
-    - Standardized array operations
-    - Consistent random number generation
-    - Optimized mathematical functions for TNFR
-    - Automatic fallback mechanisms
-    - Performance monitoring and caching
-
-    Usage:
-        # Single entry point for all numerical operations
-        num = TNFRNumericalUtilities()
-
-        # Array operations
-        result = num.normalize_phase(phase_array)
-
-        # Random generation with seed management
-        random_data = num.generate_random_array(100, seed=42)
-
-        # Mathematical operations
-        coherence = num.compute_coherence_metric(data)
+    The methods implement generic numerical operations. They do not themselves
+    compute DeltaNFR, C(t), Si or any other domain-specific TNFR observable.
     """
 
     def __init__(self, seed: int | None = None):
         """Initialize numerical utilities."""
-        self.seed = seed or CONSTANTS.DEFAULT_SEED
+        selected_seed = CONSTANTS.DEFAULT_SEED if seed is None else seed
+        self.seed = _validated_seed(selected_seed)
 
-        # Initialize random state
+        # Keep randomness local to this utility; never mutate module-global RNGs.
         if NUMPY_AVAILABLE:
             self._rng = np.random.RandomState(self.seed)
         else:
-            import random
+            self._rng = random.Random(self.seed)
 
-            random.seed(self.seed)
-            self._rng = None
-
-        # Performance tracking
-        self._operation_count = 0
-        self._total_time = 0.0
 
         logger.info(f"Initialized TNFR numerical utilities with seed {self.seed}")
 
     def normalize_phase(self, phase: ArrayLike) -> ArrayLike:
-        """Normalize phase values to [0, 2π] range.
+        """Normalize finite phase values to the half-open [0, 2π) range.
 
-        TNFR PHYSICS: Phase normalization preserves resonance relationships
-        while ensuring bounded evolution per nodal equation constraints.
+        Modulo normalization preserves circular phase equivalence.
 
         Parameters
         ----------
@@ -196,16 +199,17 @@ class TNFRNumericalUtilities:
         Returns
         -------
         array-like
-            Normalized phase values in [0, 2π] range
+            Normalized phase values in the half-open [0, 2π) range
         """
         if NUMPY_AVAILABLE and isinstance(phase, np.ndarray):
-            return phase % CONSTANTS.MAX_PHASE
-        else:
-            # Fallback for non-NumPy environments
-            if hasattr(phase, "__iter__"):
-                return [p % CONSTANTS.MAX_PHASE for p in phase]
-            else:
-                return phase % CONSTANTS.MAX_PHASE
+            values = np.asarray(phase, dtype=float)
+            if not np.all(np.isfinite(values)):
+                raise TNFRValueError("phase must contain only finite real values")
+            return values % CONSTANTS.MAX_PHASE
+        if hasattr(phase, "__iter__"):
+            values = [_finite_real(item, label="phase") for item in phase]
+            return [item % CONSTANTS.MAX_PHASE for item in values]
+        return _finite_real(phase, label="phase") % CONSTANTS.MAX_PHASE
 
     def compute_phase_difference(
         self, phase1: ArrayLike, phase2: ArrayLike
@@ -216,22 +220,32 @@ class TNFRNumericalUtilities:
         per grammar rule U3 (RESONANT COUPLING).
         """
         if NUMPY_AVAILABLE:
-            phase1 = np.asarray(phase1)
-            phase2 = np.asarray(phase2)
-            diff = phase1 - phase2
-
-            # Wrap to [-π, π] range
+            first = np.asarray(phase1, dtype=float)
+            second = np.asarray(phase2, dtype=float)
+            if not np.all(np.isfinite(first)) or not np.all(np.isfinite(second)):
+                raise TNFRValueError("phases must contain only finite real values")
+            diff = first - second
             return np.arctan2(np.sin(diff), np.cos(diff))
-        else:
-            # Fallback implementation
-            if hasattr(phase1, "__iter__") and hasattr(phase2, "__iter__"):
-                return [
-                    math.atan2(math.sin(p1 - p2), math.cos(p1 - p2))
-                    for p1, p2 in zip(phase1, phase2)
-                ]
-            else:
-                diff = phase1 - phase2
-                return math.atan2(math.sin(diff), math.cos(diff))
+
+        first_iterable = hasattr(phase1, "__iter__")
+        second_iterable = hasattr(phase2, "__iter__")
+        if first_iterable != second_iterable:
+            raise TNFRValueError(
+                "phase inputs must both be scalars or equally sized iterables"
+            )
+        if first_iterable:
+            first = [_finite_real(item, label="phase1") for item in phase1]
+            second = [_finite_real(item, label="phase2") for item in phase2]
+            if len(first) != len(second):
+                raise TNFRValueError("phase iterables must have equal length")
+            return [
+                math.atan2(math.sin(a - b), math.cos(a - b))
+                for a, b in zip(first, second)
+            ]
+        diff = _finite_real(phase1, label="phase1") - _finite_real(
+            phase2, label="phase2"
+        )
+        return math.atan2(math.sin(diff), math.cos(diff))
 
     def generate_random_array(
         self,
@@ -255,23 +269,24 @@ class TNFRNumericalUtilities:
         array-like
             Random array with specified distribution
         """
+        validated_size = _validated_random_size(size)
         if seed is not None:
-            if NUMPY_AVAILABLE:
-                local_rng = np.random.RandomState(seed)
-            else:
-                import random
-
-                random.seed(seed)
+            selected_seed = _validated_seed(seed)
+            local_rng = (
+                np.random.RandomState(selected_seed)
+                if NUMPY_AVAILABLE
+                else random.Random(selected_seed)
+            )
         else:
             local_rng = self._rng
 
         if NUMPY_AVAILABLE:
             if distribution == "uniform":
-                return local_rng.uniform(0, 1, size)
+                return local_rng.uniform(0, 1, validated_size)
             elif distribution == "normal":
-                return local_rng.normal(0, 1, size)
+                return local_rng.normal(0, 1, validated_size)
             elif distribution == "exponential":
-                return local_rng.exponential(1.0, size)
+                return local_rng.exponential(1.0, validated_size)
             else:
                 raise TNFRValueError(
                     f"Unknown distribution: {distribution}",
@@ -283,19 +298,17 @@ class TNFRNumericalUtilities:
                 )
         else:
             # Fallback for non-NumPy environments
-            import random
-
-            if isinstance(size, int):
-                length = size
+            if isinstance(validated_size, int):
+                length = validated_size
             else:
-                length = int(np.prod(size)) if NUMPY_AVAILABLE else size[0]
+                length = math.prod(validated_size)
 
             if distribution == "uniform":
-                return [random.uniform(0, 1) for _ in range(length)]
+                return [local_rng.uniform(0, 1) for _ in range(length)]
             elif distribution == "normal":
-                return [random.gauss(0, 1) for _ in range(length)]
+                return [local_rng.gauss(0, 1) for _ in range(length)]
             elif distribution == "exponential":
-                return [random.expovariate(1.0) for _ in range(length)]
+                return [local_rng.expovariate(1.0) for _ in range(length)]
             else:
                 raise TNFRValueError(
                     f"Unknown distribution: {distribution}",
@@ -309,58 +322,86 @@ class TNFRNumericalUtilities:
     def safe_divide(
         self, numerator: ArrayLike, denominator: ArrayLike, fallback: float = 0.0
     ) -> ArrayLike:
-        """Safe division with zero-denominator handling.
-
-        TNFR PHYSICS: Prevents division by zero in structural calculations
-        while maintaining numerical stability.
-        """
+        """Divide values and substitute fallback at zero denominators."""
+        fallback_value = _finite_real(fallback, label="fallback")
         if NUMPY_AVAILABLE:
-            num = np.asarray(numerator)
-            den = np.asarray(denominator)
-
-            # Use numpy's divide with where clause for safety
-            return np.divide(
-                num, den, out=np.full_like(num, fallback), where=(den != 0)
+            num, den = np.broadcast_arrays(
+                np.asarray(numerator, dtype=float),
+                np.asarray(denominator, dtype=float),
             )
+            return np.divide(
+                num,
+                den,
+                out=np.full(num.shape, fallback_value, dtype=float),
+                where=(den != 0),
+            )
+        numerator_is_iterable = hasattr(numerator, "__iter__") and not isinstance(
+            numerator, (str, bytes, bytearray)
+        )
+        denominator_is_iterable = hasattr(
+            denominator, "__iter__"
+        ) and not isinstance(denominator, (str, bytes, bytearray))
+        if numerator_is_iterable:
+            numerators = list(numerator)
         else:
-            # Fallback implementation
-            if hasattr(numerator, "__iter__") and hasattr(denominator, "__iter__"):
-                return [
-                    n / d if d != 0 else fallback
-                    for n, d in zip(numerator, denominator)
-                ]
-            else:
-                return numerator / denominator if denominator != 0 else fallback
+            numerators = None
+        if denominator_is_iterable:
+            denominators = list(denominator)
+        else:
+            denominators = None
+
+        if numerators is not None and denominators is not None:
+            if len(numerators) != len(denominators):
+                raise TNFRValueError(
+                    "numerator and denominator iterables must have equal length"
+                )
+            pairs = zip(numerators, denominators)
+        elif numerators is not None:
+            pairs = ((item, denominator) for item in numerators)
+        elif denominators is not None:
+            pairs = ((numerator, item) for item in denominators)
+        else:
+            return (
+                numerator / denominator
+                if denominator != 0
+                else fallback_value
+            )
+        return [
+            item_numerator / item_denominator
+            if item_denominator != 0
+            else fallback_value
+            for item_numerator, item_denominator in pairs
+        ]
 
     def compute_circular_mean(self, angles: ArrayLike) -> float:
-        """Compute circular mean of angles.
-
-        TNFR PHYSICS: Circular statistics preserve phase relationships
-        in network synchronization computations.
-        """
+        """Compute the circular mean of a nonempty, nondegenerate sample."""
         if NUMPY_AVAILABLE:
-            angles = np.asarray(angles)
-            return np.arctan2(np.mean(np.sin(angles)), np.mean(np.cos(angles)))
+            values = np.asarray(angles, dtype=float)
+            if values.size == 0:
+                raise TNFRValueError("circular mean requires at least one angle")
+            if not np.all(np.isfinite(values)):
+                raise TNFRValueError("angles must contain only finite real values")
+            mean_sin = float(np.mean(np.sin(values)))
+            mean_cos = float(np.mean(np.cos(values)))
         else:
-            # Fallback implementation
-            if not hasattr(angles, "__iter__"):
-                angles = [angles]
+            source = angles if hasattr(angles, "__iter__") else [angles]
+            values = [_finite_real(angle, label="angle") for angle in source]
+            if not values:
+                raise TNFRValueError("circular mean requires at least one angle")
+            mean_sin = math.fsum(math.sin(angle) for angle in values) / len(values)
+            mean_cos = math.fsum(math.cos(angle) for angle in values) / len(values)
 
-            sin_sum = sum(math.sin(a) for a in angles)
-            cos_sum = sum(math.cos(a) for a in angles)
-            n = len(angles)
-
-            return math.atan2(sin_sum / n, cos_sum / n)
+        if math.hypot(mean_sin, mean_cos) <= CONSTANTS.FLOAT_TOLERANCE:
+            raise TNFRValueError(
+                "circular mean is undefined for a vanishing resultant"
+            )
+        return math.atan2(mean_sin, mean_cos)
 
     def is_finite_array(self, arr: ArrayLike) -> bool:
-        """Check if array contains only finite values.
-
-        TNFR PHYSICS: Ensures numerical stability by detecting
-        NaN and infinite values that violate nodal equation constraints.
-        """
+        """Return whether an array contains only finite numeric values."""
         if NUMPY_AVAILABLE:
             arr = np.asarray(arr)
-            return np.all(np.isfinite(arr))
+            return bool(np.all(np.isfinite(arr)))
         else:
             # Fallback implementation
             if hasattr(arr, "__iter__"):
@@ -371,30 +412,25 @@ class TNFRNumericalUtilities:
     def clamp_value(
         self, value: ArrayLike, min_val: float, max_val: float
     ) -> ArrayLike:
-        """Clamp values to specified range.
-
-        TNFR PHYSICS: Enforces structural bounds (audit 2026: only π phase-wrap is genuine)
-        to prevent parameter escape beyond coherence thresholds.
-        """
+        """Clamp values to a validated finite numeric interval."""
+        lower = _finite_real(min_val, label="min_val")
+        upper = _finite_real(max_val, label="max_val")
+        if lower > upper:
+            raise TNFRValueError("min_val must be less than or equal to max_val")
         if NUMPY_AVAILABLE:
-            return np.clip(value, min_val, max_val)
+            return np.clip(value, lower, upper)
         else:
             # Fallback implementation
             if hasattr(value, "__iter__"):
-                return [max(min_val, min(max_val, v)) for v in value]
+                return [max(lower, min(upper, v)) for v in value]
             else:
-                return max(min_val, min(max_val, value))
+                return max(lower, min(upper, value))
 
     def kahan_sum_nd(
         self, values: Iterable[Sequence[float]], dims: int
     ) -> tuple[float, ...]:
-        """Return compensated sums of ``values`` with ``dims`` components.
-
-        TNFR PHYSICS: Essential for high-precision accumulation of structural
-        metrics (ΔNFR, EPI) over long integration periods to prevent
-        floating point drift in coherence calculations.
-        """
-        if dims < 1:
+        """Return compensated sums of values with dims components."""
+        if isinstance(dims, bool) or not isinstance(dims, Integral) or dims < 1:
             raise TNFRValueError(
                 "dims must be >= 1",
                 context={"dims": dims},
@@ -414,27 +450,31 @@ class TNFRNumericalUtilities:
         return tuple(float(totals[i] + comps[i]) for i in range(dims))
 
     def get_statistics(self) -> dict[str, Any]:
-        """Get numerical utilities performance statistics."""
+        """Return backend metadata with uninstrumented compatibility counters.
+
+        The utility does not time calls. The two historical counter fields remain
+        zero for schema compatibility and statistics_collected makes that scope
+        machine-readable.
+        """
         return {
             "numpy_available": NUMPY_AVAILABLE,
-            "operation_count": self._operation_count,
-            "total_time": self._total_time,
+            "operation_count": 0,
+            "total_time": 0.0,
+            "statistics_collected": False,
             "seed": self.seed,
             "constants_version": "structural_tetrad_v1",
         }
 
     def reset_seed(self, new_seed: int) -> None:
         """Reset random seed for reproducibility."""
-        self.seed = new_seed
+        self.seed = _validated_seed(new_seed)
 
         if NUMPY_AVAILABLE:
-            self._rng = np.random.RandomState(new_seed)
+            self._rng = np.random.RandomState(self.seed)
         else:
-            import random
+            self._rng = random.Random(self.seed)
 
-            random.seed(new_seed)
-
-        logger.info(f"Reset numerical utilities seed to {new_seed}")
+        logger.info(f"Reset numerical utilities seed to {self.seed}")
 
 
 # ============================================================================

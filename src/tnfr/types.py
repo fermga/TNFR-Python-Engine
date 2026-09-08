@@ -908,6 +908,9 @@ class RemeshMeta(TypedDict, total=False):
     topo_hash: str | None
     epi_mean_before: float
     epi_mean_after: float
+    epi_raw_mean_after: float
+    clip_mode: str
+    clipped_node_count: int
     epi_checksum_before: str
     epi_checksum_after: str
     stable_frac_last: float

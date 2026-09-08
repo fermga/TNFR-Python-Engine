@@ -22,7 +22,8 @@ $$F=\beta I+\gamma S^{\tau_l}+\delta S^{\tau_g}$$
 is a normal contraction because $S$ is a unitary cyclic shift and
 $\beta,\gamma,\delta>0$ sum to one. Its Cesàro averages converge to the
 orthogonal projection onto $\ker(I-F)$. The fixed modes satisfy both delay
-conditions, so their period is $\gcd(\tau_l,\tau_g)$.
+conditions, so the fixed subspace consists of sequences whose periods divide
+$\gcd(\tau_l,\tau_g)$.
 
 This finite model is not the clipped, history-gated runtime operation. It does
 not establish a literal $\tau_g\to\infty$ limit, conserve the structural
@@ -60,39 +61,88 @@ the coefficient identity is exact:
 
 $$\beta+\gamma+\delta=1.$$
 
-The coefficients form a convex partition only when $0\leq\alpha\leq1$. The
-default is $\alpha=0.5$, but the graph or glyph-factor configuration can
-override it; the runtime helper does not itself clamp $\alpha$ to this interval.
+The runtime factor contract requires 0 < alpha <= 1. It rejects values outside
+that interval instead of clamping them. The exact-real coefficients represented
+by a validated alpha are therefore nonnegative and sum to one. The implementation
+evaluates the equivalent nested binary64 expression; the optional evidence
+reports its rounding residual from the exact-real affine value.
 
-### §1.2 Guards and clipping
+### §1.2 Guards, shape and clipping
 
-The public runtime effect is
+Both delays are strict positive integers. The outer EPI history must be replayable
+and support indexed access. If it contains fewer than max(tau_l, tau_g) + 1
+snapshots, the planner returns an immutable insufficient-history no-op and the
+executor changes no graph state. Empty live support returns the distinct
+`empty_support` no-op and emits no metadata, callback, history event or
+cooldown update.
+
+Once the length guard passes, both selected lag entries must be mappings with
+support exactly equal to the live node support, and every selected EPI must lie
+in the real-scalar chart. There is no fallback from a missing historical node
+to its present EPI. The local and global labels denote two temporal lags for
+each node; the global-lag snapshot is not a network mean.
+
+The public committed effect is
 
 $$x_{\rm new}=\operatorname{structural\_clip}(x_{\rm raw}).$$
 
-It returns without changing the graph until `_epi_hist` has at least
-$\max(\tau_l,\tau_g)+1$ snapshots. Hard or soft clipping can make the map
-nonlinear. The function reads `_epi_hist`; it does not append a new history
-snapshot. History advancement belongs to the surrounding runtime.
+Every immutable node proposal retains both raw and bounded EPI and records
+whether clipping intervened. Hard and soft clipping can therefore be inspected
+without treating either as part of the raw affine recurrence. The operation
+reads the history but does not append or shift it; advancement belongs to the
+surrounding runtime.
 
-### §1.3 What averaging preserves
+The executor validates the complete proposal before writing and wraps EPI,
+topology, graph metadata, history, caches and capturable graph-owned callback
+state in one rollback boundary. A propagated commit, telemetry or strict
+callback failure restores that graph state. An external effect already emitted
+by a callback cannot be undone by a graph snapshot.
 
-If $0\leq\alpha\leq1$ and clipping is inactive, identical inputs are fixed:
+### §1.3 Mean and disagreement statements
 
-$$x_0=x_l=x_g=c \quad\Longrightarrow\quad x_{\rm raw}=c.$$
+If all three scalar inputs are the same constant and clipping leaves that
+constant in range, the value is fixed:
 
-This is preservation of constant histories, not preservation of every input.
-For the squared scalar norm, convexity gives
+$$x_0=x_l=x_g=c \quad\Longrightarrow\quad x_{\rm new}=c.$$
+
+For network vectors and any declared positive diagonal weights h, the exact-real
+raw weighted mean obeys
 
 $$
-|x_{\rm raw}|^2
-\leq \beta|x_0|^2+\gamma|x_l|^2+\delta|x_g|^2.
+\mu_h(x_{\rm raw})
+=\beta\mu_h(x_0)+\gamma\mu_h(x_l)+\delta\mu_h(x_g).
 $$
 
-The bound compares the output with the weighted energy of **three** snapshots.
-It does not imply $|x_{\rm raw}|^2=|x_0|^2$. Depending on the delayed values,
-the current-node EPI magnitude can increase or decrease. REMESH averaging is
-therefore not an isometry and is not generally energy-neutral.
+This is a mean-combination identity, not automatic preservation of the current
+mean. Let V_h be weighted disagreement from that mean. Convexity gives
+
+$$
+V_h(x_{\rm raw})
+\leq
+\beta V_h(x_0)+\gamma V_h(x_l)+\delta V_h(x_g).
+$$
+
+The right-hand side contains all three snapshots. If delayed histories remain
+free, it supplies no finite multiplicative gain relative to V_h(x_0) alone.
+
+For a one-step map with the delayed vectors fixed, write
+b = gamma x_l + delta x_g. The raw map of x_0 preserves the consensus subspace
+exactly when b is uniform. Under that condition its disagreement gain is at
+most beta squared. If b is nonuniform, a consensus x_0 can be sent to positive
+disagreement and no finite global multiplicative gain exists. Hard clipping
+after a uniform-offset raw map is nonexpansive and retains the beta-squared
+bound in the exact-real scalar model. The soft knee is globally 4/3-Lipschitz,
+giving the sufficient bound (4 beta / 3) squared. A degenerate clipping interval
+is a constant map with zero gain.
+
+The returned opt-in evidence keeps these universal fixed-history bounds apart
+from observed pre/post mean and disagreement values. It also reports binary64
+rounding and clipping interventions separately. Exact rational diagnostics
+outside the finite binary64 reporting range produce an explicit domain error
+before the graph commit rather than an infinite or partial result. None of
+these one-step facts
+proves stability of the history-advance recurrence, pressure closure, structural
+charge conservation, or U2 convergence.
 
 ---
 

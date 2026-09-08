@@ -48,6 +48,7 @@ _compute_dnfr: Any
 _compute_neighbor_means: Any
 _init_dnfr_cache: Any
 _refresh_dnfr_vectors: Any
+adapt_vf_after_structural_stability: Any
 adapt_vf_by_coherence: Any
 coordinate_global_local_phase: Any
 default_compute_delta_nfr: Any

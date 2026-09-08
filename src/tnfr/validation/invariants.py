@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import math
 from abc import ABC, abstractmethod
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
@@ -604,59 +605,107 @@ class Invariant8_ControlledDeterminism(TNFRInvariant):
 
 
 class Invariant9_StructuralMetrics(TNFRInvariant):
-    """Invariante 9: Structural metrics - expose C(t), Si, phase, νf."""
+    """Historical check 9: expose valid C(t), Si, phase and νf telemetry."""
 
     invariant_id = 9
     description = "Structural metrics: expose C(t), Si, phase, νf"
 
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
-        violations = []
+        violations: list[InvariantViolation] = []
 
-        # Verify that nodes expose structural metrics
-        for node_id in graph.nodes():
-            node_data = graph.nodes[node_id]
-
-            # Verify basic metrics (νf, phase already verified in other invariants)
-            # Here we verify derived metrics if they exist
-
-            # If Si metric (sense index) exists, verify it's valid
-            if "Si" in node_data or "si" in node_data:
-                si = node_data.get("Si", node_data.get("si", 0.0))
-                if isinstance(si, (int, float)):
-                    if not (0.0 <= si <= 1.0):
-                        violations.append(
-                            InvariantViolation(
-                                invariant_id=9,
-                                severity=InvariantSeverity.WARNING,
-                                description="Sense index (Si) outside expected range",
-                                node_id=str(node_id),
-                                expected_value="0.0 <= Si <= 1.0",
-                                actual_value=si,
-                                suggestion="Verify Si calculation maintains TNFR semantics",
-                            )
-                        )
-
-        # Verify that there are global coherence metrics
-        if hasattr(graph, "graph"):
-            config = graph.graph
-            has_coherence_metric = (
-                "coherence" in config or "C_t" in config or "total_coherence" in config
-            )
-
-            if not has_coherence_metric:
+        # Si is canonically nonnegative and may exceed one. It is a heuristic
+        # capacity index, not a probability or the bounded C(t) constitutive map.
+        for node_id, node_data in graph.nodes(data=True):
+            if "Si" not in node_data and "si" not in node_data:
+                continue
+            raw_si = node_data.get("Si", node_data.get("si"))
+            try:
+                if isinstance(raw_si, bool):
+                    raise TypeError
+                si = float(raw_si)
+            except (TypeError, ValueError, OverflowError):
+                si = float("nan")
+            if not math.isfinite(si) or si < 0.0:
                 violations.append(
                     InvariantViolation(
                         invariant_id=9,
                         severity=InvariantSeverity.WARNING,
-                        description="No global coherence metric C(t) exposed",
-                        expected_value="C(t) or coherence metric in graph",
-                        actual_value="Not found",
-                        suggestion="Expose total coherence C(t) for structural metrics",
+                        description="Sense index (Si) must be finite and nonnegative",
+                        node_id=str(node_id),
+                        expected_value="finite Si >= 0.0",
+                        actual_value=raw_si,
+                        suggestion="Recompute Si from canonical structural channels",
+                    )
+                )
+
+        if not hasattr(graph, "graph"):
+            return violations
+
+        config = graph.graph
+        exposed: list[tuple[str, Any]] = [
+            (key, config[key])
+            for key in ("coherence", "C_t", "total_coherence")
+            if key in config
+        ]
+        history = config.get("history")
+        if isinstance(history, Mapping):
+            samples = history.get("C_steps")
+            if (
+                isinstance(samples, Sequence)
+                and not isinstance(samples, (str, bytes))
+                and samples
+            ):
+                exposed.append(("history.C_steps[-1]", samples[-1]))
+
+        if not exposed:
+            violations.append(
+                InvariantViolation(
+                    invariant_id=9,
+                    severity=InvariantSeverity.WARNING,
+                    description="No global coherence metric C(t) exposed",
+                    expected_value="canonical C(t) telemetry",
+                    actual_value="Not found",
+                    suggestion="Expose compute_coherence(graph) in telemetry",
+                )
+            )
+            return violations
+
+        from .._coherence_validation import validate_structural_coherence
+        from ..metrics.common import compute_coherence
+
+        expected = float(compute_coherence(graph))
+        for source, raw_value in exposed:
+            try:
+                measured = validate_structural_coherence(
+                    raw_value, name=f"C(t) from {source}"
+                )
+            except (TypeError, ValueError) as exc:
+                violations.append(
+                    InvariantViolation(
+                        invariant_id=9,
+                        severity=InvariantSeverity.ERROR,
+                        description="Exposed C(t) has an invalid scalar domain",
+                        expected_value="finite value in [0, 1]",
+                        actual_value=raw_value,
+                        suggestion=str(exc),
+                    )
+                )
+                continue
+            if not math.isclose(measured, expected, rel_tol=1.0e-9, abs_tol=1.0e-12):
+                violations.append(
+                    InvariantViolation(
+                        invariant_id=9,
+                        severity=InvariantSeverity.WARNING,
+                        description="Exposed C(t) does not match canonical channels",
+                        expected_value=expected,
+                        actual_value={"source": source, "value": measured},
+                        suggestion=(
+                            "Recompute C(t) from mean |DeltaNFR| and mean |dEPI/dt|"
+                        ),
                     )
                 )
 
         return violations
-
 
 class Invariant10_DomainNeutrality(TNFRInvariant):
     """Invariante 10: Domain neutrality - trans-scale and trans-domain."""

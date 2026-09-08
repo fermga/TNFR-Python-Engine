@@ -174,9 +174,9 @@ def validate_resonance_strict(
     if vf < min_vf:
         raise TNFRValueError(
             f"RA requires sufficient structural frequency νf >= {min_vf:.2f} "
-            f"(current: {vf:.3f}). Apply AL (Emission) or VAL (Expansion) first.",
+            f"(current: {vf:.3f}). Apply VAL (Expansion) or NAV (Transition) first.",
             context={"vf": vf, "min_vf": min_vf},
-            suggestion="Apply AL (Emission) or VAL (Expansion) first.",
+            suggestion="Apply VAL (Expansion) or NAV (Transition) first.",
         )
 
     # 4. Validate controlled dissonance
@@ -303,7 +303,7 @@ def diagnose_resonance_readiness(G: TNFRGraph, node: Any) -> dict[str, Any]:
     else:
         checks["structural_frequency"] = "failed"
         recommendations.append(
-            f"Apply AL (Emission) or VAL (Expansion) to increase νf "
+            f"Apply VAL (Expansion) or NAV (Transition) to increase νf "
             f"from {vf:.3f} to >= {min_vf:.2f}"
         )
 

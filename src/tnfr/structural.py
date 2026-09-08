@@ -60,17 +60,28 @@ from tnfr.validation import InvariantSeverity, NFRValidator, SequenceSemanticVal
 from tnfr.validation import TNFRValidator as InvariantValidator
 from tnfr.validation import validate_sequence, validation_config
 
+from ._spectral_expectation import (
+    finite_spectral_real,
+    positive_spectral_dimension,
+    resolve_compatibility_value,
+    spectral_expectation_metadata,
+    spectral_expectation_payload,
+    validate_spectral_operator,
+)
 from .constants import EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
 from .dynamics import dnfr_epi_vf_mixed, set_delta_nfr_hook
 from .errors import TNFRValueError
 from .mathematics import (
     BasicStateProjector,
-    CoherenceOperator,
     FrequencyOperator,
+    SpectralExpectationOperator,
     HilbertSpace,
     MathematicalDynamicsEngine,
-    make_coherence_operator,
     make_frequency_operator,
+    make_spectral_expectation_operator,
+)
+from .mathematics.runtime import (
+    meets_spectral_expectation_threshold as runtime_spectral_threshold,
 )
 from .mathematics.unified_numerical import np
 from .operators.definitions import (
@@ -228,13 +239,10 @@ def _resolve_dimension(
     existing_cfg: Mapping[str, object] | None,
 ) -> int:
     if hilbert_space is not None:
-        resolved = int(getattr(hilbert_space, "dimension", 0) or 0)
-        if resolved <= 0:
-            raise TNFRValueError(
-                "Hilbert space dimension must be positive.",
-                context={"dimension": resolved},
-            )
-        return resolved
+        return positive_spectral_dimension(
+            getattr(hilbert_space, "dimension", 0),
+            label="Hilbert space dimension",
+        )
 
     if dimension is None and existing_cfg:
         candidate = existing_cfg.get("dimension")
@@ -248,37 +256,54 @@ def _resolve_dimension(
             count = len(tuple(G.nodes))
         dimension = max(1, count)
 
-    resolved = int(dimension)
-    if resolved <= 0:
-        raise TNFRValueError(
-            "Hilbert space dimension must be positive.",
-            context={"dimension": resolved},
-        )
-    return resolved
+    return positive_spectral_dimension(
+        dimension, label="Hilbert space dimension"
+    )
 
 
-def _ensure_coherence_operator(
+def _ensure_spectral_operator(
     *,
-    operator: CoherenceOperator | None,
+    operator: SpectralExpectationOperator | None,
     dimension: int,
     spectrum: Sequence[float] | None,
-    c_min: float | None,
-) -> CoherenceOperator:
+    expectation_floor: float | None,
+) -> SpectralExpectationOperator:
+    """Return a validated auxiliary spectral-expectation operator."""
+
     if operator is not None:
-        return operator
+        return validate_spectral_operator(
+            operator,
+            dimension=dimension,
+            label="spectral_operator",
+        )
 
     kwargs: dict[str, object] = {}
     if spectrum is not None:
         spectrum_array = np.asarray(spectrum, dtype=np.complex128)
         if spectrum_array.ndim != 1:
             raise TNFRValueError(
-                "Coherence spectrum must be one-dimensional.",
+                "Spectral expectation spectrum must be one-dimensional.",
                 context={"ndim": spectrum_array.ndim},
             )
+        if not np.all(np.isfinite(spectrum_array)):
+            raise TNFRValueError(
+                "Spectral expectation spectrum must be finite."
+            )
         kwargs["spectrum"] = spectrum_array
-    if c_min is not None:
-        kwargs["c_min"] = float(c_min)
-    return make_coherence_operator(dimension, **kwargs)
+    if expectation_floor is not None:
+        kwargs["expectation_floor"] = finite_spectral_real(
+            expectation_floor,
+            label="spectral expectation floor",
+        )
+    return validate_spectral_operator(
+        make_spectral_expectation_operator(dimension, **kwargs),
+        dimension=dimension,
+        label="spectral_operator",
+    )
+
+
+# Historical private helper retained as an explicit compatibility alias.
+_ensure_coherence_operator = _ensure_spectral_operator
 
 
 def _ensure_frequency_operator(
@@ -339,7 +364,11 @@ def create_math_nfr(
     dnfr_hook: DeltaNFRHook = dnfr_epi_vf_mixed,
     dimension: int | None = None,
     hilbert_space: HilbertSpace | None = None,
-    coherence_operator: CoherenceOperator | None = None,
+    spectral_operator: SpectralExpectationOperator | None = None,
+    spectral_spectrum: Sequence[float] | None = None,
+    spectral_expectation_floor: float | None = None,
+    spectral_expectation_threshold: float | None = None,
+    coherence_operator: SpectralExpectationOperator | None = None,
     coherence_spectrum: Sequence[float] | None = None,
     coherence_c_min: float | None = None,
     coherence_threshold: float | None = None,
@@ -353,10 +382,10 @@ def create_math_nfr(
     """Create a TNFR node with canonical mathematical validation attached.
 
     The helper wraps :func:`create_nfr` while projecting the structural state
-    into a Hilbert space so coherence, νf and norm invariants can be tracked via
-    the mathematical runtime.  It installs operators and validation metadata on
-    both the node and the hosting graph so that the
-    :class:`~tnfr.mathematics.MathematicalDynamicsEngine` can consume them
+    into a Hilbert space so an auxiliary spectral expectation, νf and norm can
+    be tracked via the mathematical runtime. It installs operators and
+    validation metadata on both the node and its host graph, allowing the
+    :class:`~tnfr.mathematics.MathematicalDynamicsEngine` to consume them
     directly.
 
     Parameters
@@ -370,12 +399,15 @@ def create_math_nfr(
         (at least one).
     hilbert_space : HilbertSpace, optional
         Pre-built Hilbert space to reuse. Its dimension supersedes ``dimension``.
-    coherence_operator, frequency_operator : optional
-        Custom operators to install. When omitted they are derived from
-        ``coherence_spectrum``/``coherence_c_min`` and
-        ``frequency_diagonal`` respectively.
-    coherence_threshold : float, optional
-        Validation floor. Defaults to ``coherence_operator.c_min``.
+    spectral_operator, frequency_operator : optional
+        Custom operators to install. The spectral observable is auxiliary and
+        does not represent canonical structural C(t).
+    spectral_spectrum, spectral_expectation_floor : optional
+        Factory inputs used when spectral_operator is omitted.
+    spectral_expectation_threshold : float, optional
+        Finite comparison floor. Defaults to the operator expectation floor.
+    coherence_operator, coherence_spectrum, coherence_c_min, coherence_threshold
+        Historical keyword aliases for the corresponding spectral inputs.
     generator_diagonal : sequence of float, optional
         Diagonal entries for the unitary generator used by the mathematical
         dynamics engine. Defaults to a null generator.
@@ -393,10 +425,11 @@ def create_math_nfr(
     >>> metrics = G.nodes[node]["math_metrics"]
     >>> round(metrics["norm"], 6)
     1.0
-    >>> metrics["coherence_passed"], metrics["frequency_passed"]
+    >>> expectation = metrics["spectral_operator_expectation"]
+    >>> expectation["passed"], metrics["frequency_passed"]
     (True, True)
-    >>> metrics["coherence_value"] >= metrics["coherence_threshold"]
-    True
+    >>> expectation["canonical_coherence_certified"]
+    False
 
     Notes
     -----
@@ -408,6 +441,39 @@ def create_math_nfr(
     if np is None:
         raise ImportError(
             "create_math_nfr requires NumPy; install the 'tnfr[math]' extras."
+        )
+
+    resolved_operator = resolve_compatibility_value(
+        spectral_operator,
+        coherence_operator,
+        canonical_name="spectral_operator",
+        legacy_name="coherence_operator",
+    )
+    resolved_spectrum = resolve_compatibility_value(
+        spectral_spectrum,
+        coherence_spectrum,
+        canonical_name="spectral_spectrum",
+        legacy_name="coherence_spectrum",
+    )
+    resolved_floor = resolve_compatibility_value(
+        spectral_expectation_floor,
+        coherence_c_min,
+        canonical_name="spectral_expectation_floor",
+        legacy_name="coherence_c_min",
+    )
+    resolved_threshold = resolve_compatibility_value(
+        spectral_expectation_threshold,
+        coherence_threshold,
+        canonical_name="spectral_expectation_threshold",
+        legacy_name="coherence_threshold",
+    )
+
+    if resolved_operator is not None and (
+        resolved_spectrum is not None or resolved_floor is not None
+    ):
+        raise TNFRValueError(
+            "Provide either a spectral operator or its factory parameters, "
+            "not both."
         )
 
     G, node = create_nfr(
@@ -434,16 +500,22 @@ def create_math_nfr(
     )
 
     hilbert = hilbert_space or HilbertSpace(resolved_dimension)
-    resolved_dimension = int(getattr(hilbert, "dimension", resolved_dimension))
-
-    coherence = _ensure_coherence_operator(
-        operator=coherence_operator,
-        dimension=resolved_dimension,
-        spectrum=coherence_spectrum,
-        c_min=coherence_c_min,
+    resolved_dimension = positive_spectral_dimension(
+        getattr(hilbert, "dimension", resolved_dimension),
+        label="Hilbert space dimension",
     )
-    threshold = float(
-        coherence_threshold if coherence_threshold is not None else coherence.c_min
+
+    spectral = _ensure_spectral_operator(
+        operator=resolved_operator,
+        dimension=resolved_dimension,
+        spectrum=resolved_spectrum,
+        expectation_floor=resolved_floor,
+    )
+    threshold = finite_spectral_real(
+        resolved_threshold
+        if resolved_threshold is not None
+        else spectral.expectation_floor,
+        label="spectral expectation threshold",
     )
 
     frequency = _ensure_frequency_operator(
@@ -466,7 +538,7 @@ def create_math_nfr(
     enforce_frequency = frequency is not None
     spectral_validator = validator or NFRValidator(
         hilbert,
-        coherence,
+        spectral,
         threshold,
         frequency_operator=frequency if enforce_frequency else None,
     )
@@ -482,30 +554,35 @@ def create_math_nfr(
         state,
         enforce_frequency_positivity=enforce_frequency,
     )
-    summary_raw = outcome.summary
-    summary = {key: deepcopy(value) for key, value in summary_raw.items()}
-
-    coherence_summary = summary.get("coherence")
+    summary = deepcopy(dict(outcome.summary))
+    expectation_passed, expectation_value = runtime_spectral_threshold(
+        state,
+        spectral,
+        threshold,
+    )
+    expectation = spectral_expectation_payload(
+        value=expectation_value,
+        threshold=threshold,
+        passed=expectation_passed,
+        provenance="tnfr.structural.create_math_nfr",
+        operator=spectral,
+    )
+    summary["spectral_operator_expectation"] = expectation
+    # Historical summary key retained as a reference to the scoped payload.
+    summary["coherence"] = expectation
     frequency_summary = summary.get("frequency")
 
     math_metrics = {
         "norm": norm_value,
         "normalized": bool(summary.get("normalized", False)),
-        "coherence_value": (
-            float(coherence_summary.get("value", 0.0))
-            if isinstance(coherence_summary, Mapping)
-            else 0.0
+        "spectral_operator_expectation": expectation,
+        **spectral_expectation_metadata(
+            provenance="tnfr.structural.create_math_nfr"
         ),
-        "coherence_threshold": (
-            float(coherence_summary.get("threshold", threshold))
-            if isinstance(coherence_summary, Mapping)
-            else threshold
-        ),
-        "coherence_passed": (
-            bool(coherence_summary.get("passed", False))
-            if isinstance(coherence_summary, Mapping)
-            else False
-        ),
+        # Historical flat keys are compatibility mirrors only.
+        "coherence_value": expectation["value"],
+        "coherence_threshold": expectation["threshold"],
+        "coherence_passed": expectation["passed"],
         "frequency_value": (
             float(frequency_summary.get("value", 0.0))
             if isinstance(frequency_summary, Mapping)
@@ -529,9 +606,15 @@ def create_math_nfr(
 
     node_context = {
         "hilbert_space": hilbert,
-        "coherence_operator": coherence,
-        "frequency_operator": frequency,
+        "spectral_operator": spectral,
+        "spectral_expectation_threshold": threshold,
+        **spectral_expectation_metadata(
+            provenance="tnfr.structural.create_math_nfr"
+        ),
+        # Historical configuration keys.
+        "coherence_operator": spectral,
         "coherence_threshold": threshold,
+        "frequency_operator": frequency,
         "dimension": resolved_dimension,
     }
 
@@ -546,7 +629,13 @@ def create_math_nfr(
             "enabled": True,
             "dimension": resolved_dimension,
             "hilbert_space": hilbert,
-            "coherence_operator": coherence,
+            "spectral_operator": spectral,
+            "spectral_expectation_threshold": threshold,
+            **spectral_expectation_metadata(
+                provenance="tnfr.structural.create_math_nfr"
+            ),
+            # Historical configuration keys.
+            "coherence_operator": spectral,
             "coherence_threshold": threshold,
             "frequency_operator": frequency,
             "state_projector": projector,

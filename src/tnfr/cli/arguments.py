@@ -172,8 +172,8 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
         default=False,
         help=(
             "Enable the spectral mathematical dynamics engine to project nodes"
-            " onto Hilbert space vectors and validate norm, coherence and"
-            " structural frequency invariants"
+            " onto Hilbert space vectors and validate norm, an auxiliary"
+            " spectral expectation, and structural frequency invariants"
         ),
     )
     math_group.add_argument(
@@ -182,24 +182,30 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
         help="Hilbert space dimension to use when the math engine is enabled",
     )
     math_group.add_argument(
+        "--math-spectral-expectation-spectrum",
         "--math-coherence-spectrum",
+        dest="math_spectral_expectation_spectrum",
         type=float,
         nargs="+",
         metavar="λ",
         help=(
-            "Eigenvalues for the coherence operator (defaults to a flat"
-            " spectrum when omitted)"
+            "Eigenvalues for the auxiliary spectral-expectation operator"
+            " (defaults to a flat spectrum when omitted)"
         ),
     )
     math_group.add_argument(
+        "--math-spectral-expectation-floor",
         "--math-coherence-c-min",
+        dest="math_spectral_expectation_floor",
         type=float,
-        help="Explicit coherence floor C_min for the operator",
+        help="Finite auxiliary spectral expectation floor",
     )
     math_group.add_argument(
+        "--math-spectral-expectation-threshold",
         "--math-coherence-threshold",
+        dest="math_spectral_expectation_threshold",
         type=float,
-        help="Coherence expectation threshold enforced during validation",
+        help="Finite spectral expectation threshold used by validation",
     )
     math_group.add_argument(
         "--math-frequency-diagonal",
@@ -371,8 +377,9 @@ def _add_math_run_parser(sub: argparse._SubParsersAction) -> None:
             "  tnfr math.run --nodes 24 --steps 100\n\n"
             "  # Run with custom Hilbert dimension\n"
             "  tnfr math.run --math-dimension 32 --steps 50\n\n"
-            "  # Run with custom coherence spectrum\n"
-            "  tnfr math.run --math-coherence-spectrum 1.0 0.8 0.6 --steps 100\n"
+            "  # Run with a custom spectral-expectation spectrum\n"
+            "  tnfr math.run --math-spectral-expectation-spectrum"
+            " 1.0 0.8 0.6 --steps 100\n"
         ),
     )
     add_common_args(p_math)
@@ -396,21 +403,27 @@ def _add_math_run_parser(sub: argparse._SubParsersAction) -> None:
         help="Hilbert space dimension",
     )
     math_group.add_argument(
+        "--math-spectral-expectation-spectrum",
         "--math-coherence-spectrum",
+        dest="math_spectral_expectation_spectrum",
         type=float,
         nargs="+",
         metavar="λ",
-        help="Eigenvalues for the coherence operator",
+        help="Eigenvalues for the auxiliary spectral-expectation operator",
     )
     math_group.add_argument(
+        "--math-spectral-expectation-floor",
         "--math-coherence-c-min",
+        dest="math_spectral_expectation_floor",
         type=float,
-        help="Explicit coherence floor C_min",
+        help="Finite auxiliary spectral expectation floor",
     )
     math_group.add_argument(
+        "--math-spectral-expectation-threshold",
         "--math-coherence-threshold",
+        dest="math_spectral_expectation_threshold",
         type=float,
-        help="Coherence threshold for validation",
+        help="Finite spectral expectation threshold for validation",
     )
     math_group.add_argument(
         "--math-frequency-diagonal",

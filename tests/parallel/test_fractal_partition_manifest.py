@@ -99,7 +99,8 @@ def test_summary_structure_is_valid(sample_network):
         assert summary["operation_type"] == "fractal_partition"
         assert summary["partition_id"] == "test_partition_003"
         assert "partition_count" in summary
-        assert "coherence" in summary
+        assert summary["C_t"] == summary["coherence"]
+        assert summary["coherence_metric_kind"] == "canonical_C_t"
         assert "sense_index" in summary
         assert "average_community_size" in summary
 
@@ -183,7 +184,8 @@ def test_community_coherence_computed(sample_network):
             assert "node_count" in community
             assert "edge_count" in community
             assert "node_ids" in community
-            assert "community_coherence" in community
+            assert community["community_C_t"] == community["community_coherence"]
+            assert community["coherence_metric_kind"] == "canonical_C_t"
 
 
 def test_partitioner_config_preserved(sample_network):
@@ -209,6 +211,7 @@ def test_partitioner_config_preserved(sample_network):
         # Check configuration is preserved
         config = manifest["partitioner_config"]
         assert config["max_partition_size"] == 15
+        assert config["affinity_threshold"] == 0.5
         assert config["coherence_threshold"] == 0.5
         assert config["use_spatial_index"] is True
         assert config["adaptive"] is False

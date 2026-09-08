@@ -672,7 +672,7 @@ class TNFRUnifiedBackend:
                     sequence_context=word.step(index),
                     **kwargs,
                 )
-        except BaseException:
+        except BaseException as failure:
             monitor = graph.graph.get("integrity_monitor")
             discard_pending = getattr(
                 monitor, "discard_pending_operator", None
@@ -682,7 +682,7 @@ class TNFRUnifiedBackend:
                     discard_pending()
                 except Exception:
                     pass
-            transaction.restore(graph)
+            transaction.restore_after_failure(graph, failure)
             raise
 
         return {

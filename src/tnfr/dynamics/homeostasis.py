@@ -74,7 +74,7 @@ class StructuralHomeostasis:
     -----
     Corrective operators follow TNFR canonical principles:
 
-    - **Low EPI**: Apply AL (Emission) to activate
+    - **Low EPI**: Apply AL (Emission) to source structural form
     - **High EPI**: Apply NUL (Contraction) to reduce
     - **Low νf**: Apply VAL (Expansion) to increase frequency
     - **High νf**: Apply SHA (Silence) to slow down

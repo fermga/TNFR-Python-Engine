@@ -27,7 +27,7 @@ except Exception:
     from typing import Any
 
     def measure_tau_relax_observed(*args: Any, **kwargs: Any) -> dict[str, Any]:
-        return {"error": "metrics_u6 missing", "metric_type": "u6_relaxation_time"}
+        return {"error": "metrics_u6 missing", "metric_type": "u6_relaxation_snapshot"}
 
     def measure_nonlinear_accumulation(*args: Any, **kwargs: Any) -> dict[str, Any]:
         return {

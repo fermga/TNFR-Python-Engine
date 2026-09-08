@@ -2,8 +2,8 @@
 
 These tests make :mod:`tnfr.operators.operator_contracts` the single source of
 truth for operator contracts: they assert the spec is self-consistent, that the
-proactive audit derives its catalog from the spec, and that the public English
-names are exposed everywhere a contract is surfaced.
+proactive audit derives its catalog from the spec, and that executable,
+display/class, and symbolic naming layers remain distinct.
 """
 
 from __future__ import annotations
@@ -156,19 +156,21 @@ class TestGroundTruthChannels:
         )
 
 
-class TestPublicEnglishNames:
-    """The public level exposes English structural-operator names, not glyphs."""
+class TestOperatorNamingLayers:
+    """Executable identifiers, display/class names, and glyphs stay distinct."""
 
-    def test_english_name_resolves_from_glyph_and_name(self) -> None:
+    def test_display_name_resolves_from_all_identifier_layers(self) -> None:
         assert english_name("AL") == "Emission"
         assert english_name("emission") == "Emission"
         assert english_name("Emission") == "Emission"
 
-    def test_every_contract_has_a_capitalized_english_name(self) -> None:
+    def test_every_contract_has_distinct_canonical_naming_layers(self) -> None:
         for c in iter_contracts():
+            assert c.name == c.name.casefold()
             assert c.english_name[0].isupper()
-            # The English name is not the glyph code.
+            assert c.name != c.english_name
             assert c.english_name != c.glyph
+            assert contract_for(c.name) is c
 
     def test_contract_for_unknown_raises(self) -> None:
         with pytest.raises(KeyError):
@@ -187,7 +189,7 @@ class TestAuditDerivesFromSpec:
         assert audit.all_satisfied
         assert audit.n_operators == 13
 
-    def test_audit_uses_spec_contract_text_and_english_names(self) -> None:
+    def test_audit_uses_spec_contract_text_and_display_names(self) -> None:
         from tnfr.physics.integrity import audit_operator_contracts
 
         with warnings.catch_warnings():

@@ -106,9 +106,9 @@ def verify_identity_preserved(
     weakens this identity check. A glyph-code value is therefore treated like
     any other structural kind and must equal its pre-mutation value.
 
-    Identity preservation is distinct from EPI preservation - EPI may change
-    slightly during mutation (structural adjustments), but the fundamental type
-    (epi_kind) must remain constant.
+    Identity preservation is distinct from EPI preservation, although ZHIR's
+    current phase-only contract requires both. This check isolates the identity
+    condition: ``epi_kind`` must remain constant through the transformation.
 
     Examples
     --------
@@ -145,9 +145,9 @@ def verify_identity_preserved(
 def verify_bifurcation_handled(G: TNFRGraph, node: NodeId) -> None:
     """Verify that bifurcation was handled if triggered during mutation.
 
-    When ZHIR detects bifurcation potential (∂²EPI/∂t² > τ), it must either:
-    1. Create a variant node (if bifurcation mode = "variant_creation")
-    2. set detection flag (if bifurcation mode = "detection")
+    When ZHIR detects bifurcation potential (∂²EPI/∂t² > τ), it records the
+    proposal-bound detection event. Structural variant creation belongs to
+    THOL because it changes node support and hierarchy.
 
     This ensures that bifurcation events are properly tracked and controlled,
     preventing uncontrolled structural fragmentation.
@@ -166,13 +166,9 @@ def verify_bifurcation_handled(G: TNFRGraph, node: NodeId) -> None:
 
     Notes
     -----
-    **Bifurcation Modes**:
-
-    - "detection" (default): Only flag bifurcation potential, no variant creation
-    - "variant_creation": Create new node as bifurcation variant
-
-    In "variant_creation" mode, the function verifies that a bifurcation event
-    was recorded in G.graph["zhir_bifurcation_events"].
+    ``detection`` is the only supported ZHIR mode. The legacy
+    ``variant_creation`` setting is rejected before execution; callers that
+    need nested structure must compose ZHIR with THOL.
 
     Grammar rule U4a requires bifurcation handlers (THOL or IL) after ZHIR
     when bifurcation is detected.
@@ -197,33 +193,26 @@ def verify_bifurcation_handled(G: TNFRGraph, node: NodeId) -> None:
     # Bifurcation was detected - verify it was handled
     mode = G.graph.get("ZHIR_BIFURCATION_MODE", "detection")
 
-    if mode == "variant_creation":
-        # In variant creation mode, verify variant was actually created
-        events = G.graph.get("zhir_bifurcation_events", [])
+    if mode != "detection":
+        raise OperatorContractViolation(
+            "Mutation",
+            f"Unsupported ZHIR_BIFURCATION_MODE={mode!r}; use THOL for "
+            "variant or sub-EPI creation.",
+        )
 
-        # Check if this node has a recorded bifurcation event
-        node_has_event = any(event.get("parent_node") == node for event in events)
+    from ...glyph_history import current_operator_step
 
-        if not node_has_event:
-            raise OperatorContractViolation(
-                "Mutation",
-                f"Bifurcation potential detected (∂²EPI/∂t² > τ) but variant "
-                f"was not created. Mode={mode} requires variant creation. "
-                f"Check _spawn_mutation_variant() implementation.",
-            )
-
-    elif mode == "detection":
-        # In detection mode, just verify the flag is set (already checked above)
-        # No variant creation required, flag is sufficient
-        pass
-
-    else:
-        # Unknown mode - log warning but don't raise error
-        import warnings
-
-        warnings.warn(
-            f"Unknown ZHIR_BIFURCATION_MODE: {mode}. "
-            f"Expected 'detection' or 'variant_creation'. "
-            f"Bifurcation handling could not be fully verified.",
-            stacklevel=2,
+    events = G.graph.get("zhir_bifurcation_events", [])
+    step = current_operator_step(G.nodes[node])
+    node_has_event = isinstance(events, list) and any(
+        isinstance(event, dict)
+        and event.get("node") == node
+        and event.get("timestamp") == step
+        for event in events
+    )
+    if not node_has_event:
+        raise OperatorContractViolation(
+            "Mutation",
+            "Bifurcation potential was detected without a proposal-bound "
+            "ZHIR event for the current operator step.",
         )

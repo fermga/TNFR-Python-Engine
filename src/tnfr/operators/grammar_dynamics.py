@@ -53,7 +53,7 @@ from .grammar_types import (
 )
 from ..config.operator_names import BIFURCATION_WINDOW, U2_DEBT_CAPACITY
 
-# ── glyph code ↔ canonical function name helpers ──────────────────────────
+# ── glyph code ↔ canonical executable-identifier helpers ───────────────────
 
 # Build fast lookup from glyph code string ("IL") → canonical name ("coherence")
 _CODE_TO_NAME: dict[str, str] = {g.value: name for g, name in GLYPH_TO_FUNCTION.items()}

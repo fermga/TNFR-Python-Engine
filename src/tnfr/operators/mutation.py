@@ -3,7 +3,7 @@
 Purpose: controlled phase transformation (theta -> theta').
 Physics: trigger when dEPI/dt > xi; identity preserved (epi_kind).
 Grammar: U4b requires prior IL + recent destabilizer (OZ/VAL).
-Effects: regime shift; may adjust epi; keeps vf and identity stable.
+Effects: regime shift through theta; keeps EPI, vf, and identity stable.
 Preconditions: active vf; signed sampled velocity>xi; two EPI samples.
 An explicit ZHIR_MIN_VF may further tighten the active-capacity requirement.
 Typical: IL->OZ->ZHIR->IL; THOL->OZ->ZHIR; IL->VAL->ZHIR->IL.
@@ -16,16 +16,18 @@ from typing import Any, ClassVar
 
 from ..alias import get_attr
 from ..config.operator_names import MUTATION
-from ..constants.aliases import ALIAS_EPI_KIND
+from ..constants.aliases import ALIAS_EPI_KIND, ALIAS_THETA
 from ..types import Glyph, TNFRGraph
-from ._argument_validation import finite_real, require_list_sink
 from .definitions_base import Operator
 
 
 class Mutation(Operator):
     """Controlled phase transform; regime shift with identity preserved.
 
-    Invariants: maintain epi_kind; theta shifts; vf stable; dnfr elevated pre.
+    Invariants: maintain EPI and epi_kind; theta shifts; vf stable; dnfr
+    elevated before the transformation.
+    The phase proposal is RNG-free and depends only on the validated state and
+    configuration; it does not consume or depend on a random seed.
     Grammar: needs prior IL + recent OZ/VAL (U4b); may flag bifurcation.
     Typical: IL->OZ->ZHIR->IL; IL->VAL->ZHIR->IL; OZ->ZHIR->THOL.
     Avoid: ZHIR->ZHIR; AL->ZHIR; ZHIR->OZ; OZ->ZHIR->OZ.
@@ -51,47 +53,62 @@ class Mutation(Operator):
 
     def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Apply ZHIR; detect bifurcation; optional post checks."""
-        # Capture state before mutation for postcondition verification
+        from ._mutation_stage_kernel import propose_mutation_network_stage
+        from .factor_contracts import resolve_runtime_operator_factors
+
+        factors = resolve_runtime_operator_factors(
+            G.graph.get("GLYPH_FACTORS"), self.glyph, G.graph
+        )
+        proposal = propose_mutation_network_stage(
+            G,
+            node,
+            factors,
+            tau=kw.get("tau"),
+        )
+
         validate_postconditions = kw.get(
             "validate_postconditions", False
         ) or G.graph.get("VALIDATE_OPERATOR_POSTCONDITIONS", False)
+        state_before = {
+            "theta": proposal.phase.theta_before,
+            "epi_kind": proposal.epi_kind_before,
+        }
 
-        state_before = None
-        if validate_postconditions:
-            state_before = self._capture_state(G, node)
-
-        # Compute structural acceleration before base operator
-        d2_epi = self._compute_epi_acceleration(G, node)
-
-        # Resolve and validate the active acceleration threshold before the
-        # base glyph can change phase, history, provenance, or telemetry.
-        tau_raw = kw.get("tau")
-        if tau_raw is None:
-            tau_raw = G.graph.get(
-                "BIFURCATION_THRESHOLD_TAU",
-                G.graph.get("ZHIR_BIFURCATION_THRESHOLD", 0.5),
-            )
-        tau = finite_real(
-            tau_raw,
-            operator=self.name,
-            label="tau",
-            lower=0.0,
-        )
-        if d2_epi > tau:
-            require_list_sink(
-                G.graph, "zhir_bifurcation_events", operator=self.name
-            )
-
-        # Apply base operator (glyph, preconditions, metrics)
-        super()._execute(G, node, **kw)
-
-        # Detect bifurcation potential if acceleration exceeds threshold
-        if d2_epi > tau:
-            self._detect_bifurcation_potential(G, node, d2_epi=d2_epi, tau=tau)
+        execution_kwargs = dict(kw)
+        execution_kwargs["_mutation_stage_proposal"] = proposal
+        super()._execute(G, node, **execution_kwargs)
 
         # Verify postconditions if enabled
-        if validate_postconditions and state_before is not None:
+        if validate_postconditions:
             self._verify_postconditions(G, node, state_before)
+        from ._mutation_stage_kernel import emit_mutation_lifecycle_log
+
+        emit_mutation_lifecycle_log(proposal)
+
+    def _after_glyph_application(
+        self, G: TNFRGraph, node: Any, **kw: Any
+    ) -> None:
+        """Merge proposal-bound evidence after phase and history commit."""
+
+        from ._mutation_stage_kernel import (
+            MutationNetworkStageProposal,
+            commit_mutation_lifecycle,
+        )
+
+        proposal = kw.get("_mutation_stage_proposal")
+        if not isinstance(proposal, MutationNetworkStageProposal):
+            raise RuntimeError("Mutation lifecycle proposal is missing")
+        if proposal.node != node:
+            raise RuntimeError("Mutation lifecycle proposal target changed")
+        theta_after = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
+        if theta_after != proposal.phase.theta_after:
+            raise RuntimeError("Mutation phase result diverged from its proposal")
+        for key, value in proposal.phase.telemetry_items:
+            if G.nodes[node].get(key) != value:
+                raise RuntimeError(
+                    "Mutation glyph telemetry diverged from its proposal"
+                )
+        commit_mutation_lifecycle(G, proposal)
 
     def _compute_epi_acceleration(self, G: TNFRGraph, node: Any) -> float:
         """Return the shared structural-acceleration magnitude without writes."""
@@ -99,37 +116,6 @@ class Mutation(Operator):
         from .nodal_equation import compute_d2epi_dt2
 
         return abs(compute_d2epi_dt2(G, node, store=False))
-
-    def _detect_bifurcation_potential(
-        self, G: TNFRGraph, node: Any, d2_epi: float, tau: float
-    ) -> None:
-        """Flag bifurcation potential (d2_epi>tau) and log event."""
-        import logging
-
-        logger = logging.getLogger(__name__)
-
-        # set telemetry flags for grammar validation
-        G.nodes[node]["_zhir_bifurcation_potential"] = True
-        G.nodes[node]["_zhir_d2epi"] = d2_epi
-        G.nodes[node]["_zhir_tau"] = tau
-
-        # Record bifurcation detection event in graph for analysis
-        bifurcation_events = G.graph.setdefault("zhir_bifurcation_events", [])
-        bifurcation_events.append(
-            {
-                "node": node,
-                "d2_epi": d2_epi,
-                "tau": tau,
-                "timestamp": len(G.nodes[node].get("glyph_history", [])),
-            }
-        )
-
-        # Log informative message
-        logger.info(
-            f"Node {node}: ZHIR bifurcation potential detected "
-            f"(∂²EPI/∂t²={d2_epi:.3f} > τ={tau}). "
-            "Consider THOL for bifurcation or IL for stabilization."
-        )
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate ZHIR-specific preconditions."""

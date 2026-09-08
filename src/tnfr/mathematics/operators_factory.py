@@ -1,14 +1,22 @@
-"""Factory helpers to assemble TNFR coherence and frequency operators."""
+"""Factory helpers for auxiliary spectral-expectation and frequency operators."""
 
 from __future__ import annotations
 
-from ..constants.canonical import MATH_COHERENCE_MIN_CANONICAL
+from ..constants.canonical import MATH_SPECTRAL_EXPECTATION_FLOOR_DEFAULT
 from ..errors import TNFRValueError
 from .backend import ensure_array, ensure_numpy, get_backend
-from .operators import CoherenceOperator, FrequencyOperator
+from .operators import (
+    CoherenceOperator,
+    FrequencyOperator,
+    SpectralExpectationOperator,
+)
 from .unified_numerical import np
 
-__all__ = ["make_coherence_operator", "make_frequency_operator"]
+__all__ = [
+    "make_spectral_expectation_operator",
+    "make_coherence_operator",
+    "make_frequency_operator",
+]
 
 _ATOL = 1e-9
 
@@ -29,32 +37,33 @@ def _validate_dimension(dim: int) -> int:
     return int(dim)
 
 
-def make_coherence_operator(
+def make_spectral_expectation_operator(
     dim: int,
     *,
     spectrum: np.ndarray | None = None,
-    c_min: float = MATH_COHERENCE_MIN_CANONICAL,
-) -> CoherenceOperator:
-    """Return a Hermitian positive semidefinite :class:`CoherenceOperator`.
+    expectation_floor: float = MATH_SPECTRAL_EXPECTATION_FLOOR_DEFAULT,
+) -> SpectralExpectationOperator:
+    """Return a positive-semidefinite spectral expectation operator.
 
-    This factory validates inputs, ensures structural invariants (Hermiticity
-    and positive semi-definiteness), and integrates with the TNFR backend
-    abstraction layer.
+    The resulting Hermitian expectation is an auxiliary real observable in the
+    supplied spectrum's units.  It is unbounded above and does not represent or
+    certify canonical structural ``C(t)``.
 
     Parameters
     ----------
     dim : int
         Dimensionality of the operator's Hilbert space. Must be positive.
     spectrum : np.ndarray | None, optional
-        Custom eigenvalue spectrum. If None, uses uniform c_min values.
+        Custom eigenvalue spectrum. If None, uses uniform
+        expectation-floor values.
         Must be real-valued and match dimension.
-    c_min : float, optional
-        Minimum coherence threshold for default spectrum (default: 0.1).
+    expectation_floor : float, optional
+        Auxiliary comparison floor and default uniform eigenvalue (default: 0.1).
 
     Returns
     -------
-    CoherenceOperator
-        Validated coherence operator with backend-native arrays.
+    SpectralExpectationOperator
+        Validated auxiliary operator with backend-native arrays.
 
     Raises
     ------
@@ -64,18 +73,18 @@ def make_coherence_operator(
     """
 
     dimension = _validate_dimension(dim)
-    if not np.isfinite(c_min):
+    if not np.isfinite(expectation_floor):
         raise TNFRValueError(
-            "Coherence threshold ``c_min`` must be finite.",
-            context={"c_min": c_min},
-            suggestion="Provide a finite value for c_min.",
+            "Spectral expectation floor must be finite.",
+            context={"expectation_floor": expectation_floor},
+            suggestion="Provide a finite expectation_floor.",
         )
 
     backend = get_backend()
 
     if spectrum is None:
         eigenvalues_backend = ensure_array(
-            np.full(dimension, float(c_min), dtype=float), backend=backend
+            np.full(dimension, float(expectation_floor), dtype=float), backend=backend
         )
     else:
         eigenvalues_backend = ensure_array(
@@ -84,13 +93,13 @@ def make_coherence_operator(
         eigenvalues_np = ensure_numpy(eigenvalues_backend, backend=backend)
         if eigenvalues_np.ndim != 1:
             raise TNFRValueError(
-                "Coherence spectrum must be one-dimensional.",
+                "Spectral expectation spectrum must be one-dimensional.",
                 context={"ndim": eigenvalues_np.ndim},
                 suggestion="Provide a 1D spectrum array.",
             )
         if eigenvalues_np.shape[0] != dimension:
             raise TNFRValueError(
-                "Coherence spectrum size must match operator dimension.",
+                "Spectral expectation spectrum size must match operator dimension.",
                 context={
                     "spectrum_size": eigenvalues_np.shape[0],
                     "dimension": dimension,
@@ -99,7 +108,7 @@ def make_coherence_operator(
             )
         if np.any(np.abs(eigenvalues_np.imag) > _ATOL):
             raise TNFRValueError(
-                "Coherence spectrum must be real-valued within tolerance.",
+                "Spectral expectation spectrum must be real-valued within tolerance.",
                 context={
                     "max_imag": float(np.max(np.abs(eigenvalues_np.imag))),
                     "atol": _ATOL,
@@ -110,20 +119,61 @@ def make_coherence_operator(
             eigenvalues_np.real.astype(float, copy=False), backend=backend
         )
 
-    operator = CoherenceOperator(eigenvalues_backend, c_min=c_min, backend=backend)
+    operator = SpectralExpectationOperator(
+        eigenvalues_backend,
+        expectation_floor=expectation_floor,
+        backend=backend,
+    )
     if not operator.is_hermitian(atol=_ATOL):
         raise TNFRValueError(
-            "Coherence operator must be Hermitian.",
+            "Spectral expectation operator must be Hermitian.",
             context={"is_hermitian": False},
             suggestion="Ensure the operator is Hermitian.",
         )
     if not operator.is_positive_semidefinite(atol=_ATOL):
         raise TNFRValueError(
-            "Coherence operator must be positive semidefinite.",
+            "Spectral expectation operator must be positive semidefinite.",
             context={"is_psd": False},
             suggestion="Ensure the operator is positive semidefinite.",
         )
     return operator
+
+
+def make_coherence_operator(
+    dim: int,
+    *,
+    spectrum: np.ndarray | None = None,
+    c_min: float = MATH_SPECTRAL_EXPECTATION_FLOOR_DEFAULT,
+) -> CoherenceOperator:
+    """Compatibility factory for an auxiliary spectral expectation operator.
+
+    Parameters
+    ----------
+    dim : int
+        Hilbert-space dimension.
+    spectrum : numpy.ndarray, optional
+        Real positive-semidefinite spectrum. Values may exceed one.
+    c_min : float, optional
+        Historical name for the auxiliary spectral expectation floor.
+
+    Returns
+    -------
+    CoherenceOperator
+        The compatibility alias of :class:`SpectralExpectationOperator`.
+
+    Raises
+    ------
+    TNFRValueError
+        If the dimension, floor, or spectrum violates the spectral contract.
+
+    This API does not compute or certify canonical structural ``C(t)``.
+    """
+
+    return make_spectral_expectation_operator(
+        dim,
+        spectrum=spectrum,
+        expectation_floor=c_min,
+    )
 
 
 def make_frequency_operator(matrix: np.ndarray) -> FrequencyOperator:

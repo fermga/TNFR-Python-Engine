@@ -27,7 +27,9 @@ precondition, an infinite-horizon convergence theorem, or a future U6 reading.
 
 ## 1. Canonical operator roles
 
-Public identifiers are the English operator names; glyphs are internal symbols.
+Executable identifiers are the lowercase English tokens (`emission`,
+`reception`, ...). Title-case English names label the public classes and the
+table below; glyphs are internal symbols.
 
 | Role | Operators | Rule |
 |------|-----------|------|

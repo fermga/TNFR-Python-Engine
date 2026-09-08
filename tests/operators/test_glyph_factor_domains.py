@@ -140,7 +140,7 @@ def test_directional_and_convex_boundaries_are_explicit(key, value):
 
 
 @pytest.mark.parametrize(
-    ("english_name", "glyph"),
+    ("display_name", "glyph"),
     [
         ("Emission", Glyph.AL),
         ("Reception", Glyph.EN),
@@ -157,7 +157,7 @@ def test_directional_and_convex_boundaries_are_explicit(key, value):
         ("Recursivity", Glyph.REMESH),
     ],
 )
-def test_canonical_english_names_are_valid_contexts(english_name, glyph):
+def test_title_case_display_names_are_valid_contexts(display_name, glyph):
     defaults = canonical_glyph_factor_defaults()
     key = next(
         key
@@ -166,7 +166,7 @@ def test_canonical_english_names_are_valid_contexts(english_name, glyph):
     )
 
     assert validate_glyph_factors(
-        {key: defaults[key]}, glyph=english_name
+        {key: defaults[key]}, glyph=display_name
     )[key] == defaults[key]
 
 

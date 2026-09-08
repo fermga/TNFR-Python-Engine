@@ -1,8 +1,9 @@
 """Tests for the data-agnostic signal confronter (the empirical arm).
 
-confront_signal reads ANY real multichannel signal through the emergent
-phase-locking geometry (L_rw) and the universal coherence kernel; the coherence
-length uses the emergent spectral gap (never nan on a valid graph).
+``confront_signal`` reads any real multichannel signal through an emergent
+phase-locking geometry. Its ``coherence`` field is a static pressure snapshot
+with ``dEPI = 0``; the coherence length uses the emergent spectral gap when the
+state-dependent fit is unavailable.
 """
 
 from __future__ import annotations
@@ -10,6 +11,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
+from tnfr.metrics.common import structural_coherence
 from tnfr.physics.canonical import estimate_coherence_length
 from tnfr.validation import SignalConfrontation, confront_signal
 from tnfr.validation.multichannel_interface import (
@@ -27,7 +29,7 @@ def _coherent_signal(n_channels: int = 12, n_samples: int = 1024, seed: int = 0)
     )
 
 
-def test_confront_signal_returns_canonical_readouts():
+def test_confront_signal_returns_scoped_readouts():
     rep = confront_signal(_coherent_signal())
     assert isinstance(rep, SignalConfrontation)
     assert rep.n_channels == 12 and rep.n_samples == 1024
@@ -38,6 +40,20 @@ def test_confront_signal_returns_canonical_readouts():
     assert isinstance(rep.diffusive_face_valid, bool)
     assert isinstance(rep.at_equilibrium, bool)
     assert "SignalConfrontation" in rep.summary()
+
+
+def test_confront_signal_coherence_is_a_static_pressure_snapshot():
+    signal = _coherent_signal()
+    report = confront_signal(signal)
+    phase, amplitude = phase_amplitude_matrices(signal)
+    graph = build_coupling_graph(phase, amplitude, k_neighbours=4)
+    mean_pressure = float(
+        np.mean([abs(float(graph.nodes[node]["dnfr"])) for node in graph])
+    )
+    assert report.coherence == pytest.approx(
+        structural_coherence(mean_pressure, 0.0)
+    )
+    assert "C_static=" in report.summary()
 
 
 def test_confront_signal_rejects_too_few_channels():

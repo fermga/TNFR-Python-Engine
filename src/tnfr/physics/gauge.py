@@ -757,11 +757,10 @@ def verify_gauge_invariance(
     phi_s = compute_structural_potential(G)
     q_before = sum(phi_s.get(n, 0.0) + k_phi_before.get(n, 0.0) for n in nodes)
 
-    # Coherence C(t) — depends on ΔNFR spread, not Ψ internal angle
-    # We need to check that it does not change
-    from ..metrics.coherence import compute_global_coherence
+    # Canonical C(t) depends on pressure and EPI rate, not the internal Ψ angle.
+    from ..metrics.common import compute_coherence
 
-    c_before = compute_global_coherence(G)
+    c_before = compute_coherence(G)
 
     # --- Apply gauge transformation ---
     transformed = apply_gauge_transformation(G, angles)
@@ -804,7 +803,7 @@ def verify_gauge_invariance(
     # Noether charge after (NOT expected invariant)
     q_after = sum(phi_s.get(n, 0.0) + k_phi_after.get(n, 0.0) for n in nodes)
 
-    # C(t) unchanged (Ψ rotation doesn't affect phase or ΔNFR)
+    # C(t) unchanged because the field rotation changes neither pressure nor EPI rate
     c_after = c_before  # By construction, external fields unchanged
 
     # --- Compute deviations ---

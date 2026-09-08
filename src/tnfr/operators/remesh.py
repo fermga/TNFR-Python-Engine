@@ -18,7 +18,8 @@ Canonical Physical Behavior
 REMESH acts on the nodal equation by creating temporal/spatial coupling:
 
 1. **Memory Activation**: References EPI(t-τ) from structural history
-2. **Pattern Recognition**: Identifies similar EPIs across network (structural_similarity)
+2. **Pattern Recognition**: Identifies similar EPIs across network
+   (structural_similarity)
 3. **Identity Tracking**: Records whether propagated patterns match a declared
    ``StructuralIdentity``
 4. **Multi-scale Operation**: Connects delayed form and topology operations
@@ -101,7 +102,8 @@ roles and are not, by themselves, complete grammar-valid words:
 
 4. **EN (Reception)**: Updates EPI from network → reception
    - Relationship: Symmetric multi-scale reception
-   - Dynamics: EN captures patterns from multiple sources → REMESH replicates symmetrically
+   - Dynamics: EN captures patterns from multiple sources; REMESH then
+     replicates them symmetrically
    - Sequence: EN → REMESH (receive multi-scale → propagate symmetrically)
    - **Note**: Pre-recursion operator that feeds REMESH
 
@@ -176,10 +178,9 @@ This implementation maintains a single, centralized flow:
    - StructuralIdentity only CAPTURES frozen states, doesn't freeze
    - Workflow: Silence() → capture_from_node(is_sha_frozen=True) → validate
 
-2. **Coherence Calculation**: Simplified C(t) for REMESH validation
-   - Full coherence calculation in tnfr.metrics module
-   - compute_global_coherence() specific to REMESH fidelity checks
-   - No duplication with main coherence computation
+2. **Coherence Calculation**: Canonical C(t) for REMESH validation
+   - tnfr.metrics.common.compute_coherence is the single implementation
+   - REMESH fidelity compares its before/after values without redefining C(t)
 
 3. **Pattern Recognition**: Unique to REMESH structural memory
    - structural_similarity(): Pattern matching (no operator overlap)
@@ -209,26 +210,39 @@ import math
 import random
 from collections import deque
 from collections.abc import Hashable, Iterable, Mapping, MutableMapping, Sequence
+from copy import deepcopy
 from dataclasses import dataclass, field
+from fractions import Fraction
 from functools import cache
 from io import StringIO
 from itertools import combinations
-from numbers import Integral, Real
+from numbers import Real
 from operator import ge, le
 from statistics import StatisticsError, fmean
 from types import ModuleType
 from typing import Any, cast
 
 from .._compat import TypeAlias
+from .._remesh_contract import (
+    DelayedRemeshConfiguration,
+    materialize_delayed_remesh_configuration,
+)
 from ..alias import get_attr, set_attr
 from ..constants import DEFAULTS, REMESH_DEFAULTS, get_param
-from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..constants.canonical import REMESH_SIMILARITY_THRESHOLD_CANONICAL
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
 from ..rng import make_rng, resolve_graph_seed, validate_seed
 from ..types import RemeshMeta
-from ..utils import angle_diff, cached_import, edge_version_update, kahan_sum_nd
+from ..utils import angle_diff, cached_import, edge_version_update
+from ._delayed_remesh_kernel import (
+    DelayedRemeshNodeProposal,
+    DelayedRemeshPlan,
+    DelayedRemeshResult,
+    DelayedRemeshStabilityEvidence,
+    build_delayed_remesh_plan,
+)
 from .factor_contracts import (
     canonical_glyph_factor_defaults,
     validate_glyph_factor,
@@ -1020,7 +1034,9 @@ def propagate_structural_identity(
         # Apply structural clipping to preserve boundaries
         from ..dynamics.structural_clip import structural_clip
 
-        new_epi = structural_clip(new_epi, lo=epi_min, hi=epi_max, mode=clip_mode_str)  # type: ignore[arg-type]
+        new_epi = structural_clip(
+            new_epi, lo=epi_min, hi=epi_max, mode=clip_mode_str
+        )  # type: ignore[arg-type]
 
         # Update node attributes
         set_attr(G.nodes[target], ALIAS_EPI, new_epi)
@@ -1174,40 +1190,6 @@ def _as_float(value: Any, default: float = 0.0) -> float:
         return default
 
 
-def _finite_remesh_scalar(value: Any, label: str) -> float:
-    """Materialize one finite real used by an atomic REMESH proposal."""
-
-    if isinstance(value, bool) or not isinstance(value, Real):
-        raise TNFRValueError(f"{label} must be a finite real scalar")
-    try:
-        result = float(value)
-    except (OverflowError, TypeError, ValueError) as exc:
-        raise TNFRValueError(f"{label} must be a finite real scalar") from exc
-    if not math.isfinite(result):
-        raise TNFRValueError(f"{label} must be finite")
-    return result
-
-
-def _finite_remesh_epi(value: Any, label: str) -> float:
-    """Require the signed scalar chart used by the REMESH affine recurrence."""
-
-    from ._epi_domain import require_real_scalar_epi
-
-    return require_real_scalar_epi(value, operator="Recursivity", label=label)
-
-
-def _positive_remesh_delay(G: CommunityGraph, key: str) -> int:
-    """Read a positive integral REMESH delay without lossy coercion."""
-
-    raw = get_param(G, key)
-    if isinstance(raw, bool) or not isinstance(raw, Integral):
-        raise TNFRValueError(f"{key} must be a positive integer")
-    value = int(raw)
-    if value <= 0:
-        raise TNFRValueError(f"{key} must be a positive integer")
-    return value
-
-
 def _ordered_edge(u: Hashable, v: Hashable) -> RemeshEdge:
     """Return a deterministic ordering for an undirected edge."""
 
@@ -1236,7 +1218,12 @@ def _get_networkx_modules() -> NetworkxModules:
 
 def _remesh_alpha_info(G: CommunityGraph) -> tuple[float, str]:
     """Return a validated ``(alpha, source)`` with explicit precedence."""
-    if bool(G.graph.get("REMESH_ALPHA_HARD", REMESH_DEFAULTS["REMESH_ALPHA_HARD"])):
+    hard_override = G.graph.get(
+        "REMESH_ALPHA_HARD", REMESH_DEFAULTS["REMESH_ALPHA_HARD"]
+    )
+    if type(hard_override) is not bool:
+        raise TNFRValueError("REMESH_ALPHA_HARD must be a bool")
+    if hard_override:
         value = G.graph.get("REMESH_ALPHA", REMESH_DEFAULTS["REMESH_ALPHA"])
         return (
             validate_glyph_factor("REMESH_alpha", value),
@@ -1262,6 +1249,206 @@ def _remesh_alpha_info(G: CommunityGraph) -> tuple[float, str]:
     )
 
 
+def _materialize_network_remesh_configuration(
+    G: CommunityGraph,
+) -> DelayedRemeshConfiguration:
+    """Resolve and freeze every deterministic delayed-map control."""
+
+    alpha, alpha_source = _remesh_alpha_info(G)
+    return materialize_delayed_remesh_configuration(
+        tau_local=get_param(G, "REMESH_TAU_LOCAL"),
+        tau_global=get_param(G, "REMESH_TAU_GLOBAL"),
+        alpha=alpha,
+        alpha_source=alpha_source,
+        epi_min=G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)),
+        epi_max=G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)),
+        clip_mode=G.graph.get("CLIP_MODE", "hard"),
+    )
+
+
+_REMESH_PROTECTED_GRAPH_MISSING = object()
+
+
+def _contract_values_equal(left: Any, right: Any) -> bool:
+    """Compare detached callback-boundary state without NumPy ambiguity."""
+
+    if isinstance(left, Mapping) and isinstance(right, Mapping):
+        if tuple(left) != tuple(right):
+            return False
+        return all(
+            _contract_values_equal(left[key], right[key]) for key in left
+        )
+    if isinstance(left, (list, tuple, deque)) and isinstance(
+        right, (list, tuple, deque)
+    ):
+        if type(left) is not type(right) or len(left) != len(right):
+            return False
+        if isinstance(left, deque) and left.maxlen != right.maxlen:
+            return False
+        return all(
+            _contract_values_equal(lhs, rhs)
+            for lhs, rhs in zip(left, right, strict=True)
+        )
+    try:
+        if isinstance(left, np.ndarray) or isinstance(right, np.ndarray):
+            return bool(np.array_equal(left, right, equal_nan=True))
+    except (AttributeError, TypeError, ValueError):
+        return False
+    try:
+        outcome = left == right
+    except Exception:
+        return False
+    if isinstance(outcome, bool):
+        return outcome
+    try:
+        return bool(outcome)
+    except (TypeError, ValueError):
+        return False
+
+
+def _snapshot_graph_surface(
+    G: CommunityGraph,
+    key: str,
+) -> tuple[bool, Any, Any]:
+    """Capture graph-owned surface presence, identity and detached content."""
+
+    if key not in G.graph:
+        return False, _REMESH_PROTECTED_GRAPH_MISSING, None
+    value = G.graph[key]
+    try:
+        detached = deepcopy(value)
+    except Exception as exc:
+        raise TNFRValueError(
+            f"graph surface {key!r} cannot be frozen for REMESH"
+        ) from exc
+    return True, value, detached
+
+
+def _require_same_graph_surface(
+    G: CommunityGraph,
+    key: str,
+    expected: tuple[bool, Any, Any],
+) -> None:
+    """Reject callback mutation of one frozen graph-owned surface."""
+
+    observed = _snapshot_graph_surface(G, key)
+    if (
+        observed[0] != expected[0]
+        or observed[1] is not expected[1]
+        or not _contract_values_equal(observed[2], expected[2])
+    ):
+        raise TNFRValueError(
+            f"REMESH callback changed protected graph surface {key!r}"
+        )
+
+
+def _snapshot_alias_channels(
+    G: CommunityGraph,
+    nodes: tuple[Hashable, ...],
+) -> tuple[Any, ...]:
+    """Freeze every stored capacity, pressure and phase alias."""
+
+    aliases = (ALIAS_VF, ALIAS_DNFR, ALIAS_THETA)
+    try:
+        return tuple(
+            (
+                node,
+                tuple(
+                    tuple(
+                        (
+                            alias,
+                            alias in G.nodes[node],
+                            deepcopy(G.nodes[node].get(alias)),
+                        )
+                        for alias in channel_aliases
+                    )
+                    for channel_aliases in aliases
+                ),
+            )
+            for node in nodes
+        )
+    except Exception as exc:
+        raise TNFRValueError(
+            "REMESH structural channels cannot be frozen"
+        ) from exc
+
+
+def _snapshot_edge_state(G: CommunityGraph) -> tuple[Any, ...]:
+    """Freeze ordered edge support, keys and attributes."""
+
+    try:
+        if G.is_multigraph():
+            return tuple(
+                (left, right, key, deepcopy(dict(data)))
+                for left, right, key, data in G.edges(keys=True, data=True)
+            )
+        return tuple(
+            (left, right, deepcopy(dict(data)))
+            for left, right, data in G.edges(data=True)
+        )
+    except Exception as exc:
+        raise TNFRValueError("REMESH edge state cannot be frozen") from exc
+
+
+def _snapshot_epi_time_histories(
+    G: CommunityGraph,
+    nodes: tuple[Hashable, ...],
+) -> tuple[tuple[Hashable, Any, tuple[Any, ...]], ...]:
+    """Freeze canonical physical EPI histories after the right endpoint."""
+
+    snapshots = []
+    for node in nodes:
+        history = G.nodes[node].get("epi_time_history")
+        if type(history) is not deque:
+            raise TNFRValueError(
+                "REMESH EPI-time boundary did not materialize a canonical deque"
+            )
+        snapshots.append((node, history, tuple(history)))
+    return tuple(snapshots)
+
+
+def _require_same_epi_time_histories(
+    G: CommunityGraph,
+    expected: tuple[tuple[Hashable, Any, tuple[Any, ...]], ...],
+) -> None:
+    """Reject observer mutation of a recorded physical EPI boundary."""
+
+    observed = _snapshot_epi_time_histories(
+        G, tuple(node for node, _history, _samples in expected)
+    )
+    for current, frozen in zip(observed, expected, strict=True):
+        if (
+            current[0] != frozen[0]
+            or current[1] is not frozen[1]
+            or current[2] != frozen[2]
+        ):
+            raise TNFRValueError(
+                "REMESH callback changed authoritative epi_time_history"
+            )
+
+
+def _snapshot_runtime_clock(G: CommunityGraph) -> tuple[bool, type[Any], Any]:
+    """Freeze the physical-time coordinate used for the REMESH jump."""
+
+    if "_t" not in G.graph:
+        return False, type(None), None
+    value = G.graph["_t"]
+    return True, type(value), deepcopy(value)
+
+
+def _require_same_runtime_clock(
+    G: CommunityGraph,
+    expected: tuple[bool, type[Any], Any],
+) -> None:
+    observed = _snapshot_runtime_clock(G)
+    if (
+        observed[0] != expected[0]
+        or observed[1] is not expected[1]
+        or not _contract_values_equal(observed[2], expected[2])
+    ):
+        raise TNFRValueError("REMESH callback changed the runtime clock")
+
+
 def _snapshot_topology(G: CommunityGraph, nx: NetworkxModule) -> str | None:
     """Return a hash representing the current graph topology."""
     try:
@@ -1274,6 +1461,56 @@ def _snapshot_topology(G: CommunityGraph, nx: NetworkxModule) -> str | None:
         return None
 
 
+def _finite_remesh_mean(
+    values: Sequence[float],
+    *,
+    label: str,
+) -> float:
+    """Return a finite mean without overflowing an intermediate sum."""
+
+    if not values:
+        return 0.0
+    exact_mean = sum(
+        (Fraction.from_float(value) for value in values),
+        Fraction(0),
+    ) / len(values)
+    try:
+        result = float(exact_mean)
+    except (OverflowError, ValueError) as exc:
+        raise TNFRValueError(
+            f"{label} exceeds the finite binary64 aggregate range"
+        ) from exc
+    if not math.isfinite(result):
+        raise TNFRValueError(
+            f"{label} exceeds the finite binary64 aggregate range"
+        )
+    return result
+
+
+def _scalar_epi_state(G: CommunityGraph) -> tuple[tuple[Hashable, float], ...]:
+    """Return ordered real-scalar EPI state for history-boundary detection."""
+
+    from ._epi_domain import require_real_scalar_epi
+
+    return tuple(
+        (
+            node,
+            require_real_scalar_epi(
+                get_attr(
+                    data,
+                    ALIAS_EPI,
+                    0.0,
+                    strict=True,
+                    conv=lambda value: value,
+                ),
+                operator="Recursivity",
+                label=f"node {node!r} EPI",
+            ),
+        )
+        for node, data in G.nodes(data=True)
+    )
+
+
 def _snapshot_epi(G: CommunityGraph) -> tuple[float, str]:
     """Return ``(mean, checksum)`` of the node EPI values."""
     buf = StringIO()
@@ -1282,124 +1519,286 @@ def _snapshot_epi(G: CommunityGraph) -> tuple[float, str]:
         v = _as_float(get_attr(data, ALIAS_EPI, 0.0))
         values.append(v)
         buf.write(f"{str(n)}:{round(v, 6)};")
-    total = kahan_sum_nd(((v,) for v in values), dims=1)[0]
-    mean_val = total / len(values) if values else 0.0
+    mean_val = _finite_remesh_mean(values, label="EPI snapshot mean")
     checksum = hashlib.blake2b(buf.getvalue().encode(), digest_size=6).hexdigest()
     return float(mean_val), checksum
 
 
+def _latest_remesh_history_scalar(
+    history: Mapping[str, Any],
+    key: str,
+) -> float | None:
+    """Read one optional finite scalar without retaining mutable metadata."""
+
+    series = history.get(key)
+    if series is None:
+        return None
+    if isinstance(series, (str, bytes, bytearray, Mapping)):
+        raise TNFRValueError(f"history {key!r} must be an indexed scalar series")
+    try:
+        if len(series) == 0:
+            return None
+        raw = series[-1]
+    except (IndexError, KeyError, TypeError) as exc:
+        raise TNFRValueError(
+            f"history {key!r} must be an indexed scalar series"
+        ) from exc
+    if isinstance(raw, bool) or not isinstance(raw, Real):
+        raise TNFRValueError(f"history {key!r} must contain finite scalars")
+    try:
+        value = float(raw)
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise TNFRValueError(
+            f"history {key!r} must contain finite scalars"
+        ) from exc
+    if not math.isfinite(value):
+        raise TNFRValueError(f"history {key!r} must contain finite scalars")
+    return value
+
+
 def _log_remesh_event(G: CommunityGraph, meta: RemeshMeta) -> None:
-    """Store remesh metadata and optionally log and trigger callbacks."""
+    """Store canonical metadata and invoke read-only REMESH observers."""
     from ..glyph_history import append_metric
     from ..utils import CallbackEvent, callback_manager
 
     G.graph["_REMESH_META"] = meta
+    logged_history = None
+    logged_events = None
+    logged_snapshot = None
     if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
-        hist = G.graph.setdefault("history", {})
-        append_metric(hist, "remesh_events", dict(meta))
+        logged_history = G.graph.setdefault("history", {})
+        append_metric(logged_history, "remesh_events", dict(meta))
+        logged_events = logged_history.get("remesh_events")
+        try:
+            logged_snapshot = deepcopy(logged_events)
+        except Exception as exc:
+            raise TNFRValueError(
+                "canonical REMESH telemetry cannot be frozen"
+            ) from exc
+
     callback_manager.invoke_callbacks(G, CallbackEvent.ON_REMESH.value, dict(meta))
+    if logged_history is not None and (
+        G.graph.get("history") is not logged_history
+        or logged_history.get("remesh_events") is not logged_events
+        or not _contract_values_equal(logged_events, logged_snapshot)
+    ):
+        raise TNFRValueError(
+            "REMESH callback changed canonical remesh_events telemetry"
+        )
 
 
-def apply_network_remesh(G: CommunityGraph) -> None:
-    """Network-scale REMESH using ``_epi_hist`` with multi-scale memory."""
+def plan_network_remesh(
+    G: CommunityGraph,
+    *,
+    include_stability_evidence: bool = False,
+    metric_weights: Mapping[Hashable, Any] | Sequence[Any] | None = None,
+) -> DelayedRemeshPlan:
+    """Build the explicit delayed EPI proposal without mutating the graph.
+
+    Empty graph support and insufficient history return distinct immutable
+    no-op plans. Once both guards pass, the selected delayed snapshots must be
+    node mappings with
+    support exactly equal to the current graph support. No absent delayed
+    value is replaced with current EPI.
+    """
+
     from ..dynamics.structural_clip import structural_clip
+
+    nodes = tuple(G.nodes)
+    current_epi = {
+        node: get_attr(
+            G.nodes[node],
+            ALIAS_EPI,
+            0.0,
+            strict=True,
+            conv=lambda value: value,
+        )
+        for node in nodes
+    }
+    configuration = _materialize_network_remesh_configuration(G)
+    return build_delayed_remesh_plan(
+        node_order=nodes,
+        current_epi=current_epi,
+        history=G.graph.get("_epi_hist", ()),
+        tau_local=configuration.tau_local,
+        tau_global=configuration.tau_global,
+        alpha=configuration.alpha,
+        alpha_source=configuration.alpha_source,
+        epi_min=configuration.epi_min,
+        epi_max=configuration.epi_max,
+        clip_mode=configuration.clip_mode,
+        clipper=structural_clip,
+        include_stability_evidence=include_stability_evidence,
+        metric_weights=metric_weights,
+    )
+
+
+def apply_network_remesh(
+    G: CommunityGraph,
+    *,
+    include_stability_evidence: bool = False,
+    metric_weights: Mapping[Hashable, Any] | Sequence[Any] | None = None,
+) -> DelayedRemeshResult:
+    """Atomically apply the separately invoked delayed REMESH EPI map.
+
+    The Recursivity glyph stage remains advisory and never calls this function.
+    This runtime operation reads two per-node temporal snapshots. It does not
+    compute a network mean or append/shift delayed ``_epi_hist``. A committed
+    EPI jump records its same-time right endpoint in ``epi_time_history`` so
+    later Mutation evidence cannot absorb that jump into a finite secant.
+
+    The returned immutable result distinguishes empty-support and
+    insufficient-history no-ops, raw affine proposals, bounded committed
+    values and optional scoped
+    stability evidence. Existing callers may continue to ignore the return.
+    ON_REMESH callbacks are observers of this EPI-only commit. They may not
+    alter capacity, pressure, phase, topology, delayed or physical EPI history,
+    the runtime clock, hybrid event log, pressure hook, deterministic map
+    configuration, alpha-source provenance or canonical event telemetry.
+    Violations restore graph-owned state; external effects already emitted by
+    a callback remain outside this graph snapshot.
+    """
+
     from ..glyph_history import current_step_idx, ensure_history
+    from ._epi_domain import require_real_scalar_epi
+    from .network_stage import GraphTransactionSnapshot
+
+    configuration = _materialize_network_remesh_configuration(G)
+    plan = plan_network_remesh(
+        G,
+        include_stability_evidence=include_stability_evidence,
+        metric_weights=metric_weights,
+    )
+    if not plan.applied:
+        return DelayedRemeshResult(status=plan.status, plan=plan)
 
     nx, _ = _get_networkx_modules()
-    tau_g = _positive_remesh_delay(G, "REMESH_TAU_GLOBAL")
-    tau_l = _positive_remesh_delay(G, "REMESH_TAU_LOCAL")
-    tau_req = max(tau_g, tau_l)
-    alpha, alpha_src = _remesh_alpha_info(G)
-    hist = G.graph.get("_epi_hist", deque())
-    try:
-        history_length = len(hist)
-    except (OverflowError, TypeError) as exc:
-        raise TNFRValueError("_epi_hist must be a replayable indexed history") from exc
-    if history_length < tau_req + 1:
-        return
-    try:
-        past_g = hist[-(tau_g + 1)]
-        past_l = hist[-(tau_l + 1)]
-    except (IndexError, KeyError, TypeError) as exc:
-        raise TNFRValueError("_epi_hist must support indexed delayed access") from exc
-
     topo_hash = _snapshot_topology(G, nx)
     epi_mean_before, epi_checksum_before = _snapshot_epi(G)
+    protected_channels = _snapshot_alias_channels(G, plan.node_order)
+    protected_edges = _snapshot_edge_state(G)
+    protected_epi_history = _snapshot_graph_surface(G, "_epi_hist")
+    protected_event_log = _snapshot_graph_surface(G, "hybrid_event_log")
+    protected_clock = _snapshot_runtime_clock(G)
+    pressure_hook_present = "compute_delta_nfr" in G.graph
+    pressure_hook = G.graph.get("compute_delta_nfr")
+    transaction = GraphTransactionSnapshot(G)
+    try:
+        for proposal in plan.proposals:
+            set_attr(
+                G.nodes[proposal.node],
+                ALIAS_EPI,
+                proposal.bounded_epi,
+            )
 
-    # Get EPI bounds for structural preservation
-    epi_min = _finite_remesh_scalar(
-        G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)), "EPI_MIN"
-    )
-    epi_max = _finite_remesh_scalar(
-        G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)), "EPI_MAX"
-    )
-    if epi_min > epi_max:
-        raise TNFRValueError("EPI_MIN must not exceed EPI_MAX")
-    clip_mode_str = str(G.graph.get("CLIP_MODE", "hard"))
-    if clip_mode_str not in ("hard", "soft"):
-        clip_mode_str = "hard"
-    clip_mode = clip_mode_str  # type: ignore[assignment]
-
-    proposals: list[tuple[MutableMapping[str, Any], float]] = []
-    for n, nd in G.nodes(data=True):
-        epi_now = _finite_remesh_epi(
-            get_attr(nd, ALIAS_EPI, 0.0, strict=True, conv=lambda value: value),
-            f"node {n!r} EPI",
+        G.graph["_REMESH_ALPHA_SRC"] = plan.alpha_source
+        epi_mean_after, epi_checksum_after = _snapshot_epi(G)
+        step_idx = current_step_idx(G)
+        raw_mean_after = _finite_remesh_mean(
+            tuple(proposal.raw_epi for proposal in plan.proposals),
+            label="raw REMESH proposal mean",
         )
-        old_l_raw = past_l.get(n, epi_now) if isinstance(past_l, Mapping) else epi_now
-        old_g_raw = past_g.get(n, epi_now) if isinstance(past_g, Mapping) else epi_now
-        epi_old_l = _finite_remesh_epi(old_l_raw, f"node {n!r} local delayed EPI")
-        epi_old_g = _finite_remesh_epi(old_g_raw, f"node {n!r} global delayed EPI")
-        mixed = (1 - alpha) * epi_now + alpha * epi_old_l
-        mixed = (1 - alpha) * mixed + alpha * epi_old_g
-        mixed = _finite_remesh_scalar(mixed, f"node {n!r} REMESH proposal")
-
-        # Apply structural boundary preservation to prevent overflow
-        mixed_clipped = _finite_remesh_scalar(
-            structural_clip(
-                mixed,
-                lo=epi_min,
-                hi=epi_max,
-                mode=clip_mode,
-                record_stats=False,
+        meta: RemeshMeta = {
+            "alpha": plan.alpha,
+            "alpha_source": plan.alpha_source,
+            "tau_global": plan.tau_global,
+            "tau_local": plan.tau_local,
+            "step": step_idx,
+            "topo_hash": topo_hash,
+            "epi_mean_before": float(epi_mean_before),
+            "epi_mean_after": float(epi_mean_after),
+            "epi_raw_mean_after": float(raw_mean_after),
+            "epi_checksum_before": epi_checksum_before,
+            "epi_checksum_after": epi_checksum_after,
+            "clip_mode": plan.clip_mode,
+            "clipped_node_count": sum(
+                proposal.clipping_intervened
+                for proposal in plan.proposals
             ),
-            f"node {n!r} bounded REMESH proposal",
-        )
-        proposals.append((nd, mixed_clipped))
+        }
 
-    # Commit only after every node and delayed sample has produced a valid
-    # finite proposal. This makes validation failure network-state atomic.
-    for nd, mixed_clipped in proposals:
-        set_attr(nd, ALIAS_EPI, mixed_clipped)
+        history = ensure_history(G)
+        if not isinstance(history, Mapping):
+            raise TNFRValueError("graph history must be a mapping")
+        for history_key, meta_key in (
+            ("stable_frac", "stable_frac_last"),
+            ("phase_sync", "phase_sync_last"),
+            ("glyph_load_disr", "glyph_disr_last"),
+        ):
+            latest = _latest_remesh_history_scalar(history, history_key)
+            if latest is not None:
+                meta[meta_key] = latest
 
-    G.graph["_REMESH_ALPHA_SRC"] = alpha_src
+        from ..dynamics.runtime import _record_mutation_flow_boundary
 
-    epi_mean_after, epi_checksum_after = _snapshot_epi(G)
+        _record_mutation_flow_boundary(G)
+        epi_time_histories = _snapshot_epi_time_histories(G, plan.node_order)
+        _log_remesh_event(G, meta)
 
-    step_idx = current_step_idx(G)
-    meta: RemeshMeta = {
-        "alpha": alpha,
-        "alpha_source": alpha_src,
-        "tau_global": tau_g,
-        "tau_local": tau_l,
-        "step": step_idx,
-        "topo_hash": topo_hash,
-        "epi_mean_before": float(epi_mean_before),
-        "epi_mean_after": float(epi_mean_after),
-        "epi_checksum_before": epi_checksum_before,
-        "epi_checksum_after": epi_checksum_after,
-    }
+        if tuple(G.nodes) != plan.node_order:
+            raise TNFRValueError(
+                "REMESH callback changed graph support during the transaction"
+            )
+        for proposal in plan.proposals:
+            live_epi = require_real_scalar_epi(
+                get_attr(
+                    G.nodes[proposal.node],
+                    ALIAS_EPI,
+                    0.0,
+                    strict=True,
+                    conv=lambda value: value,
+                ),
+                operator="Recursivity",
+                label=f"node {proposal.node!r} committed EPI",
+            )
+            if live_epi != proposal.bounded_epi:
+                raise TNFRValueError(
+                    "REMESH callback changed a committed EPI value",
+                    context={"node": proposal.node},
+                )
+        if G.graph.get("_REMESH_META") != meta:
+            raise TNFRValueError(
+                "REMESH callback changed canonical event metadata"
+            )
+        if G.graph.get("_REMESH_ALPHA_SRC") != plan.alpha_source:
+            raise TNFRValueError(
+                "REMESH callback changed the canonical alpha source"
+            )
+        if not _contract_values_equal(
+            _snapshot_alias_channels(G, plan.node_order), protected_channels
+        ):
+            raise TNFRValueError(
+                "REMESH callback changed capacity, pressure or phase"
+            )
+        if not _contract_values_equal(_snapshot_edge_state(G), protected_edges):
+            raise TNFRValueError(
+                "REMESH callback changed edge support or attributes"
+            )
+        _require_same_graph_surface(G, "_epi_hist", protected_epi_history)
+        _require_same_graph_surface(G, "hybrid_event_log", protected_event_log)
+        _require_same_runtime_clock(G, protected_clock)
+        _require_same_epi_time_histories(G, epi_time_histories)
+        if (
+            ("compute_delta_nfr" in G.graph) != pressure_hook_present
+            or G.graph.get("compute_delta_nfr") is not pressure_hook
+        ):
+            raise TNFRValueError(
+                "REMESH callback changed the pressure-refresh hook"
+            )
+        if _materialize_network_remesh_configuration(G) != configuration:
+            raise TNFRValueError(
+                "REMESH callback changed deterministic delayed-map configuration"
+            )
+    except BaseException as failure:
+        transaction.restore_after_failure(G, failure)
+        raise
 
-    h = ensure_history(G)
-    if h:
-        if h.get("stable_frac"):
-            meta["stable_frac_last"] = h["stable_frac"][-1]
-        if h.get("phase_sync"):
-            meta["phase_sync_last"] = h["phase_sync"][-1]
-        if h.get("glyph_load_disr"):
-            meta["glyph_disr_last"] = h["glyph_load_disr"][-1]
-
-    _log_remesh_event(G, meta)
+    return DelayedRemeshResult(
+        status="applied",
+        plan=plan,
+        metadata_items=tuple(meta.items()),
+        epi_time_boundary_recorded=True,
+    )
 
 
 def apply_network_remesh_with_memory(
@@ -1421,6 +1820,10 @@ def apply_network_remesh_with_memory(
     1. Standard REMESH reorganization (temporal EPI mixing)
     2. Pattern detection (find groups of structurally similar nodes)
     3. Identity propagation (reinforce shared patterns from origin nodes)
+
+    When delayed history is insufficient, phase 1 is a declared no-op. The
+    independently requested pattern-detection/propagation phase still runs
+    when enable_structural_memory is true.
 
     Parameters
     ----------
@@ -1457,11 +1860,12 @@ def apply_network_remesh_with_memory(
        - `identify_pattern_origin(G, cluster)` - Find strongest instance
        - `propagate_structural_identity(G, origin, targets)` - Reinforce pattern
 
-    **Telemetry**: Logs structural memory events to G.graph['history']['structural_memory_events']
+    **Telemetry**: Logs structural memory events under the graph history key
+    structural_memory_events.
     including cluster statistics and propagation metadata.
 
     **Canonical Relationships**:
-    - Hierarchical REMESH: Combine with IL (coherence) for stable multi-level propagation
+    - Hierarchical REMESH: combine with IL to monitor stability at each level.
     - Rhizomatic REMESH: Combine with UM (coupling) for decentralized pattern spread
     - Fractal Harmonic: Combine with RA (resonance) for symmetric amplification
 
@@ -1481,12 +1885,13 @@ def apply_network_remesh_with_memory(
     >>> apply_network_remesh_with_memory(G, enable_structural_memory=False)
     """
     # Phase 1: Apply standard REMESH (temporal memory)
-    apply_network_remesh(G)
+    delayed_result = apply_network_remesh(G)
 
     if not enable_structural_memory:
         return
 
     # Phase 2: Structural memory - detect and propagate patterns
+    memory_epi_before = _scalar_epi_state(G)
     try:
         # Detect recursive patterns across network
         clusters = detect_recursive_patterns(
@@ -1546,15 +1951,25 @@ def apply_network_remesh_with_memory(
             )
 
     except Exception as e:
-        # Graceful degradation: if structural memory fails, REMESH still applied
+        # Preserve the independently completed delayed phase.
         import warnings
 
+        delayed_state = (
+            "committed successfully"
+            if delayed_result.applied
+            else "was a declared insufficient-history no-op"
+        )
         warnings.warn(
             f"Structural memory activation failed: {e}. "
-            "Standard REMESH applied successfully.",
+            f"The delayed REMESH phase {delayed_state}.",
             RuntimeWarning,
             stacklevel=2,
         )
+    finally:
+        if _scalar_epi_state(G) != memory_epi_before:
+            from ..dynamics.runtime import _record_mutation_flow_boundary
+
+            _record_mutation_flow_boundary(G)
 
 
 def _mst_edges_from_epi(
@@ -1905,7 +2320,9 @@ def apply_remesh_if_globally_stable(
     if cfg["REMESH_COOLDOWN_TS"] > 0 and (t_now - last_ts) < cfg["REMESH_COOLDOWN_TS"]:
         return
 
-    apply_network_remesh(G)
+    result = apply_network_remesh(G)
+    if not result.applied:
+        return
     G.graph["_last_remesh_step"] = step_idx
     G.graph["_last_remesh_ts"] = t_now
 
@@ -1913,6 +2330,11 @@ def apply_remesh_if_globally_stable(
 __all__ = [
     # Core remesh functions (existing API)
     "apply_network_remesh",
+    "plan_network_remesh",
+    "DelayedRemeshNodeProposal",
+    "DelayedRemeshPlan",
+    "DelayedRemeshResult",
+    "DelayedRemeshStabilityEvidence",
     "apply_topological_remesh",
     "apply_remesh_if_globally_stable",
     # Phase 1: Structural memory & pattern recognition

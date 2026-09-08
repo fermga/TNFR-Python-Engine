@@ -380,7 +380,7 @@ ROLE_TO_URULE: dict[GrammarRole, str] = {
     GrammarRole.RECURSIVE: "U5",
 }
 
-#: Resolve a glyph mnemonic (e.g. "ZHIR") back to its function name.
+#: Resolve a glyph mnemonic (e.g. "ZHIR") to its executable identifier.
 _OPERATOR_BY_GLYPH: dict[str, str] = {g.glyph: op for op, g in OPERATOR_ROLES.items()}
 
 

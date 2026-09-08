@@ -4913,7 +4913,7 @@ operators split by the data they couple to on $G_{P14}$:
 
 | Operator       | Action channel on $G_{P14}$                                                  | Depends on $\nu_f$ via edges? |
 |---------------|------------------------------------------------------------------------------|-------------------------------|
-| AL (emission)  | node-local: writes/raises $\mathrm{EPI}, \nu_f$                              | no (writes)                   |
+| AL (emission)  | node-local: proposes a bounded $\mathrm{EPI}$ increase; reads but does not write $\nu_f$ | no (read-only precondition)   |
 | EN (reception) | edge propagation of $\Delta\mathrm{NFR}$; weight = `dissonance_magnitude * coupling_weight * phase_weight` | no (frequency-blind)          |
 | IL (coherence) | node-local $\Delta\mathrm{NFR}$ contraction + Laplacian-pure phase smoother $(I-\eta L_G)$ on $\phi$ | no (only $L_G$)               |
 | OZ (dissonance, freq-blind branch) | edge propagation; same weight as EN                              | no                            |
@@ -7463,8 +7463,8 @@ below.  Each row asks: *does this axiom force the BEPI carrier upgrade?*
 | F6 | P14 prime-ladder Hamiltonian on a scalar-spectrum Hilbert space. | §10–§12, `riemann/prime_ladder_hamiltonian.py`. | **No** — P14's Hilbert space is built from scalar eigenmodes of the temporal operator, not from per-node Banach data. |
 | F7 | Uncertainty-bandwidth complementarity $\Delta\mathrm{EPI} \cdot \Delta\nu_f \geq K$. | AGENTS.md "Quantum-Like Regime". | **No** — variances are real-valued moments of scalar distributions. |
 | F8 | `BEPIElement` exists as a research formalism. | `mathematics/epi.py:103`, `types.py:270`. | **No** — existence in the codebase is not the same as canonical operator contracts.  (This is the (P-EPI-Bijectivity) gap, see §13triginta-quinta.5.) |
-| F9 | Classical-limit demos use scalar EPI exclusively. | `examples/02_physics_regimes/12_classical_mechanics_demo.py`. | **No** — classical regime emerges from scalar EPI under high coherence. |
-| F10 | Quantum-regime demos use scalar EPI exclusively. | `examples/02_physics_regimes/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. | **No** — quantum-like phenomena (quantization, interference, complementarity) emerge from scalar EPI dynamics, not from a Banach internal carrier. |
+| F9 | The Newtonian adapter stores scalar EPI diagnostics. | `examples/02_physics_regimes/12_classical_mechanics_demo.py`. | **No** — the example supplies an explicit Newtonian state map; it does not derive classical mechanics from EPI or canonical C(t). |
+| F10 | Quantum-comparison demos use scalar EPI. | `examples/02_physics_regimes/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. | **No** — the examples construct finite spectral, interference and complementarity diagnostics; they do not derive a quantum regime or require a Banach internal carrier. |
 
 **Result.** No canonical constraint in $\{\mathrm{F1}, \ldots, \mathrm{F10}\}$
 forces the Banach carrier upgrade of EPI.  All ten admit consistent
@@ -8504,8 +8504,8 @@ upgrade of φ?*
 | F6 | Noether-like balance diagnostics and structural-energy candidate. | `physics/conservation.py`. | **No conclusion** — current readouts use wrapped scalar fields; conservation along arbitrary engine trajectories is unproved. |
 | F7 | Auxiliary variational/symplectic model. | `physics/variational.py`. | **No conclusion** — the auxiliary model initializes from wrapped scalar readouts; it is not a derivation of all engine dynamics. |
 | F8 | REMESH temporal aggregation of φ trajectories. | `theory/REMESH_INFINITY_DERIVATION.md`, `operators/remesh.py`. | **No** — REMESH aggregates EPI history, not φ history; even when φ-derived quantities feed REMESH (via :math:`\Delta\mathrm{NFR}`), the inputs have already been wrap-projected (chain of M2+M1). |
-| F9 | Classical-limit demos (Keplerian orbits, smooth phase trajectories). | `examples/02_physics_regimes/12_classical_mechanics_demo.py`. | **No** — classical regime emerges from *wrapped* φ under high coherence; the visible smoothness is a coordinate effect, not evidence of a covering-space carrier. |
-| F10 | Quantum-regime demos (interference, complementarity). | `examples/02_physics_regimes/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. | **No** — quantum-like phenomena emerge from wrapped φ dynamics; phase-difference interference at slits uses :math:`\mathrm{wrap\_angle}(\phi_A - \phi_B)`, not covering-space difference. |
+| F9 | The Newtonian adapter exposes Keplerian trajectories and wrapped phase diagnostics. | `examples/02_physics_regimes/12_classical_mechanics_demo.py`. | **No** — the trajectory comes from an explicit Newtonian integrator and state map; it does not derive a classical regime or a phase covering-space carrier. |
+| F10 | Quantum-comparison demos construct interference and complementarity diagnostics. | `examples/02_physics_regimes/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. | **No** — their slit comparison uses :math:`\mathrm{wrap\_angle}(\phi_A - \phi_B)`; it neither derives quantum dynamics nor requires a phase covering-space carrier. |
 
 **Result.** No canonical constraint in :math:`\{\mathrm{F1}, \ldots, \mathrm{F10}\}`
 forces the covering-space carrier upgrade of φ.  All ten admit

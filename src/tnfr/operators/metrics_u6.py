@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import Any
 
 from tnfr.constants.aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_VF
+from tnfr.metrics.local_coherence import compute_radius_structural_coherence
 from tnfr.operators.metrics_core import get_node_attr as _get_node_attr
 
 # ---------------------------------------------------------------------------
@@ -41,35 +42,16 @@ def measure_tau_relax_observed(
     epsilon_c: float = 0.05,
     max_steps: int = 100,
 ) -> dict[str, Any]:
-    """Measure observed relaxation time τ_relax after destabilizer application.
+    """Return an initial relaxation snapshot and estimated timescales.
 
-    Returns a snapshot; actual monitoring loop is left to the caller.
+    This call does not observe a trajectory, so ``tau_relax_observed`` and all
+    final-state fields remain ``None``. The initial local C value is the shared
+    radius-one constitutive read-out over pressure and recorded EPI rate.
     """
     dnfr_initial = abs(_get_node_attr(G, node_id, ALIAS_DNFR))
     vf = _get_node_attr(G, node_id, ALIAS_VF)
 
-    # Approximate local coherence using neighborhood ΔNFR variability
-    neighbors = (
-        list(getattr(G, "neighbors", lambda n: [])(node_id))
-        if hasattr(G, "neighbors")
-        else []
-    )
-    dnfr_vals = [abs(_get_node_attr(G, node_id, ALIAS_DNFR))]
-    for nb in neighbors:
-        try:
-            dnfr_vals.append(abs(_get_node_attr(G, nb, ALIAS_DNFR)))
-        except Exception:
-            continue
-    if len(dnfr_vals) <= 1:
-        coherence_initial = 1.0
-    else:
-        mean_dnfr = sum(dnfr_vals) / len(dnfr_vals)
-        var_dnfr = sum((x - mean_dnfr) ** 2 for x in dnfr_vals) / len(dnfr_vals)
-        sigma = var_dnfr**0.5
-        dnfr_max = max(dnfr_vals)
-        coherence_initial = (
-            1.0 if dnfr_max == 0 else max(0.0, min(1.0, 1.0 - (sigma / dnfr_max)))
-        )
+    coherence_initial = compute_radius_structural_coherence(G, node_id, radius=1)
 
     # Spectral topological estimate (existing proxy)
     try:
@@ -107,7 +89,9 @@ def measure_tau_relax_observed(
     tau_relax_estimated = liouv_tau if liouv_tau is not None else spectral_tau
 
     return {
-        "metric_type": "u6_relaxation_time",
+        "metric_type": "u6_relaxation_snapshot",
+        "measurement_kind": "initial_snapshot_with_estimated_timescale",
+        "coherence_kind": "radius_one_structural_coherence",
         "tau_relax_observed": None,
         "dnfr_initial": dnfr_initial,
         "dnfr_final": None,

@@ -165,7 +165,7 @@ def test_gpu_emission_uses_canonical_factor_and_metadata(monkeypatch) -> None:
     result = strategy.apply(prepared)
 
     assert result.telemetry["canonical_commit"] is True
-    assert result.telemetry["update_schedule"] == "operator_major_gauss_seidel"
+    assert result.telemetry["update_schedule"] == "two_phase_jacobi"
     assert result.telemetry["gpu_acceleration"] is False
     assert result.telemetry["backend"] == "canonical-cpu"
     assert result.telemetry["auxiliary_gpu_preview"] is True
@@ -434,7 +434,47 @@ def test_gpu_postcommit_telemetry_failure_rolls_back_truthfully(
 
     assert result.telemetry["canonical_commit"] is False
     assert result.telemetry["rolled_back"] is True
+    assert result.telemetry["rollback_error"] is None
     assert message in result.telemetry["error"]
+    assert _observable_snapshot(graph) == before
+
+
+def test_gpu_rollback_failure_keeps_primary_error_and_reports_secondary(
+    monkeypatch,
+) -> None:
+    graph = _graph()
+    strategy, prepared, _engine = _prepare(
+        monkeypatch,
+        GPUEmissionStrategy,
+        graph,
+        engine=_LateAvailabilityFailureEngine(),
+    )
+    before = _observable_snapshot(graph)
+    restore = gpu_strategies.GraphTransactionSnapshot.restore
+
+    def restore_then_fail(snapshot, live_graph) -> None:
+        restore(snapshot, live_graph)
+        raise RuntimeError("secondary rollback failure")
+
+    monkeypatch.setattr(
+        gpu_strategies.GraphTransactionSnapshot,
+        "restore",
+        restore_then_fail,
+    )
+
+    result = strategy.apply(prepared)
+
+    assert result.telemetry["canonical_commit"] is False
+    assert result.telemetry["rolled_back"] is False
+    assert result.telemetry["error"] == "late availability telemetry failed"
+    assert (
+        result.telemetry["rollback_error"]
+        == "RuntimeError: secondary rollback failure"
+    )
+    assert result.warnings == [
+        "Canonical Emission transaction failed: "
+        "late availability telemetry failed"
+    ]
     assert _observable_snapshot(graph) == before
 
 

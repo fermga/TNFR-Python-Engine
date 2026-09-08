@@ -1377,25 +1377,35 @@ class ArithmeticTNFRNetwork:
         -------
         dict
             ``topology``, ``centers``, ``concentration`` (geometry);
-            ``coherence``, ``equilibrium_fraction``, ``equilibrium_is_primes``
-            (resonance); ``coherence_length`` (ξ_C); ``triad`` (mean EPI, νf and
-            the Kuramoto phase synchrony); ``n_nodes``.
+            canonical static ``coherence``, ``mean_abs_dnfr``, the descriptive
+            ``mean_local_coherence``, ``equilibrium_fraction`` and
+            ``equilibrium_is_primes`` (resonance); ``coherence_length`` (ξ_C);
+            ``triad`` (mean EPI, νf and the Kuramoto phase synchrony);
+            ``readout_available`` and ``n_nodes``. Aggregate fields are ``None``
+            when the arithmetic domain is empty.
         """
         from ..metrics.common import (
+            finite_mean_absolute,
             is_structural_equilibrium,
             structural_coherence,
         )
         from ..physics.fields import classify_nodal_topology
 
-        und = self._get_undirected_graph()
-        topo = classify_nodal_topology(und)
         nodes = list(self.graph.nodes())
         n = len(nodes)
         if n:
+            und = self._get_undirected_graph()
+            topo = classify_nodal_topology(und)
             dnfr = [float(self.graph.nodes[k]["delta_nfr"]) for k in nodes]
             eq_nodes = [k for k, d in zip(nodes, dnfr) if is_structural_equilibrium(d)]
             eq_frac = len(eq_nodes) / n
-            coherence = sum(structural_coherence(d) for d in dnfr) / n
+            mean_abs_dnfr = finite_mean_absolute(
+                dnfr, name="arithmetic delta_nfr"
+            )
+            coherence = structural_coherence(mean_abs_dnfr, 0.0)
+            mean_local_coherence = (
+                sum(structural_coherence(d, 0.0) for d in dnfr) / n
+            )
             epi_mean = sum(float(self.graph.nodes[k]["EPI"]) for k in nodes) / n
             vf_mean = sum(float(self.graph.nodes[k]["nu_f"]) for k in nodes) / n
             primes = [k for k in nodes if self.graph.nodes[k]["is_prime"]]
@@ -1407,20 +1417,29 @@ class ArithmeticTNFRNetwork:
                 )
             else:
                 phase_sync = float("nan")
+            try:
+                xi_c_val = self.estimate_coherence_length().get("xi_c")
+                xi_c = float(xi_c_val) if xi_c_val is not None else float("nan")
+            except Exception:
+                xi_c = float("nan")
         else:
-            eq_frac = coherence = epi_mean = vf_mean = 0.0
-            phase_sync = float("nan")
-            eq_is_primes = True
-        try:
-            xi_c_val = self.estimate_coherence_length().get("xi_c")
-            xi_c = float(xi_c_val) if xi_c_val is not None else float("nan")
-        except Exception:
-            xi_c = float("nan")
+            topo = {"topology": None, "centers": [], "concentration": None}
+            mean_abs_dnfr = None
+            coherence = None
+            mean_local_coherence = None
+            eq_frac = None
+            epi_mean = None
+            vf_mean = None
+            phase_sync = None
+            eq_is_primes = None
+            xi_c = None
         return {
             "topology": topo["topology"],
             "centers": topo["centers"],
             "concentration": topo["concentration"],
             "coherence": coherence,
+            "mean_abs_dnfr": mean_abs_dnfr,
+            "mean_local_coherence": mean_local_coherence,
             "equilibrium_fraction": eq_frac,
             "equilibrium_is_primes": eq_is_primes,
             "coherence_length": xi_c,
@@ -1429,6 +1448,7 @@ class ArithmeticTNFRNetwork:
                 "vf_mean": vf_mean,
                 "phase_sync": phase_sync,
             },
+            "readout_available": bool(n),
             "n_nodes": n,
         }
 

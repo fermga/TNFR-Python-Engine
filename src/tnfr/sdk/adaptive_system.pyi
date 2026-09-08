@@ -16,6 +16,13 @@ class TNFRAdaptiveSystem:
     learning: AdaptiveLearningSystem
     metabolism: StructuralMetabolism
 
-    def __init__(self, graph: TNFRGraph, node: NodeId) -> None: ...
+    def __init__(
+        self,
+        graph: TNFRGraph,
+        node: NodeId,
+        stress_normalization: float = ...,
+        *,
+        random_seed: int | None = ...,
+    ) -> None: ...
     def autonomous_evolution(self, num_cycles: int = ...) -> None: ...
     def _measure_stress(self) -> float: ...

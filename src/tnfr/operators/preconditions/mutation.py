@@ -35,6 +35,7 @@ __all__ = [
     "validate_threshold_crossing",
     "validate_grammar_u4b",
     "record_destabilizer_context",
+    "emit_destabilizer_context_log",
     "diagnose_mutation_readiness",
 ]
 
@@ -151,8 +152,8 @@ def validate_threshold_crossing(
 
 def validate_grammar_u4b(
     G: TNFRGraph, node: NodeId, logger: logging.Logger | None = None
-) -> None:
-    """Validate U4b: IL precedence + recent destabilizer.
+) -> dict[str, object]:
+    """Validate U4b and return its context without changing graph state.
 
     Grammar rule U4b (BIFURCATION DYNAMICS - Transformers Need Context) requires:
 
@@ -175,6 +176,12 @@ def validate_grammar_u4b(
     ------
     OperatorPreconditionError
         If U4b requirements not met when strict validation enabled
+
+    Returns
+    -------
+    dict
+        Immutable-preflight data describing the recent destabilizer context.
+        The accepted operator workflow commits a copy after the glyph succeeds.
 
     Notes
     -----
@@ -216,7 +223,11 @@ def validate_grammar_u4b(
         logger.warning(
             f"Node {node}: No glyph history available. Cannot verify U4b compliance."
         )
-        return
+        return {
+            "destabilizer_operator": None,
+            "destabilizer_distance": None,
+            "recent_history": [],
+        }
 
     # Import glyph_function_name to convert glyphs to operator names
     from ..grammar import glyph_function_name
@@ -230,9 +241,11 @@ def validate_grammar_u4b(
     if require_il and not il_found:
         raise OperatorPreconditionError(
             "Mutation",
-            "U4b violation: ZHIR requires prior IL (Coherence) for stable transformation base. "
+            "U4b violation: ZHIR requires prior IL (Coherence) for stable "
+            "transformation base. "
             "Apply Coherence before mutation sequence. "
-            f"Recent history: {history_names[-5:] if len(history_names) > 5 else history_names}",
+            "Recent history: "
+            f"{history_names[-5:] if len(history_names) > 5 else history_names}",
         )
 
     if il_found:
@@ -242,18 +255,21 @@ def validate_grammar_u4b(
 
     # Compute the context without writing it. A rejected validation must not
     # leave metadata that falsely reports an accepted mutation path.
-    context = record_destabilizer_context(G, node, logger, record=False)
+    context = record_destabilizer_context(
+        G, node, logger, record=False, emit_log=False
+    )
     destabilizer_found = context.get("destabilizer_operator")
 
     if require_destabilizer and destabilizer_found is None:
         recent_history = context.get("recent_history", [])
         raise OperatorPreconditionError(
             "Mutation",
-            "U4b violation: ZHIR requires recent destabilizer (OZ/VAL/etc) within ~3 ops. "
+            "U4b violation: ZHIR requires recent destabilizer (OZ/VAL/etc) "
+            "within ~3 ops. "
             f"Recent history: {recent_history}. "
             "Apply Dissonance or Expansion to elevate ΔNFR first.",
         )
-    G.nodes[node]["_mutation_context"] = context
+    return context
 
 
 def record_destabilizer_context(
@@ -262,6 +278,7 @@ def record_destabilizer_context(
     logger: logging.Logger | None = None,
     *,
     record: bool = True,
+    emit_log: bool = True,
 ) -> dict:
     """Detect and record which destabilizer enabled the current mutation.
 
@@ -280,6 +297,9 @@ def record_destabilizer_context(
     record : bool, default True
         Store the resolved context on the node. Diagnostics pass ``False`` to
         remain read-only.
+    emit_log : bool, default True
+        Emit the resolved context. Immutable proposal builders pass ``False``
+        and defer this message until lifecycle commit.
 
     Returns
     -------
@@ -359,19 +379,40 @@ def record_destabilizer_context(
     if record:
         G.nodes[node]["_mutation_context"] = context
 
-    # Log telemetry for structural tracing
-    if destabilizer_found:
+    if emit_log:
+        emit_destabilizer_context_log(node, context, logger)
+
+    return context
+
+
+def emit_destabilizer_context_log(
+    node: NodeId,
+    context: dict[str, object],
+    logger: logging.Logger | None = None,
+) -> None:
+    """Emit one accepted U4b context without changing graph state."""
+
+    if logger is None:
+        import logging
+
+        logger = logging.getLogger(__name__)
+    destabilizer = context.get("destabilizer_operator")
+    distance = context.get("destabilizer_distance")
+    recent = context.get("recent_history", [])
+    if destabilizer:
         logger.info(
-            f"Node {node}: ZHIR enabled by destabilizer "
-            f"({destabilizer_found}) at distance {destabilizer_distance}"
+            "Node %r: ZHIR enabled by destabilizer (%s) at distance %s",
+            node,
+            destabilizer,
+            distance,
         )
     else:
         logger.warning(
-            f"Node {node}: ZHIR without detectable destabilizer in history. "
-            f"Recent operators: {recent_names}"
+            "Node %r: ZHIR without detectable destabilizer in history. "
+            "Recent operators: %s",
+            node,
+            recent,
         )
-
-    return context
 
 
 def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
@@ -399,7 +440,11 @@ def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
                 "minimum_vf": {"passed": bool, "value": float, "threshold": float},
                 "threshold_crossing": {"passed": bool, "depi_dt": float, "xi": float},
                 "il_precedence": {"passed": bool, "found": bool},
-                "recent_destabilizer": {"passed": bool, "operator": str|None, "distance": int|None},
+                "recent_destabilizer": {
+                    "passed": bool,
+                    "operator": str | None,
+                    "distance": int | None,
+                },
                 "history_length": {"passed": bool, "length": int, "required": int},
             },
             "recommendations": [str, ...]
@@ -413,7 +458,8 @@ def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
     >>> report["ready"]  # doctest: +SKIP
     False
     >>> report["recommendations"]  # doctest: +SKIP
-    ['Apply IL (Coherence) for stable base', 'Apply OZ (Dissonance) to elevate ΔNFR', ...]
+    ['Apply IL (Coherence) for stable base',
+     'Apply OZ (Dissonance) to elevate ΔNFR', ...]
     """
     import logging
 
@@ -438,7 +484,7 @@ def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
     if not vf_passed:
         recommendations.append(
             f"Increase νf: current={vf:.3f}, required={min_vf:.3f}. "
-            f"Apply AL (Emission) or NAV (Transition) to boost structural frequency."
+            f"Apply VAL (Expansion) or NAV (Transition) to raise structural frequency."
         )
 
     # Check 2: use the same signed, strict, non-mutating sample as runtime.
@@ -488,7 +534,13 @@ def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
 
     # Check 4: Recent destabilizer
     logger = logging.getLogger(__name__)
-    context = record_destabilizer_context(G, node, logger, record=False)
+    context = record_destabilizer_context(
+        G,
+        node,
+        logger,
+        record=False,
+        emit_log=False,
+    )
     destabilizer_found = context.get("destabilizer_operator") is not None
 
     checks["recent_destabilizer"] = {
@@ -498,7 +550,8 @@ def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
     }
     if not destabilizer_found:
         recommendations.append(
-            "Apply destabilizer (OZ/VAL) within last ~3 operations to elevate ΔNFR (U4b Part 2)."
+            "Apply destabilizer (OZ/VAL) within last ~3 operations to elevate "
+            "ΔNFR (U4b Part 2)."
         )
 
     # Check 5: the successful threshold sample is also the authority for

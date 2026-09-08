@@ -8,26 +8,32 @@ import numpy.typing as npt
 
 from .backend import MathematicsBackend
 
-__all__ = ["CoherenceOperator", "FrequencyOperator"]
+__all__ = ["SpectralExpectationOperator", "CoherenceOperator", "FrequencyOperator"]
 
 ComplexMatrix = npt.NDArray[np.complexfloating[np.float64, np.float64]]
 ComplexVector = npt.NDArray[np.complexfloating[np.float64, np.float64]]
 
 @dataclass
-class CoherenceOperator:
+class SpectralExpectationOperator:
     matrix: ComplexMatrix
     eigenvalues: ComplexVector
     c_min: float
+    metric_kind: str
+    canonical_coherence_certified: bool
+    canonical_history_key: None
     backend: MathematicsBackend = field(init=False, repr=False)
     def __init__(
         self,
         operator: Sequence[Sequence[complex]] | Sequence[complex] | np.ndarray | Any,
         *,
         c_min: float | object = ...,
+        expectation_floor: float | object = ...,
         ensure_hermitian: bool = True,
         atol: float = 1e-09,
         backend: MathematicsBackend | None = None,
     ) -> None: ...
+    @property
+    def expectation_floor(self) -> float: ...
     def is_hermitian(self, *, atol: float = 1e-09) -> bool: ...
     def is_positive_semidefinite(self, *, atol: float = 1e-09) -> bool: ...
     def spectrum(self) -> ComplexVector: ...
@@ -41,7 +47,9 @@ class CoherenceOperator:
         atol: float = 1e-09,
     ) -> float: ...
 
-class FrequencyOperator(CoherenceOperator):
+CoherenceOperator = SpectralExpectationOperator
+
+class FrequencyOperator(SpectralExpectationOperator):
     def __init__(
         self,
         operator: Sequence[Sequence[complex]] | Sequence[complex] | np.ndarray | Any,

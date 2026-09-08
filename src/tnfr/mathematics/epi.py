@@ -10,8 +10,18 @@ from .unified_numerical import TNFRValueError, np
 if TYPE_CHECKING:
     from .spaces import BanachSpaceEPI
 
+COMPOSITE_EPI_REGULARITY_KIND = "composite_epi_regularity"
+COMPOSITE_EPI_REGULARITY_PROVENANCE = (
+    "tnfr.mathematics.spaces.BanachSpaceEPI.composite_epi_regularity"
+)
+
 __all__ = [
     "BEPIElement",
+    "COMPOSITE_EPI_REGULARITY_KIND",
+    "COMPOSITE_EPI_REGULARITY_PROVENANCE",
+    "CompositeEPIRegularityEvaluation",
+    "evaluate_composite_epi_regularity_transform",
+    # Historical compatibility aliases; neither denotes canonical C(t).
     "CoherenceEvaluation",
     "evaluate_coherence_transform",
 ]
@@ -388,19 +398,130 @@ class BEPIElement(_EPIValidators):
 
 
 @dataclass(frozen=True)
-class CoherenceEvaluation:
-    """Container describing the outcome of a coherence transform evaluation."""
+class CompositeEPIRegularityEvaluation:
+    """Result of a composite EPI regularity lower-bound assessment.
+
+    The evaluated functional is unbounded and rises with amplitude or sampled
+    roughness.  ``satisfied`` only reports the declared lower-bound inequality;
+    it does not certify canonical structural coherence ``C(t)``.
+    """
 
     element: BEPIElement
     transformed: BEPIElement
-    coherence_before: float
-    coherence_after: float
+    regularity_before: float
+    regularity_after: float
     kappa: float
     tolerance: float
     satisfied: bool
     required: float
     deficit: float
     ratio: float
+    metric_kind: str = COMPOSITE_EPI_REGULARITY_KIND
+    provenance: str = COMPOSITE_EPI_REGULARITY_PROVENANCE
+
+    @property
+    def coherence_before(self) -> float:
+        """Compatibility alias for :attr:`regularity_before`.
+
+        This historical property name does not denote canonical ``C(t)``.
+        """
+
+        return self.regularity_before
+
+    @property
+    def coherence_after(self) -> float:
+        """Compatibility alias for :attr:`regularity_after`.
+
+        This historical property name does not denote canonical ``C(t)``.
+        """
+
+        return self.regularity_after
+
+
+def evaluate_composite_epi_regularity_transform(
+    element: BEPIElement,
+    transform: Callable[[BEPIElement], BEPIElement],
+    *,
+    kappa: float = 1.0,
+    tolerance: float = 1e-9,
+    space: "BanachSpaceEPI | None" = None,
+    regularity_kwargs: Mapping[str, float] | None = None,
+) -> CompositeEPIRegularityEvaluation:
+    r"""Apply ``transform`` and assess regularity retention.
+
+    The check is
+    ``R(T(EPI)) + tolerance >= kappa * R(EPI)``, where ``R`` is
+    :meth:`BanachSpaceEPI.composite_epi_regularity`.  It preserves the legacy
+    lower-bound contract, but a larger ``R`` can mean greater amplitude or
+    derivative energy.  The verdict therefore makes no claim about canonical
+    structural coherence ``C(t)``.
+    """
+
+    if not np.isfinite(kappa) or kappa < 0:
+        raise TNFRValueError(
+            "kappa must be finite and non-negative.",
+            context={"kappa": kappa},
+            suggestion="Provide a finite, non-negative kappa.",
+        )
+    if not np.isfinite(tolerance) or tolerance < 0:
+        raise TNFRValueError(
+            "tolerance must be finite and non-negative.",
+            context={"tolerance": tolerance},
+            suggestion="Provide a finite, non-negative tolerance.",
+        )
+
+    if regularity_kwargs is None:
+        regularity_kwargs = {}
+
+    from .spaces import BanachSpaceEPI  # Local import avoids circular dependency.
+
+    working_space = space if space is not None else BanachSpaceEPI()
+    regularity_before = working_space.composite_epi_regularity(
+        element.f_continuous,
+        element.a_discrete,
+        x_grid=element.x_grid,
+        **regularity_kwargs,
+    )
+
+    transformed = transform(element)
+    if not isinstance(transformed, BEPIElement):
+        raise TypeError("transform must return a BEPIElement instance.")
+
+    regularity_after = working_space.composite_epi_regularity(
+        transformed.f_continuous,
+        transformed.a_discrete,
+        x_grid=transformed.x_grid,
+        **regularity_kwargs,
+    )
+
+    required = kappa * regularity_before
+    satisfied = regularity_after + tolerance >= required
+    deficit = max(0.0, required - regularity_after)
+
+    if regularity_before > 0:
+        ratio = regularity_after / regularity_before
+    elif regularity_after > tolerance:
+        ratio = float("inf")
+    else:
+        ratio = 1.0
+
+    return CompositeEPIRegularityEvaluation(
+        element=element,
+        transformed=transformed,
+        regularity_before=regularity_before,
+        regularity_after=regularity_after,
+        kappa=kappa,
+        tolerance=tolerance,
+        satisfied=satisfied,
+        required=required,
+        deficit=deficit,
+        ratio=ratio,
+    )
+
+
+# Historical type alias.  Its fields now use the honest regularity terminology;
+# ``coherence_before`` and ``coherence_after`` remain read-only property aliases.
+CoherenceEvaluation = CompositeEPIRegularityEvaluation
 
 
 def evaluate_coherence_transform(
@@ -411,95 +532,19 @@ def evaluate_coherence_transform(
     tolerance: float = 1e-9,
     space: "BanachSpaceEPI | None" = None,
     norm_kwargs: Mapping[str, float] | None = None,
-) -> CoherenceEvaluation:
-    """Apply ``transform`` to ``element`` and verify a coherence inequality.
+) -> CompositeEPIRegularityEvaluation:
+    """Compatibility alias for regularity-transform assessment.
 
-    Parameters
-    ----------
-    element:
-        The :class:`BEPIElement` subject to the transformation.
-    transform:
-        Callable receiving ``element`` and returning the transformed
-        :class:`BEPIElement`.  The callable is expected to preserve the
-        structural sampling grid and dimensionality of the element.
-    kappa:
-        Factor on the right-hand side of the inequality ``C(T(EPI)) ≥ κ·C(EPI)``.
-    tolerance:
-        Non-negative slack applied to the inequality.  When
-        ``C(T(EPI)) + tolerance`` exceeds ``κ·C(EPI)`` the check succeeds.
-    space:
-        Optional :class:`~tnfr.mathematics.spaces.BanachSpaceEPI` instance used
-        to compute the coherence norm.  When omitted, a local instance is
-        constructed to avoid circular imports at module import time.
-    norm_kwargs:
-        Optional keyword arguments forwarded to
-        :meth:`BanachSpaceEPI.coherence_norm`.
-
-    Returns
-    -------
-    CoherenceEvaluation
-        Dataclass capturing the before/after coherence values together with the
-        inequality verdict.
+    The historical function name and ``norm_kwargs`` parameter are retained for
+    callers.  The result assesses the unbounded composite EPI regularity and
+    does not evaluate canonical structural coherence ``C(t)``.
     """
 
-    if kappa < 0:
-        raise TNFRValueError(
-            "kappa must be non-negative.",
-            context={"kappa": kappa},
-            suggestion="Provide a non-negative kappa.",
-        )
-    if tolerance < 0:
-        raise TNFRValueError(
-            "tolerance must be non-negative.",
-            context={"tolerance": tolerance},
-            suggestion="Provide a non-negative tolerance.",
-        )
-
-    if norm_kwargs is None:
-        norm_kwargs = {}
-
-    from .spaces import BanachSpaceEPI  # Local import to avoid circular dependency
-
-    working_space = space if space is not None else BanachSpaceEPI()
-
-    coherence_before = working_space.coherence_norm(
-        element.f_continuous,
-        element.a_discrete,
-        x_grid=element.x_grid,
-        **norm_kwargs,
-    )
-
-    transformed = transform(element)
-    if not isinstance(transformed, BEPIElement):
-        raise TypeError("transform must return a BEPIElement instance.")
-
-    coherence_after = working_space.coherence_norm(
-        transformed.f_continuous,
-        transformed.a_discrete,
-        x_grid=transformed.x_grid,
-        **norm_kwargs,
-    )
-
-    required = kappa * coherence_before
-    satisfied = coherence_after + tolerance >= required
-    deficit = max(0.0, required - coherence_after)
-
-    if coherence_before > 0:
-        ratio = coherence_after / coherence_before
-    elif coherence_after > tolerance:
-        ratio = float("inf")
-    else:
-        ratio = 1.0
-
-    return CoherenceEvaluation(
-        element=element,
-        transformed=transformed,
-        coherence_before=coherence_before,
-        coherence_after=coherence_after,
+    return evaluate_composite_epi_regularity_transform(
+        element,
+        transform,
         kappa=kappa,
         tolerance=tolerance,
-        satisfied=satisfied,
-        required=required,
-        deficit=deficit,
-        ratio=ratio,
+        space=space,
+        regularity_kwargs=norm_kwargs,
     )

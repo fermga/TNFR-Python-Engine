@@ -1,51 +1,25 @@
-"""The emergent structural cosmology — the large-scale history of the network,
-read emergent-first (NOT a claim about the physical universe).
+"""Compare scoped large-scale diagnostics from separate TNFR graph models.
 
-THE QUESTION (theory creator): instead of judging TNFR by whether it reproduces
-STANDARD cosmology (importing expansion, a thermal history, GR), apply the
-emergent-first rule (Sec.1): evolve the nodal dynamics on the whole network from
-the genesis (Sec.7.5) over long structural time and read what LARGE-SCALE history
-emerges on its own. It turns out a genuine structural "cosmology" emerges -- on
-TNFR's OWN emergent space (Sec.3) and time (Sec.4.2).
+The script places four finite observations beside one another:
 
-WHAT EMERGES (measured), read emergent-first:
-  - M1 EMERGENT TIME + THE ARROW. Time is the relaxation clock
-    tau = 1/(nu_f*lambda_2) (Sec.4.2); along it the Dirichlet energy
-    F = 1/2 sum A_ij (EPI_i - EPI_j)^2 decreases MONOTONICALLY (the structural
-    H-theorem, Sec.4.4) -- an emergent, irreversible arrow of time.
-  - M2 STRUCTURE FORMATION (COARSENING). From an inhomogeneous "early" field the
-    coherent domains MERGE over structural time (their count falls, e.g.
-    71 -> 6 -> 3): the coherent SCALE grows -- an emergent structure-formation /
-    coarsening history (domains, then super-domains).
-  - M3 A GROWING CAUSAL HORIZON. On the conservative (wave) face (Sec.5.1) a
-    perturbation spreads at a finite emergent speed, so the causally-connected
-    region GROWS ~linearly with time -- an emergent expanding causal horizon (the
-    nearest TNFR-native analogue of an "expansion").
-  - M4 THE FATE. The passive diffusive face relaxes to the uniform field (Sec.4.3)
-    -- one domain, F -> 0: an emergent equilibration ("heat-death"). A continuous
-    drive carrying the U2 balance (the driven regime, Sec.6.3) instead SUSTAINS
-    structure -- a non-relaxing history. So the "fate" is regime-dependent.
+M1. Dirichlet energy decreases under fixed pure-EPI diffusion.
+M2. A selected same-sign component count falls in this seeded diffusion run.
+M3. The number of graph-wave amplitudes above a declared threshold grows over
+    selected times on a chain.
+M4. The sampled passive diffusion endpoint remains on its relaxation trajectory.
 
-So a purely-TNFR structural cosmology emerges: an emergent time with an arrow, a
-structure-formation (coarsening) history, a growing causal horizon, and a
-regime-dependent fate -- all read off the nodal dynamics, nothing imported.
-
-HONEST SCOPE: this is the abstract network's OWN emergent LARGE-SCALE HISTORY,
-read emergent-first, built from standard pieces (the heat-semigroup H-theorem,
-curvature-flow/Ising coarsening, a lattice light cone). "Cosmology" here is an
-ANALOGY of SCALE -- a structural re-expression of the network's macro-history; it
-yields structural forms, not measured values (Sec.9.1), and is not offered as a
-model of the physical universe's measured cosmology. Closes no open problem.
+These observations do not form a cosmological model or one canonical engine
+trajectory. The graph-wave matrix function has instantaneous analytic tails, so
+M3 is a threshold-defined front rather than a causal horizon. The script does
+not execute a driven comparator and makes no claim about physical time,
+thermodynamics, spacetime, expansion, or the fate of a physical system.
 
 Run:
     python benchmarks/emergent_structural_cosmology.py
 
-Theoretical anchor: AGENTS.md (nodal equation; emergent-first; the two faces;
-coherence C); theory/EMERGENT_ONTOLOGY.md Sec.3 (emergent space), Sec.4.2-4.4
-(emergent time, arrow), Sec.5.1 (causal cone), Sec.6.3 (driven regime), Sec.7.5
-(the genesis). Status: RESEARCH (emergent-first structural-cosmology reading).
+Anchor: theory/EMERGENT_ONTOLOGY.md sections 2.5, 4.4 and 5.1.
+Status: RESEARCH COMPARISON.
 """
-
 from __future__ import annotations
 
 import pathlib
@@ -65,7 +39,7 @@ from tnfr.physics.structural_diffusion import (  # noqa: E402
 
 
 def dirichlet_energy(G, nodes, epi) -> float:
-    """F = 1/2 sum_ij A_ij (EPI_i - EPI_j)^2 -- the arrow-of-time functional."""
+    """Return the selected fixed-graph Dirichlet functional."""
     idx = {n: i for i, n in enumerate(nodes)}
     return 0.5 * sum((epi[idx[u]] - epi[idx[v]]) ** 2 for u, v in G.edges())
 
@@ -83,7 +57,7 @@ def coherent_domains(G, nodes, epi) -> int:
 
 def main() -> None:
     print("=" * 74)
-    print("THE EMERGENT STRUCTURAL COSMOLOGY (read emergent-first)")
+    print("SCOPED STRUCTURAL-HISTORY DIAGNOSTICS")
     print("=" * 74)
 
     grid = 20
@@ -96,12 +70,13 @@ def main() -> None:
 
     rng = np.random.default_rng(0)
     epi = rng.standard_normal(len(nodes))
-    epi -= epi.mean()  # the degree-weighted total is conserved; start zero-mean
+    degrees = np.array([G.degree[node] for node in nodes], dtype=float)
+    epi -= float(np.dot(degrees, epi) / np.sum(degrees))
 
-    # -- M1 + M2: emergent time, the arrow, and structure formation -----------
-    print(f"\n[M1+M2] emergent clock tau = 1/(nu_f*lambda_2) = {1/(nu_f*lam2):.1f};")
-    print("        the arrow (Dirichlet F falls) and coarsening (domains merge):")
-    print(f"     {'struct-time':>11} {'F (arrow)':>12} {'coherent domains':>17}")
+    # -- M1 + M2: fixed-diffusion relaxation and one domain readout -----------
+    print(f"\n[M1+M2] diffusion scale 1/(nu_f*lambda_2) = {1/(nu_f*lam2):.1f};")
+    print("        Dirichlet decay and a seeded same-sign component count:")
+    print(f"     {'model-time':>11} {'F':>12} {'sign domains':>17}")
     F_series, dom_series = [], []
     for block in range(10):
         t = block * 40 * dt
@@ -114,21 +89,23 @@ def main() -> None:
             epi = epi - dt * nu_f * (lrw @ epi)
     assert all(
         F_series[i + 1] <= F_series[i] + 1e-9 for i in range(len(F_series) - 1)
-    ), "Dirichlet energy not monotone -- arrow of time violated"
-    assert dom_series[-1] < dom_series[0], "no coarsening -- structure did not form"
-    print("     -> PASS: an emergent irreversible arrow (F monotone down) and a")
-    print(f"        coarsening history (domains {dom_series[0]} -> {dom_series[-1]}:")
-    print("        coherent scale grows) -- structure formation, nothing imported.")
+    ), "Dirichlet energy increased under the fixed diffusion step"
+    assert dom_series[-1] < dom_series[0], "seeded sign-domain count did not fall"
+    print("     -> PASS: F decreases under the fixed diffusion model.")
+    print(
+        f"        The selected sign-domain count falls from {dom_series[0]} "
+        f"to {dom_series[-1]} in this seeded run; this is not a general theorem."
+    )
 
-    # -- M3: a growing causal horizon (the conservative face) ------------------
-    print("\n[M3] A GROWING CAUSAL HORIZON (conservative/wave face, chain n=60):")
+    # -- M3: threshold-defined support in the auxiliary graph wave ------------
+    print("\n[M3] THRESHOLD-DEFINED GRAPH-WAVE FRONT (chain n=60):")
     chain = nx.path_graph(60)
     _, ls = symmetric_normalized_laplacian(chain)
     w, V = np.linalg.eigh(np.asarray(ls))
     u0 = np.zeros(60)
     u0[30] = 1.0
     c = 1.0
-    print(f"     {'wave-time':>10} {'causally-reached nodes':>24}")
+    print(f"     {'model-time':>10} {'nodes with |u| > 0.01':>24}")
     reached = []
     for t in (2, 5, 10, 20):
         ut = V @ (np.cos(c * np.sqrt(np.clip(w, 0, None)) * t) * (V.T @ u0))
@@ -137,30 +114,26 @@ def main() -> None:
         print(f"     {t:>10} {r:>24d}")
     assert (
         reached == sorted(reached) and reached[-1] > reached[0]
-    ), "horizon not growing"
-    print("     -> PASS: the causal horizon expands ~linearly (a finite-speed light")
-    print("        cone) -- the emergent 'expansion' analogue on a fixed metric.")
+    ), "threshold-defined support did not grow at the sampled times"
+    print("     -> PASS: above-threshold support grows at the sampled times.")
+    print("        The exact finite-graph wave has instantaneous analytic tails;")
+    print("        this readout is not a causal cone or an expansion observable.")
 
-    # -- M4: the fate -- equilibration vs sustained structure -----------------
-    print("\n[M4] THE FATE: passive -> equilibration; driven -> sustained.")
+    # -- M4: one passive endpoint; no driven model is executed ----------------
+    print("\n[M4] PASSIVE DIFFUSION ENDPOINT")
     F_end = dirichlet_energy(G, nodes, epi)
     dom_end = coherent_domains(G, nodes, epi)
-    print(f"     passive diffusive fate: F -> {F_end:.4f}, domains -> {dom_end}")
-    print("       (relaxation to the uniform field, Sec.4.3 = emergent heat-death)")
-    print("     driven fate (Sec.6.3, U2 made dynamic): structure is SUSTAINED,")
-    print("       R stays high with coupling, collapses without -- a non-relaxing")
-    print("       history ('maintained by resonance, dissolving when coupling fails').")
+    print(f"     sampled F = {F_end:.4f}; sign domains = {dom_end}")
+    print("     This remains a finite-time sample, not a physical-system fate.")
+    print("     No driven comparator is executed by this benchmark.")
 
     print("\n" + "=" * 74)
-    print("A PURELY-TNFR STRUCTURAL COSMOLOGY (emergent, nothing imported):")
-    print("  emergent time + arrow (H-theorem) · structure formation (coarsening)")
-    print("  · a growing causal horizon · a regime-dependent fate.")
-    print("HONEST: the abstract network's OWN emergent MACRO-HISTORY, read")
-    print("  emergent-first. 'Cosmology' here is an ANALOGY of SCALE -- a")
-    print("  structural re-expression; it yields structural forms, not measured")
-    print("  values, and is not a model of the physical universe's cosmology.")
+    print("ESTABLISHED SCOPE")
+    print("  fixed-diffusion Dirichlet decay; one seeded sign-domain reduction;")
+    print("  one threshold-defined graph-wave front; one passive endpoint.")
+    print("  These are separate graph-model diagnostics, not cosmology, causality,")
+    print("  thermodynamics, or one canonical TNFR trajectory.")
     print("=" * 74)
-
 
 if __name__ == "__main__":
     main()

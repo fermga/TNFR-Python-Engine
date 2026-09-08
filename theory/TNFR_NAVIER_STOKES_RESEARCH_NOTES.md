@@ -119,51 +119,54 @@ sharp question: *does the growth-phase closure ratio stay `< 1` as `Re → ∞`?
 undecidable from resolution-limited laminar/transitional data (`n ≥ 48–64` needed
 at high Re). Closing the rung uniformly in Re is exactly Clay.
 
-**The cross-program synergy (measured, both walls the same statement).** This is
-the NS twin of the Riemann coherence budget:
+**A scoped cross-program comparison.** The two programs admit a useful
+moment-ladder analogy:
 
 | | low moment (bounded) | high moment (the open wall) |
 |---|---|---|
 | **Riemann** | RMS of `S(T)` — Selberg `√(log log T)` | sup of `S(T)` (the extremes) |
 | **NS** | energy `M_0` — Leray | enstrophy `M_1`, palinstrophy `M_2`, … |
 
-Both Millennium walls: **a low moment of the conservative spectrum is bounded;
-the high-moment tail is the wall.** A resolution *closes the moment ladder*
-uniformly in the limiting parameter (`T` for Riemann, `Re` for NS). Closes
-nothing; the measurement localises the wall, it does not breach it.
+Each program asks for control of a high-moment tail, but the state spaces,
+operators and limiting parameters (`T` and `Re`) differ. The comparison does
+not identify the two open problems or make one bound imply the other. The
+finite measurements localize their respective unresolved limits; they close
+neither.
 
-## 7. The emergent geometry IS the attractor (closure with nothing added)
+## 7. Static pressure coherence on the emergent geometry
 
-The moment ladder (§6) is a *derived* diagnostic; the closure itself needs
-**nothing added**. The emergent geometry is the attractor, read by the ONE
-universal coherence kernel — `structural_coherence` `C = 1/(1+|ΔNFR|+|dEPI|)` and
-the fixed-point predicate `is_structural_equilibrium` (`ΔNFR = 0`) — the *same*
-emergent-geometry attractor that governs graph nodes, structural primes and noble
-gases. Only the `ΔNFR` realisation is domain-specific; for NS it is the canonical
-random-walk-Laplacian action on the vorticity field, `ΔNFR = −L_rw·|ω|`
-(`flow_coherence`).
+`flow_coherence` constructs a domain-specific pressure on vorticity magnitude,
+`ΔNFR = −L_rw·|ω|`, and evaluates the shared scalar map as
 
-**Measured (raw field, no normalisation — nothing added):** the flow **relaxes to
-its emergent-geometry equilibrium by its own evolution** — `C → 1`,
-`is_structural_equilibrium = True` at every Re (final `C = 0.995 → 0.9985` over
-Re 157→1257). That relaxation *is* the self-certification; it is intrinsic to the
-diffusive-face nodal dynamics (the unconditional eigenmode decay to the uniform
-field) and is why the linear part is regular. The **peak-turbulence coherence
-erodes with Re** — `min C = 0.94 → 0.90 → 0.84 → 0.72` — staying in the coherent
-band `[1/(π+1), π/(π+1)]` over the accessible range but drifting down.
+```
+C_static = structural_coherence(mean|ΔNFR|, 0)
+         = 1 / (1 + mean|ΔNFR|).
+```
 
-**So the uniform closure is purely geometric, with nothing added:** does the
-peak-turbulence coherence `min C` stay in the coherent band (`C > 1/(π+1)`) as
-`Re → ∞`, or erode to the fragmentation floor? The emergent geometry self-certifies
-its *return* to coherence uniformly (in structural time the diffusive relaxation
-rate is the spectral gap `λ₂`, Re-independent); the wall is whether the *peak
-excursion* the nonlinear VAL source drives stays coherent — the U2 debt rate
-(∝ Re) versus the fixed U2 capacity, now read as the erosion of the single
-canonical coherence `C`. This is a measured finite-resolution trend plus a
-restricted diffusion comparison. U2 is a grammar policy, the structural energy is
-only a Lyapunov candidate outside proved model-specific cases, U5 is a hierarchy
-contract, and the corrected REMESH analysis supplies no runtime infinity limit.
-None of them proves the required uniform-in-Re bound. Clay remains open.
+The second argument is an explicit static assumption: this observer does not
+materialize an EPI-rate channel for the Navier--Stokes trajectory. Consequently
+`C_static` is not the engine's dynamic total `C(t)`. Reusing the numeric map and
+zero-pressure predicate does not identify graph, arithmetic, chemical and fluid
+state spaces, and it proves no common attractor. The compatibility key
+`at_equilibrium` means only that the snapshot's mean pressure magnitude lies
+within the selected `ΔNFR` tolerance while `dEPI` is held at zero.
+
+**Measured finite-resolution trend.** Applied independently to successive raw
+vorticity snapshots, the score approaches one at the end of each sampled run
+(final `C_static = 0.995 → 0.9985` over Re 157→1257), while the minimum score
+decreases with Re (`0.94 → 0.90 → 0.84 → 0.72`). These numbers record flattening
+and excursion of the constructed pressure field. They do not self-certify the
+full flow, establish convergence, or transfer the uniform-field attractor of
+fixed-graph pure-EPI diffusion to nonlinear Navier--Stokes dynamics.
+
+A falsifiable finite-resolution question is whether the observed minimum
+`C_static` remains above the selected telemetry floor `1/(π+1)` as resolution
+and Re increase. That threshold application is a diagnostic policy; it is not
+equivalent to the regularity criterion. The Clay problem still requires a
+uniform-in-Re nonlinear estimate. U2 remains a grammar policy, the structural
+energy is only a Lyapunov candidate outside proved model-specific cases, U5 is
+a hierarchy contract, and the REMESH analysis supplies no runtime infinity
+limit.
 
 ## 8. Honest scope
 
@@ -181,10 +184,10 @@ the asymptotic scaling.
   `taylor_green_initial_condition_3d`.
 - `src/tnfr/navier_stokes/conservative_face.py` — `verify_diffusive_face`,
   `face_of_flow`, `vorticity_modal_spectrum`, `cascade_moment_hierarchy`,
-  `moment_ladder_closure`, `flow_coherence` (the universal-kernel attractor read),
+  `moment_ladder_closure`, `flow_coherence` (static pressure-only read-out),
   `measure_cascade_frontier`, `CascadeFrontierCertificate`.
 - `examples/06_navier_stokes/158_navier_stokes_two_face_refounded.py` — demo.
 - `examples/10_applications/159_empirical_confrontation_pipeline.py` — the
-  data-confrontation pipeline (map a signal to canonical magnitudes + face).
+  data-confrontation pipeline (map a signal to scoped read-outs + face).
 - `benchmarks/ns_moment_hierarchy_cascade.py` — the λ-moment hierarchy vs Re.
 - Tests: `tests/mathematics/test_navier_stokes_refounded.py`.

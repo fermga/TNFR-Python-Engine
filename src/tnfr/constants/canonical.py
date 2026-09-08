@@ -347,14 +347,16 @@ ANTIPHASE_THRESHOLD = math.cos(2 * PI / 3)  # cos(2π/3) ≈ -0.5 (120° destruc
 # ============================================================================
 
 # Grammar validation
-U6_STRUCTURAL_POTENTIAL_LIMIT = PI / 2  # selected U6 drift policy, not a phase-wrap theorem
+# Selected U6 drift policy, not a phase-wrap theorem.
+U6_STRUCTURAL_POTENTIAL_LIMIT = PI / 2
 GRAMMAR_TOLERANCE = 1e-10  # Numerical precision for grammar checks
 PHASE_VERIFICATION_TOLERANCE = PI / 180  # 1° tolerance for phase coupling
 
 # Convergence criteria
 INTEGRAL_CONVERGENCE_TOLERANCE = 1e-8  # For ∫νf·ΔNFR convergence
 BIFURCATION_DETECTION_SENSITIVITY = 1e-6  # ∂²EPI/∂t² threshold detection
-COHERENCE_PRESERVATION_MINIMUM = 0.1  # Minimum C(t) for system stability
+# Deprecated inert compatibility cut; no stability theorem.
+COHERENCE_PRESERVATION_MINIMUM = 0.1
 
 # Emergent-centralization, FFT-coordination, and cache-aware FFT knobs
 # (operational) → moved to tnfr.constants.operational (audit 2026).
@@ -388,8 +390,11 @@ PHYSICS_HOTSPOT_FRACTION_CANONICAL = 0.1  # curvature-hotspot fraction warning (
 # PHASE 7C: Mathematics Module Canonicalization
 # ============================================================================
 
-# Mathematics operators canonical constants
-MATH_COHERENCE_MIN_CANONICAL = 0.1  # minimum coherence floor (tunable)
+# Mathematics spectral-operator constants.  A Hermitian expectation is an
+# auxiliary, unbounded observable; it is not canonical structural C(t).
+MATH_SPECTRAL_EXPECTATION_FLOOR_DEFAULT = 0.1  # auxiliary default (tunable)
+# Backward-compatible import alias.  New code must use the spectral name above.
+MATH_COHERENCE_MIN_CANONICAL = MATH_SPECTRAL_EXPECTATION_FLOOR_DEFAULT
 MATH_TOLERANCE_CANONICAL = 1.0e4  # numerical tolerance floor (operational)
 MATH_PRECISION_ENHANCEMENT_CANONICAL = (
     MATH_TOLERANCE_CANONICAL / 100

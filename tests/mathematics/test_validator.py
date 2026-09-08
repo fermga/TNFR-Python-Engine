@@ -98,12 +98,17 @@ def test_validator_summary_structure(validator: NFRValidator) -> None:
     summary = outcome.summary
     assert set(summary.keys()) == {
         "normalized",
+        "spectral_operator_expectation",
         "coherence",
         "frequency",
         "unitary_stability",
     }
-    coherence = summary["coherence"]
-    assert set(coherence.keys()) == {"passed", "value", "threshold"}
+    expectation = summary["spectral_operator_expectation"]
+    assert summary["coherence"] is expectation
+    assert expectation["metric_kind"] == "spectral_operator_expectation"
+    assert expectation["range"] == "unbounded_real"
+    assert expectation["canonical_coherence_certified"] is False
+    assert expectation["records_to_C_steps"] is False
 
     frequency = summary["frequency"]
     assert set(frequency.keys()) == {
@@ -144,3 +149,21 @@ def test_validator_detects_non_psd_frequency_operator() -> None:
 
 def test_validator_conforms_to_protocol(validator: NFRValidator) -> None:
     assert isinstance(validator, Validator)
+
+
+def test_auxiliary_expectation_above_one_does_not_certify_canonical_coherence() -> None:
+    validator = NFRValidator(
+        hilbert_space=HilbertSpace(dimension=2),
+        coherence_operator=CoherenceOperator([2.0, 4.0]),
+        coherence_threshold=3.0,
+    )
+
+    outcome = validator.validate(np.array([0.0, 1.0]))
+    payload = outcome.summary["spectral_operator_expectation"]
+
+    assert outcome.passed is True
+    assert payload["value"] == pytest.approx(4.0)
+    assert payload["passed"] is True
+    assert payload["canonical_coherence_certified"] is False
+    assert payload["records_to_C_steps"] is False
+    assert "C_steps" not in outcome.summary

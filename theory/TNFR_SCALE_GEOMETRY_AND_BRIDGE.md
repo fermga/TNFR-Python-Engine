@@ -108,6 +108,46 @@ and nested-EPI changes are rejected as outside a fixed-dimensional vector-map
 test. Thus the certificate advances S9 without claiming closure or completeness
 of the 13-operator catalog.
 
+### Circular phase extension and obstruction
+
+Choose an open semicircle chart `q` so every relevant wrapped pairwise
+difference stays on one branch. The pairwise phase-pressure realization is then
+
+```text
+r_pair(q) = -(1/pi) diag(nu_f) L_rw q.
+```
+
+It is linear and inherits the reversible pure-EPI projection and lift
+identities. This exact fixed-branch statement concerns pairwise edge
+differences. It is distinct from the engine's canonical phase channel, which
+uses the argument of the unweighted sum of neighboring phasors:
+
+```text
+g_i(q) = -(1/pi) wrap(q_i - Arg sum_{j in N(i)} exp(i q_j)),
+r_i(q) = nu_f_i g_i(q).
+```
+
+For a lifted block-constant phase field, this nonlinear channel closes on the
+macro support under a sufficient fixed-support domain: neighbor-count profiles
+are equitable inside each fiber, fibers have no internal edges, every active
+macro neighbor has the same multiplicity within its source block, capacity is
+block-constant, the chart stays on one wrap branch, and all phasor resultants
+are nonzero. The canonical support is the unweighted NetworkX adjacency,
+including edges whose transport `weight` is zero; the reversible pairwise
+projection continues to use the conductance-degree-over-capacity metric.
+
+That lifted-subspace result does not make the projected canonical dynamics
+autonomous for arbitrary micro phases. On `K3,3`, a nonconstant micro state and
+its lifted representative have the same macro chart coordinate but different
+projected nodal rates. This is a constructive counterexample to global
+canonical phase closure: unresolved within-fiber phase affects the macro
+derivative. Branch crossing, zero resultants, evolving capacity, changing
+support and finite-time phase evolution remain outside the certificate.
+
+[`certify_phase_nodal_coarse_graining`](../src/tnfr/physics/phase_quotient.py)
+reports the pairwise matrix quotient, the restricted canonical lift test and
+the same-macro-state counterexample without reading or changing EPI.
+
 ## 2. Geometry forced by canonical coherence
 
 For the signed local chart `p=DeltaNFR`, `v=dEPI`, the constitutive kernel is
@@ -132,6 +172,42 @@ exposes this exact geometry. The result rejects the assumption that canonical
 coherence alone supplies a smooth Riemannian manifold. It naturally supplies
 an L1 gauge in the local constitutive chart. A smooth information metric on the
 full graph state would require an additional modeling choice.
+
+For a fixed nonempty network with `N` nodes, canonical mean aggregation gives
+
+```text
+C_N = 1 / (1 + (sum_i |p_i| + sum_i |v_i|) / N).
+```
+
+Thus `C_N=c` is the boundary of a `2N`-dimensional cross-polytope with
+total L1 radius `R=N(1/c-1)`, intrinsic dimension `2N-1`, `4N` vertices
+and
+
+```text
+f_k = 2^(k+1) binom(2N,k+1)
+```
+
+`k`-faces. Its `2^(2N)` open facets form the regular locus; every lower
+face is a nonsmooth absolute-value stratum. The Euclidean radius ranges from
+`R/sqrt(2N)` to `R`, the regular gradient norm is
+`c^2 sqrt(2/N)`, and the superlevel set `C_N>=c` is closed and convex.
+
+The fixed-capacity nodal equation `v_i=nu_f_i p_i` cuts this ambient level
+down to
+
+```text
+sum_i (1+nu_f_i)|p_i| = N(1/c-1).
+```
+
+This is a weighted `N`-dimensional cross-polytope. The executable certificate
+reports its pressure-axis vertices, Euclidean radii in the induced
+`(p_i,nu_f_i p_i)` metric, face stratification and regular gradient norm.
+[`network_coherence_level_set_geometry`](../src/tnfr/physics/coherence_geometry.py)
+and
+[`fixed_capacity_coherence_level_set_geometry`](../src/tnfr/physics/coherence_geometry.py)
+make both scopes explicit. They describe one instantaneous chart; capacity
+evolution, changing node count, basin boundaries and temporal attraction
+remain outside the result.
 
 ### Fixed-topology structural-state metric
 

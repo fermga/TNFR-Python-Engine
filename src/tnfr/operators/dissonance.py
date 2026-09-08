@@ -14,6 +14,7 @@ from __future__ import annotations
 import math
 from collections import deque
 from collections.abc import MutableMapping
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, ClassVar
 
@@ -27,6 +28,7 @@ from .definitions_base import Operator
 
 _MISSING = object()
 _PROPAGATION_EVENTS_KEY = "_oz_propagation_events"
+_JITTER_PROGRESS_KEY = "_rng_jitter_progress"
 
 
 @dataclass(frozen=True, slots=True)
@@ -37,6 +39,10 @@ class _LocalDissonancePlan:
     dnfr_after: float
     magnitude: float
     realized_seed: Any = _MISSING
+    had_jitter_progress: bool = False
+    jitter_progress_before: Any = None
+    has_jitter_progress_after: bool = False
+    jitter_progress_after: Any = None
 
 
 @dataclass(slots=True)
@@ -163,6 +169,10 @@ def _plan_local_dissonance(G: TNFRGraph, node: Any) -> _LocalDissonancePlan:
         probe.graph.pop(key, None)
     probe.add_nodes_from(G.nodes)
     probe.nodes[node].update(G.nodes[node])
+    had_jitter_progress = _JITTER_PROGRESS_KEY in G.nodes[node]
+    jitter_progress_before = deepcopy(
+        G.nodes[node].get(_JITTER_PROGRESS_KEY)
+    )
 
     probe_node = NodeNX(probe, node)
     dnfr_before = float(probe_node.dnfr)
@@ -170,7 +180,10 @@ def _plan_local_dissonance(G: TNFRGraph, node: Any) -> _LocalDissonancePlan:
     GLYPH_OPERATIONS[Glyph.OZ](probe_node, factors)
     dnfr_after = float(probe_node.dnfr)
     magnitude = abs(dnfr_after - dnfr_before)
-    if not all(math.isfinite(value) for value in (dnfr_before, dnfr_after, magnitude)):
+    if not all(
+        math.isfinite(value)
+        for value in (dnfr_before, dnfr_after, magnitude)
+    ):
         raise TNFRValueError("OZ local plan must remain finite")
 
     original_seed = G.graph.get("RANDOM_SEED", _MISSING)
@@ -187,6 +200,30 @@ def _plan_local_dissonance(G: TNFRGraph, node: Any) -> _LocalDissonancePlan:
         dnfr_after,
         magnitude,
         realized_seed,
+        had_jitter_progress,
+        jitter_progress_before,
+        _JITTER_PROGRESS_KEY in probe.nodes[node],
+        deepcopy(probe.nodes[node].get(_JITTER_PROGRESS_KEY)),
+    )
+
+
+def _resolve_dissonance_propagation(
+    G: TNFRGraph, execution_kwargs: MutableMapping[str, Any]
+) -> bool:
+    """Resolve the strict OZ propagation switch for direct and staged paths."""
+
+    from ._argument_validation import strict_bool
+
+    if "propagate_to_network" in execution_kwargs:
+        return strict_bool(
+            execution_kwargs["propagate_to_network"],
+            operator=DISSONANCE,
+            label="propagate_to_network",
+        )
+    return strict_bool(
+        G.graph.get("OZ_ENABLE_PROPAGATION", True),
+        operator=DISSONANCE,
+        label="OZ_ENABLE_PROPAGATION",
     )
 
 
@@ -216,20 +253,9 @@ class Dissonance(Operator):
             - propagation_mode: phase_weighted | uniform | frequency_weighted
             - Other arguments forwarded to base Operator.__call__
         """
-        from ._argument_validation import require_list_sink, strict_bool
+        from ._argument_validation import require_list_sink
 
-        if "propagate_to_network" in kw:
-            propagate = strict_bool(
-                kw["propagate_to_network"],
-                operator=self.name,
-                label="propagate_to_network",
-            )
-        else:
-            propagate = strict_bool(
-                G.graph.get("OZ_ENABLE_PROPAGATION", True),
-                operator=self.name,
-                label="OZ_ENABLE_PROPAGATION",
-            )
+        propagate = _resolve_dissonance_propagation(G, kw)
         if not propagate:
             super()._execute(G, node, **kw)
             return
@@ -348,3 +374,9 @@ class Dissonance(Operator):
             state_before["dnfr"],
             state_before["theta"],
         )
+
+
+# The immutable network stage bypasses the direct lifecycle only for this exact
+# implementation. Subclasses and monkeypatches retain the public operator path
+# inside the outer transactional Gauss--Seidel fallback.
+_CANONICAL_DISSONANCE_EXECUTE = Dissonance._execute

@@ -544,34 +544,34 @@ def certify_morphism(
     )
 
 
-def certify_epi_coarse_graining(
-    graph, partition, *, tolerance: float = 1e-10,
-) -> EpiCoarseGrainingCertificate:
-    r"""Construct and test the canonical reversible quotient of EPI diffusion.
+@dataclass(frozen=True)
+class _ReversiblePartitionGeometry:
+    """Shared fixed-support quotient geometry, independent of a live field."""
 
-    For ``A=diag(nu_f)L_rw=H^-1 B`` with ``H=diag(d_i/nu_f_i)``, let ``P`` lift
-    one macro value to every node in its block and let
+    nodes: tuple
+    blocks: tuple[tuple, ...]
+    projection: np.ndarray
+    lift: np.ndarray
+    micro_generator: np.ndarray
+    macro_generator: np.ndarray
+    macro_conductance: np.ndarray
+    macro_frequency: np.ndarray
+    macro_metric_weights: np.ndarray
+    projection_residual: float
+    lift_residual: float
+    projection_residual_scale: float
+    lift_residual_scale: float
+    relative_projection_residual: float
+    relative_lift_residual: float
+    nodal_closure_within_tolerance: bool
 
-    ``R=(P^T H P)^-1 P^T H``.
 
-    Thus ``R P=I`` and macro EPI is the ``H``-weighted block mean.  Aggregating
-    the symmetric conductance gives ``B_bar`` and
-    ``A_bar=diag(P^T h)^-1 B_bar``.  Algebraic closure for every micro state is
-    equivalent to ``R A=A_bar R``; invariance of block-constant states is
-    ``A P=P A_bar``.  For this reversible construction the two conditions
-    coincide.  A nonzero defect measures unresolved within-block dynamics and
-    prevents promotion to a U5/coarse-graining law.  The returned Boolean uses
-    the declared dimensionless relative tolerance separately for each identity:
-    every absolute residual is divided by the maximum of one and the norms of
-    its two sides.  The residuals and scales carry the quantitative evidence.
-
-    ``partition`` must contain at least two nonempty disjoint blocks, cover each
-    graph node exactly once and reduce dimension.  This certificate concerns
-    the fixed symmetric pure-EPI channel; it does not coarse-grain phase,
-    changing topology, nonlinear operators or REMESH's temporal echo.
-    """
+def _build_reversible_partition_geometry(
+    graph, partition, *, tolerance: float, label: str = "EPI coarse-graining"
+) -> _ReversiblePartitionGeometry:
+    """Build the common reversible diffusion quotient without reading EPI."""
     from ..alias import get_attr
-    from ..constants.aliases import ALIAS_EPI, ALIAS_VF
+    from ..constants.aliases import ALIAS_VF
     from ._conductance import read_conductance
 
     _reject_boolean_numeric(tolerance, "tolerance")
@@ -591,33 +591,27 @@ def certify_epi_coarse_graining(
     adjacency = conductance.dense()
     strength = conductance.strength
     if np.any(strength <= 0.0):
-        raise ValueError("EPI coarse-graining requires positive row strength")
+        raise ValueError(f"{label} requires positive row strength")
 
-    def read_scalar(node, aliases, default: float, name: str) -> float:
+    def read_capacity(node) -> float:
         raw = get_attr(
-            graph.nodes[node], aliases, default, conv=lambda value: value,
+            graph.nodes[node],
+            ALIAS_VF,
+            0.0,
+            conv=lambda value: value,
             strict=True,
         )
-        _reject_boolean_numeric(raw, f"{name} at node {node!r}")
+        _reject_boolean_numeric(raw, f"capacity at node {node!r}")
         try:
             return float(raw)
         except (TypeError, ValueError, OverflowError) as exc:
             raise ValueError(
-                f"EPI coarse-graining requires scalar {name}"
+                f"{label} requires scalar capacity"
             ) from exc
 
-    frequency = np.array(
-        [read_scalar(node, ALIAS_VF, 0.0, "capacity") for node in nodes],
-        dtype=float,
-    )
-    field = np.array(
-        [read_scalar(node, ALIAS_EPI, 0.0, "EPI") for node in nodes],
-        dtype=float,
-    )
+    frequency = np.array([read_capacity(node) for node in nodes], dtype=float)
     if not np.all(np.isfinite(frequency)) or np.any(frequency <= 0.0):
-        raise ValueError("EPI coarse-graining requires positive finite capacity")
-    if not np.all(np.isfinite(field)):
-        raise ValueError("EPI coarse-graining requires finite scalar EPI")
+        raise ValueError(f"{label} requires positive finite capacity")
 
     node_index = {node: index for index, node in enumerate(nodes)}
     lift = np.zeros((len(nodes), len(blocks)), dtype=float)
@@ -630,13 +624,16 @@ def certify_epi_coarse_graining(
             metric = strength / frequency
             if not np.all(np.isfinite(metric)) or np.any(metric <= 0.0):
                 raise ValueError(
-                    "EPI coarse-graining metric exceeds floating-point dynamic range"
+                    f"{label} metric exceeds floating-point "
+                    "dynamic range"
                 )
             macro_metric = lift.T @ metric
-            if (not np.all(np.isfinite(macro_metric))
-                    or np.any(macro_metric <= 0.0)):
+            if (
+                not np.all(np.isfinite(macro_metric))
+                or np.any(macro_metric <= 0.0)
+            ):
                 raise ValueError(
-                    "EPI coarse-graining macro metric exceeds finite "
+                    f"{label} macro metric exceeds finite "
                     "floating-point range"
                 )
             projection = (lift.T * metric[None, :]) / macro_metric[:, None]
@@ -647,7 +644,7 @@ def certify_epi_coarse_graining(
             macro_strength = np.sum(macro_conductance, axis=1)
             if np.any(macro_strength <= 0.0):
                 raise ValueError(
-                    "EPI coarse-graining requires positive macro capacity"
+                    f"{label} requires positive macro capacity"
                 )
             support = macro_conductance > 0.0
             reached = {0}
@@ -661,19 +658,18 @@ def certify_epi_coarse_graining(
                         frontier.append(index)
             if len(reached) != len(blocks):
                 raise ValueError(
-                    "EPI coarse-graining requires a connected macro quotient"
+                    f"{label} requires a connected macro quotient"
                 )
             macro_laplacian = np.diag(macro_strength) - macro_conductance
             macro_generator = macro_laplacian / macro_metric[:, None]
             macro_frequency = macro_strength / macro_metric
             if np.any(macro_frequency <= 0.0):
                 raise ValueError(
-                    "EPI coarse-graining requires positive macro capacity"
+                    f"{label} requires positive macro capacity"
                 )
-            macro_epi = projection @ field
     except FloatingPointError as exc:
         raise ValueError(
-            "EPI coarse-graining exceeds finite floating-point range"
+            f"{label} exceeds finite floating-point range"
         ) from exc
 
     for name, value in (
@@ -682,11 +678,10 @@ def certify_epi_coarse_graining(
         ("macro generator", macro_generator),
         ("macro conductance", macro_conductance),
         ("macro frequency", macro_frequency),
-        ("macro EPI", macro_epi),
     ):
         if not np.all(np.isfinite(value)):
             raise ValueError(
-                f"EPI coarse-graining {name} exceeds finite floating-point range"
+                f"{label} {name} exceeds finite floating-point range"
             )
 
     projected_micro = _finite_product(
@@ -729,18 +724,11 @@ def certify_epi_coarse_graining(
     )
     relative_projection_residual = projection_residual / projection_scale
     relative_lift_residual = lift_residual / lift_scale
-    closure_within_tolerance = (
+    closure_within_tolerance = bool(
         relative_projection_residual <= tolerance
         and relative_lift_residual <= tolerance
     )
-    morphism = certify_morphism(
-        projection,
-        micro_generator,
-        macro_generator,
-        tol=tolerance,
-        flow_probe=field,
-    )
-    return EpiCoarseGrainingCertificate(
+    return _ReversiblePartitionGeometry(
         nodes=nodes,
         blocks=blocks,
         projection=projection,
@@ -750,17 +738,107 @@ def certify_epi_coarse_graining(
         macro_conductance=macro_conductance,
         macro_frequency=macro_frequency,
         macro_metric_weights=macro_metric,
-        macro_epi=macro_epi,
         projection_residual=projection_residual,
         lift_residual=lift_residual,
-        information_loss_dimension=len(nodes) - len(blocks),
-        nodal_closure_within_tolerance=closure_within_tolerance,
-        morphism=morphism,
-        scope="fixed symmetric positive-capacity pure-EPI partition quotient",
         projection_residual_scale=projection_scale,
         lift_residual_scale=lift_scale,
         relative_projection_residual=relative_projection_residual,
         relative_lift_residual=relative_lift_residual,
+        nodal_closure_within_tolerance=closure_within_tolerance,
+    )
+
+
+def certify_epi_coarse_graining(
+    graph, partition, *, tolerance: float = 1e-10,
+) -> EpiCoarseGrainingCertificate:
+    r"""Construct and test the canonical reversible quotient of EPI diffusion.
+
+    For ``A=diag(nu_f)L_rw=H^-1 B`` with ``H=diag(d_i/nu_f_i)``, let ``P`` lift
+    one macro value to every node in its block and let
+
+    ``R=(P^T H P)^-1 P^T H``.
+
+    Thus ``R P=I`` and macro EPI is the ``H``-weighted block mean.  Aggregating
+    the symmetric conductance gives ``B_bar`` and
+    ``A_bar=diag(P^T h)^-1 B_bar``.  Algebraic closure for every micro state is
+    equivalent to ``R A=A_bar R``; invariance of block-constant states is
+    ``A P=P A_bar``.  For this reversible construction the two conditions
+    coincide.  A nonzero defect measures unresolved within-block dynamics and
+    prevents promotion to a U5/coarse-graining law.  The returned Boolean uses
+    the declared dimensionless relative tolerance separately for each identity:
+    every absolute residual is divided by the maximum of one and the norms of
+    its two sides.  The residuals and scales carry the quantitative evidence.
+
+    ``partition`` must contain at least two nonempty disjoint blocks, cover each
+    graph node exactly once and reduce dimension.  This certificate concerns
+    the fixed symmetric pure-EPI channel; it does not coarse-grain phase,
+    changing topology, nonlinear operators or REMESH's temporal echo.
+    """
+    from ..alias import get_attr
+    from ..constants.aliases import ALIAS_EPI
+
+    geometry = _build_reversible_partition_geometry(
+        graph,
+        partition,
+        tolerance=tolerance,
+    )
+
+    def read_epi(node) -> float:
+        raw = get_attr(
+            graph.nodes[node],
+            ALIAS_EPI,
+            0.0,
+            conv=lambda value: value,
+            strict=True,
+        )
+        _reject_boolean_numeric(raw, f"EPI at node {node!r}")
+        try:
+            return float(raw)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError(
+                "EPI coarse-graining requires scalar EPI"
+            ) from exc
+
+    field = np.array([read_epi(node) for node in geometry.nodes], dtype=float)
+    if not np.all(np.isfinite(field)):
+        raise ValueError("EPI coarse-graining requires finite scalar EPI")
+    macro_epi = _finite_product(
+        geometry.projection,
+        field,
+        "EPI coarse-graining macro EPI",
+    )
+    morphism = certify_morphism(
+        geometry.projection,
+        geometry.micro_generator,
+        geometry.macro_generator,
+        tol=tolerance,
+        flow_probe=field,
+    )
+    return EpiCoarseGrainingCertificate(
+        nodes=geometry.nodes,
+        blocks=geometry.blocks,
+        projection=geometry.projection,
+        lift=geometry.lift,
+        micro_generator=geometry.micro_generator,
+        macro_generator=geometry.macro_generator,
+        macro_conductance=geometry.macro_conductance,
+        macro_frequency=geometry.macro_frequency,
+        macro_metric_weights=geometry.macro_metric_weights,
+        macro_epi=macro_epi,
+        projection_residual=geometry.projection_residual,
+        lift_residual=geometry.lift_residual,
+        information_loss_dimension=(
+            len(geometry.nodes) - len(geometry.blocks)
+        ),
+        nodal_closure_within_tolerance=(
+            geometry.nodal_closure_within_tolerance
+        ),
+        morphism=morphism,
+        scope="fixed symmetric positive-capacity pure-EPI partition quotient",
+        projection_residual_scale=geometry.projection_residual_scale,
+        lift_residual_scale=geometry.lift_residual_scale,
+        relative_projection_residual=geometry.relative_projection_residual,
+        relative_lift_residual=geometry.relative_lift_residual,
     )
 
 

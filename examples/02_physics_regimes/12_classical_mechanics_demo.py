@@ -1,17 +1,13 @@
-"""TNFR Classical Mechanics Demonstration — Emergence of Keplerian Orbits
+"""Demonstrate an explicitly supplied Newtonian central-force adapter.
 
-This script demonstrates the emergence of stable Keplerian orbits from pure
-TNFR Nodal Dynamics, without assuming Newton's laws as axioms.
+The script supplies the Newtonian potential ``U=-GM/r`` and its force as model
+inputs. ``ClassicalMechanicsMapper`` packages the initial classical state in a
+TNFR-shaped payload, and ``TNFRSymplecticIntegrator`` applies velocity Verlet.
+The resulting orbit and classical invariant drift validate that declared
+adapter at the selected step size.
 
-It uses the `ClassicalMechanicsMapper` to translate the initial conditions
-and the `TNFRSymplecticIntegrator` to evolve the system, proving that
-TNFR dynamics contains Classical Mechanics as a limiting case.
-
-The script generates plots showing:
-1. The orbital trajectory (EPI spatial components).
-2. Phase space evolution (Form vs Flow).
-3. Conservation of Energy (Hamiltonian) and Structural Coherence.
-4. The correlation between Classical Force and Structural Pressure (ΔNFR).
+No graph pressure, tetrad field or canonical C(t) is computed here. The
+trajectory therefore does not derive gravity from the TNFR nodal equation.
 
 Usage:
     python examples/02_physics_regimes/12_classical_mechanics_demo.py
@@ -19,7 +15,6 @@ Usage:
 
 import math
 import os
-from typing import List, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -33,12 +28,10 @@ from tnfr.physics.classical_mechanics import (
 from tnfr.types import TNFRNode
 
 
-def run_kepler_simulation() -> Tuple[dict, dict]:
-    """
-    Simulates a planet orbiting a star using TNFR dynamics.
-    Returns history dictionaries for plotting.
-    """
-    print("Initializing TNFR Kepler Simulation...")
+def run_kepler_simulation() -> dict[str, list[float]]:
+    """Simulate one declared inverse-square central-force trajectory."""
+
+    print("Initializing the Newtonian central-force adapter...")
 
     # 1. Define System Parameters
     # G*M = 1.0 (Normalized units)
@@ -55,12 +48,12 @@ def run_kepler_simulation() -> Tuple[dict, dict]:
     q_init = np.array([r_init, 0.0])  # Start at x=r, y=0
     q_dot_init = np.array([0.0, v_init])  # Velocity in y direction
 
-    # 2. Map to TNFR Node
-    # Mass m=1 -> νf=1
+    # 2. Pack state in the classical adapter representation. The assignment
+    # nu_f=1/m is local to this adapter.
     system = GeneralizedCoordinateSystem(q=q_init, q_dot=q_dot_init)
 
     # Lagrangian L = T - V = 0.5*v^2 + GM/r
-    def lagrangian(q, qd, t):
+    def lagrangian(q, qd, _t):
         r = np.linalg.norm(q)
         v2 = np.sum(qd**2)
         return 0.5 * v2 + GM / r
@@ -75,24 +68,23 @@ def run_kepler_simulation() -> Tuple[dict, dict]:
 
     print(f"Initial State: EPI={node[EPI_PRIMARY]}, νf={node[VF_PRIMARY]}")
 
-    # 3. Define Structural Force Evaluator (Gravity)
-    # In TNFR, this is the gradient of the Coherence Potential Φ_s.
-    # Here we use the analytical gradient for the demo, but in a full network
-    # this emerges from neighbor interactions.
-    def coherence_gradient_force(n: TNFRNode) -> np.ndarray:
+    # 3. Supply the external Newtonian force. The integrator stores it in its
+    # full adapter force slot; this is not canonical scalar graph pressure.
+    def newtonian_central_force(n: TNFRNode) -> np.ndarray:
         epi = n[EPI_PRIMARY]
         q = epi[:2]  # Spatial component
         r = np.linalg.norm(q)
+        if r == 0.0:
+            raise ValueError("the unsoftened Newtonian force is singular at r=0")
 
-        # F = -∇Φ_s
-        # For gravity, Φ_s ~ -1/r (Coherence Potential)
-        # ∇Φ_s ~ 1/r^2 * r_hat
         # F = -GM/r^3 * q
-        f_vec = -GM / (r**3 + 1e-9) * q
+        f_vec = -GM / r**3 * q
 
-        # ΔNFR has same shape as EPI [q, q_dot]
-        # Force acts on Flow (q_dot)
+        # The adapter force acts on the velocity half of [q, q_dot].
         return np.concatenate([np.zeros_like(f_vec), f_vec])
+
+    # Velocity Verlet expects the initial force already materialized.
+    node[DNFR_PRIMARY] = newtonian_central_force(node)
 
     # 4. Evolve System
     dt = 0.01
@@ -113,8 +105,10 @@ def run_kepler_simulation() -> Tuple[dict, dict]:
 
     t = 0.0
     for _ in range(steps):
-        # Symplectic Step
-        TNFRSymplecticIntegrator.velocity_verlet(node, dt, coherence_gradient_force)
+        TNFRSymplecticIntegrator.velocity_verlet(
+            node, dt, newtonian_central_force
+        )
+        t += dt
 
         # Record Telemetry
         epi = node[EPI_PRIMARY]
@@ -137,24 +131,22 @@ def run_kepler_simulation() -> Tuple[dict, dict]:
         history["E"].append(energy)
         history["L"].append(ang_mom)
 
-        t += dt
-
     return history
 
 
-def plot_results(history: dict):
-    """Generates and saves plots."""
+def plot_results(history: dict[str, list[float]]) -> None:
+    """Generate and save adapter trajectory plots."""
     output_dir = "results/classical_demo"
     os.makedirs(output_dir, exist_ok=True)
 
     # 1. Trajectory Plot
     plt.figure(figsize=(8, 8))
-    plt.plot(history["x"], history["y"], label="TNFR Trajectory")
-    plt.scatter([0], [0], color="orange", s=100, label="Attractor (Star)")
+    plt.plot(history["x"], history["y"], label="Adapter trajectory")
+    plt.scatter([0], [0], color="orange", s=100, label="Fixed force center")
     plt.scatter(history["x"][0], history["y"][0], color="green", label="Start")
-    plt.title("Emergent Keplerian Orbit from Nodal Dynamics")
-    plt.xlabel("EPI Spatial X (q_x)")
-    plt.ylabel("EPI Spatial Y (q_y)")
+    plt.title("Declared Newtonian Central-Force Trajectory")
+    plt.xlabel("Adapter position q_x")
+    plt.ylabel("Adapter position q_y")
     plt.axis("equal")
     plt.grid(True, alpha=0.3)
     plt.legend()
@@ -164,9 +156,9 @@ def plot_results(history: dict):
     # 2. Phase Space (x vs vx)
     plt.figure(figsize=(8, 6))
     plt.plot(history["x"], history["vx"])
-    plt.title("Phase Space Projection (Form vs Flow)")
-    plt.xlabel("Form (Position X)")
-    plt.ylabel("Flow (Velocity X)")
+    plt.title("Classical Phase-Space Projection")
+    plt.xlabel("Position q_x")
+    plt.ylabel("Velocity dq_x/dt")
     plt.grid(True, alpha=0.3)
     plt.savefig(f"{output_dir}/02_phase_space.png")
     plt.close()
@@ -185,8 +177,8 @@ def plot_results(history: dict):
 
     plt.plot(history["t"], E_drift, label="Energy Drift (H)")
     plt.plot(history["t"], L_drift, label="Angular Momentum Drift (L)", linestyle="--")
-    plt.title("Conservation of Structural Invariants")
-    plt.xlabel("Time")
+    plt.title("Classical Invariant Drift")
+    plt.xlabel("Adapter time")
     plt.ylabel("Relative Drift")
     plt.legend()
     plt.grid(True, alpha=0.3)

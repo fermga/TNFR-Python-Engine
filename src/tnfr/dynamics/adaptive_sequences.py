@@ -1,26 +1,21 @@
-"""Adaptive sequence selection for TNFR operator trajectories.
+"""Reproducible adaptive selection among grammar-valid TNFR words.
 
-This module implements learning-based selection of operator sequences.
-Rather than executing fixed sequences, the system learns which sequences
-work best for given contexts and adapts its selection over time.
-
-The approach combines predefined canonical sequences with epsilon-greedy
-exploration to balance exploitation (use known good sequences) with
-exploration (try new patterns).
+The selector applies an epsilon-greedy heuristic to a fixed catalogue of
+standalone U1-U6 words and bounded history. It does not prove that the selected
+word is optimal for the current graph state; runtime preconditions still apply.
 """
 
 from __future__ import annotations
 
+import math
 import random
+from numbers import Real
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
-try:
-    from ..mathematics.unified_numerical import np
-except ImportError:
-    np = None  # type: ignore[assignment]
+from ..rng import resolve_graph_seed, validate_seed
 
 from ..config.operator_names import (
     COHERENCE,
@@ -37,11 +32,11 @@ __all__ = ["AdaptiveSequenceSelector"]
 
 
 class AdaptiveSequenceSelector:
-    """Learns and selects optimal operator sequences based on context.
+    """Select grammar-valid operator words from context and observed scores.
 
-    This class maintains a pool of canonical operator sequences and tracks
-    their performance over time. It uses epsilon-greedy selection to balance
-    exploitation of known-good sequences with exploration of alternatives.
+    The epsilon-greedy policy balances the greatest recorded mean score with a
+    selected exploration probability. It is a reproducible policy heuristic,
+    not an optimality certificate.
 
     **Selection Strategy:**
 
@@ -53,7 +48,10 @@ class AdaptiveSequenceSelector:
     graph : TNFRGraph
         Graph containing the node
     node : NodeId
-        Identifier of the node
+        Identifier of the node.
+    seed : int, optional
+        Explicit selector seed. When omitted, the graph RANDOM_SEED is resolved
+        once and reused.
 
     Attributes
     ----------
@@ -77,27 +75,60 @@ class AdaptiveSequenceSelector:
     >>> selector.record_performance("basic_activation", 0.85)
     """
 
-    def __init__(self, graph: TNFRGraph, node: NodeId) -> None:
+    def __init__(
+        self,
+        graph: TNFRGraph,
+        node: NodeId,
+        seed: int | None = None,
+    ) -> None:
         self.G = graph
         self.node = node
+        self.seed = (
+            resolve_graph_seed(graph)
+            if seed is None
+            else validate_seed(seed, allow_none=False)
+        )
+        self._rng = random.Random(self.seed)
 
-        # Canonical operator sequences
-        # Note: Sequences are designed to comply with TNFR grammar rules
+        # Every entry is a standalone grammar-valid U1-U6 word. Runtime
+        # preconditions, including U3 phase checks and ZHIR evidence, remain
+        # the executor's responsibility.
         self.sequences: dict[str, list[str]] = {
-            "basic_activation": [EMISSION, COHERENCE],
-            "deep_learning": [EMISSION, RECEPTION, COHERENCE],
-            "exploration": [EMISSION, DISSONANCE, COHERENCE],
-            "consolidation": [COHERENCE, SILENCE, RECURSIVITY],
-            "mutation": [COHERENCE, MUTATION, TRANSITION, COHERENCE],
+            "basic_activation": [EMISSION, COHERENCE, SILENCE],
+            "deep_learning": [
+                EMISSION,
+                RECEPTION,
+                COHERENCE,
+                DISSONANCE,
+                COHERENCE,
+                SILENCE,
+            ],
+            "exploration": [
+                EMISSION,
+                DISSONANCE,
+                COHERENCE,
+                SILENCE,
+            ],
+            "consolidation": [EMISSION, COHERENCE, RECURSIVITY],
+            "mutation": [
+                EMISSION,
+                COHERENCE,
+                DISSONANCE,
+                MUTATION,
+                COHERENCE,
+                SILENCE,
+            ],
         }
 
-        # Performance history: sequence_name -> [coherence_gains]
-        self.performance: dict[str, list[float]] = {
-            k: [] for k in self.sequences.keys()
+        self.performance_scores: dict[str, list[float]] = {
+            key: [] for key in self.sequences
         }
+        # Compatibility alias. Values are generic observed scores, not
+        # necessarily changes in canonical C(t).
+        self.performance = self.performance_scores
 
     def select_sequence(self, context: dict[str, Any]) -> list[str]:
-        """Select optimal sequence based on context and historical performance.
+        """Select a sequence from context and historical performance.
 
         Uses goal-based filtering and epsilon-greedy selection:
 
@@ -123,7 +154,7 @@ class AdaptiveSequenceSelector:
         Goal-to-sequence mapping follows TNFR principles:
 
         - **stability**: Sequences emphasizing IL (Coherence) and SHA (Silence)
-        - **growth**: Sequences with AL (Emission) and THOL (Self-organization)
+        - **growth**: Emission-led reception and controlled exploration words
         - **adaptation**: Sequences with ZHIR (Mutation) and learning cycles
         """
         goal = context.get("goal", "stability")
@@ -141,47 +172,56 @@ class AdaptiveSequenceSelector:
         # Epsilon-greedy selection (20% exploration, 80% exploitation)
         epsilon = 0.2
 
-        if np is not None:
-            random_val = np.random.random()
-        else:
-            random_val = random.random()
-
-        if random_val < epsilon:
-            # Exploration: random selection
-            if np is not None:
-                selected = str(np.random.choice(candidates))
-            else:
-                selected = random.choice(candidates)
+        if self._rng.random() < epsilon:
+            # Exploration: random selection from the instance-local stream.
+            selected = self._rng.choice(candidates)
         else:
             # Exploitation: select best-performing sequence
             avg_perf = {
                 k: (
-                    sum(self.performance[k]) / len(self.performance[k])
-                    if self.performance[k]
+                    math.fsum(
+                        value / len(self.performance_scores[k])
+                        for value in self.performance_scores[k]
+                    )
+                    if self.performance_scores[k]
                     else 0.0
                 )
                 for k in candidates
             }
             selected = max(avg_perf, key=avg_perf.get)  # type: ignore[arg-type]
 
-        return self.sequences[selected]
+        return list(self.sequences[selected])
 
-    def record_performance(self, sequence_name: str, coherence_gain: float) -> None:
-        """Record performance metric for a sequence to enable learning.
+    def record_performance(
+        self,
+        sequence_name: str,
+        coherence_gain: float | None = None,
+        *,
+        performance_score: float | None = None,
+    ) -> None:
+        """Record one finite observed score in a 20-sample sliding window.
 
-        Parameters
-        ----------
-        sequence_name : str
-            Name of the sequence that was executed
-        coherence_gain : float
-            Achieved coherence improvement or other performance metric
-
-        Notes
-        -----
-        Maintains a sliding window of the last 20 executions to adapt to
-        changing dynamics. Older performance data is discarded.
+        The coherence_gain name is retained as a compatibility keyword. The
+        value is a generic selection score unless the caller explicitly
+        supplies a measured change in canonical C(t).
         """
-        if sequence_name in self.performance:
-            self.performance[sequence_name].append(float(coherence_gain))
-            # Keep only last 20 executions (sliding window)
-            self.performance[sequence_name] = self.performance[sequence_name][-20:]
+        if coherence_gain is not None and performance_score is not None:
+            raise ValueError(
+                "coherence_gain and performance_score are aliases; provide one"
+            )
+        value = (
+            performance_score
+            if performance_score is not None
+            else coherence_gain
+        )
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, Real)
+            or not math.isfinite(float(value))
+        ):
+            raise ValueError("performance score must be a finite real")
+        if sequence_name not in self.performance_scores:
+            raise KeyError(f"unknown sequence name: {sequence_name}")
+        history = self.performance_scores[sequence_name]
+        history.append(float(value))
+        del history[:-20]

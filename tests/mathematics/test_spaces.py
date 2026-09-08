@@ -95,7 +95,7 @@ def test_banach_space_domain_validation(structural_rng: np.random.Generator) -> 
         space.validate_domain(f, a, x_grid=[0.0, 0.3, 0.9, 0.9])
 
 
-def test_banach_space_coherence_functional(
+def test_banach_space_derivative_regularity(
     structural_tolerances: dict[str, float],
 ) -> None:
     space = BanachSpaceEPI()
@@ -114,27 +114,63 @@ def test_banach_space_coherence_functional(
     )
     expected = numerator / denominator
 
-    result = space.compute_coherence_functional(f, x_grid)
+    result = space.derivative_regularity(f, x_grid)
     assert result == pytest.approx(
         expected, rel=structural_tolerances["rtol"], abs=structural_tolerances["atol"]
     )
+    assert space.compute_coherence_functional(f, x_grid) == pytest.approx(result)
 
 
-def test_banach_space_coherence_norm_combines_components(
+def test_composite_epi_regularity_combines_components(
     structural_tolerances: dict[str, float],
 ) -> None:
     space = BanachSpaceEPI()
     x_grid = np.linspace(0.0, 1.0, 4)
-    f = np.array([0.0 + 0.0j, 1.0 + 0.0j, 0.5 + 0.5j, 0.0 + 0.0j], dtype=np.complex128)
+    f = np.array(
+        [0.0 + 0.0j, 1.0 + 0.0j, 0.5 + 0.5j, 0.0 + 0.0j],
+        dtype=np.complex128,
+    )
     a = np.array([1.0 + 0.0j, -1.0j], dtype=np.complex128)
 
-    cf_value = space.compute_coherence_functional(f, x_grid)
-    expected = 2.0 * np.max(np.abs(f)) + 3.0 * np.linalg.norm(a) + 0.5 * cf_value
+    derivative_term = space.derivative_regularity(f, x_grid)
+    expected = (
+        2.0 * np.max(np.abs(f))
+        + 3.0 * np.linalg.norm(a)
+        + 0.5 * derivative_term
+    )
 
-    result = space.coherence_norm(f, a, x_grid=x_grid, alpha=2.0, beta=3.0, gamma=0.5)
+    result = space.composite_epi_regularity(
+        f, a, x_grid=x_grid, alpha=2.0, beta=3.0, gamma=0.5
+    )
     assert result == pytest.approx(
         expected, rel=structural_tolerances["rtol"], abs=structural_tolerances["atol"]
     )
+    assert space.coherence_norm(
+        f, a, x_grid=x_grid, alpha=2.0, beta=3.0, gamma=0.5
+    ) == pytest.approx(result)
 
     with pytest.raises(ValueError):
-        space.coherence_norm(f, a, x_grid=x_grid, alpha=-1.0)
+        space.composite_epi_regularity(f, a, x_grid=x_grid, alpha=-1.0)
+    with pytest.raises(ValueError):
+        space.composite_epi_regularity(f, a, x_grid=x_grid, gamma=float("nan"))
+
+
+def test_composite_epi_regularity_is_unbounded_and_rises_with_roughness() -> None:
+    space = BanachSpaceEPI()
+    x_grid = np.linspace(0.0, 1.0, 513)
+    smooth = np.sin(np.pi * x_grid).astype(np.complex128)
+    oscillatory = np.sin(8.0 * np.pi * x_grid).astype(np.complex128)
+    discrete_tail = np.zeros(1, dtype=np.complex128)
+
+    smooth_derivative_energy = space.derivative_regularity(smooth, x_grid)
+    oscillatory_derivative_energy = space.derivative_regularity(oscillatory, x_grid)
+    smooth_regularity = space.composite_epi_regularity(
+        smooth, discrete_tail, x_grid=x_grid
+    )
+    oscillatory_regularity = space.composite_epi_regularity(
+        oscillatory, discrete_tail, x_grid=x_grid
+    )
+
+    assert oscillatory_derivative_energy > smooth_derivative_energy
+    assert oscillatory_regularity > smooth_regularity
+    assert oscillatory_regularity > 1.0

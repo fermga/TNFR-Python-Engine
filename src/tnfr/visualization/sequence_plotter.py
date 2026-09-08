@@ -14,22 +14,28 @@ import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from ..constants.canonical import CRITICAL_EXPONENT as _CRIT_EXP
-from ..constants.canonical import FRAGMENTATION_THRESHOLD as _COH_LO
-from ..constants.canonical import HIGH_COHERENCE_THRESHOLD as _COH_HI
-from ..constants.operational import EMERGENT_STABILITY_THRESHOLD_CANONICAL as _STAB_THRESH
-from ..constants.canonical import FEEDBACK_LEARNING_RATE as _FEEDBACK_LR
-from ..constants.operational import NODAL_OPT_COUPLING_CANONICAL as _NODAL_COUPLING
-from ..constants.canonical import UM_COMPAT_THRESHOLD as _UM_COMPAT
 from ..mathematics.unified_numerical import np
 
-# Cosmetic dashboard layout values (matplotlib rendering only — NOT TNFR
-# physics; no structural meaning). Plain display literals.
-_LAYOUT_LEVEL = 0.6  # mid layout level (alpha / y-centre / reference line)
-_LAYOUT_BASE = 0.18  # vertical-position base
-_BORDER_WIDTH = 1.5  # annotation border width
-_LINE_WIDTH = 2.5  # default line width
-_BAR_WIDTH = 0.35  # default bar / annotation-padding width
+# Cosmetic visualization parameters. They are deliberately local: none is a
+# TNFR structural constant or a threshold for canonical coherence C(t).
+_LAYOUT_LEVEL = 0.6
+_LAYOUT_BASE = 0.18
+_FLOW_X_RANGE = 0.76
+_FLOW_WAVE_AMPLITUDE = 0.1
+_FLOW_MARGIN = 0.04
+_BORDER_WIDTH = 1.5
+_LINE_WIDTH = 2.5
+_BAR_WIDTH = 0.35
+_LIGHT_ALPHA = 0.2
+_PATTERN_ALPHA = 0.76
+_TIMELINE_ALPHA = 0.59
+
+# Selected rubric targets and display bands for bounded sequence-health scores.
+# These diagnostics inspect operator tokens, not DeltaNFR or dEPI.
+_HEALTH_BENCHMARKS = (0.76, 0.6, 0.76, 0.6, 0.59, 0.76, 0.87)
+_HEALTH_EXCELLENT_CUT = 0.76
+_HEALTH_GOOD_CUT = 0.59
+_HEALTH_FAIR_CUT = 0.24
 
 if TYPE_CHECKING:
     from ..operators.health_analyzer import SequenceHealthMetrics
@@ -182,10 +188,10 @@ class SequenceVisualizer:
             # Arrange in a flowing pattern
             for i, op in enumerate(normalized):
                 x = (
-                    _LAYOUT_BASE + (i / (n_ops - 1)) * _UM_COMPAT
+                    _LAYOUT_BASE + (i / (n_ops - 1)) * _FLOW_X_RANGE
                 )  # base + range (operational)
                 # Add slight vertical variation for visual interest
-                y = _LAYOUT_LEVEL + _NODAL_COUPLING * np.sin(
+                y = _LAYOUT_LEVEL + _FLOW_WAVE_AMPLITUDE * np.sin(
                     i * np.pi / 3
                 )  # center + amplitude (operational)
                 positions[i] = (x, y)
@@ -211,7 +217,7 @@ class SequenceVisualizer:
                     arrowstyle="->",
                     color=color,
                     lw=_LINE_WIDTH,  # default line width
-                    connectionstyle=f"arc3,rad={_NODAL_COUPLING}",  # arc radius
+                    connectionstyle=f"arc3,rad={_FLOW_WAVE_AMPLITUDE}",  # arc radius
                 ),
             )
 
@@ -275,13 +281,13 @@ class SequenceVisualizer:
         # Add health metrics sidebar if provided
         if health_metrics:
             metrics_text = (
-                f"Coherence: {health_metrics.coherence_index:.2f}\n"
+                f"Flow quality: {health_metrics.flow_quality_score:.2f}\n"
                 f"Balance: {health_metrics.balance_score:.2f}\n"
                 f"Sustainability: {health_metrics.sustainability_index:.2f}\n"
                 f"Pattern: {health_metrics.dominant_pattern}"
             )
             ax.text(
-                _FEEDBACK_LR,  # margin offset (operational)
+                _FLOW_MARGIN,  # margin offset (operational)
                 _math.cos(_math.pi / 12),  # cos(π/12) - top alignment
                 metrics_text,
                 transform=ax.transAxes,
@@ -338,7 +344,7 @@ class SequenceVisualizer:
         """
         fig = plt.figure(figsize=(14, 10), dpi=self.dpi)
         gs = fig.add_gridspec(
-            2, 2, hspace=_CRIT_EXP, wspace=_CRIT_EXP
+            2, 2, hspace=_LIGHT_ALPHA, wspace=_LIGHT_ALPHA
         )  # grid spacing
 
         # Create subplots
@@ -348,7 +354,7 @@ class SequenceVisualizer:
 
         # --- Radar Chart ---
         metrics_labels = [
-            "Coherence",
+            "Flow Quality",
             "Balance",
             "Sustainability",
             "Efficiency",
@@ -357,7 +363,7 @@ class SequenceVisualizer:
             "Smoothness",
         ]
         metrics_values = [
-            health_metrics.coherence_index,
+            health_metrics.flow_quality_score,
             health_metrics.balance_score,
             health_metrics.sustainability_index,
             health_metrics.complexity_efficiency,
@@ -377,7 +383,7 @@ class SequenceVisualizer:
         # Plot radar chart
         ax_radar.plot(angles, metrics_values_plot, "o-", linewidth=2, color="#3498db")
         ax_radar.fill(
-            angles, metrics_values_plot, alpha=_CRIT_EXP, color="#3498db"
+            angles, metrics_values_plot, alpha=_LIGHT_ALPHA, color="#3498db"
         )  # radar transparency
         ax_radar.set_xticks(angles[:-1])
         ax_radar.set_xticklabels(metrics_labels, size=9)
@@ -387,25 +393,8 @@ class SequenceVisualizer:
         ax_radar.grid(True)
 
         # --- Bar Chart ---
-        # Define benchmark values for ideal sequences
-        # These represent canonical TNFR targets for well-formed sequences
-        BENCHMARK_COHERENCE = _UM_COMPAT  # canonical coherence target
-        BENCHMARK_BALANCE = _LAYOUT_LEVEL  # reference balance level
-        BENCHMARK_SUSTAINABILITY = _UM_COMPAT  # sustainability target
-        BENCHMARK_EFFICIENCY = _LAYOUT_LEVEL  # reference efficiency level
-        BENCHMARK_FREQUENCY = _STAB_THRESH  # frequency threshold
-        BENCHMARK_COMPLETENESS = _UM_COMPAT  # completeness standard
-        BENCHMARK_SMOOTHNESS = _math.sqrt(3) / 2  # √3/2 - harmonic smoothness
-
-        benchmarks = [
-            BENCHMARK_COHERENCE,
-            BENCHMARK_BALANCE,
-            BENCHMARK_SUSTAINABILITY,
-            BENCHMARK_EFFICIENCY,
-            BENCHMARK_FREQUENCY,
-            BENCHMARK_COMPLETENESS,
-            BENCHMARK_SMOOTHNESS,
-        ]
+        # Operational rubric targets for sequence-health scores.
+        benchmarks = list(_HEALTH_BENCHMARKS)
         x_pos = np.arange(num_vars)
         width = _BAR_WIDTH  # default bar width
 
@@ -429,7 +418,7 @@ class SequenceVisualizer:
         )
         ax_bars.legend(fontsize=9)
         ax_bars.set_ylim(0, 1.1)
-        ax_bars.grid(axis="y", alpha=_CRIT_EXP)  # grid transparency
+        ax_bars.grid(axis="y", alpha=_LIGHT_ALPHA)  # grid transparency
 
         # Add value labels on bars
         for bars in [bars1, bars2]:
@@ -448,13 +437,13 @@ class SequenceVisualizer:
         overall = health_metrics.overall_health
 
         # Determine color based on health
-        if overall >= _COH_HI:  # high-coherence gate (excellent)
+        if overall >= _HEALTH_EXCELLENT_CUT:
             gauge_color = "#2ecc71"  # Excellent
             status = "EXCELLENT"
-        elif overall >= _STAB_THRESH:  # stability threshold (good)
+        elif overall >= _HEALTH_GOOD_CUT:
             gauge_color = "#3498db"  # Good
             status = "GOOD"
-        elif overall >= _COH_LO:  # fragmentation gate (fair)
+        elif overall >= _HEALTH_FAIR_CUT:
             gauge_color = "#f39c12"  # Fair
             status = "FAIR"
         else:
@@ -463,11 +452,11 @@ class SequenceVisualizer:
 
         # Draw gauge background
         ax_gauge.barh(
-            0, 1, height=_CRIT_EXP, color="#ecf0f1", left=0
+            0, 1, height=_LIGHT_ALPHA, color="#ecf0f1", left=0
         )  # gauge height
         # Draw gauge fill
         ax_gauge.barh(
-            0, overall, height=_CRIT_EXP, color=gauge_color, left=0
+            0, overall, height=_LIGHT_ALPHA, color=gauge_color, left=0
         )  # gauge height
 
         # Add markers
@@ -477,7 +466,7 @@ class SequenceVisualizer:
                 val,
                 color="gray",
                 linestyle="--",
-                alpha=_CRIT_EXP,
+                alpha=_LIGHT_ALPHA,
                 linewidth=_LAYOUT_LEVEL,
             )  # alpha, width (operational)
 
@@ -601,7 +590,7 @@ class SequenceVisualizer:
                 facecolor=color,
                 edgecolor="black",
                 linewidth=2,
-                alpha=_UM_COMPAT,  # box transparency
+                alpha=_PATTERN_ALPHA,  # box transparency
             )
             ax.add_patch(box)
 
@@ -744,7 +733,7 @@ class SequenceVisualizer:
         for i, (op, cat) in enumerate(zip(normalized, categories)):
             display_name = operator_display_name(op) or op
             y_offset = (
-                _CRIT_EXP if i % 2 == 0 else -_CRIT_EXP
+                _LIGHT_ALPHA if i % 2 == 0 else -_LIGHT_ALPHA
             )  # annotation offset (operational)
 
             cat_color = OPERATOR_CATEGORY_COLORS.get(cat, "#95a5a6")
@@ -759,7 +748,7 @@ class SequenceVisualizer:
                 bbox=dict(
                     boxstyle=f"round,pad={_BAR_WIDTH}",  # annotation padding
                     facecolor=cat_color,
-                    alpha=_STAB_THRESH,  # annotation alpha
+                    alpha=_TIMELINE_ALPHA,  # annotation alpha
                     edgecolor="black",
                     linewidth=_BORDER_WIDTH,  # annotation border
                 ),
@@ -776,7 +765,7 @@ class SequenceVisualizer:
         ax.set_title(
             "TNFR Operator Sequence Timeline", fontsize=14, weight="bold", pad=20
         )
-        ax.grid(axis="y", alpha=_CRIT_EXP, linestyle="--")  # timeline grid alpha
+        ax.grid(axis="y", alpha=_LIGHT_ALPHA, linestyle="--")  # timeline grid alpha
         ax.set_ylim(0.5, 3.5)
 
         # Add category legend

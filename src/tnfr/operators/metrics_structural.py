@@ -75,7 +75,6 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
         νf value before operator application
     epi_before : float
         EPI value before operator application
-
     Returns
     -------
     dict
@@ -262,7 +261,14 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
     }
 
 
-def contraction_metrics(G, node, vf_before, epi_before):
+def contraction_metrics(
+    G,
+    node,
+    vf_before,
+    epi_before,
+    *,
+    dnfr_before=None,
+):
     """NUL - Contraction metrics: νf decrease, core concentration, ΔNFR densification.
 
     Collects comprehensive contraction metrics including structural density dynamics
@@ -278,6 +284,10 @@ def contraction_metrics(G, node, vf_before, epi_before):
         νf value before operator application
     epi_before : float
         EPI value before operator application
+    dnfr_before : float, optional keyword-only
+        Bound pre-operation pressure. When omitted, the latest telemetry event
+        carrying the same node identifier is used, with unlabelled historical
+        records retained only as a compatibility fallback.
 
     Returns
     -------
@@ -297,10 +307,12 @@ def contraction_metrics(G, node, vf_before, epi_before):
 
         **Densification metrics (if available):**
 
-        - densification_factor: ΔNFR amplification factor (typically 1.35)
-        - dnfr_densified: Boolean indicating densification occurred
+        - densification_factor: Canonical reciprocal capacity factor
+          (approximately 1.0865 by default)
+        - dnfr_densified: Whether the magnitude of ΔNFR increased
         - dnfr_before: ΔNFR value before contraction
-        - dnfr_increase: Absolute ΔNFR change (dnfr_after - dnfr_before)
+        - dnfr_increase: Increase in ΔNFR magnitude
+        - dnfr_signed_change: Signed ΔNFR change
 
         **Structural density metrics (NEW):**
 
@@ -335,12 +347,23 @@ def contraction_metrics(G, node, vf_before, epi_before):
     # Extract densification telemetry if available
     densification_log = G.graph.get("nul_densification_log", [])
     densification_factor = None
-    dnfr_before = None
-    if densification_log:
-        # Get the most recent densification entry for this node
-        last_entry = densification_log[-1]
-        densification_factor = last_entry.get("densification_factor")
-        dnfr_before = last_entry.get("dnfr_before")
+    latest_node_entry = None
+    latest_legacy_entry = None
+    for entry in reversed(densification_log):
+        if not isinstance(entry, dict):
+            continue
+        if "node" not in entry:
+            if latest_legacy_entry is None:
+                latest_legacy_entry = entry
+            continue
+        if entry.get("node") == node:
+            latest_node_entry = entry
+            break
+    selected_entry = latest_node_entry or latest_legacy_entry
+    if selected_entry is not None:
+        densification_factor = selected_entry.get("densification_factor")
+        if dnfr_before is None:
+            dnfr_before = selected_entry.get("dnfr_before")
 
     # Calculate structural density before and after
     # Density = |ΔNFR| / max(EPI, ε)
@@ -352,9 +375,12 @@ def contraction_metrics(G, node, vf_before, epi_before):
     density_after = abs(dnfr_after) / max(abs(epi_after), EPSILON)
 
     # Calculate densification ratio (how much density increased)
-    densification_ratio = (
-        density_after / density_before if density_before > EPSILON else float("inf")
-    )
+    if density_before > EPSILON:
+        densification_ratio = density_after / density_before
+    elif density_after <= EPSILON:
+        densification_ratio = 1.0
+    else:
+        densification_ratio = float("inf")
 
     # Get critical density threshold from graph config or use default
     critical_density_threshold = float(G.graph.get("CRITICAL_DENSITY_THRESHOLD", 5.0))
@@ -374,10 +400,12 @@ def contraction_metrics(G, node, vf_before, epi_before):
     # Add densification metrics if available
     if densification_factor is not None:
         metrics["densification_factor"] = densification_factor
-        metrics["dnfr_densified"] = True
     if dnfr_before is not None:
+        magnitude_increase = abs(dnfr_after) - abs(dnfr_before)
         metrics["dnfr_before"] = dnfr_before
-        metrics["dnfr_increase"] = dnfr_after - dnfr_before if dnfr_before else 0.0
+        metrics["dnfr_increase"] = magnitude_increase
+        metrics["dnfr_signed_change"] = dnfr_after - dnfr_before
+        metrics["dnfr_densified"] = magnitude_increase > 0.0
 
     # Add NEW structural density metrics
     metrics["density_before"] = density_before
@@ -671,7 +699,15 @@ def mutation_metrics(
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
     vf_after = _get_node_attr(G, node, ALIAS_VF)
     dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
-    d2epi = _get_node_attr(G, node, ALIAS_D2EPI, 0.0)
+    node_data = G.nodes[node]
+    from .nodal_equation import compute_d2epi_dt2
+
+    # Public ZHIR execution commits proposal-bound values before collecting
+    # metrics. Isolated metric calls retain a read-only history fallback.
+    if "_zhir_d2epi" in node_data:
+        d2epi = float(node_data["_zhir_d2epi"])
+    else:
+        d2epi = abs(compute_d2epi_dt2(G, node, store=False))
 
     # === THRESHOLD VERIFICATION ===
     # Read the exact immutable sample used by ZHIR's hard runtime gate. This
@@ -679,19 +715,31 @@ def mutation_metrics(
     # Mutation. A successful runtime application necessarily reports True.
     from ._mutation_gate import mutation_threshold_sample
 
-    threshold_sample = mutation_threshold_sample(G.nodes[node], G.graph)
-    depi_dt = threshold_sample.depi_dt
-    xi = threshold_sample.xi
-    threshold_met = threshold_sample.crossed
+    if "_zhir_gate_depi_dt" in node_data and "_zhir_gate_xi" in node_data:
+        depi_dt = float(node_data["_zhir_gate_depi_dt"])
+        xi = float(node_data["_zhir_gate_xi"])
+        threshold_met = depi_dt > xi
+    else:
+        threshold_sample = mutation_threshold_sample(node_data, G.graph)
+        depi_dt = threshold_sample.depi_dt
+        xi = threshold_sample.xi
+        threshold_met = threshold_sample.crossed
     threshold_ratio = None if xi == 0.0 else depi_dt / xi
 
     # === PHASE TRANSFORMATION ===
     # Extract transformation telemetry from glyph storage
-    theta_shift_stored = G.nodes[node].get("_zhir_theta_shift", None)
-    regime_changed = G.nodes[node].get("_zhir_regime_changed", False)
-    regime_before_stored = G.nodes[node].get("_zhir_regime_before", None)
-    regime_after_stored = G.nodes[node].get("_zhir_regime_after", None)
-    fixed_mode = G.nodes[node].get("_zhir_fixed_mode", False)
+    theta_shift_stored = node_data.get("_zhir_theta_shift", None)
+    regime_changed = node_data.get("_zhir_regime_changed", False)
+    regime_before_stored = node_data.get("_zhir_regime_before", None)
+    regime_after_stored = node_data.get("_zhir_regime_after", None)
+    fixed_mode = node_data.get("_zhir_fixed_mode", False)
+    if fixed_mode:
+        # The compatibility fixed-shift kernel deliberately preserves old
+        # dynamic-branch telemetry. It is inactive evidence and must not leak
+        # into the current metric sample.
+        regime_changed = False
+        regime_before_stored = None
+        regime_after_stored = None
 
     # Compute theta shift
     theta_shift = angle_diff(theta_after, theta_before)
@@ -714,11 +762,17 @@ def mutation_metrics(
 
     # === BIFURCATION ANALYSIS ===
     tau = float(
-        G.graph.get(
-            "BIFURCATION_THRESHOLD_TAU", G.graph.get("ZHIR_BIFURCATION_THRESHOLD", 0.5)
+        node_data.get(
+            "_zhir_tau",
+            G.graph.get(
+                "BIFURCATION_THRESHOLD_TAU",
+                G.graph.get("ZHIR_BIFURCATION_THRESHOLD", 0.5),
+            ),
         )
     )
-    bifurcation_potential = d2epi > tau
+    bifurcation_potential = bool(
+        node_data.get("_zhir_bifurcation_potential", d2epi > tau)
+    )
 
     # Compute bifurcation score using canonical formula
     from ..dynamics.bifurcation import compute_bifurcation_score
@@ -729,7 +783,21 @@ def mutation_metrics(
 
     # Check if bifurcation was triggered (event recorded)
     bifurcation_events = G.graph.get("zhir_bifurcation_events", [])
-    bifurcation_triggered = len(bifurcation_events) > 0
+    if not isinstance(bifurcation_events, list):
+        bifurcation_events = []
+    from ..glyph_history import current_operator_step
+
+    operator_step = node_data.get(
+        "_zhir_operator_step", current_operator_step(node_data)
+    )
+    bifurcation_triggered = any(
+        event.get("node") == node
+        and event.get("timestamp") == operator_step
+        and event.get("d2_epi") == d2epi
+        and event.get("tau") == tau
+        for event in bifurcation_events
+        if isinstance(event, dict)
+    )
     bifurcation_event_count = len(bifurcation_events)
 
     # === STRUCTURAL PRESERVATION ===
@@ -1068,7 +1136,7 @@ def transition_metrics(
 
 
 def recursivity_metrics(G, node, epi_before, vf_before):
-    """REMESH - Recursivity metrics: fractal propagation, multi-scale coherence.
+    """REMESH advisory metrics and existing external echo-trace state.
 
     Parameters
     ----------
@@ -1084,12 +1152,12 @@ def recursivity_metrics(G, node, epi_before, vf_before):
     Returns
     -------
     dict
-        Recursivity-specific metrics including fractal pattern indicators
+        Advisory deltas plus legacy external echo-trace indicators
     """
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
     vf_after = _get_node_attr(G, node, ALIAS_VF)
 
-    # Track echo traces if graph maintains them
+    # The glyph does not create echoes; report any externally maintained trace.
     echo_traces = G.graph.get("echo_trace", [])
     echo_count = len(echo_traces)
 

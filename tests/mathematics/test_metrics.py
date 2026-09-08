@@ -1,4 +1,4 @@
-"""Tests for TNFR coherence metrics ensuring canonical contracts."""
+"""Tests for the PSD-weighted auxiliary spectral angle."""
 
 from __future__ import annotations
 
@@ -6,12 +6,12 @@ import numpy as np
 import pytest
 
 from tnfr.mathematics import CoherenceOperator
-from tnfr.mathematics.metrics import dcoh
+from tnfr.mathematics.metrics import dcoh, spectral_weighted_angle
 
 
 @pytest.fixture()
 def hermitian_operator() -> CoherenceOperator:
-    """Return a simple Hermitian coherence operator for two modes."""
+    """Return a positive-definite spectral operator for two modes."""
 
     return CoherenceOperator([[1.0, 0.2], [0.2, 0.8]])
 
@@ -39,7 +39,7 @@ def test_dcoh_identity_superposition(
     hermitian_operator: CoherenceOperator,
     orthonormal_basis: tuple[np.ndarray, np.ndarray],
 ) -> None:
-    """Non-eigenstates remain coherent with themselves under any operator."""
+    """A non-null projective ray has zero angle with itself."""
 
     psi1, psi2 = orthonormal_basis
     superposition = (psi1 + psi2) / np.sqrt(2.0)
@@ -52,7 +52,7 @@ def test_dcoh_is_symmetric(
     hermitian_operator: CoherenceOperator,
     orthonormal_basis: tuple[np.ndarray, np.ndarray],
 ) -> None:
-    """Swapping the states must not change the coherence dissimilarity."""
+    """Swapping the states must not change the weighted angle."""
 
     psi1, psi2 = orthonormal_basis
     superposition = (psi1 + psi2) / np.sqrt(2.0)
@@ -67,7 +67,7 @@ def test_dcoh_orthogonal_states_follow_operator_overlap(
     hermitian_operator: CoherenceOperator,
     orthonormal_basis: tuple[np.ndarray, np.ndarray],
 ) -> None:
-    """Orthogonal states inherit coherence from the operator's weighted overlap."""
+    """Euclidean-orthogonal states can have nonzero weighted overlap."""
 
     psi1, psi2 = orthonormal_basis
 
@@ -87,7 +87,7 @@ def test_dcoh_satisfies_triangle_inequality(
     hermitian_operator: CoherenceOperator,
     orthonormal_basis: tuple[np.ndarray, np.ndarray],
 ) -> None:
-    """The coherence dissimilarity behaves as a metric on the tested states."""
+    """The projective angle obeys the triangle inequality on tested rays."""
 
     psi1, psi3 = orthonormal_basis
     psi2 = (psi1 + psi3) / np.sqrt(2.0)
@@ -109,10 +109,34 @@ def test_dcoh_rejects_zero_expectation(
     singular_operator = CoherenceOperator([[0.0, 0.0], [0.0, 1.0]])
 
     with pytest.raises(
-        ValueError, match="Coherence expectation must remain strictly positive"
+        ValueError, match="Spectral expectation must be positive"
     ):
         dcoh(psi, psi, singular_operator)
 
+
+def test_spectral_angle_rejects_indefinite_operator(
+    orthonormal_basis: tuple[np.ndarray, np.ndarray],
+) -> None:
+    psi1, psi2 = orthonormal_basis
+    indefinite = CoherenceOperator([1.0, -0.5])
+
+    with pytest.raises(ValueError, match="positive-semidefinite operator"):
+        spectral_weighted_angle(psi1, psi2, indefinite)
+
+
+def test_spectral_angle_is_projective_and_dcoh_is_compatibility_alias(
+    hermitian_operator: CoherenceOperator,
+    orthonormal_basis: tuple[np.ndarray, np.ndarray],
+) -> None:
+    psi1, psi2 = orthonormal_basis
+    expected = spectral_weighted_angle(psi1, psi2, hermitian_operator)
+
+    assert spectral_weighted_angle(
+        np.exp(0.3j) * psi1,
+        np.exp(-1.2j) * psi2,
+        hermitian_operator,
+    ) == pytest.approx(expected)
+    assert dcoh(psi1, psi2, hermitian_operator) == pytest.approx(expected)
 
 def test_dcoh_respects_tolerance_thresholds(
     orthonormal_basis: tuple[np.ndarray, np.ndarray],
@@ -123,7 +147,7 @@ def test_dcoh_respects_tolerance_thresholds(
     near_null_operator = CoherenceOperator([1e-12, 1.0])
 
     with pytest.raises(
-        ValueError, match="Coherence expectation must remain strictly positive"
+        ValueError, match="Spectral expectation must be positive"
     ):
         dcoh(psi1, psi2, near_null_operator)
 

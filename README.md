@@ -23,7 +23,8 @@ The graph engine's scalar EPI chart accepts a raw real value or the equivalent
 uniform-real `BEPIElement` representation. Its scalar projection retains the
 sign; `abs(EPI)` remains the nonnegative Banach-envelope magnitude. Genuinely
 nonuniform or complex BEPI payloads keep that magnitude projection for generic
-read-outs and are rejected by certificates that require one real EPI coordinate.
+read-outs and are rejected by canonical glyphs that require a real scalar EPI
+coordinate, pure-EPI diffusion and scalar certificates.
 
 ```bash
 pip install tnfr
@@ -110,12 +111,64 @@ shared nodal-equation integrator from explicit `nu_f` and `DeltaNFR`, with
 provenance or a residual; ad hoc state assignment is outside the engine
 contract.
 
-SDK words preserve operator order. Each SDK Reception or Resonance stage
-reads one immutable all-target snapshot and commits its validated proposals
-atomically; the GPU Resonance strategy reuses that same stage. These positions
-have two-phase Jacobi semantics. Other operator stages retain operator-major
-Gauss-Seidel semantics, so the guarantee does not make an entire mixed word
-simultaneous. No GPU Reception strategy is currently registered.
+SDK words preserve operator order. All thirteen glyph stages use one immutable
+stage-start snapshot, validate every target proposal, and commit atomically:
+neighbour-reading Reception, Coherence and Resonance; pointwise Emission,
+Silence, Expansion, Contraction, Mutation and Transition; Coupling's
+overlapping phase/topology proposal; Dissonance's overlapping pressure
+proposal; Self-organization's child-support and hierarchy merge; and
+Recursivity's deduplicated network advisory.
+Coherence contracts each target's pressure magnitude and locks its phase from
+that shared snapshot;
+its canonical stage/global and radius-local structural `C(t)` fields are
+reported separately from the retained legacy pressure-dispersion fields. The
+supported GPU Emission and Resonance strategies reuse the corresponding shared
+stage. When grammar accepts the requested glyph for every target, these
+positions have two-phase Jacobi semantics. Their committed primary structural
+channels are target-order invariant **before** the opaque pressure-refresh
+callback. Emission and Silence bind every target to one shared stage timestamp.
+Transition binds `nu_f`, phase, `DeltaNFR` and per-node RNG progress to the
+snapshot; it resolves a missing graph seed inside the transaction, persists it
+only after success, and uses one shared instant for every latency calculation.
+Stable per-node offsets and draw counts make the committed RNG progress
+target-order invariant. Ordered lifecycle, audit/telemetry and monitor streams
+retain the requested target order. Coupling merges shortest-arc phase
+displacements in snapshot-node order, normalizes final phases, rechecks U3 and
+coalesces accepted functional links deterministically. This merge is an explicit
+engine policy, not a stability theorem. Dissonance derives every local
+pressure and outgoing propagated increment from the snapshot, then reduces
+overlapping incoming increments with `math.fsum` in snapshot-node order. Its
+local pressure-magnitude contract is checked before propagation is accumulated:
+positive incoming increments can partially cancel a negative signed pressure.
+Self-organization plans every bifurcation from the snapshot, resolves colliding
+child identifiers in snapshot-node rank, validates the complete detached
+`sub_nodes`/`sub_epis`/`hierarchy` merge, and only then commits `d2EPI`,
+`DeltaNFR` and support. IL precondition warnings are emitted only after every
+fallible stage effect succeeds and still participate in rollback
+when warning policy raises. Cache state and the opaque refresh remain outside
+this invariance claim; identity-bearing caches remain tied to their live graph
+and node objects. Relabeling equivariance remains unproved.
+
+The Recursivity word stage keeps the node-level glyph advisory-only, merges one
+graph event per telemetry step and leaves EPI, nu_f, phase, DeltaNFR and support
+unchanged before pressure refresh. It never invokes the separate
+`apply_network_remesh` delayed-EPI operation. That operation now exposes an
+immutable `plan_network_remesh` proposal and result. Insufficient history and
+empty live support are explicit side-effect-free no-ops. An applicable plan
+requires exact live support in both selected history snapshots and separates
+the exact represented
+three-term recurrence from its nested binary64 and clipped outputs, and commits
+graph-owned state atomically. Optional evidence reports weighted-mean drift, a
+three-input convex disagreement bound and a conditional fixed-history gain;
+it does not prove stability when history evolves across repeated calls.
+
+A grammar replacement or Recursivity execution override falls back to the
+transactional Gauss-Seidel path and is reported as such. The explicit legacy
+GS runner remains diagnosable as a schedule mismatch. The centralized
+stage-contract registry records read/write footprints, merge and rollback
+scopes and target-order claims for all 13 operators. These guarantees are
+stage-local and do not make a mixed word simultaneous. No GPU Reception
+strategy is currently registered.
 
 THOL's `subepi_amplitude_alignment` is a variance-based EPI-amplitude
 diagnostic, not canonical `C(t)` and not U5. A concrete U5 target is evaluated
@@ -140,6 +193,10 @@ resolved in physical time. Direct Mutation requires a valid observed rate
 strictly above `ZHIR_THRESHOLD_XI`, together with active capacity and any
 configured minimum capacity.
 
+ZHIR supports bifurcation detection only. The legacy
+`ZHIR_BIFURCATION_MODE="variant_creation"` setting is rejected before any write:
+Mutation changes phase, while topology and sub-EPI creation belong to THOL.
+
 When dynamic selection cannot support a proposed ZHIR from that evidence, it
 substitutes Coherence (IL) before ordinary grammar enforcement and records the
 requested and applied glyphs with the reason. The SDK whole-word runner
@@ -158,6 +215,50 @@ history, and malformed evidence remains an error. Direct `apply_sequence()`
 calls remain strict. See
 [Mutation (ZHIR)](theory/STRUCTURAL_OPERATORS.md#91-mutation-zhir).
 
+### Operator-event time
+
+`build_operator_event_schedule(...)` represents each canonical operator as an
+instantaneous jump and requires `m + 1` declared nodal-flow durations for `m`
+events. The exact rational value of each materialized binary64 duration is
+authoritative; absolute timestamps are display values, and coincident events
+remain ordered by `event_index` in `hybrid_event_log`. The companion
+`diagnose_continuous_relaxation_duration(...)` uses the fixed symmetric
+pure-EPI diffusion certificate and rational logarithm/exponential enclosures to
+decide whether one declared interval reaches a requested disagreement-energy
+fraction. Both objects are read-only and do not adapt U2/U4.
+
+`execute_operator_event_schedule(...)` binds a valid schedule to the configured
+nodal integrator and the shared atomic network-stage dispatcher. It requires
+the live graph clock to match every boundary exactly, rejects positive
+intervals that collapse or cannot land by direct binary64 addition, freezes the
+initial target tuple, and rolls back graph-owned flow and jump state on failure.
+Flow boundaries provide timestamped EPI evidence; zero-duration jumps are
+recorded separately and restart same-time EPI history after a state change.
+Every Mutation event therefore requires a positive representable immediately
+preceding flow. Solver accuracy, refinement equivalence, jump gains and adaptive
+U2/U4 remain outside this execution contract.
+
+`execute_event_remesh_cycle(...)` adds one explicit delayed-REMESH boundary:
+schedule execution, one canonical full-support pre-REMESH `_epi_hist` sample,
+then `apply_network_remesh`, all within an outer graph transaction. Delay `tau`
+keeps the runtime index `history[-(tau + 1)]`; no second delayed-history sample
+is added after the jump. An applied EPI jump does record its same-time right
+endpoint in `epi_time_history`, keeping later Mutation secants physical. One
+materialized positive diagonal metric measures the three cycle-level EPI states
+and REMESH stability evidence; legacy REMESH metadata keeps unweighted means.
+Ordered node support, incoming history, the endpoint clock, the committed event
+log, phase, the pressure hook and deterministic REMESH configuration are
+protected. Edge support may change during the schedule, while delayed REMESH
+observers cannot change it. Consensus drift, capacity changes and pressure
+refreshes remain separate. The optional post-REMESH refresh runs once only when
+the map applies. Exact observations remain authoritative when a derived float
+display is `None`. This is an atomic one-cycle execution contract, not a solver,
+mixed-gain or evolving-history repetition theorem.
+
+The companion example exercises
+only the schedule and duration diagnostic, without executing this runtime
+binding: [`165_operator_event_relaxation.py`](examples/02_physics_regimes/165_operator_event_relaxation.py).
+
 ## Mathematical scope
 
 TNFR provides executable structural models, diagnostics, and reproducible
@@ -173,6 +274,15 @@ The current scope is centralized in:
   [diffusion stability theorem](theory/TNFR_DIFFUSION_STABILITY_THEOREM.md) and
   [scale, geometry and bridge results](theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md)
 
+At the scale boundary, pure EPI and the fixed-branch pairwise phase realization
+admit exact reversible quotient tests. The actual circular mean-of-phasors
+channel closes only on a restricted lifted block-constant subspace; a `K3,3`
+same-macro-state construction refutes global projected phase autonomy. At the
+instantaneous coherence boundary, fixed-`N` network levels are stratified
+`2N`-dimensional cross-polytope boundaries, and fixed positive capacity cuts
+them to weighted `N`-dimensional cross-polytopes. Neither result proves temporal
+attraction or closure under changing support.
+
 The restricted S16 executable boundary now covers both frozen endpoints and
 sampled pure-EPI trajectories. The path certificate checks every nodal update
 on persistent node identifiers, the explicit-Euler modal limit and a common
@@ -183,9 +293,15 @@ a proof of convergence.
 
 Within that common metric, a declared affine EPI reset has a finite global
 disagreement gain exactly when it preserves the consensus subspace. The engine
-combines a rational Frobenius upper bound computed exactly on the represented
-binary64 coefficients for each passing reset with a rationally certified lower
-bound for the represented diffusion decay. The flow proof separately checks
+uses a rational quotient gain bound computed exactly on the represented
+binary64 coefficients for each passing reset, with the weighted-Frobenius norm
+retained as a safe fallback. Exact scalar quotient actions, including identity,
+avoid the former dimension-dependent Frobenius penalty. This bound is combined
+with a rationally certified lower bound for the represented diffusion decay.
+Log-space composition keeps the precise rational gain product and uses separate
+upward 32-bit-significand dyadic factors to bound arithmetic growth without
+weakening the certificate.
+The flow proof separately checks
 that its materialized generator preserves the consensus subspace and requires
 the stronger exact identity `A 1 = 0` so every uniform EPI field is a fixed
 point. Preservation of the displayed weighted mean, `h^T A = 0`, is reported
@@ -200,9 +316,14 @@ exact-real theorem, availability of a positive operational float rate, ordinary
 spectral diagnostics and numerical-integration verification separately; the
 last remains open because no future schedule or solver path is observed.
 
-Local Reception (EN) and Resonance (RA) are the first two catalog operators
-connected to this framework. They share one centralized unweighted-neighbour
-EPI blend even when transport conductance is weighted. The RA audit keeps four
+Reception (EN) and Resonance (RA) are the first two catalog operators connected
+to this framework at both local and all-target boundaries. They share one
+centralized unweighted-neighbour EPI blend even when transport conductance is
+weighted. The all-target certificate assembles the simultaneous stage map and
+replays a finite repeated structural trace; regression tests compare every step
+with the public runtime. It proves hard-bound forward invariance for convex
+ideal-real mixing and separates represented-map gain, consensus drift and RA
+diffusion-metric drift. The RA audit keeps four
 layers separate: the ideal-real convex blend, the represented binary64 affine
 map, the actual two-stage binary64 proposal, and the accepted identity-gated
 runtime snapshot. Only neighbours that individually pass U3 participate in
@@ -218,10 +339,25 @@ The runtime also requires `0 <= RA_epi_diff <= 1`, nonnegative
 local frequency boost generally changes the post-RA diffusion metric
 `h_i=d_i/nu_i`; the fixed post-RA flow can still be certified, while a pre/post
 switching claim abstains unless the represented metrics are exactly
-proportional. Any accepted nontrivial EPI change requires pure-EPI pressure
-refresh before diffusion resumes. Separate rounding, clipping, identity gates,
-and multichannel effects preclude a global binary64 affinity claim. Canonical
-labels do not supply gains for the remaining runtime operators.
+proportional. At the proved node-local boundary, a nontrivial EPI write has the
+exact pure-EPI pressure defect `delta L_rw e_i`. An all-target stage instead
+uses the aggregated defect `L_rw delta`: simultaneous row changes can cancel,
+including into a uniform EPI shift, so nontrivial target changes alone do not
+imply a nonzero aggregate defect. The shared stage invokes the configured
+pressure refresh inside its transaction. RA phase or capacity changes can
+independently require a full multichannel refresh even when the aggregate EPI
+pressure defect vanishes. Separate rounding, clipping, identity gates and
+multichannel effects preclude a global binary64 affinity claim. Canonical labels
+do not supply gains for the remaining runtime operators.
+
+For AL/SHA/VAL/NUL/ZHIR/NAV, the shared pointwise executor can opt into a
+three-level certificate computed from its own detached snapshot and frozen
+proposals before commit. A successful `NetworkStageResult` separates exact
+represented EPI realization, affine gain in the pre-flow metric, and an
+aligned pre/post diffusion metric. Certification rejects unsupported, empty,
+grammar-replaced and noncanonical stages before live writes; NUL pressure
+effects remain a separate diagnostic. This result does not establish a
+mixed-word or repeated-runtime theorem.
 
 The Riemann, Navier-Stokes, Yang-Mills, P-vs-NP, BSD, and Hodge programs remain
 open research programs. They do not claim solutions to the corresponding

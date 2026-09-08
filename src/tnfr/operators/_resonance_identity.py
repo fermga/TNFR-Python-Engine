@@ -7,6 +7,7 @@ import math
 from typing import Iterable
 
 from ..utils import angle_diff
+from ._neighbor_epi_kernel import neighbor_epi_proposed_kind
 from ._phase_gate import phase_limit_is_canonical
 
 __all__ = [
@@ -151,21 +152,13 @@ def resonance_proposed_epi_kind(
 ) -> str:
     """Reproduce the runtime's dominant-neighbour kind selection without mutation."""
 
-    best_kind = ""
-    best_abs = 0.0
-    found_neighbor = False
-    for value, kind in neighbor_value_kinds:
-        found_neighbor = True
-        magnitude = abs(value)
-        if magnitude > best_abs:
-            best_abs = magnitude
-            best_kind = kind
-
-    if not found_neighbor:
-        return current_kind or fallback_kind
-    dominant = best_kind or fallback_kind
-    proposed = dominant if best_abs > abs(proposed_target_epi) else current_kind
-    return proposed or fallback_kind
+    return neighbor_epi_proposed_kind(
+        current_kind,
+        neighbor_value_kinds,
+        proposed_target_epi,
+        fallback_kind=fallback_kind,
+        unlabeled_magnitude_dominates=True,
+    )
 
 
 def resonance_identity_failures(

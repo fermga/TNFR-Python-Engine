@@ -268,7 +268,9 @@ class RemeshContractAudit:
     All default to ``False`` (unverified): the projective scale map is transport-
     consistent, but that alone does not establish the TNFR REMESH operator
     contract (recursive EPI echo across scales, NETWORK-scale generator/closure,
-    preserved nodal identity, U5 multiscale coherence).  Until every field is
+    preserved nodal identity, U5 multiscale coherence). U5 may be marked verified
+    only from a declared parent/child hierarchy evaluated by the canonical U5
+    assessment; scalar EPI dispersion is not such evidence. Until every field is
     independently verified, the map keeps its neutral name and the tower→REMESH
     claim (``NT-P04``) remains CONJECTURAL.
     """

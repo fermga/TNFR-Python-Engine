@@ -1,17 +1,22 @@
 """Hierarchical multi-scale TNFR network implementation.
 
-Implements operational fractality by managing TNFR networks at multiple scales
-with cross-scale coupling, preserving canonical TNFR invariants.
+The model manages separate TNFR graphs and composes their pressure channels
+through declared directed scale couplings. It is an operational multi-scale
+model; it does not by itself enforce U3, U5, or canonical operator grammar.
 """
 
 from __future__ import annotations
 
+import math
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
-from typing import Any, Sequence
+from numbers import Integral, Real
+from typing import Any, Iterable, Sequence
 
 import networkx as nx
 
+from ..alias import collect_attr, get_attr, set_dnfr
+from ..constants.aliases import ALIAS_DEPI, ALIAS_DNFR
 from ..dynamics import (
     dnfr_epi_vf_mixed,
     set_delta_nfr_hook,
@@ -22,6 +27,28 @@ from ..types import DeltaNFR, NodeId, TNFRGraph
 from ..utils import angle_diff, get_logger
 
 logger = get_logger(__name__)
+
+
+def _finite_signed_mean(values: Iterable[float], *, name: str) -> float:
+    """Return a finite signed mean with an overflow-safe intermediate sum."""
+
+    scalars: list[float] = []
+    for value in values:
+        if isinstance(value, bool) or not isinstance(value, Real):
+            raise TypeError(f"{name} must contain finite real scalars")
+        normalized = float(value)
+        if not math.isfinite(normalized):
+            raise ValueError(f"{name} must contain only finite values")
+        scalars.append(normalized)
+    if not scalars:
+        return 0.0
+    scale = max(abs(value) for value in scalars)
+    if scale == 0.0:
+        return 0.0
+    result = scale * math.fsum(value / scale for value in scalars) / len(scalars)
+    if not math.isfinite(result):
+        raise ValueError(f"mean {name} exceeds the finite scalar range")
+    return result
 
 
 @dataclass(frozen=True)
@@ -45,6 +72,38 @@ class ScaleDefinition:
     coupling_strength: float
     edge_probability: float = 0.1
 
+    def __post_init__(self) -> None:
+        """Validate and normalize one reproducible scale declaration."""
+
+        if not isinstance(self.name, str) or not self.name.strip():
+            raise ValueError("scale name must be a non-empty string")
+        if isinstance(self.node_count, bool) or not isinstance(
+            self.node_count, Integral
+        ):
+            raise TypeError("scale node_count must be a positive integer")
+        if int(self.node_count) <= 0:
+            raise ValueError("scale node_count must be positive")
+
+        for label, value in (
+            ("coupling_strength", self.coupling_strength),
+            ("edge_probability", self.edge_probability),
+        ):
+            if isinstance(value, bool) or not isinstance(value, Real):
+                raise TypeError(f"scale {label} must be a finite real scalar")
+            if not math.isfinite(float(value)):
+                raise ValueError(f"scale {label} must be finite")
+            if not 0.0 <= float(value) <= 1.0:
+                raise ValueError(f"scale {label} must be in [0, 1]")
+
+        object.__setattr__(self, "name", self.name.strip())
+        object.__setattr__(self, "node_count", int(self.node_count))
+        object.__setattr__(
+            self, "coupling_strength", float(self.coupling_strength)
+        )
+        object.__setattr__(
+            self, "edge_probability", float(self.edge_probability)
+        )
+
 
 @dataclass
 class EvolutionResult:
@@ -55,7 +114,7 @@ class EvolutionResult:
     scale_results : dict[str, Any]
         Results indexed by scale name
     total_coherence : float
-        Aggregated coherence across all scales
+        Canonical coherence over the union of all scale-node channels
     cross_scale_coupling : float
         Measure of cross-scale synchronization
     """
@@ -68,15 +127,11 @@ class EvolutionResult:
 class HierarchicalTNFRNetwork:
     """Multi-scale TNFR network supporting operational fractality (§3.7).
 
-    Manages multiple TNFR networks at different scales with cross-scale
-    coupling, enabling simultaneous evolution while preserving structural
-    coherence.
-
-    This implementation maintains all TNFR canonical invariants:
-    - Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
-    - Operator closure: all transformations yield valid TNFR states
-    - Phase verification: explicit synchrony checks for coupling
-    - Determinism: reproducible evolution with fixed seeds
+    Manages multiple TNFR graphs with simultaneous pressure staging, directed
+    cross-scale pressure coupling and nodal-equation EPI updates. Fixed seeds
+    reproduce graph generation and evolution. Canonical operator application,
+    U3 admission and a normalized U5 parent/child inequality remain separate
+    engine contracts.
 
     Parameters
     ----------
@@ -95,13 +150,13 @@ class HierarchicalTNFRNetwork:
 
     >>> from tnfr.multiscale import HierarchicalTNFRNetwork, ScaleDefinition
     >>> scales = [
-    ...     ScaleDefinition("micro", 100, 0.8),
-    ...     ScaleDefinition("macro", 50, 0.5),
+    ...     ScaleDefinition("micro", 4, 0.8, 0.5),
+    ...     ScaleDefinition("macro", 3, 0.5, 0.5),
     ... ]
-    >>> network = HierarchicalTNFRNetwork(scales, seed=42)
-    >>> result = network.evolve_multiscale(dt=0.1, steps=10)
-    >>> result.total_coherence  # doctest: +SKIP
-    0.65...
+    >>> network = HierarchicalTNFRNetwork(scales, seed=42, parallel=False)
+    >>> result = network.evolve_multiscale(dt=0.1, steps=1)
+    >>> 0.0 <= result.total_coherence <= 1.0
+    True
 
     Notes
     -----
@@ -117,10 +172,31 @@ class HierarchicalTNFRNetwork:
         parallel: bool = True,
         max_workers: int | None = None,
     ):
-        if not scales:
+        scale_items = tuple(scales)
+        if not scale_items:
             raise ValueError("At least one scale definition required")
 
-        self.scales = list(scales)
+        scale_names = [scale.name for scale in scale_items]
+        if len(set(scale_names)) != len(scale_names):
+            raise ValueError("scale names must be unique")
+        if seed is not None:
+            if isinstance(seed, bool) or not isinstance(seed, Integral):
+                raise TypeError("seed must be an integer or None")
+            if not 0 <= int(seed) <= 2**32 - 1:
+                raise ValueError("seed must be in [0, 2**32 - 1]")
+            seed = int(seed)
+        if not isinstance(parallel, bool):
+            raise TypeError("parallel must be bool")
+        if max_workers is not None:
+            if isinstance(max_workers, bool) or not isinstance(
+                max_workers, Integral
+            ):
+                raise TypeError("max_workers must be a positive integer or None")
+            if int(max_workers) <= 0:
+                raise ValueError("max_workers must be positive")
+            max_workers = int(max_workers)
+
+        self.scales = list(scale_items)
         self.seed = seed
         self.parallel = parallel
         self.max_workers = max_workers
@@ -134,8 +210,8 @@ class HierarchicalTNFRNetwork:
         self._initialize_cross_scale_couplings()
 
         logger.info(
-            f"Initialized hierarchical network with {len(scales)} scales, "
-            f"total {sum(s.node_count for s in scales)} nodes"
+            f"Initialized hierarchical network with {len(self.scales)} scales, "
+            f"total {sum(scale.node_count for scale in self.scales)} nodes"
         )
 
     def _initialize_scales(self) -> None:
@@ -150,7 +226,6 @@ class HierarchicalTNFRNetwork:
 
             # Initialize each node with TNFR attributes
             for node in G.nodes():
-                f"{scale.name}_{node}"
                 G.nodes[node]["EPI"] = rng.uniform(0.0, 1.0)
                 G.nodes[node]["nu_f"] = rng.uniform(0.5, 1.5)
                 G.nodes[node]["phase"] = rng.uniform(0.0, 2 * np.pi)
@@ -170,9 +245,10 @@ class HierarchicalTNFRNetwork:
         """Initialize coupling strengths between scales.
 
         Default: Adjacent scales couple more strongly than distant scales.
+        Keys use ``(target_scale, source_scale)`` so they match the pressure
+        equation evaluated by :meth:`compute_multiscale_dnfr`.
         """
         scale_names = [s.name for s in self.scales]
-        len(scale_names)
 
         for i, scale_i in enumerate(scale_names):
             for j, scale_j in enumerate(scale_names):
@@ -188,7 +264,7 @@ class HierarchicalTNFRNetwork:
     def set_cross_scale_coupling(
         self, from_scale: str, to_scale: str, strength: float
     ) -> None:
-        """set explicit cross-scale coupling strength.
+        """Set an explicit cross-scale coupling strength.
 
         Parameters
         ----------
@@ -203,10 +279,19 @@ class HierarchicalTNFRNetwork:
             raise ValueError(f"Unknown scale: {from_scale}")
         if to_scale not in self.networks_by_scale:
             raise ValueError(f"Unknown scale: {to_scale}")
-        if strength < 0.0 or strength > 1.0:
+        if from_scale == to_scale:
+            raise ValueError("cross-scale coupling requires distinct scales")
+        if isinstance(strength, bool) or not isinstance(strength, Real):
+            raise TypeError("Coupling strength must be a finite real scalar")
+        strength_value = float(strength)
+        if not math.isfinite(strength_value):
+            raise ValueError("Coupling strength must be finite")
+        if strength_value < 0.0 or strength_value > 1.0:
             raise ValueError("Coupling strength must be in [0.0, 1.0]")
 
-        self.cross_scale_couplings[(from_scale, to_scale)] = strength
+        # Public arguments are source -> target; internal keys are
+        # (target, source), matching DeltaNFR_target += g_target,source * source.
+        self.cross_scale_couplings[(to_scale, from_scale)] = strength_value
 
     def compute_multiscale_dnfr(self, node_id: NodeId, target_scale: str) -> DeltaNFR:
         """Compute ΔNFR considering all relevant scales.
@@ -229,52 +314,62 @@ class HierarchicalTNFRNetwork:
         if target_scale not in self.networks_by_scale:
             raise ValueError(f"Unknown scale: {target_scale}")
 
-        G = self.networks_by_scale[target_scale]
+        graph = self.networks_by_scale[target_scale]
+        base_dnfr = _finite_signed_mean(
+            (get_attr(graph.nodes[node_id], ALIAS_DNFR, 0.0, strict=True),),
+            name=f"{target_scale} pressure",
+        )
 
-        # Base ΔNFR at target scale (simplified computation)
-        base_dnfr = G.nodes[node_id].get("delta_nfr", 0.0)
-
-        # Cross-scale contributions
-        cross_scale_contribution = 0.0
-        for other_scale in self.networks_by_scale:
-            if other_scale == target_scale:
+        contributions: list[float] = []
+        for source_scale, source_graph in self.networks_by_scale.items():
+            if source_scale == target_scale:
                 continue
+            coupling = self._cross_scale_coupling(target_scale, source_scale)
+            if coupling == 0.0:
+                continue
+            source_mean = _finite_signed_mean(
+                (
+                    get_attr(data, ALIAS_DNFR, 0.0, strict=True)
+                    for _, data in source_graph.nodes(data=True)
+                ),
+                name=f"{source_scale} pressure",
+            )
+            contributions.append(coupling * source_mean)
 
-            coupling = self.cross_scale_couplings.get((target_scale, other_scale), 0.0)
-            if coupling > 0:
-                # Aggregate ΔNFR from other scale
-                other_G = self.networks_by_scale[other_scale]
-                other_dnfr_values = [
-                    other_G.nodes[n].get("delta_nfr", 0.0) for n in other_G.nodes()
-                ]
-                mean_other_dnfr = (
-                    np.mean(other_dnfr_values) if other_dnfr_values else 0.0
-                )
-                cross_scale_contribution += coupling * mean_other_dnfr
-
-        return base_dnfr + cross_scale_contribution
+        return self._finite_pressure_sum(
+            (base_dnfr, *contributions),
+            name=f"{target_scale} multiscale pressure",
+        )
 
     def compute_total_coherence(self) -> float:
-        """Compute aggregated coherence across all scales.
+        """Compute canonical C(t) over the union of all scale nodes.
 
-        Returns
-        -------
-        float
-            Total coherence C(t) aggregated across scales
+        Channel magnitudes are aggregated before applying the nonlinear
+        constitutive kernel. Averaging already-reduced per-scale coherence
+        values would define a different diagnostic.
         """
-        total_c = 0.0
-        total_nodes = 0
+        from itertools import chain
 
-        for scale_name, G in self.networks_by_scale.items():
-            # Per-scale coherence via the canonical kernel (see _scale_coherence)
-            scale_coherence = self._scale_coherence(G)
+        from ..metrics.common import finite_mean_absolute, structural_coherence
 
-            # Weight by node count
-            node_count = G.number_of_nodes()
-            total_c += scale_coherence * node_count
-            total_nodes += node_count
+        total_nodes = sum(
+            graph.number_of_nodes()
+            for graph in self.networks_by_scale.values()
+        )
+        if total_nodes == 0:
+            return 0.0
 
-        return total_c / total_nodes if total_nodes > 0 else 0.0
+        dnfr_values = chain.from_iterable(
+            collect_attr(graph, graph.nodes, ALIAS_DNFR, 0.0)
+            for graph in self.networks_by_scale.values()
+        )
+        depi_values = chain.from_iterable(
+            collect_attr(graph, graph.nodes, ALIAS_DEPI, 0.0)
+            for graph in self.networks_by_scale.values()
+        )
+        mean_abs_dnfr = finite_mean_absolute(dnfr_values, name="dnfr")
+        mean_abs_depi = finite_mean_absolute(depi_values, name="depi")
+        return float(structural_coherence(mean_abs_dnfr, mean_abs_depi))
 
     def evolve_multiscale(
         self,
@@ -282,126 +377,96 @@ class HierarchicalTNFRNetwork:
         steps: int = 10,
         operators: Sequence[str] | None = None,
     ) -> EvolutionResult:
-        """Evolve all scales simultaneously with cross-coupling.
+        """Evolve all scales through pressure staging and the nodal equation.
 
         Parameters
         ----------
         dt : float
-            Time step for evolution
+            Positive time step when at least one step is requested.
         steps : int
-            Number of evolution steps
+            Nonnegative number of evolution steps.
         operators : Sequence[str], optional
-            Structural operators to apply (e.g., ["A'L", "THOL"])
+            Reserved compatibility parameter. Non-empty requests are rejected
+            because this class has no canonical operator-execution bridge.
 
         Returns
         -------
         EvolutionResult
-            Results containing scale-specific and aggregated metrics
+            Final per-scale and aggregate metrics from the same state.
         """
-        if operators is None:
-            operators = ["THOL"]  # Default: Coherence operator
+        if isinstance(steps, bool) or not isinstance(steps, Integral):
+            raise TypeError("steps must be a nonnegative integer")
+        steps_value = int(steps)
+        if steps_value < 0:
+            raise ValueError("steps must be a nonnegative integer")
+        if isinstance(dt, bool) or not isinstance(dt, Real):
+            raise TypeError("dt must be a finite real scalar")
+        dt_value = float(dt)
+        if not math.isfinite(dt_value):
+            raise ValueError("dt must be finite")
+        if steps_value and dt_value <= 0.0:
+            raise ValueError("dt must be positive when steps is nonzero")
+        if operators is not None and tuple(operators):
+            raise NotImplementedError(
+                "multiscale operator execution is unavailable; run canonical "
+                "operator words explicitly on each scale graph"
+            )
 
-        results = {}
-
-        for step in range(steps):
+        for _ in range(steps_value):
             if self.parallel and self.max_workers != 1:
-                # Parallel evolution
-                results = self._evolve_parallel(dt, operators)
+                self._evolve_parallel()
             else:
-                # Sequential evolution
-                results = self._evolve_sequential(dt, operators)
+                self._evolve_sequential()
 
             # Compose local and cross-scale pressure before advancing EPI once.
             # The stored DeltaNFR is therefore the pressure used by the
             # canonical nodal-equation step.
             self._apply_cross_scale_coupling()
             for graph in self.networks_by_scale.values():
-                update_epi_via_nodal_equation(graph, dt=dt, method="euler")
+                update_epi_via_nodal_equation(graph, dt=dt_value, method="euler")
 
-        # Compute final metrics
-        total_coherence = self.compute_total_coherence()
-        cross_coupling = self._compute_cross_scale_synchrony()
-
+        # Per-scale and aggregate coherence are evaluated from the same final
+        # state, after cross-scale pressure and dEPI/dt have been materialized.
+        results = {
+            scale_name: {"coherence": self._scale_coherence(graph)}
+            for scale_name, graph in self.networks_by_scale.items()
+        }
         return EvolutionResult(
             scale_results=results,
-            total_coherence=total_coherence,
-            cross_scale_coupling=cross_coupling,
+            total_coherence=self.compute_total_coherence(),
+            cross_scale_coupling=self._compute_cross_scale_synchrony(),
         )
 
-    def _evolve_sequential(self, dt: float, operators: Sequence[str]) -> dict[str, Any]:
-        """Stage each scale's local pressure sequentially."""
-        results = {}
+    def _evolve_sequential(self) -> None:
+        """Stage each scale's registered local pressure sequentially."""
 
-        for scale_name, G in self.networks_by_scale.items():
-            # EPI advances only after the cross-scale term has been composed
-            # into the pressure channel.
-            for node in G.nodes():
-                phase = G.nodes[node]["phase"]
+        for graph in self.networks_by_scale.values():
+            self._stage_scale_pressure(graph)
 
-                # Compute neighbor phase difference contribution
-                neighbors = list(G.neighbors(node))
-                if neighbors:
-                    phase_diffs = [
-                        np.sin(phase - G.nodes[n]["phase"]) for n in neighbors
-                    ]
-                    dnfr = np.mean(phase_diffs)
-                else:
-                    dnfr = 0.0
+    def _evolve_parallel(self) -> None:
+        """Stage independent per-scale pressure fields concurrently."""
 
-                G.nodes[node]["delta_nfr"] = dnfr
-
-            results[scale_name] = {"coherence": self._scale_coherence(G)}
-
-        return results
-
-    def _evolve_parallel(self, dt: float, operators: Sequence[str]) -> dict[str, Any]:
-        """Evolve scales in parallel using ThreadPoolExecutor.
-
-        Note: ThreadPoolExecutor is used instead of ProcessPoolExecutor because:
-        1. NetworkX graphs are not easily picklable (required for multiprocessing)
-        2. The overhead of serializing/deserializing graphs would negate benefits
-        3. Thread-based execution may overlap I/O or native kernels that release the GIL
-
-        For CPU-intensive workloads on very large scales, consider using
-        ProcessPoolExecutor with custom serialization or shared memory.
-        """
-        results = {}
-
-        # Use ThreadPoolExecutor for GIL-safe parallel evolution
-        # (ProcessPoolExecutor would require pickling networkx graphs)
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-            futures = {
-                scale_name: executor.submit(
-                    self._evolve_single_scale, scale_name, dt, operators
-                )
+            futures = tuple(
+                executor.submit(self._evolve_single_scale, scale_name)
                 for scale_name in self.networks_by_scale
-            }
+            )
+            for future in futures:
+                future.result()
 
-            for scale_name, future in futures.items():
-                results[scale_name] = future.result()
+    def _evolve_single_scale(self, scale_name: str) -> None:
+        """Stage one scale's registered local pressure."""
 
-        return results
+        self._stage_scale_pressure(self.networks_by_scale[scale_name])
 
-    def _evolve_single_scale(
-        self, scale_name: str, dt: float, operators: Sequence[str]
-    ) -> dict[str, Any]:
-        """Stage one scale's local pressure (parallel helper)."""
-        G = self.networks_by_scale[scale_name]
+    @staticmethod
+    def _stage_scale_pressure(graph: TNFRGraph) -> None:
+        """Evaluate the graph's single registered ΔNFR realization."""
 
-        # Same pressure-staging logic as _evolve_sequential.
-        for node in G.nodes():
-            phase = G.nodes[node]["phase"]
-
-            neighbors = list(G.neighbors(node))
-            if neighbors:
-                phase_diffs = [np.sin(phase - G.nodes[n]["phase"]) for n in neighbors]
-                dnfr = np.mean(phase_diffs)
-            else:
-                dnfr = 0.0
-
-            G.nodes[node]["delta_nfr"] = dnfr
-
-        return {"coherence": self._scale_coherence(G)}
+        compute_pressure = graph.graph.get("compute_delta_nfr")
+        if not callable(compute_pressure):
+            raise RuntimeError("scale graph has no callable DeltaNFR hook")
+        compute_pressure(graph)
 
     def _apply_cross_scale_coupling(self) -> None:
         """Compose cross-scale contributions into stored nodal pressure.
@@ -410,44 +475,89 @@ class HierarchicalTNFRNetwork:
         independent of scale iteration order and exposes the full pressure used
         by the subsequent nodal-equation step.
         """
-        mean_pressure: dict[str, float] = {}
-        for scale_name, graph in self.networks_by_scale.items():
-            values = [
-                float(graph.nodes[node].get("delta_nfr", 0.0))
-                for node in graph.nodes()
-            ]
-            mean_pressure[scale_name] = float(np.mean(values)) if values else 0.0
+        mean_pressure = {
+            scale_name: _finite_signed_mean(
+                (
+                    get_attr(data, ALIAS_DNFR, 0.0, strict=True)
+                    for _, data in graph.nodes(data=True)
+                ),
+                name=f"{scale_name} pressure",
+            )
+            for scale_name, graph in self.networks_by_scale.items()
+        }
 
         proposals: dict[str, dict[NodeId, float]] = {}
         for target_scale, target_graph in self.networks_by_scale.items():
-            cross_contribution = 0.0
-            for source_scale in self.networks_by_scale:
-                if source_scale == target_scale:
-                    continue
-                coupling = self.cross_scale_couplings.get(
-                    (target_scale, source_scale), 0.0
-                )
-                if coupling > 0.0:
-                    cross_contribution += coupling * mean_pressure[source_scale]
-
+            contributions = [
+                self._cross_scale_coupling(target_scale, source_scale)
+                * mean_pressure[source_scale]
+                for source_scale in self.networks_by_scale
+                if source_scale != target_scale
+            ]
+            cross_contribution = self._finite_pressure_sum(
+                contributions,
+                name=f"{target_scale} cross-scale pressure",
+            )
             proposals[target_scale] = {
-                node: float(target_graph.nodes[node].get("delta_nfr", 0.0))
-                + cross_contribution
-                for node in target_graph.nodes()
+                node: self._finite_pressure_sum(
+                    (
+                        get_attr(data, ALIAS_DNFR, 0.0, strict=True),
+                        cross_contribution,
+                    ),
+                    name=f"{target_scale} node pressure",
+                )
+                for node, data in target_graph.nodes(data=True)
             }
 
         for scale_name, node_pressures in proposals.items():
-            graph = self.networks_by_scale[scale_name]
-            for node, pressure in node_pressures.items():
-                graph.nodes[node]["delta_nfr"] = pressure
+            self._commit_pressure_field(
+                self.networks_by_scale[scale_name], node_pressures
+            )
+
+    def _cross_scale_coupling(self, target_scale: str, source_scale: str) -> float:
+        """Read one finite coupling coefficient from the internal matrix."""
+
+        value = self.cross_scale_couplings.get((target_scale, source_scale), 0.0)
+        if isinstance(value, bool) or not isinstance(value, Real):
+            raise TypeError("cross-scale coupling must be a finite real scalar")
+        normalized = float(value)
+        if not math.isfinite(normalized):
+            raise ValueError("cross-scale coupling must be finite")
+        if not 0.0 <= normalized <= 1.0:
+            raise ValueError("cross-scale coupling must be in [0, 1]")
+        return normalized
+
+    @staticmethod
+    def _finite_pressure_sum(values: Iterable[float], *, name: str) -> float:
+        """Return a representable finite sum of finite pressure terms."""
+
+        normalized = tuple(
+            _finite_signed_mean((value,), name=name) for value in values
+        )
+        try:
+            result = math.fsum(normalized)
+        except OverflowError as exc:
+            raise ValueError(f"{name} exceeds the finite scalar range") from exc
+        if not math.isfinite(result):
+            raise ValueError(f"{name} exceeds the finite scalar range")
+        return result
+
+    @staticmethod
+    def _commit_pressure_field(
+        graph: TNFRGraph, pressures: dict[NodeId, float]
+    ) -> None:
+        """Commit one pressure field through alias and maximum-cache hooks."""
+
+        graph.graph.pop("_dnfrmax", None)
+        graph.graph.pop("_dnfrmax_node", None)
+        for node, pressure in pressures.items():
+            set_dnfr(graph, node, pressure)
 
     def _scale_coherence(self, G: TNFRGraph) -> float:
-        """Per-scale coherence via the canonical kernel C = 1/(1+mean|ΔNFR|)."""
-        from ..metrics.common import structural_coherence
+        """Return canonical per-scale C(t), including pressure and EPI rate."""
+        from ..metrics.common import compute_coherence
 
-        dnfr_values = [abs(G.nodes[n].get("delta_nfr", 0.0)) for n in G.nodes()]
-        mean_abs_dnfr = float(np.mean(dnfr_values)) if dnfr_values else 0.0
-        return structural_coherence(mean_abs_dnfr)
+        return float(compute_coherence(G))
 
     def _compute_cross_scale_synchrony(self) -> float:
         """Compute cross-scale phase synchronization."""

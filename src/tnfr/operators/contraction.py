@@ -43,6 +43,7 @@ class Contraction(Operator):
             node,
             state_before["vf"],
             state_before["epi"],
+            dnfr_before=state_before["dnfr"],
         )
 
 

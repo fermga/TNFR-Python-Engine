@@ -30,7 +30,15 @@ from .cayley import (
     cayley_spectrum,
 )
 from .dynamics import ContractiveDynamicsEngine, MathematicalDynamicsEngine
-from .epi import BEPIElement, CoherenceEvaluation, evaluate_coherence_transform
+from .epi import (
+    BEPIElement,
+    COMPOSITE_EPI_REGULARITY_KIND,
+    COMPOSITE_EPI_REGULARITY_PROVENANCE,
+    CoherenceEvaluation,
+    CompositeEPIRegularityEvaluation,
+    evaluate_coherence_transform,
+    evaluate_composite_epi_regularity_transform,
+)
 from .generators import build_delta_nfr, build_lindblad_delta_nfr
 from .liouville import (
     compute_liouvillian_spectrum,
@@ -38,7 +46,7 @@ from .liouville import (
     get_slow_relaxation_mode,
     store_liouvillian_spectrum,
 )
-from .metrics import dcoh
+from .metrics import dcoh, spectral_weighted_angle
 from .number_theory import (
     ArithmeticStructuralTerms,
     ArithmeticTNFRFormalism,
@@ -54,22 +62,31 @@ from .number_theory import (
     unit_power_residue_set,
     unitary_residue_set,
 )
-from .operators import CoherenceOperator, FrequencyOperator
-from .operators_factory import make_coherence_operator, make_frequency_operator
+from .operators import CoherenceOperator, FrequencyOperator, SpectralExpectationOperator
+from .operators_factory import (
+    make_coherence_operator,
+    make_frequency_operator,
+    make_spectral_expectation_operator,
+)
 from .projection import BasicStateProjector, StateProjector
 from .runtime import (
     coherence,
     coherence_expectation,
     frequency_expectation,
     frequency_positive,
+    meets_spectral_expectation_threshold,
     normalized,
+    spectral_operator_expectation,
     stable_unitary,
 )
 from .spaces import BanachSpaceEPI, HilbertSpace
 from .transforms import (
     CoherenceMonotonicityReport,
     CoherenceViolation,
+    CompositeEPIRegularityTrendReport,
     IsometryFactory,
+    RegularityTrendViolation,
+    assess_composite_epi_regularity_trend,
     build_isometry_factory,
     ensure_coherence_monotonicity,
     validate_norm_preservation,
@@ -139,9 +156,15 @@ __all__ = [
     "HilbertSpace",
     "BanachSpaceEPI",
     "BEPIElement",
+    "COMPOSITE_EPI_REGULARITY_KIND",
+    "COMPOSITE_EPI_REGULARITY_PROVENANCE",
+    "CompositeEPIRegularityEvaluation",
     "CoherenceEvaluation",
     "CoherenceOperator",
+    "SpectralExpectationOperator",
     "ContractiveDynamicsEngine",
+    "CompositeEPIRegularityTrendReport",
+    "RegularityTrendViolation",
     "CoherenceMonotonicityReport",
     "CoherenceViolation",
     "FrequencyOperator",
@@ -153,20 +176,26 @@ __all__ = [
     "get_slow_relaxation_mode",
     "store_liouvillian_spectrum",
     "make_coherence_operator",
+    "make_spectral_expectation_operator",
     "make_frequency_operator",
     "IsometryFactory",
     "build_isometry_factory",
     "validate_norm_preservation",
+    "assess_composite_epi_regularity_trend",
+    "evaluate_composite_epi_regularity_transform",
     "ensure_coherence_monotonicity",
     "evaluate_coherence_transform",
     "StateProjector",
     "BasicStateProjector",
     "normalized",
     "coherence",
+    "meets_spectral_expectation_threshold",
     "frequency_positive",
     "stable_unitary",
     "dcoh",
+    "spectral_weighted_angle",
     "coherence_expectation",
+    "spectral_operator_expectation",
     "frequency_expectation",
     "available_backends",
     "get_backend",

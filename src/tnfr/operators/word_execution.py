@@ -1,20 +1,26 @@
 """Shared execution of canonical operator words across a network.
 
-The executor owns the operator-major stage schedule used by SDK and physics
-probes. Reception and Resonance use the two-phase Jacobi transaction from
-network_stage; other operators retain the explicit operator-major
-Gauss-Seidel schedule until an equivalent all-target proposal exists.
+The executor owns the network-stage schedule used by SDK and physics probes.
+When grammar retains the requested glyph, all thirteen canonical operators use
+immutable all-target proposals. Recursivity commits only its deduplicated
+node-level advisory; explicit delayed EPI mixing remains a separate network
+operation. Grammar replacements retain the explicit operator-major
+Gauss--Seidel schedule inside a failure-atomic transaction.
 """
 
 from __future__ import annotations
 
 import warnings
+from collections.abc import Sequence
 from operator import index as integer_index
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 import networkx as nx
 
 from ..errors import TNFRValueError
+
+if TYPE_CHECKING:
+    from .network_stage import NetworkStageResult
 
 
 def _validate_cycles(cycles: Any) -> int:
@@ -111,6 +117,58 @@ def preflight_network_mutation_sequence(
             ) from exc
 
 
+def execute_network_operator_stage(
+    graph: nx.Graph,
+    operator: Any,
+    targets: Sequence[Any],
+    *,
+    sequence_context: Any = None,
+    compute_delta_nfr: Any = None,
+) -> "NetworkStageResult":
+    """Dispatch one fixed-target stage through the canonical network route.
+
+    Callers own whole-word grammar validation and supply its per-step context.
+    This helper centralizes stage selection only; every routed implementation
+    retains its own preconditions, immutable proposal boundary and rollback.
+    Recursivity remains advisory-only here. Delayed EPI mixing is exposed
+    separately by apply_network_remesh.
+    """
+
+    from .network_stage import (
+        POINTWISE_TWO_PHASE_GLYPHS,
+        execute_coupling_stage,
+        execute_dissonance_stage,
+        execute_neighbor_stage,
+        execute_operator_major_stage,
+        execute_pointwise_stage,
+        execute_recursivity_stage,
+        execute_self_organization_stage,
+    )
+
+    kwargs = {
+        "sequence_context": sequence_context,
+        "compute_delta_nfr": compute_delta_nfr,
+    }
+    if operator.name in {"reception", "resonance"}:
+        return execute_neighbor_stage(graph, operator, targets, **kwargs)
+    if operator.name == "coupling":
+        return execute_coupling_stage(graph, operator, targets, **kwargs)
+    if operator.name == "dissonance":
+        return execute_dissonance_stage(graph, operator, targets, **kwargs)
+    if operator.name == "self_organization":
+        return execute_self_organization_stage(
+            graph,
+            operator,
+            targets,
+            **kwargs,
+        )
+    if operator.name == "recursivity":
+        return execute_recursivity_stage(graph, operator, targets, **kwargs)
+    if operator.glyph in POINTWISE_TWO_PHASE_GLYPHS:
+        return execute_pointwise_stage(graph, operator, targets, **kwargs)
+    return execute_operator_major_stage(graph, operator, targets, **kwargs)
+
+
 def run_network_sequence(
     graph: nx.Graph,
     operator_names: list[str],
@@ -123,9 +181,14 @@ def run_network_sequence(
 ) -> None:
     """Evolve all nodes with the declared operator-major stage schedule.
 
-    Reception and Resonance read one immutable stage snapshot, propose every
-    target, validate every proposal, and commit the stage atomically. Other
-    operators currently commit in graph iteration order inside their stage.
+    When every target retains the requested glyph, all thirteen operators read one
+    immutable stage snapshot, propose every target, validate every proposal,
+    and commit the stage atomically. EN, IL and RA read neighbours; UM merges
+    phase/topology proposals; OZ reduces local and propagated pressure; THOL
+    merges child support and hierarchy; AL, SHA, VAL, NUL, ZHIR and NAV use
+    pointwise proposals; and REMESH deduplicates its graph advisory. Grammar
+    replacements update in graph iteration order inside a stage-level rollback
+    boundary.
     Complete-word grammar validation is optional for compatibility; live
     operator preconditions remain active in both modes.
     ``cycles`` must be a non-boolean nonnegative integer; zero validates the
@@ -134,7 +197,6 @@ def run_network_sequence(
 
     from ..validation import validate_sequence
     from .grammar_execution import ValidatedSequence
-    from .network_stage import execute_neighbor_stage, record_gauss_seidel_stage
     from .registry import get_operator_class
 
     cycles = _validate_cycles(cycles)
@@ -162,33 +224,19 @@ def run_network_sequence(
                 sequence_step = (
                     None if execution_word is None else execution_word.step(index)
                 )
-                if operator.name in {"reception", "resonance"}:
-                    execute_neighbor_stage(
-                        graph,
-                        operator,
-                        nodes,
-                        sequence_context=sequence_step,
-                        compute_delta_nfr=compute,
-                    )
-                else:
-                    for node in nodes:
-                        graph._last_operator_applied = operator.name
-                        if sequence_step is None:
-                            operator(graph, node)
-                        else:
-                            operator(
-                                graph,
-                                node,
-                                sequence_context=sequence_step,
-                            )
-                    if callable(compute):
-                        compute(graph)
-                    record_gauss_seidel_stage(graph, operator, len(nodes))
+                execute_network_operator_stage(
+                    graph,
+                    operator,
+                    nodes,
+                    sequence_context=sequence_step,
+                    compute_delta_nfr=compute,
+                )
                 if on_step is not None:
                     on_step(operator.name)
 
 
 __all__ = [
+    "execute_network_operator_stage",
     "preflight_network_mutation_sequence",
     "run_network_sequence",
 ]

@@ -1,19 +1,27 @@
-"""Runtime helpers capturing TNFR spectral performance metrics."""
+"""Runtime helpers for auxiliary spectral observables."""
 
 from __future__ import annotations
 
+import math
+from numbers import Real
 from typing import Any, Sequence
 
 from ..config import get_flags
 from ..errors import TNFRValueError
 from ..utils import get_logger
 from .backend import ensure_array, ensure_numpy, get_backend
-from .operators import CoherenceOperator, FrequencyOperator
+from .operators import (
+    CoherenceOperator,
+    FrequencyOperator,
+    SpectralExpectationOperator,
+)
 from .spaces import HilbertSpace
 from .unified_numerical import np
 
 __all__ = [
     "normalized",
+    "spectral_operator_expectation",
+    "meets_spectral_expectation_threshold",
     "coherence",
     "frequency_positive",
     "stable_unitary",
@@ -79,6 +87,55 @@ def normalized(
     return passed, float(norm)
 
 
+def spectral_operator_expectation(
+    state: Sequence[complex] | np.ndarray,
+    operator: SpectralExpectationOperator,
+    *,
+    normalise: bool = True,
+    atol: float = 1e-9,
+) -> float:
+    r"""Return the auxiliary Hermitian expectation ``<psi|A|psi>``.
+
+    The result is unbounded and does not represent canonical structural
+    ``C(t)``.  This helper never writes ``history['C_steps']``.
+    """
+
+    return float(operator.expectation(state, normalise=normalise, atol=atol))
+
+
+def meets_spectral_expectation_threshold(
+    state: Sequence[complex] | np.ndarray,
+    operator: SpectralExpectationOperator,
+    threshold: float,
+    *,
+    normalise: bool = True,
+    atol: float = 1e-9,
+    label: str = "state",
+) -> tuple[bool, float]:
+    """Compare an auxiliary spectral expectation with a finite real floor."""
+
+    if isinstance(threshold, bool) or not isinstance(threshold, Real):
+        raise TNFRValueError("Spectral expectation threshold must be a real scalar.")
+    floor = float(threshold)
+    if not math.isfinite(floor):
+        raise TNFRValueError("Spectral expectation threshold must be finite.")
+    value = spectral_operator_expectation(
+        state, operator, normalise=normalise, atol=atol
+    )
+    passed = bool(value + atol >= floor)
+    _maybe_log(
+        "spectral_operator_expectation",
+        {
+            "label": label,
+            "value": value,
+            "threshold": floor,
+            "passed": passed,
+            "canonical_coherence_certified": False,
+        },
+    )
+    return passed, value
+
+
 def coherence_expectation(
     state: Sequence[complex] | np.ndarray,
     operator: CoherenceOperator,
@@ -86,9 +143,11 @@ def coherence_expectation(
     normalise: bool = True,
     atol: float = 1e-9,
 ) -> float:
-    """Return the coherence expectation value for ``state``."""
+    """Compatibility alias for :func:`spectral_operator_expectation`."""
 
-    return float(operator.expectation(state, normalise=normalise, atol=atol))
+    return spectral_operator_expectation(
+        state, operator, normalise=normalise, atol=atol
+    )
 
 
 def coherence(
@@ -100,15 +159,16 @@ def coherence(
     atol: float = 1e-9,
     label: str = "state",
 ) -> tuple[bool, float]:
-    """Evaluate coherence expectation against ``threshold``."""
+    """Compatibility alias for an auxiliary spectral-threshold comparison."""
 
-    value = coherence_expectation(state, operator, normalise=normalise, atol=atol)
-    passed = bool(value + atol >= threshold)
-    _maybe_log(
-        "coherence",
-        {"label": label, "value": value, "threshold": threshold, "passed": passed},
+    return meets_spectral_expectation_threshold(
+        state,
+        operator,
+        threshold,
+        normalise=normalise,
+        atol=atol,
+        label=label,
     )
-    return passed, value
 
 
 def frequency_expectation(
@@ -153,7 +213,7 @@ def frequency_positive(
 
 def stable_unitary(
     state: Sequence[complex] | np.ndarray,
-    operator: CoherenceOperator,
+    operator: SpectralExpectationOperator,
     hilbert_space: HilbertSpace,
     *,
     normalise: bool = True,

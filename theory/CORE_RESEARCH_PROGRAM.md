@@ -7,22 +7,22 @@ operator contracts remain authoritative.
 
 | Line | Question | Current status |
 | --- | --- | --- |
-| S1 | Stability for nontrivial dynamics | Fixed and bounded time-varying EPI diffusion derived; exact-common-metric switching plus declared affine EPI resets have a conservative hybrid gain budget; Reception and Resonance provide the first runtime realization boundaries. SDK EN/RA and GPU RA all-target stages now use a shared immutable snapshot and atomic two-phase Jacobi commit; stability of clipped, repeated and mixed-operator words remains open |
-| S2 | A TNFR Lyapunov functional | Exact weighted fixed-capacity and common time-varying functionals derived; an affine reset has finite global gain exactly when it preserves the consensus subspace, with a rational Frobenius bound for composition; uniform fixed points and weighted-mean preservation are independent requirements; Reception and Resonance expose weighted-mean drift separately, and RA generally changes the post-flow metric when it amplifies local capacity; full tetrad/nonlinear-operator functional open |
+| S1 | Stability for nontrivial dynamics | Fixed and bounded time-varying EPI diffusion derived; exact-common-metric switching plus declared affine EPI resets have a conservative hybrid gain budget. All thirteen runtime glyph stages use immutable all-target proposals. EN/RA have repeated-stage certificates and AL/SHA/VAL/NUL/ZHIR/NAV have pointwise realization/gain certificates. The delayed REMESH map has an exact-support atomic one-step contract. `execute_event_remesh_cycle` now composes one event schedule, one explicit pre-REMESH history sample and that map under a frozen metric while separating consensus drift, capacity and pressure refresh. Solver accuracy, mixed-word gain and history-updated repetition remain open |
+| S2 | A TNFR Lyapunov functional | Exact weighted fixed-capacity and common time-varying functionals derived; an affine reset has finite global gain exactly when it preserves the consensus subspace. Composition uses a rational quotient-gain upper bound for scalar and small maps with a rational Frobenius fallback; uniform fixed points and weighted-mean preservation remain independent. EN/RA expose weighted-mean drift separately, and RA may change the post-flow metric; a full tetrad/nonlinear-operator functional remains open |
 | S3 | Tetrad observability and minimality | Tetrad-only prediction disproved; full `Phi_s` plus one zero-mode scalar conditionally reconstructs EPI; universal rank/minimality open |
 | S4 | Spectrum of heterogeneous `nu_f` | Generalized fixed-capacity gap, time-varying bound and minimum common-metric switching-family gap derived. The spectral-coordinate executor now evaluates canonical `-L_rw EPI` in node space and the heterogeneous `nu_f` product pointwise; directed case open |
-| S5 | Spectral adaptive grammar | Graph-specific Euler relaxation diagnostic derived; ZHIR now separates timestamped physical secants, instantaneous nodal prediction and three-sample acceleration, but an operator-event duration contract and adaptive policy remain open |
+| S5 | Spectral adaptive grammar | Exact operator-event schedules separate zero-duration jumps from declared flows. `execute_operator_event_schedule` binds them to the configured nodal integrator and atomic glyph stages; the event/REMESH cycle adds one explicit pre-map delayed-history sample, a post-map physical-time endpoint and optional pressure refresh. Collapsed or nonadditive binary64 intervals are rejected, and event-local ZHIR evidence never treats jumps as secants. Solver-refinement equivalence and adaptive U2/U4 remain open |
 | S6 | Coherence phase transitions | Signed-global classifier corrected and a balanced static-ensemble finite-size protocol added; an actual transition and universality remain open |
 | S7 | Dynamic nodal-topology transitions | Descriptive inverse-square-kernel transition certificates align labels with tetrad, C and Si endpoint deltas; precursor prediction open |
-| S8 | Coarse-graining and closure | Exact reversible partition condition derived for pure EPI; phase, topology and nonlinear closure open |
-| S9 | Renormalization flow of operators | Pure-EPI diffusion stays in-family under certified exact intertwining quotients; generic linear identities and sampled nonlinear defects are measurable; 13-operator flow open |
+| S8 | Coarse-graining and closure | Exact reversible closure is derived for pure EPI and the fixed-branch pairwise phase realization. The canonical phasor channel closes on a strongly restricted lifted block-constant subspace, while a `K3,3` state with the same macro phase and different projected rates refutes global projected autonomy. Branch crossing, zero resultants and changing support remain open |
+| S9 | Renormalization flow of operators | Pure-EPI diffusion and the fixed-branch pairwise phase realization stay in-family under certified exact intertwining quotients. The canonical phasor counterexample and generic matrix/callable protocol expose unresolved fibers; nonlinear catalog-wide flow remains open |
 | S10 | Completeness of the 13 operators | **OPEN**: contract snapshots and catalog-independent quotient machinery are groundwork; the admissible transformation space and generation theorem are undefined |
-| S11 | Geometry of coherence level sets | Local constitutive levels are L1 diamonds; an exact scaled product metric now covers one fixed topology/label class; cross-topology strata open |
+| S11 | Geometry of coherence level sets | Local levels are L1 diamonds; for fixed `N`, the complete ambient network level is an exactly stratified `2N`-dimensional cross-polytope, and its fixed-capacity nodal-equation slice is an `N`-dimensional weighted cross-polytope. Variable-capacity/changing-support strata and temporal dynamics remain open |
 | S12 | Dissipative-symplectic bridge | Exact decoupled metriplectic product derived, with stored-pressure consistency reported separately; nonzero physical cross-coupling open |
 | S13 | Non-normality and dissonance bursts | Logarithmic-norm sign exactly characterizes fixed linear pressure growth; numerical signs within backward error abstain; finite-family prediction measured and canonical directed U2 metric open |
 | S14 | Structural information geometry | A relabeling-invariant structural-state metric is exact within a declared finite simple-graph topology/label class; cross-topology, nesting and history geometry open |
-| S15 | Inverse identification from telemetry | Known-target, node-level one-step signatures separate all 13 operators on declared probes and have a finite-prototype noise margin; ZHIR adds a replayable local prediction/observation residual with tri-state abstention. The EN/RA stage repair removes their insertion-order and partial-commit confound, while target localization, aggregate inversion, mixed schedules, unseen states and complete words remain open |
-| S16 | Observable, stable and scale-persistent NFR structure | Endpoint and sampled-path certificates compose the restricted pure-EPI hypotheses, stable forward-Euler updates and an exact common switching metric. SDK EN/RA and GPU RA now have atomic all-target Jacobi stages; the other operator stages remain operator-major Gauss-Seidel, and inter-sample, phase, nonlinear, history and changing-support dynamics remain open |
+| S15 | Inverse identification from telemetry | Known-target, node-level one-step signatures separate all 13 operators on declared probes and have a finite-prototype noise margin; ZHIR adds a replayable local prediction/observation residual with tri-state abstention. AL/EN/IL/OZ/UM/RA/SHA/VAL/NUL/THOL/ZHIR/NAV/REMESH now remove their contracted structural target-order and partial-commit confounds before pressure refresh, while ordered lifecycle and telemetry retain target order; target localization, aggregate inversion, mixed schedules, unseen states and complete words remain open |
+| S16 | Observable, stable and scale-persistent NFR structure | Endpoint and sampled-path certificates compose restricted pure-EPI hypotheses, stable forward-Euler updates and a common switching metric. All thirteen glyphs have atomic all-target Jacobi stages. One atomic cycle now executes declared flows/jumps, samples canonical delayed history and applies REMESH under a frozen metric with separate drift/capacity/refresh observations. Inter-sample refinement, mixed nonlinear gain, history-updated repetition and changing node support remain open |
 
 ## Implementation map
 
@@ -31,17 +31,17 @@ next to the subsystem they certify.
 
 | Lines | Executable certificate or diagnostic | Primary tests |
 | --- | --- | --- |
-| S1, S2, S4, S5 | [`structural_diffusion.py`](../src/tnfr/physics/structural_diffusion.py), [`hybrid_operator_stability.py`](../src/tnfr/physics/hybrid_operator_stability.py), [`reception_realization.py`](../src/tnfr/physics/reception_realization.py), [`resonance_realization.py`](../src/tnfr/physics/resonance_realization.py), [`fft_engine.py`](../src/tnfr/dynamics/fft_engine.py) | [`test_heterogeneous_diffusion_stability.py`](../tests/physics/test_heterogeneous_diffusion_stability.py), [`test_hybrid_operator_stability.py`](../tests/physics/test_hybrid_operator_stability.py), [`test_reception_realization.py`](../tests/physics/test_reception_realization.py), [`test_resonance_realization.py`](../tests/physics/test_resonance_realization.py), [`test_fft_nodal_product.py`](../tests/test_fft_nodal_product.py) |
+| S1, S2, S4, S5 | [`structural_diffusion.py`](../src/tnfr/physics/structural_diffusion.py), [`hybrid_operator_stability.py`](../src/tnfr/physics/hybrid_operator_stability.py), [`pointwise_stage_stability.py`](../src/tnfr/physics/pointwise_stage_stability.py), [`event_duration.py`](../src/tnfr/physics/event_duration.py), [`event_timing.py`](../src/tnfr/operators/event_timing.py), [`event_runtime.py`](../src/tnfr/operators/event_runtime.py), [`event_remesh_runtime.py`](../src/tnfr/operators/event_remesh_runtime.py), [`_delayed_remesh_kernel.py`](../src/tnfr/operators/_delayed_remesh_kernel.py), [`network_stage_stability.py`](../src/tnfr/physics/network_stage_stability.py) | [`test_heterogeneous_diffusion_stability.py`](../tests/physics/test_heterogeneous_diffusion_stability.py), [`test_hybrid_operator_stability.py`](../tests/physics/test_hybrid_operator_stability.py), [`test_pointwise_stage_stability.py`](../tests/physics/test_pointwise_stage_stability.py), [`test_event_duration_relaxation.py`](../tests/physics/test_event_duration_relaxation.py), [`test_operator_event_timing.py`](../tests/operators/test_operator_event_timing.py), [`test_operator_event_runtime.py`](../tests/operators/test_operator_event_runtime.py), [`test_event_remesh_runtime.py`](../tests/operators/test_event_remesh_runtime.py), [`test_delayed_remesh_contract.py`](../tests/operators/test_delayed_remesh_contract.py), [`test_network_stage_stability.py`](../tests/physics/test_network_stage_stability.py) |
 | S3 | [`observability.py`](../src/tnfr/physics/observability.py) | [`test_tetrad_observability.py`](../tests/physics/test_tetrad_observability.py) |
 | S6 | [`phase_transition.py`](../src/tnfr/physics/phase_transition.py), [`phase_scaling.py`](../src/tnfr/physics/phase_scaling.py) | [`test_phase_transition.py`](../tests/physics/test_phase_transition.py), [`test_phase_scaling.py`](../tests/physics/test_phase_scaling.py) |
 | S7 | [`topology_transitions.py`](../src/tnfr/physics/topology_transitions.py) | [`test_topology_transitions.py`](../tests/physics/test_topology_transitions.py) |
-| S8, S9 | [`structural_morphism.py`](../src/tnfr/physics/structural_morphism.py), [`operator_quotient.py`](../src/tnfr/physics/operator_quotient.py) | [`test_epi_coarse_graining.py`](../tests/physics/test_epi_coarse_graining.py), [`test_operator_quotient.py`](../tests/physics/test_operator_quotient.py) |
-| S10 | [`operator_contracts.py`](../src/tnfr/operators/operator_contracts.py), [`operator_quotient.py`](../src/tnfr/physics/operator_quotient.py) | [`test_operator_contracts.py`](../tests/operators/test_operator_contracts.py), [`test_operator_quotient.py`](../tests/physics/test_operator_quotient.py) |
+| S8, S9 | [`structural_morphism.py`](../src/tnfr/physics/structural_morphism.py), [`operator_quotient.py`](../src/tnfr/physics/operator_quotient.py), [`phase_quotient.py`](../src/tnfr/physics/phase_quotient.py) | [`test_epi_coarse_graining.py`](../tests/physics/test_epi_coarse_graining.py), [`test_operator_quotient.py`](../tests/physics/test_operator_quotient.py), [`test_phase_quotient.py`](../tests/physics/test_phase_quotient.py) |
+| S10 | [`operator_contracts.py`](../src/tnfr/operators/operator_contracts.py), [`stage_contracts.py`](../src/tnfr/operators/stage_contracts.py), [`_coupling_stage_kernel.py`](../src/tnfr/operators/_coupling_stage_kernel.py), [`_dissonance_stage_kernel.py`](../src/tnfr/operators/_dissonance_stage_kernel.py), [`al_sha_stage_proposals.py`](../src/tnfr/operators/al_sha_stage_proposals.py), [`_scale_operator_kernel.py`](../src/tnfr/operators/_scale_operator_kernel.py), [`_mutation_stage_kernel.py`](../src/tnfr/operators/_mutation_stage_kernel.py), [`transition.py`](../src/tnfr/operators/transition.py), [`jitter.py`](../src/tnfr/operators/jitter.py), [`operator_quotient.py`](../src/tnfr/physics/operator_quotient.py) | [`test_operator_contracts.py`](../tests/operators/test_operator_contracts.py), [`test_stage_contracts.py`](../tests/operators/test_stage_contracts.py), [`test_coupling_jacobi_stage.py`](../tests/operators/test_coupling_jacobi_stage.py), [`test_dissonance_jacobi_stage.py`](../tests/operators/test_dissonance_jacobi_stage.py), [`test_al_sha_stage_proposals.py`](../tests/operators/test_al_sha_stage_proposals.py), [`test_scale_operator_kernel.py`](../tests/operators/test_scale_operator_kernel.py), [`test_mutation_stage_kernel.py`](../tests/operators/test_mutation_stage_kernel.py), [`test_nav_pointwise_stage.py`](../tests/operators/test_nav_pointwise_stage.py), [`test_jitter_proposal.py`](../tests/operators/test_jitter_proposal.py), [`test_operator_quotient.py`](../tests/physics/test_operator_quotient.py) |
 | S11, S14 | [`coherence_geometry.py`](../src/tnfr/physics/coherence_geometry.py), [`structural_state_distance.py`](../src/tnfr/physics/structural_state_distance.py) | [`test_coherence_geometry.py`](../tests/physics/test_coherence_geometry.py), [`test_structural_state_distance.py`](../tests/physics/test_structural_state_distance.py) |
 | S12 | [`metriplectic.py`](../src/tnfr/physics/metriplectic.py) | [`test_metriplectic_product.py`](../tests/physics/test_metriplectic_product.py) |
 | S13 | [`nonnormal_prediction.py`](../src/tnfr/physics/nonnormal_prediction.py) | [`test_nonnormal_prediction.py`](../tests/physics/test_nonnormal_prediction.py) |
 | S15 | [`temporal_identifiability.py`](../src/tnfr/physics/temporal_identifiability.py), [`mutation_trigger.py`](../src/tnfr/physics/mutation_trigger.py) | [`test_temporal_identifiability.py`](../tests/physics/test_temporal_identifiability.py), [`test_mutation_trigger.py`](../tests/physics/test_mutation_trigger.py) |
-| S16 | [`core_research_integration.py`](../src/tnfr/physics/core_research_integration.py) composes frozen endpoints; [`core_research_trajectory.py`](../src/tnfr/physics/core_research_trajectory.py) adds the sampled temporal boundary; [`network_stage.py`](../src/tnfr/operators/network_stage.py) supplies atomic two-phase EN/RA stages and labels the remaining schedule | [`test_core_research_integration.py`](../tests/physics/test_core_research_integration.py), [`test_core_research_trajectory.py`](../tests/physics/test_core_research_trajectory.py), [`test_network_stage_schedule_diagnostic.py`](../tests/sdk/test_network_stage_schedule_diagnostic.py) |
+| S16 | [`core_research_integration.py`](../src/tnfr/physics/core_research_integration.py), [`core_research_trajectory.py`](../src/tnfr/physics/core_research_trajectory.py), [`network_stage.py`](../src/tnfr/operators/network_stage.py), [`event_runtime.py`](../src/tnfr/operators/event_runtime.py), [`event_remesh_runtime.py`](../src/tnfr/operators/event_remesh_runtime.py), [`remesh.py`](../src/tnfr/operators/remesh.py), [`stage_contracts.py`](../src/tnfr/operators/stage_contracts.py) | [`test_core_research_integration.py`](../tests/physics/test_core_research_integration.py), [`test_core_research_trajectory.py`](../tests/physics/test_core_research_trajectory.py), [`test_operator_event_runtime.py`](../tests/operators/test_operator_event_runtime.py), [`test_event_remesh_runtime.py`](../tests/operators/test_event_remesh_runtime.py), [`test_delayed_remesh_contract.py`](../tests/operators/test_delayed_remesh_contract.py), [`test_operator_major_stage_atomicity.py`](../tests/operators/test_operator_major_stage_atomicity.py), [`test_stage_contracts.py`](../tests/operators/test_stage_contracts.py) |
 
 ## Current restricted results
 
@@ -72,13 +72,76 @@ Diffusion uses edge `weight` as conductance; potential geometry uses an explicit
 `length` when provided and otherwise preserves `weight` as a compatibility
 fallback. Studies with distinct physical channels must declare both.
 
-Line S5 now has a non-normative spectral diagnostic. It computes the exact
-explicit-Euler modal factor and step count for frozen symmetric EPI diffusion,
-  including heterogeneous capacity and the stability interval
-  `0<dt<2/lambda_max`.
-The 21-node path requires 231 steps at canonical `dt` while `K4` requires 2;
-U4 remains a three-position grammar policy. An adaptive grammar cannot identify
-these clocks until an operator-position-to-time contract is defined.
+Line S5 now separates three clocks. The existing non-normative spectral
+diagnostic computes the explicit-Euler modal factor and step count for frozen
+symmetric EPI diffusion, including heterogeneous capacity and the stability
+interval `0<dt<2/lambda_max`. The 21-node path requires 231 steps at canonical
+`dt` while `K4` requires 2; U4 remains a three-position grammar policy.
+
+The finite operator-event contract represents each canonical operator as an
+instantaneous zero-duration jump. A schedule with `m` events therefore has
+exactly `m+1` declared nodal-flow intervals. Materialized binary64 durations
+are retained as exact `Fraction` values; their exact prefix sums define the
+authoritative offsets and physical ordering. Absolute binary64 timestamps are
+representations only. They can coincide or have a subtraction different from
+the declared duration, so they neither reconstruct interval duration nor feed
+`epi_time_history`. Coincident jumps belong to the hybrid event log and retain
+the stable `event_index` order.
+
+For one declared flow interval,
+[`diagnose_continuous_relaxation_duration`](../src/tnfr/physics/event_duration.py)
+uses the frozen connected symmetric positive-capacity pure-EPI theorem. It
+forms a rational upper bound on `log(1/target)` and decides sufficiency only by
+the rational comparison `rate_lower * duration >= log_upper`. The displayed
+required duration is rounded upward and the reported decay factor is an upper
+bound. Libm duration/factor values and the source eigensolver rate remain
+explicitly non-proof estimates; an invalid spectral estimate is discarded
+without blocking an intact exact proof. The reproducible
+[`165_operator_event_relaxation.py`](../examples/02_physics_regimes/165_operator_event_relaxation.py)
+exposes timestamp subtraction loss and coincident-event ordering.
+
+The schedule builder and duration diagnostic remain read-only. The separate
+`execute_operator_event_schedule` runtime now binds a valid finite schedule to
+the graph's configured nodal integrator and the same canonical all-target stage
+dispatcher used by ordinary words. It freezes the initial target tuple, checks
+the live binary64 clock at every boundary, and rejects positive intervals for
+which exact-prefix endpoints collapse or direct binary64 addition misses the
+scheduled endpoint. A whole-schedule graph transaction covers flows, jumps,
+histories, runtime caches and `hybrid_event_log`; effects already emitted by
+external callbacks or resources are outside that rollback.
+
+The executor records a boundary on both sides of every positive flow and after
+each jump. A same-time EPI jump restarts the local timestamped history, so it
+cannot become a finite secant. Every ZHIR event needs a positive representable
+immediately preceding flow; the event runtime then evaluates its fresh
+two-sample evidence at the jump. The executor does not certify integrator
+accuracy, equivalent-step refinement, jump gains or an adaptive U2/U4 policy.
+
+`execute_event_remesh_cycle` supplies the first operational mixed boundary. One
+outer graph transaction executes the schedule, binds its immutable result to the
+live endpoint clock and committed event log, verifies frozen ordered node support
+and incoming delayed history, appends the endpoint through the ordinary
+pre-REMESH `_epi_hist` helper, and invokes the delayed map. Edges may change in
+the schedule, while the EPI-only map and its ON_REMESH observers preserve that
+post-schedule topology and all non-EPI channels. The pressure hook, phase and
+materialized deterministic REMESH controls remain fixed. Shared validation
+covers positive-integer delays, materializable deque capacity, alpha source,
+bounds and clipping policy before positive flow.
+
+The uniform or supplied positive diagonal metric is materialized once and reused
+for all cycle-level weighted EPI observations and delayed-map evidence; legacy
+REMESH metadata retains unweighted means. Exact weighted means, drifts and
+disagreements remain authoritative when an optional binary64 display is `None`.
+Capacity vectors, completed schedule callbacks and an optional post-REMESH
+pressure refresh remain separate. The latter runs only after an applied map and
+counts only after returning. Delay `tau` reads `_epi_hist[-(tau + 1)]`; no second
+delayed-history sample follows the jump. The applied jump instead records its
+same-time right endpoint in `epi_time_history`, preventing a later Mutation gate
+from treating it as flow. This establishes one-cycle graph-state atomicity and a
+reproducible evolving-history convention. It does not certify the configured
+integrator, a common mixed gain, or repeated stability after the next schedule
+changes state, capacity, pressure or history. External effects emitted by
+integrators or callbacks remain outside rollback.
 
 ZHIR now supplies a narrower event-local temporal boundary shared by S5 and
 S15. The nodal equation predicts the instantaneous rate
@@ -93,9 +156,10 @@ proof that the nodal law failed between samples. Legacy histories retain a
 declared unit-operator-step basis and therefore cannot produce that physical
 residual. Missing, malformed or stale evidence yields abstention rather than a
 fabricated non-crossing. This makes one operator trigger replayable and gives
-inverse identification an additional temporal channel; it still does not
-define how long an operator position lasts or derive the three-position U4b
-window from graph relaxation.
+inverse identification an additional temporal channel. The finite event
+runtime binds fresh evidence to an executed jump when a positive representable
+pre-flow exists; it still does not derive the three-position U4b window from
+graph relaxation or prove invariance under equivalent solver refinement.
 
 The next restricted extension admits topology switching. A finite family of
 connected symmetric graphs has a common quadratic Lyapunov function when all
@@ -112,10 +176,12 @@ into dynamics. For a declared affine EPI reset `x+ = Ax+b` in the same positive
 metric, a finite global disagreement gain exists exactly when `A1` and `b` are
 uniform. Failure produces an explicit consensus input with zero incoming and
 positive outgoing disagreement energy. In the passing case the sharp gain is
-the induced norm of `QAQ`; the executable certificate uses a rational
-weighted-Frobenius upper bound computed exactly on the represented binary64
-coefficients so finite hybrid flow/reset words can be composed
-without trusting a rounded SVD estimate or a caller-declared multiplier. A
+the induced norm of `QAQ`; the executable certificate uses exact rational
+quotient reduction for scalar and small quotient maps and retains the rational
+weighted-Frobenius norm as a fallback for larger non-scalar maps. This removes
+the false `N-1` identity penalty while keeping every compositional factor above
+the sharp gain, without trusting a rounded SVD estimate or a caller-declared
+multiplier. A
 repeated positive-duration word contracts disagreement when its cumulative
 log-gain is smaller than the certified diffusion decay. Exact preservation of
 the weighted mean additionally fixes the limiting consensus to the initial
@@ -132,7 +198,8 @@ translation that separates disagreement decay from consensus drift, and the
 exact infinite-gain witness for a local offset.
 
 Reception (EN) and Resonance (RA) now supply the first two runtime realization
-bridges for this generic result. Their centralized kernel blends the target
+bridges for this generic result, locally and as complete all-target stages.
+Their centralized kernel blends the target
 with the **unweighted** arithmetic mean of runtime neighbours, even when the
 pure-EPI transport uses weighted conductance. On fixed connected undirected
 support, with scalar or uniform-real BEPI input, a convex mix, bounded values,
@@ -179,18 +246,73 @@ binary64 defect norm is a separate snapshot diagnostic. See
 [`reception_realization.py`](../src/tnfr/physics/reception_realization.py) and
 [`resonance_realization.py`](../src/tnfr/physics/resonance_realization.py).
 
-Lines S8 and S9 now have an exact pure-EPI scale result. The reversible
-partition average `R` closes the macro equation exactly iff it intertwines the
-micro and quotient generators. Exact quotients remain in the
-`diag(nu_f)L_rw` family; non-equitable partitions expose unresolved within-block
-modes. This is structural transport under U5, not an additional operator and
-not a proof that all 13 operators close.
+The all-target extension assembles every local row from the same stage-start
+snapshot and recomputes a finite repeated structural trace. Convex ideal-real
+mixing preserves any declared finite hard interval for arbitrary repetitions.
+Fixed-map promotion additionally requires fixed support; RA requires declared
+fixed U3 neighbour sets and a common sign/kind domain that remains admissible.
+The represented stage receives its own exact row-sum and rational quotient-gain
+tests. Runtime agreement, clipping interventions, consensus drift, RA capacity
+metric changes and atomic identity rejection remain separate outputs. The
+public runtime and certificate agree at every tested finite step, while degree-
+three averaging supplies a concrete case where the two-stage binary64 result is
+not exact represented matrix multiplication. No global binary64 runtime-affinity
+claim follows. See
+[`network_stage_stability.py`](../src/tnfr/physics/network_stage_stability.py).
 
-Lines S11 and S14 have a local exact result. Since
-`C=1/(1+|DeltaNFR|+|dEPI|)`, every finite non-equilibrium constitutive level is
-an L1 diamond with four nonsmooth vertices. Coherence therefore supplies an
-exact L1 distance to equilibrium but no preferred smooth global information
-metric.
+One certified all-target stage can now be composed directly with a strictly
+positive-duration fixed post-stage pure-EPI flow. The bridge reconstructs every
+available local affine-domain condition and validates node order, represented
+coefficients, exact row algebra, nested proof stamps and the post-stage metric
+before calling the generic hybrid composer. The original raw EPI payload is no
+longer present, so its scalar-embedding observation is carried from the local
+certificate and explicitly not revalidated without the graph. Failed support,
+clipping or identity hypotheses yield an abstention. A selective RA capacity
+change may alter the pre/post metric and still admit the fixed post-RA flow; it
+does not establish a switching theorem. Disagreement contraction, represented
+and observed weighted-mean drift, and the aggregated binary64 pure-EPI pressure
+defect remain separate. The bridge requires runtime pressure refresh
+conservatively after relevant EPI, phase or capacity changes but does not certify
+that refresh. Global runtime affinity and repetition of the stage-flow schedule
+remain open.
+
+Lines S8 and S9 now have exact scale results and a decisive phase obstruction.
+The reversible partition average `R` closes the pure-EPI macro equation exactly
+iff it intertwines the micro and quotient generators. Exact quotients remain
+in the `diag(nu_f)L_rw` family; non-equitable partitions expose unresolved
+within-block modes. This is structural transport under U5, not an additional
+operator and not a proof that all 13 operators close.
+
+In one open semicircle chart, the pairwise wrapped phase realization is the
+linear field `-(1/pi) diag(nu_f)L_rw q` and inherits the same reversible
+quotient identities. The engine's actual phase channel instead compares each
+phase with the argument of an unweighted neighbor-phasor sum. It closes exactly
+on the lifted block-constant subspace only under equitable support profiles, no
+intra-fiber edges, equal active macro-neighbor multiplicities and block-constant
+capacity. A `K3,3` construction gives two micro states with the same macro
+phase coordinate and different projected canonical rates, so global projected
+autonomy is false. Branch crossings, zero phasor resultants, finite-time
+evolution and changing support remain outside the certificate.
+
+Lines S11 and S14 have exact instantaneous coherence geometry. Locally,
+`C=1/(1+|DeltaNFR|+|dEPI|)` makes every finite non-equilibrium level an L1
+diamond with four nonsmooth vertices. For a fixed nonempty network of `N`
+nodes, the canonical mean aggregation gives the boundary of a
+`2N`-dimensional cross-polytope with total L1 radius `N(1/C-1)`, `4N`
+vertices and exact face counts `2^(k+1) binom(2N,k+1)`. Its regular locus is
+the union of `2^(2N)` open facets; all lower-dimensional faces are
+absolute-value singular strata. The superlevel set is closed and convex.
+
+Imposing the nodal equation at declared fixed capacities restricts the
+ambient chart to `dEPI_i=nu_f_i DeltaNFR_i` and the weighted level
+`sum_i(1+nu_f_i)|DeltaNFR_i|=N(1/C-1)`. This is an exact weighted
+`N`-dimensional cross-polytope in pressure coordinates, with Euclidean radii
+and induced regular-gradient norm reported by
+[`fixed_capacity_coherence_level_set_geometry`](../src/tnfr/physics/coherence_geometry.py).
+These results provide an L1 distance and a complete fixed-dimension
+stratification; they do not select a smooth information metric or prove
+temporal attraction. Variable capacity and changing node count require
+separate strata.
 
 They now also have an exact fixed-topology state result. Assign effective
 positive scales to EPI, `nu_f`, circular phase, `DeltaNFR`, `dEPI`, edge
@@ -222,18 +344,94 @@ zero pressure and rate. This establishes solver fidelity for one explicit-Euler
 step; it does not make the dense full-basis implementation asymptotically fast.
 
 Network-stage scheduling now has a bounded positive result and an explicit
-remaining boundary. SDK words and supported GPU blocks remain operator-major
-across glyph stages. Within SDK EN/RA and GPU RA stages, every target reads the
-same detached stage-start graph; the executor preflights all targets, builds and
-validates all proposals, then performs one transactional commit of state,
-histories, grammar bookkeeping, telemetry and the pressure refresh. These stages therefore have
-two-phase Jacobi semantics, are insertion-order invariant on the executable
-fixtures, and roll back completely when validation or refresh fails.
+remaining boundary. SDK words and supported GPU blocks execute in declared
+order across glyph stages. All thirteen SDK glyph stages use the shared
+two-phase path when grammar selects the requested glyph for every target:
+neighbour- or topology-reading EN/IL/UM/RA, overlapping-pressure OZ, THOL's
+child-support and hierarchy merge, pointwise AL/SHA/VAL/NUL/ZHIR/NAV, and the
+REMESH advisory merge. Supported GPU AL and RA blocks reuse their respective
+path. Every target reads the same detached stage-start graph; the
+executor preflights all targets, builds and validates frozen proposals, then
+performs one transactional commit of state, histories, grammar bookkeeping,
+telemetry and the pressure refresh. Validation, monitor, warning-policy or
+refresh failure rolls the complete stage back.
+
+The committed primary structural channels are target-order invariant before
+the opaque pressure-refresh callback: EPI for AL; EPI and `epi_kind` for EN;
+`DeltaNFR` and phase for IL; `DeltaNFR` and per-node RNG progress for OZ;
+phase on every proposed node, optional target
+`nu_f`/`DeltaNFR`, and new edge support for UM; EPI, `epi_kind`, `nu_f` and
+phase for RA; `nu_f` for SHA; EPI and `nu_f` for VAL; EPI, `nu_f` and
+`DeltaNFR` for NUL; and `d2EPI`, `DeltaNFR`, child nodes,
+`sub_nodes`, `sub_epis` and graph `hierarchy` for THOL; REMESH leaves every structural channel and support unchanged. IL's
+sign-preserving pressure contraction and circular phase lock come from one pure
+kernel shared with direct execution. Its canonical stage/global and
+radius-local structural `C(t)` telemetry is separate from retained auxiliary
+pressure-dispersion keys, and its integrity check compares bound before/after
+snapshots rather than the latest graph event. ZHIR's primary phase write and
+structural-acceleration telemetry derive from snapshot-bound temporal evidence
+and U4 context. NAV commits `nu_f`, phase, `DeltaNFR` and per-node RNG progress
+from the same snapshot. In random mode, a missing graph seed is resolved inside
+the transaction, copied into the detached snapshot, restored on rejection and
+persisted on success; stable node offsets and draw counts keep each stream
+independent of target order. AL/SHA use one wall-clock timestamp, and NAV uses
+one shared latency-observation instant, for every target in their respective
+stage. Ordered lifecycle, audit/telemetry and monitor streams retain the
+requested target order. IL warnings are emitted only after all other fallible
+stage effects succeed and still trigger rollback under warning-as-error policy.
+Cache state and the opaque pressure refresh remain outside the invariance claim;
+identity-bearing caches remain tied to their live graph and node objects.
+Relabeling equivariance also remains outside this result. A grammar replacement
+is executed and reported through the transactional Gauss-Seidel fallback rather
+than silently inheriting the declared two-phase schedule. UM merges overlapping
+shortest-arc phase displacements in stable snapshot order, then revalidates U3
+for retained relations and proposed links; this is an explicit engine policy
+rather than a phase-dynamics theorem.
 
 This repair is stage-local. It does not make a mixed word simultaneous or prove
-arbitrary relabeling equivariance. The other operator stages retain
-operator-major Gauss-Seidel semantics until their cross-target read/write sets
-and merge laws are specified. The positive and failing cases live in
+arbitrary relabeling equivariance. The pointwise realization certificate
+replays AL/SHA/VAL/NUL/ZHIR/NAV proposals from the executor's own detached
+snapshot and frozen proposal tuple, binds their exact represented EPI map, and
+conditionally adds pre-flow and common pre/post-metric gain levels. A successful
+`NetworkStageResult` carries that pre-commit certificate. It does not cover
+IL/UM multichannel, OZ overlapping pressure or THOL support/hierarchy merges,
+histories, monitors, pressure refresh, mixed words or repetition. THOL resolves
+cross-parent child-ID collisions and structural commit order in immutable
+snapshot-node rank, and validates its complete support and
+hierarchy merge on a detached graph before the first live write.
+REMESH shares one immutable advisory proposal across targets, deduplicates its
+graph event per telemetry step and does not invoke apply_network_remesh.
+Multi-target IL and UM historically used the sequential schedule; their
+canonical word paths now use immutable proposal rules. OZ instead combines snapshot-bound local proposals with all incoming
+propagation magnitudes through `math.fsum` in immutable snapshot-node rank.
+The local magnitude postcondition is evaluated before this signed accumulation,
+which can partially cancel a negative local pressure. A late target or
+pressure-refresh failure restores the stage-start graph.
+
+[`stage_contracts.py`](../src/tnfr/operators/stage_contracts.py) records a
+conservative all-target read/write footprint, structural overlap, current and
+required merge law, shared and direct-call rollback scope, structural-state
+target-order result, relabeling scope and concrete promotion blockers for all
+13 operators. Live schedule telemetry is derived from that registry and
+distinguishes the declared operator schedule from an observed grammar fallback.
+All thirteen glyph stages have an implemented and tested complete two-phase
+proposal/commit contract. REMESH's glyph stage proves only its advisory merge.
+The separately invoked delayed network EPI operation now has its own immutable
+plan/result contract, exact-support history boundary and graph-state atomic
+commit. Its one-step evidence does not prove history-updated repetition. NUL
+audit events carry target identity, and its metrics use the captured pre-stage
+pressure (or the matching node event) to distinguish signed pressure change
+from magnitude densification; zero pressure is not reported as densified. NAV
+transition telemetry separately records pre-handler, handler and post-retention
+pressure. The positive and failing cases live in
+[`test_stage_contracts.py`](../tests/operators/test_stage_contracts.py),
+[`test_coherence_jacobi_stage.py`](../tests/operators/test_coherence_jacobi_stage.py),
+[`test_coupling_jacobi_stage.py`](../tests/operators/test_coupling_jacobi_stage.py), [`test_dissonance_jacobi_stage.py`](../tests/operators/test_dissonance_jacobi_stage.py),
+[`test_self_organization_jacobi_stage.py`](../tests/operators/test_self_organization_jacobi_stage.py),
+[`test_recursivity_jacobi_stage.py`](../tests/operators/test_recursivity_jacobi_stage.py),
+[`test_pointwise_network_stage.py`](../tests/operators/test_pointwise_network_stage.py),
+[`test_nav_pointwise_stage.py`](../tests/operators/test_nav_pointwise_stage.py),
+[`test_operator_major_stage_atomicity.py`](../tests/operators/test_operator_major_stage_atomicity.py),
 [`test_network_stage_schedule_diagnostic.py`](../tests/sdk/test_network_stage_schedule_diagnostic.py)
 and the GPU canonical-execution tests.
 
@@ -427,39 +625,39 @@ measurements. See
 
 | Line | Next precise test | Result that blocks promotion |
 | --- | --- | --- |
-| S1-S2 | Certify the all-target EN/RA stage maps across clipping and repetition, then derive realizations for the remaining operators | A staged runtime map leaves its declared domain, violates a gate, loses atomicity, fails pressure refresh, or silently changes the proof metric |
+| S1-S2 | Bind interval-specific flow and glyph-gain certificates to repeated `execute_event_remesh_cycle` calls with explicitly evolving pre-jump history | A cycle leaves its certified domain, loses graph-state atomicity or a fixed metric, conflates capacity with metric, omits required pressure refresh, or promotes one-step REMESH evidence to an evolving-history gain |
 | S3 | Prove or refute `rank(-K L_rw)=N-1` beyond the finite atlas | One connected positive-conductance graph with nullity greater than one |
 | S4 | Replace symmetric gaps by a directed contraction quantity | Stable spectrum with an unbounded claimed metric transient |
-| S5 | Define operator-event duration, then compare timestamped trigger evidence and modal decay under equivalent timestep refinement | The physical trigger or duration mapping changes solely because an equivalent integration interval is repartitioned |
+| S5 | Spectral adaptive grammar | Exact operator-event schedules separate zero-duration jumps from declared flows. `execute_operator_event_schedule` binds them to the configured nodal integrator and atomic glyph stages; the event/REMESH cycle adds one explicit pre-map delayed-history sample, a post-map physical-time endpoint and optional pressure refresh. Collapsed or nonadditive binary64 intervals are rejected, and event-local ZHIR evidence never treats jumps as secants. Solver-refinement equivalence and adaptive U2/U4 remain open |
 | S6 | Run the implemented shared-grid protocol across replicated graph families | Size slopes fail held-out family reproducibility intervals |
 | S7 | Compare recorded pre-transition trajectories with matched non-transition controls | No precursor beats the matched controls out of sample |
-| S8 | Extend the quotient to circular phase and changing support | Macro derivatives depend on unresolved fiber state |
+| S8 | Characterize branch transitions, zero-resultant singularities and changing support after the global canonical phase-autonomy counterexample | A proposed closure depends on unresolved phase fibers, drops support used by the canonical channel or crosses an undeclared wrap branch |
 | S9 | Map each fixed-state operator onto the generic quotient protocol | A proposed closed operator depends on an unresolved fiber or leaves the declared macro family |
 | S10 | Define the admissible transformation space independently of the catalog | One admissible transformation cannot be generated or classified |
-| S11 | Stratify the full network-level `C` map | Claimed smooth chart crosses an absolute-value singular stratum |
+| S11 | Stratify the variable-capacity nodal-consistent set and its changing-`N` boundaries | A proposed chart crosses a zero-coordinate stratum, omits a capacity/support singularity or infers temporal attraction from instantaneous geometry |
 | S12 | Introduce nonzero cross tensors satisfying both degeneracies | Either `H` drifts or the dissipative functional increases |
 | S13 | Repeat the benchmark across held-out graph families and operator-driven trajectories | The exact linear sign criterion fails in scope, or spectral baselines match finite predictive rankings out of sample |
 | S14 | Extend the fixed-class metric across topology, nesting and histories with explicit edit costs | Triangle inequality, relabeling invariance or phase-wrap invariance fails |
 | S15 | Estimate observation scales/noise laws, then test unseen graph families, mixed schedules and complete grammar words | Operators or words claimed identifiable have overlapping observation laws, or empirical errors exceed the certified finite-prototype margin |
-| S16 | Add a third nested mesh and reference trajectories that mix Jacobi EN/RA with declared operator-major stages | A repaired EN/RA stage regains insertion-order dependence or partial commits, refinement stops reducing persistent-id error, or an intermediate state leaves the hypothesis class |
+| S16 | Add a third nested mesh and reference trajectories that mix the thirteen Jacobi glyph stages with separately contracted delayed REMESH operations | A repaired AL/EN/IL/OZ/UM/RA/SHA/VAL/NUL/THOL/ZHIR/NAV structural state regains target-order dependence before pressure refresh, a stage produces partial commits, refinement stops reducing persistent-id error, or an intermediate state leaves the hypothesis class |
 
 ## Next working order
 
-1. Extend the certified EN and RA realizations from local and single-stage
-   boundaries to their all-target two-phase maps, including clipping and
-   repetition, while tracking consensus drift and proof-metric changes.
-2. Specify cross-target read/write and merge contracts for the remaining
-   operators before changing their operator-major Gauss-Seidel stages; test
-   insertion-order behavior, relabeling behavior and rollback independently.
-3. Define an operator-event duration contract on top of the timestamped ZHIR
-   evidence before converting modal solver clocks into adaptive U2/U4 policies.
-4. Extend the pure-EPI quotient to circular phase, changing support and
-   nonlinear operators while recording unresolved fiber dependence.
-5. Test topology precursors and temporal operator signatures on held-out graph
+1. Bind interval-specific flow and glyph-gain certificates to repeated
+   `execute_event_remesh_cycle` calls, retaining the implemented pre-jump
+   history convention and frozen metric while refusing a repeated REMESH gain
+   unless evolving delayed inputs satisfy a new theorem.
+2. Partition equivalent continuous flows into different solver refinements and
+   test whether event-local ZHIR evidence, jump placement and modal decisions
+   remain invariant before deriving optional adaptive U2/U4 policies.
+3. Extend phase and nonlinear quotient analysis to branch transitions, zero
+   phasor resultants and changing support; retain the proved unresolved-fiber
+   counterexample as the global closure boundary.
+4. Test topology precursors and temporal operator signatures on held-out graph
    families, noise models and complete grammar words with declared schedules.
-6. Search for nonzero dissipative-symplectic cross tensors satisfying both
+5. Search for nonzero dissipative-symplectic cross tensors satisfying both
    degeneracy identities, and for a canonical directed contraction metric.
-7. Define admissible TNFR transformations independently of the existing catalog
+6. Define admissible TNFR transformations independently of the existing catalog
    before revisiting catalog completeness.
 
 Reusable certificate functions record their declared inputs, numerical decision

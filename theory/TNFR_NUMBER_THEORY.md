@@ -344,10 +344,16 @@ facets:
 
 - **Resonant.** By the §4.1 primality theorem the pressure-equilibrium set
   $\{n : \Delta\mathrm{NFR}(n) = 0\}$ is *exactly* the primes.
-  `equilibrium_fraction` is the prime density and the mean per-node coherence
-  $C = 1/(1+|\Delta\mathrm{NFR}|)$ is a static constitutive readout. The
-  arithmetic pressure is independent of EPI, so this identifies fixed points,
-  not restoring attractors or basins of attraction.
+  `equilibrium_fraction` is the prime density. The canonical static aggregate
+  `coherence` is
+  $1/(1+\operatorname{mean}|\Delta\mathrm{NFR}|)$ under the static
+  $d\mathrm{EPI}=0$ convention. `mean_local_coherence` retains the distinct
+  descriptive average
+  $\operatorname{mean}_i[1/(1+|\Delta\mathrm{NFR}_i|)]$; the two generally
+  differ because the coherence kernel is nonlinear. The arithmetic pressure is
+  independent of EPI, so this identifies fixed points, not restoring attractors
+  or basins of attraction. An empty arithmetic domain reports these aggregates
+  as unavailable rather than assigning it zero coherence.
 - **Geometric.** The nodal topology (radial / annular / multinodal), read by
   `classify_nodal_topology` from the structural-potential geometry, is
   **multinodal** — its centers are the highly-composite / abundant numbers

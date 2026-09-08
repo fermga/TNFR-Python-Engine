@@ -12,9 +12,9 @@ from __future__ import annotations
 import math
 import warnings
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from ..alias import get_attr, set_attr
 from ..config.operator_names import TRANSITION
@@ -31,6 +31,9 @@ from ._argument_validation import (
 )
 from .definitions_base import Operator
 from .factor_contracts import resolve_runtime_operator_factors
+
+if TYPE_CHECKING:  # pragma: no cover - import used only by static analyzers
+    from .jitter import JitterProposal
 
 _VF_LATENT_THRESHOLD = 0.05
 _EPI_RESONANT_THRESHOLD = 0.5
@@ -65,12 +68,98 @@ class _TransitionPreflight:
     phase_shift_requested: float
     phase_shift_applied: float
     dnfr_before: float
+    handler_base: float
+    jitter_amplitude: float
+    random_mode: bool
     retention: float
     handler_dnfr_after: float | None
     dnfr_after: float | None
     handler_dnfr_bounds: tuple[float, float]
     dnfr_bounds: tuple[float, float]
     latency: _LatencyProposal
+
+
+@dataclass(frozen=True, slots=True)
+class TransitionNetworkStageProposal:
+    """One fully bound NAV target proposal from an immutable stage snapshot."""
+
+    node: Any
+    transition: _TransitionPreflight
+    handler_dnfr_after: float
+    dnfr_after: float
+    jitter_proposal: JitterProposal | None = None
+    glyph: Glyph = field(default=Glyph.NAV, init=False)
+
+
+def _transition_event(
+    node: Any,
+    proposal: _TransitionPreflight,
+    handler_dnfr: float,
+    dnfr_after: float,
+) -> dict[str, Any]:
+    """Return the canonical NAV audit event from bound scalar values."""
+
+    return {
+        "node": node,
+        "regime_origin": proposal.regime,
+        "vf_before": proposal.vf_before,
+        "vf_after": proposal.vf_after,
+        "theta_before": proposal.theta_before,
+        "theta_after": proposal.theta_after,
+        "dnfr_before": proposal.dnfr_before,
+        "dnfr_handler_after": handler_dnfr,
+        "dnfr_after": dnfr_after,
+        "phase_shift": proposal.phase_shift_applied,
+        "phase_shift_requested": proposal.phase_shift_requested,
+    }
+
+
+def commit_transition_network_structure(
+    G: TNFRGraph,
+    proposal: TransitionNetworkStageProposal,
+) -> None:
+    """Commit one already validated NAV structural and RNG proposal."""
+
+    data = G.nodes[proposal.node]
+    if proposal.jitter_proposal is not None:
+        from .jitter import commit_jitter_proposal
+
+        commit_jitter_proposal(data, proposal.jitter_proposal)
+    set_attr(data, ALIAS_VF, proposal.transition.vf_after)
+    set_attr(data, ALIAS_THETA, proposal.transition.theta_after)
+    set_attr(data, ALIAS_DNFR, proposal.dnfr_after)
+
+
+def commit_transition_network_lifecycle(
+    G: TNFRGraph,
+    proposal: TransitionNetworkStageProposal,
+) -> None:
+    """Merge NAV latency and ordered audit state after history commit."""
+
+    data = G.nodes[proposal.node]
+    Transition._commit_latency(G, proposal.node, proposal.transition.latency)
+    data["_regime_before"] = proposal.transition.regime
+    G.graph.setdefault("_nav_transitions", []).append(
+        _transition_event(
+            proposal.node,
+            proposal.transition,
+            proposal.handler_dnfr_after,
+            proposal.dnfr_after,
+        )
+    )
+
+
+def emit_transition_network_warnings(
+    G: TNFRGraph,
+    proposal: TransitionNetworkStageProposal,
+) -> None:
+    """Publish latency warnings before the network stage's first write."""
+
+    Transition()._emit_latency_warnings(
+        G,
+        proposal.node,
+        proposal.transition.latency,
+    )
 
 
 class Transition(Operator):
@@ -81,11 +170,16 @@ class Transition(Operator):
     glyph: ClassVar[Glyph] = Glyph.NAV
 
     def _validate_application_preconditions(
-        self, G: TNFRGraph, node: Any, **kw: Any
+        self,
+        G: TNFRGraph,
+        node: Any,
+        *,
+        _stage_now: datetime | None = None,
+        **kw: Any,
     ) -> None:
         """Validate NAV's full public boundary before grammar or metadata."""
 
-        self._validate_request_boundary(G, node, kw)
+        self._validate_request_boundary(G, node, kw, now=_stage_now)
         run_preconditions = bool(kw.get("validate_preconditions", True)) or bool(
             G.graph.get("VALIDATE_PRECONDITIONS", False)
         )
@@ -94,7 +188,12 @@ class Transition(Operator):
             self._validate_preconditions(G, node)
 
     def _validate_request_boundary(
-        self, G: TNFRGraph, node: Any, kw: Mapping[str, Any]
+        self,
+        G: TNFRGraph,
+        node: Any,
+        kw: Mapping[str, Any],
+        *,
+        now: datetime | None = None,
     ) -> None:
         """Reject malformed state, flags, arguments, and sinks without mutation."""
 
@@ -121,7 +220,7 @@ class Transition(Operator):
             label="phase_shift",
         )
         self._validate_sinks_and_monitor(G, node, kw)
-        self._prepare_latency(G, node)
+        self._prepare_latency(G, node, now=now)
 
     def _validate_precondition_config(self, G: TNFRGraph) -> None:
         """Validate every threshold consumed by ``validate_transition``."""
@@ -237,7 +336,13 @@ class Transition(Operator):
     def _retention(regime: str) -> float:
         return {"latent": 0.7, "active": 0.8, "resonant": 0.9}[regime]
 
-    def _prepare_latency(self, G: TNFRGraph, node: Any) -> _LatencyProposal:
+    def _prepare_latency(
+        self,
+        G: TNFRGraph,
+        node: Any,
+        *,
+        now: datetime | None = None,
+    ) -> _LatencyProposal:
         """Parse latency inputs without clearing or creating any metadata."""
 
         data = G.nodes[node]
@@ -269,10 +374,11 @@ class Transition(Operator):
                 reject_operator_argument(
                     self.name, "latency_start_time must include a UTC offset"
                 )
+            observed_at = datetime.now(timezone.utc) if now is None else now
+            if observed_at.tzinfo is None or observed_at.utcoffset() is None:
+                raise RuntimeError("NAV stage time must include a UTC offset")
             duration = finite_real(
-                (
-                    datetime.now(timezone.utc) - start.astimezone(timezone.utc)
-                ).total_seconds(),
+                (observed_at - start.astimezone(observed_at.tzinfo)).total_seconds(),
                 operator=self.name,
                 label="silence duration",
                 lower=0.0,
@@ -321,11 +427,16 @@ class Transition(Operator):
         )
 
     def _build_preflight(
-        self, G: TNFRGraph, node: Any, **kw: Any
+        self,
+        G: TNFRGraph,
+        node: Any,
+        *,
+        now: datetime | None = None,
+        **kw: Any,
     ) -> _TransitionPreflight:
         """Build the deterministic proposal or the random output envelope."""
 
-        self._validate_request_boundary(G, node, kw)
+        self._validate_request_boundary(G, node, kw, now=now)
         epi, vf, dnfr, theta, latent = self._read_state(G, node)
         regime = self._regime_from_state(epi, vf, latent)
         vf_factor = finite_real(
@@ -468,12 +579,79 @@ class Transition(Operator):
             phase_shift_requested=phase_shift,
             phase_shift_applied=phase_applied,
             dnfr_before=dnfr,
+            handler_base=base,
+            jitter_amplitude=jitter,
+            random_mode=random_mode,
             retention=retention,
             handler_dnfr_after=handler_after,
             dnfr_after=dnfr_after,
             handler_dnfr_bounds=(handler_low, handler_high),
             dnfr_bounds=(min(dnfr_low, dnfr_high), max(dnfr_low, dnfr_high)),
-            latency=self._prepare_latency(G, node),
+            latency=self._prepare_latency(G, node, now=now),
+        )
+
+    def _build_network_stage_proposal(
+        self,
+        G: TNFRGraph,
+        node: Any,
+        *,
+        now: datetime,
+        resolved_seed: int | None,
+        node_offset: int | None,
+        **kw: Any,
+    ) -> TransitionNetworkStageProposal:
+        """Bind NAV's random draw and all outputs without changing ``G``."""
+
+        proposal = self._build_preflight(G, node, now=now, **kw)
+        handler_dnfr = proposal.handler_dnfr_after
+        jitter_proposal = None
+        if handler_dnfr is None:
+            from .jitter import _JITTER_PROGRESS_KEY, propose_jitter_draw
+
+            if resolved_seed is None or node_offset is None:
+                raise RuntimeError("Random NAV stage proposal lacks stream identity")
+            try:
+                jitter_proposal = propose_jitter_draw(
+                    proposal.jitter_amplitude,
+                    seed=resolved_seed,
+                    offset=node_offset,
+                    progress_state=G.nodes[node].get(_JITTER_PROGRESS_KEY),
+                )
+            except ValueError as exc:
+                reject_operator_argument(self.name, str(exc))
+            handler_dnfr = finite_real(
+                proposal.handler_base + jitter_proposal.value,
+                operator=self.name,
+                label="random DeltaNFR proposal",
+            )
+            if handler_dnfr == proposal.dnfr_before:
+                reject_operator_argument(
+                    self.name,
+                    "NAV must change DeltaNFR before recording its history",
+                )
+
+        dnfr_after = finite_real(
+            handler_dnfr * proposal.retention,
+            operator=self.name,
+            label="final DeltaNFR proposal",
+        )
+        low, high = proposal.dnfr_bounds
+        if not low <= dnfr_after <= high:
+            raise RuntimeError("NAV result escaped its immutable proposal bounds")
+        if (
+            proposal.vf_after == proposal.vf_before
+            and proposal.phase_shift_applied == 0.0
+            and dnfr_after == proposal.dnfr_before
+        ):
+            reject_operator_argument(
+                self.name, "NAV proposal must change at least one nodal channel"
+            )
+        return TransitionNetworkStageProposal(
+            node=node,
+            transition=proposal,
+            handler_dnfr_after=handler_dnfr,
+            dnfr_after=dnfr_after,
+            jitter_proposal=jitter_proposal,
         )
 
     def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
@@ -580,18 +758,7 @@ class Transition(Operator):
         """Append telemetry using only previously validated scalar values."""
 
         G.graph.setdefault("_nav_transitions", []).append(
-            {
-                "node": node,
-                "regime_origin": proposal.regime,
-                "vf_before": proposal.vf_before,
-                "vf_after": proposal.vf_after,
-                "theta_before": proposal.theta_before,
-                "theta_after": proposal.theta_after,
-                "dnfr_before": handler_dnfr,
-                "dnfr_after": dnfr_after,
-                "phase_shift": proposal.phase_shift_applied,
-                "phase_shift_requested": proposal.phase_shift_requested,
-            }
+            _transition_event(node, proposal, handler_dnfr, dnfr_after)
         )
 
     def _emit_latency_warnings(

@@ -227,8 +227,9 @@ def _normalize_glyph(glyph: Glyph | str) -> Glyph:
     except ValueError:
         pass
 
-    # Public English names live in operator_contracts. Import lazily so this
-    # foundational validator does not create an operators/config import cycle.
+    # Executable identifiers and title-case display names live in
+    # operator_contracts. Import lazily so this foundational validator does not
+    # create an operators/config import cycle.
     try:
         from .operator_contracts import contract_for
 

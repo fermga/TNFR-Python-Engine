@@ -19,15 +19,17 @@ Start Operators (Activation)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 An operator can START a sequence if it can either:
 
-1. **Generate EPI from null state** (νf=0, EPI=0):
-   - emission: Creates outward coherence pulse, generates νf > 0 and ΔNFR > 0
+1. **Generate EPI from zero form** (EPI=0 with pre-existing basal νf):
+   - emission: Proposes a positive EPI source increment and commits bounded,
+     nondecreasing EPI while preserving νf and ΔNFR
 
 2. **Activate latent EPI** (νf≈0, but EPI>0):
    - recursivity: Replicates/echoes existing patterns across scales
    - transition: Activates node from another phase/regime
 
-Physical justification: Only operators that can create or activate structural
-capacity (νf > 0) from dormant/null states can initiate reorganization.
+Physical justification: U1a records an explicit source or activation boundary.
+It does not imply that every generator writes structural capacity. Emission
+requires basal capacity and writes only the EPI channel.
 
 End Operators (Closure)
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -102,6 +104,7 @@ CANONICAL_OPERATOR_NAMES = frozenset(
 )
 
 ALL_OPERATOR_NAMES = CANONICAL_OPERATOR_NAMES
+# Backward-compatible alias; values are lowercase public executable identifiers.
 ENGLISH_OPERATOR_NAMES = CANONICAL_OPERATOR_NAMES
 
 # Physics-derived operator sets (derived from TNFR canonical principles)

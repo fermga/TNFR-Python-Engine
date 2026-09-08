@@ -1,13 +1,14 @@
-"""Unified adaptive system integrating all TNFR dynamic components.
+"""Facade over TNFR feedback, selection, homeostasis, learning and metabolism.
 
-This module provides a high-level interface that combines feedback loops,
-adaptive sequence selection, homeostasis, learning, and metabolism into a
-single coherent adaptive system. It represents the complete implementation
-of TNFR autonomous evolution.
+The default evolution loop runs homeostasis and feedback. Learning and
+metabolism are exposed as components for explicit invocation; their presence
+does not imply that every adaptive mechanism runs in each cycle.
 """
 
 from __future__ import annotations
 
+import math
+from numbers import Integral, Real
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -24,17 +25,28 @@ from ..dynamics.metabolism import StructuralMetabolism
 __all__ = ["TNFRAdaptiveSystem"]
 
 
-class TNFRAdaptiveSystem:
-    """Complete adaptive system integrating all TNFR dynamic components.
+def _finite_pressure(value: object) -> float:
+    """Return one finite real DeltaNFR value without coercing booleans."""
+    if (
+        isinstance(value, bool)
+        or not isinstance(value, Real)
+        or not math.isfinite(float(value))
+    ):
+        raise ValueError("DeltaNFR must be a finite real")
+    return float(value)
 
-    This class orchestrates feedback loops, sequence selection, homeostasis,
-    learning, and metabolism into autonomous evolution cycles. It provides
-    a single entry point for complex adaptive behaviors.
+
+class TNFRAdaptiveSystem:
+    """High-level facade for TNFR adaptive components.
+
+    The default cycle orchestrates homeostasis and feedback. Sequence
+    selection, learning and metabolism remain available through their
+    component attributes for caller-controlled execution.
 
     **Integrated Components:**
 
     - **Feedback Loop**: Regulates coherence via operator selection
-    - **Sequence Selector**: Learns optimal operator trajectories
+    - **Sequence Selector**: Scores a catalogue of grammar-valid words
     - **Homeostasis**: Maintains parameter equilibrium
     - **Learning System**: Implements AL + T'HOL learning cycles
     - **Metabolism**: Digests stimuli into structure
@@ -45,8 +57,11 @@ class TNFRAdaptiveSystem:
         Graph containing the evolving node
     node : NodeId
         Identifier of the adaptive node
-    stress_normalization : float, default ≈ 0.0993
-        ΔNFR value that corresponds to maximum stress (1.0) - operational threshold
+    stress_normalization : float, default=0.1
+        Positive pressure magnitude mapped to the saturated stress value 1.0.
+    random_seed : int, optional
+        Seed for the adaptive sequence selector. The graph RANDOM_SEED is used
+        when omitted.
 
     Attributes
     ----------
@@ -77,15 +92,9 @@ class TNFRAdaptiveSystem:
 
     Notes
     -----
-    The adaptive system implements complete TNFR autonomous evolution as
-    specified in the operational manual. Each cycle integrates:
-
-    1. Homeostatic regulation
-    2. Feedback-driven operator selection
-    3. Metabolic stress response
-    4. Learning consolidation
-
-    This creates self-regulating, adaptive structural dynamics.
+    The default loop integrates homeostatic regulation and feedback-driven
+    operator selection. Metabolic and learning operations require explicit
+    calls because they have their own runtime preconditions.
     """
 
     # ΔNFR normalization constant: 0.1 (operational dynamic threshold).
@@ -97,20 +106,31 @@ class TNFRAdaptiveSystem:
         graph: TNFRGraph,
         node: NodeId,
         stress_normalization: float = STRESS_NORM,
+        *,
+        random_seed: int | None = None,
     ) -> None:
+        if (
+            isinstance(stress_normalization, bool)
+            or not isinstance(stress_normalization, Real)
+            or not math.isfinite(float(stress_normalization))
+            or float(stress_normalization) <= 0.0
+        ):
+            raise ValueError("stress_normalization must be a positive finite real")
         self.G = graph
         self.node = node
         self.STRESS_NORM = float(stress_normalization)
 
         # Initialize all components
         self.feedback = StructuralFeedbackLoop(graph, node)
-        self.sequence_selector = AdaptiveSequenceSelector(graph, node)
+        self.sequence_selector = AdaptiveSequenceSelector(
+            graph, node, seed=random_seed
+        )
         self.homeostasis = StructuralHomeostasis(graph, node)
         self.learning = AdaptiveLearningSystem(graph, node)
         self.metabolism = StructuralMetabolism(graph, node)
 
     def autonomous_evolution(self, num_cycles: int = 20) -> None:
-        """Execute complete autonomous evolution cycles.
+        """Execute the default homeostasis-and-feedback cycles.
 
         Each cycle integrates adaptive components:
 
@@ -141,7 +161,13 @@ class TNFRAdaptiveSystem:
 
         These require careful sequence design to comply with TNFR grammar.
         """
-        for cycle in range(num_cycles):
+        if (
+            isinstance(num_cycles, bool)
+            or not isinstance(num_cycles, Integral)
+            or num_cycles < 0
+        ):
+            raise ValueError("num_cycles must be a nonnegative integer")
+        for _ in range(num_cycles):
             # 1. Homeostatic regulation: maintain parameter equilibrium
             self.homeostasis.maintain_equilibrium()
 
@@ -161,7 +187,7 @@ class TNFRAdaptiveSystem:
 
         Notes
         -----
-        Stress mapping (operational, ≈ 0.0993):
+        Stress mapping (selected operational normalization):
 
         - ΔNFR = 0.0 → stress = 0.0 (no pressure)
         - ΔNFR = STRESS_NORM → stress = 1.0 (maximum pressure threshold)
@@ -170,6 +196,11 @@ class TNFRAdaptiveSystem:
         This normalization allows consistent stress response across
         different system scales.
         """
-        dnfr = get_attr(self.G.nodes[self.node], ALIAS_DNFR, 0.0)
-        # Normalize ΔNFR to [0, 1] stress level
-        return min(1.0, abs(dnfr) / self.STRESS_NORM)
+        dnfr = get_attr(
+            self.G.nodes[self.node],
+            ALIAS_DNFR,
+            0.0,
+            strict=True,
+            conv=_finite_pressure,
+        )
+        return min(1.0, abs(float(dnfr)) / self.STRESS_NORM)

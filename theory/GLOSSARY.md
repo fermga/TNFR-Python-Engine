@@ -46,9 +46,9 @@ single node is a micro-NFR and a coherent region is a macro-NFR.
 embedding represent the same signed graph coordinate. `real_scalar_epi(value)`
 returns that coordinate or `None`; `scalarize_epi(value)` preserves it and uses
 maximum-component magnitude only for genuinely nonuniform or complex elements.
-`abs(BEPIElement)` is always the nonnegative magnitude. Scalar-only diffusion
-and affine certificates reject richer elements rather than silently discarding
-their component structure.
+`abs(BEPIElement)` is always the nonnegative magnitude. Glyphs that require a
+real scalar EPI coordinate, scalar-only diffusion and affine certificates reject
+richer elements rather than silently discarding their component structure.
 **API:** `tnfr.structural` operators; `tnfr.types.real_scalar_epi`,
 `tnfr.types.scalarize_epi`
 **Math:** [FUNDAMENTAL_THEORY.md §2.2 (Structural Triad — Banach space B_EPI)](FUNDAMENTAL_THEORY.md)
@@ -60,7 +60,8 @@ their component structure.
 **Units:** Hz_str (structural hertz)
 **Range:** \(\mathbb{R}^+\) (positive reals; node collapse when \(\nu_f \to 0\))
 **What:** Rate of structural reorganization
-**API:** `adapt_vf_by_coherence()`, operators
+**API:** `adapt_vf_after_structural_stability()`; the historical
+`adapt_vf_by_coherence()` name remains a compatibility alias; operators
 **Math:** [FUNDAMENTAL_THEORY.md §2 (Governing Dynamics)](FUNDAMENTAL_THEORY.md)
 
 ### Internal Reorganization Operator (ΔNFR)
@@ -119,14 +120,20 @@ for exact integer arithmetic).
 **Code:** [src/tnfr/metrics/common.py](../src/tnfr/metrics/common.py) (`is_structural_equilibrium`)
 **Theory:** [AGENTS.md §2, §7](../AGENTS.md)
 
-### Coherence Operator (Ĉ)
+### Structural affinity matrix (historical Ĉ interface)
 
-**Code:** `coherence_matrix(G)` → (nodes, W)
-**Symbol:** \(\hat{C}\)
-**Matrix element:** \(w_{ij} \approx \langle i | \hat{C} | j \rangle\)
-**Properties:** Hermitian (\(\hat{C}^\dagger = \hat{C}\)), positive semi-definite
-**What:** Operator measuring structural stability between nodes
-**Math:** [src/tnfr/metrics/coherence.py](../src/tnfr/metrics/coherence.py) (`coherence_matrix`)
+**Code:** `coherence_matrix(G)` → `(nodes, W)`
+**Symbol:** \(W=(w_{ij})\); older APIs call it \(\hat C\)
+**What:** Auxiliary bounded pairwise similarity built from phase, EPI,
+\(\nu_f\) and Si. It is distinct from constitutive coherence \(C(t)\).
+**Properties:** The implementation produces a real symmetric matrix with
+entries in \([0,1]\), including a symmetric support mask for directed inputs.
+It is not positive semidefinite in general. For three identical nodes on a
+path under neighbour scope, \(W=I+A_{P_3}\) has eigenvalues
+\(1,1-\sqrt2,1+\sqrt2\). Its normalized trace is therefore not a definition
+of \(C(t)\); with the default unit diagonal it is identically one.
+**Math:** [src/tnfr/metrics/coherence.py](../src/tnfr/metrics/coherence.py)
+(`coherence_matrix`)
 
 ### Sense Index (Si)
 
@@ -145,7 +152,7 @@ for exact integer arithmetic).
 **Formula:** \(|\nabla\phi|(i) = \text{mean}_{j \in N(i)} |\theta_i - \theta_j|\) (circular mean)
 **What:** Local phase desynchronization / stress proxy field
 **Status:** **CANONICAL** (Nov 2025)
-**Physics:** Captures dynamics C(t) misses due to scaling invariance
+**Physics:** Locates phase stress that the global scalar C(t) does not spatially resolve
 **Threshold:** Kinematic bound |∇φ| ≤ π (phase wrap — same as K_φ); π/16 ≈ 0.196 is the selected early-warning policy, not a derived bound (measured sync-onset ≈ 0.29, σ-dependent)
 **API:** `tnfr.physics.fields.compute_phase_gradient()`
 **Usage:** Stress detection, local instability prediction

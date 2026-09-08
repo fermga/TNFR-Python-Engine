@@ -14,6 +14,7 @@ import math
 from collections import Counter
 from collections.abc import Iterable, Iterator, Mapping
 from itertools import tee
+from numbers import Integral
 from typing import Any, Callable, TypeVar
 
 import networkx as nx
@@ -355,21 +356,34 @@ def register_sigma_callback(G: TNFRGraph) -> None:
 
 def sigma_rose(G: TNFRGraph, steps: int | None = None) -> dict[str, int]:
     """Histogram of glyphs in the last ``steps`` steps (or all)."""
+    resolved_steps: int | None = None
+    if steps is not None:
+        if isinstance(steps, bool) or not isinstance(steps, Integral):
+            raise TNFRValueError(
+                "steps must be a non-negative integer",
+                context={"steps": repr(steps)},
+                suggestion="Provide a non-negative integer for steps.",
+            )
+        resolved_steps = int(steps)
+        if resolved_steps < 0:
+            raise TNFRValueError(
+                "steps must be a non-negative integer",
+                context={"steps": resolved_steps},
+                suggestion="Provide a non-negative integer for steps.",
+            )
+
     hist = ensure_history(G)
     counts = hist.get("sigma_counts", [])
     if not counts:
         return {g: 0 for g in GLYPHS_CANONICAL}
-    if steps is not None:
-        steps = int(steps)
-        if steps < 0:
-            raise TNFRValueError(
-                "steps must be non-negative",
-                context={"steps": steps},
-                suggestion="Provide a non-negative integer for steps.",
-            )
-        rows = counts if steps >= len(counts) else counts[-steps:]  # noqa: E203
-    else:
+    if resolved_steps is None:
         rows = counts
+    elif resolved_steps == 0:
+        rows = []
+    elif resolved_steps >= len(counts):
+        rows = counts
+    else:
+        rows = counts[-resolved_steps:]
     counter: Counter[str] = Counter()
     for row in rows:
         for k, v in row.items():

@@ -36,6 +36,14 @@ does not prove $dE/dt\leq0$. A proved Lyapunov result exists for the different,
 weighted centered energy of restricted pure EPI diffusion; see
 [the heterogeneous diffusion theorem](TNFR_DIFFUSION_STABILITY_THEOREM.md).
 
+The historical `coherence_matrix` is also outside this Lyapunov claim. It is
+an auxiliary entrywise-bounded affinity built from phase, EPI, frequency and
+Si, and it is distinct from canonical $C(t)$. Entrywise nonnegativity does not
+imply a nonnegative spectrum after the graph-support mask: three identical
+nodes on a path give $W=I+A_{P_3}$ with eigenvalue $1-\sqrt{2}<0$. The matrix
+can supply a Hermitian term to the auxiliary Hamiltonian because it is real
+symmetric; it is not a positive-semidefinite coherence observable.
+
 ### 1.2 Canonical channels and nominal U2 roles
 
 The canonical operator channel is defined by
@@ -129,21 +137,26 @@ changing U2. In a positive common diffusion metric `H=diag(h)`, let
 `V_before=0<V_after` counterexample.
 
 For a passing reset, the sharp gain is the squared weighted induced norm of
-`QAQ`. The engine uses a rational weighted-Frobenius upper bound computed
-exactly on the represented binary64 coefficients for
-composition with continuous diffusion. Valid flow and reset proofs yield a
-finite-horizon multiplicative bound. The flow contribution uses only its
+`QAQ`. The engine computes a rational quotient-gain upper bound exactly on the
+represented binary64 coefficients and retains the weighted-Frobenius value as a
+fallback for larger non-scalar maps. Exact scalar quotient actions avoid its
+dimension penalty. Valid flow and reset proofs then compose this bound with
+continuous diffusion to yield a finite-horizon multiplicative bound. The exact
+gain product remains certificate data; log-space composition uses separate
+upward 32-bit-significand dyadic gain factors to bound rational growth while
+preserving a conservative upper enclosure. The flow contribution uses only its
 rationally certified quotient-rate lower bound, never its eigensolver estimate.
 The strict contraction decision uses a rational upper enclosure of the net
 log-energy budget; caller tolerance does not decide its sign, and the reported
-multiplier is rounded upward. Asymptotic disagreement decay is asserted only when the caller
-declares repetition of the same word with positive flow duration. Exact
+multiplier is rounded upward. Asymptotic disagreement decay is asserted only
+when the caller declares repetition of the same word with positive flow
+duration. Exact
 weighted-mean preservation identifies convergence to the initial weighted
 consensus only together with that repeated contraction and exact preservation
 of the same mean by the represented flow.
 
-The first two catalog realizations are now explicit for local Reception (EN)
-and Resonance (RA). Their runtime kernels use one centralized unweighted
+The first two catalog realizations are now explicit for local and all-target
+Reception (EN) and Resonance (RA). Their runtime kernels use one centralized unweighted
 neighbour mean and two-stage binary64 blend. Under fixed connected undirected
 support, scalar or uniform-real BEPI, convex mixing, and inactive hard clipping,
 the ideal-real update is affine and preserves constants, but a nontrivial local
@@ -151,6 +164,71 @@ blend does not preserve a positive weighted mean as a global functional. A
 represented coefficient matrix is nested into the affine theorem only when its
 consensus identity passes exactly; runtime/matrix agreement remains a snapshot
 diagnostic.
+
+At the all-target boundary, every row is assembled from one immutable stage
+snapshot. Convex ideal-real mixing preserves configured hard bounds under
+repetition. Fixed-map promotion checks support, represented row sums and, for
+RA, fixed U3 sets plus a forward-invariant sign/kind domain. The finite runtime
+trace, weighted-mean drift and pre/post diffusion metrics remain independent
+diagnostics; the certificate does not claim global binary64 affinity.
+
+The shared execution boundary now also covers target-local AL, SHA, VAL,
+NUL, ZHIR and NAV, IL's snapshot-bound pressure and phase proposal, UM's
+overlapping phase/topology proposal, OZ's overlapping local/propagated pressure
+reduction, and THOL's child-support and hierarchy merge. Together with EN/RA and REMESH,
+all thirteen stages preflight and freeze every target proposal before
+committing. Their contracted
+structural channels are target-order invariant before the opaque
+pressure-refresh callback: AL writes EPI; IL writes `DeltaNFR` and phase; OZ
+writes reduced `DeltaNFR` and per-node RNG progress; SHA
+writes `nu_f`; VAL writes EPI and `nu_f`; NUL writes EPI, `nu_f` and
+`DeltaNFR`; THOL writes `d2EPI`, `DeltaNFR`, child nodes,
+`sub_nodes`, `sub_epis` and graph `hierarchy` after collision-safe
+snapshot-rank allocation and detached validation; and ZHIR writes phase, with
+structural-acceleration telemetry bound to the same snapshot evidence and U4
+context. NAV writes `nu_f`, phase,
+`DeltaNFR` and per-node RNG progress from the same snapshot. REMESH leaves structural channels unchanged and merges one graph advisory per telemetry step. UM merges
+shortest-arc phase displacements in stable snapshot order, normalizes final
+phases, revalidates U3 and coalesces accepted functional links
+deterministically. This merge is an engine policy, not a phase-dynamics or
+Lyapunov theorem.
+
+IL reports canonical stage/global and radius-local structural `C(t)` separately
+from its retained pressure-dispersion telemetry. A missing NAV random seed is
+resolved inside the transaction and survives only a successful commit; stable
+node offsets and draw counts preserve each random stream across target orders.
+AL/SHA bind all targets to one stage timestamp, while NAV uses one shared
+latency-observation instant. Ordered lifecycle, audit/telemetry and monitor
+streams retain requested target order. IL warnings occur only after all other
+fallible stage effects succeed and remain inside the rollback boundary. Cache
+state and the opaque pressure refresh are excluded from the invariance result;
+identity-bearing caches remain tied to their live graph and node objects.
+
+This execution and atomicity result alone supplies no affine gain. For
+AL/SHA/VAL/NUL/ZHIR/NAV, the shared pointwise stage executor can opt into a
+certificate computed from its own detached snapshot and frozen proposals.
+A successful result distinguishes exact represented EPI realization, affine
+gain in the pre-flow metric and an aligned pre/post diffusion metric. The
+request rejects unsupported, empty or grammar-replaced stages before live
+writes. It does not certify IL, UM, OZ, THOL, histories, pressure refresh,
+mixed words or repeated runtime execution.
+
+OZ now derives every local action and outgoing propagation increment from one
+immutable snapshot. Incoming increments are summed with `math.fsum` in
+snapshot-node rank; its local pressure-magnitude postcondition remains separate
+from the final signed field because positive propagation can partially cancel a
+negative pressure. REMESH uses an immutable advisory proposal, deduplicates its
+graph event and leaves structural channels unchanged; explicit delayed EPI
+mixing remains outside the glyph stage. The separate delayed operation has an
+immutable exact-support plan, side-effect-free insufficient-history and
+empty-support no-ops, and graph-state atomic commit. Its opt-in one-step
+evidence separates the exact three-input recurrence, binary64 rounding,
+clipping, weighted-mean drift, a convex disagreement bound and a conditional
+fixed-history gain. It does not certify repetition with evolving history.
+Multi-target IL and UM historically
+used the sequential schedule; their canonical word paths now use the shared
+snapshot. A grammar replacement still executes through the transactional
+Gauss-Seidel fallback.
 
 RA additionally filters every contributing neighbour through circular U3 with
 a configured limit in `[0,pi/2]`. Its EPI mix and phase coupling lie in `[0,1]`,
@@ -161,11 +239,15 @@ absent kind may be initialized. The certificate separates the ideal-real blend,
 represented binary64 map, two-stage proposal, and accepted identity-gated
 snapshot. A local frequency boost generally changes `h_i=d_i/nu_i`, so a fixed
 post-RA diffusion theorem remains available while pre/post switching abstains
-unless the metrics are exactly proportional. Every accepted nontrivial EN or
-RA EPI change invalidates the old pure-EPI pressure by the exact defect
-`delta L_rw e_i`; pressure must be refreshed before continuing under that
-channel model. These gates, rounding stages, and multichannel changes preclude
-a global binary64 runtime-affinity claim.
+unless the metrics are exactly proportional. For the proved nonisolated
+single-target EN/RA boundary, a nontrivial EPI write creates the exact defect
+`delta L_rw e_i`. In an all-target stage, the relevant quantity is instead the
+aggregated defect `L_rw delta`; simultaneous row changes may cancel into a
+uniform shift even when individual EPI values changed. The configured refresh
+still runs transactionally, and RA phase or capacity changes may independently
+require a full multichannel refresh when the aggregate EPI defect vanishes.
+These gates, rounding stages, and multichannel changes preclude a global
+binary64 runtime-affinity claim.
 
 The generic theorem otherwise applies only to the supplied affine map. The
 canonical operator name is metadata, and the nominal policy table above
@@ -176,7 +258,59 @@ and the implementations in
 [`reception_realization.py`](../src/tnfr/physics/reception_realization.py), and
 [`resonance_realization.py`](../src/tnfr/physics/resonance_realization.py).
 
-### 1.5 Spectral Gap Characterisation
+### 1.5 Operator-event physical-time boundary
+
+The finite event model gives canonical operators zero duration and assigns
+elapsed physical time only to nodal-flow intervals. A schedule with `m`
+operator events has `m+1` intervals: before the first jump, between successive
+jumps and after the last. The schedule is finite and immutable; it does not
+execute an operator. See
+[`event_timing.py`](../src/tnfr/operators/event_timing.py).
+
+Each accepted duration is first materialized as binary64 and then retained as
+the exact `Fraction` represented by those bits. Exact prefix sums define flow
+offsets, event offsets, total duration and physical ordering. Float start,
+event and end timestamps are display representations of the corresponding
+exact absolute times. At large origins a positive interval can leave its
+display endpoints equal, or timestamp subtraction can disagree with the
+declared duration. Consequently, timestamps never reconstruct duration and
+scheduled jumps never populate the strictly ordered secants in
+`epi_time_history`. Coincident jumps instead share an exact event coordinate
+in the hybrid log and are ordered by `event_index`.
+
+For one declared interval,
+[`event_duration.py`](../src/tnfr/physics/event_duration.py) maps physical
+duration to the fixed pure-EPI disagreement theorem. If `r_lower` is its exact
+rational energy-decay-rate lower bound and `q` is the represented target
+fraction, the diagnostic encloses `log(1/q)` above by `ell_upper` and certifies
+the target only when
+
+`r_lower * exact_duration >= ell_upper`.
+
+The sufficient duration display is rounded toward positive infinity. The
+decay-factor result is an upper bound. Ordinary libm duration/factor values and
+the source eigensolver rate are estimates and never decide the theorem; the
+spectral estimate is explicitly unsealed and is omitted when malformed. A
+positive rational rate can still decide the theorem when its downward-rounded
+binary64 display is zero.
+
+The separate `execute_operator_event_schedule` runtime now binds these records
+to the graph's configured nodal integrator and the shared atomic network-stage
+dispatcher. It freezes the initial targets, checks the live binary64 clock at
+each boundary and rejects positive intervals whose endpoints collapse or whose
+direct float addition misses the scheduled endpoint. Flow boundaries populate
+timestamped EPI evidence; a same-time jump restarts that history and remains in
+`hybrid_event_log`. One graph transaction covers flow, jump, history, cache and
+event-log state, while external emitted effects remain outside rollback.
+
+This execution contract does not prove solver accuracy or invariance under an
+equivalent timestep refinement, assign an affine gain to every jump, or convert
+the continuous duration or Euler modal count into adaptive U2 debt or U4
+recency. The executable
+[`165_operator_event_relaxation.py`](../examples/02_physics_regimes/165_operator_event_relaxation.py)
+records the schedule-only distinctions with two coincident jumps.
+
+### 1.6 Spectral Gap Characterisation
 
 For connected fixed symmetric pure EPI diffusion, the first positive
 generalized eigenvalue $\lambda_*$ of $Bv=\lambda Hv$, with
@@ -556,7 +690,7 @@ entries check only a measurable proxy and REMESH is explicitly advisory:
 
 | Operator | Check currently performed by the reactive registry |
 |----------|----------------------------------------------------|
-| **AL** | EPI and $\nu_f$ do not decrease |
+| **AL** | EPI does not decrease; $\nu_f$, phase and $\Delta\mathrm{NFR}$ do not change |
 | **EN** | $C(t)$ does not decrease |
 | **IL** | $C(t)$ does not decrease and $|\Delta\mathrm{NFR}|$ does not increase |
 | **OZ** | $|\Delta\mathrm{NFR}|$ does not decrease |
@@ -687,6 +821,13 @@ and
 | `src/tnfr/physics/hybrid_operator_stability.py` | Declared affine-reset gains and hybrid flow/reset budgets |
 | `src/tnfr/physics/reception_realization.py` | Read-only EN runtime-to-affine-flow boundary |
 | `src/tnfr/physics/resonance_realization.py` | Read-only identity-gated RA runtime-to-affine-flow boundary and post-RA metric audit |
+| `src/tnfr/physics/network_stage_stability.py` | All-target EN/RA certificates and the validated one-stage positive-duration post-flow bridge |
+| `src/tnfr/physics/pointwise_stage_stability.py` | Executor-bound pointwise affine realization and gain levels |
+| `src/tnfr/operators/event_timing.py` | Exact finite flow/jump schedules and binary64 clock readiness |
+| `src/tnfr/operators/event_runtime.py` | Atomic binding of declared flows and canonical operator jumps |
+| `src/tnfr/operators/_delayed_remesh_kernel.py` | Immutable delayed REMESH proposals and one-step evidence |
+| `src/tnfr/physics/phase_quotient.py` | Fixed-branch pairwise quotient, restricted canonical phase lift and counterexample |
+| `src/tnfr/physics/coherence_geometry.py` | Local, fixed-network and fixed-capacity coherence strata |
 | `src/tnfr/physics/phase_transition.py` | Order parameter, operational phase classification, effective exponent fit |
 | `src/tnfr/physics/life.py` | Strict supplied-series logistic diagnostics and selected $A(t)>1$ event |
 | `src/tnfr/operators/lifecycle.py` | Instantaneous node-state and collapse predicates |

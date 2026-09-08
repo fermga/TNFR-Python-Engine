@@ -34,9 +34,11 @@ Each canonical operator has a contract (AGENTS.md §Operators):
     RA  → effective coupling must increase (propagation)
     SHA → EPI unchanged           (silence)
     EN  → C(t) must not decrease  (reception)
+    AL  → EPI nondecrease; νf, ΔNFR and phase unchanged
     ...
 
-The `POSTCONDITIONS` registry maps each operator name to a callable
+The `POSTCONDITIONS` registry maps each lowercase public executable identifier
+to a callable
 ``(G, node, state_before, state_after) → None | raise``.
 
 INTEGRATION POINTS
@@ -312,35 +314,27 @@ def _postcond_coherence(
     before: dict[str, Any],
     after: dict[str, Any],
 ) -> str | None:
-    """IL: C(t) must not decrease; |ΔNFR| must not increase (stabiliser).
+    """IL: bound snapshots must show nondecreasing C(t) and |ΔNFR| contraction.
 
-    Reuses IL_coherence_tracking and IL_dnfr_reductions (written by
-    coherence.py) when available to avoid recomputing.
+    The monitor interval owns both dictionaries. Graph telemetry is deliberately
+    ignored because its latest record may belong to another target or stage.
     """
-    tracking = G.graph.get("IL_coherence_tracking")
-    if tracking:
-        latest = tracking[-1]
-        c_before = latest.get("C_global_before", before.get("coherence", 0.0))
-        c_after = latest.get("C_global_after", after.get("coherence", 0.0))
-    else:
-        c_before = before.get("coherence", 0.0)
-        c_after = after.get("coherence", 0.0)
+
+    c_before = before.get("coherence", 0.0)
+    c_after = after.get("coherence", 0.0)
     if c_after < c_before - 1e-9:
         return (
             f"Coherence decreased: {c_before:.6f} → {c_after:.6f} "
             f"(Δ={c_after - c_before:.6f})"
         )
-    # |ΔNFR| must not increase (stabilisation: glyph applies dnfr *= factor < 1)
-    dnfr_tracking = G.graph.get("IL_dnfr_reductions")
-    if dnfr_tracking:
-        latest_dnfr = dnfr_tracking[-1]
-        d_before = latest_dnfr.get("before", abs(before.get("dnfr", 0.0)))
-        d_after = latest_dnfr.get("after", abs(after.get("dnfr", 0.0)))
-    else:
-        d_before = abs(before.get("dnfr", 0.0))
-        d_after = abs(after.get("dnfr", 0.0))
-    if d_after > d_before + 1e-6:
-        return f"|ΔNFR| increased during Coherence: " f"{d_before:.6f} → {d_after:.6f}"
+
+    magnitude_before = abs(before.get("dnfr", 0.0))
+    magnitude_after = abs(after.get("dnfr", 0.0))
+    if magnitude_after > magnitude_before + 1e-6:
+        return (
+            "|ΔNFR| increased during Coherence: "
+            f"{magnitude_before:.6f} → {magnitude_after:.6f}"
+        )
     return None
 
 
@@ -435,16 +429,32 @@ def _postcond_emission(
     before: dict[str, Any],
     after: dict[str, Any],
 ) -> str | None:
-    """AL: νf must not decrease; EPI must not decrease (∂EPI/∂t > 0)."""
-    vf_before = before.get("vf", 0.0)
-    vf_after = after.get("vf", 0.0)
-    if vf_after < vf_before - 1e-9:
-        return f"νf decreased during Emission: " f"{vf_before:.6f} → {vf_after:.6f}"
-    # EPI must not decrease (core glyph effect: +AL_boost)
+    """AL: EPI cannot decrease; capacity, pressure and phase stay fixed."""
     e_before = before.get("epi", 0.0)
     e_after = after.get("epi", 0.0)
     if e_after < e_before - 1e-6:
         return f"EPI decreased during Emission: " f"{e_before:.6f} → {e_after:.6f}"
+
+    vf_before = before.get("vf", 0.0)
+    vf_after = after.get("vf", 0.0)
+    if abs(vf_after - vf_before) > 1e-9:
+        return f"νf changed during Emission: {vf_before:.6f} → {vf_after:.6f}"
+
+    dnfr_before = before.get("dnfr", 0.0)
+    dnfr_after = after.get("dnfr", 0.0)
+    if abs(dnfr_after - dnfr_before) > 1e-9:
+        return (
+            "ΔNFR changed during Emission: "
+            f"{dnfr_before:.6f} → {dnfr_after:.6f}"
+        )
+
+    theta_before = before.get("theta", 0.0)
+    theta_after = after.get("theta", 0.0)
+    if abs(angle_diff(theta_after, theta_before)) > 1e-9:
+        return (
+            "Phase changed during Emission: "
+            f"{theta_before:.6f} → {theta_after:.6f}"
+        )
     return None
 
 
@@ -1047,12 +1057,11 @@ class OperatorContractResult:
     Attributes
     ----------
     english_name : str
-        Public structural-operator name (Emission, Reception, ...). This is the
-        canonical public identifier; ``glyph`` is the internal symbolic code.
+        Title-case public display/class name (Emission, Reception, ...).
     glyph : str
         Internal symbolic glyph code (AL, EN, IL, ...).
     operator : str
-        Canonical function name (emission, reception, ...).
+        Canonical lowercase public executable identifier (emission, reception, ...).
     contract : str
         The canonical postcondition contract being measured.
     context : str

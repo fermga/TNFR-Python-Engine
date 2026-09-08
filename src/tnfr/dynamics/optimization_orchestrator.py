@@ -532,6 +532,7 @@ class TNFROptimizationOrchestrator:
         dt = kwargs.get("dt", 0.01)
         transaction = GraphTransactionSnapshot(G)
         committed = False
+        failure: BaseException | None = None
         try:
             fft_results = self.fft_engine.run_fft_simulation(G, num_steps, dt)
             if not isinstance(fft_results, Mapping):
@@ -590,9 +591,15 @@ class TNFROptimizationOrchestrator:
             )
             committed = equation_verified
             return result
+        except BaseException as exc:
+            failure = exc
+            raise
         finally:
             if not committed:
-                transaction.restore(G)
+                if failure is None:
+                    transaction.restore(G)
+                else:
+                    transaction.restore_after_failure(G, failure)
 
     def _execute_nodal_optimization(
         self, G: Any, operation: str, **kwargs

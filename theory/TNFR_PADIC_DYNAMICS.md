@@ -104,29 +104,33 @@ map keeps its neutral name. The claim *"a compatible p-adic tower realises
 REMESH"* (`NT-P04`) is therefore **CONJECTURAL**; naming the reduction REMESH is
 forbidden until every contract field is independently established.
 
-### 5b. The R4b campaign — what the lift lacks (N09)
+### 5b. The R4b campaign — temporal memory and the U5 boundary (N09)
 
-The missing ingredient is now **measured**, not just asserted
-([remesh_audit.py](../src/tnfr/mathematics/remesh_audit.py)). The static tower
-candidate is the same-scale projection `P = Lift_e · R_e` (regenerate the fine
-field from its fiber averages — a projection **morphism**, N08). Auditing the four
-conditions against a genuine temporal recurrence
-`EPI_new = (1-α)² EPI(t) + α(1-α) EPI(t-τ_l) + α EPI(t-τ_g)`:
+The campaign measures the missing temporal ingredient
+([remesh_audit.py](../src/tnfr/mathematics/remesh_audit.py)) without conflating
+field dispersion with hierarchy coherence. The static tower candidate is the
+same-scale projection `P = Lift_e · R_e`; the temporal candidate is
+`EPI_new = (1-α)² EPI(t) + α(1-α) EPI(t-τ_l) + α EPI(t-τ_g)`.
+Their default audits are:
 
-| candidate | temporal echo | NETWORK scale | identity | U5 | REMESH |
-|-----------|---------------|---------------|----------|----|--------|
-| static `Lift·R_e` (the tower) | **no** (`0`) | yes | yes | yes | **no** |
-| temporal recurrence | yes (`≈ 1.5`) | yes | yes | yes | **yes** |
+| candidate | temporal echo | NETWORK probe | identity probe | `1/(1+std(EPI))` | declared U5 | REMESH |
+|-----------|---------------|---------------|----------------|------------------|-------------|--------|
+| static `Lift·R_e` | **no** (`0`) | yes | yes | preserved | unverified | **no** |
+| temporal recurrence | yes (`≈ 1.5`) | yes | yes | preserved | unverified | **no** |
 
-The static map satisfies **three of four** conditions but has **zero temporal
-echo** (perturbing the delayed inputs leaves the output unchanged) — it transports
-structure instantaneously, so it is a morphism, not REMESH. The temporal
-recurrence passes all four (its coefficients `((1-α)², α(1-α), α)` are a partition
-of unity — a convex, identity- and coherence-preserving mix). So the gate is a
-**real discriminator, not vacuous**: it *accepts* a genuine `EPI(t) ← EPI(t-τ)`
-recursion and *rejects* the static lift. R4b closes as an **honest negative for
-the tower**: the only thing the projective transport lacks to be REMESH is the
-temporal echo.
+The dispersion score is now reported as `field_uniformity_*`. It reads only the
+sampled scalar EPI field; it does not read `DeltaNFR` or `dEPI` and declares no
+parent/child relation. It therefore cannot set `u5_multiscale_verified`.
+The default campaign establishes only that the recurrence responds to delayed
+inputs while the projection does not: `temporal_echo_discriminates == True`, but
+`audit_discriminates == False` because U5 has no declared evidence.
+
+A caller can provide candidate-specific `RemeshU5Evidence` for a concrete graph
+materialized after the update. The audit then invokes
+`assess_u5_parent_child_coherence` with the declared parent, children, alpha and
+tolerance. A satisfying assessment can complete the temporal candidate's scoped
+four-condition audit. This is evidence for that hierarchy and state; it is not a
+universal U5-preservation theorem for later states or arbitrary recurrences.
 
 ## 6. Claim ledger
 
@@ -138,10 +142,12 @@ temporal echo.
 | `spec(L_e) ⊆ spec(L_{e+1})` | intertwining corollary | **DERIVED** + MEASURED (`~1e-15`) |
 | compatibility necessary | non-uniform control | **MEASURED** (residual `≠ 0`) |
 | tower realises REMESH | contract unverified | **CONJECTURAL** (`NT-P04`, `realizes_remesh = False`) |
-| static `Lift·R_e` fails only the temporal echo | four-condition audit (N09) | **MEASURED** (3/4 pass, echo `= 0`) |
-| the four-condition gate discriminates REMESH | recurrence passes all four (N09) | **MEASURED** (`NT-P04b` negative for the tower) |
+| static `Lift·R_e` lacks temporal echo and declared U5 evidence | scoped audit (N09) | **MEASURED** (2/4 pass, echo `= 0`) |
+| temporal recurrence has delayed-input sensitivity | temporal probe (N09) | **MEASURED** (`temporal_echo_discriminates = True`) |
+| default campaign realises REMESH | no declared hierarchy | **UNVERIFIED** (`audit_discriminates = False`) |
+| recurrence with declared hierarchy evidence | canonical U5 assessment | **SCOPED** to the supplied post-update state |
 
-**Bottom line.** The reduction-compatible p-adic tower carries a genuinely
+**Scope.** The reduction-compatible p-adic tower carries a genuinely
 projective transport: coarse and fine dynamics commute with fiber-averaging, the
 lift intertwines the levels, and coarse modes survive exactly. This is a
 structural scale-consistency result on small `p` and low exponents. It does

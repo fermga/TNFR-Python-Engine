@@ -116,12 +116,9 @@ def test_invalid_template_controls_fail_before_node_creation(monkeypatch, method
 @pytest.mark.parametrize("budget", [1, 2, 3])
 def test_real_template_cycles_follow_exact_words_and_repeat(monkeypatch, method, budget):
     from tnfr.operators import word_execution
-    from tnfr.operators.network_stage import (
-        OPERATOR_MAJOR_GAUSS_SEIDEL,
-        STAGE_SCHEDULE_KEY,
-        TWO_PHASE_JACOBI,
-    )
+    from tnfr.operators.network_stage import STAGE_SCHEDULE_KEY
     from tnfr.operators.registry import get_operator_class
+    from tnfr.operators.stage_contracts import stage_contract_for
 
     # Explicit coherent initial phases isolate cycle accounting from random
     # U3 admissibility. Operators and their hard phase gates remain active.
@@ -198,11 +195,7 @@ def test_real_template_cycles_follow_exact_words_and_repeat(monkeypatch, method,
             assert schedule == {
                 "operator": operator_name,
                 "glyph": glyph,
-                "schedule": (
-                    TWO_PHASE_JACOBI
-                    if operator_name in {"reception", "resonance"}
-                    else OPERATOR_MAJOR_GAUSS_SEIDEL
-                ),
+                "schedule": stage_contract_for(operator_name).current_schedule.value,
                 "nodes_processed": 6,
             }
             # The callback runs after the whole stage commits. Every target
@@ -228,12 +221,56 @@ def test_real_template_cycles_follow_exact_words_and_repeat(monkeypatch, method,
 
 
 def test_sampled_template_phases_still_require_the_live_u3_gate():
+    from copy import deepcopy
+
+    from tnfr.alias import get_attr
+    from tnfr.constants.aliases import ALIAS_THETA
+    from tnfr.constants.canonical import DELTA_PHI_MAX
+    from tnfr.operators.definitions import Coupling
     from tnfr.operators.preconditions import OperatorPreconditionError
+    from tnfr.utils import angle_diff
+
+    graph = Templates.creative_process_model(
+        ideas=12,
+        inspiration_level=0.4,
+        development_cycles=0,
+        random_seed=7,
+    ).graph
+
+    def phase(node):
+        return get_attr(graph.nodes[node], ALIAS_THETA, 0.0)
+
+    inadmissible = tuple(
+        node
+        for node in graph
+        if graph.degree(node) > 0
+        and all(
+            abs(angle_diff(phase(node), phase(neighbor))) > DELTA_PHI_MAX
+            for neighbor in graph.neighbors(node)
+        )
+    )
+    assert inadmissible
+    target = inadmissible[0]
+
+    def mutation_surface():
+        return {
+            "nodes": deepcopy(dict(graph.nodes(data=True))),
+            "edges": deepcopy(tuple(graph.edges(data=True))),
+            "graph": tuple(
+                (key, repr(value)) for key, value in graph.graph.items()
+            ),
+            "last_operator": (
+                hasattr(graph, "_last_operator_applied"),
+                getattr(graph, "_last_operator_applied", None),
+            ),
+        }
+
+    before = mutation_surface()
 
     with pytest.raises(OperatorPreconditionError, match="U3 phase gate"):
-        Templates.creative_process_model(
-            ideas=12, inspiration_level=0.4, development_cycles=3, random_seed=7,
-        )
+        Coupling()(graph, target)
+
+    assert mutation_surface() == before
 
 
 def test_template_topology_helpers_preserve_mixed_node_identities():

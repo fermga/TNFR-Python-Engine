@@ -1,9 +1,10 @@
 """Compartment diagnostics and membrane-pressure dynamics for TNFR graphs.
 
-The read-only detector reports boundary coherence, an unweighted edge-count
-selectivity diagnostic, internal-pressure dispersion and optional flux-based
-membrane integrity. It classifies only those declared observables; it does not
-establish an autopoietic ``A > 1`` certificate or nested U5 coherence.
+The read-only detector reports canonical ``C(t)`` on the declared boundary,
+an unweighted edge-count selectivity diagnostic, internal-pressure dispersion
+and optional flux-based membrane integrity. It classifies only those declared
+observables; it does not establish an autopoietic ``A > 1`` certificate or
+nested U5 coherence.
 
 The membrane solver specializes the nodal equation through an explicit pressure
 channel without defining another glyph::
@@ -65,8 +66,9 @@ class CellTelemetry:
         I_compartment(t) in [0, 1] from supplied flux pairs. NaN means
         that no flux evidence was supplied for that snapshot.
     cell_formation_time : float | None
-        First time t where all cellular criteria satisfied (C_boundary > 0.8,
-        ρ_selectivity > 0.6, H_index > 0.5, I_compartment > 0.7), else None.
+        First time t where all cellular criteria are satisfied. The default
+        ``C_boundary > 0.8`` cut is a selected cell-detector heuristic, not a
+        threshold of an operator matrix.
     """
 
     times: list[float]
@@ -120,10 +122,11 @@ class MembraneFluxResult:
 
 
 def compute_boundary_coherence(graph: nx.Graph, boundary_nodes: Sequence[int]) -> float:
-    """Compute coherence specifically at cellular boundary regions per TNFR coherence operator.
+    """Compute canonical total coherence ``C(t)`` on the boundary subgraph.
 
-    From the TNFR coherence operator Ĉ, boundary coherence measures structural stability
-    at the compartment interface. Uses centralized coherence computation from tnfr.metrics.common.
+    The centralized constitutive kernel uses boundary-node means of
+    ``|DeltaNFR|`` and ``|dEPI|``. This is a restricted graph read-out of
+    canonical ``C(t)``, not the auxiliary pairwise ``coherence_matrix``.
 
     Parameters
     ----------
@@ -135,8 +138,9 @@ def compute_boundary_coherence(graph: nx.Graph, boundary_nodes: Sequence[int]) -
     Returns
     -------
     float
-        Boundary coherence C_boundary ∈ [0, 1]. C_boundary > 0.8 indicates
-        strong membrane formation suitable for compartmentalization.
+        Boundary coherence ``C_boundary`` in ``[0, 1]``. The default ``0.8``
+        cut in :func:`detect_cell_formation` is a selected cellular heuristic,
+        not a threshold derived from the coherence operator notation.
     """
     if not boundary_nodes:
         return 0.0
@@ -322,7 +326,7 @@ def detect_cell_formation(
     flux pairs. It does not compute or assume an autopoietic coefficient.
 
     Cellular criteria (all must be satisfied simultaneously):
-    - Boundary coherence: C_boundary > c_boundary_threshold (default 0.8)
+    - Boundary canonical C(t): C_boundary > c_boundary_threshold (default 0.8)
     - Selectivity index: ρ_selectivity > selectivity_threshold (default 0.6)
     - Homeostatic dispersion score: H_index > homeostasis_threshold (default 0.5)
     - Membrane integrity: I_compartment > integrity_threshold (default 0.7)
@@ -330,7 +334,8 @@ def detect_cell_formation(
     Parameters
     ----------
     graph_sequence : Sequence[nx.Graph]
-        Time series of TNFR network states with node attributes 'delta_nfr' (structural pressure).
+        Time series of TNFR network states with node attribute ``delta_nfr``
+        (structural pressure).
     times : Sequence[float]
         Structural-time coordinates corresponding to each graph state.
     internal_nodes : Sequence[int]
@@ -338,7 +343,8 @@ def detect_cell_formation(
     boundary_nodes : Sequence[int]
         Node IDs that form the phase-selective cellular boundary (membrane).
     c_boundary_threshold : float, default=0.8
-        Minimum boundary coherence for cellular membrane formation.
+        Selected cell-detector heuristic for minimum boundary ``C(t)``. It is
+        not a general threshold of canonical coherence or an operator matrix.
     selectivity_threshold : float, default=0.6
         Minimum selectivity index for preferential internal coupling.
     homeostasis_threshold : float, default=0.5

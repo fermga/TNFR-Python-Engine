@@ -2,11 +2,11 @@
 """Example 159 — the empirical-confrontation pipeline (TNFR-IA -> engine).
 
 Promotes the TNFR-IA empirical arm's workflow to a runnable engine example:
-map an objective multichannel signal onto the canonical TNFR magnitudes and
+map an objective multichannel signal onto scoped TNFR read-outs and
 then ask the decisive question the two-face machinery answers — *which face is
 the data on?* — using only engine primitives.
 
-Pipeline (all canonical, engine-native):
+Pipeline (scoped, engine-native):
   signal  -> analytic phase/amplitude        (phase_amplitude_matrices)
           -> emergent phase-locking graph     (build_coupling_graph, U3/PLV)
           -> emergent geometry (L_rw modes)   (compute_emergent_pulse)
@@ -16,7 +16,7 @@ Pipeline (all canonical, engine-native):
                                                damped_wave_rates)
 
 The confrontation (measured here):
-  M1  Canonical read-outs of the data: the emergent pulse (fundamental
+  M1  Scoped read-outs of the data: the emergent pulse (fundamental
       omega = sqrt(lambda_2), dominant beat, vibration energy), the fitted
       coherence length xi_C from a correlation-decay fit when identifiable,
       with the graph-spectral scale 1/sqrt(lambda_2) as fallback, plus the
@@ -33,9 +33,9 @@ The confrontation (measured here):
       falsifiable against data because the face is *measured*, not assumed.
 
 HONEST SCOPE: this is the empirical *instrument*, not a competitive model.
-On accessible-signal tasks the canonical read-outs tie simple baselines
-(see the TNFR-IA findings); their value is canonical, emergent parsimony and
-interpretability. Closes no open problem.
+On accessible-signal tasks the scoped read-outs tie simple baselines
+(see the TNFR-IA findings); their value lies in parsimonious, transparent
+structural interpretation. Closes no open problem.
 
 Run:
     python examples/10_applications/159_empirical_confrontation_pipeline.py
@@ -113,10 +113,10 @@ def main() -> None:
     )
     xi_estimate = estimate_coherence_length_with_provenance(coupling_graph)
 
-    print("\nCanonical read-outs of the emergent coupling graph:")
+    print("\nScoped read-outs of the emergent coupling graph:")
     print(f"   Kuramoto R           = {rep.kuramoto_R:.3f}")
-    print(f"   coherence C          = {rep.coherence:.3f}  "
-          f"(at ΔNFR=0 attractor: {rep.at_equilibrium})")
+    print(f"   static coherence C₀ = {rep.coherence:.3f}  "
+          f"(mean |ΔNFR| within tolerance: {rep.at_equilibrium}; dEPI=0)")
     print(
         f"   tetrad |∇φ|,|K_φ|    = {rep.grad_phi:.3f}, {rep.k_phi:.3f}  "
         "(local phase-field summaries)"

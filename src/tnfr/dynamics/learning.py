@@ -95,7 +95,7 @@ class AdaptiveLearningSystem:
         """Execute learning cycle from external stimulus.
 
         Implements canonical learning sequence following TNFR grammar:
-        - AL (Emission): Activate learning readiness
+        - AL (Emission): Seed the learning form
         - EN (Reception): Receive stimulus
         - IL (Coherence): Stabilize before dissonance (grammar requirement)
         - OZ (Dissonance): If stimulus is dissonant
@@ -169,7 +169,7 @@ class AdaptiveLearningSystem:
         """Execute memory consolidation cycle.
 
         Implements canonical consolidation sequence:
-        - AL (Emission): Reactivate for consolidation
+        - AL (Emission): Source EPI for consolidation
         - EN (Reception): Integrate memory
         - IL (Coherence): Stabilize structure
         - REMESH (Recursivity): Recursive consolidation

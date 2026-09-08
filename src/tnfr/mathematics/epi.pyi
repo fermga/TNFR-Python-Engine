@@ -5,7 +5,20 @@ from typing import Callable, Mapping, Sequence
 
 import numpy as np
 
-__all__ = ["BEPIElement", "CoherenceEvaluation", "evaluate_coherence_transform"]
+from .spaces import BanachSpaceEPI
+
+COMPOSITE_EPI_REGULARITY_KIND: str
+COMPOSITE_EPI_REGULARITY_PROVENANCE: str
+
+__all__ = [
+    "BEPIElement",
+    "COMPOSITE_EPI_REGULARITY_KIND",
+    "COMPOSITE_EPI_REGULARITY_PROVENANCE",
+    "CompositeEPIRegularityEvaluation",
+    "evaluate_composite_epi_regularity_transform",
+    "CoherenceEvaluation",
+    "evaluate_coherence_transform",
+]
 
 class _EPIValidators:
     @classmethod
@@ -45,17 +58,35 @@ class BEPIElement(_EPIValidators):
     def __eq__(self, other: object) -> bool: ...
 
 @dataclass(frozen=True)
-class CoherenceEvaluation:
+class CompositeEPIRegularityEvaluation:
     element: BEPIElement
     transformed: BEPIElement
-    coherence_before: float
-    coherence_after: float
+    regularity_before: float
+    regularity_after: float
     kappa: float
     tolerance: float
     satisfied: bool
     required: float
     deficit: float
     ratio: float
+    metric_kind: str = ...
+    provenance: str = ...
+    @property
+    def coherence_before(self) -> float: ...
+    @property
+    def coherence_after(self) -> float: ...
+
+CoherenceEvaluation = CompositeEPIRegularityEvaluation
+
+def evaluate_composite_epi_regularity_transform(
+    element: BEPIElement,
+    transform: Callable[[BEPIElement], BEPIElement],
+    *,
+    kappa: float = 1.0,
+    tolerance: float = 1e-09,
+    space: BanachSpaceEPI | None = None,
+    regularity_kwargs: Mapping[str, float] | None = None,
+) -> CompositeEPIRegularityEvaluation: ...
 
 def evaluate_coherence_transform(
     element: BEPIElement,
@@ -65,4 +96,4 @@ def evaluate_coherence_transform(
     tolerance: float = 1e-09,
     space: BanachSpaceEPI | None = None,
     norm_kwargs: Mapping[str, float] | None = None,
-) -> CoherenceEvaluation: ...
+) -> CompositeEPIRegularityEvaluation: ...

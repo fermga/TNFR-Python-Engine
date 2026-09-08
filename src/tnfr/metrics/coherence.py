@@ -1,37 +1,25 @@
-r"""Coherence metrics for TNFR networks.
+r"""Canonical coherence and auxiliary structural affinities.
 
-This module implements the coherence operator :math:`\hat{C}` and related
-metrics for measuring structural stability in resonant fractal networks.
-
-Mathematical Foundation
------------------------
-
-The **coherence operator** :math:`\hat{C}` is a Hermitian operator on the Hilbert
-space :math:`H_{\text{NFR}}` with spectral decomposition:
+The canonical total coherence is
 
 .. math::
-    \hat{C} = \sum_i \lambda_i |\phi_i\rangle\langle\phi_i|
+    C(t) = \frac{1}{1 + \operatorname{mean}|\Delta\mathrm{NFR}|
+                         + \operatorname{mean}|d\mathrm{EPI}/dt|},
 
-where :math:`\lambda_i \geq 0` are coherence eigenvalues and :math:`|\phi_i\rangle`
-are coherence eigenstates (maximally stable configurations).
+implemented by :func:`tnfr.metrics.common.compute_coherence` and re-exported
+from this module.  :func:`coherence_matrix` computes a different object: a
+bounded pairwise structural-affinity matrix from phase, EPI, frequency and Si.
+The historical ``coherence operator`` name is retained by public APIs, but the
+matrix is not another definition of ``C(t)`` and is not positive semidefinite
+in general.
 
-**Properties**:
-
-1. **Hermiticity**: :math:`\hat{C}^\dagger = \hat{C}` (ensures real eigenvalues)
-2. **Positivity**: :math:`\langle\psi|\hat{C}|\psi\rangle \geq 0` (coherence is non-negative)
-3. **Boundedness**: :math:`\|\hat{C}\| \leq M` (prevents runaway growth)
-
-In the discrete node basis :math:`\{|i\rangle\}`, matrix elements are approximated:
-
-.. math::
-    w_{ij} \approx \langle i | \hat{C} | j \rangle
-
-The **total coherence** is computed as the trace:
-
-.. math::
-    C(t) = \text{Tr}(\hat{C}\rho) = \sum_i w_{ii} \rho_i
-
-where :math:`\rho_i` is the density of node :math:`i` (typically uniform: :math:`\rho_i = 1/N`).
+For example, under the default neighbour scope, three structurally identical
+nodes on a path produce ``W = I + A_path``.  Its eigenvalues are
+``1, 1 - sqrt(2), 1 + sqrt(2)``, so one is negative.  The matrix is real
+symmetric because the implementation symmetrizes graph support, and every
+stored entry lies in ``[0, 1]``.  Those facts make it an admissible auxiliary
+Hermitian affinity in the legacy Hamiltonian model; they do not make it a
+constitutive coherence observable or a Lyapunov functional.
 
 Similarity Components
 ---------------------
@@ -59,8 +47,9 @@ Implementation Map
 
 **Core Functions**:
 
-- :func:`coherence_matrix` : Constructs :math:`W \approx \hat{C}` matrix representation
-- :func:`compute_coherence` : Global scalar coherence :math:`C = 1/(1 + \overline{|\Delta\text{NFR}|} + \overline{|d\text{EPI}|})` (imported from `.common`; distinct from the operator trace above)
+- :func:`coherence_matrix` : Constructs the auxiliary affinity matrix ``W``
+- :func:`compute_coherence` : Canonical scalar coherence :math:`C(t)`
+  (imported from :mod:`tnfr.metrics.common`)
 - :func:`compute_wij_phase_epi_vf_si` : Computes similarity components :math:`(s_{\text{phase}}, s_{\text{EPI}}, s_{\nu_f}, s_{\text{Si}})`
 
 **Helper Functions**:
@@ -68,22 +57,16 @@ Implementation Map
 - :func:`_combine_similarity` : Weighted combination: :math:`w_{ij} = \sum_k w_k s_k`
 - :func:`_compute_wij_phase_epi_vf_si_vectorized` : Vectorized computation for all pairs
 - :func:`_wij_vectorized` : Builds full matrix with NumPy acceleration
-- :func:`_wij_sparse` : Builds sparse matrix for large networks
-
-**Parallel Computation**:
-
-- :func:`_coherence_matrix_parallel` : Multi-process matrix construction
-- :func:`_parallel_wij_worker` : Worker function for parallel chunks
+- :func:`_coherence_numpy` : Serializes dense or sparse NumPy payloads
+- :func:`_coherence_python` : Serializes pure-Python payloads, optionally in workers
 
 Theoretical References
 ----------------------
 
-See the following for complete mathematical derivation:
-
-- **Mathematical Foundations**: `docs/source/theory/mathematical_foundations.md` §3.1
-- **Coherence Operator Theory**: Sections 3.1 (operator definition), 3.1.1 (implementation bridge)
-- **Spectral Properties**: Section 3.1 on eigenvalue decomposition
-- **Style Guide**: `docs/source/style_guide.md` for notation conventions
+The constitutive definition and its scope are stated in ``AGENTS.md`` and
+``theory/FUNDAMENTAL_THEORY.md``.  The affinity matrix is an implementation
+diagnostic; no positive-spectrum or trace representation of canonical
+coherence is assumed.
 
 Examples
 --------
@@ -106,20 +89,15 @@ True
 >>> nodes, W = coherence_matrix(G)
 >>> len(nodes) == 2
 True
->>> W.shape == (2, 2)  # Assuming numpy backend
+>>> len(W) > 0  # Sparse or dense according to configuration
 True
-
-**Worked examples** with step-by-step calculations:
-
-See `docs/source/examples/worked_examples.md` Example 2 for detailed coherence
-matrix element computation walkthrough.
 
 Notes
 -----
 
-- Matrix element computation can use different backends (NumPy, JAX, PyTorch)
-- Sparse matrix format is automatically selected for large networks (>1000 nodes)
-- Parallel computation is enabled for networks with >500 nodes by default
+- Matrix elements use the NumPy vectorized path or the pure-Python fallback
+- Sparse or dense storage is selected explicitly by ``COHERENCE.store_mode``
+- Pure-Python worker count is selected explicitly by ``COHERENCE.n_jobs``
 - Trigonometric values are cached to avoid redundant cos/sin evaluations
 
 See Also
@@ -137,6 +115,7 @@ import math
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
+from numbers import Integral, Real
 from typing import Any, MutableMapping, cast
 
 from .._compat import TypeAlias
@@ -207,8 +186,43 @@ CoherenceMatrixDense = list[list[float]]
 CoherenceMatrixSparse = list[tuple[int, int, float]]
 CoherenceMatrixPayload = CoherenceMatrixDense | CoherenceMatrixSparse
 PhaseSyncWeights: TypeAlias = (
-    Sequence[float] | CoherenceMatrixSparse | CoherenceMatrixDense
+    Sequence[float]
+    | CoherenceMatrixSparse
+    | CoherenceMatrixDense
+    | FloatArray
+    | FloatMatrix
 )
+
+
+def _is_sparse_affinity_payload(value: Any) -> bool:
+    """Identify the canonical sparse ``(row, column, weight)`` payload."""
+
+    return (
+        type(value) is list
+        and len(value) > 0
+        and all(
+            type(entry) is tuple
+            and len(entry) == 3
+            and isinstance(entry[0], Integral)
+            and not isinstance(entry[0], bool)
+            and isinstance(entry[1], Integral)
+            and not isinstance(entry[1], bool)
+            and isinstance(entry[2], Real)
+            and not isinstance(entry[2], bool)
+            for entry in value
+        )
+    )
+
+
+def _validated_affinity_weight(value: Any) -> float:
+    """Return a finite nonnegative affinity weight."""
+
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise TNFRValueError("affinity weights must be real non-Boolean scalars")
+    weight = float(value)
+    if not math.isfinite(weight) or weight < 0.0:
+        raise TNFRValueError("affinity weights must be finite and nonnegative")
+    return weight
 
 SimilarityComponents = tuple[float, float, float, float]
 VectorizedComponents: TypeAlias = tuple[
@@ -333,10 +347,13 @@ def compute_wij_phase_epi_vf_si(
     epi_range: float = 1.0,
     vf_range: float = 1.0,
 ) -> SimilarityComponents | VectorizedComponents:
-    r"""Compute structural similarity components for coherence matrix elements.
+    r"""Compute components of the auxiliary structural-affinity matrix.
 
-    Returns four similarity components :math:`(s_{\text{phase}}, s_{\text{EPI}}, s_{\nu_f}, s_{\text{Si}})`
-    that approximate coherence operator matrix elements :math:`w_{ij} \approx \langle i | \hat{C} | j \rangle`.
+    Returns the four bounded similarities
+    :math:`(s_{\text{phase}}, s_{\text{EPI}}, s_{\nu_f}, s_{\text{Si}})`
+    combined into :math:`w_{ij}`.  They do not define canonical ``C(t)`` and
+    do not imply that the assembled, support-masked matrix is positive
+    semidefinite.
 
     Mathematical Foundation
     -----------------------
@@ -378,7 +395,7 @@ def compute_wij_phase_epi_vf_si(
         w_{ij} = w_{\text{phase}} \cdot s_{\text{phase}} + w_{\text{EPI}} \cdot s_{\text{EPI}}
                + w_{\nu_f} \cdot s_{\nu_f} + w_{\text{Si}} \cdot s_{\text{Si}}
 
-    where :math:`w_{ij} \approx \langle i | \hat{C} | j \rangle` (coherence operator matrix element).
+    The resulting :math:`w_{ij}` is a pairwise structural affinity.
 
     Parameters
     ----------
@@ -427,7 +444,7 @@ def compute_wij_phase_epi_vf_si(
 
     See Also
     --------
-    coherence_matrix : Constructs full :math:`W \approx \hat{C}` matrix
+    coherence_matrix : Constructs the full auxiliary affinity matrix
     compute_coherence : Global scalar :math:`C = 1/(1 + \overline{|\Delta\text{NFR}|} + \overline{|d\text{EPI}|})`
     _combine_similarity : Weighted combination of similarity components
 
@@ -446,12 +463,6 @@ def compute_wij_phase_epi_vf_si(
     - `epi_range` and `vf_range` should reflect actual network ranges for proper scaling
     - If ranges are 0, defaults to 1.0 to avoid division by zero
     - Si similarity uses absolute difference (already bounded to [0,1])
-
-    References
-    ----------
-    .. [1] Mathematical Foundations, §3.1.1 - Implementation Bridge
-    .. [2] docs/source/theory/mathematical_foundations.md#311-implementation-bridge-theory-to-code
-    .. [3] docs/source/examples/worked_examples.md - Example 2: Coherence Matrix Elements
 
     Examples
     --------
@@ -558,11 +569,9 @@ def _combine_similarity(
     vf_w: float,
     si_w: float,
 ) -> ScalarOrArray:
-    """Combine similarity components into coherence weight wᵢⱼ ≈ ⟨i|Ĉ|j⟩.
+    """Combine similarity components into one bounded affinity ``w_ij``.
 
-    Returns wᵢⱼ ∈ [0, 1] clamped to maintain operator boundedness.
-
-    See: Mathematical Foundations §3.1.1 for spectral projection details.
+    Entrywise bounds do not imply a positive-semidefinite assembled matrix.
     """
     wij = phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
     if np is not None:
@@ -912,13 +921,14 @@ def _coherence_numpy(
     """
 
     n = wij.shape[0]
-    mask = ~np.eye(n, dtype=bool)
-    values = wij[mask]
+    off_diagonal = ~np.eye(n, dtype=bool)
+    values = wij[off_diagonal]
     row_sum = wij.sum(axis=1)
     if mode == "dense":
         W = wij.tolist()
     else:
-        idx = np.where((wij >= thr) & mask)
+        stored = off_diagonal & (wij != 0.0) & (wij >= thr)
+        idx = np.where(stored)
         W = [(int(i), int(j), float(wij[i, j])) for i, j in zip(idx[0], idx[1])]
     return n, values, row_sum, W
 
@@ -939,7 +949,7 @@ def _coherence_python_worker(
             total += w
             if i != j:
                 values.append(w)
-                if not dense_mode and w >= thr:
+                if not dense_mode and w != 0.0 and w >= thr:
                     sparse.append((i, j, w))
         row_sum.append(total)
 
@@ -983,7 +993,7 @@ def _coherence_python(
                     w = row_i[j]
                     if i != j:
                         values.append(w)
-                        if w >= thr:
+                        if w != 0.0 and w >= thr:
                             W_sparse.append((i, j, w))
                     row_sum[i] += w
         return n, values, row_sum, W if mode == "dense" else W_sparse
@@ -1036,6 +1046,7 @@ def _finalize_wij(
     self_diag: bool,
     *,
     n_jobs: int = 1,
+    record_history: bool = True,
 ) -> tuple[list[NodeId], CoherenceMatrixPayload]:
     """Finalize the coherence matrix ``wij`` and store results in history.
 
@@ -1063,11 +1074,12 @@ def _finalize_wij(
         "scope": scope,
     }
 
-    hist = ensure_history(G)
-    cfg = get_param(G, "COHERENCE")
-    append_metric(hist, cfg.get("history_key", "W_sparse"), W)
-    append_metric(hist, cfg.get("Wi_history_key", "W_i"), Wi)
-    append_metric(hist, cfg.get("stats_history_key", "W_stats"), stats)
+    if record_history:
+        hist = ensure_history(G)
+        cfg = get_param(G, "COHERENCE")
+        append_metric(hist, cfg.get("history_key", "W_sparse"), W)
+        append_metric(hist, cfg.get("Wi_history_key", "W_i"), Wi)
+        append_metric(hist, cfg.get("stats_history_key", "W_stats"), stats)
     return list(nodes), W
 
 
@@ -1076,17 +1088,21 @@ def coherence_matrix(
     use_numpy: bool | None = None,
     *,
     n_jobs: int | None = None,
+    _force_dense: bool = False,
+    _record_history: bool = True,
 ) -> tuple[list[NodeId] | None, CoherenceMatrixPayload | None]:
-    """Compute coherence matrix W approximating operator Ĉ.
+    """Compute the auxiliary structural-affinity matrix ``W``.
 
-    Returns matrix W where wᵢⱼ ≈ ⟨i|Ĉ|j⟩ computed from structural
-    similarities: phase, EPI, frequency, and sense index.
+    Entries combine phase, EPI, frequency and Si similarities.  The configured
+    support mask is symmetric, including for directed input graphs, and each
+    retained entry is in ``[0, 1]``.  The matrix is therefore real symmetric,
+    but it need not be positive semidefinite.  It is distinct from canonical
+    total coherence ``C(t)``.
 
-    Mathematical Foundation:
-        Ĉ ≈ Σᵢⱼ wᵢⱼ |i⟩⟨j|
-
-    Matrix W satisfies Hermiticity (W=W^T), element bounds (wᵢⱼ ∈ [0,1]),
-    and provides spectrum σ(Ĉ) via eigenvalues.
+    Under neighbour scope and the default unit-diagonal policy, identical
+    nodes on the three-node path give ``W = I + A_path`` with the negative
+    eigenvalue ``1 - sqrt(2)``.  This is the minimal counterexample within
+    that policy to the historical positive-semidefinite claim.
 
     Parameters
     ----------
@@ -1096,6 +1112,10 @@ def coherence_matrix(
         Force NumPy (True), pure Python (False), or auto-detect (None)
     n_jobs:
         Worker processes for Python fallback (None or ≤1 = serial)
+
+    The private force-dense and record-history controls let internal consumers
+    read the complete affinity without making a storage policy part of their
+    matrix or appending metric history.
 
     Returns
     -------
@@ -1107,12 +1127,16 @@ def coherence_matrix(
     See Also
     --------
     compute_coherence : Global scalar C = 1/(1 + mean|ΔNFR| + mean|dEPI|)
-    Mathematical Foundations §3.1: Theory + Implementation Bridge
 
     Examples
     --------
-    >>> nodes, W = coherence_matrix(G)
-    >>> # W[i][j] ≈ ⟨i|Ĉ|j⟩ for computational basis
+    >>> import networkx as nx
+    >>> graph = nx.path_graph(2)
+    >>> nodes, W = coherence_matrix(graph)
+    >>> nodes
+    [0, 1]
+    >>> W
+    [(0, 1, 1.0), (1, 0, 1.0)]
     """
 
     cfg = get_param(G, "COHERENCE")
@@ -1153,7 +1177,9 @@ def coherence_matrix(
     scope = str(cfg.get("scope", "neighbors")).lower()
     neighbors_only = scope != "all"
     self_diag = bool(cfg.get("self_on_diag", True))
-    mode = str(cfg.get("store_mode", "sparse")).lower()
+    mode = "dense" if _force_dense else str(
+        cfg.get("store_mode", "sparse")
+    ).lower()
     thr = float(cfg.get("threshold", 0.0))
     if mode not in ("sparse", "dense"):
         mode = "sparse"
@@ -1217,6 +1243,7 @@ def coherence_matrix(
         scope,
         self_diag,
         n_jobs=parallel_jobs if not use_np else 1,
+        record_history=_record_history,
     )
 
 
@@ -1229,9 +1256,11 @@ def local_phase_sync_weighted(
 ) -> float:
     """Compute local phase synchrony using explicit weights.
 
-    ``nodes_order`` is the node ordering used to build the coherence matrix
-    and ``W_row`` contains either the dense row corresponding to ``n`` or the
-    sparse list of ``(i, j, w)`` tuples for the whole matrix.
+    ``nodes_order`` is the node ordering used to build the affinity. ``W_row``
+    contains a dense row, a full dense matrix, or the canonical sparse list of
+    exact ``(i, j, w)`` tuples. Dense NumPy arrays are accepted in one or two
+    dimensions. A Python list of exact three-tuples is reserved for the sparse
+    payload; use nested lists or a two-dimensional array for a dense 3x3.
     """
     if W_row is None or nodes_order is None:
         raise TNFRValueError(
@@ -1239,10 +1268,12 @@ def local_phase_sync_weighted(
         )
 
     if node_to_index is None:
-        node_to_index = ensure_node_index_map(G)
-    i = node_to_index.get(n)
-    if i is None:
         i = nodes_order.index(n)
+    else:
+        i = node_to_index.get(n)
+        if i is None:
+            i = nodes_order.index(n)
+    size = len(nodes_order)
 
     num = 0 + 0j
     den = 0.0
@@ -1250,87 +1281,83 @@ def local_phase_sync_weighted(
     trig = get_trig_cache(G)
     cos_map, sin_map = trig.cos, trig.sin
 
-    if isinstance(W_row, Sequence) and W_row:
-        first = W_row[0]
-        if isinstance(first, (int, float)):
-            row_vals = cast(Sequence[float], W_row)
-            for w, nj in zip(row_vals, nodes_order):
-                if nj == n:
-                    continue
-                den += w
-                cos_j = cos_map.get(nj)
-                sin_j = sin_map.get(nj)
-                if cos_j is None or sin_j is None:
-                    trig_j = compute_theta_trig(((nj, G.nodes[nj]),))
-                    cos_j = trig_j.cos[nj]
-                    sin_j = trig_j.sin[nj]
-                num += w * complex(cos_j, sin_j)
-            return abs(num / den) if den else 0.0
-
-        if (
-            isinstance(first, Sequence)
-            and len(first) == 3
-            and isinstance(first[0], int)
-            and isinstance(first[1], int)
-            and isinstance(first[2], (int, float))
-        ):
-            sparse_entries = cast(CoherenceMatrixSparse, W_row)
-            for ii, jj, w in sparse_entries:
-                if ii != i:
-                    continue
-                nj = nodes_order[jj]
-                if nj == n:
-                    continue
-                den += w
-                cos_j = cos_map.get(nj)
-                sin_j = sin_map.get(nj)
-                if cos_j is None or sin_j is None:
-                    trig_j = compute_theta_trig(((nj, G.nodes[nj]),))
-                    cos_j = trig_j.cos[nj]
-                    sin_j = trig_j.sin[nj]
-                num += w * complex(cos_j, sin_j)
-            return abs(num / den) if den else 0.0
-
-        dense_matrix = cast(CoherenceMatrixDense, W_row)
-        if i is None:
-            raise TNFRValueError("node index resolution failed for dense weights")
-        row_vals = cast(Sequence[float], dense_matrix[i])
-        for w, nj in zip(row_vals, nodes_order):
+    if _is_sparse_affinity_payload(W_row):
+        sparse_entries = cast(CoherenceMatrixSparse, W_row)
+        for ii, jj, w in sparse_entries:
+            if not 0 <= ii < size or not 0 <= jj < size:
+                raise TNFRValueError("sparse affinity index is out of range")
+            weight = _validated_affinity_weight(w)
+            if ii != i:
+                continue
+            nj = nodes_order[jj]
             if nj == n:
                 continue
-            den += w
+            den += weight
             cos_j = cos_map.get(nj)
             sin_j = sin_map.get(nj)
             if cos_j is None or sin_j is None:
                 trig_j = compute_theta_trig(((nj, G.nodes[nj]),))
                 cos_j = trig_j.cos[nj]
                 sin_j = trig_j.sin[nj]
-            num += w * complex(cos_j, sin_j)
+            num += weight * complex(cos_j, sin_j)
         return abs(num / den) if den else 0.0
 
-    sparse_entries = cast(CoherenceMatrixSparse, W_row)
-    for ii, jj, w in sparse_entries:
-        if ii != i:
-            continue
-        nj = nodes_order[jj]
+    if np is not None and isinstance(W_row, np.ndarray):
+        if W_row.ndim == 1:
+            if W_row.shape != (size,):
+                raise TNFRValueError("dense affinity row has the wrong length")
+            row_vals = W_row
+        elif W_row.ndim == 2:
+            if W_row.shape != (size, size):
+                raise TNFRValueError("dense affinity matrix has the wrong shape")
+            row_vals = W_row[i]
+        else:
+            raise TNFRValueError("dense weights must have one or two dimensions")
+    elif isinstance(W_row, Sequence) and not isinstance(W_row, (str, bytes)):
+        if len(W_row) == 0:
+            return 0.0
+        first = W_row[0]
+        if isinstance(first, Real) and not isinstance(first, bool):
+            if len(W_row) != size:
+                raise TNFRValueError("dense affinity row has the wrong length")
+            row_vals = cast(Sequence[float], W_row)
+        else:
+            dense_matrix = cast(CoherenceMatrixDense, W_row)
+            if len(dense_matrix) != size or any(
+                not isinstance(row, Sequence)
+                or isinstance(row, (str, bytes))
+                or len(row) != size
+                for row in dense_matrix
+            ):
+                raise TNFRValueError("dense affinity matrix has the wrong shape")
+            row_vals = dense_matrix[i]
+    else:
+        raise TNFRValueError("weights must be a dense row, matrix, or sparse list")
+
+    for w, nj in zip(row_vals, nodes_order):
+        weight = _validated_affinity_weight(w)
         if nj == n:
             continue
-        den += w
+        den += weight
         cos_j = cos_map.get(nj)
         sin_j = sin_map.get(nj)
         if cos_j is None or sin_j is None:
             trig_j = compute_theta_trig(((nj, G.nodes[nj]),))
             cos_j = trig_j.cos[nj]
             sin_j = trig_j.sin[nj]
-        num += w * complex(cos_j, sin_j)
+        num += weight * complex(cos_j, sin_j)
 
     return abs(num / den) if den else 0.0
 
 
 def local_phase_sync(G: TNFRGraph, n: NodeId) -> float:
-    """Compute unweighted local phase synchronization for node ``n``."""
-    nodes, W = coherence_matrix(G)
-    if nodes is None:
+    """Compute affinity-weighted local phase synchronization for node ``n``.
+
+    This read-only query suppresses coherence-history recording; the explicit
+    coherence callback remains the metric-recording boundary.
+    """
+    nodes, W = coherence_matrix(G, _record_history=False)
+    if nodes is None or W is None:
         return 0.0
     return local_phase_sync_weighted(G, n, nodes_order=nodes, W_row=W)
 
@@ -1893,7 +1920,7 @@ def compute_global_coherence(G: TNFRGraph) -> float:
 
     - **σ_ΔNFR**: Standard deviation of ΔNFR values measures dispersion
     - **max|ΔNFR|**: Magnitude scale provides sign-invariant normalization
-    - **C(t)**: Higher values indicate more uniform structural state
+    - **C_disp**: Higher values indicate more uniform structural pressure
 
     **Special Cases:**
 
@@ -1905,9 +1932,11 @@ def compute_global_coherence(G: TNFRGraph) -> float:
 
     This dispersion diagnostic complements the primary coherence ``C(t)``
     (:func:`tnfr.metrics.common.compute_coherence`) when assessing IL
-    (Coherence) operator effectiveness. When IL is applied, both the primary
-    ``C(t)`` rises (pressure shrinks toward zero) and this dispersion form
-    rises (ΔNFR becomes more uniform).
+    (Coherence) operator effectiveness. IL pressure contraction makes the
+    primary ``C(t)`` nondecreasing before an external pressure refresh. This
+    dispersion form can rise, fall or remain unchanged because it measures the
+    pressure distribution rather than its absolute magnitude; a uniform
+    all-target scaling leaves it invariant.
 
     See Also
     --------
@@ -1952,12 +1981,12 @@ def compute_global_coherence(G: TNFRGraph) -> float:
     if dnfr_max == 0:
         return 1.0
 
-    C_t = 1.0 - (sigma_dnfr / dnfr_max)
+    C_disp = 1.0 - (sigma_dnfr / dnfr_max)
 
     # Clamp to [0, 1] to handle numerical edge cases
     if np is not None:
-        return float(np.clip(C_t, 0.0, 1.0))
-    return max(0.0, min(1.0, C_t))
+        return float(np.clip(C_disp, 0.0, 1.0))
+    return max(0.0, min(1.0, C_disp))
 
 
 def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
@@ -1996,7 +2025,7 @@ def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
     - **Hotspot Detection**: Identify regions of structural instability
     - **IL Targeting**: Prioritize nodes needing coherence stabilization
     - **Network Health**: Monitor local vs. global coherence balance
-    - **Bifurcation Risk**: Low local C(t) may predict structural splits
+    - **Bifurcation Risk**: Low local dispersion coherence may flag structural splits
 
     **Radius Selection:**
 

@@ -129,7 +129,12 @@ from .conservation import (
 )
 from .coherence_geometry import (
     CoherenceLevelSetCertificate,
+    CrossPolytopeStratification,
+    FixedCapacityCoherenceLevelSetCertificate,
+    NetworkCoherenceLevelSetCertificate,
     coherence_level_set_geometry,
+    fixed_capacity_coherence_level_set_geometry,
+    network_coherence_level_set_geometry,
 )
 from .conservation_gauge_unification import (
     ActionEnergyConsistency,
@@ -160,6 +165,10 @@ from .dissipative_conservation import (
     predict_dephasing_purity,
     steady_state_from_generator,
     verify_dissipative_balance,
+)
+from .event_duration import (
+    ContinuousRelaxationDurationDiagnostic,
+    diagnose_continuous_relaxation_duration,
 )
 from .fields import (
     CoherenceLengthEstimate,
@@ -304,6 +313,10 @@ from .operator_quotient import (
     OperatorQuotientCertificate,
     certify_operator_quotient,
 )
+from .phase_quotient import (
+    PhaseNodalCoarseGrainingCertificate,
+    certify_phase_nodal_coarse_graining,
+)
 from .phase_transition import (
     Z_SIGNIFICANCE,
     Phase,
@@ -419,6 +432,15 @@ from .hybrid_operator_stability import (
     HybridEPIStabilityCertificate,
     certify_affine_epi_jump_gain,
     compose_hybrid_epi_stability,
+)
+from .network_stage_stability import (
+    AllTargetNeighborStageCertificate,
+    AllTargetNeighborStageStep,
+    NeighborStageDiffusionBridgeCertificate,
+    certify_all_target_neighbor_stage,
+    certify_reception_all_target_stage,
+    certify_resonance_all_target_stage,
+    compose_neighbor_stage_diffusion_stability,
 )
 from .reception_realization import (
     ReceptionEPIRealizationCertificate,
@@ -614,7 +636,12 @@ __all__ = [
     "compute_conservation_scaling",
     # --- Constitutive coherence geometry ---
     "CoherenceLevelSetCertificate",
+    "CrossPolytopeStratification",
+    "FixedCapacityCoherenceLevelSetCertificate",
+    "NetworkCoherenceLevelSetCertificate",
     "coherence_level_set_geometry",
+    "fixed_capacity_coherence_level_set_geometry",
+    "network_coherence_level_set_geometry",
     # --- Unified Complex Fields (Ψ = K_φ + i·J_φ) ---
     "compute_complex_geometric_field",
     "compute_field_magnitude",
@@ -667,6 +694,9 @@ __all__ = [
     # --- Exact pure-EPI coarse-graining ---
     "EpiCoarseGrainingCertificate",
     "certify_epi_coarse_graining",
+    # --- Fixed-branch circular phase coarse-graining ---
+    "PhaseNodalCoarseGrainingCertificate",
+    "certify_phase_nodal_coarse_graining",
     # --- Structural-state quotient metric ---
     "StructuralChannelScales",
     "StructuralStateDistanceCertificate",
@@ -686,6 +716,17 @@ __all__ = [
     "HybridEPIStabilityCertificate",
     "certify_affine_epi_jump_gain",
     "compose_hybrid_epi_stability",
+    # --- Physical operator-event flow duration ---
+    "ContinuousRelaxationDurationDiagnostic",
+    "diagnose_continuous_relaxation_duration",
+    # --- Repeated all-target EN/RA EPI-stage realization ---
+    "AllTargetNeighborStageCertificate",
+    "AllTargetNeighborStageStep",
+    "NeighborStageDiffusionBridgeCertificate",
+    "certify_all_target_neighbor_stage",
+    "certify_reception_all_target_stage",
+    "certify_resonance_all_target_stage",
+    "compose_neighbor_stage_diffusion_stability",
     # --- Reception runtime-to-affine realization boundary ---
     "ReceptionEPIRealizationCertificate",
     "certify_reception_epi_realization",

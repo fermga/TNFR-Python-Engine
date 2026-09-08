@@ -19,6 +19,13 @@ from typing import (
 )
 from weakref import WeakValueDictionary
 
+from ._spectral_expectation import (
+    finite_spectral_real,
+    positive_spectral_dimension,
+    resolve_compatibility_value,
+    spectral_expectation_payload,
+    validate_spectral_operator,
+)
 from .alias import (
     get_attr,
     get_attr_str,
@@ -44,16 +51,18 @@ from .constants.aliases import (
 from .locking import get_lock
 from .mathematics import (
     BasicStateProjector,
-    CoherenceOperator,
     FrequencyOperator,
+    SpectralExpectationOperator,
     HilbertSpace,
     StateProjector,
 )
 from .mathematics.operators_factory import (
-    make_coherence_operator,
     make_frequency_operator,
+    make_spectral_expectation_operator,
 )
-from .mathematics.runtime import coherence as runtime_coherence
+from .mathematics.runtime import (
+    meets_spectral_expectation_threshold as runtime_spectral_threshold,
+)
 from .mathematics.runtime import frequency_positive as runtime_frequency_positive
 from .mathematics.runtime import normalized as runtime_normalized
 from .mathematics.runtime import stable_unitary as runtime_stable_unitary
@@ -303,15 +312,47 @@ class NodeNX(NodeProtocol):
     d2EPI: SecondDerivativeEPI = ATTR_SPECS["d2EPI"].build_property()
 
     @staticmethod
-    def _prepare_coherence_operator(
-        operator: CoherenceOperator | None,
+    def _spectral_dimension_hint(
+        *,
+        operator: SpectralExpectationOperator | None,
+        dimension: int | None,
+        spectrum: Sequence[float] | np.ndarray | None,
+    ) -> int | None:
+        """Infer the Hilbert dimension from explicit spectral inputs."""
+
+        if dimension is not None:
+            return positive_spectral_dimension(
+                dimension, label="spectral_dimension"
+            )
+        if isinstance(operator, SpectralExpectationOperator):
+            validated = validate_spectral_operator(
+                operator, label="spectral_operator"
+            )
+            return int(validated.matrix.shape[0])
+        if spectrum is not None:
+            spectrum_array = np.asarray(spectrum)
+            if spectrum_array.ndim == 1:
+                return positive_spectral_dimension(
+                    spectrum_array.shape[0], label="spectral spectrum size"
+                )
+        return None
+
+    @staticmethod
+    def _prepare_spectral_operator(
+        operator: SpectralExpectationOperator | None,
         *,
         dim: int | None = None,
         spectrum: Sequence[float] | np.ndarray | None = None,
-        c_min: float | None = None,
-    ) -> CoherenceOperator | None:
+        expectation_floor: float | None = None,
+    ) -> SpectralExpectationOperator | None:
+        """Resolve an auxiliary spectral-expectation operator."""
+
         if operator is not None:
-            return operator
+            return validate_spectral_operator(
+                operator,
+                dimension=dim,
+                label="spectral_operator",
+            )
 
         spectrum_array: np.ndarray | None
         if spectrum is None:
@@ -319,27 +360,47 @@ class NodeNX(NodeProtocol):
         else:
             spectrum_array = np.asarray(spectrum, dtype=np.complex128)
             if spectrum_array.ndim != 1:
-                raise ValueError("Coherence spectrum must be one-dimensional.")
+                raise ValueError(
+                    "Spectral expectation spectrum must be one-dimensional."
+                )
+            if not np.all(np.isfinite(spectrum_array)):
+                raise ValueError("Spectral expectation spectrum must be finite.")
 
         effective_dim = dim
         if spectrum_array is not None:
             spectrum_length = spectrum_array.shape[0]
             if effective_dim is None:
                 effective_dim = int(spectrum_length)
-            elif spectrum_length != int(effective_dim):
+            elif spectrum_length != positive_spectral_dimension(
+                effective_dim, label="spectral_dimension"
+            ):
                 raise ValueError(
-                    "Coherence spectrum size mismatch with requested dimension."
+                    "Spectral expectation spectrum size mismatch with "
+                    "requested dimension."
                 )
 
         if effective_dim is None:
             return None
+        resolved_dim = positive_spectral_dimension(
+            effective_dim, label="spectral_dimension"
+        )
 
         kwargs: dict[str, Any] = {}
         if spectrum_array is not None:
             kwargs["spectrum"] = spectrum_array
-        if c_min is not None:
-            kwargs["c_min"] = float(c_min)
-        return make_coherence_operator(int(effective_dim), **kwargs)
+        if expectation_floor is not None:
+            kwargs["expectation_floor"] = finite_spectral_real(
+                expectation_floor,
+                label="spectral expectation floor",
+            )
+        return validate_spectral_operator(
+            make_spectral_expectation_operator(resolved_dim, **kwargs),
+            dimension=resolved_dim,
+            label="spectral_operator",
+        )
+
+    # Historical private helper retained for integrations that reached into it.
+    _prepare_coherence_operator = _prepare_spectral_operator
 
     @staticmethod
     def _prepare_frequency_operator(
@@ -361,13 +422,18 @@ class NodeNX(NodeProtocol):
         state_projector: StateProjector | None = None,
         enable_math_validation: bool | None = None,
         hilbert_space: HilbertSpace | None = None,
-        coherence_operator: CoherenceOperator | None = None,
+        spectral_operator: SpectralExpectationOperator | None = None,
+        spectral_dimension: int | None = None,
+        spectral_spectrum: Sequence[float] | np.ndarray | None = None,
+        spectral_expectation_floor: float | None = None,
+        spectral_expectation_threshold: float | None = None,
+        coherence_operator: SpectralExpectationOperator | None = None,
         coherence_dim: int | None = None,
         coherence_spectrum: Sequence[float] | np.ndarray | None = None,
         coherence_c_min: float | None = None,
+        coherence_threshold: float | None = None,
         frequency_operator: FrequencyOperator | None = None,
         frequency_matrix: Sequence[Sequence[complex]] | np.ndarray | None = None,
-        coherence_threshold: float | None = None,
         validator: NFRValidator | None = None,
         rng: np.random.Generator | None = None,
     ) -> None:
@@ -390,35 +456,104 @@ class NodeNX(NodeProtocol):
         self.hilbert_space: HilbertSpace = hilbert_space or HilbertSpace(
             default_dimension
         )
-        if coherence_operator is not None and (
-            coherence_dim is not None
-            or coherence_spectrum is not None
-            or coherence_c_min is not None
+        resolved_operator = resolve_compatibility_value(
+            spectral_operator,
+            coherence_operator,
+            canonical_name="spectral_operator",
+            legacy_name="coherence_operator",
+        )
+        resolved_dimension = resolve_compatibility_value(
+            spectral_dimension,
+            coherence_dim,
+            canonical_name="spectral_dimension",
+            legacy_name="coherence_dim",
+        )
+        resolved_spectrum = resolve_compatibility_value(
+            spectral_spectrum,
+            coherence_spectrum,
+            canonical_name="spectral_spectrum",
+            legacy_name="coherence_spectrum",
+        )
+        resolved_floor = resolve_compatibility_value(
+            spectral_expectation_floor,
+            coherence_c_min,
+            canonical_name="spectral_expectation_floor",
+            legacy_name="coherence_c_min",
+        )
+        resolved_threshold = resolve_compatibility_value(
+            spectral_expectation_threshold,
+            coherence_threshold,
+            canonical_name="spectral_expectation_threshold",
+            legacy_name="coherence_threshold",
+        )
+        if resolved_operator is not None and (
+            resolved_dimension is not None
+            or resolved_spectrum is not None
+            or resolved_floor is not None
         ):
             raise ValueError(
-                "Provide either a coherence operator or factory parameters, not both."
+                "Provide either a spectral operator or its factory parameters, "
+                "not both."
             )
         if frequency_operator is not None and frequency_matrix is not None:
             raise ValueError(
                 "Provide either a frequency operator or frequency matrix, not both."
             )
 
-        self.coherence_operator: CoherenceOperator | None = (
-            self._prepare_coherence_operator(
-                coherence_operator,
-                dim=coherence_dim,
-                spectrum=coherence_spectrum,
-                c_min=coherence_c_min,
+        spectral_requested = any(
+            parameter is not None
+            for parameter in (
+                resolved_operator,
+                resolved_dimension,
+                resolved_spectrum,
+                resolved_floor,
             )
         )
+        dimension_hint = self._spectral_dimension_hint(
+            operator=resolved_operator,
+            dimension=resolved_dimension,
+            spectrum=resolved_spectrum,
+        )
+        if hilbert_space is None and dimension_hint is not None:
+            self.hilbert_space = HilbertSpace(dimension_hint)
+        elif (
+            dimension_hint is not None
+            and dimension_hint != self.hilbert_space.dimension
+        ):
+            raise ValueError(
+                "Spectral inputs must match the Hilbert space dimension."
+            )
+        operator_dimension = (
+            self.hilbert_space.dimension if spectral_requested else None
+        )
+
+        self.spectral_operator: SpectralExpectationOperator | None = (
+            self._prepare_spectral_operator(
+                resolved_operator,
+                dim=operator_dimension,
+                spectrum=resolved_spectrum,
+                expectation_floor=resolved_floor,
+            )
+        )
+        if self.spectral_operator is not None:
+            validate_spectral_operator(
+                self.spectral_operator,
+                dimension=self.hilbert_space.dimension,
+                label="spectral_operator",
+            )
         self.frequency_operator: FrequencyOperator | None = (
             self._prepare_frequency_operator(
                 frequency_operator,
                 matrix=frequency_matrix,
             )
         )
-        self.coherence_threshold: float | None = (
-            float(coherence_threshold) if coherence_threshold is not None else None
+        self.spectral_expectation_threshold: float | None = (
+            finite_spectral_real(
+                resolved_threshold,
+                label="spectral expectation threshold",
+            )
+            if resolved_threshold is not None
+            else None
         )
         self.validator: NFRValidator | None = validator
         self.rng: np.random.Generator | None = rng
@@ -430,6 +565,42 @@ class NodeNX(NodeProtocol):
                 cache = {}
                 G.graph["_node_cache"] = cache
             cache[n] = self
+
+    @property
+    def coherence_operator(self) -> SpectralExpectationOperator | None:
+        """Compatibility alias for spectral_operator; never canonical C(t)."""
+
+        return self.spectral_operator
+
+    @coherence_operator.setter
+    def coherence_operator(
+        self, value: SpectralExpectationOperator | None
+    ) -> None:
+        self.spectral_operator = (
+            validate_spectral_operator(
+                value,
+                dimension=self.hilbert_space.dimension,
+                label="coherence_operator compatibility alias",
+            )
+            if value is not None
+            else None
+        )
+
+    @property
+    def coherence_threshold(self) -> float | None:
+        """Compatibility alias for spectral_expectation_threshold."""
+
+        return self.spectral_expectation_threshold
+
+    @coherence_threshold.setter
+    def coherence_threshold(self, value: float | None) -> None:
+        self.spectral_expectation_threshold = (
+            finite_spectral_real(
+                value, label="spectral expectation threshold"
+            )
+            if value is not None
+            else None
+        )
 
     def _glyph_storage(self) -> MutableMapping[str, Any]:
         return self.G.nodes[self.n]
@@ -588,7 +759,12 @@ class NodeNX(NodeProtocol):
         *,
         projector: StateProjector | None = None,
         hilbert_space: HilbertSpace | None = None,
-        coherence_operator: CoherenceOperator | None = None,
+        spectral_operator: SpectralExpectationOperator | None = None,
+        spectral_dimension: int | None = None,
+        spectral_spectrum: Sequence[float] | np.ndarray | None = None,
+        spectral_expectation_floor: float | None = None,
+        spectral_expectation_threshold: float | None = None,
+        coherence_operator: SpectralExpectationOperator | None = None,
         coherence_dim: int | None = None,
         coherence_spectrum: Sequence[float] | np.ndarray | None = None,
         coherence_c_min: float | None = None,
@@ -608,17 +784,77 @@ class NodeNX(NodeProtocol):
         projector = projector or self.state_projector
         hilbert = hilbert_space or self.hilbert_space
 
-        effective_coherence = (
-            self._prepare_coherence_operator(
-                coherence_operator,
-                dim=coherence_dim,
-                spectrum=coherence_spectrum,
-                c_min=(
-                    coherence_c_min
-                    if coherence_c_min is not None
+        resolved_operator = resolve_compatibility_value(
+            spectral_operator,
+            coherence_operator,
+            canonical_name="spectral_operator",
+            legacy_name="coherence_operator",
+        )
+        resolved_dimension = resolve_compatibility_value(
+            spectral_dimension,
+            coherence_dim,
+            canonical_name="spectral_dimension",
+            legacy_name="coherence_dim",
+        )
+        resolved_spectrum = resolve_compatibility_value(
+            spectral_spectrum,
+            coherence_spectrum,
+            canonical_name="spectral_spectrum",
+            legacy_name="coherence_spectrum",
+        )
+        resolved_floor = resolve_compatibility_value(
+            spectral_expectation_floor,
+            coherence_c_min,
+            canonical_name="spectral_expectation_floor",
+            legacy_name="coherence_c_min",
+        )
+        resolved_threshold = resolve_compatibility_value(
+            spectral_expectation_threshold,
+            coherence_threshold,
+            canonical_name="spectral_expectation_threshold",
+            legacy_name="coherence_threshold",
+        )
+        if resolved_operator is not None and (
+            resolved_dimension is not None
+            or resolved_spectrum is not None
+            or resolved_floor is not None
+        ):
+            raise ValueError(
+                "Provide either a spectral operator or its factory parameters, "
+                "not both."
+            )
+        spectral_requested = any(
+            parameter is not None
+            for parameter in (
+                resolved_operator,
+                resolved_dimension,
+                resolved_spectrum,
+                resolved_floor,
+            )
+        )
+        dimension_hint = self._spectral_dimension_hint(
+            operator=resolved_operator,
+            dimension=resolved_dimension,
+            spectrum=resolved_spectrum,
+        )
+        if hilbert_space is None and dimension_hint is not None:
+            hilbert = HilbertSpace(dimension_hint)
+        elif dimension_hint is not None and dimension_hint != hilbert.dimension:
+            raise ValueError(
+                "Spectral inputs must match the Hilbert space dimension."
+            )
+        operator_dimension = hilbert.dimension if spectral_requested else None
+        effective_spectral = (
+            self._prepare_spectral_operator(
+                resolved_operator,
+                dim=operator_dimension,
+                spectrum=resolved_spectrum,
+                expectation_floor=(
+                    resolved_floor
+                    if resolved_floor is not None
                     else (
-                        self.coherence_operator.c_min
-                        if self.coherence_operator is not None
+                        self.spectral_operator.expectation_floor
+                        if self.spectral_operator is not None
                         else None
                     )
                 ),
@@ -626,14 +862,20 @@ class NodeNX(NodeProtocol):
             if any(
                 parameter is not None
                 for parameter in (
-                    coherence_operator,
-                    coherence_dim,
-                    coherence_spectrum,
-                    coherence_c_min,
+                    resolved_operator,
+                    resolved_dimension,
+                    resolved_spectrum,
+                    resolved_floor,
                 )
             )
-            else self.coherence_operator
+            else self.spectral_operator
         )
+        if effective_spectral is not None:
+            validate_spectral_operator(
+                effective_spectral,
+                dimension=hilbert.dimension,
+                label="spectral_operator",
+            )
         effective_freq = (
             self._prepare_frequency_operator(
                 frequency_operator,
@@ -643,9 +885,12 @@ class NodeNX(NodeProtocol):
             else self.frequency_operator
         )
         threshold = (
-            float(coherence_threshold)
-            if coherence_threshold is not None
-            else self.coherence_threshold
+            finite_spectral_real(
+                resolved_threshold,
+                label="spectral expectation threshold",
+            )
+            if resolved_threshold is not None
+            else self.spectral_expectation_threshold
         )
         validator = validator or self.validator
         rng = rng or self.rng
@@ -693,13 +938,30 @@ class NodeNX(NodeProtocol):
                 )
                 metrics["normalized"] = bool(norm_passed)
                 metrics["norm"] = float(norm_value)
-                if effective_coherence is not None and threshold is not None:
-                    coh_passed, coh_value = runtime_coherence(
-                        state, effective_coherence, threshold, label=label
+                if effective_spectral is not None and threshold is not None:
+                    expectation_passed, expectation_value = (
+                        runtime_spectral_threshold(
+                            state,
+                            effective_spectral,
+                            threshold,
+                            label=label,
+                        )
                     )
-                    metrics["coherence"] = bool(coh_passed)
-                    metrics["coherence_expectation"] = float(coh_value)
-                    metrics["coherence_threshold"] = float(threshold)
+                    expectation = spectral_expectation_payload(
+                        value=expectation_value,
+                        threshold=threshold,
+                        passed=expectation_passed,
+                        provenance=(
+                            "tnfr.node.NodeNX.run_sequence_with_validation"
+                        ),
+                        operator=effective_spectral,
+                    )
+                    metrics["spectral_operator_expectation"] = expectation
+                    # Historical flat keys are compatibility mirrors only.
+                    metrics["coherence"] = expectation["passed"]
+                    metrics["coherence_expectation"] = expectation["value"]
+                    metrics["coherence_threshold"] = expectation["threshold"]
+                    metrics["canonical_coherence_certified"] = False
                 if effective_freq is not None:
                     freq_summary = runtime_frequency_positive(
                         state,
@@ -719,10 +981,10 @@ class NodeNX(NodeProtocol):
                         freq_summary["spectrum_min"]
                     )
                     metrics["frequency_enforced"] = bool(freq_summary["enforce"])
-                if effective_coherence is not None:
+                if effective_spectral is not None:
                     unitary_passed, unitary_norm = runtime_stable_unitary(
                         state,
-                        effective_coherence,
+                        effective_spectral,
                         hilbert,
                         label=label,
                     )
@@ -730,13 +992,16 @@ class NodeNX(NodeProtocol):
                     metrics["stable_unitary_norm_after"] = float(unitary_norm)
             if should_log_metrics:
                 LOGGER.debug(
-                    "node_metrics.%s normalized=%s coherence=%s frequency_positive=%s stable_unitary=%s coherence_expectation=%s frequency_expectation=%s",
+                    "node_metrics.%s normalized=%s "
+                    "spectral_expectation_passed=%s frequency_positive=%s "
+                    "stable_unitary=%s spectral_operator_expectation=%s "
+                    "frequency_expectation=%s",
                     label,
                     metrics.get("normalized"),
-                    metrics.get("coherence"),
+                    metrics.get("spectral_operator_expectation", {}).get("passed"),
                     metrics.get("frequency_positive"),
                     metrics.get("stable_unitary"),
-                    metrics.get("coherence_expectation"),
+                    metrics.get("spectral_operator_expectation", {}).get("value"),
                     metrics.get("frequency_expectation"),
                 )
             return metrics
@@ -753,11 +1018,13 @@ class NodeNX(NodeProtocol):
         if should_validate:
             validator_instance = validator
             if validator_instance is None:
-                if effective_coherence is None:
-                    raise ValueError("Validation requires a coherence operator.")
+                if effective_spectral is None:
+                    raise ValueError(
+                        "Validation requires a spectral expectation operator."
+                    )
                 validator_instance = NFRValidator(
                     hilbert,
-                    effective_coherence,
+                    effective_spectral,
                     threshold if threshold is not None else 0.0,
                     frequency_operator=effective_freq,
                 )

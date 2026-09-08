@@ -1,32 +1,37 @@
-import os
-import sys
+"""Compare a prescribed constant-velocity adapter with an analytic crossing.
+
+The classical adapter stores ``[q, q_dot]`` and a separately declared
+second-order step advances position at zero external force. Canonical TNFR
+zero pressure would instead freeze the EPI chart. This example computes no
+canonical pressure, tetrad field or C(t).
+"""
+
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Add src to path
-sys.path.append(str(Path(__file__).parent.parent.parent / "src"))
-
+from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
 from tnfr.dynamics.symplectic import TNFRSymplecticIntegrator
+from tnfr.physics.classical_mechanics import (
+    ClassicalMechanicsMapper,
+    GeneralizedCoordinateSystem,
+)
+from tnfr.types import TNFRNode
 
 
-def ensure_dir(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
+def ensure_dir(path: Path) -> None:
+    path.mkdir(parents=True, exist_ok=True)
 
 
-def zero_force(q):
-    """
-    Represents a 'Free Particle' regime in TNFR.
-    Delta NFR = 0 (No structural pressure).
-    The node propagates with constant momentum (Coherence Inertia).
-    """
-    return np.zeros_like(q)
+def zero_adapter_force(node: TNFRNode) -> np.ndarray:
+    """Return the declared zero force in the mechanical adapter slot."""
+
+    return np.zeros_like(node[EPI_PRIMARY])
 
 
-def run_train_crossing_demo():
-    print("--- TNFR Classical Kinematics: The Two Trains Problem ---")
+def run_train_crossing_demo() -> None:
+    print("--- Constant-Velocity Adapter: The Two Trains Problem ---")
 
     # Problem Parameters
     # Train A: Madrid -> Barcelona
@@ -51,54 +56,29 @@ def run_train_crossing_demo():
     t_analytical = dist_m / (v_a_ms + abs(v_b_ms))
     x_analytical = v_a_ms * t_analytical
 
-    print(f"\nAnalytical Prediction:")
+    print("\nAnalytical prediction:")
     print(f"Time to cross: {t_analytical:.2f} s ({t_analytical/60:.2f} min)")
     print(f"Crossing point: {x_analytical/1000:.2f} km from Madrid")
 
-    # --- TNFR Simulation ---
+    # Pack both prescribed classical states. nu_f=1 follows only from the
+    # adapter's unit-mass convention.
+    def make_node(position: float, velocity: float) -> TNFRNode:
+        state = GeneralizedCoordinateSystem(
+            q=np.array([position, 0.0]),
+            q_dot=np.array([velocity, 0.0]),
+            masses=np.ones(2),
+        )
+        payload = ClassicalMechanicsMapper.lagrangian_to_tnfr(
+            lambda _q, q_dot, _t: float(0.5 * np.sum(q_dot**2)), state
+        )
+        return {
+            EPI_PRIMARY: payload[EPI_PRIMARY],
+            VF_PRIMARY: payload[VF_PRIMARY],
+            DNFR_PRIMARY: payload[DNFR_PRIMARY],
+        }
 
-    # Initialize Nodes
-    # State vector q = [x, y] (we only use x)
-    q_a = np.array([0.0, 0.0])
-    p_a = np.array([v_a_ms, 0.0])  # Momentum (assuming mass=1 for simplicity)
-
-    q_b = np.array([dist_m, 0.0])
-    p_b = np.array([v_b_ms, 0.0])
-
-    # Integrator
-    # Mass = 1.0 (Inverse Structural Frequency nu_f = 1.0)
-    # The current implementation of TNFRSymplecticIntegrator is a static class or uses node objects.
-    # Let's check how we used it in the classical mechanics demo.
-    # It seems I implemented a standalone version there or the class has changed.
-    # Let's implement a simple standalone Verlet here to avoid dependency issues if the class signature is different.
-
-    class SimpleVerlet:
-        def __init__(self, mass=1.0):
-            self.mass = mass
-
-        def velocity_verlet(self, q, p, force_func, dt):
-            # p = m * v -> v = p / m
-            v = p / self.mass
-            f = force_func(q)
-            a = f / self.mass
-
-            # Half kick
-            v_half = v + 0.5 * a * dt
-
-            # Drift
-            q_new = q + v_half * dt
-
-            # Re-eval force
-            f_new = force_func(q_new)
-            a_new = f_new / self.mass
-
-            # Half kick
-            v_new = v_half + 0.5 * a_new * dt
-
-            # Return new q, new p
-            return q_new, v_new * self.mass
-
-    integrator = SimpleVerlet(mass=1.0)
+    node_a = make_node(0.0, v_a_ms)
+    node_b = make_node(dist_m, v_b_ms)
 
     dt = 1.0  # 1 second steps
     time = 0.0
@@ -107,7 +87,7 @@ def run_train_crossing_demo():
     history_b = []
     times = []
 
-    print(f"\nRunning Nodal Dynamics Simulation (dt={dt}s)...")
+    print(f"\nRunning the external kinematic adapter (dt={dt}s)...")
 
     crossing_detected = False
     crossing_time = 0.0
@@ -119,6 +99,8 @@ def run_train_crossing_demo():
 
     for step in range(max_steps):
         # Store history
+        q_a = node_a[EPI_PRIMARY][:2]
+        q_b = node_b[EPI_PRIMARY][:2]
         history_a.append(q_a[0])
         history_b.append(q_b[0])
         times.append(time)
@@ -151,15 +133,18 @@ def run_train_crossing_demo():
 
             print(f"-> Crossing Detected at Step {step}!")
 
-        # Evolve Nodes
-        # Force = 0 (Inertial Motion)
-        q_a, p_a = integrator.velocity_verlet(q_a, p_a, zero_force, dt)
-        q_b, p_b = integrator.velocity_verlet(q_b, p_b, zero_force, dt)
+        # Advance the declared second-order adapter with zero external force.
+        TNFRSymplecticIntegrator.velocity_verlet(
+            node_a, dt, zero_adapter_force
+        )
+        TNFRSymplecticIntegrator.velocity_verlet(
+            node_b, dt, zero_adapter_force
+        )
 
         time += dt
 
     # --- Results ---
-    print(f"\nTNFR Simulation Results:")
+    print("\nAdapter results:")
     print(f"Time to cross: {crossing_time:.2f} s")
     print(f"Crossing point: {crossing_pos/1000:.2f} km")
 
@@ -171,7 +156,7 @@ def run_train_crossing_demo():
     print(f"Position Error: {error_x:.6f} m")
 
     if error_t < 1e-3:
-        print("SUCCESS: Nodal Dynamics perfectly reproduces Classical Kinematics.")
+        print("PASS: the adapter matches the analytic constant-velocity result.")
     else:
         print("WARNING: Discrepancy detected.")
 
@@ -205,8 +190,8 @@ def run_train_crossing_demo():
         textcoords="offset points",
     )
 
-    plt.title("TNFR Kinematics: Two Trains Problem")
-    plt.xlabel("Time (minutes)")
+    plt.title("Constant-Velocity Adapter: Two Trains Problem")
+    plt.xlabel("Adapter time (minutes)")
     plt.ylabel("Position (km)")
     plt.grid(True, alpha=0.3)
     plt.legend()

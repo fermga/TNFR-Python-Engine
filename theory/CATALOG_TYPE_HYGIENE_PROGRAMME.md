@@ -138,7 +138,8 @@ directly.
   `BEPIElement`, but the trivial uniform-real embedding represents the same
   signed scalar and is recovered by `real_scalar_epi`. Genuinely nonuniform or
   complex BEPI values retain a magnitude projection for generic read-outs and
-  are rejected by scalar-only pure-EPI diffusion.
+  are rejected by glyphs that require a real scalar EPI coordinate and by
+  scalar-only pure-EPI diffusion.
 - **Suspected non-canonical envelope**: `BEPIElement` Banach element
   $C^0([0,1], \mathbb{C}) \oplus \ell^2(\mathbb{C})$, fully formalised in
   `src/tnfr/mathematics/epi.py` with `direct_sum`, `tensor`, `adjoint` and

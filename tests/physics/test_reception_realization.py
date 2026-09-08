@@ -10,6 +10,8 @@ import pytest
 from tnfr.constants.canonical import EN_MIX_FACTOR
 from tnfr.node import NodeNX
 from tnfr.operators import _op_EN, get_glyph_factors
+from tnfr.operators.definitions import Reception
+from tnfr.operators.network_stage import execute_neighbor_stage
 from tnfr.physics.reception_realization import (
     certify_reception_epi_realization,
 )
@@ -68,6 +70,64 @@ def test_arbitrary_ids_and_weighted_transport_keep_en_mean_unweighted():
     runtime_node = NodeNX.from_graph(runtime_copy, hub)
     _op_EN(runtime_node, get_glyph_factors(runtime_node) | {"EN_mix": 0.5})
     assert runtime_node.EPI == result.runtime_target_value
+
+
+def test_soft_clip_kind_uses_unclipped_proposal_across_en_paths():
+    graph = nx.Graph()
+    graph.add_edge("target", "neighbor")
+    graph.nodes["target"].update(
+        EPI=0.962,
+        EPI_kind="target",
+        nu_f=1.0,
+        theta=0.0,
+        delta_nfr=0.0,
+        Si=0.8,
+        glyph_history=["AL", "IL"],
+    )
+    graph.nodes["neighbor"].update(
+        EPI=0.963,
+        EPI_kind="neighbor",
+        nu_f=1.0,
+        theta=0.0,
+        delta_nfr=0.0,
+        Si=0.8,
+        glyph_history=["AL", "IL"],
+    )
+    graph.graph.update(
+        CLIP_MODE="soft",
+        EPI_SATURATION_MAX=1.0,
+        GLYPH_FACTORS={"EN_mix": 0.5},
+    )
+
+    certificate = certify_reception_epi_realization(
+        graph,
+        "target",
+        fixed_support_declared=True,
+        mix_factor=0.5,
+    )
+
+    direct = deepcopy(graph)
+    direct_node = NodeNX.from_graph(direct, "target")
+    _op_EN(direct_node, {"EN_mix": 0.5})
+
+    staged = deepcopy(graph)
+    execute_neighbor_stage(
+        staged,
+        Reception(),
+        ("target",),
+        track_sources=False,
+    )
+
+    assert certificate.runtime_unclipped_target_value == pytest.approx(0.9625)
+    assert certificate.runtime_target_value > 0.963
+    assert float(direct_node.EPI) == certificate.runtime_target_value
+    assert (
+        float(NodeNX.from_graph(staged, "target").EPI)
+        == certificate.runtime_target_value
+    )
+    assert direct_node.epi_kind == "neighbor"
+    assert staged.nodes["target"]["EPI_kind"] == "neighbor"
+    assert certificate.epi_kind_after == "neighbor"
 
 
 def test_signed_scalar_embedding_matches_runtime_and_is_affine_eligible():

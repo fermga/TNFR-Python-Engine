@@ -47,4 +47,5 @@ Public APIs and package ownership live in [ARCHITECTURE.md](../ARCHITECTURE.md).
 Test requirements live in [TESTING.md](../TESTING.md).
 
 Recent executable runtime bridges in `02_physics_regimes` are
-`163_reception_runtime_bridge.py` and `164_resonance_runtime_bridge.py`.
+`163_reception_runtime_bridge.py`, `164_resonance_runtime_bridge.py`, and
+`165_operator_event_relaxation.py`.

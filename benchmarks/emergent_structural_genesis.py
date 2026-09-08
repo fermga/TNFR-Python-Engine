@@ -1,66 +1,38 @@
-"""The structural genesis: from the vacuum to the first topological charge --
-a Kibble-like structural defect formation (an analogy of form).
+"""Structural initialization, evolution, and winding controls.
 
-THE QUESTION (theory creator): does TNFR have a process -- analogous in FORM to
-"from nothing to the first particles" -- that takes the structural vacuum to the
-first coherent structures and charges? YES: a canonical, grammar-driven
-STRUCTURAL genesis. But read the boundary first.
+This benchmark contains four reproducible observations. They are independent
+controls rather than a demonstrated causal genesis:
 
-THE GENESIS IN ONE LINE (read first): a canonical STRUCTURAL origin sequence --
-the grammar's initiation from the vacuum (U1), the coherence flow, and a
-symmetry-breaking bifurcation -- unfolding on TNFR's OWN emergent space (Sec.3)
-and time (Sec.4.2, Sec.5.1). Its last step is the KIBBLE MECHANISM (topological-
-defect formation at a symmetry-breaking transition). "Big Bang" is an ANALOGY of
-FORM: it yields the first structural form (the |W|=1 unit charge, Sec.9.1) -- a
-structural re-expression carrying its own DERIVED/ANALOGY labels, not a model of
-the physical universe's measured cosmology.
+* M1 reads the SDK initialization EPI = 0, nu_f = 1 Hz_str, and phase = 0.
+  Grammar U1 requires a generator at the start of a standalone operator word;
+  that is an operator-history contract, not a theorem that the nodal
+  derivative is undefined or that physical matter is created from nothing.
+* M2 executes the registered basic_activation word for five cycles and prints
+  its live stage list. Its seeded fixture shows increasing mean absolute EPI.
+  The change cannot be attributed to Emission alone because the complete mixed
+  word is executed.
+* M3 reads canonical C(t) and winding after those cycles. A single state with
+  C(t) = 1 and winding zero does not establish an attractor, a vacuum phase, or
+  a symmetry-breaking transition.
+* M4 constructs winding_ring(n, 1) directly and checks its integer winding and
+  compatibility classifier. It is not produced from M3 by an engine
+  trajectory. No Kibble dynamics, bifurcation, particle creation, or winding
+  conservation law is executed.
 
-THE GENESIS (canonical, from AGENTS.md + EMERGENT_ONTOLOGY.md):
-  1. THE VACUUM. EPI = 0. From EPI = 0 the nodal equation dEPI/dt = vf*dNFR is
-     undefined (nothing to reorganize), so NOTHING evolves on its own: the vacuum
-     is inert. Grammar U1a therefore REQUIRES a generator {Emission, Transition,
-     Recursivity} to open any sequence -- the "why something rather than nothing"
-     step is structural, not spontaneous.
-  2. EMISSION -- the first form. Emission (AL) sources EPI from the vacuum
-     (dEPI/dt > 0, vf activates): the first structure appears where there was
-     none.
-  3. THE COHERENT VACUUM. Reception + Coherence + Resonance + Coupling drive the
-     field to the coherence attractor (C -> 1): a smooth, symmetric, coherent
-     field with NO topological defect (winding W = 0) -- the ordered "false
-     vacuum".
-  4. THE FIRST PARTICLE. A symmetry-breaking bifurcation (a destabilizer with a
-     stabilizer, U2/U4) crystallizes the first quantized topological charge
-     W = 1 -- the fundamental unit charge (Sec.9.1), the first coherent PATTERN
-     that is a particle. This is the Kibble-like step: a defect of the coherent
-     phase field.
+The ring, graph distance, cycle index, and operator order are declared model
+coordinates. This script does not derive physical space, physical time, a
+causal cone, or cosmological initial conditions. It provides finite graph and
+operator diagnostics that can serve as inputs to a future transition study.
 
-WHAT EMERGES (measured):
-  - M1: the vacuum is EPI = 0 (inert; U1 requires a generator to start).
-  - M2: Emission sources the first EPI -- it rises from 0 monotonically
-    (0 -> 0.09 -> ... -> 0.50) under the canonical Emission-led sequence.
-  - M3: the field reaches the coherent vacuum (C ~ 1) with winding W = 0 -- a
-    symmetric coherent field, no defect yet.
-  - M4: the first topological charge W = 1 is an EXACT integer (quantized),
-    conserved -- the first particle, a defect of the coherent field (the
-    |W| = 1 fundamental unit charge of Sec.9.1).
+Measured claims are limited to the printed seeded values and the exact winding
+of the constructed fixture. The name classify_particle is retained from the
+public research API; its result is reported here as a topological defect class,
+not as evidence of a physical particle.
 
-HONEST SCOPE: the genesis is the canonical grammar (U1 initiation) + Emission +
-the coherence flow + a symmetry-breaking bifurcation (Kibble defect formation);
-each step is canonical TNFR, and defect formation at a symmetry-breaking
-transition is standard physics. The TNFR content is the ORDERED, grammar-forced
-sequence from the vacuum to the first coherent charge -- a structural
-re-expression yielding the first form (the unit charge), with the real particle
-spectrum and masses OPEN (Sec.9.1). Big Bang = analogy of form (Kibble). Closes
-no open problem.
+Status: RESEARCH DIAGNOSTIC. No cosmological or particle-formation claim.
 
 Run:
     python benchmarks/emergent_structural_genesis.py
-
-Theoretical anchor: AGENTS.md (nodal equation; grammar U1 initiation; operators
-Emission/Coherence/Dissonance; coherence C); theory/EMERGENT_ONTOLOGY.md Sec.7.1
-(the occupant winding), Sec.9.1 (the particle sector, values open); benchmarks/
-emergent_particle_catalog.py (the |W|=1 unit charge).
-Status: RESEARCH (structural-genesis demonstration; honest non-cosmological).
 """
 
 from __future__ import annotations
@@ -74,98 +46,115 @@ _SRC = pathlib.Path(__file__).resolve().parents[1] / "src"
 if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
+from tnfr.constants import VF_KEY  # noqa: E402
 from tnfr.physics.emergent_particles import (  # noqa: E402
     classify_particle,
     winding_number,
     winding_ring,
 )
 from tnfr.sdk import TNFR  # noqa: E402
+from tnfr.sdk.fluent import NAMED_SEQUENCES  # noqa: E402
 
 
 def epi_magnitude(net) -> float:
-    """Mean |EPI| over the network (the amount of coherent form present)."""
-    vals = []
-    for n in net.G.nodes():
-        e = net.G.nodes[n].get("EPI")
-        if isinstance(e, dict):
-            cont = e.get("continuous")
-            if cont:
-                vals.append(abs(complex(cont[0])))
-        elif e is not None:
-            vals.append(abs(complex(e)))
-    return float(np.mean(vals)) if vals else 0.0
+    """Return mean absolute scalar EPI over the network."""
+    values = []
+    for node in net.G.nodes():
+        epi = net.G.nodes[node].get("EPI")
+        if isinstance(epi, dict):
+            continuous = epi.get("continuous")
+            if continuous:
+                values.append(abs(complex(continuous[0])))
+        elif epi is not None:
+            values.append(abs(complex(epi)))
+    return float(np.mean(values)) if values else 0.0
 
 
 def ring_winding(net) -> int:
-    """Integer topological winding of the phase field around the ring."""
-    for i, n in enumerate(sorted(net.G.nodes())):
-        net.G.nodes[n].setdefault("phase", net.G.nodes[n].get("theta", 0.0))
-    w, _ = winding_number(net.G, order=sorted(net.G.nodes()))
-    return w
+    """Return integer phase winding in the declared node order."""
+    for node in sorted(net.G.nodes()):
+        net.G.nodes[node].setdefault(
+            "phase",
+            net.G.nodes[node].get("theta", 0.0),
+        )
+    winding, _ = winding_number(net.G, order=sorted(net.G.nodes()))
+    return winding
 
 
 def main() -> None:
     print("=" * 74)
-    print("THE STRUCTURAL GENESIS -- vacuum -> first charge (NOT a Big Bang)")
+    print("STRUCTURAL INITIALIZATION, EVOLUTION, AND WINDING CONTROLS")
     print("=" * 74)
 
     n = 12
 
-    # -- M1: the vacuum is inert; U1 requires a generator ----------------------
-    print("\n[M1] THE VACUUM: EPI = 0, inert (U1 requires a generator to start).")
+    print("\n[M1] SDK zero-form initialization.")
     net = TNFR.create(n, seed=0).ring()
-    e0 = epi_magnitude(net)
-    print(f"     vacuum EPI = {e0:.4f}  (nothing to reorganize; dEPI/dt undefined)")
-    print("     grammar U1a: a sequence MUST open with {Emission, Transition,")
-    print("     Recursivity} -- structure cannot start spontaneously from EPI=0.")
-    assert e0 < 1e-6, "vacuum is not empty"
-    print("     -> PASS: the vacuum is empty and inert.")
+    initial_epi = epi_magnitude(net)
+    initial_vf = {
+        float(net.G.nodes[node][VF_KEY])
+        for node in net.G.nodes()
+    }
+    print(f"     mean |EPI| = {initial_epi:.4f}")
+    print(f"     initialized nu_f values = {sorted(initial_vf)} Hz_str")
+    print("     U1 requires a generator to open a standalone operator word.")
+    assert initial_epi < 1e-6
+    assert initial_vf == {1.0}
+    print("     -> PASS: this SDK fixture starts at EPI = 0 with active capacity.")
 
-    # -- M2: Emission sources the first form -----------------------------------
-    print("\n[M2] EMISSION: the first form from the vacuum (dEPI/dt > 0).")
-    print(f"     {'cycle':>6} {'EPI (form)':>12} {'C (coherence)':>14}")
-    print(f"     {'vacuum':>6} {e0:>12.4f} {net.coherence():>14.4f}")
-    epis = [e0]
-    for k in range(1, 6):
-        net.evolve(1)
-        e = epi_magnitude(net)
-        epis.append(e)
-        print(f"     {k:>6} {e:>12.4f} {net.coherence():>14.4f}")
-    assert epis[-1] > epis[0] and all(
-        epis[i + 1] >= epis[i] - 1e-9 for i in range(len(epis) - 1)
-    ), "EPI did not rise from the vacuum"
-    print("     -> PASS: form emerges from nothing, monotonically (Emission).")
+    print("\n[M2] Five cycles of the declared basic_activation word.")
+    word = NAMED_SEQUENCES["basic_activation"]
+    print(f"     word = {' -> '.join(word)}")
+    print(f"     {'cycle':>6} {'mean |EPI|':>12} {'C(t)':>14}")
+    print(f"     {'start':>6} {initial_epi:>12.4f} {net.coherence():>14.4f}")
+    epi_series = [initial_epi]
+    for cycle in range(1, 6):
+        net.evolve(1, sequence="basic_activation")
+        current_epi = epi_magnitude(net)
+        epi_series.append(current_epi)
+        print(
+            f"     {cycle:>6} {current_epi:>12.4f} "
+            f"{net.coherence():>14.4f}"
+        )
+    assert epi_series[-1] > epi_series[0]
+    assert all(
+        epi_series[index + 1] >= epi_series[index] - 1e-9
+        for index in range(len(epi_series) - 1)
+    )
+    print("     -> PASS: mean |EPI| increases in this seeded mixed-word fixture.")
+    print("        The benchmark does not assign that net change to one stage.")
 
-    # -- M3: the coherent vacuum (C -> 1, no defect yet) -----------------------
-    print("\n[M3] THE COHERENT VACUUM: C ~ 1, winding W = 0 (symmetric, no defect).")
-    c_final = net.coherence()
-    w0 = ring_winding(net)
-    print(f"     coherence C = {c_final:.4f}   winding W = {w0:+d}")
-    assert w0 == 0, "the coherent vacuum should carry no topological charge"
-    print("     -> PASS: a smooth coherent field, no topological defect -- the")
-    print("        ordered 'false vacuum' before symmetry breaking.")
+    print("\n[M3] Read-only diagnostics on the evolved snapshot.")
+    final_coherence = net.coherence()
+    zero_winding = ring_winding(net)
+    print(f"     canonical C(t) = {final_coherence:.4f}")
+    print(f"     phase winding W = {zero_winding:+d}")
+    assert zero_winding == 0
+    print("     -> PASS: the selected snapshot has C(t) = 1 and W = 0.")
+    print("        One snapshot is not an attractor or phase-transition proof.")
 
-    # -- M4: the first particle -- a quantized topological charge --------------
-    print("\n[M4] THE FIRST PARTICLE: a symmetry-breaking defect, W = 1 (quantized).")
-    # the Kibble step: a defect crystallizes in the coherent phase field
-    defect = winding_ring(n, 1)
-    w1, raw = winding_number(defect)
-    part = classify_particle(defect)
-    print(f"     first charge: W = {w1:+d}  (raw {raw:.6f}, exact integer)")
-    print(f"     class: {part.particle_class}")
-    assert w1 == 1 and abs(raw - 1.0) < 1e-9, "first charge not a clean W=1"
-    print("     -> PASS: the first coherent pattern that is a particle -- the")
-    print("        |W|=1 fundamental unit charge (Sec.9.1), a defect of the field.")
+    print("\n[M4] Directly constructed unit-winding control.")
+    constructed = winding_ring(n, 1)
+    unit_winding, raw_winding = winding_number(constructed)
+    classification = classify_particle(constructed)
+    print(
+        f"     constructed W = {unit_winding:+d} "
+        f"(raw {raw_winding:.6f})"
+    )
+    print(
+        "     compatibility classifier label: "
+        f"{classification.particle_class}"
+    )
+    assert unit_winding == 1
+    assert abs(raw_winding - 1.0) < 1e-9
+    print("     -> PASS: the constructed graph has the requested winding.")
+    print("        It is an input fixture, not the output of M1-M3 dynamics.")
 
     print("\n" + "=" * 74)
-    print("THE GENESIS (structural, grammar-forced):")
-    print("  vacuum (EPI=0, inert)  --Emission-->  first form (dEPI/dt>0)")
-    print("    --coherence flow-->  coherent vacuum (C->1, W=0)")
-    print("    --symmetry-breaking bifurcation-->  first charge (W=1, the particle)")
-    print("HONEST: a Kibble-like STRUCTURAL genesis (defect formation at a")
-    print("  symmetry-breaking transition) on TNFR's emergent space and time.")
-    print("  'Big Bang' = analogy of FORM: it yields the first structural form")
-    print("  (the unit charge, Sec.9.1) -- a structural re-expression, values open.")
+    print("RESULT: four finite controls were verified. The default operator")
+    print("word evolves the seeded zero-EPI graph, while the unit-winding graph")
+    print("is constructed independently. No Kibble transition, physical")
+    print("particle genesis, emergent spacetime, or causal cone is inferred.")
     print("=" * 74)
 
 

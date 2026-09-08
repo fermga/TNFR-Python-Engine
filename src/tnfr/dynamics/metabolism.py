@@ -147,7 +147,7 @@ def _execute_atomic_word(
                 sequence_context=word.step(index),
                 **kwargs,
             )
-    except BaseException:
+    except BaseException as failure:
         monitor = G.graph.get("integrity_monitor")
         discard_pending = getattr(monitor, "discard_pending_operator", None)
         if callable(discard_pending):
@@ -155,7 +155,7 @@ def _execute_atomic_word(
                 discard_pending()
             except Exception:
                 pass
-        snapshot.restore(G)
+        snapshot.restore_after_failure(G, failure)
         raise
 
 

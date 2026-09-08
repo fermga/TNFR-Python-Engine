@@ -19,10 +19,11 @@ Performance Optimization
 ------------------------
 CASCADE DETECTION CACHING: `detect_cascade()` uses TNFR's canonical caching
 infrastructure (`@cache_tnfr_computation`) to avoid recomputing cascade state.
-The cache is automatically invalidated when THOL propagations change, ensuring
-coherence while enabling O(1) lookups for repeated queries.
+Topology and edge weights enter the cache fingerprint. History/configuration
+entries retain explicit dependency tags for targeted invalidation.
 
-Cache key depends on: graph identity + propagation history + cascade config.
+Cache identity covers the graph object, topology/weights, propagation history
+and cascade configuration.
 This provides significant performance improvement for large networks (>1000 nodes)
 where cascade detection is called frequently (e.g., in `self_organization_metrics`).
 """
@@ -43,6 +44,10 @@ __all__ = [
 
 # Import cache utilities for performance optimization
 from ..mathematics.unified_cache import CacheLevel, cache_tnfr_computation
+from ._diagnostic_scores import (
+    finite_real,
+    sum_nonnegative_magnitudes,
+)
 
 _CACHING_AVAILABLE = True
 
@@ -60,7 +65,7 @@ def _estimate_cascade_cost(G: TNFRGraph) -> float:
 
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS,
-    dependencies={"thol_propagations", "cascade_config"},
+    dependencies={"thol_propagations", "cascade_config", "graph_topology"},
     cost_estimator=_estimate_cascade_cost,
 )
 def detect_cascade(G: TNFRGraph) -> dict[str, Any]:
@@ -74,8 +79,9 @@ def detect_cascade(G: TNFRGraph) -> dict[str, Any]:
 
     **Performance**: This function uses TNFR's canonical cache infrastructure
     to avoid recomputing cascade state. First call builds cache (O(P × N_prop)),
-    subsequent calls are O(1) hash lookups. Cache automatically invalidates
-    when `thol_propagations` or `cascade_config` dependencies change.
+    subsequent calls can reuse the cached result. Topology/weight changes alter
+    the cache fingerprint; history/configuration changes require dependency
+    invalidation through the mutation path or invalidate_cascade_cache().
 
     Parameters
     ----------
@@ -90,18 +96,20 @@ def detect_cascade(G: TNFRGraph) -> dict[str, Any]:
         - affected_nodes: set of NodeIds involved
         - cascade_depth: maximum propagation chain length
         - total_propagations: total number of propagation events
-        - cascade_coherence: average coupling strength in cascade
+        - mean_internal_edge_weight_magnitude: unbounded mean magnitude of
+          induced edge weights
+        - cascade_coherence: deprecated compatibility alias for that magnitude
 
     Notes
     -----
-    TNFR Principle: Cascades emerge when network phase coherence enables
-    propagation across multiple nodes, creating collective self-organization.
+    The edge-weight magnitude is a coupling diagnostic. It reads neither
+    DeltaNFR nor dEPI and therefore does not measure canonical C(t).
 
     Caching Strategy:
     - Cache level: DERIVED_METRICS (mid-persistence)
     - Dependencies: 'thol_propagations' (propagation history),
                    'cascade_config' (threshold parameters)
-    - Invalidation: Automatic when dependencies change
+    - Invalidation: topology fingerprint plus explicit dependency invalidation
     - Cost: Proportional to number of propagation events
 
     Cache reuse avoids recomputing the traversal when the declared dependencies
@@ -126,7 +134,9 @@ def detect_cascade(G: TNFRGraph) -> dict[str, Any]:
             "affected_nodes": set(),
             "cascade_depth": 0,
             "total_propagations": 0,
+            "mean_internal_edge_weight_magnitude": 0.0,
             "cascade_coherence": 0.0,
+            "canonical_coherence_certified": False,
         }
 
     # Build propagation graph
@@ -149,48 +159,49 @@ def detect_cascade(G: TNFRGraph) -> dict[str, Any]:
     # Cascade = affects ≥ cascade_min_nodes
     is_cascade = len(affected_nodes) >= cascade_min_nodes
 
+    mean_edge_magnitude = _mean_internal_edge_weight_magnitude(
+        G, affected_nodes
+    )
     return {
         "is_cascade": is_cascade,
         "affected_nodes": affected_nodes,
         "cascade_depth": cascade_depth,
         "total_propagations": total_props,
-        "cascade_coherence": _compute_cascade_coherence(G, affected_nodes),
+        "mean_internal_edge_weight_magnitude": mean_edge_magnitude,
+        # Public compatibility alias. This value is not structural C(t).
+        "cascade_coherence": mean_edge_magnitude,
+        "canonical_coherence_certified": False,
     }
 
 
-def _compute_cascade_coherence(G: TNFRGraph, affected_nodes: list[NodeId]) -> float:
-    """Compute cascade coherence from coupling strengths.
+def _mean_internal_edge_weight_magnitude(
+    G: TNFRGraph, affected_nodes: set[NodeId]
+) -> float:
+    """Return the unbounded mean magnitude of induced edge weights.
 
-    Parameters
-    ----------
-    G : TNFRGraph
-        Graph with edge weights representing coupling strengths
-    affected_nodes : list[NodeId]
-        Nodes involved in the cascade
-
-    Returns
-    -------
-    float
-        Cascade coherence metric (0.0-1.0)
+    Directed arcs and parallel edges each count once. Missing weights default
+    to 1.0. The result is finite and nonnegative but has no upper bound, and it
+    is not canonical structural coherence C(t).
     """
-    if len(affected_nodes) < 2:
+
+    if not affected_nodes:
         return 0.0
 
-    try:
-        # Calculate coherence based on edge weights between affected nodes
-        total_coupling = 0.0
-        edge_count = 0
-
-        for i, node1 in enumerate(affected_nodes):
-            for node2 in affected_nodes[i + 1 :]:
-                if G.has_edge(node1, node2):
-                    weight = G.edges[node1, node2].get("weight", 1.0)
-                    total_coupling += abs(weight)
-                    edge_count += 1
-
-        return total_coupling / max(edge_count, 1) if edge_count > 0 else 0.0
-    except Exception:
+    magnitudes = []
+    for left, right, data in G.edges(data=True):
+        if left not in affected_nodes or right not in affected_nodes:
+            continue
+        weight = finite_real(
+            data.get("weight", 1.0),
+            label=f"THOL cascade edge weight {left!r}->{right!r}",
+        )
+        magnitudes.append(abs(weight))
+    if not magnitudes:
         return 0.0
+    total = sum_nonnegative_magnitudes(
+        magnitudes, label="THOL internal edge-weight magnitude"
+    )
+    return total / len(magnitudes)
 
 
 def measure_cascade_radius(G: TNFRGraph, source_node: NodeId) -> int:
@@ -265,9 +276,8 @@ def invalidate_cascade_cache() -> int:
     TNFR Caching: Uses canonical `invalidate_by_dependency()` mechanism.
     Dependencies invalidated: 'thol_propagations', 'cascade_config'.
 
-    This function is typically not needed explicitly, as cache invalidation
-    happens automatically when G.graph["thol_propagations"] is modified.
-    However, it's provided for manual cache management in edge cases.
+    Call this function after mutating propagation history or cascade
+    configuration outside a managed mutation path.
 
     Examples
     --------

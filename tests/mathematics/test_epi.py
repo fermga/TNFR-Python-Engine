@@ -29,7 +29,7 @@ def sample_elements(sample_grid: np.ndarray) -> tuple[BEPIElement, BEPIElement]:
     return first, second
 
 
-def test_direct_sum_preserves_norm_structure(
+def test_direct_sum_preserves_regularity_evaluation(
     sample_elements: tuple[BEPIElement, BEPIElement],
 ) -> None:
     space = BanachSpaceEPI()
@@ -46,17 +46,17 @@ def test_direct_sum_preserves_norm_structure(
         element_a.a_discrete + element_b.a_discrete,
     )
 
-    expected_norm = space.coherence_norm(
+    expected_regularity = space.composite_epi_regularity(
         element_a.f_continuous + element_b.f_continuous,
         element_a.a_discrete + element_b.a_discrete,
         x_grid=combined.x_grid,
     )
-    combined_norm = space.coherence_norm(
+    combined_regularity = space.composite_epi_regularity(
         combined.f_continuous,
         combined.a_discrete,
         x_grid=combined.x_grid,
     )
-    assert combined_norm == pytest.approx(expected_norm)
+    assert combined_regularity == pytest.approx(expected_regularity)
 
 
 def test_adjoint_inverts_phase(
@@ -72,17 +72,17 @@ def test_adjoint_inverts_phase(
     )
     np.testing.assert_allclose(adjoint.a_discrete, np.conjugate(element_a.a_discrete))
 
-    original_norm = space.coherence_norm(
+    original_regularity = space.composite_epi_regularity(
         element_a.f_continuous,
         element_a.a_discrete,
         x_grid=element_a.x_grid,
     )
-    adjoint_norm = space.coherence_norm(
+    adjoint_regularity = space.composite_epi_regularity(
         adjoint.f_continuous,
         adjoint.a_discrete,
         x_grid=adjoint.x_grid,
     )
-    assert original_norm == pytest.approx(adjoint_norm)
+    assert original_regularity == pytest.approx(adjoint_regularity)
 
 
 def test_tensor_with_hilbert_matches_outer_product(
@@ -115,17 +115,17 @@ def test_compose_applies_componentwise(
     np.testing.assert_allclose(scaled.f_continuous, 2.0 * element_a.f_continuous)
     np.testing.assert_allclose(scaled.a_discrete, element_a.a_discrete + 1.0)
 
-    scaled_norm = space.coherence_norm(
+    scaled_regularity = space.composite_epi_regularity(
         scaled.f_continuous,
         scaled.a_discrete,
         x_grid=scaled.x_grid,
     )
-    manual_norm = space.coherence_norm(
+    manual_regularity = space.composite_epi_regularity(
         2.0 * element_a.f_continuous,
         element_a.a_discrete + 1.0,
         x_grid=element_a.x_grid,
     )
-    assert scaled_norm == pytest.approx(manual_norm)
+    assert scaled_regularity == pytest.approx(manual_regularity)
 
 
 def test_zero_and_basis_factories(sample_grid: np.ndarray) -> None:
@@ -153,7 +153,9 @@ def test_zero_and_basis_factories(sample_grid: np.ndarray) -> None:
     np.testing.assert_allclose(combined.a_discrete, basis.a_discrete)
 
 
-def test_bepi_sequence_forms_cauchy(sample_grid: np.ndarray) -> None:
+def test_bepi_convergent_residuals_have_vanishing_regularity(
+    sample_grid: np.ndarray,
+) -> None:
     space = BanachSpaceEPI()
 
     def partial_weight(order: int) -> float:
@@ -175,8 +177,8 @@ def test_bepi_sequence_forms_cauchy(sample_grid: np.ndarray) -> None:
         sample_grid,
     )
 
-    distances_to_limit = [
-        space.coherence_norm(
+    residual_regularities = [
+        space.composite_epi_regularity(
             limit_element.f_continuous - element.f_continuous,
             limit_element.a_discrete - element.a_discrete,
             x_grid=sample_grid,
@@ -184,23 +186,23 @@ def test_bepi_sequence_forms_cauchy(sample_grid: np.ndarray) -> None:
         for element in sequence
     ]
 
-    assert distances_to_limit[-1] < 0.08
+    assert residual_regularities[-1] < 0.08
     assert all(
         earlier >= later
-        for earlier, later in zip(distances_to_limit, distances_to_limit[1:])
+        for earlier, later in zip(residual_regularities, residual_regularities[1:])
     )
 
-    tail_bounds = []
+    tail_regularity_bounds = []
     for start in range(4, len(sequence) - 1):
         diffs = [
-            space.coherence_norm(
+            space.composite_epi_regularity(
                 sequence[next_idx].f_continuous - sequence[start].f_continuous,
                 sequence[next_idx].a_discrete - sequence[start].a_discrete,
                 x_grid=sample_grid,
             )
             for next_idx in range(start + 1, len(sequence))
         ]
-        tail_bounds.append(max(diffs))
+        tail_regularity_bounds.append(max(diffs))
 
-    assert tail_bounds
-    assert all(bound < 0.08 for bound in tail_bounds)
+    assert tail_regularity_bounds
+    assert all(bound < 0.08 for bound in tail_regularity_bounds)

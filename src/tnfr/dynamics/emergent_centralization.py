@@ -496,7 +496,10 @@ class TNFREmergentCentralizationEngine:
         """
         Discover centralization based on phase synchronization potential.
 
-        Nodes that can coordinate phase across the network become centers.
+        Rank nodes by a reciprocal wrapped-distance affinity and capacity.
+
+        The affinity is an operational coordination score. It is distinct from
+        both structural coherence C(t) and the Kuramoto order parameter.
         """
         coordination_nodes = []
 
@@ -516,32 +519,36 @@ class TNFREmergentCentralizationEngine:
             if len(neighbors) > 2:  # Need sufficient connections for coordination
                 neighbor_phases = [phase_values.get(n, 0.0) for n in neighbors]
 
-                # Calculate coherence from shortest-arc phase separations.
+                # Bounded affinity derived only from shortest-arc separation.
+                # It is a coordination heuristic, not structural coherence C(t)
+                # and not the Kuramoto phase-order parameter.
                 phase_differences = [
                     abs(angle_diff(phase, nphase)) for nphase in neighbor_phases
                 ]
-                avg_phase_diff = np.mean(phase_differences)
-                phase_coherence = 1.0 / (
-                    1.0 + avg_phase_diff
-                )  # Higher coherence = lower differences
+                avg_phase_diff = float(np.mean(phase_differences))
+                phase_distance_affinity = 1.0 / (1.0 + avg_phase_diff)
 
                 # Phase coordination capacity
                 vf = _node_real_channel(
                     G, node, ALIAS_VF, 1.0, "structural frequency", nonnegative=True
                 )
                 coordination_capacity = _finite_product(
-                    float(phase_coherence),
+                    phase_distance_affinity,
                     float(len(neighbors)),
                     vf,
                     label="phase coordination capacity",
                 )
 
                 if (
-                    phase_coherence > EMERGENT_CENTRALITY_THRESHOLD_CANONICAL
+                    phase_distance_affinity
+                    > EMERGENT_CENTRALITY_THRESHOLD_CANONICAL
                     and coordination_capacity > self.coordination_threshold
                 ):  # ≈ 0.737
                     signature = {
-                        "phase_coherence": phase_coherence,
+                        "phase_distance_affinity": phase_distance_affinity,
+                        # Compatibility alias; explicitly not structural C(t).
+                        "phase_coherence": phase_distance_affinity,
+                        "phase_metric_kind": "reciprocal_mean_wrapped_distance",
                         "average_phase_difference": avg_phase_diff,
                         "neighbor_count": len(neighbors),
                         "vf": vf,
@@ -560,7 +567,7 @@ class TNFREmergentCentralizationEngine:
 
                     coord_node = CentralizationNode(
                         node_id=node,
-                        centrality_score=phase_coherence,
+                        centrality_score=phase_distance_affinity,
                         coordination_capacity=coordination_capacity,
                         current_load=None,
                         specialization="phase_coordination",

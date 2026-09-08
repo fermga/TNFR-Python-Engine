@@ -183,9 +183,9 @@ def experiment_3_relative_entropy(transition, stationary):
     )
     print(f"  non-increasing over sampled steps: {monotone}")
     assert monotone
-    print("\n  This is Markov data processing with stationary pi. It does not show")
-    print("  that an engine trajectory follows this kernel or reaches a physical")
-    print("  resonant-coherence attractor.")
+    print("\n  This is Markov data processing for the finite selected kernel")
+    print("  relative to its stationary Parry measure. It does not show that an")
+    print("  engine trajectory follows this kernel or prove nodal C(t) convergence.")
 
 
 def experiment_4_operator_frequencies(component, transition, stationary, labels):

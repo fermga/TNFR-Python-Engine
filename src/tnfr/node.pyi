@@ -16,8 +16,8 @@ from typing import (
 import numpy as np
 
 from .mathematics import (
-    CoherenceOperator,
     FrequencyOperator,
+    SpectralExpectationOperator,
     HilbertSpace,
     NFRValidator,
     StateProjector,
@@ -90,9 +90,11 @@ class NodeNX(NodeProtocol):
     state_projector: StateProjector
     enable_math_validation: bool
     hilbert_space: HilbertSpace
-    coherence_operator: CoherenceOperator | None
-    frequency_operator: FrequencyOperator | None
+    spectral_operator: SpectralExpectationOperator | None
+    spectral_expectation_threshold: float | None
+    coherence_operator: SpectralExpectationOperator | None
     coherence_threshold: float | None
+    frequency_operator: FrequencyOperator | None
     validator: NFRValidator | None
     rng: np.random.Generator | None
     def __init__(
@@ -103,13 +105,18 @@ class NodeNX(NodeProtocol):
         state_projector: StateProjector | None = None,
         enable_math_validation: bool | None = None,
         hilbert_space: HilbertSpace | None = None,
-        coherence_operator: CoherenceOperator | None = None,
+        spectral_operator: SpectralExpectationOperator | None = None,
+        spectral_dimension: int | None = None,
+        spectral_spectrum: Sequence[float] | np.ndarray | None = None,
+        spectral_expectation_floor: float | None = None,
+        spectral_expectation_threshold: float | None = None,
+        coherence_operator: SpectralExpectationOperator | None = None,
         coherence_dim: int | None = None,
         coherence_spectrum: Sequence[float] | np.ndarray | None = None,
         coherence_c_min: float | None = None,
+        coherence_threshold: float | None = None,
         frequency_operator: FrequencyOperator | None = None,
         frequency_matrix: Sequence[Sequence[complex]] | np.ndarray | None = None,
-        coherence_threshold: float | None = None,
         validator: NFRValidator | None = None,
         rng: np.random.Generator | None = None,
     ) -> None: ...
@@ -128,7 +135,12 @@ class NodeNX(NodeProtocol):
         *,
         projector: StateProjector | None = None,
         hilbert_space: HilbertSpace | None = None,
-        coherence_operator: CoherenceOperator | None = None,
+        spectral_operator: SpectralExpectationOperator | None = None,
+        spectral_dimension: int | None = None,
+        spectral_spectrum: Sequence[float] | np.ndarray | None = None,
+        spectral_expectation_floor: float | None = None,
+        spectral_expectation_threshold: float | None = None,
+        coherence_operator: SpectralExpectationOperator | None = None,
         coherence_dim: int | None = None,
         coherence_spectrum: Sequence[float] | np.ndarray | None = None,
         coherence_c_min: float | None = None,

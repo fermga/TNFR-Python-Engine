@@ -46,6 +46,7 @@ from ..errors.contextual import (  # noqa: F401 – re-exported via __init__
     TNFRSecurityError,
 )
 from ..mathematics.unified_numerical import np
+from .._coherence_validation import validate_structural_coherence
 
 logger = logging.getLogger(__name__)
 
@@ -368,29 +369,23 @@ class TNFRUnifiedValidationSystem:
         warnings = []
         validated_value = coherence
 
-        # type validation
-        if not isinstance(coherence, (int, float)):
-            errors.append(
-                f"{field_name} must be a number, got {type(coherence).__name__}"
+        try:
+            validated_value = validate_structural_coherence(
+                coherence, name=field_name
             )
+        except (TypeError, ValueError) as exc:
+            errors.append(str(exc))
         else:
-            validated_value = float(coherence)
-
-            # Range validation
             if validated_value < self.config.min_coherence:
                 errors.append(
-                    f"{field_name} must be >= {self.config.min_coherence}, got {validated_value}"
+                    f"{field_name} must be >= {self.config.min_coherence}, "
+                    f"got {validated_value}"
                 )
             elif validated_value > self.config.max_coherence:
                 errors.append(
-                    f"{field_name} must be <= {self.config.max_coherence}, got {validated_value}"
+                    f"{field_name} must be <= {self.config.max_coherence}, "
+                    f"got {validated_value}"
                 )
-
-            # Special values validation
-            if math.isnan(validated_value):
-                errors.append(f"{field_name} cannot be NaN")
-            elif math.isinf(validated_value):
-                errors.append(f"{field_name} cannot be infinite")
 
         result = ValidationResult(
             is_valid=len(errors) == 0,

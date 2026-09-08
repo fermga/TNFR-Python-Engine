@@ -5,21 +5,27 @@ an out-prediction claim. Closes no open problem.
 
 ## Purpose
 
-TNFR's canonical magnitudes (the structural tetrad `|∇φ|`, `K_φ`, `Φ_s`, `ξ_C`;
-the pulse `ω_k = √λ_k`; the coherence `C`; the structural frequency `νf`) are
+TNFR's structural read-outs (the tetrad `|∇φ|`, `K_φ`, `Φ_s`, `ξ_C`;
+the pulse `ω_k = √λ_k`; static pressure coherence `C_static`; structural
+frequency `νf`) are
 meant to be **confronted with real data** — tests that *can* fail. The engine
 ships the **data-agnostic instrument**; it does **not** bundle datasets.
 
 - **Instrument (in-engine):** [`confront_signal`](../src/tnfr/validation/signal_confrontation.py)
   maps any real multichannel signal → the **emergent phase-locking graph**
   ([`build_coupling_graph`](../src/tnfr/validation/multichannel_interface.py),
-  U3/PLV) → the canonical read-outs (tetrad, pulse, `ξ_C` via the emergent
-  spectral gap, coherence `C`) → the **emergent two-face diagnosis**
+  U3/PLV) → the scoped read-outs (tetrad, pulse, `ξ_C` via the emergent
+  spectral gap, static pressure coherence `C_static`) → the **emergent two-face
+  diagnosis**
   ([`emergent_wave_fraction`](../src/tnfr/validation/signal_confrontation.py):
   project the signal onto the emergent `L_sym` eigenmodes and read the damping
   from each modal coordinate's own AR(2) dynamics — oscillate ⇒ conservative-
   wave face, relax ⇒ diffusive face — so the verdict is set by the emergent
   dynamics, not by a fixed γ or the raw input spectrum).
+  The signal window has no TNFR EPI-rate channel. Consequently the public
+  ``coherence`` result evaluates ``structural_coherence(mean|DeltaNFR|, 0)``.
+  It is a static snapshot read-out, not canonical dynamic ``C(t)`` and not an
+  attractor or convergence certificate.
   Demo: [example 159](../examples/10_applications/159_empirical_confrontation_pipeline.py)
   (`python examples/10_applications/159_empirical_confrontation_pipeline.py path/to/signal.npy`).
 - **Findings below** come from the **TNFR-IA empirical arm** (a separate,
@@ -52,7 +58,7 @@ reproducible from the engine alone.
 | **Emergent face** (modal AR(2) on `L_sym`) | **WAVE / under-damped in 18/20** conditions | the emergent two-face verdict: real EEG is on the conservative (wave) face; a real thermal field (heat diffusion) lands on the **diffusive** face (97–99% of 2-day windows), so the certificate **discriminates** two real systems |
 | **`K_φ`** (phase curvature, local) | rises in **10/10** subjects (paired dz ≈ +1.1, sign-test **p ≈ 0.002**) | the phase-curvature field — a canonical TNFR magnitude with no standard analogue — is the **most consistent cross-subject state marker** |
 | **`|∇φ|`** (phase gradient, local) | rises in **9/10** (**p ≈ 0.021**) | the local phase field carries the state consistently across subjects |
-| **`C`** (coherence) / **`Q`** (quality factor) | both rise (8/10 each) | a sharper, more coherent rhythm; `C` is a trend (p ≈ 0.11) |
+| **`C_static`** (pressure snapshot) / **`Q`** (quality factor) | both rise (8/10 each) | a sharper rhythm; `C_static` is a pressure-only trend (p ≈ 0.11), not dynamic total `C(t)` |
 | **Global Kuramoto `R`** | **falls** in 9/10 (dz ≈ −0.9) | mean-field synchrony moves **opposite** to the local fields — the local tetrad and `R` **dissociate** |
 | **Collective pulse** `ω₀=√λ₂` | structural `ω₀ ∈ [0.12, 0.27]` vs measured `1–11 Hz` (Spearman ≈ −0.3); flat open↔closed (dz ≈ −0.2, **p = 1.0**) | the pulse `ω_k=√λ_k` is the coupling graph's **spatial / topological** standing-wave spectrum — **not** the temporal Hz spectrum, and not a state marker here (the k-NN PLV topology is state-insensitive by construction); the *local* tetrad carries the state |
 

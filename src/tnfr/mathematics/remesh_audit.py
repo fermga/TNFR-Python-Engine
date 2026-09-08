@@ -1,178 +1,374 @@
-r"""REMESH contract audit — is the p-adic transport REMESH? (R4b, N09).
+r"""Scoped REMESH contract audit for p-adic transport (R4b, N09).
 
-The p-adic tower (R4) gives an exact projective transport, and N08 classifies its
-lift/scale maps as **morphisms** (LIFT, COARSE_GRAINING, and the same-scale
-projection ``Lift·R_e``).  A morphism transports structure *instantaneously*; the
-canonical **REMESH** operator (Recursivity, glyph REMESH) instead echoes the form
-**across time**,
+The p-adic tower supplies exact projective transport. Its lift and scale maps
+are instantaneous morphisms; canonical REMESH additionally requires a temporal
+EPI echo. This module measures that distinction without treating scalar EPI
+uniformity as evidence for grammar U5.
 
-    ``EPI_new = (1-α)² EPI(t) + α(1-α) EPI(t-τ_l) + α EPI(t-τ_g)``
-
-(:mod:`tnfr.operators.operator_contracts`), a genuine temporal memory.  This
-module audits the four REMESH-contract conditions and runs one predefined
-campaign contrasting the static p-adic projection with the temporal recurrence.
-
-**Honest result.**  The static tower map satisfies three conditions (NETWORK
-scale, preserved identity, U5 multiscale coherence) but **fails the temporal
-echo** — it is a projection morphism, not REMESH (``NT-P04b`` stays negative for
-the tower).  The temporal recurrence passes all four, so the audit is a real
-discriminator, not a vacuous gate.  The only ingredient the lift lacks to be
-REMESH is the ``EPI(t) ← EPI(t-τ)`` recursion.
+``field_uniformity_score`` reports the heuristic ``1 / (1 + std(EPI))``. It is
+neither canonical structural coherence nor a parent/child U5 certificate. U5
+remains unverified unless the caller declares a concrete post-update hierarchy
+through ``RemeshU5Evidence``; the evidence is evaluated by the canonical
+``assess_u5_parent_child_coherence`` function with explicit alpha and tolerance.
+Consequently the default campaign distinguishes temporal memory, while neither
+candidate realizes REMESH without hierarchy evidence.
 """
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
+from numbers import Integral
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+from ..types import NodeId
 from .padic_tower import (
     RemeshContractAudit,
     padic_lift_map,
     projective_scale_map,
 )
 
+if TYPE_CHECKING:
+    from ..physics.multiscale_coherence import U5CoherenceAssessment
+
 __all__ = [
+    "field_uniformity_score",
     "remesh_coefficients",
     "remesh_recurrence",
     "remesh_recurrence_update",
     "scale_projection_update",
     "temporal_echo_residual",
+    "RemeshU5Evidence",
+    "RemeshCandidateAudit",
     "audit_remesh_candidate",
     "RemeshCampaign",
     "remesh_campaign",
 ]
 
 
-def _frac(matrix) -> np.ndarray:
+def _finite_scalar(value: Any, *, name: str) -> float:
+    """Normalize a finite scalar while rejecting truth values and arrays."""
+    if isinstance(value, (bool, np.bool_)):
+        raise TypeError(f"{name} must be a finite real scalar, not bool")
+    if isinstance(value, (str, bytes)) or not bool(np.isscalar(value)):
+        raise TypeError(f"{name} must be a finite real scalar")
+    try:
+        normalized = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TypeError(f"{name} must be a finite real scalar") from exc
+    if not math.isfinite(normalized):
+        raise ValueError(f"{name} must be finite")
+    return normalized
+
+
+def _network_size(value: Any) -> int:
+    """Return a nontrivial integer network size."""
+    if isinstance(value, (bool, np.bool_)) or not isinstance(value, Integral):
+        raise TypeError("network_size must be an integer greater than one")
+    normalized = int(value)
+    if normalized <= 1:
+        raise ValueError("network_size must be an integer greater than one")
+    return normalized
+
+
+def _frac(matrix: Any) -> np.ndarray:
     return np.array([[float(x) for x in row] for row in matrix], dtype=float)
 
 
-def _coherence(x) -> float:
-    r"""Coherence proxy ``1/(1+std)`` — higher means a more uniform (coherent)
-    per-node field."""
-    return 1.0 / (1.0 + float(np.std(np.asarray(x, dtype=float))))
+def field_uniformity_score(values: Any) -> float:
+    r"""Return the scalar-field heuristic ``1 / (1 + std(EPI))``.
+
+    This score describes only dispersion in a finite one-dimensional EPI field.
+    It does not read ``DeltaNFR`` or ``dEPI``, does not declare a hierarchy, and
+    cannot establish canonical structural ``C(t)`` or grammar U5.
+    """
+    try:
+        raw = np.asarray(values)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TypeError("values must be a finite one-dimensional field") from exc
+    if raw.ndim != 1 or raw.size == 0:
+        raise ValueError("values must be a nonempty one-dimensional field")
+    try:
+        field = np.fromiter(
+            (_finite_scalar(value, name="field value") for value in raw),
+            dtype=float,
+            count=raw.size,
+        )
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TypeError("values must contain only finite real scalars") from exc
+
+    scale = float(np.max(np.abs(field)))
+    if scale == 0.0:
+        return 1.0
+    standard_deviation = scale * float(np.std(field / scale))
+    if standard_deviation >= 1.0:
+        inverse = 1.0 / standard_deviation
+        return inverse / (1.0 + inverse)
+    return 1.0 / (1.0 + standard_deviation)
 
 
 def remesh_coefficients(alpha: float) -> tuple[float, float, float]:
-    r"""``(c_now, c_local, c_global) = ((1-α)², α(1-α), α)`` — a partition of unity.
+    r"""Return ``((1-alpha)^2, alpha(1-alpha), alpha)``.
 
-    Their sum is ``(1-α)² + α(1-α) + α = 1``, so the recurrence is a convex
-    combination for ``0 ≤ α ≤ 1`` (identity- and coherence-preserving).
+    The coefficients form a convex partition of unity for the required domain
+    ``0 <= alpha <= 1``.
     """
-    a = float(alpha)
-    return ((1.0 - a) ** 2, a * (1.0 - a), a)
+    value = _finite_scalar(alpha, name="alpha")
+    if not 0.0 <= value <= 1.0:
+        raise ValueError("alpha must be in [0, 1]")
+    return ((1.0 - value) ** 2, value * (1.0 - value), value)
 
 
-def remesh_recurrence(now, past_local, past_global, *, alpha: float = 0.5):
-    r"""The canonical REMESH temporal echo across two scales (local/global)."""
-    c0, cl, cg = remesh_coefficients(alpha)
-    return (c0 * np.asarray(now, dtype=float)
-            + cl * np.asarray(past_local, dtype=float)
-            + cg * np.asarray(past_global, dtype=float))
+def remesh_recurrence(
+    now: Any,
+    past_local: Any,
+    past_global: Any,
+    *,
+    alpha: float = 0.5,
+) -> np.ndarray:
+    r"""Apply the canonical REMESH temporal echo across two delay scales."""
+    current_weight, local_weight, global_weight = remesh_coefficients(alpha)
+    return (
+        current_weight * np.asarray(now, dtype=float)
+        + local_weight * np.asarray(past_local, dtype=float)
+        + global_weight * np.asarray(past_global, dtype=float)
+    )
 
 
 def remesh_recurrence_update(*, alpha: float = 0.5):
-    r"""A candidate REMESH update ``(now, past_l, past_g) → EPI_new`` with **real
-    temporal memory**."""
-    def update(now, past_local, past_global):
-        return remesh_recurrence(now, past_local, past_global, alpha=alpha)
+    r"""Return a candidate update with explicit local and global memory."""
+    # Validate at builder time so an invalid candidate fails before execution.
+    remesh_coefficients(alpha)
+
+    def update(now: Any, past_local: Any, past_global: Any) -> np.ndarray:
+        return remesh_recurrence(
+            now,
+            past_local,
+            past_global,
+            alpha=alpha,
+        )
+
     return update
 
 
 def scale_projection_update(p: int, e: int):
-    r"""The static p-adic candidate ``P = Lift·R_e`` on the fine level.
+    r"""Return the static p-adic projection ``Lift * R_e`` on the fine level.
 
-    It regenerates the fine field from its fiber averages (a same-scale
-    idempotent PROJECTION morphism, N08); crucially it **ignores** the delayed
-    inputs, so it has no temporal echo.
+    The projection ignores delayed inputs and therefore has no temporal echo.
     """
-    proj = _frac(padic_lift_map(p, e)) @ _frac(projective_scale_map(p, e))
+    projection = _frac(padic_lift_map(p, e)) @ _frac(
+        projective_scale_map(p, e)
+    )
 
-    def update(now, past_local, past_global):  # delayed inputs unused (no echo)
-        return proj @ np.asarray(now, dtype=float)
+    def update(now: Any, past_local: Any, past_global: Any) -> np.ndarray:
+        del past_local, past_global
+        return projection @ np.asarray(now, dtype=float)
+
     return update
 
 
-def temporal_echo_residual(update, now, past_local, past_global, *,
-                           delta: float = 1e-2) -> float:
-    r"""Sensitivity of ``update`` to the **delayed** inputs — the temporal echo.
+def temporal_echo_residual(
+    update: Any,
+    now: Any,
+    past_local: Any,
+    past_global: Any,
+    *,
+    delta: float = 1e-2,
+) -> float:
+    r"""Measure update sensitivity to delayed inputs.
 
-    Perturbs ``past_local`` and ``past_global`` and measures the induced change
-    in the output.  ``0`` means the update ignores history (a static morphism);
-    ``> 0`` means a genuine ``EPI(t) ← EPI(t-τ)`` recursion.
+    Zero means that the candidate ignores history. A positive result establishes
+    sensitivity for this probe; it is not by itself a complete REMESH contract.
     """
-    now = np.asarray(now, dtype=float)
-    pl = np.asarray(past_local, dtype=float)
-    pg = np.asarray(past_global, dtype=float)
-    base = update(now, pl, pg)
-    step = delta * np.ones_like(pl)
-    d_local = np.linalg.norm(update(now, pl + step, pg) - base)
-    d_global = np.linalg.norm(update(now, pl, pg + step) - base)
-    return float(max(d_local, d_global) / delta)
+    delta_value = _finite_scalar(delta, name="delta")
+    if delta_value <= 0.0:
+        raise ValueError("delta must be positive")
+    current = np.asarray(now, dtype=float)
+    local = np.asarray(past_local, dtype=float)
+    global_ = np.asarray(past_global, dtype=float)
+    base = np.asarray(update(current, local, global_), dtype=float)
+    step = delta_value * np.ones_like(local)
+    local_change = np.linalg.norm(
+        np.asarray(update(current, local + step, global_), dtype=float) - base
+    )
+    global_change = np.linalg.norm(
+        np.asarray(update(current, local, global_ + step), dtype=float) - base
+    )
+    return float(max(local_change, global_change) / delta_value)
 
 
-def audit_remesh_candidate(update, *, network_size: int = 9,
-                           tol: float = 1e-9) -> RemeshContractAudit:
-    r"""Audit the four REMESH-contract conditions for a candidate ``update``.
+@dataclass(frozen=True, slots=True)
+class RemeshU5Evidence:
+    """Declared post-update hierarchy for a canonical U5 assessment.
 
-    (1) EPI recursion — a non-zero temporal echo; (2) NETWORK scale — acts on the
-    whole ``EPI`` field; (3) identity preserved — a coherent (fiber-constant)
-    state is a fixed point; (4) U5 multiscale — coherence is not lost.  ``REMESH``
-    may be named only when all four hold.
+    The caller is responsible for providing the graph materialized after the
+    candidate update. The assessment records the concrete parent, children,
+    alpha, tolerance, and canonical per-node coherence values; it is not a
+    universal preservation theorem for future states.
     """
+
+    post_update_graph: Any
+    parent: NodeId
+    alpha: float
+    children: tuple[NodeId, ...] | None = None
+    tolerance: float = 0.0
+
+    def assess(self) -> U5CoherenceAssessment:
+        """Evaluate this declaration through the canonical U5 implementation."""
+        from ..physics.multiscale_coherence import (
+            assess_u5_parent_child_coherence,
+        )
+
+        return assess_u5_parent_child_coherence(
+            self.post_update_graph,
+            self.parent,
+            alpha=self.alpha,
+            children=self.children,
+            tolerance=self.tolerance,
+        )
+
+
+@dataclass(frozen=True)
+class RemeshCandidateAudit(RemeshContractAudit):
+    """REMESH contract flags plus a separately named field diagnostic."""
+
+    field_uniformity_before: float = 0.0
+    field_uniformity_after: float = 0.0
+    field_uniformity_preserved: bool = False
+    u5_assessment: U5CoherenceAssessment | None = None
+
+    @property
+    def u5_evidence_declared(self) -> bool:
+        """Whether an explicit canonical hierarchy assessment was supplied."""
+        return self.u5_assessment is not None
+
+    def to_dict(self) -> dict[str, bool | float]:
+        """Return contract flags and non-canonical uniformity diagnostics."""
+        result: dict[str, bool | float] = super().to_dict()
+        result.update(
+            {
+                "field_uniformity_before": self.field_uniformity_before,
+                "field_uniformity_after": self.field_uniformity_after,
+                "field_uniformity_preserved": self.field_uniformity_preserved,
+                "u5_evidence_declared": self.u5_evidence_declared,
+            }
+        )
+        return result
+
+
+def audit_remesh_candidate(
+    update: Any,
+    *,
+    network_size: int = 9,
+    tol: float = 1e-9,
+    u5_evidence: RemeshU5Evidence | None = None,
+) -> RemeshCandidateAudit:
+    r"""Audit a candidate using scoped probes and optional hierarchy evidence.
+
+    The temporal, network-scale, and identity flags describe the fixed probes
+    below. ``u5_multiscale_verified`` can become true only when ``u5_evidence``
+    produces a satisfying canonical parent/child assessment. Field uniformity
+    is always reported separately and never contributes to ``realizes_remesh``.
+    """
+    size = _network_size(network_size)
+    tolerance = _finite_scalar(tol, name="tol")
+    if tolerance < 0.0:
+        raise ValueError("tol must be nonnegative")
+
     rng = np.random.default_rng(0)
-    n = network_size
-    now = rng.standard_normal(n)
-    past_local = rng.standard_normal(n)
-    past_global = rng.standard_normal(n)
-    # a coherent (fiber-constant on residues mod 3) probe for identity / U5
-    coherent = np.tile(np.array([1.0, -1.0, 0.5]), n // 3)[:n]
+    now = rng.standard_normal(size)
+    past_local = rng.standard_normal(size)
+    past_global = rng.standard_normal(size)
+    identity_probe = np.resize(np.array([1.0, -1.0, 0.5]), size)
 
     echo = temporal_echo_residual(update, now, past_local, past_global)
-    out = np.asarray(update(now, past_local, past_global), dtype=float)
-    fixed = update(coherent, coherent, coherent)
+    output = np.asarray(update(now, past_local, past_global), dtype=float)
+    fixed = np.asarray(
+        update(identity_probe, identity_probe, identity_probe),
+        dtype=float,
+    )
 
     epi_recursion = echo > 1e-6
-    network_scale = out.shape == (n,) and n > 1
+    network_scale = output.shape == (size,) and size > 1
     identity_preserved = bool(
-        np.linalg.norm(np.asarray(fixed, dtype=float) - coherent) < 1e-6
+        fixed.shape == identity_probe.shape
+        and np.linalg.norm(fixed - identity_probe) < 1e-6
     )
-    u5_multiscale = _coherence(fixed) >= _coherence(coherent) - tol
-    return RemeshContractAudit(
+    uniformity_before = field_uniformity_score(identity_probe)
+    uniformity_after = field_uniformity_score(fixed)
+    uniformity_preserved = uniformity_after >= uniformity_before - tolerance
+
+    assessment = None if u5_evidence is None else u5_evidence.assess()
+    u5_verified = bool(
+        assessment is not None and assessment.satisfies_target
+    )
+
+    return RemeshCandidateAudit(
         epi_recursion_verified=epi_recursion,
         network_scale_verified=network_scale,
         identity_preserved_verified=identity_preserved,
-        u5_multiscale_verified=u5_multiscale,
+        u5_multiscale_verified=u5_verified,
+        field_uniformity_before=uniformity_before,
+        field_uniformity_after=uniformity_after,
+        field_uniformity_preserved=uniformity_preserved,
+        u5_assessment=assessment,
     )
 
 
 @dataclass(frozen=True)
 class RemeshCampaign:
-    """One predefined campaign: static p-adic transport vs temporal recurrence."""
+    """Static p-adic transport and temporal recurrence audit results."""
 
-    static_lift: RemeshContractAudit
-    temporal_recurrence: RemeshContractAudit
+    static_lift: RemeshCandidateAudit
+    temporal_recurrence: RemeshCandidateAudit
 
     @property
     def tower_realizes_remesh(self) -> bool:
-        """Whether the p-adic tower transport is REMESH (it is not)."""
+        """Whether the p-adic tower transport satisfies every contract field."""
         return self.static_lift.realizes_remesh
 
     @property
+    def temporal_echo_discriminates(self) -> bool:
+        """Whether the probe detects memory only in the temporal candidate."""
+        return (
+            not self.static_lift.epi_recursion_verified
+            and self.temporal_recurrence.epi_recursion_verified
+        )
+
+    @property
     def audit_discriminates(self) -> bool:
-        """The gate rejects the static morphism yet accepts genuine REMESH."""
-        return (not self.static_lift.realizes_remesh
-                and self.temporal_recurrence.realizes_remesh)
+        """Whether the full gate rejects the lift and accepts the recurrence."""
+        return (
+            not self.static_lift.realizes_remesh
+            and self.temporal_recurrence.realizes_remesh
+        )
 
 
-def remesh_campaign(*, p: int = 3, e: int = 1,
-                    alpha: float = 0.5) -> RemeshCampaign:
-    r"""Run the predefined R4b campaign on the ``p^{e+1}``-node fine level."""
-    n = p ** (e + 1)
+def remesh_campaign(
+    *,
+    p: int = 3,
+    e: int = 1,
+    alpha: float = 0.5,
+    static_u5_evidence: RemeshU5Evidence | None = None,
+    temporal_u5_evidence: RemeshU5Evidence | None = None,
+) -> RemeshCampaign:
+    r"""Run the R4b campaign on the ``p**(e+1)``-node fine level.
+
+    Candidate-specific post-update hierarchy evidence must be supplied
+    separately. Without it, both U5 flags remain explicitly unverified.
+    """
+    size = p ** (e + 1)
     return RemeshCampaign(
         static_lift=audit_remesh_candidate(
-            scale_projection_update(p, e), network_size=n),
+            scale_projection_update(p, e),
+            network_size=size,
+            u5_evidence=static_u5_evidence,
+        ),
         temporal_recurrence=audit_remesh_candidate(
-            remesh_recurrence_update(alpha=alpha), network_size=n),
+            remesh_recurrence_update(alpha=alpha),
+            network_size=size,
+            u5_evidence=temporal_u5_evidence,
+        ),
     )

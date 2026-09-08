@@ -172,24 +172,22 @@ def moment_ladder_closure(flow: TNFRNavierStokes) -> dict[str, Any]:
 
 
 def flow_coherence(flow: TNFRNavierStokes) -> dict[str, Any]:
-    r"""The emergent-geometry coherence attractor, read by the UNIVERSAL kernel.
+    r"""Read a static pressure-coherence snapshot of the vorticity field.
 
-    Nothing NS-specific is added: the flow is read through the **one** canonical
-    coherence map :func:`~tnfr.metrics.common.structural_coherence`
-    ``C = 1/(1 + |ΔNFR|)`` and the **one** fixed-point predicate
-    :func:`~tnfr.metrics.common.is_structural_equilibrium` (``ΔNFR = 0``) -- the
-    same emergent-geometry attractor that governs graph nodes, structural primes
-    and noble gases.  Only the domain-specific ``ΔNFR`` realisation differs: here
-    it is the canonical random-walk-Laplacian action on the vorticity magnitude
-    field (the neighbour-mean minus self on the emergent torus geometry,
-    ``ΔNFR = -L_rw·|ω|``), exactly as the graph dynamics realises it.
+    The domain-specific pressure is the random-walk-Laplacian action on
+    vorticity magnitude, ``ΔNFR = -L_rw·|ω|``.  The function evaluates the
+    shared scalar map :func:`~tnfr.metrics.common.structural_coherence` with
+    the explicit static assumption ``dEPI = 0``.  It therefore reports
+    ``C_static = 1/(1 + mean|ΔNFR|)`` rather than the engine's dynamic total
+    ``C(t)``, which requires a measured or declared EPI-rate channel.
 
-    The self-certification is intrinsic: the flow relaxes to its emergent-geometry
-    equilibrium (``ΔNFR → 0``, ``C → 1``, ``at_equilibrium = True``) by its own
-    evolution.  The uniform-closure question is then purely geometric -- does the
-    coherence stay in the coherent band ``C > 1/(π+1)`` as ``Re → ∞``, or does the
-    peak-turbulence coherence erode to the fragmentation floor?  This read-out
-    measures it; it does not close it.
+    Reusing the scalar map does not identify Navier--Stokes, graph, arithmetic,
+    and chemical state spaces or prove that they share an attractor.  The
+    compatibility key ``at_equilibrium`` only tests whether the mean pressure
+    magnitude is within the selected tolerance while the rate is held at zero.
+    Successive calls along a numerical trajectory can record a trend;
+    one snapshot does not certify convergence, regularity, or an asymptotic
+    Navier--Stokes bound.
     """
     wx, wy, wz = flow.vorticity()
     mag = np.sqrt(wx**2 + wy**2 + wz**2)
@@ -200,15 +198,20 @@ def flow_coherence(flow: TNFRNavierStokes) -> dict[str, Any]:
     ) / 6.0
     dnfr = neigh - mag  # = -(L_rw . |omega|): the canonical DeltaNFR realisation
     mean_abs_dnfr = float(np.mean(np.abs(dnfr)))
-    coherence = structural_coherence(mean_abs_dnfr)  # the universal kernel
+    coherence = structural_coherence(mean_abs_dnfr, 0.0)
     frag_floor = 1.0 / (math.pi + 1.0)
     strong_cut = math.pi / (math.pi + 1.0)
+    mean_pressure_within_tolerance = bool(
+        is_structural_equilibrium(mean_abs_dnfr, 0.0, eps_dnfr=1e-2)
+    )
     return {
         "coherence": float(coherence),
         "mean_abs_dnfr": mean_abs_dnfr,
-        "at_equilibrium": bool(
-            is_structural_equilibrium(mean_abs_dnfr, 0.0, eps_dnfr=1e-2)
-        ),
+        "at_equilibrium": mean_pressure_within_tolerance,
+        "mean_pressure_within_tolerance": mean_pressure_within_tolerance,
+        "coherence_kind": "static_pressure_only_structural_coherence",
+        "depi_assumption": 0.0,
+        "dynamic_equilibrium_assessed": False,
         "strong": bool(coherence > strong_cut),
         "coherent": bool(coherence > frag_floor),
     }

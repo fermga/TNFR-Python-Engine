@@ -10,10 +10,12 @@ from tnfr.mathematics.operators import (
     DEFAULT_C_MIN,
     CoherenceOperator,
     FrequencyOperator,
+    SpectralExpectationOperator,
 )
 from tnfr.mathematics.operators_factory import (
     make_coherence_operator,
     make_frequency_operator,
+    make_spectral_expectation_operator,
 )
 
 
@@ -41,6 +43,22 @@ def test_coherence_operator_from_eigenvalues() -> None:
     np.testing.assert_array_equal(
         operator.spectrum(), np.array([1.0, 2.0, 3.0], dtype=np.complex128)
     )
+
+
+def test_legacy_coherence_operator_is_the_spectral_expectation_alias() -> None:
+    assert CoherenceOperator is SpectralExpectationOperator
+
+
+def test_spectral_expectation_is_unbounded_and_not_canonical_coherence() -> None:
+    operator = make_spectral_expectation_operator(
+        2, spectrum=np.array([2.0, 4.0]), expectation_floor=2.5
+    )
+
+    assert operator.expectation([0.0, 1.0]) == pytest.approx(4.0)
+    assert operator.expectation_floor == pytest.approx(2.5)
+    assert operator.metric_kind == "spectral_operator_expectation"
+    assert operator.canonical_coherence_certified is False
+    assert operator.canonical_history_key is None
 
 
 def test_coherence_operator_allows_custom_c_min() -> None:

@@ -105,8 +105,11 @@ def push_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> None:
     # and a zero-length trace cannot erase uncompensated destabilization.
     debt = node_debt(nd)
     prior_coherence = node_has_prior_coherence(nd)
-    _, hist = _ensure_history(nd, window, create_zero=True)
+    # Freeze the monotonic index before a smaller window can evict retained
+    # entries. Trace length is a fallback only; resizing must never move the
+    # lifetime operator clock backwards.
     step = current_operator_step(nd) + 1
+    _, hist = _ensure_history(nd, window, create_zero=True)
     hist.append(str(glyph))
     nd[_OPERATOR_STEP_KEY] = step
     nd[U2_DEBT_KEY] = advance_debt(debt, glyph)

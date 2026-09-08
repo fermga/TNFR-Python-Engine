@@ -17,15 +17,23 @@ bound ``V(J(x)) <= gamma V(x)`` for every ``x`` exists exactly when ``A 1`` and
 
 ``gamma = ||H**(1/2) Q A Q H**(-1/2)||_2**2``.
 
-Its binary64 SVD evaluation is reported only as a sharp *estimate*.  The exact
-affine hypotheses and each proved reset factor instead use the rational
-weighted-Frobenius bound
+Its binary64 SVD evaluation is reported only as a sharp *estimate*.  Exact
+rational arithmetic first forms the weighted-Frobenius bound
 
 ``Gamma_F = sum_ij (h_i / h_j) (Q A Q)_ij**2 >= gamma``
 
-formed from the exact rational values of the represented binary64
-coefficients.  Its floating representation is rounded toward positive
-infinity.
+formed from the represented binary64 coefficients.  Scalar quotient actions
+(``Q A Q = c Q``) have the exact gain ``c**2``.  One-dimensional quotients are
+also exact; two-dimensional quotients use a rational upper enclosure of their
+algebraic largest eigenvalue.  Quotient dimensions three and four use exact
+positive-semidefinite tests to bisect a rational upper bound, and larger
+quotients retain the safe Frobenius bound.  Thus every precise gain bound is
+proved and retained in rational arithmetic, while avoiding the
+dimension-dependent ``n-1`` penalty that the Frobenius bound assigns even to
+the identity map. Log-space composition first rounds each gain upward to an
+exact 32-bit-significand dyadic rational. This keeps each
+transcendental-series input bounded without weakening the upper-bound
+guarantee.
 
 If either condition fails, a consensus input has zero energy and some consensus
 input is sent to positive disagreement, so the global gain is infinite.  This
@@ -60,15 +68,29 @@ until separately certified.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from fractions import Fraction
 import math
 from numbers import Real
 import sys
 from typing import Any, Iterable, Sequence
 
+from .._exact_time import (
+    atanh_log_bounds as _atanh_log_bounds,
+    exact_log_bounds as _exact_log_bounds,
+    exp_unit_bounds as _exp_unit_bounds,
+    exp_upper_float as _exp_upper_float,
+    fraction_lower_float as _fraction_lower_float,
+    fraction_upper_float as _fraction_upper_float,
+    fraction_upper_signed_float as _fraction_upper_signed_float,
+    materialize_nonnegative_time_sequence as _materialize_time_sequence,
+)
 from ..mathematics._weight_normalization import normalize_weights
 from ..mathematics.unified_numerical import np
+from ._exact_linear_algebra import (
+    exact_matrix_inverse as _exact_matrix_inverse,
+    exact_symmetric_semidefinite as _exact_symmetric_semidefinite,
+)
 from ._helpers import finite_real_scalar
 from .directed_diffusion import NormKind, induced_operator_norm
 from .structural_diffusion import (
@@ -84,16 +106,28 @@ __all__ = [
 ]
 
 
-# The log/exp tails are enclosed exactly.  Two binary64 significands provide a
-# substantial guard beyond the precision needed when the rational enclosure is
-# finally rounded to a float.
-_TRANSCENDENTAL_ENCLOSURE_TERMS = 2 * sys.float_info.mant_dig
+# For a positive gain g in [2**e, 2**(e+1)), upward quantization to p=32
+# significand bits has quantum q=2**(e-(p-1)).  Its strict ceiling error is
+# below q <= g*2**(-(p-1)), hence g_hat < g*(1 + 2**-31).  Across k positive
+# gains the product inflation is therefore below (1 + 2**-31)**k.  This may
+# make the contraction test more conservative but cannot make it unsound, and
+# it bounds rational growth in repeated log-space composition.  The precise
+# quotient gains and their product remain exposed separately in the
+# certificate.
+_COMPOSITION_GAIN_SIGNIFICAND_BITS = 32
+# Exact generalized-eigenvalue bisection is deliberately limited to small
+# quotient spaces.  Scalar quotient actions are recognized exactly in every
+# dimension; larger non-scalar maps retain the weighted-Frobenius fallback.
+_EXACT_QUOTIENT_BISECTION_STEPS = 16
+_EXACT_QUOTIENT_REFINEMENT_MAX_DIMENSION = 4
+_EXACT_SQRT_UPPER_BITS = 64
 
 
 _JUMP_SCOPE = (
     "EXACT affine-reset theorem on the declared common pure-EPI disagreement "
-    "metric. Exact rational algebra and an upward-rounded weighted-Frobenius "
-    "bound support the theorem; binary64 spectral estimates and residuals are "
+    "metric. Exact rational algebra supplies a quotient energy-gain upper "
+    "bound, with the weighted-Frobenius value retained as a conservative "
+    "fallback; binary64 spectral estimates and residuals are "
     "diagnostic only. The canonical operator name supplies metadata only and "
     "does not determine the gain. "
     "Runtime-map identification, nonlinear clipping, phase, independent "
@@ -106,11 +140,15 @@ _HYBRID_SCOPE = (
     "certificate. A repeated-word conclusion additionally assumes the same "
     "finite word and positive flow duration repeat without Zeno accumulation. "
     "Disagreement convergence and convergence to the initial weighted "
-    "consensus are reported separately. Exact rational enclosures of the "
-    "represented reset gains, flow rate, durations, logarithm, and exponential "
-    "support the finite and repeated-word bounds. "
-    "Other scalar consensus dynamics, operator duration, and unsupplied "
-    "dynamics remain outside scope."
+    "consensus are reported separately. Precise rational reset-gain bounds are "
+    "retained, while their upward 32-bit dyadic enclosures provide bounded-"
+    "complexity exact rational inputs to the logarithm. Exact rational "
+    "enclosures of the flow rate, durations, logarithm, and exponential "
+    "support the finite and "
+    "repeated-word bounds. "
+    "Canonical jumps have zero duration in the separate event schedule. "
+    "Runtime temporal realization, any nonzero operator duration, other "
+    "scalar consensus dynamics, and unsupplied dynamics remain outside scope."
 )
 
 
@@ -171,19 +209,6 @@ def _relative_tolerance(value: Any) -> float:
     return tolerance
 
 
-def _nonnegative_scalar(value: Any, name: str) -> float:
-    try:
-        exact = _fraction(value, name)
-    except (TypeError, ValueError, OverflowError) as exc:
-        raise ValueError(f"{name} must be a finite nonnegative real") from exc
-    if exact < 0:
-        raise ValueError(f"{name} must be a finite nonnegative real")
-    result = float(exact)
-    if exact > 0 and result == 0.0:
-        raise ValueError(f"{name} is below nonzero floating-point range")
-    return result
-
-
 def _nonnegative_scalar_with_exact(
     value: Any, name: str
 ) -> tuple[float, Fraction]:
@@ -194,156 +219,43 @@ def _nonnegative_scalar_with_exact(
     return _fraction_upper_float(exact), exact
 
 
-def _fraction_upper_float(value: Fraction) -> float:
-    """Smallest available binary64 value known to be at least ``value``."""
-    if value < 0:
-        raise ValueError("an upper-rounded fraction must be nonnegative")
-    try:
-        rounded = float(value)
-    except OverflowError:
-        return float("inf")
-    if math.isinf(rounded):
-        return rounded
-    if Fraction.from_float(rounded) < value:
-        rounded = math.nextafter(rounded, float("inf"))
-    return rounded
+def _bounded_composition_gain_factor(
+    exact_gain: Fraction,
+) -> Fraction:
+    """Round a gain upward to a bounded-significand dyadic rational.
 
+    For ``2**e <= g < 2**(e+1)`` and ``p`` significand bits, the quantum is
+    ``q = 2**(e-(p-1))``.  Exact integer ceiling gives
+    ``g <= g_hat < g + q <= g * (1 + 2**(-(p-1)))``.  Thus every factor and
+    any finite product remain conservative, while the normalized significand
+    has at most ``p`` bits.  The precise gain remains certificate data.
+    """
+    if exact_gain < 0:
+        raise ValueError("an exact composition gain must be nonnegative")
+    if exact_gain == 0:
+        return Fraction(0)
 
-def _fraction_upper_signed_float(value: Fraction) -> float:
-    """Smallest nearby binary64 value known not to be below ``value``."""
-    try:
-        rounded = float(value)
-    except OverflowError:
-        return (
-            float("inf")
-            if value > 0
-            else math.nextafter(float("-inf"), float("inf"))
-        )
-    if math.isinf(rounded):
-        return (
-            rounded
-            if rounded > 0
-            else math.nextafter(rounded, float("inf"))
-        )
-    if Fraction.from_float(rounded) < value:
-        rounded = math.nextafter(rounded, float("inf"))
-    return rounded
-
-
-def _fraction_lower_float(value: Fraction) -> float:
-    """Largest nearby binary64 value known not to exceed a nonnegative value."""
-    if value < 0:
-        raise ValueError("a lower-rounded fraction must be nonnegative")
-    try:
-        rounded = float(value)
-    except OverflowError:
-        return math.nextafter(float("inf"), 0.0)
-    if math.isinf(rounded):
-        return math.nextafter(rounded, 0.0)
-    if Fraction.from_float(rounded) > value:
-        rounded = math.nextafter(rounded, 0.0)
-    return rounded
-
-
-def _atanh_log_bounds(value: Fraction) -> tuple[Fraction, Fraction]:
-    """Enclose ``log(value)`` for ``1 <= value <= 2`` rationally."""
-    if not Fraction(1) <= value <= Fraction(2):
-        raise ValueError("log-series input must lie in [1, 2]")
-    ratio = (value - 1) / (value + 1)
-    ratio_squared = ratio * ratio
-    term = ratio
-    partial = Fraction(0)
-    term_count = _TRANSCENDENTAL_ENCLOSURE_TERMS
-    for index in range(term_count):
-        partial += term / (2 * index + 1)
-        term *= ratio_squared
-    lower = 2 * partial
-    if term == 0:
-        return lower, lower
-    remainder = (
-        2
-        * term
-        / ((2 * term_count + 1) * (1 - ratio_squared))
-    )
-    return lower, lower + remainder
-
-
-def _exact_log_bounds(value: Fraction) -> tuple[Fraction, Fraction]:
-    """Return exact rational lower and upper bounds on a positive logarithm."""
-    if value <= 0:
-        raise ValueError("logarithm input must be positive")
-    exponent = value.numerator.bit_length() - value.denominator.bit_length()
+    exponent = exact_gain.numerator.bit_length() - exact_gain.denominator.bit_length()
     power = (
         Fraction(1 << exponent)
         if exponent >= 0
         else Fraction(1, 1 << -exponent)
     )
-    if value < power:
+    if exact_gain < power:
         exponent -= 1
-        power /= 2
-    elif value >= 2 * power:
-        exponent += 1
-        power *= 2
-    mantissa = value / power
-    mantissa_lower, mantissa_upper = _atanh_log_bounds(mantissa)
-    log_two_lower, log_two_upper = _atanh_log_bounds(Fraction(2))
-    if exponent >= 0:
-        return (
-            exponent * log_two_lower + mantissa_lower,
-            exponent * log_two_upper + mantissa_upper,
-        )
-    return (
-        exponent * log_two_upper + mantissa_lower,
-        exponent * log_two_lower + mantissa_upper,
+
+    scale_exponent = exponent - (_COMPOSITION_GAIN_SIGNIFICAND_BITS - 1)
+    scale = (
+        Fraction(1 << scale_exponent)
+        if scale_exponent >= 0
+        else Fraction(1, 1 << -scale_exponent)
     )
-
-
-def _exp_unit_bounds(value: Fraction) -> tuple[Fraction, Fraction]:
-    """Enclose ``exp(value)`` on ``[0, 1]`` by a rational Taylor sum."""
-    if not Fraction(0) <= value <= Fraction(1):
-        raise ValueError("exponential-series input must lie in [0, 1]")
-    term = Fraction(1)
-    partial = Fraction(1)
-    term_count = _TRANSCENDENTAL_ENCLOSURE_TERMS
-    for index in range(1, term_count + 1):
-        term = term * value / index
-        partial += term
-    first_omitted = term * value / (term_count + 1)
-    if first_omitted == 0:
-        return partial, partial
-    remainder = first_omitted / (
-        1 - value / (term_count + 2)
-    )
-    return partial, partial + remainder
-
-
-def _exp_upper_float(exponent: Fraction) -> float:
-    """Return a binary64 upper bound on ``exp(exponent)``."""
-    if exponent == 0:
-        return 1.0
-    if exponent > 0:
-        # e > 2, so this range is certainly beyond binary64.
-        if exponent >= 1024:
-            return float("inf")
-        integer = exponent.numerator // exponent.denominator
-        remainder = exponent - integer
-        _, e_upper = _exp_unit_bounds(Fraction(1))
-        _, remainder_upper = _exp_unit_bounds(remainder)
-        return _fraction_upper_float(
-            e_upper**integer * remainder_upper
-        )
-
-    magnitude = -exponent
-    # e > 2 makes exp(-1075) smaller than every positive binary64.
-    if magnitude >= 1075:
-        return math.nextafter(0.0, float("inf"))
-    integer = magnitude.numerator // magnitude.denominator
-    remainder = magnitude - integer
-    e_lower, _ = _exp_unit_bounds(Fraction(1))
-    remainder_lower, _ = _exp_unit_bounds(remainder)
-    return _fraction_upper_float(
-        Fraction(1) / (e_lower**integer * remainder_lower)
-    )
+    scaled = exact_gain / scale
+    units = -(-scaled.numerator // scaled.denominator)
+    factor = units * scale
+    if factor < exact_gain:
+        raise RuntimeError("composition-gain quantization lost its upper bound")
+    return factor
 
 
 def _exact_matrix_product(
@@ -364,6 +276,171 @@ def _exact_matrix_product(
         )
         for i in range(rows)
     )
+
+
+def _exact_quotient_basis(
+    weights: tuple[Fraction, ...],
+) -> tuple[tuple[Fraction, ...], ...]:
+    """Return columns spanning ``h.T y = 0`` with bounded coefficients."""
+
+    dimension = len(weights)
+    pivot = max(range(dimension), key=weights.__getitem__)
+    free = tuple(index for index in range(dimension) if index != pivot)
+    basis = [
+        [Fraction(0) for _ in range(dimension - 1)]
+        for _ in range(dimension)
+    ]
+    for column, index in enumerate(free):
+        basis[index][column] = Fraction(1)
+        basis[pivot][column] = -weights[index] / weights[pivot]
+    return tuple(tuple(row) for row in basis)
+
+
+def _exact_weighted_gram(
+    left: tuple[tuple[Fraction, ...], ...],
+    right: tuple[tuple[Fraction, ...], ...],
+    weights: tuple[Fraction, ...],
+) -> tuple[tuple[Fraction, ...], ...]:
+    """Return ``left.T diag(weights) right`` exactly."""
+
+    columns_left = len(left[0])
+    columns_right = len(right[0])
+    return tuple(
+        tuple(
+            sum(
+                (
+                    weights[row] * left[row][i] * right[row][j]
+                    for row in range(len(weights))
+                ),
+                Fraction(0),
+            )
+            for j in range(columns_right)
+        )
+        for i in range(columns_left)
+    )
+
+
+def _exact_scalar_quotient_gain(
+    quotient_map: tuple[tuple[Fraction, ...], ...],
+    projection: tuple[tuple[Fraction, ...], ...],
+) -> Fraction | None:
+    """Return ``c**2`` when ``Q A Q`` acts as ``c I`` on the quotient."""
+
+    scale: Fraction | None = None
+    for mapped_row, projection_row in zip(quotient_map, projection):
+        for mapped, projected in zip(mapped_row, projection_row):
+            if projected == 0:
+                if mapped != 0:
+                    return None
+                continue
+            candidate = mapped / projected
+            if scale is None:
+                scale = candidate
+            elif candidate != scale:
+                return None
+    if scale is None:  # pragma: no cover - Q is nonzero for dimension >= 2
+        raise RuntimeError("internal error: consensus quotient is empty")
+    return scale * scale
+
+
+def _exact_sqrt_upper(value: Fraction) -> Fraction:
+    """Return a rational upper enclosure of a nonnegative square root."""
+
+    if value < 0:
+        raise ValueError("square-root enclosure requires a nonnegative value")
+    if value == 0:
+        return Fraction(0)
+    scale = 1 << _EXACT_SQRT_UPPER_BITS
+    scaled_numerator = value.numerator * scale * scale
+    root = math.isqrt(scaled_numerator // value.denominator)
+    if root * root * value.denominator < scaled_numerator:
+        root += 1
+    return Fraction(root, scale)
+
+
+def _exact_quotient_energy_gain_upper_bound(
+    quotient_map: tuple[tuple[Fraction, ...], ...],
+    projection: tuple[tuple[Fraction, ...], ...],
+    weights: tuple[Fraction, ...],
+    frobenius_bound: Fraction,
+) -> Fraction:
+    r"""Prove an upper bound for ``max V(B y)/V(y)`` on ``h.T y=0``.
+
+    ``B = Q A Q``.  Scalar quotient actions and one-dimensional quotients are
+    exact.  Dimension two encloses the algebraic square root rationally.
+    Dimensions three and four bisect ``lambda G - K >= 0`` using exact
+    positive-semidefinite tests, where ``G = R.T H R`` and
+    ``K = (B R).T H (B R)``.  The initial upper endpoint is the smaller of the
+    weighted-Frobenius bound and an exact induced infinity-norm bound on
+    ``G^-1 K``.  No floating eigensolver participates.
+    """
+
+    scalar_gain = _exact_scalar_quotient_gain(quotient_map, projection)
+    if scalar_gain is not None:
+        return scalar_gain
+
+    quotient_dimension = len(weights) - 1
+    if quotient_dimension > _EXACT_QUOTIENT_REFINEMENT_MAX_DIMENSION:
+        return frobenius_bound
+
+    basis = _exact_quotient_basis(weights)
+    mapped_basis = _exact_matrix_product(quotient_map, basis)
+    metric = _exact_weighted_gram(basis, basis, weights)
+    output = _exact_weighted_gram(mapped_basis, mapped_basis, weights)
+    if quotient_dimension == 1:
+        return min(frobenius_bound, output[0][0] / metric[0][0])
+
+    transfer = _exact_matrix_product(_exact_matrix_inverse(metric), output)
+    if quotient_dimension == 2:
+        trace = transfer[0][0] + transfer[1][1]
+        determinant = (
+            transfer[0][0] * transfer[1][1]
+            - transfer[0][1] * transfer[1][0]
+        )
+        discriminant = trace * trace - 4 * determinant
+        if discriminant < 0:  # pragma: no cover - exact PSD pencil invariant
+            raise RuntimeError("internal error: affine quotient has complex energy")
+        algebraic_upper = (trace + _exact_sqrt_upper(discriminant)) / 2
+        return min(frobenius_bound, algebraic_upper)
+
+    induced_upper = max(
+        sum((abs(value) for value in row), Fraction(0))
+        for row in transfer
+    )
+    upper = min(frobenius_bound, induced_upper)
+    if upper == 0:
+        return Fraction(0)
+
+    def upper_is_valid(candidate: Fraction) -> bool:
+        shifted = tuple(
+            tuple(
+                candidate * metric[i][j] - output[i][j]
+                for j in range(quotient_dimension)
+            )
+            for i in range(quotient_dimension)
+        )
+        return _exact_symmetric_semidefinite(shifted)
+
+    # Both initial candidates are analytic upper bounds.  Retain the
+    # Frobenius endpoint if a future implementation error violates that fact.
+    if not upper_is_valid(upper):  # pragma: no cover - defensive invariant
+        upper = frobenius_bound
+        if not upper_is_valid(upper):
+            raise RuntimeError("internal error: invalid affine gain upper bound")
+
+    lower = max(
+        output[index][index] / metric[index][index]
+        for index in range(quotient_dimension)
+    )
+    if lower >= upper:
+        return upper
+    for _ in range(_EXACT_QUOTIENT_BISECTION_STEPS):
+        midpoint = (lower + upper) / 2
+        if upper_is_valid(midpoint):
+            upper = midpoint
+        else:
+            lower = midpoint
+    return upper
 
 
 def _exact_matrix_vector(
@@ -448,6 +525,57 @@ def _readonly_array(value: Any) -> Any:
     return result
 
 
+def _finite_float_signature(value: Any) -> tuple[str, ...]:
+    """Encode a finite array exactly enough for an in-memory proof stamp."""
+
+    array = np.asarray(value, dtype=float)
+    if not np.all(np.isfinite(array)):
+        raise ValueError("proof data must remain finite")
+    return tuple(float(item).hex() for item in array.flat)
+
+
+def _affine_jump_proof_stamp(
+    nodes: tuple[Any, ...],
+    linear_map: Any,
+    offset: Any,
+    metric_weights: Any,
+    exact_consensus: bool,
+    exact_frobenius_bound: Fraction,
+    exact_quotient_bound: Fraction,
+    finite_global_gain: bool,
+    global_gain_bound: float,
+    composition_bound: float,
+    exact_mean_preservation: bool,
+    counterexample_level: float | None,
+    exact_counterexample_energy: Fraction | None,
+) -> tuple[Any, ...]:
+    """Snapshot every input and result used by affine theorem properties."""
+
+    return (
+        "affine_epi_jump_gain_v2",
+        tuple(nodes),
+        np.asarray(linear_map).shape,
+        _finite_float_signature(linear_map),
+        np.asarray(offset).shape,
+        _finite_float_signature(offset),
+        np.asarray(metric_weights).shape,
+        _finite_float_signature(metric_weights),
+        bool(exact_consensus),
+        Fraction(exact_frobenius_bound),
+        Fraction(exact_quotient_bound),
+        bool(finite_global_gain),
+        float(global_gain_bound).hex(),
+        float(composition_bound).hex(),
+        bool(exact_mean_preservation),
+        counterexample_level,
+        (
+            None
+            if exact_counterexample_energy is None
+            else Fraction(exact_counterexample_energy)
+        ),
+    )
+
+
 def _weighted_norm(vector: Any, weights: Any, name: str) -> float:
     """Scale-safe norm induced by positive normalized diagonal weights."""
     values = np.asarray(vector, dtype=float)
@@ -493,7 +621,20 @@ def _exactly_proportional(left: Sequence[float], right: Sequence[float]) -> bool
 
 @dataclass(frozen=True, slots=True)
 class AffineEPIJumpGainCertificate:
-    """Global common-metric gain of one declared affine EPI reset."""
+    """Global common-metric gain of one declared affine EPI reset.
+
+    ``exact_quotient_energy_gain_upper_bound`` is the rational theorem factor
+    retained in the precise hybrid product.  It is not passed directly to the
+    logarithm: ``HybridEPIStabilityCertificate`` exposes the separate upward
+    dyadic factors actually used by log-space composition.
+    ``energy_gain_bound_for_composition`` is the backward-compatible binary64
+    display of the precise quotient bound when the global theorem applies.
+    ``exact_weighted_frobenius_energy_bound`` is the always-valid fallback and
+    remains visible for comparison.  A supplied declaration is certified
+    against the quotient bound; the separate
+    ``declared_bound_certified_by_frobenius`` flag records whether it also
+    clears the generally stronger Frobenius test.
+    """
 
     operator_name: str
     glyph: str
@@ -512,10 +653,13 @@ class AffineEPIJumpGainCertificate:
     sharp_quotient_energy_gain_estimate: float | None
     exact_weighted_frobenius_energy_bound: Fraction
     weighted_frobenius_energy_bound: float
+    exact_quotient_energy_gain_upper_bound: Fraction
+    quotient_energy_gain_upper_bound: float
     global_energy_gain_bound: float
     finite_global_energy_gain: bool
     declared_energy_gain_bound: float | None
     exact_declared_energy_gain_bound: Fraction | None
+    declared_energy_gain_bound_certified: bool | None
     declared_bound_certified_by_frobenius: bool | None
     declared_bound_within_tolerance: bool | None
     energy_gain_bound_for_composition: float
@@ -528,12 +672,37 @@ class AffineEPIJumpGainCertificate:
     consensus_counterexample_energy_after: float | None
     tolerance: float
     scope: str
+    _proof_stamp: tuple[Any, ...] = field(repr=False, compare=False)
+
+    def _proof_fields_are_intact(self) -> bool:
+        """Detect ordinary replacement or mutation of decisive proof fields."""
+
+        try:
+            expected = _affine_jump_proof_stamp(
+                self.nodes,
+                self.linear_map,
+                self.offset,
+                self.metric_weights,
+                self.exact_consensus_subspace_preservation,
+                self.exact_weighted_frobenius_energy_bound,
+                self.exact_quotient_energy_gain_upper_bound,
+                self.finite_global_energy_gain,
+                self.global_energy_gain_bound,
+                self.energy_gain_bound_for_composition,
+                self.exact_weighted_mean_preservation,
+                self.consensus_counterexample_level,
+                self.exact_consensus_counterexample_energy_after,
+            )
+        except (TypeError, ValueError, OverflowError):
+            return False
+        return self._proof_stamp == expected
 
     @property
     def supports_global_gain_theorem(self) -> bool:
         """Whether this reset has a usable finite multiplicative energy gain."""
         return bool(
-            self.finite_global_energy_gain
+            self._proof_fields_are_intact()
+            and self.finite_global_energy_gain
             and math.isfinite(self.energy_gain_bound_for_composition)
         )
 
@@ -541,7 +710,8 @@ class AffineEPIJumpGainCertificate:
     def preserves_initial_weighted_consensus(self) -> bool:
         """Whether the reset preserves the initial common-metric consensus."""
         return bool(
-            self.exact_consensus_subspace_preservation
+            self._proof_fields_are_intact()
+            and self.exact_consensus_subspace_preservation
             and self.exact_weighted_mean_preservation
         )
 
@@ -550,9 +720,13 @@ class AffineEPIJumpGainCertificate:
 class HybridEPIStabilityCertificate:
     """Composition of pure-EPI flow decay and affine reset gains.
 
-    The ``exact_*`` fields expose the rational enclosure inputs that decide the
-    theorem.  ``log_contraction_decision_margin`` remains zero as a compatibility
-    field because contraction now uses the exact upper log's sign.
+    ``exact_cumulative_jump_energy_gain_bound`` is the product of the precise
+    rational quotient-gain bounds.  ``exact_log_composition_gain_factors``
+    exposes the distinct upward dyadic factors actually supplied to the
+    rational logarithm enclosures.  Their bounded complexity can introduce
+    conservative slack but cannot understate the precise product.
+    ``log_contraction_decision_margin`` remains zero as a compatibility field
+    because contraction uses the exact upper log's sign.
     """
 
     nodes: tuple[Any, ...]
@@ -569,6 +743,7 @@ class HybridEPIStabilityCertificate:
     net_log_energy_gain_bound: float
     energy_multiplier_bound: float
     exact_cumulative_jump_energy_gain_bound: Fraction | None
+    exact_log_composition_gain_factors: tuple[Fraction, ...] | None
     exact_flow_log_energy_decay_lower_bound: Fraction
     exact_net_log_energy_gain_upper_bound: Fraction | None
     log_contraction_decision_margin: float
@@ -686,6 +861,17 @@ def certify_affine_epi_jump_gain(
         exact_quotient_map, metric_exact
     )
     frobenius_bound = _fraction_upper_float(exact_frobenius_bound)
+    exact_quotient_bound = _exact_quotient_energy_gain_upper_bound(
+        exact_quotient_map,
+        exact_projection,
+        metric_exact,
+        exact_frobenius_bound,
+    )
+    if exact_quotient_bound > exact_frobenius_bound:
+        raise RuntimeError(
+            "internal error: quotient gain bound exceeds Frobenius fallback"
+        )
+    quotient_bound = _fraction_upper_float(exact_quotient_bound)
 
     ones = np.ones(dimension, dtype=float)
     projection = np.eye(dimension) - np.outer(ones, normalized_metric)
@@ -740,27 +926,30 @@ def certify_affine_epi_jump_gain(
         quotient_norm = None
         quotient_gain = None
 
-    global_gain_bound = frobenius_bound if exact_consensus else float("inf")
+    global_gain_bound = quotient_bound if exact_consensus else float("inf")
     if declared_bound_exact is None:
         declared_certified = None
+        declared_by_frobenius = None
         declared_within = None
     elif not exact_consensus:
         declared_certified = False
+        declared_by_frobenius = False
         declared_within = False
     else:
-        declared_certified = declared_bound_exact >= exact_frobenius_bound
+        declared_certified = declared_bound_exact >= exact_quotient_bound
+        declared_by_frobenius = declared_bound_exact >= exact_frobenius_bound
         if declared_certified:
             declared_within = True
         else:
             declared_difference = _fraction_upper_float(
-                exact_frobenius_bound - declared_bound_exact
+                exact_quotient_bound - declared_bound_exact
             )
             declared_within = _within_relative_tolerance(
                 declared_difference,
-                max(frobenius_bound, declared_bound),
+                max(quotient_bound, declared_bound),
                 tol,
             )
-    composition_bound = frobenius_bound if exact_consensus else float("inf")
+    composition_bound = quotient_bound if exact_consensus else float("inf")
 
     weighted_row = tuple(
         sum(
@@ -831,15 +1020,34 @@ def certify_affine_epi_jump_gain(
             )
         counter_energy = _fraction_upper_float(exact_counter_energy)
 
+    frozen_matrix = _readonly_array(matrix)
+    frozen_offset = _readonly_array(offset_array)
+    frozen_metric = _readonly_array(metric)
+    proof_stamp = _affine_jump_proof_stamp(
+        node_tuple,
+        frozen_matrix,
+        frozen_offset,
+        frozen_metric,
+        exact_consensus,
+        exact_frobenius_bound,
+        exact_quotient_bound,
+        exact_consensus,
+        global_gain_bound,
+        composition_bound,
+        exact_mean,
+        counter_level,
+        exact_counter_energy,
+    )
+
     return AffineEPIJumpGainCertificate(
         operator_name=contract.english_name,
         glyph=contract.glyph,
         primary_channel=contract.primary_channel.value,
         operator_scale=contract.scale.value,
         nodes=node_tuple,
-        linear_map=_readonly_array(matrix),
-        offset=_readonly_array(offset_array),
-        metric_weights=_readonly_array(metric),
+        linear_map=frozen_matrix,
+        offset=frozen_offset,
+        metric_weights=frozen_metric,
         normalized_metric_weights=_readonly_array(normalized_metric),
         consensus_linear_residual=linear_residual,
         consensus_offset_residual=offset_residual,
@@ -853,11 +1061,14 @@ def certify_affine_epi_jump_gain(
         ),
         exact_weighted_frobenius_energy_bound=exact_frobenius_bound,
         weighted_frobenius_energy_bound=float(frobenius_bound),
+        exact_quotient_energy_gain_upper_bound=exact_quotient_bound,
+        quotient_energy_gain_upper_bound=float(quotient_bound),
         global_energy_gain_bound=float(global_gain_bound),
         finite_global_energy_gain=exact_consensus,
         declared_energy_gain_bound=declared_bound,
         exact_declared_energy_gain_bound=declared_bound_exact,
-        declared_bound_certified_by_frobenius=declared_certified,
+        declared_energy_gain_bound_certified=declared_certified,
+        declared_bound_certified_by_frobenius=declared_by_frobenius,
         declared_bound_within_tolerance=declared_within,
         energy_gain_bound_for_composition=float(composition_bound),
         weighted_mean_linear_residual=mean_linear_residual,
@@ -869,6 +1080,7 @@ def certify_affine_epi_jump_gain(
         consensus_counterexample_energy_after=counter_energy,
         tolerance=tol,
         scope=_JUMP_SCOPE,
+        _proof_stamp=proof_stamp,
     )
 
 
@@ -941,10 +1153,12 @@ def _materialize_durations(values: Iterable[Any], expected: int) -> tuple[float,
         ) from exc
     if len(raw) != expected:
         raise ValueError("flow_durations must contain one more entry than jumps")
-    durations = tuple(
-        _nonnegative_scalar(value, f"flow_durations[{index}]")
-        for index, value in enumerate(raw)
-    )
+    try:
+        durations, _ = _materialize_time_sequence(raw)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError(
+            "flow_durations must contain finite nonnegative real values"
+        ) from exc
     try:
         total = math.fsum(durations)
     except OverflowError as exc:
@@ -974,7 +1188,9 @@ def compose_hybrid_epi_stability(
     only on their sum, while retaining the full tuple makes the event timeline
     explicit.  ``repeat_schedule=True`` asks for the corollary obtained by
     repeating that same positive-duration word indefinitely.  The contraction
-    decision uses exact rational enclosures of the represented inputs;
+    decision uses exact rational enclosures of the represented inputs. Each
+    precise reset gain is retained in the result and rounded upward to a
+    32-bit dyadic significand only for the rational log enclosure;
     ``tolerance`` affects only the accompanying numerical diagnostics.
     """
     tol = _relative_tolerance(tolerance)
@@ -1040,7 +1256,7 @@ def compose_hybrid_epi_stability(
                 f"jump {index} exposes an invalid energy-gain bound"
             )
         gains.append(gain)
-        exact_gains.append(jump.exact_weighted_frobenius_energy_bound)
+        exact_gains.append(jump.exact_quotient_energy_gain_upper_bound)
         validated_jumps.append(jump)
 
     jump_tuple = tuple(validated_jumps)
@@ -1055,6 +1271,7 @@ def compose_hybrid_epi_stability(
     )
     flow_log_decay = _fraction_lower_float(exact_decay)
     exact_gain_product: Fraction | None = None
+    composition_factors: tuple[Fraction, ...] | None = None
     exact_net_log_upper: Fraction | None
     if not all_jump_pass or any(math.isinf(gain) for gain in gains):
         jump_log = float("inf")
@@ -1063,13 +1280,23 @@ def compose_hybrid_epi_stability(
         exact_net_log_upper = None
     else:
         exact_gain_product = math.prod(exact_gains, start=Fraction(1))
+        composition_factors = tuple(
+            _bounded_composition_gain_factor(exact_gain)
+            for exact_gain in exact_gains
+        )
         if exact_gain_product == 0:
             jump_log = float("-inf")
             net_log = float("-inf")
             multiplier = 0.0
             exact_net_log_upper = None
         else:
-            _, exact_jump_log_upper = _exact_log_bounds(exact_gain_product)
+            exact_jump_log_upper = sum(
+                (
+                    _exact_log_bounds(factor)[1]
+                    for factor in composition_factors
+                ),
+                Fraction(0),
+            )
             exact_net_log_upper = exact_jump_log_upper - exact_decay
             jump_log = _fraction_upper_signed_float(exact_jump_log_upper)
             net_log = _fraction_upper_signed_float(exact_net_log_upper)
@@ -1131,6 +1358,7 @@ def compose_hybrid_epi_stability(
         net_log_energy_gain_bound=net_log,
         energy_multiplier_bound=multiplier,
         exact_cumulative_jump_energy_gain_bound=exact_gain_product,
+        exact_log_composition_gain_factors=composition_factors,
         exact_flow_log_energy_decay_lower_bound=exact_decay,
         exact_net_log_energy_gain_upper_bound=exact_net_log_upper,
         log_contraction_decision_margin=decision_margin,

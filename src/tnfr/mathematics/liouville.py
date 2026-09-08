@@ -30,7 +30,7 @@ Eigenvalue spectrum properties:
 See Also
 --------
 tnfr.mathematics.generators.build_lindblad_delta_nfr : Lindblad generator construction
-tnfr.operators.metrics_u6.measure_tau_relax_observed : U6 relaxation time telemetry
+tnfr.operators.metrics_u6.measure_tau_relax_observed : U6 relaxation snapshot telemetry
 """
 
 from __future__ import annotations

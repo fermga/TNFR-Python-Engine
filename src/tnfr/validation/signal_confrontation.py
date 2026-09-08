@@ -2,20 +2,23 @@
 
 The empirical arm as a first-class engine capability: point :func:`confront_signal`
 at **any** real multichannel signal (EEG, grid telemetry, coupled oscillators) and
-read the canonical TNFR magnitudes -- the emergent phase-locking graph, the
-structural tetrad (``|∇φ|``, ``K_φ``, ``Φ_s``, ``ξ_C``), the pulse
-(``ω_k = √λ_k``), the coherence ``C`` (the universal attractor kernel) and the
-Kuramoto order ``R`` -- plus the two-face diagnosis (the diffusive/over-damped
-certificate).  Bring your own signal; **no bundled data, no ML dependencies**.
+read the TNFR magnitudes -- the emergent phase-locking graph, the structural
+tetrad (``|∇φ|``, ``K_φ``, ``Φ_s``, ``ξ_C``), the pulse (``ω_k = √λ_k``), the
+static pressure-coherence snapshot ``C_static`` and the Kuramoto order ``R`` --
+plus the two-face diagnosis (the diffusive/over-damped certificate).  The signal
+window supplies no TNFR EPI-rate channel, so ``C_static`` evaluates the shared
+coherence map with the explicit assumption ``dEPI = 0``; it is not dynamic total
+``C(t)`` or an attractor certificate.  Bring your own signal; **no bundled data,
+no ML dependencies**.
 
 This composes the existing engine pipeline
 (:mod:`tnfr.validation.multichannel_interface` for the phase-locking graph and
 tetrad, :mod:`tnfr.physics.structural_diffusion` for the pulse and the face
-certificate, :func:`tnfr.metrics.common.structural_coherence` for the universal
-coherence kernel) into a single confrontation entry point.
+certificate, :func:`tnfr.metrics.common.structural_coherence` for the shared
+scalar map) into a single confrontation entry point.
 
 Honest scope: this is the falsifiable *instrument*, not a competitive model.  On
-real EEG the canonical read-outs carry genuine state (the local tetrad
+real EEG the scoped read-outs carry measured state (the local tetrad
 discriminates seizure cross-patient; the single-``νf`` wave ties strong
 baselines) but do **not** out-predict standard methods -- see
 ``docs/EMPIRICAL_CONFRONTATION_EEG.md``.
@@ -158,7 +161,13 @@ def emergent_wave_fraction(signals: Any, *, k_neighbours: int = 4) -> float:
 
 @dataclass(frozen=True)
 class SignalConfrontation:
-    """Canonical TNFR read-out of one multichannel signal (the empirical arm)."""
+    """TNFR read-out of one multichannel signal window.
+
+    ``coherence`` is the static pressure-only value obtained with ``dEPI = 0``.
+    ``at_equilibrium`` tests only whether its mean pressure magnitude lies
+    within the selected tolerance; neither field establishes dynamic
+    convergence of the underlying signal.
+    """
 
     n_channels: int
     n_samples: int
@@ -177,8 +186,12 @@ class SignalConfrontation:
     diffusive_face_valid: bool
 
     def summary(self) -> str:
-        """Human-readable one-line canonical read-out."""
-        eq = "at ΔNFR=0" if self.at_equilibrium else "off equilibrium"
+        """Return a one-line summary with the static score labelled explicitly."""
+        eq = (
+            "mean |ΔNFR| within tolerance"
+            if self.at_equilibrium
+            else "mean |ΔNFR| outside tolerance"
+        )
         face = (
             "DIFFUSIVE/over-damped"
             if self.diffusive_face_valid
@@ -186,7 +199,7 @@ class SignalConfrontation:
         )
         return (
             f"SignalConfrontation[{self.n_channels}ch × {self.n_samples}]: "
-            f"R={self.kuramoto_R:.3f}, C={self.coherence:.3f} ({eq}); "
+            f"R={self.kuramoto_R:.3f}, C_static={self.coherence:.3f} ({eq}); "
             f"tetrad |∇φ|={self.grad_phi:.3f} |K_φ|={self.k_phi:.3f} "
             f"Φ_s={self.phi_s:.3f} ξ_C={self.xi_c:.3f}; pulse "
             f"ω₀={self.pulse_fundamental:.3f} beat={self.dominant_beat:.3f}; "
@@ -198,7 +211,10 @@ class SignalConfrontation:
 def confront_signal(
     signals: Any, *, k_neighbours: int = 4
 ) -> SignalConfrontation:
-    """Confront a real multichannel signal with the canonical TNFR magnitudes.
+    """Confront a real multichannel signal with scoped TNFR magnitudes.
+
+    The returned ``coherence`` is a static pressure snapshot with ``dEPI = 0``
+    because one signal window does not materialize a TNFR EPI-rate channel.
 
     Parameters
     ----------
@@ -210,7 +226,7 @@ def confront_signal(
     Returns
     -------
     SignalConfrontation
-        The canonical read-outs plus the two-face diagnosis.
+        The scoped read-outs plus the two-face diagnosis.
     """
     data = np.asarray(signals, dtype=float)
     if data.ndim != 2 or data.shape[0] < 3:
@@ -229,7 +245,7 @@ def confront_signal(
 
     dnfr_vals = [abs(float(graph.nodes[n].get("dnfr", 0.0))) for n in graph]
     mean_dnfr = float(np.mean(dnfr_vals)) if dnfr_vals else 0.0
-    coherence = structural_coherence(mean_dnfr)
+    coherence = structural_coherence(mean_dnfr, 0.0)
     at_eq = is_structural_equilibrium(mean_dnfr, 0.0, eps_dnfr=1e-2)
 
     pulse = compute_emergent_pulse(graph)

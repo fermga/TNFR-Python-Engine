@@ -17,11 +17,16 @@ traceable to TNFR grammar principles:
     tooling surfaces during guidance flows.
 * Composition analysis reports stabiliser/destabiliser balance and highlights
     sub-pattern components so downstream code can provide actionable feedback.
+
+Pattern scores and their prior weights are heuristic rubric values. They are
+unrelated to canonical total coherence C(t).
 """
 
 from __future__ import annotations
 
+import math
 from collections import Counter
+from numbers import Real
 from typing import Iterable, Mapping, Sequence
 
 from ..config.operator_names import (
@@ -92,7 +97,7 @@ from .grammar_types import STABILIZERS as _STABILIZERS
 # is a destabilizer).  Local to the detector's heuristics.
 _INTERMEDIATE = {COUPLING, RESONANCE, DISSONANCE}
 
-_COHERENCE_WEIGHTS = {
+_PATTERN_SCORING_WEIGHTS = {
     StructuralPattern.THERAPEUTIC: PATTERN_THERAPEUTIC_WEIGHT_CANONICAL,  # = 2.8 (therapeutic boost)
     StructuralPattern.EDUCATIONAL: PATTERN_EDUCATIONAL_WEIGHT_CANONICAL,  # = 0.74 (educational boost)
     StructuralPattern.ORGANIZATIONAL: PATTERN_ORGANIZATIONAL_WEIGHT_CANONICAL,  # = 0.16 (organizational boost)
@@ -172,10 +177,10 @@ class AdvancedPatternDetector:
         suitability = self._domain_suitability(canonical)
         health = self._structural_health(canonical)
         pattern_scores = self._pattern_scores(canonical, pattern)
-        coherence_weights = self._coherence_weights()
+        pattern_scoring_weights = self._pattern_scoring_weights()
         weighted_scores = {
             name: round(
-                pattern_scores[name] * coherence_weights.get(name, 1.0),
+                pattern_scores[name] * pattern_scoring_weights.get(name, 1.0),
                 4,
             )
             for name in pattern_scores
@@ -186,7 +191,10 @@ class AdvancedPatternDetector:
             "primary_pattern": pattern.value,
             "pattern_scores": pattern_scores,
             "weighted_scores": weighted_scores,
-            "coherence_weights": coherence_weights,
+            "pattern_scoring_weights": pattern_scoring_weights,
+            # Public compatibility key retained with explicit proxy semantics.
+            "coherence_weights": pattern_scoring_weights,
+            "weight_semantics": "heuristic_pattern_prior_not_canonical_C_t",
             "components": components,
             "complexity_score": complexity_score,
             "domain_suitability": suitability,
@@ -645,8 +653,31 @@ class AdvancedPatternDetector:
 
         return scores
 
+    def _pattern_scoring_weights(self) -> dict[str, float]:
+        """Return validated heuristic priors for pattern-score weighting."""
+
+        weights: dict[str, float] = {}
+        for pattern in StructuralPattern:
+            raw_weight = _PATTERN_SCORING_WEIGHTS.get(pattern, 1.0)
+            invalid_type = isinstance(raw_weight, bool) or not isinstance(
+                raw_weight, Real
+            )
+            try:
+                weight = float(raw_weight)
+            except (OverflowError, TypeError, ValueError):
+                invalid_type = True
+                weight = math.nan
+            if invalid_type or not math.isfinite(weight) or weight < 0.0:
+                raise ValueError(
+                    f"invalid pattern-scoring weight for {pattern.value!r}"
+                )
+            weights[pattern.value] = weight
+        return weights
+
     def _coherence_weights(self) -> dict[str, float]:
-        return {
-            pattern.value: _COHERENCE_WEIGHTS.get(pattern, 1.0)
-            for pattern in StructuralPattern
-        }
+        """Compatibility alias for historical pattern-prior naming.
+
+        These values are heuristic score multipliers, not C(t).
+        """
+
+        return self._pattern_scoring_weights()

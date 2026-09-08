@@ -1,267 +1,419 @@
-"""νf adaptation routines for TNFR dynamics."""
+"""Structural-stability-gated frequency adaptation.
+
+The gate combines a small absolute DeltaNFR value with a high Sense Index.
+It does not evaluate the canonical total-coherence kernel C(t), because no
+EPI-rate channel is read.
+"""
 
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
-from typing import Any, cast
+from numbers import Integral, Real
+from typing import Any
 
-from ..alias import collect_attr, set_vf
-from ..constants import get_graph_param
+from ..alias import set_vf
+from ..constants import get_param
 from ..constants.canonical import DYNAMICS_SI_HI_THRESHOLD_CANONICAL
-from ..mathematics.unified_numerical import np
 from ..metrics.common import ensure_neighbors_map
-from ..types import CoherenceMetric, DeltaNFR, TNFRGraph
+from ..types import TNFRGraph
 from ..utils import clamp, resolve_chunk_size
 from .aliases import ALIAS_DNFR, ALIAS_SI, ALIAS_VF
 
-__all__ = ("adapt_vf_by_coherence",)
+__all__ = (
+    "adapt_vf_after_structural_stability",
+    "adapt_vf_by_coherence",
+)
+
+
+def _finite_real(
+    value: Any,
+    label: str,
+    *,
+    minimum: float | None = None,
+    maximum: float | None = None,
+) -> float:
+    """Return one finite real scalar within optional closed bounds."""
+
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise ValueError(f"{label} must be a finite real number")
+    try:
+        normalized = float(value)
+    except (OverflowError, TypeError, ValueError):
+        raise ValueError(f"{label} must be a finite real number") from None
+    if not math.isfinite(normalized):
+        raise ValueError(f"{label} must be a finite real number")
+    if minimum is not None and normalized < minimum:
+        raise ValueError(f"{label} must be >= {minimum}")
+    if maximum is not None and normalized > maximum:
+        raise ValueError(f"{label} must be <= {maximum}")
+    return normalized
+
+
+def _integer_at_least(value: Any, label: str, minimum: int) -> int:
+    """Return one integral value without truncating floats or booleans."""
+
+    if isinstance(value, bool) or not isinstance(value, Integral):
+        raise ValueError(f"{label} must be an integer >= {minimum}")
+    normalized = int(value)
+    if normalized < minimum:
+        raise ValueError(f"{label} must be an integer >= {minimum}")
+    return normalized
+
+
+def _mapping(value: Any, label: str) -> Mapping[str, Any]:
+    """Return one configuration mapping without coercing other containers."""
+
+    if not isinstance(value, Mapping):
+        raise ValueError(f"{label} must be a mapping")
+    return value
+
+
+def _first_alias_value(
+    attributes: Mapping[str, Any],
+    aliases: Sequence[str],
+    default: Any,
+) -> Any:
+    """Read the first present alias without permissive scalar coercion."""
+
+    for key in aliases:
+        if key in attributes:
+            return attributes[key]
+    return default
+
+
+def _stable_mean(
+    values: tuple[float, ...],
+    neighbor_indices: tuple[int, ...],
+    fallback: float,
+) -> float:
+    """Return a range-safe arithmetic mean for nonnegative frequencies."""
+
+    if not neighbor_indices:
+        return fallback
+    scale = max(values[index] for index in neighbor_indices)
+    if scale == 0.0:
+        return 0.0
+    normalized_total = math.fsum(
+        values[index] / scale for index in neighbor_indices
+    )
+    mean = scale * (normalized_total / len(neighbor_indices))
+    if not math.isfinite(mean):
+        raise ValueError("neighbor frequency mean must remain finite")
+    return mean
 
 
 def _vf_adapt_chunk(
-    args: tuple[list[tuple[Any, int, tuple[int, ...]]], tuple[float, ...], float],
+    args: tuple[
+        list[tuple[Any, int, tuple[int, ...]]],
+        tuple[float, ...],
+        float,
+    ],
 ) -> list[tuple[Any, float]]:
-    """Return proposed νf updates for ``chunk`` of stable nodes."""
+    """Return immutable-snapshot frequency proposals for one work chunk."""
 
     chunk, vf_values, mu = args
     updates: list[tuple[Any, float]] = []
-    for node, idx, neighbor_idx in chunk:
-        vf = vf_values[idx]
-        if neighbor_idx:
-            mean = math.fsum(vf_values[j] for j in neighbor_idx) / len(neighbor_idx)
-        else:
-            mean = vf
-        updates.append((node, vf + mu * (mean - vf)))
+    for node, index, neighbor_indices in chunk:
+        vf = vf_values[index]
+        mean = _stable_mean(vf_values, neighbor_indices, vf)
+        proposed = (1.0 - mu) * vf + mu * mean
+        if not math.isfinite(proposed):
+            raise ValueError("adapted structural frequency must remain finite")
+        updates.append((node, proposed))
     return updates
 
 
-def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
-    """Synchronise νf to the neighbour mean once ΔNFR and Si stay coherent.
-
-    Parameters
-    ----------
-    G : TNFRGraph
-        Graph that stores the TNFR nodes and configuration required for
-        adaptation. The routine reads ``VF_ADAPT_TAU`` (τ) to decide how many
-        consecutive stable steps a node must accumulate in ``stable_count``
-        before updating. The adaptation weight ``VF_ADAPT_MU`` (μ) controls how
-        quickly νf moves toward the neighbour mean. Stability is detected when
-        the absolute ΔNFR stays below ``EPS_DNFR_STABLE`` and the sense index Si
-        exceeds the selector threshold ``SELECTOR_THRESHOLDS['si_hi']`` (falling
-        back to ``GLYPH_THRESHOLDS['hi']``). Only nodes that satisfy both
-        thresholds for τ successive evaluations are eligible for μ-weighted
-        averaging.
-    n_jobs : int or None, optional
-        Number of worker processes used for eligible nodes. ``None`` (the
-        default) keeps the adaptation serial, ``1`` disables parallelism, and
-        any value greater than one dispatches chunks of nodes to a
-        :class:`~concurrent.futures.ProcessPoolExecutor` so large graphs can
-        adjust νf without blocking the main dynamic loop.
-
-    Returns
-    -------
-    None
-        The graph is updated in place; no value is returned.
-
-    Raises
-    ------
-    KeyError
-        Raised when ``G.graph`` lacks the canonical adaptation parameters and
-        defaults have not been injected.
-
-    Examples
-    --------
-    >>> from tnfr.constants import inject_defaults
-    >>> from tnfr.dynamics import adapt_vf_by_coherence
-    >>> from tnfr.structural import create_nfr
-    >>> G, seed = create_nfr("seed", vf=0.2)
-    >>> _, anchor = create_nfr("anchor", graph=G, vf=1.0)
-    >>> G.add_edge(seed, anchor)
-    >>> inject_defaults(G)
-    >>> G.graph["VF_ADAPT_TAU"] = 2      # τ: consecutive stable steps
-    >>> G.graph["VF_ADAPT_MU"] = 0.5      # μ: neighbour coupling strength
-    >>> G.graph["SELECTOR_THRESHOLDS"] = {"si_hi": 0.8}
-    >>> for node in G.nodes:
-    ...     G.nodes[node]["Si"] = 0.9      # above ΔSi threshold
-    ...     G.nodes[node]["ΔNFR"] = 0.0    # within |ΔNFR| ≤ eps guard
-    ...     G.nodes[node]["stable_count"] = 1
-    >>> adapt_vf_by_coherence(G)
-    >>> round(G.nodes[seed]["νf"], 2), round(G.nodes[anchor]["νf"], 2)
-    (0.6, 0.6)
-    >>> G.nodes[seed]["stable_count"], G.nodes[anchor]["stable_count"] >= 2
-    (2, True)
-    """
+def _validated_parameters(
+    G: TNFRGraph,
+    n_jobs: int | None,
+) -> tuple[int, float, float, float, float, float, int | None]:
+    """Validate every graph-owned and call-owned adaptation parameter."""
 
     required_keys = ("VF_ADAPT_TAU", "VF_ADAPT_MU")
     missing_keys = [key for key in required_keys if key not in G.graph]
     if missing_keys:
         missing_list = ", ".join(sorted(missing_keys))
         raise KeyError(
-            "adapt_vf_by_coherence requires graph parameters "
+            "adapt_vf_after_structural_stability requires graph parameters "
             f"{missing_list}; call tnfr.constants.inject_defaults(G) "
             "before adaptation."
         )
 
-    tau = get_graph_param(G, "VF_ADAPT_TAU", int)
-    mu = float(get_graph_param(G, "VF_ADAPT_MU"))
-    eps_dnfr = cast(DeltaNFR, get_graph_param(G, "EPS_DNFR_STABLE"))
-    thr_sel = get_graph_param(G, "SELECTOR_THRESHOLDS", dict)
-    thr_def = get_graph_param(G, "GLYPH_THRESHOLDS", dict)
-    si_hi = cast(
-        CoherenceMetric,
-        float(
-            thr_sel.get("si_hi", thr_def.get("hi", DYNAMICS_SI_HI_THRESHOLD_CANONICAL))
-        ),
+    tau = _integer_at_least(get_param(G, "VF_ADAPT_TAU"), "VF_ADAPT_TAU", 1)
+    mu = _finite_real(
+        get_param(G, "VF_ADAPT_MU"),
+        "VF_ADAPT_MU",
+        minimum=0.0,
+        maximum=1.0,
     )
-    vf_min = float(get_graph_param(G, "VF_MIN"))
-    vf_max = float(get_graph_param(G, "VF_MAX"))
+    eps_dnfr = _finite_real(
+        get_param(G, "EPS_DNFR_STABLE"),
+        "EPS_DNFR_STABLE",
+        minimum=0.0,
+    )
+
+    selector_thresholds = _mapping(
+        get_param(G, "SELECTOR_THRESHOLDS"),
+        "SELECTOR_THRESHOLDS",
+    )
+    fallback_thresholds = _mapping(
+        get_param(G, "GLYPH_THRESHOLDS"),
+        "GLYPH_THRESHOLDS",
+    )
+    si_hi = _finite_real(
+        selector_thresholds.get(
+            "si_hi",
+            fallback_thresholds.get(
+                "hi",
+                DYNAMICS_SI_HI_THRESHOLD_CANONICAL,
+            ),
+        ),
+        "SELECTOR_THRESHOLDS['si_hi']",
+        minimum=0.0,
+        maximum=1.0,
+    )
+
+    vf_min = _finite_real(get_param(G, "VF_MIN"), "VF_MIN", minimum=0.0)
+    vf_max = _finite_real(get_param(G, "VF_MAX"), "VF_MAX", minimum=0.0)
+    if vf_max < vf_min:
+        raise ValueError("VF_MAX must be >= VF_MIN")
+
+    if n_jobs is None:
+        jobs = None
+    else:
+        requested_jobs = _integer_at_least(n_jobs, "n_jobs", 1)
+        jobs = None if requested_jobs == 1 else requested_jobs
+
+    return tau, mu, eps_dnfr, si_hi, vf_min, vf_max, jobs
+
+
+def _validated_node_state(
+    G: TNFRGraph,
+    nodes: Sequence[Any],
+    *,
+    vf_min: float,
+    vf_max: float,
+) -> tuple[
+    tuple[float, ...],
+    tuple[float, ...],
+    tuple[float, ...],
+    tuple[int, ...],
+]:
+    """Read and validate all node inputs before any state mutation."""
+
+    si_values: list[float] = []
+    dnfr_values: list[float] = []
+    vf_values: list[float] = []
+    stable_counts: list[int] = []
+
+    for node in nodes:
+        attributes = G.nodes[node]
+        prefix = f"node {node!r}"
+        si_values.append(
+            _finite_real(
+                _first_alias_value(attributes, ALIAS_SI, 0.0),
+                f"{prefix} Si",
+                minimum=0.0,
+            )
+        )
+        dnfr_values.append(
+            _finite_real(
+                _first_alias_value(attributes, ALIAS_DNFR, 0.0),
+                f"{prefix} DeltaNFR",
+            )
+        )
+        vf_values.append(
+            _finite_real(
+                _first_alias_value(attributes, ALIAS_VF, 0.0),
+                f"{prefix} nu_f",
+                minimum=vf_min,
+                maximum=vf_max,
+            )
+        )
+        stable_counts.append(
+            _integer_at_least(
+                attributes.get("stable_count", 0),
+                f"{prefix} stable_count",
+                0,
+            )
+        )
+
+    return (
+        tuple(si_values),
+        tuple(dnfr_values),
+        tuple(vf_values),
+        tuple(stable_counts),
+    )
+
+
+def _restore_transaction(
+    G: TNFRGraph,
+    graph_snapshot: dict[str, Any],
+    node_snapshots: Mapping[Any, dict[str, Any]],
+) -> None:
+    """Restore graph and node attribute mappings after a failed commit."""
+
+    G.graph.clear()
+    G.graph.update(graph_snapshot)
+    for node, snapshot in node_snapshots.items():
+        attributes = G.nodes[node]
+        attributes.clear()
+        attributes.update(snapshot)
+
+
+def adapt_vf_after_structural_stability(
+    G: TNFRGraph,
+    n_jobs: int | None = None,
+) -> None:
+    """Synchronize nu_f after the DeltaNFR-plus-Si stability gate persists.
+
+    A node is stable for this operational gate when abs(DeltaNFR) is no larger
+    than EPS_DNFR_STABLE and Si is at least the configured si_hi threshold.
+    After VF_ADAPT_TAU consecutive qualifying evaluations, its frequency moves
+    by VF_ADAPT_MU toward the immutable-snapshot mean of its neighbors.
+
+    This routine does not read dEPI/dt and therefore does not compute or gate on
+    canonical total coherence C(t). All parameters and node scalars are
+    validated before mutation. Stable counters and frequency updates commit as
+    one transaction; any proposal, worker, or setter failure restores both.
+
+    Parameters
+    ----------
+    G
+        Graph with injected TNFR defaults and scalar Si, DeltaNFR, nu_f, and
+        optional stable_count node attributes.
+    n_jobs
+        None or 1 selects serial proposal calculation. A positive integer
+        greater than one enables process-based proposal calculation.
+
+    Examples
+    --------
+    >>> from tnfr.constants import inject_defaults
+    >>> from tnfr.dynamics import adapt_vf_after_structural_stability
+    >>> from tnfr.structural import create_nfr
+    >>> G, seed = create_nfr("seed", vf=0.2)
+    >>> _, anchor = create_nfr("anchor", graph=G, vf=1.0)
+    >>> G.add_edge(seed, anchor)
+    >>> inject_defaults(G)
+    >>> G.graph["VF_ADAPT_TAU"] = 2
+    >>> G.graph["VF_ADAPT_MU"] = 0.5
+    >>> G.graph["SELECTOR_THRESHOLDS"] = {"si_hi": 0.8}
+    >>> for node in G.nodes:
+    ...     G.nodes[node]["Si"] = 0.9
+    ...     G.nodes[node]["ΔNFR"] = 0.0
+    ...     G.nodes[node]["stable_count"] = 1
+    >>> adapt_vf_after_structural_stability(G)
+    >>> round(G.nodes[seed]["νf"], 2), round(G.nodes[anchor]["νf"], 2)
+    (0.6, 0.6)
+    """
+
+    (
+        tau,
+        mu,
+        eps_dnfr,
+        si_hi,
+        vf_min,
+        vf_max,
+        jobs,
+    ) = _validated_parameters(G, n_jobs)
 
     nodes = list(G.nodes)
     if not nodes:
         return
 
-    neighbors_map = ensure_neighbors_map(G)
-    node_count = len(nodes)
-    node_index = {node: idx for idx, node in enumerate(nodes)}
-
-    jobs: int | None
-    if n_jobs is None:
-        jobs = None
-    else:
-        try:
-            jobs = int(n_jobs)
-        except (TypeError, ValueError):
-            jobs = None
-        else:
-            if jobs <= 1:
-                jobs = None
-
-    use_np = np is not None
-
-    si_values = collect_attr(G, nodes, ALIAS_SI, 0.0)
-    dnfr_values = collect_attr(G, nodes, ALIAS_DNFR, 0.0)
-    vf_values = collect_attr(G, nodes, ALIAS_VF, 0.0)
-
-    if use_np:
-        si_arr = cast(Any, si_values).astype(float, copy=False)
-        dnfr_arr = np.abs(cast(Any, dnfr_values).astype(float, copy=False))
-        vf_arr = cast(Any, vf_values).astype(float, copy=False)
-
-        prev_counts = np.fromiter(
-            (int(G.nodes[node].get("stable_count", 0)) for node in nodes),
-            dtype=int,
-            count=node_count,
-        )
-        stable_mask = (si_arr >= si_hi) & (dnfr_arr <= eps_dnfr)
-        new_counts = np.where(stable_mask, prev_counts + 1, 0)
-
-        for node, count in zip(nodes, new_counts.tolist()):
-            G.nodes[node]["stable_count"] = int(count)
-
-        eligible_mask = new_counts >= tau
-        if not bool(eligible_mask.any()):
-            return
-
-        max_degree = 0
-        if node_count:
-            degree_counts = np.fromiter(
-                (len(neighbors_map.get(node, ())) for node in nodes),
-                dtype=int,
-                count=node_count,
-            )
-            if degree_counts.size:
-                max_degree = int(degree_counts.max())
-
-        if max_degree > 0:
-            neighbor_indices = np.zeros((node_count, max_degree), dtype=int)
-            mask = np.zeros((node_count, max_degree), dtype=bool)
-            for idx, node in enumerate(nodes):
-                neigh = neighbors_map.get(node, ())
-                if not neigh:
-                    continue
-                idxs = [node_index[nbr] for nbr in neigh if nbr in node_index]
-                if not idxs:
-                    continue
-                length = len(idxs)
-                neighbor_indices[idx, :length] = idxs
-                mask[idx, :length] = True
-            neighbor_values = vf_arr[neighbor_indices]
-            sums = (neighbor_values * mask).sum(axis=1)
-            counts = mask.sum(axis=1)
-            neighbor_means = np.where(counts > 0, sums / counts, vf_arr)
-        else:
-            neighbor_means = vf_arr
-
-        vf_updates = vf_arr + mu * (neighbor_means - vf_arr)
-        for idx in np.nonzero(eligible_mask)[0]:
-            node = nodes[int(idx)]
-            vf_new = clamp(float(vf_updates[int(idx)]), vf_min, vf_max)
-            set_vf(G, node, vf_new)
-        return
-
-    si_list = [float(val) for val in si_values]
-    dnfr_list = [abs(float(val)) for val in dnfr_values]
-    vf_list = [float(val) for val in vf_values]
-
-    prev_counts = [int(G.nodes[node].get("stable_count", 0)) for node in nodes]
-    stable_flags = [
-        si >= si_hi and dnfr <= eps_dnfr for si, dnfr in zip(si_list, dnfr_list)
-    ]
-    new_counts = [
-        prev + 1 if flag else 0 for prev, flag in zip(prev_counts, stable_flags)
-    ]
-
-    for node, count in zip(nodes, new_counts):
-        G.nodes[node]["stable_count"] = int(count)
-
-    eligible_nodes = [node for node, count in zip(nodes, new_counts) if count >= tau]
-    if not eligible_nodes:
-        return
-
-    if jobs is None:
-        for node in eligible_nodes:
-            idx = node_index[node]
-            neigh_indices = [
-                node_index[nbr]
-                for nbr in neighbors_map.get(node, ())
-                if nbr in node_index
-            ]
-            if neigh_indices:
-                total = math.fsum(vf_list[i] for i in neigh_indices)
-                mean = total / len(neigh_indices)
-            else:
-                mean = vf_list[idx]
-            vf_new = vf_list[idx] + mu * (mean - vf_list[idx])
-            set_vf(G, node, clamp(float(vf_new), vf_min, vf_max))
-        return
-
-    work_items: list[tuple[Any, int, tuple[int, ...]]] = []
-    for node in eligible_nodes:
-        idx = node_index[node]
-        neigh_indices = tuple(
-            node_index[nbr] for nbr in neighbors_map.get(node, ()) if nbr in node_index
-        )
-        work_items.append((node, idx, neigh_indices))
-
-    approx_chunk = math.ceil(len(work_items) / jobs) if jobs else None
-    chunk_size = resolve_chunk_size(
-        approx_chunk,
-        len(work_items),
-        minimum=1,
+    (
+        si_values,
+        dnfr_values,
+        vf_values,
+        previous_counts,
+    ) = _validated_node_state(
+        G,
+        nodes,
+        vf_min=vf_min,
+        vf_max=vf_max,
     )
-    chunks = [
-        work_items[i : i + chunk_size] for i in range(0, len(work_items), chunk_size)
-    ]
-    vf_tuple = tuple(vf_list)
-    updates: dict[Any, float] = {}
-    with ProcessPoolExecutor(max_workers=jobs) as executor:
-        args = ((chunk, vf_tuple, mu) for chunk in chunks)
-        for chunk_updates in executor.map(_vf_adapt_chunk, args):
-            for node, value in chunk_updates:
-                updates[node] = float(value)
 
-    for node in eligible_nodes:
-        vf_new = updates.get(node)
-        if vf_new is None:
-            continue
-        set_vf(G, node, clamp(float(vf_new), vf_min, vf_max))
+    stable_flags = tuple(
+        si >= si_hi and abs(dnfr) <= eps_dnfr
+        for si, dnfr in zip(si_values, dnfr_values)
+    )
+    new_counts = tuple(
+        previous + 1 if stable else 0
+        for previous, stable in zip(previous_counts, stable_flags)
+    )
+    eligible_indices = tuple(
+        index for index, count in enumerate(new_counts) if count >= tau
+    )
+
+    graph_snapshot = dict(G.graph)
+    node_snapshots = {node: dict(G.nodes[node]) for node in nodes}
+
+    try:
+        neighbors_map = ensure_neighbors_map(G)
+        node_index = {node: index for index, node in enumerate(nodes)}
+        work_items = [
+            (
+                nodes[index],
+                index,
+                tuple(
+                    node_index[neighbor]
+                    for neighbor in neighbors_map.get(nodes[index], ())
+                    if neighbor in node_index
+                ),
+            )
+            for index in eligible_indices
+        ]
+
+        if jobs is None or len(work_items) <= 1:
+            raw_updates = _vf_adapt_chunk((work_items, vf_values, mu))
+        else:
+            worker_count = min(jobs, len(work_items))
+            approximate_chunk = math.ceil(len(work_items) / worker_count)
+            chunk_size = resolve_chunk_size(
+                approximate_chunk,
+                len(work_items),
+                minimum=1,
+            )
+            chunks = [
+                work_items[index : index + chunk_size]
+                for index in range(0, len(work_items), chunk_size)
+            ]
+            raw_updates = []
+            with ProcessPoolExecutor(max_workers=worker_count) as executor:
+                arguments = ((chunk, vf_values, mu) for chunk in chunks)
+                for chunk_updates in executor.map(_vf_adapt_chunk, arguments):
+                    raw_updates.extend(chunk_updates)
+
+        proposals = {
+            node: clamp(
+                _finite_real(value, f"node {node!r} adapted nu_f"),
+                vf_min,
+                vf_max,
+            )
+            for node, value in raw_updates
+        }
+        eligible_nodes = [nodes[index] for index in eligible_indices]
+        if any(node not in proposals for node in eligible_nodes):
+            raise RuntimeError("frequency adaptation proposal set is incomplete")
+
+        for node, count in zip(nodes, new_counts):
+            G.nodes[node]["stable_count"] = count
+        for node in eligible_nodes:
+            set_vf(G, node, proposals[node])
+    except BaseException:
+        _restore_transaction(G, graph_snapshot, node_snapshots)
+        raise
+
+
+def adapt_vf_by_coherence(
+    G: TNFRGraph,
+    n_jobs: int | None = None,
+) -> None:
+    """Compatibility wrapper for the structural-stability adaptation gate.
+
+    The historical name does not mean that this function computes C(t).
+    """
+
+    adapt_vf_after_structural_stability(G, n_jobs=n_jobs)

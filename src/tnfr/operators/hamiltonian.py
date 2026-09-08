@@ -25,9 +25,11 @@ where the reorganization operator :math:`\Delta\text{NFR}` is defined as:
    Potential energy from structural alignment between nodes.
 
    .. math::
-       \hat{H}_{coh} = -C_0 \sum_{ij} w_{ij} |i\rangle\langle j|
+       \hat{H}_{coh} = C_0 W
 
-   where :math:`w_{ij}` is the coherence weight from similarity metrics.
+   where :math:`W=(w_{ij})` is the auxiliary structural-affinity matrix and
+   :math:`C_0` is normally negative. This term is distinct from canonical
+   total coherence ``C(t)``; :math:`W` is symmetric but can be indefinite.
 
 2. **Frequency Operator** :math:`\hat{H}_{freq}`:
    Diagonal operator encoding each node's structural frequency.
@@ -39,7 +41,11 @@ where the reorganization operator :math:`\Delta\text{NFR}` is defined as:
    Network topology-induced interactions.
 
    .. math::
-       \hat{H}_{coupling} = J_0 \sum_{(i,j) \in E} (|i\rangle\langle j| + |j\rangle\langle i|)
+       \hat{H}_{coupling} = J_0 A_{supp}
+
+   Here :math:`A_{supp}` is the Boolean adjacency matrix of the underlying
+   simple undirected support. Direction, reciprocal arcs and parallel edges
+   collapse to one coupling. A self-loop contributes one diagonal entry.
 
 Theoretical References
 ----------------------
@@ -80,13 +86,15 @@ Evolution operator is unitary: True
 **Energy spectrum**:
 
 >>> eigenvalues, eigenvectors = ham.get_spectrum()
->>> print("Ground state energy:", eigenvalues[0])
-Ground state energy: ...
+>>> eigenvalues.shape, eigenvectors.shape
+((3,), (3, 3))
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+import math
+from numbers import Real
+from typing import TYPE_CHECKING, Any, Sequence
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_VF
@@ -196,17 +204,18 @@ class InternalHamiltonian:
         self._verify_hermitian()
 
     def _build_H_coherence(self) -> FloatMatrix:
-        r"""Construct coherence potential H_coh from coherence matrix.
+        r"""Construct the auxiliary affinity contribution ``H_coh``.
 
         Theory
         ------
 
         .. math::
-            \hat{H}_{coh} = -C_0 \sum_{ij} w_{ij} |i\rangle\langle j|
+            \hat{H}_{coh} = C_0 W
 
-        where :math:`w_{ij}` is the coherence weight computed from structural
-        similarity (phase, EPI, νf, Si). The negative sign ensures coherent
-        states have lower energy (potential well).
+        Here ``W`` is the bounded structural-affinity matrix and ``C_0`` is
+        normally negative for an attractive contribution. ``W`` is symmetric
+        but is not positive semidefinite in general; this auxiliary model is
+        distinct from canonical ``C(t)``.
 
         Returns
         -------
@@ -220,57 +229,12 @@ class InternalHamiltonian:
         ensure consistency with existing coherence computations.
         """
 
-        # Handle empty graph case
-        if self.N == 0:
-            return np.zeros((0, 0), dtype=complex)
-
-        # Import here to avoid circular dependency
-        from ..metrics.coherence import coherence_matrix
-
-        # Reuse existing coherence_matrix computation
-        nodes, W = coherence_matrix(self.G)
-
-        # Convert to dense NumPy array
-        if isinstance(W, list):
-            # Empty list case
-            if len(W) == 0:
-                W_matrix = np.zeros((self.N, self.N), dtype=complex)
-            # Check if sparse format (list of tuples) or dense (list of lists)
-            elif isinstance(W[0], (list, tuple)) and len(W[0]) == 3:
-                # Sparse format: [(i, j, w), ...]
-                W_matrix = np.zeros((self.N, self.N), dtype=complex)
-                for i, j, w in W:
-                    W_matrix[i, j] = w
-            else:
-                # Dense format: [[...], [...], ...]
-                W_matrix = np.array(W, dtype=complex)
-        else:
-            W_matrix = np.asarray(W, dtype=complex)
-
-        # Reshape if necessary (handle 1D case)
-        if W_matrix.ndim == 1:
-            if len(W_matrix) == 0:
-                W_matrix = np.zeros((self.N, self.N), dtype=complex)
-            elif len(W_matrix) == self.N * self.N:
-                W_matrix = W_matrix.reshape((self.N, self.N))
-            else:
-                raise ValueError(
-                    f"Cannot reshape coherence vector of length {len(W_matrix)} "
-                    f"into ({self.N}, {self.N}) matrix"
-                )
-
-        # Ensure correct shape
-        if W_matrix.shape != (self.N, self.N):
-            raise ValueError(
-                f"Coherence matrix shape {W_matrix.shape} does not match "
-                f"node count ({self.N}, {self.N})"
-            )
-
-        # Scale by coherence strength (negative for potential well)
-        C_0 = self.G.graph.get("H_COH_STRENGTH", -1.0)
-        H_coh = C_0 * W_matrix
-
-        return H_coh
+        strength = self.G.graph.get("H_COH_STRENGTH", -1.0)
+        return build_H_coherence(
+            self.G,
+            nodes=list(self.nodes),
+            C_0=strength,
+        )
 
     def _build_H_frequency(self) -> FloatMatrix:
         r"""Construct frequency operator H_freq (diagonal).
@@ -309,47 +273,30 @@ class InternalHamiltonian:
         return H_freq
 
     def _build_H_coupling(self) -> FloatMatrix:
-        r"""Construct coupling Hamiltonian from network topology.
+        r"""Construct coupling from the graph's undirected Boolean support.
 
         Theory
         ------
 
         .. math::
-            \hat{H}_{coupling} = J_0 \sum_{(i,j) \in E} (|i\rangle\langle j| + |j\rangle\langle i|)
+            \hat{H}_{coupling} = J_0 A_{supp}
 
-        where E is the edge set and :math:`J_0` is coupling strength.
-        The sum is symmetric (Hermitian) for undirected graphs.
+        ``A_supp`` is the Boolean adjacency of the underlying simple
+        undirected graph. Direction, reciprocal arcs and edge multiplicity do
+        not change its entries; a self-loop contributes one diagonal entry.
 
         Returns
         -------
         H_coupling : ndarray, shape (N, N)
-            Coupling matrix (Hermitian for undirected graphs)
-
-        Notes
-        -----
-
-        For directed graphs, the matrix may not be Hermitian unless the graph
-        is explicitly symmetrized.
+            Real-symmetric coupling matrix
         """
 
-        H_coupling = np.zeros((self.N, self.N), dtype=complex)
-
-        # Build node index mapping (use consistent ordering)
-        node_to_idx = {node: i for i, node in enumerate(self.nodes)}
-
-        # Get coupling strength from graph configuration
-        J_0 = self.G.graph.get("H_COUPLING_STRENGTH", 0.1)
-
-        # Populate coupling matrix from edges
-        for u, v in self.G.edges():
-            i = node_to_idx[u]
-            j = node_to_idx[v]
-
-            # Symmetric coupling (ensures Hermiticity)
-            H_coupling[i, j] = J_0
-            H_coupling[j, i] = J_0
-
-        return H_coupling
+        strength = self.G.graph.get("H_COUPLING_STRENGTH", 0.1)
+        return build_H_coupling(
+            self.G,
+            nodes=list(self.nodes),
+            J_0=strength,
+        )
 
     def _verify_hermitian(self, tolerance: float = 1e-10) -> None:
         r"""Verify that all Hamiltonian components are Hermitian.
@@ -571,12 +518,114 @@ class InternalHamiltonian:
 # Standalone builder functions for modular usage
 
 
+def _finite_real_coefficient(value: Any, name: str) -> float:
+    """Return a finite, non-Boolean real coefficient."""
+
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise TypeError(f"{name} must be a finite real scalar, not a boolean")
+    result = float(value)
+    if not math.isfinite(result):
+        raise ValueError(f"{name} must be finite")
+    return result
+
+
+def _coherence_strength(value: Any) -> float:
+    """Return a validated affinity-potential coefficient."""
+
+    return _finite_real_coefficient(value, "C_0")
+
+
+def _coupling_strength(value: Any) -> float:
+    """Return a validated topological-coupling coefficient."""
+
+    return _finite_real_coefficient(value, "J_0")
+
+
+def _validated_node_order(
+    G: TNFRGraph,
+    nodes: Sequence[Any] | None,
+) -> tuple[Any, ...]:
+    """Return ``nodes`` after validating complete graph support exactly once."""
+
+    requested = tuple(cached_node_list(G) if nodes is None else nodes)
+    graph_nodes = tuple(G.nodes)
+    try:
+        same_nodes = (
+            len(requested) == len(graph_nodes)
+            and len(set(requested)) == len(requested)
+            and set(requested) == set(graph_nodes)
+        )
+    except TypeError as exc:
+        raise TypeError(
+            "nodes must contain hashable graph node identifiers"
+        ) from exc
+    if not same_nodes:
+        raise ValueError(
+            "nodes must be a duplicate-free permutation of graph nodes"
+        )
+    return requested
+
+
+def _dense_coherence_affinity(
+    G: TNFRGraph,
+    nodes: Sequence[Any],
+) -> FloatMatrix:
+    """Materialize and reorder the auxiliary affinity exactly once."""
+
+    from ..metrics.coherence import (
+        _is_sparse_affinity_payload,
+        coherence_matrix,
+    )
+
+    requested = _validated_node_order(G, nodes)
+
+    affinity_nodes, payload = coherence_matrix(
+        G,
+        _force_dense=True,
+        _record_history=False,
+    )
+    size = len(requested)
+    if affinity_nodes is None or payload is None:
+        return np.zeros((size, size), dtype=complex)
+    source_nodes = tuple(affinity_nodes)
+    if len(source_nodes) != size or set(source_nodes) != set(requested):
+        raise RuntimeError("coherence affinity node support changed during assembly")
+
+    if isinstance(payload, list):
+        if not payload:
+            matrix = np.zeros((size, size), dtype=complex)
+        elif _is_sparse_affinity_payload(payload):
+            matrix = np.zeros((size, size), dtype=complex)
+            for row, column, weight in payload:
+                if not 0 <= row < size or not 0 <= column < size:
+                    raise ValueError("sparse coherence affinity index is out of range")
+                matrix[row, column] = weight
+        else:
+            matrix = np.asarray(payload, dtype=complex)
+    else:
+        matrix = np.asarray(payload, dtype=complex)
+
+    if matrix.shape != (size, size):
+        raise ValueError(
+            f"coherence affinity shape {matrix.shape} does not match "
+            f"node count ({size}, {size})"
+        )
+    source_index = {node: index for index, node in enumerate(source_nodes)}
+    permutation = [source_index[node] for node in requested]
+    return np.asarray(matrix[np.ix_(permutation, permutation)], dtype=complex)
+
+
 def build_H_coherence(
     G: TNFRGraph,
     nodes: list | None = None,
     C_0: float = -1.0,
 ) -> FloatMatrix:
-    """Construct coherence potential matrix from graph.
+    """Construct the legacy Hamiltonian's structural-affinity contribution.
+
+    This is ``C_0 * W`` for the auxiliary affinity matrix ``W``.  It is not
+    canonical total coherence ``C(t)`` and ``W`` need not be positive
+    semidefinite.  ``nodes`` must be a permutation of all graph nodes; the
+    returned matrix is explicitly reordered to match it.
 
     Parameters
     ----------
@@ -585,36 +634,17 @@ def build_H_coherence(
     nodes : list, optional
         Ordered list of nodes. If None, uses cached_node_list(G)
     C_0 : float, default=-1.0
-        Coherence potential strength (negative for attractive potential)
+        Affinity-potential strength (negative for an attractive contribution)
 
     Returns
     -------
     H_coh : ndarray, shape (N, N)
         Coherence potential matrix
     """
-    from ..mathematics.unified_numerical import np
-
-    # Import here to avoid circular dependency
-    from ..metrics.coherence import coherence_matrix
-
     if nodes is None:
-        nodes = cached_node_list(G)
-
-    N = len(nodes)
-    _, W = coherence_matrix(G)
-
-    # Convert to NumPy array
-    if isinstance(W, list):
-        if W and isinstance(W[0], (list, tuple)) and len(W[0]) == 3:
-            W_matrix = np.zeros((N, N), dtype=complex)
-            for i, j, w in W:
-                W_matrix[i, j] = w
-        else:
-            W_matrix = np.array(W, dtype=complex)
-    else:
-        W_matrix = np.asarray(W, dtype=complex)
-
-    return C_0 * W_matrix
+        nodes = list(cached_node_list(G))
+    strength = _coherence_strength(C_0)
+    return strength * _dense_coherence_affinity(G, nodes)
 
 
 def build_H_frequency(
@@ -652,38 +682,42 @@ def build_H_frequency(
 
 def build_H_coupling(
     G: TNFRGraph,
-    nodes: list | None = None,
+    nodes: Sequence[Any] | None = None,
     J_0: float = 0.1,
 ) -> FloatMatrix:
-    """Construct coupling matrix from graph topology.
+    """Construct coupling from the underlying simple undirected support.
+
+    Each unordered pair with at least one edge receives exactly one ``J_0``
+    entry in each symmetric position. Direction, reciprocal arcs and parallel
+    edges therefore collapse. A self-loop contributes one diagonal ``J_0``.
 
     Parameters
     ----------
     G : TNFRGraph
         Graph with edge structure
     nodes : list, optional
-        Ordered list of nodes. If None, uses cached_node_list(G)
+        Complete node permutation defining matrix order. If None, uses
+        cached_node_list(G)
     J_0 : float, default=0.1
-        Coupling strength
+        Finite real coupling strength; booleans are rejected
 
     Returns
     -------
     H_coupling : ndarray, shape (N, N)
-        Coupling matrix (symmetric for undirected graphs)
+        Real-symmetric support-coupling matrix
     """
-    from ..mathematics.unified_numerical import np
 
-    if nodes is None:
-        nodes = cached_node_list(G)
-
-    N = len(nodes)
-    H_coupling = np.zeros((N, N), dtype=complex)
-    node_to_idx = {node: i for i, node in enumerate(nodes)}
+    ordered_nodes = _validated_node_order(G, nodes)
+    strength = _coupling_strength(J_0)
+    size = len(ordered_nodes)
+    H_coupling = np.zeros((size, size), dtype=complex)
+    node_to_idx = {node: i for i, node in enumerate(ordered_nodes)}
 
     for u, v in G.edges():
         i = node_to_idx[u]
         j = node_to_idx[v]
-        H_coupling[i, j] = J_0
-        H_coupling[j, i] = J_0
+        H_coupling[i, j] = strength
+        if i != j:
+            H_coupling[j, i] = strength
 
     return H_coupling

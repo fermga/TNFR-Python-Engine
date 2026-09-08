@@ -41,7 +41,11 @@ from ..utils import (
     resolve_chunk_size,
     similarity_abs,
 )
-from .coherence import CoherenceMatrixPayload, coherence_matrix, local_phase_sync
+from .coherence import (
+    CoherenceMatrixPayload,
+    coherence_matrix,
+    local_phase_sync_weighted,
+)
 from .common import _coerce_jobs, compute_dnfr_accel_max, min_max_range, normalize_dnfr
 from .trig_cache import compute_theta_trig, get_trig_cache
 
@@ -790,10 +794,25 @@ def dissonance_events(G: TNFRGraph, ctx: DiagnosisSharedState | None = None) -> 
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     step_idx = len(hist.get("C_steps", []))
     nodes: list[NodeId] = list(G.nodes())
+    coherence_nodes, weights = coherence_matrix(G, _record_history=False)
+    weight_index = (
+        {node: index for index, node in enumerate(coherence_nodes)}
+        if coherence_nodes is not None
+        else {}
+    )
     for n in nodes:
         nd = G.nodes[n]
         dn = normalize_dnfr(nd, dnfr_max)
-        Rloc = local_phase_sync(G, n)
+        if coherence_nodes is None or weights is None:
+            Rloc = 0.0
+        else:
+            Rloc = local_phase_sync_weighted(
+                G,
+                n,
+                nodes_order=coherence_nodes,
+                W_row=weights,
+                node_to_index=weight_index,
+            )
         st = bool(nd.get("_disr_state", False))
         if (
             (not st)

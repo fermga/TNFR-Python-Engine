@@ -10,7 +10,7 @@ from __future__ import annotations
 import logging
 import math
 from collections.abc import Iterator, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from numbers import Real
 from typing import Any, ClassVar
 
@@ -243,32 +243,62 @@ def _validate_sub_epi_records(records: list[Any]) -> tuple[Mapping[str, Any], ..
     return tuple(validated)
 
 
-def _subepi_amplitude_alignment(records: tuple[Mapping[str, Any], ...]) -> float:
-    if len(records) < 2:
-        return 0.0
-    values = tuple(float(record["epi"]) for record in records)
-    mean = finite_real(
-        math.fsum(values) / len(values),
-        operator=_OPERATOR,
-        label="sub-EPI mean",
+def _retarget_bifurcation(
+    proposal: _BifurcationProposal, sub_node_id: str
+) -> _BifurcationProposal:
+    """Return one proposal with every child-identity reference updated."""
+
+    if (
+        not proposal.sub_nodes
+        or not proposal.hierarchy_children
+        or not proposal.sub_epis
+    ):
+        raise RuntimeError("THOL bifurcation proposal has incomplete child references")
+    record = dict(proposal.sub_epis[-1])
+    record["node_id"] = sub_node_id
+    return replace(
+        proposal,
+        sub_node_id=sub_node_id,
+        sub_nodes=(*proposal.sub_nodes[:-1], sub_node_id),
+        hierarchy_children=(*proposal.hierarchy_children[:-1], sub_node_id),
+        sub_epis=(*proposal.sub_epis[:-1], record),
     )
-    squared = tuple(
-        _checked_product(value - mean, value - mean, "sub-EPI squared deviation")
-        for value in values
-    )
-    variance = finite_real(
-        math.fsum(squared) / len(squared),
-        operator=_OPERATOR,
-        label="sub-EPI variance",
-        lower=0.0,
-    )
-    return finite_real(
-        1.0 / (1.0 + variance),
-        operator=_OPERATOR,
-        label="sub-EPI amplitude alignment",
-        lower=0.0,
-        upper=1.0,
-    )
+
+
+def _merge_stage_execution_proposals(
+    snapshot: TNFRGraph,
+    proposals: tuple[tuple[Any, _ExecutionProposal], ...],
+) -> tuple[tuple[Any, _ExecutionProposal], ...]:
+    """Allocate collision-free THOL children in immutable snapshot-node rank.
+
+    A parent's ordinary direct-call identifier remains unchanged whenever it
+    does not collide. Cross-target collisions are resolved by advancing that
+    parent's local suffix. Snapshot rank, rather than requested target order,
+    decides which proposal retains a colliding identifier.
+    """
+
+    rank = {node: index for index, node in enumerate(snapshot.nodes)}
+    if any(node not in rank for node, _proposal in proposals):
+        raise RuntimeError("THOL stage proposal contains a non-snapshot target")
+    ordered = sorted(proposals, key=lambda item: rank[item[0]])
+    reserved = set(snapshot.nodes)
+    merged: dict[Any, _ExecutionProposal] = {}
+    for node, proposal in ordered:
+        bifurcation = proposal.bifurcation
+        if bifurcation is None:
+            merged[node] = proposal
+            continue
+        sub_index = len(bifurcation.sub_nodes) - 1
+        sub_node_id = f"{node}_sub_{sub_index}"
+        while sub_node_id in reserved:
+            sub_index += 1
+            sub_node_id = f"{node}_sub_{sub_index}"
+        reserved.add(sub_node_id)
+        if sub_node_id != bifurcation.sub_node_id:
+            bifurcation = _retarget_bifurcation(bifurcation, sub_node_id)
+            proposal = replace(proposal, bifurcation=bifurcation)
+        merged[node] = proposal
+    return tuple((node, merged[node]) for node, _proposal in proposals)
 
 
 class SelfOrganization(Operator):
@@ -415,7 +445,7 @@ class SelfOrganization(Operator):
         snapshot = _GraphSnapshot(G)
         try:
             self._execute_transaction(G, node, proposal, kw)
-        except BaseException:
+        except BaseException as failure:
             monitor = G.graph.get("integrity_monitor")
             discard_pending = getattr(monitor, "discard_pending_operator", None)
             if callable(discard_pending):
@@ -423,7 +453,7 @@ class SelfOrganization(Operator):
                     discard_pending()
                 except Exception:
                     pass
-            snapshot.restore(G)
+            snapshot.restore_after_failure(G, failure)
             raise
 
     def _execute_transaction(
@@ -447,14 +477,27 @@ class SelfOrganization(Operator):
         if monitor is not None:
             monitor.before_operator(G, node)
 
-        from ..alias import set_attr
-        from .grammar_application import _apply_selected_glyph
+        from . import _validated_execution_window
+        from .network_stage import (
+            PointwiseStageProposal,
+            _record_histories_and_patterns,
+        )
 
-        # Feed the generic glyph kernel the same freshly reconstructed
-        # acceleration used by planning and bifurcation admission. This also
-        # refreshes the diagnostic alias atomically with the transaction.
-        set_attr(G.nodes[node], ALIAS_D2EPI, proposal.d2_epi)
-        _apply_selected_glyph(G, node, self.glyph, kw.get("window"))
+        # Planning is the single source of the direct and staged structural
+        # action. Canonical setters preserve alias precedence and DeltaNFR cache
+        # invalidation; the shared lifecycle helper preserves glyph provenance.
+        self._commit_primary_channels(G, node, proposal)
+        _record_histories_and_patterns(
+            G,
+            (
+                PointwiseStageProposal(
+                    node=node,
+                    glyph=self.glyph,
+                    payload=proposal,
+                ),
+            ),
+            window=_validated_execution_window(G, kw.get("window")),
+        )
         self._commit_proposal(G, node, proposal)
 
         if monitor is not None:
@@ -542,7 +585,11 @@ class SelfOrganization(Operator):
 
         amplitude_alignment = None
         if final_records:
-            amplitude_alignment = _subepi_amplitude_alignment(final_records)
+            from .metabolism import _subepi_amplitude_alignment_from_records
+
+            amplitude_alignment = _subepi_amplitude_alignment_from_records(
+                final_records
+            )
 
         preconditions_active = bool(
             kw.get("validate_preconditions", True)
@@ -751,11 +798,21 @@ class SelfOrganization(Operator):
         hierarchy = G.graph.get("hierarchy", {})
         if not isinstance(hierarchy, dict):
             reject_operator_argument(_OPERATOR, "hierarchy must be a dictionary")
-        hierarchy_children = hierarchy.get(node, [])
-        if not isinstance(hierarchy_children, list):
-            reject_operator_argument(
-                _OPERATOR, "hierarchy children must be stored in a list"
-            )
+        if node in hierarchy:
+            hierarchy_children = hierarchy[node]
+            if not isinstance(hierarchy_children, list):
+                reject_operator_argument(
+                    _OPERATOR, "hierarchy children must be stored in a list"
+                )
+            if tuple(hierarchy_children) != tuple(sub_nodes):
+                reject_operator_argument(
+                    _OPERATOR,
+                    "graph hierarchy children must match parent sub_nodes",
+                )
+        else:
+            # sub_nodes is the node-local U5 source of truth for legacy graphs
+            # that predate the redundant graph-level hierarchy index.
+            hierarchy_children = sub_nodes
 
         timestamp = next_operator_step(data)
         child_vf = _checked_product(
@@ -848,6 +905,20 @@ class SelfOrganization(Operator):
         records = _existing_list(data, "sub_epis")
         validated_records = _validate_sub_epi_records(records)
         children = _existing_list(data, "sub_nodes")
+        hierarchy = G.graph.get("hierarchy", {})
+        if not isinstance(hierarchy, dict):
+            reject_operator_argument(_OPERATOR, "hierarchy must be a dictionary")
+        if node in hierarchy:
+            hierarchy_children = hierarchy[node]
+            if not isinstance(hierarchy_children, list):
+                reject_operator_argument(
+                    _OPERATOR, "hierarchy children must be stored in a list"
+                )
+            if tuple(hierarchy_children) != tuple(children):
+                reject_operator_argument(
+                    _OPERATOR,
+                    "graph hierarchy children must match parent sub_nodes",
+                )
         if children:
             for child in children:
                 if child not in G:
@@ -972,30 +1043,89 @@ class SelfOrganization(Operator):
                 },
             )
 
-    def _commit_proposal(
+    def _commit_primary_channels(
         self, G: TNFRGraph, node: Any, proposal: _ExecutionProposal
     ) -> None:
-        from ..alias import set_attr
+        """Commit proposed nodal channels through canonical alias boundaries."""
+
+        from ..alias import set_attr, set_dnfr
+
+        set_attr(G.nodes[node], ALIAS_D2EPI, proposal.d2_epi)
+        set_dnfr(G, node, proposal.dnfr_after)
+
+    def _commit_support_and_hierarchy(
+        self, G: TNFRGraph, node: Any, proposal: _ExecutionProposal
+    ) -> None:
+        """Commit the already merged structural support for one target."""
 
         bifurcation = proposal.bifurcation
-        if bifurcation is not None:
-            G.add_node(bifurcation.sub_node_id, **dict(bifurcation.sub_node_data))
-            G.nodes[node]["sub_nodes"] = list(bifurcation.sub_nodes)
-            hierarchy = G.graph.setdefault("hierarchy", {})
-            hierarchy[node] = list(bifurcation.hierarchy_children)
-            G.nodes[node]["sub_epis"] = list(bifurcation.sub_epis)
+        if bifurcation is None:
+            return
+        G.add_node(bifurcation.sub_node_id, **dict(bifurcation.sub_node_data))
+        G.nodes[node]["sub_nodes"] = list(bifurcation.sub_nodes)
+        hierarchy = G.graph.setdefault("hierarchy", {})
+        hierarchy[node] = list(bifurcation.hierarchy_children)
+        G.nodes[node]["sub_epis"] = list(bifurcation.sub_epis)
+
+    def _validate_merged_stage_support(
+        self,
+        candidate: TNFRGraph,
+        proposals: tuple[tuple[Any, _ExecutionProposal], ...],
+    ) -> None:
+        """Materialize and validate all merged support on a detached candidate."""
+
+        generated: set[Any] = set()
+        for node, proposal in proposals:
+            bifurcation = proposal.bifurcation
+            if bifurcation is not None:
+                if (
+                    bifurcation.sub_node_id in candidate
+                    or bifurcation.sub_node_id in generated
+                ):
+                    raise RuntimeError(
+                        "THOL stage child identifier merge is not collision-free"
+                    )
+                generated.add(bifurcation.sub_node_id)
+            self._commit_support_and_hierarchy(candidate, node, proposal)
+
+        hierarchy = candidate.graph.get("hierarchy", {})
+        if not isinstance(hierarchy, dict):
+            raise RuntimeError("THOL stage hierarchy merge changed container type")
+        for node, proposal in proposals:
+            self._validate_subtree(candidate, node, frozenset())
+            bifurcation = proposal.bifurcation
+            if bifurcation is None:
+                continue
+            child = bifurcation.sub_node_id
+            if candidate.nodes[child].get("parent_node") != node:
+                raise RuntimeError("THOL stage child has inconsistent parent identity")
+            if tuple(_existing_list(candidate.nodes[node], "sub_nodes")) != (
+                bifurcation.sub_nodes
+            ):
+                raise RuntimeError("THOL stage sub-node merge changed")
+            if tuple(hierarchy.get(node, ())) != bifurcation.hierarchy_children:
+                raise RuntimeError("THOL stage hierarchy merge changed")
+            if tuple(_existing_list(candidate.nodes[node], "sub_epis")) != (
+                bifurcation.sub_epis
+            ):
+                raise RuntimeError("THOL stage sub-EPI merge changed")
+
+    def _commit_lifecycle_proposal(
+        self,
+        G: TNFRGraph,
+        node: Any,
+        proposal: _ExecutionProposal,
+        *,
+        emit_depth_warning: bool = True,
+    ) -> None:
+        """Commit target-local diagnostics and ordered graph telemetry."""
 
         if proposal.depth_limit_reached is not None:
             diagnostic = dict(proposal.depth_limit_reached)
             G.nodes[node]["_thol_depth_limit_reached"] = True
             G.graph.setdefault("thol_depth_limits", []).append(diagnostic)
-            logging.getLogger(__name__).warning(
-                "Node %r: THOL child depth %d reached configured maximum %d; "
-                "pressure was reorganized without creating another child.",
-                node,
-                diagnostic["depth"],
-                diagnostic["max_depth"],
-            )
+            if emit_depth_warning:
+                self._emit_depth_limit_warning(node, proposal)
 
         if proposal.subepi_amplitude_alignment is not None:
             G.nodes[node]["_thol_subepi_amplitude_alignment"] = (
@@ -1007,6 +1137,30 @@ class SelfOrganization(Operator):
             G.nodes[node]["_thol_no_bifurcation_expected"] = (
                 proposal.no_bifurcation_expected
             )
+
+    def _emit_depth_limit_warning(
+        self, node: Any, proposal: _ExecutionProposal
+    ) -> None:
+        """Publish one accepted depth-limit warning."""
+
+        diagnostic = proposal.depth_limit_reached
+        if diagnostic is None:
+            return
+        logging.getLogger(__name__).warning(
+            "Node %r: THOL child depth %d reached configured maximum %d; "
+            "pressure was reorganized without creating another child.",
+            node,
+            diagnostic["depth"],
+            diagnostic["max_depth"],
+        )
+
+    def _commit_proposal(
+        self, G: TNFRGraph, node: Any, proposal: _ExecutionProposal
+    ) -> None:
+        """Commit support and lifecycle data for the direct public call."""
+
+        self._commit_support_and_hierarchy(G, node, proposal)
+        self._commit_lifecycle_proposal(G, node, proposal)
 
     def _compute_epi_acceleration(self, G: TNFRGraph, node: Any) -> float:
         """Read the signed value supplied by the shared structural derivative."""
@@ -1027,3 +1181,6 @@ class SelfOrganization(Operator):
         return self_organization_metrics(
             G, node, state_before["epi"], state_before["vf"]
         )
+
+
+_CANONICAL_SELF_ORGANIZATION_EXECUTE = SelfOrganization._execute

@@ -84,11 +84,24 @@ def test_domain_observation_adapters_preserve_distinct_semantics():
     chemical_observation = observe_emergent_element(classify_element(2))
     assert graph_observation.aggregation == "per_node_fields_plus_global_xi_c"
     assert arithmetic_observation.aggregation == (
-        "mean_local_structural_coherence"
+        "canonical_static_coherence_of_mean_absolute_pressure"
+    )
+    assert arithmetic_observation.metadata["canonical_field"] == "coherence"
+    assert (
+        arithmetic_observation.metadata["descriptive_field"]
+        == "mean_local_coherence"
     )
     assert chemical_observation.pressure_realization == (
         "valence_shell_distance"
     )
+
+
+def test_empty_arithmetic_observation_is_marked_unavailable():
+    observation = observe_arithmetic_nfr(
+        {"coherence": None, "readout_available": False, "n_nodes": 0}
+    )
+
+    assert observation.metadata["unavailable"] is True
 
 
 def test_public_domain_readouts_expose_opt_in_observation_envelopes():

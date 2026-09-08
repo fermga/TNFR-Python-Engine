@@ -694,8 +694,8 @@ class FFTDynamicsEngine:
             # fingerprints; clearing them prevents small spectral updates from
             # reusing a stale read-out. The topology-only basis cache remains valid.
             self.structural_cache.clear_cache()
-        except BaseException:
-            transaction.restore(G)
+        except BaseException as failure:
+            transaction.restore_after_failure(G, failure)
             raise
 
     def run_fft_simulation(

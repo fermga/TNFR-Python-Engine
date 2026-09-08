@@ -36,6 +36,7 @@ from typing import Any, Iterable
 import networkx as nx
 
 from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
+from ..metrics.common import structural_coherence
 from .unified import compute_energy_density, compute_historical_q_density
 from .winding_certificates import certify_phase_winding
 
@@ -108,7 +109,7 @@ def winding_ring(n_nodes: int, winding: float, *, base_dnfr: float = 0.05) -> nx
 
     The phase advances by ``winding`` full turns around the loop:
     φ_i = wrap(2π · winding · i / n). The node ordering 0,1,...,n-1,0 defines the
-    closed loop. ΔNFR is set to a mild baseline; coherence = 1/(1+|ΔNFR|).
+    closed loop. ΔNFR is set to a mild baseline; static coherence uses dEPI=0.
 
     ``winding`` may be non-integer on input. Sampling and shortest-arc closure
     produce an integer winding class whenever no edge lies on the wrap branch;
@@ -132,8 +133,8 @@ def winding_ring(n_nodes: int, winding: float, *, base_dnfr: float = 0.05) -> nx
         G.nodes[i]["phase"] = phi
         G.nodes[i]["delta_nfr"] = float(base_dnfr)
         G.nodes[i]["dnfr"] = float(base_dnfr)
-        G.nodes[i]["coherence"] = 1.0 / (1.0 + abs(base_dnfr))
-        G.nodes[i]["EPI"] = 1.0 / (1.0 + abs(base_dnfr))
+        G.nodes[i]["coherence"] = float(structural_coherence(base_dnfr))
+        G.nodes[i]["EPI"] = float(structural_coherence(base_dnfr))
         G.nodes[i]["nu_f"] = 1.0
     return G
 

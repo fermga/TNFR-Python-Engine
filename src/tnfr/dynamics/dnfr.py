@@ -3088,7 +3088,8 @@ def compute_delta_nfr_hamiltonian(
     - **Rigorous**: Directly implements TNFR mathematical formalization
     - **Hermitian**: Guarantees real eigenvalues and unitary evolution
     - **Verifiable**: Can compute energy spectrum and eigenstates
-    - **Complete**: Accounts for all structural correlations via coherence matrix
+    - **Scoped**: Uses the auxiliary structural-affinity matrix; it does not
+      reconstruct all structural correlations or canonical ``C(t)``
 
     **Performance considerations**:
 

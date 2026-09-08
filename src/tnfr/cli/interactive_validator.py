@@ -366,7 +366,7 @@ class TNFRInteractiveValidator:
         print("Health Metrics:")
         print()
         print("  Overall Health    - Composite quality score (0.0-1.0)")
-        print("  Coherence Index   - Sequential flow quality")
+        print("  Flow Quality      - Sequential token-flow score")
         print("  Balance Score     - Stability/instability equilibrium")
         print("  Sustainability    - Long-term maintenance capacity")
         print()
@@ -407,7 +407,9 @@ class TNFRInteractiveValidator:
 
         # Individual metrics
         print(
-            f"│ Coherence Index:     {self._health_bar(health.coherence_index)} {health.coherence_index:.2f}"
+            "│ Flow Quality:         "
+            f"{self._health_bar(health.flow_quality_score)} "
+            f"{health.flow_quality_score:.2f}"
         )
         print(
             f"│ Balance Score:       {self._health_bar(health.balance_score)} {health.balance_score:.2f}"

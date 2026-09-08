@@ -1,4 +1,4 @@
-"""REMESH-Window-Type Signature — Diagnostic for the T-REMESH-window Conjecture (§13quadraginta-tertia).
+"""REMESH-Window-Type Signature diagnostic for the T-REMESH-window conjecture.
 
 This module implements a finite **REMESH-Window-Type Signature**
 :math:`\\mathcal{S}_{\\tau}`. It records how the current runtime stores
@@ -16,12 +16,10 @@ research-record compatibility.
 The diagnostic probes two orthogonal axes:
 
 1. **Integer-index storage axis** — the fraction of REMESH-bearing
-   parameter reads at which both runtime window slots
-   ``G.graph["REMESH_TAU_LOCAL"]`` / ``G.graph["REMESH_TAU_GLOBAL"]``
-   contain an integer-coercible value. The default and bracket setup use
-   integers, so the expected value is ``1.0``. A lower value reports a
-   non-integer raw payload that the runtime reader would coerce with
-   ``int(get_param(...))``.
+   parameter observations for which both runtime delay slots contain strict
+   positive integers. The default and bracket setup use integers, so the
+   expected value is 1.0. A lower value predicts rejection by the runtime
+   planner; it is never silently truncated.
 2. **Window-refinement sensitivity axis** — variance of the
    post-REMESH per-node EPI snapshot across a small bracket of
    adjacent integer windows
@@ -36,17 +34,13 @@ windows produce substantially different post-REMESH states. It can motivate
 a richer follow-up model, but it does **not** prove that the REMESH window
 requires a continuous kernel.
 
-A low :math:`\\mathcal{S}_{\\tau}` plus a unit integer-storage
-fraction is the empirically expected outcome. It is consistent with
-the catalog row 1 typing
-:math:`(\\tau_l, \\tau_g) \\in \\mathbb{N} \\times \\mathbb{N}` and with
-the integer-indexed history read at
-``src/tnfr/operators/remesh.py:1218–1228`` (``int(get_param(...))``
-+ ``hist[-(tau_g + 1)]``). It supplies no statement about a literal
-:math:`\\tau_g\\to\\infty` runtime limit. The corrected N15 record proves
-a separate Cesàro projection theorem only for a finite cyclic filter with
-fixed delays; its fixed modes are governed by
-:math:`\\gcd(\\tau_l,\\tau_g)`.
+A low signature plus a unit integer-storage fraction is the empirically expected
+outcome. It is consistent with the strict domain
+(tau_l, tau_g) in positive integers and with the indexed delayed access owned by
+tnfr.operators.remesh.plan_network_remesh. It supplies no statement about a
+literal tau_g to infinity runtime limit. The corrected N15 record proves a
+separate Cesaro projection theorem only for a finite cyclic filter with fixed
+delays; its fixed modes are governed by gcd(tau_l, tau_g).
 
 References
 ----------
@@ -79,33 +73,17 @@ def _wrap_to_pi(angle: float) -> float:
     return (float(angle) + math.pi) % (2.0 * math.pi) - math.pi
 
 
-def _is_integer_payload(value: Any) -> bool:
-    """Return ``True`` iff ``value`` is structurally a non-negative integer.
+def _is_strict_positive_integer_payload(value: Any) -> bool:
+    """Return whether value is a strict positive integer payload.
 
-    Accepts: Python ``int`` (excluding ``bool``), NumPy integer scalar,
-    and Python ``float`` whose fractional part is exactly zero (after
-    safe conversion).  Rejects: floats with non-zero fractional part,
-    NumPy ``float`` arrays of dimension > 0, mappings, sequences,
-    callables, None.
+    Python and NumPy integer scalars are accepted. Booleans, floating-point
+    values (including integral-valued floats), arrays, text and non-positive
+    integers are rejected exactly as by the delayed REMESH planner.
     """
-    if isinstance(value, bool):
+
+    if isinstance(value, (bool, np.bool_)):
         return False
-    if isinstance(value, int):
-        return True
-    if isinstance(value, np.integer):
-        return True
-    if isinstance(value, float):
-        return value.is_integer()
-    if isinstance(value, np.floating):
-        return float(value).is_integer()
-    if isinstance(value, np.ndarray):
-        if value.ndim != 0:
-            return False
-        try:
-            return float(value).is_integer()
-        except (TypeError, ValueError):
-            return False
-    return False
+    return isinstance(value, (int, np.integer)) and int(value) > 0
 
 
 def _build_canonical_demo_graph(n_nodes: int, seed: int) -> Any:
@@ -147,7 +125,7 @@ def _inspect_tau_storage(G: Any) -> tuple[int, int]:
     -------
     n_integer : int
         Number of canonical window slots (out of 2) whose raw payload
-        is structurally an integer.
+        is a strict positive integer.
     n_total : int
         Total number of canonical window slots inspected (2 per call).
     """
@@ -155,9 +133,9 @@ def _inspect_tau_storage(G: Any) -> tuple[int, int]:
     n_integer = 0
     raw_l = G.graph.get("REMESH_TAU_LOCAL")
     raw_g = G.graph.get("REMESH_TAU_GLOBAL")
-    if raw_l is not None and _is_integer_payload(raw_l):
+    if raw_l is not None and _is_strict_positive_integer_payload(raw_l):
         n_integer += 1
-    if raw_g is not None and _is_integer_payload(raw_g):
+    if raw_g is not None and _is_strict_positive_integer_payload(raw_g):
         n_integer += 1
     return n_integer, n_total
 
@@ -179,36 +157,23 @@ def _run_remesh_bracket(
     tau_l_base: int,
     tau_g_base: int,
     n_events: int,
-) -> tuple[np.ndarray, list[Any], int, int]:
-    """Run the canonical REMESH event ``n_events`` times for each window in the bracket.
+) -> tuple[np.ndarray, list[Any], int, int, int]:
+    """Run delayed REMESH attempts for each integer window bracket.
 
-    For each integer offset ``j ∈ {0, 1, 2}``, rebuild a fresh
-    canonical demo graph from ``seed`` (deterministically identical
-    pre-REMESH state across bracket entries), warm up ``_epi_hist``
-    with ``warmup_steps`` canonical steps, set
-    ``(τ_l + j, τ_g + j)`` on the freshly-built graph, fire
-    :func:`apply_network_remesh` ``n_events`` times, and record the
-    final per-node EPI snapshot.  The rebuild-per-bracket strategy
-    is used because the canonical TNFR graph carries non-picklable
-    runtime locks (``_thread.RLock``) and cannot be ``deepcopy``-d.
+    Each bracket member starts from an identically seeded, independently warmed
+    graph. The function counts strict-integer delay observations, total delay
+    observations and successful delayed operations separately. An
+    insufficient-history result is an attempt but is not an applied event.
 
-    Returns
-    -------
-    epi_bracket : np.ndarray of shape ``(3, n_nodes)``
-        Final EPI vectors for the three bracket windows.
-    nodes : list[Any]
-        Canonical node order used to interpret the EPI columns.
-    n_integer_samples : int
-        Cumulative number of integer-coerced window-slot reads across
-        the bracket.
-    n_total_samples : int
-        Cumulative number of window-slot reads across the bracket.
+    Returns the three final EPI vectors, canonical node order, integer reads,
+    total reads and applied-event count.
     """
     from ..operators.remesh import apply_network_remesh
 
     epi_bracket = np.zeros((3, int(n_nodes)), dtype=float)
     n_integer_samples = 0
     n_total_samples = 0
+    n_applied_events = 0
     nodes_canonical: list[Any] | None = None
     for j in range(3):
         G_j = _build_canonical_demo_graph(n_nodes, seed)
@@ -222,10 +187,17 @@ def _run_remesh_bracket(
             n_int, n_tot = _inspect_tau_storage(G_j)
             n_integer_samples += n_int
             n_total_samples += n_tot
-            apply_network_remesh(G_j)
+            result = apply_network_remesh(G_j)
+            n_applied_events += int(result.applied)
         epi_bracket[j, :] = _read_epi_snapshot(G_j, nodes_j)
     assert nodes_canonical is not None
-    return epi_bracket, nodes_canonical, n_integer_samples, n_total_samples
+    return (
+        epi_bracket,
+        nodes_canonical,
+        n_integer_samples,
+        n_total_samples,
+        n_applied_events,
+    )
 
 
 def _window_refinement_signature(
@@ -271,18 +243,14 @@ class RemeshWindowTypeSignatureCertificate:
         snapshots. The legacy verdict label may then mention a continuous
         kernel, but the measurement alone cannot establish its necessity.
     integer_storage_fraction : float
-        Fraction of REMESH-bearing window-slot reads in which the
-        canonical slot stored an *integer-coercible* payload.  ``1.0``
-        is the empirically expected value under the canonical
-        implementation ``int(get_param(...))`` at every read; any value
-        below ``1.0`` flags that canonical evolution stores a
-        non-integer that the integer reader necessarily truncates.
+        Fraction of inspected delay slots holding strict positive integers.
+        A value below one predicts rejection by the delayed REMESH planner.
     noninteger_storage_count : int
         Absolute number of window-slot reads that stored a non-integer
-        payload (equals ``n_remesh_events * 2 - integer_storage_count``).
+        payload (total inspected reads minus integer_storage_count).
     n_remesh_events : int
-        Total number of :func:`apply_network_remesh` events fired across
-        the bracket (== ``3 * remesh_events_per_window``).
+        Number of delayed REMESH operations whose result reports applied.
+        Insufficient-history attempts are excluded.
     n_nodes : int
         Number of nodes in the diagnostic graph.
     tau_l : int
@@ -326,11 +294,13 @@ class RemeshWindowTypeSignatureCertificate:
 
     def summary(self) -> str:
         lines = [
-            "REMESH-Window-Type Signature certificate (diagnostic only — §13quadraginta-tertia.5)",
-            f"  signature S_tau          : {self.signature:.6f}   (0 = bracket-flat, 1 = bracket-saturated)",
+            "REMESH-Window-Type Signature certificate "
+            "(diagnostic only — §13quadraginta-tertia.5)",
+            f"  signature S_tau          : {self.signature:.6f}   "
+            "(0 = bracket-flat, 1 = bracket-saturated)",
             f"  integer storage fraction : {self.integer_storage_fraction:.4f}"
             f"  ({self.noninteger_storage_count} non-integer reads / "
-            f"{self.n_remesh_events * 2} total reads)",
+            f"{self.diagnostics.get('total_window_reads', 0)} total reads)",
             f"  raw relative variance    : {self.raw_relative_variance:.6e}"
             f" (per-node Var(EPI)/<|EPI|> across bracket)",
             f"  bracket mean L2          : {self.bracket_mean_l2:.6f}"
@@ -340,9 +310,10 @@ class RemeshWindowTypeSignatureCertificate:
             f" ({self.tau_l + 1}, {self.tau_g + 1}),"
             f" ({self.tau_l + 2}, {self.tau_g + 2})}}",
             f"  graph                    : {self.n_nodes} nodes,"
-            f" {self.n_remesh_events} REMESH events ({self.n_remesh_events // 3} per window)",
+            f" {self.n_remesh_events} applied REMESH events",
             f"  verdict                  : {self.verdict}",
-            "  scope: finite adjacent-window diagnostic; legacy verdict labels do not prove a continuous kernel",
+            "  scope: finite adjacent-window diagnostic; legacy verdict "
+            "labels do not prove a continuous kernel",
         ]
         return "\n".join(lines)
 
@@ -365,12 +336,10 @@ def compute_remesh_window_type_signature(
     n_nodes : int, default 24
         Size of the ring graph used as the canonical probe.
     warmup_steps : int, default 16
-        Number of canonical evolution steps before the REMESH bracket
-        starts firing.  Must be large enough that the canonical
-        ``_epi_hist`` deque has accumulated ``> max(τ_l, τ_g) + 2``
-        snapshots (else :func:`apply_network_remesh` early-returns).
-        Default ``16`` covers the canonical defaults ``τ_l = 4``,
-        ``τ_g = 8`` plus the ``+2`` bracket headroom.
+        Number of canonical evolution steps before the REMESH bracket starts.
+        It should provide at least max(tau_l, tau_g) + 3 snapshots so all three
+        offset windows can apply. Shorter histories produce explicit no-op
+        results that are excluded from n_remesh_events.
     tau_l : int, default 4 (canonical default of
         ``REMESH_TAU_LOCAL``)
         Base local memory window τ_l used as bracket anchor.
@@ -378,9 +347,8 @@ def compute_remesh_window_type_signature(
         ``REMESH_TAU_GLOBAL``)
         Base global memory window τ_g used as bracket anchor.
     remesh_events_per_window : int, default 8
-        Number of :func:`apply_network_remesh` events fired per
-        window in the bracket; total events == ``3 *
-        remesh_events_per_window``.
+        Number of delayed REMESH attempts per bracket member. The certificate
+        counts only results reporting applied as events.
     seed : int, default 17
         Deterministic seed for the initial phase / EPI / νf
         perturbation.
@@ -402,18 +370,12 @@ def compute_remesh_window_type_signature(
     -----
     The diagnostic uses two orthogonal axes:
 
-    - **Integer-index storage axis**: per REMESH event, inspect the
-      raw payloads stored at ``G.graph["REMESH_TAU_LOCAL"]`` and
-      ``G.graph["REMESH_TAU_GLOBAL"]`` for non-integer-coercible
-      values.  Under the canonical implementation
-      :func:`tnfr.operators.remesh.apply_network_remesh`, every read
-      is coerced via ``int(get_param(...))``; the integer-storage
-      fraction is therefore structurally ``1.0`` by construction —
-      exactly mirroring the :math:`w_{\\mathrm{frac}} = 0`,
-      :math:`\\mathrm{bepi\\_frac} = 0`, and
-      :math:`T_{\\mathrm{frac}} = 0` outcomes of the B2a/B1a/B3a
-      diagnostics (inverted polarity: here "1.0 integer" plays the
-      role of "0.0 non-canonical").
+    - **Integer-index storage axis**: before each delayed REMESH attempt,
+      inspect the raw local and global delay payloads. The runtime planner
+      accepts strict positive integers and rejects booleans, fractions and
+      text without coercion. The measured integer-storage fraction is thus a
+      domain diagnostic, while applied-event counts come from the returned
+      immutable execution result.
     - **Window-refinement sensitivity axis**: for each of three
       adjacent integer windows
       :math:`\\{(\\tau_l + j, \\tau_g + j) : j = 0, 1, 2\\}`,
@@ -442,7 +404,7 @@ def compute_remesh_window_type_signature(
     ``signature ∈ [0, scalar_threshold)`` (empirical), yielding
     verdict ``"INTEGER_WINDOW_ADEQUATE"``.
     """
-    epi_bracket, nodes, n_int, n_tot = _run_remesh_bracket(
+    epi_bracket, nodes, n_int, n_tot, n_applied = _run_remesh_bracket(
         n_nodes=int(n_nodes),
         seed=int(seed),
         warmup_steps=int(warmup_steps),
@@ -453,7 +415,8 @@ def compute_remesh_window_type_signature(
     signature, raw_var = _window_refinement_signature(epi_bracket)
     integer_storage_fraction = float(n_int) / float(n_tot) if n_tot > 0 else 0.0
     noninteger_storage_count = int(n_tot - n_int)
-    n_remesh_events = 3 * int(remesh_events_per_window)
+    n_remesh_attempts = 3 * int(remesh_events_per_window)
+    n_remesh_events = n_applied
 
     # Advisory L2 distance: baseline vs (+1, +2) windows.
     baseline = epi_bracket[0]
@@ -476,6 +439,8 @@ def compute_remesh_window_type_signature(
         "seed": int(seed),
         "warmup_steps": int(warmup_steps),
         "remesh_events_per_window": int(remesh_events_per_window),
+        "remesh_attempts": n_remesh_attempts,
+        "remesh_noop_count": n_remesh_attempts - n_applied,
         "integer_storage_count": int(n_int),
         "total_window_reads": int(n_tot),
     }

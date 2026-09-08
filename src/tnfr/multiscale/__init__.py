@@ -1,28 +1,23 @@
 """Multi-scale hierarchical TNFR network support.
 
-This module implements operational fractality (§3.7) by enabling TNFR networks
-to operate recursively at multiple scales simultaneously, preserving structural
-coherence across scale transitions.
-
-Canonical Invariants Preserved
-------------------------------
-1. EPI operational fractality - nested EPIs maintain functional identity
-2. Cross-scale ΔNFR - coherence propagates between scales
-3. Phase synchrony - maintained within and across scales
-4. Deterministic evolution - reproducible multi-scale dynamics
+This module manages distinct TNFR graphs, composes directed cross-scale
+pressure contributions from simultaneous source snapshots, and advances EPI
+through the nodal equation. It supplies an operational multi-scale model and
+reproducible storage boundary. U3 admission, U5 hierarchy normalization, and
+canonical operator words require their dedicated engine interfaces.
 
 Examples
 --------
-Create a hierarchical network spanning quantum to organism scales:
+Create a reproducible hierarchy:
 
 >>> from tnfr.multiscale import HierarchicalTNFRNetwork, ScaleDefinition
 >>> scales = [
-...     ScaleDefinition("quantum", node_count=1000, coupling_strength=0.8),
-...     ScaleDefinition("molecular", node_count=500, coupling_strength=0.6),
-...     ScaleDefinition("cellular", node_count=100, coupling_strength=0.4),
+...     ScaleDefinition("micro", node_count=4, coupling_strength=0.8),
+...     ScaleDefinition("macro", node_count=3, coupling_strength=0.4),
 ... ]
->>> network = HierarchicalTNFRNetwork(scales)
->>> # Network supports simultaneous evolution at all scales
+>>> network = HierarchicalTNFRNetwork(scales, seed=42)
+>>> set(network.networks_by_scale) == {"micro", "macro"}
+True
 """
 
 from __future__ import annotations

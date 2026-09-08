@@ -56,7 +56,8 @@ not prove that it generates every independently admissible TNFR transformation.
 
 The registry contains 13 public semantic transformations satisfying:
 
-1. **Nodal equation compatibility**: Every transformation must be expressible as a modification of $\nu_f$, $\Delta\text{NFR}$, or the coupling structure.
+1. **Nodal equation compatibility**: Every transformation must declare its effect on
+   EPI, $\nu_f$, $\Delta\text{NFR}$, phase, or the coupling structure.
 2. **Grammar closure**: The set must include generators (U1a), closures (U1b), stabilizers (U2), destabilizers (U2), coupling operators (U3), bifurcation triggers and handlers (U4), and multi-scale operators (U5).
 3. **Semantic distinction**: Each member has a named physical contract. The
    finite temporal-signature experiment separates their implementations on its
@@ -70,7 +71,8 @@ reference to this catalog. That is research line S10 in
 
 Throughout this document:
 - Glyph codes (AL, EN, IL, ...) reference the structural symbols.
-- English names (Emission, Reception, Coherence, ...) are the public API identifiers.
+- Lowercase English tokens (`emission`, `reception`, ...) are executable API
+  identifiers; title-case names are public display/class names.
 - Operator gain magnitudes are operational parameters (only $\pi$ is a genuine structural scale); the engine-configuration tier in `canonical.py` is calibrated, not derived.
 - Grammar roles reference rules U1–U6 from [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md).
 - Energy diagnostics and their proof boundaries are discussed in [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md).
@@ -113,11 +115,93 @@ subject to:
 Operators compose into sequences $[\hat{O}_1, \hat{O}_2, \ldots, \hat{O}_n]$ applied left-to-right. Grammar validation operates on the full sequence. The grammar is not commutative: the order of operators affects validity and outcome.
 
 SDK execution is operator-major across sequence positions, as are the
-supported GPU blocks. SDK EN/RA and GPU RA positions use the shared atomic
-two-phase Jacobi stage: all targets read one immutable snapshot before any
-proposal commits. Other operator stages retain operator-major Gauss-Seidel
-semantics until their cross-target write and merge rules are explicit. Thus the
-guarantee is stage-local and does not make a mixed word simultaneous.
+supported GPU blocks. All thirteen SDK positions use a shared atomic two-phase
+Jacobi stage when grammar accepts the requested glyph for every target:
+EN/IL/RA build neighbour-reading proposals, AL/SHA/VAL/NUL/ZHIR/NAV build
+pointwise proposals, UM merges overlapping phase/topology proposals, OZ reduces
+overlapping local and propagated pressure proposals, and THOL merges child
+support and hierarchy proposals, and REMESH merges one shared advisory per telemetry step. IL contracts each target's
+pressure magnitude and computes circular
+phase locking from the immutable stage snapshot; canonical structural `C(t)`
+telemetry and auxiliary pressure dispersion remain separate.
+Supported GPU AL/RA blocks reuse the corresponding path. Every target reads one
+immutable stage-start snapshot before any proposal commits. The committed
+primary channels are invariant to target iteration order before the opaque
+pressure-refresh callback; AL and SHA additionally use one shared timestamp
+per stage, while NAV uses one shared latency-observation instant. A random NAV
+stage binds each node's draw and RNG progress to the snapshot; a missing graph
+seed is resolved inside the transaction and persists only after successful
+commit. Ordered lifecycle, audit/telemetry and monitor streams retain target
+order. UM averages shortest-arc phase displacements in immutable snapshot-rank
+order, normalizes the result, revalidates U3 after the merge and deterministically
+coalesces accepted functional links. This reducer is an engine policy, not a
+stability theorem. OZ derives local actions and outgoing propagation from the
+same snapshot, then sums incoming increments with `math.fsum` in snapshot-node
+rank. Its local pressure-magnitude postcondition precedes signed accumulation:
+positive incoming increments can partially cancel a negative pressure. THOL
+allocates colliding child identifiers in snapshot-node rank and validates all
+child nodes, `sub_nodes`, `sub_epis` and graph `hierarchy` writes on a
+detached candidate before committing `d2EPI`, `DeltaNFR` and support. IL
+warnings are emitted as the final transactional effect. Cache state
+and the opaque pressure refresh are excluded from the invariance claim;
+identity-bearing caches remain tied to their live graph and node objects. No
+relabeling-equivariance result follows.
+
+The REMESH glyph stage is advisory-only: it leaves structural channels and
+support unchanged and deterministically deduplicates one graph event per
+telemetry step. The separate apply_network_remesh operation owns delayed EPI
+mixing. Multi-target IL previously used the sequential schedule; its canonical
+word runner now uses the snapshot rule. A grammar replacement or Recursivity
+execution override still follows and reports the transactional Gauss-Seidel
+path. Thus the guarantee is stage-local and does not make a mixed word
+simultaneous.
+
+The hybrid time contract treats each operator position as a zero-duration jump
+and assigns physical time only to the `m + 1` declared nodal-flow intervals
+around `m` events. Exact rational values of materialized binary64 durations and
+their offsets are authoritative; absolute timestamps are display fields, and
+coincident jumps remain ordered by event index. The schedule builder itself
+does not execute the word or manufacture timestamped EPI secants.
+
+`execute_operator_event_schedule` supplies the separate runtime binding. It
+uses the configured nodal integrator for each positive interval and the shared
+all-target dispatcher for each jump, with the initial target tuple frozen.
+Collapsed or nonadditive binary64 intervals are rejected before writes. Flow
+boundaries become timestamped samples, while a same-time EPI jump restarts that
+history and is recorded only as a zero-duration event. One graph transaction
+covers flow, jump, history, cache and event-log state; emitted external effects
+remain outside rollback. This contract does not prove solver accuracy,
+refinement invariance, jump gains or adaptive U2/U4.
+
+`execute_event_remesh_cycle` supplies a narrower executable composition. It
+runs one event schedule, appends its endpoint through the ordinary pre-REMESH
+`_epi_hist` helper, and invokes the separate delayed map inside an outer graph
+transaction. Ordered node support and incoming delayed history are fixed across
+the schedule; edges may change there. The endpoint clock, event log, phase,
+pressure hook and deterministic delayed-map controls remain bound to the
+schedule result. The EPI-only map treats ON_REMESH callbacks as observers and
+preserves the post-schedule edge state and all non-EPI channels.
+
+One frozen positive diagonal metric measures the cycle-level pre-schedule,
+pre-REMESH and post-REMESH EPI observations and is passed unchanged to
+stability evidence; REMESH metadata retains legacy unweighted summaries. Exact
+weighted-mean drift and disagreement remain authoritative when their optional
+binary64 display is `None`. Capacity vectors, stage refresh counts and an
+explicitly requested post-REMESH pressure refresh stay separate. That refresh
+runs only after an applied map. Delay `tau` reads `_epi_hist[-(tau + 1)]`, and no
+post-jump delayed-history sample is appended. The applied jump instead restarts
+or appends the same-time `epi_time_history` right endpoint, so Mutation cannot
+read it as a finite flow secant. Atomic execution does not provide a mixed gain,
+solver-accuracy or history-updated repetition theorem; emitted external effects
+remain outside rollback.
+
+The shared pointwise stage executor can opt into a conditional certificate for
+AL/SHA/VAL/NUL/ZHIR/NAV. Its successful `NetworkStageResult` carries evidence
+computed from the same detached snapshot and frozen proposals used by the
+commit. The three levels separate exact realization, pre-flow affine gain and
+an aligned pre/post diffusion metric. Requests reject unsupported, empty or
+grammar-replaced stages before live writes. The result supplies no IL,
+mixed-word, pressure-refresh or repeated-runtime theorem.
 
 ---
 
@@ -180,12 +264,16 @@ channel and sign, not this threshold).
 - **Irreversible**: Sets an immutable activation flag. Re-emission increments an activation counter but preserves the original timestamp.
 - **Genealogical**: Maintains structural lineage tracking (origin timestamp, parent references, derived node list).
 - **Latency-aware**: Detects and clears silence (SHA) latency state on reactivation.
+- **All-target time basis**: One accepted AL stage assigns one common timestamp
+  to all newly emitted targets; repeated targets retain their original origin.
 
 **Grammar**: Generator (U1a).
 
 **Contract**:
-- Pre: $\text{EPI} < 0.8$ (activation threshold).
-- Post: $\text{EPI} > 0$, $\nu_f > 0$, activation flag set.
+- Pre: $\text{EPI} < 0.8$ and $\nu_f$ at or above the configured basal
+  threshold when strict preconditions are enabled.
+- Post: EPI does not decrease; $\nu_f$, phase and $\Delta\text{NFR}$ remain
+  unchanged; the activation flag is set.
 
 ### 4.2 Transition (NAV)
 
@@ -211,7 +299,20 @@ $$
 
 **Properties**:
 - **Latency recovery**: When transitioning from latent state, verifies EPI drift against preserved snapshot (tolerance: 1% for established nodes, $0.330$ for initial nodes).
-- **Regime traceability**: Records origin regime, before/after state, and phase shift in telemetry.
+- **Regime traceability**: Records origin regime, before/after state, and phase
+  shift in telemetry. Pressure telemetry distinguishes the true pre-handler
+  value, the low-level handler result, and the final regime-retained value.
+- **All-target stage**: One immutable proposal binds each target's `nu_f`, phase,
+  `DeltaNFR`, latency state and optional jitter draw/RNG progress before any
+  write. A missing graph seed is resolved inside the outer transaction, copied
+  into the detached snapshot, restored on rejection and retained on success.
+  Stable per-node offsets and draw counts make the committed RNG progress
+  independent of target iteration order.
+- **Shared latency clock**: Every target computes silence duration from one
+  stage instant. Ordered warnings, histories, transition events, metrics and
+  monitor callbacks still follow requested target order. Cache state, the
+  opaque pressure-refresh result and relabeling equivariance remain outside the
+  structural target-order claim.
 
 **Grammar**: Generator (U1a), Closure (U1b).
 
@@ -235,11 +336,19 @@ $$
 \text{EPI}_{\rm new}=\operatorname{clip}(\text{EPI}_{\rm raw})
 $$
 
-where the default is $\alpha=0.5$, but graph configuration can override it.
-The three raw coefficients sum to one for every $\alpha$ and form a convex
-combination when $0\leq\alpha\leq1$. The runtime returns without changing EPI
-until `_epi_hist` contains at least $\max(\tau_l,\tau_g)+1$ snapshots, and its
-hard or soft structural clipping can make the map nonlinear.
+where the default is alpha = 0.5, but graph configuration can override it.
+The runtime validates 0 < alpha <= 1 rather than clamping, so the three raw
+coefficients are a convex partition and sum to one. Both delays must be strict
+positive integers; neither booleans nor fractional values are coerced.
+
+The operation is guarded by max(tau_l, tau_g) + 1 stored snapshots. Before that
+point it returns an immutable insufficient-history no-op. Empty live support is
+a separate side-effect-free no-op. Once the guard passes, the selected
+local-lag and global-lag entries must each be a node-to-EPI mapping
+whose support equals the current graph support. Both are temporal per-node
+snapshots; the global lag is not a spatial network mean. Hard or soft structural
+clipping acts only after the raw recurrence and can make the committed map
+nonlinear.
 
 **Properties**:
 - **Depth parameter**: Recursion depth $\geq 1$ (validated at construction; raises error if $< 1$).
@@ -250,12 +359,33 @@ hard or soft structural clipping can make the map nonlinear.
   $alpha$ is explicit and has no graph-independent default.
 - **Constant-history fixed point**: identical current, local-delay and
   global-delay EPI snapshots are preserved before clipping.
-- **Energy scope**: convex averaging obeys a Jensen bound against the weighted
-  energy of all three input snapshots. It is not an isometry, and the current
-  EPI norm can rise or fall. The structural candidate energy does not contain
-  EPI directly, so a snapshot evaluation with every derived field held fixed
-  is unchanged; recomputation of pressure, fields or later dynamics supplies
-  no REMESH conservation law.
+- **Energy scope**: for one positive diagonal metric h, let V_h denote
+  weighted disagreement from the h-weighted mean. Convexity gives
+
+  $$
+  V_h(x_{\rm raw})\leq
+  \beta V_h(x_0)+\gamma V_h(x_l)+\delta V_h(x_g).
+  $$
+
+  This bound uses all three inputs. It is not a gain bound relative to the
+  current state alone when delayed histories are free. With the two delayed
+  vectors fixed, write b = gamma x_l + delta x_g. The raw map of the current
+  vector preserves the consensus subspace, and has disagreement gain at most
+  beta squared, when b is uniform. Otherwise a consensus current vector can be
+  sent to positive disagreement, so no finite global multiplicative gain
+  exists. Weighted-mean preservation is reported separately from disagreement.
+  Clipping intervention is reported separately from the raw recurrence. None
+  of these one-step facts establishes repeated-map stability, pressure closure,
+  a structural-charge conservation law or U2 convergence.
+
+- **Execution boundary**: plan_network_remesh returns the immutable proposal;
+  apply_network_remesh commits it and returns an immutable result. Strict
+  validation precedes writes. A commit, metadata, history or propagated
+  callback failure restores graph-owned state, topology, caches and capturable
+  callback state. External effects already emitted by callbacks are outside
+  this rollback boundary. Exact evidence values that exceed the finite
+  binary64 diagnostic range are rejected explicitly before commit. The
+  function reads the EPI history but does not append or shift it.
 
 **Grammar**: Generator (U1a), Closure (U1b).
 
@@ -274,8 +404,8 @@ $$F=\beta I+\gamma S^{\tau_l}+\delta S^{\tau_g}$$
 is a normal contraction. Its Cesàro averages converge to the orthogonal
 projection onto $\ker(I-F)$. If the window length is compatible with the
 delays, those fixed modes satisfy both $z^{\tau_l}=1$ and $z^{\tau_g}=1$;
-their period is therefore $\gcd(\tau_l,\tau_g)$, not the historically stated
-$\operatorname{lcm}(\tau_l,\tau_g)$.
+their periods therefore divide $\gcd(\tau_l,\tau_g)$; they are not
+determined by the historically stated $\operatorname{lcm}(\tau_l,\tau_g)$.
 
 This finite cyclic filter is not the runtime history-update map. In particular,
 it does not prove a literal $\tau_g\to\infty$ limit for
@@ -303,10 +433,12 @@ retains the historical N15 milestones and commit anchors (`a1f298fd`,
 
 **Physics**: Captures and integrates incoming resonance from the network environment. Reduces $\Delta\text{NFR}$ via structured integration of external signals.
 
-**Runtime transformation**: let `r(EPI)` denote the centralized graph scalar
-reader. Raw real values and uniform-real BEPI embeddings retain their signed
-value; genuinely nonuniform or complex BEPI values use the maximum component
-magnitude. Let `B_i=ensure_bepi(EPI_i)` be the target operand. Reception first
+**Runtime transformation**: let `r(EPI)` denote the centralized real-scalar
+glyph reader. It is defined for raw finite real values and uniform-real BEPI
+embeddings, retaining their signed value. Genuinely nonuniform or complex BEPI
+values have a maximum-component magnitude for generic read-only diagnostics,
+but Reception rejects them before proposing a blend. Let
+`B_i=ensure_bepi(EPI_i)` be the accepted target operand. Reception first
 forms the unweighted arithmetic mean of the runtime neighbours,
 
 $$
@@ -808,12 +940,26 @@ $s=(1/\pi)(\pi/4)=1/4$ radians unless an explicit fixed shift is supplied.
 The runtime preconditions and U4b history determine whether the mutation is
 admissible; $|\Delta\text{NFR}|$ does not scale this phase step.
 
+The phase calculation and its branch-specific `_zhir_*` telemetry payload use
+one RNG-free immutable kernel. At the all-target boundary, the complete frozen
+proposal also binds the temporal threshold evidence, structural acceleration
+and U4 context to one stage snapshot. The stage commits phase and acceleration
+before merging histories, provenance, metrics and bifurcation events in
+requested target order. Its primary structural result is target-order invariant
+before the opaque pressure refresh; the ordered auxiliary streams and
+relabeling equivariance remain outside that result.
+
 **Bifurcation monitoring**: `compute_d2epi_dt2` estimates structural
 acceleration from three EPI-history samples. Timestamped histories use adjacent
 secant slopes over their physical intervals; legacy histories use the unit-step
 second difference. The result can flag bifurcation potential when it exceeds
 $\tau$. This acceleration diagnostic is distinct from both the instantaneous
 nodal prediction and the two-sample observed ZHIR gate.
+
+`ZHIR_BIFURCATION_MODE="detection"` is the only supported mode. The legacy
+`"variant_creation"` value is rejected before any write. ZHIR therefore remains
+a phase-only transformation with bifurcation detection and telemetry; topology
+or sub-EPI creation belongs to THOL and must be expressed through that operator.
 
 **Key parameters**:
 
@@ -870,6 +1016,8 @@ EPI is preserved via latency snapshot.
 - **Latency state**: Activates a latent flag with timestamped EPI snapshot.
 - **EPI preservation**: Drift tolerance of 1% for established nodes, $0.330$ for initial nodes.
 - **Reactivation protocol**: AL or NAV recovery verifies silence duration and EPI drift, then clears latency attributes.
+- **All-target time basis**: One accepted SHA stage gives every target the same
+  latency-start timestamp while preserving a target-specific EPI snapshot.
 
 **Grammar**: Closure (U1b).
 
@@ -901,6 +1049,14 @@ $$
 |----------|-------|------------|
 | Scale factor | $1-1/(4\pi)\approx0.9204$ | Same operational $\nu_f$ step as SHA |
 | Densification factor | $1/f_{\text{NUL}}\approx1.0865$ | Reciprocal configured capacity factor |
+
+The immutable scale proposal binds the requested capacity factor, its exact
+binary64 reciprocal, the pre/post pressure and any EPI-boundary adaptation
+before commit. Each densification audit event carries its target identifier.
+Contraction metrics use their captured pre-operation pressure, or the latest
+matching target event for compatibility, and report signed pressure change
+separately from magnitude increase. Unchanged zero pressure is therefore not
+misreported as densification.
 
 **Grammar**: Simplifier (no active grammar role; supports VAL reversals).
 
@@ -1006,7 +1162,8 @@ state functional, pressure law, timing and gain bounds. The fixed symmetric pure
 EPI channel is one class where this has now been established, including
 heterogeneous positive capacities. A declared affine EPI reset can also be
 bounded in the same metric exactly when it preserves the consensus subspace;
-the resulting rational Frobenius bound composes with elapsed diffusion time.
+the resulting rational quotient-gain bound, with a weighted-Frobenius fallback,
+composes with elapsed diffusion time.
 This generic theorem does not certify any catalog operator until its runtime
 action is derived as that affine map on a declared domain.
 
@@ -1021,7 +1178,7 @@ Every operator has a postcondition contract anchored to the **direct effect on n
 
 | # | Operator | Glyph | Channel | Postcondition |
 |---|----------|-------|---------|---------------|
-| 1 | Emission | AL | EPI | $\text{EPI}$ not decreased ($\partial\text{EPI}/\partial t \ge 0$) |
+| 1 | Emission | AL | EPI | EPI not decreased; $\nu_f$, phase and $\Delta\text{NFR}$ unchanged |
 | 2 | Reception | EN | EPI | $C(t)$ not decreased (coherent integration) |
 | 3 | Coherence | IL | $\Delta\text{NFR}$ | $C(t)$ non-decreasing; $|\Delta\text{NFR}|$ reduced |
 | 4 | Dissonance | OZ | $\Delta\text{NFR}$ | $|\Delta\text{NFR}|$ not decreased |
@@ -1108,6 +1265,7 @@ channel, direction, scale and postcondition).
 | `src/tnfr/operators/definitions.py` | Facade: imports all 13 operator classes |
 | `src/tnfr/operators/definitions_base.py` | `Operator` abstract base class with `__call__` workflow |
 | `src/tnfr/operators/emission.py` | AL implementation |
+| `src/tnfr/operators/al_sha_stage_proposals.py` | Immutable AL/SHA structural and lifecycle proposals |
 | `src/tnfr/operators/reception.py` | EN implementation |
 | `src/tnfr/operators/_neighbor_epi_kernel.py` | Shared unweighted EN/RA scalar-mean and blend kernel |
 | `src/tnfr/operators/coherence.py` | IL implementation |
@@ -1118,14 +1276,19 @@ channel, direction, scale and postcondition).
 | `src/tnfr/operators/silence.py` | SHA implementation |
 | `src/tnfr/operators/expansion.py` | VAL implementation |
 | `src/tnfr/operators/contraction.py` | NUL implementation |
+| `src/tnfr/operators/_scale_operator_kernel.py` | Shared immutable VAL/NUL capacity, pressure and EPI-boundary proposal |
 | `src/tnfr/operators/self_organization.py` | THOL implementation |
 | `src/tnfr/operators/mutation.py` | ZHIR implementation |
+| `src/tnfr/operators/_mutation_stage_kernel.py` | Pure immutable ZHIR phase proposal |
 | `src/tnfr/operators/transition.py` | NAV implementation |
+| `src/tnfr/operators/jitter.py` | Reproducible jitter proposal, progress validation and atomic commit |
 | `src/tnfr/operators/recursivity.py` | REMESH implementation |
+| `src/tnfr/operators/network_stage.py` | Shared transactional Jacobi and Gauss-Seidel stage executors |
 | `src/tnfr/operators/nodal_equation.py` | Nodal equation validation |
 | `src/tnfr/operators/canonical_patterns.py` | Canonical sequence definitions |
 | `src/tnfr/operators/introspection.py` | `OperatorMeta` metadata registry |
 | `src/tnfr/operators/operator_contracts.py` | **Canonical contract layer** (single source of truth: channel × scale × postcondition) |
+| `src/tnfr/operators/stage_contracts.py` | All-target schedule, footprint, merge, rollback and invariance contracts |
 | `src/tnfr/operators/grammar_canon.py` | Canonical grammar spec (U1–U6 role table, structural typology, glyphic macros) |
 | `src/tnfr/operators/grammar.py` | Grammar validation (public API facade) |
 | `src/tnfr/operators/grammar_dynamics.py` | Incremental grammar-aware dynamics |

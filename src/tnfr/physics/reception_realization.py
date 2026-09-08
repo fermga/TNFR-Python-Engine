@@ -1,7 +1,8 @@
 r"""Runtime realization bridge for one local Reception (EN) update.
 
 Reception changes one EPI coordinate by blending it with the arithmetic mean
-of the target's runtime neighbours.  On a fixed support, with a mix
+of the target's runtime neighbours and proposes the semantic EPI kind from the
+dominant labelled neighbour.  On a fixed support, with a mix
 ``alpha in [0, 1]``, hard clipping, and an EPI field already inside its bounds,
 the corresponding *ideal real* update is the affine reset
 
@@ -60,15 +61,16 @@ import math
 from types import SimpleNamespace
 from typing import Any
 
-from ..constants.aliases import ALIAS_EPI
+from ..constants.aliases import ALIAS_EPI, ALIAS_EPI_KIND
 from ..constants.canonical import EN_MIX_FACTOR
 from ..dynamics.structural_clip import structural_clip
 from ..mathematics.unified_numerical import np
 from ..operators._neighbor_epi_kernel import (
     neighbor_epi_blend_value,
     neighbor_epi_unweighted_mean,
+    reception_proposed_epi_kind,
 )
-from ..types import ZERO_BEPI_STORAGE, ensure_bepi
+from ..types import Glyph, ZERO_BEPI_STORAGE, ensure_bepi
 from ._helpers import finite_real_scalar
 from ._neighbor_epi_realization import (
     exact_binary64_matrix as _exact_binary64_matrix,
@@ -109,7 +111,9 @@ _SCOPE = (
     "evaluation are reported separately. Any nested jump/hybrid certificate "
     "applies only to the represented affine model. Pressure diagnostics use "
     "the pure-EPI channel on detached arrays and do not refresh or identify "
-    "the graph's full multichannel DeltaNFR. Soft clipping, nonconvex mixing, "
+    "the graph's full multichannel DeltaNFR. The EPI-kind proposal is a "
+    "snapshot runtime diagnostic outside the affine theorem. Soft clipping, "
+    "nonconvex mixing, "
     "nonuniform or complex BEPI payloads, finite-step flow, grammar/history "
     "effects, changing support/capacity, other pressure channels, phase, and "
     "repeated words remain outside scope."
@@ -156,6 +160,8 @@ class ReceptionEPIRealizationCertificate:
     runtime_target_value: float
     runtime_target_increment: float
     nontrivial_runtime_reception: bool
+    epi_kind_before: str
+    epi_kind_after: str
     ideal_real_hard_clipping_inactive_by_convexity: bool
     runtime_hard_clipping_inactive_at_snapshot: bool
     ideal_real_linear_map: tuple[tuple[Fraction, ...], ...]
@@ -303,6 +309,28 @@ def certify_reception_epi_realization(
     increment = runtime_target - float(state[target_index])
     nontrivial = runtime_target != float(state[target_index])
     clipping_inactive = runtime_target == unclipped_target
+
+    def node_kind(node: Any) -> str:
+        return str(
+            get_attr(
+                G.nodes[node],
+                ALIAS_EPI_KIND,
+                "",
+                strict=True,
+                conv=lambda value: value,
+            )
+        )
+
+    kind_before = node_kind(target)
+    kind_after = reception_proposed_epi_kind(
+        kind_before,
+        (
+            (float(state[index]), node_kind(node))
+            for node, index in zip(runtime_neighbors, runtime_neighbor_indices)
+        ),
+        unclipped_target_epi=unclipped_target,
+        fallback_kind=Glyph.EN.value,
+    )
 
     ideal_map = _exact_ideal_map(
         len(nodes), target_index, runtime_neighbor_indices, exact_mix
@@ -475,6 +503,8 @@ def certify_reception_epi_realization(
         runtime_target_value=runtime_target,
         runtime_target_increment=increment,
         nontrivial_runtime_reception=nontrivial,
+        epi_kind_before=kind_before,
+        epi_kind_after=kind_after,
         ideal_real_hard_clipping_inactive_by_convexity=(
             ideal_clipping_inactive
         ),

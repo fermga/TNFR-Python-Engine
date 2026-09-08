@@ -8,237 +8,280 @@
 
 ## 1. Scope
 
-This document derives five physical regimes as limiting cases of the nodal equation $\partial\mathrm{EPI}/\partial t = \nu_f \, \Delta\mathrm{NFR}(t)$. Each regime is specified by measurable conditions on the structural field tetrad ($\Phi_s$, $|\nabla\phi|$, $K_\phi$, $\xi_C$), the observable mappings between TNFR quantities and classical/quantum variables, and the validation artifacts linking theory to reproducible simulations.
+This document records five scoped comparisons between TNFR observables and
+separately declared physical models. Each comparison states its assumptions,
+telemetry and validation artifact. The nodal equation
+$\partial\mathrm{EPI}/\partial t = \nu_f\,\Delta\mathrm{NFR}(t)$ directly gives a
+first-order structural drift law. It does not, by itself, derive Newtonian,
+quantum or thermodynamic dynamics. Those labels apply only to the adapters or
+auxiliary models named below.
 
 ### Verification Status
 
-| Regime | Implementation | External reference | Test coverage | Status |
-|--------|---------------|-------------------|---------------|---------|
-| Classical mechanics | `classical_mechanics.py` | Kepler orbit (analytical) | `test_classical_mechanics.py` | **Verified** |
-| Inertial | `classical_mechanics.py` | Two-train analytical | Embedded in example | **Verified** |
-| Quantum | `quantum_mechanics.py` | Particle-in-box ($E_n = (\pi n/L)^2$) | None | Partial |
-| Uncertainty/interference | Example only | Fourier bound | None | Partial |
-| Thermodynamics | Example only | Newton cooling law | None | Demonstration |
+| Comparison | Implementation | External reference | Test coverage | Status |
+|------------|----------------|-------------------|---------------|--------|
+| Classical adapter | `classical_mechanics.py` | Harmonic and circular-orbit closure | `test_classical_mechanics.py` | Finite regression |
+| Kinematic adapter | `classical_mechanics.py` | Two-train analytical | Embedded in example | Demonstrated |
+| Finite spectral model | `quantum_mechanics.py` | Particle in a box | None | Partial |
+| Fourier/interference model | Example only | Fourier bound | None | Partial |
+| Coupled-oscillator thermal proxy | Example only | Newton cooling law | None | Demonstration |
 
-
----
-
-## 2. Classical Mechanics (Low-Dissonance Limit)
+## 2. Classical Adapter and Overdamped Limit
 
 ### 2.1 Regime Conditions
 
+A high-coherence structural snapshot requires small aggregate pressure and EPI
+rate:
+
 $$
-|\nabla\phi| \to 0, \qquad \nu_f = \mathrm{const}, \qquad C(t) \approx 1
+\operatorname{mean}|\Delta\mathrm{NFR}| \ll 1, \qquad
+\operatorname{mean}|d\mathrm{EPI}/dt| \ll 1.
 $$
 
-Under these constraints the nodal equation reduces to a form algebraically identical to Newton's second law.
+Under these measured assumptions the canonical read-out
+$C(t)=1/(1+\operatorname{mean}|\Delta\mathrm{NFR}|+
+\operatorname{mean}|d\mathrm{EPI}/dt|)$ is close to one. Phase spread and a
+constant capacity may be assumptions of a selected mechanical comparison, but
+neither quantity enters the constitutive kernel directly. A small phase
+gradient alone does not establish high $C(t)$.
 
 ### 2.2 Observable Mapping
 
-| Classical quantity | Symbol | TNFR quantity | Access |
-|-------------------|--------|---------------|--------|
-| Position | $q$ | Spatial component of EPI | `ClassicalMechanicsMapper.position` |
-| Velocity | $\dot{q}$ | Flow component | Same accessor |
-| Mass | $m$ | $1/\nu_f$ | Telemetry |
-| Force | $F$ | $\Delta\mathrm{NFR}$ | Structural units |
-| Potential | $V$ | $\Phi_s$ | `compute_structural_potential()` |
-| Action | $S$ | Phase accumulation | Diagnostics |
+| Model quantity | TNFR comparison | Scope |
+|----------------|-----------------|-------|
+| Position $q$ | Selected spatial component of EPI | Adapter convention |
+| Velocity $\dot q$ | Selected flow component | Adapter convention |
+| Mobility | $\nu_f$ | Exact coefficient in the first-order nodal law |
+| Inertial mass $m$ | Explicit adapter parameter | No identity $m=1/\nu_f$ follows from TNFR |
+| Force slot $F$ | Optional $\Delta\mathrm{NFR}$ bridge | Must be declared and dimensionally specified |
+| Potential comparison | $\Phi_s$ | Structural source aggregation, not mechanical potential energy |
+| Action comparison | Optional phase accumulation | Mapper does not construct this bridge |
 
-### 2.3 Derivation
+### 2.3 First-order law and second-order adapter
 
-Starting from the nodal equation:
+Reading an EPI coordinate as $q$ and pressure as $F$ gives the exact algebraic
+form
 
 $$
-\frac{\partial\mathrm{EPI}}{\partial t} = \nu_f \, \Delta\mathrm{NFR}
-\quad \Rightarrow \quad
-\frac{dv}{dt} = \nu_f \, \Delta\mathrm{NFR}_{\mathrm{force}}
+\dot q = \nu_f F,
 $$
 
-Substituting $\nu_f = 1/m$ yields $F = ma$ under the inertial reading; departures introduce corrections proportional to $|\nabla\phi|$.
+so $\nu_f$ is a mobility. Newtonian motion instead requires an additional state
+and a separately chosen law,
 
-**Regime refinement.** The bare nodal equation is *first order* in time, so taken literally (EPI as a position-like coordinate, $\Delta\mathrm{NFR}$ as force) it yields the **overdamped drift law** $\dot{q} = \nu_f\,F$ — velocity proportional to force, with $\nu_f$ acting as a **mobility**, not an inverse mass. The second-order Newtonian examples ($\ddot{q}=F/m$) use an explicitly chosen classical adapter. Separately, a damped graph wave has a restricted pure-EPI diffusion limit. Neither construction derives the full inertial regime from the isotropic auxiliary substrate or from the first-order nodal law.
+$$
+\dot q=v,\qquad \dot v=F/m.
+$$
+
+The classical examples implement this second-order adapter. Their inertial mass
+is an adapter parameter; substituting $\nu_f=1/m$ is an optional dimensional
+identification, not a consequence of the nodal equation. A damped graph wave has
+a restricted pure-EPI diffusion limit under its own stated hypotheses. Neither
+construction derives the full inertial regime from the isotropic auxiliary
+substrate.
 
 ### 2.4 Force Interpretation
 
-| Classical force | TNFR mechanism | Telemetry observable |
-|----------------|----------------|---------------------|
-| Gravity | Phase-coherence gradient | $-\nabla\Phi_s$ along trajectories |
-| Friction | Coherence stabilizer (IL operator) | Reduction of high-frequency $\Delta\mathrm{NFR}$ |
-| Harmonic restoring | Phase-gradient confinement | $|\nabla\phi|$ deviation generating restoring pressure |
+| Adapter mechanism | Directly available telemetry | Optional TNFR comparison |
+|-------------------|------------------------------|--------------------------|
+| Externally supplied pair force | $q$, $p$, force/acceleration and classical energy | $\Delta\mathrm{NFR}$ and $\Phi_s$ only after an explicit scalar pressure bridge |
+| Configured damping | Adapter state and dissipation rate | $C(t)$ only after pressure and EPI-rate channels are materialized |
+| Configured restoring force | Adapter state and force | Phase-gradient and curvature only from a separately constructed graph state |
+
+These rows specify possible comparisons. The mapper and N-body solver do not
+materialize canonical pressure, $C(t)$ or the tetrad, and the tetrad does not
+generate the adapter's force law.
 
 ### 2.5 Integration Scheme
 
-Symplectic integrators (Verlet/Yoshida 4th-order) in `src/tnfr/dynamics/symplectic.py` preserve structural invariants analogously to Liouville's theorem.
+The Verlet/Yoshida integrators in `src/tnfr/dynamics/symplectic.py` preserve the
+symplectic structure of the declared Hamiltonian map up to numerical error. This
+property does not certify all TNFR structural invariants or any arbitrary
+operator schedule.
 
 Workflow:
-1. Select integrator order; record in run metadata.
-2. Verify $|\nabla\phi|$ and $K_\phi$ remain within canonical thresholds during integration.
-3. Export telemetry ($C(t)$, $\Phi_s$, $|\nabla\phi|$) alongside classical observables ($q$, $p$, energy).
-4. Compare against analytic references; flag deviations beyond tolerance.
+
+1. Select and record the adapter, force law, units and integrator order.
+2. Export $q$, $p$, force/acceleration and adapter energy with numerical
+   tolerances.
+3. If a graph comparison is required, declare how adapter state maps to scalar
+   EPI and $\Delta\mathrm{NFR}$, materialize $d\mathrm{EPI}/dt$, and record its
+   provenance before computing $C(t)$ or the tetrad.
+4. Compare the adapter trajectory against its stated reference.
 
 ### 2.6 Validation
 
-**Kepler benchmark** (`examples/02_physics_regimes/12_classical_mechanics_demo.py`): single node in coherence-gradient potential approximating an ellipse with eccentricity $e \approx 0.5$. Artifacts include trajectory overlays, phase-space loops, and conservation plots (energy/angular momentum drift target $< 10^{-4}$).
+The focused tests check one-period harmonic and circular-orbit closure under
+explicitly supplied force evaluators. The Kepler demonstration
+(`examples/02_physics_regimes/12_classical_mechanics_demo.py`) plots a selected
+inverse-square central-force trajectory. These finite checks validate the
+declared force/integration paths at their tolerances; they do not derive gravity
+from the nodal equation.
 
----
+## 3. Zero-pressure and Kinematic Comparisons
 
-## 3. Inertial Regime (Zero Structural Pressure)
-
-### 3.1 Regime Conditions
+### 3.1 Canonical zero-pressure statement
 
 $$
-\Delta\mathrm{NFR} = 0 \quad \Rightarrow \quad \frac{\partial\mathrm{EPI}}{\partial t} = 0 \text{ (co-moving frame)}
+\Delta\mathrm{NFR}=0 \quad\Rightarrow\quad
+\partial\mathrm{EPI}/\partial t=0.
 $$
 
-Practical checklist:
-- Exclude destabilizers (no OZ/VAL) from operator schedules.
-- Confirm $|\nabla\phi| < 10^{-4}$ and $K_\phi \approx 0$ over the interval.
-- Record initial phase current $J_\phi$ as the momentum analog; verify $C(t) > 0.99$.
+This freezes the EPI coordinate represented by the nodal equation. Constant
+translation does not follow unless a separate kinematic adapter stores velocity
+and advances an external position coordinate.
 
-### 3.2 Constant-Velocity Motion
+A reproducible zero-pressure experiment should record the pressure and EPI-rate
+residuals, fixed/moving coordinate convention, operator schedule and structural
+telemetry. Excluding named destabilizers is insufficient: any custom pressure
+law or initial state can still carry nonzero pressure.
 
-With zero $\Delta\mathrm{NFR}$, the structural state is frozen and nodes translate uniformly. This is the TNFR analog of Newton's first law: no reorganization pressure implies no change in the structural trajectory.
+### 3.2 Two-train adapter
 
-### 3.3 Validation
-
-**Two-train benchmark** (`examples/02_physics_regimes/15_train_crossing_demo.py`):
+`examples/02_physics_regimes/15_train_crossing_demo.py` uses prescribed constant
+velocities:
 
 | Parameter | Train A | Train B |
 |-----------|---------|---------|
-| Initial position | $x = 0$ km | $x = 600$ km |
+| Initial position | $x=0$ km | $x=600$ km |
 | Velocity | $+300$ km/h | $-250$ km/h |
-| Operators | [AL, IL, SHA] | [AL, IL, SHA] |
 
-Analytical prediction:
+Its analytical crossing is
 
 $$
-t_c = \frac{600}{300 + 250} \approx 1.0909 \text{ h}, \quad x_c = 300 \cdot t_c \approx 327.27 \text{ km}
+t_c=\frac{600}{300+250}\approx1.0909\ \mathrm{h},\qquad
+x_c=300t_c\approx327.27\ \mathrm{km}.
 $$
 
-Numerical runs match within integration tolerance ($< 10^{-3}$); larger deviations indicate unintended structural forces.
+Numerical agreement checks the kinematic adapter. It does not turn the
+zero-pressure fixed EPI chart into a derivation of Newton's first law.
 
----
+## 4. Finite Spectral and Wave Correspondence
 
-## 4. Quantum Regime (High-Dissonance Limit)
+### 4.1 Scope
 
-### 4.1 Regime Conditions
-
-High phase gradient ($|\nabla\phi| \sim \pi$), boundary reflections, or proximity to phase singularities (vortices). The classical approximation breaks down; discrete resonant modes emerge.
+Finite graph or cavity operators possess discrete modes because their state
+space and boundary-value problem are finite. Large wrapped phase gradients can
+be useful stress diagnostics, but they do not by themselves select a quantum
+model or cause quantization.
 
 ### 4.2 Observable Mapping
 
-| Quantum quantity | Symbol | TNFR analogue | Notes |
-|-----------------|--------|---------------|-------|
-| Wavefunction | $\psi$ | Complex field $\Psi = K_\phi + iJ_\phi$ | Curvature + current components |
-| Energy | $E$ | Structural frequency $\nu_f$ | Domain-specific proportionality |
-| Potential | $V(x)$ | $\Phi_s(x)$ | Identical boundary conditions |
-| Quantum number | $n$ | Winding number $w$ | $\oint \nabla\phi = 2\pi w$ |
-| Collapse | — | Decoherence via IL/SHA | Grammar U2 enforcement |
+| Auxiliary-model quantity | TNFR comparison | Boundary |
+|--------------------------|-----------------|----------|
+| Complex wave field $\psi$ | $\Psi=K_\phi+iJ_\phi$ | Auxiliary geometric sector |
+| Modal energy/frequency | Eigenvalue-derived model value | Not identical to nodal $\nu_f$ |
+| Potential $V(x)$ | Declared function compared with $\Phi_s(x)$ | Matching must be specified |
+| Mode index $n$ | Eigenmode or winding label | Depends on boundary operator |
+| Damping/selection | Explicit dissipative adapter | IL/SHA labels alone do not define measurement collapse |
 
-### 4.3 Quantization Mechanism
+### 4.3 Mode-selection mechanism
 
-1. **Evolution**: Nodes follow $\partial\mathrm{EPI}/\partial t = \nu_f \, \Delta\mathrm{NFR}$.
-2. **Boundary feedback**: Reflections inside finite domains superimpose outgoing and incoming phase waves.
-3. **Interference**: Coherent modes form when accumulated phase matches $2\pi w$ ($w \in \mathbb{Z}$); otherwise $|\nabla\phi|$ spikes and coherence degrades.
-4. **Selection**: Stabilizers drive the system toward minimal $\Delta\mathrm{NFR}$, retaining only resonant modes.
+A finite spectral experiment must specify its wave operator, boundary
+conditions, initial field, normalization and damping rule. Those additional
+assumptions produce standing modes and their eigenvalues. The nodal law can
+supply structural telemetry along the experiment, but it does not supply the
+wave equation, superposition principle or a measurement rule on its own.
 
-Quantized spectra arise from the boundary conditions and resonant mode selection described above, without invoking additional axioms beyond the nodal equation. Superposition of EPI states is the default behavior of linear wave dynamics; "collapse" is the decoherence process where environmental coupling selects eigenstates (grammar rule U2).
+### 4.4 Validation boundary
 
-### 4.4 Validation
+`examples/02_physics_regimes/13_quantum_mechanics_demo.py` compares a declared
+one-dimensional cavity operator with its finite standing-wave spectrum. Until a
+dedicated quantitative test fixes operator, normalization and tolerances, this
+remains a partial spectral correspondence rather than a TNFR derivation of
+quantum mechanics.
 
-**One-dimensional cavity benchmark** (`examples/02_physics_regimes/13_quantum_mechanics_demo.py`): define cavity length $L$, initialize with random $\nu_f$ and phase profile ($C(t_0) > 0.6$), integrate until $\nu_f$ converges. Expected outcome: discrete $\nu_n$ proportional to $n^2$ (linear dispersion) or $n$ (other media).
+## 5. Fourier Width and Interference Correspondence
 
----
+### 5.1 Fourier-width product
 
-## 5. Structural Uncertainty and Interference
+For a declared signal window, temporal and frequency widths satisfy the
+uncertainty relation associated with the selected Fourier convention. A
+Gaussian value near $0.16$ is convention-dependent; it is not a universal TNFR
+constant. Every reported product must name the width estimator, normalization
+and sampling window.
 
-### 5.1 Uncertainty Relation
+### 5.2 Two-path interference
 
-For wave packets occupying time window $\Delta t_{\mathrm{EPI}}$ with structural frequency spread $\Delta\nu_f$:
+A two-path auxiliary wave model can compare detector intensity with wrapped
+phase separation. Constructive and destructive bands change phase-order and
+phase-gradient diagnostics. They change structural $C(t)$ only when the model
+also specifies how phase affects $\Delta\mathrm{NFR}$ or $d\mathrm{EPI}/dt$ and
+the recorded channels confirm the resulting change. Phase separation is not a
+direct argument of the constitutive $C(t)$ kernel.
+
+### 5.3 Validation boundary
+
+`examples/02_physics_regimes/14_uncertainty_and_interference.py` demonstrates a
+finite Fourier-width product and an auxiliary interference pattern. It does not
+currently validate a fixed analytical bound or a canonical pressure-to-phase
+bridge, and it has no dedicated test module.
+
+## 6. Coupled-oscillator Thermal Proxy
+
+This section concerns `17_thermodynamics_demo.py`, which uses a Kuramoto-style
+phase model and thermal labels for selected diagnostics. It does not derive the
+laws of thermodynamics from TNFR and currently has no dedicated quantitative
+test.
+
+### 6.1 Declared proxy mapping
+
+| Demonstration quantity | Chosen structural proxy | Status |
+|------------------------|-------------------------|--------|
+| Heat/noise | Phase dispersion $\sigma_\phi$ | Model convention |
+| Temperature | Local phase-gradient variance | Model convention |
+| Entropy | Separately defined monotone diagnostic | No identity $S\propto1/C(t)$ |
+| Synchronized state | Small pairwise wrapped separation | Phase condition, not full structural equilibrium |
+
+### 6.2 Pairwise U3 compatibility is not transitive
+
+U3 checks each active pair independently. If A and B are each within
+$\Delta\phi_{\max}$ of C, their mutual separation may reach
+$2\Delta\phi_{\max}$ and fail the gate. Therefore a synchronized cluster needs
+explicit pairwise or edgewise evidence; compatibility through a shared neighbor
+is insufficient.
+
+### 6.3 Balance boundary
+
+Conservation of a structural current requires a stated symmetry and model. The
+auxiliary symplectic substrate conserves its declared charges under its exact
+flow. A general engine operator sequence, Kuramoto experiment or sum of
+$J_\phi$ values has no automatic conservation law; its residual must be measured
+along the actual trajectory.
+
+### 6.4 Stochastic desynchronization boundary
+
+Random perturbations can increase phase spread in a specified stochastic
+schedule, while sufficiently strong coupling can also resynchronize the same
+network without invoking IL or THOL. The direction of $C(t)$ depends on the
+observed pressure and EPI-rate channels. No universal time arrow follows from
+omitting named stabilizers or closure operators.
+
+### 6.5 Cooling comparison
+
+The coffee-cup example evolves a central random-phase patch and an outer aligned
+ring with a coupled-oscillator equation. A Newton-cooling comparison would fit
 
 $$
-\Delta t_{\mathrm{EPI}} \cdot \Delta\nu_f \geq K \tag{1}
+T(t)=T_{\mathrm{env}}+(T_0-T_{\mathrm{env}})e^{-kt}
 $$
 
-where $K$ depends on the analysis window (Gaussian packets yield $K \approx 0.16$). This emerges from the Fourier relationship between form (EPI) and frequency ($\nu_f$): localizing a pattern in structural space increases its frequency spread, and conversely.
-
-### 5.2 Two-Path Interference
-
-The double-slit experiment maps to two emission nodes executing [AL, RA] into a propagation medium. Receiving nodes integrate $\Psi = K_\phi + iJ_\phi$ and report per-pixel telemetry:
-
-- **Constructive bands**: $\Delta\phi \approx 0$ → increased $C(t)$ and $Si$.
-- **Destructive bands**: $\Delta\phi \approx \pi$ → elevated $|\nabla\phi|$ and reduced $C(t)$.
-
-Interference is described entirely through phase-coupled dynamics. No wave/particle duality narrative is invoked; only structural metrics.
-
-### 5.3 Validation
-
-`examples/02_physics_regimes/14_uncertainty_and_interference.py` generates: scatter of $\sigma_t$ vs. $\sigma_f$ with constant-product reference line, 2D detector intensity maps, and fringe-spacing line profiles.
-
-> **Note**: The example demonstrates qualitative uncertainty behavior (constant $\sigma_t \cdot \sigma_f$ product) but does not validate the product against a specific analytical bound. The double-slit section is incomplete. No dedicated test module exists.
-
----
-
-## 6. Thermodynamic Laws from Phase Dynamics
-
-> **Note**: This section describes a demonstration-level correspondence. The example `17_thermodynamics_demo.py` implements a Kuramoto model where "temperature" is defined as $|\nabla\phi|$, but does not extract a time constant or validate quantitatively against Newton's law of cooling. No dedicated test module exists. Promotion to verified status requires: (a) extraction of decay constant $k$ from simulation, (b) quantitative comparison with the analytical form $T(t) = T_{\mathrm{env}} + (T_0 - T_{\mathrm{env}})e^{-kt}$, and (c) a dedicated test file.
-
-### 6.1 Observable Mapping
-
-| Thermodynamic quantity | TNFR interpretation | Symbol |
-|----------------------|---------------------|--------|
-| Heat ($Q$) | Incoherent phase noise | $\sigma_\phi$ |
-| Temperature ($T$) | Local phase-gradient variance | $\mathrm{Var}(|\nabla\phi|)$ |
-| Entropy ($S$) | Structural decoherence | $S \propto 1/C(t)$ |
-| Equilibrium | Phase synchronization | $\Delta\phi \to 0$ |
-
-### 6.2 Zeroth Law — Resonant Transitivity
-
-If node A and node C satisfy $|\phi_A - \phi_C| \leq \Delta\phi_{\max}$, and node B satisfies the same relation with C, then $|\phi_A - \phi_B|$ automatically respects the bound. Coupling operators (UM, RA) enforce this check before activation per grammar rule U3.
-
-### 6.3 First Law — Structural Balance
-
-Structural current is conserved up to explicit operator work:
-
-$$
-\Delta E_{\mathrm{total}} = \Delta E_{\mathrm{coherent}} + \Delta E_{\mathrm{incoherent}}
-$$
-
-In closed experiments, the sum over $J_\phi$ remains constant. This accounts for how resonance-preserving work (coherent) and decohering work (incoherent) partition the same nodal update.
-
-### 6.4 Second Law — Passive Desynchronization
-
-Without stabilizers (IL, THOL), random perturbations drive the network toward larger $|\nabla\phi|$ and reduced coherence. Operators lacking closure steps predictably lose $C(t)$, producing the familiar time arrow without additional hypotheses.
-
-### 6.5 Validation
-
-**Coffee-cup cooling benchmark**: 2D lattice with a high-$\nu_f$, random-phase central patch (sample) surrounded by an aligned-phase, low-$\nu_f$ outer ring (bath). Dynamics follow the coupled-oscillator form:
-
-$$
-\frac{d\phi_i}{dt} = \omega_i + \frac{K}{N}\sum_{j \in \mathcal{N}(i)} \sin(\phi_j - \phi_i)
-$$
-
-The phase-gradient mismatch decays exponentially:
-
-$$
-T(t) = T_{\mathrm{env}} + (T_0 - T_{\mathrm{env}}) \, e^{-kt}
-$$
-
-obtaining a form analogous to Newton's law of cooling from nodal dynamics.
-
----
+to a predeclared temperature proxy and report residuals and uncertainty. The
+current demonstration does not yet extract that time constant, so exponential
+cooling remains a hypothesis to test.
 
 ## 7. Regime Transition Summary
 
-The five regimes form a coherent hierarchy indexed by the degree of structural dissonance:
+The comparisons can be organized by their declared pressure and phase
+conditions. This table is a model index, not a phase diagram derived from TNFR:
 
-| Regime | $\Delta\mathrm{NFR}$ | $|\nabla\phi|$ | Primary telemetry | Governing reduction |
+| Comparison | $\Delta\mathrm{NFR}$ | $|\nabla\phi|$ | Primary telemetry | Declared model |
 |--------|---------------------|----------------|-------------------|-------------------|
-| Inertial | $= 0$ | $< 10^{-4}$ | $J_\phi$ (momentum) | Constant velocity |
-| Classical mechanics | Low | $\to 0$ | $\Phi_s$, $J_\phi$ | $F = ma$ |
-| Thermodynamic | Distributed | Moderate | $\mathrm{Var}(|\nabla\phi|)$, $C(t)$ | Cooling laws |
-| Quantum | High | $\sim \pi$ | $\Psi$, winding number | Discrete eigenvalues |
-| Uncertainty | High + localized | Broadband | $\sigma_t \sigma_f$ product | Fourier bound |
+| Zero-pressure chart | $=0$ | Measured separately | EPI rate, $C(t)$ | Fixed EPI |
+| Classical adapter | External force value; graph bridge optional | Optional low-spread regime | Adapter $q,p,F$; tetrad only through a declared bridge | Explicit $F=ma$ adapter |
+| Thermal proxy | Model-dependent | Distributed | Phase variance, pressure/rate | Coupled oscillators |
+| Finite spectral model | Model-dependent | Model-dependent | Eigenpairs, $\Psi$ | Declared boundary operator |
+| Fourier-width model | Not required | Broadband | Width estimators | Declared Fourier convention |
 
 These regimes organize several implemented TNFR read-outs and declared auxiliary
 models. Only reductions with explicit hypotheses, such as fixed-graph EPI
@@ -257,7 +300,7 @@ equation.
 | Quantum mechanics module | `src/tnfr/physics/quantum_mechanics.py` |
 | Symplectic integrators | `src/tnfr/dynamics/symplectic.py` |
 | Structural field computation | `src/tnfr/physics/fields.py` |
-| Kepler benchmark | `examples/02_physics_regimes/12_classical_mechanics_demo.py` |
+| Central-force demonstration | `examples/02_physics_regimes/12_classical_mechanics_demo.py` |
 | Quantum cavity benchmark | `examples/02_physics_regimes/13_quantum_mechanics_demo.py` |
 | Uncertainty/interference | `examples/02_physics_regimes/14_uncertainty_and_interference.py` |
 | Two-train kinematics | `examples/02_physics_regimes/15_train_crossing_demo.py` |
@@ -277,20 +320,20 @@ from coherence or from the nodal equation.
 
 | TNFR Quantity | Definition (TNFR) | Classical Analog | Notes |
 |---------------|-------------------|------------------|-------|
-| **EPI** | Coherent form (spatial + kinematic state) | Generalized coordinates $q$, velocities $\dot{q}$ | Structural Triad |
+| **EPI** | Canonical coherent form | Adapter payload for $q$ and $\dot q$ | The payload convention does not redefine EPI generally |
 | **νf** | Reorganization rate (Hz_str) | Mobility in the overdamped projection | High νf → faster drift for fixed pressure |
-| **ΔNFR** | Structural pressure in the engine | Force/acceleration slot in an adapter | The Newtonian solver supplies it externally; the phase-coupled adapter's legacy commutator read-out is zero |
+| **ΔNFR** | Scalar structural pressure in the engine | Optional force/acceleration bridge | The Newtonian solver returns acceleration but does not materialize canonical graph pressure |
 | **Φ_s** | Inverse-square ΔNFR accumulation | Potential-like readout | U6 monitors drift between declared snapshots; a well analogy adds no bound |
-| **\|∇φ\|** | Local desynchronization | Stress/strain rate, tidal gradients | Shear force analog |
+| **\|∇φ\|** | Local desynchronization | Optional stress comparison | No mechanical stress or force identity is implied |
 | **K_φ** | Phase torsion read-out | Curvature comparison | Does not generate the adapter force |
 | **ξ_C** | Correlation decay scale | Interaction-range comparison | Does not set either N-body pair law |
-| **Ψ = K_φ + i·J_φ** | Complex geometric field | Complexified action density | Hamilton-Jacobi analog |
+| **Ψ = K_φ + i·J_φ** | Complex auxiliary geometric field | Phase-space comparison | No Hamilton-Jacobi identity is established |
 | **Operator sequences** | Canonical engine transformations | Work/impulse comparison | No equivalence between grammar validity and mechanical admissibility is established |
 
 **Structural Triad ↔ Phase Space comparison**:
 - Form (EPI) → configuration coordinate in the overdamped projection
-- Frequency (νf) → mobility; an inertial mass belongs only to a separately
-  specified conservative substrate model
+- Frequency (νf) → mobility; inverse inertial mass is only an assignment in a
+  separately specified second-order adapter or model
 - Phase (φ/θ) → oscillator phase; action-angle status requires the auxiliary
   Hamiltonian construction
 
@@ -306,10 +349,10 @@ from coherence or from the nodal equation.
 | Example | Concept from this document |
 |---------|---------------------------|
 | [11_classical_limit_comparison.py](../examples/02_physics_regimes/11_classical_limit_comparison.py) | Finite comparison of Newtonian and declared phase-coupled N-body adapters |
-| [12_classical_mechanics_demo.py](../examples/02_physics_regimes/12_classical_mechanics_demo.py) | Keplerian orbits from symplectic integrator |
+| [12_classical_mechanics_demo.py](../examples/02_physics_regimes/12_classical_mechanics_demo.py) | Declared inverse-square central-force trajectory |
 | [13_quantum_mechanics_demo.py](../examples/02_physics_regimes/13_quantum_mechanics_demo.py) | Finite standing-wave spectral correspondence |
 | [14_uncertainty_and_interference.py](../examples/02_physics_regimes/14_uncertainty_and_interference.py) | Auxiliary Fourier-width and interference correspondence |
-| [15_train_crossing_demo.py](../examples/02_physics_regimes/15_train_crossing_demo.py) | Free-particle classical kinematics |
+| [15_train_crossing_demo.py](../examples/02_physics_regimes/15_train_crossing_demo.py) | Prescribed constant-velocity kinematic adapter |
 
 ### Key Source Modules
 

@@ -317,4 +317,25 @@ def test_nav_success_commits_finite_normalized_complete_transition() -> None:
     assert theta == pytest.approx(0.75)
     assert graph.nodes[0]["glyph_history"][-1] == "NAV"
     assert graph.nodes[0]["_regime_before"] == "active"
-    assert graph.graph["_nav_transitions"][-1]["phase_shift"] == pytest.approx(0.5)
+    transition = graph.graph["_nav_transitions"][-1]
+    assert transition["dnfr_before"] == pytest.approx(0.4)
+    assert transition["dnfr_handler_after"] == pytest.approx(0.6)
+    assert transition["dnfr_after"] == pytest.approx(0.48)
+    assert transition["phase_shift"] == pytest.approx(0.5)
+
+
+def test_nav_compatibility_transition_keeps_initial_dnfr_telemetry() -> None:
+    graph = _graph(history=["IL"])
+
+    Transition()._apply_structural_transition(
+        graph,
+        0,
+        "active",
+        vf_factor=1.0,
+        phase_shift=0.2,
+    )
+
+    transition = graph.graph["_nav_transitions"][-1]
+    assert transition["dnfr_before"] == pytest.approx(0.4)
+    assert transition["dnfr_after"] == pytest.approx(0.32)
+    assert "dnfr_handler_after" not in transition

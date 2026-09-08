@@ -1,7 +1,7 @@
 """Recursivity (REMESH) operator.
 
-Purpose: propagate fractal pattern echoes across nested EPIs.
-Physics: epi(t) references epi(t-τ); multi-scale identity retention.
+Purpose: request network-scale fractal echo handling across nested EPIs.
+Physics: explicit REMESH mixing references epi(t-tau); the glyph is advisory.
 Grammar: generator/closure; depth>1 enforces U5 stabilizers nearby.
 Telemetry: depth, epi_before, vf_before for recursion analysis.
 Typical: THOL->REMESH, REMESH->IL, VAL->REMESH, REMESH->RA.
@@ -31,9 +31,9 @@ def validate_recursivity_depth(depth: Any) -> int:
 
 
 class Recursivity(Operator):
-    """Propagate fractal echoes; enforce multi-scale identity retention.
+    """Record a network REMESH advisory with declared U5 depth.
 
-    depth>1: requires nearby IL/THOL (U5 coherence). Metrics minimal.
+    depth>1 requires nearby IL/THOL. Explicit delayed EPI mixing is separate.
     """
 
     __slots__ = ("depth",)
@@ -53,7 +53,10 @@ class Recursivity(Operator):
     def _collect_metrics(
         self, G: TNFRGraph, node: Any, state_before: dict[str, Any]
     ) -> dict[str, Any]:
-        """Collect REMESH metrics (epi,vf before)."""
+        """Collect advisory REMESH metrics from the unchanged target state."""
         from .metrics import recursivity_metrics
 
         return recursivity_metrics(G, node, state_before["epi"], state_before["vf"])
+
+
+_CANONICAL_RECURSIVITY_EXECUTE = Recursivity._execute

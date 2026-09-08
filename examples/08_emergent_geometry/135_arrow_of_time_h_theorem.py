@@ -1,76 +1,52 @@
 #!/usr/bin/env python3
 """
-Example 135 — The Emergent Arrow of Time: the Structural H-Theorem of the EPI
-Diffusion Channel
-==============================================================================
+Example 135 — Dirichlet Dissipation in the EPI Diffusion Channel
+================================================================
 
 The EPI channel of the nodal equation is the discrete diffusion equation
-(AGENTS.md "Transport Content of the Nodal Equation"; examples 99, 134):
+(AGENTS.md "Transport content"; examples 99 and 134):
 
-    dEPI/dt = nu_f * dNFR = -nu_f * L_rw * EPI,   L_rw = I - D^{-1} W.
+    dEPI/dt = nu_f * DeltaNFR = -nu_f * L_rw * EPI.
 
-Diffusion is IRREVERSIBLE. It carries a monotone Lyapunov functional -- the
-H-theorem (Boltzmann 1872) -- and a structural ARROW OF TIME: the forward flow
-smooths and forgets, while the time-reversed flow is ill-posed. This is the
-standard irreversible behavior of this restricted graph-heat model.  It does
-not extend a thermodynamic second-law theorem to the full multichannel engine.
-
-Doctrine compliance
--------------------
-Everything emerges from the canonical structural-diffusion operator: the flow is
-the EPI channel of the nodal equation, the H-functional is the total squared
-canonical structural Fick current (structural_current), and the stationary
-measure is ``stationary_distribution``. This is the classical Shannon/Dirichlet
-analysis of the EPI random-walk channel. It is distinct from the five-field
-structural energy candidate in ``conservation.py`` and the von Neumann entropy
-diagnostic in ``dissipative_conservation.py``.
+On a fixed connected undirected graph with nonnegative conductance and positive
+fixed capacity, this restricted flow has a monotone Dirichlet functional. The
+associated reversible Markov semigroup contracts relative entropy toward its
+stationary distribution. These results establish dissipation and mixing within
+that model; they do not identify EPI with heat or probability, derive physical
+entropy, or prove a universal time direction for the full TNFR engine.
 
 Three measured results
 ----------------------
-M1 THE STRUCTURAL H-THEOREM. The Dirichlet energy F = (1/2) sum_ij A_ij
-   (EPI_i - EPI_j)^2 -- which equals the total squared canonical structural Fick
-   current (structural_current; verified |diff|=0) -- decreases MONOTONICALLY to
-   0 under the EPI diffusion flow (dF/dt <= 0 exact, verified on a fine grid).
-   F is a Lyapunov functional; equilibrium is reached when the currents vanish.
+M1 DIRICHLET DISSIPATION. The graph Dirichlet energy decreases monotonically to
+   zero. It equals the squared structural-current readout under the unit-weight
+   convention used by this experiment.
 
-M2 ENTROPY INCREASES (THE SECOND LAW). The random-walk distribution
-   p_t = e^{-t L_rw} delta (a row of the heat kernel, a probability distribution
-   -- ex 134) has relative entropy D(p_t || pi) to the stationary measure pi that
-   DECREASES monotonically to 0 (the rigorous H-functional for any graph); on a
-   regular graph the Shannon entropy S(p_t) INCREASES monotonically to log n. The
-   structural field forgets its initial condition.
+M2 MARKOV MIXING. Relative entropy of a heat-kernel row to the stationary
+   distribution decreases. On a regular graph the Shannon entropy of that
+   auxiliary probability distribution increases toward log(n).
 
-M3 THE ARROW OF TIME IS STRUCTURAL. Forward diffusion is a smoothing contraction
-   (F bounded, -> 0); the time-reversed anti-diffusion dEPI/dt = +nu_f L_rw EPI is
-   ill-posed (F DIVERGES as ~ e^{2 nu_f lambda_max t}). Only the forward direction
-   is well-posed -- the arrow of time emerges from the NON-NEGATIVE spectrum of the
-   canonical operator (every lambda_k >= 0).
+M3 INVERSE SENSITIVITY. On every finite graph both forward diffusion and its
+   exact inverse exist for finite time. The inverse amplifies high-frequency
+   perturbations exponentially. The inverse heat problem becomes ill-conditioned
+   as time or the resolved spectral range grows, and is ill-posed in the usual
+   continuum or unbounded-spectrum limit.
 
-Honest scope
-------------
-The H-theorem / entropy increase for diffusion is an EXACT, provable fact (the
-Dirichlet energy and the relative entropy to the stationary measure are Lyapunov
-functionals of the heat semigroup / reversible Markov chain), and the arrow of
-time / second law is one of the most empirically-established phenomena in physics
-(Clausius, Boltzmann). This re-expresses the irreversibility of the diffusion
-equation -- the restricted nodal EPI channel (ex 99, 134) -- in thermodynamic
-language. It is distinct from the five-field structural energy candidate
-(``conservation.py``) and the Lindblad / von Neumann entropy diagnostics
-(``dissipative_conservation.py``). The clock ``nu_f*lambda_2`` is proved here
-for fixed pure-EPI diffusion; it is not assigned to the five-field candidate.
-This is not new mathematics and closes no open problem.
+Scope
+-----
+The experiment concerns fixed pure-EPI diffusion. Its Dirichlet functional is
+distinct from the five-field structural-energy candidate in conservation.py and
+from the von Neumann entropy diagnostic in dissipative_conservation.py. The
+nu_f*lambda_2 relaxation scale applies under the corresponding fixed-diffusion
+hypotheses. No thermodynamic identification or open-problem result follows.
 
 References
 ----------
-- src/tnfr/physics/structural_diffusion.py (structural_diffusion_operator,
-  structural_current, stationary_distribution)
-- src/tnfr/physics/conservation.py (five-field energy candidate -- distinct)
-- src/tnfr/physics/dissipative_conservation.py (Lindblad/Von Neumann -- distinct)
-- AGENTS.md "Transport Content of the Nodal Equation (Structural Diffusion)"
-- examples/08_emergent_geometry/99_structural_diffusion.py (the diffusion layer)
-- examples/08_emergent_geometry/134_spectral_dimension_heat_kernel.py (heat kernel)
+- src/tnfr/physics/structural_diffusion.py
+- src/tnfr/physics/conservation.py
+- src/tnfr/physics/dissipative_conservation.py
+- examples/08_emergent_geometry/99_structural_diffusion.py
+- examples/08_emergent_geometry/134_spectral_dimension_heat_kernel.py
 """
-
 import os
 import sys
 
@@ -118,9 +94,9 @@ def dirichlet_energy(A, epi):
 
 
 def experiment_1_h_theorem():
-    """M1: the structural H-theorem -- Dirichlet energy decreases monotonically."""
+    """M1: verify monotone Dirichlet dissipation."""
     print("=" * 74)
-    print("M1: THE STRUCTURAL H-THEOREM (Dirichlet energy -> 0 monotonically)")
+    print("M1: DIRICHLET DISSIPATION (energy -> 0 monotonically)")
     print("=" * 74)
     G = nx.watts_strogatz_graph(40, 6, 0.2, seed=1)
     nodes, lap = structural_diffusion_operator(G)
@@ -138,7 +114,7 @@ def experiment_1_h_theorem():
         f"          Dirichlet F (direct)    = {F_direct:.6f}  "
         f"|diff|={abs(F_canon - F_direct):.1e}"
     )
-    print("  -> the H-functional IS the total squared structural Fick current.")
+    print("  -> the functionals agree under this unit-weight convention.")
     print()
     print(f"  {'t':>6} {'F(t)':>12} {'monotone?':>10}")
     prevF = None
@@ -157,17 +133,17 @@ def experiment_1_h_theorem():
         f"(<=0 => monotone), all-monotone = {bool(np.all(dF <= 1e-9))}"
     )
     print("  -> F decays monotonically to 0 (equilibrium = no Fick currents):")
-    print("     the structural H-theorem. F is a Lyapunov functional.")
+    print("     F is a Lyapunov functional for this fixed diffusion flow.")
 
 
 def experiment_2_entropy():
-    """M2: entropy increases (relative entropy to pi decreases monotonically)."""
+    """M2: verify relative-entropy contraction for the Markov semigroup."""
     print()
     print("=" * 74)
-    print("M2: ENTROPY INCREASES (the second law)")
+    print("M2: AUXILIARY MARKOV-DISTRIBUTION MIXING")
     print("=" * 74)
     print("The random-walk distribution p_t = e^{-t L_rw} delta has relative")
-    print("entropy D(p_t || pi) to the stationary measure that decreases monotone.")
+    print("entropy D(p_t || pi) to stationarity that decreases monotonically.")
     print()
     G = nx.watts_strogatz_graph(40, 6, 0.2, seed=1)
     nodes, lap = structural_diffusion_operator(G)
@@ -177,8 +153,10 @@ def experiment_2_entropy():
     print(f"  {'t':>6} {'D(p_t||pi)':>12} {'monotone?':>10}")
     prevD = None
     for t in [0.05, 0.2, 0.5, 1.0, 2.0, 5.0, 15.0]:
-        p = np.clip(_expm(-t * L)[0], 1e-300, None)
-        D = float(np.sum(p * np.log(p / pi)))
+        p = np.maximum(_expm(-t * L)[0], 0.0)
+        p /= float(np.sum(p))
+        support = p > 0.0
+        D = float(np.sum(p[support] * np.log(p[support] / pi[support])))
         tag = "" if prevD is None else ("yes" if D <= prevD + 1e-9 else "NO")
         print(f"  {t:>6.2f} {D:>12.6f} {tag:>10}")
         prevD = D
@@ -194,8 +172,10 @@ def experiment_2_entropy():
     prevS = None
     smono = True
     for t in [0.1, 1.0, 5.0, 20.0, 100.0, 500.0]:
-        p = np.clip(_expm(-t * Lr)[0], 1e-300, None)
-        S = float(-np.sum(p * np.log(p)))
+        p = np.maximum(_expm(-t * Lr)[0], 0.0)
+        p /= float(np.sum(p))
+        support = p > 0.0
+        S = float(-np.sum(p[support] * np.log(p[support])))
         tag = "" if prevS is None else ("up" if S >= prevS - 1e-9 else "DOWN")
         if prevS is not None and S < prevS - 1e-9:
             smono = False
@@ -203,18 +183,18 @@ def experiment_2_entropy():
         prevS = S
     print()
     print("  -> relative entropy decreases (rigorous H-functional, any graph);")
-    print(f"     ring Shannon entropy increases monotonically: {smono}. The")
-    print("     structural field forgets its initial condition (mixing).")
+    print(f"     ring Shannon entropy increases monotonically: {smono}.")
+    print("     The heat-kernel row loses its starting-node information (mixing).")
 
 
-def experiment_3_arrow_of_time():
-    """M3: the arrow of time -- forward smooths, backward blows up."""
+def experiment_3_inverse_sensitivity():
+    """M3: contrast forward smoothing with finite-graph inverse sensitivity."""
     print()
     print("=" * 74)
-    print("M3: THE ARROW OF TIME IS STRUCTURAL")
+    print("M3: FINITE-GRAPH INVERSE SENSITIVITY")
     print("=" * 74)
-    print("Forward diffusion smooths (F -> 0); time-reversed anti-diffusion")
-    print("dEPI/dt = +nu_f L_rw EPI is ill-posed (F diverges exponentially).")
+    print("Forward diffusion smooths (F -> 0); reversing the finite flow means")
+    print("the exact inverse, which amplifies high-frequency error exponentially.")
     print()
     Greg = nx.cycle_graph(60)
     nr, lr = structural_diffusion_operator(Greg)
@@ -232,41 +212,34 @@ def experiment_3_arrow_of_time():
         Fb = dirichlet_energy(Ar, _expm(+t * Lr) @ epi0)
         print(f"  {t:>6.1f} {Ff:>14.6f} {Fb:>18.2f}")
     print()
-    print("  -> forward F is bounded and -> 0 (smoothing contraction); backward F")
-    print("     diverges exponentially (anti-diffusion is ill-posed). Only the")
-    print("     forward direction is well-posed: the arrow of time emerges from")
-    print("     the non-negative spectrum of the canonical operator (lambda_k >= 0).")
+    print("  -> forward F contracts while inverse-flow F grows exponentially.")
+    print("     Both maps exist on this finite graph for finite t; inversion becomes")
+    print("     exponentially ill-conditioned and is ill-posed only in the usual")
+    print("     continuum or unbounded-spectrum inverse-heat limit.")
 
 
 def main():
     print()
     print("  ===============================================================")
-    print("  The Emergent Arrow of Time")
-    print("  The Structural H-Theorem of the EPI Diffusion Channel")
+    print("  Dirichlet Dissipation and Inverse Sensitivity")
+    print("  Fixed-Graph EPI Diffusion")
     print("  ===============================================================")
     print()
     experiment_1_h_theorem()
     experiment_2_entropy()
-    experiment_3_arrow_of_time()
+    experiment_3_inverse_sensitivity()
     print()
     print("=" * 74)
     print("WHAT THIS ESTABLISHES")
     print("=" * 74)
-    print("The EPI channel of the nodal equation is the diffusion equation, which")
-    print("is IRREVERSIBLE. Its Dirichlet energy (the total squared structural Fick")
-    print("current) is a Lyapunov functional decreasing monotonically to 0 (M1,")
-    print("the structural H-theorem); the random-walk relative entropy decreases")
-    print("monotonically and the Shannon entropy increases (M2, the second law);")
-    print("and the time-reversed anti-diffusion is ill-posed while the forward flow")
-    print("smooths (M3, the arrow of time from the non-negative spectrum). HONEST")
-    print("SCOPE: the H-theorem / entropy increase for diffusion is exact and")
-    print("provable (Lyapunov functionals of the heat semigroup), and the second")
-    print("law / arrow of time is empirically ironclad (Clausius, Boltzmann). It")
-    print("re-expresses the irreversibility of the EPI diffusion channel (ex 99,")
-    print("134) in thermodynamic language; distinct from the five-field energy")
-    print("candidate in conservation.py. The nu_f*lambda_2 clock belongs to")
-    print("the restricted pure-EPI diffusion model. No open problem is closed.")
-
+    print("For fixed pure-EPI diffusion, the Dirichlet energy is a Lyapunov")
+    print("functional (M1). A heat-kernel probability row contracts relative")
+    print("entropy toward stationarity; regular-graph Shannon entropy rises (M2).")
+    print("The finite-graph inverse exists but amplifies spectral error")
+    print("exponentially, exposing the inverse heat problem's conditioning (M3).")
+    print("These are scoped diffusion and Markov-semigroup results. They do not")
+    print("identify EPI with thermodynamic state, prove a physical second law, or")
+    print("establish a universal arrow of time for multichannel TNFR dynamics.")
 
 if __name__ == "__main__":
     main()

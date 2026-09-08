@@ -81,15 +81,18 @@ def capture_network_signals(G: TNFRGraph, node: NodeId) -> dict[str, Any] | None
 
     Examples
     --------
-    >>> # Node with coherent neighbors (low variance)
-    >>> signals = capture_network_signals(G, node)
-    >>> signals["phase_variance"]  # Low = stable field
-    0.02
-
-    >>> # Node in dissonant field (high variance)
-    >>> signals = capture_network_signals(G_dissonant, node)
-    >>> signals["phase_variance"]  # High = complex field
-    0.45
+    >>> import networkx as nx
+    >>> graph = nx.Graph()
+    >>> graph.add_node("parent", EPI=1.0, theta=0.0)
+    >>> graph.add_node("neighbor", EPI=1.2, theta=0.0)
+    >>> graph.add_edge("parent", "neighbor")
+    >>> signals = capture_network_signals(graph, "parent")
+    >>> signals["neighbor_count"]
+    1
+    >>> round(signals["epi_gradient"], 10)
+    0.2
+    >>> signals["phase_variance"]
+    0.0
     """
     from ..metrics.phase_compatibility import compute_phase_coupling_strength
 
@@ -516,6 +519,7 @@ def compute_hierarchical_depth(G: TNFRGraph, node: NodeId) -> int:
 
     return visit(node)
 
+
 def compute_propagation_radius(G: TNFRGraph) -> int:
     """Count total unique nodes affected by THOL cascades.
 
@@ -537,13 +541,14 @@ def compute_propagation_radius(G: TNFRGraph) -> int:
 
     Examples
     --------
-    >>> # Local cascade (few nodes)
-    >>> compute_propagation_radius(G_local)
+    >>> import networkx as nx
+    >>> graph = nx.Graph()
+    >>> graph.graph["thol_propagations"] = [
+    ...     {"source_node": "root", "propagations": [("a", 0.1), ("b", 0.2)]},
+    ...     {"source_node": "a", "propagations": [("b", 0.3)]},
+    ... ]
+    >>> compute_propagation_radius(graph)
     3
-
-    >>> # Network-wide cascade
-    >>> compute_propagation_radius(G_wide)
-    15
     """
     propagations = G.graph.get("thol_propagations", [])
     affected_nodes = set()
@@ -569,13 +574,24 @@ def compute_subepi_amplitude_alignment(G: TNFRGraph, node: NodeId) -> float:
     if node not in G:
         reject_operator_argument(_OPERATOR, f"node {node!r} is missing")
     sub_epis = G.nodes[node].get("sub_epis", [])
-    if not isinstance(sub_epis, (list, tuple)):
+    return _subepi_amplitude_alignment_from_records(sub_epis)
+
+
+def _subepi_amplitude_alignment_from_records(records: Any) -> float:
+    """Return the shared population-variance readout for sub-EPI records.
+
+    This value kernel lets THOL assess a fully validated proposal before its
+    records exist on the live graph. The graph-facing public function and the
+    proposal path therefore use the same arithmetic and domain checks.
+    """
+
+    if not isinstance(records, (list, tuple)):
         reject_operator_argument(_OPERATOR, "sub_epis must be a sequence")
-    if len(sub_epis) < 2:
+    if len(records) < 2:
         return 0.0
 
     epi_values: list[float] = []
-    for index, record in enumerate(sub_epis):
+    for index, record in enumerate(records):
         if not isinstance(record, Mapping) or "epi" not in record:
             reject_operator_argument(
                 _OPERATOR, f"sub_epis[{index}] must be a mapping with epi"
@@ -606,6 +622,7 @@ def compute_subepi_collective_coherence(G: TNFRGraph, node: NodeId) -> float:
 
     return compute_subepi_amplitude_alignment(G, node)
 
+
 def compute_metabolic_activity_index(G: TNFRGraph, node: NodeId) -> float:
     """Measure proportion of sub-EPIs generated through network metabolism.
 
@@ -629,13 +646,14 @@ def compute_metabolic_activity_index(G: TNFRGraph, node: NodeId) -> float:
 
     Examples
     --------
-    >>> # Network-driven bifurcation
-    >>> compute_metabolic_activity_index(G_coupled, node)
-    0.90
-
-    >>> # Internal-only bifurcation
-    >>> compute_metabolic_activity_index(G_isolated, node)
-    0.0
+    >>> import networkx as nx
+    >>> graph = nx.Graph()
+    >>> graph.add_node(
+    ...     "parent",
+    ...     sub_epis=[{"metabolized": True}, {"metabolized": False}],
+    ... )
+    >>> compute_metabolic_activity_index(graph, "parent")
+    0.5
     """
     sub_epis = G.nodes[node].get("sub_epis", [])
     if not sub_epis:

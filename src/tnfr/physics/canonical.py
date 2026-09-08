@@ -640,11 +640,13 @@ def _estimate_coherence_length_autocorr(G: Any) -> float:
             # Fallback to Python implementation
             pass
 
-    # Compute per-node local coherence
+    # Compute the same static local coherence field as the vectorized path.
+    from ..metrics.common import structural_coherence
+
     coherences = {}
     for node in nodes:
-        dnfr = dtype(abs(_get_dnfr(G, node)))
-        coherences[node] = dtype(1.0) / (dtype(1.0) + dnfr)
+        dnfr = dtype(_get_dnfr(G, node))
+        coherences[node] = dtype(structural_coherence(dnfr, 0.0))
 
     # Compute distance matrix (precision-aware sampling)
     if len(nodes) <= sample_threshold:

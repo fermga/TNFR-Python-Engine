@@ -59,7 +59,11 @@ from ..constants.canonical import ZHIR_THRESHOLD_XI_CANONICAL
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
 from ..metrics.coherence import compute_coherence
-from ..metrics.common import is_structural_equilibrium, structural_coherence
+from ..metrics.common import (
+    finite_mean_absolute,
+    is_structural_equilibrium,
+    structural_coherence,
+)
 from ..metrics.sense_index import compute_Si
 from ..operators.nodal_equation import compute_d2epi_dt2
 from ..physics.mutation_trigger import (
@@ -640,25 +644,62 @@ class NodalStateReport:
 
 @dataclass
 class NodalDynamicsReport:
-    """Global nodal-dynamics report for study and diagnostics."""
+    """Global nodal-equation prediction report for study and diagnostics.
+
+    Its total coherence aggregates pressure and predicted EPI-rate magnitudes
+    before applying the nonlinear constitutive kernel. ``mean_local_coherence``
+    remains available as a distinct descriptive statistic.
+    """
 
     nodes: dict[Any, NodalStateReport] = field(default_factory=dict)
     equilibrium_tolerance: float = _EPS_DNFR_STABLE_DEFAULT
     bifurcation_threshold: float = ZHIR_THRESHOLD_XI_CANONICAL
+
+    def _channel_means(self) -> tuple[float, float]:
+        """Return mean pressure and predicted-rate magnitudes for this scan."""
+
+        values = self.nodes.values()
+        mean_pressure = finite_mean_absolute(
+            (state.delta_nfr for state in values), name="scan dnfr"
+        )
+        mean_rate = finite_mean_absolute(
+            (state.expected_depi_dt for state in self.nodes.values()),
+            name="scan predicted depi",
+        )
+        return mean_pressure, mean_rate
+
+    def total_coherence(self) -> float:
+        """Return canonical C over this scan's predicted nodal channels."""
+
+        if not self.nodes:
+            return 0.0
+        mean_pressure, mean_rate = self._channel_means()
+        return float(structural_coherence(mean_pressure, mean_rate))
+
+    def mean_local_coherence(self) -> float:
+        """Return the distinct mean of already-reduced local coherences."""
+
+        if not self.nodes:
+            return 0.0
+        return finite_mean_absolute(
+            (state.coherence for state in self.nodes.values()),
+            name="scan local coherence",
+        )
 
     def summary(self) -> str:
         n = len(self.nodes)
         if n == 0:
             return "Nodal dynamics: empty"
         values = list(self.nodes.values())
-        active = sum(1 for s in values if s.active)
-        equilibrium = sum(1 for s in values if s.equilibrium)
-        bif = sum(1 for s in values if s.near_bifurcation)
-        mean_abs_rate = sum(abs(s.expected_depi_dt) for s in values) / n
-        mean_coh = sum(s.coherence for s in values) / n
+        active = sum(1 for state in values if state.active)
+        equilibrium = sum(1 for state in values if state.equilibrium)
+        bifurcation = sum(1 for state in values if state.near_bifurcation)
+        _, mean_abs_rate = self._channel_means()
+        coherence = self.total_coherence()
         return (
             f"NodalDynamics(N={n}, active={active}, equilibrium={equilibrium}, "
-            f"bifurcation={bif}, C={mean_coh:.3f}, mean|∂EPI/∂t|={mean_abs_rate:.4g})"
+            f"bifurcation={bifurcation}, C={coherence:.3f}, "
+            f"mean|∂EPI/∂t|={mean_abs_rate:.4g})"
         )
 
     def top_pressure_nodes(self, k: int = 5) -> list[NodalStateReport]:
@@ -669,14 +710,16 @@ class NodalDynamicsReport:
         return ranked[: max(int(k), 0)]
 
     def near_equilibrium_nodes(self) -> list[NodalStateReport]:
-        """Nodes with |ΔNFR| <= equilibrium tolerance."""
-        return [s for s in self.nodes.values() if s.equilibrium]
+        """Nodes whose pressure and predicted rate meet the fixed-point cut."""
+        return [state for state in self.nodes.values() if state.equilibrium]
 
     def to_dict(self) -> dict[str, Any]:
         values = list(self.nodes.values())
         n = len(values)
-        mean_abs_rate = sum(abs(s.expected_depi_dt) for s in values) / max(n, 1)
-        max_abs_rate = max((abs(s.expected_depi_dt) for s in values), default=0.0)
+        mean_abs_pressure, mean_abs_rate = self._channel_means()
+        max_abs_rate = max(
+            (abs(state.expected_depi_dt) for state in values), default=0.0
+        )
         return {
             "equilibrium_tolerance": float(self.equilibrium_tolerance),
             "bifurcation_threshold": float(self.bifurcation_threshold),
@@ -687,9 +730,15 @@ class NodalDynamicsReport:
                 "count": n,
                 "active_count": sum(1 for s in values if s.active),
                 "equilibrium_count": sum(1 for s in values if s.equilibrium),
-                "bifurcation_count": sum(1 for s in values if s.near_bifurcation),
+                "bifurcation_count": sum(
+                    1 for state in values if state.near_bifurcation
+                ),
+                "coherence": self.total_coherence(),
+                "mean_local_coherence": self.mean_local_coherence(),
+                "mean_abs_dnfr": float(mean_abs_pressure),
                 "mean_abs_depi_dt": float(mean_abs_rate),
                 "max_abs_depi_dt": float(max_abs_rate),
+                "depi_dt_source": "nodal_equation_prediction",
             },
         }
 
@@ -1081,25 +1130,31 @@ class Network:
 
         The named *sequence* is resolved to canonical structural operators.
         Execution is operator-major: each operator reaches every node before
-        the next operator begins. Reception and Resonance derive every target
-        proposal from one immutable stage snapshot and commit the stage
-        atomically (two-phase Jacobi). Other operators retain node-by-node
-        commits in graph iteration order until explicit merge laws exist.
+        the next operator begins. When grammar retains the requested glyph,
+        EN/IL/OZ/UM/RA/THOL and AL/SHA/VAL/NUL/ZHIR/NAV derive every target
+        proposal from one immutable stage snapshot and commit atomically
+        (two-phase Jacobi). IL binds pressure contraction and phase locking to
+        that snapshot; OZ reduces local and propagated pressure there; THOL
+        validates and merges child support and hierarchy; NAV binds per-node
+        RNG progress, transactional seed resolution and one shared latency
+        instant. REMESH and grammar replacements retain Gauss-Seidel reads in
+        graph iteration order inside a complete stage rollback boundary.
 
-        Form (EPI) is created from the structural vacuum by the **Emission**
-        generator that opens every canonical sequence -- never by direct
-        assignment (invariant #1; grammar U1). See
-        :func:`tnfr.operators.run_network_sequence` for the executable scheduling contract.
+        Every registered SDK word is resolved from NAMED_SEQUENCES and applied
+        through the shared runner. In words that open with Emission, AL sources
+        EPI through its operator contract rather than an ad hoc assignment.
+        See tnfr.operators.run_network_sequence for the executable scheduling
+        contract.
 
         Parameters
         ----------
         steps : int
             Number of times the sequence is applied to the whole network.
         sequence : str
-            Name of a canonical sequence (see
-            :data:`tnfr.sdk.fluent.NAMED_SEQUENCES`). Defaults to
-            ``"basic_activation"`` =
-            ``[Emission, Reception, Coherence, Resonance, Silence]``.
+            Name of a registered complete word in
+            tnfr.sdk.fluent.NAMED_SEQUENCES, the executable source of truth.
+            The default is "basic_activation" =
+            [Emission, Reception, Coherence, Expansion, Resonance, Silence].
         record : bool
             When True, sample the canonical metrics step after each cycle so
             the per-step rhythm series (the pulse in motion: ``kuramoto_R``,
@@ -1114,12 +1169,17 @@ class Network:
 
         Raises
         ------
+        ValueError
+            If *steps* is not a non-negative integer. Boolean and real-valued
+            counts are rejected rather than coerced.
         TNFRValueError
             If *sequence* is not a known canonical sequence; an invalid
             sequence is rejected (by name lookup or grammar validation)
             rather than silently ignored.
         """
         from .fluent import NAMED_SEQUENCES
+
+        step_count = nonnegative_integer(steps, "steps")
 
         operator_names = NAMED_SEQUENCES.get(sequence)
         if operator_names is None:
@@ -1141,7 +1201,7 @@ class Network:
             # (kuramoto_R, C_steps, ...) after each cycle: the pulse in motion
             from ..metrics.core import _metrics_step
 
-            for _ in range(int(steps)):
+            for _ in range(step_count):
                 _run_network_sequence(
                     self.G,
                     operator_names,
@@ -1153,7 +1213,7 @@ class Network:
             _run_network_sequence(
                 self.G,
                 operator_names,
-                cycles=steps,
+                cycles=step_count,
                 suppress_birth_warnings=True,
             )
         return self
@@ -1187,10 +1247,11 @@ class Network:
 
         Applies *sequence* with the shared operator-major mixed schedule for
         *cycles* repetitions and records C(t) and Si after every stage.
-        Reception and Resonance use atomic two-phase Jacobi stages; remaining
-        operators use the documented graph-order commit schedule. The trace
-        exposes the implemented intra-sequence transient through the shared
-        executor callback.
+        When grammar retains the requested glyph, EN/IL/OZ/UM/RA/THOL and
+        AL/SHA/VAL/NUL/ZHIR/NAV use atomic two-phase Jacobi stages; REMESH and
+        grammar replacements use the documented Gauss-Seidel schedule.
+        The trace exposes the implemented intra-sequence transient through
+        the shared executor callback.
 
         Parameters
         ----------
@@ -1207,12 +1268,22 @@ class Network:
             ``operator`` (name), ``coherence`` (C(t)) and ``sense_index``
             (Si).
 
+        Raises
+        ------
+        ValueError
+            If *cycles* is not a non-negative integer. Boolean and real-valued
+            counts are rejected rather than coerced.
+        TNFRValueError
+            If *sequence* is not a registered complete word.
+
         Examples
         --------
         >>> hist = TNFR.create(12, seed=1).random(0.3).trajectory(2)
         >>> [(h["operator"], round(h["coherence"], 3)) for h in hist]  # doctest: +SKIP
         """
         from .fluent import NAMED_SEQUENCES
+
+        cycle_count = nonnegative_integer(cycles, "cycles")
 
         operator_names = NAMED_SEQUENCES.get(sequence)
         if operator_names is None:
@@ -1240,7 +1311,7 @@ class Network:
         _run_network_sequence(
             self.G,
             operator_names,
-            cycles=int(cycles),
+            cycles=cycle_count,
             suppress_birth_warnings=True,
             on_step=_record,
         )
@@ -1364,13 +1435,18 @@ class Network:
             epi=epi,
             nu_f=nu_f,
             delta_nfr=delta_nfr,
-            coherence=structural_coherence(delta_nfr),
+            coherence=structural_coherence(
+                delta_nfr, trigger.predicted_depi_dt
+            ),
             phase=phase,
             expected_depi_dt=trigger.predicted_depi_dt,
             d2epi_dt2=d2epi_dt2,
             degree=int(self.G.degree(node)),
             equilibrium=is_structural_equilibrium(
-                delta_nfr, eps_dnfr=float(equilibrium_tolerance)
+                delta_nfr,
+                trigger.predicted_depi_dt,
+                eps_dnfr=float(equilibrium_tolerance),
+                eps_depi=float(equilibrium_tolerance),
             ),
             active=trigger.capacity_active,
             near_bifurcation=trigger.predicted_crossed,
@@ -1826,8 +1902,11 @@ class Network:
         -------
         dict
             ``topology``, ``centers``, ``concentration`` (geometry);
-            ``coherence``, ``zero_pressure_fraction`` and
-            ``equilibrium_fraction`` (resonance, when available);
+            ``coherence`` (aggregate-then-reduce C(t)),
+            ``mean_local_coherence`` (a distinct descriptive mean),
+            ``mean_abs_dnfr``, ``mean_abs_depi_dt``,
+            ``zero_pressure_fraction`` and ``equilibrium_fraction``
+            (resonance, when available);
             ``depi_dt_source`` identifies whether the rate was recorded or
             evaluated from the nodal equation;
             ``coherence_length`` (xi_C, fractal/region scale); ``triad`` (mean
@@ -1891,15 +1970,22 @@ class Network:
             if dynamic_available and n
             else None
         )
-        coherence = (
-            sum(
-                structural_coherence(pressure, rate)
-                for pressure, rate in zip(dnfr, depi)
+        if dynamic_available and n:
+            mean_abs_dnfr = finite_mean_absolute(dnfr, name="nfr dnfr")
+            mean_abs_depi = finite_mean_absolute(depi, name="nfr depi")
+            coherence = structural_coherence(mean_abs_dnfr, mean_abs_depi)
+            mean_local_coherence = finite_mean_absolute(
+                (
+                    structural_coherence(pressure, rate)
+                    for pressure, rate in zip(dnfr, depi)
+                ),
+                name="nfr local coherence",
             )
-            / n
-            if dynamic_available and n
-            else None
-        )
+        else:
+            mean_abs_dnfr = None
+            mean_abs_depi = None
+            coherence = None
+            mean_local_coherence = None
         epi_mean = sum(epis) / n if epis is not None and n else None
         vf_mean = sum(frequencies) / n if frequencies is not None and n else None
         phase_sync = (
@@ -1919,6 +2005,9 @@ class Network:
             "centers": topo["centers"],
             "concentration": topo["concentration"],
             "coherence": coherence,
+            "mean_local_coherence": mean_local_coherence,
+            "mean_abs_dnfr": mean_abs_dnfr,
+            "mean_abs_depi_dt": mean_abs_depi,
             "zero_pressure_fraction": zero_pressure_fraction,
             "equilibrium_fraction": equilibrium_fraction,
             "pressure_telemetry_available": pressure_available,
@@ -1943,7 +2032,7 @@ class Network:
             pressure_realization="graph_coupled_delta_nfr",
             aggregation="global_network_nfr",
             derivative_kind="read_only_snapshot",
-            equilibrium_tolerance=1e-12,
+            equilibrium_tolerance=_EPS_DNFR_STABLE_DEFAULT,
             scope="graph NFR observation",
             value=self.nfr(),
         )

@@ -8,7 +8,7 @@ TNFR Structural Invariants
 These validators enforce TNFR canonical invariants:
 1. Structural frequency (νf) in Hz_str units
 2. Phase (φ) in valid range [0, 2π]
-3. Coherence C(t) as non-negative value
+3. Coherence C(t) as a finite value in [0, 1]
 4. Sense index Si validation
 
 Example
@@ -29,6 +29,7 @@ import math
 from typing import Any
 
 from ..errors import TNFRValueError
+from .._coherence_validation import validate_structural_coherence
 
 
 def validate_structural_frequency(nu_f: float) -> float:
@@ -148,56 +149,18 @@ def validate_phase_value(phase: float, *, allow_wrap: bool = True) -> float:
 
 
 def validate_coherence_value(coherence: float) -> float:
-    """Validate coherence C(t) value.
+    """Validate canonical coherence C(t) as a finite value in ``[0, 1]``."""
 
-    Coherence represents the total structural stability and must be
-    non-negative.
-
-    Parameters
-    ----------
-    coherence : float
-        Coherence value to validate
-
-    Returns
-    -------
-    float
-        The validated coherence value
-
-    Raises
-    ------
-    TNFRValueError
-        If coherence is negative, NaN, or infinite
-
-    Example
-    -------
-    >>> validate_coherence_value(0.8)
-    0.8
-    >>> validate_coherence_value(0.0)  # Minimum coherence
-    0.0
-    >>> validate_coherence_value(-0.1)  # doctest: +SKIP
-    Traceback (most recent call last):
-        ...
-    TNFRValueError: Coherence must be non-negative, got -0.1
-    """
-    if not isinstance(coherence, (int, float)):
+    try:
+        return validate_structural_coherence(coherence)
+    except (TypeError, ValueError) as exc:
         raise TNFRValueError(
-            f"Coherence must be numeric, got {type(coherence).__name__}",
-            context={"type": type(coherence).__name__, "value": str(coherence)},
-        )
-
-    if math.isnan(coherence):
-        raise TNFRValueError("Coherence cannot be NaN")
-
-    if math.isinf(coherence):
-        raise TNFRValueError("Coherence cannot be infinite")
-
-    if coherence < 0:
-        raise TNFRValueError(
-            f"Coherence must be non-negative, got {coherence}",
-            context={"value": coherence},
-        )
-
-    return float(coherence)
+            "Coherence must be a finite real value in [0, 1]",
+            context={
+                "type": type(coherence).__name__,
+                "value": repr(coherence),
+            },
+        ) from exc
 
 
 def validate_sense_index(si: float) -> float:

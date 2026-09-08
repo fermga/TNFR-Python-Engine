@@ -226,25 +226,34 @@ class TestPostconditions:
         report = monitor.after_operator(G, 0, "Silence")
         assert report.postcondition_ok is False
 
-    def test_emission_postcondition_passes_on_vf_increase(self) -> None:
-        """AL postcondition: νf must increase."""
+    def test_emission_postcondition_accepts_epi_increase_only(self) -> None:
+        """AL accepts its EPI source while secondary channels stay fixed."""
         G = _make_graph()
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
         monitor.before_operator(G, 0)
-        # Increase vf
-        G.nodes[0]["nu_f"] = G.nodes[0]["nu_f"] + 1.0
+        G.nodes[0]["EPI"] = G.nodes[0]["EPI"] + 0.1
         report = monitor.after_operator(G, 0, "Emission")
         assert report.postcondition_ok is True
 
-    def test_emission_postcondition_fails_on_vf_decrease(self) -> None:
-        """AL postcondition detects νf decrease."""
+    @pytest.mark.parametrize(
+        ("aliases", "value", "detail"),
+        [
+            (ALIAS_VF, 2.0, "νf changed"),
+            (ALIAS_DNFR, 0.25, "ΔNFR changed"),
+            (ALIAS_THETA, 0.25, "Phase changed"),
+        ],
+    )
+    def test_emission_postcondition_rejects_non_epi_writes(
+        self, aliases, value, detail
+    ) -> None:
+        """AL is a channel-pure EPI source."""
         G = _make_graph()
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
         monitor.before_operator(G, 0)
-        # Decrease vf
-        G.nodes[0]["nu_f"] = 0.01
+        set_attr(G.nodes[0], aliases, value)
         report = monitor.after_operator(G, 0, "Emission")
         assert report.postcondition_ok is False
+        assert detail in report.postcondition_detail
 
     def test_mutation_postcondition_passes_on_theta_change(self) -> None:
         """ZHIR postcondition: θ must change."""
@@ -356,17 +365,23 @@ class TestPostconditions:
         report = monitor.after_operator(G, 0, "Coherence")
         assert report.postcondition_ok is False
 
-    def test_coherence_postcondition_reuses_dnfr_tracking(self) -> None:
-        """IL enriched: ΔNFR check reuses IL_dnfr_reductions telemetry."""
+    def test_coherence_postcondition_ignores_unbound_latest_telemetry(self) -> None:
+        """IL compares its bound snapshots even when latest telemetry disagrees."""
         G = _make_graph()
         G.graph["IL_dnfr_reductions"] = [
             {"node": 0, "before": 0.5, "after": 0.35, "reduction": 0.15}
         ]
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
         monitor.before_operator(G, 0)
+        # Raise this target magnitude while lowering the network mean so
+        # C(t) does not mask the snapshot-bound pressure assertion.
+        G.nodes[0]["ΔNFR"] = -0.06
+        G.nodes[0]["delta_nfr"] = -0.06
+        G.nodes[1]["ΔNFR"] = 0.0
+        G.nodes[1]["delta_nfr"] = 0.0
         report = monitor.after_operator(G, 0, "Coherence")
-        # ΔNFR "decreased" per telemetry (0.5 → 0.35) → passes
-        assert report.postcondition_ok is True
+        assert report.postcondition_ok is False
+        assert "|ΔNFR| increased" in report.postcondition_detail
 
     def test_silence_postcondition_fails_on_vf_increase(self) -> None:
         """SHA enriched: νf must not increase during Silence."""

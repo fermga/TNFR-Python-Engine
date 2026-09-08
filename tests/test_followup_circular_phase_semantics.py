@@ -38,9 +38,13 @@ def test_phase_centralization_clusters_neighbors_across_wrap() -> None:
 
     assert [item.node_id for item in coordination_nodes] == [0]
     assert coordination_nodes[0].connected_cluster == [0, 1, 2, 3]
-    assert coordination_nodes[0].mathematical_signature[
-        "average_phase_difference"
-    ] == pytest.approx(0.02)
+    signature = coordination_nodes[0].mathematical_signature
+    assert signature["average_phase_difference"] == pytest.approx(0.02)
+    assert signature["phase_distance_affinity"] == pytest.approx(1.0 / 1.02)
+    assert signature["phase_coherence"] == pytest.approx(
+        signature["phase_distance_affinity"]
+    )
+    assert signature["phase_metric_kind"] == "reciprocal_mean_wrapped_distance"
 
 
 def test_cross_scale_synchrony_uses_shortest_arc_at_branch_cut() -> None:

@@ -116,13 +116,15 @@ class HilbertSpace:
 
 
 class BanachSpaceEPI(_EPIValidators):
-    r"""Banach space for :math:`C^0([0, 1],\mathbb{C}) \oplus \ell^2(\mathbb{N})`.
+    r"""Representation of :math:`C^0([0, 1],\mathbb{C}) \oplus \ell^2(\mathbb{N})`.
 
     Elements are represented by a pair ``(f, a)`` where ``f`` samples the
-    continuous field over a uniform grid ``x_grid`` and ``a`` is the discrete
-    spectral tail.  The coherence norm combines the supremum of ``f``, the
-    :math:`\ell^2` norm of ``a`` and a derivative-based functional capturing
-    the local stability of ``f``.
+    continuous field over a grid ``x_grid`` and ``a`` is the discrete spectral
+    tail.  :meth:`composite_epi_regularity` combines the supremum of ``f``, the
+    :math:`\ell^2` norm of ``a`` and a derivative-energy quotient.  It is an
+    unbounded regularity functional: larger amplitude or a rougher continuous
+    field can increase it.  It is neither the canonical TNFR structural
+    coherence ``C(t)`` nor, because of its quotient term, a mathematical norm.
     """
 
     def element(
@@ -244,19 +246,32 @@ class BanachSpaceEPI(_EPIValidators):
         )  # pylint: disable=protected-access
         return element.tensor(hilbert_vector)
 
-    def compute_coherence_functional(
+    def derivative_regularity(
         self,
         f_continuous: Sequence[complex] | np.ndarray,
         x_grid: Sequence[float] | np.ndarray,
     ) -> float:
-        r"""Approximate :math:`\int |f'|^2 dx / (1 + \int |f|^2 dx)`."""
+        r"""Return the sampled derivative-energy quotient.
+
+        The functional is
+
+        .. math::
+
+            R_D(f) = \frac{\int |f'(x)|^2\,dx}
+                           {1 + \int |f(x)|^2\,dx}.
+
+        ``R_D`` is nonnegative and unbounded.  At comparable amplitude,
+        increasing spatial oscillation usually increases its numerator and
+        therefore its value.  It is a roughness/regularity read-out, not the
+        bounded canonical TNFR structural coherence ``C(t)``.
+        """
 
         f_array, _, grid = self.validate_domain(
             f_continuous, np.array([0.0], dtype=np.complex128), x_grid
         )
         if grid is None:
             raise TNFRValueError(
-                "x_grid must be provided for coherence evaluations.",
+                "x_grid must be provided for derivative-regularity evaluations.",
                 context={"x_grid": x_grid},
                 suggestion="Provide a valid x_grid.",
             )
@@ -270,11 +285,65 @@ class BanachSpaceEPI(_EPIValidators):
         denominator = 1.0 + trapezoid(np.abs(f_array) ** 2, grid)
         if denominator <= 0:
             raise TNFRValueError(
-                "Denominator of coherence functional must be positive.",
+                "Denominator of derivative regularity must be positive.",
                 context={"denominator": denominator},
                 suggestion="Check the input function for validity.",
             )
         return float(np.real_if_close(numerator / denominator))
+
+    def composite_epi_regularity(
+        self,
+        f_continuous: Sequence[complex] | np.ndarray,
+        a_discrete: Sequence[complex] | np.ndarray,
+        *,
+        x_grid: Sequence[float] | np.ndarray,
+        alpha: float = 1.0,
+        beta: float = 1.0,
+        gamma: float = 1.0,
+    ) -> float:
+        r"""Return ``α‖f‖∞ + β‖a‖₂ + γ R_D(f)``.
+
+        The weights must be finite and strictly positive.  This composite EPI
+        regularity is an unbounded amplitude-and-roughness functional.  A
+        larger value can reflect more amplitude, more discrete-tail energy, or
+        more derivative energy; it must not be interpreted as improved
+        structural coherence ``C(t)``.
+        """
+
+        weights = np.asarray([alpha, beta, gamma], dtype=float)
+        if not np.all(np.isfinite(weights)) or np.any(weights <= 0):
+            raise TNFRValueError(
+                "alpha, beta and gamma must be finite and strictly positive.",
+                context={"alpha": alpha, "beta": beta, "gamma": gamma},
+                suggestion="Provide finite, strictly positive weights.",
+            )
+
+        f_array, a_array, grid = self.validate_domain(f_continuous, a_discrete, x_grid)
+        if grid is None:
+            raise TNFRValueError(
+                "x_grid must be supplied when evaluating EPI regularity.",
+                context={"x_grid": x_grid},
+                suggestion="Provide a valid x_grid.",
+            )
+
+        sup_norm = float(np.max(np.abs(f_array))) if f_array.size else 0.0
+        l2_norm = float(np.linalg.norm(a_array))
+        derivative_term = self.derivative_regularity(f_array, grid)
+        value = alpha * sup_norm + beta * l2_norm + gamma * derivative_term
+        return float(np.real_if_close(value))
+
+    def compute_coherence_functional(
+        self,
+        f_continuous: Sequence[complex] | np.ndarray,
+        x_grid: Sequence[float] | np.ndarray,
+    ) -> float:
+        """Compatibility alias for :meth:`derivative_regularity`.
+
+        The historical name is retained for callers, but this method does not
+        compute canonical structural coherence ``C(t)``.
+        """
+
+        return self.derivative_regularity(f_continuous, x_grid)
 
     def coherence_norm(
         self,
@@ -286,26 +355,18 @@ class BanachSpaceEPI(_EPIValidators):
         beta: float = 1.0,
         gamma: float = 1.0,
     ) -> float:
-        """Return ``α‖f‖_∞ + β‖a‖_2 + γ CF(f)`` for positive weights."""
+        """Compatibility alias for :meth:`composite_epi_regularity`.
 
-        if alpha <= 0 or beta <= 0 or gamma <= 0:
-            raise TNFRValueError(
-                "alpha, beta and gamma must be strictly positive.",
-                context={"alpha": alpha, "beta": beta, "gamma": gamma},
-                suggestion="Provide strictly positive weights.",
-            )
+        The historical name is retained for callers, but the returned value is
+        unbounded and is neither canonical structural coherence ``C(t)`` nor a
+        mathematical norm.
+        """
 
-        f_array, a_array, grid = self.validate_domain(f_continuous, a_discrete, x_grid)
-        if grid is None:
-            raise TNFRValueError(
-                "x_grid must be supplied when evaluating the norm.",
-                context={"x_grid": x_grid},
-                suggestion="Provide a valid x_grid.",
-            )
-
-        sup_norm = float(np.max(np.abs(f_array))) if f_array.size else 0.0
-        l2_norm = float(np.linalg.norm(a_array))
-        coherence_functional = self.compute_coherence_functional(f_array, grid)
-
-        value = alpha * sup_norm + beta * l2_norm + gamma * coherence_functional
-        return float(np.real_if_close(value))
+        return self.composite_epi_regularity(
+            f_continuous,
+            a_discrete,
+            x_grid=x_grid,
+            alpha=alpha,
+            beta=beta,
+            gamma=gamma,
+        )

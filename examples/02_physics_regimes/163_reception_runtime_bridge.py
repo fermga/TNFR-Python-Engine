@@ -9,7 +9,9 @@ The report keeps four conclusions separate: the runtime value, the represented
 affine jump bound, drift of the common weighted mean, and the pressure refresh
 required before a subsequent pure-EPI flow segment. The optional recovery
 Boolean comes from the exact hybrid composer; the displayed break-even time is
-only a numerical estimate.
+only a numerical estimate. Here the sharp certified quotient bound is one, so
+the break-even infimum is zero. The protocol still declares one positive
+certified diffusion timescale to obtain a strict contraction.
 """
 
 from __future__ import annotations
@@ -67,9 +69,14 @@ def run_protocol() -> dict[str, Any]:
         mix_factor=MIX_FACTOR,
     )
     estimate = baseline.recovery_break_even_duration_estimate
-    if estimate is None or estimate <= 0.0:
-        raise RuntimeError("the declared Reception case must have a positive estimate")
-    recovery_duration = 2.0 * estimate
+    flow = baseline.diffusion_certificate
+    rate = flow.certified_exponential_rate_lower_bound
+    if estimate is None or not flow.is_certified or rate <= 0.0:
+        raise RuntimeError("the declared Reception case needs a certified flow rate")
+    # A gain-one jump has break-even infimum zero: every positive flow duration
+    # contracts, but no smallest positive duration exists. Use one certified
+    # relaxation timescale rather than treating the correct zero as a failure.
+    recovery_duration = 2.0 * estimate if estimate > 0.0 else 1.0 / rate
     recovered = certify_reception_epi_realization(
         graph,
         NODES[0],
@@ -156,6 +163,9 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
             "represented_jump_eligible": baseline.represented_affine_jump_eligible,
             "exact_target_row_sum": _fraction_text(
                 baseline.exact_represented_target_row_sum
+            ),
+            "exact_quotient_gain_upper_bound": _fraction_text(
+                jump.exact_quotient_energy_gain_upper_bound
             ),
             "exact_frobenius_gain_bound": _fraction_text(
                 jump.exact_weighted_frobenius_energy_bound

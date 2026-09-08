@@ -14,6 +14,10 @@ class NFRValidator(Validator[np.ndarray]):
     coherence_threshold: float
     frequency_operator: FrequencyOperator | None
     atol: float
+    @property
+    def spectral_operator(self) -> CoherenceOperator: ...
+    @property
+    def spectral_expectation_threshold(self) -> float: ...
 
     def __init__(
         self,

@@ -1,8 +1,7 @@
-"""Cycle detection and validation for regenerative TNFR sequences.
+"""Cycle detection and operational scoring for regenerative sequences.
 
-This module implements R5_REGENERATIVE_CYCLES validation, ensuring that
-regenerative cycles are structurally valid and self-sustaining according
-to TNFR canonical principles.
+The bounded scores in this module are token-sequence rubrics. They inspect no
+DeltaNFR or dEPI values and therefore do not estimate structural coherence C(t).
 """
 
 from __future__ import annotations
@@ -38,6 +37,7 @@ from ..constants.operational import (
 
 # Import canonical stabilizer set from grammar_types (single source of truth)
 # Extended with silence, resonance, coupling for cycle detection context
+from ._diagnostic_scores import mean_unit_score, unit_score
 from .grammar_types import STABILIZERS as _GRAMMAR_STABILIZERS
 
 _STABILIZERS_SET = _GRAMMAR_STABILIZERS | frozenset([SILENCE, RESONANCE, COUPLING])
@@ -82,7 +82,19 @@ class CycleAnalysis:
     stabilizer_count_after: int = 0
     balance_score: float = 0.0
     diversity_score: float = 0.0
-    coherence_score: float = 0.0
+    cycle_integrity_score: float = 0.0
+
+    @property
+    def coherence_score(self) -> float:
+        """Compatibility alias for cycle_integrity_score; it is not C(t)."""
+
+        return self.cycle_integrity_score
+
+    @coherence_score.setter
+    def coherence_score(self, value: float) -> None:
+        self.cycle_integrity_score = unit_score(
+            value, label="cycle integrity"
+        )
 
 
 class CycleDetector:
@@ -91,8 +103,8 @@ class CycleDetector:
     Implements R5_REGENERATIVE_CYCLES validation rules:
     - Cycles must have minimum length (MIN_CYCLE_LENGTH)
     - Must include stabilizers before AND after regenerator
-    - Must achieve minimum structural health score (>0.6)
-    - Validates balance, diversity, and coherence
+    - Must meet the configured operational cycle-health threshold
+    - Validates balance, diversity, and a bounded cycle-integrity rubric
 
     Note: Uses _STABILIZERS_SET with canonical operator names to match
     the sequence validation format. Reuses pattern detector methods for
@@ -172,9 +184,12 @@ class CycleDetector:
         # 5. Calculate structural health
         balance = self._calculate_balance(sequence)
         diversity = self._calculate_diversity(sequence)
-        coherence = self._calculate_sequence_coherence(sequence)
+        cycle_integrity = self._calculate_cycle_integrity(sequence)
 
-        health_score = (balance + diversity + coherence) / 3.0
+        health_score = mean_unit_score(
+            (balance, diversity, cycle_integrity),
+            label="cycle health",
+        )
 
         # 6. Determine cycle type
         cycle_type = self._determine_cycle_type(regenerator)
@@ -192,7 +207,7 @@ class CycleDetector:
             stabilizer_count_after=stabilizers_after,
             balance_score=balance,
             diversity_score=diversity,
-            coherence_score=coherence,
+            cycle_integrity_score=cycle_integrity,
         )
 
     def analyze_full_cycle(self, sequence: Sequence[str]) -> CycleAnalysis:
@@ -250,7 +265,8 @@ class CycleDetector:
     def _count_stabilizers(self, segment: Sequence[str]) -> int:
         """Count stabilizing operators in a sequence segment.
 
-        Uses canonical operator names: coherence, self_organization, silence, resonance, coupling.
+        Counts canonical IL/THOL stabilizers plus the selected cycle-support
+        tokens SHA, RA and UM.
         """
         return sum(1 for op in segment if op in _STABILIZERS_SET)
 
@@ -319,11 +335,11 @@ class CycleDetector:
 
         return diversity_ratio
 
-    def _calculate_sequence_coherence(self, sequence: Sequence[str]) -> float:
-        """Calculate structural coherence score (0.0-1.0).
+    def _calculate_cycle_integrity(self, sequence: Sequence[str]) -> float:
+        """Calculate a bounded cycle-integrity rubric in [0, 1].
 
-        Combines insights from pattern detector with cycle-specific
-        coherence requirements (good start/end, essential elements).
+        The checklist covers selected start/end tokens, network operators and
+        information-flow tokens. It is not canonical structural C(t).
         """
         from .patterns import AdvancedPatternDetector
 
@@ -364,7 +380,9 @@ class CycleDetector:
             if sequence[0] in _STABILIZERS_SET and sequence[-1] in _STABILIZERS_SET:
                 score += 0.17  # operational: closure bonus
 
-        return min(1.0, score)
+        return unit_score(
+            min(1.0, score), label="cycle integrity"
+        )
 
     def _determine_cycle_type(self, regenerator: str) -> CycleType:
         """Determine cycle type based on dominant regenerator."""

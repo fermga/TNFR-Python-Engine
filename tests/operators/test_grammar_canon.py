@@ -228,7 +228,7 @@ class TestOperatorMetadataRolesAreCanonical:
             ), f"{mnemonic}: metadata {meta.grammar_roles} != canon {expected}"
 
     def test_u_rules_accepts_function_name_and_glyph(self) -> None:
-        # Same result whether queried by function name or glyph mnemonic.
+        # Same result for an executable identifier or internal glyph mnemonic.
         assert gc.u_rules_for_operator("mutation") == gc.u_rules_for_operator("ZHIR")
         assert gc.u_rules_for_operator("ZHIR") == ("U2", "U4a", "U4b")
 

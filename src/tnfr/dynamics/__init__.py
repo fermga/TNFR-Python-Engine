@@ -31,7 +31,7 @@ The facade aggregates runtime helpers that preserve canonical TNFR dynamics:
 ``dnfr`` manages ΔNFR preparation and caching, ``integrators`` drives the
 numerical updates of νf and EPI, and ``coordination`` synchronizes global and
 local phase. Complementary exports such as
-:func:`~tnfr.dynamics.adaptation.adapt_vf_by_coherence` and
+:func:`~tnfr.dynamics.adaptation.adapt_vf_after_structural_stability` and
 :func:`~tnfr.dynamics.coordination.coordinate_global_local_phase` allow custom
 feedback loops without breaking operator closure.
 
@@ -65,7 +65,10 @@ from ..metrics.sense_index import compute_Si
 from ..operators import apply_glyph
 from ..types import GlyphCode
 from . import canonical, coordination, dnfr, integrators, metabolism
-from .adaptation import adapt_vf_by_coherence
+from .adaptation import (
+    adapt_vf_after_structural_stability,
+    adapt_vf_by_coherence,
+)
 from .adaptive_sequences import AdaptiveSequenceSelector
 from .aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_DSI, ALIAS_EPI, ALIAS_SI, ALIAS_VF
 from .bifurcation import compute_bifurcation_score, get_bifurcation_paths
@@ -188,6 +191,7 @@ __all__ = (
     "_compute_neighbor_means",
     "_init_dnfr_cache",
     "_refresh_dnfr_vectors",
+    "adapt_vf_after_structural_stability",
     "adapt_vf_by_coherence",
     "coordinate_global_local_phase",
     "compute_Si",

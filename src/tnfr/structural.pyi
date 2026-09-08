@@ -7,8 +7,8 @@ from tnfr.validation import validate_sequence as validate_sequence
 
 from .mathematics import (
     BasicStateProjector,
-    CoherenceOperator,
     FrequencyOperator,
+    SpectralExpectationOperator,
     HilbertSpace,
     MathematicalDynamicsEngine,
 )
@@ -70,7 +70,11 @@ def create_math_nfr(
     dnfr_hook: DeltaNFRHook = ...,
     dimension: int | None = None,
     hilbert_space: HilbertSpace | None = None,
-    coherence_operator: CoherenceOperator | None = None,
+    spectral_operator: SpectralExpectationOperator | None = None,
+    spectral_spectrum: Sequence[float] | None = None,
+    spectral_expectation_floor: float | None = None,
+    spectral_expectation_threshold: float | None = None,
+    coherence_operator: SpectralExpectationOperator | None = None,
     coherence_spectrum: Sequence[float] | None = None,
     coherence_c_min: float | None = None,
     coherence_threshold: float | None = None,

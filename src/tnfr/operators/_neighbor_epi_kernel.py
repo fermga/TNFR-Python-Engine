@@ -2,9 +2,11 @@
 
 Reception (EN) and Resonance (RA) both use the arithmetic mean of the
 runtime neighbour set, independently of transport edge weights, followed by
-one scalar blend.  Keeping those floating-point operations here gives the
-runtime and the realization certificates one numerical definition without
-invoking grammar, history, metrics, or graph mutation.
+one scalar blend.  They also choose the semantic EPI kind from the dominant
+labelled neighbour, while retaining their distinct historical policy for an
+unlabelled dominant magnitude.  Keeping those operations here gives runtime
+and realization certificates one numerical definition without invoking
+grammar, history, metrics, or graph mutation.
 """
 
 from __future__ import annotations
@@ -13,10 +15,85 @@ from statistics import fmean
 from typing import Any, Iterable
 
 __all__ = [
+    "dominant_neighbor_epi_kind",
     "neighbor_epi_blend_value",
+    "neighbor_epi_proposed_kind",
     "neighbor_epi_represented_affine_row",
     "neighbor_epi_unweighted_mean",
+    "reception_proposed_epi_kind",
 ]
+
+
+def dominant_neighbor_epi_kind(
+    neighbor_value_kinds: Iterable[tuple[float, str]],
+    fallback_kind: str,
+    *,
+    unlabeled_magnitude_dominates: bool = False,
+) -> tuple[str, float]:
+    """Return the kind attached to the largest strict EPI magnitude.
+
+    Equal magnitudes retain the first neighbour in runtime iteration order.
+    Zero-magnitude or empty inputs use ``fallback_kind`` and report zero.
+    ``unlabeled_magnitude_dominates`` retains the magnitude attached to an
+    empty kind so RA can apply its historical fallback-identity gate; EN keeps
+    an established target kind when no neighbour supplies a semantic label.
+    """
+
+    best_kind = ""
+    best_abs = 0.0
+    for value, kind in neighbor_value_kinds:
+        magnitude = abs(value)
+        if magnitude > best_abs:
+            best_abs = magnitude
+            best_kind = kind
+    if not best_kind:
+        return (
+            fallback_kind,
+            best_abs if unlabeled_magnitude_dominates else 0.0,
+        )
+    return best_kind, best_abs
+
+
+def neighbor_epi_proposed_kind(
+    current_kind: str,
+    neighbor_value_kinds: Iterable[tuple[float, str]],
+    proposed_target_epi: float,
+    *,
+    fallback_kind: str,
+    unlabeled_magnitude_dominates: bool = False,
+) -> str:
+    """Resolve the semantic kind accompanying a neighbour-EPI blend."""
+
+    dominant, best_abs = dominant_neighbor_epi_kind(
+        neighbor_value_kinds,
+        fallback_kind,
+        unlabeled_magnitude_dominates=unlabeled_magnitude_dominates,
+    )
+    proposed = dominant if best_abs > abs(proposed_target_epi) else current_kind
+    return proposed or fallback_kind
+
+
+def reception_proposed_epi_kind(
+    current_kind: str,
+    neighbor_value_kinds: Iterable[tuple[float, str]],
+    *,
+    unclipped_target_epi: float,
+    fallback_kind: str = "EN",
+) -> str:
+    """Resolve EN identity from the blend proposal before boundary projection.
+
+    Reception historically chooses its semantic source before structural
+    clipping accepts the numeric EPI value. Soft clipping can move that value
+    across a neighbour-magnitude comparison, so every EN runtime and
+    realization path must pass the shared *unclipped* blend explicitly.
+    """
+
+    return neighbor_epi_proposed_kind(
+        current_kind,
+        neighbor_value_kinds,
+        unclipped_target_epi,
+        fallback_kind=fallback_kind,
+    )
 
 
 def neighbor_epi_unweighted_mean(values: Iterable[Any]) -> float:
@@ -40,8 +117,9 @@ def neighbor_epi_blend_value(
     ``current_epi`` may be the engine's BEPI object.  Arithmetic is performed
     in that representation before ``float`` applies its scalar projection.
     The uniform real-scalar BEPI embedding retains its sign and therefore
-    follows the same affine formula as a raw scalar.  General nonuniform or
-    complex BEPI payloads can follow a different scalar projection.
+    follows the same affine formula as a raw scalar. Canonical runtime callers
+    reject nonuniform or complex BEPI payloads before invoking this scalar
+    kernel; their magnitude projection is outside the affine domain.
     """
 
     return float(

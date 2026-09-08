@@ -8,9 +8,16 @@ import sys
 from collections import deque
 from collections.abc import Iterable, Mapping, MutableMapping
 from copy import deepcopy
-from numbers import Real
+from numbers import Integral, Real
 from typing import Any, cast
 
+from .._spectral_expectation import (
+    finite_spectral_real,
+    resolve_compatibility_value,
+    spectral_expectation_metadata,
+    spectral_expectation_payload,
+    validate_spectral_operator,
+)
 from ..alias import get_attr
 from ..config.operator_names import BIFURCATION_WINDOW
 from ..constants import get_graph_param, get_param
@@ -33,16 +40,19 @@ except ImportError:  # pragma: no cover - optional dependency missing
 try:  # pragma: no cover - optional math extras
     from ..mathematics.dynamics import MathematicalDynamicsEngine
     from ..mathematics.projection import BasicStateProjector
-    from ..mathematics.runtime import coherence as runtime_coherence
+    from ..mathematics.runtime import (
+        meets_spectral_expectation_threshold as runtime_spectral_threshold,
+    )
     from ..mathematics.runtime import frequency_positive as runtime_frequency_positive
     from ..mathematics.runtime import normalized as runtime_normalized
 except Exception:  # pragma: no cover - fallback when extras not available
     MathematicalDynamicsEngine = None  # type: ignore[assignment]
     BasicStateProjector = None  # type: ignore[assignment]
-    runtime_coherence = None  # type: ignore[assignment]
+    runtime_spectral_threshold = None  # type: ignore[assignment]
     runtime_frequency_positive = None  # type: ignore[assignment]
     runtime_normalized = None  # type: ignore[assignment]
 from .dnfr import default_compute_delta_nfr
+from .remesh_history import append_remesh_epi_history_snapshot
 from .sampling import update_node_sample as _update_node_sample
 
 __all__ = (
@@ -556,7 +566,7 @@ def _update_nodes(
         G.graph.get("VF_ADAPT_N_JOBS"),
         allow_non_positive=False,
     )
-    adaptation.adapt_vf_by_coherence(G, n_jobs=vf_jobs)
+    adaptation.adapt_vf_after_structural_stability(G, n_jobs=vf_jobs)
     # Default integrators advance ``_t``. If a custom integrator does not,
     # same-time EPI changes reset the history and cannot masquerade as flow.
     _record_mutation_flow_boundary(G)
@@ -565,15 +575,7 @@ def _update_nodes(
 def _update_epi_hist(G: TNFRGraph) -> None:
     """Maintain the rolling EPI history used by remeshing heuristics."""
 
-    tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
-    tau_l = int(get_param(G, "REMESH_TAU_LOCAL"))
-    tau = max(tau_g, tau_l)
-    maxlen = max(2 * tau + 5, 64)
-    epi_hist = G.graph.get("_epi_hist")
-    if not isinstance(epi_hist, deque) or epi_hist.maxlen != maxlen:
-        epi_hist = deque(list(epi_hist or [])[-maxlen:], maxlen=maxlen)
-        G.graph["_epi_hist"] = epi_hist
-    epi_hist.append({n: get_attr(nd, ALIAS_EPI, 0.0) for n, nd in G.nodes(data=True)})
+    append_remesh_epi_history_snapshot(G)
 
 
 def _maybe_remesh(G: TNFRGraph) -> None:
@@ -716,24 +718,51 @@ def _advance_math_engine(
         np is None
         or MathematicalDynamicsEngine is None
         or runtime_normalized is None
-        or runtime_coherence is None
+        or runtime_spectral_threshold is None
     ):
         raise RuntimeError(
-            "Mathematical dynamics require NumPy and tnfr.mathematics extras to be installed."
+            "Mathematical dynamics require NumPy and tnfr.mathematics "
+            "extras to be installed."
         )
 
     hilbert_space = cfg.get("hilbert_space")
-    coherence_operator = cfg.get("coherence_operator")
-    coherence_threshold = cfg.get("coherence_threshold")
-    if (
-        hilbert_space is None
-        or coherence_operator is None
-        or coherence_threshold is None
-    ):
+    spectral_operator = resolve_compatibility_value(
+        cfg.get("spectral_operator"),
+        cfg.get("coherence_operator"),
+        canonical_name="MATH_ENGINE['spectral_operator']",
+        legacy_name="MATH_ENGINE['coherence_operator']",
+    )
+    threshold_raw = resolve_compatibility_value(
+        cfg.get("spectral_expectation_threshold"),
+        cfg.get("coherence_threshold"),
+        canonical_name="MATH_ENGINE['spectral_expectation_threshold']",
+        legacy_name="MATH_ENGINE['coherence_threshold']",
+    )
+    if hilbert_space is None or spectral_operator is None or threshold_raw is None:
         raise ValueError(
-            "MATH_ENGINE requires 'hilbert_space', 'coherence_operator' and "
-            "'coherence_threshold' entries."
+            "MATH_ENGINE requires 'hilbert_space', 'spectral_operator' and "
+            "'spectral_expectation_threshold' entries."
         )
+    spectral_operator = validate_spectral_operator(
+        spectral_operator,
+        dimension=getattr(hilbert_space, "dimension", None),
+        label="MATH_ENGINE spectral_operator",
+    )
+    spectral_threshold = finite_spectral_real(
+        threshold_raw,
+        label="MATH_ENGINE spectral expectation threshold",
+    )
+    # Materialize canonical keys and keep historical aliases synchronized.
+    cfg["spectral_operator"] = spectral_operator
+    cfg["spectral_expectation_threshold"] = spectral_threshold
+    cfg["coherence_operator"] = spectral_operator
+    cfg["coherence_threshold"] = spectral_threshold
+    metadata_provenance = cfg.get(
+        "provenance", "tnfr.dynamics.runtime._advance_math_engine"
+    )
+    cfg.update(
+        spectral_expectation_metadata(provenance=metadata_provenance)
+    )
 
     if BasicStateProjector is None:  # pragma: no cover - guarded by import above
         raise RuntimeError(
@@ -794,10 +823,10 @@ def _advance_math_engine(
         atol=atol,
         label=label,
     )
-    coherence_passed, coherence_value = runtime_coherence(
+    expectation_passed, expectation_value = runtime_spectral_threshold(
         advanced,
-        coherence_operator,
-        float(coherence_threshold),
+        spectral_operator,
+        spectral_threshold,
         normalise=False,
         atol=atol,
         label=label,
@@ -828,24 +857,36 @@ def _advance_math_engine(
         if "spectrum_min" in freq_raw:
             frequency_summary["spectrum_min"] = float(freq_raw.get("spectrum_min", 0.0))
 
+    expectation = spectral_expectation_payload(
+        value=expectation_value,
+        threshold=spectral_threshold,
+        passed=expectation_passed,
+        provenance="tnfr.dynamics.runtime._advance_math_engine",
+        operator=spectral_operator,
+    )
     summary = {
         "step": step_idx,
         "normalized": bool(normalized_passed),
         "norm": float(norm_value),
-        "coherence": {
-            "passed": bool(coherence_passed),
-            "value": float(coherence_value),
-            "threshold": float(coherence_threshold),
-        },
+        "spectral_operator_expectation": expectation,
+        # Historical result key retained as the same explicitly scoped payload.
+        "coherence": expectation,
         "frequency": frequency_summary,
     }
 
     hist.setdefault("math_engine_summary", []).append(summary)
     hist.setdefault("math_engine_norm", []).append(summary["norm"])
     hist.setdefault("math_engine_normalized", []).append(summary["normalized"])
-    hist.setdefault("math_engine_coherence", []).append(summary["coherence"]["value"])
+    hist.setdefault("math_engine_spectral_operator_expectation", []).append(
+        expectation["value"]
+    )
+    hist.setdefault("math_engine_spectral_expectation_passed", []).append(
+        expectation["passed"]
+    )
+    # Historical streams mirror the auxiliary spectral values only.
+    hist.setdefault("math_engine_coherence", []).append(expectation["value"])
     hist.setdefault("math_engine_coherence_passed", []).append(
-        summary["coherence"]["passed"]
+        expectation["passed"]
     )
 
     if frequency_summary is None:
@@ -1015,9 +1056,11 @@ def run(
     >>> len(G.graph["dt_trace"])
     2
     """
+    if isinstance(steps, bool) or not isinstance(steps, Integral):
+        raise TypeError("'steps' must be a non-negative integer")
     steps_int = int(steps)
     if steps_int < 0:
-        raise ValueError("'steps' must be non-negative")
+        raise ValueError("'steps' must be a non-negative integer")
     stop_cfg = get_graph_param(G, "STOP_EARLY", dict)
     stop_enabled = False
     if stop_cfg and stop_cfg.get("enabled", False):

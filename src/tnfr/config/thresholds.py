@@ -43,7 +43,7 @@ EPI_LATENT_MAX: float = CONFIG_EPI_LATENT_MAX_CANONICAL
 
 # Minimum structural frequency (νf) for emission - ensures sufficient
 # reorganization capacity. Below this threshold, the node cannot sustain
-# the structural frequency activation that AL initiates.
+# emission. AL reads this capacity as a precondition and does not write it.
 VF_BASAL_THRESHOLD: float = CONFIG_VF_BASAL_CANONICAL
 
 # Minimum coherence gradient (epsilon) for meaningful emission
@@ -78,9 +78,8 @@ DNFR_RECEPTION_MAX: float = 0.15
 # Zero or negative EPI indicates no structure to stabilize
 EPI_IL_MIN: float = 0.0
 
-# Maximum EPI for coherence - IL may increment EPI during stabilization
-# Leave room for stabilization increment to avoid saturation
-# Values near 1.0 indicate node is already highly stable
+# Deprecated compatibility value. IL does not write EPI, so this bound is not
+# consumed by strict readiness and supplies no EPI-headroom condition.
 EPI_IL_MAX: float = 1.0
 
 # Minimum structural frequency for coherence - IL requires active νf
@@ -88,10 +87,9 @@ EPI_IL_MAX: float = 1.0
 # Zero νf prevents effective stabilization
 VF_IL_MIN: float = 0.0
 
-# Critical ΔNFR threshold - excessive reorganization pressure
-# Above this threshold, node is highly unstable and may benefit from
-# OZ (Dissonance) → IL sequence for controlled stabilization
-# This is a warning threshold, not a hard failure
+# Critical |ΔNFR| warning threshold. Either pressure sign is an IL input;
+# above this magnitude, repeated IL or THOL may be needed. This is advisory,
+# not a hard failure.
 DNFR_IL_CRITICAL: float = 0.8
 
 # -------------------------
@@ -110,7 +108,7 @@ DNFR_RA_MAX: float = 0.5
 
 # Minimum structural frequency for resonance - RA requires active νf
 # Resonance amplifies νf across the network. Zero νf prevents propagation
-# dynamics from occurring. Consider AL (Emission) or VAL (Expansion) first.
+# dynamics from occurring. Consider VAL (Expansion) or NAV (Transition) first.
 VF_RA_MIN: float = 0.01
 
 # Maximum phase difference for optimal resonance - RA prefers phase alignment

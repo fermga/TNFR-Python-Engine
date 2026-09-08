@@ -173,6 +173,7 @@ class Operator(metaclass=OperatorMetaAuto):
 
         try:
             _apply_selected_glyph(G, node, self.glyph, kw.get("window"))
+            self._after_glyph_application(G, node, **kw)
         except Exception:
             if _integrity_monitor is not None:
                 discard_pending = getattr(
@@ -212,6 +213,16 @@ class Operator(metaclass=OperatorMetaAuto):
             if "operator_metrics" not in G.graph:
                 G.graph["operator_metrics"] = []
             G.graph["operator_metrics"].append(metrics)
+
+    def _after_glyph_application(
+        self, G: TNFRGraph, node: Any, **kw: Any
+    ) -> None:
+        """Commit subclass lifecycle state after glyph history is durable.
+
+        The default implementation has no additional lifecycle. Subclasses
+        may override this hook when metrics and monitor checks must observe
+        metadata derived from the same pre-glyph proposal.
+        """
 
     def _validate_hard_invariants(self, G: TNFRGraph, node: Any) -> None:
         """Validate non-disableable structural invariants.

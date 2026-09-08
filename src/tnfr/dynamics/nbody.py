@@ -1,139 +1,19 @@
-"""Classical N-body problem implementation in TNFR structural framework.
+"""Newtonian N-body solver with explicit TNFR-shaped adapter metadata.
 
-⚠️ **IMPORTANT LIMITATION**: This module ASSUMES Newtonian gravitational potential:
-   U(q) = -Σ_{i<j} G * m_i * m_j / |r_i - r_j|
+The force law in this module is the externally assumed Newtonian potential
+``U = -sum(G*m_i*m_j/r_ij)``. Velocity Verlet advances that classical model.
+For compatibility, graph nodes store position/velocity dictionaries, record
+the optional adapter assignment ``nu_f = 1/m``, and expose Newtonian
+acceleration through the legacy name ``compute_gravitational_dnfr``.
 
-This is an **external assumption**, NOT derived from TNFR first principles!
+The solver does not execute the scalar nodal equation and its acceleration is
+not the graph pressure computed by :mod:`tnfr.dynamics.dnfr`. Agreement with
+Newtonian orbits validates the stated force law and integrator only; it does not
+derive gravity, mechanical energy or increasing structural C(t) from TNFR.
 
 For a different declared auxiliary pair law, see
-``tnfr.dynamics.nbody_tnfr``. That adapter uses phase, edge weights,
-frequencies and a regularized distance law selected by its implementation. Its
-localized-projector commutator read-out is identically zero and does not derive
-the pair force.
-
-Purpose of This Module
------------------------
-
-This module embeds a Newtonian model in TNFR-shaped storage through an explicit
-adapter. Agreement with Newtonian mechanics is true by construction because the
-force law is an input, not a prediction of the nodal equation.
-
-Classical Mechanics   ←→   TNFR Framework
--------------------        ---------------
-Position q            ←→   EPI spatial component
-Velocity v            ←→   EPI velocity component
-Mass m                ←→   1/νf (structural inertia)
-Force F = -∇U         ←→   ΔNFR (ASSUMED from classical U)
-Newton's 2nd law      ←→   Nodal equation ∂EPI/∂t = νf·ΔNFR
-
-Comparison:
------------
-
-**This module** (nbody.py):
-```python
-# Assumes gravitational potential
-U = -Σ G*m_i*m_j/r_ij
-F = -∇U  # Classical force
-ΔNFR = F/m  # External assumption
-```
-
-**Phase-coupled auxiliary adapter** (nbody_tnfr.py):
-```python
-# Assumes a regularized central pair law from phase, graph weights, and nu_f
-F = compute_nbody_pair_forces(graph, positions, distance_regularization)
-a = F * nu_f
-```
-
-Theoretical Foundation
-----------------------
-
-The adapter uses the following declared dictionary:
-
-1. **Mass as inverse frequency**: m_i = 1/νf_i in this adapter
-   High mass → low structural reorganization rate (inertia)
-   Low mass → high structural reorganization rate (responsiveness)
-
-2. **Gravitational potential as coherence potential** (ASSUMED):
-   U(q) = -Σ_{i<j} G * m_i * m_j / |r_i - r_j|
-
-   This potential encodes structural stability landscape. Nodes
-   naturally evolve toward configurations of higher coherence
-   (lower potential energy).
-
-3. **Nodal equation integration**:
-   ∂EPI/∂t = νf · ΔNFR(t)
-
-   Where EPI encodes position and velocity, and ΔNFR is computed
-   from the gravitational coherence gradient (ASSUMED).
-
-Mathematical Correspondence
----------------------------
-
-Classical mechanics:     TNFR structural dynamics:
-- Position q_i          → EPI spatial component
-- Velocity v_i          → EPI velocity component
-- Mass m_i              → 1/νf_i (structural inertia)
-- Force F_i = -∇U       → ΔNFR (coherence gradient, ASSUMED)
-- Newton's 2nd law      → Nodal equation ∂EPI/∂t = νf·ΔNFR
-
-Conservation Laws
------------------
-
-The continuous Newtonian central-force model has the usual energy, linear
-momentum, and angular-momentum invariants. The finite velocity-Verlet
-trajectory reports numerical drift; it does not conserve energy exactly at an
-arbitrary step size.
-
-References
-----------
-- tnfr.dynamics.nbody_tnfr: declared phase-coupled auxiliary adapter
-- theory/PHYSICAL_REGIME_CORRESPONDENCES.md
-- TNFR.pdf: Canonical nodal equation (§2.3)
-- AGENTS.md: Canonical invariants (§3)
-
-Examples
---------
-Two-body orbit (Earth-Moon system) with ASSUMED gravity:
-
->>> from tnfr.dynamics.nbody import NBodySystem
->>> import numpy as np
->>>
->>> # Create 2-body system (dimensionless units)
->>> system = NBodySystem(
-...     n_bodies=2,
-...     masses=[1.0, 0.012],  # Mass ratio ~ Earth/Moon
-...     G=1.0  # Gravitational constant (ASSUMED)
-... )
->>>
->>> # Initialize circular orbit
->>> positions = np.array([
-...     [0.0, 0.0, 0.0],      # Earth at origin
-...     [1.0, 0.0, 0.0]       # Moon at distance 1
-... ])
->>> velocities = np.array([
-...     [0.0, 0.0, 0.0],      # Earth at rest (CM frame)
-...     [0.0, 1.0, 0.0]       # Moon with tangential velocity
-... ])
->>>
->>> system.set_state(positions, velocities)
->>>
->>> # Evolve system (structural time)
->>> history = system.evolve(t_final=10.0, dt=0.01)
->>>
->>> # Check energy conservation
->>> E0 = history['energy'][0]
->>> E_final = history['energy'][-1]
->>> print(f"Energy drift: {abs(E_final - E0) / abs(E0):.2e}")
-
-Three-body system (Figure-8 orbit):
-
->>> system = NBodySystem(n_bodies=3, masses=[1.0, 1.0, 1.0], G=1.0)
->>> # Use known figure-8 initial conditions
->>> # (See Chenciner & Montgomery, 2000)
->>> history = system.evolve(t_final=6.3, dt=0.001)
->>> system.plot_trajectories(history)
+:mod:`tnfr.dynamics.nbody_tnfr`.
 """
-
 from __future__ import annotations
 
 import math
@@ -154,6 +34,7 @@ __all__ = (
     "NBodySystem",
     "gravitational_potential",
     "gravitational_force",
+    "compute_newtonian_acceleration",
     "compute_gravitational_dnfr",
 )
 
@@ -244,6 +125,21 @@ def _finite_float(value: Any, name: str) -> float:
     return normalized
 
 
+def _finite_real_array(value: Any, name: str) -> NDArray[np.floating]:
+    """Normalize a finite real array without discarding imaginary parts."""
+
+    try:
+        raw = np.asarray(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError(f"{name} must be a finite real array") from exc
+    if raw.dtype.kind not in "iuf":
+        raise ValueError(f"{name} must be a finite real array")
+    array = np.asarray(raw, dtype=float)
+    if not np.all(np.isfinite(array)):
+        raise ValueError(f"{name} must be a finite real array")
+    return array
+
+
 def _scaled_product(*factors: float) -> float:
     """Multiply finite floats without avoidable intermediate range loss."""
     sign = 1.0
@@ -299,22 +195,20 @@ def _validate_newtonian_inputs(
     float,
 ]:
     """Return finite arrays and scalar parameters for the 3D adapter."""
-    position_array = np.asarray(positions, dtype=float)
-    mass_array = np.asarray(masses, dtype=float)
-    gravitational_constant = float(G)
-    softening_length = float(softening)
+    position_array = _finite_real_array(positions, "positions")
+    mass_array = _finite_real_array(masses, "masses")
+    gravitational_constant = _finite_float(G, "G")
+    softening_length = _finite_float(softening, "softening")
 
     if position_array.ndim != 2 or position_array.shape[1] != 3:
         raise ValueError("positions must have shape (N, 3)")
     if mass_array.ndim != 1 or len(mass_array) != len(position_array):
         raise ValueError("masses must have shape (N,) matching positions")
-    if not np.all(np.isfinite(position_array)):
-        raise ValueError("All positions must be finite")
-    if not np.all(np.isfinite(mass_array)) or np.any(mass_array <= 0.0):
+    if np.any(mass_array <= 0.0):
         raise ValueError("All masses must be finite and positive")
-    if not np.isfinite(gravitational_constant) or gravitational_constant < 0.0:
+    if gravitational_constant < 0.0:
         raise ValueError("G must be finite and non-negative")
-    if not np.isfinite(softening_length) or softening_length < 0.0:
+    if softening_length < 0.0:
         raise ValueError("softening must be finite and non-negative")
 
     return position_array, mass_array, gravitational_constant, softening_length
@@ -442,15 +336,15 @@ def gravitational_force(
     return forces
 
 
-def compute_gravitational_dnfr(
+def compute_newtonian_acceleration(
     positions: NDArray[np.floating],
     masses: NDArray[np.floating],
     G: float = 1.0,
     softening: float = 0.0,
 ) -> NDArray[np.floating]:
-    """Return Newtonian acceleration under a legacy adapter name.
+    """Return acceleration from the externally supplied Newtonian pair law.
 
-    ΔNFR_i = F_i / m_i = a_i (acceleration)
+    ``a_i = F_i / m_i``
 
     The returned array is used directly as acceleration by velocity Verlet. It
     is not the scalar graph pressure computed by ``tnfr.dynamics.dnfr`` and is
@@ -461,7 +355,7 @@ def compute_gravitational_dnfr(
     positions : ndarray, shape (N, 3)
         Positions of N bodies
     masses : ndarray, shape (N,)
-        Masses (or inverse frequencies: m = 1/νf)
+        Classical masses; the graph records ``nu_f=1/m`` as adapter metadata
     G : float, default=1.0
         Gravitational constant
     softening : float, default=0.0
@@ -469,36 +363,50 @@ def compute_gravitational_dnfr(
 
     Returns
     -------
-    dnfr : ndarray, shape (N, 3)
+    accelerations : ndarray, shape (N, 3)
         Newtonian accelerations for each body
 
     Notes
     -----
-    The function name is retained for compatibility. Treating acceleration as
-    a TNFR pressure is an adapter convention, not a nodal-equation derivation.
+    This is an auxiliary classical-model value. It is not canonical scalar
+    graph pressure and cannot be used to compute structural ``C(t)`` without a
+    separately declared mapping to the graph pressure and EPI-rate channels.
     """
     positions, masses, G, softening = _validate_newtonian_inputs(
         positions, masses, G, softening
     )
     forces = gravitational_force(positions, masses, G, softening)
 
-    # ΔNFR = F/m (acceleration)
-    # Broadcast division: (N, 3) / (N, 1) -> (N, 3)
+    # Broadcast division: (N, 3) / (N, 1) -> (N, 3).
     with np.errstate(over="ignore", invalid="ignore"):
-        dnfr = forces / masses[:, np.newaxis]
-    if not np.all(np.isfinite(dnfr)):
+        accelerations = forces / masses[:, np.newaxis]
+    if not np.all(np.isfinite(accelerations)):
         raise ValueError("gravitational acceleration exceeds finite range")
 
-    return dnfr
+    return accelerations
+
+
+def compute_gravitational_dnfr(
+    positions: NDArray[np.floating],
+    masses: NDArray[np.floating],
+    G: float = 1.0,
+    softening: float = 0.0,
+) -> NDArray[np.floating]:
+    """Compatibility alias for :func:`compute_newtonian_acceleration`.
+
+    The historical name does not make the returned vector a canonical TNFR
+    pressure. New code should use the model-specific acceleration name.
+    """
+
+    return compute_newtonian_acceleration(positions, masses, G, softening)
 
 
 class NBodySystem:
     """Newtonian N-body solver with TNFR-shaped graph metadata.
 
-    Implements N particles (resonant nodes) coupled through Newtonian
-    gravitational potential. Positions and velocities are encoded as
-    EPI components, masses as inverse frequencies (m = 1/νf), and
-    evolution follows Newtonian velocity Verlet.
+    Implements N particles coupled through the externally specified Newtonian
+    potential. Graph nodes retain adapter-shaped position/velocity metadata and
+    the optional assignment ``nu_f=1/m``; evolution follows velocity Verlet.
 
     Attributes
     ----------
@@ -516,9 +424,9 @@ class NBodySystem:
     velocities : ndarray, shape (N, 3)
         Current velocities
     time : float
-        Current structural time
+        Current time in the declared Newtonian adapter units
     graph : TNFRGraph
-        NetworkX graph storing nodes as NFRs
+        Adapter graph storing NFR-shaped nodes and explicit scope metadata
 
     Notes
     -----
@@ -562,21 +470,21 @@ class NBodySystem:
             raise ValueError(f"n_bodies must be >= 1, got {n_bodies}")
 
         self.n_bodies = int(n_bodies)
-        self.masses = np.asarray(masses, dtype=float)
+        self.masses = _finite_real_array(masses, "masses")
 
         if self.masses.ndim != 1 or self.masses.shape != (n_bodies,):
             raise ValueError(
                 f"masses shape {self.masses.shape} != ({n_bodies},)"
             )
 
-        if not np.all(np.isfinite(self.masses)) or np.any(self.masses <= 0):
+        if np.any(self.masses <= 0):
             raise ValueError("All masses must be finite and positive")
 
-        self.G = float(G)
-        self.softening = float(softening)
-        if not np.isfinite(self.G) or self.G < 0.0:
+        self.G = _finite_float(G, "G")
+        self.softening = _finite_float(softening, "softening")
+        if self.G < 0.0:
             raise ValueError("G must be finite and non-negative")
-        if not np.isfinite(self.softening) or self.softening < 0.0:
+        if self.softening < 0.0:
             raise ValueError("softening must be finite and non-negative")
 
         # State vectors
@@ -594,13 +502,25 @@ class NBodySystem:
         - νf = 1/m under this adapter's explicit classical embedding
         - EPI encoding (position, velocity)
         - Phase initialized to 0 (can be set for rotation)
-        - Fully connected topology (all-to-all gravitational coupling)
+        - Fully connected metadata for the externally computed pair law
         """
         # Create empty graph (will add nodes manually)
         import networkx as nx
 
         self.graph: TNFRGraph = nx.Graph()
         self.graph.graph["name"] = "nbody_system"
+        self.graph.graph.update(
+            {
+                "MODEL_SCOPE": "external_newtonian_nbody_adapter",
+                "DYNAMICS_LAW": "velocity_verlet_newtonian_pair_force",
+                "NU_F_SEMANTICS": "inverse_mass_adapter_metadata_only",
+                "FORCE_BRIDGE_MATERIALIZED": False,
+                "ACCELERATION_API_COMPATIBILITY": (
+                    "compute_gravitational_dnfr_is_legacy_name"
+                ),
+                "CANONICAL_C_T_AVAILABLE": False,
+            }
+        )
 
         # Canonical EPI seed stays below the EPI_MAX = 1.0 validation bound.
         epi_seed = min(0.5, EPI_MAX_CANONICAL * 0.95)
@@ -611,7 +531,11 @@ class NBodySystem:
 
             # Adapter convention for this classical embedding. In the bare
             # first-order nodal equation νf has mobility semantics.
-            nu_f = 1.0 / self.masses[i]
+            nu_f = 1.0 / float(self.masses[i])
+            if not math.isfinite(nu_f) or nu_f <= 0.0:
+                raise ValueError(
+                    "inverse-mass adapter frequency is not representable"
+                )
 
             # Create NFR node
             _, _ = create_nfr(
@@ -628,8 +552,8 @@ class NBodySystem:
             for j in range(i + 1, self.n_bodies):
                 node_i = f"body_{i}"
                 node_j = f"body_{j}"
-                # Coupling weight: G * m_i * m_j
-                weight = self.G * self.masses[i] * self.masses[j]
+                # Metadata coefficient for the external Newtonian pair law.
+                weight = _scaled_product(self.G, self.masses[i], self.masses[j])
                 self.graph.add_edge(node_i, node_j, weight=weight)
 
     def set_state(
@@ -651,19 +575,16 @@ class NBodySystem:
         ValueError
             If shapes don't match (N, 3)
         """
-        positions = np.asarray(positions, dtype=float)
-        velocities = np.asarray(velocities, dtype=float)
+        positions = _finite_real_array(positions, "positions")
+        velocities = _finite_real_array(velocities, "velocities")
 
         expected_shape = (self.n_bodies, 3)
         if positions.shape != expected_shape:
             raise ValueError(f"positions shape {positions.shape} != {expected_shape}")
         if velocities.shape != expected_shape:
-            raise ValueError(f"velocities shape {velocities.shape} != {expected_shape}")
-        if not np.all(np.isfinite(positions)):
-            raise ValueError("All positions must be finite")
-        if not np.all(np.isfinite(velocities)):
-            raise ValueError("All velocities must be finite")
-
+            raise ValueError(
+                f"velocities shape {velocities.shape} != {expected_shape}"
+            )
         self.positions = positions.copy()
         self.velocities = velocities.copy()
 
@@ -671,7 +592,8 @@ class NBodySystem:
         # EPI encodes state as dictionary with position/velocity
         for i in range(self.n_bodies):
             node_id = f"body_{i}"
-            # Store as structured EPI
+            # Store the adapter payload under the legacy EPI key. Canonical
+            # scalar-EPI operators are not applied to this graph.
             epi_state = {
                 "position": self.positions[i].copy(),
                 "velocity": self.velocities[i].copy(),
@@ -704,8 +626,8 @@ class NBodySystem:
 
         Notes
         -----
-        Energy conservation is a fundamental check of integrator accuracy.
-        For Hamiltonian systems, H should be constant over time.
+        The continuous declared Newtonian model conserves energy. Reported
+        drift measures the finite-step integrator error.
         """
         # Kinetic energy: T = Σ (1/2) m_i v_i²
         kinetic = _kinetic_energy(self.masses, self.velocities)
@@ -732,7 +654,8 @@ class NBodySystem:
 
         Notes
         -----
-        For isolated systems, momentum should be conserved (constant).
+        The continuous declared Newtonian central-force model conserves
+        total linear momentum; a finite trajectory can show numerical drift.
         """
         momentum = np.sum(self.masses[:, np.newaxis] * self.velocities, axis=0)
         return momentum
@@ -747,7 +670,8 @@ class NBodySystem:
 
         Notes
         -----
-        For central force systems, angular momentum is conserved.
+        The continuous declared Newtonian central-force model conserves
+        angular momentum; a finite trajectory can show numerical drift.
         """
         L = np.zeros(3)
         for i in range(self.n_bodies):
@@ -757,8 +681,8 @@ class NBodySystem:
     def step(self, dt: float) -> None:
         """Advance system by one time step using velocity Verlet.
 
-        The velocity Verlet integrator is symplectic (preserves phase space
-        volume) and provides excellent long-term energy conservation.
+        Velocity Verlet is symplectic for this autonomous separable
+        Hamiltonian model. Its finite-step energy drift depends on the timestep.
 
         Algorithm:
         1. r(t+dt) = r(t) + v(t)*dt + (1/2)*a(t)*dt²
@@ -781,7 +705,7 @@ class NBodySystem:
             raise ValueError("dt must be finite and strictly positive")
 
         # Compute Newtonian acceleration at the current time.
-        accel_t = compute_gravitational_dnfr(
+        accel_t = compute_newtonian_acceleration(
             self.positions, self.masses, self.G, self.softening
         )
 
@@ -791,7 +715,7 @@ class NBodySystem:
         )
 
         # Compute acceleration at new time: a(t+dt)
-        accel_t_plus_dt = compute_gravitational_dnfr(
+        accel_t_plus_dt = compute_newtonian_acceleration(
             new_positions, self.masses, self.G, self.softening
         )
 
@@ -808,7 +732,7 @@ class NBodySystem:
         self.positions = new_positions
         self.velocities = new_velocities
 
-        # Update structural time
+        # Update time in the Newtonian adapter units.
         self.time = new_time
 
         # Update graph representation
@@ -1014,7 +938,7 @@ class NBodySystem:
         ax_3d.set_xlabel("X")
         ax_3d.set_ylabel("Y")
         ax_3d.set_zlabel("Z")
-        ax_3d.set_title("N-Body Trajectories (TNFR Framework)")
+        ax_3d.set_title("Newtonian N-Body Adapter Trajectories")
         ax_3d.legend()
 
         if show_energy:
@@ -1031,9 +955,9 @@ class NBodySystem:
                 color="red",
             )
             ax_energy.axhline(0, color="black", linestyle="--", alpha=0.3)
-            ax_energy.set_xlabel("Structural Time")
+            ax_energy.set_xlabel("Adapter Time")
             ax_energy.set_ylabel("ΔE/E₀ (%)")
-            ax_energy.set_title("Energy Conservation Check")
+            ax_energy.set_title("Newtonian Energy Drift")
             ax_energy.legend()
             ax_energy.grid(True, alpha=0.3)
 

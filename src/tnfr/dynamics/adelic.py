@@ -68,10 +68,33 @@ class AdelicState:
     time: float = 0.0  # The flow parameter 't'
 
     @property
+    def phase_coherence(self) -> float:
+        """Return amplitude-weighted phase order in ``[0, 1]``.
+
+        This is a phase-alignment diagnostic, normalized by total amplitude
+        magnitude. It is invariant under a common positive amplitude scaling
+        and is distinct from structural coherence C(t).
+        """
+
+        amplitudes = np.asarray(self.amplitudes, dtype=complex).reshape(-1)
+        if amplitudes.size == 0:
+            return 0.0
+        magnitudes = np.abs(amplitudes)
+        if not bool(np.all(np.isfinite(magnitudes))):
+            raise ValueError("adelic amplitudes must be finite")
+        scale = float(np.max(magnitudes))
+        if scale == 0.0:
+            return 0.0
+        scaled = amplitudes / scale
+        denominator = float(np.sum(np.abs(scaled)))
+        order = float(np.abs(np.sum(scaled))) / denominator
+        return min(1.0, max(0.0, order))
+
+    @property
     def coherence(self) -> float:
-        """Measure of phase coherence (constructive interference)."""
-        # Simple proxy: magnitude of the sum of amplitudes
-        return np.abs(np.sum(self.amplitudes)) / len(self.amplitudes)
+        """Compatibility alias for :attr:`phase_coherence`; not C(t)."""
+
+        return self.phase_coherence
 
     def to_graph(self) -> Any:
         """
@@ -350,7 +373,8 @@ class AdelicDynamics:
 
         trajectory = {
             "time": [],
-            "coherence": [],
+            "phase_coherence": [],
+            "coherence": [],  # compatibility alias of phase_coherence
             "trace_magnitude": [],
             "delta_nfr": [],
         }
@@ -360,7 +384,9 @@ class AdelicDynamics:
         for _ in range(steps):
             # Record metrics
             trajectory["time"].append(current_state.time)
-            trajectory["coherence"].append(current_state.coherence)
+            phase_coherence = current_state.phase_coherence
+            trajectory["phase_coherence"].append(phase_coherence)
+            trajectory["coherence"].append(phase_coherence)
             trajectory["trace_magnitude"].append(
                 self.compute_geometric_trace(current_state.time)
             )

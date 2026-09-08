@@ -761,9 +761,10 @@ class TNFRNetwork:
         else:
             operator_list = sequence
 
-        # The neutral executor uses operator-major stages. Reception and
-        # Resonance commit atomic two-phase Jacobi proposals; other operators
-        # retain graph-order commits until their merge laws are specified.
+        # The neutral executor uses operator-major stages. EN/IL/OZ/UM/RA/THOL
+        # and AL/SHA/VAL/NUL/ZHIR/NAV commit atomic two-phase Jacobi proposals;
+        # REMESH and grammar replacements retain Gauss-Seidel graph-order reads
+        # inside complete stage rollback boundaries.
         from ..operators.word_execution import run_network_sequence
 
         run_network_sequence(

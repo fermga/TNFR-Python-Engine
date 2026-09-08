@@ -69,6 +69,21 @@ class BanachSpaceEPI(_EPIValidators):
         hilbert_space: HilbertSpace,
         vector: Sequence[complex] | np.ndarray | None = None,
     ) -> np.ndarray: ...
+    def derivative_regularity(
+        self,
+        f_continuous: Sequence[complex] | np.ndarray,
+        x_grid: Sequence[float] | np.ndarray,
+    ) -> float: ...
+    def composite_epi_regularity(
+        self,
+        f_continuous: Sequence[complex] | np.ndarray,
+        a_discrete: Sequence[complex] | np.ndarray,
+        *,
+        x_grid: Sequence[float] | np.ndarray,
+        alpha: float = 1.0,
+        beta: float = 1.0,
+        gamma: float = 1.0,
+    ) -> float: ...
     def compute_coherence_functional(
         self,
         f_continuous: Sequence[complex] | np.ndarray,

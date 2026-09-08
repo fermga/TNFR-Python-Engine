@@ -154,7 +154,7 @@ See Also
 --------
 
 coherence.compute_coherence : Total network coherence :math:`C(t)`
-coherence.coherence_matrix : Coherence operator approximation :math:`W \approx \hat{C}`
+coherence.coherence_matrix : Auxiliary pairwise structural-affinity matrix
 observers.kuramoto_order : Kuramoto order parameter for phase synchrony
 observers.phase_sync : Phase synchronization metrics
 

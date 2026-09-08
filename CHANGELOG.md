@@ -4,6 +4,204 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added — 2026-09-08 Dissonance, Coupling, event-time and proof boundaries
+
+- Promoted Recursivity as the thirteenth atomic all-target glyph stage. One
+  immutable snapshot now preflights all targets and produces one shared
+  advisory that is deduplicated per telemetry step. The stage commits node
+  histories, provenance, metrics, monitors and pressure refresh atomically
+  while leaving EPI, nu_f, phase, DeltaNFR and support unchanged. Explicit
+  delayed EPI mixing remains the separate apply_network_remesh operation;
+  grammar replacements and execution overrides retain the transactional
+  Gauss-Seidel fallback.
+- Promoted Self-organization as the twelfth atomic all-target two-phase stage.
+  Every THOL target now reads one detached stage-start graph. Cross-parent child
+  identifier collisions and structural commits resolve in snapshot-node rank;
+  the complete child/`sub_nodes`/`sub_epis`/`hierarchy` merge is validated
+  on a detached graph before live mutation. Direct and staged execution share
+  the prepared nodal action and amplitude-alignment kernel, with full rollback
+  through late monitor, metric and pressure-refresh failures.
+- Promoted Dissonance as the eleventh atomic all-target two-phase stage.
+  Local OZ actions and outgoing propagation now read one immutable snapshot;
+  overlapping incoming pressure increments use a deterministic `math.fsum`
+  reduction in snapshot-node order. Local pressure amplification, per-node RNG
+  progress, ordered events, late warnings and full-stage rollback have explicit
+  contracts and tests across graph variants.
+- Promoted Coupling as the tenth atomic all-target two-phase stage. One
+  immutable snapshot now feeds a deterministic circular-displacement merge,
+  final phase normalization, U3 revalidation and functional-link coalescing.
+  THOL and the final REMESH advisory promotion complete the thirteen-stage
+  immutable proposal boundary.
+- Added a finite operator-event schedule with zero-duration jumps and exactly
+  `m + 1` declared flow intervals for `m` events. Exact rationalized binary64
+  durations and offsets own physical ordering; float timestamps are display
+  values. A companion exact-bound diagnostic gives a sufficient fixed-flow
+  relaxation duration without executing operators or adapting U2/U4.
+- Added `execute_operator_event_schedule`, which binds a valid schedule to the
+  configured nodal integrator and shared atomic glyph stages. It freezes initial
+  targets, validates every live clock boundary, rejects collapsed and
+  nonadditive binary64 intervals, separates zero-duration jumps from EPI
+  secants, and rolls back graph-owned flow/jump state as one transaction.
+- Added `execute_event_remesh_cycle` as an atomic one-cycle bridge from an
+  operator-event schedule through one canonical pre-REMESH history sample to
+  the separately invoked delayed map. It freezes one positive diagonal metric,
+  rejects schedule changes to ordered node support or incoming REMESH history,
+  exposes weighted-consensus drift and capacity separately, and makes the
+  optional post-map pressure refresh explicit. It claims no mixed or repeated
+  evolving-history gain.
+- Applied delayed REMESH now records its same-time `epi_time_history` right
+  endpoint and treats `ON_REMESH` callbacks as observers of the EPI-only map.
+  Mutations of structural channels, topology, delayed or physical histories,
+  clock, event log, hook/config provenance or canonical telemetry fail
+  atomically. Structural-memory EPI propagation records a further endpoint.
+- Event/REMESH execution now preflights and freezes all deterministic delayed-map
+  controls before schedule flow, binds immutable events to the live event log,
+  and protects endpoint traces through the optional pressure refresh. Exact
+  rational observations remain authoritative when a derived float display is
+  unrepresentable and therefore `None`.
+- Canonical delayed history now rebuilds `deque` subclasses before append and
+  verifies the expected length transition, preventing overridden methods from
+  inserting hidden samples.
+- Centralized the runtime and delayed-planner validation of strict positive
+  REMESH delays and protected bounded-history allocation from oversized
+  `deque.maxlen` values. `_epi_hist` now retains its container identity during
+  graph-owned rollback when in-place restoration is possible.
+- Contracted the separately invoked delayed REMESH map with immutable plans and
+  results, exact-support temporal snapshots, explicit insufficient-history and
+  empty-support no-ops, exact recurrence/rounding/clipping separation and
+  graph-state atomic commit. Optional one-step evidence separates convex
+  three-input bounds, mean drift and conditional fixed-history gains; extreme
+  diagnostics outside binary64 reporting range now fail explicitly.
+- Added fixed-branch phase coarse-graining. The pairwise phase realization
+  inherits the reversible diffusion quotient; the canonical mean-of-phasors
+  channel has a restricted lifted-subspace closure and a `K3,3`
+  same-macro-state counterexample to global projected autonomy. Canonical phase
+  support remains unweighted even across zero-conductance edges.
+- Completed fixed-`N` coherence-level geometry: canonical network levels are
+  stratified `2N`-dimensional cross-polytope boundaries, and fixed positive
+  capacities induce exact weighted `N`-dimensional pressure sections.
+- Added a conditional pointwise certificate for frozen
+  AL/SHA/VAL/NUL/ZHIR/NAV proposals. A successful network-stage result carries
+  evidence computed from the executor's own detached snapshot and frozen
+  proposals. It separates exact runtime realization, affine quotient gain and
+  aligned pre/post diffusion metrics; histories, pressure refresh, mixed words
+  and repetition remain open.
+- Integrated the structural-affinity boundary throughout telemetry and the
+  auxiliary Hamiltonian: `coherence_matrix` remains a bounded, potentially
+  indefinite pairwise affinity and never substitutes for canonical `C(t)`.
+  Read-only nodal-pulse diagnostics no longer append `W_sparse`, `W_i` or
+  `W_stats` history while sampling that affinity.
+
+### Changed — 2026-09-08 structural-affinity boundary
+
+- Corrected the historical `coherence_matrix` documentation: it is an
+  auxiliary bounded structural-affinity matrix, not the constitutive `C(t)`
+  kernel and not positive semidefinite in general. The three-node path with
+  identical node attributes gives the exact counterexample
+  `W = I + A_path`, whose spectrum contains `1 - sqrt(2) < 0`; its normalized
+  unit-diagonal trace is also independent of canonical coherence.
+- Centralized conversion of dense and sparse affinity payloads for the legacy
+  Hamiltonian builders. Dense 3-by-3 payloads are no longer mistaken for
+  sparse triples, caller-supplied node order is now honored and validated,
+  disabled affinity contributes a zero matrix, and the class and standalone
+  builders share one finite strength and ordering contract.
+
+### Changed — 2026-09-08 Coherence stage contract
+
+- Promoted Coherence as the ninth atomic all-target two-phase stage. Direct IL
+  and the network runner now share one pure snapshot proposal for
+  sign-preserving pressure-magnitude contraction and circular phase locking.
+  The canonical word path is target-order invariant for committed target
+  `DeltaNFR` and phase before the opaque pressure refresh; the earlier
+  multi-target operator-major Gauss-Seidel behavior remains visible only through
+  the explicit legacy runner and its schedule-mismatch diagnostic.
+- Committed direct IL phase and telemetry before monitor and metrics hooks.
+  Integrity now compares bound before/after snapshots, including `|DeltaNFR|`,
+  and never consults an unbound latest telemetry record. Stage telemetry adds
+  canonical global and radius-local structural `C(t)` fields while preserving
+  historical `C_global_*` and `C_local_*` pressure-dispersion values with
+  explicit auxiliary aliases and deprecation metadata.
+- Corrected negative-pressure reduction metrics, removed EPI-headroom and
+  signed-positive-pressure admission assumptions, and deferred IL precondition
+  warnings until all other fallible stage effects succeed. Warning-as-error,
+  monitor and pressure-refresh failures restore the complete stage; grammar
+  replacement still uses the transactional Gauss-Seidel fallback. The
+  unpromoted set is now OZ, UM, THOL and REMESH.
+
+### Added — 2026-09-07 all-target stability and stage contracts
+
+- Promoted Emission, Silence, Expansion and Contraction to the shared
+  all-target two-phase scheduler alongside Reception and Resonance. Their
+  frozen pointwise proposals are built from one stage-start snapshot, globally
+  validated and atomically merged; AL/SHA use one common stage timestamp.
+  Primary structural channels are target-order invariant before the opaque
+  pressure refresh. Ordered lifecycle, audit/telemetry and monitor effects
+  retain requested target order, while identity-bearing caches remain tied to
+  their live graph and node objects. Operators not yet promoted at that point
+  remained transactional Gauss-Seidel stages.
+- Promoted Mutation as the seventh two-phase stage. Its immutable all-target
+  proposal binds each target's temporal threshold evidence, phase result,
+  structural acceleration and U4 context to the stage snapshot, then commits
+  phase and acceleration before merging ordered histories, bifurcation events,
+  metrics and monitor effects. The opaque pressure refresh and relabeling
+  equivariance remain outside the target-order result. The impossible legacy
+  `ZHIR_BIFURCATION_MODE="variant_creation"` branch is now rejected before any
+  write: ZHIR remains phase-only plus detection, while topology and sub-EPI
+  creation belong to THOL.
+- Promoted Transition as the eighth two-phase stage. Its immutable proposal
+  binds `nu_f`, phase, `DeltaNFR`, latency state and each node's jitter draw/RNG
+  progress to one stage snapshot. A missing graph seed is resolved inside the
+  transaction, copied into the proposal snapshot, rolled back on rejection and
+  persisted on success; one shared stage instant supplies every latency
+  calculation. Ordered warnings, histories, transition events, metrics and
+  monitor effects retain requested target order. Cache state, the opaque
+  pressure refresh and relabeling equivariance remain outside the target-order
+  result.
+- Centralized VAL/NUL capacity, EPI-boundary and NUL reciprocal-pressure
+  proposals. NUL audit events now carry target identity, and contraction
+  metrics bind the captured pre-operation pressure or the matching node event,
+  report signed and magnitude changes separately, and do not label unchanged
+  zero pressure as densified. NAV transition telemetry now distinguishes the
+  true pre-handler pressure, handler output and final retained pressure.
+- Extended the EN/RA runtime-to-theorem bridge from one target to the complete
+  two-phase Jacobi stage. The new read-only certificate assembles every ideal
+  and represented row and replays finite repeated structural traces; regression
+  tests compare every step with the public runtime. It proves convex hard-bound
+  forward invariance in its declared domain and reports clipping, U3-set
+  changes, identity rejection, consensus drift and
+  RA diffusion-metric drift separately. It does not promote observed binary64
+  agreement to global runtime affinity.
+- Added the first direct composition from one certified all-target EN/RA stage
+  to a strictly positive-duration fixed post-stage pure-EPI flow. The bridge
+  rebuilds local domain conditions and validates node order, represented maps,
+  rational row algebra, proof stamps and the post-stage metric before using the
+  generic hybrid composer. It reports finite-horizon disagreement contraction,
+  weighted-mean drift, RA metric changes and the aggregate pure-EPI pressure
+  defect separately. Stored-pressure refresh, global binary64 runtime affinity
+  and repetition of the stage-flow schedule remain explicitly uncertified.
+- Replaced the dimension-dependent weighted-Frobenius composition penalty with
+  a tighter exact rational quotient-gain bound for scalar and small quotient
+  maps, retaining Frobenius as the conservative fallback. Identity now
+  certifies gain one; declared bounds and proof-stamp integrity use the same
+  decisive bound. Log-space composition retains the precise rational product
+  and uses visible upward 32-bit-significand dyadic factors to prevent
+  denominator growth without weakening the upper-bound proof.
+- Added centralized network-stage contracts for all 13 operators, covering
+  conservative read/write footprints, cross-target overlap, merge status,
+  direct and shared rollback scope, structural-state target-order behavior,
+  the retained target order of lifecycle and telemetry streams, relabeling
+  scope and promotion blockers. Live schedule diagnostics now derive from this
+  registry.
+- Made every non-EN/RA operator-major stage in the shared word runner a complete
+  graph transaction. Late target or pressure-refresh failures restore the
+  stage-start graph while successful execution retains the established
+  Gauss-Seidel reads. Unrelated synchronization primitives in graph metadata
+  are preserved by identity across both successful execution and rollback.
+- Centralized the dominant-neighbour EPI-kind rule shared by EN and RA and
+  exposed EN kind before/after in its local realization certificate. EN now
+  uses its historical pre-clipping proposal consistently in direct, staged and
+  certified paths, including soft clipping.
+
 ### Added — 2026-09-07 temporal Mutation and transactional operators
 
 - Added one pure Mutation trigger certificate that separates the instantaneous

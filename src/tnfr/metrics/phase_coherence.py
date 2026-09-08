@@ -70,7 +70,7 @@ See Also
 --------
 
 operators.definitions.Coherence : IL operator that applies phase locking
-metrics.coherence.compute_global_coherence : Global structural coherence C(t)
+metrics.common.compute_coherence : Canonical total structural coherence C(t)
 observers.kuramoto_order : Alternative Kuramoto order parameter implementation
 """
 
@@ -264,7 +264,8 @@ def compute_global_phase_coherence(G: TNFRGraph) -> float:
     - **IL Effectiveness**: Measure global impact of IL phase locking
     - **Network Health**: Monitor overall synchronization state
     - **Convergence Tracking**: Verify phase alignment over time
-    - **Bifurcation Detection**: Low r_global may indicate impending split
+    - **Bifurcation Measurement**: Low r_global records phase desynchronization;
+      precursor claims require a sampled trajectory and matched controls
 
     **Special Cases:**
 
@@ -274,15 +275,15 @@ def compute_global_phase_coherence(G: TNFRGraph) -> float:
 
     **TNFR Context:**
 
-    Global phase coherence is a key metric for network structural health.
-    Repeated IL application should increase r_global as nodes synchronize
-    their phases. Combined with C(t) (structural coherence), r_global provides
-    a complete picture of network stability.
+    Global phase coherence is a phase-synchronization diagnostic. Together
+    with canonical C(t), it separates phase alignment from structural pressure
+    and EPI rate. Their joint observation does not prove asymptotic stability
+    or reconstruct the full TNFR state.
 
     See Also
     --------
     compute_phase_alignment : Local phase alignment for node neighborhoods
-    metrics.coherence.compute_global_coherence : Global structural coherence C(t)
+    metrics.common.compute_coherence : Canonical total structural coherence C(t)
     observers.kuramoto_order : Alternative Kuramoto implementation
 
     Examples

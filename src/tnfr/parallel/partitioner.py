@@ -1,8 +1,8 @@
-"""TNFR-aware network partitioning for parallel computation.
+"""TNFR-aware affinity partitioning for parallel computation.
 
-Partitions networks respecting structural coherence rather than classical graph
-metrics. Communities are grown based on phase synchrony and frequency alignment
-to preserve the fractal organization inherent in TNFR.
+Communities are grown with a bounded heuristic that combines structural-frequency
+proximity and circular phase alignment. The affinity is a partitioning score; it
+does not estimate canonical coherence C(t), which depends on DeltaNFR and dEPI.
 """
 
 from __future__ import annotations
@@ -35,6 +35,19 @@ _DENSITY_DENSE_THRESHOLD = 0.5
 _DENSITY_MEDIUM_THRESHOLD = 0.1
 _CLUSTERING_HIGH_THRESHOLD = 0.6
 _CLUSTERING_LOW_THRESHOLD = 0.2
+_DEFAULT_AFFINITY_THRESHOLD = 0.3
+
+
+def _validated_affinity_threshold(value: Any, *, label: str) -> float:
+    """Return a finite positive-alignment threshold in [0, 1]."""
+    if (
+        isinstance(value, bool)
+        or not isinstance(value, Real)
+        or not math.isfinite(float(value))
+        or not 0.0 <= float(value) <= 1.0
+    ):
+        raise ValueError(f"{label} must be a finite real in [0, 1]")
+    return float(value)
 
 
 def _node_attribute(
@@ -64,12 +77,11 @@ def _node_attribute(
 
 
 class FractalPartitioner:
-    """Partitions TNFR networks respecting structural coherence.
+    """Partition TNFR networks by frequency-and-phase affinity.
 
-    This partitioner detects communities based on TNFR metrics (frequency and
-    phase) rather than classical graph metrics. It ensures that nodes with
-    similar structural frequencies and synchronized phases are grouped together,
-    preserving operational fractality during parallel processing.
+    The partitioner groups nodes with similar structural frequencies and aligned
+    circular phases. This operational affinity is independent of canonical C(t);
+    manifests compute C(t) separately from the resulting subgraphs.
 
     Parameters
     ----------
@@ -77,8 +89,11 @@ class FractalPartitioner:
         Maximum number of nodes per partition. Larger partitions reduce
         communication overhead but may limit parallelism. If None, uses
         adaptive partitioning based on network density.
-    coherence_threshold : float, default=0.3
-        Minimum coherence score for adding a node to a community. Higher values
+    coherence_threshold : float, optional
+        Compatibility name for affinity_threshold. The default is 0.3 when
+        neither name is supplied.
+    affinity_threshold : float, optional
+        Minimum frequency-and-phase affinity for adding a node. Higher values
         create tighter communities but may result in more partitions.
     use_spatial_index : bool, default=True
         Whether to build a KDTree for structural-coordinate candidate queries.
@@ -112,28 +127,78 @@ class FractalPartitioner:
     def __init__(
         self,
         max_partition_size: int | None = 100,
-        coherence_threshold: float = 0.3,
+        coherence_threshold: float | None = None,
         use_spatial_index: bool = True,
         adaptive: bool = True,
+        *,
+        affinity_threshold: float | None = None,
     ):
         if max_partition_size is not None and (
-            not isinstance(max_partition_size, int) or isinstance(max_partition_size, bool)
+            not isinstance(max_partition_size, int)
+            or isinstance(max_partition_size, bool)
             or max_partition_size <= 0
         ):
             raise ValueError("max_partition_size must be a positive integer or None")
+
+        legacy_threshold = (
+            None
+            if coherence_threshold is None
+            else _validated_affinity_threshold(
+                coherence_threshold, label="coherence_threshold"
+            )
+        )
+        canonical_threshold = (
+            None
+            if affinity_threshold is None
+            else _validated_affinity_threshold(
+                affinity_threshold, label="affinity_threshold"
+            )
+        )
         if (
-            isinstance(coherence_threshold, bool)
-            or not isinstance(coherence_threshold, Real)
-            or not math.isfinite(float(coherence_threshold))
-            or not 0.0 <= float(coherence_threshold) <= 1.0
+            legacy_threshold is not None
+            and canonical_threshold is not None
+            and legacy_threshold != canonical_threshold
         ):
-            raise ValueError("coherence_threshold must be a finite real in [0, 1]")
+            raise ValueError(
+                "coherence_threshold and affinity_threshold must agree when both "
+                "are provided"
+            )
         self.max_partition_size = max_partition_size
-        self.coherence_threshold = float(coherence_threshold)
+        self.affinity_threshold = (
+            canonical_threshold
+            if canonical_threshold is not None
+            else (
+                legacy_threshold
+                if legacy_threshold is not None
+                else _DEFAULT_AFFINITY_THRESHOLD
+            )
+        )
         self.use_spatial_index = use_spatial_index and HAS_SCIPY and HAS_NUMPY
         self.adaptive = adaptive
         self._kdtree = None
         self._node_index_map = None
+
+    @property
+    def affinity_threshold(self) -> float:
+        """Return the operational partition-affinity threshold."""
+        return self._affinity_threshold
+
+    @affinity_threshold.setter
+    def affinity_threshold(self, value: float) -> None:
+        self._affinity_threshold = _validated_affinity_threshold(
+            value, label="affinity_threshold"
+        )
+
+    @property
+    def coherence_threshold(self) -> float:
+        """Compatibility alias for affinity_threshold; this is not C(t)."""
+        return self.affinity_threshold
+
+    @coherence_threshold.setter
+    def coherence_threshold(self, value: float) -> None:
+        self.affinity_threshold = _validated_affinity_threshold(
+            value, label="coherence_threshold"
+        )
 
     @staticmethod
     def _validate_structural_coordinates(graph: TNFRGraph) -> None:
@@ -145,7 +210,7 @@ class FractalPartitioner:
             _node_attribute(graph, node, ALIAS_THETA, 0.0, label="phase")
 
     def partition_network(self, graph: TNFRGraph) -> list[tuple[set[Any], TNFRGraph]]:
-        """Partition network into coherent subgraphs.
+        """Partition a network into affinity-grouped subgraphs.
 
         Parameters
         ----------
@@ -160,8 +225,8 @@ class FractalPartitioner:
         Notes
         -----
         Maintains TNFR structural invariants:
-        - Communities formed by resonance (not just topology)
-        - Phase coherence preserved within partitions
+        - Communities grouped by the declared frequency-and-phase affinity
+        - Circular phase alignment contributes to the grouping score
         - Frequency alignment respected
 
         Optionally builds a KDTree for candidate queries; this does not establish
@@ -185,7 +250,7 @@ class FractalPartitioner:
         if self.use_spatial_index:
             self._build_spatial_index(graph)
 
-        # Detect TNFR communities
+        # Detect operational affinity groups
         communities = self._detect_tnfr_communities(graph)
 
         # Create balanced partitions
@@ -193,7 +258,7 @@ class FractalPartitioner:
         current_partition = set()
 
         for community in communities:
-            # A coherent community may itself exceed the capacity. Split it
+            # An affinity group may exceed the capacity. Split it
             # in stable graph order while preserving each induced subgraph.
             ordered = [node for node in graph if node in community]
             for start in range(0, len(ordered), partition_size):
@@ -263,12 +328,18 @@ class FractalPartitioner:
         try:
             avg_clustering = nx.average_clustering(graph)
             if avg_clustering > _CLUSTERING_HIGH_THRESHOLD:
-                # High clustering: communities are well-defined, can use smaller partitions
+                # High clustering permits smaller partitions with fewer cut edges
                 size_multiplier *= 0.8
             elif avg_clustering < _CLUSTERING_LOW_THRESHOLD:
                 # Low clustering: use larger partitions
                 size_multiplier *= 1.2
-        except (AttributeError, ZeroDivisionError, ValueError, TypeError, nx.NetworkXNotImplemented):
+        except (
+            AttributeError,
+            ZeroDivisionError,
+            ValueError,
+            TypeError,
+            nx.NetworkXNotImplemented,
+        ):
             # If clustering calculation fails, skip adjustment
             pass
 
@@ -279,7 +350,7 @@ class FractalPartitioner:
     def _build_spatial_index(self, graph: TNFRGraph) -> None:
         """Build a KDTree over structural coordinates in O(n log n).
 
-        Constructs a 2D spatial index using (νf, phase) coordinates
+        Constructs a 3D index using normalized νf and (cos(phase), sin(phase))
         to enable fast nearest-neighbor queries.
         """
         if not HAS_SCIPY or not HAS_NUMPY:
@@ -289,35 +360,40 @@ class FractalPartitioner:
         if len(nodes) == 0:
             return
 
-        # Extract νf and phase coordinates
-        coords = np.array(
+        # Embed phase on the unit circle so angles adjacent across the wrap
+        # boundary remain adjacent in the KDTree.
+        frequencies = np.array(
             [
-                [
-                    _node_attribute(
-                        graph, node, ALIAS_VF, 1.0, label="nu_f", nonnegative=True
-                    ),
-                    _node_attribute(graph, node, ALIAS_THETA, 0.0, label="phase"),
-                ]
+                _node_attribute(
+                    graph, node, ALIAS_VF, 1.0, label="nu_f", nonnegative=True
+                )
                 for node in nodes
-            ]
+            ],
+            dtype=float,
         )
-
-        # Normalize coordinates for better distance metrics
-        # νf: normalize by mean
-        if coords[:, 0].std() > 0:
-            coords[:, 0] = (coords[:, 0] - coords[:, 0].mean()) / coords[:, 0].std()
-
-        # phase: wrap to [-π, π] for periodicity
-        coords[:, 1] = np.arctan2(np.sin(coords[:, 1]), np.cos(coords[:, 1]))
+        phases = np.array(
+            [
+                _node_attribute(graph, node, ALIAS_THETA, 0.0, label="phase")
+                for node in nodes
+            ],
+            dtype=float,
+        )
+        if frequencies.std() > 0:
+            frequencies = (
+                frequencies - frequencies.mean()
+            ) / frequencies.std()
+        coords = np.column_stack(
+            (frequencies, np.cos(phases), np.sin(phases))
+        )
 
         # Build KDTree
         self._kdtree = KDTree(coords)
         self._node_index_map = {i: node for i, node in enumerate(nodes)}
 
-    def _find_coherent_neighbors_spatial(
+    def _find_affinity_candidates_spatial(
         self, graph: TNFRGraph, seed: Any, available: set[Any], k: int = 20
     ) -> list[Any]:
-        """Find k nearest coherent neighbors using spatial index.
+        """Find up to k nearby affinity candidates using the spatial index.
 
         The KDTree query has expected O(log n + k) cost under standard assumptions;
         filtering and subsequent community scoring are separate costs.
@@ -336,7 +412,7 @@ class FractalPartitioner:
         Returns
         -------
         list[Any]
-            list of up to k nearest coherent neighbors
+            list of up to k nearby affinity candidates
         """
         if self._kdtree is None or self._node_index_map is None:
             # Fallback to graph neighbors
@@ -369,10 +445,10 @@ class FractalPartitioner:
         return neighbors
 
     def _detect_tnfr_communities(self, graph: TNFRGraph) -> list[set[Any]]:
-        """Detect communities using TNFR coherence metrics.
+        """Detect communities with the frequency-and-phase affinity.
 
-        Uses structural frequency and phase to grow coherent communities rather
-        than classical modularity or betweenness metrics.
+        This operational grouping score is distinct from canonical C(t) and
+        from graph modularity or betweenness.
         """
         communities = []
         unprocessed = set(graph.nodes())
@@ -380,16 +456,16 @@ class FractalPartitioner:
         while unprocessed:
             # Select seed node
             seed = next(node for node in graph if node in unprocessed)
-            community = self._grow_coherent_community(graph, seed, unprocessed)
+            community = self._grow_affinity_community(graph, seed, unprocessed)
             communities.append(community)
             unprocessed -= community
 
         return communities
 
-    def _grow_coherent_community(
+    def _grow_affinity_community(
         self, graph: TNFRGraph, seed: Any, available: set[Any]
     ) -> set[Any]:
-        """Grow community from seed based on structural coherence.
+        """Grow a community from a seed using structural affinity.
 
         Parameters
         ----------
@@ -403,7 +479,7 @@ class FractalPartitioner:
         Returns
         -------
         set[Any]
-            set of nodes forming a coherent community
+            Nodes selected by the affinity threshold
 
         Notes
         -----
@@ -416,34 +492,34 @@ class FractalPartitioner:
         # Use spatial index if available for faster neighbor finding
         if self.use_spatial_index and self._kdtree is not None:
             candidates = set(
-                self._find_coherent_neighbors_spatial(graph, seed, available, k=50)
+                self._find_affinity_candidates_spatial(graph, seed, available, k=50)
             )
         else:
             neighbors = graph.neighbors(seed)
             candidates = set(neighbors) & available
 
         while candidates:
-            # Find most coherent candidate
+            # Find the candidate with greatest affinity
             best_candidate = None
-            best_coherence = -1.0
+            best_affinity = -1.0
 
             for candidate in sorted(candidates, key=node_order.__getitem__):
-                coherence = self._compute_community_coherence(
+                affinity = self._compute_community_affinity(
                     graph, community, candidate
                 )
-                if coherence > best_coherence:
-                    best_coherence = coherence
+                if affinity > best_affinity:
+                    best_affinity = affinity
                     best_candidate = candidate
 
             # Add if above threshold
-            if best_coherence > self.coherence_threshold:
+            if best_affinity > self.affinity_threshold:
                 community.add(best_candidate)
                 candidates.remove(best_candidate)
 
                 # Add new neighbors as candidates
                 if self.use_spatial_index and self._kdtree is not None:
                     new_neighbors = set(
-                        self._find_coherent_neighbors_spatial(
+                        self._find_affinity_candidates_spatial(
                             graph, best_candidate, available, k=50
                         )
                     )
@@ -452,16 +528,22 @@ class FractalPartitioner:
 
                 candidates.update(new_neighbors - community)
             else:
-                break  # No more coherent candidates
+                break  # No remaining candidate passes the affinity threshold
 
         return community
 
-    def _compute_community_coherence(
+    def _grow_coherent_community(
+        self, graph: TNFRGraph, seed: Any, available: set[Any]
+    ) -> set[Any]:
+        """Compatibility alias for affinity-based community growth."""
+        return self._grow_affinity_community(graph, seed, available)
+    def _compute_community_affinity(
         self, graph: TNFRGraph, community: set[Any], candidate: Any
     ) -> float:
-        """Compute coherence between candidate and existing community.
+        """Compute frequency-and-phase affinity to an existing community.
 
-        Uses TNFR metrics: frequency alignment (νf) and phase synchrony.
+        This selected 60/40 blend is an operational partitioning heuristic. It
+        does not use DeltaNFR or dEPI and therefore is not canonical C(t).
 
         Parameters
         ----------
@@ -487,7 +569,7 @@ class FractalPartitioner:
             graph, candidate, ALIAS_THETA, 0.0, label="phase"
         )
 
-        coherences = []
+        affinities = []
         for member in community:
             member_vf = _node_attribute(
                 graph, member, ALIAS_VF, 1.0, label="nu_f", nonnegative=True
@@ -496,21 +578,31 @@ class FractalPartitioner:
                 graph, member, ALIAS_THETA, 0.0, label="phase"
             )
 
-            # Frequency coherence: inversely proportional to difference
+            # Frequency proximity: inversely proportional to difference
             vf_diff = abs(candidate_vf - member_vf)
-            vf_coherence = 1.0 / (1.0 + vf_diff)
+            frequency_proximity = 1.0 / (1.0 + vf_diff)
 
-            # Phase coherence: cosine of phase difference
+            # Circular phase alignment
             phase_diff = candidate_phase - member_phase
             if HAS_NUMPY:
-                phase_coherence = float(np.cos(phase_diff))
+                phase_alignment = float(np.cos(phase_diff))
             else:
-                phase_coherence = math.cos(phase_diff)
+                phase_alignment = math.cos(phase_diff)
 
             # Weighted combination: prioritize frequency alignment
-            coherences.append(0.6 * vf_coherence + 0.4 * phase_coherence)
+            affinities.append(0.6 * frequency_proximity + 0.4 * phase_alignment)
 
-        return math.fsum(coherences) / len(coherences) if coherences else 0.0
+        return (
+            math.fsum(affinities) / len(affinities)
+            if affinities
+            else 0.0
+        )
+
+    def _compute_community_coherence(
+        self, graph: TNFRGraph, community: set[Any], candidate: Any
+    ) -> float:
+        """Compatibility alias for community affinity; this is not C(t)."""
+        return self._compute_community_affinity(graph, community, candidate)
 
     def partition_with_manifest(
         self,
@@ -542,7 +634,7 @@ class FractalPartitioner:
         Manifest format compatible with self_opt_support pipeline:
         - operation_type: 'fractal_partition'
         - partition_id: unique identifier
-        - communities: list of community metadata with coherence scores
+        - communities: metadata with separately computed canonical C(t)
         - telemetry: global coherence, sense_index, phase metrics
         - network_metadata: node count, edge count, partition count
 
@@ -571,7 +663,13 @@ class FractalPartitioner:
         graph_payloads = []
         for partition_idx, (node_set, subgraph) in enumerate(partitions):
             community_telemetry = collect_manifest_telemetry(subgraph)
-            graph_payloads.append((f"{partition_id}:p{partition_idx}", subgraph, community_telemetry))
+            graph_payloads.append(
+                (
+                    f"{partition_id}:p{partition_idx}",
+                    subgraph,
+                    community_telemetry,
+                )
+            )
 
             community_data = {
                 "partition_index": partition_idx,
@@ -580,7 +678,9 @@ class FractalPartitioner:
                     len(subgraph.edges()) if hasattr(subgraph, "edges") else 0
                 ),
                 "node_ids": [n for n in graph if n in node_set],
+                "community_C_t": community_telemetry["coherence"],
                 "community_coherence": community_telemetry["coherence"],
+                "coherence_metric_kind": "canonical_C_t",
             }
             communities_serialized.append(community_data)
 
@@ -598,6 +698,7 @@ class FractalPartitioner:
             "communities": communities_serialized,
             "partitioner_config": {
                 "max_partition_size": self.max_partition_size,
+                "affinity_threshold": self.affinity_threshold,
                 "coherence_threshold": self.coherence_threshold,
                 "use_spatial_index": self.use_spatial_index,
                 "adaptive": self.adaptive,
@@ -609,14 +710,18 @@ class FractalPartitioner:
             "operation_type": "fractal_partition",
             "partition_id": partition_id,
             "partition_count": len(partitions),
+            "C_t": telemetry.get("coherence"),
             "coherence": telemetry.get("coherence"),
+            "coherence_metric_kind": "canonical_C_t",
             "sense_index": telemetry.get("sense_index"),
             "average_community_size": node_count / len(partitions) if partitions else 0,
         }
         return {
             "partitions": partitions,
             **write_manifest_bundle(
-                output_dir, "fractal_partition_manifest.json", "fractal_partition_summary.json",
+                output_dir,
+                "fractal_partition_manifest.json",
+                "fractal_partition_summary.json",
                 manifest, summary, graph_payloads,
             ),
         }

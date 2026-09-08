@@ -1,7 +1,7 @@
-"""Structural health metrics analyzer for TNFR operator sequences.
+"""Bounded heuristic health scores for TNFR operator sequences.
 
-Provides quantitative assessment of sequence structural quality through
-canonical TNFR metrics: coherence, balance, sustainability, and efficiency.
+These token-sequence diagnostics do not inspect DeltaNFR or dEPI. They are
+operational rubric scores and do not estimate canonical coherence C(t).
 """
 
 from __future__ import annotations
@@ -32,6 +32,7 @@ __all__ = [
 ]
 
 # Import canonical stabilizer set from grammar_types (single source of truth)
+from ._diagnostic_scores import mean_unit_score, unit_score
 from .grammar_types import STABILIZERS as _GRAMMAR_STABILIZERS
 
 # Extended stabilizers for health analysis include silence & resonance (defensive)
@@ -48,9 +49,9 @@ class SequenceHealthMetrics:
 
     Attributes
     ----------
-    coherence_index : float
-        Global sequential flow quality (0.0-1.0). Measures how well operators
-        transition and whether the sequence forms a recognizable pattern.
+    flow_quality_score : float
+        Bounded sequential-flow rubric in [0, 1]. It measures token transitions,
+        recognizable pattern shape and closure; it is not C(t).
     balance_score : float
         Equilibrium between stabilizers and destabilizers (0.0-1.0). Ideal
         sequences have balanced structural forces.
@@ -78,7 +79,7 @@ class SequenceHealthMetrics:
         Specific suggestions for improving sequence health.
     """
 
-    coherence_index: float
+    flow_quality_score: float
     balance_score: float
     sustainability_index: float
     complexity_efficiency: float
@@ -90,12 +91,24 @@ class SequenceHealthMetrics:
     dominant_pattern: str
     recommendations: list[str]
 
+    @property
+    def coherence_index(self) -> float:
+        """Compatibility alias for flow_quality_score; it is not C(t)."""
+
+        return self.flow_quality_score
+
+    @coherence_index.setter
+    def coherence_index(self, value: float) -> None:
+        self.flow_quality_score = unit_score(
+            value, label="sequence flow quality"
+        )
+
 
 class SequenceHealthAnalyzer:
     """Analyzer for structural health of TNFR operator sequences.
 
-    Evaluates sequences along multiple dimensions to provide quantitative
-    assessment of structural quality, coherence, and sustainability.
+    Evaluates token sequences along multiple bounded rubric dimensions. The
+    result describes sequence quality and sustainability, not graph-state C(t).
 
     Uses caching to optimize repeated analysis of identical sequences,
     which is common in pattern exploration and batch validation workflows.
@@ -204,8 +217,10 @@ class SequenceHealthAnalyzer:
         Examples
         --------
         >>> analyzer = SequenceHealthAnalyzer()
-        >>> health = analyzer.analyze_health(["emission", "reception", "coherence", "silence"])
-        >>> health.coherence_index > 0.7
+        >>> health = analyzer.analyze_health(
+        ...     ["emission", "reception", "coherence", "silence"]
+        ... )
+        >>> health.flow_quality_score > 0.7
         True
         """
         self._recommendations = []
@@ -224,7 +239,9 @@ class SequenceHealthAnalyzer:
             problematic_transitions,
         ) = analysis
 
-        coherence = self._calculate_coherence(sequence, problematic_transitions)
+        flow_quality = self._calculate_flow_quality(
+            sequence, problematic_transitions
+        )
         balance = self._calculate_balance(
             sequence, stabilizer_count, destabilizer_count
         )
@@ -241,7 +258,7 @@ class SequenceHealthAnalyzer:
         # Calculate overall health as weighted average
         # Primary metrics weighted more heavily
         overall = (
-            coherence * 0.20
+            flow_quality * 0.20
             + balance * 0.20
             + sustainability * 0.20
             + efficiency * 0.15
@@ -253,7 +270,7 @@ class SequenceHealthAnalyzer:
         pattern = self._detect_pattern(sequence)
 
         return SequenceHealthMetrics(
-            coherence_index=coherence,
+            flow_quality_score=flow_quality,
             balance_score=balance,
             sustainability_index=sustainability,
             complexity_efficiency=efficiency,
@@ -266,10 +283,25 @@ class SequenceHealthAnalyzer:
             recommendations=self._recommendations.copy(),
         )
 
-    def _calculate_coherence(
+    @staticmethod
+    def _transition_quality_score(
+        sequence_length: int, problematic_transition_count: int
+    ) -> float:
+        """Score the shared transition-penalty rule once."""
+
+        if sequence_length < 2:
+            return 1.0
+        total_transitions = sequence_length - 1
+        penalty = problematic_transition_count * 0.5
+        return unit_score(
+            max(0.0, 1.0 - penalty / total_transitions),
+            label="sequence transition quality",
+        )
+
+    def _calculate_flow_quality(
         self, sequence: list[str], problematic_transitions: list[tuple[str, str]]
     ) -> float:
-        """Calculate coherence index: how well the sequence flows.
+        """Calculate the bounded token-sequence flow-quality score.
 
         Factors:
         - Valid transitions between operators
@@ -286,19 +318,14 @@ class SequenceHealthAnalyzer:
         Returns
         -------
         float
-            Coherence score (0.0-1.0)
+            Flow-quality score in [0, 1]; this is not structural C(t).
         """
         if not sequence:
             return 0.0
 
-        # Transition quality: use pre-computed problematic transitions
-        if len(sequence) < 2:
-            transition_quality = 1.0
-        else:
-            total_transitions = len(sequence) - 1
-            # Each problematic transition gets 0.5 penalty
-            penalty = len(problematic_transitions) * 0.5
-            transition_quality = max(0.0, 1.0 - (penalty / total_transitions))
+        transition_quality = self._transition_quality_score(
+            len(sequence), len(problematic_transitions)
+        )
 
         # Pattern clarity: does it form a recognizable structure?
         pattern_clarity = self._assess_pattern_clarity(sequence)
@@ -306,7 +333,10 @@ class SequenceHealthAnalyzer:
         # Structural closure: does it end properly?
         structural_closure = self._assess_closure(sequence)
 
-        return (transition_quality + pattern_clarity + structural_closure) / 3.0
+        return mean_unit_score(
+            (transition_quality, pattern_clarity, structural_closure),
+            label="sequence flow quality",
+        )
 
     def _calculate_balance(
         self, sequence: list[str], stabilizer_count: int, destabilizer_count: int
@@ -551,10 +581,9 @@ class SequenceHealthAnalyzer:
         if len(sequence) < 2:
             return 1.0  # No transitions to assess
 
-        total_transitions = len(sequence) - 1
-        # Each problematic transition gets 0.5 penalty (same as in _calculate_coherence)
-        penalty = len(problematic_transitions) * 0.5
-        return max(0.0, 1.0 - (penalty / total_transitions))
+        return self._transition_quality_score(
+            len(sequence), len(problematic_transitions)
+        )
 
     def _assess_pattern_clarity(self, sequence: list[str]) -> float:
         """Assess how clearly the sequence forms a recognizable pattern.

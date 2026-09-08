@@ -4,11 +4,17 @@ from typing import Sequence
 
 import numpy as np
 
-from .operators import CoherenceOperator, FrequencyOperator
+from .operators import (
+    CoherenceOperator,
+    FrequencyOperator,
+    SpectralExpectationOperator,
+)
 from .spaces import HilbertSpace
 
 __all__ = [
     "normalized",
+    "spectral_operator_expectation",
+    "meets_spectral_expectation_threshold",
     "coherence",
     "frequency_positive",
     "stable_unitary",
@@ -20,6 +26,22 @@ def normalized(
     state: Sequence[complex] | np.ndarray,
     hilbert_space: HilbertSpace,
     *,
+    atol: float = 1e-09,
+    label: str = "state",
+) -> tuple[bool, float]: ...
+def spectral_operator_expectation(
+    state: Sequence[complex] | np.ndarray,
+    operator: SpectralExpectationOperator,
+    *,
+    normalise: bool = True,
+    atol: float = 1e-09,
+) -> float: ...
+def meets_spectral_expectation_threshold(
+    state: Sequence[complex] | np.ndarray,
+    operator: SpectralExpectationOperator,
+    threshold: float,
+    *,
+    normalise: bool = True,
     atol: float = 1e-09,
     label: str = "state",
 ) -> tuple[bool, float]: ...
@@ -57,7 +79,7 @@ def frequency_positive(
 ) -> dict[str, float | bool]: ...
 def stable_unitary(
     state: Sequence[complex] | np.ndarray,
-    operator: CoherenceOperator,
+    operator: SpectralExpectationOperator,
     hilbert_space: HilbertSpace,
     *,
     normalise: bool = True,

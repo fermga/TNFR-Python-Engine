@@ -866,6 +866,24 @@ class TestNodalPulse:
         pulse = compute_nodal_pulse(G)
         assert pulse["resonance_gate"] == pytest.approx(float(DELTA_PHI_MAX))
 
+    def test_nodal_pulse_read_does_not_record_affinity_history(self) -> None:
+        from tnfr.glyph_history import ensure_history
+
+        graph = self._pulsing_ring(6, [1.0] * 6, [0.0] * 6)
+        history = ensure_history(graph)
+        before = {
+            key: list(history.get(key, ()))
+            for key in ("W_sparse", "W_i", "W_stats")
+        }
+
+        compute_nodal_pulse(graph)
+
+        after = {
+            key: list(history.get(key, ()))
+            for key in ("W_sparse", "W_i", "W_stats")
+        }
+        assert after == before
+
     def test_inactive_nfr_not_pulsing(self) -> None:
         # nu_f = 0 -> the node cannot reorganize -> not a live pulse
         G = self._pulsing_ring(4, [1.0, 0.0, 1.0, 0.0], [0.0] * 4)

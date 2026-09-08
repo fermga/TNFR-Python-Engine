@@ -101,7 +101,7 @@ class UnifiedPatternDetector:
     Key Features
     ------------
     - Explicit mapping of patterns to U1-U5 grammar rules (temporal + multi-scale)
-    - Coherence-weighted scoring for pattern prioritization
+    - Pattern-prior-weighted scoring for pattern prioritization
     - Detection of named fragments and meta-patterns
     - Grammar-rule annotations integrated with pattern recognition; complete-word
       validity remains the responsibility of the grammar validator
@@ -165,7 +165,7 @@ class UnifiedPatternDetector:
     def detect_pattern(self, sequence: Sequence[str]) -> StructuralPattern:
         """Detect the best matching pattern in sequence.
 
-        Uses coherence-weighted scoring from AdvancedPatternDetector.
+        Uses pattern-prior-weighted scoring from AdvancedPatternDetector.
 
         Parameters
         ----------
@@ -248,7 +248,7 @@ class UnifiedPatternDetector:
         """Detect U1b-based closure patterns.
 
         Patterns that use CLOSURES (silence, transition, recursivity, dissonance)
-        to leave system in coherent attractor states.
+        to satisfy the standalone U1b grammar closure policy.
 
         Parameters
         ----------

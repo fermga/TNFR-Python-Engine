@@ -19,6 +19,7 @@ from tnfr.mathematics.number_theory import (
     ArithmeticTNFRNetwork,
     ArithmeticTNFRParameters,
 )
+from tnfr.metrics.common import structural_coherence
 
 
 def _is_prime(n: int) -> bool:
@@ -94,8 +95,44 @@ def test_nfr_equilibrium_set_is_exactly_the_primes():
     n_primes = sum(1 for n in range(2, 61) if _is_prime(n))
     assert r["equilibrium_fraction"] == pytest.approx(n_primes / 59)
     assert r["topology"] in {"radial", "annular", "multinodal"}
-    assert 0.0 <= r["coherence"] <= 1.0
+    pressures = [
+        abs(float(net.graph.nodes[node]["delta_nfr"])) for node in net.graph
+    ]
+    mean_pressure = sum(pressures) / len(pressures)
+    mean_local = sum(structural_coherence(value, 0.0) for value in pressures) / len(
+        pressures
+    )
+    assert r["coherence"] == pytest.approx(
+        structural_coherence(mean_pressure, 0.0)
+    )
+    assert r["mean_abs_dnfr"] == pytest.approx(mean_pressure)
+    assert r["mean_local_coherence"] == pytest.approx(mean_local)
+    assert r["mean_local_coherence"] > r["coherence"]
+    assert r["readout_available"] is True
     assert r["n_nodes"] == 59
+
+
+def test_empty_arithmetic_nfr_reports_unavailable_instead_of_zero_coherence():
+    net = ArithmeticTNFRNetwork(max_number=2)
+    net.graph.clear()
+
+    result = net.nfr()
+
+    assert result["n_nodes"] == 0
+    assert result["readout_available"] is False
+    assert result["topology"] is None
+    assert result["coherence"] is None
+    assert result["mean_abs_dnfr"] is None
+    assert result["mean_local_coherence"] is None
+    assert result["equilibrium_fraction"] is None
+    assert result["equilibrium_is_primes"] is None
+    assert result["coherence_length"] is None
+    assert result["triad"] == {
+        "epi_mean": None,
+        "vf_mean": None,
+        "phase_sync": None,
+    }
+    assert net.nfr_observation().metadata["unavailable"] is True
 
 
 # --- emergent geometry: conservation + symplectic substrate ----------------

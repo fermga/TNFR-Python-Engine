@@ -1,70 +1,20 @@
-"""TNFR Classical Mechanics Mapper — Canonical Translation Layer
+"""Explicit classical-mechanics adapters for TNFR-shaped state.
 
-This module implements the formal correspondence between Classical Mechanics
-(Lagrangian/Hamiltonian formalisms) and TNFR Structural Dynamics. It provides
-the translation layer requested in the "Módulo Traductor Mecánica Clásica" task.
+The canonical nodal equation is first order: ``dEPI/dt = nu_f * DeltaNFR``.
+Reading an EPI coordinate as position and pressure as force therefore makes
+``nu_f`` a mobility. This module additionally offers selected second-order
+classical embeddings. They store coordinates and velocities in EPI-shaped
+arrays, optionally record ``nu_f = 1/m`` as adapter metadata, and obtain forces
+from the caller's Lagrangian or Hamiltonian.
 
-Theoretical Foundation
-----------------------
-The mapping relies on the Nodal Equation:
-    ∂EPI/∂t = νf · ΔNFR(t)
-
-This relationship reveals that Classical Mechanics is a limiting case of TNFR
-dynamics where:
-1. Coherence is maximized (low dissonance regime).
-2. Structural frequency (νf) is assigned an inverse-inertia role in the optional
-   second-order adapter; this is not an identity of the first-order nodal law.
-3. Structural pressure (ΔNFR) manifests as phenomenological force.
-
-REGIME NOTE (two distinct mechanical regimes — keep them separate)
-------------------------------------------------------------------
-The inertial reading below (m = 1/νf, F = ΔNFR giving second-order
-F = ma / Hamilton equations) is the **symplectic-substrate** regime: the
-conservative Hamiltonian flow of :mod:`tnfr.physics.symplectic_substrate`,
-which is second order (q̈ = −∂V/∂q per conjugate pair).  The **bare** nodal
-equation ∂EPI/∂t = νf·ΔNFR is *first order*, so by itself it produces the
-**overdamped drift** law q̇ = νf·F (velocity ∝ force, νf = mobility), the
-empirically-demonstrated Stokes/Einstein mobility regime
-(:func:`tnfr.physics.structural_diffusion.verify_overdamped_regime`).  The
-bare nodal equation instead has an overdamped *form*. A separate damped graph
-wave has a restricted pure-EPI diffusion limit, while no derivation of the full
-nodal law from the isotropic substrate is established. The inertial mapping
-here is a user-selected second-order embedding, not a canonical consequence of
-the first-order nodal equation.
-
-Canonical Mappings:
-1. Generalized Coordinates (q) <--> EPI Spatial Components
-2. Generalized Velocities (q_dot) <--> EPI Velocity Components
-3. Inertial Mass (m) <--> Inverse Structural Frequency (1/νf)
-4. Force / Gradient (-∇V) <--> Structural Pressure (ΔNFR)
-5. Action (S) <--> Structural Phase Accumulation (∫ φ dt)
-
-Connection to TNFR Conjugate Pairs (variational.py)
-----------------------------------------------------
-The variational formulation identifies two specific conjugate pairs
-from the conservation law structure:
-
-- **Geometric sector**: (K_φ, J_φ)  — maps to spatial DOF
-- **Potential sector**: (Φ_s, J_ΔNFR) — maps to potential DOF
-
-For a single mechanical degree of freedom:
-- Classical generalized coordinate q → K_φ (curvature acts as position-like)
-- Classical velocity qdot → J_φ (current acts as momentum-like / m)
-- Classical inertia m = 1/νf (adapter convention)
-- Classical force F → ΔNFR (structural pressure = Euler-Lagrange force)
-
-The mapping is **asymmetric**: Φ_s and K_φ are both part of the potential V,
-but they form different conjugate pairs.  Classical F=ma applies to one DOF;
-TNFR applies to two coupled sectors.
-
-See Also
---------
-variational.identify_conjugate_pairs : Identifies (K_φ, J_φ) and (Φ_s, J_ΔNFR).
-variational.translate_sectors : Maps between variational and conservation decompositions.
+These assignments are conventions of the adapter. They do not derive inertia,
+gravity, friction or harmonic forces from the nodal equation, the tetrad or the
+13 operators. The auxiliary symplectic substrate is also a separate declared
+Hamiltonian model; it supplies no canonical identity ``m = 1/nu_f``.
 """
-
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Any, Callable
 
@@ -73,6 +23,76 @@ from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
 
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
+
+
+def _finite_real_vector(
+    value: Any,
+    label: str,
+    *,
+    shape: tuple[int, ...] | None = None,
+    positive: bool = False,
+) -> np.ndarray:
+    """Materialize one finite real adapter vector with an optional shape."""
+
+    try:
+        raw = np.asarray(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TNFRValueError(f"{label} must be a finite real vector") from exc
+    if raw.dtype.kind not in "iuf":
+        raise TNFRValueError(f"{label} must be a finite real vector")
+    array = np.asarray(raw, dtype=float)
+    if array.ndim != 1 or array.size == 0:
+        raise TNFRValueError(f"{label} must be a nonempty one-dimensional vector")
+    if shape is not None and array.shape != shape:
+        raise TNFRValueError(f"{label} must have shape {shape!r}")
+    if not bool(np.all(np.isfinite(array))):
+        raise TNFRValueError(f"{label} must contain only finite values")
+    if positive and bool(np.any(array <= 0.0)):
+        raise TNFRValueError(f"{label} must contain only strictly positive values")
+    return array
+
+
+def _finite_real_scalar(value: Any, label: str, *, positive: bool = False) -> float:
+    """Materialize one finite real scalar without lossy coercion."""
+
+    try:
+        raw = np.asarray(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TNFRValueError(f"{label} must be a finite real scalar") from exc
+    if raw.ndim != 0 or raw.dtype.kind not in "iuf":
+        raise TNFRValueError(f"{label} must be a finite real scalar")
+    normalized = float(raw)
+    if not math.isfinite(normalized) or (positive and normalized <= 0.0):
+        qualifier = "positive " if positive else ""
+        raise TNFRValueError(f"{label} must be a finite {qualifier}real scalar")
+    return normalized
+
+
+def _adapter_frequency(masses: np.ndarray) -> tuple[float, float]:
+    """Return a stable mean-mass reference and its representable reciprocal."""
+
+    scale = float(np.max(masses))
+    mass_reference = scale * float(np.mean(masses / scale))
+    frequency = 1.0 / mass_reference
+    if not math.isfinite(frequency) or frequency <= 0.0:
+        raise TNFRValueError(
+            "inverse-mean-mass adapter frequency is not representable"
+        )
+    return mass_reference, frequency
+
+
+def _adapter_metadata(kind: str, mass_reference: float) -> dict[str, Any]:
+    """Describe the classical-only interpretation of an adapter payload."""
+
+    return {
+        "kind": kind,
+        "force_bridge_supplied": False,
+        "nu_f_semantics": "inverse_mean_mass_adapter_only",
+        "mass_reduction": "arithmetic_mean_single_node_summary",
+        "mass_reference": mass_reference,
+        "dnfr_semantics": "zero_placeholder_no_force_bridge",
+        "canonical_coherence_available": False,
+    }
 
 
 @dataclass
@@ -84,13 +104,23 @@ class GeneralizedCoordinateSystem:
     q_dot: np.ndarray | None = None  # Generalized velocities (for Lagrangian)
     masses: np.ndarray | None = None  # Masses associated with coordinates
 
-    def __post_init__(self):
-        if self.p is None and self.q_dot is None:
-            # Allow initialization with just q, but warn or handle if needed
-            pass
+    def __post_init__(self) -> None:
+        self.q = _finite_real_vector(self.q, "q")
+        if self.p is not None:
+            self.p = _finite_real_vector(self.p, "p", shape=self.q.shape)
+        if self.q_dot is not None:
+            self.q_dot = _finite_real_vector(
+                self.q_dot, "q_dot", shape=self.q.shape
+            )
         if self.masses is None:
-            # Default to unit masses if not specified
-            self.masses = np.ones_like(self.q)
+            self.masses = np.ones_like(self.q, dtype=float)
+        else:
+            self.masses = _finite_real_vector(
+                self.masses,
+                "masses",
+                shape=self.q.shape,
+                positive=True,
+            )
 
     @property
     def dimension(self) -> int:
@@ -98,7 +128,7 @@ class GeneralizedCoordinateSystem:
 
 
 class ClassicalMechanicsMapper:
-    """Translates Classical Mechanics formulations to TNFR Structural Dynamics."""
+    """Build TNFR-shaped payloads from declared classical-model state."""
 
     @staticmethod
     def lagrangian_to_tnfr(
@@ -118,59 +148,36 @@ class ClassicalMechanicsMapper:
             dict containing TNFR nodal attributes:
             - EPI: Combined state vector [q, q_dot]
             - νf: Structural frequency assigned by the adapter convention
-            - ΔNFR: Structural pressure (derived from Euler-Lagrange)
+            - ΔNFR: zero placeholder; the caller must supply a force bridge
         """
         if system.q_dot is None:
             raise TNFRValueError(
                 "Lagrangian mapping requires generalized velocities (q_dot)."
             )
 
-        # 1. Adapter convention: map mass to frequency as νf = 1/m.
-        # This is a chosen classical embedding, not a derivation from the bare
-        # first-order nodal equation (where νf has mobility semantics).
-        # We take the mean mass if multiple, or return a vector if supported.
-        # For a single node representing the system, we might use an effective mass.
-        # Here we assume the system represents a single entity or we return arrays.
-        # To keep it simple for the mapper, we map per-coordinate if possible.
+        # A single node needs a scalar nu_f, so this adapter uses reciprocal
+        # mean mass. Per-body mappings belong in a graph adapter.
+        time = _finite_real_scalar(t, "t")
+        mass_ref, nu_f = _adapter_frequency(system.masses)
 
-        # In TNFR, a node usually has one scalar νf. If this system is multi-body,
-        # it should probably map to a Graph. For now, we map to attributes of a single
-        # representative node or a list of attributes.
-
-        # Let's assume 1D or N-D system mapped to N-D EPI.
-
-        # Adapter-specific νf <--> 1 / mass assignment.
-        # Using the first mass as reference or vector if supported by custom node types.
-        # Standard TNFR nodes have scalar νf.
-        mass_ref = np.mean(system.masses) if system.masses is not None else 1.0
-        nu_f = 1.0 / mass_ref if mass_ref > 0 else 1.0
-
-        # 2. Map State to EPI
-        # EPI typically holds the structural form. In N-body, it's [pos, vel].
         epi_vector = np.concatenate([system.q, system.q_dot])
 
-        # 3. Map Dynamics to ΔNFR
-        # The Euler-Lagrange equation: d/dt (∂L/∂q_dot) - ∂L/∂q = 0
-        # => d/dt (p) = F_generalized
-        # => F = ∂L/∂q
-        # In TNFR: ∂EPI/∂t = νf · ΔNFR
-        # Ideally ΔNFR corresponds to the Force term.
+        # The mapper evaluates L for provenance but does not differentiate it.
+        # Pressure therefore remains an explicit zero placeholder. A caller that
+        # needs Euler-Lagrange dynamics must provide and label that force bridge.
 
-        # We can approximate ∂L/∂q numerically or symbolically.
-        # For this mapper, we might need the force function explicitly or use autodiff.
-        # Since we only have the function L, we can't easily get gradients without autodiff.
-        # For now, we will return a placeholder or require the force function.
-
-        # However, the prompt asks for the *mapper structure*.
-        # We will return the mapped state.
-
+        lagrangian_value = _finite_real_scalar(
+            L(system.q, system.q_dot, time), "Lagrangian value"
+        )
         return {
             EPI_PRIMARY: epi_vector,
             VF_PRIMARY: nu_f,
-            "classical_L": L(system.q, system.q_dot, t),
-            # ΔNFR would be calculated by the engine using the potential,
-            # here we just set up the state.
-            DNFR_PRIMARY: np.zeros_like(epi_vector),  # Placeholder
+            "classical_L": lagrangian_value,
+            # No force law is inferred from the Lagrangian callable.
+            DNFR_PRIMARY: np.zeros_like(epi_vector),
+            "classical_adapter": _adapter_metadata(
+                "lagrangian_state_embedding", mass_ref
+            ),
         }
 
     @staticmethod
@@ -195,82 +202,101 @@ class ClassicalMechanicsMapper:
                 "Hamiltonian mapping requires generalized momenta (p)."
             )
 
-        # 1. Apply the same explicit adapter convention νf = 1/m.
-        mass_ref = np.mean(system.masses) if system.masses is not None else 1.0
-        nu_f = 1.0 / mass_ref if mass_ref > 0 else 1.0
+        time = _finite_real_scalar(t, "t")
+        mass_ref, nu_f = _adapter_frequency(system.masses)
 
-        # 2. Map State to EPI
-        # For Hamiltonian, state is (q, p).
-        # We might map p back to q_dot for the standard EPI [pos, vel] representation
-        # if we want consistency with the N-body solver.
-        # q_dot = p / m
-        q_dot = system.p / system.masses if system.masses is not None else system.p
+        # Decode p as velocity through the declared classical masses.
+        with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+            q_dot = system.p / system.masses
+        q_dot = _finite_real_vector(q_dot, "derived q_dot", shape=system.q.shape)
         epi_vector = np.concatenate([system.q, q_dot])
 
-        # 3. Map Energy to Coherence/Potential
-        # H is total energy.
-        # In TNFR, Φ_s (Structural Potential) relates to Potential Energy.
-        # But H includes Kinetic.
+        # H is retained as adapter provenance. It is not structural C(t) or the
+        # tetrad potential, and this mapping supplies no Hamiltonian force law.
 
+        hamiltonian_value = _finite_real_scalar(
+            H(system.q, system.p, time), "Hamiltonian value"
+        )
         return {
             EPI_PRIMARY: epi_vector,
             VF_PRIMARY: nu_f,
-            "classical_H": H(system.q, system.p, t),
+            "classical_H": hamiltonian_value,
             DNFR_PRIMARY: np.zeros_like(epi_vector),
+            "classical_adapter": _adapter_metadata(
+                "hamiltonian_state_embedding", mass_ref
+            ),
         }
 
     @staticmethod
     def equations_of_motion_to_operators(
         forces: np.ndarray, masses: np.ndarray
     ) -> list[str]:
+        """Classify force presence into a grammar-valid illustrative word.
+
+        The returned word records only whether the supplied finite classical
+        force array is zero. It does not encode force magnitude, direction or
+        a derivation of classical motion. Nonzero input selects an exploratory
+        word with OZ and its required IL handler; zero input selects a closed
+        source/coherence/silence word.
         """
-        Translates phenomenological forces into their fundamental Structural Operator equivalents.
 
-        Classical F=ma is the limiting case of ∂EPI/∂t = νf · ΔNFR where:
-        - Force (F) corresponds to Structural Pressure (ΔNFR)
-        - Mass (m) corresponds to Inverse Structural Frequency (1/νf)
+        try:
+            raw_forces = np.asarray(forces)
+            raw_masses = np.asarray(masses)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise TNFRValueError(
+                "forces and masses must be real numeric arrays"
+            ) from exc
+        if (
+            raw_forces.dtype.kind not in "iuf"
+            or raw_masses.dtype.kind not in "iuf"
+        ):
+            raise TNFRValueError("forces and masses must be real numeric arrays")
+        try:
+            force_values = np.asarray(forces, dtype=float)
+            mass_values = np.asarray(masses, dtype=float)
+        except (TypeError, ValueError) as exc:
+            raise TNFRValueError(
+                "forces and masses must be real numeric arrays"
+            ) from exc
+        if force_values.ndim == 0 or mass_values.ndim != 1:
+            raise TNFRValueError(
+                "forces must have a leading body axis and masses must be "
+                "one-dimensional"
+            )
+        if mass_values.size == 0 or force_values.shape[0] != mass_values.size:
+            raise TNFRValueError(
+                "the leading force dimension must match the nonempty mass vector"
+            )
+        if not np.all(np.isfinite(force_values)) or not np.all(
+            np.isfinite(mass_values)
+        ):
+            raise TNFRValueError("forces and masses must be finite")
+        if np.any(mass_values <= 0.0):
+            raise TNFRValueError("masses must be strictly positive")
 
-        This suggests that 'Force' is applied via 'Dissonance' (OZ) or 'Reception' (EN)
-        depending on whether it's internal or external, followed by 'Coherence' (IL)
-        to stabilize the new state.
-
-        Args:
-            forces: Array of force vectors
-            masses: Array of masses
-
-        Returns:
-            list of operator names (e.g., ['OZ', 'IL'])
-        """
-        # If forces are non-zero, we have a change in state (acceleration).
-        # In TNFR, change is driven by ΔNFR.
-        # To induce ΔNFR, we might use Dissonance (OZ) to break equilibrium,
-        # or Reception (EN) to intake information (force).
-
-        # Canonical sequence for state update:
-        # 1. Dissonance (OZ) - Introduces ΔNFR (Force)
-        # 2. Coherence (IL) - Stabilizes the new trajectory (Integration)
-
-        ops = []
-        if np.any(np.abs(forces) > 1e-9):
-            ops.append("OZ")  # Apply Force / Pressure
-            ops.append("IL")  # Integrate / Stabilize
-        else:
-            ops.append("SHA")  # Silence / Inertia
-
-        return ops
+        if bool(np.any(force_values != 0.0)):
+            return ["emission", "dissonance", "coherence", "silence"]
+        return ["emission", "coherence", "silence"]
 
     @staticmethod
     def state_vector_to_generalized(
         epi: np.ndarray, nu_f: float
     ) -> GeneralizedCoordinateSystem:
-        """
-        Inverse mapping: TNFR EPI -> Generalized Coordinates.
-        Assumes EPI is [q, q_dot] stacked.
-        """
-        n = len(epi) // 2
-        q = epi[:n]
-        q_dot = epi[n:]
-        mass = 1.0 / nu_f if nu_f > 0 else 1.0
+        """Decode an adapter EPI vector using the declared ``nu_f=1/m`` map."""
+
+        values = _finite_real_vector(epi, "adapter EPI")
+        if values.size % 2:
+            raise TNFRValueError("adapter EPI must contain equally sized q and q_dot")
+        frequency = _finite_real_scalar(nu_f, "nu_f", positive=True)
+        n = values.size // 2
+        q = values[:n]
+        q_dot = values[n:]
+        mass = 1.0 / frequency
+        if not math.isfinite(mass) or mass <= 0.0:
+            raise TNFRValueError(
+                "inverse-frequency adapter mass is not representable"
+            )
         p = q_dot * mass
 
         return GeneralizedCoordinateSystem(
@@ -279,58 +305,37 @@ class ClassicalMechanicsMapper:
 
 
 class ClassicalForceTranslator:
-    """
-    Translates phenomenological forces into fundamental Structural Mechanisms.
-
-    This class provides the dictionary between observed classical forces and
-    the underlying nodal dynamics that generate them.
-    """
+    """Return honest descriptions of legacy classical-adapter comparisons."""
 
     @staticmethod
     def gravity_to_tnfr() -> str:
-        """
-        Gravity corresponds to the Coherence Gradient (-∇Φ_s).
+        """Describe gravity as an externally supplied force law.
 
-        Mechanism:
-        Nodes naturally evolve to maximize phase synchronization (minimize dissonance).
-        This creates an emergent attractive force between coherent structures,
-        which we observe macroscopically as gravity.
-
-        Returns:
-            Description of the mechanism.
+        Neither phase synchronization nor the structural potential derives
+        Newtonian gravity in this adapter.
         """
-        return "Emergent Coherence Attraction (Phase Synchronization)"
+
+        return "External Newtonian force adapter (no canonical TNFR gravity map)"
 
     @staticmethod
     def friction_to_tnfr() -> str:
-        """
-        Friction corresponds to Structural Damping / Coherence Stabilization.
+        """Describe friction as a separately configured dissipative law.
 
-        Mechanism:
-        The 'Coherence' (IL) operator acts as a stabilizer, reducing high-frequency
-        fluctuations (thermal energy) and aligning velocity vectors. This manifests
-        as a dissipative force (friction) that removes kinetic energy from the
-        macroscopic mode.
-
-        Returns:
-            Description of the mechanism.
+        IL contracts structural pressure under its own contract; it does not
+        supply a velocity-dependent classical friction law by itself.
         """
-        return "Structural Stabilization (IL Operator)"
+
+        return "Configured dissipative adapter (IL is only a comparison)"
 
     @staticmethod
     def harmonic_restoring_to_tnfr() -> str:
-        """
-        Harmonic forces (Springs) correspond to Structural Confinement.
+        """Describe a harmonic force as an explicit restoring-pressure law.
 
-        Mechanism:
-        When a node deviates from its equilibrium position in the structural manifold,
-        the Phase Gradient (|∇φ|) increases. The system generates a restoring
-        pressure (ΔNFR) to return to the low-gradient state (equilibrium).
-
-        Returns:
-            Description of the mechanism.
+        A phase gradient is diagnostic and does not generate Hooke's law unless
+        the adapter defines that bridge.
         """
-        return "Phase Gradient Confinement (|∇φ| Minimization)"
+
+        return "Configured harmonic adapter (phase gradient is diagnostic)"
 
     @staticmethod
     def compute_poisson_bracket(
@@ -340,12 +345,14 @@ class ClassicalForceTranslator:
         epsilon: float = 1e-5,
     ) -> float:
         """
-        Computes the Poisson Bracket {f, g} numerically on the Structural Manifold.
+        Compute the classical Poisson bracket ``{f, g}`` by finite differences.
 
         {f, g} = Σ (∂f/∂q_i ∂g/∂p_i - ∂f/∂p_i ∂g/∂q_i)
 
-        This metric quantifies the structural commutation relation between two
-        observables. If {f, H} = 0, then f is a conserved structural invariant.
+        The result belongs to the declared classical phase-space adapter. Under
+        the usual Hamiltonian regularity assumptions, ``{f, H}=0`` makes ``f``
+        constant along that Hamiltonian flow; it does not prove a TNFR
+        structural invariant for engine operator trajectories.
 
         Args:
             f: First observable function.
@@ -356,6 +363,8 @@ class ClassicalForceTranslator:
         Returns:
             Value of the Poisson Bracket.
         """
+        epsilon = _finite_real_scalar(epsilon, "epsilon", positive=True)
+
         n = system.dimension
         bracket = 0.0
 
@@ -367,18 +376,22 @@ class ClassicalForceTranslator:
         def gradient(func, sys, var_name, idx):
             original = getattr(sys, var_name)[idx]
 
-            # Forward
-            getattr(sys, var_name)[idx] = original + epsilon
-            val_plus = func(sys)
+            try:
+                getattr(sys, var_name)[idx] = original + epsilon
+                val_plus = _finite_real_scalar(
+                    func(sys), f"{var_name} positive-shift observable"
+                )
+                getattr(sys, var_name)[idx] = original - epsilon
+                val_minus = _finite_real_scalar(
+                    func(sys), f"{var_name} negative-shift observable"
+                )
+            finally:
+                getattr(sys, var_name)[idx] = original
 
-            # Backward
-            getattr(sys, var_name)[idx] = original - epsilon
-            val_minus = func(sys)
-
-            # Restore
-            getattr(sys, var_name)[idx] = original
-
-            return (val_plus - val_minus) / (2 * epsilon)
+            derivative = (val_plus - val_minus) / (2 * epsilon)
+            if not math.isfinite(derivative):
+                raise TNFRValueError("Poisson-bracket derivative must remain finite")
+            return derivative
 
         # We need mutable arrays for this to work efficiently,
         # or we construct new systems.
@@ -396,5 +409,7 @@ class ClassicalForceTranslator:
             dg_dq = gradient(g, system, "q", i)
 
             bracket += (df_dq * dg_dp) - (df_dp * dg_dq)
+            if not math.isfinite(bracket):
+                raise TNFRValueError("Poisson bracket must remain finite")
 
-        return bracket
+        return float(bracket)

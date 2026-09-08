@@ -36,7 +36,6 @@ from ..constants.canonical import (
     DISSONANCE_AMPLIFICATION,
     EN_MIX_FACTOR,
     INV_PI,
-    NUL_DENSIFICATION_FACTOR,
     NUL_SCALE_FACTOR,
     SHA_VF_FACTOR,
     VAL_SCALE_FACTOR,
@@ -47,9 +46,12 @@ from ..types import EPIValue, Glyph, NodeId, TNFRGraph
 from ..utils import angle_diff, get_nodenx
 from . import definitions as _definitions
 from ._epi_domain import require_real_scalar_epi, validate_affine_epi_graph_input
+from ._mutation_stage_kernel import propose_mutation_stage
 from ._neighbor_epi_kernel import (
+    dominant_neighbor_epi_kind,
     neighbor_epi_blend_value,
     neighbor_epi_unweighted_mean,
+    reception_proposed_epi_kind,
 )
 from ._phase_gate import (
     U3PhaseGateError,
@@ -65,6 +67,13 @@ from ._resonance_identity import (
     resonance_proposed_epi_kind,
     validate_resonance_runtime_factors,
 )
+from ._scale_operator_kernel import (
+    compute_nul_edge_aware_scale as _compute_nul_edge_aware_scale,
+    compute_val_edge_aware_scale as _compute_val_edge_aware_scale,
+    edge_aware_intervention_event,
+    nul_densification_event,
+    propose_scale_operator,
+)
 from .factor_contracts import (
     GLYPH_FACTOR_SPECS,
     GLYPH_FACTORS_BY_GLYPH,
@@ -77,6 +86,24 @@ from .factor_contracts import (
     validate_glyph_factor,
     validate_glyph_factors,
 )
+from .event_remesh_runtime import (
+    EventRemeshCycleResult,
+    WeightedEPIObservation,
+    execute_event_remesh_cycle,
+)
+from .event_runtime import (
+    ExecutedOperatorEvent,
+    OperatorEventExecutionResult,
+    execute_operator_event_schedule,
+)
+from .event_timing import (
+    OperatorEventRuntimeClockDiagnostic,
+    OperatorEventSchedule,
+    ScheduledOperatorEvent,
+    StructuralFlowInterval,
+    build_operator_event_schedule,
+    diagnose_operator_event_runtime_clock,
+)
 from .jitter import (
     _JITTER_PROGRESS_KEY,
     JitterCache,
@@ -87,9 +114,14 @@ from .jitter import (
 )
 from .registry import OPERATORS, discover_operators, get_operator_class
 from .remesh import (
+    DelayedRemeshNodeProposal,
+    DelayedRemeshPlan,
+    DelayedRemeshResult,
+    DelayedRemeshStabilityEvidence,
     apply_network_remesh,
     apply_remesh_if_globally_stable,
     apply_topological_remesh,
+    plan_network_remesh,
 )
 
 _remesh_doc = (
@@ -159,6 +191,18 @@ __all__ = [
     "runtime_active_glyph_factor_keys",
     "validate_glyph_factor",
     "validate_glyph_factors",
+    "EventRemeshCycleResult",
+    "WeightedEPIObservation",
+    "execute_event_remesh_cycle",
+    "ExecutedOperatorEvent",
+    "OperatorEventExecutionResult",
+    "execute_operator_event_schedule",
+    "OperatorEventRuntimeClockDiagnostic",
+    "OperatorEventSchedule",
+    "ScheduledOperatorEvent",
+    "StructuralFlowInterval",
+    "build_operator_event_schedule",
+    "diagnose_operator_event_runtime_clock",
     "GLYPH_OPERATIONS",
     "apply_glyph_obj",
     "apply_glyph",
@@ -168,6 +212,11 @@ __all__ = [
     "StructuralPotentialConfinementObservation",
     "observe_structural_potential_confinement",
     "apply_network_remesh",
+    "plan_network_remesh",
+    "DelayedRemeshNodeProposal",
+    "DelayedRemeshPlan",
+    "DelayedRemeshResult",
+    "DelayedRemeshStabilityEvidence",
     "apply_topological_remesh",
     "apply_remesh_if_globally_stable",
     "OPERATORS",
@@ -461,16 +510,9 @@ def _determine_dominant(
     >>> _determine_dominant([Mock(0.2, "seed"), Mock(-1.0, "pulse")], "seed")
     ('pulse', 1.0)
     """
-    best_kind: str | None = None
-    best_abs = 0.0
-    for v in neigh:
-        abs_v = abs(v.EPI)
-        if abs_v > best_abs:
-            best_abs = abs_v
-            best_kind = v.epi_kind
-    if not best_kind:
-        return default_kind, 0.0
-    return best_kind, best_abs
+    return dominant_neighbor_epi_kind(
+        ((float(v.EPI), v.epi_kind) for v in neigh), default_kind
+    )
 
 
 def _mix_epi_with_neighbors(
@@ -531,14 +573,15 @@ def _mix_epi_with_neighbors(
             f"neighbor EPI state[{index}]",
             operator="Reception",
         )
-    dominant, best_abs = _determine_dominant(neigh, default_kind)
     new_epi = _finite_operator_scalar(
         neighbor_epi_blend_value(epi, epi_bar, mix), "EN EPI proposal"
     )
-    final = dominant if best_abs > abs(new_epi) else node.epi_kind
-    if not final:
-        final = default_kind
-    final = str(final)
+    final = reception_proposed_epi_kind(
+        node.epi_kind,
+        ((float(neighbor.EPI), neighbor.epi_kind) for neighbor in neigh),
+        unclipped_target_epi=new_epi,
+        fallback_kind=default_kind,
+    )
 
     # Validate both proposals before changing either form or identity.  Retain a
     # best-effort rollback for custom NodeProtocol setters that reject the kind
@@ -648,8 +691,12 @@ def _op_IL(node: NodeProtocol, gf: GlyphFactors) -> None:  # IL — Coherence
     0.1
     """
     factor = get_factor(gf, "IL_dnfr_factor", COHERENCE_RETENTION)
-    dnfr = _finite_operator_scalar(getattr(node, "dnfr", 0.0), "IL DeltaNFR state")
-    proposal = _finite_operator_scalar(factor * dnfr, "IL DeltaNFR proposal")
+    from ._coherence_stage_kernel import propose_coherence_pressure
+
+    dnfr = _finite_operator_scalar(
+        getattr(node, "dnfr", 0.0), "IL DeltaNFR state"
+    )
+    _before, proposal = propose_coherence_pressure(dnfr, factor)
     node.dnfr = proposal
 
 
@@ -813,269 +860,134 @@ def _um_select_candidates(
 
 
 def compute_consensus_phase(phases: list[float]) -> float:
-    """Compute circular mean (consensus phase) from a list of phase angles.
+    """Compute the finite circular mean through the shared UM kernel."""
 
-    This function calculates the consensus phase using the circular mean
-    formula: arctan2(mean(sin), mean(cos)). This ensures proper handling
-    of phase wrapping at ±π boundaries.
+    from ._coupling_stage_kernel import compute_consensus_phase as _kernel_mean
 
-    Parameters
-    ----------
-    phases : list[float]
-        list of phase angles in radians.
-
-    Returns
-    -------
-    float
-        Consensus phase angle in radians, in the range [-π, π).
-
-    Notes
-    -----
-    The consensus phase represents the central tendency of a set of angular
-    values, accounting for the circular nature of phase space. This is
-    critical for bidirectional phase synchronization in the UM operator.
-
-    Examples
-    --------
-    >>> import math
-    >>> phases = [0.0, math.pi/2, math.pi]
-    >>> result = compute_consensus_phase(phases)
-    >>> -math.pi <= result < math.pi
-    True
-    """
-    if not phases:
-        return 0.0
-
-    cos_sum = sum(math.cos(ph) for ph in phases)
-    sin_sum = sum(math.sin(ph) for ph in phases)
-    return math.atan2(sin_sum, cos_sum)
+    return _kernel_mean(phases)
 
 
-def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
-    """Align node phase and frequency with neighbours and optionally create links.
+def _op_um_protocol_fallback(
+    node: NodeProtocol, gf: GlyphFactors
+) -> None:
+    """Preserve the phase-only behavior of graphless NodeProtocol objects."""
 
-    Coupling shifts the node phase ``theta`` towards the neighbour mean while
-    respecting νf and EPI. When bidirectional mode is enabled (default), both
-    the node and its neighbors synchronize their phases mutually. Additionally,
-    structural frequency (νf) synchronization causes coupled nodes to converge
-    their reorganization rates. Coupling also reduces ΔNFR through mutual
-    stabilization, decreasing reorganization pressure proportional to phase
-    alignment strength. When functional links are enabled it may add edges
-    based on combined phase, EPI, and sense-index similarity.
-
-    Parameters
-    ----------
-    node : NodeProtocol
-        Node whose phase and frequency are being synchronised.
-    gf : GlyphFactors
-        Provides ``UM_theta_push``, ``UM_vf_sync``, ``UM_dnfr_reduction`` and
-        optional selection parameters.
-
-    Notes
-    -----
-    Bidirectional synchronization (UM_BIDIRECTIONAL=True, default) implements
-    the canonical TNFR requirement φᵢ(t) ≈ φⱼ(t) by mutually adjusting phases
-    of both the node and its neighbors towards a consensus phase. This ensures
-    true coupling as defined in the theory.
-
-    Structural frequency synchronization (UM_SYNC_VF=True, default) implements
-    the TNFR requirement that coupling synchronizes not only phases but also
-    structural frequencies (νf). This enables coupled nodes to converge their
-    reorganization rates, which is essential for sustained resonance and coherent
-    network evolution as described by the nodal equation: ∂EPI/∂t = νf · ΔNFR(t).
-
-    ΔNFR stabilization (UM_STABILIZE_DNFR=True, default) implements the canonical
-    effect where coupling reduces reorganization pressure through mutual stabilization.
-    The reduction is proportional to phase alignment: well-coupled nodes (high phase
-    alignment) experience stronger ΔNFR reduction, promoting structural coherence.
-
-    Legacy unidirectional mode (UM_BIDIRECTIONAL=False) only adjusts the node's
-    phase towards its neighbors, preserving backward compatibility.
-
-    Examples
-    --------
-    >>> import math
-    >>> class MockNode:
-    ...     def __init__(self, theta, neighbors):
-    ...         self.theta = theta
-    ...         self.EPI = 1.0
-    ...         self.Si = 0.5
-    ...         self.graph = {}
-    ...         self._neighbors = neighbors
-    ...     def neighbors(self):
-    ...         return self._neighbors
-    ...     def offset(self):
-    ...         return 0
-    ...     def all_nodes(self):
-    ...         return []
-    ...     def has_edge(self, _):
-    ...         return False
-    ...     def add_edge(self, *_):
-    ...         raise AssertionError("not used in example")
-    >>> neighbor = MockNode(math.pi / 2, [])
-    >>> node = MockNode(0.0, [neighbor])
-    >>> _op_UM(node, {"UM_theta_push": 0.5})
-    >>> round(node.theta, 2)
-    0.79
-    """
-    # Resolve every factor and the immutable U3 subset before any node, edge,
-    # history, metric, or telemetry mutation.
-    k = get_factor(gf, "UM_theta_push", EN_MIX_FACTOR)
-    k_vf = get_factor(gf, "UM_vf_sync", COUPLING_GENTLE)
-    stabilize_dnfr = bool(node.graph.get("UM_STABILIZE_DNFR", True))
-    k_dnfr = (
-        get_factor(gf, "UM_dnfr_reduction", COUPLING_MODERATE)
-        if stabilize_dnfr
-        else 0.0
-    )
+    theta_push = get_factor(gf, "UM_theta_push", EN_MIX_FACTOR)
     selection, neighbors = _runtime_u3_neighbors(node, "UM")
-    th_i = selection.target_phase
-    neighbor_phases = list(selection.phases)
     bidirectional = bool(node.graph.get("UM_BIDIRECTIONAL", True))
-
-    consensus_inputs = [th_i, *neighbor_phases] if bidirectional else neighbor_phases
-    target_phase = compute_consensus_phase(consensus_inputs)
-    proposed_theta = _finite_operator_scalar(
-        th_i + k * angle_diff(target_phase, th_i), "UM target phase proposal"
+    inputs = (
+        [selection.target_phase, *selection.phases]
+        if bidirectional
+        else list(selection.phases)
+    )
+    consensus = compute_consensus_phase(inputs)
+    target_phase = _finite_operator_scalar(
+        (
+            selection.target_phase
+            + theta_push
+            * angle_diff(consensus, selection.target_phase)
+        )
+        % math.tau,
+        "UM target phase proposal",
     )
     if bidirectional:
-        proposed_neighbor_phases = [
+        neighbor_phases = tuple(
             _finite_operator_scalar(
-                phase + k * angle_diff(target_phase, phase),
+                (
+                    phase
+                    + theta_push * angle_diff(consensus, phase)
+                )
+                % math.tau,
                 "UM neighbor phase proposal",
             )
-            for phase in neighbor_phases
-        ]
+            for phase in selection.phases
+        )
     else:
-        proposed_neighbor_phases = neighbor_phases
+        neighbor_phases = ()
 
-    proposed_vf: float | None = None
-    sync_vf = bool(node.graph.get("UM_SYNC_VF", True))
-    if sync_vf and hasattr(node, "G"):
-        vf_i = _finite_operator_scalar(node.vf, "UM target structural frequency")
-        vf_neighbors = [
-            _finite_operator_scalar(
-                neighbor.vf, "UM compatible-neighbor structural frequency"
-            )
-            for neighbor in neighbors
-        ]
-        vf_mean = sum(vf_neighbors) / len(vf_neighbors)
-        proposed_vf = _finite_operator_scalar(
-            vf_i + k_vf * (vf_mean - vf_i),
-            "UM structural-frequency proposal",
+    node.theta = target_phase
+    for neighbor, phase in zip(
+        neighbors, neighbor_phases, strict=True
+    ):
+        neighbor.theta = phase
+
+
+def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM - Coupling
+    """Synchronize U3-compatible phases and optionally form valid links.
+
+    NetworkX-backed nodes use the same pure proposal and merge policy as the
+    all-target stage. A direct call has one target, so its phase result matches
+    the established single-target rule apart from canonical normalization and
+    final U3 revalidation. Graphless protocol objects retain the historical
+    phase-only behavior.
+    """
+
+    if not hasattr(node, "G"):
+        _op_um_protocol_fallback(node, gf)
+        return
+
+    from ._coupling_stage_kernel import propose_coupling_stage
+    from .network_stage import (
+        GraphTransactionSnapshot,
+        _commit_coupling_structure,
+    )
+
+    transaction = GraphTransactionSnapshot(node.G)
+    try:
+        functional_links = bool(
+            node.graph.get("UM_FUNCTIONAL_LINKS", True)
+        )
+        # Direct and staged public entry points both validate the graph seed
+        # before dispatch, even when links are disabled. Keep that shared
+        # argument contract here for standalone calls of this private helper.
+        configured_seed = validate_graph_seed(node)
+        resolved_seed: int | None = None
+        node_offsets: dict[Any, int] = {}
+        if functional_links:
+            if configured_seed is None:
+                import random
+
+                resolved_seed = random.SystemRandom().getrandbits(64)
+            else:
+                resolved_seed = configured_seed
+            node_offsets[node.n] = node.offset()
+
+        stage = propose_coupling_stage(
+            node.G,
+            (node.n,),
+            gf,
+            resolved_seed=resolved_seed,
+            node_offsets=node_offsets,
         )
 
-    proposed_dnfr: float | None = None
-    if stabilize_dnfr and hasattr(node, "G"):
-        from ..metrics.phase_compatibility import compute_phase_coupling_strength
-
-        phase_alignments = [
-            compute_phase_coupling_strength(proposed_theta, phase)
-            for phase in proposed_neighbor_phases
-        ]
-        mean_alignment = sum(phase_alignments) / len(phase_alignments)
-        reduction_factor = 1.0 - k_dnfr * mean_alignment
-        proposed_dnfr = _finite_operator_scalar(
-            _finite_operator_scalar(node.dnfr, "UM target DeltaNFR")
-            * reduction_factor,
-            "UM DeltaNFR proposal",
-        )
-
-    proposed_links: list[tuple[NodeProtocol, float]] = []
-    if bool(node.graph.get("UM_FUNCTIONAL_LINKS", True)) and hasattr(node, "G"):
-        thr = _finite_operator_scalar(
-            node.graph.get(
-                "UM_COMPAT_THRESHOLD",
-                DEFAULTS.get("UM_COMPAT_THRESHOLD", _UM_COMPAT_CANONICAL),
-            ),
-            "UM_COMPAT_THRESHOLD",
-        )
-        limit = int(node.graph.get("UM_CANDIDATE_COUNT", 0))
-        mode = str(node.graph.get("UM_CANDIDATE_MODE", "sample")).lower()
-
-        # The hard U3 gate is applied to prospective functional links before
-        # sampling or scoring, so a high EPI/Si score cannot admit an antiphase
-        # edge. The optional UM limit is the same effective limit used above.
-        all_candidates = tuple(_um_candidate_iter(node))
-        try:
-            _, phase_candidates, phase_candidate_values = select_u3_phase_neighbors(
-                th_i,
-                all_candidates,
-                phase_getter=lambda candidate: _raw_runtime_phase(node, candidate),
-                phase_limit=selection.effective_limit,
-                require_compatible=False,
-            )
-        except U3PhaseGateError as exc:
-            raise TNFRValueError(
-                f"Coupling functional-link phase gate rejected a candidate: {exc}",
-                context={
-                    "operator": "Coupling",
-                    "failed_condition": exc.failed_condition,
-                },
-            ) from exc
-        phase_by_identity = {
-            id(candidate): phase
-            for candidate, phase in zip(
-                phase_candidates, phase_candidate_values, strict=True
-            )
-        }
-        candidates = _um_select_candidates(
-            node, iter(phase_candidates), limit, mode, th_i
-        )
-
-        from ..metrics.phase_compatibility import compute_phase_coupling_strength
-
-        epi_i = node.EPI
-        si_i = _finite_operator_scalar(node.Si, "UM target sense index")
-        for candidate in candidates:
-            phase_coupling = compute_phase_coupling_strength(
-                th_i, phase_by_identity[id(candidate)]
-            )
-            epi_j = candidate.EPI
-            si_j = _finite_operator_scalar(
-                candidate.Si, "UM candidate sense index"
-            )
-            epi_sim = 1.0 - abs(epi_i - epi_j) / (
-                abs(epi_i) + abs(epi_j) + 1e-9
-            )
-            si_sim = 1.0 - abs(si_i - si_j)
-            compat = _finite_operator_scalar(
-                phase_coupling * 0.5 + 0.25 * epi_sim + 0.25 * si_sim,
-                "UM functional-link compatibility",
-            )
-            if compat >= thr:
-                proposed_links.append((candidate, compat))
-
-    # Atomic channel commit follows complete validation and proposal building.
-    node.theta = proposed_theta
-    if bidirectional:
-        for neighbor, phase in zip(
-            neighbors, proposed_neighbor_phases, strict=True
-        ):
-            neighbor.theta = phase
-    if proposed_vf is not None:
-        node.vf = proposed_vf
-    if proposed_dnfr is not None:
-        node.dnfr = proposed_dnfr
-    for candidate, compatibility in proposed_links:
-        node.add_edge(candidate, compatibility)
+        if resolved_seed is not None:
+            if validate_graph_seed(node) != configured_seed:
+                raise RuntimeError(
+                    "stale UM random seed: configuration changed before commit"
+                )
+            if configured_seed is None:
+                node.graph["RANDOM_SEED"] = resolved_seed
+        _commit_coupling_structure(node.G, stage)
+    except BaseException as failure:
+        transaction.restore_after_failure(node.G, failure)
+        raise
 
 
 def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
-    """Propagate coherence through resonance with νf amplification.
+    """Propagate scalar EPI through U3-admissible resonance.
 
-    Resonance (RA) propagates EPI along existing couplings while amplifying
-    the structural frequency (νf) to reflect network coherence propagation.
-    According to TNFR theory, RA creates "resonant cascades" where coherence
-    amplifies across the network, increasing collective νf and global C(t).
+    Resonance (RA) blends the target EPI with its compatible neighborhood,
+    proposes a phase step toward that subset, and may amplify structural
+    frequency when a nonzero signal is present. Structural C(t) is an observed
+    pressure/rate read-out: RA has no unconditional monotonic C(t) guarantee.
 
-    **Canonical Effects (always active):**
+    **Canonical effects:**
 
-    - **EPI Propagation**: Diffuses EPI to neighbors (identity-preserving)
-    - **νf Amplification**: Increases structural frequency when propagating coherence
-    - **Phase Alignment**: Strengthens phase synchrony across propagation path
-    - **Network C(t)**: Contributes to global coherence increase
-    - **Identity Preservation**: Maintains structural identity during propagation
+    - **EPI propagation**: blends scalar EPI while preserving sign/kind identity
+    - **νf amplification**: raises capacity when the propagation trigger is active
+    - **Phase step**: moves the target toward the compatible circular mean
+    - **C(t) telemetry**: optionally records the signed before/after difference
+    - **Identity preservation**: maintains structural identity during propagation
 
     Parameters
     ----------
@@ -1088,20 +1000,18 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
 
     Notes
     -----
-    **νf Amplification (Canonical)**: When neighbors have coherence (|epi_bar| > 1e-9),
-    node.vf is multiplied by (1.0 + RA_vf_amplification). This reflects
-    the canonical TNFR property that resonance amplifies collective νf.
-    This is NOT optional - it is a fundamental property of resonance per TNFR theory.
+    **νf amplification**: When the compatible-neighbor scalar EPI mean satisfies
+    the configured nonzero trigger, ``node.vf`` is multiplied by
+    ``1 + RA_vf_amplification``. This changes reorganization capacity; it does
+    not by itself establish a change in C(t).
 
-    **Phase Alignment Strengthening (Canonical)**: RA strengthens phase alignment
-    with neighbors by applying a small phase correction toward the network mean.
-    This ensures that "Phase alignment: Strengthens across propagation path" as
-    stated in the theoretical foundations. Uses existing phase utility functions
-    to avoid code duplication.
+    **Phase step**: RA moves the target toward the compatible-neighbor circular
+    mean by ``RA_phase_coupling``. Phase alignment and structural C(t) remain
+    separate diagnostics because phase is not a direct argument of the C kernel.
 
-    **Network Coherence Tracking (Optional)**: If ``TRACK_NETWORK_COHERENCE`` is enabled,
-    global C(t) is measured before/after RA application to quantify network-level
-    coherence increase.
+    **Network C(t) tracking (optional)**: With ``TRACK_NETWORK_COHERENCE``, RA
+    records canonical C(t) before and after execution plus their signed
+    difference. The difference may be negative, zero, or positive.
 
     **Identity Preservation (Canonical)**: EPI structure (kind and sign) are preserved
     during propagation to ensure structural identity is maintained as required by theory.
@@ -1303,14 +1213,10 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     track_coherence = bool(node.graph.get("TRACK_NETWORK_COHERENCE", False))
     c_before = None
     if track_coherence and hasattr(node, "G"):
-        try:
-            from ..metrics.coherence import compute_network_coherence
+        from ..metrics.common import compute_coherence
 
-            c_before = compute_network_coherence(node.G)
-            if "_ra_c_tracking" not in node.graph:
-                node.graph["_ra_c_tracking"] = []
-        except ImportError:
-            pass  # Metrics module not available
+        c_before = float(compute_coherence(node.G))
+        node.graph.setdefault("_ra_c_tracking", [])
 
     # Commit the already validated proposal.  The setter remains the canonical
     # storage boundary, while clipping is not repeated after the gate.
@@ -1322,7 +1228,7 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
 
     # CANONICAL EFFECT 1: νf amplification through resonance
     # This is always active - it's a fundamental property of resonance per TNFR theory
-    # Only amplify if neighbors have coherence to propagate
+    # Only amplify when the compatible-neighbor EPI trigger is active
     if amplification_active:
         node.vf = proposed_vf
 
@@ -1355,22 +1261,19 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
             node.graph["ra_metrics"] = []
         node.graph["ra_metrics"].append(metrics)
 
-    # Track network C(t) after RA if enabled (optional telemetry)
+    # Record the signed network C(t) change if optional telemetry is enabled
     if track_coherence and c_before is not None and hasattr(node, "G"):
-        try:
-            from ..metrics.coherence import compute_network_coherence
+        from ..metrics.common import compute_coherence
 
-            c_after = compute_network_coherence(node.G)
-            node.graph["_ra_c_tracking"].append(
-                {
-                    "node": getattr(node, "n", None),
-                    "c_before": c_before,
-                    "c_after": c_after,
-                    "c_delta": c_after - c_before,
-                }
-            )
-        except ImportError:
-            pass
+        c_after = float(compute_coherence(node.G))
+        node.graph["_ra_c_tracking"].append(
+            {
+                "node": getattr(node, "n", None),
+                "c_before": c_before,
+                "c_after": c_after,
+                "c_delta": c_after - c_before,
+            }
+        )
 
 
 def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
@@ -1502,269 +1405,76 @@ def _set_epi_with_boundary_check(
     node.EPI = proposal
 
 
-def _compute_val_edge_aware_scale(
-    epi_current: float, scale: float, epi_max: float, epsilon: float
-) -> float:
-    """Compute edge-aware scale factor for VAL (Expansion) operator.
-
-    Adapts the expansion scale to prevent EPI overflow beyond EPI_MAX.
-    When EPI is near the upper boundary, the effective scale is reduced
-    to ensure EPI * scale_eff <= EPI_MAX.
-
-    Parameters
-    ----------
-    epi_current : float
-        Current EPI value
-    scale : float
-        Desired expansion scale factor (e.g., VAL_scale = 1.05)
-    epi_max : float
-        Upper EPI boundary (typically 1.0)
-    epsilon : float
-        Small value to prevent division by zero (e.g., 1e-12)
-
-    Returns
-    -------
-    float
-        Effective scale factor, adapted to respect EPI_MAX boundary
-
-    Notes
-    -----
-    TNFR Principle: This implements "resonance to the edge" - expansion
-    scales adaptively to explore volume while respecting structural envelope.
-    The adaptation is a dynamic compatibility check, not a fixed constant.
-
-    Examples
-    --------
-    >>> # Normal case: EPI far from boundary
-    >>> _compute_val_edge_aware_scale(0.5, 1.05, 1.0, 1e-12)
-    1.05
-
-    >>> # Edge case: EPI near boundary, scale adapts
-    >>> scale = _compute_val_edge_aware_scale(0.96, 1.05, 1.0, 1e-12)
-    >>> abs(scale - 1.0417) < 0.001  # Roughly 1.0/0.96
-    True
-    """
-    abs_epi = abs(epi_current)
-    if abs_epi < epsilon:
-        # EPI near zero, full scale can be applied safely
-        return scale
-
-    # Compute maximum safe scale that keeps EPI within bounds
-    max_safe_scale = epi_max / abs_epi
-
-    # Return the minimum of desired scale and safe scale
-    return min(scale, max_safe_scale)
-
-
-def _compute_nul_edge_aware_scale(
-    epi_current: float, scale: float, epi_min: float, epsilon: float
-) -> float:
-    """Compute edge-aware scale factor for NUL (Contraction) operator.
-
-    Adapts the contraction scale to prevent EPI underflow below EPI_MIN.
-
-    Parameters
-    ----------
-    epi_current : float
-        Current EPI value
-    scale : float
-        Desired contraction scale factor (e.g., NUL_scale = 0.9)
-    epi_min : float
-        Lower EPI boundary (typically -1.0)
-    epsilon : float
-        Small value to prevent division by zero (e.g., 1e-12)
-
-    Returns
-    -------
-    float
-        Effective scale factor, adapted to respect EPI_MIN boundary
-
-    Notes
-    -----
-    TNFR Principle: Contraction concentrates structure toward core while
-    maintaining coherence.
-
-    For typical NUL_scale < 1.0, contraction naturally moves EPI toward zero
-    (the center), which is always safe regardless of whether EPI is positive
-    or negative. Edge-awareness is only needed if scale could somehow push
-    EPI beyond boundaries.
-
-    In practice, with NUL_scale = 0.9 < 1.0:
-    - Positive EPI contracts toward zero: safe
-    - Negative EPI contracts toward zero: safe
-
-    Edge-awareness is provided for completeness and future extensibility.
-
-    Examples
-    --------
-    >>> # Normal contraction (always safe with scale < 1.0)
-    >>> _compute_nul_edge_aware_scale(0.5, 0.9, -1.0, 1e-12)
-    0.9
-    >>> _compute_nul_edge_aware_scale(-0.5, 0.9, -1.0, 1e-12)
-    0.9
-    """
-    # With NUL_scale < 1.0, contraction moves toward zero (always safe)
-    # No adaptation needed in typical case
-    return scale
-
-
 def _make_scale_op(glyph: Glyph) -> GlyphOperation:
     def _op(node: NodeProtocol, gf: GlyphFactors) -> None:
         key = "VAL_scale" if glyph is Glyph.VAL else "NUL_scale"
         default = _SCALE_FACTORS[glyph]
         factor = get_factor(gf, key, default)
-
-        # Resolve every state-dependent proposal before committing any channel.
-        vf_before = _finite_operator_scalar(node.vf, "nu_f before scale operator")
-        vf_after = _finite_operator_scalar(
-            vf_before * factor, f"{glyph.value} nu_f proposal"
-        )
-        if vf_after < 0.0:
-            raise TNFRValueError(
-                f"{glyph.value} must preserve nonnegative structural frequency"
-            )
-
-        dnfr_before: float | None = None
-        dnfr_after: float | None = None
-        densification_factor: float | None = None
-        inverse_residual: float | None = None
-        if glyph is Glyph.NUL:
-            # The pressure coefficient is the materialized reciprocal of the
-            # resolved capacity contraction. It is a derived relation, not a
-            # second tuning degree of freedom.
-            densification_factor = _finite_operator_scalar(
-                1.0 / factor, "NUL inverse densification coefficient"
-            )
-            if "NUL_densification_factor" in gf:
-                configured = get_factor(
-                    gf, "NUL_densification_factor", densification_factor
-                )
-                if configured != densification_factor:
-                    raise GlyphFactorValidationError(
-                        "NUL_densification_factor is derived, not independent: "
-                        f"expected {densification_factor!r}, got {configured!r}"
-                    )
-            dnfr_before = _finite_operator_scalar(
-                node.dnfr, "DeltaNFR before Contraction"
-            )
-            dnfr_after = _finite_operator_scalar(
-                dnfr_before * densification_factor,
-                "NUL DeltaNFR proposal",
-            )
-            # This is a binary64 diagnostic. The ideal-real coefficient product
-            # is one; its materialized multiplication need not equal one exactly.
-            inverse_residual = factor * densification_factor - 1.0
-
         edge_aware_enabled = bool(
             node.graph.get(
                 "EDGE_AWARE_ENABLED", DEFAULTS.get("EDGE_AWARE_ENABLED", True)
             )
         )
-        epi_before: float | None = None
-        epi_after: float | None = None
-        scale_eff: float | None = None
-        epsilon: float | None = None
-        if edge_aware_enabled:
-            epsilon = _finite_operator_scalar(
-                node.graph.get(
-                    "EDGE_AWARE_EPSILON",
-                    DEFAULTS.get("EDGE_AWARE_EPSILON", 1e-12),
-                ),
+        proposal = propose_scale_operator(
+            glyph=glyph,
+            factor=factor,
+            vf_before=node.vf,
+            dnfr_before=node.dnfr if glyph is Glyph.NUL else None,
+            configured_densification_factor=(
+                gf.get("NUL_densification_factor")
+                if glyph is Glyph.NUL
+                and "NUL_densification_factor" in gf
+                else None
+            ),
+            edge_aware_enabled=edge_aware_enabled,
+            epi_before=node.EPI if edge_aware_enabled else None,
+            epi_min=node.graph.get(
+                "EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)
+            ),
+            epi_max=node.graph.get(
+                "EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)
+            ),
+            epsilon=node.graph.get(
                 "EDGE_AWARE_EPSILON",
-            )
-            if epsilon <= 0.0:
-                raise TNFRValueError("EDGE_AWARE_EPSILON must be positive")
-            epi_min = _finite_operator_scalar(
-                node.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)),
-                "EPI_MIN",
-            )
-            epi_max = _finite_operator_scalar(
-                node.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)),
-                "EPI_MAX",
-            )
-            if epi_min > epi_max:
-                raise TNFRValueError("EPI_MIN must not exceed EPI_MAX")
-            epi_before = _finite_real_epi(
-                node.EPI,
-                "target EPI state",
-                operator="Expansion" if glyph is Glyph.VAL else "Contraction",
-            )
-
-            # Compute edge-aware scale factor
-            if glyph is Glyph.VAL:
-                magnitude_bound = epi_max if epi_before >= 0.0 else abs(epi_min)
-                scale_eff = _compute_val_edge_aware_scale(
-                    epi_before, factor, magnitude_bound, epsilon
-                )
-            else:  # Glyph.NUL
-                scale_eff = _compute_nul_edge_aware_scale(
-                    epi_before, factor, epi_min, epsilon
-                )
-            scale_eff = _finite_operator_scalar(
-                scale_eff, f"{glyph.value} effective EPI scale"
-            )
-            raw_epi_after = _finite_operator_scalar(
-                epi_before * scale_eff, f"{glyph.value} EPI proposal"
-            )
-            from ..dynamics.structural_clip import structural_clip
-
-            clip_mode = str(node.graph.get("CLIP_MODE", "hard"))
-            if clip_mode not in ("hard", "soft"):
-                clip_mode = "hard"
-            epi_after = _finite_operator_scalar(
-                structural_clip(
-                    raw_epi_after,
-                    lo=epi_min,
-                    hi=epi_max,
-                    mode=clip_mode,  # type: ignore[arg-type]
-                    record_stats=False,
-                ),
-                f"{glyph.value} bounded EPI proposal",
-            )
+                DEFAULTS.get("EDGE_AWARE_EPSILON", 1e-12),
+            ),
+            clip_mode=str(node.graph.get("CLIP_MODE", "hard")),
+        )
 
         # Atomic commit after every factor, bound and proposal has passed.
-        node.vf = vf_after
+        node.vf = proposal.vf_after
         if glyph is Glyph.NUL:
-            assert dnfr_before is not None
-            assert dnfr_after is not None
-            assert densification_factor is not None
-            node.dnfr = dnfr_after
+            assert proposal.dnfr_before is not None
+            assert proposal.dnfr_after is not None
+            assert proposal.densification_factor is not None
+            node.dnfr = proposal.dnfr_after
             node.graph.setdefault("nul_densification_log", []).append(
-                {
-                    "dnfr_before": dnfr_before,
-                    "dnfr_after": dnfr_after,
-                    "densification_factor": densification_factor,
-                    "contraction_scale": factor,
-                    "derived_inverse_coefficient": True,
-                    "binary64_inverse_product_residual": inverse_residual,
-                }
+                nul_densification_event(proposal, getattr(node, "n", None))
             )
-        if epi_after is not None:
-            _set_epi_with_boundary_check(node, epi_after, apply_clip=False)
-            assert epi_before is not None
-            assert scale_eff is not None
-            assert epsilon is not None
-            if abs(scale_eff - factor) > epsilon:
+        if proposal.write_epi:
+            assert proposal.epi_after is not None
+            _set_epi_with_boundary_check(
+                node, proposal.epi_after, apply_clip=False
+            )
+            if proposal.edge_aware_adapted:
+                assert proposal.epi_before is not None
+                assert proposal.effective_epi_scale is not None
                 node.graph.setdefault("edge_aware_interventions", []).append(
-                    {
-                        "glyph": glyph.name if hasattr(glyph, "name") else str(glyph),
-                        "epi_before": epi_before,
-                        "epi_after": epi_after,
-                        "scale_requested": factor,
-                        "scale_effective": scale_eff,
-                        "adapted": True,
-                    }
+                    edge_aware_intervention_event(
+                        proposal, getattr(node, "n", None)
+                    )
                 )
 
-    _op.__doc__ = """{} glyph scales νf and EPI with edge-aware adaptation.
+    _op.__doc__ = """{} glyph proposes a target-local capacity scale.
 
-        VAL (expansion) increases νf and EPI, whereas NUL (contraction) decreases them.
-        Edge-aware scaling adapts the scale factor near EPI boundaries to prevent
-        overflow/underflow, maintaining structural coherence within [-1.0, 1.0].
+        VAL increases νf and scales signed EPI away from zero; NUL decreases νf,
+        scales EPI toward zero, and densifies |ΔNFR|. EPI is changed only when
+        EDGE_AWARE_ENABLED is true. Boundary projection then keeps it within the
+        configured structural interval.
 
         When EDGE_AWARE_ENABLED is True (default), the effective scale is computed as:
-        - VAL: scale_eff = min(VAL_scale, EPI_MAX / |EPI_current|)
-        - NUL: scale_eff = min(NUL_scale, |EPI_MIN| / |EPI_current|) for negative EPI
+        - VAL: scale_eff = min(VAL_scale, sign-specific bound / |EPI_current|)
+        - NUL: scale_eff = NUL_scale
 
         This implements TNFR principle: "resonance to the edge" without breaking
         the structural envelope. Telemetry records adaptation events.
@@ -1853,7 +1563,7 @@ def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
     - Direction: Based on ΔNFR sign (positive → forward phase, negative → backward)
     - Magnitude: Calibrated constant theta_shift_factor · (π/4); independent of |ΔNFR|
     - Regime detection: Identifies quadrant crossings (π/2 boundaries)
-    - Deterministic: Same seed produces same transformation
+    - RNG-free: Same validated state and configuration produce the same result
 
     The transformation preserves structural identity (epi_kind) while shifting the
     operational regime, enabling adaptation without losing coherence.
@@ -1863,8 +1573,9 @@ def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
     node : NodeProtocol
         Node whose phase is transformed based on its structural state.
     gf : GlyphFactors
-        Supplies ``ZHIR_theta_shift_factor`` (default: 0.3) controlling transformation
-        magnitude. Can override with explicit ``ZHIR_theta_shift`` for fixed rotation.
+        Supplies ``ZHIR_theta_shift_factor`` (default: 1/π) controlling
+        transformation magnitude. Can override with explicit
+        ``ZHIR_theta_shift`` for fixed rotation.
 
     Examples
     --------
@@ -1890,59 +1601,25 @@ def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
     >>> round(node3.theta, 2)
     1.57
     """
-    # Check for explicit fixed shift (backward compatibility)
+    # Resolve only the active branch before building the pure phase proposal.
     if "ZHIR_theta_shift" in gf:
-        shift = get_factor(gf, "ZHIR_theta_shift", math.pi / 2)
-        theta_before = _finite_operator_scalar(node.theta, "ZHIR phase state")
-        theta_new = _finite_operator_scalar(
-            ((theta_before % math.tau) + (shift % math.tau)) % math.tau,
-            "ZHIR phase proposal",
+        proposal = propose_mutation_stage(
+            node.theta,
+            fixed_shift=get_factor(gf, "ZHIR_theta_shift", math.pi / 2),
         )
-        node.theta = theta_new
-        # Store telemetry for fixed shift mode
-        storage = node._glyph_storage()
-        storage["_zhir_theta_shift"] = shift
-        storage["_zhir_fixed_mode"] = True
-        return
+    else:
+        proposal = propose_mutation_stage(
+            node.theta,
+            node.dnfr,
+            theta_shift_factor=get_factor(
+                gf, "ZHIR_theta_shift_factor", INV_PI
+            ),
+        )
 
-    # Canonical transformation: θ → θ' based on ΔNFR
-    theta_before = _finite_operator_scalar(node.theta, "ZHIR phase state")
-    theta_before = theta_before % math.tau
-    dnfr = _finite_operator_scalar(node.dnfr, "ZHIR DeltaNFR state")
-
-    # Transformation magnitude controlled by factor
-    theta_shift_factor = get_factor(gf, "ZHIR_theta_shift_factor", INV_PI)
-
-    # Direction based on ΔNFR sign (coherent with structural pressure)
-    # Magnitude is a calibration constant (theta_shift_factor · π/4); ΔNFR enters
-    # only via its SIGN (direction) and the U4b firing threshold, NOT as |ΔNFR|.
-    base_shift = math.pi / 4
-    shift = _finite_operator_scalar(
-        theta_shift_factor * math.copysign(1.0, dnfr) * base_shift,
-        "ZHIR phase shift",
-    )
-
-    # Apply transformation with phase wrapping [0, 2π)
-    theta_new = _finite_operator_scalar(
-        (theta_before + (shift % math.tau)) % math.tau,
-        "ZHIR phase proposal",
-    )
-    node.theta = theta_new
-
-    # Detect regime change (crossing quadrant boundaries)
-    regime_before = int(theta_before // (math.pi / 2))
-    regime_after = int(theta_new // (math.pi / 2))
-    regime_changed = regime_before != regime_after
-
-    # Store telemetry for metrics collection
+    node.theta = proposal.theta_after
     storage = node._glyph_storage()
-    storage["_zhir_theta_shift"] = shift
-    storage["_zhir_theta_before"] = theta_before
-    storage["_zhir_theta_after"] = theta_new
-    storage["_zhir_regime_changed"] = regime_changed
-    storage["_zhir_regime_before"] = regime_before
-    storage["_zhir_regime_after"] = regime_after
-    storage["_zhir_fixed_mode"] = False
+    for key, value in proposal.telemetry_items:
+        storage[key] = value
 
 
 def _op_NAV(node: NodeProtocol, gf: GlyphFactors) -> None:  # NAV — Transition
@@ -2039,20 +1716,13 @@ def _op_REMESH(
     >>> "_remesh_warn_step" in node.graph
     True
     """
-    step_idx = glyph_history.current_step_idx(node)
-    last_warn = node.graph.get("_remesh_warn_step", None)
-    if last_warn != step_idx:
-        msg = (
-            "REMESH operates at network scale. Use apply_remesh_if_globally_"
-            "stable(G) or apply_network_remesh(G)."
-        )
-        hist = glyph_history.ensure_history(node)
-        glyph_history.append_metric(
-            hist,
-            "events",
-            ("warn", {"step": step_idx, "node": None, "msg": msg}),
-        )
-        node.graph["_remesh_warn_step"] = step_idx
+    from ._recursivity_stage_kernel import (
+        commit_recursivity_advisory,
+        propose_recursivity_advisory,
+    )
+
+    proposal = propose_recursivity_advisory(node)
+    commit_recursivity_advisory(node, proposal)
     return
 
 
@@ -2078,7 +1748,7 @@ GLYPH_OPERATIONS: dict[Glyph, GlyphOperation] = {
 
 
 def _resolve_glyph_operation(glyph: Glyph | str) -> tuple[Glyph, GlyphOperation]:
-    """Resolve public names and glyph aliases before touching runtime state."""
+    """Resolve executable/display names or a glyph before touching state."""
     from .grammar_types import function_name_to_glyph, glyph_function_name
 
     g = function_name_to_glyph(glyph_function_name(glyph))

@@ -16,9 +16,10 @@ from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.errors import TNFRValueError
 from tnfr.mathematics import BEPIElement
 from tnfr.operators.network_analysis.source_detection import detect_emission_sources
-from tnfr.operators.definitions import Reception
+from tnfr.operators.definitions import Reception, Resonance
 from tnfr.operators.network_stage import (
     GraphTransactionSnapshot,
+    STAGE_CONTRACT_KEY,
     STAGE_SCHEDULE_KEY,
     TWO_PHASE_JACOBI,
     execute_neighbor_stage,
@@ -114,6 +115,10 @@ def test_sdk_neighbor_stage_is_insertion_order_invariant_and_matches_jacobi(
         )
         outputs.append(_state(graph))
         assert graph.graph[STAGE_SCHEDULE_KEY]["schedule"] == TWO_PHASE_JACOBI
+        contract = graph.graph[STAGE_CONTRACT_KEY]
+        assert contract["observed_schedule"] == TWO_PHASE_JACOBI
+        assert contract["schedule_matches_contract"] is True
+        assert contract["executed_two_phase_contract_complete"] is True
         for node in graph:
             assert tuple(graph.nodes[node]["glyph_history"])[-1] == (
                 "EN" if operator == "reception" else "RA"
@@ -131,6 +136,11 @@ def test_gpu_resonance_uses_the_same_two_phase_jacobi_stage() -> None:
         _apply_canonical_block(graph, "RA")
         outputs.append(_state(graph))
         assert graph.graph[STAGE_SCHEDULE_KEY]["schedule"] == TWO_PHASE_JACOBI
+        contract = graph.graph[STAGE_CONTRACT_KEY]
+        assert contract["operator"] == "resonance"
+        assert contract["glyph"] == "RA"
+        assert contract["observed_schedule"] == TWO_PHASE_JACOBI
+        assert contract["executed_two_phase_contract_complete"] is True
 
     expected = {
         0: (0.05, 1.25, 0.1),
@@ -192,6 +202,71 @@ def test_resonance_stage_preserves_optional_telemetry_channels() -> None:
             real_scalar_epi(graph.nodes[node]["EPI"])
         )
         assert graph.nodes[node]["glyph_history"][-1] == "RA"
+
+
+def test_resonance_structural_state_is_target_order_invariant_with_telemetry() -> None:
+    class RecordingMonitor:
+        def __init__(self) -> None:
+            self.events: list[tuple[str, int]] = []
+
+        def before_operator(self, graph, node) -> None:
+            self.events.append(("before", node))
+
+        def after_operator(self, graph, node, operator) -> None:
+            self.events.append(("after", node))
+
+    graphs = []
+    orders = ((0, 1, 2), (2, 1, 0))
+    for order in orders:
+        graph = _path((0, 1, 2))
+        monitor = RecordingMonitor()
+        graph.graph.update(
+            COLLECT_OPERATOR_METRICS=True,
+            COLLECT_RA_METRICS=True,
+            TRACK_NETWORK_COHERENCE=True,
+            integrity_monitor=monitor,
+        )
+
+        execute_neighbor_stage(graph, Resonance(), order)
+        graphs.append((graph, monitor))
+
+    forward, forward_monitor = graphs[0]
+    reverse, reverse_monitor = graphs[1]
+    assert _state(forward) == _state(reverse)
+    assert {
+        node: tuple(forward.nodes[node]["glyph_history"]) for node in forward
+    } == {
+        node: tuple(reverse.nodes[node]["glyph_history"]) for node in reverse
+    }
+
+    assert [item["epi_before"] for item in forward.graph["ra_metrics"]] == [
+        0.0,
+        0.2,
+        0.9,
+    ]
+    assert [item["epi_before"] for item in reverse.graph["ra_metrics"]] == [
+        0.9,
+        0.2,
+        0.0,
+    ]
+    assert [item["node"] for item in forward.graph["_ra_c_tracking"]] == [0, 1, 2]
+    assert [item["node"] for item in reverse.graph["_ra_c_tracking"]] == [2, 1, 0]
+    assert forward_monitor.events == [
+        (phase, node) for node in orders[0] for phase in ("before", "after")
+    ]
+    assert reverse_monitor.events == [
+        (phase, node) for node in orders[1] for phase in ("before", "after")
+    ]
+
+    for graph, _monitor in graphs:
+        contract = graph.graph[STAGE_CONTRACT_KEY]
+        assert contract["structural_state_target_order_invariant"] is True
+        assert "ordered lifecycle, telemetry and monitor streams" in contract[
+            "structural_state_target_order_scope"
+        ]
+        assert contract["two_phase_contract_complete"] is True
+        assert contract["executed_two_phase_contract_complete"] is True
+        assert contract["relabeling_equivariant"] is None
 
 
 def test_active_emission_threshold_is_centralized_and_matches_detection() -> None:

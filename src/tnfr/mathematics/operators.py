@@ -1,12 +1,20 @@
-"""Spectral operators modelling coherence and frequency dynamics."""
+"""Auxiliary Hermitian spectral-expectation and frequency operators.
+
+The expectation ``<psi|A|psi>`` is an unbounded real observable in the units of
+``A``.  It is deliberately separate from canonical structural coherence
+``C(t)`` and is never a source for ``history['C_steps']``.
+"""
 
 from __future__ import annotations
 
 from dataclasses import field
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import TYPE_CHECKING, Any, ClassVar, Sequence
 
 from ..compat.dataclass import dataclass
-from ..constants.canonical import MATH_COHERENCE_MIN_CANONICAL, MATH_TOLERANCE_CANONICAL
+from ..constants.canonical import (
+    MATH_SPECTRAL_EXPECTATION_FLOOR_DEFAULT,
+    MATH_TOLERANCE_CANONICAL,
+)
 from ..errors import TNFRValueError
 from .backend import MathematicsBackend, ensure_array, ensure_numpy, get_backend
 from .unified_numerical import np
@@ -26,9 +34,20 @@ else:  # pragma: no cover - runtime alias
     ComplexVector = np.ndarray
     ComplexMatrix = np.ndarray
 
-__all__ = ["CoherenceOperator", "FrequencyOperator"]
+__all__ = [
+    "SpectralExpectationOperator",
+    "CoherenceOperator",
+    "FrequencyOperator",
+    "DEFAULT_SPECTRAL_EXPECTATION_FLOOR",
+    "DEFAULT_C_MIN",
+]
 
-DEFAULT_C_MIN: float = MATH_COHERENCE_MIN_CANONICAL
+DEFAULT_SPECTRAL_EXPECTATION_FLOOR: float = (
+    MATH_SPECTRAL_EXPECTATION_FLOOR_DEFAULT
+)
+# Compatibility alias for the historical spectral API.  This value has never
+# been a canonical C(t) threshold.
+DEFAULT_C_MIN: float = DEFAULT_SPECTRAL_EXPECTATION_FLOOR
 _C_MIN_UNSET = object()
 
 
@@ -70,24 +89,30 @@ def _make_diagonal(values: Any, *, backend: MathematicsBackend) -> Any:
 
 
 @dataclass(slots=True)
-class CoherenceOperator:
-    """Hermitian operator capturing coherence redistribution.
+class SpectralExpectationOperator:
+    r"""Hermitian operator defining an auxiliary spectral expectation.
 
-    The operator encapsulates how a TNFR EPI redistributes coherence across
-    its spectral components.  It supports construction either from an explicit
-    matrix expressed on the canonical basis or from a pre-computed list of
-    eigenvalues (interpreted as already diagonalised).  The minimal eigenvalue
-    ``c_min`` is tracked explicitly so structural stability thresholds are easy
-    to evaluate during simulations.  The precedence for determining the stored
-    threshold is: an explicit ``c_min`` wins, otherwise the spectral floor
-    (minimum real eigenvalue) is used, with ``0.1`` acting as the canonical
-    fallback for callers that still wish to supply a fixed number.
+    The observable is ``<psi|A|psi>`` for a Hermitian matrix ``A``.  Its range
+    is the real spectral interval of ``A`` and may lie below zero or above one;
+    it therefore has no canonical structural-coherence interpretation.  In
+    particular, it is not ``C(t) = 1/(1 + mean|DeltaNFR| + mean|dEPI|)`` and
+    must not be recorded in ``C_steps`` or compared with canonical ``[0, 1]``
+    coherence bands.
+
+    Construction accepts either an explicit matrix or an eigenvalue vector.
+    ``expectation_floor`` names the optional auxiliary comparison floor.  The
+    historical keyword and attribute ``c_min`` remain compatibility aliases;
+    when neither is supplied, the minimum real eigenvalue is stored.
 
     When instantiated under an automatic differentiation backend (JAX, PyTorch)
     the spectral decomposition remains differentiable provided the supplied
     operator is non-defective.  NumPy callers receive ``numpy.ndarray`` outputs
     and all tolerance checks match the historical semantics.
     """
+
+    metric_kind: ClassVar[str] = "spectral_operator_expectation"
+    canonical_coherence_certified: ClassVar[bool] = False
+    canonical_history_key: ClassVar[None] = None
 
     matrix: ComplexMatrix
     eigenvalues: ComplexVector
@@ -101,10 +126,17 @@ class CoherenceOperator:
         operator: Sequence[Sequence[complex]] | Sequence[complex] | np.ndarray | Any,
         *,
         c_min: float | object = _C_MIN_UNSET,
+        expectation_floor: float | object = _C_MIN_UNSET,
         ensure_hermitian: bool = True,
         atol: float = 1e-9,
         backend: MathematicsBackend | None = None,
     ) -> None:
+        if c_min is not _C_MIN_UNSET and expectation_floor is not _C_MIN_UNSET:
+            raise TNFRValueError(
+                "Provide either expectation_floor or legacy c_min, not both.",
+                context={"c_min": c_min, "expectation_floor": expectation_floor},
+                suggestion="Use expectation_floor in new spectral code.",
+            )
         resolved_backend = backend or get_backend()
         operand = ensure_array(operator, dtype=np.complex128, backend=resolved_backend)
         if getattr(operand, "ndim", len(getattr(operand, "shape", ()))) == 1:
@@ -125,7 +157,7 @@ class CoherenceOperator:
                 matrix_backend, atol=atol, backend=resolved_backend
             ):
                 raise TNFRValueError(
-                    "Coherence operator must be Hermitian.",
+                    "Spectral expectation operator must be Hermitian.",
                     context={"is_hermitian": False},
                     suggestion="Ensure the operator matrix is Hermitian.",
                 )
@@ -140,10 +172,24 @@ class CoherenceOperator:
         self.matrix = ensure_numpy(matrix_backend, backend=resolved_backend)
         self.eigenvalues = ensure_numpy(eigenvalues_backend, backend=resolved_backend)
         derived_c_min = float(np.min(self.eigenvalues.real))
-        if c_min is _C_MIN_UNSET:
+        requested_floor = (
+            expectation_floor
+            if expectation_floor is not _C_MIN_UNSET
+            else c_min
+        )
+        if requested_floor is _C_MIN_UNSET:
             self.c_min = derived_c_min
         else:
-            self.c_min = float(c_min)
+            self.c_min = float(requested_floor)
+
+    @property
+    def expectation_floor(self) -> float:
+        """Return the auxiliary spectral comparison floor.
+
+        ``c_min`` remains available as the historical attribute name.
+        """
+
+        return self.c_min
 
     @staticmethod
     def _check_hermitian(
@@ -239,14 +285,21 @@ class CoherenceOperator:
         return float(real_expectation)
 
 
-class FrequencyOperator(CoherenceOperator):
+CoherenceOperator = SpectralExpectationOperator
+"""Backward-compatible alias for :class:`SpectralExpectationOperator`."""
+
+
+class FrequencyOperator(SpectralExpectationOperator):
     """Operator encoding the structural frequency distribution.
 
-    The frequency operator reuses the coherence machinery but enforces a real
+    The frequency operator reuses the Hermitian expectation machinery but
+    enforces a real
     spectrum representing the structural hertz (νf) each mode contributes.  Its
     helpers therefore constrain outputs to the real axis and expose projections
     suited for telemetry collection.
     """
+
+    metric_kind: ClassVar[str] = "frequency_operator_expectation"
 
     def __init__(
         self,

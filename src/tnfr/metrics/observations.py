@@ -76,16 +76,25 @@ def observe_graph_tetrad(
 def observe_arithmetic_nfr(
     readout: Mapping[str, Any]
 ) -> StructuralObservation:
-    """Wrap an arithmetic NFR readout with its local aggregation."""
+    """Wrap an arithmetic NFR readout with explicit aggregate semantics."""
+    unavailable = (
+        not bool(readout)
+        or readout.get("readout_available") is False
+        or readout.get("coherence") is None
+    )
     return StructuralObservation(
         domain="arithmetic",
         pressure_realization="arithmetic_divisor_pressure",
-        aggregation="mean_local_structural_coherence",
+        aggregation="canonical_static_coherence_of_mean_absolute_pressure",
         derivative_kind="static_zero_readout",
         equilibrium_tolerance=1e-12,
         scope="descriptive arithmetic fixed-point observation",
         value=dict(readout),
-        metadata={"unavailable": not bool(readout)},
+        metadata={
+            "unavailable": unavailable,
+            "canonical_field": "coherence",
+            "descriptive_field": "mean_local_coherence",
+        },
     )
 
 

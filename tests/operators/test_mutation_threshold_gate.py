@@ -17,6 +17,7 @@ from tnfr.operators._mutation_gate import (
     validate_mutation_runtime_gate,
     validate_mutation_threshold,
 )
+from tnfr.operators.factor_contracts import GlyphFactorValidationError
 from tnfr.operators.metrics_structural import mutation_metrics
 from tnfr.operators.preconditions import OperatorPreconditionError
 from tnfr.operators.preconditions.mutation import diagnose_mutation_readiness
@@ -237,3 +238,22 @@ def test_public_mutation_rejects_invalid_bifurcation_sink_before_effect():
 
     assert dict(graph.nodes[0]) == node_before
     assert dict(graph.graph) == graph_before
+
+
+def test_public_mutation_strict_preflight_and_late_factor_rejection_are_read_only():
+    graph = _graph([0.0, 0.2])
+    graph.graph.update(
+        VALIDATE_OPERATOR_PRECONDITIONS=True,
+        GLYPH_FACTORS={"ZHIR_theta_shift_factor": 0.0},
+    )
+    node_before = deepcopy(dict(graph.nodes[0]))
+    graph_before = deepcopy(dict(graph.graph))
+
+    with pytest.raises(
+        GlyphFactorValidationError, match="ZHIR_theta_shift_factor"
+    ):
+        Mutation()(graph, 0)
+
+    assert dict(graph.nodes[0]) == node_before
+    assert dict(graph.graph) == graph_before
+    assert "_mutation_context" not in graph.nodes[0]

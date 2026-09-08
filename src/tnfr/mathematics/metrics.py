@@ -1,30 +1,41 @@
-"""Structural metrics preserving TNFR coherence invariants."""
+"""Projective angles induced by positive spectral expectation operators.
+
+These auxiliary Hilbert-space diagnostics are distinct from canonical
+structural coherence ``C(t)``.
+"""
 
 from __future__ import annotations
 
+import math
+from numbers import Real
 from typing import Sequence
 
 from ..constants.canonical import MATH_PRECISION_ENHANCEMENT_CANONICAL
-from .operators import CoherenceOperator
+from .operators import CoherenceOperator, SpectralExpectationOperator
 from .unified_numerical import TNFRValueError, np
 
-__all__ = ["dcoh"]
+__all__ = ["spectral_weighted_angle", "dcoh"]
 
 
-def _as_coherent_vector(
+def _as_spectral_vector(
     state: Sequence[complex] | np.ndarray,
     *,
     dimension: int,
 ) -> np.ndarray:
-    """Return a complex vector compatible with ``CoherenceOperator`` matrices."""
+    """Return one finite complex vector of the operator dimension."""
 
-    vector = np.asarray(state, dtype=np.complex128)
+    try:
+        vector = np.asarray(state, dtype=np.complex128)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TNFRValueError("Spectral state must be a finite complex vector.") from exc
     if vector.ndim != 1 or vector.shape[0] != dimension:
         raise TNFRValueError(
             "State vector dimension mismatch.",
             context={"expected_dimension": dimension, "received_shape": vector.shape},
             suggestion="Ensure state vector matches operator dimension.",
         )
+    if not bool(np.all(np.isfinite(vector))):
+        raise TNFRValueError("Spectral state must contain only finite values.")
     return vector
 
 
@@ -34,14 +45,85 @@ def _normalise_vector(
     atol: float,
     label: str,
 ) -> np.ndarray:
-    norm = np.linalg.norm(vector)
-    if np.isclose(norm, 0.0, atol=atol):
+    norm = float(np.linalg.norm(vector))
+    if not math.isfinite(norm) or np.isclose(norm, 0.0, atol=atol):
         raise TNFRValueError(
-            f"Cannot normalise null coherence state {label}.",
+            f"Cannot normalise null spectral state {label}.",
             context={"norm": norm, "atol": atol},
-            suggestion="Provide a non-zero state vector.",
+            suggestion="Provide a non-zero finite state vector.",
         )
     return vector / norm
+
+
+def spectral_weighted_angle(
+    psi1: Sequence[complex] | np.ndarray,
+    psi2: Sequence[complex] | np.ndarray,
+    operator: SpectralExpectationOperator,
+    *,
+    normalise: bool = True,
+    atol: float = 1e-9,
+) -> float:
+    r"""Return the projective angle induced by a PSD Hermitian operator.
+
+    For non-null rays under ``A``, the result is
+
+    ``arccos(|<psi1, A psi2>| / sqrt(<psi1,A psi1><psi2,A psi2>))``.
+
+    It lies in ``[0, pi/2]`` and is invariant under independent global phases.
+    Positive semidefiniteness is required for the weighted Cauchy inequality;
+    a singular operator gives an angle only for states outside its null space.
+    This is an auxiliary spectral geometry and is never structural ``C(t)``.
+    """
+
+    if isinstance(atol, (bool, np.bool_)) or not isinstance(atol, Real):
+        raise TNFRValueError("atol must be a finite nonnegative real scalar.")
+    tolerance = float(atol)
+    if not math.isfinite(tolerance) or tolerance < 0.0:
+        raise TNFRValueError("atol must be a finite nonnegative real scalar.")
+    if not operator.is_positive_semidefinite(atol=tolerance):
+        raise TNFRValueError(
+            "Spectral weighted angle requires a positive-semidefinite operator.",
+            context={"spectral_minimum": float(np.min(operator.eigenvalues.real))},
+            suggestion="Use a positive-semidefinite Hermitian operator.",
+        )
+
+    dimension = operator.matrix.shape[0]
+    vector1 = _as_spectral_vector(psi1, dimension=dimension)
+    vector2 = _as_spectral_vector(psi2, dimension=dimension)
+    if normalise:
+        vector1 = _normalise_vector(vector1, atol=tolerance, label="psi1")
+        vector2 = _normalise_vector(vector2, atol=tolerance, label="psi2")
+
+    weighted_vector2 = operator.matrix @ vector2
+    cross = np.vdot(vector1, weighted_vector2)
+    if not bool(np.isfinite(cross)):
+        raise TNFRValueError("Weighted spectral overlap must be finite.")
+
+    expect1 = float(operator.expectation(vector1, normalise=False, atol=tolerance))
+    expect2 = float(operator.expectation(vector2, normalise=False, atol=tolerance))
+    for index, value in enumerate((expect1, expect2), start=1):
+        if not math.isfinite(value) or value <= tolerance:
+            raise TNFRValueError(
+                "Spectral expectation must be positive outside the operator "
+                f"null space (state psi{index}).",
+                context={"expectation_value": value, "atol": tolerance},
+            )
+
+    denominator = expect1 * expect2
+    if not math.isfinite(denominator) or denominator <= 0.0:
+        raise TNFRValueError("Spectral expectations produced an invalid product.")
+    ratio = float((np.abs(cross) ** 2) / denominator)
+    eps = max(
+        np.finfo(float).eps * MATH_PRECISION_ENHANCEMENT_CANONICAL,
+        tolerance,
+    )
+    if not math.isfinite(ratio) or ratio < -eps or ratio > 1.0 + eps:
+        raise TNFRValueError(
+            "Weighted overlap violates the positive-semidefinite angle bound.",
+            context={"squared_ratio": ratio, "tolerance": eps},
+        )
+    bounded_ratio = min(1.0, max(0.0, ratio))
+    return float(np.arccos(np.sqrt(bounded_ratio)))
 
 
 def dcoh(
@@ -52,102 +134,15 @@ def dcoh(
     normalise: bool = True,
     atol: float = 1e-9,
 ) -> float:
-    """Return the TNFR dissimilarity of coherence between ``psi1`` and ``psi2``.
+    """Compatibility alias for :func:`spectral_weighted_angle`.
 
-    The metric follows the canonical TNFR expectation contracts:
-
-    * States are converted to Hilbert-compatible complex vectors respecting the
-      ``CoherenceOperator`` dimension, preserving the spectral phase space.
-    * Optional normalisation keeps overlap and expectations coherent with
-      unit-phase contracts, preventing coherence inflation.
-    * Expectation values ``⟨ψ|Ĉ|ψ⟩`` must remain strictly positive; null or
-      negative projections signal a collapse and therefore raise ``TNFRValueError``.
-
-    Parameters mirror the runtime helpers so callers can rely on the same
-    tolerances.  Numerical overflow is contained by bounding intermediate ratios
-    within ``[0, 1]`` up to ``atol`` before applying the Bures-style angle
-    ``arccos(√ratio)``, ensuring the returned dissimilarity remains within the
-    TNFR coherence interval.
+    The historical name does not denote, compare or derive canonical ``C(t)``.
     """
 
-    dimension = operator.matrix.shape[0]
-    vector1 = _as_coherent_vector(psi1, dimension=dimension)
-    vector2 = _as_coherent_vector(psi2, dimension=dimension)
-
-    if normalise:
-        vector1_norm = _normalise_vector(vector1, atol=atol, label="ψ₁")
-        vector2_norm = _normalise_vector(vector2, atol=atol, label="ψ₂")
-    else:
-        vector1_norm = vector1
-        vector2_norm = vector2
-
-    weighted_vector2 = operator.matrix @ vector2_norm
-    if weighted_vector2.shape != vector2_norm.shape:
-        raise TNFRValueError(
-            "Operator application distorted coherence dimensionality.",
-            context={
-                "input_shape": vector2_norm.shape,
-                "output_shape": weighted_vector2.shape,
-            },
-            suggestion="Check operator matrix dimensions.",
-        )
-
-    cross = np.vdot(vector1_norm, weighted_vector2)
-    if not np.isfinite(cross):
-        raise TNFRValueError(
-            "State overlap produced a non-finite value.",
-            context={"overlap": cross},
-            suggestion="Check input states for NaN or Inf values.",
-        )
-
-    expect1 = float(operator.expectation(vector1, normalise=normalise, atol=atol))
-    expect2 = float(operator.expectation(vector2, normalise=normalise, atol=atol))
-
-    for idx, value in enumerate((expect1, expect2), start=1):
-        if not np.isfinite(value):
-            raise TNFRValueError(
-                f"Coherence expectation diverged for state ψ{idx}.",
-                context={"expectation_value": value},
-                suggestion="Check operator and state validity.",
-            )
-        if value <= 0.0 or np.isclose(value, 0.0, atol=atol):
-            raise TNFRValueError(
-                f"Coherence expectation must remain strictly positive to preserve TNFR invariants (state ψ{idx}).",
-                context={"expectation_value": value, "atol": atol},
-                suggestion="Ensure states have non-zero projection on the operator.",
-            )
-
-    denominator = expect1 * expect2
-    if not np.isfinite(denominator):
-        raise TNFRValueError(
-            "Coherence expectations produced a non-finite product.",
-            context={"denominator": denominator},
-            suggestion="Check expectation values.",
-        )
-    if denominator <= 0.0 or np.isclose(denominator, 0.0, atol=atol):
-        raise TNFRValueError(
-            "Product of coherence expectations must be strictly positive to evaluate dissimilarity.",
-            context={"denominator": denominator, "atol": atol},
-            suggestion="Ensure both states have positive expectations.",
-        )
-
-    ratio = (np.abs(cross) ** 2) / denominator
-    eps = max(np.finfo(float).eps * MATH_PRECISION_ENHANCEMENT_CANONICAL, atol)
-    if ratio < -eps:
-        raise TNFRValueError(
-            "Overlap produced a negative coherence ratio.",
-            context={"ratio": ratio, "eps": eps},
-            suggestion="Check numerical stability or operator hermiticity.",
-        )
-    if ratio < 0.0:
-        ratio = 0.0
-    if ratio > 1.0 + eps:
-        raise TNFRValueError(
-            "Coherence ratio exceeded unity beyond tolerance.",
-            context={"ratio": ratio, "eps": eps},
-            suggestion="Check normalization or operator properties.",
-        )
-    if ratio > 1.0:
-        ratio = 1.0
-
-    return float(np.arccos(np.sqrt(ratio)))
+    return spectral_weighted_angle(
+        psi1,
+        psi2,
+        operator,
+        normalise=normalise,
+        atol=atol,
+    )

@@ -42,10 +42,9 @@ from ...alias import get_attr
 from ...constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..network_stage import (
     GraphTransactionSnapshot,
-    OPERATOR_MAJOR_GAUSS_SEIDEL,
     TWO_PHASE_JACOBI,
     execute_neighbor_stage,
-    record_gauss_seidel_stage,
+    execute_pointwise_stage,
 )
 from .strategy import (
     OperationResult,
@@ -174,6 +173,15 @@ def _discard_pending_monitor(graph: PartitionBlock) -> None:
             pass
 
 
+def _attached_rollback_error(failure: BaseException) -> str | None:
+    """Describe a secondary rollback failure retained on the primary error."""
+
+    rollback_failure = getattr(failure, "_tnfr_rollback_failure", None)
+    if rollback_failure is None:
+        return None
+    return f"{type(rollback_failure).__qualname__}: {rollback_failure}"
+
+
 def _apply_canonical_block(
     graph: PartitionBlock,
     glyph: str,
@@ -200,17 +208,20 @@ def _apply_canonical_block(
                 transaction_snapshot=snapshot,
             )
         else:
-            for node in nodes:
-                operator(graph, node)
-            record_gauss_seidel_stage(graph, operator, len(nodes))
+            execute_pointwise_stage(
+                graph,
+                operator,
+                nodes,
+                transaction_snapshot=snapshot,
+            )
         for node in nodes:
             if not _history_ends_with(graph, node, glyph):
                 raise RuntimeError(
                     f"Canonical grammar did not accept {glyph} for node {node!r}"
                 )
-    except BaseException:
+    except BaseException as failure:
         _discard_pending_monitor(graph)
-        snapshot.restore(graph)
+        snapshot.restore_after_failure(graph, failure)
         raise
     return len(nodes)
 
@@ -334,7 +345,7 @@ class GPUEmissionStrategy:
                 "operator": "AL",
                 "strategy": "gpu_emission",
                 "canonical_commit": True,
-                "update_schedule": OPERATOR_MAJOR_GAUSS_SEIDEL,
+                "update_schedule": TWO_PHASE_JACOBI,
                 "nodes_processed": nodes_processed,
                 "gpu_available": gpu_available,
                 **_preview_telemetry(preview),
@@ -349,7 +360,8 @@ class GPUEmissionStrategy:
 
         except Exception as e:
             _discard_pending_monitor(graph)
-            transaction.restore(graph)
+            rolled_back = transaction.restore_after_failure(graph, e)
+            rollback_error = _attached_rollback_error(e)
             warnings.append(f"Canonical Emission transaction failed: {e}")
             return OperationResult(
                 block=graph,
@@ -359,7 +371,8 @@ class GPUEmissionStrategy:
                     "gpu_acceleration": False,
                     "auxiliary_gpu_preview": preview.available,
                     "canonical_commit": False,
-                    "rolled_back": True,
+                    "rolled_back": rolled_back,
+                    "rollback_error": rollback_error,
                     "error": str(e),
                 },
                 warnings=warnings,
@@ -454,7 +467,8 @@ class GPUResonanceStrategy:
 
         except Exception as e:
             _discard_pending_monitor(graph)
-            transaction.restore(graph)
+            rolled_back = transaction.restore_after_failure(graph, e)
+            rollback_error = _attached_rollback_error(e)
             warnings.append(f"Canonical Resonance transaction failed: {e}")
             return OperationResult(
                 block=graph,
@@ -464,7 +478,8 @@ class GPUResonanceStrategy:
                     "gpu_acceleration": False,
                     "auxiliary_gpu_preview": preview.available,
                     "canonical_commit": False,
-                    "rolled_back": True,
+                    "rolled_back": rolled_back,
+                    "rollback_error": rollback_error,
                     "error": str(e),
                 },
                 warnings=warnings,

@@ -593,7 +593,8 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
         raise OperatorPreconditionError(
             "Expansion",
             f"EPI too low for coherent expansion (EPI={epi:.3f} < {min_epi:.3f}). "
-            f"Insufficient structural base. Consider AL (Emission) to activate node first.",
+            "Insufficient structural base. Consider AL (Emission) "
+            "to source EPI first.",
         )
 
     # 4. Network capacity check (OPTIONAL - for large-scale systems)
@@ -1053,7 +1054,7 @@ def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
 
 
 def validate_recursivity(G: "TNFRGraph", node: "NodeId") -> None:
-    """REMESH - Recursivity requires global network coherence threshold.
+    """Require enough support to record a meaningful REMESH advisory.
 
     Parameters
     ----------
@@ -1065,9 +1066,9 @@ def validate_recursivity(G: "TNFRGraph", node: "NodeId") -> None:
     Raises
     ------
     OperatorPreconditionError
-        If network is not ready for remesh operation
+        If the network is too small for a REMESH advisory
     """
-    # REMESH is a network-scale operation, check graph state
+    # The advisory represents a network-scale request.
     min_nodes = int(G.graph.get("REMESH_MIN_NODES", 2))
     if G.number_of_nodes() < min_nodes:
         raise OperatorPreconditionError(

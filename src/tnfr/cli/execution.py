@@ -13,6 +13,14 @@ from typing import Any, Sequence
 import networkx as nx
 import numpy as np
 
+from .._spectral_expectation import (
+    SPECTRAL_EXPECTATION_METRIC_KIND,
+    finite_spectral_real,
+    positive_spectral_dimension,
+    resolve_compatibility_value,
+    spectral_expectation_metadata,
+    validate_spectral_operator,
+)
 from ..alias import get_attr
 from ..config import apply_config
 from ..config.presets import PREFERRED_PRESET_NAMES, get_preset
@@ -24,12 +32,12 @@ from ..flatten import parse_program_tokens
 from ..glyph_history import ensure_history
 from ..mathematics import (
     BasicStateProjector,
-    CoherenceOperator,
     FrequencyOperator,
+    SpectralExpectationOperator,
     HilbertSpace,
     MathematicalDynamicsEngine,
-    make_coherence_operator,
     make_frequency_operator,
+    make_spectral_expectation_operator,
 )
 from ..metrics import (
     build_metrics_summary,
@@ -150,20 +158,44 @@ def _to_float_array(values: Sequence[float] | None, *, name: str) -> np.ndarray 
     array = np.asarray(list(values), dtype=float)
     if array.ndim != 1:
         raise ValueError(f"{name} must be a one-dimensional sequence of numbers")
+    if not np.all(np.isfinite(array)):
+        raise ValueError(f"{name} must contain only finite real numbers")
     return array
+
+
+def _cli_spectral_value(
+    args: argparse.Namespace,
+    *,
+    canonical_attr: str,
+    legacy_attr: str,
+) -> Any:
+    """Read one canonical CLI field with its historical namespace alias."""
+
+    return resolve_compatibility_value(
+        getattr(args, canonical_attr, None),
+        getattr(args, legacy_attr, None),
+        canonical_name=canonical_attr,
+        legacy_name=legacy_attr,
+    )
 
 
 def _resolve_math_dimension(args: argparse.Namespace, fallback: int) -> int:
     dimension = getattr(args, "math_dimension", None)
-    candidate_lengths: list[int] = []
-    for attr in (
-        "math_coherence_spectrum",
-        "math_frequency_diagonal",
-        "math_generator_diagonal",
-    ):
-        seq = getattr(args, attr, None)
-        if seq is not None:
-            candidate_lengths.append(len(seq))
+    spectral_spectrum = _cli_spectral_value(
+        args,
+        canonical_attr="math_spectral_expectation_spectrum",
+        legacy_attr="math_coherence_spectrum",
+    )
+    candidate_sequences = (
+        spectral_spectrum,
+        getattr(args, "math_frequency_diagonal", None),
+        getattr(args, "math_generator_diagonal", None),
+    )
+    candidate_lengths = [
+        len(sequence)
+        for sequence in candidate_sequences
+        if sequence is not None
+    ]
     if dimension is None:
         if candidate_lengths:
             unique = set(candidate_lengths)
@@ -175,14 +207,18 @@ def _resolve_math_dimension(args: argparse.Namespace, fallback: int) -> int:
         else:
             dimension = fallback
     else:
+        resolved_requested = positive_spectral_dimension(
+            dimension, label="Hilbert space dimension"
+        )
         for length in candidate_lengths:
-            if length != dimension:
+            if length != resolved_requested:
                 raise ValueError(
                     "Math engine sequence lengths must match the requested dimension"
                 )
-    if dimension is None or dimension <= 0:
-        raise ValueError("Hilbert space dimension must be a positive integer")
-    return int(dimension)
+        dimension = resolved_requested
+    return positive_spectral_dimension(
+        dimension, label="Hilbert space dimension"
+    )
 
 
 def _build_math_engine_config(
@@ -192,12 +228,18 @@ def _build_math_engine_config(
     fallback_dim = max(1, int(node_count) if node_count is not None else 1)
     dimension = _resolve_math_dimension(args, fallback=fallback_dim)
 
-    coherence_spectrum = _to_float_array(
-        getattr(args, "math_coherence_spectrum", None),
-        name="--math-coherence-spectrum",
+    spectral_spectrum = _to_float_array(
+        _cli_spectral_value(
+            args,
+            canonical_attr="math_spectral_expectation_spectrum",
+            legacy_attr="math_coherence_spectrum",
+        ),
+        name="--math-spectral-expectation-spectrum",
     )
-    if coherence_spectrum is not None and coherence_spectrum.size != dimension:
-        raise ValueError("Coherence spectrum length must equal the Hilbert dimension")
+    if spectral_spectrum is not None and spectral_spectrum.size != dimension:
+        raise ValueError(
+            "Spectral expectation spectrum length must equal the Hilbert dimension"
+        )
 
     frequency_diagonal = _to_float_array(
         getattr(args, "math_frequency_diagonal", None),
@@ -213,21 +255,37 @@ def _build_math_engine_config(
     if generator_diagonal is not None and generator_diagonal.size != dimension:
         raise ValueError("Generator diagonal length must equal the Hilbert dimension")
 
-    coherence_c_min = getattr(args, "math_coherence_c_min", None)
-    if coherence_spectrum is None:
-        coherence_operator = make_coherence_operator(
+    floor_raw = _cli_spectral_value(
+        args,
+        canonical_attr="math_spectral_expectation_floor",
+        legacy_attr="math_coherence_c_min",
+    )
+    expectation_floor = (
+        finite_spectral_real(
+            floor_raw, label="spectral expectation floor"
+        )
+        if floor_raw is not None
+        else None
+    )
+    if spectral_spectrum is None:
+        spectral_operator = make_spectral_expectation_operator(
             dimension,
-            c_min=float(coherence_c_min) if coherence_c_min is not None else 0.1,
+            expectation_floor=(
+                expectation_floor if expectation_floor is not None else 0.1
+            ),
         )
     else:
-        if coherence_c_min is not None:
-            coherence_operator = CoherenceOperator(
-                coherence_spectrum, c_min=float(coherence_c_min)
+        if expectation_floor is not None:
+            spectral_operator = SpectralExpectationOperator(
+                spectral_spectrum,
+                expectation_floor=expectation_floor,
             )
         else:
-            coherence_operator = CoherenceOperator(coherence_spectrum)
-        if not coherence_operator.is_positive_semidefinite():
-            raise ValueError("Coherence spectrum must be positive semidefinite")
+            spectral_operator = SpectralExpectationOperator(spectral_spectrum)
+        if not spectral_operator.is_positive_semidefinite():
+            raise ValueError(
+                "Spectral expectation spectrum must be positive semidefinite"
+            )
 
     frequency_matrix: np.ndarray
     if frequency_diagonal is None:
@@ -248,27 +306,44 @@ def _build_math_engine_config(
         hilbert_space=hilbert_space,
     )
 
-    coherence_threshold = getattr(args, "math_coherence_threshold", None)
-    if coherence_threshold is None:
-        coherence_threshold = float(coherence_operator.c_min)
-    else:
-        coherence_threshold = float(coherence_threshold)
+    threshold_raw = _cli_spectral_value(
+        args,
+        canonical_attr="math_spectral_expectation_threshold",
+        legacy_attr="math_coherence_threshold",
+    )
+    spectral_threshold = finite_spectral_real(
+        threshold_raw
+        if threshold_raw is not None
+        else spectral_operator.expectation_floor,
+        label="spectral expectation threshold",
+    )
 
     state_projector = BasicStateProjector()
     validator = NFRValidator(
         hilbert_space,
-        coherence_operator,
-        coherence_threshold,
+        spectral_operator,
+        spectral_threshold,
         frequency_operator=frequency_operator,
     )
 
+    spectral_operator = validate_spectral_operator(
+        spectral_operator,
+        dimension=dimension,
+        label="MATH_ENGINE spectral_operator",
+    )
     return {
         "enabled": True,
         "dimension": dimension,
         "hilbert_space": hilbert_space,
-        "coherence_operator": coherence_operator,
+        "spectral_operator": spectral_operator,
+        "spectral_expectation_threshold": spectral_threshold,
+        **spectral_expectation_metadata(
+            provenance="tnfr.cli.execution._build_math_engine_config"
+        ),
+        # Historical configuration keys.
+        "coherence_operator": spectral_operator,
+        "coherence_threshold": spectral_threshold,
         "frequency_operator": frequency_operator,
-        "coherence_threshold": coherence_threshold,
         "state_projector": state_projector,
         "validator": validator,
         "dynamics_engine": dynamics_engine,
@@ -530,18 +605,37 @@ def _log_math_engine_summary(G: "nx.Graph") -> None:
         return
 
     hilbert_space: HilbertSpace = math_cfg["hilbert_space"]
-    coherence_operator: CoherenceOperator = math_cfg["coherence_operator"]
+    spectral_operator = resolve_compatibility_value(
+        math_cfg.get("spectral_operator"),
+        math_cfg.get("coherence_operator"),
+        canonical_name="MATH_ENGINE['spectral_operator']",
+        legacy_name="MATH_ENGINE['coherence_operator']",
+    )
+    spectral_operator = validate_spectral_operator(
+        spectral_operator,
+        dimension=getattr(hilbert_space, "dimension", None),
+        label="MATH_ENGINE spectral_operator",
+    )
     frequency_operator: FrequencyOperator | None = math_cfg.get("frequency_operator")
     state_projector: BasicStateProjector = math_cfg.get(
         "state_projector", BasicStateProjector()
     )
     validator: NFRValidator | None = math_cfg.get("validator")
     if validator is None:
-        coherence_threshold = math_cfg.get("coherence_threshold")
+        threshold_raw = resolve_compatibility_value(
+            math_cfg.get("spectral_expectation_threshold"),
+            math_cfg.get("coherence_threshold"),
+            canonical_name="MATH_ENGINE['spectral_expectation_threshold']",
+            legacy_name="MATH_ENGINE['coherence_threshold']",
+        )
+        spectral_threshold = finite_spectral_real(
+            threshold_raw if threshold_raw is not None else 0.0,
+            label="spectral expectation threshold",
+        )
         validator = NFRValidator(
             hilbert_space,
-            coherence_operator,
-            float(coherence_threshold) if coherence_threshold is not None else 0.0,
+            spectral_operator,
+            spectral_threshold,
             frequency_operator=frequency_operator,
         )
         math_cfg["validator"] = validator
@@ -550,9 +644,9 @@ def _log_math_engine_summary(G: "nx.Graph") -> None:
 
     norm_values: list[float] = []
     normalized_flags: list[bool] = []
-    coherence_flags: list[bool] = []
-    coherence_values: list[float] = []
-    coherence_threshold: float | None = None
+    expectation_flags: list[bool] = []
+    expectation_values: list[float] = []
+    expectation_threshold: float | None = None
     frequency_flags: list[bool] = []
     frequency_values: list[float] = []
     frequency_spectrum_min: float | None = None
@@ -585,12 +679,27 @@ def _log_math_engine_summary(G: "nx.Graph") -> None:
         summary = outcome.summary
         normalized_flags.append(bool(summary.get("normalized", False)))
 
-        coherence_summary = summary.get("coherence")
-        if isinstance(coherence_summary, Mapping):
-            coherence_flags.append(bool(coherence_summary.get("passed", False)))
-            coherence_values.append(float(coherence_summary.get("value", 0.0)))
-            if coherence_threshold is None and "threshold" in coherence_summary:
-                coherence_threshold = float(coherence_summary.get("threshold", 0.0))
+        expectation_summary = summary.get("spectral_operator_expectation")
+        if not isinstance(expectation_summary, Mapping):
+            expectation_summary = summary.get("coherence")
+        if isinstance(expectation_summary, Mapping):
+            expectation_flags.append(
+                bool(expectation_summary.get("passed", False))
+            )
+            expectation_values.append(
+                finite_spectral_real(
+                    expectation_summary.get("value", 0.0),
+                    label="spectral operator expectation",
+                )
+            )
+            if (
+                expectation_threshold is None
+                and "threshold" in expectation_summary
+            ):
+                expectation_threshold = finite_spectral_real(
+                    expectation_summary.get("threshold", 0.0),
+                    label="spectral expectation threshold",
+                )
 
         frequency_summary = summary.get("frequency")
         if isinstance(frequency_summary, Mapping):
@@ -609,12 +718,15 @@ def _log_math_engine_summary(G: "nx.Graph") -> None:
             max(norm_values),
         )
 
-    if coherence_values and coherence_threshold is not None:
+    if expectation_values and expectation_threshold is not None:
         logger.info(
-            "[MATH] Coherence ≥ C_min=%s (C_min=%.6f, min=%.6f)",
-            all(coherence_flags),
-            float(coherence_threshold),
-            min(coherence_values),
+            "[MATH] Spectral expectation threshold passed=%s "
+            "(floor=%.6f, min=%.6f, kind=%s, "
+            "canonical_coherence_certified=False)",
+            all(expectation_flags),
+            expectation_threshold,
+            min(expectation_values),
+            SPECTRAL_EXPECTATION_METRIC_KIND,
         )
 
     if frequency_values:
