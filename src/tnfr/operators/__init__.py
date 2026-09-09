@@ -88,8 +88,14 @@ from .factor_contracts import (
 )
 from .event_remesh_runtime import (
     EventRemeshCycleResult,
+    RemeshHistoryTransitionObservation,
     WeightedEPIObservation,
     execute_event_remesh_cycle,
+)
+from .event_remesh_sequence import (
+    EventRemeshCycleBoundaryObservation,
+    ObservedEventRemeshCycleSequence,
+    compose_event_remesh_cycle_observations,
 )
 from .event_runtime import (
     ExecutedGlyphStage,
@@ -196,8 +202,12 @@ __all__ = [
     "validate_glyph_factor",
     "validate_glyph_factors",
     "EventRemeshCycleResult",
+    "RemeshHistoryTransitionObservation",
     "WeightedEPIObservation",
     "execute_event_remesh_cycle",
+    "EventRemeshCycleBoundaryObservation",
+    "ObservedEventRemeshCycleSequence",
+    "compose_event_remesh_cycle_observations",
     "ExecutedGlyphStage",
     "ExecutedNodalFlowInterval",
     "ExecutedOperatorEvent",

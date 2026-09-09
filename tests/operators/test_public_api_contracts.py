@@ -8,7 +8,12 @@ from dataclasses import fields
 import tnfr.operators as operators
 import tnfr.physics as physics
 import tnfr.sdk as sdk
-from tnfr.operators import event_timing, factor_contracts
+from tnfr.operators import (
+    event_remesh_runtime,
+    event_remesh_sequence,
+    event_timing,
+    factor_contracts,
+)
 from tnfr.operators.nodal_equation import compute_d2epi_dt2
 from tnfr.physics import mutation_trigger
 from tnfr.sdk import simple
@@ -20,6 +25,15 @@ def test_event_timing_exports_are_identical_at_operators_facade() -> None:
     assert public_names <= set(operators.__all__)
     for name in public_names:
         assert getattr(operators, name) is getattr(event_timing, name)
+
+
+def test_event_remesh_exports_are_identical_at_operators_facade() -> None:
+    for module in (event_remesh_runtime, event_remesh_sequence):
+        public_names = set(module.__all__)
+
+        assert public_names <= set(operators.__all__)
+        for name in public_names:
+            assert getattr(operators, name) is getattr(module, name)
 
 
 def test_factor_contract_module_is_centralized_at_operators_facade() -> None:

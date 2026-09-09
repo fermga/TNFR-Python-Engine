@@ -462,7 +462,7 @@ endpoint in authoritative `epi_time_history`. The schedule must preserve ordered
 node support and incoming delayed history; edges may change there. The endpoint
 clock, committed event log, phase, pressure-hook identity and deterministic
 REMESH controls remain frozen. The EPI-only map treats ON_REMESH callbacks as
-observers and preserves the post-schedule topology and all non-EPI channels.
+observers and preserves the post-schedule topology and all stored non-EPI aliases.
 One frozen positive diagonal metric measures cycle-level weighted EPI
 observations and feeds delayed-map evidence; legacy metadata retains unweighted
 means. Exact values remain authoritative when an optional float display is
@@ -472,10 +472,36 @@ finite represented flow/glyph composition inside its event result, but the
 delayed map and its one-step evidence remain separate. This certifies
 graph-owned one-cycle execution, not solver accuracy, delayed-REMESH gain or
 repeated stability with evolving history. External effects remain outside
-rollback. See
+rollback.
+
+Each cycle seals a `RemeshHistoryTransitionObservation`. For bounded history
+capacity `M`, exact incoming history `H_in` and exact pre-REMESH state `x_pre`,
+it verifies `H_out = tail_M(tail_M(H_in) || (x_pre,))`, including truncation and
+append eviction. Local and global lag availability are recorded independently.
+A completed post-REMESH pressure callback is an operational fact and does not
+prove `DeltaNFR = -L_rw EPI`.
+
+`compose_event_remesh_cycle_observations` binds at least two sealed cycle results
+supplied in caller order into an `ObservedEventRemeshCycleSequence`. Its sealed
+`EventRemeshCycleBoundaryObservation` records compare exact EPI, capacity,
+pressure, phase, clock and full delayed history across adjacent supplied results.
+Indices are local ordinals. Identical-object reuse is rejected, while distinct
+copies do not prove causal order or shared-graph execution provenance. Exact
+raw metric equality remains separate from normalized-ray compatibility;
+tri-state nested schedule metric alignment is diagnostic. Schedule compositions
+and REMESH results remain separate. Recorded-boundary continuity is independent
+of metric compatibility; the stronger sequence result requires one normalized
+ray aligned with every nested schedule, without requiring raw metric equality.
+`None` or `False` alignment blocks only that stronger result. No gain
+multiplication, evolving-history repetition, runtime-global gain, whole-sequence
+atomicity, full graph or grammar-history continuity, solver or future theorem
+follows. In one explicit sequential lag-one execution with `alpha=1`, `(2,0)`
+with delayed row `(0,2)` alternates to `(0,2)` and back even though each
+fixed-history result has zero current-state coefficient. See
 [src/tnfr/operators/event_timing.py](src/tnfr/operators/event_timing.py),
 [src/tnfr/operators/event_runtime.py](src/tnfr/operators/event_runtime.py),
-[src/tnfr/operators/event_remesh_runtime.py](src/tnfr/operators/event_remesh_runtime.py)
+[src/tnfr/operators/event_remesh_runtime.py](src/tnfr/operators/event_remesh_runtime.py),
+[src/tnfr/operators/event_remesh_sequence.py](src/tnfr/operators/event_remesh_sequence.py)
 and [src/tnfr/physics/event_duration.py](src/tnfr/physics/event_duration.py).
 
 ### Composition

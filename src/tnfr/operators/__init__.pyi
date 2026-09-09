@@ -6,8 +6,14 @@ from ..node import NodeProtocol
 from ..types import Glyph
 from .event_remesh_runtime import (
     EventRemeshCycleResult as EventRemeshCycleResult,
+    RemeshHistoryTransitionObservation as RemeshHistoryTransitionObservation,
     WeightedEPIObservation as WeightedEPIObservation,
     execute_event_remesh_cycle as execute_event_remesh_cycle,
+)
+from .event_remesh_sequence import (
+    EventRemeshCycleBoundaryObservation as EventRemeshCycleBoundaryObservation,
+    ObservedEventRemeshCycleSequence as ObservedEventRemeshCycleSequence,
+    compose_event_remesh_cycle_observations as compose_event_remesh_cycle_observations,
 )
 from .event_runtime import (
     ExecutedGlyphStage as ExecutedGlyphStage,

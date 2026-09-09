@@ -4,6 +4,34 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added — 2026-09-09 Ordered event/REMESH cycle observations
+
+- Added sealed `RemeshHistoryTransitionObservation` evidence to each
+  `EventRemeshCycleResult`. It records incoming and outgoing exact represented
+  histories, the canonical bounded append, and independently available local
+  and global delayed vectors.
+- Added `EventRemeshCycleBoundaryObservation`,
+  `ObservedEventRemeshCycleSequence` and
+  `compose_event_remesh_cycle_observations` for at least two sealed cycle
+  results supplied in caller order. The pure composer checks exact recorded EPI,
+  capacity, pressure, phase, clock and full REMESH-history continuity at every
+  adjacent supplied-result boundary. Its indices are local ordinals, not runtime
+  call identifiers.
+- Separated exact raw metric equality from normalized metric-ray compatibility
+  and added tri-state alignment with each nested represented schedule metric.
+  Exact boundary continuity remains separate; the stronger common-metric
+  sequence result requires every nested schedule to expose the shared ray.
+  Nested schedule compositions and REMESH results remain independent evidence.
+- Kept the repetition boundary explicit. An `alpha=1`, lag-one two-state trace
+  alternates between its current and delayed EPI even though each fixed-history
+  REMESH result has zero current-state coefficient. No schedule/REMESH gain
+  product, evolving-history repetition, runtime-global gain, whole-sequence
+  atomicity, full graph/grammar-history continuity, solver-accuracy result or future
+  theorem is claimed.
+- Rejected reuse of the identical cycle-result object as two observations. This
+  guards trivial self-pairing but does not establish causal order or shared-graph
+  provenance; distinct value-equal records remain observationally indistinct.
+
 ### Added — 2026-09-09 Observed represented EPI schedule composition
 
 - Added opt-in executor-owned EPI jump evidence to the shared all-target stage

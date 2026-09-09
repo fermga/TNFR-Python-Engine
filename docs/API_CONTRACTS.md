@@ -203,7 +203,7 @@ ordered node-support changes or schedule-owned delayed-history writes. It also
 binds the immutable schedule result to the live event log and freezes the
 endpoint clock, phase, pressure-hook identity and deterministic REMESH controls.
 Edges may change during the schedule; the EPI-only delayed map and its ON_REMESH
-observers must preserve the resulting edge state and all non-EPI channels.
+observers must preserve the resulting edge state and all stored non-EPI aliases.
 
 The supplied metric is materialized once, exposed even for the uniform default,
 and reused for cycle-level weighted EPI observations and optional REMESH
@@ -222,6 +222,62 @@ in `represented_epi_schedule_composition`. The cycle does not certify a global
 binary64 runtime gain or repeated stability with evolving history. External
 callback and integrator effects remain outside rollback.
 
+Each successful cycle also returns a sealed
+[`RemeshHistoryTransitionObservation`](../src/tnfr/operators/event_remesh_runtime.py).
+Writing `M=history_maxlen`, `H_in` for the exact represented incoming rows and
+`x_pre` for the exact pre-REMESH EPI vector, its decisive identity is
+`H_out = tail_M(tail_M(H_in) || (x_pre,))`. It records container rebuild and
+truncation, append eviction, and the vectors at
+`H_out[-(tau_local + 1)]` and `H_out[-(tau_global + 1)]` independently. Either
+lag can therefore be unavailable while the other is present. Its proof seal,
+and the enclosing `EventRemeshCycleResult` seal, fail closed after replacement
+or nested evidence mutation.
+
+[`compose_event_remesh_cycle_observations`](../src/tnfr/operators/event_remesh_sequence.py)
+is a pure observer over at least two sealed cycle results supplied in caller
+order. It returns an `ObservedEventRemeshCycleSequence` containing one sealed
+`EventRemeshCycleBoundaryObservation` per adjacent supplied pair. A passing
+boundary requires intact individually atomic cycles, ordered node support, exact
+schedule end/start time, post-REMESH/pre-schedule EPI, complete outgoing/incoming
+REMESH history, capacity, post-refresh/pre-schedule pressure and phase equality.
+When an applied left REMESH changed EPI, the observer additionally requires one
+completed explicitly requested post-REMESH pressure callback. Callback
+completion is operational evidence; it does not certify the constitutive
+identity `DeltaNFR = -L_rw EPI`.
+
+`cycle_indices` are zero-based local ordinals assigned by the composer, not
+runtime call identifiers. Reusing the identical result object at two positions
+is rejected as a self-pairing guard. Distinct value-equal copies remain
+admissible, so neither that guard nor exact boundary equality proves causal
+ordering, consecutive calls or shared-graph execution provenance.
+
+The sequence records each exact raw metric vector and its normalized positive
+rational ray. `raw_metric_weights_equal` requires the original vectors to be
+identical; `exact_common_normalized_metric_ray` also admits exact proportional
+vectors, which share disagreement geometry while using different raw energy
+scales. `nested_schedule_metric_alignment` is tri-state per cycle and compares
+an available nested `ObservedRepresentedEPIScheduleComposition` metric with
+that cycle's ray; absence of a nested metric remains `None`. This alignment is
+not silently substituted for recorded boundary continuity.
+`exact_recorded_boundary_continuity_certified` checks the sealed adjacent-state
+conditions without requiring a common metric. The stronger
+`exact_common_metric_cycle_sequence_certified` additionally requires one exact
+normalized ray and `True` alignment for every nested schedule; exact equality
+of raw metric vectors is not a condition. A `None` or `False` alignment blocks
+only this stronger result, not exact recorded-boundary continuity.
+`schedule_compositions` and `remesh_results` preserve both evidence families
+without combining their gain claims.
+
+No sequence field multiplies schedule and REMESH gains or certifies
+evolving-history REMESH gain or repetition, a runtime-global gain,
+whole-sequence atomicity across separate calls, full graph-state or
+grammar-history continuity, solver accuracy, shared graph provenance, or a
+future-cycle theorem. A concrete obstruction uses lag one and `alpha=1`:
+starting from EPI `(2, 0)` with delayed row `(0, 2)`, two empty-schedule cycles
+produce `(0, 2)` and then `(2, 0)`. Both one-step REMESH records have zero
+current-state coefficient, so multiplying those fixed-history factors would
+contradict the observed alternating history.
+
 ## Contract verification
 
 - [`test_operator_contracts.py`](../tests/operators/test_operator_contracts.py)
@@ -230,6 +286,11 @@ callback and integrator effects remain outside rollback.
   verifies rejection before Coupling or Resonance mutation.
 - [`test_canonical_operators_modern.py`](../tests/operators/test_canonical_operators_modern.py)
   covers operator behavior and latency.
+- [`test_event_remesh_runtime.py`](../tests/operators/test_event_remesh_runtime.py)
+  verifies sealed exact history transitions and one-cycle boundaries.
+- [`test_event_remesh_cycle_sequence.py`](../tests/operators/test_event_remesh_cycle_sequence.py)
+  verifies ordered recorded-state continuity, metric rays, proof seals and
+  the alternating-history obstruction to gain multiplication.
 - [Grammar Physics Verification Map](grammar/PHYSICS_VERIFICATION.md) maps U1-U6
   to their implementation and scope.
 

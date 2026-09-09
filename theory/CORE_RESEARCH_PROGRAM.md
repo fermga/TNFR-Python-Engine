@@ -7,8 +7,8 @@ operator contracts remain authoritative.
 
 | Line | Question | Current status |
 | --- | --- | --- |
-| S1 | Stability for nontrivial dynamics | Fixed and bounded time-varying EPI diffusion derived; exact-common-metric switching plus declared affine EPI resets have a conservative hybrid gain budget. All thirteen runtime glyph stages use immutable all-target proposals. An opt-in event execution now binds supported flow and glyph certificates to observed endpoints and composes their represented affine gains for one finite trace in one exact normalized metric. The delayed REMESH map retains a separate exact-support atomic one-step contract inside `execute_event_remesh_cycle`. No global executable binary64 map, solver-accuracy, full-multichannel, delayed-REMESH or history-updated repetition theorem follows |
-| S2 | A TNFR Lyapunov functional | Exact weighted fixed-capacity and common time-varying functionals derived; an affine reset has finite global gain exactly when it preserves the consensus subspace. Composition uses a rational quotient-gain upper bound for scalar and small maps with a rational Frobenius fallback; the runtime binds a complete finite represented-map trace only under exact endpoint continuity and one normalized metric. Uniform fixed points and weighted-mean preservation remain independent. EN/RA expose weighted-mean drift separately, and RA may change the post-flow metric; a full tetrad/nonlinear-operator functional remains open |
+| S1 | Stability for nontrivial dynamics | Fixed and bounded time-varying EPI diffusion derived; exact-common-metric switching plus declared affine EPI resets have a conservative hybrid gain budget. All thirteen runtime glyph stages use immutable all-target proposals. Event execution composes eligible represented affine gains for one observed finite trace. Ordered supplied event/REMESH cycle results now expose sealed exact nodal/history boundary observations; a stronger result requires one normalized metric ray aligned with every nested schedule while retaining schedule compositions and REMESH results separately. Local ordinals and exact equality do not prove causal or shared-graph provenance. No mixed schedule/REMESH gain, global executable binary64 map, solver-accuracy, full-multichannel or history-updated repetition theorem follows |
+| S2 | A TNFR Lyapunov functional | Exact weighted fixed-capacity and common time-varying functionals derived; an affine reset has finite global gain exactly when it preserves the consensus subspace. Composition uses rational quotient-gain bounds and requires exact endpoint continuity. Across supplied cycle observations, exact normalized metric rays identify common disagreement geometry, every nested schedule must expose the same ray for the stronger sequence result, and raw metric equality remains separate because proportional weights rescale energy. No Lyapunov decrease is inferred across evolving REMESH history; uniform fixed points, weighted-mean preservation and pure-EPI pressure identity remain independent, and a full tetrad/nonlinear-operator functional remains open |
 | S3 | Tetrad observability and minimality | Tetrad-only prediction disproved; full `Phi_s` plus one zero-mode scalar conditionally reconstructs EPI; universal rank/minimality open |
 | S4 | Spectrum of heterogeneous `nu_f` | Generalized fixed-capacity gap, time-varying bound and minimum common-metric switching-family gap derived. The spectral-coordinate executor now evaluates canonical `-L_rw EPI` in node space and the heterogeneous `nu_f` product pointwise; directed case open |
 | S5 | Spectral adaptive grammar | Exact operator-event schedules separate zero-duration jumps from declared flows. `execute_operator_event_schedule` binds them to the configured nodal integrator and atomic glyph stages; its opt-in evidence records built-in Euler provenance, executor-owned glyph certificates and a represented affine composition for a fully eligible observed finite trace. The event/REMESH cycle preserves that record while keeping the delayed map separate. Solver-refinement equivalence and adaptive U2/U4 remain open |
@@ -22,7 +22,7 @@ operator contracts remain authoritative.
 | S13 | Non-normality and dissonance bursts | Logarithmic-norm sign exactly characterizes fixed linear pressure growth; numerical signs within backward error abstain; finite-family prediction measured and canonical directed U2 metric open |
 | S14 | Structural information geometry | A relabeling-invariant structural-state metric is exact within a declared finite simple-graph topology/label class; cross-topology, nesting and history geometry open |
 | S15 | Inverse identification from telemetry | Known-target, node-level one-step signatures separate all 13 operators on declared probes and have a finite-prototype noise margin; ZHIR adds a replayable local prediction/observation residual with tri-state abstention. AL/EN/IL/OZ/UM/RA/SHA/VAL/NUL/THOL/ZHIR/NAV/REMESH now remove their contracted structural target-order and partial-commit confounds before pressure refresh, while ordered lifecycle and telemetry retain target order; target localization, aggregate inversion, mixed schedules, unseen states and complete words remain open |
-| S16 | Observable, stable and scale-persistent NFR structure | Endpoint and sampled-path certificates compose restricted pure-EPI hypotheses, stable forward-Euler updates and a common switching metric. All thirteen glyphs have atomic all-target Jacobi stages. Executed schedules can retain detached flow and glyph evidence plus an exact gain product for the represented affine maps of one observed finite trace; one atomic event/REMESH cycle carries it beside, but does not combine it with, canonical delayed-map evidence. Inter-sample refinement, unsupported or nonlinear glyph gain, history-updated repetition and changing node support remain open |
+| S16 | Observable, stable and scale-persistent NFR structure | Endpoint and sampled-path certificates compose restricted pure-EPI hypotheses, stable forward-Euler updates and a common switching metric. All thirteen glyphs have atomic all-target Jacobi stages. Executed schedules retain detached flow/glyph evidence and eligible represented-map products; individually atomic event/REMESH results now compose into sealed observations of exact recorded EPI, capacity, pressure, phase, clock and delayed-history continuity. Nested schedules and REMESH evidence remain separate. Inter-sample refinement, whole-sequence atomicity, full graph/grammar-history continuity, history-updated repetition and changing node support remain open |
 
 ## Implementation map
 
@@ -31,7 +31,7 @@ next to the subsystem they certify.
 
 | Lines | Executable certificate or diagnostic | Primary tests |
 | --- | --- | --- |
-| S1, S2, S4, S5 | [`structural_diffusion.py`](../src/tnfr/physics/structural_diffusion.py), [`hybrid_operator_stability.py`](../src/tnfr/physics/hybrid_operator_stability.py), [`_exact_metric.py`](../src/tnfr/physics/_exact_metric.py), [`pointwise_stage_stability.py`](../src/tnfr/physics/pointwise_stage_stability.py), [`runtime_flow_stability.py`](../src/tnfr/physics/runtime_flow_stability.py), [`event_duration.py`](../src/tnfr/physics/event_duration.py), [`event_timing.py`](../src/tnfr/operators/event_timing.py), [`event_runtime.py`](../src/tnfr/operators/event_runtime.py), [`event_remesh_runtime.py`](../src/tnfr/operators/event_remesh_runtime.py), [`_delayed_remesh_kernel.py`](../src/tnfr/operators/_delayed_remesh_kernel.py), [`network_stage_stability.py`](../src/tnfr/physics/network_stage_stability.py) | [`test_heterogeneous_diffusion_stability.py`](../tests/physics/test_heterogeneous_diffusion_stability.py), [`test_hybrid_operator_stability.py`](../tests/physics/test_hybrid_operator_stability.py), [`test_pointwise_stage_stability.py`](../tests/physics/test_pointwise_stage_stability.py), [`test_runtime_flow_stability.py`](../tests/physics/test_runtime_flow_stability.py), [`test_event_duration_relaxation.py`](../tests/physics/test_event_duration_relaxation.py), [`test_operator_event_timing.py`](../tests/operators/test_operator_event_timing.py), [`test_operator_event_runtime.py`](../tests/operators/test_operator_event_runtime.py), [`test_operator_event_flow_certificates.py`](../tests/operators/test_operator_event_flow_certificates.py), [`test_epi_jump_certificate_plumbing.py`](../tests/operators/test_epi_jump_certificate_plumbing.py), [`test_operator_event_stage_certificates.py`](../tests/operators/test_operator_event_stage_certificates.py), [`test_operator_event_composition_adversarial.py`](../tests/operators/test_operator_event_composition_adversarial.py), [`test_event_remesh_runtime.py`](../tests/operators/test_event_remesh_runtime.py), [`test_delayed_remesh_contract.py`](../tests/operators/test_delayed_remesh_contract.py), [`test_network_stage_stability.py`](../tests/physics/test_network_stage_stability.py) |
+| S1, S2, S4, S5 | [`structural_diffusion.py`](../src/tnfr/physics/structural_diffusion.py), [`hybrid_operator_stability.py`](../src/tnfr/physics/hybrid_operator_stability.py), [`_exact_metric.py`](../src/tnfr/physics/_exact_metric.py), [`pointwise_stage_stability.py`](../src/tnfr/physics/pointwise_stage_stability.py), [`runtime_flow_stability.py`](../src/tnfr/physics/runtime_flow_stability.py), [`event_duration.py`](../src/tnfr/physics/event_duration.py), [`event_timing.py`](../src/tnfr/operators/event_timing.py), [`event_runtime.py`](../src/tnfr/operators/event_runtime.py), [`event_remesh_runtime.py`](../src/tnfr/operators/event_remesh_runtime.py), [`event_remesh_sequence.py`](../src/tnfr/operators/event_remesh_sequence.py), [`_delayed_remesh_kernel.py`](../src/tnfr/operators/_delayed_remesh_kernel.py), [`network_stage_stability.py`](../src/tnfr/physics/network_stage_stability.py) | [`test_heterogeneous_diffusion_stability.py`](../tests/physics/test_heterogeneous_diffusion_stability.py), [`test_hybrid_operator_stability.py`](../tests/physics/test_hybrid_operator_stability.py), [`test_pointwise_stage_stability.py`](../tests/physics/test_pointwise_stage_stability.py), [`test_runtime_flow_stability.py`](../tests/physics/test_runtime_flow_stability.py), [`test_event_duration_relaxation.py`](../tests/physics/test_event_duration_relaxation.py), [`test_operator_event_timing.py`](../tests/operators/test_operator_event_timing.py), [`test_operator_event_runtime.py`](../tests/operators/test_operator_event_runtime.py), [`test_operator_event_flow_certificates.py`](../tests/operators/test_operator_event_flow_certificates.py), [`test_epi_jump_certificate_plumbing.py`](../tests/operators/test_epi_jump_certificate_plumbing.py), [`test_operator_event_stage_certificates.py`](../tests/operators/test_operator_event_stage_certificates.py), [`test_operator_event_composition_adversarial.py`](../tests/operators/test_operator_event_composition_adversarial.py), [`test_event_remesh_runtime.py`](../tests/operators/test_event_remesh_runtime.py), [`test_event_remesh_cycle_sequence.py`](../tests/operators/test_event_remesh_cycle_sequence.py), [`test_delayed_remesh_contract.py`](../tests/operators/test_delayed_remesh_contract.py), [`test_network_stage_stability.py`](../tests/physics/test_network_stage_stability.py) |
 | S3 | [`observability.py`](../src/tnfr/physics/observability.py) | [`test_tetrad_observability.py`](../tests/physics/test_tetrad_observability.py) |
 | S6 | [`phase_transition.py`](../src/tnfr/physics/phase_transition.py), [`phase_scaling.py`](../src/tnfr/physics/phase_scaling.py) | [`test_phase_transition.py`](../tests/physics/test_phase_transition.py), [`test_phase_scaling.py`](../tests/physics/test_phase_scaling.py) |
 | S7 | [`topology_transitions.py`](../src/tnfr/physics/topology_transitions.py) | [`test_topology_transitions.py`](../tests/physics/test_topology_transitions.py) |
@@ -41,7 +41,7 @@ next to the subsystem they certify.
 | S12 | [`metriplectic.py`](../src/tnfr/physics/metriplectic.py) | [`test_metriplectic_product.py`](../tests/physics/test_metriplectic_product.py) |
 | S13 | [`nonnormal_prediction.py`](../src/tnfr/physics/nonnormal_prediction.py) | [`test_nonnormal_prediction.py`](../tests/physics/test_nonnormal_prediction.py) |
 | S15 | [`temporal_identifiability.py`](../src/tnfr/physics/temporal_identifiability.py), [`mutation_trigger.py`](../src/tnfr/physics/mutation_trigger.py) | [`test_temporal_identifiability.py`](../tests/physics/test_temporal_identifiability.py), [`test_mutation_trigger.py`](../tests/physics/test_mutation_trigger.py) |
-| S16 | [`core_research_integration.py`](../src/tnfr/physics/core_research_integration.py), [`core_research_trajectory.py`](../src/tnfr/physics/core_research_trajectory.py), [`runtime_flow_stability.py`](../src/tnfr/physics/runtime_flow_stability.py), [`network_stage.py`](../src/tnfr/operators/network_stage.py), [`event_runtime.py`](../src/tnfr/operators/event_runtime.py), [`event_remesh_runtime.py`](../src/tnfr/operators/event_remesh_runtime.py), [`remesh.py`](../src/tnfr/operators/remesh.py), [`stage_contracts.py`](../src/tnfr/operators/stage_contracts.py) | [`test_core_research_integration.py`](../tests/physics/test_core_research_integration.py), [`test_core_research_trajectory.py`](../tests/physics/test_core_research_trajectory.py), [`test_runtime_flow_stability.py`](../tests/physics/test_runtime_flow_stability.py), [`test_operator_event_runtime.py`](../tests/operators/test_operator_event_runtime.py), [`test_operator_event_flow_certificates.py`](../tests/operators/test_operator_event_flow_certificates.py), [`test_epi_jump_certificate_plumbing.py`](../tests/operators/test_epi_jump_certificate_plumbing.py), [`test_operator_event_stage_certificates.py`](../tests/operators/test_operator_event_stage_certificates.py), [`test_operator_event_composition_adversarial.py`](../tests/operators/test_operator_event_composition_adversarial.py), [`test_event_remesh_runtime.py`](../tests/operators/test_event_remesh_runtime.py), [`test_delayed_remesh_contract.py`](../tests/operators/test_delayed_remesh_contract.py), [`test_operator_major_stage_atomicity.py`](../tests/operators/test_operator_major_stage_atomicity.py), [`test_stage_contracts.py`](../tests/operators/test_stage_contracts.py) |
+| S16 | [`core_research_integration.py`](../src/tnfr/physics/core_research_integration.py), [`core_research_trajectory.py`](../src/tnfr/physics/core_research_trajectory.py), [`runtime_flow_stability.py`](../src/tnfr/physics/runtime_flow_stability.py), [`network_stage.py`](../src/tnfr/operators/network_stage.py), [`event_runtime.py`](../src/tnfr/operators/event_runtime.py), [`event_remesh_runtime.py`](../src/tnfr/operators/event_remesh_runtime.py), [`event_remesh_sequence.py`](../src/tnfr/operators/event_remesh_sequence.py), [`remesh.py`](../src/tnfr/operators/remesh.py), [`stage_contracts.py`](../src/tnfr/operators/stage_contracts.py) | [`test_core_research_integration.py`](../tests/physics/test_core_research_integration.py), [`test_core_research_trajectory.py`](../tests/physics/test_core_research_trajectory.py), [`test_runtime_flow_stability.py`](../tests/physics/test_runtime_flow_stability.py), [`test_operator_event_runtime.py`](../tests/operators/test_operator_event_runtime.py), [`test_operator_event_flow_certificates.py`](../tests/operators/test_operator_event_flow_certificates.py), [`test_epi_jump_certificate_plumbing.py`](../tests/operators/test_epi_jump_certificate_plumbing.py), [`test_operator_event_stage_certificates.py`](../tests/operators/test_operator_event_stage_certificates.py), [`test_operator_event_composition_adversarial.py`](../tests/operators/test_operator_event_composition_adversarial.py), [`test_event_remesh_runtime.py`](../tests/operators/test_event_remesh_runtime.py), [`test_event_remesh_cycle_sequence.py`](../tests/operators/test_event_remesh_cycle_sequence.py), [`test_delayed_remesh_contract.py`](../tests/operators/test_delayed_remesh_contract.py), [`test_operator_major_stage_atomicity.py`](../tests/operators/test_operator_major_stage_atomicity.py), [`test_stage_contracts.py`](../tests/operators/test_stage_contracts.py) |
 
 ## Current restricted results
 
@@ -174,7 +174,7 @@ live endpoint clock and committed event log, verifies frozen ordered node suppor
 and incoming delayed history, appends the endpoint through the ordinary
 pre-REMESH `_epi_hist` helper, and invokes the delayed map. Edges may change in
 the schedule, while the EPI-only map and its ON_REMESH observers preserve that
-post-schedule topology and all non-EPI channels. The pressure hook, phase and
+post-schedule topology and all stored non-EPI aliases. The pressure hook, phase and
 materialized deterministic REMESH controls remain fixed. Shared validation
 covers positive-integer delays, materializable deque capacity, alpha source,
 bounds and clipping policy before positive flow.
@@ -196,6 +196,52 @@ remain outside that composition. The cycle therefore provides no global
 binary64 runtime gain or repeated-stability theorem after the next schedule
 changes state, capacity, pressure or history. External effects emitted by
 integrators or callbacks remain outside rollback.
+
+Each cycle result now contains a sealed
+`RemeshHistoryTransitionObservation`. For bounded capacity `M`, exact incoming
+history `H_in` and exact pre-REMESH state `x_pre`, it checks
+`H_out = tail_M(tail_M(H_in) || (x_pre,))`, including rebuild truncation and
+append eviction. The local and global lag selections are derived independently
+from `H_out`, so insufficient history for one does not erase an available value
+for the other. The enclosing cycle seal binds this transition to its exact
+recorded schedule, REMESH plan and EPI, capacity, pressure, phase and clock
+boundaries. A requested pressure callback that returns once after a changed
+REMESH state is operationally complete; this is not a proof of
+`DeltaNFR = -L_rw EPI`.
+
+`compose_event_remesh_cycle_observations` is pure: it observes at least two
+sealed `EventRemeshCycleResult` objects supplied in caller order without
+executing or mutating the graph. One sealed
+`EventRemeshCycleBoundaryObservation` per pair checks exact schedule-time,
+post-REMESH/pre-schedule EPI, complete
+outgoing/incoming delayed history, capacity, post-refresh/pre-schedule pressure
+and phase continuity on ordered support. The resulting
+`ObservedEventRemeshCycleSequence` requires one exact normalized positive metric
+ray across its cycle observations. It reports raw metric equality separately,
+because proportional vectors preserve disagreement geometry while rescaling
+energy. Tri-state nested schedule metric alignment is also diagnostic; every
+schedule composition and REMESH result remains independently available.
+
+`exact_recorded_boundary_continuity_certified` concerns only the sealed
+recorded boundaries. `exact_common_metric_cycle_sequence_certified` is the
+stronger result: every cycle metric must share one normalized ray and every
+nested schedule composition must expose the matching ray. Exact raw metric
+equality is not required by that result.
+
+Sequence indices are zero-based local ordinals rather than runtime call ids.
+The composer rejects reuse of the identical result object, preventing trivial
+self-pairing. Distinct value-equal copies still cannot establish causal order,
+consecutive calls or shared-graph execution provenance.
+
+This closes the ordered-observation step without promoting a stability theorem.
+In one explicit sequential execution with lag one and `alpha=1`, EPI `(2,0)`
+and prior delayed row `(0,2)` produce `(0,2)` after the first empty-schedule
+cycle and `(2,0)` after the second. Both one-step REMESH results have zero
+current-state coefficient,
+so multiplying their fixed-history factors would falsely predict collapse.
+The sequence therefore certifies no mixed gain, evolving-history repetition,
+runtime-global gain, whole-sequence atomicity, full graph/grammar-history
+continuity, solver accuracy, shared execution provenance or future cycle.
 
 ZHIR now supplies a narrower event-local temporal boundary shared by S5 and
 S15. The nodal equation predicts the instantaneous rate
@@ -682,7 +728,7 @@ measurements. See
 
 | Line | Next precise test | Result that blocks promotion |
 | --- | --- | --- |
-| S1-S2 | Compose consecutive `execute_event_remesh_cycle` observations with explicitly evolving pre-jump history while retaining each finite represented schedule composition and delayed-REMESH observation as separate evidence | A cycle leaves its certified domain, loses graph-state atomicity or a compatible frozen metric, conflates capacity with metric, omits required pressure refresh, or promotes one-step REMESH evidence to an evolving-history gain |
+| S1-S2 | Derive or refute an augmented EPI-history Lyapunov functional for repeated delayed REMESH while retaining the `alpha=1` alternating-history obstruction | One admitted history/parameter family alternates or amplifies while the proposed functional claims strict decay, or a proof multiplies fixed-history one-step factors across changing delayed inputs |
 | S3 | Prove or refute `rank(-K L_rw)=N-1` beyond the finite atlas | One connected positive-conductance graph with nullity greater than one |
 | S4 | Replace symmetric gaps by a directed contraction quantity | Stable spectrum with an unbounded claimed metric transient |
 | S5 | Partition one declared continuous flow into equivalent solver refinements before proposing adaptive U2/U4 | Refinement changes event-local ZHIR evidence, jump placement or a claimed modal decision beyond its declared numerical bound |
@@ -696,25 +742,26 @@ measurements. See
 | S13 | Repeat the benchmark across held-out graph families and operator-driven trajectories | The exact linear sign criterion fails in scope, or spectral baselines match finite predictive rankings out of sample |
 | S14 | Extend the fixed-class metric across topology, nesting and histories with explicit edit costs | Triangle inequality, relabeling invariance or phase-wrap invariance fails |
 | S15 | Estimate observation scales/noise laws, then test unseen graph families, mixed schedules and complete grammar words | Operators or words claimed identifiable have overlapping observation laws, or empirical errors exceed the certified finite-prototype margin |
-| S16 | Build three-mesh reference trajectories that carry complete finite represented schedule compositions and separately observed delayed REMESH operations | A stage regains target-order dependence or partial commits, a represented composition changes metric without abstaining, refinement stops reducing persistent-id error, or evolving history is promoted without a theorem |
+| S16 | Build three-mesh reference trajectories carrying `ObservedEventRemeshCycleSequence`, complete finite represented schedule compositions and separate delayed REMESH results | A stage regains target-order dependence or partial commits, an exact recorded boundary breaks, a represented composition changes metric without abstaining, refinement stops reducing persistent-id error, or evolving history is promoted without a theorem |
 
 ## Next working order
 
-1. Compose consecutive `execute_event_remesh_cycle` observations with explicitly
-   evolving pre-jump history and compatible frozen metrics. Retain each finite
-   represented flow/glyph composition and each REMESH result as separate
-   evidence unless evolving delayed inputs satisfy a repetition theorem.
-2. Partition equivalent continuous flows into different solver refinements and
+1. Partition equivalent continuous flows into different solver refinements and
    test whether event-local ZHIR evidence, jump placement and modal decisions
    remain invariant before deriving optional adaptive U2/U4 policies.
-3. Extend phase and nonlinear quotient analysis to branch transitions, zero
+2. Build three-mesh reference trajectories carrying sealed ordered-cycle
+   observations, persistent-node errors, represented schedule compositions and
+   separate delayed REMESH results without multiplying their gains.
+3. Derive or refute an augmented-state Lyapunov functional for evolving REMESH
+   history, retaining the `alpha=1` alternating trace as a required obstruction.
+4. Extend phase and nonlinear quotient analysis to branch transitions, zero
    phasor resultants and changing support; retain the proved unresolved-fiber
    counterexample as the global closure boundary.
-4. Test topology precursors and temporal operator signatures on held-out graph
+5. Test topology precursors and temporal operator signatures on held-out graph
    families, noise models and complete grammar words with declared schedules.
-5. Search for nonzero dissipative-symplectic cross tensors satisfying both
+6. Search for nonzero dissipative-symplectic cross tensors satisfying both
    degeneracy identities, and for a canonical directed contraction metric.
-6. Define admissible TNFR transformations independently of the existing catalog
+7. Define admissible TNFR transformations independently of the existing catalog
    before revisiting catalog completeness.
 
 Reusable certificate functions record their declared inputs, numerical decision

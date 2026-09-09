@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import deque
 from copy import deepcopy
+from dataclasses import replace
 from fractions import Fraction
 import sys
 from typing import Any
@@ -11,10 +12,12 @@ from typing import Any
 import networkx as nx
 import pytest
 
+import tnfr.operators.event_remesh_runtime as event_remesh_runtime
 from tnfr.dynamics.integrators import AbstractIntegrator
 from tnfr.errors import TNFRValueError
 from tnfr.operators import (
     EventRemeshCycleResult,
+    RemeshHistoryTransitionObservation,
     build_operator_event_schedule,
     execute_event_remesh_cycle,
 )
@@ -441,6 +444,7 @@ def test_public_stub_exposes_event_remesh_cycle_contract() -> None:
     }
     assert imported == {
         "EventRemeshCycleResult",
+        "RemeshHistoryTransitionObservation",
         "WeightedEPIObservation",
         "execute_event_remesh_cycle",
     }
@@ -682,3 +686,377 @@ def test_cycle_stage_certificate_flag_requires_a_strict_bool(value: object) -> N
         )
 
     assert _state(graph) == before
+
+
+def test_history_transition_records_exact_append_and_selected_lags() -> None:
+    graph = _graph()
+
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+    transition = result.history_transition
+
+    assert isinstance(transition, RemeshHistoryTransitionObservation)
+    assert transition.nodes == (0, 1)
+    assert transition.incoming_exact_history == (
+        (Fraction(0), Fraction(2)),
+    )
+    assert transition.outgoing_exact_history == (
+        (Fraction(0), Fraction(2)),
+        (Fraction(2), Fraction(0)),
+    )
+    assert transition.appended_exact_pre_remesh_epi == (
+        Fraction(2),
+        Fraction(0),
+    )
+    assert transition.selected_local_delayed_epi == (
+        Fraction(0),
+        Fraction(2),
+    )
+    assert transition.selected_global_delayed_epi == (
+        Fraction(0),
+        Fraction(2),
+    )
+    assert transition.tau_local == 1
+    assert transition.tau_global == 1
+    assert transition.history_maxlen == 64
+    assert transition.incoming_history_present
+    assert transition.incoming_history_is_canonical_deque
+    assert not transition.history_container_rebuilt
+    assert not transition.oldest_snapshot_evicted
+    assert not transition.incoming_history_truncated_during_rebuild
+    assert transition.history_rebuild_truncation_count == 0
+    assert transition.canonical_history_transition_certified
+    assert result.phase_before_schedule == (0.0, 0.0)
+    assert result._proof_fields_are_intact()
+
+
+def test_history_transition_records_independent_insufficient_lags() -> None:
+    graph = _graph()
+    graph.graph["REMESH_TAU_LOCAL"] = 1
+    graph.graph["REMESH_TAU_GLOBAL"] = 2
+
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+    transition = result.history_transition
+
+    assert transition.selected_local_delayed_epi == (
+        Fraction(0),
+        Fraction(2),
+    )
+    assert transition.selected_global_delayed_epi is None
+    assert result.remesh.status == "insufficient_history"
+    assert not result.remesh_applied
+    assert transition.canonical_history_transition_certified
+    assert result._proof_fields_are_intact()
+
+
+def test_history_transition_records_canonical_left_eviction() -> None:
+    graph = _graph()
+    incoming = [
+        {0: float(index), 1: -float(index)}
+        for index in range(64)
+    ]
+    graph.graph["_epi_hist"] = deque(incoming, maxlen=64)
+
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+    transition = result.history_transition
+
+    assert transition.incoming_history_is_canonical_deque
+    assert not transition.history_container_rebuilt
+    assert transition.oldest_snapshot_evicted
+    assert transition.history_rebuild_truncation_count == 0
+    assert len(transition.incoming_exact_history) == 64
+    assert len(transition.outgoing_exact_history) == 64
+    assert transition.outgoing_exact_history[0] == (
+        Fraction(1),
+        Fraction(-1),
+    )
+    assert transition.outgoing_exact_history[-1] == (
+        Fraction(2),
+        Fraction(0),
+    )
+    assert result.history_length_before_append == 64
+    assert result.history_length_after_append == 64
+    assert result._proof_fields_are_intact()
+
+
+def test_history_transition_records_rebuild_truncation_before_eviction() -> None:
+    graph = _graph()
+    graph.graph["_epi_hist"] = [
+        {0: float(index), 1: -float(index)}
+        for index in range(66)
+    ]
+
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+    transition = result.history_transition
+
+    assert not transition.incoming_history_is_canonical_deque
+    assert transition.history_container_rebuilt
+    assert transition.incoming_history_truncated_during_rebuild
+    assert transition.history_rebuild_truncation_count == 2
+    assert transition.oldest_snapshot_evicted
+    assert len(transition.incoming_exact_history) == 66
+    assert len(transition.outgoing_exact_history) == 64
+    assert transition.outgoing_exact_history[0] == (
+        Fraction(3),
+        Fraction(-3),
+    )
+    assert transition.outgoing_exact_history[-1] == (
+        Fraction(2),
+        Fraction(0),
+    )
+    assert result.history_length_before_cycle == 66
+    assert result.history_length_before_append == 64
+    assert result._proof_fields_are_intact()
+
+
+@pytest.mark.parametrize(
+    "malformed",
+    [
+        [{0: 1.0}],
+        [{0: 1.0, 1: 2.0, 2: 3.0}],
+        [(1.0, 2.0)],
+        [{0: complex(1.0, 1.0), 1: 2.0}],
+    ],
+)
+def test_history_transition_rejects_malformed_incoming_history_atomically(
+    malformed: object,
+) -> None:
+    graph = _graph()
+    graph.graph["_epi_hist"] = malformed
+    before = _state(graph)
+
+    with pytest.raises(TNFRValueError):
+        execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert _state(graph) == before
+
+
+def test_history_transition_and_cycle_proofs_fail_closed_after_tampering() -> None:
+    graph = _graph()
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+    transition = result.history_transition
+
+    with pytest.raises(ValueError):
+        replace(
+            transition,
+            selected_local_delayed_epi=None,
+        )
+
+    object.__setattr__(
+        transition,
+        "selected_local_delayed_epi",
+        None,
+    )
+    assert not transition.canonical_history_transition_certified
+    assert not transition._proof_fields_are_intact()
+    assert not result._proof_fields_are_intact()
+
+
+def test_cycle_proof_detects_nested_remesh_plan_tampering_by_value() -> None:
+    graph = _graph()
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+    proposal = result.remesh.plan.proposals[0]
+
+    object.__setattr__(proposal, "epi_local", 9.0)
+
+    assert not result._proof_fields_are_intact()
+
+
+def test_cycle_proof_detects_nested_schedule_composition_tampering() -> None:
+    graph = _graph()
+    graph.graph["DT_MIN"] = 0.0
+    result = execute_event_remesh_cycle(
+        graph,
+        _schedule(graph, durations=(0.25,)),
+        include_stage_certificates=True,
+    )
+    composition = (
+        result.event_execution.represented_epi_schedule_composition
+    )
+    assert composition is not None
+    assert result._proof_fields_are_intact()
+
+    object.__setattr__(
+        composition,
+        "exact_energy_gain_upper_bound",
+        Fraction(0),
+    )
+
+    assert not composition._proof_fields_are_intact()
+    assert not result._proof_fields_are_intact()
+
+
+def test_cycle_proof_detects_boundary_phase_tampering() -> None:
+    graph = _graph()
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+
+    object.__setattr__(result, "phase_before_schedule", (0.5, 0.0))
+
+    assert not result._proof_fields_are_intact()
+
+def test_history_transition_records_reverse_independent_lag_availability() -> None:
+    graph = _graph()
+    graph.graph["REMESH_TAU_LOCAL"] = 2
+    graph.graph["REMESH_TAU_GLOBAL"] = 1
+
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+    transition = result.history_transition
+
+    assert transition.selected_local_delayed_epi is None
+    assert transition.selected_global_delayed_epi == (
+        Fraction(0),
+        Fraction(2),
+    )
+    assert result.remesh.status == "insufficient_history"
+    assert transition.canonical_history_transition_certified
+    assert result._proof_fields_are_intact()
+
+
+class _CyclicHashableNode:
+    def __init__(self, label: str) -> None:
+        self.label = label
+        self.self_reference = self
+
+    def __hash__(self) -> int:
+        return hash(self.label)
+
+    def __eq__(self, other: object) -> bool:
+        return (
+            type(other) is _CyclicHashableNode
+            and self.label == other.label
+        )
+
+
+def test_cycle_proof_serialization_accepts_cyclic_hashable_nodes() -> None:
+    left = _CyclicHashableNode("left")
+    right = _CyclicHashableNode("right")
+    graph = _graph()
+    nx.relabel_nodes(graph, {0: left, 1: right}, copy=False)
+    graph.graph["_epi_hist"] = deque(
+        [{left: 0.0, right: 2.0}],
+        maxlen=64,
+    )
+
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert result.target_nodes == (left, right)
+    assert result.history_transition.nodes == (left, right)
+    assert result._proof_fields_are_intact()
+
+
+def test_cycle_hard_false_claims_are_read_only_properties() -> None:
+    graph = _graph()
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+
+    for name in (
+        "remesh_history_repetition_certified",
+        "mixed_runtime_gain_certified",
+        "external_side_effects_rolled_back",
+    ):
+        assert getattr(result, name) is False
+        with pytest.raises(AttributeError):
+            object.__setattr__(result, name, True)
+
+class _SlottedMutableNode:
+    __slots__ = ("label", "payload", "self_reference")
+
+    def __init__(self, label: str) -> None:
+        self.label = label
+        self.payload = "original"
+        self.self_reference = self
+
+    def __hash__(self) -> int:
+        return hash(self.label)
+
+    def __eq__(self, other: object) -> bool:
+        return (
+            type(other) is _SlottedMutableNode
+            and self.label == other.label
+        )
+
+
+def test_cycle_proof_serializes_mutable_slotted_nodes_by_mro_state() -> None:
+    left = _SlottedMutableNode("left")
+    right = _SlottedMutableNode("right")
+    graph = _graph()
+    nx.relabel_nodes(graph, {0: left, 1: right}, copy=False)
+    graph.graph["_epi_hist"] = deque(
+        [{left: 0.0, right: 2.0}],
+        maxlen=64,
+    )
+
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert result._proof_fields_are_intact()
+    left.payload = "tampered"
+    assert not result.history_transition._proof_fields_are_intact()
+    assert not result._proof_fields_are_intact()
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        ("capacity", "non-EPI alias channels"),
+        ("pressure", "non-EPI alias channels"),
+        ("phase", "non-EPI alias channels"),
+        ("edge", "protected edge state"),
+    ],
+)
+def test_outer_cycle_rejects_remesh_wrapper_channel_or_edge_mutation(
+    monkeypatch: pytest.MonkeyPatch,
+    mutation: str,
+    message: str,
+) -> None:
+    graph = _graph()
+    before = _state(graph)
+    history = graph.graph["_epi_hist"]
+    original = event_remesh_runtime.apply_network_remesh
+
+    def mutate_after_apply(target: nx.Graph, **kwargs: object) -> Any:
+        result = original(target, **kwargs)
+        if mutation == "capacity":
+            target.nodes[0]["nu_f"] = 3.0
+        elif mutation == "pressure":
+            target.nodes[0]["delta_nfr"] = 4.0
+        elif mutation == "phase":
+            target.nodes[0]["theta"] = 1.25
+        else:
+            target.edges[0, 1]["weight"] = 9.0
+        return result
+
+    monkeypatch.setattr(
+        event_remesh_runtime,
+        "apply_network_remesh",
+        mutate_after_apply,
+    )
+    with pytest.raises(TNFRValueError, match=message):
+        execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert _state(graph) == before
+    assert graph.graph["_epi_hist"] is history
+
+
+def test_outer_cycle_rejects_applied_remesh_without_exact_evidence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    graph = _graph()
+    before = _state(graph)
+    history = graph.graph["_epi_hist"]
+    original = event_remesh_runtime.apply_network_remesh
+
+    def remove_evidence(target: nx.Graph, **kwargs: object) -> Any:
+        result = original(target, **kwargs)
+        return replace(
+            result,
+            plan=replace(result.plan, evidence=None),
+        )
+
+    monkeypatch.setattr(
+        event_remesh_runtime,
+        "apply_network_remesh",
+        remove_evidence,
+    )
+    with pytest.raises(RuntimeError, match="omitted exact stability evidence"):
+        execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert _state(graph) == before
+    assert graph.graph["_epi_hist"] is history

@@ -287,7 +287,8 @@ and REMESH stability evidence; legacy REMESH metadata keeps unweighted means.
 Ordered node support, incoming history, the endpoint clock, the committed event
 log, phase, the pressure hook and deterministic REMESH configuration are
 protected. Edge support may change during the schedule, while delayed REMESH
-observers cannot change it. Consensus drift, capacity changes and pressure
+observers cannot change it or any stored non-EPI alias. Consensus drift,
+capacity changes and pressure
 refreshes remain separate. The optional post-REMESH refresh runs once only when
 the map applies. Exact observations remain authoritative when a derived float
 display is `None`. This is an atomic one-cycle execution contract, not a solver,
@@ -297,6 +298,42 @@ The cycle forwards both certificate options to its event execution and can
 therefore retain the finite represented flow/glyph composition there. The
 separately invoked delayed-REMESH map remains outside that composition; its
 one-step evidence is never inserted as another gain factor.
+
+Each cycle result also seals a `RemeshHistoryTransitionObservation`. For bounded
+history capacity `M` and exact pre-REMESH vector `x_pre`, it verifies
+`H_out = tail_M(tail_M(H_in) || (x_pre,))`, including any rebuild truncation and
+oldest-snapshot eviction. Local and global delayed vectors are selected
+independently from `H_out`, so one lag may be available while the other is not.
+A completed post-REMESH pressure callback is an operational fact only; it does
+not prove that the resulting pressure satisfies `DeltaNFR = -L_rw EPI`.
+
+`compose_event_remesh_cycle_observations(...)` binds at least two sealed results
+supplied in caller order into an `ObservedEventRemeshCycleSequence`. Each sealed
+`EventRemeshCycleBoundaryObservation` compares the exact recorded EPI,
+capacity, pressure, phase, schedule clock and complete delayed history across
+one adjacent supplied-result boundary. Its zero-based cycle indices are local
+ordinals rather than runtime call identifiers. The composer rejects reuse of
+the identical result object, but distinct copies do not prove that observations
+came from consecutive calls or the same graph. The sequence distinguishes
+equality of raw metric weights from equality of their exact normalized rays:
+proportional weights share disagreement geometry but rescale its energy. It
+also reports tri-state alignment between each cycle ray and its nested
+represented schedule metric.
+The nested schedule compositions and REMESH results remain separately exposed.
+`exact_recorded_boundary_continuity_certified` concerns the sealed recorded
+boundaries alone. The stronger
+`exact_common_metric_cycle_sequence_certified` additionally requires every
+cycle metric to share one exact normalized ray and every nested schedule to
+expose that ray; `None` or `False` alignment blocks only this stronger result,
+and raw metric equality is not required.
+
+This observation does not multiply schedule and REMESH gains or establish
+evolving-history repetition, a runtime-global gain, whole-sequence atomicity,
+full graph or grammar-history continuity, solver accuracy, future stability or
+shared execution provenance. The boundary is necessary: one explicit sequential
+lag-one execution with `alpha=1`, initial EPI `(2, 0)` and prior history `(0, 2)`
+alternates to `(0, 2)` and back to `(2, 0)`, although each fixed-history REMESH
+certificate has zero current-state coefficient.
 
 The companion example exercises
 only the schedule and duration diagnostic, without executing this runtime

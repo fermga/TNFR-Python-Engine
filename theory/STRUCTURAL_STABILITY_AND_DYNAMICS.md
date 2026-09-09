@@ -319,6 +319,40 @@ gain belongs to the represented maps and bounds the observed trace through its
 endpoint bindings. The hard-false `runtime_schedule_global_gain_certified`
 field prevents interpreting it as a global executable binary64 map.
 
+One `execute_event_remesh_cycle` then appends exactly one pre-REMESH state and
+applies the delayed map inside an individually atomic graph transaction. The
+delayed map preserves the post-schedule edge state and every stored non-EPI
+alias. Its sealed `RemeshHistoryTransitionObservation` verifies, for capacity
+`M`, `H_out = tail_M(tail_M(H_in) || (x_pre,))`, and records local/global lag
+availability independently. The optional pressure callback is operationally
+complete only after one successful return; this does not prove that its output
+satisfies `DeltaNFR = -L_rw EPI`.
+
+For at least two sealed cycle results supplied in caller order,
+`compose_event_remesh_cycle_observations` constructs sealed adjacent
+`EventRemeshCycleBoundaryObservation` records and an
+`ObservedEventRemeshCycleSequence`. These compare exact recorded EPI, capacity,
+pressure, phase, clock and full delayed history. Raw metric equality is kept
+separate from compatibility of exact normalized metric rays: proportional raw
+weights define the same disagreement geometry at different energy scales.
+Tri-state nested schedule metric alignment is reported without merging each
+`ObservedRepresentedEPIScheduleComposition` with its REMESH result.
+The zero-based indices are local ordinals. Repeated object identity is rejected,
+while distinct copies still cannot prove causal order or shared-graph execution.
+Exact recorded-boundary continuity is independent of those metric conditions.
+The stronger common-metric sequence result requires one normalized ray and a
+matching non-absent metric from every nested schedule; raw equality is not
+required. A `None` or `False` alignment blocks only this stronger result, not
+exact recorded-boundary continuity.
+
+No schedule/REMESH gain product follows across evolving history. In an explicit
+sequential lag-one execution with `alpha=1`, EPI `(2,0)` and delayed row `(0,2)`
+map first to `(0,2)` and then back to `(2,0)`, even though both fixed-history
+REMESH records have zero current-state coefficient. The sequence
+therefore withholds evolving-history gain and repetition, runtime-global gain,
+whole-sequence atomicity, full graph/grammar-history continuity, solver
+accuracy, shared execution provenance and future stability.
+
 This execution contract does not prove solver accuracy or invariance under an
 equivalent timestep refinement, assign an affine gain to every jump, establish
 full-multichannel or repeated stability, or convert the continuous duration or
@@ -842,6 +876,7 @@ and
 | `src/tnfr/operators/event_timing.py` | Exact finite flow/jump schedules and binary64 clock readiness |
 | `src/tnfr/operators/event_runtime.py` | Atomic observed flow/glyph binding and finite represented EPI-map composition |
 | `src/tnfr/operators/event_remesh_runtime.py` | Atomic schedule/delayed-REMESH cycle with separate evidence channels |
+| `src/tnfr/operators/event_remesh_sequence.py` | Exact continuity across ordered supplied cycle results |
 | `src/tnfr/operators/_delayed_remesh_kernel.py` | Immutable delayed REMESH proposals and one-step evidence |
 | `src/tnfr/physics/phase_quotient.py` | Fixed-branch pairwise quotient, restricted canonical phase lift and counterexample |
 | `src/tnfr/physics/coherence_geometry.py` | Local, fixed-network and fixed-capacity coherence strata |

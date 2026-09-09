@@ -13,6 +13,30 @@ from .remesh import DelayedRemeshResult
 
 
 @dataclass(frozen=True, slots=True)
+class RemeshHistoryTransitionObservation:
+    nodes: tuple[Hashable, ...]
+    incoming_exact_history: tuple[tuple[Fraction, ...], ...]
+    outgoing_exact_history: tuple[tuple[Fraction, ...], ...]
+    appended_exact_pre_remesh_epi: tuple[Fraction, ...]
+    selected_local_delayed_epi: tuple[Fraction, ...] | None
+    selected_global_delayed_epi: tuple[Fraction, ...] | None
+    tau_local: int
+    tau_global: int
+    history_maxlen: int
+    incoming_history_present: bool
+    incoming_history_is_canonical_deque: bool
+    history_container_rebuilt: bool
+    oldest_snapshot_evicted: bool
+    incoming_history_truncated_during_rebuild: bool
+    history_rebuild_truncation_count: int
+    _proof_stamp: tuple[Any, ...] = field(repr=False, compare=False)
+
+    def _proof_fields_are_intact(self) -> bool: ...
+    @property
+    def canonical_history_transition_certified(self) -> bool: ...
+
+
+@dataclass(frozen=True, slots=True)
 class WeightedEPIObservation:
     nodes: tuple[Hashable, ...]
     epi_values: tuple[float, ...]
@@ -29,6 +53,7 @@ class EventRemeshCycleResult:
     metric_weights: tuple[float, ...]
     event_execution: OperatorEventExecutionResult
     remesh: DelayedRemeshResult
+    history_transition: RemeshHistoryTransitionObservation
     pre_schedule_epi: WeightedEPIObservation
     pre_remesh_epi: WeightedEPIObservation
     post_remesh_epi: WeightedEPIObservation
@@ -45,6 +70,7 @@ class EventRemeshCycleResult:
     pressure_before_remesh: tuple[float, ...]
     pressure_after_remesh_before_refresh: tuple[float, ...]
     pressure_after_optional_refresh: tuple[float, ...]
+    phase_before_schedule: tuple[float, ...]
     phase_before_remesh: tuple[float, ...]
     phase_after_remesh_before_refresh: tuple[float, ...]
     phase_after_optional_refresh: tuple[float, ...]
@@ -61,6 +87,7 @@ class EventRemeshCycleResult:
     post_remesh_pressure_refresh_callback_invocations: int
     committed_hybrid_event_log_length: int
     post_remesh_epi_time_boundary_recorded: bool
+    _proof_stamp: tuple[Any, ...] = field(repr=False, compare=False)
     history_convention: str = field(default=..., init=False)
     schedule_left_history_unchanged: bool = field(default=..., init=False)
     whole_cycle_graph_state_atomic: bool = field(default=..., init=False)
@@ -69,15 +96,15 @@ class EventRemeshCycleResult:
     hybrid_event_log_preserved: bool = field(default=..., init=False)
     pressure_hook_identity_preserved: bool = field(default=..., init=False)
     remesh_configuration_frozen: bool = field(default=..., init=False)
-    remesh_history_repetition_certified: bool = field(
-        default=..., init=False
-    )
-    mixed_runtime_gain_certified: bool = field(default=..., init=False)
-    external_side_effects_rolled_back: bool = field(
-        default=..., init=False
-    )
     scope: str = field(default=..., init=False)
 
+    def _proof_fields_are_intact(self) -> bool: ...
+    @property
+    def remesh_history_repetition_certified(self) -> bool: ...
+    @property
+    def mixed_runtime_gain_certified(self) -> bool: ...
+    @property
+    def external_side_effects_rolled_back(self) -> bool: ...
     @property
     def remesh_applied(self) -> bool: ...
     @property
