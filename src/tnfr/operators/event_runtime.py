@@ -27,6 +27,10 @@ from ..dynamics.integrators import (
     prepare_integration_params as _canonical_prepare_integration_params,
 )
 from ..errors import TNFRValueError
+from ..physics._exact_metric import (
+    normalized_positive_binary64_metric as _normalized_exact_metric,
+    normalized_positive_fraction_metric as _normalized_fraction_metric,
+)
 from ..types import Glyph
 from .event_timing import (
     OperatorEventSchedule,
@@ -41,6 +45,12 @@ from .network_stage import (
 )
 
 if TYPE_CHECKING:
+    from ..physics.network_stage_stability import (
+        AllTargetNeighborStageCertificate,
+    )
+    from ..physics.pointwise_stage_stability import (
+        PointwiseEPIJumpRealizationCertificate,
+    )
     from ..physics.runtime_flow_stability import (
         NodalFlowIntervalCertificate,
         NodalFlowStateSnapshot,
@@ -59,6 +69,30 @@ _FLOW_SCOPE = (
     "refresh confined to explicit operator-stage callbacks; solver accuracy "
     "and adaptive U2/U4 behavior are not certified"
 )
+_STAGE_SCOPE = (
+    "one executed zero-duration glyph stage bound to its captured EPI endpoints "
+    "and immediately adjacent observed flow intervals; unsupported glyphs and "
+    "incompatible supports or metrics produce explicit abstention"
+)
+_REPRESENTED_COMPOSITION_SCOPE = (
+    "composition of the exact rational EPI maps represented by every operation "
+    "in this observed finite schedule. Each positive flow and glyph jump is "
+    "bound to exact observed endpoints and one identical normalized rational "
+    "metric. This is not a global-affinity or gain theorem for the executable "
+    "binary64 runtime map. Solver accuracy, full multichannel stability, future "
+    "schedules and repeated execution are not certified"
+)
+
+
+def _has_intact_nodal_flow_certificate(value: Any) -> bool:
+    """Recognize only a canonical interval certificate with intact proof fields."""
+
+    from ..physics.runtime_flow_stability import NodalFlowIntervalCertificate
+
+    return bool(
+        type(value) is NodalFlowIntervalCertificate
+        and value._proof_fields_are_intact()
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,6 +105,34 @@ class _FlowRuntimeMetadata:
     resolved_substeps: int | None
     gamma_is_none: bool | None
     extended_dynamics_requested: bool
+
+
+@dataclass(frozen=True, slots=True)
+class _PendingGlyphStage:
+    """Captured event boundary retained until adjacent flows are complete."""
+
+    event: ExecutedOperatorEvent
+    result: NetworkStageResult
+    left: NodalFlowStateSnapshot | None
+    right: NodalFlowStateSnapshot | None
+    left_captured: bool
+    right_captured: bool
+
+
+@dataclass(frozen=True, slots=True)
+class _GlyphCertificateFacts:
+    """Validated common fields extracted from one executor-owned certificate."""
+
+    certificate_kind: str | None
+    certificate: Any | None
+    abstention_reason: str | None
+    nodes: tuple[Any, ...] | None
+    exact_epi_before: tuple[Fraction, ...] | None
+    exact_epi_after: tuple[Fraction, ...] | None
+    exact_metric_ray_before: tuple[Fraction, ...] | None
+    exact_metric_ray_after: tuple[Fraction, ...] | None
+    intrinsic_common_metric_bridge: bool
+    exact_energy_gain_upper_bound: Fraction | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -166,6 +228,7 @@ class ExecutedNodalFlowInterval:
         return bool(
             self.integrator_provenance_certified
             and self.certificate is not None
+            and _has_intact_nodal_flow_certificate(self.certificate)
             and self.certificate.binary64_runtime_interval_identified
         )
 
@@ -176,6 +239,7 @@ class ExecutedNodalFlowInterval:
         return bool(
             self.integrator_provenance_certified
             and self.certificate is not None
+            and _has_intact_nodal_flow_certificate(self.certificate)
             and self.certificate.explicit_euler_map_identified
         )
 
@@ -188,6 +252,557 @@ class ExecutedNodalFlowInterval:
             and self.certificate is not None
             and self.certificate.global_disagreement_contraction_certified
         )
+
+
+@dataclass(frozen=True, slots=True)
+class ExecutedGlyphStage:
+    """Runtime-bound EPI evidence for one accepted zero-duration glyph stage."""
+
+    event: ExecutedOperatorEvent
+    certificate_kind: str | None
+    certificate: (
+        PointwiseEPIJumpRealizationCertificate
+        | AllTargetNeighborStageCertificate
+        | None
+    )
+    certificate_abstention_reason: str | None
+    left: NodalFlowStateSnapshot | None
+    right: NodalFlowStateSnapshot | None
+    endpoint_capture_complete: bool
+    exact_runtime_endpoint_bound: bool
+    exact_metric_ray_before: tuple[Fraction, ...] | None
+    exact_metric_ray_after: tuple[Fraction, ...] | None
+    exact_common_metric_bridge: bool
+    exact_energy_gain_upper_bound: Fraction | None
+    represented_affine_gain_bound_at_observed_endpoint_certified: bool
+    pre_interval_index: int
+    post_interval_index: int
+    pre_interval_positive: bool
+    post_interval_positive: bool
+    pre_flow_evidence: ExecutedNodalFlowInterval | None = field(
+        default=None, repr=False, compare=False
+    )
+    post_flow_evidence: ExecutedNodalFlowInterval | None = field(
+        default=None, repr=False, compare=False
+    )
+    pre_flow_endpoint_continuous: bool | None = None
+    post_flow_endpoint_continuous: bool | None = None
+    pre_flow_metric_compatible: bool | None = None
+    post_flow_metric_compatible: bool | None = None
+    solver_accuracy_certified: bool = field(default=False, init=False)
+    future_or_repeated_schedule_stability_certified: bool = field(
+        default=False,
+        init=False,
+    )
+    scope: str = field(default=_STAGE_SCOPE, init=False)
+
+
+_REPRESENTED_OPERATION_PROOF_VERSION = "represented_epi_schedule_operation_v1"
+_REPRESENTED_COMPOSITION_PROOF_VERSION = "represented_epi_schedule_composition_v1"
+
+
+def _exact_vector_is_well_typed(value: Any) -> bool:
+    return bool(type(value) is tuple and all(type(item) is Fraction for item in value))
+
+
+def _represented_operation_stamp(
+    *,
+    position: int,
+    operation_kind: str,
+    operation_index: int,
+    operator_name: str | None,
+    nodes: tuple[Any, ...] | None,
+    exact_epi_before: tuple[Fraction, ...] | None,
+    exact_epi_after: tuple[Fraction, ...] | None,
+    exact_metric_ray_before: tuple[Fraction, ...] | None,
+    exact_metric_ray_after: tuple[Fraction, ...] | None,
+    exact_energy_gain_upper_bound: Fraction | None,
+    ineligibility_reasons: tuple[str, ...],
+) -> tuple[Any, ...]:
+    return (
+        _REPRESENTED_OPERATION_PROOF_VERSION,
+        position,
+        operation_kind,
+        operation_index,
+        operator_name,
+        nodes,
+        exact_epi_before,
+        exact_epi_after,
+        exact_metric_ray_before,
+        exact_metric_ray_after,
+        exact_energy_gain_upper_bound,
+        ineligibility_reasons,
+    )
+
+
+def _validate_represented_operation_fields(
+    *,
+    position: Any,
+    operation_kind: Any,
+    operation_index: Any,
+    operator_name: Any,
+    nodes: Any,
+    exact_epi_before: Any,
+    exact_epi_after: Any,
+    exact_metric_ray_before: Any,
+    exact_metric_ray_after: Any,
+    exact_energy_gain_upper_bound: Any,
+    ineligibility_reasons: Any,
+) -> None:
+    if type(position) is not int or position < 0:
+        raise ValueError("operation position must be a nonnegative integer")
+    if operation_kind not in ("flow", "glyph"):
+        raise ValueError("operation_kind must be 'flow' or 'glyph'")
+    if type(operation_index) is not int or operation_index < 0:
+        raise ValueError("operation_index must be a nonnegative integer")
+    if operation_kind == "flow" and operator_name is not None:
+        raise ValueError("flow operations cannot declare an operator_name")
+    if operation_kind == "glyph" and (
+        type(operator_name) is not str or not operator_name
+    ):
+        raise ValueError("glyph operations require a nonempty operator_name")
+    if nodes is not None and type(nodes) is not tuple:
+        raise TypeError("operation nodes must be a tuple or None")
+
+    exact_vectors = (
+        ("exact_epi_before", exact_epi_before, False),
+        ("exact_epi_after", exact_epi_after, False),
+        ("exact_metric_ray_before", exact_metric_ray_before, True),
+        ("exact_metric_ray_after", exact_metric_ray_after, True),
+    )
+    for label, value, is_metric in exact_vectors:
+        if value is None:
+            continue
+        if not _exact_vector_is_well_typed(value):
+            raise TypeError(f"{label} must be an exact Fraction tuple or None")
+        if nodes is None or len(value) != len(nodes):
+            raise ValueError(f"{label} must align with operation nodes")
+        if is_metric and _normalized_fraction_metric(value) != value:
+            raise ValueError(f"{label} must be a normalized positive metric")
+    if exact_energy_gain_upper_bound is not None and (
+        type(exact_energy_gain_upper_bound) is not Fraction
+        or exact_energy_gain_upper_bound < 0
+    ):
+        raise ValueError("operation gain must be a nonnegative Fraction or None")
+    if (
+        type(ineligibility_reasons) is not tuple
+        or any(
+            type(reason) is not str or not reason
+            for reason in ineligibility_reasons
+        )
+        or len(set(ineligibility_reasons)) != len(ineligibility_reasons)
+    ):
+        raise ValueError("ineligibility_reasons must contain unique nonempty strings")
+    complete = bool(
+        nodes is not None
+        and exact_epi_before is not None
+        and exact_epi_after is not None
+        and exact_metric_ray_before is not None
+        and exact_metric_ray_after is not None
+        and exact_metric_ray_before == exact_metric_ray_after
+        and exact_energy_gain_upper_bound is not None
+    )
+    if ineligibility_reasons and exact_energy_gain_upper_bound is not None:
+        raise ValueError("an ineligible operation cannot publish an exact gain")
+    if not ineligibility_reasons and not complete:
+        raise ValueError("an eligible operation requires complete exact map evidence")
+
+
+@dataclass(frozen=True, slots=True)
+class RepresentedEPIScheduleOperation:
+    """One indexed represented EPI map or an explicit abstention.
+
+    Its gain belongs to the exact rational affine map represented by this
+    observed operation, not to every input of the binary64 runtime map.
+    """
+
+    position: int
+    operation_kind: str
+    operation_index: int
+    operator_name: str | None
+    nodes: tuple[Any, ...] | None
+    exact_epi_before: tuple[Fraction, ...] | None
+    exact_epi_after: tuple[Fraction, ...] | None
+    exact_metric_ray_before: tuple[Fraction, ...] | None
+    exact_metric_ray_after: tuple[Fraction, ...] | None
+    exact_energy_gain_upper_bound: Fraction | None
+    ineligibility_reasons: tuple[str, ...]
+    _proof_stamp: tuple[Any, ...] = field(repr=False, compare=False)
+
+    def __post_init__(self) -> None:
+        fields = dict(
+            position=self.position,
+            operation_kind=self.operation_kind,
+            operation_index=self.operation_index,
+            operator_name=self.operator_name,
+            nodes=self.nodes,
+            exact_epi_before=self.exact_epi_before,
+            exact_epi_after=self.exact_epi_after,
+            exact_metric_ray_before=self.exact_metric_ray_before,
+            exact_metric_ray_after=self.exact_metric_ray_after,
+            exact_energy_gain_upper_bound=self.exact_energy_gain_upper_bound,
+            ineligibility_reasons=self.ineligibility_reasons,
+        )
+        _validate_represented_operation_fields(**fields)
+        if (
+            type(self._proof_stamp) is not tuple
+            or self._proof_stamp != _represented_operation_stamp(**fields)
+        ):
+            raise ValueError("represented operation proof fields are inconsistent")
+
+    @property
+    def represented_affine_gain_certified(self) -> bool:
+        return bool(
+            self._proof_fields_are_intact()
+            and not self.ineligibility_reasons
+        )
+
+    def _proof_fields_are_intact(self) -> bool:
+        fields = dict(
+            position=self.position,
+            operation_kind=self.operation_kind,
+            operation_index=self.operation_index,
+            operator_name=self.operator_name,
+            nodes=self.nodes,
+            exact_epi_before=self.exact_epi_before,
+            exact_epi_after=self.exact_epi_after,
+            exact_metric_ray_before=self.exact_metric_ray_before,
+            exact_metric_ray_after=self.exact_metric_ray_after,
+            exact_energy_gain_upper_bound=self.exact_energy_gain_upper_bound,
+            ineligibility_reasons=self.ineligibility_reasons,
+        )
+        try:
+            _validate_represented_operation_fields(**fields)
+        except (TypeError, ValueError):
+            return False
+        return bool(
+            type(self._proof_stamp) is tuple
+            and self._proof_stamp == _represented_operation_stamp(**fields)
+        )
+
+
+def _represented_operation(
+    *,
+    position: int,
+    operation_kind: str,
+    operation_index: int,
+    operator_name: str | None,
+    nodes: tuple[Any, ...] | None,
+    exact_epi_before: tuple[Fraction, ...] | None,
+    exact_epi_after: tuple[Fraction, ...] | None,
+    exact_metric_ray_before: tuple[Fraction, ...] | None,
+    exact_metric_ray_after: tuple[Fraction, ...] | None,
+    exact_energy_gain_upper_bound: Fraction | None,
+    ineligibility_reasons: tuple[str, ...] | list[str],
+) -> RepresentedEPIScheduleOperation:
+    reasons = tuple(dict.fromkeys(ineligibility_reasons))
+    gain = None if reasons else exact_energy_gain_upper_bound
+    fields = dict(
+        position=position,
+        operation_kind=operation_kind,
+        operation_index=operation_index,
+        operator_name=operator_name,
+        nodes=nodes,
+        exact_epi_before=exact_epi_before,
+        exact_epi_after=exact_epi_after,
+        exact_metric_ray_before=exact_metric_ray_before,
+        exact_metric_ray_after=exact_metric_ray_after,
+        exact_energy_gain_upper_bound=gain,
+        ineligibility_reasons=reasons,
+    )
+    return RepresentedEPIScheduleOperation(
+        **fields,
+        _proof_stamp=_represented_operation_stamp(**fields),
+    )
+
+
+def _represented_composition_conditions(
+    nodes: tuple[Any, ...],
+    positive_flow_interval_indices: tuple[int, ...],
+    event_indices: tuple[int, ...],
+    operations: tuple[RepresentedEPIScheduleOperation, ...],
+) -> tuple[tuple[str, bool], ...]:
+    positive = set(positive_flow_interval_indices)
+    expected_keys: list[tuple[str, int]] = []
+    for interval_index in range(len(event_indices) + 1):
+        if interval_index in positive:
+            expected_keys.append(("flow", interval_index))
+        if interval_index < len(event_indices):
+            expected_keys.append(("glyph", interval_index))
+    complete_cardinality = bool(
+        tuple(operation.position for operation in operations)
+        == tuple(range(len(operations)))
+        and tuple(
+            (operation.operation_kind, operation.operation_index)
+            for operation in operations
+        )
+        == tuple(expected_keys)
+    )
+    flow_operations = tuple(
+        operation for operation in operations if operation.operation_kind == "flow"
+    )
+    glyph_operations = tuple(
+        operation for operation in operations if operation.operation_kind == "glyph"
+    )
+    all_flows = all(item.represented_affine_gain_certified for item in flow_operations)
+    all_glyphs = all(
+        item.represented_affine_gain_certified
+        for item in glyph_operations
+    )
+    all_operations = bool(
+        operations
+        and all(
+            item.represented_affine_gain_certified
+            for item in operations
+        )
+    )
+    nodes_match = bool(operations and all(item.nodes == nodes for item in operations))
+    support_continuity = bool(
+        operations
+        and all(item.nodes is not None for item in operations)
+        and all(
+            left.nodes == right.nodes
+            for left, right in zip(operations, operations[1:])
+        )
+    )
+    endpoints_complete = bool(
+        operations
+        and all(
+            item.exact_epi_before is not None and item.exact_epi_after is not None
+            for item in operations
+        )
+    )
+    endpoint_continuity = bool(
+        endpoints_complete
+        and all(
+            left.exact_epi_after == right.exact_epi_before
+            for left, right in zip(operations, operations[1:])
+        )
+    )
+    metrics_complete = bool(
+        operations
+        and all(
+            item.exact_metric_ray_before is not None
+            and item.exact_metric_ray_after is not None
+            and item.exact_metric_ray_before == item.exact_metric_ray_after
+            for item in operations
+        )
+    )
+    rays = tuple(
+        item.exact_metric_ray_before
+        for item in operations
+        if item.exact_metric_ray_before is not None
+    )
+    common_metric = bool(
+        metrics_complete and rays and all(ray == rays[0] for ray in rays[1:])
+    )
+    return (
+        ("complete_operation_cardinality", complete_cardinality),
+        ("all_positive_flows_exact_affine", all_flows),
+        ("all_glyph_stages_represented_affine", all_glyphs),
+        ("all_operations_represented_affine", all_operations),
+        ("all_operation_nodes_match", nodes_match),
+        ("exact_operation_support_continuity", support_continuity),
+        ("exact_operation_endpoint_continuity", endpoint_continuity),
+        ("one_exact_normalized_metric", common_metric),
+        ("nonempty_operation_trace", bool(operations)),
+    )
+
+
+def _represented_composition_stamp(
+    *,
+    nodes: tuple[Any, ...],
+    positive_flow_interval_indices: tuple[int, ...],
+    event_indices: tuple[int, ...],
+    operations: tuple[RepresentedEPIScheduleOperation, ...],
+    exact_normalized_metric: tuple[Fraction, ...] | None,
+    exact_operation_energy_gain_factors: tuple[Fraction, ...],
+    exact_energy_gain_upper_bound: Fraction | None,
+    conditions: tuple[tuple[str, bool], ...],
+) -> tuple[Any, ...]:
+    return (
+        _REPRESENTED_COMPOSITION_PROOF_VERSION,
+        nodes,
+        positive_flow_interval_indices,
+        event_indices,
+        tuple(operation._proof_stamp for operation in operations),
+        exact_normalized_metric,
+        exact_operation_energy_gain_factors,
+        exact_energy_gain_upper_bound,
+        conditions,
+    )
+
+
+def _complete_represented_operation_factors(
+    operations: tuple[RepresentedEPIScheduleOperation, ...],
+) -> tuple[Fraction, ...]:
+    factors: list[Fraction] = []
+    for operation in operations:
+        factor = operation.exact_energy_gain_upper_bound
+        if factor is None:
+            raise ValueError("a certified operation cannot omit its exact gain")
+        factors.append(factor)
+    return tuple(factors)
+
+
+@dataclass(frozen=True, slots=True)
+class ObservedRepresentedEPIScheduleComposition:
+    """Sealed represented-map composition for one observed finite trace."""
+
+    nodes: tuple[Any, ...]
+    positive_flow_interval_indices: tuple[int, ...]
+    event_indices: tuple[int, ...]
+    operations: tuple[RepresentedEPIScheduleOperation, ...]
+    exact_normalized_metric: tuple[Fraction, ...] | None
+    exact_operation_energy_gain_factors: tuple[Fraction, ...]
+    exact_energy_gain_upper_bound: Fraction | None
+    conditions: tuple[tuple[str, bool], ...]
+    _proof_stamp: tuple[Any, ...] = field(repr=False, compare=False)
+    scope: str = field(default=_REPRESENTED_COMPOSITION_SCOPE, init=False)
+
+    @property
+    def runtime_schedule_global_gain_certified(self) -> bool:
+        return False
+
+    @property
+    def solver_accuracy_certified(self) -> bool:
+        return False
+
+    @property
+    def full_multichannel_stability_certified(self) -> bool:
+        return False
+
+    @property
+    def future_or_repeated_schedule_stability_certified(self) -> bool:
+        return False
+
+    def __post_init__(self) -> None:
+        if type(self.nodes) is not tuple:
+            raise TypeError("composition nodes must be a tuple")
+        if (
+            type(self.event_indices) is not tuple
+            or any(type(index) is not int for index in self.event_indices)
+            or self.event_indices != tuple(range(len(self.event_indices)))
+        ):
+            raise ValueError(
+                "event_indices must be the complete zero-based event range"
+            )
+        if (
+            type(self.positive_flow_interval_indices) is not tuple
+            or any(
+                type(index) is not int
+                for index in self.positive_flow_interval_indices
+            )
+            or self.positive_flow_interval_indices
+            != tuple(sorted(set(self.positive_flow_interval_indices)))
+            or any(
+                index < 0 or index > len(self.event_indices)
+                for index in self.positive_flow_interval_indices
+            )
+        ):
+            raise ValueError(
+                "positive flow indices must be sorted, unique and in range"
+            )
+        if (
+            type(self.operations) is not tuple
+            or any(
+                type(operation) is not RepresentedEPIScheduleOperation
+                or not operation._proof_fields_are_intact()
+                for operation in self.operations
+            )
+        ):
+            raise ValueError("composition operations must contain intact proof records")
+        if (
+            type(self.conditions) is not tuple
+            or any(
+                type(condition) is not tuple
+                or len(condition) != 2
+                or type(condition[0]) is not str
+                or type(condition[1]) is not bool
+                for condition in self.conditions
+            )
+            or len({name for name, _ in self.conditions}) != len(self.conditions)
+        ):
+            raise ValueError("composition conditions must be uniquely named booleans")
+        expected_conditions = _represented_composition_conditions(
+            self.nodes,
+            self.positive_flow_interval_indices,
+            self.event_indices,
+            self.operations,
+        )
+        if self.conditions != expected_conditions:
+            raise ValueError("composition conditions do not match operation evidence")
+        certified = all(passed for _, passed in expected_conditions)
+        expected_factors = (
+            _complete_represented_operation_factors(self.operations)
+            if certified
+            else ()
+        )
+        if self.exact_operation_energy_gain_factors != expected_factors:
+            raise ValueError(
+                "composition factors do not match complete operation evidence"
+            )
+        expected_metric = (
+            self.operations[0].exact_metric_ray_before
+            if certified
+            else None
+        )
+        if self.exact_normalized_metric != expected_metric:
+            raise ValueError(
+                "composition metric does not match complete operation evidence"
+            )
+        expected_gain = (
+            math.prod(expected_factors, start=Fraction(1))
+            if certified
+            else None
+        )
+        if self.exact_energy_gain_upper_bound != expected_gain:
+            raise ValueError("composition gain does not match its exact factors")
+        fields = dict(
+            nodes=self.nodes,
+            positive_flow_interval_indices=self.positive_flow_interval_indices,
+            event_indices=self.event_indices,
+            operations=self.operations,
+            exact_normalized_metric=self.exact_normalized_metric,
+            exact_operation_energy_gain_factors=(
+                self.exact_operation_energy_gain_factors
+            ),
+            exact_energy_gain_upper_bound=self.exact_energy_gain_upper_bound,
+            conditions=self.conditions,
+        )
+        if (
+            type(self._proof_stamp) is not tuple
+            or self._proof_stamp != _represented_composition_stamp(**fields)
+        ):
+            raise ValueError("represented composition proof fields are inconsistent")
+
+    def _proof_fields_are_intact(self) -> bool:
+        try:
+            self.__post_init__()
+        except (TypeError, ValueError):
+            return False
+        return True
+
+    @property
+    def represented_affine_composition_gain_certified(self) -> bool:
+        return bool(
+            self._proof_fields_are_intact()
+            and all(passed for _, passed in self.conditions)
+        )
+
+    @property
+    def represented_map_global_disagreement_contraction_certified(self) -> bool:
+        return bool(
+            self.represented_affine_composition_gain_certified
+            and self.exact_energy_gain_upper_bound is not None
+            and self.exact_energy_gain_upper_bound < 1
+        )
+
+    @property
+    def failed_conditions(self) -> tuple[str, ...]:
+        if not self._proof_fields_are_intact():
+            return ("composition_proof_fields_intact",)
+        return tuple(name for name, passed in self.conditions if not passed)
 
 
 @dataclass(frozen=True, slots=True)
@@ -208,6 +823,11 @@ class OperatorEventExecutionResult:
     pressure_refresh_callback_invocations: int
     flow_certification_requested: bool = False
     flow_interval_evidence: tuple[ExecutedNodalFlowInterval, ...] = ()
+    stage_certification_requested: bool = False
+    glyph_stage_evidence: tuple[ExecutedGlyphStage, ...] = ()
+    represented_epi_schedule_composition: (
+        ObservedRepresentedEPIScheduleComposition | None
+    ) = None
     runtime_clock_checked: bool = field(default=True, init=False)
     flow_provenance: str = field(default=_FLOW_PROVENANCE, init=False)
     nodal_flow_inputs: str = field(default=_NODAL_FLOW_INPUTS, init=False)
@@ -256,6 +876,19 @@ class OperatorEventExecutionResult:
 
         return self._all_positive_flow_intervals(
             "runtime_bound_global_disagreement_contraction_certified"
+        )
+
+    @property
+    def all_glyph_stages_represented_affine(self) -> bool | None:
+        """Aggregate exact runtime-bound glyph gains, or ``None`` if disabled."""
+
+        if not self.stage_certification_requested:
+            return None
+        if len(self.glyph_stage_evidence) != len(self.events):
+            return False
+        return all(
+            evidence.represented_affine_gain_bound_at_observed_endpoint_certified
+            for evidence in self.glyph_stage_evidence
         )
 
 
@@ -453,6 +1086,651 @@ def _capture_interval_endpoint(
         return capture_nodal_flow_state(graph), True
     except (TypeError, ValueError, nx.NetworkXException):
         return None, False
+
+
+def _exact_binary64_vector(values: Any) -> tuple[Fraction, ...] | None:
+    """Interpret one finite vector through its represented binary64 values."""
+
+    try:
+        materialized = tuple(float(value) for value in values)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if not all(math.isfinite(value) for value in materialized):
+        return None
+    return tuple(Fraction.from_float(value) for value in materialized)
+
+
+def _snapshot_metric_ray(
+    snapshot: NodalFlowStateSnapshot | None,
+) -> tuple[Fraction, ...] | None:
+    """Derive the exact ``d_i / nu_f_i`` ray from one captured endpoint."""
+
+    if snapshot is None or not snapshot.nodes:
+        return None
+    degrees = tuple(sum(row, Fraction(0)) for row in snapshot.conductance)
+    if any(value <= 0 for value in degrees) or any(
+        value <= 0 for value in snapshot.exact_nu_f
+    ):
+        return None
+    weights = tuple(
+        degree / capacity
+        for degree, capacity in zip(
+            degrees,
+            snapshot.exact_nu_f,
+            strict=True,
+        )
+    )
+    return _normalized_fraction_metric(weights)
+
+
+def _require_nested_certificate_identity(
+    result: NetworkStageResult,
+    event: ExecutedOperatorEvent,
+    certificate: Any,
+    *,
+    kind: str,
+    expected_nodes: tuple[Any, ...] | None,
+) -> None:
+    """Reject executor-owned evidence bound to a different stage identity."""
+
+    from .operator_contracts import contract_for
+
+    try:
+        contract = contract_for(event.operator_name)
+    except KeyError as exc:
+        raise RuntimeError(
+            "scheduled event has no canonical operator contract"
+        ) from exc
+    failures: list[str] = []
+    if result.operator != event.operator_name:
+        failures.append("stage_result_operator")
+    if result.glyph != event.glyph.value:
+        failures.append("stage_result_glyph")
+    if result.schedule != event.stage_schedule:
+        failures.append("stage_result_schedule")
+    if contract.name != event.operator_name:
+        failures.append("canonical_operator")
+    if contract.glyph != event.glyph.value:
+        failures.append("canonical_glyph")
+    if getattr(certificate, "operator_name", None) != contract.english_name:
+        failures.append("certificate_operator")
+    if getattr(certificate, "glyph", None) != event.glyph.value:
+        failures.append("certificate_glyph")
+    certificate_nodes = getattr(certificate, "nodes", None)
+    if type(certificate_nodes) is not tuple:
+        failures.append("certificate_nodes_type")
+    elif len(certificate_nodes) != result.nodes_processed:
+        failures.append("certificate_node_count")
+    if expected_nodes is not None and certificate_nodes != expected_nodes:
+        failures.append("certificate_target_support")
+    if kind == "pointwise":
+        if getattr(certificate, "stage_schedule", None) != result.schedule:
+            failures.append("certificate_stage_schedule")
+        if getattr(certificate, "target_nodes", None) != certificate_nodes:
+            failures.append("certificate_target_nodes")
+        if event.glyph not in {
+            Glyph.AL,
+            Glyph.SHA,
+            Glyph.VAL,
+            Glyph.NUL,
+            Glyph.ZHIR,
+            Glyph.NAV,
+        }:
+            failures.append("certificate_family")
+    elif event.glyph not in {Glyph.EN, Glyph.RA}:
+        failures.append("certificate_family")
+    if failures:
+        raise RuntimeError(
+            "executor-owned EPI certificate identity mismatch: "
+            + ",".join(failures)
+        )
+
+
+def _glyph_certificate_facts(
+    result: NetworkStageResult,
+    event: ExecutedOperatorEvent,
+    expected_nodes: tuple[Any, ...] | None,
+) -> _GlyphCertificateFacts:
+    """Validate and normalize one certificate returned by the stage executor."""
+
+    certificate = result.epi_jump_certificate
+    kind = result.epi_jump_certificate_kind
+    reason = result.epi_jump_certificate_abstention_reason
+    if certificate is None:
+        return _GlyphCertificateFacts(
+            certificate_kind=kind,
+            certificate=None,
+            abstention_reason=reason or "glyph_has_no_executor_bound_epi_certificate",
+            nodes=None,
+            exact_epi_before=None,
+            exact_epi_after=None,
+            exact_metric_ray_before=None,
+            exact_metric_ray_after=None,
+            intrinsic_common_metric_bridge=False,
+            exact_energy_gain_upper_bound=None,
+        )
+
+    if kind == "pointwise":
+        from ..physics.pointwise_stage_stability import (
+            PointwiseEPIJumpRealizationCertificate,
+        )
+
+        if type(certificate) is not PointwiseEPIJumpRealizationCertificate:
+            reason = "pointwise_certificate_type_mismatch"
+        elif not certificate._proof_fields_are_intact():
+            reason = "pointwise_certificate_proof_fields_not_intact"
+        else:
+            _require_nested_certificate_identity(
+                result,
+                event,
+                certificate,
+                kind=kind,
+                expected_nodes=expected_nodes,
+            )
+            pre_flow = certificate.pre_diffusion_certificate
+            post_flow = certificate.post_diffusion_certificate
+            before = _exact_binary64_vector(certificate.state_before)
+            after = _exact_binary64_vector(
+                certificate.runtime_proposed_state_after
+            )
+            pre_metric = (
+                None
+                if pre_flow is None
+                else _normalized_exact_metric(pre_flow.metric_weights)
+            )
+            post_metric = (
+                None
+                if post_flow is None
+                else _normalized_exact_metric(post_flow.metric_weights)
+            )
+            bridge = bool(certificate.supports_hybrid_common_metric_bridge)
+            if not bridge and reason is None:
+                failures = certificate.failed_common_metric_bridge_conditions
+                reason = "pointwise_exact_common_metric_gain_not_certified"
+                if failures:
+                    reason += ":" + ",".join(failures)
+            gain = (
+                certificate.exact_common_metric_energy_gain_bound
+                if bridge
+                else None
+            )
+            return _GlyphCertificateFacts(
+                certificate_kind=kind,
+                certificate=certificate,
+                abstention_reason=reason,
+                nodes=tuple(certificate.nodes),
+                exact_epi_before=before,
+                exact_epi_after=after,
+                exact_metric_ray_before=pre_metric,
+                exact_metric_ray_after=post_metric,
+                intrinsic_common_metric_bridge=bridge,
+                exact_energy_gain_upper_bound=gain,
+            )
+    elif kind == "neighbor":
+        from ..physics.network_stage_stability import (
+            AllTargetNeighborStageCertificate,
+            _validate_bridge_stage_certificate,
+        )
+
+        if type(certificate) is not AllTargetNeighborStageCertificate:
+            reason = "neighbor_certificate_type_mismatch"
+        else:
+            try:
+                validated = _validate_bridge_stage_certificate(certificate)
+            except (AttributeError, TypeError, ValueError, OverflowError):
+                reason = "neighbor_certificate_proof_fields_not_intact"
+            else:
+                _require_nested_certificate_identity(
+                    result,
+                    event,
+                    certificate,
+                    kind=kind,
+                    expected_nodes=expected_nodes,
+                )
+                step = validated.step
+                jump = step.pre_metric_affine_jump_certificate
+                jump_valid = bool(jump.supports_global_gain_theorem)
+                bridge = bool(
+                    validated.all_local_snapshots_in_affine_model_domain
+                    and validated.represented_consensus_subspace_preserved
+                    and validated.runtime_exact_match
+                    and validated.pre_post_metric_exactly_proportional
+                    and jump_valid
+                )
+                if not bridge and reason is None:
+                    reason = "neighbor_exact_common_metric_gain_not_certified"
+                return _GlyphCertificateFacts(
+                    certificate_kind=kind,
+                    certificate=certificate,
+                    abstention_reason=reason,
+                    nodes=tuple(certificate.nodes),
+                    exact_epi_before=_exact_binary64_vector(step.state_before),
+                    exact_epi_after=_exact_binary64_vector(
+                        step.runtime_accepted_state_after
+                    ),
+                    exact_metric_ray_before=_normalized_exact_metric(
+                        step.pre_diffusion_certificate.metric_weights
+                    ),
+                    exact_metric_ray_after=_normalized_exact_metric(
+                        step.post_diffusion_certificate.metric_weights
+                    ),
+                    intrinsic_common_metric_bridge=bridge,
+                    exact_energy_gain_upper_bound=(
+                        jump.exact_quotient_energy_gain_upper_bound
+                        if bridge
+                        else None
+                    ),
+                )
+    else:
+        reason = "unknown_epi_jump_certificate_kind"
+
+    return _GlyphCertificateFacts(
+        certificate_kind=kind,
+        certificate=certificate,
+        abstention_reason=reason,
+        nodes=None,
+        exact_epi_before=None,
+        exact_epi_after=None,
+        exact_metric_ray_before=None,
+        exact_metric_ray_after=None,
+        intrinsic_common_metric_bridge=False,
+        exact_energy_gain_upper_bound=None,
+    )
+
+
+def _flow_by_interval(
+    evidence: tuple[ExecutedNodalFlowInterval, ...] | list[ExecutedNodalFlowInterval],
+) -> dict[int, ExecutedNodalFlowInterval]:
+    """Index detached positive-flow evidence without accepting duplicates."""
+
+    indexed: dict[int, ExecutedNodalFlowInterval] = {}
+    for item in evidence:
+        index = item.interval.index
+        if index in indexed:
+            raise RuntimeError("duplicate runtime flow interval evidence")
+        indexed[index] = item
+    return indexed
+
+
+def _adjacent_flow_checks(
+    flow: ExecutedNodalFlowInterval | None,
+    endpoint: NodalFlowStateSnapshot | None,
+    metric_ray: tuple[Fraction, ...] | None,
+    *,
+    side: str,
+) -> tuple[bool | None, bool | None]:
+    """Check exact endpoint and metric continuity at one positive boundary."""
+
+    if flow is None:
+        return None, None
+    certificate = flow.certificate
+    if certificate is None or endpoint is None:
+        return False, False
+    flow_endpoint = certificate.right if side == "pre" else certificate.left
+    endpoint_continuous = flow_endpoint == endpoint
+    flow_metric = _normalized_fraction_metric(certificate.exact_metric_weights)
+    metric_compatible = bool(
+        flow_metric is not None
+        and metric_ray is not None
+        and flow_metric == metric_ray
+    )
+    return endpoint_continuous, metric_compatible
+
+
+def _finalize_glyph_stage(
+    pending: _PendingGlyphStage,
+    schedule: OperatorEventSchedule,
+    flow_index: Mapping[int, ExecutedNodalFlowInterval],
+) -> ExecutedGlyphStage:
+    """Bind an executor certificate to captured endpoints and adjacent flows."""
+
+    facts = _glyph_certificate_facts(
+        pending.result,
+        pending.event,
+        None if pending.left is None else pending.left.nodes,
+    )
+    left = pending.left
+    right = pending.right
+    complete = bool(
+        pending.left_captured
+        and pending.right_captured
+        and left is not None
+        and right is not None
+    )
+    left_ray = _snapshot_metric_ray(left)
+    right_ray = _snapshot_metric_ray(right)
+    endpoint_bound = bool(
+        complete
+        and facts.nodes is not None
+        and left is not None
+        and right is not None
+        and facts.nodes == left.nodes == right.nodes
+        and facts.exact_epi_before == left.exact_epi
+        and facts.exact_epi_after == right.exact_epi
+    )
+    common_metric = bool(
+        facts.intrinsic_common_metric_bridge
+        and left_ray is not None
+        and right_ray is not None
+        and facts.exact_metric_ray_before == left_ray
+        and facts.exact_metric_ray_after == right_ray
+        and left_ray == right_ray
+    )
+    gain_certified = bool(
+        endpoint_bound
+        and common_metric
+        and facts.exact_energy_gain_upper_bound is not None
+    )
+    abstention_reasons: list[str] = []
+    if facts.abstention_reason is not None:
+        abstention_reasons.append(facts.abstention_reason)
+    if not complete:
+        abstention_reasons.append("glyph_endpoint_capture_incomplete")
+    elif facts.certificate is not None and not endpoint_bound:
+        abstention_reasons.append("glyph_certificate_endpoint_mismatch")
+    if facts.certificate is not None and not common_metric:
+        abstention_reasons.append("glyph_exact_common_metric_bridge_not_certified")
+    abstention_reason = (
+        ";".join(dict.fromkeys(abstention_reasons))
+        if abstention_reasons
+        else None
+    )
+
+    event_index = pending.event.event_index
+    pre_interval = schedule.intervals[event_index]
+    post_interval = schedule.intervals[event_index + 1]
+    pre_positive = pre_interval.exact_duration > 0
+    post_positive = post_interval.exact_duration > 0
+    pre_flow = flow_index.get(pre_interval.index) if pre_positive else None
+    post_flow = flow_index.get(post_interval.index) if post_positive else None
+    pre_endpoint, pre_metric = _adjacent_flow_checks(
+        pre_flow,
+        left,
+        facts.exact_metric_ray_before,
+        side="pre",
+    )
+    post_endpoint, post_metric = _adjacent_flow_checks(
+        post_flow,
+        right,
+        facts.exact_metric_ray_after,
+        side="post",
+    )
+    if pre_positive and pre_flow is None:
+        pre_endpoint = False
+        pre_metric = False
+    if post_positive and post_flow is None:
+        post_endpoint = False
+        post_metric = False
+
+    return ExecutedGlyphStage(
+        event=pending.event,
+        certificate_kind=facts.certificate_kind,
+        certificate=facts.certificate,
+        certificate_abstention_reason=abstention_reason,
+        left=left,
+        right=right,
+        endpoint_capture_complete=complete,
+        exact_runtime_endpoint_bound=endpoint_bound,
+        exact_metric_ray_before=facts.exact_metric_ray_before,
+        exact_metric_ray_after=facts.exact_metric_ray_after,
+        exact_common_metric_bridge=common_metric,
+        exact_energy_gain_upper_bound=(
+            facts.exact_energy_gain_upper_bound if gain_certified else None
+        ),
+        represented_affine_gain_bound_at_observed_endpoint_certified=gain_certified,
+        pre_interval_index=pre_interval.index,
+        post_interval_index=post_interval.index,
+        pre_interval_positive=pre_positive,
+        post_interval_positive=post_positive,
+        pre_flow_evidence=pre_flow,
+        post_flow_evidence=post_flow,
+        pre_flow_endpoint_continuous=pre_endpoint,
+        post_flow_endpoint_continuous=post_endpoint,
+        pre_flow_metric_compatible=pre_metric,
+        post_flow_metric_compatible=post_metric,
+    )
+
+
+def _flow_composition_operation(
+    *,
+    position: int,
+    interval: StructuralFlowInterval,
+    expected_nodes: tuple[Any, ...],
+    evidence: ExecutedNodalFlowInterval | None,
+) -> RepresentedEPIScheduleOperation:
+    reasons: list[str] = []
+    certificate = None if evidence is None else evidence.certificate
+    if evidence is None:
+        reasons.append("flow_evidence_missing")
+    elif certificate is None:
+        reasons.append("flow_certificate_unavailable")
+        if evidence.abstention_reason is not None:
+            reasons.append(f"flow_certificate_abstained:{evidence.abstention_reason}")
+    elif not _has_intact_nodal_flow_certificate(certificate):
+        reasons.append("flow_certificate_proof_fields_not_intact")
+
+    operation_nodes: tuple[Any, ...] | None = None
+    exact_before: tuple[Fraction, ...] | None = None
+    exact_after: tuple[Fraction, ...] | None = None
+    metric_ray: tuple[Fraction, ...] | None = None
+    gain: Fraction | None = None
+    if (
+        evidence is not None
+        and certificate is not None
+        and _has_intact_nodal_flow_certificate(certificate)
+    ):
+        left_nodes = tuple(certificate.left.nodes)
+        right_nodes = tuple(certificate.right.nodes)
+        if left_nodes != right_nodes:
+            reasons.append("flow_support_changed")
+        else:
+            operation_nodes = left_nodes
+            exact_before = certificate.left.exact_epi
+            exact_after = certificate.right.exact_epi
+        if operation_nodes != expected_nodes:
+            reasons.append("flow_node_order_mismatch")
+        if evidence.interval != interval:
+            reasons.append("flow_interval_identity_mismatch")
+        if not evidence.integrator_provenance_certified:
+            reasons.append("flow_integrator_provenance_not_certified")
+        if not evidence.runtime_bound_exact_affine_map_identified:
+            reasons.append("flow_represented_affine_map_not_identified")
+            reasons.extend(
+                f"flow_model_condition_failed:{name}"
+                for name in certificate.euler_map_abstention_reasons
+            )
+        metric_ray = _normalized_fraction_metric(certificate.exact_metric_weights)
+        if metric_ray is None:
+            reasons.append("flow_exact_positive_metric_unavailable")
+        gain = certificate.exact_quotient_energy_gain_upper_bound
+        if gain is None:
+            reasons.append("flow_exact_energy_gain_unavailable")
+        if operation_nodes is None:
+            exact_before = None
+            exact_after = None
+            metric_ray = None
+
+    return _represented_operation(
+        position=position,
+        operation_kind="flow",
+        operation_index=interval.index,
+        operator_name=None,
+        nodes=operation_nodes,
+        exact_epi_before=exact_before,
+        exact_epi_after=exact_after,
+        exact_metric_ray_before=metric_ray,
+        exact_metric_ray_after=metric_ray,
+        exact_energy_gain_upper_bound=gain,
+        ineligibility_reasons=reasons,
+    )
+
+
+def _glyph_composition_operation(
+    *,
+    position: int,
+    event: ScheduledOperatorEvent,
+    expected_nodes: tuple[Any, ...],
+    evidence: ExecutedGlyphStage | None,
+) -> RepresentedEPIScheduleOperation:
+    reasons: list[str] = []
+    if evidence is None:
+        reasons.append("glyph_stage_evidence_missing")
+        return _represented_operation(
+            position=position,
+            operation_kind="glyph",
+            operation_index=event.event_index,
+            operator_name=event.operator_name,
+            nodes=None,
+            exact_epi_before=None,
+            exact_epi_after=None,
+            exact_metric_ray_before=None,
+            exact_metric_ray_after=None,
+            exact_energy_gain_upper_bound=None,
+            ineligibility_reasons=reasons,
+        )
+
+    committed = evidence.event
+    if (
+        committed.event_index != event.event_index
+        or committed.cycle_index != event.cycle_index
+        or committed.word_position != event.word_position
+        or committed.operator_name != event.operator_name
+        or committed.glyph is not event.glyph
+        or committed.event_time != event.event_time
+        or committed.event_offset != event.event_offset
+        or committed.exact_event_time != event.exact_event_time
+        or committed.stage_schedule != TWO_PHASE_JACOBI
+        or committed.nodes_processed != len(expected_nodes)
+    ):
+        reasons.append("glyph_event_identity_mismatch")
+    if evidence.certificate_abstention_reason is not None:
+        reasons.append(
+            "glyph_certificate_abstained:"
+            + evidence.certificate_abstention_reason
+        )
+    if not evidence.endpoint_capture_complete:
+        reasons.append("glyph_endpoint_capture_incomplete")
+    if not evidence.exact_runtime_endpoint_bound:
+        reasons.append("glyph_runtime_endpoint_not_bound")
+    if not evidence.exact_common_metric_bridge:
+        reasons.append("glyph_exact_common_metric_bridge_not_certified")
+    if not evidence.represented_affine_gain_bound_at_observed_endpoint_certified:
+        reasons.append("glyph_represented_affine_gain_not_certified")
+    if evidence.exact_energy_gain_upper_bound is None:
+        reasons.append("glyph_exact_energy_gain_unavailable")
+
+    left = evidence.left
+    right = evidence.right
+    operation_nodes: tuple[Any, ...] | None = None
+    exact_before: tuple[Fraction, ...] | None = None
+    exact_after: tuple[Fraction, ...] | None = None
+    if left is None or right is None:
+        reasons.append("glyph_support_observation_incomplete")
+    elif left.nodes != right.nodes:
+        reasons.append("glyph_support_changed")
+    else:
+        operation_nodes = left.nodes
+        exact_before = left.exact_epi
+        exact_after = right.exact_epi
+    if operation_nodes != expected_nodes:
+        reasons.append("glyph_node_order_mismatch")
+    metric_before = evidence.exact_metric_ray_before
+    metric_after = evidence.exact_metric_ray_after
+    if operation_nodes is None:
+        exact_before = None
+        exact_after = None
+        metric_before = None
+        metric_after = None
+
+    return _represented_operation(
+        position=position,
+        operation_kind="glyph",
+        operation_index=event.event_index,
+        operator_name=event.operator_name,
+        nodes=operation_nodes,
+        exact_epi_before=exact_before,
+        exact_epi_after=exact_after,
+        exact_metric_ray_before=metric_before,
+        exact_metric_ray_after=metric_after,
+        exact_energy_gain_upper_bound=evidence.exact_energy_gain_upper_bound,
+        ineligibility_reasons=reasons,
+    )
+
+
+def _compose_observed_represented_epi_schedule(
+    schedule: OperatorEventSchedule,
+    nodes: tuple[Any, ...],
+    flows: tuple[ExecutedNodalFlowInterval, ...],
+    stages: tuple[ExecutedGlyphStage, ...],
+) -> ObservedRepresentedEPIScheduleComposition:
+    """Compose only the rational maps represented by the complete observed trace."""
+
+    flow_index = _flow_by_interval(flows)
+    stage_index = {item.event.event_index: item for item in stages}
+    if len(stage_index) != len(stages):
+        raise RuntimeError("duplicate runtime glyph-stage evidence")
+    positive_indices = tuple(
+        interval.index
+        for interval in schedule.intervals
+        if interval.exact_duration > 0
+    )
+    if any(index not in positive_indices for index in flow_index):
+        raise RuntimeError("unexpected runtime flow interval evidence")
+    if any(index < 0 or index >= schedule.event_count for index in stage_index):
+        raise RuntimeError("unexpected runtime glyph-stage evidence")
+
+    operations: list[RepresentedEPIScheduleOperation] = []
+    for interval in schedule.intervals:
+        if interval.exact_duration > 0:
+            operations.append(
+                _flow_composition_operation(
+                    position=len(operations),
+                    interval=interval,
+                    expected_nodes=nodes,
+                    evidence=flow_index.get(interval.index),
+                )
+            )
+        if interval.index < schedule.event_count:
+            event = schedule.events[interval.index]
+            operations.append(
+                _glyph_composition_operation(
+                    position=len(operations),
+                    event=event,
+                    expected_nodes=nodes,
+                    evidence=stage_index.get(event.event_index),
+                )
+            )
+
+    operation_tuple = tuple(operations)
+    event_indices = tuple(range(schedule.event_count))
+    conditions = _represented_composition_conditions(
+        nodes,
+        positive_indices,
+        event_indices,
+        operation_tuple,
+    )
+    certified = all(passed for _, passed in conditions)
+    factors = (
+        _complete_represented_operation_factors(operation_tuple)
+        if certified
+        else ()
+    )
+    metric = operation_tuple[0].exact_metric_ray_before if certified else None
+    gain = math.prod(factors, start=Fraction(1)) if certified else None
+    fields = dict(
+        nodes=nodes,
+        positive_flow_interval_indices=positive_indices,
+        event_indices=event_indices,
+        operations=operation_tuple,
+        exact_normalized_metric=metric,
+        exact_operation_energy_gain_factors=factors,
+        exact_energy_gain_upper_bound=gain,
+        conditions=conditions,
+    )
+    return ObservedRepresentedEPIScheduleComposition(
+        **fields,
+        _proof_stamp=_represented_composition_stamp(**fields),
+    )
 
 
 def _clipping_intervened(
@@ -663,6 +1941,7 @@ def execute_operator_event_schedule(
     n_jobs: int | None = None,
     suppress_birth_warnings: bool = False,
     include_flow_certificates: bool = False,
+    include_stage_certificates: bool = False,
 ) -> OperatorEventExecutionResult:
     """Execute one finite flow/jump schedule inside a whole-schedule rollback.
 
@@ -681,8 +1960,11 @@ def execute_operator_event_schedule(
     one flow and the left endpoint of the next, but a same-time EPI jump resets
     that node's history and can never become an epi_time_history secant.
     ``include_flow_certificates`` captures detached endpoints around each
-    positive interval and returns runtime-bound evidence without writing it to
-    graph metadata or claiming solver accuracy or repeated stability.
+    positive interval. ``include_stage_certificates`` additionally requests
+    executor-bound EPI certificates for every supported glyph, captures each
+    jump boundary, and implies interval capture so adjacent evidence can be
+    checked. Both result channels remain detached from graph metadata and make
+    no solver-accuracy or repeated-stability claim.
     """
 
     graph = _require_graph(graph)
@@ -700,6 +1982,8 @@ def execute_operator_event_schedule(
         raise TypeError("suppress_birth_warnings must be a bool")
     if type(include_flow_certificates) is not bool:
         raise TypeError("include_flow_certificates must be a bool")
+    if type(include_stage_certificates) is not bool:
+        raise TypeError("include_stage_certificates must be a bool")
     schedule.__post_init__()
     _validate_schedule_clock(schedule)
     _require_runtime_clock(
@@ -731,6 +2015,10 @@ def execute_operator_event_schedule(
     transaction = GraphTransactionSnapshot(graph)
     events_committed: list[ExecutedOperatorEvent] = []
     flow_interval_evidence: list[ExecutedNodalFlowInterval] = []
+    pending_glyph_stages: list[_PendingGlyphStage] = []
+    effective_flow_certification = bool(
+        include_flow_certificates or include_stage_certificates
+    )
     positive_intervals = tuple(
         interval.index
         for interval in schedule.intervals
@@ -761,7 +2049,7 @@ def execute_operator_event_schedule(
                         method=method,
                         n_jobs=n_jobs,
                         include_flow_certificate=(
-                            include_flow_certificates
+                            effective_flow_certification
                         ),
                     )
                     if evidence is not None:
@@ -788,12 +2076,23 @@ def execute_operator_event_schedule(
                     if execution_word is None
                     else execution_word.step(event.word_position)
                 )
+                if include_stage_certificates:
+                    stage_left, stage_left_captured = _capture_interval_endpoint(
+                        graph
+                    )
+                else:
+                    stage_left, stage_left_captured = None, False
+                stage_kwargs = {
+                    "sequence_context": sequence_step,
+                    "compute_delta_nfr": compute_delta_nfr,
+                }
+                if include_stage_certificates:
+                    stage_kwargs["include_epi_jump_certificate"] = True
                 result = execute_network_operator_stage(
                     graph,
                     operator,
                     targets,
-                    sequence_context=sequence_step,
-                    compute_delta_nfr=compute_delta_nfr,
+                    **stage_kwargs,
                 )
                 _require_exact_stage(
                     event,
@@ -805,8 +2104,25 @@ def execute_operator_event_schedule(
                     event.event_time,
                     boundary=f"event[{event.event_index}]",
                 )
+                if include_stage_certificates:
+                    stage_right, stage_right_captured = _capture_interval_endpoint(
+                        graph
+                    )
+                else:
+                    stage_right, stage_right_captured = None, False
                 _record_mutation_flow_boundary(graph)
                 committed = ExecutedOperatorEvent.from_stage(event, result)
+                if include_stage_certificates:
+                    pending_glyph_stages.append(
+                        _PendingGlyphStage(
+                            event=committed,
+                            result=result,
+                            left=stage_left,
+                            right=stage_right,
+                            left_captured=stage_left_captured,
+                            right_captured=stage_right_captured,
+                        )
+                    )
                 sink = graph.graph.setdefault(_HYBRID_EVENT_LOG, [])
                 if not isinstance(sink, list):
                     raise TNFRValueError(
@@ -824,6 +2140,22 @@ def execute_operator_event_schedule(
             schedule.end_time,
             boundary="schedule.end",
         )
+        flow_tuple = tuple(flow_interval_evidence)
+        flow_index = _flow_by_interval(flow_tuple)
+        glyph_stage_tuple = tuple(
+            _finalize_glyph_stage(pending, schedule, flow_index)
+            for pending in pending_glyph_stages
+        )
+        represented_composition = (
+            _compose_observed_represented_epi_schedule(
+                schedule,
+                targets,
+                flow_tuple,
+                glyph_stage_tuple,
+            )
+            if include_stage_certificates
+            else None
+        )
         return OperatorEventExecutionResult(
             schedule=schedule,
             target_nodes=targets,
@@ -839,8 +2171,11 @@ def execute_operator_event_schedule(
             pressure_refresh_callback_invocations=(
                 pressure_refresh_callback_invocations
             ),
-            flow_certification_requested=include_flow_certificates,
-            flow_interval_evidence=tuple(flow_interval_evidence),
+            flow_certification_requested=effective_flow_certification,
+            flow_interval_evidence=flow_tuple,
+            stage_certification_requested=include_stage_certificates,
+            glyph_stage_evidence=glyph_stage_tuple,
+            represented_epi_schedule_composition=represented_composition,
         )
     except BaseException as failure:
         transaction.restore_after_failure(graph, failure)
@@ -848,8 +2183,11 @@ def execute_operator_event_schedule(
 
 
 __all__ = (
+    "ExecutedGlyphStage",
     "ExecutedNodalFlowInterval",
     "ExecutedOperatorEvent",
+    "ObservedRepresentedEPIScheduleComposition",
+    "RepresentedEPIScheduleOperation",
     "OperatorEventExecutionResult",
     "execute_operator_event_schedule",
 )

@@ -1,6 +1,6 @@
 """Focused tests for one-interval nodal-flow stability evidence."""
 
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, replace
 from fractions import Fraction
 
 import networkx as nx
@@ -82,6 +82,23 @@ def test_exact_dyadic_interval_identifies_contracting_euler_map():
     assert not result.integrator_provenance_certified
     assert not result.future_or_repeated_schedule_stability_certified
     assert result.euler_map_abstention_reasons == ()
+
+
+def test_interval_theorem_claim_fails_closed_after_proof_field_tamper():
+    left = _two_node_graph([1.0, -1.0], [-2.0, 2.0])
+    right = _two_node_graph([0.5, -0.5], [-2.0, 2.0])
+    result = _certificate(left, right, 0.25)
+
+    replaced = replace(
+        result,
+        exact_quotient_energy_gain_upper_bound=Fraction(0),
+    )
+    assert not replaced._proof_fields_are_intact()
+    assert not replaced.global_disagreement_contraction_certified
+
+    object.__setattr__(result, "exact_quotient_energy_gain_upper_bound", Fraction(0))
+    assert not result._proof_fields_are_intact()
+    assert not result.global_disagreement_contraction_certified
 
 
 def test_stale_pressure_passes_nodal_balance_but_blocks_diffusion():

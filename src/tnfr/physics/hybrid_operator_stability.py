@@ -73,7 +73,7 @@ from fractions import Fraction
 import math
 from numbers import Real
 import sys
-from typing import Any, Iterable, Sequence
+from typing import Any, Iterable
 
 from .._exact_time import (
     atanh_log_bounds as _atanh_log_bounds,
@@ -90,6 +90,9 @@ from ..mathematics.unified_numerical import np
 from ._exact_linear_algebra import (
     exact_matrix_inverse as _exact_matrix_inverse,
     exact_symmetric_semidefinite as _exact_symmetric_semidefinite,
+)
+from ._exact_metric import (
+    binary64_vectors_exactly_proportional as _exactly_proportional,
 )
 from ._helpers import finite_real_scalar
 from .directed_diffusion import NormKind, induced_operator_norm
@@ -608,15 +611,6 @@ def _weighted_energy(vector: Any, weights: Any, name: str) -> float:
 
 def _within_relative_tolerance(residual: float, scale: float, tolerance: float) -> bool:
     return bool(residual == 0.0 or residual / max(1.0, scale) <= tolerance)
-
-
-def _exactly_proportional(left: Sequence[float], right: Sequence[float]) -> bool:
-    left_q = tuple(Fraction.from_float(float(value)) for value in left)
-    right_q = tuple(Fraction.from_float(float(value)) for value in right)
-    return all(
-        lhs * right_q[0] == rhs * left_q[0]
-        for lhs, rhs in zip(left_q, right_q)
-    )
 
 
 @dataclass(frozen=True, slots=True)

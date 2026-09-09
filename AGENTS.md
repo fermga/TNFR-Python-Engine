@@ -437,8 +437,21 @@ affine promotion additionally requires fixed symmetric nonnegative conductance,
 positive row strengths and capacity, the stored pressure `-L_rw EPI` and the
 exact nodal identity. Stale pressure can pass the trusted binary64 runtime level
 while the pure-EPI affine map and quotient theorem abstain.
-Solver accuracy, refinement equivalence, mixed glyph/REMESH gain, adaptive
-U2/U4 and future or repeated schedule stability remain unproved.
+
+With `include_stage_certificates=True`, interval capture is implied and every
+accepted event returns an `ExecutedGlyphStage`. The event runtime binds the
+executor-owned pointwise certificate for AL/SHA/VAL/NUL/ZHIR/NAV or all-target
+neighbour certificate for EN/RA to the actual captured EPI endpoints; other
+glyphs and failed certificate domains abstain explicitly. One
+`RepresentedEPIScheduleOperation` records each positive flow and glyph in
+chronological order. `ObservedRepresentedEPIScheduleComposition` publishes an
+exact represented-map gain product only when all operations are eligible, node
+order and consecutive EPI endpoints match exactly, and one normalized positive
+rational metric spans the trace. Its represented-map contraction result is not
+a global executable binary64-map result;
+`runtime_schedule_global_gain_certified` is always false. Solver accuracy,
+refinement equivalence, full multichannel stability, delayed-REMESH gain,
+adaptive U2/U4 and future or repeated schedule stability remain unproved.
 
 `execute_event_remesh_cycle` composes one finite schedule with the separately
 invoked delayed map under an outer graph transaction. It appends exactly one
@@ -454,9 +467,12 @@ One frozen positive diagonal metric measures cycle-level weighted EPI
 observations and feeds delayed-map evidence; legacy metadata retains unweighted
 means. Exact values remain authoritative when an optional float display is
 `None`. Weighted-consensus drift, capacity and pressure refresh remain separate.
-The optional refresh runs only after an applied map. This certifies graph-owned
-one-cycle execution, not solver accuracy, mixed gain or repeated stability with
-evolving history. External effects remain outside rollback. See
+The optional refresh runs only after an applied map. The cycle can retain the
+finite represented flow/glyph composition inside its event result, but the
+delayed map and its one-step evidence remain separate. This certifies
+graph-owned one-cycle execution, not solver accuracy, delayed-REMESH gain or
+repeated stability with evolving history. External effects remain outside
+rollback. See
 [src/tnfr/operators/event_timing.py](src/tnfr/operators/event_timing.py),
 [src/tnfr/operators/event_runtime.py](src/tnfr/operators/event_runtime.py),
 [src/tnfr/operators/event_remesh_runtime.py](src/tnfr/operators/event_remesh_runtime.py)
@@ -528,8 +544,10 @@ own detached snapshot and frozen proposals before commit. Certification
 requests reject IL, empty stages, grammar replacements and noncanonical
 operator overrides atomically. The three levels distinguish exact runtime
 realization, consensus-preserving affine action and an aligned positive
-pre/post diffusion metric. They do not certify mixed words, histories, the
-opaque pressure refresh or future repetition. See
+pre/post diffusion metric. By themselves they do not certify mixed words,
+histories, the opaque pressure refresh or future repetition. The event runtime
+can compose supported pointwise and EN/RA represented maps only after exact
+observed-endpoint and common-metric gates pass. See
 [src/tnfr/physics/pointwise_stage_stability.py](src/tnfr/physics/pointwise_stage_stability.py).
 
 Read/write footprints, merge status, rollback scope and scoped structural-state
@@ -754,7 +772,7 @@ program history** (the full milestone/gap/branch threads live in the notes).
 
 | Program | Status | Reference |
 |---------|--------|-----------|
-| **Core dynamics S1–S16** | Restricted results cover pure-EPI diffusion, rational quotient affine-reset budgets, exact operator-event timing, conditional pointwise realization/gain certificates, observability, quotient geometry, temporal signatures and sampled-path certificates under declared hypotheses. All thirteen operators have atomic all-target Jacobi stages; EN/RA additionally have scoped repeated-map results. Every shared stage is failure-atomic; the REMESH glyph stage is advisory-only and distinct from explicit delayed mixing. General nonlinear, phase, history, changing-support and catalog-completeness results remain open. | [CORE_RESEARCH_PROGRAM.md](theory/CORE_RESEARCH_PROGRAM.md) |
+| **Core dynamics S1–S16** | Restricted results cover pure-EPI diffusion, rational quotient affine-reset budgets, exact operator-event timing, conditional stage certificates and exact represented-map composition for a fully eligible observed finite flow/glyph trace, plus observability, quotient geometry, temporal signatures and sampled-path certificates. All thirteen operators have atomic all-target Jacobi stages; EN/RA additionally have scoped repeated-map results. Every shared stage is failure-atomic; delayed REMESH remains separate. Global binary64 runtime-map, solver, full-multichannel, history-updated repetition, changing-support and catalog-completeness results remain open. | [CORE_RESEARCH_PROGRAM.md](theory/CORE_RESEARCH_PROGRAM.md) |
 | **TNFR-Riemann** | Finite protocols estimate a critical-line-centered comparison and expose ζ/L diagnostic surfaces (P12–P50). No engine theorem identifies phase coherence with zero location. The bridge to RH, including control of `S(T) = (1/π)·arg ζ(½+iT)`, remains open. | [TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) |
 | **REMESH fixed-delay surrogate** | A finite cyclic, fixed-coefficient REMESH filter has a Cesàro fixed-mode projection and needs no additional registry entry to compute it. This is distinct from the clipped runtime map and does not establish the literal `τ_g → ∞` limit or completeness of the 13-operator catalog; both remain open. | [REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) |
 | **TNFR-Navier–Stokes** | A declared linear mapping compares viscous diffusion with the overdamped limit of a separate graph-wave model (`ν_f = ν`). Finite pseudo-spectral runs measure enstrophy growth with Reynolds number. The nonlinear vortex-stretching term is compared with a `K_φ`/VAL cascade, but no equivalence or uniform regularity bound is derived; the `Re → ∞` problem remains open. | [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) |

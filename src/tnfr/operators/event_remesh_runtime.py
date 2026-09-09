@@ -65,9 +65,10 @@ _SCOPE = (
     "optional post-REMESH pressure callback runs only after an applied map. "
     "Phase, clock, event log, pressure-hook identity and deterministic REMESH "
     "configuration remain fixed after the schedule. External callback or "
-    "integrator side effects are not rolled back. No "
-    "field certifies solver accuracy, mixed-word gain, or stability under "
-    "repeated cycles with evolving history."
+    "integrator side effects are not rolled back. No cycle-level field "
+    "composes the retained represented flow/glyph gain with delayed REMESH, "
+    "or certifies solver accuracy, a global binary64 runtime gain, or "
+    "stability under repeated cycles with evolving history."
 )
 _HISTORY_CONVENTION = (
     "append_pre_remesh_snapshot_then_read_delay_at_history[-(tau+1)]"
@@ -504,6 +505,7 @@ def execute_event_remesh_cycle(
     n_jobs: int | None = None,
     suppress_birth_warnings: bool = False,
     include_flow_certificates: bool = False,
+    include_stage_certificates: bool = False,
 ) -> EventRemeshCycleResult:
     """Execute one schedule, one history sample and one delayed REMESH map.
 
@@ -526,6 +528,8 @@ def execute_event_remesh_cycle(
         raise TypeError("refresh_pressure_after_remesh must be a bool")
     if type(include_flow_certificates) is not bool:
         raise TypeError("include_flow_certificates must be a bool")
+    if type(include_stage_certificates) is not bool:
+        raise TypeError("include_stage_certificates must be a bool")
 
     nodes = tuple(graph.nodes)
     if not nodes:
@@ -573,6 +577,7 @@ def execute_event_remesh_cycle(
             n_jobs=n_jobs,
             suppress_birth_warnings=suppress_birth_warnings,
             include_flow_certificates=include_flow_certificates,
+            include_stage_certificates=include_stage_certificates,
         )
         if event_result.target_nodes != nodes:
             raise RuntimeError(

@@ -17,8 +17,11 @@ local/propagated pressure reduction, and Self-organization has a collision-safe
 snapshot-bound child-support and hierarchy merge. Recursivity has an immutable
 advisory-only glyph stage. The separate delayed REMESH operation now has an
 exact three-input recurrence, graph-state atomic execution and scoped one-step
-convex and fixed-history gain evidence. Stability of history-updated repetition,
-mixed words, nonlinear regimes and the full catalog remains open.
+convex and fixed-history gain evidence. Event execution can bind supported flow
+and glyph certificates into an exact represented-map gain product for one fully
+eligible observed finite trace in one common metric; it does not identify a
+global executable binary64 map. Stability of history-updated repetition,
+unrestricted mixed words, nonlinear regimes and the full catalog remains open.
 
 ## Question and hypotheses
 
@@ -731,9 +734,11 @@ proposal.
 Canonical names remain metadata outside such a realization proof. Neither a
 U2 role nor a legacy policy multiplier supplies a runtime gain. Branching,
 richer BEPI, arbitrary multichannel pressure laws, topology or history mutation,
-non-EN/RA gain theorems, mixed operator words and global binary64 runtime
-affinity remain outside this theorem. Repetition is covered only for the
-explicitly certified fixed ideal-real or represented EN/RA map. The RA bridge also
+unsupported glyph gains, unrestricted mixed operator words and global binary64
+runtime affinity remain outside this theorem. The event runtime's finite
+composition applies only to exact represented maps bound to one observed trace
+with a common metric. Repetition is covered only for the explicitly certified
+fixed ideal-real or represented EN/RA map. The RA bridge also
 requires finite positive capacities on a fixed connected undirected
 positive-conductance support; it does not certify finite-step integration or a
 general phase/nonlinear trajectory.

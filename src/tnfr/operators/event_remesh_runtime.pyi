@@ -97,6 +97,7 @@ def execute_event_remesh_cycle(
     n_jobs: int | None = ...,
     suppress_birth_warnings: bool = ...,
     include_flow_certificates: bool = ...,
+    include_stage_certificates: bool = ...,
 ) -> EventRemeshCycleResult: ...
 
 

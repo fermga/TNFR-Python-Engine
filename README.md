@@ -252,9 +252,29 @@ rational pure-EPI affine promotion additionally requires fixed symmetric
 nonnegative conductance with positive row strengths, positive capacity, the
 stored pressure `-L_rw EPI` and the exact nodal identity. A stale stored
 pressure can therefore pass trusted binary64 held-pressure identification while
-the pure-EPI diffusion and quotient theorem abstain. No interval field certifies
-solver accuracy, refinement equivalence, a mixed-word gain or future/repeated
-schedule stability.
+the pure-EPI diffusion and quotient theorem abstain. No interval field by itself
+certifies solver accuracy, refinement equivalence, a glyph gain or
+future/repeated schedule stability.
+
+Passing `include_stage_certificates=True` implies flow capture and returns one
+`ExecutedGlyphStage` for every accepted event. The stage record binds the
+executor-owned pointwise certificate for AL/SHA/VAL/NUL/ZHIR/NAV, or the
+all-target neighbour certificate for EN/RA, to the EPI endpoints captured around
+the actual jump and to any immediately adjacent positive flows. Unsupported or
+out-of-domain glyph evidence remains an explicit abstention without changing a
+valid stage execution.
+
+The result's `represented_epi_schedule_composition` is an
+`ObservedRepresentedEPIScheduleComposition`. It records every positive flow and
+glyph in chronological order as a `RepresentedEPIScheduleOperation`. It
+publishes an exact rational gain product only when every operation exposes an
+intact represented affine map, the node order and consecutive observed EPI
+endpoints agree exactly, and one normalized positive rational metric spans the
+whole finite trace. `represented_map_global_disagreement_contraction_certified`
+then concerns those represented maps. `runtime_schedule_global_gain_certified`
+remains false: endpoint binding does not identify one global executable
+binary64 map or certify solver accuracy, refinement, full multichannel
+stability, future schedules or repeated execution.
 
 `execute_event_remesh_cycle(...)` adds one explicit delayed-REMESH boundary:
 schedule execution, one canonical full-support pre-REMESH `_epi_hist` sample,
@@ -271,11 +291,12 @@ observers cannot change it. Consensus drift, capacity changes and pressure
 refreshes remain separate. The optional post-REMESH refresh runs once only when
 the map applies. Exact observations remain authoritative when a derived float
 display is `None`. This is an atomic one-cycle execution contract, not a solver,
-mixed-gain or evolving-history repetition theorem.
+delayed-REMESH gain or evolving-history repetition theorem.
 
-The cycle forwards `include_flow_certificates` to its event execution and thus
-can carry the same per-interval evidence. It does not compose an interval gain
-with glyph or delayed-REMESH gains.
+The cycle forwards both certificate options to its event execution and can
+therefore retain the finite represented flow/glyph composition there. The
+separately invoked delayed-REMESH map remains outside that composition; its
+one-step evidence is never inserted as another gain factor.
 
 The companion example exercises
 only the schedule and duration diagnostic, without executing this runtime
@@ -370,7 +391,7 @@ pressure refresh inside its transaction. RA phase or capacity changes can
 independently require a full multichannel refresh even when the aggregate EPI
 pressure defect vanishes. Separate rounding, clipping, identity gates and
 multichannel effects preclude a global binary64 affinity claim. Canonical labels
-do not supply gains for the remaining runtime operators.
+alone do not supply a gain.
 
 For AL/SHA/VAL/NUL/ZHIR/NAV, the shared pointwise executor can opt into a
 three-level certificate computed from its own detached snapshot and frozen
@@ -378,8 +399,10 @@ proposals before commit. A successful `NetworkStageResult` separates exact
 represented EPI realization, affine gain in the pre-flow metric, and an
 aligned pre/post diffusion metric. Certification rejects unsupported, empty,
 grammar-replaced and noncanonical stages before live writes; NUL pressure
-effects remain a separate diagnostic. This result does not establish a
-mixed-word or repeated-runtime theorem.
+effects remain a separate diagnostic. The event runtime can bind these
+certificates and the EN/RA stage certificates into one finite represented-map
+composition under exact endpoint and common-metric gates. This does not produce
+a global binary64 runtime-map or repeated-runtime theorem.
 
 The Riemann, Navier-Stokes, Yang-Mills, P-vs-NP, BSD, and Hodge programs remain
 open research programs. They do not claim solutions to the corresponding

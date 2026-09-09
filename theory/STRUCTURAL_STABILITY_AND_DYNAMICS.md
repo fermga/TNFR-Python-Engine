@@ -210,8 +210,10 @@ certificate computed from its own detached snapshot and frozen proposals.
 A successful result distinguishes exact represented EPI realization, affine
 gain in the pre-flow metric and an aligned pre/post diffusion metric. The
 request rejects unsupported, empty or grammar-replaced stages before live
-writes. It does not certify IL, UM, OZ, THOL, histories, pressure refresh,
-mixed words or repeated runtime execution.
+writes. By itself it does not certify IL, UM, OZ, THOL, histories, pressure
+refresh, mixed words or repeated runtime execution. The event runtime can
+compose supported pointwise and EN/RA represented maps only after binding all
+observed endpoints and one exact common metric.
 
 OZ now derives every local action and outgoing propagation increment from one
 immutable snapshot. Incoming increments are summed with `math.fsum` in
@@ -303,10 +305,24 @@ timestamped EPI evidence; a same-time jump restarts that history and remains in
 `hybrid_event_log`. One graph transaction covers flow, jump, history, cache and
 event-log state, while external emitted effects remain outside rollback.
 
+With `include_stage_certificates=True`, interval capture is implied and each
+accepted event produces an `ExecutedGlyphStage`. Pointwise
+AL/SHA/VAL/NUL/ZHIR/NAV and neighbour-reading EN/RA reuse the certificates
+computed from their executor-owned snapshots and proposals; other glyphs or
+failed domains abstain explicitly. Each represented certificate is checked
+against the actual EPI endpoints and adjacent positive-flow evidence.
+`ObservedRepresentedEPIScheduleComposition` then retains a complete
+chronological operation record and multiplies exact rational gain factors only
+if every represented affine map is intact, all node orders and consecutive EPI
+endpoints match, and one normalized metric spans the finite trace. This global
+gain belongs to the represented maps and bounds the observed trace through its
+endpoint bindings. The hard-false `runtime_schedule_global_gain_certified`
+field prevents interpreting it as a global executable binary64 map.
+
 This execution contract does not prove solver accuracy or invariance under an
-equivalent timestep refinement, assign an affine gain to every jump, or convert
-the continuous duration or Euler modal count into adaptive U2 debt or U4
-recency. The executable
+equivalent timestep refinement, assign an affine gain to every jump, establish
+full-multichannel or repeated stability, or convert the continuous duration or
+Euler modal count into adaptive U2 debt or U4 recency. The executable
 [`165_operator_event_relaxation.py`](../examples/02_physics_regimes/165_operator_event_relaxation.py)
 records the schedule-only distinctions with two coincident jumps.
 
@@ -824,7 +840,8 @@ and
 | `src/tnfr/physics/network_stage_stability.py` | All-target EN/RA certificates and the validated one-stage positive-duration post-flow bridge |
 | `src/tnfr/physics/pointwise_stage_stability.py` | Executor-bound pointwise affine realization and gain levels |
 | `src/tnfr/operators/event_timing.py` | Exact finite flow/jump schedules and binary64 clock readiness |
-| `src/tnfr/operators/event_runtime.py` | Atomic binding of declared flows and canonical operator jumps |
+| `src/tnfr/operators/event_runtime.py` | Atomic observed flow/glyph binding and finite represented EPI-map composition |
+| `src/tnfr/operators/event_remesh_runtime.py` | Atomic schedule/delayed-REMESH cycle with separate evidence channels |
 | `src/tnfr/operators/_delayed_remesh_kernel.py` | Immutable delayed REMESH proposals and one-step evidence |
 | `src/tnfr/physics/phase_quotient.py` | Fixed-branch pairwise quotient, restricted canonical phase lift and counterexample |
 | `src/tnfr/physics/coherence_geometry.py` | Local, fixed-network and fixed-capacity coherence strata |

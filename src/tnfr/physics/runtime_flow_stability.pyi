@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from fractions import Fraction
 from typing import Any
 
@@ -66,10 +66,13 @@ class NodalFlowIntervalCertificate:
     exact_observed_disagreement_energy_gain: Fraction | None
     observed_disagreement_nonincrease: bool | None
     exact_quotient_energy_gain_upper_bound: Fraction | None
-    global_disagreement_contraction_certified: bool
+    _global_disagreement_contraction_certified: bool
     integrator_provenance_certified: bool
     future_or_repeated_schedule_stability_certified: bool
     scope: str
+    _proof_stamp: tuple[Any, ...] = field(...)
+
+    def _proof_fields_are_intact(self) -> bool: ...
 
     @property
     def nodes(self) -> tuple[Any, ...]: ...
@@ -81,6 +84,8 @@ class NodalFlowIntervalCertificate:
     def left_nu_f(self) -> tuple[float, ...]: ...
     @property
     def left_delta_nfr(self) -> tuple[float, ...]: ...
+    @property
+    def global_disagreement_contraction_certified(self) -> bool: ...
     @property
     def failed_diffusion_conditions(self) -> tuple[str, ...]: ...
     @property

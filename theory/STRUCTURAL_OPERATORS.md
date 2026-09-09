@@ -170,8 +170,22 @@ Collapsed or nonadditive binary64 intervals are rejected before writes. Flow
 boundaries become timestamped samples, while a same-time EPI jump restarts that
 history and is recorded only as a zero-duration event. One graph transaction
 covers flow, jump, history, cache and event-log state; emitted external effects
-remain outside rollback. This contract does not prove solver accuracy,
-refinement invariance, jump gains or adaptive U2/U4.
+remain outside rollback.
+
+With `include_stage_certificates=True`, flow capture is implied. The runtime
+binds executor-owned pointwise AL/SHA/VAL/NUL/ZHIR/NAV or all-target EN/RA
+certificates to the EPI endpoints captured around each actual stage and to its
+adjacent positive-flow evidence. Unsupported glyphs and rejected certificate
+domains abstain explicitly. A complete
+`ObservedRepresentedEPIScheduleComposition` orders every positive flow and
+glyph as a `RepresentedEPIScheduleOperation` and multiplies exact gain factors
+only when every represented affine map is intact, node order and observed EPI
+endpoints are exactly continuous, and one normalized rational metric spans the
+finite trace. This globally bounds the represented maps and, through endpoint
+binding, the observed trace. `runtime_schedule_global_gain_certified` remains
+false: no global executable binary64 map, solver accuracy, refinement
+invariance, full-multichannel result, future schedule, repetition or adaptive
+U2/U4 policy is certified.
 
 `execute_event_remesh_cycle` supplies a narrower executable composition. It
 runs one event schedule, appends its endpoint through the ordinary pre-REMESH
@@ -191,17 +205,21 @@ explicitly requested post-REMESH pressure refresh stay separate. That refresh
 runs only after an applied map. Delay `tau` reads `_epi_hist[-(tau + 1)]`, and no
 post-jump delayed-history sample is appended. The applied jump instead restarts
 or appends the same-time `epi_time_history` right endpoint, so Mutation cannot
-read it as a finite flow secant. Atomic execution does not provide a mixed gain,
-solver-accuracy or history-updated repetition theorem; emitted external effects
-remain outside rollback.
+read it as a finite flow secant. The cycle may retain the finite represented
+flow/glyph composition in its event result, but the delayed map and its one-step
+evidence remain separate. Atomic execution does not provide a global binary64
+runtime gain, solver-accuracy or history-updated repetition theorem; emitted
+external effects remain outside rollback.
 
 The shared pointwise stage executor can opt into a conditional certificate for
 AL/SHA/VAL/NUL/ZHIR/NAV. Its successful `NetworkStageResult` carries evidence
 computed from the same detached snapshot and frozen proposals used by the
 commit. The three levels separate exact realization, pre-flow affine gain and
 an aligned pre/post diffusion metric. Requests reject unsupported, empty or
-grammar-replaced stages before live writes. The result supplies no IL,
-mixed-word, pressure-refresh or repeated-runtime theorem.
+grammar-replaced stages before live writes. By itself the result supplies no
+IL, mixed-word, pressure-refresh or repeated-runtime theorem; the event runtime
+can compose it with EN/RA and flow evidence only after exact endpoint and
+common-metric gates pass.
 
 ---
 
@@ -1284,6 +1302,9 @@ channel, direction, scale and postcondition).
 | `src/tnfr/operators/jitter.py` | Reproducible jitter proposal, progress validation and atomic commit |
 | `src/tnfr/operators/recursivity.py` | REMESH implementation |
 | `src/tnfr/operators/network_stage.py` | Shared transactional Jacobi and Gauss-Seidel stage executors |
+| `src/tnfr/operators/event_timing.py` | Exact finite flow/jump schedules and clock boundaries |
+| `src/tnfr/operators/event_runtime.py` | Observed flow/glyph binding and represented EPI-map composition |
+| `src/tnfr/operators/event_remesh_runtime.py` | Atomic event-schedule/delayed-REMESH cycle with separate evidence |
 | `src/tnfr/operators/nodal_equation.py` | Nodal equation validation |
 | `src/tnfr/operators/canonical_patterns.py` | Canonical sequence definitions |
 | `src/tnfr/operators/introspection.py` | `OperatorMeta` metadata registry |
@@ -1297,6 +1318,10 @@ channel, direction, scale and postcondition).
 | `src/tnfr/physics/lyapunov.py` | Configured operator-role energy diagnostics |
 | `src/tnfr/physics/reception_realization.py` | Read-only EN runtime-to-affine-flow certificate |
 | `src/tnfr/physics/resonance_realization.py` | Read-only RA four-layer realization, identity, post-metric, and pressure audit |
+| `src/tnfr/physics/network_stage_stability.py` | Executor-bound all-target EN/RA represented-map certificates |
+| `src/tnfr/physics/pointwise_stage_stability.py` | Executor-bound pointwise represented-map certificates |
+| `src/tnfr/physics/runtime_flow_stability.py` | Detached observed-flow certificates and proof sealing |
+| `src/tnfr/physics/_exact_metric.py` | Shared exact positive-metric normalization and proportionality |
 | `src/tnfr/constants/canonical.py` | All derived constants |
 
 ### 15.2 Base Operator Workflow

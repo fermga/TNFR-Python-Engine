@@ -92,8 +92,11 @@ from .event_remesh_runtime import (
     execute_event_remesh_cycle,
 )
 from .event_runtime import (
+    ExecutedGlyphStage,
     ExecutedNodalFlowInterval,
     ExecutedOperatorEvent,
+    ObservedRepresentedEPIScheduleComposition,
+    RepresentedEPIScheduleOperation,
     OperatorEventExecutionResult,
     execute_operator_event_schedule,
 )
@@ -195,8 +198,11 @@ __all__ = [
     "EventRemeshCycleResult",
     "WeightedEPIObservation",
     "execute_event_remesh_cycle",
+    "ExecutedGlyphStage",
     "ExecutedNodalFlowInterval",
     "ExecutedOperatorEvent",
+    "ObservedRepresentedEPIScheduleComposition",
+    "RepresentedEPIScheduleOperation",
     "OperatorEventExecutionResult",
     "execute_operator_event_schedule",
     "OperatorEventRuntimeClockDiagnostic",

@@ -4,6 +4,35 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added — 2026-09-09 Observed represented EPI schedule composition
+
+- Added opt-in executor-owned EPI jump evidence to the shared all-target stage
+  dispatcher. AL/SHA/VAL/NUL/ZHIR/NAV reuse their frozen pointwise proposals;
+  EN/RA certify one simultaneous neighbour stage. Unsupported glyphs and
+  rejected domains return explicit abstention, while a certificate/proposal
+  mismatch aborts before commit and pressure refresh.
+- Added `include_stage_certificates` to operator-event execution and the
+  event/REMESH cycle. It implies positive-flow capture and returns one
+  `ExecutedGlyphStage` per accepted event, bound to the actual captured EPI
+  endpoints, exact pre/post metric rays and adjacent positive-flow evidence.
+- Added sealed `RepresentedEPIScheduleOperation` records and
+  `ObservedRepresentedEPIScheduleComposition`. A complete finite observed trace
+  publishes its exact rational represented-map gain product only under exact
+  operation cardinality, node order, endpoint continuity and one normalized
+  positive metric. Ineligible traces retain per-operation reasons and publish
+  no partial product.
+- Kept the global theorem boundary explicit: the product is global for the
+  represented affine maps and bounds this observed trace through exact endpoint
+  binding. `runtime_schedule_global_gain_certified` remains false; solver
+  accuracy, refinement, full-multichannel behavior, delayed REMESH, future
+  schedules and repeated execution are not certified.
+- Sealed `NodalFlowIntervalCertificate` proof fields and made wrapper and
+  composition properties revalidate them fail-closed, so replaced factors or
+  Boolean claims cannot promote runtime or represented-map conclusions.
+- Centralized exact positive-metric normalization and proportionality checks in
+  `physics/_exact_metric.py` for pointwise, neighbour, resonance and hybrid
+  composition certificates.
+
 ### Added — 2026-09-09 Runtime-observed nodal-flow evidence
 
 - Added detached one-interval snapshots and certificates that report the exact
@@ -18,8 +47,8 @@ All notable changes to this project will be documented in this file.
   identification. Stale pure-EPI pressure can still pass that held-pressure
   level while blocking exact affine and quotient promotion. Changed support,
   conductance, capacity or pressure blocks the corresponding claim.
-- Kept interval evidence read-only and opt-in, with no solver-accuracy,
-  mixed-gain or future/repeated-schedule theorem.
+- Kept interval evidence read-only and opt-in; by itself it provides no
+  solver-accuracy, glyph-gain or future/repeated-schedule theorem.
 - Centralized scalar Gamma cache refresh through the live Gamma specification,
   aligning cached and vectorized paths after configuration replacement or
   in-place mutation.

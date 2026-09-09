@@ -69,6 +69,9 @@ from ._neighbor_epi_realization import (
     represented_neighbor_blend_map,
     validate_certificate_tolerance,
 )
+from ._exact_metric import (
+    binary64_vectors_exactly_proportional as _exactly_proportional,
+)
 from .hybrid_operator_stability import (
     AffineEPIJumpGainCertificate,
     HybridEPIStabilityCertificate,
@@ -214,15 +217,6 @@ def _fraction_upper_float(value: Fraction) -> float:
     if Fraction.from_float(result) < value:
         result = math.nextafter(result, float("inf"))
     return result
-
-
-def _exactly_proportional(left: Any, right: Any) -> bool:
-    left_exact = tuple(Fraction.from_float(float(value)) for value in left)
-    right_exact = tuple(Fraction.from_float(float(value)) for value in right)
-    return all(
-        lhs * right_exact[0] == rhs * left_exact[0]
-        for lhs, rhs in zip(left_exact, right_exact)
-    )
 
 
 def _exact_weighted_mean(

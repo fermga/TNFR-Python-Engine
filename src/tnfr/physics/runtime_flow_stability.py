@@ -26,7 +26,7 @@ estimate solver error, or prove future, refined, or repeated schedules.
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field, fields, replace
 from fractions import Fraction
 import math
 from numbers import Integral, Real
@@ -338,10 +338,33 @@ class NodalFlowIntervalCertificate:
     exact_observed_disagreement_energy_gain: Fraction | None
     observed_disagreement_nonincrease: bool | None
     exact_quotient_energy_gain_upper_bound: Fraction | None
-    global_disagreement_contraction_certified: bool
+    _global_disagreement_contraction_certified: bool = field(repr=False)
     integrator_provenance_certified: bool
     future_or_repeated_schedule_stability_certified: bool
     scope: str
+    _proof_stamp: tuple[Any, ...] = field(
+        default=(),
+        repr=False,
+        compare=False,
+    )
+
+    def _proof_fields_are_intact(self) -> bool:
+        """Detect ordinary replacement or mutation of decisive proof fields."""
+
+        try:
+            expected = _nodal_flow_interval_proof_stamp(self)
+        except (AttributeError, TypeError, ValueError, OverflowError):
+            return False
+        return type(self._proof_stamp) is tuple and self._proof_stamp == expected
+
+    @property
+    def global_disagreement_contraction_certified(self) -> bool:
+        """Return the contraction claim only while its proof fields are intact."""
+
+        return bool(
+            self._proof_fields_are_intact()
+            and self._global_disagreement_contraction_certified
+        )
 
     @property
     def nodes(self) -> tuple[Any, ...]:
@@ -386,6 +409,46 @@ class NodalFlowIntervalCertificate:
         if not self.exact_nodal_equation_realized:
             reasons.append("exact_nodal_equation_realized")
         return tuple(reasons)
+
+
+_NODAL_FLOW_INTERVAL_PROOF_VERSION = "observed_nodal_flow_interval_v1"
+_NODAL_FLOW_SNAPSHOT_PROOF_VERSION = "nodal_flow_state_snapshot_v1"
+
+
+def _nodal_flow_snapshot_proof_signature(
+    snapshot: Any,
+) -> tuple[Any, ...]:
+    """Freeze one endpoint by value rather than by dataclass object identity."""
+
+    if type(snapshot) is not NodalFlowStateSnapshot:
+        raise TypeError("flow certificate endpoints must be canonical snapshots")
+    return (
+        _NODAL_FLOW_SNAPSHOT_PROOF_VERSION,
+        tuple(
+            (item.name, getattr(snapshot, item.name))
+            for item in fields(NodalFlowStateSnapshot)
+        ),
+    )
+
+
+def _nodal_flow_interval_proof_stamp(
+    certificate: Any,
+) -> tuple[Any, ...]:
+    """Snapshot every field used by interval-level theorem consumers."""
+
+    if type(certificate) is not NodalFlowIntervalCertificate:
+        raise TypeError("certificate must be a NodalFlowIntervalCertificate")
+    payload = tuple(
+        (item.name, getattr(certificate, item.name))
+        for item in fields(NodalFlowIntervalCertificate)
+        if item.name not in {"left", "right", "_proof_stamp"}
+    )
+    return (
+        _NODAL_FLOW_INTERVAL_PROOF_VERSION,
+        _nodal_flow_snapshot_proof_signature(certificate.left),
+        _nodal_flow_snapshot_proof_signature(certificate.right),
+        payload,
+    )
 
 
 def capture_nodal_flow_state(
@@ -717,7 +780,7 @@ def certify_observed_nodal_flow_interval(
         and not isinstance(substeps, (bool, np.bool_))
         else None
     )
-    return NodalFlowIntervalCertificate(
+    certificate = NodalFlowIntervalCertificate(
         left=left,
         right=right,
         duration=duration_float,
@@ -765,8 +828,12 @@ def certify_observed_nodal_flow_interval(
         exact_observed_disagreement_energy_gain=observed_gain,
         observed_disagreement_nonincrease=observed_nonincrease,
         exact_quotient_energy_gain_upper_bound=quotient_gain,
-        global_disagreement_contraction_certified=contracts,
+        _global_disagreement_contraction_certified=contracts,
         integrator_provenance_certified=False,
         future_or_repeated_schedule_stability_certified=False,
         scope=_SCOPE,
+    )
+    return replace(
+        certificate,
+        _proof_stamp=_nodal_flow_interval_proof_stamp(certificate),
     )

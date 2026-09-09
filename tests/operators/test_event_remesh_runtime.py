@@ -430,6 +430,7 @@ def test_public_stub_exposes_event_remesh_cycle_contract() -> None:
         "n_jobs",
         "suppress_birth_warnings",
         "include_flow_certificates",
+        "include_stage_certificates",
     ]
     imported = {
         alias.name
@@ -645,6 +646,39 @@ def test_cycle_flow_certificate_flag_requires_a_strict_bool(value: object) -> No
             graph,
             _schedule(graph),
             include_flow_certificates=value,  # type: ignore[arg-type]
+        )
+
+    assert _state(graph) == before
+
+
+def test_cycle_forwards_stage_certification_request() -> None:
+    graph = _graph()
+    graph.graph["DT_MIN"] = 0.0
+
+    result = execute_event_remesh_cycle(
+        graph,
+        _schedule(graph, durations=(0.25,)),
+        include_stage_certificates=True,
+    )
+
+    execution = result.event_execution
+    assert execution.stage_certification_requested
+    assert execution.flow_certification_requested
+    assert execution.glyph_stage_evidence == ()
+    assert execution.represented_epi_schedule_composition is not None
+    assert "glyph_stage_evidence" not in graph.graph
+
+
+@pytest.mark.parametrize("value", [None, 0, 1.0, "yes"])
+def test_cycle_stage_certificate_flag_requires_a_strict_bool(value: object) -> None:
+    graph = _graph()
+    before = _state(graph)
+
+    with pytest.raises(TypeError, match="include_stage_certificates"):
+        execute_event_remesh_cycle(
+            graph,
+            _schedule(graph),
+            include_stage_certificates=value,  # type: ignore[arg-type]
         )
 
     assert _state(graph) == before

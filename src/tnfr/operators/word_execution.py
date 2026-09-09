@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Sequence
+from dataclasses import replace
 from operator import index as integer_index
 from typing import TYPE_CHECKING, Any, Callable
 
@@ -124,6 +125,7 @@ def execute_network_operator_stage(
     *,
     sequence_context: Any = None,
     compute_delta_nfr: Any = None,
+    include_epi_jump_certificate: bool = False,
 ) -> "NetworkStageResult":
     """Dispatch one fixed-target stage through the canonical network route.
 
@@ -134,7 +136,11 @@ def execute_network_operator_stage(
     separately by apply_network_remesh.
     """
 
+    if type(include_epi_jump_certificate) is not bool:
+        raise TypeError("include_epi_jump_certificate must be a bool")
+
     from .network_stage import (
+        POINTWISE_EPI_JUMP_GLYPHS,
         POINTWISE_TWO_PHASE_GLYPHS,
         execute_coupling_stage,
         execute_dissonance_stage,
@@ -150,23 +156,69 @@ def execute_network_operator_stage(
         "compute_delta_nfr": compute_delta_nfr,
     }
     if operator.name in {"reception", "resonance"}:
-        return execute_neighbor_stage(graph, operator, targets, **kwargs)
-    if operator.name == "coupling":
-        return execute_coupling_stage(graph, operator, targets, **kwargs)
-    if operator.name == "dissonance":
-        return execute_dissonance_stage(graph, operator, targets, **kwargs)
-    if operator.name == "self_organization":
-        return execute_self_organization_stage(
+        return execute_neighbor_stage(
             graph,
             operator,
             targets,
+            include_epi_jump_certificate=include_epi_jump_certificate,
             **kwargs,
         )
+
+    def unsupported(result: "NetworkStageResult") -> "NetworkStageResult":
+        if not include_epi_jump_certificate:
+            return result
+        if result.epi_jump_certificate is not None:
+            return result
+        if result.epi_jump_certificate_abstention_reason is not None:
+            return result
+        return replace(
+            result,
+            epi_jump_certificate_abstention_reason=(
+                "epi_jump_certificate_unavailable_for_glyph:"
+                f"{operator.glyph.value}"
+            ),
+        )
+
+    if operator.name == "coupling":
+        return unsupported(
+            execute_coupling_stage(graph, operator, targets, **kwargs)
+        )
+    if operator.name == "dissonance":
+        return unsupported(
+            execute_dissonance_stage(graph, operator, targets, **kwargs)
+        )
+    if operator.name == "self_organization":
+        return unsupported(
+            execute_self_organization_stage(
+                graph,
+                operator,
+                targets,
+                **kwargs,
+            )
+        )
     if operator.name == "recursivity":
-        return execute_recursivity_stage(graph, operator, targets, **kwargs)
+        return unsupported(
+            execute_recursivity_stage(graph, operator, targets, **kwargs)
+        )
     if operator.glyph in POINTWISE_TWO_PHASE_GLYPHS:
-        return execute_pointwise_stage(graph, operator, targets, **kwargs)
-    return execute_operator_major_stage(graph, operator, targets, **kwargs)
+        if (
+            include_epi_jump_certificate
+            and operator.glyph in POINTWISE_EPI_JUMP_GLYPHS
+        ):
+            return execute_pointwise_stage(
+                graph,
+                operator,
+                targets,
+                epi_jump_fixed_support_declared=True,
+                _allow_epi_jump_certificate_abstention=True,
+                **kwargs,
+            )
+        return unsupported(
+            execute_pointwise_stage(graph, operator, targets, **kwargs)
+        )
+    return unsupported(
+        execute_operator_major_stage(graph, operator, targets, **kwargs)
+    )
 
 
 def run_network_sequence(

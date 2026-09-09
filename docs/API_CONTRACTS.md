@@ -163,7 +163,38 @@ records. The tri-state
 `all_positive_flow_intervals_contracting` aggregates return `None` when
 capture was not requested and otherwise summarize only those executed positive
 intervals. They do not turn endpoint agreement into solver-accuracy,
-refinement, mixed-word or repeated-schedule evidence.
+refinement, glyph-gain or repeated-schedule evidence.
+
+Setting `include_stage_certificates=True` is also opt-in and implies flow
+capture. `glyph_stage_evidence` then contains one `ExecutedGlyphStage` for every
+accepted scheduled event. Pointwise AL/SHA/VAL/NUL/ZHIR/NAV stages reuse their
+executor-owned frozen-proposal certificate; EN/RA reuse their executor-owned
+all-target neighbour certificate. IL/OZ/UM/THOL/REMESH and any domain-rejected
+certificate expose a specific abstention reason. Each successful stage record
+binds the represented certificate to detached EPI snapshots captured around the
+actual jump, derives normalized exact pre/post metric rays, and checks its
+immediately adjacent positive-flow endpoints and metrics. A pressure callback
+that also changes EPI is observed in the right snapshot and prevents exact
+endpoint binding.
+
+`represented_epi_schedule_composition` returns an
+`ObservedRepresentedEPIScheduleComposition` whenever stage capture was
+requested. Its `operations` tuple contains one
+`RepresentedEPIScheduleOperation` for every positive flow and every glyph in
+chronological order, including explicit ineligibility reasons. Exact factors,
+the common metric and their product are published only if the operation count
+is complete, every operation has intact represented affine evidence, all node
+orders match, consecutive observed EPI endpoints are exactly continuous, and
+one normalized positive rational metric applies throughout. On success,
+`represented_affine_composition_gain_certified` certifies that product and
+`represented_map_global_disagreement_contraction_certified` reports whether it
+is strictly below one. `runtime_schedule_global_gain_certified` is always
+false. These properties do not identify a global executable binary64 map or
+certify solver accuracy, refinement, full multichannel stability, future
+schedules or repeated execution. The underlying flow certificate and the
+operation/composition records seal their proof fields; wrapper and aggregate
+properties revalidate those seals and fail closed if a factor or claim flag is
+replaced.
 
 [`execute_event_remesh_cycle`](../src/tnfr/operators/event_remesh_runtime.py)
 composes one such schedule with exactly one canonical pre-REMESH `_epi_hist`
@@ -183,10 +214,12 @@ the optional post-REMESH pressure callback remain distinct. The latter runs
 only when REMESH applies and is counted only after returning. Delay `tau` reads
 `_epi_hist[-(tau + 1)]`, with no post-jump delayed-history duplicate. A committed
 jump separately records its same-time `epi_time_history` endpoint for Mutation.
-The cycle forwards `include_flow_certificates` and preserves the resulting
-per-interval records inside `event_execution`. It does not compose their
-quotient gains with glyph-stage or delayed-REMESH gains, and it does not certify
-mixed runtime gain or repeated stability with evolving history. External
+The cycle forwards `include_flow_certificates` and
+`include_stage_certificates`, preserving the resulting interval, glyph and
+represented finite-schedule records inside `event_execution`. The delayed
+REMESH operation remains separate and its one-step evidence is never a factor
+in `represented_epi_schedule_composition`. The cycle does not certify a global
+binary64 runtime gain or repeated stability with evolving history. External
 callback and integrator effects remain outside rollback.
 
 ## Contract verification

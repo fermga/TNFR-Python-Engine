@@ -44,6 +44,7 @@ from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..mathematics.unified_numerical import np
 from ..operators.factor_contracts import resolve_runtime_operator_factors
 from ..types import Glyph, real_scalar_epi
+from ._exact_metric import exact_vectors_proportional_if_aligned
 from ._neighbor_epi_realization import validate_certificate_tolerance
 from .hybrid_operator_stability import (
     AffineEPIJumpGainCertificate,
@@ -135,12 +136,7 @@ def _finite_residual_norm(values: tuple[Fraction, ...]) -> float:
 def _exactly_proportional(left: Any, right: Any) -> bool:
     left_exact = _exact_vector(left)
     right_exact = _exact_vector(right)
-    if not left_exact or not right_exact or len(left_exact) != len(right_exact):
-        return False
-    return all(
-        lhs * right_exact[0] == rhs * left_exact[0]
-        for lhs, rhs in zip(left_exact, right_exact)
-    )
+    return exact_vectors_proportional_if_aligned(left_exact, right_exact)
 
 
 def _well_typed_conditions(value: Any) -> bool:

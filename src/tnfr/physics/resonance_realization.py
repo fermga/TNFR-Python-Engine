@@ -79,6 +79,9 @@ from ..operators._resonance_identity import (
 )
 from ..types import ZERO_BEPI_STORAGE, ensure_bepi, real_scalar_epi
 from ..utils import angle_diff
+from ._exact_metric import (
+    binary64_vectors_exactly_proportional as _exactly_proportional,
+)
 from ._helpers import finite_real_scalar
 from .hybrid_operator_stability import (
     AffineEPIJumpGainCertificate,
@@ -189,15 +192,6 @@ def _node_frequency(G: Any, node: Any) -> float:
     if value <= 0.0:
         raise ValueError("Resonance realization requires positive capacities")
     return value
-
-
-def _exactly_proportional(left: Any, right: Any) -> bool:
-    left_exact = tuple(Fraction.from_float(float(value)) for value in left)
-    right_exact = tuple(Fraction.from_float(float(value)) for value in right)
-    return all(
-        lhs * right_exact[0] == rhs * left_exact[0]
-        for lhs, rhs in zip(left_exact, right_exact)
-    )
 
 
 def _exact_weighted_mean_data(

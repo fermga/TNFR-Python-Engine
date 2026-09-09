@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, TypeAlias
 
 from ..node import NodeProtocol
 from ..types import Glyph
@@ -10,8 +10,11 @@ from .event_remesh_runtime import (
     execute_event_remesh_cycle as execute_event_remesh_cycle,
 )
 from .event_runtime import (
+    ExecutedGlyphStage as ExecutedGlyphStage,
     ExecutedNodalFlowInterval as ExecutedNodalFlowInterval,
     ExecutedOperatorEvent as ExecutedOperatorEvent,
+    ObservedRepresentedEPIScheduleComposition as _ObservedComposition,
+    RepresentedEPIScheduleOperation as RepresentedEPIScheduleOperation,
     OperatorEventExecutionResult as OperatorEventExecutionResult,
     execute_operator_event_schedule as execute_operator_event_schedule,
 )
@@ -47,6 +50,8 @@ from .word_execution import (
     preflight_network_mutation_sequence as preflight_network_mutation_sequence,
     run_network_sequence as run_network_sequence,
 )
+
+ObservedRepresentedEPIScheduleComposition: TypeAlias = _ObservedComposition
 
 Operator: Any
 Emission: Any

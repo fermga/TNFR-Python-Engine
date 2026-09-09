@@ -38,6 +38,7 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
+from fractions import Fraction
 from numbers import Real
 from types import (
     BuiltinFunctionType,
@@ -845,10 +846,11 @@ class RecursivityStageProposal:
 class NetworkStageResult:
     """Completed network stage and its executable scheduling semantics.
 
-    ``pointwise_epi_jump_certificate`` is populated only when the caller
-    requests the opt-in pointwise EPI audit. The certificate is computed from
-    the executor's own detached stage-start graph and frozen proposals before
-    any live structural commit.
+    The pointwise or neighbor EPI jump certificate is populated only when the
+    caller requests the opt-in EPI audit. Evidence is computed from the
+    executor's detached stage-start graph and frozen proposals before any
+    live structural commit; unsupported theorem domains report an explicit
+    abstention reason.
     """
 
     operator: str
@@ -858,6 +860,54 @@ class NetworkStageResult:
     pointwise_epi_jump_certificate: Any | None = field(
         default=None, repr=False, compare=False
     )
+    neighbor_epi_jump_certificate: Any | None = field(
+        default=None, repr=False, compare=False
+    )
+    epi_jump_certificate_abstention_reason: str | None = None
+
+    def __post_init__(self) -> None:
+        """Reject contradictory evidence payloads at their source."""
+
+        certificates = (
+            self.pointwise_epi_jump_certificate,
+            self.neighbor_epi_jump_certificate,
+        )
+        if sum(certificate is not None for certificate in certificates) > 1:
+            raise ValueError(
+                "NetworkStageResult cannot contain multiple EPI jump certificates"
+            )
+        if (
+            any(certificate is not None for certificate in certificates)
+            and self.epi_jump_certificate_abstention_reason is not None
+        ):
+            raise ValueError(
+                "A certified stage cannot also declare certificate abstention"
+            )
+        if (
+            self.epi_jump_certificate_abstention_reason is not None
+            and type(self.epi_jump_certificate_abstention_reason) is not str
+        ):
+            raise TypeError(
+                "epi_jump_certificate_abstention_reason must be a string or None"
+            )
+
+    @property
+    def epi_jump_certificate(self) -> Any | None:
+        """Return the available operator-family EPI jump certificate."""
+
+        if self.pointwise_epi_jump_certificate is not None:
+            return self.pointwise_epi_jump_certificate
+        return self.neighbor_epi_jump_certificate
+
+    @property
+    def epi_jump_certificate_kind(self) -> str | None:
+        """Return ``pointwise`` or ``neighbor`` for the available certificate."""
+
+        if self.pointwise_epi_jump_certificate is not None:
+            return "pointwise"
+        if self.neighbor_epi_jump_certificate is not None:
+            return "neighbor"
+        return None
 
 
 @dataclass(frozen=True, slots=True)
@@ -1402,6 +1452,113 @@ def _validate_pointwise_proposals(
             raise RuntimeError("Pointwise stage payload target changed")
 
 
+def _validate_pointwise_epi_jump_certificate(
+    snapshot: Any,
+    proposals: tuple[PointwiseStageProposal, ...],
+    glyph: Glyph,
+    certificate: Any,
+    *,
+    fixed_support_declared: bool,
+) -> None:
+    """Bind one proof-stamped pointwise certificate to frozen proposals."""
+
+    from ..operators.operator_contracts import contract_for
+    from ..physics.pointwise_stage_stability import (
+        PointwiseEPIJumpRealizationCertificate,
+    )
+
+    if type(certificate) is not PointwiseEPIJumpRealizationCertificate:
+        raise RuntimeError(
+            "Pointwise EPI certificate builder returned an unexpected type"
+        )
+    if not certificate._proof_fields_are_intact():
+        raise RuntimeError("Pointwise EPI certificate proof fields are not intact")
+
+    nodes = tuple(snapshot.nodes)
+    targets = tuple(proposal.node for proposal in proposals)
+    contract = contract_for(glyph.value)
+    if (
+        certificate.operator_name != contract.english_name
+        or certificate.glyph != glyph.value
+        or tuple(certificate.nodes) != nodes
+        or tuple(certificate.target_nodes) != targets
+        or certificate.stage_schedule != TWO_PHASE_JACOBI
+        or certificate.fixed_support_declared is not fixed_support_declared
+    ):
+        raise RuntimeError(
+            "Pointwise EPI certificate identity or schedule diverged from "
+            "the frozen stage"
+        )
+
+    expected_before = tuple(
+        require_real_scalar_epi(
+            _raw_alias(snapshot, node, ALIAS_EPI, 0.0),
+            operator=contract.english_name,
+            label=f"node {node!r} EPI snapshot",
+        )
+        for node in nodes
+    )
+    expected_after = list(expected_before)
+    node_indices = {node: index for index, node in enumerate(nodes)}
+    for proposal in proposals:
+        payload = proposal.payload
+        if proposal.glyph is Glyph.AL:
+            expected_after[node_indices[proposal.node]] = float(payload.epi_after)
+        elif proposal.glyph in (Glyph.VAL, Glyph.NUL) and payload.write_epi:
+            if payload.epi_after is None:
+                raise RuntimeError(
+                    "Pointwise EPI-writing proposal lost its endpoint"
+                )
+            expected_after[node_indices[proposal.node]] = float(payload.epi_after)
+
+    if not np.array_equal(
+        np.asarray(certificate.state_before, dtype=float),
+        np.asarray(expected_before, dtype=float),
+    ) or not np.array_equal(
+        np.asarray(certificate.runtime_proposed_state_after, dtype=float),
+        np.asarray(expected_after, dtype=float),
+    ):
+        raise RuntimeError(
+            "Pointwise EPI certificate endpoints diverged from frozen proposals"
+        )
+
+    resolved_factors = resolve_runtime_operator_factors(
+        snapshot.graph.get("GLYPH_FACTORS"), glyph, snapshot.graph
+    )
+    expected_linear = np.eye(len(nodes), dtype=float)
+    expected_offset = np.zeros(len(nodes), dtype=float)
+    for proposal in proposals:
+        index = node_indices[proposal.node]
+        payload = proposal.payload
+        if proposal.glyph is Glyph.AL:
+            expected_offset[index] = float(resolved_factors["AL_boost"])
+        elif proposal.glyph in (Glyph.VAL, Glyph.NUL) and payload.write_epi:
+            expected_linear[index, index] = float(payload.requested_scale)
+
+    exact_linear = tuple(
+        tuple(Fraction.from_float(float(value)) for value in row)
+        for row in expected_linear
+    )
+    exact_offset = tuple(
+        Fraction.from_float(float(value)) for value in expected_offset
+    )
+    if (
+        not np.array_equal(
+            np.asarray(certificate.represented_linear_map, dtype=float),
+            expected_linear,
+        )
+        or not np.array_equal(
+            np.asarray(certificate.represented_offset, dtype=float),
+            expected_offset,
+        )
+        or certificate.exact_represented_linear_map != exact_linear
+        or certificate.exact_represented_offset != exact_offset
+    ):
+        raise RuntimeError(
+            "Pointwise EPI certificate affine map diverged from frozen proposals"
+        )
+
+
 def _commit_pointwise_lifecycle_before_structure(
     graph: Any, proposals: Sequence[PointwiseStageProposal]
 ) -> None:
@@ -1658,6 +1815,261 @@ def _validate_proposals(
             # was built; any failure here indicates internal corruption.
             if failures:
                 raise RuntimeError("Resonance proposal identity changed")
+
+
+def _certify_neighbor_epi_jump_from_proposals(
+    snapshot: Any,
+    proposals: tuple[NeighborStageProposal, ...],
+    glyph: Glyph,
+    factors: Mapping[str, Any],
+) -> tuple[Any | None, str | None]:
+    """Certify one EN/RA stage and bind it to its frozen proposals.
+
+    The general all-target certificate rebuilds one read-only structural step
+    from the same detached stage-start graph.  This adapter accepts that result
+    only when every runtime-facing field agrees exactly with the proposals the
+    executor is about to commit.  Mathematical domain rejection is an
+    abstention; disagreement between two supposedly shared kernels is an
+    internal error and must abort the surrounding transaction.
+    """
+
+    from ..physics.network_stage_stability import (
+        AllTargetNeighborStageCertificate,
+        _validate_bridge_stage_certificate,
+        certify_all_target_neighbor_stage,
+    )
+    from ..physics._conductance import read_conductance
+    from ..physics._neighbor_epi_realization import (
+        exact_binary64_matrix,
+        represented_neighbor_blend_map,
+    )
+
+    nodes = tuple(snapshot.nodes())
+    targets = tuple(proposal.node for proposal in proposals)
+    if not targets:
+        return None, "neighbor_certificate_requires_nonempty_targets"
+    if targets != nodes:
+        return None, "neighbor_certificate_requires_complete_snapshot_node_order"
+
+    # These are valid executor inputs but explicit exclusions of the symmetric
+    # positive-conductance theorem used by this optional certificate.  Detect
+    # them before entering the proof builder so an implementation exception
+    # cannot be mislabeled as mathematical abstention.
+    if len(nodes) < 2:
+        return None, "neighbor_certificate_domain_rejected:at_least_two_nodes"
+    if snapshot.is_directed():
+        return None, "neighbor_certificate_domain_rejected:undirected_support"
+    if any(not proposal.neighbors for proposal in proposals):
+        return None, "neighbor_certificate_domain_rejected:nonempty_neighbor_sets"
+    if any(
+        not any(alias in snapshot.nodes[node] for alias in ALIAS_EPI)
+        for node in nodes
+    ):
+        return None, "neighbor_certificate_domain_rejected:explicit_epi_state"
+
+    try:
+        conductance = read_conductance(snapshot, list(nodes), symmetric=True)
+        strength = conductance.strength
+    except ValueError as exc:
+        return (
+            None,
+            "neighbor_certificate_domain_rejected:conductance:"
+            f"{exc}",
+        )
+    if np.any(strength <= 0.0):
+        return None, "neighbor_certificate_domain_rejected:positive_row_strength"
+    adjacency = conductance.dense()
+    reached = {0}
+    frontier = [0]
+    while frontier:
+        source = frontier.pop()
+        for target in np.flatnonzero(adjacency[source] > 0.0):
+            target = int(target)
+            if target != source and target not in reached:
+                reached.add(target)
+                frontier.append(target)
+    if len(reached) != len(nodes):
+        return None, "neighbor_certificate_domain_rejected:connected_conductance"
+
+    capacities: list[float] = []
+    for node in nodes:
+        raw_capacity = _raw_alias(snapshot, node, ALIAS_VF, None)
+        if isinstance(raw_capacity, (bool, str, bytes, bytearray, complex)):
+            return None, "neighbor_certificate_domain_rejected:positive_capacity"
+        try:
+            capacity = float(raw_capacity)
+        except (TypeError, ValueError, OverflowError):
+            return None, "neighbor_certificate_domain_rejected:positive_capacity"
+        if not math.isfinite(capacity) or capacity <= 0.0:
+            return None, "neighbor_certificate_domain_rejected:positive_capacity"
+        capacities.append(capacity)
+    with np.errstate(
+        over="ignore", divide="ignore", invalid="ignore", under="ignore"
+    ):
+        metric = strength / np.asarray(capacities, dtype=float)
+    if not np.all(np.isfinite(metric)) or np.any(metric <= 0.0):
+        return None, "neighbor_certificate_domain_rejected:finite_positive_metric"
+
+    kwargs: dict[str, Any] = {
+        "fixed_support_declared": True,
+        "repetitions": 1,
+    }
+    if glyph is Glyph.EN:
+        kwargs["mix_factor"] = factors["EN_mix"]
+    else:
+        kwargs.update(
+            {
+                "fixed_phase_neighbor_sets_declared": False,
+                "mix_factor": factors["RA_epi_diff"],
+                "vf_amplification_factor": factors[
+                    "RA_vf_amplification"
+                ],
+                "phase_coupling_factor": factors["RA_phase_coupling"],
+            }
+        )
+    certificate = certify_all_target_neighbor_stage(
+        snapshot,
+        glyph,
+        **kwargs,
+    )
+
+    if type(certificate) is not AllTargetNeighborStageCertificate:
+        raise RuntimeError(
+            "Neighbor-stage certificate builder returned an unexpected type"
+        )
+    if (
+        certificate.operator_name
+        != ("Reception" if glyph is Glyph.EN else "Resonance")
+        or certificate.glyph != glyph.value
+        or tuple(certificate.nodes) != nodes
+        or certificate.repetitions_requested != 1
+        or certificate.repetitions_observed != 1
+        or certificate.repetitions_completed != 1
+        or not certificate.all_stages_admissible
+        or len(certificate.steps) != 1
+    ):
+        raise RuntimeError(
+            "Neighbor-stage certificate identity or cardinality diverged"
+        )
+
+    step = certificate.steps[0]
+    resolved_mix = float(
+        factors["EN_mix" if glyph is Glyph.EN else "RA_epi_diff"]
+    )
+    exact_resolved_mix = Fraction.from_float(resolved_mix)
+    if (
+        step.mix_factor != resolved_mix
+        or step.exact_mix_factor != exact_resolved_mix
+    ):
+        raise RuntimeError(
+            "Neighbor-stage certificate diverged from resolved runtime factors"
+        )
+
+    node_indices = {node: index for index, node in enumerate(nodes)}
+    expected_rows = []
+    for index, proposal in enumerate(proposals):
+        expected_local_map = represented_neighbor_blend_map(
+            len(nodes),
+            index,
+            tuple(node_indices[neighbor] for neighbor in proposal.neighbors),
+            resolved_mix,
+        )
+        expected_rows.append(expected_local_map[index])
+    expected_stage_map = np.asarray(expected_rows, dtype=float)
+    if (
+        not np.array_equal(
+            np.asarray(step.represented_stage_map, dtype=float),
+            expected_stage_map,
+        )
+        or step.exact_represented_stage_map
+        != exact_binary64_matrix(expected_stage_map)
+    ):
+        raise RuntimeError(
+            "Neighbor-stage certificate map diverged from frozen stage proposals"
+        )
+
+    if (
+        step.index != 0
+        or tuple(step.nodes) != nodes
+        or not step.runtime_stage_admissible
+        or step.atomic_rejection_nodes
+        or len(step.local_certificates) != len(proposals)
+        or tuple(step.runtime_neighbor_sets)
+        != tuple(proposal.neighbors for proposal in proposals)
+        or not np.array_equal(
+            np.asarray(step.state_before, dtype=float),
+            np.asarray(
+                tuple(proposal.epi_before for proposal in proposals),
+                dtype=float,
+            ),
+        )
+        or not np.array_equal(
+            np.asarray(step.runtime_accepted_state_after, dtype=float),
+            np.asarray(
+                tuple(proposal.epi_after for proposal in proposals),
+                dtype=float,
+            ),
+        )
+    ):
+        raise RuntimeError(
+            "Neighbor-stage certificate diverged from frozen stage proposals"
+        )
+
+    for index, (proposal, local) in enumerate(
+        zip(proposals, step.local_certificates, strict=True)
+    ):
+        common_matches = bool(
+            tuple(local.nodes) == nodes
+            and local.target == proposal.node
+            and local.target_index == index
+            and tuple(local.runtime_neighbors) == proposal.neighbors
+            and np.array_equal(
+                np.asarray(local.state_before, dtype=float),
+                np.asarray(step.state_before, dtype=float),
+            )
+            and float(local.unweighted_runtime_neighbor_mean)
+            == proposal.neighbor_epi_mean
+            and float(local.runtime_target_value) == proposal.epi_after
+            and local.epi_kind_before == proposal.epi_kind_before
+            and local.epi_kind_after == proposal.epi_kind_after
+            and float(local.mix_factor) == resolved_mix
+            and local.exact_mix_factor == exact_resolved_mix
+        )
+        if glyph is Glyph.EN:
+            channel_matches = bool(
+                proposal.write_epi
+                and not proposal.write_vf
+                and not proposal.write_theta
+            )
+        else:
+            resolved_vf_amplification = float(
+                factors["RA_vf_amplification"]
+            )
+            resolved_phase_coupling = float(factors["RA_phase_coupling"])
+            channel_matches = bool(
+                proposal.write_epi
+                and proposal.write_theta
+                and float(local.vf_amplification_factor)
+                == resolved_vf_amplification
+                and float(local.phase_coupling_factor)
+                == resolved_phase_coupling
+                and float(local.frequency_before[index])
+                == proposal.vf_before
+                and float(local.frequency_after[index])
+                == proposal.vf_after
+                and bool(local.frequency_amplification_active)
+                is proposal.write_vf
+                and float(local.phase_before) == proposal.theta_before
+                and float(local.phase_after) == proposal.theta_after
+            )
+        if not common_matches or not channel_matches:
+            raise RuntimeError(
+                "Neighbor-stage local certificate diverged from its frozen proposal"
+            )
+    validated = _validate_bridge_stage_certificate(certificate)
+    if validated.step is not step:
+        raise RuntimeError("Neighbor-stage certificate validation lost its step")
+    return certificate, None
 
 
 def _commit_structural_proposals(
@@ -2603,6 +3015,7 @@ def execute_pointwise_stage(
     compute_delta_nfr: Any = None,
     transaction_snapshot: GraphTransactionSnapshot | None = None,
     epi_jump_fixed_support_declared: bool | None = None,
+    _allow_epi_jump_certificate_abstention: bool = False,
     **execution_kwargs: Any,
 ) -> NetworkStageResult:
     """Execute an atomic all-target stage for a proven pointwise kernel.
@@ -2626,6 +3039,10 @@ def execute_pointwise_stage(
         raise ValueError(
             "Snapshot two-phase stages support AL, IL, SHA, VAL, NUL, ZHIR and NAV only"
         )
+    if type(_allow_epi_jump_certificate_abstention) is not bool:
+        raise TypeError(
+            "_allow_epi_jump_certificate_abstention must be a bool"
+        )
     if (
         epi_jump_fixed_support_declared is not None
         and type(epi_jump_fixed_support_declared) is not bool
@@ -2641,7 +3058,11 @@ def execute_pointwise_stage(
         )
 
     targets_tuple = _unique_stage_targets(targets)
-    if epi_jump_fixed_support_declared is not None and not targets_tuple:
+    if (
+        epi_jump_fixed_support_declared is not None
+        and not targets_tuple
+        and not _allow_epi_jump_certificate_abstention
+    ):
         raise ValueError(
             "The pointwise EPI jump certificate requires at least one target"
         )
@@ -2662,6 +3083,11 @@ def execute_pointwise_stage(
                 glyph=operator.glyph.value,
                 schedule=TWO_PHASE_JACOBI,
                 nodes_processed=0,
+                epi_jump_certificate_abstention_reason=(
+                    "pointwise_certificate_requires_nonempty_targets"
+                    if epi_jump_fixed_support_declared is not None
+                    else None
+                ),
             )
 
         transition_now = (
@@ -2680,7 +3106,10 @@ def execute_pointwise_stage(
         execution_kwargs = preflight.execution_kwargs
         states_before = preflight.states_before
         if not preflight.exact_stage:
-            if epi_jump_fixed_support_declared is not None:
+            if (
+                epi_jump_fixed_support_declared is not None
+                and not _allow_epi_jump_certificate_abstention
+            ):
                 raise TNFRValueError(
                     "Pointwise EPI certification requires the requested canonical "
                     "glyph to retain its two-phase proposal path.",
@@ -2705,6 +3134,11 @@ def execute_pointwise_stage(
                 glyph=operator.glyph.value,
                 schedule=OPERATOR_MAJOR_GAUSS_SEIDEL,
                 nodes_processed=len(targets_tuple),
+                epi_jump_certificate_abstention_reason=(
+                    "pointwise_certificate_requires_canonical_two_phase_stage"
+                    if epi_jump_fixed_support_declared is not None
+                    else None
+                ),
             )
 
         factors = resolve_runtime_operator_factors(
@@ -2795,6 +3229,13 @@ def execute_pointwise_stage(
                 nav_resolved_seed=resolved_seed,
                 nav_node_offsets=node_offsets,
                 nav_execution_kwargs=execution_kwargs,
+            )
+            _validate_pointwise_epi_jump_certificate(
+                snapshot,
+                proposals,
+                operator.glyph,
+                pointwise_certificate,
+                fixed_support_declared=epi_jump_fixed_support_declared,
             )
 
         _emit_pointwise_precommit_warnings(graph, proposals)
@@ -3030,12 +3471,21 @@ def execute_neighbor_stage(
     sequence_context: Any = None,
     compute_delta_nfr: Any = None,
     transaction_snapshot: GraphTransactionSnapshot | None = None,
+    include_epi_jump_certificate: bool = False,
     **execution_kwargs: Any,
 ) -> NetworkStageResult:
-    """Execute one atomic EN/RA stage from a shared immutable snapshot."""
+    """Execute one atomic EN/RA stage from a shared immutable snapshot.
+
+    When requested, the optional EPI certificate is created before commit from
+    this stage's detached snapshot and accepted only after exact comparison
+    with every frozen proposal. Unsupported mathematical domains abstain while
+    preserving ordinary stage execution.
+    """
 
     if operator.glyph not in (Glyph.EN, Glyph.RA):
         raise ValueError("Two-phase network stages currently support EN and RA only")
+    if type(include_epi_jump_certificate) is not bool:
+        raise TypeError("include_epi_jump_certificate must be a bool")
 
     targets_tuple = _unique_stage_targets(targets)
     transaction = transaction_snapshot or GraphTransactionSnapshot(graph)
@@ -3054,6 +3504,11 @@ def execute_neighbor_stage(
                 glyph=operator.glyph.value,
                 schedule=TWO_PHASE_JACOBI,
                 nodes_processed=0,
+                epi_jump_certificate_abstention_reason=(
+                    "neighbor_certificate_requires_nonempty_targets"
+                    if include_epi_jump_certificate
+                    else None
+                ),
             )
         preflight = _preflight_two_phase_stage(
             graph,
@@ -3085,6 +3540,11 @@ def execute_neighbor_stage(
                 glyph=operator.glyph.value,
                 schedule=OPERATOR_MAJOR_GAUSS_SEIDEL,
                 nodes_processed=len(targets_tuple),
+                epi_jump_certificate_abstention_reason=(
+                    "neighbor_certificate_requires_canonical_two_phase_stage"
+                    if include_epi_jump_certificate
+                    else None
+                ),
             )
 
         factors = resolve_runtime_operator_factors(
@@ -3125,6 +3585,18 @@ def execute_neighbor_stage(
             )
 
         _validate_proposals(proposals, targets_tuple, operator.glyph)
+        neighbor_certificate = None
+        certificate_abstention_reason = None
+        if include_epi_jump_certificate:
+            (
+                neighbor_certificate,
+                certificate_abstention_reason,
+            ) = _certify_neighbor_epi_jump_from_proposals(
+                snapshot,
+                proposals,
+                operator.glyph,
+                factors,
+            )
         graph._last_operator_applied = operator.name
         _commit_structural_proposals(graph, proposals)
         if operator.glyph is Glyph.RA:
@@ -3165,6 +3637,10 @@ def execute_neighbor_stage(
             glyph=operator.glyph.value,
             schedule=TWO_PHASE_JACOBI,
             nodes_processed=len(targets_tuple),
+            neighbor_epi_jump_certificate=neighbor_certificate,
+            epi_jump_certificate_abstention_reason=(
+                certificate_abstention_reason
+            ),
         )
     except BaseException as failure:
         _discard_pending_monitor(graph)
