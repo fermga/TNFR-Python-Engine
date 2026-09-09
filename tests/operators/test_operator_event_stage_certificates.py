@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from fractions import Fraction
 
 import networkx as nx
@@ -257,3 +258,27 @@ def test_zero_flow_transition_does_not_invent_strict_contraction() -> None:
     assert mixed.represented_affine_composition_gain_certified
     assert mixed.exact_energy_gain_upper_bound == 1
     assert not mixed.represented_map_global_disagreement_contraction_certified
+
+
+def test_stage_gain_claim_fails_closed_when_a_sealed_field_changes() -> None:
+    schedule = build_operator_event_schedule(
+        ("transition",),
+        start_time=0.0,
+        flow_durations=(0.0, 0.0),
+    )
+    result = execute_operator_event_schedule(
+        _graph(),
+        schedule,
+        include_stage_certificates=True,
+    )
+    stage = result.glyph_stage_evidence[0]
+
+    assert stage._proof_fields_are_intact()
+    assert stage.represented_affine_gain_bound_at_observed_endpoint_certified
+
+    altered = replace(stage, exact_runtime_endpoint_bound=False)
+
+    assert not altered._proof_fields_are_intact()
+    assert not altered.represented_affine_gain_bound_at_observed_endpoint_certified
+    with pytest.raises(ValueError, match="proof fields are not intact"):
+        replace(result, glyph_stage_evidence=(altered,))

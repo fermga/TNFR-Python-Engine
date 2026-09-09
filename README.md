@@ -234,35 +234,62 @@ intervals that collapse or cannot land by direct binary64 addition, freezes the
 initial target tuple, and rolls back graph-owned flow and jump state on failure.
 Flow boundaries provide timestamped EPI evidence; zero-duration jumps are
 recorded separately and restart same-time EPI history after a state change.
-Every Mutation event therefore requires a positive representable immediately
-preceding flow.
+Every Mutation event therefore requires a positive immediately preceding flow
+whose displayed endpoint subtraction exactly equals its declared duration.
 
 `capture_nodal_flow_state(...)` and
 `certify_observed_nodal_flow_interval(...)` provide detached endpoint evidence
 for one declared interval. They separate the exact rational nodal identity and
-pure-EPI diffusion/quotient result from a same-operation binary64 held-pressure
-Euler replay. The standalone certificate never infers runtime provenance.
+pure-EPI diffusion/quotient result from binary64 held-pressure replays. The
+standalone certificate never infers runtime provenance.
 Passing `include_flow_certificates=True` to the event executor captures each
 positive interval immediately around the actual integrator call and returns an
-`ExecutedNodalFlowInterval`. Runtime-bound binary64 identification requires
-the exact built-in `DefaultIntegrator`, Euler with one substep, live Gamma type
-`none`, inactive clipping, disabled extended dynamics, stable support,
-unchanged capacity and pressure, and an exact binary64 endpoint replay. Exact
-rational pure-EPI affine promotion additionally requires fixed symmetric
-nonnegative conductance with positive row strengths, positive capacity, the
-stored pressure `-L_rw EPI` and the exact nodal identity. A stale stored
-pressure can therefore pass trusted binary64 held-pressure identification while
-the pure-EPI diffusion and quotient theorem abstain. No interval field by itself
-certifies solver accuracy, refinement equivalence, a glyph gain or
-future/repeated schedule stability.
+`ExecutedNodalFlowInterval`. Its broader
+`runtime_bound_binary64_held_pressure_interval_identified` result covers one or
+more built-in Euler substeps when their represented duration sum equals the
+declared interval, Gamma is `none`, clipping and extended dynamics are inactive,
+support, capacity and pressure remain fixed, and the sequential binary64 replay
+matches. `runtime_bound_binary64_interval_identified` and exact rational
+pure-EPI affine promotion remain restricted to one Euler substep; the latter
+also requires fixed symmetric nonnegative conductance with positive row
+strengths, positive capacity, stored pressure `-L_rw EPI` and the exact nodal
+identity. Internal held-pressure substeps do not re-evaluate pressure and do not
+establish physical mesh refinement or a modal diffusion decision. No interval
+field by itself certifies solver accuracy, a glyph gain or future/repeated
+schedule stability.
 
+`observe_event_local_zhir_prejump(...)` pairs one sealed executed flow offline
+with a scheduled ZHIR boundary at the same exact and binary64 coordinate. It
+records both the exact rational endpoint secant and the subtraction/division
+performed by the live Mutation gate; those values can differ, and the latter
+alone decides the strict `rate > xi` threshold. The observation is available
+whether that threshold passes or fails. The paired objects do not prove common
+schedule-execution provenance.
+
+`compare_event_local_zhir_held_pressure_subdivision(...)` compares two such
+observations with identical initial state, capacity, pressure, conductance,
+support, duration, event coordinate and threshold but different positive
+substep counts. It certifies the represented gate decision only when both
+decisions agree and every exact binary64 rate difference is strictly smaller
+than the baseline distance to `xi`. Equality at the margin abstains. This is an
+internal held-pressure subdivision result; pressure-reevaluated refinement,
+modal decisions, solver accuracy/order, U4 readiness, adaptive grammar and
+future behavior remain open.
 Passing `include_stage_certificates=True` implies flow capture and returns one
 `ExecutedGlyphStage` for every accepted event. The stage record binds the
 executor-owned pointwise certificate for AL/SHA/VAL/NUL/ZHIR/NAV, or the
 all-target neighbour certificate for EN/RA, to the EPI endpoints captured around
 the actual jump and to any immediately adjacent positive flows. Unsupported or
 out-of-domain glyph evidence remains an explicit abstention without changing a
-valid stage execution.
+valid stage execution. Every accepted two-phase ZHIR stage separately preserves
+one sealed `MutationStageDecisionObservation` per target, including its complete
+threshold certificate, phase/regime decision, acceleration/bifurcation read-out
+and U4 context. `NetworkStageResult` retains these observations even when no EPI
+certificate was requested; opt-in event-stage evidence carries them forward.
+Each `ExecutedGlyphStage` is value-sealed across its event, endpoints,
+certificate, adjacent-flow records and Mutation observations. The execution
+result requires one intact stage per committed event in the same order, so
+construction or replacement cannot promote a represented-gain claim.
 
 The result's `represented_epi_schedule_composition` is an
 `ObservedRepresentedEPIScheduleComposition`. It records every positive flow and

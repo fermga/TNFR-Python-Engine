@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, replace
 from fractions import Fraction
 from types import MethodType
 from typing import Any
@@ -111,12 +111,18 @@ def test_opt_in_binds_one_exact_dyadic_default_euler_interval() -> None:
     assert certificate.explicit_euler_map_identified
     assert certificate.exact_quotient_energy_gain_upper_bound == Fraction(1, 4)
     assert certificate.global_disagreement_contraction_certified
+    assert evidence._proof_fields_are_intact()
     assert evidence.runtime_bound_binary64_interval_identified
+    assert evidence.runtime_bound_binary64_held_pressure_interval_identified
     assert evidence.runtime_bound_exact_affine_map_identified
     assert evidence.runtime_bound_global_disagreement_contraction_certified
     assert not evidence.solver_accuracy_certified
     assert not evidence.future_or_repeated_schedule_stability_certified
     assert result.all_positive_flow_intervals_binary64_identified is True
+    assert (
+        result.all_positive_flow_intervals_binary64_held_pressure_identified
+        is True
+    )
     assert result.all_positive_flow_intervals_exact_affine is True
     assert result.all_positive_flow_intervals_contracting is True
     assert not result.solver_accuracy_certified
@@ -127,12 +133,61 @@ def test_opt_in_binds_one_exact_dyadic_default_euler_interval() -> None:
         evidence.clipping_applied = True  # type: ignore[misc]
 
 
+def test_runtime_flow_wrapper_fails_closed_after_provenance_replacement() -> None:
+    result = execute_operator_event_schedule(
+        _graph(),
+        _schedule(0.25),
+        include_flow_certificates=True,
+    )
+    evidence = result.flow_interval_evidence[0]
+
+    forged = replace(evidence, resolved_substeps=2)
+
+    assert not forged._proof_fields_are_intact()
+    assert not forged.runtime_bound_binary64_interval_identified
+    assert not forged.runtime_bound_binary64_held_pressure_interval_identified
+    assert not forged.runtime_bound_exact_affine_map_identified
+
+
+def test_directly_constructed_runtime_flow_wrapper_has_no_provenance_seal() -> None:
+    result = execute_operator_event_schedule(
+        _graph(),
+        _schedule(0.25),
+        include_flow_certificates=True,
+    )
+    evidence = result.flow_interval_evidence[0]
+    fields = {
+        name: getattr(evidence, name)
+        for name in (
+            "interval",
+            "certificate",
+            "abstention_reason",
+            "integrator_name",
+            "integrator_provenance_certified",
+            "resolved_method",
+            "resolved_substeps",
+            "gamma_is_none",
+            "clipping_applied",
+            "extended_dynamics_requested",
+        )
+    }
+
+    copied = ExecutedNodalFlowInterval(**fields)
+
+    assert not copied._proof_fields_are_intact()
+    assert not copied.runtime_bound_binary64_held_pressure_interval_identified
+
+
 def test_default_path_remains_uncertified_when_opt_in_is_disabled() -> None:
     result = execute_operator_event_schedule(_graph(), _schedule(0.25))
 
     assert not result.flow_certification_requested
     assert result.flow_interval_evidence == ()
     assert result.all_positive_flow_intervals_binary64_identified is None
+    assert (
+        result.all_positive_flow_intervals_binary64_held_pressure_identified
+        is None
+    )
     assert result.all_positive_flow_intervals_exact_affine is None
     assert result.all_positive_flow_intervals_contracting is None
 
@@ -343,6 +398,19 @@ def test_nonpromotable_default_modes_abstain_explicitly(
     assert evidence.resolved_substeps == expected_substeps
     assert evidence.certificate is not None
     assert not evidence.runtime_bound_binary64_interval_identified
+    held_pressure_expected = bool(
+        expected_method == "euler"
+        and expected_substeps >= 1
+        and not configuration.get("use_extended_dynamics")
+    )
+    assert (
+        evidence.runtime_bound_binary64_held_pressure_interval_identified
+        is held_pressure_expected
+    )
+    assert (
+        result.all_positive_flow_intervals_binary64_held_pressure_identified
+        is held_pressure_expected
+    )
     if expected_method != "euler":
         assert "euler_method" in evidence.certificate.failed_runtime_conditions
     if expected_substeps != 1:
@@ -352,6 +420,29 @@ def test_nonpromotable_default_modes_abstain_explicitly(
         assert "extended_dynamics_not_requested" in (
             evidence.certificate.failed_runtime_conditions
         )
+
+
+def test_multistep_clipping_blocks_held_pressure_runtime_identification() -> None:
+    graph = _graph(epi=(0.9, -0.9), pressure=(1.0, -1.0))
+    graph.graph.update(DT_MIN=0.25, EPI_MIN=-1.0, EPI_MAX=1.0)
+
+    result = execute_operator_event_schedule(
+        graph,
+        _schedule(0.5),
+        include_flow_certificates=True,
+    )
+
+    evidence = result.flow_interval_evidence[0]
+    assert evidence.resolved_substeps == 2
+    assert evidence.clipping_applied is True
+    assert evidence.certificate is not None
+    assert evidence.certificate.binary64_held_pressure_replay_matches is False
+    assert not evidence.runtime_bound_binary64_held_pressure_interval_identified
+    assert (
+        result.all_positive_flow_intervals_binary64_held_pressure_identified
+        is False
+    )
+    assert tuple(graph.nodes[node]["EPI"] for node in graph) == (1.0, -1.0)
 
 
 def test_unsupported_capture_abstains_without_changing_runtime() -> None:
@@ -428,6 +519,10 @@ def test_zero_positive_intervals_have_vacuous_requested_aggregates() -> None:
 
     assert result.flow_interval_evidence == ()
     assert result.all_positive_flow_intervals_binary64_identified is True
+    assert (
+        result.all_positive_flow_intervals_binary64_held_pressure_identified
+        is True
+    )
     assert result.all_positive_flow_intervals_exact_affine is True
     assert result.all_positive_flow_intervals_contracting is True
 
@@ -473,3 +568,84 @@ def test_unexpected_certificate_failure_rolls_back_schedule(
     assert graph.graph == before_graph
     assert dict(graph.nodes(data=True)) == before_nodes
     assert "flow_interval_evidence" not in graph.graph
+
+
+
+def test_forced_signed_zero_interval_mutation_invalidates_runtime_wrapper() -> None:
+    result = execute_operator_event_schedule(
+        _graph(epi=(0.0, 0.0), pressure=(0.0, 0.0)),
+        _schedule(1.0),
+        include_flow_certificates=True,
+    )
+    evidence = result.flow_interval_evidence[0]
+    assert evidence.interval.start_time.hex() == 0.0.hex()
+    assert evidence._proof_fields_are_intact()
+
+    object.__setattr__(evidence.interval, "start_time", -0.0)
+
+    assert evidence.interval.start_time.hex() == (-0.0).hex()
+    assert not evidence._proof_fields_are_intact()
+    assert not evidence.runtime_bound_binary64_interval_identified
+    assert not evidence.runtime_bound_binary64_held_pressure_interval_identified
+
+
+def test_mutable_identity_node_invalidates_nested_and_wrapper_proofs() -> None:
+    calls = {"repr": 0, "hash": 0, "eq": 0}
+
+    class MutableIdentityNode:
+        def __init__(self, label: str) -> None:
+            self.label = label
+
+        def __hash__(self) -> int:
+            calls["hash"] += 1
+            return object.__hash__(self)
+
+        def __eq__(self, other: object) -> bool:
+            calls["eq"] += 1
+            return self is other
+
+        def __repr__(self) -> str:
+            calls["repr"] += 1
+            return f"MutableIdentityNode({self.label!r})"
+
+    left = MutableIdentityNode("left")
+    right = MutableIdentityNode("right")
+    graph = nx.Graph()
+    graph.add_edge(left, right)
+    graph.graph.update(
+        _t=0.0,
+        DT_MIN=0.0,
+        GAMMA={"type": "none"},
+        EPI_MIN=-10.0,
+        EPI_MAX=10.0,
+    )
+    for node, epi in ((left, 0.0), (right, 1.0)):
+        graph.nodes[node].update(
+            EPI=epi,
+            nu_f=1.0,
+            theta=0.0,
+            delta_nfr=0.25,
+        )
+    evidence = execute_operator_event_schedule(
+        graph,
+        _schedule(0.25),
+        include_flow_certificates=True,
+    ).flow_interval_evidence[0]
+    certificate = evidence.certificate
+    assert certificate is not None
+    assert certificate._proof_fields_are_intact()
+    assert evidence._proof_fields_are_intact()
+    calls_before_validation = dict(calls)
+
+    assert certificate._proof_fields_are_intact()
+    assert evidence._proof_fields_are_intact()
+    assert calls == calls_before_validation
+    stamp_before = certificate._proof_stamp
+    left.label = "mutated-left"
+
+    assert certificate._proof_stamp == stamp_before
+    assert not certificate._proof_fields_are_intact()
+    assert not certificate.binary64_held_pressure_runtime_identified
+    assert not evidence._proof_fields_are_intact()
+    assert not evidence.runtime_bound_binary64_held_pressure_interval_identified
+    assert calls == calls_before_validation

@@ -275,10 +275,10 @@ offsets, event offsets, total duration and physical ordering. Float start,
 event and end timestamps are display representations of the corresponding
 exact absolute times. At large origins a positive interval can leave its
 display endpoints equal, or timestamp subtraction can disagree with the
-declared duration. Consequently, timestamps never reconstruct duration and
-scheduled jumps never populate the strictly ordered secants in
-`epi_time_history`. Coincident jumps instead share an exact event coordinate
-in the hybrid log and are ordered by `event_index`.
+declared duration. Consequently, schedule logic never reconstructs duration
+from timestamps, and the schedule builder never populates `epi_time_history`.
+Coincident jumps instead share an exact event coordinate in the hybrid log and
+are ordered by `event_index`.
 
 For one declared interval,
 [`event_duration.py`](../src/tnfr/physics/event_duration.py) maps physical
@@ -300,17 +300,54 @@ The separate `execute_operator_event_schedule` runtime now binds these records
 to the graph's configured nodal integrator and the shared atomic network-stage
 dispatcher. It freezes the initial targets, checks the live binary64 clock at
 each boundary and rejects positive intervals whose endpoints collapse or whose
-direct float addition misses the scheduled endpoint. Flow boundaries populate
-timestamped EPI evidence; a same-time jump restarts that history and remains in
-`hybrid_event_log`. One graph transaction covers flow, jump, history, cache and
-event-log state, while external emitted effects remain outside rollback.
+direct float addition misses the scheduled endpoint. Because ZHIR currently
+reads a secant from absolute binary64 timestamps, its pre-flow is also rejected
+when endpoint subtraction differs from the authoritative declared duration.
+Flow boundaries populate timestamped EPI evidence; a same-time jump restarts
+that history and remains in `hybrid_event_log`. One graph transaction covers
+flow, jump, history, cache and event-log state, while external emitted effects
+remain outside rollback.
 
+Opt-in interval evidence separates two binary64 runtime claims. The original
+single-step replay and exact rational Euler map still require one Euler substep.
+The broader sequential held-pressure replay admits one or more substeps only
+when their represented duration sum equals the declared interval and the exact
+built-in integrator, Euler method, absent Gamma, inactive clipping, disabled
+extended dynamics, stable support and unchanged capacity/pressure are all
+observed. Those internal substeps retain the interval-start pressure; they are
+not a pressure-reevaluated physical mesh and have no diffusion modal decision.
+
+The narrower event-local comparison in
+[`event_refinement.py`](../src/tnfr/physics/event_refinement.py) starts from that
+executor-sealed held-pressure evidence. One pre-jump observation pairs a flow
+offline with a scheduled ZHIR event at the same exact and represented endpoint;
+common schedule-execution provenance is not inferred. It preserves two distinct
+secants: the rational quotient of exact represented endpoints and duration, and
+the binary64 subtraction/division performed by the actual Mutation gate. The
+second quantity alone controls the strict threshold and may record either an
+accepted or rejected gate.
+
+Two observations with the same support, initial EPI, capacity, pressure,
+conductance, duration, event coordinate and `xi`, but different internal
+substep counts, have a certified identical represented gate outcome only if the
+observed decisions agree and each exact binary64 rate perturbation is strictly
+smaller than the baseline threshold margin. Contact with the margin is not a
+certificate. Since the substeps hold the interval-start pressure, this result
+does not establish a pressure-reevaluated partition, modal equivalence, solver
+accuracy or order, U4 readiness, adaptive U2/U4 or future behavior.
 With `include_stage_certificates=True`, interval capture is implied and each
 accepted event produces an `ExecutedGlyphStage`. Pointwise
 AL/SHA/VAL/NUL/ZHIR/NAV and neighbour-reading EN/RA reuse the certificates
 computed from their executor-owned snapshots and proposals; other glyphs or
 failed domains abstain explicitly. Each represented certificate is checked
-against the actual EPI endpoints and adjacent positive-flow evidence.
+against the actual EPI endpoints and adjacent positive-flow evidence. Accepted
+two-phase ZHIR stages additionally seal one complete decision observation per
+target before commit metadata can change; the event-stage record retains these
+observations independently of whether its EPI map is certifiable.
+The complete `ExecutedGlyphStage` is value-sealed, and the enclosing execution
+result checks stage cardinality, event order and ordered ZHIR target support.
+An adjacent flow that explicitly abstains remains observable while its failed
+inner proof cannot enter the represented schedule product.
 `ObservedRepresentedEPIScheduleComposition` then retains a complete
 chronological operation record and multiplies exact rational gain factors only
 if every represented affine map is intact, all node orders and consecutive EPI
@@ -774,7 +811,10 @@ secant**. Timestamped `epi_time_history` supplies
 finite, the interval must be strictly positive, and the final EPI sample must
 represent the current endpoint. The runtime default requires an exact endpoint
 match. Once physical history is supplied it is authoritative, so an invalid or
-stale record does not fall back to an untimestamped source.
+stale record does not fall back to an untimestamped source. Event-schedule
+execution writes such evidence only when a ZHIR pre-flow's binary64 timestamp
+difference exactly recovers the schedule's authoritative declared duration;
+otherwise it rejects the schedule before graph writes.
 
 The compatibility channels `epi_history` and `_epi_history` use two finite
 scalar samples separated by one operator step. Their difference is therefore a

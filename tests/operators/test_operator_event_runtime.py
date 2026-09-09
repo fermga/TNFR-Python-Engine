@@ -476,6 +476,28 @@ def test_collapsed_positive_interval_is_rejected_before_writes() -> None:
     assert _plain_state(graph) == before
 
 
+def test_zhir_duration_mismatch_is_rejected_before_writes() -> None:
+    graph = _graph()
+    graph.graph["_t"] = float(2**52)
+    schedule = build_operator_event_schedule(
+        ("mutation",),
+        start_time=float(2**52),
+        flow_durations=(0.6, 0.0),
+    )
+    before = _plain_state(graph)
+
+    with pytest.raises(TNFRValueError, match="cannot bind") as error:
+        execute_operator_event_schedule(graph, schedule)
+
+    assert error.value.context[
+        "zhir_event_indices_with_duration_mismatch"
+    ] == (0,)
+    assert _plain_state(graph) == before
+    assert graph.graph["_t"] == float(2**52)
+    assert "hybrid_event_log" not in graph.graph
+    assert all("epi_time_history" not in graph.nodes[node] for node in graph)
+
+
 def test_nonadditive_positive_interval_is_rejected_before_writes() -> None:
     graph = _graph()
     schedule = build_operator_event_schedule(

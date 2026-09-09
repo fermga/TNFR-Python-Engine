@@ -515,8 +515,9 @@ class OperatorEventRuntimeClockDiagnostic:
     ``epi_time_history`` use binary64 timestamps, so such an interval cannot
     yet be replayed as two strictly ordered physical samples. A ZHIR event
     additionally needs a positive representable flow interval immediately
-    before its jump. These are clock conditions only; they do not establish a
-    Mutation threshold crossing or certify any numerical flow solver.
+    before its jump whose endpoint subtraction exactly recovers the declared
+    duration. These are clock conditions only; they do not establish a Mutation
+    threshold crossing or certify any numerical flow solver.
     """
 
     schedule: OperatorEventSchedule
@@ -586,6 +587,29 @@ class OperatorEventRuntimeClockDiagnostic:
         )
 
     @property
+    def zhir_event_indices_with_duration_mismatch(self) -> tuple[int, ...]:
+        """ZHIR jumps whose timestamp difference is not the declared duration.
+
+        Flow duration is authoritative in an operator-event schedule. Mutation's
+        timestamped secant currently reads two binary64 absolute timestamps, so
+        execution must abstain when subtracting those representations would use
+        a different physical interval.
+        """
+
+        intervals = self.schedule.intervals
+        return tuple(
+            event.event_index
+            for event in self.schedule.events
+            if event.glyph is Glyph.ZHIR
+            and intervals[event.event_index].exact_duration > 0
+            and (
+                intervals[event.event_index].end_time
+                - intervals[event.event_index].start_time
+                != intervals[event.event_index].duration
+            )
+        )
+
+    @property
     def binary64_runtime_clock_compatible(self) -> bool:
         """Whether each positive flow advances and lands on its endpoint."""
 
@@ -596,11 +620,12 @@ class OperatorEventRuntimeClockDiagnostic:
 
     @property
     def timestamped_zhir_preflow_clock_compatible(self) -> bool:
-        """Whether every ZHIR has two possible ordered pre-flow timestamps."""
+        """Whether every ZHIR can read its declared pre-flow duration exactly."""
 
         return not (
             self.zhir_event_indices_without_positive_preflow
             or self.zhir_event_indices_with_collapsed_preflow
+            or self.zhir_event_indices_with_duration_mismatch
         )
 
     @property

@@ -410,12 +410,13 @@ Canonical operator events are represented as zero-duration hybrid jumps. A
 finite schedule with `m` events therefore declares exactly `m + 1` nodal-flow
 intervals: before, between and after the jumps. Materialized binary64 durations
 have authoritative exact-rational values and offsets; absolute float timestamps
-are display values and are never subtracted to recover duration or inserted as
-finite secants into `epi_time_history`. Coincident events retain their explicit
-event-index order in `hybrid_event_log`. For fixed connected symmetric
-positive-capacity pure-EPI diffusion, the exact quotient-rate certificate and
-rational log/exp enclosures provide a sufficient duration for a requested
-disagreement-energy fraction. These schedule and duration objects are read-only
+are display values, schedule logic never subtracts them to recover duration,
+and the builder does not insert them into `epi_time_history`. Coincident events
+retain their explicit event-index order in `hybrid_event_log`. For fixed
+connected symmetric positive-capacity pure-EPI diffusion, the exact
+quotient-rate certificate and rational log/exp enclosures provide a sufficient
+duration for a requested disagreement-energy fraction. These schedule and
+duration objects are read-only
 and do not turn U2/U4 into an adaptive policy.
 
 `execute_operator_event_schedule` binds a valid finite schedule to the
@@ -424,19 +425,47 @@ the initial targets, requires the live binary64 clock at every boundary, rejects
 collapsed or nonadditive positive intervals, and commits graph-owned flow, jump,
 history, cache and event-log state in one transaction. Flow boundaries supply
 timestamped EPI evidence; a same-time EPI jump restarts that history and remains
-a zero-duration event. ZHIR therefore requires a positive representable
-immediately preceding flow. With `include_flow_certificates=True`, detached
+a zero-duration event. ZHIR therefore requires a positive immediately preceding
+flow whose displayed endpoint subtraction equals its authoritative declared
+duration. With `include_flow_certificates=True`, detached
 snapshots around each actual positive flow produce an
 `ExecutedNodalFlowInterval`. Its evidence keeps the exact rational
 held-pressure nodal identity and pure-EPI quotient theorem separate from the
-binary64 Euler replay. Trusted binary64 held-pressure identification requires
-the exact built-in `DefaultIntegrator`, Euler with one substep, live Gamma type
-`none`, inactive clipping, disabled extended dynamics, stable support,
-unchanged capacity and pressure, and a matching replay. Exact rational pure-EPI
-affine promotion additionally requires fixed symmetric nonnegative conductance,
-positive row strengths and capacity, the stored pressure `-L_rw EPI` and the
-exact nodal identity. Stale pressure can pass the trusted binary64 runtime level
-while the pure-EPI affine map and quotient theorem abstain.
+binary64 replays. Trusted sequential held-pressure identification requires the
+exact built-in `DefaultIntegrator`, Euler with at least one substep, live Gamma
+type `none`, inactive clipping, disabled extended dynamics, stable support,
+unchanged capacity and pressure, an exact represented substep-duration sum equal
+to the declared interval, and a matching replay. The older binary64 interval
+property and exact rational pure-EPI affine promotion still require one substep;
+the latter also requires fixed symmetric nonnegative conductance, positive row
+strengths and capacity, stored pressure `-L_rw EPI` and the exact nodal identity.
+Internal substeps keep pressure fixed, so they establish neither a physical mesh
+refinement nor a modal diffusion decision. Runtime flow wrappers are value-sealed;
+direct construction or later replacement cannot assert executor provenance.
+
+`observe_event_local_zhir_prejump` pairs one such sealed nonempty flow offline
+with a scheduled ZHIR boundary at the same exact and represented coordinate. It
+keeps the rational endpoint secant separate from the actual binary64
+subtraction/division used by Mutation; only the latter decides `rate > xi`, and
+both passing and failing thresholds are observations. The pairing does not prove
+a common schedule execution. For two observations with identical initial state,
+capacity, pressure, conductance, support, duration, event coordinate and `xi`
+but different positive substep counts,
+`compare_event_local_zhir_held_pressure_subdivision` certifies the represented
+gate outcome only when decisions agree and every exact rate difference is
+strictly below the baseline threshold distance. It does not certify physical
+pressure-reevaluated refinement, modal equivalence, solver accuracy/order, U4
+readiness, adaptive grammar or future behavior.
+
+Every accepted two-phase ZHIR stage seals one ordered
+`MutationStageDecisionObservation` per target from its immutable proposal. It
+retains the complete threshold certificate, capacity gate, phase/regime decision,
+acceleration/bifurcation read-out and U4 context independently of EPI-map
+certification. Opt-in event-stage evidence carries these observations forward.
+The complete `ExecutedGlyphStage` is value-sealed; its execution result requires
+one intact stage per committed event and binds ordered ZHIR observations to the
+ordered target support. An adjacent flow abstention remains observable but
+cannot enter a represented schedule product.
 
 With `include_stage_certificates=True`, interval capture is implied and every
 accepted event returns an `ExecutedGlyphStage`. The event runtime binds the
@@ -501,8 +530,9 @@ fixed-history result has zero current-state coefficient. See
 [src/tnfr/operators/event_timing.py](src/tnfr/operators/event_timing.py),
 [src/tnfr/operators/event_runtime.py](src/tnfr/operators/event_runtime.py),
 [src/tnfr/operators/event_remesh_runtime.py](src/tnfr/operators/event_remesh_runtime.py),
-[src/tnfr/operators/event_remesh_sequence.py](src/tnfr/operators/event_remesh_sequence.py)
-and [src/tnfr/physics/event_duration.py](src/tnfr/physics/event_duration.py).
+[src/tnfr/operators/event_remesh_sequence.py](src/tnfr/operators/event_remesh_sequence.py),
+[src/tnfr/physics/event_duration.py](src/tnfr/physics/event_duration.py) and
+[src/tnfr/physics/event_refinement.py](src/tnfr/physics/event_refinement.py).
 
 ### Composition
 

@@ -350,6 +350,7 @@ def test_runtime_clock_diagnostic_accepts_representable_zhir_preflow() -> None:
     assert diagnostic.nonadditive_positive_interval_indices == ()
     assert diagnostic.zhir_event_indices_without_positive_preflow == ()
     assert diagnostic.zhir_event_indices_with_collapsed_preflow == ()
+    assert diagnostic.zhir_event_indices_with_duration_mismatch == ()
     assert diagnostic.binary64_runtime_clock_compatible
     assert diagnostic.timestamped_zhir_preflow_clock_compatible
     assert diagnostic.clock_binding_ready
@@ -400,6 +401,25 @@ def test_runtime_clock_diagnostic_detects_rounded_positive_preflow() -> None:
     assert diagnostic.zhir_event_indices_without_positive_preflow == ()
     assert diagnostic.zhir_event_indices_with_collapsed_preflow == (0,)
     assert not diagnostic.binary64_runtime_clock_compatible
+    assert not diagnostic.timestamped_zhir_preflow_clock_compatible
+    assert not diagnostic.clock_binding_ready
+
+
+def test_runtime_clock_diagnostic_rejects_zhir_timestamp_duration_mismatch() -> None:
+    schedule = build_operator_event_schedule(
+        ["mutation"],
+        start_time=float(2**52),
+        flow_durations=[0.6, 0.0],
+    )
+
+    interval = schedule.intervals[0]
+    diagnostic = diagnose_operator_event_runtime_clock(schedule)
+
+    assert interval.start_time + interval.duration == interval.end_time
+    assert interval.end_time - interval.start_time == 1.0
+    assert interval.duration == 0.6
+    assert diagnostic.binary64_runtime_clock_compatible
+    assert diagnostic.zhir_event_indices_with_duration_mismatch == (0,)
     assert not diagnostic.timestamped_zhir_preflow_clock_compatible
     assert not diagnostic.clock_binding_ready
 

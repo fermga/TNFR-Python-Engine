@@ -4,6 +4,39 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added — 2026-09-09 Event-local ZHIR refinement evidence
+
+- Rejected a scheduled Mutation before graph writes when the binary64
+  subtraction of its immediately preceding flow endpoints differs from that
+  flow's authoritative represented duration. This prevents ZHIR from measuring
+  a secant on an unintended time interval at large absolute clock origins.
+- Extended observed-flow certificates with sequential built-in Euler replay for
+  any positive internal substep count whose represented substep durations sum
+  exactly to the declared interval. This held-pressure result remains separate
+  from the one-step affine map and from pressure-reevaluated physical refinement.
+- Value-sealed executor flow wrappers and their nested proof payloads, preserving
+  binary64 bit distinctions and structural snapshots of mutable node labels.
+  Direct construction, replacement and post-capture mutation fail closed.
+- Value-sealed complete executed glyph stages and required one intact stage per
+  committed event. ZHIR decision order is bound to execution targets; an
+  abstaining adjacent flow remains observable without entering the represented
+  schedule product.
+- Added `EventLocalZHIRPrejumpObservation` for offline coordinate-paired flow and
+  event records. It keeps exact rational endpoint secants separate from the
+  actual binary64 Mutation subtraction/division and retains both passing and
+  rejected strict-threshold outcomes.
+- Added `EventLocalZHIRHeldPressureComparison`. Under identical state, pressure,
+  capacity, conductance, support, duration, event coordinate and threshold, it
+  certifies a gate result across different internal substep counts only when
+  observed decisions agree and every exact rate perturbation lies strictly
+  inside the baseline threshold margin.
+- Added one sealed `MutationStageDecisionObservation` per accepted two-phase
+  ZHIR target and carried it into opt-in executed glyph stages independently of
+  EPI-map certification. The record freezes trigger evidence, capacity, phase
+  and regime decisions, acceleration, bifurcation read-out and U4 context.
+- Kept pressure-reevaluated refinement, modal equivalence, solver accuracy/order,
+  shared flow/event execution provenance, adaptive U2/U4 and future behavior
+  explicitly outside these results.
 ### Added — 2026-09-09 Ordered event/REMESH cycle observations
 
 - Added sealed `RemeshHistoryTransitionObservation` evidence to each

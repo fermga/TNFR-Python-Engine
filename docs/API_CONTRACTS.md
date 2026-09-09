@@ -119,20 +119,21 @@ diagnostic does not alter U2 or U4 policy.
 executes a valid schedule with the graph's configured nodal integrator and the
 shared canonical all-target stage dispatcher. It freezes the initial target
 tuple, requires exact agreement with the live binary64 clock at each boundary,
-and rejects collapsed or nonadditive positive intervals before writes. One
-outer graph transaction covers flows, jumps, histories, runtime caches and the
-hybrid event log. Completed pressure-refresh callbacks are counted; effects
-already emitted outside the graph cannot be rolled back. Flow boundaries feed
-timestamped EPI evidence, while same-time jumps restart that evidence and remain
-zero-duration events.
+and rejects collapsed or nonadditive positive intervals before writes. A ZHIR
+pre-flow is also rejected when subtracting its displayed endpoints would differ
+from its authoritative declared duration. One outer graph transaction covers
+flows, jumps, histories, runtime caches and the hybrid event log. Completed
+pressure-refresh callbacks are counted; effects already emitted outside the
+graph cannot be rolled back. Flow boundaries feed timestamped EPI evidence,
+while same-time jumps restart that evidence and remain zero-duration events.
 
 [`capture_nodal_flow_state`](../src/tnfr/physics/runtime_flow_stability.py)
 captures a detached ordered endpoint containing only scalar EPI, `nu_f`,
 `DeltaNFR` and effective conductance.
 [`certify_observed_nodal_flow_interval`](../src/tnfr/physics/runtime_flow_stability.py)
 compares two such endpoints over one materialized binary64 duration. Its exact
-rational nodal residual, exact pure-EPI pressure identity, binary64
-held-pressure Euler replay and exact rational quotient-gain theorem are
+rational nodal residual, exact pure-EPI pressure identity, one-step Euler replay,
+sequential held-pressure replay and exact rational quotient-gain theorem are
 independent claims. Caller-supplied endpoint metadata does not prove which
 runtime produced the observations.
 
@@ -140,30 +141,73 @@ Setting `include_flow_certificates=True` on
 `execute_operator_event_schedule` binds capture to both sides of each actual
 positive flow call. Each `ExecutedNodalFlowInterval` records its interval and
 actual integrator provenance together with the detached certificate or an
-explicit state-capture abstention; failed theorem conditions remain visible in
-the nested certificate. Runtime-bound binary64 identification requires the
-exact built-in `DefaultIntegrator`, Euler with one substep, live Gamma type
-`none`, inactive clipping, disabled extended dynamics, stable node support,
-unchanged capacity and pressure, and an exact binary64 endpoint replay. A
-custom integrator or subclass, RK4, multiple substeps, any other Gamma type,
-active clipping or requested extended dynamics prevents that identification.
+explicit state-capture abstention; failed conditions remain visible in the
+nested certificate. The broader
+`runtime_bound_binary64_held_pressure_interval_identified` property requires the
+exact built-in `DefaultIntegrator`, Euler with at least one substep, live Gamma
+type `none`, inactive clipping, disabled extended dynamics, stable node support,
+unchanged capacity and pressure, equality between the exact sum of represented
+substep durations and the declared interval, and a matching sequential replay.
+A custom integrator or subclass, RK4, any other Gamma type, active clipping,
+extended dynamics or a duration-sum mismatch prevents that identification.
 
-Exact rational pure-EPI affine promotion additionally requires at least two
+The older one-step binary64 property and exact rational pure-EPI affine
+promotion remain restricted to one Euler substep. The latter additionally
+requires at least two
 nodes, fixed symmetric nonnegative conductance with positive row strengths,
 positive capacity, the exact stored pressure `-L_rw EPI` and the exact rational
 nodal identity. Changed support, conductance, capacity or pressure blocks the
-corresponding promotion. Stale pressure exposes the three-level boundary: the
-held-pressure nodal identity and trusted binary64 runtime replay can pass while
-the pure-EPI affine map and quotient theorem abstain.
+corresponding promotion. Stale pressure exposes the levels directly: the
+held-pressure nodal identity and trusted binary64 sequential replay can pass
+while the pure-EPI affine map and quotient theorem abstain. Internal substeps
+hold pressure fixed; they are not a pressure-reevaluated physical partition and
+do not carry a diffusion modal decision.
 `flow_certification_requested` distinguishes the
 disabled path, while `flow_interval_evidence` stores the positive-interval
-records. The tri-state
+records. Runtime wrappers are value-sealed, so direct construction or later
+replacement cannot assert executor provenance. The tri-state
 `all_positive_flow_intervals_binary64_identified`,
 `all_positive_flow_intervals_exact_affine` and
 `all_positive_flow_intervals_contracting` aggregates return `None` when
 capture was not requested and otherwise summarize only those executed positive
 intervals. They do not turn endpoint agreement into solver-accuracy,
 refinement, glyph-gain or repeated-schedule evidence.
+
+[`observe_event_local_zhir_prejump`](../src/tnfr/physics/event_refinement.py)
+requires a sealed, nonempty `ExecutedNodalFlowInterval` with trusted sequential
+held-pressure provenance. It pairs that record offline with a canonical
+scheduled ZHIR event whose exact and represented coordinate is the flow end and
+whose timestamp subtraction equals the declared duration. It reproduces the
+runtime gate in its actual binary64 order—EPI subtraction, timestamp
+subtraction, then division—and retains the exact rational endpoint secant as a
+separate quantity. `xi` must be finite and nonnegative. A rejected threshold is
+a valid observation; the object certifies neither a common originating schedule
+nor operator admission or U4b readiness.
+
+[`compare_event_local_zhir_held_pressure_subdivision`](../src/tnfr/physics/event_refinement.py)
+requires two intact observations with equal event coordinate, interval index,
+node order, initial EPI, capacity, pressure, conductance, duration and threshold,
+and different positive substep counts. For node `i`, let `r_i` be the exact
+representation of the actual binary64 observed rate and `xi` the exact
+representation of its threshold. The local sufficient test is
+`|r_i(candidate)-r_i(baseline)| < |r_i(baseline)-xi|`, together with observed
+decision agreement. It is strict: touching the threshold margin abstains. The
+sealed aggregate covers only that offline held-pressure gate comparison and
+keeps all physical-refinement, modal, solver, adaptive-policy, U4 and future
+claims false.
+Every accepted two-phase ZHIR `NetworkStageResult` also contains one ordered,
+sealed `MutationStageDecisionObservation` per target, independent of the EPI
+certificate option. It freezes the complete trigger certificate, capacity gate,
+phase/regime decision, acceleration and bifurcation result, and U4 context before
+live metadata can change. Direct construction and coherent `dataclasses.replace`
+records remain unsealed. Event execution carries these observations into the
+corresponding opt-in `ExecutedGlyphStage`.
+
+`ExecutedGlyphStage` also seals its complete event, endpoint, certificate,
+adjacent-flow and decision payload. `OperatorEventExecutionResult` requires one
+intact stage for every committed event, preserves event order, and binds ZHIR
+observation order to `target_nodes`. A nested flow abstention remains recordable
+but cannot be promoted into a flow or composition certificate.
 
 Setting `include_stage_certificates=True` is also opt-in and implies flow
 capture. `glyph_stage_evidence` then contains one `ExecutedGlyphStage` for every

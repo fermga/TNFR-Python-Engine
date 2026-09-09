@@ -35,7 +35,7 @@ from collections.abc import (
     Sequence,
 )
 from copy import deepcopy
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from enum import Enum
 from fractions import Fraction
@@ -64,9 +64,14 @@ from ..constants.aliases import (
 )
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
+from ..physics.mutation_trigger import (
+    MutationTriggerCertificate,
+    MutationTriggerEvidence,
+)
 from ..rng import resolve_graph_seed, validate_graph_seed
 from ..types import Glyph
 from ..utils import angle_diff
+from ..utils._structural_signature import structural_proof_signature
 from ._argument_validation import require_list_sink
 from ._epi_domain import require_real_scalar_epi
 from ._neighbor_epi_kernel import (
@@ -842,6 +847,370 @@ class RecursivityStageProposal:
     advisory: RecursivityAdvisoryProposal
 
 
+_MUTATION_DECISION_PROOF_VERSION = "mutation_stage_decision_observation_v1"
+
+
+def _mutation_decision_stamp(
+    observation: "MutationStageDecisionObservation",
+) -> tuple[Any, ...]:
+    """Seal one accepted ZHIR decision independently of live graph metadata."""
+
+    return (
+        _MUTATION_DECISION_PROOF_VERSION,
+        structural_proof_signature(
+            (
+                observation.target_index,
+                observation.node,
+                observation.trigger_certificate,
+                observation.minimum_nu_f,
+                observation.theta_before,
+                observation.theta_after,
+                observation.theta_shift,
+                observation.fixed_mode,
+                observation.regime_changed,
+                observation.regime_before,
+                observation.regime_after,
+                observation.structural_acceleration,
+                observation.acceleration_magnitude,
+                observation.tau,
+                observation.bifurcation_potential,
+                observation.destabilizer_operator,
+                observation.destabilizer_distance,
+                observation.recent_history,
+                observation.epi_kind_before,
+                observation.operator_step,
+                observation.glyph,
+            )
+        ),
+    )
+
+
+def _validate_mutation_trigger_certificate(
+    certificate: MutationTriggerCertificate,
+) -> None:
+    """Reject internally contradictory trigger evidence in a public record."""
+
+    required_floats = (
+        certificate.current_epi,
+        certificate.nu_f,
+        certificate.delta_nfr,
+        certificate.xi,
+        certificate.predicted_depi_dt,
+    )
+    optional_floats = (
+        certificate.observed_depi_dt,
+        certificate.rate_gap,
+    )
+    if any(
+        type(value) is not float or not math.isfinite(value)
+        for value in required_floats
+    ):
+        raise ValueError("Mutation trigger certificate has invalid finite fields")
+    if any(
+        value is not None
+        and (type(value) is not float or not math.isfinite(value))
+        for value in optional_floats
+    ):
+        raise ValueError("Mutation trigger certificate has invalid optional rates")
+    boolean_fields = (
+        certificate.predicted_crossed,
+        certificate.evidence_available,
+        certificate.evidence_valid,
+        certificate.capacity_active,
+        certificate.threshold_gate_satisfied,
+        certificate.physical_time_resolved,
+    )
+    if any(type(value) is not bool for value in boolean_fields):
+        raise TypeError("Mutation trigger certificate has non-Boolean flags")
+    if certificate.observed_crossed is not None and type(
+        certificate.observed_crossed
+    ) is not bool:
+        raise TypeError("Mutation trigger observed_crossed must be bool or None")
+    if certificate.current_endpoint_matches_state is not None and type(
+        certificate.current_endpoint_matches_state
+    ) is not bool:
+        raise TypeError("Mutation trigger endpoint flag must be bool or None")
+    for value in (certificate.source, certificate.time_basis, certificate.reason):
+        if value is not None and type(value) is not str:
+            raise TypeError("Mutation trigger certificate labels must be strings")
+
+    evidence = certificate.evidence
+    if type(evidence) is not MutationTriggerEvidence:
+        raise TypeError("Mutation trigger certificate requires canonical evidence")
+    evidence_required_floats = (evidence.previous_epi, evidence.current_epi)
+    evidence_optional_floats = (
+        evidence.previous_time,
+        evidence.current_time,
+        evidence.sample_interval,
+        evidence.observed_depi_dt,
+    )
+    if any(
+        type(value) is not float or not math.isfinite(value)
+        for value in evidence_required_floats
+    ) or any(
+        value is not None
+        and (type(value) is not float or not math.isfinite(value))
+        for value in evidence_optional_floats
+    ):
+        raise ValueError("Mutation trigger evidence has invalid finite fields")
+    if (
+        type(evidence.source) is not str
+        or type(evidence.time_basis) is not str
+        or type(evidence.physical_time_resolved) is not bool
+        or type(evidence.is_valid) is not bool
+        or (
+            evidence.current_endpoint_matches_state is not None
+            and type(evidence.current_endpoint_matches_state) is not bool
+        )
+        or (evidence.reason is not None and type(evidence.reason) is not str)
+    ):
+        raise TypeError("Mutation trigger evidence metadata is invalid")
+
+    predicted = certificate.nu_f * certificate.delta_nfr
+    if (
+        certificate.xi < 0.0
+        or certificate.nu_f <= 0.0
+        or certificate.predicted_depi_dt != predicted
+        or certificate.predicted_crossed != (predicted > certificate.xi)
+        or certificate.capacity_active != (certificate.nu_f > 0.0)
+        or not certificate.evidence_available
+        or not certificate.evidence_valid
+        or not certificate.threshold_gate_satisfied
+        or certificate.observed_crossed is not True
+        or certificate.observed_depi_dt is None
+        or not certificate.observed_depi_dt > certificate.xi
+        or not evidence.is_valid
+        or evidence.observed_depi_dt != certificate.observed_depi_dt
+        or evidence.source != certificate.source
+        or evidence.time_basis != certificate.time_basis
+        or evidence.physical_time_resolved
+        != certificate.physical_time_resolved
+        or evidence.current_endpoint_matches_state
+        != certificate.current_endpoint_matches_state
+        or certificate.reason is not None
+        or evidence.reason is not None
+    ):
+        raise ValueError("Mutation trigger certificate is internally inconsistent")
+    if certificate.physical_time_resolved:
+        if (
+            evidence.previous_time is None
+            or evidence.current_time is None
+            or evidence.sample_interval is None
+            or evidence.sample_interval <= 0.0
+            or evidence.current_endpoint_matches_state is not True
+            or evidence.current_epi != certificate.current_epi
+        ):
+            raise ValueError("Physical Mutation trigger evidence is inconsistent")
+        expected_gap = certificate.observed_depi_dt - certificate.predicted_depi_dt
+        if math.isfinite(expected_gap) and certificate.rate_gap != expected_gap:
+            raise ValueError("Mutation trigger rate gap is inconsistent")
+    elif certificate.rate_gap is not None:
+        raise ValueError("Legacy Mutation trigger evidence cannot declare a rate gap")
+
+
+def _validate_mutation_decision_fields(
+    observation: "MutationStageDecisionObservation",
+) -> None:
+    """Validate the complete value-domain contract of one ZHIR observation."""
+
+    if (
+        isinstance(observation.target_index, bool)
+        or not isinstance(observation.target_index, int)
+        or observation.target_index < 0
+    ):
+        raise ValueError("Mutation observation target_index must be nonnegative")
+    if type(observation.trigger_certificate) is not MutationTriggerCertificate:
+        raise TypeError(
+            "Mutation observation requires a MutationTriggerCertificate"
+        )
+    certificate = observation.trigger_certificate
+    _validate_mutation_trigger_certificate(certificate)
+
+    finite_fields = (
+        (observation.minimum_nu_f, "minimum_nu_f"),
+        (observation.theta_before, "theta_before"),
+        (observation.theta_after, "theta_after"),
+        (observation.theta_shift, "theta_shift"),
+        (observation.structural_acceleration, "structural_acceleration"),
+        (observation.acceleration_magnitude, "acceleration_magnitude"),
+        (observation.tau, "tau"),
+    )
+    for value, label in finite_fields:
+        if type(value) is not float or not math.isfinite(value):
+            raise ValueError(
+                f"Mutation observation {label} must be a finite float"
+            )
+    if observation.minimum_nu_f < 0.0:
+        raise ValueError("Mutation observation minimum_nu_f must be nonnegative")
+    if certificate.nu_f < observation.minimum_nu_f:
+        raise ValueError("Mutation observation capacity is below its minimum")
+    if observation.acceleration_magnitude != abs(
+        observation.structural_acceleration
+    ):
+        raise ValueError("Mutation observation acceleration magnitude is inconsistent")
+    if observation.tau < 0.0:
+        raise ValueError("Mutation observation tau must be nonnegative")
+    if type(observation.bifurcation_potential) is not bool or (
+        observation.bifurcation_potential
+        != (observation.acceleration_magnitude > observation.tau)
+    ):
+        raise ValueError("Mutation observation bifurcation decision is inconsistent")
+    if type(observation.fixed_mode) is not bool:
+        raise TypeError("Mutation observation fixed_mode must be a bool")
+    if observation.fixed_mode:
+        if any(
+            value is not None
+            for value in (
+                observation.regime_changed,
+                observation.regime_before,
+                observation.regime_after,
+            )
+        ):
+            raise ValueError("Fixed Mutation observations cannot declare regimes")
+    elif (
+        type(observation.regime_changed) is not bool
+        or isinstance(observation.regime_before, bool)
+        or not isinstance(observation.regime_before, int)
+        or isinstance(observation.regime_after, bool)
+        or not isinstance(observation.regime_after, int)
+    ):
+        raise ValueError("Dynamic Mutation observations require regime decisions")
+    else:
+        expected_before = int(observation.theta_before // (math.pi / 2.0))
+        expected_after = int(observation.theta_after // (math.pi / 2.0))
+        if (
+            observation.regime_before != expected_before
+            or observation.regime_after != expected_after
+            or observation.regime_changed
+            != (observation.regime_before != observation.regime_after)
+            or not 0 <= observation.regime_before <= 3
+            or not 0 <= observation.regime_after <= 3
+        ):
+            raise ValueError("Mutation observation regime decision is inconsistent")
+    expected_theta_after = (
+        observation.theta_before + (observation.theta_shift % math.tau)
+    ) % math.tau
+    if (
+        not 0.0 <= observation.theta_before < math.tau
+        or not 0.0 <= observation.theta_after < math.tau
+        or observation.theta_after != expected_theta_after
+    ):
+        raise ValueError("Mutation observation phase decision is inconsistent")
+    if type(observation.recent_history) is not tuple or any(
+        type(item) is not str for item in observation.recent_history
+    ):
+        raise TypeError("Mutation observation recent_history must be a string tuple")
+    if observation.destabilizer_operator is not None and type(
+        observation.destabilizer_operator
+    ) is not str:
+        raise TypeError("Mutation observation destabilizer_operator is invalid")
+    if observation.destabilizer_distance is not None and (
+        isinstance(observation.destabilizer_distance, bool)
+        or not isinstance(observation.destabilizer_distance, int)
+        or observation.destabilizer_distance < 0
+    ):
+        raise ValueError("Mutation observation destabilizer_distance is invalid")
+    if observation.epi_kind_before is not None and type(
+        observation.epi_kind_before
+    ) is not str:
+        raise TypeError("Mutation observation epi_kind_before is invalid")
+    if (
+        isinstance(observation.operator_step, bool)
+        or not isinstance(observation.operator_step, int)
+        or observation.operator_step < 0
+    ):
+        raise ValueError("Mutation observation operator_step must be nonnegative")
+    if observation.glyph is not Glyph.ZHIR:
+        raise ValueError("Mutation observation glyph must be ZHIR")
+
+
+@dataclass(frozen=True, slots=True)
+class MutationStageDecisionObservation:
+    """Value-sealed accepted ZHIR decision from one stage-start snapshot."""
+
+    target_index: int
+    node: Any
+    trigger_certificate: MutationTriggerCertificate
+    minimum_nu_f: float
+    theta_before: float
+    theta_after: float
+    theta_shift: float
+    fixed_mode: bool
+    regime_changed: bool | None
+    regime_before: int | None
+    regime_after: int | None
+    structural_acceleration: float
+    acceleration_magnitude: float
+    tau: float
+    bifurcation_potential: bool
+    destabilizer_operator: str | None
+    destabilizer_distance: int | None
+    recent_history: tuple[str, ...]
+    epi_kind_before: str | None
+    operator_step: int
+    glyph: Glyph = field(default=Glyph.ZHIR, init=False)
+    _proof_stamp: tuple[Any, ...] = field(
+        default=(), repr=False, compare=False
+    )
+
+    def __post_init__(self) -> None:
+        _validate_mutation_decision_fields(self)
+
+    def _proof_fields_are_intact(self) -> bool:
+        """Whether no decisive field or nested trigger evidence was altered."""
+
+        try:
+            _validate_mutation_decision_fields(self)
+            return self._proof_stamp == _mutation_decision_stamp(self)
+        except Exception:
+            return False
+
+
+def _observe_mutation_proposal(
+    proposal: PointwiseStageProposal,
+    *,
+    target_index: int,
+) -> MutationStageDecisionObservation:
+    """Detach one public observation from an internal frozen ZHIR proposal."""
+
+    from ._mutation_stage_kernel import MutationNetworkStageProposal
+
+    payload = proposal.payload
+    if (
+        proposal.glyph is not Glyph.ZHIR
+        or type(payload) is not MutationNetworkStageProposal
+    ):
+        raise TypeError("Mutation decision observation requires a ZHIR proposal")
+    phase = payload.phase
+    gate = payload.runtime_gate
+    candidate = MutationStageDecisionObservation(
+        target_index=target_index,
+        node=proposal.node,
+        trigger_certificate=deepcopy(gate.threshold.certificate),
+        minimum_nu_f=float(gate.minimum_nu_f),
+        theta_before=float(phase.theta_before),
+        theta_after=float(phase.theta_after),
+        theta_shift=float(phase.theta_shift),
+        fixed_mode=phase.fixed_mode,
+        regime_changed=phase.regime_changed,
+        regime_before=phase.regime_before,
+        regime_after=phase.regime_after,
+        structural_acceleration=float(payload.structural_acceleration),
+        acceleration_magnitude=float(payload.acceleration_magnitude),
+        tau=float(payload.tau),
+        bifurcation_potential=payload.bifurcation_potential,
+        destabilizer_operator=payload.destabilizer_operator,
+        destabilizer_distance=payload.destabilizer_distance,
+        recent_history=tuple(payload.recent_history),
+        epi_kind_before=payload.epi_kind_before,
+        operator_step=payload.operator_step,
+    )
+    return replace(
+        candidate,
+        _proof_stamp=_mutation_decision_stamp(candidate),
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class NetworkStageResult:
     """Completed network stage and its executable scheduling semantics.
@@ -864,9 +1233,44 @@ class NetworkStageResult:
         default=None, repr=False, compare=False
     )
     epi_jump_certificate_abstention_reason: str | None = None
+    mutation_decision_observations: tuple[
+        MutationStageDecisionObservation, ...
+    ] = ()
 
     def __post_init__(self) -> None:
         """Reject contradictory evidence payloads at their source."""
+
+        observations = self.mutation_decision_observations
+        if type(observations) is not tuple:
+            raise TypeError("mutation_decision_observations must be a tuple")
+        is_two_phase_mutation = bool(
+            self.glyph == Glyph.ZHIR.value and self.schedule == TWO_PHASE_JACOBI
+        )
+        if is_two_phase_mutation:
+            if len(observations) != self.nodes_processed:
+                raise ValueError(
+                    "Two-phase Mutation results require one decision observation "
+                    "per processed target"
+                )
+            for index, observation in enumerate(observations):
+                if type(observation) is not MutationStageDecisionObservation:
+                    raise TypeError(
+                        "mutation_decision_observations contain an invalid record"
+                    )
+                if observation.target_index != index:
+                    raise ValueError(
+                        "Mutation decision observation target order changed"
+                    )
+                if observation.glyph is not Glyph.ZHIR:
+                    raise ValueError("Mutation decision observation glyph changed")
+                if not observation._proof_fields_are_intact():
+                    raise ValueError(
+                        "Mutation decision observation proof fields are not intact"
+                    )
+        elif observations:
+            raise ValueError(
+                "Only two-phase Mutation results may carry decision observations"
+            )
 
         certificates = (
             self.pointwise_epi_jump_certificate,
@@ -1448,8 +1852,13 @@ def _validate_pointwise_proposals(
         if getattr(proposal.payload, "glyph", None) is not glyph:
             raise RuntimeError("Pointwise stage payload glyph changed")
         payload_node = getattr(proposal.payload, "node", proposal.node)
-        if payload_node != proposal.node:
-            raise RuntimeError("Pointwise stage payload target changed")
+        if payload_node is not proposal.node:
+            try:
+                target_matches = bool(payload_node == proposal.node)
+            except BaseException:
+                target_matches = False
+            if not target_matches:
+                raise RuntimeError("Pointwise stage payload target changed")
 
 
 def _validate_pointwise_epi_jump_certificate(
@@ -3195,6 +3604,17 @@ def execute_pointwise_stage(
         _validate_pointwise_proposals(
             proposals, targets_tuple, operator.glyph
         )
+        mutation_decision_observations = (
+            tuple(
+                _observe_mutation_proposal(
+                    proposal,
+                    target_index=index,
+                )
+                for index, proposal in enumerate(proposals)
+            )
+            if operator.glyph is Glyph.ZHIR
+            else ()
+        )
         if operator.glyph is Glyph.NUL:
             require_list_sink(
                 snapshot.graph,
@@ -3280,6 +3700,9 @@ def execute_pointwise_stage(
             glyph=operator.glyph.value,
             schedule=TWO_PHASE_JACOBI,
             nodes_processed=len(targets_tuple),
+            mutation_decision_observations=(
+                mutation_decision_observations
+            ),
             pointwise_epi_jump_certificate=pointwise_certificate,
         )
         # IL precondition warnings are the final transactional effect. A
@@ -3650,6 +4073,7 @@ def execute_neighbor_stage(
 
 __all__ = [
     "GraphTransactionSnapshot",
+    "MutationStageDecisionObservation",
     "NetworkStageResult",
     "OPERATOR_MAJOR_GAUSS_SEIDEL",
     "STAGE_CONTRACT_KEY",

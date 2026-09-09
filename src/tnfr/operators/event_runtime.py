@@ -13,7 +13,7 @@ from __future__ import annotations
 import math
 import warnings
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields, replace
 from fractions import Fraction
 from numbers import Integral
 from typing import TYPE_CHECKING, Any
@@ -32,6 +32,7 @@ from ..physics._exact_metric import (
     normalized_positive_fraction_metric as _normalized_fraction_metric,
 )
 from ..types import Glyph
+from ..utils._structural_signature import structural_proof_signature
 from .event_timing import (
     OperatorEventSchedule,
     ScheduledOperatorEvent,
@@ -41,6 +42,7 @@ from .event_timing import (
 from .network_stage import (
     TWO_PHASE_JACOBI,
     GraphTransactionSnapshot,
+    MutationStageDecisionObservation,
     NetworkStageResult,
 )
 
@@ -194,6 +196,41 @@ class ExecutedOperatorEvent:
         }
 
 
+_EXECUTED_FLOW_PROOF_VERSION = "executed_nodal_flow_interval_v2"
+
+
+def _executed_flow_interval_stamp(value: Any) -> tuple[Any, ...]:
+    """Snapshot one runtime flow wrapper without retaining mutable graph state."""
+
+    if type(value) is not ExecutedNodalFlowInterval:
+        raise TypeError("flow evidence must have the canonical runtime type")
+    interval = value.interval
+    if type(interval) is not StructuralFlowInterval:
+        raise TypeError("flow evidence interval must be canonical")
+    certificate = value.certificate
+    return (
+        _EXECUTED_FLOW_PROOF_VERSION,
+        structural_proof_signature(interval),
+        structural_proof_signature(
+            None
+            if certificate is None
+            else getattr(certificate, "_proof_stamp", None)
+        ),
+        structural_proof_signature(
+            (
+                value.abstention_reason,
+                value.integrator_name,
+                value.integrator_provenance_certified,
+                value.resolved_method,
+                value.resolved_substeps,
+                value.gamma_is_none,
+                value.clipping_applied,
+                value.extended_dynamics_requested,
+            )
+        ),
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class ExecutedNodalFlowInterval:
     """Runtime-bound evidence for one executed positive flow interval.
@@ -220,16 +257,43 @@ class ExecutedNodalFlowInterval:
         default=False,
         init=False,
     )
+    _proof_stamp: tuple[Any, ...] = field(default=(), repr=False, compare=False)
+
+    def _proof_fields_are_intact(self) -> bool:
+        """Whether this wrapper still matches executor-owned provenance fields."""
+
+        if self.certificate is not None and not _has_intact_nodal_flow_certificate(
+            self.certificate
+        ):
+            return False
+        try:
+            expected = _executed_flow_interval_stamp(self)
+        except Exception:
+            return False
+        return type(self._proof_stamp) is tuple and self._proof_stamp == expected
 
     @property
     def runtime_bound_binary64_interval_identified(self) -> bool:
         """Whether the observed endpoint has trusted built-in provenance."""
 
         return bool(
-            self.integrator_provenance_certified
+            self._proof_fields_are_intact()
+            and self.integrator_provenance_certified
             and self.certificate is not None
             and _has_intact_nodal_flow_certificate(self.certificate)
             and self.certificate.binary64_runtime_interval_identified
+        )
+
+    @property
+    def runtime_bound_binary64_held_pressure_interval_identified(self) -> bool:
+        """Whether the observed multi-substep held-pressure replay is trusted."""
+
+        return bool(
+            self._proof_fields_are_intact()
+            and self.integrator_provenance_certified
+            and self.certificate is not None
+            and _has_intact_nodal_flow_certificate(self.certificate)
+            and self.certificate.binary64_held_pressure_runtime_identified
         )
 
     @property
@@ -237,7 +301,8 @@ class ExecutedNodalFlowInterval:
         """Whether this execution realizes the certified rational Euler map."""
 
         return bool(
-            self.integrator_provenance_certified
+            self._proof_fields_are_intact()
+            and self.integrator_provenance_certified
             and self.certificate is not None
             and _has_intact_nodal_flow_certificate(self.certificate)
             and self.certificate.explicit_euler_map_identified
@@ -274,7 +339,7 @@ class ExecutedGlyphStage:
     exact_metric_ray_after: tuple[Fraction, ...] | None
     exact_common_metric_bridge: bool
     exact_energy_gain_upper_bound: Fraction | None
-    represented_affine_gain_bound_at_observed_endpoint_certified: bool
+    _represented_affine_gain_bound_at_observed_endpoint_certified: bool
     pre_interval_index: int
     post_interval_index: int
     pre_interval_positive: bool
@@ -289,12 +354,174 @@ class ExecutedGlyphStage:
     post_flow_endpoint_continuous: bool | None = None
     pre_flow_metric_compatible: bool | None = None
     post_flow_metric_compatible: bool | None = None
+    mutation_decision_observations: tuple[
+        MutationStageDecisionObservation, ...
+    ] = field(default=(), repr=False)
     solver_accuracy_certified: bool = field(default=False, init=False)
     future_or_repeated_schedule_stability_certified: bool = field(
         default=False,
         init=False,
     )
     scope: str = field(default=_STAGE_SCOPE, init=False)
+    _proof_stamp: tuple[Any, ...] = field(default=(), repr=False, compare=False)
+
+    def _proof_fields_are_intact(self) -> bool:
+        """Whether all executor-owned stage fields retain their sealed values."""
+
+        try:
+            if not _executed_glyph_stage_fields_are_valid(self):
+                return False
+            expected = _executed_glyph_stage_stamp(self)
+        except Exception:
+            return False
+        return type(self._proof_stamp) is tuple and self._proof_stamp == expected
+
+    @property
+    def represented_affine_gain_bound_at_observed_endpoint_certified(self) -> bool:
+        """Publish the represented gain claim only while the stage seal is intact."""
+
+        return bool(
+            self._proof_fields_are_intact()
+            and self._represented_affine_gain_bound_at_observed_endpoint_certified
+        )
+
+
+_EXECUTED_GLYPH_STAGE_PROOF_VERSION = "executed_glyph_stage_v1"
+
+
+def _same_structural_value(left: Any, right: Any) -> bool:
+    """Compare detached signatures without invoking identifier equality."""
+
+    return structural_proof_signature(left) == structural_proof_signature(right)
+
+
+def _executed_glyph_stage_stamp(value: Any) -> tuple[Any, ...]:
+    """Snapshot every public and private stage fact except the stamp itself."""
+
+    if type(value) is not ExecutedGlyphStage:
+        raise TypeError("glyph-stage evidence must have the canonical runtime type")
+    stage_fields = tuple(
+        (item.name, object.__getattribute__(value, item.name))
+        for item in fields(ExecutedGlyphStage)
+        if item.name != "_proof_stamp"
+    )
+    return (
+        _EXECUTED_GLYPH_STAGE_PROOF_VERSION,
+        structural_proof_signature(stage_fields),
+    )
+
+
+def _executed_glyph_stage_fields_are_valid(value: Any) -> bool:
+    """Validate stage structure and ZHIR decision-to-endpoint correspondence."""
+
+    if type(value) is not ExecutedGlyphStage:
+        return False
+    event = value.event
+    if (
+        type(event) is not ExecutedOperatorEvent
+        or not isinstance(event.glyph, Glyph)
+        or event.stage_schedule != TWO_PHASE_JACOBI
+        or type(event.nodes_processed) is not int
+        or event.nodes_processed < 0
+    ):
+        return False
+    if (
+        type(value.pre_interval_index) is not int
+        or type(value.post_interval_index) is not int
+        or value.pre_interval_index != event.event_index
+        or value.post_interval_index != event.event_index + 1
+    ):
+        return False
+    booleans = (
+        value.endpoint_capture_complete,
+        value.exact_runtime_endpoint_bound,
+        value.exact_common_metric_bridge,
+        value._represented_affine_gain_bound_at_observed_endpoint_certified,
+        value.pre_interval_positive,
+        value.post_interval_positive,
+        value.solver_accuracy_certified,
+        value.future_or_repeated_schedule_stability_certified,
+    )
+    if any(type(item) is not bool for item in booleans):
+        return False
+    optional_booleans = (
+        value.pre_flow_endpoint_continuous,
+        value.post_flow_endpoint_continuous,
+        value.pre_flow_metric_compatible,
+        value.post_flow_metric_compatible,
+    )
+    if any(item is not None and type(item) is not bool for item in optional_booleans):
+        return False
+    if value.endpoint_capture_complete != bool(
+        value.left is not None and value.right is not None
+    ):
+        return False
+    if value.exact_runtime_endpoint_bound and not value.endpoint_capture_complete:
+        return False
+    expected_gain_claim = bool(
+        value.exact_runtime_endpoint_bound
+        and value.exact_common_metric_bridge
+        and value.exact_energy_gain_upper_bound is not None
+    )
+    if (
+        value._represented_affine_gain_bound_at_observed_endpoint_certified
+        != expected_gain_claim
+    ):
+        return False
+    if not expected_gain_claim and value.exact_energy_gain_upper_bound is not None:
+        return False
+    if value.pre_flow_evidence is not None and type(
+        value.pre_flow_evidence
+    ) is not ExecutedNodalFlowInterval:
+        return False
+    if value.post_flow_evidence is not None and type(
+        value.post_flow_evidence
+    ) is not ExecutedNodalFlowInterval:
+        return False
+
+    from ..physics.runtime_flow_stability import NodalFlowStateSnapshot
+
+    endpoint_nodes: list[tuple[Any, ...]] = []
+    for snapshot in (value.left, value.right):
+        if snapshot is None:
+            continue
+        if type(snapshot) is not NodalFlowStateSnapshot:
+            return False
+        nodes = object.__getattribute__(snapshot, "nodes")
+        if type(nodes) is not tuple:
+            return False
+        endpoint_nodes.append(nodes)
+    if len(endpoint_nodes) == 2 and not _same_structural_value(
+        endpoint_nodes[0], endpoint_nodes[1]
+    ):
+        return False
+
+    observations = value.mutation_decision_observations
+    if type(observations) is not tuple:
+        return False
+    if event.glyph is not Glyph.ZHIR:
+        return not observations
+    if len(observations) != event.nodes_processed:
+        return False
+    for index, observation in enumerate(observations):
+        if (
+            type(observation) is not MutationStageDecisionObservation
+            or observation.target_index != index
+            or observation.glyph is not Glyph.ZHIR
+            or not observation._proof_fields_are_intact()
+        ):
+            return False
+        observation_signature = structural_proof_signature(observation.node)
+        if any(
+            all(
+                observation_signature != structural_proof_signature(node)
+                for node in nodes
+            )
+            for nodes in endpoint_nodes
+        ):
+            return False
+    return True
+
 
 
 _REPRESENTED_OPERATION_PROOF_VERSION = "represented_epi_schedule_operation_v1"
@@ -842,6 +1069,111 @@ class OperatorEventExecutionResult:
     )
     flow_scope: str = field(default=_FLOW_SCOPE, init=False)
 
+    def __post_init__(self) -> None:
+        """Reject missing, reordered, substituted, or altered stage evidence."""
+
+        if type(self.stage_certification_requested) is not bool:
+            raise TypeError("stage_certification_requested must be a bool")
+        if type(self.events) is not tuple:
+            raise TypeError("events must be a tuple")
+        if type(self.glyph_stage_evidence) is not tuple:
+            raise TypeError("glyph_stage_evidence must be a tuple")
+        if not self.stage_certification_requested:
+            if self.glyph_stage_evidence:
+                raise ValueError(
+                    "disabled stage certification cannot carry glyph-stage evidence"
+                )
+            if self.represented_epi_schedule_composition is not None:
+                raise ValueError(
+                    "disabled stage certification cannot carry a represented "
+                    "schedule composition"
+                )
+            return
+
+        if len(self.glyph_stage_evidence) != len(self.events):
+            raise ValueError(
+                "stage evidence must contain one record per committed event"
+            )
+        for stage, event in zip(
+            self.glyph_stage_evidence,
+            self.events,
+            strict=True,
+        ):
+            if type(event) is not ExecutedOperatorEvent:
+                raise TypeError("events contain a noncanonical record")
+            if (
+                type(stage) is not ExecutedGlyphStage
+                or not stage._proof_fields_are_intact()
+            ):
+                raise ValueError("glyph-stage evidence proof fields are not intact")
+            try:
+                event_matches = _same_structural_value(stage.event, event)
+            except Exception as exc:
+                raise ValueError(
+                    "stage evidence event identity is unreadable"
+                ) from exc
+            if not event_matches:
+                raise ValueError(
+                    "stage evidence does not match committed event order"
+                )
+            if event.nodes_processed != len(self.target_nodes):
+                raise ValueError(
+                    "committed event target count does not match execution"
+                )
+            if event.glyph is Glyph.ZHIR:
+                observation_nodes = tuple(
+                    observation.node
+                    for observation in stage.mutation_decision_observations
+                )
+                try:
+                    mutation_targets_match = _same_structural_value(
+                        observation_nodes,
+                        self.target_nodes,
+                    )
+                except Exception as exc:
+                    raise ValueError(
+                        "Mutation stage target support is unreadable"
+                    ) from exc
+                if not mutation_targets_match:
+                    raise ValueError(
+                        "Mutation stage observations do not match execution targets"
+                    )
+
+        composition = self.represented_epi_schedule_composition
+        if (
+            type(composition) is not ObservedRepresentedEPIScheduleComposition
+            or not composition._proof_fields_are_intact()
+        ):
+            raise ValueError(
+                "stage certification requires one intact represented composition"
+            )
+        try:
+            nodes_match = _same_structural_value(
+                composition.nodes,
+                self.target_nodes,
+            )
+        except Exception as exc:
+            raise ValueError(
+                "represented composition target support is unreadable"
+            ) from exc
+        if not nodes_match:
+            raise ValueError(
+                "represented composition target support does not match execution"
+            )
+        if composition.event_indices != tuple(
+            event.event_index for event in self.events
+        ):
+            raise ValueError(
+                "represented composition event indices do not match execution"
+            )
+        if (
+            composition.positive_flow_interval_indices
+            != self.positive_flow_interval_indices
+        ):
+            raise ValueError(
+                "represented composition flow indices do not match execution"
+            )
+
     def _all_positive_flow_intervals(self, attribute: str) -> bool | None:
         if not self.flow_certification_requested:
             return None
@@ -860,6 +1192,16 @@ class OperatorEventExecutionResult:
 
         return self._all_positive_flow_intervals(
             "runtime_bound_binary64_interval_identified"
+        )
+
+    @property
+    def all_positive_flow_intervals_binary64_held_pressure_identified(
+        self,
+    ) -> bool | None:
+        """Aggregate trusted held-pressure replays, or ``None`` if disabled."""
+
+        return self._all_positive_flow_intervals(
+            "runtime_bound_binary64_held_pressure_interval_identified"
         )
 
     @property
@@ -886,10 +1228,27 @@ class OperatorEventExecutionResult:
             return None
         if len(self.glyph_stage_evidence) != len(self.events):
             return False
-        return all(
-            evidence.represented_affine_gain_bound_at_observed_endpoint_certified
-            for evidence in self.glyph_stage_evidence
-        )
+        for evidence, event in zip(
+            self.glyph_stage_evidence,
+            self.events,
+            strict=True,
+        ):
+            if (
+                type(evidence) is not ExecutedGlyphStage
+                or not evidence._proof_fields_are_intact()
+            ):
+                return False
+            try:
+                if not _same_structural_value(evidence.event, event):
+                    return False
+            except Exception:
+                return False
+            if (
+                not evidence
+                .represented_affine_gain_bound_at_observed_endpoint_certified
+            ):
+                return False
+        return True
 
 
 def _require_graph(graph: Any) -> nx.Graph:
@@ -959,10 +1318,13 @@ def _validate_schedule_clock(schedule: OperatorEventSchedule) -> None:
             "zhir_event_indices_with_collapsed_preflow": (
                 diagnostic.zhir_event_indices_with_collapsed_preflow
             ),
+            "zhir_event_indices_with_duration_mismatch": (
+                diagnostic.zhir_event_indices_with_duration_mismatch
+            ),
         },
         suggestion=(
             "Choose a representable time origin and positive pre-flow for every "
-            "Mutation event."
+            "Mutation event whose timestamp difference equals its declared duration."
         ),
     )
 
@@ -1462,7 +1824,7 @@ def _finalize_glyph_stage(
         post_endpoint = False
         post_metric = False
 
-    return ExecutedGlyphStage(
+    stage = ExecutedGlyphStage(
         event=pending.event,
         certificate_kind=facts.certificate_kind,
         certificate=facts.certificate,
@@ -1477,7 +1839,7 @@ def _finalize_glyph_stage(
         exact_energy_gain_upper_bound=(
             facts.exact_energy_gain_upper_bound if gain_certified else None
         ),
-        represented_affine_gain_bound_at_observed_endpoint_certified=gain_certified,
+        _represented_affine_gain_bound_at_observed_endpoint_certified=gain_certified,
         pre_interval_index=pre_interval.index,
         post_interval_index=post_interval.index,
         pre_interval_positive=pre_positive,
@@ -1488,6 +1850,13 @@ def _finalize_glyph_stage(
         post_flow_endpoint_continuous=post_endpoint,
         pre_flow_metric_compatible=pre_metric,
         post_flow_metric_compatible=post_metric,
+        mutation_decision_observations=(
+            pending.result.mutation_decision_observations
+        ),
+    )
+    return replace(
+        stage,
+        _proof_stamp=_executed_glyph_stage_stamp(stage),
     )
 
 
@@ -1575,6 +1944,25 @@ def _glyph_composition_operation(
     reasons: list[str] = []
     if evidence is None:
         reasons.append("glyph_stage_evidence_missing")
+        return _represented_operation(
+            position=position,
+            operation_kind="glyph",
+            operation_index=event.event_index,
+            operator_name=event.operator_name,
+            nodes=None,
+            exact_epi_before=None,
+            exact_epi_after=None,
+            exact_metric_ray_before=None,
+            exact_metric_ray_after=None,
+            exact_energy_gain_upper_bound=None,
+            ineligibility_reasons=reasons,
+        )
+
+    if (
+        type(evidence) is not ExecutedGlyphStage
+        or not evidence._proof_fields_are_intact()
+    ):
+        reasons.append("glyph_stage_proof_fields_not_intact")
         return _represented_operation(
             position=position,
             operation_kind="glyph",
@@ -1739,12 +2127,14 @@ def _clipping_intervened(
     interval: StructuralFlowInterval,
     metadata: _FlowRuntimeMetadata,
 ) -> bool | None:
-    """Detect one-step clipping by comparison with the unclipped Euler update."""
+    """Detect clipping against the sequential unclipped held-pressure replay."""
 
+    substeps = metadata.resolved_substeps
     if not (
         metadata.integrator_provenance_certified
         and metadata.resolved_method == "euler"
-        and metadata.resolved_substeps == 1
+        and type(substeps) is int
+        and substeps >= 1
         and metadata.gamma_is_none is True
         and left.nodes == right.nodes
     ):
@@ -1758,18 +2148,19 @@ def _clipping_intervened(
                 np.asarray(left.nu_f, dtype=float),
                 np.asarray(left.delta_nfr, dtype=float),
             )
-            increment = np.multiply(interval.duration, rate)
-            replay = np.add(
-                np.asarray(left.epi, dtype=float),
-                increment,
-            )
+            rate = np.add(rate, np.zeros_like(rate))
+            dt_step = interval.duration / substeps
+            replay = np.asarray(left.epi, dtype=float)
+            for _ in range(substeps):
+                increment = np.multiply(dt_step, rate)
+                replay = np.add(replay, increment)
     except (FloatingPointError, TypeError, ValueError, OverflowError):
         return None
     if not bool(np.all(np.isfinite(replay))):
         return None
     return any(
-        float(expected) != observed
-        for expected, observed in zip(replay, right.epi)
+        float(expected).hex() != observed.hex()
+        for expected, observed in zip(replay, right.epi, strict=True)
     )
 
 
@@ -1840,7 +2231,7 @@ def _execute_flow_interval(
             reason = "left_state_capture_failed"
         else:
             reason = "right_state_capture_failed"
-        return ExecutedNodalFlowInterval(
+        evidence = ExecutedNodalFlowInterval(
             interval=interval,
             certificate=None,
             abstention_reason=reason,
@@ -1855,6 +2246,10 @@ def _execute_flow_interval(
             extended_dynamics_requested=(
                 metadata.extended_dynamics_requested
             ),
+        )
+        return replace(
+            evidence,
+            _proof_stamp=_executed_flow_interval_stamp(evidence),
         )
     if left is None or right is None:
         raise RuntimeError("captured flow endpoint is unexpectedly absent")
@@ -1886,7 +2281,7 @@ def _execute_flow_interval(
             metadata.extended_dynamics_requested
         ),
     )
-    return ExecutedNodalFlowInterval(
+    evidence = ExecutedNodalFlowInterval(
         interval=interval,
         certificate=certificate,
         abstention_reason=None,
@@ -1899,6 +2294,10 @@ def _execute_flow_interval(
         gamma_is_none=metadata.gamma_is_none,
         clipping_applied=clipping_applied,
         extended_dynamics_requested=metadata.extended_dynamics_requested,
+    )
+    return replace(
+        evidence,
+        _proof_stamp=_executed_flow_interval_stamp(evidence),
     )
 
 

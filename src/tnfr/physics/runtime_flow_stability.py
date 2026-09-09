@@ -17,6 +17,12 @@ interval identified with the rational explicit-Euler map
 
     A = I - duration * diag(nu_f) L_rw.
 
+A separate held-pressure observation replays any positive number of uniform
+internal substeps. It records the materialized binary64 substep, its exact
+rational sum, and the sequential binary64 endpoint without promoting the
+partition to one Euler map or to pure-EPI diffusion. Identification requires
+that the rational substep sum equal the declared represented duration.
+
 The map is analyzed in the reversible metric H = diag(d_i / nu_f_i) with the
 shared exact quotient-gain machinery. This read-only result covers one supplied
 interval. It does not infer runtime provenance, certify a custom integrator,
@@ -37,6 +43,7 @@ from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..mathematics._neighbor_differences import edge_mean_differences
 from ..mathematics.unified_numerical import np
 from ..types import real_scalar_epi
+from ..utils._structural_signature import structural_proof_signature
 from ._conductance import read_conductance
 from .hybrid_operator_stability import (
     _exact_matrix_product,
@@ -59,9 +66,11 @@ _SCOPE = (
     "EXACT one-interval endpoint certificate for represented binary64 values. "
     "It separately checks the rational nodal identity, frozen pure-EPI "
     "realization, declared built-in Euler conditions, IEEE-754 replay, and "
-    "quotient contraction. It does not infer runtime provenance, certify "
-    "custom integrators, estimate solver error, or prove future, refined, or "
-    "repeated schedules."
+    "quotient contraction. It also replays a declared positive uniform "
+    "internal partition under held capacity and pressure, while keeping that "
+    "observation separate from the one-step Euler-map theorem. It does not "
+    "infer runtime provenance, certify custom integrators, estimate solver "
+    "error, or prove future, refined, or repeated schedules."
 )
 
 
@@ -342,6 +351,18 @@ class NodalFlowIntervalCertificate:
     integrator_provenance_certified: bool
     future_or_repeated_schedule_stability_certified: bool
     scope: str
+    binary64_substep_duration: float | None = None
+    exact_binary64_substep_duration: Fraction | None = None
+    exact_binary64_substep_duration_sum: Fraction | None = None
+    exact_substep_duration_sum_matches_interval: bool = False
+    binary64_held_pressure_replay: tuple[float, ...] | None = None
+    exact_binary64_held_pressure_replay_residual: ExactVector | None = None
+    binary64_held_pressure_replay_matches: bool = False
+    held_pressure_runtime_conditions: tuple[tuple[str, bool], ...] = ()
+    _binary64_held_pressure_runtime_identified: bool = field(
+        default=False,
+        repr=False,
+    )
     _proof_stamp: tuple[Any, ...] = field(
         default=(),
         repr=False,
@@ -364,6 +385,15 @@ class NodalFlowIntervalCertificate:
         return bool(
             self._proof_fields_are_intact()
             and self._global_disagreement_contraction_certified
+        )
+
+    @property
+    def binary64_held_pressure_runtime_identified(self) -> bool:
+        """Whether the sealed sequential held-pressure replay is identified."""
+
+        return bool(
+            self._proof_fields_are_intact()
+            and self._binary64_held_pressure_runtime_identified
         )
 
     @property
@@ -403,6 +433,16 @@ class NodalFlowIntervalCertificate:
         )
 
     @property
+    def failed_held_pressure_runtime_conditions(self) -> tuple[str, ...]:
+        """Names blocking identification of the held-pressure replay."""
+
+        return tuple(
+            name
+            for name, passed in self.held_pressure_runtime_conditions
+            if not passed
+        )
+
+    @property
     def euler_map_abstention_reasons(self) -> tuple[str, ...]:
         reasons = list(self.failed_diffusion_conditions)
         reasons.extend(self.failed_runtime_conditions)
@@ -411,8 +451,20 @@ class NodalFlowIntervalCertificate:
         return tuple(reasons)
 
 
-_NODAL_FLOW_INTERVAL_PROOF_VERSION = "observed_nodal_flow_interval_v1"
-_NODAL_FLOW_SNAPSHOT_PROOF_VERSION = "nodal_flow_state_snapshot_v1"
+_NODAL_FLOW_INTERVAL_PROOF_VERSION = "observed_nodal_flow_interval_v4"
+_NODAL_FLOW_SNAPSHOT_PROOF_VERSION = "nodal_flow_state_snapshot_v3"
+
+
+def _binary64_vectors_match(
+    observed: tuple[float, ...],
+    expected: tuple[float, ...],
+) -> bool:
+    """Compare finite binary64 vectors without erasing signed zero."""
+
+    return len(observed) == len(expected) and all(
+        left.hex() == right.hex()
+        for left, right in zip(observed, expected, strict=True)
+    )
 
 
 def _nodal_flow_snapshot_proof_signature(
@@ -425,7 +477,7 @@ def _nodal_flow_snapshot_proof_signature(
     return (
         _NODAL_FLOW_SNAPSHOT_PROOF_VERSION,
         tuple(
-            (item.name, getattr(snapshot, item.name))
+            (item.name, structural_proof_signature(getattr(snapshot, item.name)))
             for item in fields(NodalFlowStateSnapshot)
         ),
     )
@@ -439,7 +491,10 @@ def _nodal_flow_interval_proof_stamp(
     if type(certificate) is not NodalFlowIntervalCertificate:
         raise TypeError("certificate must be a NodalFlowIntervalCertificate")
     payload = tuple(
-        (item.name, getattr(certificate, item.name))
+        (
+            item.name,
+            structural_proof_signature(getattr(certificate, item.name)),
+        )
         for item in fields(NodalFlowIntervalCertificate)
         if item.name not in {"left", "right", "_proof_stamp"}
     )
@@ -646,11 +701,12 @@ def certify_observed_nodal_flow_interval(
         passed for _, passed in diffusion_conditions
     )
 
-    valid_substeps = bool(
+    positive_substeps = bool(
         isinstance(substeps, Integral)
         and not isinstance(substeps, (bool, np.bool_))
-        and int(substeps) == 1
+        and int(substeps) >= 1
     )
+    valid_substeps = bool(positive_substeps and int(substeps) == 1)
     runtime_conditions = (
         ("default_integrator", integrator_name == "DefaultIntegrator"),
         ("euler_method", method == "euler"),
@@ -680,6 +736,7 @@ def certify_observed_nodal_flow_interval(
                     np.asarray(left.nu_f, dtype=float),
                     np.asarray(left.delta_nfr, dtype=float),
                 )
+                base = np.add(base, np.zeros_like(base))
                 increment = np.multiply(duration_float, base)
                 replay_array = np.add(
                     np.asarray(left.epi, dtype=float),
@@ -700,8 +757,9 @@ def certify_observed_nodal_flow_interval(
                         exact_binary_replay,
                     )
                 )
-                binary_matches = all(
-                    value == 0 for value in binary_residual
+                binary_matches = _binary64_vectors_match(
+                    right.epi,
+                    binary_replay,
                 )
         except FloatingPointError:
             pass
@@ -712,6 +770,97 @@ def certify_observed_nodal_flow_interval(
         and capacity_unchanged
         and pressure_unchanged
         and binary_matches
+    )
+
+    binary_substep_duration: float | None = None
+    exact_binary_substep_duration: Fraction | None = None
+    exact_binary_substep_sum: Fraction | None = None
+    substep_sum_matches = False
+    held_pressure_replay: tuple[float, ...] | None = None
+    held_pressure_residual: ExactVector | None = None
+    held_pressure_matches = False
+    if positive_substeps:
+        step_count = int(substeps)
+        try:
+            binary_substep_duration = duration_float / step_count
+        except OverflowError:
+            binary_substep_duration = None
+        if (
+            binary_substep_duration is not None
+            and math.isfinite(binary_substep_duration)
+        ):
+            exact_binary_substep_duration = Fraction.from_float(
+                binary_substep_duration
+            )
+            exact_binary_substep_sum = (
+                exact_binary_substep_duration * step_count
+            )
+            substep_sum_matches = exact_binary_substep_sum == duration_exact
+            if stable_support:
+                try:
+                    with np.errstate(
+                        over="raise",
+                        invalid="raise",
+                        under="ignore",
+                    ):
+                        held_base = np.multiply(
+                            np.asarray(left.nu_f, dtype=float),
+                            np.asarray(left.delta_nfr, dtype=float),
+                        )
+                        held_base = np.add(
+                            held_base,
+                            np.zeros_like(held_base),
+                        )
+                        held_increment = np.multiply(
+                            binary_substep_duration,
+                            held_base,
+                        )
+                        held_state = np.asarray(left.epi, dtype=float)
+                        for _ in range(step_count):
+                            held_state = np.add(held_state, held_increment)
+                    if np.all(np.isfinite(held_state)):
+                        held_pressure_replay = tuple(
+                            float(value) for value in held_state
+                        )
+                        exact_held_replay = tuple(
+                            Fraction.from_float(value)
+                            for value in held_pressure_replay
+                        )
+                        held_pressure_residual = tuple(
+                            observed - expected
+                            for observed, expected in zip(
+                                right.exact_epi,
+                                exact_held_replay,
+                            )
+                        )
+                        held_pressure_matches = _binary64_vectors_match(
+                            right.epi,
+                            held_pressure_replay,
+                        )
+                except FloatingPointError:
+                    pass
+
+    held_pressure_conditions = (
+        ("default_integrator", integrator_name == "DefaultIntegrator"),
+        ("euler_method", method == "euler"),
+        ("positive_substeps", positive_substeps),
+        ("gamma_none", gamma_is_none is True),
+        ("clipping_inactive", clipping_applied is False),
+        (
+            "extended_dynamics_not_requested",
+            extended_dynamics_requested is False,
+        ),
+        ("stable_node_support", stable_support),
+        ("capacity_unchanged", capacity_unchanged),
+        ("pressure_unchanged", pressure_unchanged),
+        (
+            "substep_duration_sum_matches_interval",
+            substep_sum_matches,
+        ),
+        ("binary64_held_pressure_replay_matches", held_pressure_matches),
+    )
+    held_pressure_runtime_identified = all(
+        passed for _, passed in held_pressure_conditions
     )
     map_identified = bool(
         nodal_realized
@@ -818,6 +967,19 @@ def certify_observed_nodal_flow_interval(
         binary64_euler_replay_matches=binary_matches,
         binary64_runtime_interval_identified=(
             binary_runtime_identified
+        ),
+        binary64_substep_duration=binary_substep_duration,
+        exact_binary64_substep_duration=exact_binary_substep_duration,
+        exact_binary64_substep_duration_sum=exact_binary_substep_sum,
+        exact_substep_duration_sum_matches_interval=substep_sum_matches,
+        binary64_held_pressure_replay=held_pressure_replay,
+        exact_binary64_held_pressure_replay_residual=(
+            held_pressure_residual
+        ),
+        binary64_held_pressure_replay_matches=held_pressure_matches,
+        held_pressure_runtime_conditions=held_pressure_conditions,
+        _binary64_held_pressure_runtime_identified=(
+            held_pressure_runtime_identified
         ),
         exact_metric_weights=metric,
         exact_explicit_euler_map=exact_map,

@@ -19,7 +19,7 @@ from .event_timing import (
     ScheduledOperatorEvent,
     StructuralFlowInterval,
 )
-from .network_stage import NetworkStageResult
+from .network_stage import MutationStageDecisionObservation, NetworkStageResult
 
 
 @dataclass(frozen=True, slots=True)
@@ -64,9 +64,14 @@ class ExecutedNodalFlowInterval:
         default=...,
         init=False,
     )
+    _proof_stamp: tuple[Any, ...] = field(...)
+
+    def _proof_fields_are_intact(self) -> bool: ...
 
     @property
     def runtime_bound_binary64_interval_identified(self) -> bool: ...
+    @property
+    def runtime_bound_binary64_held_pressure_interval_identified(self) -> bool: ...
     @property
     def runtime_bound_exact_affine_map_identified(self) -> bool: ...
     @property
@@ -91,7 +96,7 @@ class ExecutedGlyphStage:
     exact_metric_ray_after: tuple[Fraction, ...] | None
     exact_common_metric_bridge: bool
     exact_energy_gain_upper_bound: Fraction | None
-    represented_affine_gain_bound_at_observed_endpoint_certified: bool
+    _represented_affine_gain_bound_at_observed_endpoint_certified: bool
     pre_interval_index: int
     post_interval_index: int
     pre_interval_positive: bool
@@ -102,12 +107,21 @@ class ExecutedGlyphStage:
     post_flow_endpoint_continuous: bool | None = ...
     pre_flow_metric_compatible: bool | None = ...
     post_flow_metric_compatible: bool | None = ...
+    mutation_decision_observations: tuple[
+        MutationStageDecisionObservation, ...
+    ] = field(...)
     solver_accuracy_certified: bool = field(default=..., init=False)
     future_or_repeated_schedule_stability_certified: bool = field(
         default=...,
         init=False,
     )
     scope: str = field(default=..., init=False)
+    _proof_stamp: tuple[Any, ...] = field(...)
+    def _proof_fields_are_intact(self) -> bool: ...
+    @property
+    def represented_affine_gain_bound_at_observed_endpoint_certified(
+        self,
+    ) -> bool: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -194,9 +208,14 @@ class OperatorEventExecutionResult:
         init=False,
     )
     flow_scope: str = field(default=..., init=False)
+    def __post_init__(self) -> None: ...
 
     @property
     def all_positive_flow_intervals_binary64_identified(self) -> bool | None: ...
+    @property
+    def all_positive_flow_intervals_binary64_held_pressure_identified(
+        self,
+    ) -> bool | None: ...
     @property
     def all_positive_flow_intervals_exact_affine(self) -> bool | None: ...
     @property
