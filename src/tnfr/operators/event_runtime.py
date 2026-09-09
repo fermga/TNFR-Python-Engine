@@ -16,10 +16,16 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from fractions import Fraction
 from numbers import Integral
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import networkx as nx
 
+from ..dynamics.integrators import (
+    DefaultIntegrator as _CanonicalDefaultIntegrator,
+)
+from ..dynamics.integrators import (
+    prepare_integration_params as _canonical_prepare_integration_params,
+)
 from ..errors import TNFRValueError
 from ..types import Glyph
 from .event_timing import (
@@ -34,18 +40,37 @@ from .network_stage import (
     NetworkStageResult,
 )
 
+if TYPE_CHECKING:
+    from ..physics.runtime_flow_stability import (
+        NodalFlowIntervalCertificate,
+        NodalFlowStateSnapshot,
+    )
+
 
 _HYBRID_EVENT_LOG = "hybrid_event_log"
 _FLOW_PROVENANCE = (
     "tnfr.operators.event_runtime.execute_operator_event_schedule"
 )
 _NODAL_FLOW_INPUTS = "live_nu_f_and_delta_nfr_at_each_interval_start"
+_CANONICAL_DEFAULT_INTEGRATE = _CanonicalDefaultIntegrator.integrate
 _FLOW_SCOPE = (
     "configured nodal EPI integrator over each declared positive interval, "
     "with current stored fields held according to that integrator and pressure "
     "refresh confined to explicit operator-stage callbacks; solver accuracy "
     "and adaptive U2/U4 behavior are not certified"
 )
+
+
+@dataclass(frozen=True, slots=True)
+class _FlowRuntimeMetadata:
+    """Trusted metadata read from the actual interval execution path."""
+
+    integrator_name: str
+    integrator_provenance_certified: bool
+    resolved_method: str | None
+    resolved_substeps: int | None
+    gamma_is_none: bool | None
+    extended_dynamics_requested: bool
 
 
 @dataclass(frozen=True, slots=True)
@@ -108,6 +133,64 @@ class ExecutedOperatorEvent:
 
 
 @dataclass(frozen=True, slots=True)
+class ExecutedNodalFlowInterval:
+    """Runtime-bound evidence for one executed positive flow interval.
+
+    The wrapper supplies integrator provenance from the execution site. The
+    nested certificate remains a standalone endpoint result and therefore
+    deliberately leaves its own ``integrator_provenance_certified`` flag
+    false. Solver accuracy and future or repeated schedules are outside both
+    scopes.
+    """
+
+    interval: StructuralFlowInterval
+    certificate: NodalFlowIntervalCertificate | None
+    abstention_reason: str | None
+    integrator_name: str
+    integrator_provenance_certified: bool
+    resolved_method: str | None
+    resolved_substeps: int | None
+    gamma_is_none: bool | None
+    clipping_applied: bool | None
+    extended_dynamics_requested: bool
+    solver_accuracy_certified: bool = field(default=False, init=False)
+    future_or_repeated_schedule_stability_certified: bool = field(
+        default=False,
+        init=False,
+    )
+
+    @property
+    def runtime_bound_binary64_interval_identified(self) -> bool:
+        """Whether the observed endpoint has trusted built-in provenance."""
+
+        return bool(
+            self.integrator_provenance_certified
+            and self.certificate is not None
+            and self.certificate.binary64_runtime_interval_identified
+        )
+
+    @property
+    def runtime_bound_exact_affine_map_identified(self) -> bool:
+        """Whether this execution realizes the certified rational Euler map."""
+
+        return bool(
+            self.integrator_provenance_certified
+            and self.certificate is not None
+            and self.certificate.explicit_euler_map_identified
+        )
+
+    @property
+    def runtime_bound_global_disagreement_contraction_certified(self) -> bool:
+        """Whether that identified map contracts global disagreement."""
+
+        return bool(
+            self.runtime_bound_exact_affine_map_identified
+            and self.certificate is not None
+            and self.certificate.global_disagreement_contraction_certified
+        )
+
+
+@dataclass(frozen=True, slots=True)
 class OperatorEventExecutionResult:
     """Immutable evidence that one complete finite schedule committed.
 
@@ -123,6 +206,8 @@ class OperatorEventExecutionResult:
     final_time: float
     integrator_name: str | None
     pressure_refresh_callback_invocations: int
+    flow_certification_requested: bool = False
+    flow_interval_evidence: tuple[ExecutedNodalFlowInterval, ...] = ()
     runtime_clock_checked: bool = field(default=True, init=False)
     flow_provenance: str = field(default=_FLOW_PROVENANCE, init=False)
     nodal_flow_inputs: str = field(default=_NODAL_FLOW_INPUTS, init=False)
@@ -131,7 +216,47 @@ class OperatorEventExecutionResult:
     solver_accuracy_certified: bool = field(default=False, init=False)
     adaptive_u2_u4_policy: bool = field(default=False, init=False)
     external_side_effects_rolled_back: bool = field(default=False, init=False)
+    future_or_repeated_schedule_stability_certified: bool = field(
+        default=False,
+        init=False,
+    )
     flow_scope: str = field(default=_FLOW_SCOPE, init=False)
+
+    def _all_positive_flow_intervals(self, attribute: str) -> bool | None:
+        if not self.flow_certification_requested:
+            return None
+        if len(self.flow_interval_evidence) != len(
+            self.positive_flow_interval_indices
+        ):
+            return False
+        return all(
+            bool(getattr(evidence, attribute))
+            for evidence in self.flow_interval_evidence
+        )
+
+    @property
+    def all_positive_flow_intervals_binary64_identified(self) -> bool | None:
+        """Aggregate trusted binary64 realization, or ``None`` if disabled."""
+
+        return self._all_positive_flow_intervals(
+            "runtime_bound_binary64_interval_identified"
+        )
+
+    @property
+    def all_positive_flow_intervals_exact_affine(self) -> bool | None:
+        """Aggregate exact affine identification, or ``None`` if disabled."""
+
+        return self._all_positive_flow_intervals(
+            "runtime_bound_exact_affine_map_identified"
+        )
+
+    @property
+    def all_positive_flow_intervals_contracting(self) -> bool | None:
+        """Aggregate exact contraction result, or ``None`` if disabled."""
+
+        return self._all_positive_flow_intervals(
+            "runtime_bound_global_disagreement_contraction_certified"
+        )
 
 
 def _require_graph(graph: Any) -> nx.Graph:
@@ -260,6 +385,116 @@ def _prepare_word(
     )
 
 
+def _flow_runtime_metadata(
+    graph: nx.Graph,
+    interval: StructuralFlowInterval,
+    integrator: Any,
+    *,
+    method: str | None,
+) -> _FlowRuntimeMetadata:
+    """Derive execution metadata without invoking the integrator twice."""
+
+    from ..gamma import _get_gamma_spec
+
+    integrator_name = type(integrator).__qualname__
+    bound_integrate = getattr(integrator, "integrate", None)
+    instance_attributes = getattr(integrator, "__dict__", {})
+    provenance = bool(
+        type(integrator) is _CanonicalDefaultIntegrator
+        and "integrate" not in instance_attributes
+        and getattr(bound_integrate, "__self__", None) is integrator
+        and getattr(bound_integrate, "__func__", None)
+        is _CANONICAL_DEFAULT_INTEGRATE
+        and _CanonicalDefaultIntegrator.integrate
+        is _CANONICAL_DEFAULT_INTEGRATE
+    )
+    extended_requested = bool(
+        graph.graph.get("use_extended_dynamics", False)
+    )
+    if not provenance:
+        return _FlowRuntimeMetadata(
+            integrator_name=integrator_name,
+            integrator_provenance_certified=False,
+            resolved_method=None,
+            resolved_substeps=None,
+            gamma_is_none=None,
+            extended_dynamics_requested=extended_requested,
+        )
+
+    _, substeps, _, resolved_method = _canonical_prepare_integration_params(
+        graph,
+        interval.duration,
+        interval.start_time,
+        method,
+    )
+    gamma_spec = _get_gamma_spec(graph)
+    gamma_is_none = bool(
+        isinstance(gamma_spec, Mapping)
+        and gamma_spec.get("type", "none") == "none"
+    )
+    return _FlowRuntimeMetadata(
+        integrator_name=integrator_name,
+        integrator_provenance_certified=True,
+        resolved_method=resolved_method,
+        resolved_substeps=substeps,
+        gamma_is_none=gamma_is_none,
+        extended_dynamics_requested=extended_requested,
+    )
+
+
+def _capture_interval_endpoint(
+    graph: nx.Graph,
+) -> tuple[NodalFlowStateSnapshot | None, bool]:
+    """Capture a detached endpoint while treating unsupported state as abstention."""
+
+    from ..physics.runtime_flow_stability import capture_nodal_flow_state
+
+    try:
+        return capture_nodal_flow_state(graph), True
+    except (TypeError, ValueError, nx.NetworkXException):
+        return None, False
+
+
+def _clipping_intervened(
+    left: NodalFlowStateSnapshot,
+    right: NodalFlowStateSnapshot,
+    interval: StructuralFlowInterval,
+    metadata: _FlowRuntimeMetadata,
+) -> bool | None:
+    """Detect one-step clipping by comparison with the unclipped Euler update."""
+
+    if not (
+        metadata.integrator_provenance_certified
+        and metadata.resolved_method == "euler"
+        and metadata.resolved_substeps == 1
+        and metadata.gamma_is_none is True
+        and left.nodes == right.nodes
+    ):
+        return None
+
+    from ..mathematics.unified_numerical import np
+
+    try:
+        with np.errstate(over="raise", invalid="raise", under="ignore"):
+            rate = np.multiply(
+                np.asarray(left.nu_f, dtype=float),
+                np.asarray(left.delta_nfr, dtype=float),
+            )
+            increment = np.multiply(interval.duration, rate)
+            replay = np.add(
+                np.asarray(left.epi, dtype=float),
+                increment,
+            )
+    except (FloatingPointError, TypeError, ValueError, OverflowError):
+        return None
+    if not bool(np.all(np.isfinite(replay))):
+        return None
+    return any(
+        float(expected) != observed
+        for expected, observed in zip(replay, right.epi)
+    )
+
+
 def _execute_flow_interval(
     graph: nx.Graph,
     interval: StructuralFlowInterval,
@@ -267,8 +502,9 @@ def _execute_flow_interval(
     *,
     method: str | None,
     n_jobs: int | None,
-) -> None:
-    """Advance one positive interval and verify both runtime boundaries."""
+    include_flow_certificate: bool,
+) -> ExecutedNodalFlowInterval | None:
+    """Advance one positive interval and optionally bind endpoint evidence."""
 
     from ..dynamics.runtime import _record_mutation_flow_boundary
 
@@ -278,9 +514,24 @@ def _execute_flow_interval(
         boundary=f"interval[{interval.index}].start",
     )
     if interval.exact_duration == 0:
-        return
+        return None
 
+    metadata = (
+        _flow_runtime_metadata(
+            graph,
+            interval,
+            integrator,
+            method=method,
+        )
+        if include_flow_certificate
+        else None
+    )
     _record_mutation_flow_boundary(graph)
+    if include_flow_certificate:
+        left, left_captured = _capture_interval_endpoint(graph)
+    else:
+        left, left_captured = None, False
+
     integrator.integrate(
         graph,
         dt=interval.duration,
@@ -288,12 +539,89 @@ def _execute_flow_interval(
         method=method,
         n_jobs=n_jobs,
     )
+
     _require_runtime_clock(
         graph,
         interval.end_time,
         boundary=f"interval[{interval.index}].end",
     )
+    if include_flow_certificate:
+        right, right_captured = _capture_interval_endpoint(graph)
+    else:
+        right, right_captured = None, False
     _record_mutation_flow_boundary(graph)
+
+    if not include_flow_certificate:
+        return None
+    if metadata is None:
+        raise RuntimeError("flow certification metadata was not prepared")
+    if not left_captured or not right_captured:
+        if not left_captured and not right_captured:
+            reason = "left_and_right_state_capture_failed"
+        elif not left_captured:
+            reason = "left_state_capture_failed"
+        else:
+            reason = "right_state_capture_failed"
+        return ExecutedNodalFlowInterval(
+            interval=interval,
+            certificate=None,
+            abstention_reason=reason,
+            integrator_name=metadata.integrator_name,
+            integrator_provenance_certified=(
+                metadata.integrator_provenance_certified
+            ),
+            resolved_method=metadata.resolved_method,
+            resolved_substeps=metadata.resolved_substeps,
+            gamma_is_none=metadata.gamma_is_none,
+            clipping_applied=None,
+            extended_dynamics_requested=(
+                metadata.extended_dynamics_requested
+            ),
+        )
+    if left is None or right is None:
+        raise RuntimeError("captured flow endpoint is unexpectedly absent")
+
+    clipping_applied = _clipping_intervened(
+        left,
+        right,
+        interval,
+        metadata,
+    )
+    from ..physics.runtime_flow_stability import (
+        certify_observed_nodal_flow_interval,
+    )
+
+    certificate = certify_observed_nodal_flow_interval(
+        left,
+        right,
+        duration=interval.duration,
+        integrator_name=(
+            "DefaultIntegrator"
+            if metadata.integrator_provenance_certified
+            else metadata.integrator_name
+        ),
+        method=metadata.resolved_method,
+        substeps=metadata.resolved_substeps,
+        gamma_is_none=metadata.gamma_is_none,
+        clipping_applied=clipping_applied,
+        extended_dynamics_requested=(
+            metadata.extended_dynamics_requested
+        ),
+    )
+    return ExecutedNodalFlowInterval(
+        interval=interval,
+        certificate=certificate,
+        abstention_reason=None,
+        integrator_name=metadata.integrator_name,
+        integrator_provenance_certified=(
+            metadata.integrator_provenance_certified
+        ),
+        resolved_method=metadata.resolved_method,
+        resolved_substeps=metadata.resolved_substeps,
+        gamma_is_none=metadata.gamma_is_none,
+        clipping_applied=clipping_applied,
+        extended_dynamics_requested=metadata.extended_dynamics_requested,
+    )
 
 
 def _require_exact_stage(
@@ -334,6 +662,7 @@ def execute_operator_event_schedule(
     method: str | None = None,
     n_jobs: int | None = None,
     suppress_birth_warnings: bool = False,
+    include_flow_certificates: bool = False,
 ) -> OperatorEventExecutionResult:
     """Execute one finite flow/jump schedule inside a whole-schedule rollback.
 
@@ -351,6 +680,9 @@ def execute_operator_event_schedule(
     sampling may retain the same physical coordinate as the right endpoint of
     one flow and the left endpoint of the next, but a same-time EPI jump resets
     that node's history and can never become an epi_time_history secant.
+    ``include_flow_certificates`` captures detached endpoints around each
+    positive interval and returns runtime-bound evidence without writing it to
+    graph metadata or claiming solver accuracy or repeated stability.
     """
 
     graph = _require_graph(graph)
@@ -366,6 +698,8 @@ def execute_operator_event_schedule(
         raise TypeError("n_jobs must be an integer or None")
     if type(suppress_birth_warnings) is not bool:
         raise TypeError("suppress_birth_warnings must be a bool")
+    if type(include_flow_certificates) is not bool:
+        raise TypeError("include_flow_certificates must be a bool")
     schedule.__post_init__()
     _validate_schedule_clock(schedule)
     _require_runtime_clock(
@@ -396,6 +730,7 @@ def execute_operator_event_schedule(
         compute_delta_nfr = None
     transaction = GraphTransactionSnapshot(graph)
     events_committed: list[ExecutedOperatorEvent] = []
+    flow_interval_evidence: list[ExecutedNodalFlowInterval] = []
     positive_intervals = tuple(
         interval.index
         for interval in schedule.intervals
@@ -419,13 +754,18 @@ def execute_operator_event_schedule(
                         raise RuntimeError(
                             "positive flow interval has no configured integrator"
                         )
-                    _execute_flow_interval(
+                    evidence = _execute_flow_interval(
                         graph,
                         interval,
                         integrator,
                         method=method,
                         n_jobs=n_jobs,
+                        include_flow_certificate=(
+                            include_flow_certificates
+                        ),
                     )
+                    if evidence is not None:
+                        flow_interval_evidence.append(evidence)
                 else:
                     _require_runtime_clock(
                         graph,
@@ -499,6 +839,8 @@ def execute_operator_event_schedule(
             pressure_refresh_callback_invocations=(
                 pressure_refresh_callback_invocations
             ),
+            flow_certification_requested=include_flow_certificates,
+            flow_interval_evidence=tuple(flow_interval_evidence),
         )
     except BaseException as failure:
         transaction.restore_after_failure(graph, failure)
@@ -506,6 +848,7 @@ def execute_operator_event_schedule(
 
 
 __all__ = (
+    "ExecutedNodalFlowInterval",
     "ExecutedOperatorEvent",
     "OperatorEventExecutionResult",
     "execute_operator_event_schedule",

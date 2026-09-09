@@ -433,6 +433,12 @@ from .hybrid_operator_stability import (
     certify_affine_epi_jump_gain,
     compose_hybrid_epi_stability,
 )
+from .runtime_flow_stability import (
+    NodalFlowIntervalCertificate,
+    NodalFlowStateSnapshot,
+    capture_nodal_flow_state,
+    certify_observed_nodal_flow_interval,
+)
 from .network_stage_stability import (
     AllTargetNeighborStageCertificate,
     AllTargetNeighborStageStep,
@@ -716,6 +722,11 @@ __all__ = [
     "HybridEPIStabilityCertificate",
     "certify_affine_epi_jump_gain",
     "compose_hybrid_epi_stability",
+    # --- Observed nodal-flow interval evidence ---
+    "NodalFlowStateSnapshot",
+    "NodalFlowIntervalCertificate",
+    "capture_nodal_flow_state",
+    "certify_observed_nodal_flow_interval",
     # --- Physical operator-event flow duration ---
     "ContinuousRelaxationDurationDiagnostic",
     "diagnose_continuous_relaxation_duration",

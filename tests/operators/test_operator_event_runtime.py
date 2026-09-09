@@ -16,6 +16,7 @@ from tnfr.dynamics.integrators import AbstractIntegrator
 from tnfr.dynamics.runtime import _resolve_integrator_instance
 from tnfr.errors import TNFRValueError
 from tnfr.operators.event_runtime import (
+    ExecutedNodalFlowInterval,
     OperatorEventExecutionResult,
     execute_operator_event_schedule,
 )
@@ -515,6 +516,7 @@ def test_runtime_schedule_executor_is_public() -> None:
         is execute_operator_event_schedule
     )
     assert operators.OperatorEventExecutionResult is OperatorEventExecutionResult
+    assert operators.ExecutedNodalFlowInterval is ExecutedNodalFlowInterval
 
 
 @pytest.mark.parametrize(

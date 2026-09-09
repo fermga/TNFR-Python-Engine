@@ -425,8 +425,20 @@ collapsed or nonadditive positive intervals, and commits graph-owned flow, jump,
 history, cache and event-log state in one transaction. Flow boundaries supply
 timestamped EPI evidence; a same-time EPI jump restarts that history and remains
 a zero-duration event. ZHIR therefore requires a positive representable
-immediately preceding flow. Solver accuracy, refinement equivalence, jump gains,
-adaptive U2/U4 and external side-effect rollback remain unproved.
+immediately preceding flow. With `include_flow_certificates=True`, detached
+snapshots around each actual positive flow produce an
+`ExecutedNodalFlowInterval`. Its evidence keeps the exact rational
+held-pressure nodal identity and pure-EPI quotient theorem separate from the
+binary64 Euler replay. Trusted binary64 held-pressure identification requires
+the exact built-in `DefaultIntegrator`, Euler with one substep, live Gamma type
+`none`, inactive clipping, disabled extended dynamics, stable support,
+unchanged capacity and pressure, and a matching replay. Exact rational pure-EPI
+affine promotion additionally requires fixed symmetric nonnegative conductance,
+positive row strengths and capacity, the stored pressure `-L_rw EPI` and the
+exact nodal identity. Stale pressure can pass the trusted binary64 runtime level
+while the pure-EPI affine map and quotient theorem abstain.
+Solver accuracy, refinement equivalence, mixed glyph/REMESH gain, adaptive
+U2/U4 and future or repeated schedule stability remain unproved.
 
 `execute_event_remesh_cycle` composes one finite schedule with the separately
 invoked delayed map under an outer graph transaction. It appends exactly one

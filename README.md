@@ -235,8 +235,26 @@ initial target tuple, and rolls back graph-owned flow and jump state on failure.
 Flow boundaries provide timestamped EPI evidence; zero-duration jumps are
 recorded separately and restart same-time EPI history after a state change.
 Every Mutation event therefore requires a positive representable immediately
-preceding flow. Solver accuracy, refinement equivalence, jump gains and adaptive
-U2/U4 remain outside this execution contract.
+preceding flow.
+
+`capture_nodal_flow_state(...)` and
+`certify_observed_nodal_flow_interval(...)` provide detached endpoint evidence
+for one declared interval. They separate the exact rational nodal identity and
+pure-EPI diffusion/quotient result from a same-operation binary64 held-pressure
+Euler replay. The standalone certificate never infers runtime provenance.
+Passing `include_flow_certificates=True` to the event executor captures each
+positive interval immediately around the actual integrator call and returns an
+`ExecutedNodalFlowInterval`. Runtime-bound binary64 identification requires
+the exact built-in `DefaultIntegrator`, Euler with one substep, live Gamma type
+`none`, inactive clipping, disabled extended dynamics, stable support,
+unchanged capacity and pressure, and an exact binary64 endpoint replay. Exact
+rational pure-EPI affine promotion additionally requires fixed symmetric
+nonnegative conductance with positive row strengths, positive capacity, the
+stored pressure `-L_rw EPI` and the exact nodal identity. A stale stored
+pressure can therefore pass trusted binary64 held-pressure identification while
+the pure-EPI diffusion and quotient theorem abstain. No interval field certifies
+solver accuracy, refinement equivalence, a mixed-word gain or future/repeated
+schedule stability.
 
 `execute_event_remesh_cycle(...)` adds one explicit delayed-REMESH boundary:
 schedule execution, one canonical full-support pre-REMESH `_epi_hist` sample,
@@ -254,6 +272,10 @@ refreshes remain separate. The optional post-REMESH refresh runs once only when
 the map applies. Exact observations remain authoritative when a derived float
 display is `None`. This is an atomic one-cycle execution contract, not a solver,
 mixed-gain or evolving-history repetition theorem.
+
+The cycle forwards `include_flow_certificates` to its event execution and thus
+can carry the same per-interval evidence. It does not compose an interval gain
+with glyph or delayed-REMESH gains.
 
 The companion example exercises
 only the schedule and duration diagnostic, without executing this runtime

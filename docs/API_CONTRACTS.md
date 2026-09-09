@@ -124,8 +124,46 @@ outer graph transaction covers flows, jumps, histories, runtime caches and the
 hybrid event log. Completed pressure-refresh callbacks are counted; effects
 already emitted outside the graph cannot be rolled back. Flow boundaries feed
 timestamped EPI evidence, while same-time jumps restart that evidence and remain
-zero-duration events. The result does not certify solver accuracy, equivalent
-timestep refinement, jump gains or adaptive U2/U4.
+zero-duration events.
+
+[`capture_nodal_flow_state`](../src/tnfr/physics/runtime_flow_stability.py)
+captures a detached ordered endpoint containing only scalar EPI, `nu_f`,
+`DeltaNFR` and effective conductance.
+[`certify_observed_nodal_flow_interval`](../src/tnfr/physics/runtime_flow_stability.py)
+compares two such endpoints over one materialized binary64 duration. Its exact
+rational nodal residual, exact pure-EPI pressure identity, binary64
+held-pressure Euler replay and exact rational quotient-gain theorem are
+independent claims. Caller-supplied endpoint metadata does not prove which
+runtime produced the observations.
+
+Setting `include_flow_certificates=True` on
+`execute_operator_event_schedule` binds capture to both sides of each actual
+positive flow call. Each `ExecutedNodalFlowInterval` records its interval and
+actual integrator provenance together with the detached certificate or an
+explicit state-capture abstention; failed theorem conditions remain visible in
+the nested certificate. Runtime-bound binary64 identification requires the
+exact built-in `DefaultIntegrator`, Euler with one substep, live Gamma type
+`none`, inactive clipping, disabled extended dynamics, stable node support,
+unchanged capacity and pressure, and an exact binary64 endpoint replay. A
+custom integrator or subclass, RK4, multiple substeps, any other Gamma type,
+active clipping or requested extended dynamics prevents that identification.
+
+Exact rational pure-EPI affine promotion additionally requires at least two
+nodes, fixed symmetric nonnegative conductance with positive row strengths,
+positive capacity, the exact stored pressure `-L_rw EPI` and the exact rational
+nodal identity. Changed support, conductance, capacity or pressure blocks the
+corresponding promotion. Stale pressure exposes the three-level boundary: the
+held-pressure nodal identity and trusted binary64 runtime replay can pass while
+the pure-EPI affine map and quotient theorem abstain.
+`flow_certification_requested` distinguishes the
+disabled path, while `flow_interval_evidence` stores the positive-interval
+records. The tri-state
+`all_positive_flow_intervals_binary64_identified`,
+`all_positive_flow_intervals_exact_affine` and
+`all_positive_flow_intervals_contracting` aggregates return `None` when
+capture was not requested and otherwise summarize only those executed positive
+intervals. They do not turn endpoint agreement into solver-accuracy,
+refinement, mixed-word or repeated-schedule evidence.
 
 [`execute_event_remesh_cycle`](../src/tnfr/operators/event_remesh_runtime.py)
 composes one such schedule with exactly one canonical pre-REMESH `_epi_hist`
@@ -145,9 +183,11 @@ the optional post-REMESH pressure callback remain distinct. The latter runs
 only when REMESH applies and is counted only after returning. Delay `tau` reads
 `_epi_hist[-(tau + 1)]`, with no post-jump delayed-history duplicate. A committed
 jump separately records its same-time `epi_time_history` endpoint for Mutation.
-The result does not certify mixed runtime gain or repeated stability with
-evolving history. External callback and integrator effects remain outside
-rollback.
+The cycle forwards `include_flow_certificates` and preserves the resulting
+per-interval records inside `event_execution`. It does not compose their
+quotient gains with glyph-stage or delayed-REMESH gains, and it does not certify
+mixed runtime gain or repeated stability with evolving history. External
+callback and integrator effects remain outside rollback.
 
 ## Contract verification
 

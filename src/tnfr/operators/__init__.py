@@ -92,6 +92,7 @@ from .event_remesh_runtime import (
     execute_event_remesh_cycle,
 )
 from .event_runtime import (
+    ExecutedNodalFlowInterval,
     ExecutedOperatorEvent,
     OperatorEventExecutionResult,
     execute_operator_event_schedule,
@@ -194,6 +195,7 @@ __all__ = [
     "EventRemeshCycleResult",
     "WeightedEPIObservation",
     "execute_event_remesh_cycle",
+    "ExecutedNodalFlowInterval",
     "ExecutedOperatorEvent",
     "OperatorEventExecutionResult",
     "execute_operator_event_schedule",

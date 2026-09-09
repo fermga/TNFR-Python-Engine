@@ -473,13 +473,11 @@ def _build_gamma_increments(
             suggestion="Use 'euler' or 'rk4' as the integration method.",
         )
 
-    gamma_spec = G.graph.get("_gamma_spec")
-    if gamma_spec is None:
-        gamma_spec = _get_gamma_spec(G)
+    gamma_spec = _get_gamma_spec(G)
 
     gamma_type = ""
     if isinstance(gamma_spec, Mapping):
-        gamma_type = str(gamma_spec.get("type", "")).lower()
+        gamma_type = str(gamma_spec.get("type", ""))
 
     if gamma_type == "none":
         gamma_maps: tuple[GammaMap, ...] = tuple(

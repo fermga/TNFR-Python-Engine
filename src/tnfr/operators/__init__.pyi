@@ -10,6 +10,7 @@ from .event_remesh_runtime import (
     execute_event_remesh_cycle as execute_event_remesh_cycle,
 )
 from .event_runtime import (
+    ExecutedNodalFlowInterval as ExecutedNodalFlowInterval,
     ExecutedOperatorEvent as ExecutedOperatorEvent,
     OperatorEventExecutionResult as OperatorEventExecutionResult,
     execute_operator_event_schedule as execute_operator_event_schedule,

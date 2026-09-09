@@ -429,6 +429,7 @@ def test_public_stub_exposes_event_remesh_cycle_contract() -> None:
         "method",
         "n_jobs",
         "suppress_birth_warnings",
+        "include_flow_certificates",
     ]
     imported = {
         alias.name
@@ -610,3 +611,40 @@ def test_unrepresentable_disagreement_keeps_exact_observation() -> None:
     assert not result.remesh_applied
     assert result.pre_schedule_epi.exact_disagreement_energy > 0
     assert result.pre_schedule_epi.disagreement_energy is None
+
+def test_cycle_forwards_detached_runtime_flow_certificates() -> None:
+    graph = _graph()
+    graph.graph["DT_MIN"] = 0.0
+
+    result = execute_event_remesh_cycle(
+        graph,
+        _schedule(graph, durations=(0.25,)),
+        include_flow_certificates=True,
+    )
+
+    execution = result.event_execution
+    assert execution.flow_certification_requested
+    assert len(execution.flow_interval_evidence) == 1
+    evidence = execution.flow_interval_evidence[0]
+    assert evidence.runtime_bound_binary64_interval_identified
+    assert not evidence.runtime_bound_exact_affine_map_identified
+    assert evidence.certificate is not None
+    assert evidence.certificate.left_epi == (2.0, 0.0)
+    assert evidence.certificate.right_epi == (2.0, 0.0)
+    assert result.post_remesh_epi.epi_values == (0.5, 1.5)
+    assert "flow_interval_evidence" not in graph.graph
+
+
+@pytest.mark.parametrize("value", [None, 0, 1.0, "yes"])
+def test_cycle_flow_certificate_flag_requires_a_strict_bool(value: object) -> None:
+    graph = _graph()
+    before = _state(graph)
+
+    with pytest.raises(TypeError, match="include_flow_certificates"):
+        execute_event_remesh_cycle(
+            graph,
+            _schedule(graph),
+            include_flow_certificates=value,  # type: ignore[arg-type]
+        )
+
+    assert _state(graph) == before

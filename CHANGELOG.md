@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added — 2026-09-09 Runtime-observed nodal-flow evidence
+
+- Added detached one-interval snapshots and certificates that report the exact
+  rational held-pressure nodal identity, the pure-EPI pressure/affine/quotient
+  result and the same-operation binary64 Euler replay as separate claims.
+  Standalone endpoint agreement never infers runtime provenance.
+- Bound `include_flow_certificates` to actual positive calls made by
+  operator-event execution and event/REMESH cycles. Each
+  `ExecutedNodalFlowInterval` derives built-in integrator provenance. Custom or
+  subclassed integrators, RK4, multiple substeps, a live Gamma type other than
+  `none`, clipping and requested extended dynamics block trusted binary64
+  identification. Stale pure-EPI pressure can still pass that held-pressure
+  level while blocking exact affine and quotient promotion. Changed support,
+  conductance, capacity or pressure blocks the corresponding claim.
+- Kept interval evidence read-only and opt-in, with no solver-accuracy,
+  mixed-gain or future/repeated-schedule theorem.
+- Centralized scalar Gamma cache refresh through the live Gamma specification,
+  aligning cached and vectorized paths after configuration replacement or
+  in-place mutation.
+
 ### Added — 2026-09-08 Dissonance, Coupling, event-time and proof boundaries
 
 - Promoted Recursivity as the thirteenth atomic all-target glyph stage. One

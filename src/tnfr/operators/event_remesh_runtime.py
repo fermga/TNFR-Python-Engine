@@ -503,6 +503,7 @@ def execute_event_remesh_cycle(
     method: str | None = None,
     n_jobs: int | None = None,
     suppress_birth_warnings: bool = False,
+    include_flow_certificates: bool = False,
 ) -> EventRemeshCycleResult:
     """Execute one schedule, one history sample and one delayed REMESH map.
 
@@ -523,6 +524,8 @@ def execute_event_remesh_cycle(
         raise TypeError("schedule must be an OperatorEventSchedule")
     if type(refresh_pressure_after_remesh) is not bool:
         raise TypeError("refresh_pressure_after_remesh must be a bool")
+    if type(include_flow_certificates) is not bool:
+        raise TypeError("include_flow_certificates must be a bool")
 
     nodes = tuple(graph.nodes)
     if not nodes:
@@ -569,6 +572,7 @@ def execute_event_remesh_cycle(
             method=method,
             n_jobs=n_jobs,
             suppress_birth_warnings=suppress_birth_warnings,
+            include_flow_certificates=include_flow_certificates,
         )
         if event_result.target_nodes != nodes:
             raise RuntimeError(
