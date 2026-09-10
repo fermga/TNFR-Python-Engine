@@ -46,6 +46,18 @@ The governing theory and claim status live in [theory/README.md](../theory/READM
 Public APIs and package ownership live in [ARCHITECTURE.md](../ARCHITECTURE.md).
 Test requirements live in [TESTING.md](../TESTING.md).
 
-Recent executable runtime bridges in `02_physics_regimes` are
-`163_reception_runtime_bridge.py`, `164_resonance_runtime_bridge.py`, and
-`165_operator_event_relaxation.py`.
+Recent executable runtime and refinement examples in `02_physics_regimes` are
+`163_reception_runtime_bridge.py`, `164_resonance_runtime_bridge.py`,
+`165_operator_event_relaxation.py`, and
+`166_event_remesh_reference_family.py`. Example 166 certifies one finite
+event-free effective-P2 runtime family for a fixed nonuniform mode, with
+`2/4/8` pressure-refreshed Euler segments; it is not a generic
+mesh-convergence experiment.
+
+`167_reversible_eigenmode_reference.py` is the pure exact-rational extension.
+It certifies both nonuniform eigenmodes of the nonregular three-node path in
+the reversible metric `H=diag(1,2,1)`, including rational exponential
+enclosures, exact Euler products and conditional exact-real refinement scope.
+It does not execute a binary64 solver, glyph or REMESH operation. The complete
+proof is in the
+[diffusion stability theorem](../theory/TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem).

@@ -21,6 +21,36 @@ All notable changes to this project will be documented in this file.
   Integrity or decreasing finite errors do not certify solver accuracy/order,
   mesh convergence, Lyapunov decrease, a combined schedule/REMESH gain,
   whole-three-mesh atomicity or future behavior.
+- Added `reversible_eigenmode_reference.py`, its exact public stub, focused
+  tests and `167_reversible_eigenmode_reference.py`. For any fixed connected
+  symmetric nonnegative rational conductance with positive rational capacity,
+  the sealed pure kernel verifies one exact nonuniform eigenmode in
+  `H=diag(d_i/nu_i)`, encloses its exponential solution rationally, constructs
+  pressure-refreshed Euler products, and proves exact `L_inf` and
+  `H`-error-energy bounds. Proper positive subdivision strictly improves the
+  factor and quadratic bounds; the `h_max` bound yields conditional exact-real
+  convergence for fixed-data admissible partition families. The `mu*T <= 4096`
+  limit caps only the enclosure's integer-power exponent and does not bound
+  arbitrary rational bit size. Binary64 asymptotics, solver order, mixed
+  modes, directed or changing generators, glyph/REMESH dynamics and full TNFR
+  stability remain outside the certificate. Example 167 checks both exact
+  nonuniform modes of nonregular `P3` through the public `tnfr.physics` facade.
+- Added `event_remesh_reference.py`, its exact public stub, focused tests and
+  `166_event_remesh_reference_family.py`. The sealed effective-P2 family binds
+  three event-free, fixed-conductance, homogeneous-capacity,
+  pressure-refreshed Euler executions of one nonuniform initial mode, with
+  `0 < lambda*h < 1` and two proper positive subdivisions. Rational
+  exponential enclosures prove
+  the finite continuous/Euler error bounds and strict subdivision improvement;
+  unit-delay REMESH scales the ideal error by `beta=(1-alpha)^2`, while the
+  committed endpoint bound adds the signed rounding-plus-clipping residual
+  norm. Hard clipping must use one common scalar interval. Solver order,
+  generic or binary64 asymptotic convergence, arbitrary glyphs or mixed
+  channels, soft clipping, changing support or metric, repetition and future
+  behavior remain outside the certificate. Its continuous/Euler proof is now
+  centralized as the two-node specialization of the general reversible
+  eigenmode theorem; the REMESH derivation retains only its scale and runtime
+  residual layer.
 - Added `remesh_history_stability.py` and
   `test_remesh_history_stability.py`. The exact finite companion certificate
   derives the invariant temporal distribution for uniform unclipped delayed
@@ -31,6 +61,37 @@ All notable changes to this project will be documented in this file.
   spatial consensus, zero pressure and schedule/REMESH composition remain
   outside the theorem. The certificate, transition observation and both
   constructors are re-exported from `tnfr.physics`.
+- Added `runtime_remesh_history_stability.py` and its exact public stub. The
+  one-transition bridge accepts an applied executor-sealed event/REMESH cycle,
+  reverses the retained runtime history into companion order, and replays the
+  raw affine and canonical clipping evaluations bit for bit. It retains signed
+  exact rounding and clipping residuals, their augmented-energy defects,
+  stationary-barycenter drift and a posteriori sufficient Lyapunov margins.
+  Hard clipping is nonexpansive for the observed common-interval step; the soft
+  knee counterexample and a binary64 rounding counterexample remain explicit.
+  Live history advance, repetition, schedule composition and future stability
+  are not promoted by this isolated bridge.
+- Delayed-REMESH stability evidence now rejects a nonzero exact diagnostic that
+  would underflow to displayed binary64 zero, before planning or execution can
+  write graph state.
+- Added `remesh_schedule_stability.py` and its public stub. The sealed pure
+  observation telescopes ideal REMESH dissipation with signed raw, clipping and
+  schedule disagreement-energy defects, retains the exact schedule-gain slack,
+  a sufficient one-step lower bound and stationary-history barycenter drift.
+  Caller-supplied heads remain algebraic evidence without executor provenance,
+  repeated-runtime or future-stability promotion.
+- Added `runtime_remesh_schedule_stability.py` and its public stub. The
+  adjacent-cycle adapter requires exact recorded boundaries, one fixed REMESH
+  configuration and a common normalized schedule metric. It binds each applied
+  binary64 REMESH result to the next represented schedule and verifies the
+  resulting history append. Per-boundary balances telescope to one exact finite
+  energy drop and summed gain-based lower bound without multiplying
+  fixed-history REMESH factors. Shared graph provenance, cross-call atomicity,
+  global executable gain, repetition and future stability remain outside the
+  result.
+- Exact REMESH companion certificates and transitions now reconstruct every
+  derived field during seal validation. Privately re-sealed inconsistencies,
+  duplicate or unhashable node orders and hostile equality payloads fail closed.
 - Required custom event-schedule integrators to modify only EPI, `dEPI_dt`,
   `d2EPI_dt2` and the runtime clock and to realize exactly, in rationalized
   represented values, `EPI_right-EPI_left = dt*nu_f_left*DeltaNFR_left`.
@@ -77,8 +138,9 @@ All notable changes to this project will be documented in this file.
   resources; built-in methods retain Python's atomic deepcopy behavior.
 - Updated S1, S2, S5 and S16 to distinguish the implemented finite three-mesh
   observation from convergence and to record the separate uniform exact
-  augmented-history theorem. The next stability target is its bridge to the
-  clipped binary64 runtime and a compatible schedule/REMESH composition law.
+  augmented-history theorem. Subsequent entries above record the completed
+  one-transition binary64 bridge and finite adjacent schedule/history
+  telescope and the first compatible finite P2 reference-family theorem.
 
 ### Added — 2026-09-09 Physical pressure-refreshed event flow
 

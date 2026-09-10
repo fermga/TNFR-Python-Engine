@@ -381,6 +381,9 @@ remains false: endpoint binding does not identify one global executable
 binary64 map or certify solver accuracy, refinement, full multichannel
 stability, future schedules or repeated execution.
 
+The schedule-only construction and duration diagnostic are exercised by
+[`165_operator_event_relaxation.py`](examples/02_physics_regimes/165_operator_event_relaxation.py).
+
 `execute_event_remesh_cycle(...)` adds one explicit delayed-REMESH boundary:
 schedule execution, one canonical full-support pre-REMESH `_epi_hist` sample,
 then `apply_network_remesh`, all within an outer graph transaction. Delay `tau`
@@ -446,6 +449,19 @@ lag-one execution with `alpha=1`, initial EPI `(2, 0)` and prior history `(0, 2)
 alternates to `(0, 2)` and back to `(2, 0)`, although each fixed-history REMESH
 certificate has zero current-state coefficient.
 
+The stricter
+[`observe_runtime_remesh_schedule_sequence(...)`](src/tnfr/physics/runtime_remesh_schedule_stability.py)
+uses that base sequence only when every boundary is exact, the REMESH
+configuration is fixed and all nested schedules share one normalized positive
+metric. It binds cycle `i`'s applied binary64 REMESH bridge to cycle `i+1`'s
+represented schedule endpoints and verifies that the scheduled endpoint is the
+new head in the next recorded history window. Each boundary then carries the
+exact Jensen/raw/clipping/schedule energy balance, and consecutive augmented
+energies telescope over the finite supplied sequence. This additive result
+still does not establish shared graph provenance, causal succession,
+cross-call atomicity, a global executable gain, repetition or future
+stability.
+
 [`observe_event_remesh_three_mesh_refinement(...)`](src/tnfr/physics/event_remesh_refinement.py)
 compares three already executed and individually sealed event/REMESH cycles on
 strictly nested coarse, intermediate and fine physical partitions. It requires
@@ -471,6 +487,51 @@ The observer and its six record types are available from the curated
 `tnfr.physics` facade and their defining `tnfr.physics.event_remesh_refinement`
 submodule.
 
+[`certify_reversible_single_eigenmode_euler_reference(...)`](src/tnfr/physics/reversible_eigenmode_reference.py)
+supplies the general pure mathematical reference behind the finite modal
+comparison. For an exact rational connected symmetric nonnegative conductance
+matrix, positive capacities and one exact nonuniform eigenmode of
+`A=diag(nu_f)L_rw`, it uses the reversible metric `H=diag(d_i/nu_i)` and the
+`H`-weighted mean to certify the exponential solution, each
+pressure-refreshed Euler product, and exact rational `L_inf` and `H`-error-energy
+bounds. Proper positive subdivision strictly improves the modal factor and
+quadratic bound. For fixed problem data and admissible partitions with
+`h_max -> 0`, the exact-real Euler endpoints converge to the modal solution.
+This pure theorem has no executor provenance and does not certify binary64
+asymptotics, solver order, mixed modes, directed or changing generators,
+glyphs, REMESH or full TNFR stability. Its complete proof is centralized in
+the [diffusion stability theorem](theory/TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem).
+The rational exponential enclosure imposes `mu*T <= 4096` only as a cap on its
+integer-power exponent; it does not bound the total bit size of arbitrary
+`Fraction` inputs. The exact public stub is
+[`reversible_eigenmode_reference.pyi`](src/tnfr/physics/reversible_eigenmode_reference.pyi),
+and
+[`167_reversible_eigenmode_reference.py`](examples/02_physics_regimes/167_reversible_eigenmode_reference.py)
+certifies both nonuniform exact modes of the nonregular path `P3`.
+
+[`observe_p2_event_remesh_reference_family(...)`](src/tnfr/physics/event_remesh_reference.py)
+turns that generic three-mesh record into one compatible finite reference
+family. It requires an event-free effective two-node path, a nonuniform initial
+mode, fixed positive conductance, homogeneous positive capacity, pure-EPI
+pressure refreshed at every physical boundary, exact
+represented Euler segments with `0 < lambda*h < 1`, two proper positive
+subdivisions, unit REMESH delays, the initial field as the delayed row, and hard
+clipping on one common scalar interval. Rational exponential enclosures certify
+the continuous-versus-Euler error bounds and strict finite-subdivision
+improvement. The ideal REMESH error scales by `beta=(1-alpha)^2`; the runtime
+bound adds the exact infinity norm of the signed rounding-plus-clipping
+residual. This result does not certify solver order, generic or binary64
+asymptotic convergence, arbitrary glyphs or mixed channels, soft clipping,
+changing support or metric, repetition, or future behavior. The full derivation
+of its diffusion component is the two-node specialization of the
+[general reversible eigenmode theorem](theory/TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem);
+the REMESH scaling and runtime-residual boundary remain in
+[REMESH Fixed-Delay Models](theory/REMESH_INFINITY_DERIVATION.md#28-effective-p2-three-mesh-reference-family),
+with an executable `2/4/8`-segment instance in
+[`166_event_remesh_reference_family.py`](examples/02_physics_regimes/166_event_remesh_reference_family.py).
+Its exact public interface is declared in
+[`event_remesh_reference.pyi`](src/tnfr/physics/event_remesh_reference.pyi).
+
 The separate
 [`certify_uniform_remesh_history_stability(...)`](src/tnfr/physics/remesh_history_stability.py)
 closes the restricted evolving-history question for one uniform, unclipped
@@ -490,9 +551,25 @@ centralized in
 and verified by
 [`test_remesh_history_stability.py`](tests/physics/test_remesh_history_stability.py).
 
-The companion example exercises
-only the schedule and duration diagnostic, without executing this runtime
-binding: [`165_operator_event_relaxation.py`](examples/02_physics_regimes/165_operator_event_relaxation.py).
+[`observe_runtime_remesh_history_bridge(...)`](src/tnfr/physics/runtime_remesh_history_stability.py)
+binds one applied executor-sealed cycle to that exact companion. It converts
+the retained runtime history to newest-first order, replays the nested
+binary64 affine expression and canonical clipping call, and records the exact
+signed identity `bounded = ideal + rounding_residual + clipping_residual`.
+Its lifted augmented-energy balance separates Jensen dissipation from rounding
+and clipping defects and provides a posteriori sufficient lower bounds. Hard
+clipping on one common interval is disagreement-nonexpansive. Soft clipping
+and binary64 rounding both have retained counterexamples to unconditional
+decrease. Because the runtime has not yet appended the bounded head, this
+one-transition bridge does not certify live history advance or repetition.
+
+The pure
+[`observe_remesh_schedule_history_transition(...)`](src/tnfr/physics/remesh_schedule_stability.py)
+layer adds a supplied scheduled head and a represented schedule gain to that
+balance. It telescopes raw, clipping and schedule defects and exposes the exact
+schedule-gain slack and a sufficient finite-step lower bound. This algebra does
+not multiply fixed-history REMESH gains and carries no executable provenance by
+itself.
 
 ## Mathematical scope
 

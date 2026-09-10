@@ -294,7 +294,10 @@ def _runtime_mapping_values_for_nodes(
         node_signature = structural_proof_signature(node)
         match_index = None
         for index, (candidate, _value) in enumerate(unmatched):
-            if candidate is node or structural_proof_signature(candidate) == node_signature:
+            if (
+                candidate is node
+                or structural_proof_signature(candidate) == node_signature
+            ):
                 match_index = index
                 break
             # NetworkX node support follows hash/equality semantics.  This
@@ -418,6 +421,11 @@ def _diagnostic_float(value: Fraction, label: str) -> float:
     if not math.isfinite(result):
         raise TNFRValueError(
             f"{label} exceeds the finite binary64 diagnostic range"
+        )
+    if result == 0.0 and value != 0:
+        raise TNFRValueError(
+            f"{label} is nonzero but underflows the finite binary64 "
+            "diagnostic range"
         )
     return result
 

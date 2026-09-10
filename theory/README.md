@@ -29,7 +29,7 @@ contracts are centralized in [API Contracts](../docs/API_CONTRACTS.md).
 | [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) | Variational models and their stated bridge conditions |
 | [DISSIPATIVE_AND_OPEN_SYSTEMS.md](DISSIPATIVE_AND_OPEN_SYSTEMS.md) | Open-system and dissipative extensions |
 | [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md) | Stability diagnostics and invariant monitoring |
-| [TNFR_DIFFUSION_STABILITY_THEOREM.md](TNFR_DIFFUSION_STABILITY_THEOREM.md) | Fixed/time-varying and exact-common-metric EPI diffusion, directed transient criterion, and conditional affine hybrid bounds |
+| [TNFR_DIFFUSION_STABILITY_THEOREM.md](TNFR_DIFFUSION_STABILITY_THEOREM.md) | Fixed/time-varying and exact-common-metric EPI diffusion, exact reversible single-eigenmode Euler solution/error/convergence theorem, directed transient criterion, and conditional affine hybrid bounds |
 | [TNFR_SCALE_GEOMETRY_AND_BRIDGE.md](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) | Pure-EPI quotient, coherence geometry, decoupled metriplectic bridge, and restricted S16 endpoint/path certificates |
 | [PHYSICAL_REGIME_CORRESPONDENCES.md](PHYSICAL_REGIME_CORRESPONDENCES.md) | Scoped comparisons with diffusive, inertial and modal regimes |
 | [GAUGE_SYMMETRY_AND_UNIFICATION.md](GAUGE_SYMMETRY_AND_UNIFICATION.md) | Gauge and polarization models |
@@ -73,7 +73,16 @@ problems. Supporting maps include
 - [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) separates the
   clipped runtime, finite cyclic filter and finite companion recurrence; it
   derives the cyclic projector and the restricted augmented-history stability
-  theorem while leaving the runtime infinity limit open.
+  theorem. It also records the one-transition binary64 residual bridge and the
+  exact finite telescope that binds each applied REMESH result to the next
+  represented schedule and recorded history head. Its effective-P2 reference
+  family specializes the general reversible eigenmode theorem from
+  [TNFR_DIFFUSION_STABILITY_THEOREM.md](TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem),
+  then adds exact ideal REMESH error scaling and an explicit runtime residual
+  bound. The general pure kernel proves conditional exact-real partition
+  convergence, but runtime binding beyond P2, binary64 asymptotic convergence,
+  shared causal multi-cycle provenance, repeated runtime stability and the
+  runtime infinity limit remain open.
 - [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) records
   tested catalog extensions and their classification.
 - [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) links selected

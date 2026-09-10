@@ -5,7 +5,13 @@ companion results; runtime limit and catalog completeness open
 **Date**: May 26, 2026 — corrected September 2026
 **Owner**: `theory/REMESH_INFINITY_DERIVATION.md`
 **Source implementations**: `src/tnfr/operators/remesh.py::apply_network_remesh`,
-`src/tnfr/physics/remesh_history_stability.py`
+`src/tnfr/physics/remesh_history_stability.py`,
+`src/tnfr/physics/runtime_remesh_history_stability.py`,
+`src/tnfr/physics/remesh_schedule_stability.py`, and
+`src/tnfr/physics/runtime_remesh_schedule_stability.py`, plus the finite
+reference-family certificate and typed interface in
+`src/tnfr/physics/event_remesh_reference.py` and
+`src/tnfr/physics/event_remesh_reference.pyi`.
 
 ---
 
@@ -40,6 +46,13 @@ They do not establish a literal $\tau_g\to\infty$ limit, conserve the TNFR
 structural charge, make the full tetrad energy monotone, imply spatial
 consensus or $\Delta\mathrm{NFR}=0$, or prove that the 13 registered operators
 exhaust all admissible TNFR transformations.
+
+A separate effective-$P_2$ reference family now connects three executed
+pressure-refreshed Euler meshes to the exact continuous nonuniform mode and to
+one unit-delay REMESH step. It supplies a rational finite-mesh error enclosure,
+strict improvement under the two declared proper subdivisions, exact ideal
+REMESH error scaling and a runtime residual bound. This finite family is not a
+general or binary64 asymptotic convergence theorem.
 
 The sections below retain the N15 programme structure and commit anchors while
 recording the corrected statements.
@@ -257,6 +270,279 @@ materializes the exact companion and stationary measure.
 checks one rational transition, its barycenter and the dissipation identity.
 Both APIs exclude binary64 runtime identification, clipping, changing
 coefficients, metric or support, and schedule/REMESH gain composition.
+
+### §2.5 One executed binary64 transition
+
+[`observe_runtime_remesh_history_bridge`](../src/tnfr/physics/runtime_remesh_history_stability.py)
+closes the first runtime boundary for one applied, executor-sealed
+`EventRemeshCycleResult`. It reverses exactly the retained oldest-first runtime
+window required by the newest-first companion, rebuilds the exact theorem from
+the represented `alpha` and delays, and replays both the nested binary64 affine
+formula and the canonical clipping call bit for bit.
+
+Let `y` be the exact companion head, `b` the rational value represented by the
+binary64 raw result, and `z` the rational value represented by the committed
+bounded result. The bridge retains the signed decomposition
+
+$$
+b=y+r_{\rm round},\qquad
+z=b+r_{\rm clip},\qquad
+z=y+r_{\rm round}+r_{\rm clip}.
+$$
+
+Only the new history head changes relative to the ideal companion step. If
+$\pi_0$ is the first stationary temporal weight, the exact lifted balances are
+
+$$
+\begin{aligned}
+V(X)-V(b,x_0,\ldots,x_{m-1})
+ &=D_J-\pi_0\bigl(E_H(b)-E_H(y)\bigr),\\
+V(X)-V(z,x_0,\ldots,x_{m-1})
+ &=D_J-\pi_0\bigl(E_H(z)-E_H(y)\bigr).
+\end{aligned}
+$$
+
+For a signed error $e$, the bridge also evaluates the exact a posteriori bound
+
+$$
+\left|E_H(y+e)-E_H(y)\right|
+\leq
+\sum_i h_i\left|(Q_Hy)_i(Q_He)_i\right|+E_H(e).
+$$
+
+Multiplying this bound by $\pi_0$ gives a sufficient one-step Lyapunov margin.
+The signed defect remains separate because it can establish decrease when the
+absolute bound is conservative. Rounding and clipping are staged: the clipping
+defect is based at `b`, so the cross term between the two residuals is not lost.
+
+Hard clipping on one common scalar interval is nonexpansive for every positive
+diagonal spatial metric. This follows from the pairwise identity
+
+$$
+E_H(x)=\frac{1}{2\sum_i h_i}
+       \sum_{i<j}h_i h_j(x_i-x_j)^2
+$$
+
+and the 1-Lipschitz property of the scalar clamp. Soft clipping has no such
+nonincrease theorem: points in its Hermite knee can expand pairwise separation
+by almost `4/3`, and disagreement by almost `16/9`. The runtime bridge therefore
+records its exact observed defect rather than promoting the analytic ideal-map
+Lipschitz bound to the binary64 evaluator.
+
+The result is deliberately a **lifted** companion observation. The current
+runtime appends the pre-REMESH state and does not immediately insert `z` into
+`_epi_hist`. Consequently, this bridge alone proves neither live history
+advance nor repeated runtime stability. It also records the exact stationary
+history-barycenter drift $\pi_0r_{\rm round}$ or
+$\pi_0(r_{\rm round}+r_{\rm clip})$; disagreement nonincrease does not imply
+preservation of that barycenter.
+
+Exact diagnostics used by delayed-REMESH evidence now reject a nonzero rational
+that would underflow to displayed binary64 zero. This prevents a real rounding
+residual from being published as `0.0`.
+
+### §2.6 Exact REMESH-head/schedule-head balance
+
+The next algebraic step inserts a scheduled head `s` after the ideal, raw and
+bounded REMESH heads `y`, `b` and `z`. In one fixed positive diagonal metric,
+define the stationary-weighted defects
+
+$$
+\varepsilon_r=\pi_0(E_H(b)-E_H(y)),\qquad
+\varepsilon_c=\pi_0(E_H(z)-E_H(b)),\qquad
+\varepsilon_s=\pi_0(E_H(s)-E_H(z)).
+$$
+
+Replacing only the newest history row gives the exact telescoping identity
+
+$$
+V(X)-V(s,x_0,\ldots,x_{m-1})
+=D_J-\varepsilon_r-\varepsilon_c-\varepsilon_s.
+$$
+
+Suppose a separately established represented schedule bound satisfies
+`E_H(s) <= q E_H(z)` with `q >= 0`. Its nonnegative slack is
+`sigma = q E_H(z) - E_H(s)`, and therefore
+
+$$
+\begin{aligned}
+L
+ &=D_J-\varepsilon_r-\varepsilon_c
+   +\pi_0(1-q)E_H(z),\\
+V(X)-V(s,x_0,\ldots,x_{m-1})
+ &=L+\pi_0\sigma \geq L.
+\end{aligned}
+$$
+
+Thus `L >= 0` is a sufficient finite-step nonincrease condition. A schedule
+gain `q <= 1` is not sufficient by itself when binary64 rounding or a
+disagreement-expanding clipping map consumes the Jensen margin. Conversely,
+`q > 1` need not force increase when the ideal Jensen dissipation pays for the
+scheduled expansion. The stationary-history barycenter changes exactly by
+`pi[0] * (s - y)`.
+
+[`observe_remesh_schedule_history_transition`](../src/tnfr/physics/remesh_schedule_stability.py)
+implements this identity as a sealed exact-rational observation. Its inputs
+are caller-supplied algebraic heads and a declared nonnegative gain bound that
+is verified against those heads; the result
+does not identify them with one executor trace, prove repetition or constrain
+future schedules. The stricter recorded-artifact binding is handled in §2.7.
+
+### §2.7 Adjacent recorded-cycle binding
+
+[`observe_runtime_remesh_schedule_sequence`](../src/tnfr/physics/runtime_remesh_schedule_stability.py)
+binds the preceding pure identity to an
+`ObservedEventRemeshCycleSequence`. For every adjacent supplied pair it starts
+from the applied REMESH bridge of cycle `i`, then requires the represented EPI
+composition inside cycle `i+1` to start at the bounded REMESH head `z_i`, end
+at its exact pre-REMESH head `s_i`, and expose a gain in the sequence's common
+normalized metric.
+
+The decisive runtime-history check is
+
+$$
+X_{i+1}=(s_i,x_i,\ldots,x_{i-m+1}),
+$$
+
+where the right side must equal the newest-first window reconstructed from the
+next cycle's sealed outgoing `_epi_hist`. Equal REMESH configuration fixes the
+same coefficients, delay width and clipping policy across every paired row.
+This certifies the recorded append identity between the supplied artifacts,
+which the isolated runtime bridge could only lift hypothetically.
+
+For `r` adjacent boundaries in the same metric, exact history equality makes
+the intermediate augmented energies cancel:
+
+$$
+\sum_{i=0}^{r-1}\bigl(V(X_i)-V(X_{i+1})\bigr)
+=V(X_0)-V(X_r).
+$$
+
+Each summand retains its own Jensen, raw, clipping and schedule defects. The
+finite total drop is also the sum of the gain-based lower bounds and the
+nonnegative augmented schedule-gain slacks $\pi_0\sigma_i$. This is an additive
+balance; no fixed-history REMESH gain is multiplied across cycles.
+
+The adapter identifies exact represented values in the supplied sealed cycle
+records. The underlying sequence remains a caller-ordered observation of
+individually atomic executions: it does not prove that the records came from
+one graph in causal succession, make the calls jointly atomic, identify a
+global binary64 map, or establish repeated or future stability.
+
+### §2.8 Effective-P2 three-mesh reference family
+
+The generic three-mesh observer becomes runtime-linked on one deliberately
+small domain. Its diffusion component is exactly the two-node,
+homogeneous-capacity specialization of the
+[reversible single-eigenmode Euler theorem](TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem),
+where the complete exponential, Euler, norm-bound, subdivision and conditional
+exact-real convergence proofs are centralized.
+
+For the effective path $P_2$, fixed positive conductance and homogeneous
+capacity $\nu>0$ give
+
+$$
+L_{\rm rw}=\begin{pmatrix}1&-1\\-1&1\end{pmatrix},
+\qquad u=(1,-1)^\mathsf T,
+\qquad A u=\lambda u,\quad \lambda=2\nu.
+$$
+
+Thus a nonuniform initial field has the form
+
+$$
+x_0=m\mathbf 1+d u,\qquad d\ne0,
+$$
+
+and the general theorem supplies
+
+$$
+x(T)=m\mathbf 1+d e^{-\lambda T}u,
+\qquad
+x_h(T)=m\mathbf 1+d p_h u,
+\qquad
+p_h=\prod_j(1-\lambda h_j).
+$$
+
+The adapter requires each exact represented partition to have positive
+durations summing to the same $T$, every segment to expose an intact
+pressure-refreshed exact-affine Euler identification, and
+$0<\lambda h_j<1$. Its inherited finite bounds are
+
+$$
+0\le e^{-\lambda T}-p_h
+\le \frac{\lambda^2}{2}\sum_j h_j^2
+\le \frac{\lambda^2}{2}T h_{\max},
+\qquad
+\lVert x(T)-x_h(T)\rVert_\infty
+=|d|\bigl(e^{-\lambda T}-p_h\bigr).
+$$
+
+The implementation stores rational lower and upper enclosures of both errors
+and requires two successive proper positive subdivisions. The strict finite
+improvements follow from the cited general theorem. Its rational exponential
+routine restricts $\lambda T\le4096$ solely to cap the integer-power exponent
+used by the enclosure. That restriction is not a dynamical threshold and does
+not bound the total bit size of arbitrary rational inputs. Although the pure
+theorem proves convergence for fixed-data admissible exact-real partition
+families with $h_{\max}\to0$, this runtime adapter observes only three finite
+meshes and does not promote binary64 asymptotic convergence or solver order.
+
+The REMESH part fixes $\tau_l=\tau_g=1$ and requires the delayed row to be the
+exact initial field $x_0$. With
+
+$$
+\beta=(1-\alpha)^2,
+$$
+
+the ideal Euler-driven and continuous-reference REMESH heads are
+
+$$
+y_h=\beta x_h(T)+(1-\beta)x_0,
+\qquad
+y_*=\beta x(T)+(1-\beta)x_0.
+$$
+
+Their error therefore scales exactly as
+
+$$
+\lVert y_*-y_h\rVert_\infty
+=\beta |d|\bigl(e^{-\lambda T}-p_h\bigr).
+$$
+
+The strict subdivision improvement survives this ideal REMESH step when
+$\beta>0$; at $\alpha=1$, $\beta=0$ and the ideal error is already zero. For
+the committed binary64 head, the executor-linked bridge supplies
+
+$$
+z_h=y_h+r_{\rm round}+r_{\rm clip},
+$$
+
+and hence the certified finite runtime bound is
+
+$$
+\lVert z_h-y_*\rVert_\infty
+\le
+\beta |d|\bigl(U_{\exp}-p_h\bigr)
++\lVert r_{\rm round}+r_{\rm clip}\rVert_\infty,
+$$
+
+where $U_{\exp}$ is the rational upper enclosure of $e^{-\lambda T}$. The
+runtime family requires hard clipping on one common nonempty scalar interval;
+soft clipping is rejected.
+
+[`observe_p2_event_remesh_reference_family`](../src/tnfr/physics/event_remesh_reference.py)
+constructs the sealed family from three already executed cycles. Its mesh and
+family records preserve every exact premise, factor, enclosure, ideal scaling
+and runtime residual. It certifies neither solver order nor generic mesh or
+binary64 asymptotic convergence, arbitrary glyphs or mixed channels, changing
+support or metric, repetition, or future behavior. The executable
+[`166_event_remesh_reference_family.py`](../examples/02_physics_regimes/166_event_remesh_reference_family.py)
+instantiates the scope with two, four and eight equal segments.
+
+The separate pure
+[`167_reversible_eigenmode_reference.py`](../examples/02_physics_regimes/167_reversible_eigenmode_reference.py)
+exercises both exact nonuniform modes of nonregular `P3` without claiming a
+runtime or REMESH binding.
 
 ---
 
@@ -645,10 +931,31 @@ The operator-registry diagnostic in
 schema consistency only.
 
 The finite companion theorem and its one-transition identity are exercised by
-`tests/physics/test_remesh_history_stability.py`. The test suite verifies the
-exact stationary distribution, Jensen dissipation, equality case, preserved
-history barycenter and the distinct $\alpha=0$, $\alpha=1$ and
-$0<\alpha<1$ regimes.
+`tests/physics/test_remesh_history_stability.py`. The executed residual bridge,
+pure schedule balance and adjacent runtime telescope are checked by
+`tests/physics/test_runtime_remesh_history_stability.py`,
+`tests/physics/test_remesh_schedule_stability.py`, and
+`tests/physics/test_runtime_remesh_schedule_stability.py`. Together they verify
+the exact stationary distribution, Jensen dissipation, equality case,
+preserved ideal-history barycenter, signed runtime defects, recorded history
+advance, finite additive telescoping and the distinct $\alpha=0$, $\alpha=1$
+and $0<\alpha<1$ regimes.
+
+The effective-P2 family and its public example are checked by
+[`test_event_remesh_reference.py`](../tests/physics/test_event_remesh_reference.py)
+and
+[`test_event_remesh_reference_example.py`](../tests/physics/test_event_remesh_reference_example.py).
+They verify the exact
+Euler recurrence, rational enclosures, strict proper-subdivision inequalities,
+ideal REMESH scaling, runtime residual bound, public stub and explicit negative
+scope properties.
+The general pure theorem and nonregular-`P3` example are checked separately by
+[`test_reversible_eigenmode_reference.py`](../tests/physics/test_reversible_eigenmode_reference.py)
+and
+[`test_reversible_eigenmode_reference_example.py`](../tests/physics/test_reversible_eigenmode_reference_example.py).
+They verify the reversible metric, exact eigenmode identity, exponential and
+Euler enclosures, both norm bounds, proper subdivision, public stub and the
+conditional exact-real convergence scope without promoting a REMESH bridge.
 
 ---
 
@@ -658,20 +965,31 @@ The following problems remain open:
 
 1. Define a common state space and convergence mode for a nontrivial runtime
    $\tau_g\to\infty$ limit.
-2. Link the finite companion theorem to the actual binary64, clipped runtime
-   with its bounded-history append convention.
-3. Extend the companion result to changing $\alpha$, metric, delays or node
+2. Promote the finite adjacent-cycle telescope to repeated runtime stability
+   only if shared causal execution provenance and a uniform positive margin can
+   be established; otherwise retain counterexamples.
+3. Bind the general reversible exact-mode theorem to executor-owned runtime
+   evidence beyond effective $P_2$, including a signed represented endpoint
+   residual, before extending any runtime mesh claim.
+4. Extend the companion result to changing $\alpha$, metric, delays or node
    support, or produce counterexamples.
-4. Determine when a lifted REMESH map preserves a declared structural charge
+5. Determine when a lifted REMESH map preserves a declared structural charge
    or dissipates the full tetrad energy.
-5. Establish any bridge from the finite periodic projection to the Riemann,
+6. Establish any bridge from the finite periodic projection to the Riemann,
    Navier–Stokes, or other programme observables.
-6. Define the admissible TNFR transformation space independently and resolve
+7. Define the admissible TNFR transformation space independently and resolve
    catalog generation and irreducibility within it.
 
 The exact current conclusion is therefore narrow: **a fixed finite cyclic
 REMESH filter has a computable Cesàro fixed-mode projection, and a distinct
 fixed finite companion recurrence has a nonincreasing augmented disagreement
-functional with sharply separated mixing and pure-delay regimes. The clipped
-binary64 runtime limit, full structural invariants and global operator
-completeness remain unresolved.**
+functional with sharply separated mixing and pure-delay regimes. One applied
+binary64 transition is decomposed into exact ideal, rounding and clipping
+terms, and compatible adjacent recorded cycles have an exact finite additive
+schedule/history telescope. One event-free effective-$P_2$ family additionally
+has a rational continuous/Euler error enclosure, strict improvement across its
+two declared proper subdivisions, exact ideal REMESH scaling and an explicit
+runtime residual bound. Shared causal provenance, generic or binary64
+asymptotic convergence, repeated runtime stability, the clipped binary64
+runtime limit, full structural invariants and global operator completeness
+remain unresolved.**

@@ -86,16 +86,46 @@ def _sealed(value: Any, expected_type: type[Any], version: str) -> bool:
     return proof_stamps_are_identical(observed, expected)
 
 
-def _conditions_are_well_formed(value: Any) -> bool:
-    if type(value) is not tuple:
-        return False
-    return all(
-        type(item) is tuple
-        and len(item) == 2
-        and type(item[0]) is str
-        and type(item[1]) is bool
-        for item in value
+def _strict_exact_vector(
+    value: Any,
+    *,
+    width: int | None = None,
+) -> bool:
+    """Recognize the closed exact-vector representation without coercion."""
+
+    return bool(
+        type(value) is tuple
+        and (width is None or len(value) == width)
+        and all(type(item) is Fraction for item in value)
     )
+
+
+def _strict_exact_history(
+    value: Any,
+    *,
+    length: int | None = None,
+    width: int | None = None,
+) -> bool:
+    """Recognize a nonempty rectangular exact history without dispatch."""
+
+    return bool(
+        type(value) is tuple
+        and value
+        and (length is None or len(value) == length)
+        and all(_strict_exact_vector(row, width=width) for row in value)
+    )
+
+
+def _structural_values_are_identical(left: Any, right: Any) -> bool:
+    """Compare closed proof values without caller-owned equality protocols."""
+
+    try:
+        return proof_stamps_are_identical(
+            structural_proof_signature(left),
+            structural_proof_signature(right),
+        )
+    except BaseException:
+        return False
 
 
 def _exact_scalar(value: Any, label: str) -> Fraction:
@@ -162,6 +192,24 @@ def _node_order(nodes: Iterable[Hashable] | None, width: int) -> tuple[Hashable,
     except Exception as exc:
         raise TNFRValueError("nodes contain unreadable structural state") from exc
     return ordered
+
+
+def _sealed_node_order_is_valid(value: Any, width: int) -> bool:
+    """Recheck the public node-order contract without node hash/equality calls."""
+
+    if type(value) is not tuple or len(value) != width:
+        return False
+    try:
+        signatures = tuple(structural_proof_signature(node) for node in value)
+        hash_slots = tuple(
+            type.__getattribute__(type(node), "__hash__") for node in value
+        )
+    except BaseException:
+        return False
+    return bool(
+        all(slot is not None for slot in hash_slots)
+        and len(set(signatures)) == len(signatures)
+    )
 
 
 def _left_matrix_vector(vector: ExactVector, matrix: ExactMatrix) -> ExactVector:
@@ -332,25 +380,37 @@ class UniformRemeshHistoryStabilityCertificate:
                 _CERTIFICATE_PROOF_VERSION,
             ):
                 return False
+            if (
+                type(self.alpha) is not Fraction
+                or not Fraction(0) <= self.alpha <= Fraction(1)
+                or type(self.tau_local) is not int
+                or self.tau_local <= 0
+                or type(self.tau_global) is not int
+                or self.tau_global <= 0
+            ):
+                return False
             model = _temporal_model(
                 self.alpha,
                 self.tau_local,
                 self.tau_global,
             )
-            return bool(
-                self.beta == model.beta
-                and self.gamma == model.gamma
-                and self.delta == model.delta
-                and self.combined_delay_coefficients
-                == model.combined_delay_coefficients
-                and self.active_delays == model.active_delays
-                and self.active_max_delay == model.active_max_delay
-                and self.companion_matrix == model.companion_matrix
-                and self.stationary_denominator == model.stationary_denominator
-                and self.stationary_distribution
-                == model.stationary_distribution
-                and self.conditions == model.conditions
-                and _conditions_are_well_formed(self.conditions)
+            observed_payload = tuple(
+                (
+                    item.name,
+                    object.__getattribute__(self, item.name),
+                )
+                for item in fields(_TemporalModel)
+            )
+            expected_payload = tuple(
+                (
+                    item.name,
+                    object.__getattribute__(model, item.name),
+                )
+                for item in fields(_TemporalModel)
+            )
+            return _structural_values_are_identical(
+                observed_payload,
+                expected_payload,
             )
         except BaseException:
             return False
@@ -464,12 +524,8 @@ class UniformRemeshHistoryTransitionObservation:
     _proof_stamp: tuple[Any, ...] = field(default=(), repr=False, compare=False)
 
     def _proof_fields_are_intact(self) -> bool:
-        certificate = self.certificate
         try:
-            # Reject a replaced nested certificate and any changed observation
-            # payload before consulting properties or applying operators.  The
-            # structural signature reads state through built-in descriptors and
-            # does not dispatch user comparison/numeric protocols.
+            certificate = self.certificate
             if type(certificate) is not UniformRemeshHistoryStabilityCertificate:
                 return False
             if not _sealed(
@@ -480,51 +536,46 @@ class UniformRemeshHistoryTransitionObservation:
                 return False
             if not certificate.stability_certificate_certified:
                 return False
-            widths_match = bool(
-                self.nodes
-                and len(self.exact_metric_weights) == len(self.nodes)
-                and all(len(row) == len(self.nodes) for row in self.exact_history)
-                and all(
-                    len(row) == len(self.nodes)
-                    for row in self.exact_centered_history
+            nodes = self.nodes
+            metric = self.exact_metric_weights
+            history = self.exact_history
+            if type(nodes) is not tuple or not nodes:
+                return False
+            width = len(nodes)
+            if (
+                not _sealed_node_order_is_valid(nodes, width)
+                or not _strict_exact_vector(metric, width=width)
+                or not metric
+                or any(weight <= 0 for weight in metric)
+                or not _strict_exact_history(
+                    history,
+                    length=certificate.active_max_delay + 1,
+                    width=width,
                 )
-                and len(self.exact_next_field) == len(self.nodes)
-                and len(self.exact_next_centered_field) == len(self.nodes)
+            ):
+                return False
+            expected = _derive_transition_model(
+                certificate,
+                history,
+                metric,
             )
-            exact_balance = bool(
-                self.exact_energy_drop
-                == self.exact_augmented_energy_before
-                - self.exact_augmented_energy_after
-                == self.exact_jensen_dissipation
+            observed_payload = tuple(
+                (
+                    item.name,
+                    object.__getattribute__(self, item.name),
+                )
+                for item in fields(_TransitionModel)
             )
-            equality_consistent = bool(
-                self.lyapunov_equality
-                == (self.exact_energy_drop == 0)
-                == self.active_centered_fields_pairwise_equal
+            expected_payload = tuple(
+                (
+                    item.name,
+                    object.__getattribute__(expected, item.name),
+                )
+                for item in fields(_TransitionModel)
             )
-            strict_convergence = (
-                certificate.strict_mixing_pointwise_temporal_convergence_certified
-            )
-            expected_limit = (
-                self.exact_stationary_history_barycenter
-                if strict_convergence
-                else None
-            )
-            return bool(
-                widths_match
-                and len(self.exact_history)
-                == certificate.active_max_delay + 1
-                and len(self.exact_history_energies) == len(self.exact_history)
-                and all(weight > 0 for weight in self.exact_metric_weights)
-                and exact_balance
-                and self.lyapunov_nonincreasing
-                == (self.exact_energy_drop >= 0)
-                and equality_consistent
-                and self.exact_stationary_history_barycenter
-                == self.exact_post_transition_stationary_history_barycenter
-                and self.exact_strict_mixing_temporal_limit
-                == expected_limit
-                and _conditions_are_well_formed(self.conditions)
+            return _structural_values_are_identical(
+                observed_payload,
+                expected_payload,
             )
         except BaseException:
             return False
@@ -651,45 +702,35 @@ def _pairwise_active_fields_equal(
     )
 
 
-def observe_uniform_remesh_history_transition(
+@dataclass(frozen=True, slots=True)
+class _TransitionModel:
+    exact_centered_history: ExactHistory
+    exact_history_energies: ExactVector
+    exact_next_field: ExactVector
+    exact_next_centered_field: ExactVector
+    exact_next_energy: Fraction
+    exact_augmented_energy_before: Fraction
+    exact_augmented_energy_after: Fraction
+    exact_energy_drop: Fraction
+    exact_jensen_dissipation: Fraction
+    active_centered_fields: tuple[tuple[int, ExactVector], ...]
+    active_centered_fields_pairwise_equal: bool
+    lyapunov_nonincreasing: bool
+    lyapunov_equality: bool
+    exact_stationary_history_barycenter: ExactVector
+    exact_post_transition_stationary_history_barycenter: ExactVector
+    exact_strict_mixing_temporal_limit: ExactVector | None
+    conditions: tuple[tuple[str, bool], ...]
+
+
+def _derive_transition_model(
     certificate: UniformRemeshHistoryStabilityCertificate,
-    history: Iterable[Iterable[Real]],
-    metric_weights: Iterable[Real],
-    *,
-    nodes: Iterable[Hashable] | None = None,
-) -> UniformRemeshHistoryTransitionObservation:
-    """Observe one exact recurrence step from ``(x[k], ..., x[k-m])``.
+    exact_history: ExactHistory,
+    metric: ExactVector,
+) -> _TransitionModel:
+    """Derive every transition field from its canonical mathematical inputs."""
 
-    The history must have exactly ``m + 1`` equally shaped spatial fields,
-    where ``m`` is the maximum delay with a positive combined coefficient.
-    """
-
-    if type(certificate) is not UniformRemeshHistoryStabilityCertificate:
-        raise TypeError(
-            "certificate must be a UniformRemeshHistoryStabilityCertificate"
-        )
-    if not certificate.stability_certificate_certified:
-        raise TNFRValueError("certificate is unsealed, tampered, or inconsistent")
-    history_items = _materialize_iterable(history, "history")
-    required = certificate.active_max_delay + 1
-    if len(history_items) != required:
-        raise TNFRValueError(
-            f"history must contain exactly {required} fields ordered newest first"
-        )
-    exact_history = tuple(
-        _exact_vector(row, f"history[{index}]")
-        for index, row in enumerate(history_items)
-    )
-    width = len(exact_history[0])
-    if any(len(row) != width for row in exact_history):
-        raise TNFRValueError("history fields must have one common spatial shape")
-    node_order = _node_order(nodes, width)
-    metric = _exact_vector(metric_weights, "metric_weights")
-    if len(metric) != width:
-        raise TNFRValueError("metric_weights must match the spatial vector width")
-    if any(weight <= 0 for weight in metric):
-        raise TNFRValueError("metric_weights must be strictly positive")
-
+    width = len(metric)
     coefficients = certificate.combined_delay_coefficients
     next_field = tuple(
         sum(
@@ -769,7 +810,7 @@ def observe_uniform_remesh_history_transition(
     post_barycenter = _weighted_history_field(temporal_weights, post_history)
     strict_limit = (
         stationary_barycenter
-        if certificate.strict_mixing_pointwise_temporal_convergence_certified
+        if Fraction(0) < certificate.alpha < Fraction(1)
         else None
     )
     weighted_centered_next = tuple(
@@ -798,11 +839,7 @@ def observe_uniform_remesh_history_transition(
             (drop == 0) == active_equal,
         ),
     )
-    value = UniformRemeshHistoryTransitionObservation(
-        certificate=certificate,
-        nodes=node_order,
-        exact_metric_weights=metric,
-        exact_history=exact_history,
+    return _TransitionModel(
         exact_centered_history=centered_history,
         exact_history_energies=history_energies,
         exact_next_field=next_field,
@@ -820,6 +857,79 @@ def observe_uniform_remesh_history_transition(
         exact_post_transition_stationary_history_barycenter=post_barycenter,
         exact_strict_mixing_temporal_limit=strict_limit,
         conditions=conditions,
+    )
+
+
+def observe_uniform_remesh_history_transition(
+    certificate: UniformRemeshHistoryStabilityCertificate,
+    history: Iterable[Iterable[Real]],
+    metric_weights: Iterable[Real],
+    *,
+    nodes: Iterable[Hashable] | None = None,
+) -> UniformRemeshHistoryTransitionObservation:
+    """Observe one exact recurrence step from ``(x[k], ..., x[k-m])``.
+
+    The history must have exactly ``m + 1`` equally shaped spatial fields,
+    where ``m`` is the maximum delay with a positive combined coefficient.
+    """
+
+    if type(certificate) is not UniformRemeshHistoryStabilityCertificate:
+        raise TypeError(
+            "certificate must be a UniformRemeshHistoryStabilityCertificate"
+        )
+    if not certificate.stability_certificate_certified:
+        raise TNFRValueError("certificate is unsealed, tampered, or inconsistent")
+    history_items = _materialize_iterable(history, "history")
+    required = certificate.active_max_delay + 1
+    if len(history_items) != required:
+        raise TNFRValueError(
+            f"history must contain exactly {required} fields ordered newest first"
+        )
+    exact_history = tuple(
+        _exact_vector(row, f"history[{index}]")
+        for index, row in enumerate(history_items)
+    )
+    width = len(exact_history[0])
+    if any(len(row) != width for row in exact_history):
+        raise TNFRValueError("history fields must have one common spatial shape")
+    node_order = _node_order(nodes, width)
+    metric = _exact_vector(metric_weights, "metric_weights")
+    if len(metric) != width:
+        raise TNFRValueError("metric_weights must match the spatial vector width")
+    if any(weight <= 0 for weight in metric):
+        raise TNFRValueError("metric_weights must be strictly positive")
+
+    model = _derive_transition_model(certificate, exact_history, metric)
+    value = UniformRemeshHistoryTransitionObservation(
+        certificate=certificate,
+        nodes=node_order,
+        exact_metric_weights=metric,
+        exact_history=exact_history,
+        exact_centered_history=model.exact_centered_history,
+        exact_history_energies=model.exact_history_energies,
+        exact_next_field=model.exact_next_field,
+        exact_next_centered_field=model.exact_next_centered_field,
+        exact_next_energy=model.exact_next_energy,
+        exact_augmented_energy_before=model.exact_augmented_energy_before,
+        exact_augmented_energy_after=model.exact_augmented_energy_after,
+        exact_energy_drop=model.exact_energy_drop,
+        exact_jensen_dissipation=model.exact_jensen_dissipation,
+        active_centered_fields=model.active_centered_fields,
+        active_centered_fields_pairwise_equal=(
+            model.active_centered_fields_pairwise_equal
+        ),
+        lyapunov_nonincreasing=model.lyapunov_nonincreasing,
+        lyapunov_equality=model.lyapunov_equality,
+        exact_stationary_history_barycenter=(
+            model.exact_stationary_history_barycenter
+        ),
+        exact_post_transition_stationary_history_barycenter=(
+            model.exact_post_transition_stationary_history_barycenter
+        ),
+        exact_strict_mixing_temporal_limit=(
+            model.exact_strict_mixing_temporal_limit
+        ),
+        conditions=model.conditions,
     )
     result = _seal(
         value,

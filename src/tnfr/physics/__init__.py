@@ -58,10 +58,29 @@ phase_transition : Operational structural-symmetry transition diagnostics
 event_remesh_refinement : Finite three-mesh event/REMESH observations
     - Exact persistent-node checkpoint errors, executed ZHIR gates and modal factors
     - Excludes solver order, mesh convergence and mixed schedule/REMESH gain
+reversible_eigenmode_reference : Exact reversible single-eigenmode Euler theorem
+    - Derives the reversible metric, eigenvalue, modal factors and error bounds
+    - Certifies conditional exact-real convergence, not binary64 asymptotics
+event_remesh_reference : Exact P2 event/REMESH reference family
+    - Rational continuous/Euler error enclosure and subdivision improvement
+    - Exact beta-scaled ideal REMESH error plus bounded runtime residual
+    - Excludes generic or binary64 asymptotic convergence
 remesh_history_stability : Exact finite uniform delayed-history theorem
     - Stationary-weighted Jensen disagreement balance
     - Temporal mixing for 0 < alpha < 1; pure-delay cycles at alpha = 1
     - Excludes clipping, changing support/metric and runtime identification
+runtime_remesh_history_stability : Executed runtime/companion bridge
+    - Exact signed binary64 rounding and clipping residual decomposition
+    - Lifted one-step augmented-energy balances and sufficient lower bounds
+    - Excludes live history advance, repeated stability and schedule composition
+remesh_schedule_stability : Exact REMESH-head/schedule-head balance
+    - Separates raw, clipping and schedule disagreement-energy defects
+    - Retains the schedule-gain slack and a sufficient one-step lower bound
+    - Excludes executable provenance, repetition and future stability
+runtime_remesh_schedule_stability : Adjacent-cycle runtime/history binding
+    - Identifies the next represented schedule and recorded history append
+    - Telescopes exact finite augmented-energy balances in one metric
+    - Excludes shared execution provenance, global gain and repetition
 
 See Also
 --------
@@ -455,11 +474,33 @@ from .event_remesh_refinement import (
     EventRemeshThreeMeshZHIRObservation,
     observe_event_remesh_three_mesh_refinement,
 )
+from .reversible_eigenmode_reference import (
+    ReversibleSingleEigenmodeEulerReferenceCertificate,
+    certify_reversible_single_eigenmode_euler_reference,
+)
+from .event_remesh_reference import (
+    P2EventRemeshMeshReferenceObservation,
+    P2EventRemeshReferenceFamilyObservation,
+    observe_p2_event_remesh_reference_family,
+)
 from .remesh_history_stability import (
     UniformRemeshHistoryStabilityCertificate,
     UniformRemeshHistoryTransitionObservation,
     certify_uniform_remesh_history_stability,
     observe_uniform_remesh_history_transition,
+)
+from .runtime_remesh_history_stability import (
+    RuntimeRemeshHistoryBridgeObservation,
+    observe_runtime_remesh_history_bridge,
+)
+from .remesh_schedule_stability import (
+    RemeshScheduleHistoryStabilityObservation,
+    observe_remesh_schedule_history_transition,
+)
+from .runtime_remesh_schedule_stability import (
+    RuntimeRemeshScheduleBoundaryObservation,
+    RuntimeRemeshScheduleSequenceObservation,
+    observe_runtime_remesh_schedule_sequence,
 )
 from .network_stage_stability import (
     AllTargetNeighborStageCertificate,
@@ -757,11 +798,28 @@ __all__ = [
     "EventRemeshThreeMeshRefinementObservation",
     "EventRemeshThreeMeshZHIRObservation",
     "observe_event_remesh_three_mesh_refinement",
+    # --- Exact reversible single-eigenmode Euler reference ---
+    "ReversibleSingleEigenmodeEulerReferenceCertificate",
+    "certify_reversible_single_eigenmode_euler_reference",
+    # --- Exact P2 event/REMESH reference family ---
+    "P2EventRemeshMeshReferenceObservation",
+    "P2EventRemeshReferenceFamilyObservation",
+    "observe_p2_event_remesh_reference_family",
     # --- Exact uniform delayed-REMESH history stability ---
     "UniformRemeshHistoryStabilityCertificate",
     "UniformRemeshHistoryTransitionObservation",
     "certify_uniform_remesh_history_stability",
     "observe_uniform_remesh_history_transition",
+    # --- Executed REMESH runtime/companion bridge ---
+    "RuntimeRemeshHistoryBridgeObservation",
+    "observe_runtime_remesh_history_bridge",
+    # --- Exact REMESH-to-schedule augmented-history balance ---
+    "RemeshScheduleHistoryStabilityObservation",
+    "observe_remesh_schedule_history_transition",
+    # --- Adjacent-cycle runtime REMESH/schedule history binding ---
+    "RuntimeRemeshScheduleBoundaryObservation",
+    "RuntimeRemeshScheduleSequenceObservation",
+    "observe_runtime_remesh_schedule_sequence",
     # --- Physical operator-event flow duration ---
     "ContinuousRelaxationDurationDiagnostic",
     "diagnose_continuous_relaxation_duration",

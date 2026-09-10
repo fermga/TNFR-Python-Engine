@@ -290,6 +290,47 @@ and mesh-only causal claims. This completes a finite S5/S16 observation. Neither
 its integrity nor decreasing measured errors proves solver order, mesh
 convergence, Lyapunov decrease or a combined schedule/REMESH gain.
 
+The pure `certify_reversible_single_eigenmode_euler_reference` kernel now
+supplies the mathematical reference independently of any operator. On fixed
+connected symmetric rational conductance with positive capacity, it verifies
+one exact centered eigenmode in `H=diag(d_i/nu_i)`, its exponential solution,
+pressure-refreshed Euler products, `L_inf` and `H`-error-energy bounds, strict
+proper-subdivision improvement, and conditional exact-real convergence as
+`h_max -> 0`. The
+[`complete proof`](TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem)
+also records that `mu*T <= 4096` caps only the rational enclosure's
+integer-power exponent, not arbitrary rational bit size. The certificate has
+no executor or glyph provenance.
+
+`observe_p2_event_remesh_reference_family` closes one compatible finite
+runtime-linked specialization: an event-free effective two-node path with a
+nonuniform initial mode,
+fixed positive conductance, homogeneous positive capacity, pure-EPI pressure
+refreshed at every boundary, exact represented
+Euler segments satisfying `0 < lambda*h < 1`, and two proper positive
+subdivisions. Unit REMESH delays, the exact initial field as delayed data and
+hard clipping on one common scalar interval yield rational finite error bounds,
+strict subdivision improvement, exact ideal scaling by
+`beta=(1-alpha)^2`, and a runtime bound with the signed
+rounding-plus-clipping residual norm. It does not establish solver order,
+generic or binary64 asymptotic convergence, arbitrary glyphs or mixed channels,
+soft clipping, changing support or metric, repetition or future behavior. The
+continuous/Euler equations and proof are centralized in
+[`TNFR_DIFFUSION_STABILITY_THEOREM.md`](TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem);
+the REMESH specialization is in
+[`REMESH_INFINITY_DERIVATION.md`](REMESH_INFINITY_DERIVATION.md#28-effective-p2-three-mesh-reference-family);
+the implementation and exact typed interface are
+[`event_remesh_reference.py`](../src/tnfr/physics/event_remesh_reference.py) and
+[`event_remesh_reference.pyi`](../src/tnfr/physics/event_remesh_reference.pyi),
+verified by
+[`test_event_remesh_reference.py`](../tests/physics/test_event_remesh_reference.py)
+and
+[`test_event_remesh_reference_example.py`](../tests/physics/test_event_remesh_reference_example.py),
+with the public `2/4/8` witness in
+[`166_event_remesh_reference_family.py`](../examples/02_physics_regimes/166_event_remesh_reference_family.py).
+The pure nonregular-`P3` witness is
+[`167_reversible_eigenmode_reference.py`](../examples/02_physics_regimes/167_reversible_eigenmode_reference.py).
+
 The separate uniform exact companion recurrence now has an augmented-history
 result. `certify_uniform_remesh_history_stability` derives a row-stochastic
 history matrix and its invariant temporal measure. For any one fixed positive
@@ -302,6 +343,29 @@ The result is outside the named REMESH stage and does not identify the clipped
 binary64 runtime, imply spatial consensus or zero pressure, or combine its map
 with a schedule gain. See
 [`REMESH_INFINITY_DERIVATION.md`](REMESH_INFINITY_DERIVATION.md#24-exact-finite-companion-history-stability).
+
+`observe_runtime_remesh_history_bridge` identifies one applied,
+executor-sealed REMESH result with that companion while retaining exact signed
+binary64 rounding and clipping residuals. It lifts the runtime head into the
+companion history and separates those defects from the ideal Jensen
+dissipation. Hard clipping onto one common scalar interval is
+disagreement-nonexpansive in the fixed positive diagonal metric; soft clipping
+and rounding can block unconditional decrease.
+The runtime does not immediately append the post-REMESH head, so this isolated
+bridge proves neither live history advance nor repetition.
+
+`observe_remesh_schedule_history_transition` adds one supplied scheduled head
+to the exact balance. It keeps the raw, clipping and schedule energy defects,
+verifies the declared schedule gain against the supplied heads, and publishes
+a sufficient lower bound plus its exact gain slack. The pure observation has no
+runtime provenance. `observe_runtime_remesh_schedule_sequence` supplies the
+stricter adjacent-cycle binding: in one common normalized metric and fixed
+REMESH configuration it requires the next represented schedule to start at the
+bounded REMESH head, finish at the next pre-REMESH head, and become the next
+recorded history head. Compatible boundary balances telescope additively over
+the finite caller-ordered sequence. Shared causal graph provenance, cross-call
+atomicity, a global executable gain, repeated stability and future behavior
+remain open.
 
 The shared pointwise stage executor can opt into a conditional certificate for
 AL/SHA/VAL/NUL/ZHIR/NAV. Its successful `NetworkStageResult` carries evidence
@@ -903,7 +967,7 @@ frequency, and the identity gate below.
 | Frequency amplification $a$ | $1/(8\pi)\approx0.0398$ | `[0,+infinity)`; nondecreasing capacity |
 | Phase coupling $c$ | $1/(4\pi)\approx0.0796$ | `[0,1]`; shortest-arc interpolation |
 | U3 phase limit | $\pi/2$ | `[0,pi/2]`; may only be tightened |
-| Capacity trigger | $10^{-9}$ | Operational binary64 threshold on $|\bar x_i|$ |
+| Capacity trigger | $10^{-9}$ | Operational binary64 threshold on $\lvert\bar x_i\rvert$ |
 | Resonance detection threshold | $\approx0.198$ | Separate operational detection sensitivity |
 
 **Identity contract**:
@@ -1080,7 +1144,7 @@ or sub-EPI creation belongs to THOL and must be expressed through that operator.
 | Optional direct minimum | absent (`ZHIR_MIN_VF = 0`) | Tightens the activity condition only when configured explicitly |
 | Branch-selection threshold | `ZHIR_BIFURCATION_VF_THRESHOLD = 0.5` | Selects whether the bifurcation router proposes ZHIR; it is not a ZHIR operator precondition |
 | Default phase shift | $1/4$ rad | Calibrated magnitude; $\Delta\text{NFR}$ supplies direction only |
-| Sampled $|\Delta E|$ | $\leq 0.056$ per node in the referenced protocol | Finite observation, not an operator contract |
+| Sampled $\lvert\Delta E\rvert$ | $\leq 0.056$ per node in the referenced protocol | Finite observation, not an operator contract |
 
 **Grammar**: Transformer (U4b); Bifurcation Trigger (U4a).
 
@@ -1120,7 +1184,7 @@ EPI is preserved via latency snapshot.
 | Constant | Value | Derivation |
 |----------|-------|------------|
 | $\nu_f$ suppression factor | $1-1/(4\pi)\approx0.9204$ | Operational `SHA_VF_FACTOR` |
-| Sampled $|\Delta E|$ | $\leq 0.187$ in the referenced protocol | Finite observation, not an operator contract |
+| Sampled $\lvert\Delta E\rvert$ | $\leq 0.187$ in the referenced protocol | Finite observation, not an operator contract |
 
 **Properties**:
 - **Latency state**: Activates a latent flag with timestamped EPI snapshot.
@@ -1290,9 +1354,9 @@ Every operator has a postcondition contract anchored to the **direct effect on n
 |---|----------|-------|---------|---------------|
 | 1 | Emission | AL | EPI | EPI not decreased; $\nu_f$, phase and $\Delta\text{NFR}$ unchanged |
 | 2 | Reception | EN | EPI | $C(t)$ not decreased (coherent integration) |
-| 3 | Coherence | IL | $\Delta\text{NFR}$ | $C(t)$ non-decreasing; $|\Delta\text{NFR}|$ reduced |
-| 4 | Dissonance | OZ | $\Delta\text{NFR}$ | $|\Delta\text{NFR}|$ not decreased |
-| 5 | Coupling | UM | $\theta$ | Phase compatibility $|\phi_i - \phi_j| \le \Delta\phi_{\max}$ |
+| 3 | Coherence | IL | $\Delta\text{NFR}$ | $C(t)$ non-decreasing; $\lvert\Delta\text{NFR}\rvert$ reduced |
+| 4 | Dissonance | OZ | $\Delta\text{NFR}$ | $\lvert\Delta\text{NFR}\rvert$ not decreased |
+| 5 | Coupling | UM | $\theta$ | Phase compatibility $\lvert\phi_i - \phi_j\rvert \le \Delta\phi_{\max}$ |
 | 6 | Resonance | RA | EPI | EPI structural identity (sign/kind) preserved |
 | 7 | Silence | SHA | $\nu_f$ | EPI preserved over time; $\nu_f$ frozen |
 | 8 | Expansion | VAL | $\nu_f$ | $\nu_f$ not decreased (capacity added) |
@@ -1325,7 +1389,7 @@ contracts in [`operators/operator_contracts.py`](../src/tnfr/operators/operator_
 
 | Symbol | Name | Value | Role |
 |--------|------|-------|------|
-| $\pi$ | Pi | $3.141592653589793$ | the one genuine structural scale: bounds the phase sector ($|\nabla\phi| \le \pi$, $|K_\phi| \le \pi$) |
+| $\pi$ | Pi | $3.141592653589793$ | the one genuine structural scale: bounds the phase sector ($\lvert\nabla\phi\rvert \le \pi$, $\lvert K_\phi\rvert \le \pi$) |
 
 ### 14.2 Operator gain magnitudes (operational)
 
@@ -1400,7 +1464,12 @@ channel, direction, scale and postcondition).
 | `src/tnfr/operators/event_remesh_sequence.py` | Exact continuity across ordered supplied event/REMESH cycle observations |
 | `src/tnfr/physics/event_refinement.py` | Offline and executor-linked event-local ZHIR observations |
 | `src/tnfr/physics/event_remesh_refinement.py` | Strict finite coarse/intermediate/fine event/REMESH observations |
+| `src/tnfr/physics/event_remesh_reference.py` / `src/tnfr/physics/event_remesh_reference.pyi` | Effective-P2 finite reference-family certificate and exact public interface |
+| `src/tnfr/physics/reversible_eigenmode_reference.py` / `src/tnfr/physics/reversible_eigenmode_reference.pyi` | Pure exact-rational reversible single-eigenmode Euler theorem and public interface |
 | `src/tnfr/physics/remesh_history_stability.py` | Exact uniform finite companion-history stability certificate |
+| `src/tnfr/physics/runtime_remesh_history_stability.py` | One-transition runtime REMESH/companion bridge with signed residuals |
+| `src/tnfr/physics/remesh_schedule_stability.py` | Exact REMESH-head/schedule-head augmented-energy balance |
+| `src/tnfr/physics/runtime_remesh_schedule_stability.py` | Adjacent-cycle runtime/history energy telescope |
 | `src/tnfr/operators/nodal_equation.py` | Nodal equation validation |
 | `src/tnfr/operators/canonical_patterns.py` | Canonical sequence definitions |
 | `src/tnfr/operators/introspection.py` | `OperatorMeta` metadata registry |
@@ -1445,6 +1514,7 @@ The `Operator.__call__(G, node, **kw)` method implements the canonical execution
 | [36_grammar_violation_detector.py](../examples/02_physics_regimes/36_grammar_violation_detector.py) | Grammar enforcement across sequences |
 | [163_reception_runtime_bridge.py](../examples/02_physics_regimes/163_reception_runtime_bridge.py) | EN ideal-real, represented, runtime-snapshot, and pressure-refresh boundary |
 | [164_resonance_runtime_bridge.py](../examples/02_physics_regimes/164_resonance_runtime_bridge.py) | RA U3 filter, identity gate, four realization layers, post-flow certificate, and switching abstention |
+| [167_reversible_eigenmode_reference.py](../examples/02_physics_regimes/167_reversible_eigenmode_reference.py) | No glyph execution: pure exact-real references for both nonuniform modes of nonregular `P3` |
 
 ### 15.4 SDK Entry Points
 
@@ -1535,7 +1605,7 @@ One finite protocol measured percentage changes after single requested operator
 applications on a random 20-node network. These rows are sampled response
 profiles, not unique or universal operator fingerprints:
 
-| Operator | $\Phi_s$ (%) | $|\nabla\varphi|$ (%) | $K_\varphi$ (%) | $\xi_C$ (%) |
+| Operator | $\Phi_s$ (%) | $\lvert\nabla\varphi\rvert$ (%) | $K_\varphi$ (%) | $\xi_C$ (%) |
 |----------|-------------|----------------------|-----------------|-------------|
 | IL (Coherence) | +7.8 | $-0.5$ | 0.0 | $-2.1$ |
 | OZ (Dissonance) | +7.8 | $-0.5$ | 0.0 | $-2.1$ |

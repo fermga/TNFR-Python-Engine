@@ -510,6 +510,25 @@ sub-EPI state. Accordingly, `complete_reference_problem_certified` and
 Even a decreasing intermediate/fine error diagnostic does not prove solver
 order, mesh convergence, Lyapunov decrease or a mixed gain.
 
+The compatible effective-P2 reference family closes one finite runtime-linked
+subcase of the general pure reversible single-eigenmode theorem. It
+requires an event-free two-node path, a nonuniform initial mode, fixed positive
+conductance, homogeneous positive capacity, pure-EPI pressure refreshed at
+every boundary, exact represented Euler
+segments with `0 < lambda*h < 1`, and two proper positive subdivisions.
+For unit REMESH delays with the exact initial field as delayed data and hard
+clipping on one common scalar interval, rational exponential enclosures prove
+the finite continuous/Euler bound and strict subdivision improvement. The
+ideal post-REMESH error is exactly `beta=(1-alpha)^2` times the pre-REMESH
+error, while the committed runtime bound adds the signed rounding-plus-clipping
+residual norm. This does not establish solver order, generic or binary64
+asymptotic convergence, glyph or mixed-channel dynamics, soft clipping,
+changing support or metric, repetition or future behavior. The complete
+continuous/Euler proof is in
+[`TNFR_DIFFUSION_STABILITY_THEOREM.md`](TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem);
+the additional REMESH equations and runtime boundary are in
+[`REMESH_INFINITY_DERIVATION.md`](REMESH_INFINITY_DERIVATION.md#28-effective-p2-three-mesh-reference-family).
+
 The restricted augmented-history REMESH problem is now solved for a distinct
 exact recurrence with fixed uniform `alpha`, fixed positive diagonal spatial
 metric, fixed delays and ordered support, and no clipping. Let the active delay
@@ -534,10 +553,54 @@ converges to its preserved stationary history barycenter. For `alpha=1`, it is
 a pure-delay permutation: the functional is conserved and periodic histories
 remain possible, including the alternating witness above. The theorem therefore
 resolves the earlier obstruction without claiming strict decay in that regime.
-It proves neither spatial consensus nor zero pressure and does not yet cover
-binary64 evaluation, clipping, changing coefficients, delays, metric or
-support, or composition with an event schedule. See
-[`remesh_history_stability.py`](../src/tnfr/physics/remesh_history_stability.py)
+It proves neither spatial consensus nor zero pressure.
+
+One further bridge now identifies a single applied, sealed runtime cycle with
+that exact companion. It converts the retained oldest-first runtime window to
+the theorem's newest-first order, replays the raw affine and clipping calls bit
+for bit, and keeps the signed exact decomposition
+
+$$z=y+r_{\rm round}+r_{\rm clip}$$
+
+between ideal companion head `y`, binary64 raw head and committed bounded head
+`z`. The bridge gives exact lifted augmented-energy defects for rounding and
+clipping, plus a posteriori sufficient lower bounds derived in the same fixed
+metric. A hard common-interval clamp is disagreement-nonexpansive; the soft
+knee can expand disagreement, and exact binary64 rounding can dominate an
+arbitrarily small ideal Jensen dissipation. Both cases are retained as finite
+observations instead of being hidden by the ideal theorem. A nonzero rational
+diagnostic that would display as binary64 zero is rejected before commit.
+
+The post-REMESH head is not immediately appended to the runtime history, so the
+bridge constructs a lifted companion state and does not transfer repetition or
+temporal convergence to the live executor. Changing coefficients, delays,
+metric or support and composition with the next event schedule remain outside
+this single-transition result.
+
+The separate exact REMESH-head/schedule-head layer supplies the algebra needed
+at that next boundary. In one fixed metric it decomposes the augmented energy
+drop into ideal Jensen dissipation minus signed raw, clipping and schedule
+defects. If the supplied scheduled head satisfies `E(s) <= q E(z)`, the exact
+drop is the sum of a computable lower bound and the nonnegative schedule-gain
+slack. This yields a sufficient finite-step test without multiplying a
+fixed-history REMESH factor by `q`. It also retains the exact change in the
+stationary history barycenter. The pure layer does not itself identify the
+heads or gain with one runtime trace.
+
+The adjacent-cycle adapter supplies that finite identification when a sealed
+cycle sequence has exact recorded boundaries, fixed REMESH configuration and
+one common normalized schedule metric. It requires the next represented
+schedule to map the bounded REMESH head to the next pre-REMESH head and checks
+that this endpoint becomes the next recorded history head. Consecutive
+augmented energies then telescope exactly, and the total drop is the sum of
+the per-boundary lower bounds and the augmented schedule-gain slacks
+`pi[0] * schedule_gain_slack`. The input order still
+does not prove shared graph provenance or causal execution, so no cross-call
+atomicity, global executable gain, repetition or future theorem follows. See
+[`remesh_history_stability.py`](../src/tnfr/physics/remesh_history_stability.py),
+[`runtime_remesh_history_stability.py`](../src/tnfr/physics/runtime_remesh_history_stability.py),
+[`remesh_schedule_stability.py`](../src/tnfr/physics/remesh_schedule_stability.py),
+[`runtime_remesh_schedule_stability.py`](../src/tnfr/physics/runtime_remesh_schedule_stability.py),
 and the centralized derivation in
 [`REMESH_INFINITY_DERIVATION.md`](REMESH_INFINITY_DERIVATION.md#24-exact-finite-companion-history-stability).
 
@@ -559,6 +622,26 @@ $H=\operatorname{diag}(d_i/\nu_i)$, controls the weighted-energy decay:
 | Energy decay | $V(t) \le e^{-2\lambda_*t}V(0)$ | Exact upper bound |
 | Relaxation scale | $1/\lambda_*$ | Heterogeneous structural time |
 | Homogeneous reduction | $\lambda_*=\nu_f\lambda_2(L_{sym})$ | Common-capacity case |
+
+The corresponding exact single-mode Euler theorem is now available for every
+fixed connected symmetric rational conductance with positive rational
+capacity. If `v=x_0-mean_H(x_0)*1` is nonzero and satisfies the exact identity
+`A*v=mu*v` for `A=diag(nu_f)L_rw`, then
+
+```text
+x(T) = mean_H(x_0)*1 + exp(-mu*T)*v,
+x_P(T) = mean_H(x_0)*1 + product_j(1-mu*h_j)*v.
+```
+
+For a positive partition with `0 < mu*h_j < 1`, the factor error is bounded by
+`(mu^2/2) sum_j h_j^2 <= (mu^2/2) T h_max`. Multiplication by
+`||v||_inf` gives the exact `L_inf` endpoint error; multiplication by
+`E_H(v)` times the squared factor error gives its `H`-error energy. Proper
+positive subdivision strictly improves the factor and quadratic bound, and the `h_max` estimate
+proves conditional exact-real convergence for fixed-data admissible families.
+The complete derivation and runtime-scope boundary are centralized in the
+[`reversible single-eigenmode theorem`](TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem).
+The pure certificate does not inspect binary64 execution, glyphs or REMESH.
 
 This table is the exact real-arithmetic theorem. The executable binary64
 certificate separately rationalizes its materialized generator and displayed
@@ -773,10 +856,10 @@ parameters, it evaluates conditions in this order:
 
 | Returned state | Implemented condition |
 |----------------|-----------------------|
-| **COLLAPSING** | $\nu_f<0.01$, or $|\Delta\mathrm{NFR}|>10$, or a non-isolated node has coupling $<0.1$ |
-| **MUTATION** | $|\Delta\mathrm{NFR}|>5$ and $\nu_f>0.1$ |
+| **COLLAPSING** | $\nu_f<0.01$, or $\lvert\Delta\mathrm{NFR}\rvert>10$, or a non-isolated node has coupling $<0.1$ |
+| **MUTATION** | $\lvert\Delta\mathrm{NFR}\rvert>5$ and $\nu_f>0.1$ |
 | **PROPAGATION** | coupling $>0.7$ and $\nu_f>0.1$ |
-| **STABILIZATION** | $|\Delta\mathrm{NFR}|<1$ and scalar EPI $>0.8$ |
+| **STABILIZATION** | $\lvert\Delta\mathrm{NFR}\rvert<1$ and scalar EPI $>0.8$ |
 | **ACTIVATION** | $\nu_f\geq0.1$ after the earlier checks |
 | **DORMANT** | all remaining states above the collapse-frequency cut |
 
@@ -804,7 +887,7 @@ matching reason in this order:
 | Collapse reason | Default condition |
 |-----------------|-------------------|
 | **Frequency failure** | $\nu_f<0.01$ |
-| **Extreme dissonance** | $|\Delta\mathrm{NFR}|>10$ |
+| **Extreme dissonance** | $\lvert\Delta\mathrm{NFR}\rvert>10$ |
 | **Network decoupling** | non-isolated node with $c_i<0.1$ |
 | **EPI dissolution** | scalar EPI $<0.01$ |
 
@@ -930,9 +1013,9 @@ entries check only a measurable proxy and REMESH is explicitly advisory:
 |----------|----------------------------------------------------|
 | **AL** | EPI does not decrease; $\nu_f$, phase and $\Delta\mathrm{NFR}$ do not change |
 | **EN** | $C(t)$ does not decrease |
-| **IL** | $C(t)$ does not decrease and $|\Delta\mathrm{NFR}|$ does not increase |
-| **OZ** | $|\Delta\mathrm{NFR}|$ does not decrease |
-| **UM** | $|\Delta\mathrm{NFR}|$ does not increase |
+| **IL** | $C(t)$ does not decrease and $\lvert\Delta\mathrm{NFR}\rvert$ does not increase |
+| **OZ** | $\lvert\Delta\mathrm{NFR}\rvert$ does not decrease |
+| **UM** | $\lvert\Delta\mathrm{NFR}\rvert$ does not increase |
 | **RA** | nonzero EPI sign is preserved and $\nu_f$ does not decrease |
 | **SHA** | EPI is unchanged and $\nu_f$ does not increase |
 | **VAL** | $\nu_f$ does not decrease |
@@ -1070,7 +1153,12 @@ and
 | `src/tnfr/operators/event_remesh_sequence.py` | Exact continuity across ordered supplied cycle results |
 | `src/tnfr/physics/event_refinement.py` | Offline and executor-linked event-local ZHIR evidence |
 | `src/tnfr/physics/event_remesh_refinement.py` | Finite strict three-mesh event/REMESH observations |
+| `src/tnfr/physics/event_remesh_reference.py` / `src/tnfr/physics/event_remesh_reference.pyi` | Effective-P2 finite reference-family certificate and exact public interface |
+| `src/tnfr/physics/reversible_eigenmode_reference.py` / `src/tnfr/physics/reversible_eigenmode_reference.pyi` | General exact-rational reversible single-eigenmode Euler theorem and public interface |
 | `src/tnfr/physics/remesh_history_stability.py` | Exact uniform finite companion-history Lyapunov certificate |
+| `src/tnfr/physics/runtime_remesh_history_stability.py` | One-transition executed binary64 REMESH/companion bridge |
+| `src/tnfr/physics/remesh_schedule_stability.py` | Exact REMESH-head/schedule-head augmented-energy balance |
+| `src/tnfr/physics/runtime_remesh_schedule_stability.py` | Adjacent-cycle runtime/history energy telescope |
 | `src/tnfr/operators/_delayed_remesh_kernel.py` | Immutable delayed REMESH proposals and one-step evidence |
 | `src/tnfr/physics/phase_quotient.py` | Fixed-branch pairwise quotient, restricted canonical phase lift and counterexample |
 | `src/tnfr/physics/coherence_geometry.py` | Local, fixed-network and fixed-capacity coherence strata |
@@ -1082,8 +1170,23 @@ and
 
 The finite three-mesh contracts are falsified and sealed by
 [`test_event_remesh_refinement.py`](../tests/physics/test_event_remesh_refinement.py).
+The effective-P2 reference family and public example are checked by
+[`test_event_remesh_reference.py`](../tests/physics/test_event_remesh_reference.py)
+and
+[`test_event_remesh_reference_example.py`](../tests/physics/test_event_remesh_reference_example.py).
+The general reversible exact-mode theorem, sealing and public `P3` example are
+checked by
+[`test_reversible_eigenmode_reference.py`](../tests/physics/test_reversible_eigenmode_reference.py)
+and
+[`test_reversible_eigenmode_reference_example.py`](../tests/physics/test_reversible_eigenmode_reference_example.py).
 The finite companion-history theorem is checked exactly by
 [`test_remesh_history_stability.py`](../tests/physics/test_remesh_history_stability.py).
+The runtime residual and lifted-energy bridge is tested in
+[`test_runtime_remesh_history_stability.py`](../tests/physics/test_runtime_remesh_history_stability.py).
+The pure schedule-head telescope and gain-based lower bound are tested in
+[`test_remesh_schedule_stability.py`](../tests/physics/test_remesh_schedule_stability.py).
+The adjacent runtime schedule binding and finite history telescope are tested in
+[`test_runtime_remesh_schedule_stability.py`](../tests/physics/test_runtime_remesh_schedule_stability.py).
 
 ### SDK Entry Points
 
@@ -1108,6 +1211,8 @@ catalog = net.audit_operators()               # dict; 13 controlled probes
 | [162_hybrid_epi_stability.py](../examples/02_physics_regimes/162_hybrid_epi_stability.py) | Affine amplification absorbed by diffusion, consensus drift, and the infinite-gain local-offset witness |
 | [163_reception_runtime_bridge.py](../examples/02_physics_regimes/163_reception_runtime_bridge.py) | EN ideal-real, represented, runtime-snapshot and pressure-refresh boundary |
 | [164_resonance_runtime_bridge.py](../examples/02_physics_regimes/164_resonance_runtime_bridge.py) | U3-filtered RA identity gate, four realization layers, post-RA flow certificate and switching abstention |
+| [166_event_remesh_reference_family.py](../examples/02_physics_regimes/166_event_remesh_reference_family.py) | Effective-P2 `2/4/8`-segment finite Euler/REMESH reference family and explicit false scope |
+| [167_reversible_eigenmode_reference.py](../examples/02_physics_regimes/167_reversible_eigenmode_reference.py) | Both exact nonuniform modes of nonregular `P3`, with exact-real Euler refinement bounds and explicit runtime abstention |
 
 ## Cross-References
 

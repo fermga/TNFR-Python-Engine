@@ -536,6 +536,27 @@ def test_exact_evidence_overflow_rejects_before_graph_writes() -> None:
         assert _state(graph) == before
 
 
+def test_exact_evidence_underflow_rejects_before_graph_writes() -> None:
+    smallest_positive = float.fromhex("0x0.0000000000001p-1022")
+
+    for operation in (plan_network_remesh, apply_network_remesh):
+        graph = _graph(
+            current=(smallest_positive, 0.0),
+            past=(0.0, 0.0),
+            epi_min=-1.0,
+            epi_max=1.0,
+        )
+        before = _state(graph)
+
+        with pytest.raises(
+            TNFRValueError,
+            match="underflows the finite binary64 diagnostic range",
+        ):
+            operation(graph, include_stability_evidence=True)
+
+        assert _state(graph) == before
+
+
 def test_extreme_finite_proposal_mean_has_no_intermediate_overflow() -> None:
     float_max = float.fromhex("0x1.fffffffffffffp+1023")
     graph = _graph(

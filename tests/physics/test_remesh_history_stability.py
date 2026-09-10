@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from fractions import Fraction
 
 import pytest
 
+import tnfr.physics.remesh_history_stability as stability_module
 from tnfr.errors import TNFRValueError
 from tnfr.physics.remesh_history_stability import (
     UniformRemeshHistoryStabilityCertificate,
@@ -336,6 +338,144 @@ def test_transition_fails_closed_after_direct_field_tampering() -> None:
 
     assert not observation.transition_observation_certified
     assert not observation.exact_dissipation_identity_certified
+
+
+@pytest.mark.parametrize(
+    ("field_name", "forged_value"),
+    [
+        ("beta", Fraction(9)),
+        ("combined_delay_coefficients", ((0, Fraction(1)),)),
+        ("companion_matrix", ((Fraction(1),),)),
+        ("stationary_distribution", (Fraction(1),)),
+        ("conditions", (("forged", True),)),
+    ],
+)
+def test_privately_resealed_inconsistent_certificate_derivatives_fail_closed(
+    field_name: str,
+    forged_value: object,
+) -> None:
+    certificate = _strict_certificate()
+    forged = replace(
+        certificate,
+        **{field_name: forged_value},
+        _proof_stamp=(),
+    )
+    resealed = stability_module._seal(
+        forged,
+        UniformRemeshHistoryStabilityCertificate,
+        stability_module._CERTIFICATE_PROOF_VERSION,
+    )
+
+    assert not resealed.stability_certificate_certified
+    assert resealed.failed_conditions == ("remesh_history_proof_fields_intact",)
+
+
+@pytest.mark.parametrize(
+    ("field_name", "forged_value"),
+    [
+        ("exact_next_field", (Fraction(99), Fraction(99))),
+        ("exact_history_energies", (Fraction(0), Fraction(0), Fraction(0))),
+        ("exact_jensen_dissipation", Fraction(999)),
+        ("active_centered_fields_pairwise_equal", True),
+        (
+            "exact_stationary_history_barycenter",
+            (Fraction(0), Fraction(0)),
+        ),
+        ("conditions", (("forged", True),)),
+    ],
+)
+def test_privately_resealed_inconsistent_transition_derivatives_fail_closed(
+    field_name: str,
+    forged_value: object,
+) -> None:
+    observation = observe_uniform_remesh_history_transition(
+        _strict_certificate(),
+        ((3, -1), (0, 2), (1, 4)),
+        (2, 1),
+    )
+    forged = replace(
+        observation,
+        **{field_name: forged_value},
+        _proof_stamp=(),
+    )
+    resealed = stability_module._seal(
+        forged,
+        UniformRemeshHistoryTransitionObservation,
+        stability_module._TRANSITION_PROOF_VERSION,
+    )
+
+    assert not resealed.transition_observation_certified
+    assert resealed.failed_conditions == (
+        "remesh_history_transition_proof_fields_intact",
+    )
+
+
+def test_privately_resealed_always_equal_derivatives_do_not_dispatch_equality() -> None:
+    marker: list[str] = []
+
+    class AlwaysEqual:
+        def __eq__(self, other):
+            del other
+            marker.append("caller equality dispatched")
+            return True
+
+    certificate = _strict_certificate()
+    forged_certificate = replace(
+        certificate,
+        beta=AlwaysEqual(),
+        _proof_stamp=(),
+    )
+    resealed_certificate = stability_module._seal(
+        forged_certificate,
+        UniformRemeshHistoryStabilityCertificate,
+        stability_module._CERTIFICATE_PROOF_VERSION,
+    )
+
+    observation = observe_uniform_remesh_history_transition(
+        certificate,
+        ((3, -1), (0, 2), (1, 4)),
+        (2, 1),
+    )
+    forged_observation = replace(
+        observation,
+        active_centered_fields=AlwaysEqual(),
+        _proof_stamp=(),
+    )
+    resealed_observation = stability_module._seal(
+        forged_observation,
+        UniformRemeshHistoryTransitionObservation,
+        stability_module._TRANSITION_PROOF_VERSION,
+    )
+
+    assert not resealed_certificate.stability_certificate_certified
+    assert not resealed_observation.transition_observation_certified
+    assert marker == []
+
+
+@pytest.mark.parametrize("forged_nodes", [("same", "same"), ([], [])])
+def test_privately_resealed_invalid_node_order_fails_closed(
+    forged_nodes: object,
+) -> None:
+    observation = observe_uniform_remesh_history_transition(
+        _strict_certificate(),
+        ((3, -1), (0, 2), (1, 4)),
+        (2, 1),
+    )
+    forged = replace(
+        observation,
+        nodes=forged_nodes,
+        _proof_stamp=(),
+    )
+    resealed = stability_module._seal(
+        forged,
+        UniformRemeshHistoryTransitionObservation,
+        stability_module._TRANSITION_PROOF_VERSION,
+    )
+
+    assert not resealed.transition_observation_certified
+    assert resealed.failed_conditions == (
+        "remesh_history_transition_proof_fields_intact",
+    )
 
 
 def test_certificate_tamper_is_rejected_before_hostile_numeric_dispatch() -> None:

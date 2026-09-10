@@ -21,6 +21,13 @@ convex and fixed-history gain evidence. A distinct exact, uniform, unclipped
 fixed-delay companion recurrence has a stationary-history Lyapunov theorem;
 see
 [`REMESH_INFINITY_DERIVATION.md` section 2.4](REMESH_INFINITY_DERIVATION.md#24-exact-finite-companion-history-stability).
+For any fixed connected symmetric rational conductance and positive rational
+capacity, a separate sealed reference theorem now gives the exact exponential
+solution, pressure-refreshed Euler product and finite error bounds for one
+exact nonuniform eigenmode. It also proves conditional exact-real convergence
+under admissible partitions whose maximum step tends to zero. This pure theorem
+has no runtime provenance; the effective-P2 event/REMESH family remains its
+first executor-linked specialization.
 Event execution can bind supported flow
 and glyph certificates into an exact represented-map gain product for one fully
 eligible observed finite trace in one common metric; it does not identify a
@@ -341,6 +348,157 @@ intervals—but it does not convert the positional U4 policy into a spectral one
 Stationary-mode resolution uses a reported
 dimensionless tolerance times the fastest decay rate. It is not an absolute
 frequency threshold and is kept separate from any scaled EPI-update tolerance.
+
+### Exact reversible single-eigenmode Euler reference theorem
+
+This section centralizes the complete proof used by the pure reference kernel.
+Let `W` be an exact rational symmetric nonnegative conductance matrix with zero
+diagonal and connected positive support. Set
+
+```text
+d_i = sum_j W_ij,        D = diag(d_i),        B = D-W,
+A = diag(nu) L_rw = diag(nu) D^-1 B,
+H = diag(d_i/nu_i),
+```
+
+where every `d_i` and `nu_i` is positive. Then
+
+```text
+H A = B = B^T,
+```
+
+so `A` is self-adjoint in the weighted inner product
+`<p,q>_H = p^T H q`. Define
+
+```text
+m_H = (1^T H x_0)/(1^T H 1),        v = x_0-m_H*1.
+```
+
+Assume that `v != 0` and that the exact rational identity
+
+```text
+A v = mu v,        mu > 0,
+```
+
+holds. Since `A 1=0`, the pure-EPI equation `x'=-Ax` has the exact solution
+
+```text
+x(t) = m_H*1 + exp(-mu*t)*v.                         (1)
+```
+
+The weighted mean is conserved, and this mode has centered energy
+
+```text
+E_H(v) = (1/2) v^T H v > 0.
+```
+
+Now let `P=(h_1,...,h_s)` be a positive partition of one fixed duration `T`,
+and refresh the pressure before every exact-real explicit-Euler segment:
+
+```text
+x_(j+1) = (I-h_j A)x_j,        sum_j h_j=T.
+```
+
+If `0 < mu*h_j < 1` for every segment, the modal recurrence closes exactly and
+its endpoint is
+
+```text
+x_P(T) = m_H*1 + g_P*v,
+g_P = product_j (1-mu*h_j).                         (2)
+```
+
+Write `a_j=mu*h_j`. For `0 <= a <= 1`, the exact integral remainder identity
+
+```text
+exp(-a)-(1-a) = integral_0^a (a-s) exp(-s) ds
+```
+
+gives
+
+```text
+0 <= exp(-a)-(1-a) <= a^2/2.                       (3)
+```
+
+Set `b_j=exp(-a_j)` and `c_j=1-a_j`. Because
+`0 < c_j <= b_j <= 1`, the product-difference identity
+
+```text
+product_j b_j - product_j c_j
+  = sum_j (b_j-c_j)
+      product_(k<j) b_k product_(k>j) c_k
+```
+
+and (3) prove
+
+```text
+0 <= exp(-mu*T)-g_P
+   <= (mu^2/2) sum_j h_j^2
+   <= (mu^2/2) T h_max,                             (4)
+```
+
+where `h_max=max_j h_j`. This is an enclosure of the exact continuous factor,
+not a floating-point estimate. The endpoint consequences are the exact
+identities
+
+```text
+||x(T)-x_P(T)||_inf
+  = ||v||_inf [exp(-mu*T)-g_P],                     (5)
+
+E_H(x(T)-x_P(T))
+  = E_H(v) [exp(-mu*T)-g_P]^2,                     (6)
+```
+
+where `E_H(z)=(1/2)z^T H z`. Combining (4) with (5) and (6) gives the
+reported `L_inf` and weighted error-energy upper bounds. The implementation
+also stores rational lower and upper enclosures obtained from its rational
+enclosure of `exp(-mu*T)`.
+
+A proper positive subdivision replaces at least one step `h=a+b` by two
+positive steps `a,b`, without moving an existing boundary. Its local factor
+changes by
+
+```text
+(1-mu*a)(1-mu*b) - (1-mu*(a+b)) = mu^2*a*b > 0.    (7)
+```
+
+All untouched factors are positive, so (7) strictly raises `g_P` and strictly
+lowers the exact factor error. At the same time,
+
+```text
+(mu^2/2)[(a+b)^2-a^2-b^2] = mu^2*a*b > 0,          (8)
+```
+
+so the quadratic factor bound and its nonzero `L_inf` and `H`-error-energy
+consequences strictly improve. Repeating this argument proves the result for a
+proper subdivision that splits several coarse intervals.
+
+Finally, fix `W`, `nu`, `x_0`, the exact mode and `T`. For any family of
+positive partitions satisfying `0 < mu*h < 1` and `h_max -> 0`, (4) tends to
+zero. Equations (5) and (6) therefore prove convergence of the exact-real Euler
+endpoints to (1). This is a mathematical partition-family theorem. It does not
+certify a binary64 trajectory, numerical solver order, mixed-mode initial data,
+directed or changing generators, glyph or REMESH dynamics, or full TNFR
+stability.
+
+[`certify_reversible_single_eigenmode_euler_reference`](../src/tnfr/physics/reversible_eigenmode_reference.py)
+implements the theorem entirely over exact `Fraction` inputs and returns a
+sealed `ReversibleSingleEigenmodeEulerReferenceCertificate`. One supplied
+partition is sufficient for the theorem; when several are supplied they must
+form a strict proper-subdivision chain, and only then is an observed strict
+subdivision improvement reported. The public surface is declared exactly in
+[`reversible_eigenmode_reference.pyi`](../src/tnfr/physics/reversible_eigenmode_reference.pyi)
+and re-exported from `tnfr.physics`. The rational exponential routine requires
+`mu*T <= 4096` solely to cap the integer-power exponent used by that enclosure.
+This implementation limit is not a dynamical threshold and does not bound the
+total bit size of arbitrary `Fraction` inputs or derived rational values.
+
+[`test_reversible_eigenmode_reference.py`](../tests/physics/test_reversible_eigenmode_reference.py)
+checks the hypotheses, both norm bounds, subdivision identities, scope flags
+and proof sealing. The public
+[`167_reversible_eigenmode_reference.py`](../examples/02_physics_regimes/167_reversible_eigenmode_reference.py)
+certifies both exact nonuniform modes of the nonregular path `P3`; its facade,
+stub and report are checked by
+[`test_reversible_eigenmode_reference_example.py`](../tests/physics/test_reversible_eigenmode_reference_example.py).
 
 ## Switching-topology common-metric theorem
 
