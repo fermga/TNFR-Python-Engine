@@ -4,6 +4,121 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added — 2026-09-10 Executed refinement and transactional runtime boundary
+
+- Added `observe_executed_event_local_zhir_physical_prejump`. Starting from one
+  intact stage-certified `OperatorEventExecutionResult`, it binds the scheduled
+  and committed ZHIR event, preceding physical partition, terminal segment,
+  glyph stage, ordered Mutation decisions and trigger certificates to the same
+  execution. The existing physical pre-jump observer remains an offline
+  coordinate pairing without common-execution provenance.
+- Added `event_remesh_refinement.py` and
+  `test_event_remesh_refinement.py`. The new pure observer compares three
+  already committed event/REMESH cycles on strictly nested coarse,
+  intermediate and fine physical partitions. It records exact represented EPI
+  checkpoints and persistent-node pairwise `L_inf` errors, executor-linked ZHIR
+  rates and gates, and modal products only under a common captured generator.
+  Integrity or decreasing finite errors do not certify solver accuracy/order,
+  mesh convergence, Lyapunov decrease, a combined schedule/REMESH gain,
+  whole-three-mesh atomicity or future behavior.
+- Added `remesh_history_stability.py` and
+  `test_remesh_history_stability.py`. The exact finite companion certificate
+  derives the invariant temporal distribution for uniform unclipped delayed
+  REMESH and verifies a stationary-weighted Jensen disagreement identity.
+  `0 < alpha < 1` gives primitive temporal mixing toward the preserved history
+  barycenter; `alpha = 1` is a pure-delay permutation with conserved augmented
+  energy and possible periodic orbits. Binary64 clipping, changing parameters,
+  spatial consensus, zero pressure and schedule/REMESH composition remain
+  outside the theorem. The certificate, transition observation and both
+  constructors are re-exported from `tnfr.physics`.
+- Required custom event-schedule integrators to modify only EPI, `dEPI_dt`,
+  `d2EPI_dt2` and the runtime clock and to realize exactly, in rationalized
+  represented values, `EPI_right-EPI_left = dt*nu_f_left*DeltaNFR_left`.
+  This held-input identity does not certify solver accuracy or order.
+- Made graph transaction snapshots owner-bound and preserved NetworkX
+  structural mapping identities, alias topology and capturable callback-owned
+  state. Exact `CallbackSpec` carriers and replayable one-dimensional object
+  history arrays retain their aliases while their reachable mutable state is
+  covered. Snapshot preflight rejects mutable structural keys with non-identity
+  hash/equality, custom `__deepcopy__` hooks and unmodelled opaque C state while
+  accepting common immutable atoms. Exact standard locks and loggers, including
+  nested occurrences, are treated as external resources without invoking their
+  copy reducers. Rollback covers capturable graph-reachable state; emitted I/O
+  and warnings, external-resource state and external-only aliases remain outside
+  it.
+- Centralized proof-stamp comparison on a closed immutable token grammar with
+  bit-exact float and complex handling. Runtime, refinement, diffusion,
+  pointwise, hybrid, Mutation and REMESH evidence now authenticates its own
+  outer seal before nested semantic validation and fails closed without calling
+  truth, equality or descriptor protocols on replaced stamp values.
+- Compacted parent runtime seals through exact-type references to independently
+  validated child seals. Event/REMESH proof growth is now linear in the number
+  of segments while deep child tampering still invalidates every enclosing
+  record. Graph snapshots also preseed all direct graph-owned identities before
+  capture and admit only the canonical `NodeCache` serialization binding and
+  its exact weak owner reference.
+- Made standalone REMESH planning observationally pure and materialized live
+  configuration, runtime controls, EPI channels and delayed history once per
+  guarded boundary. A conversion or history read that changes graph state now
+  aborts and restores the enclosing transaction instead of becoming a later
+  baseline. `ON_REMESH` callbacks are graph-read-only observers; the public
+  history append helper still derives its snapshot and capacity from the live
+  canonical graph configuration.
+- Materialized `physical_flow_partitions` exactly once inside the outer
+  `execute_event_remesh_cycle` transaction and forwarded that tuple unchanged
+  to event execution.
+- Centralized the SDK graph-copy resource policy on the transaction classifier.
+  Measurement, cloning and pulse trajectories now discard stale runtime caches,
+  detach ordinary mutable graph data, and preserve exact external resources by
+  identity under the documented external-state boundary. Alias relationships
+  crossing those resources and explicit graph-container back-references remain
+  outside the SDK data-copy contract. Ordinary stored Python bound methods are
+  rebound to copied receivers, including receivers that own nested external
+  resources; built-in methods retain Python's atomic deepcopy behavior.
+- Updated S1, S2, S5 and S16 to distinguish the implemented finite three-mesh
+  observation from convergence and to record the separate uniform exact
+  augmented-history theorem. The next stability target is its bridge to the
+  clipped binary64 runtime and a compatible schedule/REMESH composition law.
+
+### Added — 2026-09-09 Physical pressure-refreshed event flow
+
+- Added immutable `PhysicalFlowPartition` declarations with exact rationalized
+  binary64 coverage, additive/subtractive clock checks and at least two
+  positive physical segments.
+- Extended `execute_operator_event_schedule` with
+  `physical_flow_partitions=`. It refreshes `DeltaNFR` before every segment and
+  at the terminal boundary, captures all segment flows, and rolls back the
+  whole graph if a boundary callback or later operation fails.
+- Added sealed `PressureRefreshBoundaryObservation`,
+  `PhysicalEulerModalObservation` and
+  `ExecutedPressureRefreshedFlowPartition` evidence. Pressure callbacks must
+  preserve all non-pressure nodal state, full edge state, persistent graph
+  configuration, histories, conductance and clock; existing non-`None` cached
+  pressure weights cannot change, while the canonical default may initialize a
+  missing or `None` cache.
+- Applied the same restricted-write policy to operator-stage pressure refreshes,
+  froze hook presence and identity for the whole schedule, rejected integrator
+  history writes even on newly added nodes, and preserved capturable callable
+  state. Violations now fail before replacement hooks can run and roll back all
+  graph-owned state.
+- Hardened graph transactions for custom mapping factories, owner-qualified
+  slots, NetworkX internal mappings and ordinary lock-bearing metadata while
+  preserving their identities across rollback.
+- Centralized runtime pressure callback dispatch in `_refresh_delta_nfr`,
+  retaining legacy callbacks without retrying an internal `TypeError`.
+- Added exact common-metric segment gain composition and kept solver accuracy,
+  order, mesh convergence, adaptive U2/U4 and future behavior explicitly
+  uncertified.
+- Added `EventLocalZHIRPhysicalPrejumpObservation` and
+  `EventLocalZHIRPhysicalRefinementComparison`. They separate Mutation's actual
+  terminal-segment secant from an offline whole-interval secant and compare
+  ordinary binary64 evaluations of the exact-real held factor `1-T*mu` and
+  refreshed product `product_k(1-h_k*mu)` without identifying runtime endpoints
+  with those maps or assuming equivalent decisions. Modal comparison requires
+  trusted segment replays and one fixed generator; matching spectra alone cannot
+  promote an isospectral, noncommuting sequence. Exact endpoint-map promotion
+  remains gated by the separate exact-affine certificate.
+
 ### Added — 2026-09-09 Event-local ZHIR refinement evidence
 
 - Rejected a scheduled Mutation before graph writes when the binary64

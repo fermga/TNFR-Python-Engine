@@ -10,10 +10,8 @@ from __future__ import annotations
 
 import math
 from collections import deque
-from collections.abc import Hashable, Mapping, Sequence
-from copy import deepcopy
-from dataclasses import dataclass, field, fields, is_dataclass
-from enum import Enum
+from collections.abc import Hashable, Iterable, Mapping, Sequence
+from dataclasses import dataclass, field, fields
 from fractions import Fraction
 from numbers import Real
 from typing import Any
@@ -22,24 +20,44 @@ import networkx as nx
 
 from .._remesh_contract import (
     materialize_delayed_remesh_configuration,
-    materialize_positive_diagonal_metric,
 )
-from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..errors import TNFRValueError
+from ..utils._structural_signature import (
+    proof_stamps_are_identical,
+    structural_proof_signature,
+)
+from ._delayed_remesh_kernel import (
+    _materialize_indexed_history,
+    _materialize_remesh_metric,
+    _runtime_mapping_values_for_nodes,
+)
 from ._epi_domain import require_real_scalar_epi
 from .event_runtime import (
     OperatorEventExecutionResult,
+    _invoke_restricted_pressure_refresh,
     _require_runtime_clock,
+    _schedule_preparation_state_signature,
+    _selected_mapping_entries,
     execute_operator_event_schedule,
 )
-from .event_timing import OperatorEventSchedule
-from .network_stage import GraphTransactionSnapshot
+from .event_timing import OperatorEventSchedule, PhysicalFlowPartition
+from .network_stage import (
+    GraphTransactionSnapshot,
+    _networkx_runtime_layout,
+    _runtime_class_mro,
+    _runtime_class_namespace,
+    _runtime_mapping_items,
+)
 from .remesh import (
     DelayedRemeshResult,
     DelayedRemeshStabilityEvidence,
+    _RemeshGraphSurfaceState,
     _contract_values_equal,
     _materialize_network_remesh_configuration,
+    _raw_string_entry,
+    _remesh_configuration_input_signature,
+    _remesh_configuration_input_signatures_are_identical,
     _require_same_epi_time_histories,
     _require_same_graph_surface,
     _snapshot_alias_channels,
@@ -83,10 +101,39 @@ _HISTORY_TRANSITION_PROOF_VERSION = "remesh_history_transition_v1"
 _EVENT_REMESH_CYCLE_PROOF_VERSION = "event_remesh_cycle_v1"
 
 
+def _require_canonical_nodes_surface(graph: nx.Graph) -> None:
+    """Reject a graph subclass whose ``nodes`` read can execute user code."""
+
+    networkx_bases = {nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph}
+    for owner in _runtime_class_mro(type(graph)):
+        if owner in networkx_bases:
+            return
+        if "nodes" in _runtime_class_namespace(owner):
+            raise TNFRValueError(
+                "Event/REMESH input materialization changed graph state: "
+                "custom nodes accessors are outside the atomic cycle domain."
+            )
+    raise TNFRValueError("unsupported NetworkX graph runtime type")
+
+
 def _exact_epi_vector(values: tuple[float, ...]) -> tuple[Fraction, ...]:
     """Return the exact rational values represented by one binary64 vector."""
 
     return tuple(Fraction.from_float(value) for value in values)
+
+
+def _ordered_identity_is(left: Any, right: Any) -> bool:
+    """Match two frozen support sequences without caller equality methods."""
+
+    return bool(
+        type(left) is tuple
+        and type(right) is tuple
+        and len(left) == len(right)
+        and all(
+            observed is expected
+            for observed, expected in zip(left, right, strict=True)
+        )
+    )
 
 
 def _exact_history(
@@ -171,13 +218,20 @@ class RemeshHistoryTransitionObservation:
 
     def __post_init__(self) -> None:
         values = _history_transition_fields(self)
-        _validate_history_transition_fields(**values)
-        if (
-            type(self._proof_stamp) is not tuple
-            or self._proof_stamp != _history_transition_stamp(**values)
+        if not proof_stamps_are_identical(
+            self._proof_stamp,
+            _history_transition_stamp(**values),
         ):
             raise ValueError(
                 "REMESH history-transition proof fields are inconsistent"
+            )
+        _validate_history_transition_fields(**values)
+        if not proof_stamps_are_identical(
+            self._proof_stamp,
+            _history_transition_stamp(**values),
+        ):
+            raise ValueError(
+                "REMESH history-transition proof fields changed during validation"
             )
 
     def _proof_fields_are_intact(self) -> bool:
@@ -185,7 +239,7 @@ class RemeshHistoryTransitionObservation:
 
         try:
             self.__post_init__()
-        except (AttributeError, TypeError, ValueError, OverflowError):
+        except BaseException:
             return False
         return True
 
@@ -388,216 +442,29 @@ class WeightedEPIObservation:
     disagreement_energy: float | None
 
 
-def _safe_opaque_hash(value: Any) -> tuple[Any, ...]:
-    """Return a non-raising hash signature for an otherwise opaque value."""
-
-    try:
-        return ("hash", hash(value))
-    except BaseException as exc:
-        return (
-            "hash-unavailable",
-            type(exc).__module__,
-            type(exc).__qualname__,
-        )
-
-
-def _safe_opaque_repr(value: Any) -> str:
-    """Return a non-raising representation for an otherwise opaque value."""
-
-    try:
-        return repr(value)
-    except BaseException as exc:
-        return (
-            f"<repr-unavailable:{type(exc).__module__}."
-            f"{type(exc).__qualname__}>"
-        )
-
-
-def _slot_storage_name(owner: type[Any], declared: str) -> str:
-    if declared.startswith("__") and not declared.endswith("__"):
-        return f"_{owner.__name__.lstrip('_')}{declared}"
-    return declared
-
-
-def _slotted_object_state(
-    value: Any,
-    *,
-    seen: dict[int, int],
-) -> tuple[Any, ...]:
-    """Read declared slot storage in deterministic MRO/declaration order."""
-
-    state: list[Any] = []
-    for owner in type(value).__mro__:
-        declared_slots = owner.__dict__.get("__slots__", ())
-        if type(declared_slots) is str:
-            slot_names = (declared_slots,)
-        else:
-            try:
-                slot_names = tuple(declared_slots)
-            except TypeError:
-                slot_names = ()
-        for declared in slot_names:
-            if declared in ("__dict__", "__weakref__"):
-                continue
-            if type(declared) is not str:
-                state.append(
-                    (
-                        owner.__module__,
-                        owner.__qualname__,
-                        _safe_opaque_repr(declared),
-                        ("invalid-slot-name",),
-                    )
-                )
-                continue
-            storage_name = _slot_storage_name(owner, declared)
-            descriptor = owner.__dict__.get(storage_name)
-            if descriptor is None:
-                slot_value = ("missing-descriptor",)
-            else:
-                try:
-                    observed = descriptor.__get__(value, type(value))
-                except AttributeError:
-                    slot_value = ("unset",)
-                except BaseException as exc:
-                    slot_value = (
-                        "unreadable",
-                        type(exc).__module__,
-                        type(exc).__qualname__,
-                    )
-                else:
-                    slot_value = (
-                        "value",
-                        _proof_value(observed, seen=seen),
-                    )
-            state.append(
-                (
-                    owner.__module__,
-                    owner.__qualname__,
-                    declared,
-                    slot_value,
-                )
-            )
-    return tuple(state)
-
-
 def _proof_value(
     value: Any,
     *,
     seen: dict[int, int] | None = None,
 ) -> Any:
-    """Freeze decisive runtime evidence structurally rather than by identity."""
+    """Seal values, reusing exact child seals for closed TNFR records."""
 
-    if value is None:
-        return ("none",)
-    if type(value) is bool:
-        return ("bool", value)
-    if type(value) is int:
-        return ("int", value)
-    if type(value) is float:
-        return ("float", value.hex())
-    if type(value) is Fraction:
-        return ("fraction", value.numerator, value.denominator)
-    if type(value) is str:
-        return ("str", value)
-    if type(value) is bytes:
-        return ("bytes", value)
-    if isinstance(value, Enum):
+    del seen
+    kind = type(value)
+    if kind in (OperatorEventExecutionResult, RemeshHistoryTransitionObservation):
+        try:
+            stamp = object.__getattribute__(value, "_proof_stamp")
+        except BaseException:
+            stamp = None
+        if type(stamp) is not tuple:
+            stamp = None
         return (
-            "enum",
-            type(value).__module__,
-            type(value).__qualname__,
-            _proof_value(value.value, seen=seen),
+            "tnfr-nested-proof-stamp-v1",
+            kind.__module__,
+            kind.__qualname__,
+            stamp,
         )
-
-    if seen is None:
-        seen = {}
-    identity = id(value)
-    if identity in seen:
-        return ("reference", seen[identity])
-    seen[identity] = len(seen)
-
-    if type(value) is tuple:
-        return (
-            "tuple",
-            tuple(_proof_value(item, seen=seen) for item in value),
-        )
-    if type(value) is list:
-        return (
-            "list",
-            tuple(_proof_value(item, seen=seen) for item in value),
-        )
-    if isinstance(value, deque):
-        return (
-            "deque",
-            type(value).__module__,
-            type(value).__qualname__,
-            value.maxlen,
-            tuple(_proof_value(item, seen=seen) for item in value),
-        )
-    if isinstance(value, Mapping):
-        return (
-            "mapping",
-            type(value).__module__,
-            type(value).__qualname__,
-            tuple(
-                (
-                    _proof_value(key, seen=seen),
-                    _proof_value(item, seen=seen),
-                )
-                for key, item in value.items()
-            ),
-        )
-    if isinstance(value, (set, frozenset)):
-        members = tuple(
-            _proof_value(item, seen=seen)
-            for item in sorted(value, key=_safe_opaque_repr)
-        )
-        return (type(value).__name__, members)
-    if is_dataclass(value) and not isinstance(value, type):
-        return (
-            "dataclass",
-            type(value).__module__,
-            type(value).__qualname__,
-            tuple(
-                (
-                    item.name,
-                    _proof_value(
-                        getattr(value, item.name),
-                        seen=seen,
-                    ),
-                )
-                for item in fields(value)
-                if item.name != "_proof_stamp"
-            ),
-        )
-    namespace = getattr(value, "__dict__", None)
-    namespace_state = (
-        tuple(
-            (
-                name,
-                _proof_value(item, seen=seen),
-            )
-            for name, item in namespace.items()
-        )
-        if isinstance(namespace, Mapping)
-        else ()
-    )
-    slot_state = _slotted_object_state(value, seen=seen)
-    if isinstance(namespace, Mapping) or slot_state:
-        return (
-            "object-state",
-            type(value).__module__,
-            type(value).__qualname__,
-            namespace_state,
-            slot_state,
-        )
-    return (
-        "opaque",
-        type(value).__module__,
-        type(value).__qualname__,
-        _safe_opaque_hash(value),
-        _safe_opaque_repr(value),
-    )
+    return structural_proof_signature(value)
 
 
 def _nested_proof_records_are_intact(
@@ -605,42 +472,20 @@ def _nested_proof_records_are_intact(
     *,
     seen: set[int] | None = None,
 ) -> bool:
-    """Require every nested sealed record to retain its executor-owned proof."""
+    """Validate only the closed set of proof-bearing TNFR record roots."""
 
-    if seen is None:
-        seen = set()
-    identity = id(value)
-    if identity in seen:
-        return True
-    seen.add(identity)
-
-    validator = getattr(value, "_proof_fields_are_intact", None)
-    if callable(validator):
+    del seen
+    if type(value) is OperatorEventExecutionResult:
         try:
-            if not bool(validator()):
-                return False
-        except Exception:
-            return False
-    if is_dataclass(value) and not isinstance(value, type):
-        return all(
-            _nested_proof_records_are_intact(
-                getattr(value, item.name),
-                seen=seen,
+            return bool(
+                OperatorEventExecutionResult._proof_fields_are_intact(value)
             )
-            for item in fields(value)
-            if item.name != "_proof_stamp"
-        )
-    if isinstance(value, Mapping):
-        return all(
-            _nested_proof_records_are_intact(key, seen=seen)
-            and _nested_proof_records_are_intact(item, seen=seen)
-            for key, item in value.items()
-        )
-    if isinstance(value, (tuple, list, deque, set, frozenset)):
-        return all(
-            _nested_proof_records_are_intact(item, seen=seen)
-            for item in value
-        )
+        except BaseException:
+            return False
+    if type(value) is DelayedRemeshResult:
+        # DelayedRemeshResult has no independent stamp. Its complete immutable
+        # structure is already included in the enclosing cycle proof stamp.
+        return True
     return True
 
 
@@ -686,7 +531,10 @@ def _validate_weighted_observation(
 ) -> None:
     if type(observation) is not WeightedEPIObservation:
         raise TypeError(f"{label} must be a WeightedEPIObservation")
-    if observation.nodes != nodes or observation.metric_weights != weights:
+    if (
+        not _ordered_identity_is(observation.nodes, nodes)
+        or observation.metric_weights != weights
+    ):
         raise ValueError(f"{label} changed node order or metric")
     if (
         type(observation.epi_values) is not tuple
@@ -751,7 +599,7 @@ def _validate_event_remesh_cycle_result(
     transition = result.history_transition
     if (
         not transition._proof_fields_are_intact()
-        or transition.nodes != nodes
+        or not _ordered_identity_is(transition.nodes, nodes)
     ):
         raise ValueError("cycle history-transition proof is not intact")
 
@@ -759,7 +607,7 @@ def _validate_event_remesh_cycle_result(
         raise TypeError(
             "event_execution must be an OperatorEventExecutionResult"
         )
-    if result.event_execution.target_nodes != nodes:
+    if not _ordered_identity_is(result.event_execution.target_nodes, nodes):
         raise ValueError("event execution target order changed")
     schedule = result.event_execution.schedule
     try:
@@ -819,7 +667,7 @@ def _validate_event_remesh_cycle_result(
     if (
         configuration.history_maxlen != transition.history_maxlen
         or result.remesh.status != plan.status
-        or plan.node_order != nodes
+        or not _ordered_identity_is(plan.node_order, nodes)
         or plan.tau_local != transition.tau_local
         or plan.tau_global != transition.tau_global
         or plan.history_length != len(transition.outgoing_exact_history)
@@ -879,7 +727,7 @@ def _validate_event_remesh_cycle_result(
             raise ValueError("applied REMESH requires one proposal per node")
         for index, proposal in enumerate(plan.proposals):
             if (
-                proposal.node != nodes[index]
+                proposal.node is not nodes[index]
                 or Fraction.from_float(proposal.epi_now)
                 != transition.appended_exact_pre_remesh_epi[index]
                 or Fraction.from_float(proposal.epi_local) != local[index]
@@ -1112,14 +960,21 @@ class EventRemeshCycleResult:
     scope: str = field(default=_SCOPE, init=False)
 
     def __post_init__(self) -> None:
-        _validate_event_remesh_cycle_result(self)
         values = _cycle_result_fields(self)
-        if (
-            type(self._proof_stamp) is not tuple
-            or self._proof_stamp != _cycle_result_stamp(values)
+        if not proof_stamps_are_identical(
+            self._proof_stamp,
+            _cycle_result_stamp(values),
         ):
             raise ValueError(
                 "event/REMESH cycle proof fields are inconsistent"
+            )
+        _validate_event_remesh_cycle_result(self)
+        if not proof_stamps_are_identical(
+            self._proof_stamp,
+            _cycle_result_stamp(values),
+        ):
+            raise ValueError(
+                "event/REMESH cycle proof fields changed during validation"
             )
 
     def _proof_fields_are_intact(self) -> bool:
@@ -1127,7 +982,7 @@ class EventRemeshCycleResult:
 
         try:
             self.__post_init__()
-        except Exception:
+        except BaseException:
             return False
         return True
 
@@ -1153,13 +1008,16 @@ class EventRemeshCycleResult:
     def remesh_applied(self) -> bool:
         """Whether the delayed map committed in this cycle."""
 
-        return self.remesh.applied
+        return self._proof_fields_are_intact() and self.remesh.applied
 
     @property
     def post_remesh_pressure_refresh_performed(self) -> bool:
         """Whether the explicit post-map pressure callback completed."""
 
-        return self.post_remesh_pressure_refresh_callback_invocations == 1
+        return bool(
+            self._proof_fields_are_intact()
+            and self.post_remesh_pressure_refresh_callback_invocations == 1
+        )
 
 
 _EVENT_REMESH_CYCLE_FIELD_NAMES = tuple(
@@ -1240,14 +1098,15 @@ def _required_scalar_channel(
     nonnegative: bool = False,
 ) -> tuple[float, ...]:
     values: list[float] = []
-    for node in nodes:
-        raw = get_attr(
-            graph.nodes[node],
-            aliases,
-            _MISSING,
-            strict=True,
-            conv=lambda value: value,
+    layout = _networkx_runtime_layout(graph)
+    observed_nodes = tuple(node for node, _data in layout.node_data)
+    if not _ordered_identity_is(observed_nodes, nodes):
+        raise TNFRValueError(
+            "The event/REMESH cycle requires fixed ordered node support."
         )
+    for node, node_data in layout.node_data:
+        entries = _selected_mapping_entries(node_data, aliases)
+        raw = entries[0][1] if entries else _MISSING
         if raw is _MISSING:
             raise TNFRValueError(f"node {node!r} is missing required {label}")
         value = _finite_real(raw, f"node {node!r} {label}")
@@ -1264,14 +1123,15 @@ def _epi_values(
     nodes: tuple[Hashable, ...],
 ) -> tuple[float, ...]:
     values: list[float] = []
-    for node in nodes:
-        raw = get_attr(
-            graph.nodes[node],
-            ALIAS_EPI,
-            _MISSING,
-            strict=True,
-            conv=lambda value: value,
+    layout = _networkx_runtime_layout(graph)
+    observed_nodes = tuple(node for node, _data in layout.node_data)
+    if not _ordered_identity_is(observed_nodes, nodes):
+        raise TNFRValueError(
+            "The event/REMESH cycle requires fixed ordered node support."
         )
+    for node, node_data in layout.node_data:
+        entries = _selected_mapping_entries(node_data, ALIAS_EPI)
+        raw = entries[0][1] if entries else _MISSING
         if raw is _MISSING:
             raise TNFRValueError(f"node {node!r} is missing required EPI")
         values.append(
@@ -1326,46 +1186,33 @@ def _history_signature(
     Any,
     tuple[tuple[float, ...], ...],
 ]:
-    if "_epi_hist" not in graph.graph:
+    layout = _networkx_runtime_layout(graph)
+    present, raw = _raw_string_entry(
+        layout.graph_mapping,
+        "_epi_hist",
+        _MISSING,
+    )
+    if not present:
         return False, _MISSING, ()
-    raw = graph.graph["_epi_hist"]
     if raw is None:
         return True, raw, ()
-    if isinstance(raw, (str, bytes, bytearray, Mapping)):
-        raise TNFRValueError(
-            "_epi_hist must be a replayable indexed history"
-        )
-    if not hasattr(raw, "__len__") or not hasattr(raw, "__getitem__"):
-        raise TNFRValueError(
-            "_epi_hist must be a replayable indexed history"
-        )
-    try:
-        snapshots = tuple(raw)
-    except (OverflowError, TypeError) as exc:
-        raise TNFRValueError(
-            "_epi_hist must be a replayable indexed history"
-        ) from exc
+    snapshots = _materialize_indexed_history(raw)
 
-    node_set = frozenset(nodes)
     signature: list[tuple[float, ...]] = []
     for index, snapshot in enumerate(snapshots):
-        if not isinstance(snapshot, Mapping):
-            raise TNFRValueError(
-                f"_epi_hist[{index}] must be a node-to-EPI mapping"
-            )
-        keys = tuple(snapshot)
-        if len(keys) != len(nodes) or frozenset(keys) != node_set:
-            raise TNFRValueError(
-                f"_epi_hist[{index}] support must equal the initial node support"
-            )
+        values = _runtime_mapping_values_for_nodes(
+            snapshot,
+            nodes,
+            label=f"_epi_hist[{index}]",
+        )
         signature.append(
             tuple(
                 require_real_scalar_epi(
-                    snapshot[node],
+                    value,
                     operator="Recursivity",
                     label=f"_epi_hist[{index}][{node!r}]",
                 )
-                for node in nodes
+                for node, value in zip(nodes, values, strict=True)
             )
         )
     return True, raw, tuple(signature)
@@ -1381,7 +1228,7 @@ def _require_same_history(
     ],
     *,
     boundary: str,
-) -> None:
+) -> tuple[bool, Any, tuple[tuple[float, ...], ...]]:
     observed = _history_signature(graph, nodes)
     expected_present, expected_object, expected_values = expected
     observed_present, observed_object, observed_values = observed
@@ -1395,6 +1242,7 @@ def _require_same_history(
             "the explicit history boundary.",
             context={"boundary": boundary},
         )
+    return observed
 
 
 def _require_node_order(
@@ -1403,8 +1251,10 @@ def _require_node_order(
     *,
     boundary: str,
 ) -> None:
-    observed = tuple(graph.nodes)
-    if observed != expected:
+    observed = tuple(
+        node for node, _data in _networkx_runtime_layout(graph).node_data
+    )
+    if not _ordered_identity_is(observed, expected):
         raise TNFRValueError(
             "The event/REMESH cycle requires fixed ordered node support.",
             context={
@@ -1416,7 +1266,46 @@ def _require_node_order(
 
 
 def _pressure_hook_signature(graph: nx.Graph) -> tuple[bool, Any]:
-    return "compute_delta_nfr" in graph.graph, graph.graph.get("compute_delta_nfr")
+    return _raw_string_entry(
+        _networkx_runtime_layout(graph).graph_mapping,
+        "compute_delta_nfr",
+        None,
+    )
+
+
+def _read_only_graph_state(
+    graph: nx.Graph,
+) -> tuple[tuple[Any, ...], list[Any]]:
+    """Capture graph/callback state around a bridge-owned read phase."""
+
+    retained_references: list[Any] = []
+    return (
+        _schedule_preparation_state_signature(
+            graph,
+            retained_references=retained_references,
+        ),
+        retained_references,
+    )
+
+
+def _require_read_only_graph_state(
+    graph: nx.Graph,
+    expected: tuple[tuple[Any, ...], list[Any]],
+    *,
+    boundary: str,
+) -> None:
+    """Reject graph mutation caused by observational materialization."""
+
+    expected_signature, retained_references = expected
+    del retained_references
+    if not proof_stamps_are_identical(
+        expected_signature,
+        _schedule_preparation_state_signature(graph),
+    ):
+        raise TNFRValueError(
+            "Event/REMESH observational materialization changed graph state.",
+            context={"boundary": boundary},
+        )
 
 
 def _require_same_pressure_hook(
@@ -1435,11 +1324,14 @@ def _require_same_pressure_hook(
 
 def _require_same_configuration(
     graph: nx.Graph,
-    expected: Any,
+    expected_signature: tuple[Any, ...],
     *,
     boundary: str,
 ) -> None:
-    if _materialize_network_remesh_configuration(graph) != expected:
+    if not _remesh_configuration_input_signatures_are_identical(
+        _remesh_configuration_input_signature(graph),
+        expected_signature,
+    ):
         raise TNFRValueError(
             "The event/REMESH cycle changed deterministic REMESH configuration.",
             context={"boundary": boundary},
@@ -1454,7 +1346,7 @@ def _require_same_phase(
     boundary: str,
 ) -> tuple[float, ...]:
     observed = _required_scalar_channel(graph, nodes, ALIAS_THETA, "phase")
-    if observed != expected:
+    if not _contract_values_equal(observed, expected):
         raise TNFRValueError(
             "The delayed REMESH boundary changed phase.",
             context={"boundary": boundary},
@@ -1469,8 +1361,15 @@ def _require_schedule_event_log_commit(
 ) -> tuple[bool, Any, Any]:
     """Bind the immutable schedule result to its graph-owned event log."""
 
-    expected_records = [] if not before[0] else deepcopy(before[2])
-    expected_records.extend(event.as_record() for event in event_result.events)
+    before_state = before[2]
+    if before[0] and (
+        type(before_state) is not _RemeshGraphSurfaceState
+        or before_state.sequence_items is None
+        or before_state.sequence_signature is None
+    ):
+        raise TNFRValueError("pre-existing hybrid_event_log must be a list")
+    before_length = 0 if not before[0] else len(before_state.sequence_items)
+    expected_suffix = tuple(event.as_record() for event in event_result.events)
     expected_present = before[0] or bool(event_result.events)
     observed = _snapshot_graph_surface(graph, "hybrid_event_log")
     if observed[0] != expected_present:
@@ -1483,9 +1382,40 @@ def _require_schedule_event_log_commit(
         raise TNFRValueError(
             "hybrid_event_log changed identity during schedule execution"
         )
-    if not isinstance(observed[1], list) or not _contract_values_equal(
-        observed[2], expected_records
+    observed_state = observed[2]
+    if (
+        type(observed_state) is not _RemeshGraphSurfaceState
+        or observed_state.sequence_items is None
+        or list not in _runtime_class_mro(type(observed[1]))
     ):
+        raise TNFRValueError(
+            "hybrid_event_log content disagrees with the schedule result"
+        )
+    observed_items = observed_state.sequence_items
+    if len(observed_items) != before_length + len(expected_suffix):
+        raise TNFRValueError(
+            "hybrid_event_log content disagrees with the schedule result"
+        )
+    opaque_references = (
+        before_state.opaque_references
+        if before[0]
+        else observed_state.opaque_references
+    )
+    prefix_signature = structural_proof_signature(
+        observed_items[:before_length],
+        opaque_references=opaque_references,
+    )
+    suffix_signature = structural_proof_signature(
+        observed_items[before_length:],
+        opaque_references=opaque_references,
+    )
+    expected_suffix_signature = structural_proof_signature(
+        expected_suffix,
+        opaque_references=opaque_references,
+    )
+    if (
+        before[0] and prefix_signature != before_state.sequence_signature
+    ) or suffix_signature != expected_suffix_signature:
         raise TNFRValueError(
             "hybrid_event_log content disagrees with the schedule result"
         )
@@ -1526,6 +1456,7 @@ def execute_event_remesh_cycle(
     suppress_birth_warnings: bool = False,
     include_flow_certificates: bool = False,
     include_stage_certificates: bool = False,
+    physical_flow_partitions: Iterable[PhysicalFlowPartition] = (),
 ) -> EventRemeshCycleResult:
     """Execute one schedule, one history sample and one delayed REMESH map.
 
@@ -1538,7 +1469,9 @@ def execute_event_remesh_cycle(
     If requested, the graph's configured pressure callback runs once only
     after an applied REMESH map. It must return successfully before it is
     counted. Any failure restores graph-owned state through the outer
-    transaction while retaining the primary exception.
+    transaction while retaining the primary exception. Declared physical-flow
+    partitions are materialized once inside that same outer transaction and
+    delegated unchanged to the schedule executor.
     """
 
     graph = _require_graph(graph)
@@ -1551,50 +1484,89 @@ def execute_event_remesh_cycle(
     if type(include_stage_certificates) is not bool:
         raise TypeError("include_stage_certificates must be a bool")
 
-    nodes = tuple(graph.nodes)
-    if not nodes:
-        raise TNFRValueError(
-            "event/REMESH composition requires nonempty node support"
-        )
-    weights = materialize_positive_diagonal_metric(
-        metric_weights,
-        nodes,
-    )
-    history_before = _history_signature(graph, nodes)
-    history_length_before = len(history_before[2])
-    remesh_configuration = _materialize_network_remesh_configuration(graph)
-    pressure_hook = _pressure_hook_signature(graph)
-    pressure_callback = pressure_hook[1]
-    event_log_before = _snapshot_graph_surface(graph, "hybrid_event_log")
-    if refresh_pressure_after_remesh and not callable(pressure_callback):
-        raise TNFRValueError(
-            "refresh_pressure_after_remesh requires a callable "
-            "compute_delta_nfr graph hook"
-        )
-
-    pre_schedule_epi = _observe_epi(graph, nodes, weights)
-    capacity_before = _required_scalar_channel(
-        graph,
-        nodes,
-        ALIAS_VF,
-        "structural frequency",
-        nonnegative=True,
-    )
-    pressure_before = _required_scalar_channel(
-        graph,
-        nodes,
-        ALIAS_DNFR,
-        "DeltaNFR",
-    )
-    phase_before_schedule = _required_scalar_channel(
-        graph,
-        nodes,
-        ALIAS_THETA,
-        "phase",
-    )
     transaction = GraphTransactionSnapshot(graph)
 
     try:
+        preparation_references: list[Any] = []
+        preparation_state = _schedule_preparation_state_signature(
+            graph,
+            retained_references=preparation_references,
+        )
+        schedule.__post_init__()
+        _require_canonical_nodes_surface(graph)
+        runtime_layout = _networkx_runtime_layout(graph)
+        nodes = tuple(node for node, _data in runtime_layout.node_data)
+        if not nodes:
+            raise TNFRValueError(
+                "event/REMESH composition requires nonempty node support"
+            )
+        try:
+            materialized_physical_flow_partitions = tuple(
+                physical_flow_partitions
+            )
+        except TypeError as exc:
+            raise TypeError(
+                "physical_flow_partitions must be an iterable of partitions"
+            ) from exc
+        for position, partition in enumerate(
+            materialized_physical_flow_partitions
+        ):
+            if type(partition) is not PhysicalFlowPartition:
+                raise TypeError(
+                    "physical_flow_partitions must contain "
+                    "PhysicalFlowPartition records; item "
+                    f"{position} has type {type(partition).__qualname__}"
+                )
+        weights = _materialize_remesh_metric(
+            metric_weights,
+            nodes,
+        )
+        history_before = _history_signature(graph, nodes)
+        history_length_before = len(history_before[2])
+        remesh_configuration_references: list[Any] = []
+        remesh_configuration_signature = (
+            _remesh_configuration_input_signature(
+                graph,
+                retained_references=remesh_configuration_references,
+            )
+        )
+        remesh_configuration = _materialize_network_remesh_configuration(graph)
+        pressure_hook = _pressure_hook_signature(graph)
+        pressure_callback = pressure_hook[1]
+        event_log_before = _snapshot_graph_surface(graph, "hybrid_event_log")
+        if refresh_pressure_after_remesh and not callable(pressure_callback):
+            raise TNFRValueError(
+                "refresh_pressure_after_remesh requires a callable "
+                "compute_delta_nfr graph hook"
+            )
+
+        pre_schedule_epi = _observe_epi(graph, nodes, weights)
+        capacity_before = _required_scalar_channel(
+            graph,
+            nodes,
+            ALIAS_VF,
+            "structural frequency",
+            nonnegative=True,
+        )
+        pressure_before = _required_scalar_channel(
+            graph,
+            nodes,
+            ALIAS_DNFR,
+            "DeltaNFR",
+        )
+        phase_before_schedule = _required_scalar_channel(
+            graph,
+            nodes,
+            ALIAS_THETA,
+            "phase",
+        )
+        if not proof_stamps_are_identical(
+            preparation_state,
+            _schedule_preparation_state_signature(graph),
+        ):
+            raise TNFRValueError(
+                "Event/REMESH input materialization changed graph state."
+            )
         event_result = execute_operator_event_schedule(
             graph,
             schedule,
@@ -1604,13 +1576,15 @@ def execute_event_remesh_cycle(
             suppress_birth_warnings=suppress_birth_warnings,
             include_flow_certificates=include_flow_certificates,
             include_stage_certificates=include_stage_certificates,
+            physical_flow_partitions=materialized_physical_flow_partitions,
         )
-        if event_result.target_nodes != nodes:
+        if not _ordered_identity_is(event_result.target_nodes, nodes):
             raise RuntimeError(
                 "event execution lost the bridge's frozen target order"
             )
+        after_schedule_read_state = _read_only_graph_state(graph)
         _require_node_order(graph, nodes, boundary="after_schedule")
-        _require_same_history(
+        history_after_schedule = _require_same_history(
             graph,
             nodes,
             history_before,
@@ -1628,7 +1602,7 @@ def execute_event_remesh_cycle(
         )
         _require_same_configuration(
             graph,
-            remesh_configuration,
+            remesh_configuration_signature,
             boundary="after_schedule",
         )
         committed_event_log = _require_schedule_event_log_commit(
@@ -1636,6 +1610,17 @@ def execute_event_remesh_cycle(
             event_log_before,
             event_result,
         )
+        committed_event_log_state = committed_event_log[2]
+        committed_event_log_length = (
+            0
+            if not committed_event_log[0]
+            else len(committed_event_log_state.sequence_items)
+            if type(committed_event_log_state) is _RemeshGraphSurfaceState
+            and committed_event_log_state.sequence_items is not None
+            else -1
+        )
+        if committed_event_log_length < 0:
+            raise RuntimeError("committed hybrid_event_log lost list storage")
 
         pre_remesh_epi = _observe_epi(graph, nodes, weights)
         capacity_before_remesh = _required_scalar_channel(
@@ -1657,17 +1642,56 @@ def execute_event_remesh_cycle(
             ALIAS_THETA,
             "phase",
         )
-
-        from ..dynamics.remesh_history import (
-            append_remesh_epi_history_snapshot,
+        _require_read_only_graph_state(
+            graph,
+            after_schedule_read_state,
+            boundary="after_schedule_observations",
         )
 
-        history_append = append_remesh_epi_history_snapshot(graph)
-        appended_history = _history_signature(graph, nodes)
+        from ..dynamics.remesh_history import (
+            _append_remesh_epi_history_snapshot_from_materialized,
+        )
+
+        history_append = _append_remesh_epi_history_snapshot_from_materialized(
+            graph,
+            history_maxlen=remesh_configuration.history_maxlen,
+            snapshot_items=tuple(
+                zip(nodes, pre_remesh_epi.epi_values, strict=True)
+            ),
+        )
+        appended_history_present, appended_history_object = _raw_string_entry(
+            _networkx_runtime_layout(graph).graph_mapping,
+            "_epi_hist",
+            None,
+        )
+        retained_before_append = history_after_schedule[2][
+            -history_append.history_maxlen:
+        ]
+        expected_appended_values = (
+            retained_before_append + (pre_remesh_epi.epi_values,)
+        )[-history_append.history_maxlen:]
+        appended_history = (
+            appended_history_present,
+            appended_history_object,
+            expected_appended_values,
+        )
         if (
             not appended_history[0]
             or type(appended_history[1]) is not deque
-            or appended_history[2][-1] != pre_remesh_epi.epi_values
+            or appended_history[1].maxlen != history_append.history_maxlen
+            or len(appended_history[1]) != history_append.history_length_after
+            or any(
+                observed_node is not expected_node
+                for (observed_node, _value), expected_node in zip(
+                    history_append.snapshot_items,
+                    nodes,
+                    strict=True,
+                )
+            )
+            or not _contract_values_equal(
+                tuple(value for _node, value in history_append.snapshot_items),
+                pre_remesh_epi.epi_values,
+            )
             or history_append.history_maxlen
             != remesh_configuration.history_maxlen
         ):
@@ -1690,6 +1714,10 @@ def execute_event_remesh_cycle(
                 history_append.oldest_snapshot_evicted
             ),
         )
+        appended_history_surface = _snapshot_graph_surface(
+            graph,
+            "_epi_hist",
+        )
 
         channels_before_remesh_apply = _snapshot_alias_channels(
             graph,
@@ -1701,6 +1729,7 @@ def execute_event_remesh_cycle(
             include_stability_evidence=True,
             metric_weights=weights,
         )
+        after_remesh_read_state = _read_only_graph_state(graph)
         if not _contract_values_equal(
             _snapshot_alias_channels(graph, nodes),
             channels_before_remesh_apply,
@@ -1716,11 +1745,10 @@ def execute_event_remesh_cycle(
                 "The REMESH wrapper changed protected edge state."
             )
         _require_node_order(graph, nodes, boundary="after_remesh")
-        _require_same_history(
+        _require_same_graph_surface(
             graph,
-            nodes,
-            appended_history,
-            boundary="after_remesh",
+            "_epi_hist",
+            appended_history_surface,
         )
         _require_runtime_clock(
             graph,
@@ -1739,7 +1767,7 @@ def execute_event_remesh_cycle(
         )
         _require_same_configuration(
             graph,
-            remesh_configuration,
+            remesh_configuration_signature,
             boundary="after_remesh",
         )
         phase_after_remesh = _require_same_phase(
@@ -1748,7 +1776,7 @@ def execute_event_remesh_cycle(
             phase_before_remesh,
             boundary="after_remesh",
         )
-        if remesh_result.plan.node_order != nodes:
+        if not _ordered_identity_is(remesh_result.plan.node_order, nodes):
             raise RuntimeError("REMESH plan lost the frozen node order")
         if remesh_result.applied:
             if type(remesh_result.evidence) is not DelayedRemeshStabilityEvidence:
@@ -1795,27 +1823,55 @@ def execute_event_remesh_cycle(
             graph, "_REMESH_ALPHA_SRC"
         )
         post_remesh_telemetry = _snapshot_graph_surface(graph, "history")
+        _require_read_only_graph_state(
+            graph,
+            after_remesh_read_state,
+            boundary="after_remesh_observations",
+        )
 
         post_refresh_count = 0
+        refresh_guard_failure: BaseException | None = None
         if refresh_pressure_after_remesh and remesh_result.applied:
             _require_same_pressure_hook(
                 graph,
                 pressure_hook,
                 boundary="before_post_remesh_pressure_refresh",
             )
-            assert callable(pressure_callback)
-            pressure_callback(graph)
+            try:
+                _invoke_restricted_pressure_refresh(
+                    graph,
+                    expected_present=pressure_hook[0],
+                    expected_callback=pressure_callback,
+                    n_jobs=n_jobs,
+                    boundary_label=(
+                        "event_remesh.post_remesh_pressure_refresh"
+                    ),
+                    require_callback_state_preserved=False,
+                )
+            except TNFRValueError as failure:
+                if failure.message != (
+                    "A pressure callback changed non-pressure graph state."
+                ):
+                    raise
+                refresh_guard_failure = failure
+            except RuntimeError as failure:
+                if failure.args != (
+                    "configured pressure callback changed during event "
+                    "execution",
+                ):
+                    raise
+                refresh_guard_failure = failure
             post_refresh_count += 1
+            after_refresh_read_state = _read_only_graph_state(graph)
             _require_node_order(
                 graph,
                 nodes,
                 boundary="after_post_remesh_pressure_refresh",
             )
-            _require_same_history(
+            _require_same_graph_surface(
                 graph,
-                nodes,
-                appended_history,
-                boundary="after_post_remesh_pressure_refresh",
+                "_epi_hist",
+                appended_history_surface,
             )
             _require_runtime_clock(
                 graph,
@@ -1834,7 +1890,7 @@ def execute_event_remesh_cycle(
             )
             _require_same_configuration(
                 graph,
-                remesh_configuration,
+                remesh_configuration_signature,
                 boundary="after_post_remesh_pressure_refresh",
             )
             if not _contract_values_equal(
@@ -1855,7 +1911,10 @@ def execute_event_remesh_cycle(
             if epi_time_histories is None:
                 raise RuntimeError("applied REMESH lost its physical history")
             _require_same_epi_time_histories(graph, epi_time_histories)
-            if _epi_values(graph, nodes) != post_remesh_epi.epi_values:
+            if not _contract_values_equal(
+                _epi_values(graph, nodes),
+                post_remesh_epi.epi_values,
+            ):
                 raise TNFRValueError(
                     "The post-REMESH pressure callback changed EPI."
                 )
@@ -1866,23 +1925,35 @@ def execute_event_remesh_cycle(
                 "structural frequency",
                 nonnegative=True,
             )
-            if refreshed_capacity != capacity_after_remesh:
+            if not _contract_values_equal(
+                refreshed_capacity,
+                capacity_after_remesh,
+            ):
                 raise TNFRValueError(
                     "The post-REMESH pressure callback changed capacity."
                 )
-
-        phase_after_optional_refresh = _require_same_phase(
-            graph,
-            nodes,
-            phase_before_remesh,
-            boundary="after_optional_pressure_refresh",
-        )
-        pressure_after_optional_refresh = _required_scalar_channel(
-            graph,
-            nodes,
-            ALIAS_DNFR,
-            "DeltaNFR",
-        )
+            phase_after_optional_refresh = _require_same_phase(
+                graph,
+                nodes,
+                phase_before_remesh,
+                boundary="after_optional_pressure_refresh",
+            )
+            pressure_after_optional_refresh = _required_scalar_channel(
+                graph,
+                nodes,
+                ALIAS_DNFR,
+                "DeltaNFR",
+            )
+            _require_read_only_graph_state(
+                graph,
+                after_refresh_read_state,
+                boundary="after_post_remesh_pressure_refresh_observations",
+            )
+        else:
+            phase_after_optional_refresh = phase_after_remesh
+            pressure_after_optional_refresh = pressure_before_optional_refresh
+        if refresh_guard_failure is not None:
+            raise refresh_guard_failure
         schedule_drift = (
             pre_remesh_epi.exact_weighted_mean
             - pre_schedule_epi.exact_weighted_mean
@@ -1957,7 +2028,7 @@ def execute_event_remesh_cycle(
                 post_refresh_count
             ),
             committed_hybrid_event_log_length=(
-                0 if not committed_event_log[0] else len(committed_event_log[2])
+                committed_event_log_length
             ),
             post_remesh_epi_time_boundary_recorded=(
                 remesh_result.epi_time_boundary_recorded

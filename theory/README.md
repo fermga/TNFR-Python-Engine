@@ -70,8 +70,10 @@ problems. Supporting maps include
 
 ## Catalog studies
 
-- [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) studies the
-  REMESH limit under its stated function-space assumptions.
+- [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) separates the
+  clipped runtime, finite cyclic filter and finite companion recurrence; it
+  derives the cyclic projector and the restricted augmented-history stability
+  theorem while leaving the runtime infinity limit open.
 - [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) records
   tested catalog extensions and their classification.
 - [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) links selected

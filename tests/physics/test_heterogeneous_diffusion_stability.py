@@ -57,6 +57,28 @@ def test_two_node_certificate_matches_closed_form_equality():
     assert not result.is_equilibrium
 
 
+def test_fixed_flow_proof_stamp_rejects_hostile_equality_without_dispatch():
+    class Probe:
+        called = False
+
+        def __eq__(self, _other):
+            self.called = True
+            raise SystemExit("proof-stamp equality must not be dispatched")
+
+        def __bool__(self):
+            self.called = True
+            raise SystemExit("proof-stamp truthiness must not be dispatched")
+
+    graph = _set_state(nx.path_graph(3), [1.0, 0.0, -1.0], [1.0] * 3)
+    result = verify_heterogeneous_diffusion_stability(graph)
+    probe = Probe()
+    original = object.__getattribute__(result, "_proof_stamp")
+    object.__setattr__(result, "_proof_stamp", (probe, *original[1:]))
+
+    assert not result._proof_fields_are_intact()
+    assert not probe.called
+
+
 def test_stability_certificate_rejects_a_single_node_domain():
     graph = _set_state(nx.empty_graph(1), [0.0], [1.0])
 
@@ -639,6 +661,34 @@ def test_exact_switched_flow_obeys_the_common_exponential_envelope():
             * certificate.lyapunov_value
         )
         assert value <= envelope + 1e-11
+
+
+def test_switching_proof_stamp_rejects_hostile_equality_without_dispatch():
+    class Probe:
+        called = False
+
+        def __eq__(self, _other):
+            self.called = True
+            raise SystemExit("proof-stamp equality must not be dispatched")
+
+        def __bool__(self):
+            self.called = True
+            raise SystemExit("proof-stamp truthiness must not be dispatched")
+
+    epi = np.array([3.0, -2.0, 1.0])
+    metric = np.array([1.0, 1.5, 2.0])
+    result = verify_switching_diffusion_stability(
+        [
+            _switching_regime(nx.path_graph(3), epi, metric),
+            _switching_regime(nx.complete_graph(3), epi, metric),
+        ]
+    )
+    probe = Probe()
+    original = object.__getattribute__(result, "_proof_stamp")
+    object.__setattr__(result, "_proof_stamp", (probe, *original[1:]))
+
+    assert not result._proof_fields_are_intact()
+    assert not probe.called
 
 
 def test_topology_family_without_common_metric_is_not_promoted_to_theorem():

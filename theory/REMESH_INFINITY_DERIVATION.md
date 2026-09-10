@@ -1,10 +1,11 @@
-# REMESH Fixed-Delay Surrogate and Runtime-Limit Boundary
+# REMESH Fixed-Delay Models and Runtime-Limit Boundary
 
-**Status**: CORRECTED N15 HISTORICAL RECORD — restricted finite surrogate;
-runtime limit and catalog completeness open
+**Status**: CORRECTED N15 HISTORICAL RECORD — restricted finite cyclic and
+companion results; runtime limit and catalog completeness open
 **Date**: May 26, 2026 — corrected September 2026
 **Owner**: `theory/REMESH_INFINITY_DERIVATION.md`
-**Source implementation**: `src/tnfr/operators/remesh.py::apply_network_remesh`
+**Source implementations**: `src/tnfr/operators/remesh.py::apply_network_remesh`,
+`src/tnfr/physics/remesh_history_stability.py`
 
 ---
 
@@ -14,8 +15,8 @@ The historical N15 programme used the name $\mathcal R_\infty$ for several
 different objects: a delay parameter limit, iterates of a history-advance map,
 and a Fourier projection. Those objects are not interchangeable.
 
-One exact result survives after separating them. On a **finite cyclic history
-window**, with fixed delays, fixed $0<\alpha<1$, and no clipping, the filter
+Two exact finite results survive after separating them. On a **finite cyclic
+history window**, with fixed delays, fixed $0<\alpha<1$, and no clipping, the filter
 
 $$F=\beta I+\gamma S^{\tau_l}+\delta S^{\tau_g}$$
 
@@ -25,10 +26,20 @@ orthogonal projection onto $\ker(I-F)$. The fixed modes satisfy both delay
 conditions, so the fixed subspace consists of sequences whose periods divide
 $\gcd(\tau_l,\tau_g)$.
 
-This finite model is not the clipped, history-gated runtime operation. It does
-not establish a literal $\tau_g\to\infty$ limit, conserve the structural
-charge, make the structural candidate energy monotone, or prove that the 13
-registered operators exhaust all admissible TNFR transformations.
+For the distinct **finite companion history recurrence**, one fixed uniform
+$\alpha\in[0,1]$, fixed delays, fixed ordered spatial support, one fixed
+positive diagonal metric and no clipping yield an exact stationary-weighted
+Jensen Lyapunov functional. It is nonincreasing for every history transition.
+When $0<\alpha<1$, the companion is primitive and every spatial coordinate
+converges to its stationary history barycenter. At $\alpha=1$, the companion is
+a permutation: the functional is conserved and periodic histories remain
+possible.
+
+Neither finite model is the complete clipped, history-gated runtime operation.
+They do not establish a literal $\tau_g\to\infty$ limit, conserve the TNFR
+structural charge, make the full tetrad energy monotone, imply spatial
+consensus or $\Delta\mathrm{NFR}=0$, or prove that the 13 registered operators
+exhaust all admissible TNFR transformations.
 
 The sections below retain the N15 programme structure and commit anchors while
 recording the corrected statements.
@@ -140,9 +151,10 @@ from observed pre/post mean and disagreement values. It also reports binary64
 rounding and clipping interventions separately. Exact rational diagnostics
 outside the finite binary64 reporting range produce an explicit domain error
 before the graph commit rather than an infinite or partial result. None of
-these one-step facts
-proves stability of the history-advance recurrence, pressure closure, structural
-charge conservation, or U2 convergence.
+these one-step facts alone proves stability of the history-advance recurrence,
+pressure closure, structural-charge conservation, or U2 convergence. Section
+2.4 derives a separate exact result only after the finite history shift, fixed
+coefficients and fixed metric are declared explicitly.
 
 ---
 
@@ -159,7 +171,8 @@ engine operation.
 A mathematical recurrence can insert the new value at the head of a history
 vector and shift all prior entries. This companion-style map is useful for
 studying an isolated recurrence, but `apply_network_remesh` does not perform
-that shift itself.
+that shift itself. Section 2.4 analyzes its finite, uniform, unclipped form
+without replacing it by a convolution.
 
 ### §2.3 Finite cyclic filter $F$
 
@@ -174,6 +187,76 @@ by the corrected Fourier projector in
 The spectrum of $F$ does not describe the companion map $T$ merely because
 both contain the same coefficients. The historical N15 derivation conflated
 these two constructions.
+
+### §2.4 Exact finite companion-history stability
+
+Let $m$ be the largest delay with a positive coefficient and define the
+newest-first augmented history
+
+$$X_k=(x_k,x_{k-1},\ldots,x_{k-m}).$$
+
+After combining coincident delays, write $c_0=\beta$,
+$c_{\tau_l}\mathrel{+}=\gamma$ and
+$c_{\tau_g}\mathrel{+}=\delta$. The recurrence and shift are
+
+$$
+x_{k+1}=\sum_{r=0}^{m}c_r x_{k-r},
+\qquad
+X_{k+1}=P X_k,
+$$
+
+where the first row of $P$ is $(c_0,\ldots,c_m)$ and its remaining rows shift
+the history. The coefficients are nonnegative and sum to one, so $P$ is row
+stochastic. Its exact stationary distribution is
+
+$$
+D=1+\gamma\tau_l+\delta\tau_g,
+\qquad
+\pi_0=D^{-1},
+\qquad
+\pi_j=\frac{\gamma\mathbf 1_{j\leq\tau_l}
+                 +\delta\mathbf 1_{j\leq\tau_g}}{D}
+\quad(1\leq j\leq m).
+$$
+
+Fix a positive diagonal spatial metric $H$ and let $Q_H$ remove the
+$H$-weighted spatial mean. With
+$E_H(x)=\tfrac12\lVert Q_Hx\rVert_H^2$, define
+
+$$V(X_k)=\sum_{j=0}^{m}\pi_j E_H(x_{k-j}).$$
+
+Stationarity of $\pi$ and the quadratic Jensen identity give the exact balance
+
+$$
+V(X_k)-V(X_{k+1})
+=\frac{\pi_0}{2}
+  \sum_{a<b}c_a c_b
+  \lVert Q_Hx_{k-a}-Q_Hx_{k-b}\rVert_H^2
+\geq0.
+$$
+
+Equality holds exactly when all active centered input fields agree pairwise.
+This is an augmented temporal disagreement functional. It does not control
+differences between spatially uniform history rows and therefore is not a
+strict Lyapunov function for the complete augmented state.
+
+For $0<\alpha<1$, $c_0=\beta>0$ and the maximum-delay coefficient is positive.
+The finite companion is irreducible and aperiodic, hence primitive. It follows
+independently of strict decrease of $V$ that every coordinate converges to the
+preserved stationary history barycenter $\sum_j\pi_jx_{k-j}$. This is temporal
+pointwise convergence; it does not force different nodes to share one value.
+
+At $\alpha=0$, $m=0$ and the map is the identity. At $\alpha=1$, only the
+global-delay coefficient remains: $P$ is a cyclic permutation of order
+$\tau_g+1$, $V$ is conserved and an individual orbit can have any period
+dividing that order. The alternating-history witness is therefore retained.
+
+[`certify_uniform_remesh_history_stability`](../src/tnfr/physics/remesh_history_stability.py)
+materializes the exact companion and stationary measure.
+[`observe_uniform_remesh_history_transition`](../src/tnfr/physics/remesh_history_stability.py)
+checks one rational transition, its barycenter and the dissipation identity.
+Both APIs exclude binary64 runtime identification, clipping, changing
+coefficients, metric or support, and schedule/REMESH gain composition.
 
 ---
 
@@ -496,6 +579,7 @@ the REMESH surrogate.
 | Companion history map has the polynomial Fourier symbol | Superseded: the symbol belongs to the cyclic/convolution filter |
 | Fixed modes use $\operatorname{lcm}(\tau_l,\tau_g)$ | Corrected to $\gcd(\tau_l,\tau_g)$ for $0<\alpha<1$ |
 | The history operator is power bounded on the stated $H^2$ model | Unproved for that companion map |
+| No finite companion-history Lyapunov functional is available | Corrected in the fixed uniform, unclipped, finite-dimensional scope of §2.4 |
 | Projected structural charge is conserved | Conditional and unproved |
 | Projected structural energy is monotone with universal $O(1/n)$ decay | Superseded |
 | The surrogate closes the 13-operator catalog | Superseded; registry reuse only |
@@ -513,6 +597,9 @@ The original commits remain useful provenance:
 
 - **Branch A**: established only for the finite cyclic fixed-delay surrogate:
   its Cesàro projector exists.
+- **Finite companion branch**: the stationary-weighted disagreement functional
+  of §2.4 is nonincreasing; strict temporal mixing holds only for
+  $0<\alpha<1$, while $\alpha=1$ retains periodic orbits.
 - **Branch B1**: no universality conclusion follows without a scaling family
   and an intertwining map.
 - **Branch B2**: no extra registry entry is needed to compute this projection;
@@ -525,9 +612,11 @@ The original commits remain useful provenance:
 
 ## §21. Scope Across TNFR Programs
 
-The corrected result is internal and limited:
+The corrected results are internal and limited:
 
 - it supplies a finite periodic-history diagnostic;
+- it supplies an exact augmented-history disagreement balance and temporal
+  limit for one fixed uniform unclipped companion recurrence;
 - it separates an auxiliary linear model from the canonical clipped runtime;
 - it corrects the fixed-mode arithmetic from LCM to GCD;
 - it leaves all classical open problems unchanged;
@@ -555,6 +644,12 @@ The operator-registry diagnostic in
 `src/tnfr/riemann/operator_catalog_discipline_signature.py` checks declared
 schema consistency only.
 
+The finite companion theorem and its one-transition identity are exercised by
+`tests/physics/test_remesh_history_stability.py`. The test suite verifies the
+exact stationary distribution, Jensen dissipation, equality case, preserved
+history barycenter and the distinct $\alpha=0$, $\alpha=1$ and
+$0<\alpha<1$ regimes.
+
 ---
 
 ## §23. Open Research Questions
@@ -563,17 +658,20 @@ The following problems remain open:
 
 1. Define a common state space and convergence mode for a nontrivial runtime
    $\tau_g\to\infty$ limit.
-2. Analyze the companion history-advance map without replacing it by a
-   convolution operator.
-3. State and verify admissible bounds for configurable $\alpha$ when convex
-   averaging is required.
+2. Link the finite companion theorem to the actual binary64, clipped runtime
+   with its bounded-history append convention.
+3. Extend the companion result to changing $\alpha$, metric, delays or node
+   support, or produce counterexamples.
 4. Determine when a lifted REMESH map preserves a declared structural charge
-   or dissipates a declared energy.
+   or dissipates the full tetrad energy.
 5. Establish any bridge from the finite periodic projection to the Riemann,
    Navier–Stokes, or other programme observables.
 6. Define the admissible TNFR transformation space independently and resolve
    catalog generation and irreducibility within it.
 
 The exact current conclusion is therefore narrow: **a fixed finite cyclic
-REMESH filter has a computable Cesàro fixed-mode projection; the runtime limit,
-structural invariants, and global operator completeness are unresolved.**
+REMESH filter has a computable Cesàro fixed-mode projection, and a distinct
+fixed finite companion recurrence has a nonincreasing augmented disagreement
+functional with sharply separated mixing and pure-delay regimes. The clipped
+binary64 runtime limit, full structural invariants and global operator
+completeness remain unresolved.**

@@ -11,11 +11,16 @@ import tnfr.sdk as sdk
 from tnfr.operators import (
     event_remesh_runtime,
     event_remesh_sequence,
+    event_runtime,
     event_timing,
     factor_contracts,
 )
 from tnfr.operators.nodal_equation import compute_d2epi_dt2
-from tnfr.physics import mutation_trigger
+from tnfr.physics import (
+    event_remesh_refinement,
+    mutation_trigger,
+    remesh_history_stability,
+)
 from tnfr.sdk import simple
 
 
@@ -25,6 +30,14 @@ def test_event_timing_exports_are_identical_at_operators_facade() -> None:
     assert public_names <= set(operators.__all__)
     for name in public_names:
         assert getattr(operators, name) is getattr(event_timing, name)
+
+
+def test_event_runtime_exports_are_identical_at_operators_facade() -> None:
+    public_names = set(event_runtime.__all__)
+
+    assert public_names <= set(operators.__all__)
+    for name in public_names:
+        assert getattr(operators, name) is getattr(event_runtime, name)
 
 
 def test_event_remesh_exports_are_identical_at_operators_facade() -> None:
@@ -55,6 +68,15 @@ def test_mutation_certificate_exports_are_available_from_physics_facade() -> Non
     assert names <= set(physics.__all__)
     for name in names:
         assert getattr(physics, name) is getattr(mutation_trigger, name)
+
+
+def test_new_remesh_physics_modules_are_centralized_at_physics_facade() -> None:
+    for module in (event_remesh_refinement, remesh_history_stability):
+        public_names = set(module.__all__)
+
+        assert public_names <= set(physics.__all__)
+        for name in public_names:
+            assert getattr(physics, name) is getattr(module, name)
 
 
 def test_sdk_nodal_state_report_exposes_mutation_evidence_fields() -> None:

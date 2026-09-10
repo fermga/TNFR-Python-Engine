@@ -902,6 +902,10 @@ class TestFractalResonantNode:
         """The trajectory evolves a copy; the caller's network is untouched."""
         net = TNFR.create(12, seed=1).ring().evolve(2)
         before = net.coherence()
+        histories_before = {
+            node: tuple(data.get("glyph_history", ()))
+            for node, data in net.G.nodes(data=True)
+        }
         first = net.pulse_trajectory(steps=4)
         second = net.pulse_trajectory(steps=4)
         # identical first sample => the network was not advanced in place
@@ -909,6 +913,32 @@ class TestFractalResonantNode:
             second["phase_coherence"][0]
         )
         assert net.coherence() == pytest.approx(before)
+        assert {
+            node: tuple(data.get("glyph_history", ()))
+            for node, data in net.G.nodes(data=True)
+        } == histories_before
+
+    def test_pulse_trajectory_detaches_bound_pressure_callback_owner(self):
+        """The probe must not mutate state owned by the caller's callback."""
+        import threading
+
+        class PressureRefresh:
+            def __init__(self):
+                self.calls = 0
+                self.lock = threading.Lock()
+
+            def refresh(self, graph):
+                self.calls += 1
+                for node in graph:
+                    graph.nodes[node]["delta_nfr"] = 0.0
+
+        net = TNFR.create(3, seed=1).ring()
+        refresh = PressureRefresh()
+        net.G.graph["compute_delta_nfr"] = refresh.refresh
+
+        net.pulse_trajectory(steps=2)
+
+        assert refresh.calls == 0
 
     def test_evolve_record_populates_rhythm_history(self):
         """evolve(record=True) records the canonical pulse-in-motion series.

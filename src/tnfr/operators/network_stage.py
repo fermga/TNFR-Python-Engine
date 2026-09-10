@@ -23,32 +23,42 @@ telemetry and the pressure refresh inside one rollback boundary.
 
 from __future__ import annotations
 
+import copyreg
+import logging
 import math
 import threading
 import warnings
-from collections import deque
+from collections import OrderedDict, defaultdict, deque
 from collections.abc import (
     Mapping,
     MutableMapping,
-    MutableSequence,
-    MutableSet,
     Sequence,
 )
 from copy import deepcopy
 from dataclasses import dataclass, field, replace
-from datetime import datetime, timezone
-from enum import Enum
+from datetime import date, datetime, time, timedelta, timezone
+from decimal import Decimal
 from fractions import Fraction
+from functools import partial
+from gc import get_referents
+from inspect import getattr_static
 from numbers import Real
+from random import Random
+from re import Pattern
 from types import (
     BuiltinFunctionType,
     BuiltinMethodType,
+    CellType,
     FunctionType,
+    GetSetDescriptorType,
+    MemberDescriptorType,
     MappingProxyType,
     MethodType,
+    ModuleType,
 )
 from typing import Any, Literal
-from weakref import WeakValueDictionary
+from weakref import ReferenceType, WeakValueDictionary
+from zoneinfo import ZoneInfo
 
 import networkx as nx
 
@@ -63,6 +73,7 @@ from ..constants.aliases import (
     ALIAS_VF,
 )
 from ..errors import TNFRValueError
+from ..mathematics.epi import BEPIElement
 from ..mathematics.unified_numerical import np
 from ..physics.mutation_trigger import (
     MutationTriggerCertificate,
@@ -70,8 +81,13 @@ from ..physics.mutation_trigger import (
 )
 from ..rng import resolve_graph_seed, validate_graph_seed
 from ..types import Glyph
-from ..utils import angle_diff
-from ..utils._structural_signature import structural_proof_signature
+from ..utils import CallbackSpec, angle_diff
+from ..utils.cache import NodeCache
+from ..utils._structural_signature import (
+    proof_stamps_are_identical,
+    structural_object_state_signature,
+    structural_proof_signature,
+)
 from ._argument_validation import require_list_sink
 from ._epi_domain import require_real_scalar_epi
 from ._neighbor_epi_kernel import (
@@ -107,6 +123,7 @@ _RUNTIME_GRAPH_KEYS = frozenset(
     {
         "integrator",
         "integrity_monitor",
+        "compute_delta_nfr",
         "_node_cache",
         "_node_cache_weak",
         "_creating_node",
@@ -124,6 +141,8 @@ _NETWORKX_GRAPH_INTERNAL_ATTRIBUTES = frozenset(
         "_succ",
         "_pred",
         "adj",
+        "succ",
+        "pred",
         "nodes",
         "degree",
         "edges",
@@ -136,14 +155,309 @@ _NETWORKX_GRAPH_INTERNAL_ATTRIBUTES = frozenset(
         "_last_operator_applied",
     }
 )
+_NETWORKX_STRUCTURAL_STORAGE_ATTRIBUTES = frozenset(
+    {"graph", "_node", "_adj", "_succ", "_pred", "_last_operator_applied"}
+)
 _IMMUTABLE_CALLABLE_TYPES = (
-    FunctionType,
     BuiltinFunctionType,
     MethodType,
     BuiltinMethodType,
     type,
 )
 _LOCK_TYPES = (type(threading.Lock()), type(threading.RLock()))
+_EXTERNAL_RUNTIME_RESOURCE_TYPES = (
+    *_LOCK_TYPES,
+    logging.Logger,
+    logging.RootLogger,
+)
+_IMMUTABLE_DESCRIPTOR_TYPES = (GetSetDescriptorType, MemberDescriptorType)
+_NETWORKX_FACTORY_ATTRIBUTES = (
+    "graph_attr_dict_factory",
+    "node_dict_factory",
+    "node_attr_dict_factory",
+    "adjlist_outer_dict_factory",
+    "adjlist_inner_dict_factory",
+    "edge_key_dict_factory",
+    "edge_attr_dict_factory",
+)
+_TYPE_DICTIONARY_DESCRIPTOR = type.__dict__["__dict__"]
+_TYPE_MRO_DESCRIPTOR = type.__dict__["__mro__"]
+_TYPE_FLAGS_DESCRIPTOR = type.__dict__["__flags__"]
+_TYPE_NAME_DESCRIPTORS = {
+    name: type.__dict__[name]
+    for name in ("__module__", "__qualname__", "__name__")
+}
+_FUNCTION_TYPE_PARAMETERS_DESCRIPTOR = FunctionType.__dict__.get(
+    "__type_params__"
+)
+_DEQUE_MAXLEN_DESCRIPTOR = deque.__dict__["maxlen"]
+_DEFAULTDICT_FACTORY_DESCRIPTOR = defaultdict.__dict__["default_factory"]
+_OBJECT_HASH_DESCRIPTOR = object.__dict__["__hash__"]
+_OBJECT_EQUAL_DESCRIPTOR = object.__dict__["__eq__"]
+_BUILTIN_METHOD_RECEIVER_DESCRIPTOR = BuiltinMethodType.__dict__["__self__"]
+_PY_TPFLAGS_HEAPTYPE = 1 << 9
+_MISSING_RUNTIME_BINDING = object()
+_RUNTIME_DEEPCOPY_PROTOCOL_NAMES = frozenset(
+    {
+        "__deepcopy__",
+        "__delattr__",
+        "__getattr__",
+        "__getattribute__",
+        "__getnewargs__",
+        "__getnewargs_ex__",
+        "__getstate__",
+        "__new__",
+        "__reduce__",
+        "__reduce_ex__",
+        "__setattr__",
+        "__setstate__",
+    }
+)
+_RUNTIME_ATTRIBUTE_PROTOCOL_NAMES = frozenset(
+    {"__delattr__", "__getattr__", "__getattribute__", "__setattr__"}
+)
+_SAFE_DEEPCOPY_PROTOCOL_OWNERS = frozenset(
+    owner
+    for kind in (
+        tuple,
+        list,
+        dict,
+        set,
+        frozenset,
+        deque,
+        defaultdict,
+        OrderedDict,
+        WeakValueDictionary,
+        partial,
+        Random,
+    )
+    for owner in kind.__mro__
+)
+_CALLBACK_SPEC_PROTOCOL_BINDINGS = tuple(
+    (name, CallbackSpec.__dict__[name])
+    for name in ("__new__", "__getnewargs__")
+)
+_NODE_CACHE_PROTOCOL_BINDINGS = (
+    ("__reduce__", NodeCache.__dict__["__reduce__"]),
+)
+_BEPI_ELEMENT_PROTOCOL_BINDINGS = tuple(
+    (name, BEPIElement.__dict__[name])
+    for name in ("__delattr__", "__getstate__", "__setattr__", "__setstate__")
+)
+_ATOMIC_IMMUTABLE_RUNTIME_TYPES = (
+    bool,
+    int,
+    float,
+    complex,
+    str,
+    bytes,
+    range,
+    Fraction,
+    date,
+    datetime,
+    time,
+    timedelta,
+    timezone,
+    Decimal,
+    Pattern,
+    ZoneInfo,
+    ReferenceType,
+)
+
+
+def _numpy_atomic_scalar_runtime_types() -> frozenset[type[Any]]:
+    """Return exact NumPy value-scalar types with no mutable referent."""
+
+    if np is None:
+        return frozenset()
+    scalar_types: set[type[Any]] = set()
+    for candidate in getattr(np, "sctypeDict", {}).values():
+        if not isinstance(candidate, type):
+            continue
+        try:
+            safe = (
+                issubclass(candidate, np.generic)
+                and not issubclass(candidate, np.void)
+                and not np.dtype(candidate).hasobject
+            )
+        except (TypeError, ValueError):
+            safe = False
+        if safe:
+            scalar_types.add(candidate)
+    return frozenset(scalar_types)
+
+
+_NUMPY_SCALAR_RUNTIME_TYPES = _numpy_atomic_scalar_runtime_types()
+_NUMPY_ARRAY_CAPTURE_HOOKS = frozenset(
+    {
+        "__array__",
+        "__array_finalize__",
+        "__array_function__",
+        "__array_ufunc__",
+        "__getattr__",
+        "__getattribute__",
+        "__getnewargs__",
+        "__getnewargs_ex__",
+        "__getstate__",
+        "__new__",
+        "__reduce__",
+        "__reduce_ex__",
+        "__setstate__",
+    }
+)
+
+
+def _runtime_object_array_item_is_immutable(value: Any) -> bool:
+    """Recognize object-array members with no mutable reachable state."""
+
+    if _atomic_immutable_runtime_value(value) or type(value) is object:
+        return True
+    if type(value) is tuple:
+        return all(
+            _runtime_object_array_item_is_immutable(item)
+            for item in tuple.__iter__(value)
+        )
+    if type(value) is frozenset:
+        return all(
+            _runtime_object_array_item_is_immutable(item)
+            for item in frozenset.__iter__(value)
+        )
+    return False
+
+
+def _runtime_ndarray_dtype_and_flat(value: Any) -> tuple[Any, Any]:
+    """Read ndarray storage after rejecting subclass-controlled hooks."""
+
+    for owner in _runtime_class_mro(type(value)):
+        if owner is np.ndarray:
+            break
+        namespace = _runtime_class_namespace(owner)
+        declared = tuple(
+            name for name in _NUMPY_ARRAY_CAPTURE_HOOKS if name in namespace
+        )
+        if declared:
+            raise TNFRValueError(
+                "NumPy ndarray subclasses with custom array/copy hooks cannot "
+                "be snapshotted observationally"
+            )
+
+    dtype = type(np.ndarray.dtype).__get__(
+        np.ndarray.dtype,
+        value,
+        type(value),
+    )
+    flat = type(np.ndarray.flat).__get__(
+        np.ndarray.flat,
+        value,
+        type(value),
+    )
+    return dtype, flat
+
+
+def _validate_runtime_ndarray_references(
+    value: Any,
+    *,
+    captured_reference_ids: frozenset[int] = frozenset(),
+) -> None:
+    """Reject mutable referents hidden behind an object-dtype ndarray.
+
+    ``numpy.array(..., copy=True)`` and ``numpy.copyto`` copy object-array
+    pointers rather than the reachable Python state.  Treating such an array
+    as a complete rollback root would therefore leave mutations to a list,
+    mapping, callable, or arbitrary instance alive after restoration.  Exact
+    immutable atoms and recursively immutable built-in tuples/frozensets are
+    safe because retaining their identities is the complete logical state.
+
+    Read the dtype and elements through the base ndarray descriptors so an
+    ndarray subclass cannot run an attribute override during this preflight.
+    """
+
+    dtype, flat = _runtime_ndarray_dtype_and_flat(value)
+    if not dtype.hasobject:
+        return
+    if any(
+        not _runtime_object_array_item_is_immutable(item)
+        and id(item) not in captured_reference_ids
+        for item in flat
+    ):
+        raise TNFRValueError(
+            "NumPy object array contains mutable references and cannot be "
+            "snapshotted atomically"
+        )
+
+
+def _preflight_runtime_epi_history(
+    runtime_items: tuple[tuple[Any, Any], ...],
+) -> tuple[tuple[int, Any], ...]:
+    """Validate canonical history storage and expose object-array referents.
+
+    The transaction must be established before REMESH reads configuration or
+    plans a map. This preflight therefore gives the known ``_epi_hist`` channel
+    its domain error before a generic opaque-state error. Mutable referents are
+    returned as explicit rollback roots; no other object array receives this
+    exception.
+    """
+
+    referents: list[tuple[int, Any]] = []
+    for key, history in runtime_items:
+        if type(key) is not str or key != "_epi_hist" or history is None:
+            continue
+        owners = _runtime_class_mro(type(history))
+        if (
+            tuple in owners
+            or list in owners
+            or deque in owners
+            or type(history) is range
+        ):
+            continue
+        if np is not None and np.ndarray in owners:
+            dtype, flat = _runtime_ndarray_dtype_and_flat(history)
+            shape = type(np.ndarray.shape).__get__(
+                np.ndarray.shape,
+                history,
+                type(history),
+            )
+            if type(shape) is not tuple or len(shape) != 1:
+                raise TNFRValueError(
+                    "_epi_hist NumPy storage must be one-dimensional"
+                )
+            if dtype.hasobject:
+                referents.extend(
+                    (id(history), item)
+                    for item in flat
+                    if id(item) != id(history)
+                    and not _runtime_object_array_item_is_immutable(item)
+                )
+            continue
+        raise TNFRValueError("_epi_hist must be a replayable indexed history")
+    return tuple(referents)
+
+
+def _is_runtime_graph_key(key: Any) -> bool:
+    """Classify runtime keys without invoking user string or hash methods."""
+
+    return type(key) is str and (
+        key in _RUNTIME_GRAPH_KEYS or "cache" in key.lower()
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class _RuntimeSlotDescriptor:
+    """One owner-qualified built-in slot descriptor."""
+
+    owner: type[Any]
+    declared_name: str
+    storage_name: str
+    descriptor: Any
+
+
+@dataclass(frozen=True, slots=True)
+class _RuntimeSlotState:
+    """Captured state for one concrete slot, including hidden MRO storage."""
+
+    slot: _RuntimeSlotDescriptor
+    present: bool
+    value: Any
 
 
 @dataclass(frozen=True, slots=True)
@@ -152,10 +466,12 @@ class _RuntimeGraphValue:
 
     key: Any
     value: Any
+    value_type: type[Any]
     container_kind: str | None
     container_state: Any
+    object_namespace: dict[Any, Any] | None
     object_state: Mapping[str, Any] | None
-    slot_state: tuple[tuple[str, bool, Any], ...]
+    slot_state: tuple[_RuntimeSlotState, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -166,40 +482,937 @@ class _RuntimeNDArrayState:
     writeable: bool
 
 
-def _runtime_slot_names(value: Any) -> tuple[str, ...]:
-    """Return concrete slot attribute names across an object's MRO."""
+@dataclass(frozen=True, slots=True)
+class _RuntimeClosureCellState:
+    """Original binding of one closure cell."""
 
-    names: list[str] = []
-    seen: set[str] = set()
-    for cls in type(value).__mro__:
-        raw_slots = vars(cls).get("__slots__", ())
-        slots = (raw_slots,) if isinstance(raw_slots, str) else tuple(raw_slots)
+    cell: CellType
+    present: bool
+    value: Any
+
+
+@dataclass(frozen=True, slots=True)
+class _RuntimeFunctionState:
+    """Mutable bindings owned by one configured Python function."""
+
+    function: FunctionType
+    namespace: dict[Any, Any]
+    namespace_items: tuple[tuple[Any, Any], ...]
+    annotations: dict[str, Any]
+    code: Any
+    defaults: tuple[Any, ...] | None
+    documentation: str | None
+    keyword_defaults: dict[str, Any] | None
+    module: str | None
+    name: str
+    qualified_name: str
+    type_parameters: Any
+    closure: tuple[CellType, ...] | None
+    closure_cells: tuple[_RuntimeClosureCellState, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class _NetworkXRuntimeLayout:
+    """NetworkX storage materialized without calling graph virtual APIs."""
+
+    directed: bool
+    multigraph: bool
+    graph_mapping: MutableMapping[Any, Any]
+    node_outer: MutableMapping[Any, Any]
+    adjacency_outer: MutableMapping[Any, Any]
+    predecessor_outer: MutableMapping[Any, Any] | None
+    node_data: tuple[tuple[Any, MutableMapping[Any, Any]], ...]
+    adjacency_inner: tuple[tuple[Any, MutableMapping[Any, Any]], ...]
+    predecessor_inner: tuple[tuple[Any, MutableMapping[Any, Any]], ...]
+    adjacency_edge_keys: tuple[tuple[Any, Any, MutableMapping[Any, Any]], ...]
+    predecessor_edge_keys: tuple[
+        tuple[Any, Any, MutableMapping[Any, Any]], ...
+    ]
+    edges: tuple[Any, ...]
+
+
+def _runtime_descriptor_get(descriptor: Any, value: Any, owner: type[Any]) -> Any:
+    """Read state through a known built-in descriptor implementation."""
+
+    return type(descriptor).__get__(descriptor, value, owner)
+
+
+def _runtime_class_mro(kind: type[Any]) -> tuple[type[Any], ...]:
+    """Read a class MRO without invoking a custom metaclass hook."""
+
+    owners = _runtime_descriptor_get(_TYPE_MRO_DESCRIPTOR, kind, type(kind))
+    if type(owners) is not tuple:
+        raise TNFRValueError("runtime class MRO must be a tuple")
+    return owners
+
+
+def _runtime_derives_from(value: Any, *bases: type[Any]) -> bool:
+    """Test concrete inheritance without consulting ``value.__class__``."""
+
+    owners = _runtime_class_mro(type(value))
+    return any(base in owners for base in bases)
+
+
+def _runtime_type_is_heap_allocated(kind: type[Any]) -> bool:
+    """Return the interpreter heap-type flag without metaclass dispatch."""
+
+    flags = _runtime_descriptor_get(_TYPE_FLAGS_DESCRIPTOR, kind, type(kind))
+    return type(flags) is int and bool(flags & _PY_TPFLAGS_HEAPTYPE)
+
+
+def _runtime_type_has_unmodeled_c_state(kind: type[Any]) -> bool:
+    """Detect a C-defined storage layer outside the modeled built-in types."""
+
+    for owner in _runtime_class_mro(kind):
+        if owner is object:
+            continue
+        if not _runtime_type_is_heap_allocated(owner):
+            return True
+        constructor = _runtime_class_namespace(owner).get("__new__")
+        if type(constructor) is BuiltinFunctionType:
+            return True
+    return False
+
+
+def _runtime_class_namespace(kind: type[Any]) -> MappingProxyType:
+    """Read a class namespace without invoking a custom metaclass hook."""
+
+    namespace = _runtime_descriptor_get(
+        _TYPE_DICTIONARY_DESCRIPTOR,
+        kind,
+        type(kind),
+    )
+    if type(namespace) is not MappingProxyType:
+        raise TNFRValueError("runtime class namespace must be a mapping proxy")
+    return namespace
+
+
+def _runtime_class_text(kind: type[Any], name: str) -> str:
+    """Read stable class text through the corresponding type descriptor."""
+
+    value = _runtime_descriptor_get(_TYPE_NAME_DESCRIPTORS[name], kind, type(kind))
+    if type(value) is not str:
+        raise TNFRValueError(f"runtime class {name} must be a string")
+    return value
+
+
+def _runtime_special_method(kind: type[Any], name: str) -> Any:
+    """Resolve one special method without invoking metaclass user code."""
+
+    for owner in _runtime_class_mro(kind):
+        namespace = _runtime_class_namespace(owner)
+        if name in namespace:
+            return namespace[name]
+    return None
+
+
+def _runtime_deque_maxlen(value: deque[Any]) -> int | None:
+    """Read deque capacity without invoking a subclass attribute hook."""
+
+    return _runtime_descriptor_get(_DEQUE_MAXLEN_DESCRIPTOR, value, type(value))
+
+
+def _runtime_default_factory(value: defaultdict[Any, Any]) -> Any:
+    """Read defaultdict factory without invoking an attribute override."""
+
+    return _runtime_descriptor_get(
+        _DEFAULTDICT_FACTORY_DESCRIPTOR,
+        value,
+        type(value),
+    )
+
+
+def _runtime_instance_namespace_descriptor(value: Any) -> Any | None:
+    """Find the built-in descriptor owning an instance namespace."""
+
+    # ``isinstance(value, type)`` may consult a hostile virtual ``__class__``.
+    # Reading the concrete type's MRO through the built-in descriptor is
+    # observational and also handles custom metaclasses.
+    if type in _runtime_class_mro(type(value)):
+        return None
+    for owner in _runtime_class_mro(type(value)):
+        descriptor = _runtime_class_namespace(owner).get("__dict__")
+        if descriptor is None:
+            continue
+        if type(descriptor) is not GetSetDescriptorType:
+            raise TNFRValueError(
+                "runtime instance namespace descriptor is not a built-in getset"
+            )
+        return descriptor
+    return None
+
+
+def _runtime_instance_namespace(value: Any) -> dict[Any, Any] | None:
+    """Read an instance dictionary without invoking ``__getattribute__``."""
+
+    descriptor = _runtime_instance_namespace_descriptor(value)
+    if descriptor is None:
+        return None
+    namespace = _runtime_descriptor_get(descriptor, value, type(value))
+    if type(namespace) is not dict:
+        raise TNFRValueError("runtime instance namespace must be a built-in dict")
+    return namespace
+
+
+def _runtime_slot_descriptors(value: Any) -> tuple[_RuntimeSlotDescriptor, ...]:
+    """Return every concrete slot descriptor across an object's MRO.
+
+    The owner is retained because Python permits a subclass to redeclare an
+    inherited slot name.  Those declarations allocate distinct storage even
+    though ordinary ``getattr`` exposes only the most-derived descriptor.
+    """
+
+    descriptors: list[_RuntimeSlotDescriptor] = []
+    for cls in _runtime_class_mro(type(value)):
+        namespace = _runtime_class_namespace(cls)
+        raw_slots = namespace.get("__slots__", ())
+        slots = (raw_slots,) if type(raw_slots) is str else tuple(raw_slots)
         for raw_name in slots:
             if raw_name in {"__dict__", "__weakref__"}:
                 continue
             name = raw_name
             if raw_name.startswith("__") and not raw_name.endswith("__"):
-                name = f"_{cls.__name__.lstrip('_')}{raw_name}"
-            if name not in seen:
-                names.append(name)
-                seen.add(name)
-    return tuple(names)
+                class_name = _runtime_class_text(cls, "__name__")
+                name = f"_{class_name.lstrip('_')}{raw_name}"
+            descriptor = namespace.get(name)
+            if type(descriptor) is not MemberDescriptorType:
+                raise TNFRValueError(
+                    "runtime slot declaration has no built-in member descriptor"
+                )
+            descriptors.append(
+                _RuntimeSlotDescriptor(
+                    owner=cls,
+                    declared_name=raw_name,
+                    storage_name=name,
+                    descriptor=descriptor,
+                )
+            )
+    return tuple(descriptors)
+
+
+def _read_runtime_slot(value: Any, slot: _RuntimeSlotDescriptor) -> Any:
+    """Read one slot through its declaring owner's built-in descriptor."""
+
+    return type(slot.descriptor).__get__(slot.descriptor, value, type(value))
+
+
+def _write_runtime_slot(
+    value: Any,
+    slot: _RuntimeSlotDescriptor,
+    state: Any,
+) -> None:
+    """Write one slot without resolving a same-named derived descriptor."""
+
+    type(slot.descriptor).__set__(slot.descriptor, value, state)
+
+
+def _delete_runtime_slot(value: Any, slot: _RuntimeSlotDescriptor) -> None:
+    """Delete one slot without resolving a same-named derived descriptor."""
+
+    type(slot.descriptor).__delete__(slot.descriptor, value)
+
+
+def _runtime_slot_is_present(value: Any, slot: _RuntimeSlotDescriptor) -> bool:
+    try:
+        _read_runtime_slot(value, slot)
+    except AttributeError:
+        return False
+    return True
+
+
+def _validate_runtime_deepcopy_protocol(
+    value: Any,
+    *,
+    manual_capture: bool = False,
+) -> None:
+    """Reject hooks that could execute if ``deepcopy`` reached ``value``."""
+
+    kind = type(value)
+    if any(
+        registered is kind
+        for registered in dict.__iter__(copyreg.dispatch_table)
+    ):
+        raise TNFRValueError(
+            "runtime metadata with a registered copyreg reducer cannot be "
+            "deep-copied observationally"
+        )
+    namespace = _runtime_instance_namespace(value)
+    if namespace is not None:
+        instance_hooks = tuple(
+            name
+            for name in _RUNTIME_DEEPCOPY_PROTOCOL_NAMES
+            if name in namespace
+        )
+        if instance_hooks:
+            raise TNFRValueError(
+                "runtime metadata with instance copy-protocol hooks cannot "
+                "be deep-copied observationally"
+            )
+    trusted_bindings = None
+    trusted_name = None
+    if kind is CallbackSpec:
+        trusted_bindings = _CALLBACK_SPEC_PROTOCOL_BINDINGS
+        trusted_name = "CallbackSpec"
+    elif kind is NodeCache:
+        trusted_bindings = _NODE_CACHE_PROTOCOL_BINDINGS
+        trusted_name = "NodeCache"
+    elif kind is BEPIElement:
+        trusted_bindings = _BEPI_ELEMENT_PROTOCOL_BINDINGS
+        trusted_name = "BEPIElement"
+    if trusted_bindings is not None:
+        trusted_namespace = _runtime_class_namespace(kind)
+        declared = frozenset(
+            name
+            for name in _RUNTIME_DEEPCOPY_PROTOCOL_NAMES
+            if name in trusted_namespace
+        )
+        expected = frozenset(
+            name for name, _binding in trusted_bindings
+        )
+        bindings_are_canonical = (
+            declared == expected
+            and all(
+                trusted_namespace[name] is binding
+                for name, binding in trusted_bindings
+            )
+        )
+        if not bindings_are_canonical:
+            raise TNFRValueError(
+                f"runtime {trusted_name} has modified copy-protocol hooks and "
+                "cannot be snapshotted observationally"
+            )
+        return
+    for owner in _runtime_class_mro(kind):
+        if any(
+            owner is safe_owner
+            for safe_owner in _SAFE_DEEPCOPY_PROTOCOL_OWNERS
+        ) or (
+            np is not None and owner is np.ndarray
+        ):
+            continue
+        if not _runtime_type_is_heap_allocated(owner):
+            continue
+        owner_namespace = _runtime_class_namespace(owner)
+        declared = tuple(
+            name
+            for name in _RUNTIME_DEEPCOPY_PROTOCOL_NAMES
+            if name in owner_namespace
+            and not (
+                manual_capture and name in _RUNTIME_ATTRIBUTE_PROTOCOL_NAMES
+            )
+        )
+        if not declared:
+            continue
+        if "__deepcopy__" in declared:
+            raise TNFRValueError(
+                "runtime metadata with a custom __deepcopy__ hook cannot be "
+                "snapshotted observationally or restored atomically; runtime "
+                "object cannot be snapshotted atomically"
+            )
+        opaque_detail = (
+            "; opaque interpreter state cannot be restored atomically"
+            if _runtime_type_has_unmodeled_c_state(kind)
+            else ""
+        )
+        raise TNFRValueError(
+            "runtime metadata with custom copy-protocol or attribute hooks "
+            f"cannot be deep-copied observationally{opaque_detail}"
+        )
+
+
+def _runtime_owner_qualified_slot_state(value: Any) -> tuple[Any, ...]:
+    """Materialize every slot with an owner-qualified identity token."""
+
+    state: list[Any] = []
+    for slot in _runtime_slot_descriptors(value):
+        key = (
+            _runtime_class_text(slot.owner, "__module__"),
+            _runtime_class_text(slot.owner, "__qualname__"),
+            id(slot.owner),
+            slot.declared_name,
+            slot.storage_name,
+        )
+        try:
+            slot_value = _read_runtime_slot(value, slot)
+        except AttributeError:
+            state.append((key, False, None))
+        else:
+            state.append((key, True, slot_value))
+    return tuple(state)
+
+
+def _graph_factory_items(graph: Any) -> tuple[tuple[str, Any], ...]:
+    """Return stable raw NetworkX factory bindings that influence graph state."""
+
+    items: list[tuple[str, Any]] = []
+    for name in _NETWORKX_FACTORY_ATTRIBUTES:
+        try:
+            value = getattr_static(graph, name)
+        except AttributeError:
+            continue
+        if type(value) in (staticmethod, classmethod):
+            value = value.__func__
+        elif type(value) is MemberDescriptorType:
+            try:
+                value = type(value).__get__(value, graph, type(graph))
+            except AttributeError:
+                continue
+        items.append((name, value))
+    return tuple(items)
+
+
+def _graph_factory_state_signature(graph: Any) -> tuple[Any, ...]:
+    """Sign factory identities and their instance-owned mutable state."""
+
+    return tuple(
+        (name, structural_object_state_signature(value))
+        for name, value in _graph_factory_items(graph)
+    )
+
+
+def _networkx_internal_mapping_items(
+    graph: Any,
+    *,
+    layout: _NetworkXRuntimeLayout | None = None,
+) -> tuple[tuple[Any, Any], ...]:
+    """Return mappings created by NetworkX's structural dict factories."""
+
+    if layout is None:
+        layout = _networkx_runtime_layout(graph)
+    items: list[tuple[Any, Any]] = [
+        (("node-outer",), layout.node_outer),
+        (("adjacency-outer",), layout.adjacency_outer),
+    ]
+    items.extend(
+        (("adjacency-inner", node), value)
+        for node, value in layout.adjacency_inner
+    )
+    if layout.directed:
+        items.append((("predecessor-outer",), layout.predecessor_outer))
+        items.extend(
+            (("predecessor-inner", node), value)
+            for node, value in layout.predecessor_inner
+        )
+    if layout.multigraph:
+        items.extend(
+            (("edge-key-adjacency", node, neighbor), value)
+            for node, neighbor, value in layout.adjacency_edge_keys
+        )
+        if layout.directed:
+            items.extend(
+                (("edge-key-predecessor", node, neighbor), value)
+                for node, neighbor, value in layout.predecessor_edge_keys
+            )
+    return tuple(items)
+
+
+def _networkx_internal_mapping_state_signature(graph: Any) -> tuple[Any, ...]:
+    """Sign identity and own state of every structural mapping factory output."""
+
+    return tuple(
+        (label, structural_object_state_signature(value))
+        for label, value in _networkx_internal_mapping_items(graph)
+    )
+
+
+def _graph_transaction_protected_values(
+    graph: Any,
+    *,
+    excluded: tuple[Any, ...] = (),
+    _layout: _NetworkXRuntimeLayout | None = None,
+) -> tuple[Any, ...]:
+    """Return graph-owned identities already covered by the transaction.
+
+    Callback-state traversal treats these objects as opaque references.  The
+    configured callback itself can be excluded by callers that need to inspect
+    its owned state while keeping aliases back into the live graph opaque.
+    """
+
+    layout = _networkx_runtime_layout(graph) if _layout is None else _layout
+    namespace = _runtime_instance_namespace(graph)
+    if namespace is None:
+        raise TNFRValueError("graph instance has no restorable namespace")
+    graph_mapping = layout.graph_mapping
+    nodes = tuple(node for node, _data in layout.node_data)
+    raw_edges = layout.edges
+    values: list[Any] = [graph, graph_mapping, *namespace.values(), *nodes]
+    for slot in _runtime_slot_descriptors(graph):
+        try:
+            values.append(_read_runtime_slot(graph, slot))
+        except AttributeError:
+            continue
+    values.extend(value for _name, value in _graph_factory_items(graph))
+    values.extend(
+        value
+        for _label, value in _networkx_internal_mapping_items(
+            graph,
+            layout=layout,
+        )
+    )
+    values.extend(value for _node, value in layout.node_data)
+    if layout.multigraph:
+        values.extend(key for _left, _right, key, _data in raw_edges)
+    values.extend(edge[-1] for edge in raw_edges)
+    values.extend(
+        value
+        for key, value in _runtime_mapping_items(graph_mapping)
+        if _is_runtime_graph_key(key)
+    )
+    excluded_ids = {id(value) for value in excluded}
+    unique: dict[int, Any] = {}
+    for value in values:
+        identity = id(value)
+        if identity not in excluded_ids:
+            unique.setdefault(identity, value)
+    return tuple(unique.values())
+
+
+def _atomic_immutable_runtime_value(value: Any) -> bool:
+    """Recognize exact immutable atoms with no hidden mutable referent."""
+
+    kind = type(value)
+    if value is None or kind in _ATOMIC_IMMUTABLE_RUNTIME_TYPES:
+        if kind in (datetime, time):
+            tzinfo = value.tzinfo
+            return tzinfo is None or type(tzinfo) in (timezone, ZoneInfo)
+        return True
+    if kind in _NUMPY_SCALAR_RUNTIME_TYPES:
+        return True
+    if np is not None and np.dtype in _runtime_class_mro(kind):
+        return True
+    return False
 
 
 def _known_immutable_runtime_value(value: Any) -> bool:
     """Recognize values whose identity can safely span a rollback boundary."""
 
-    if value is None or isinstance(
-        value, (bool, int, float, complex, str, bytes, range, Enum)
+    if _atomic_immutable_runtime_value(value):
+        return True
+    if type(value) is tuple:
+        return all(
+            _known_immutable_runtime_value(item)
+            for item in tuple.__iter__(value)
+        )
+    if type(value) is frozenset:
+        return all(
+            _known_immutable_runtime_value(item)
+            for item in frozenset.__iter__(value)
+        )
+    kind = type(value)
+    return (
+        kind in _IMMUTABLE_CALLABLE_TYPES
+        or kind in _IMMUTABLE_DESCRIPTOR_TYPES
+        or kind is object
+        or type in _runtime_class_mro(kind)
+    )
+
+
+def _runtime_value_has_stable_rollback_identity(value: Any) -> bool:
+    """Recognize immutable values and exact external-resource aggregates."""
+
+    if _known_immutable_runtime_value(value):
+        return True
+    if type(value) in _EXTERNAL_RUNTIME_RESOURCE_TYPES:
+        return True
+    if type(value) is tuple:
+        return all(
+            _runtime_value_has_stable_rollback_identity(item)
+            for item in tuple.__iter__(value)
+        )
+    if type(value) is frozenset:
+        return all(
+            _runtime_value_has_stable_rollback_identity(item)
+            for item in frozenset.__iter__(value)
+        )
+    return False
+
+
+def _mapping_proxy_member_is_immutable(
+    value: Any,
+    seen: set[int],
+) -> bool:
+    """Recognize a proxy-exposed value with no mutable reachable state."""
+
+    if _atomic_immutable_runtime_value(value) or type(value) is object:
+        return True
+    identity = id(value)
+    if identity in seen:
+        return True
+    seen.add(identity)
+    if type(value) is tuple:
+        return all(
+            _mapping_proxy_member_is_immutable(item, seen)
+            for item in tuple.__iter__(value)
+        )
+    if type(value) is frozenset:
+        return all(
+            _mapping_proxy_member_is_immutable(item, seen)
+            for item in frozenset.__iter__(value)
+        )
+    if type(value) is MappingProxyType:
+        try:
+            _validate_runtime_mapping_proxy_references(value, seen=seen)
+        except TNFRValueError:
+            return False
+        return True
+    return False
+
+
+def _validate_runtime_mapping_proxy_references(
+    value: MappingProxyType,
+    *,
+    seen: set[int] | None = None,
+) -> None:
+    """Accept only exact-dict proxies exposing transitively immutable values."""
+
+    referents = get_referents(value)
+    if len(referents) != 1 or type(referents[0]) is not dict:
+        raise TNFRValueError(
+            "MappingProxyType graph metadata must wrap an exact built-in dict"
+        )
+    visited = set() if seen is None else seen
+    mapping = referents[0]
+    for key, item in dict.items(mapping):
+        if not _mapping_proxy_member_is_immutable(
+            key,
+            visited,
+        ) or not _mapping_proxy_member_is_immutable(item, visited):
+            raise TNFRValueError(
+                "MappingProxyType graph metadata exposes mutable referents and "
+                "cannot be snapshotted atomically"
+            )
+
+
+def _runtime_identity_key_has_owned_state(key: Any) -> bool:
+    """Return whether a structural key can carry mutable instance state."""
+
+    return (
+        _runtime_instance_namespace_descriptor(key) is not None
+        or bool(_runtime_slot_descriptors(key))
+    )
+
+
+def _validate_runtime_identity_key(key: Any, *, label: str) -> None:
+    """Reject mutable structural keys whose hash can drift during a stage.
+
+    NetworkX stores node identifiers and multigraph edge keys directly in
+    dictionaries.  A mutable key is rollback-safe only when equality and hash
+    retain object-identity semantics while its owned namespace and slots are
+    restored in place.
+    """
+
+    if _known_immutable_runtime_value(key):
+        return
+    if (
+        _runtime_special_method(type(key), "__hash__")
+        is _OBJECT_HASH_DESCRIPTOR
+        and _runtime_special_method(type(key), "__eq__")
+        is _OBJECT_EQUAL_DESCRIPTOR
     ):
-        return True
-    if np is not None and isinstance(value, np.generic):
-        return True
-    if isinstance(value, tuple):
-        return all(_known_immutable_runtime_value(item) for item in value)
-    if isinstance(value, frozenset):
-        return all(_known_immutable_runtime_value(item) for item in value)
-    return isinstance(value, _IMMUTABLE_CALLABLE_TYPES) or type(value) is object
+        return
+    raise TNFRValueError(
+        f"mutable {label} must use object-identity hash and equality for "
+        "atomic rollback"
+    )
+
+
+def _runtime_mapping_items(value: MutableMapping[Any, Any]) -> tuple[Any, ...]:
+    """Materialize a supported mapping without invoking subclass overrides."""
+
+    owners = _runtime_class_mro(type(value))
+    if OrderedDict in owners:
+        return tuple(OrderedDict.items(value))
+    if dict in owners:
+        return tuple(dict.items(value))
+    if WeakValueDictionary in owners:
+        return tuple(WeakValueDictionary.items(value))
+    raise TNFRValueError(
+        "runtime mapping implementation cannot be restored without user code"
+    )
+
+
+def _replace_runtime_mapping(
+    value: MutableMapping[Any, Any],
+    items: Any,
+) -> None:
+    """Replace mapping entries through a known base implementation."""
+
+    owners = _runtime_class_mro(type(value))
+    if OrderedDict in owners:
+        OrderedDict.clear(value)
+        for key, item in items:
+            OrderedDict.__setitem__(value, key, item)
+        return
+    if dict in owners:
+        dict.clear(value)
+        for key, item in items:
+            dict.__setitem__(value, key, item)
+        return
+    if WeakValueDictionary in owners:
+        WeakValueDictionary.clear(value)
+        for key, item in items:
+            WeakValueDictionary.__setitem__(value, key, item)
+        return
+    raise TNFRValueError(
+        "runtime mapping implementation cannot be restored without user code"
+    )
+
+
+def _set_runtime_mapping_item(
+    value: MutableMapping[Any, Any],
+    key: Any,
+    item: Any,
+) -> None:
+    """Set one entry through a known mapping base implementation."""
+
+    owners = _runtime_class_mro(type(value))
+    if OrderedDict in owners:
+        OrderedDict.__setitem__(value, key, item)
+        return
+    if dict in owners:
+        dict.__setitem__(value, key, item)
+        return
+    if WeakValueDictionary in owners:
+        WeakValueDictionary.__setitem__(value, key, item)
+        return
+    raise TNFRValueError(
+        "runtime mapping implementation cannot be restored without user code"
+    )
+
+
+def _runtime_mapping_known_value(
+    value: MutableMapping[Any, Any],
+    key: str,
+    default: Any = None,
+) -> Any:
+    """Read one known string key without invoking mapping overrides."""
+
+    for candidate, item in _runtime_mapping_items(value):
+        if type(candidate) is str and candidate == key:
+            return item
+    return default
+
+
+def _runtime_stored_attribute(value: Any, name: str) -> Any:
+    """Read an instance-stored value without invoking attribute overrides."""
+
+    for owner in _runtime_class_mro(type(value)):
+        descriptor = _runtime_class_namespace(owner).get(name)
+        if type(descriptor) in _IMMUTABLE_DESCRIPTOR_TYPES:
+            return _runtime_descriptor_get(descriptor, value, type(value))
+    namespace = _runtime_instance_namespace(value)
+    if namespace is not None and name in namespace:
+        return dict.__getitem__(namespace, name)
+    raise TNFRValueError(f"runtime object has no stored {name!r} attribute")
+
+
+def _write_runtime_stored_attribute(value: Any, name: str, state: Any) -> None:
+    """Write instance storage without invoking ``__setattr__`` overrides."""
+
+    for owner in _runtime_class_mro(type(value)):
+        descriptor = _runtime_class_namespace(owner).get(name)
+        if type(descriptor) in _IMMUTABLE_DESCRIPTOR_TYPES:
+            type(descriptor).__set__(descriptor, value, state)
+            return
+    namespace = _runtime_instance_namespace(value)
+    if namespace is None:
+        raise TNFRValueError(f"runtime object cannot store {name!r}")
+    dict.__setitem__(namespace, name, state)
+
+
+def _delete_runtime_stored_attribute(value: Any, name: str) -> None:
+    """Delete instance storage without invoking ``__delattr__`` overrides."""
+
+    for owner in _runtime_class_mro(type(value)):
+        descriptor = _runtime_class_namespace(owner).get(name)
+        if type(descriptor) in _IMMUTABLE_DESCRIPTOR_TYPES:
+            try:
+                type(descriptor).__delete__(descriptor, value)
+            except AttributeError:
+                pass
+            return
+    namespace = _runtime_instance_namespace(value)
+    if namespace is not None:
+        dict.pop(namespace, name, None)
+
+
+def _runtime_mapping_identity_value(
+    items: tuple[tuple[Any, Any], ...],
+    key: Any,
+    *,
+    label: str,
+) -> Any:
+    """Resolve a structural mapping entry strictly by key identity."""
+
+    for candidate, value in items:
+        if candidate is key:
+            return value
+    raise TNFRValueError(f"{label} is inconsistent with node identity support")
+
+
+def _require_runtime_mapping(value: Any, *, label: str) -> MutableMapping[Any, Any]:
+    """Validate one factory-produced mapping before transaction writes."""
+
+    if not _runtime_derives_from(
+        value,
+        dict,
+        OrderedDict,
+        WeakValueDictionary,
+    ):
+        raise TNFRValueError(f"{label} is not a mutable mapping")
+    _runtime_mapping_items(value)
+    return value
+
+
+def _graph_kind_flags(graph: Any) -> tuple[bool, bool]:
+    """Return ``(directed, multigraph)`` from the class MRO without dispatch."""
+
+    mro = _runtime_class_mro(type(graph))
+    return (
+        nx.DiGraph in mro or nx.MultiDiGraph in mro,
+        nx.MultiGraph in mro or nx.MultiDiGraph in mro,
+    )
+
+
+def _networkx_runtime_layout(graph: Any) -> _NetworkXRuntimeLayout:
+    """Read NetworkX topology through stored mappings and base primitives."""
+
+    directed, multigraph = _graph_kind_flags(graph)
+    graph_mapping = _require_runtime_mapping(
+        _runtime_stored_attribute(graph, "graph"),
+        label="graph attribute storage",
+    )
+    node_outer = _require_runtime_mapping(
+        _runtime_stored_attribute(graph, "_node"),
+        label="node storage",
+    )
+    adjacency_outer = _require_runtime_mapping(
+        _runtime_stored_attribute(graph, "_adj"),
+        label="adjacency storage",
+    )
+    predecessor_outer = (
+        _require_runtime_mapping(
+            _runtime_stored_attribute(graph, "_pred"),
+            label="predecessor storage",
+        )
+        if directed
+        else None
+    )
+    node_data = tuple(
+        (
+            node,
+            _require_runtime_mapping(data, label="node attribute storage"),
+        )
+        for node, data in _runtime_mapping_items(node_outer)
+    )
+    nodes = tuple(node for node, _data in node_data)
+    adjacency_outer_items = _runtime_mapping_items(adjacency_outer)
+    adjacency_inner = tuple(
+        (
+            node,
+            _require_runtime_mapping(
+                _runtime_mapping_identity_value(
+                    adjacency_outer_items,
+                    node,
+                    label="adjacency storage",
+                ),
+                label="inner adjacency storage",
+            ),
+        )
+        for node in nodes
+    )
+    predecessor_inner: tuple[tuple[Any, MutableMapping[Any, Any]], ...]
+    if predecessor_outer is None:
+        predecessor_inner = ()
+    else:
+        predecessor_outer_items = _runtime_mapping_items(predecessor_outer)
+        predecessor_inner = tuple(
+            (
+                node,
+                _require_runtime_mapping(
+                    _runtime_mapping_identity_value(
+                        predecessor_outer_items,
+                        node,
+                        label="predecessor storage",
+                    ),
+                    label="inner predecessor storage",
+                ),
+            )
+            for node in nodes
+        )
+
+    adjacency_edge_keys: list[
+        tuple[Any, Any, MutableMapping[Any, Any]]
+    ] = []
+    predecessor_edge_keys: list[
+        tuple[Any, Any, MutableMapping[Any, Any]]
+    ] = []
+    edges: list[Any] = []
+    seen_undirected: set[tuple[int, int]] = set()
+    for node, neighbors in adjacency_inner:
+        for neighbor, edge_storage in _runtime_mapping_items(neighbors):
+            if multigraph:
+                edge_key_mapping = _require_runtime_mapping(
+                    edge_storage,
+                    label="edge-key storage",
+                )
+                adjacency_edge_keys.append((node, neighbor, edge_key_mapping))
+            edge_token = (min(id(node), id(neighbor)), max(id(node), id(neighbor)))
+            if not directed and edge_token in seen_undirected:
+                continue
+            if not directed:
+                seen_undirected.add(edge_token)
+            if multigraph:
+                for key, data in _runtime_mapping_items(edge_key_mapping):
+                    edges.append(
+                        (
+                            node,
+                            neighbor,
+                            key,
+                            _require_runtime_mapping(
+                                data,
+                                label="edge attribute storage",
+                            ),
+                        )
+                    )
+            else:
+                edges.append(
+                    (
+                        node,
+                        neighbor,
+                        _require_runtime_mapping(
+                            edge_storage,
+                            label="edge attribute storage",
+                        ),
+                    )
+                )
+    if multigraph:
+        for node, neighbors in predecessor_inner:
+            for neighbor, edge_storage in _runtime_mapping_items(neighbors):
+                predecessor_edge_keys.append(
+                    (
+                        node,
+                        neighbor,
+                        _require_runtime_mapping(
+                            edge_storage,
+                            label="predecessor edge-key storage",
+                        ),
+                    )
+                )
+    return _NetworkXRuntimeLayout(
+        directed=directed,
+        multigraph=multigraph,
+        graph_mapping=graph_mapping,
+        node_outer=node_outer,
+        adjacency_outer=adjacency_outer,
+        predecessor_outer=predecessor_outer,
+        node_data=node_data,
+        adjacency_inner=adjacency_inner,
+        predecessor_inner=predecessor_inner,
+        adjacency_edge_keys=tuple(adjacency_edge_keys),
+        predecessor_edge_keys=tuple(predecessor_edge_keys),
+        edges=tuple(edges),
+    )
 
 
 def _seed_runtime_tuple_member_memo(
@@ -209,7 +1422,7 @@ def _seed_runtime_tuple_member_memo(
 ) -> None:
     """Preserve mutable tuple-member aliases captured by their own snapshots."""
 
-    if not isinstance(value, tuple):
+    if not _runtime_derives_from(value, tuple):
         return
     if seen is None:
         seen = set()
@@ -217,17 +1430,29 @@ def _seed_runtime_tuple_member_memo(
     if identity in seen:
         return
     seen.add(identity)
-    for item in value:
+    for item in tuple.__iter__(value):
         if _known_immutable_runtime_value(item):
             continue
         memo.setdefault(id(item), item)
         _seed_runtime_tuple_member_memo(item, memo, seen)
 
 
-def _seed_runtime_lock_memo(
-    value: Any, memo: dict[int, Any], seen: set[int] | None = None
+def _seed_runtime_resource_memo(
+    value: Any,
+    memo: dict[int, Any],
+    seen: set[int] | None = None,
+    *,
+    preserve_bound_methods: bool = True,
 ) -> None:
-    """Keep synchronization primitives by identity during state deepcopy."""
+    """Keep external runtime resources by identity during state deepcopy.
+
+    Transaction snapshots retain Python bound-method identity because
+    callable-owned state is captured separately. Detached SDK data copies set
+    ``preserve_bound_methods=False`` so deepcopy can rebind ordinary stored
+    Python methods to copied receivers while this walk still discovers their
+    nested external resources. Built-in methods keep Python's atomic deepcopy
+    behavior.
+    """
 
     if seen is None:
         seen = set()
@@ -235,33 +1460,312 @@ def _seed_runtime_lock_memo(
     if identity in seen:
         return
     seen.add(identity)
-    if isinstance(value, _LOCK_TYPES):
+    kind = type(value)
+    owners = _runtime_class_mro(kind)
+    if kind in _EXTERNAL_RUNTIME_RESOURCE_TYPES:
         memo[identity] = value
         return
-    if isinstance(value, MappingProxyType):
+    if kind is MappingProxyType:
+        _validate_runtime_mapping_proxy_references(value)
         memo[identity] = value
         return
+    if kind is CallbackSpec:
+        # CallbackSpec is the engine's exact immutable callback carrier. Keep
+        # it by identity so deepcopy never invokes even its trusted generated
+        # NamedTuple reconstruction methods. Callable discovery separately
+        # traverses its members and snapshots state owned by ``func``.
+        _validate_runtime_deepcopy_protocol(value, manual_capture=True)
+        memo[identity] = value
+        for item in tuple.__iter__(value):
+            _seed_runtime_resource_memo(
+                item,
+                memo,
+                seen,
+                preserve_bound_methods=preserve_bound_methods,
+            )
+        return
+    if not preserve_bound_methods and kind is MethodType:
+        receiver = value.__self__
+        if receiver is not None and type(receiver) is not ModuleType:
+            _seed_runtime_resource_memo(
+                receiver,
+                memo,
+                seen,
+                preserve_bound_methods=False,
+            )
+        return
+    if _atomic_immutable_runtime_value(value):
+        # Some C-backed immutable values (notably datetime/date/timedelta)
+        # deepcopy to a value-equal replacement.  Retain the original atom so
+        # graph-visible alias identity is unchanged by rollback.
+        memo[identity] = value
+        return
+    if np is not None and np.ndarray in owners:
+        if identity in memo:
+            return
+        _validate_runtime_ndarray_references(
+            value,
+            captured_reference_ids=frozenset(memo),
+        )
+        return
+    traversed_container = False
+    if any(
+        base in owners
+        for base in (dict, OrderedDict, defaultdict, WeakValueDictionary)
+    ):
+        traversed_container = True
+        try:
+            mapping_items = _runtime_mapping_items(value)
+        except TNFRValueError:
+            namespace = _runtime_instance_namespace(value)
+            if namespace is None:
+                raise
+            _seed_runtime_resource_memo(
+                namespace,
+                memo,
+                seen,
+                preserve_bound_methods=preserve_bound_methods,
+            )
+            return
+        for key, item in mapping_items:
+            _seed_runtime_resource_memo(
+                key,
+                memo,
+                seen,
+                preserve_bound_methods=preserve_bound_methods,
+            )
+            _seed_runtime_resource_memo(
+                item,
+                memo,
+                seen,
+                preserve_bound_methods=preserve_bound_methods,
+            )
+    elif tuple in owners:
+        traversed_container = True
+        for item in tuple.__iter__(value):
+            _seed_runtime_resource_memo(
+                item,
+                memo,
+                seen,
+                preserve_bound_methods=preserve_bound_methods,
+            )
+    elif list in owners:
+        traversed_container = True
+        for item in list.__iter__(value):
+            _seed_runtime_resource_memo(
+                item,
+                memo,
+                seen,
+                preserve_bound_methods=preserve_bound_methods,
+            )
+    elif set in owners:
+        traversed_container = True
+        for item in set.__iter__(value):
+            _seed_runtime_resource_memo(
+                item,
+                memo,
+                seen,
+                preserve_bound_methods=preserve_bound_methods,
+            )
+    elif frozenset in owners:
+        traversed_container = True
+        for item in frozenset.__iter__(value):
+            _seed_runtime_resource_memo(
+                item,
+                memo,
+                seen,
+                preserve_bound_methods=preserve_bound_methods,
+            )
+    elif deque in owners:
+        traversed_container = True
+        for item in deque.__iter__(value):
+            _seed_runtime_resource_memo(
+                item,
+                memo,
+                seen,
+                preserve_bound_methods=preserve_bound_methods,
+            )
     if identity in memo:
         return
-    if _known_immutable_runtime_value(value):
+    if _known_immutable_runtime_value(value) and not (
+        not preserve_bound_methods and kind in (tuple, frozenset)
+    ):
+        memo[identity] = value
+        return
+    if (
+        preserve_bound_methods
+        and traversed_container
+        and kind in (tuple, frozenset)
+        and _runtime_value_has_stable_rollback_identity(value)
+    ):
+        memo[identity] = value
+        return
+    namespace = _runtime_instance_namespace(value)
+    if namespace is not None:
+        _seed_runtime_resource_memo(
+            namespace,
+            memo,
+            seen,
+            preserve_bound_methods=preserve_bound_methods,
+        )
+    for slot in _runtime_slot_descriptors(value):
+        try:
+            slot_value = _read_runtime_slot(value, slot)
+        except AttributeError:
+            continue
+        _seed_runtime_resource_memo(
+            slot_value,
+            memo,
+            seen,
+            preserve_bound_methods=preserve_bound_methods,
+        )
+
+
+def _validate_runtime_deepcopy_value(
+    value: Any,
+    *,
+    opaque_ids: set[int],
+    seen: set[int] | None = None,
+) -> None:
+    """Reject user copy hooks before any transaction-owned deep copy runs."""
+
+    if seen is None:
+        seen = set()
+    identity = id(value)
+    if identity in seen or identity in opaque_ids:
+        return
+    seen.add(identity)
+    if type(value) in _EXTERNAL_RUNTIME_RESOURCE_TYPES:
+        return
+    if _atomic_immutable_runtime_value(value):
+        return
+    # Validate protocol declarations before any ``isinstance`` operation.
+    # CPython may consult an instance's virtual ``__class__`` attribute for
+    # ``isinstance``; a hostile ``__getattribute__`` must therefore be rejected
+    # while all inspection still uses raw type/namespace descriptors.
+    _validate_runtime_deepcopy_protocol(value)
+    if np is not None and isinstance(value, np.void):
+        raise TNFRValueError(
+            "NumPy void/record metadata cannot be snapshotted atomically"
+        )
+    if isinstance(value, BuiltinMethodType):
+        try:
+            receiver = _runtime_descriptor_get(
+                _BUILTIN_METHOD_RECEIVER_DESCRIPTOR,
+                value,
+                BuiltinMethodType,
+            )
+        except BaseException as exc:
+            raise TNFRValueError(
+                "built-in callable receiver cannot be inspected safely"
+            ) from exc
+        # Module-owned built-ins do not own the ambient module namespace.
+        if receiver is not None and not isinstance(receiver, ModuleType):
+            _validate_runtime_deepcopy_value(
+                receiver,
+                opaque_ids=opaque_ids,
+                seen=seen,
+            )
+        return
+    if (
+        _known_immutable_runtime_value(value)
+    ):
+        return
+    if isinstance(value, MappingProxyType):
+        _validate_runtime_mapping_proxy_references(value)
         return
     if np is not None and isinstance(value, np.ndarray):
-        if value.dtype.hasobject:
-            for item in value.flat:
-                _seed_runtime_lock_memo(item, memo, seen)
+        _validate_runtime_ndarray_references(value)
         return
     if isinstance(value, Mapping):
-        for key, item in tuple(value.items()):
-            _seed_runtime_lock_memo(key, memo, seen)
-            _seed_runtime_lock_memo(item, memo, seen)
-    elif isinstance(value, (tuple, list, set, frozenset, deque)):
-        for item in tuple(value):
-            _seed_runtime_lock_memo(item, memo, seen)
-    if hasattr(value, "__dict__"):
-        _seed_runtime_lock_memo(vars(value), memo, seen)
-    for name in _runtime_slot_names(value):
-        if hasattr(value, name):
-            _seed_runtime_lock_memo(getattr(value, name), memo, seen)
+        if not isinstance(value, MutableMapping):
+            raise TNFRValueError(
+                "runtime mapping implementation cannot be copied without "
+                "user code"
+            )
+        for key, item in _runtime_mapping_items(value):
+            _validate_runtime_identity_key(
+                key,
+                label="nested mapping key",
+            )
+            _validate_runtime_deepcopy_value(
+                key,
+                opaque_ids=opaque_ids,
+                seen=seen,
+            )
+            _validate_runtime_deepcopy_value(
+                item,
+                opaque_ids=opaque_ids,
+                seen=seen,
+            )
+        if isinstance(value, defaultdict):
+            _validate_runtime_deepcopy_value(
+                _runtime_default_factory(value),
+                opaque_ids=opaque_ids,
+                seen=seen,
+            )
+        return
+    supported_container = True
+    if isinstance(value, tuple):
+        members = tuple.__iter__(value)
+    elif isinstance(value, list):
+        members = list.__iter__(value)
+    elif isinstance(value, set):
+        members = set.__iter__(value)
+    elif isinstance(value, frozenset):
+        members = frozenset.__iter__(value)
+    elif isinstance(value, deque):
+        members = deque.__iter__(value)
+    else:
+        supported_container = False
+        members = ()
+    for member in members:
+        if isinstance(value, (set, frozenset)):
+            _validate_runtime_identity_key(
+                member,
+                label="nested set member",
+            )
+        _validate_runtime_deepcopy_value(
+            member,
+            opaque_ids=opaque_ids,
+            seen=seen,
+        )
+    namespace = _runtime_instance_namespace(value)
+    if namespace is not None:
+        for item in namespace.values():
+            _validate_runtime_deepcopy_value(
+                item,
+                opaque_ids=opaque_ids,
+                seen=seen,
+            )
+    slots = _runtime_slot_descriptors(value)
+    for slot in slots:
+        try:
+            item = _read_runtime_slot(value, slot)
+        except AttributeError:
+            continue
+        _validate_runtime_deepcopy_value(
+            item,
+            opaque_ids=opaque_ids,
+            seen=seen,
+        )
+    if (
+        not supported_container
+        and type(value) is not Random
+        and _runtime_type_has_unmodeled_c_state(type(value))
+    ):
+        raise TNFRValueError(
+            "runtime metadata contains opaque interpreter state that cannot "
+            "be restored atomically"
+        )
+
+
+def _capture_runtime_deepcopy(value: Any, memo: dict[int, Any]) -> Any:
+    """Deep-copy captured state only after a side-effect-free preflight."""
+
+    _seed_runtime_resource_memo(value, memo)
+    _validate_runtime_deepcopy_value(value, opaque_ids=set(memo))
+    return deepcopy(value, memo)
 
 
 def _prepare_runtime_copy_memo(
@@ -273,7 +1777,7 @@ def _prepare_runtime_copy_memo(
     if key == "_tnfr_cache_manager":
         from ..utils.cache import CacheManager
 
-        if isinstance(value, CacheManager):
+        if _runtime_derives_from(value, CacheManager):
             is_cache_manager = True
             for layer in getattr(value, "_layers", ()):
                 memo[id(layer)] = layer
@@ -281,7 +1785,8 @@ def _prepare_runtime_copy_memo(
                 resource = getattr(value, name, None)
                 if resource is not None:
                     memo[id(resource)] = resource
-    _seed_runtime_lock_memo(vars(value) if hasattr(value, "__dict__") else value, memo)
+    namespace = _runtime_instance_namespace(value)
+    _seed_runtime_resource_memo(namespace if namespace is not None else value, memo)
     if is_cache_manager:
         storage = value._storage
         memo[id(storage)] = storage
@@ -294,42 +1799,107 @@ def _capture_runtime_value(
     memo: dict[int, Any],
     *,
     preserve_mapping_items: bool = False,
+    allow_captured_object_array_references: bool = False,
 ) -> _RuntimeGraphValue:
     """Capture one identity-bearing runtime value or reject it before writes."""
 
+    if type(value) in _EXTERNAL_RUNTIME_RESOURCE_TYPES:
+        memo[id(value)] = value
+        return _RuntimeGraphValue(
+            key=key,
+            value=value,
+            value_type=type(value),
+            container_kind=None,
+            container_state=None,
+            object_namespace=None,
+            object_state=None,
+            slot_state=(),
+        )
+    owners = _runtime_class_mro(type(value))
+    if np is not None and np.ndarray in owners:
+        _validate_runtime_ndarray_references(
+            value,
+            captured_reference_ids=(
+                frozenset(memo)
+                if allow_captured_object_array_references
+                else frozenset()
+            ),
+        )
     is_cache_manager = _prepare_runtime_copy_memo(key, value, memo)
     container_kind: str | None = None
     container_state: Any = None
     if is_cache_manager:
         container_kind = "cache_manager"
-        container_state = deepcopy(tuple(value._storage.items()), memo)
-    elif isinstance(value, MutableMapping):
-        raw_items = tuple(value.items())
+        container_state = _capture_runtime_deepcopy(
+            _runtime_mapping_items(value._storage),
+            memo,
+        )
+    elif defaultdict in owners:
+        raw_items = _runtime_mapping_items(value)
+        if preserve_mapping_items:
+            container_kind = "defaultdict_reference"
+            container_state = (raw_items, _runtime_default_factory(value))
+        else:
+            _seed_runtime_resource_memo(raw_items, memo)
+            container_kind = "defaultdict"
+            container_state = (
+                _capture_runtime_deepcopy(raw_items, memo),
+                _capture_runtime_deepcopy(
+                    _runtime_default_factory(value),
+                    memo,
+                ),
+            )
+    elif any(
+        base in owners for base in (dict, OrderedDict, WeakValueDictionary)
+    ):
+        raw_items = _runtime_mapping_items(value)
         if preserve_mapping_items:
             container_kind = "mapping_reference"
             container_state = raw_items
         else:
             container_kind = "mapping"
-            container_state = deepcopy(raw_items, memo)
-    elif isinstance(value, deque):
+            # Attribute mappings are memoized by identity before capture so
+            # aliases can be rebuilt exactly.  Traverse their detached items
+            # explicitly: otherwise the memo short-circuit hides ordinary
+            # locks stored as node or edge metadata from ``deepcopy``.
+            _seed_runtime_resource_memo(raw_items, memo)
+            container_state = _capture_runtime_deepcopy(raw_items, memo)
+    elif deque in owners:
         container_kind = "deque"
-        container_state = (deepcopy(tuple(value), memo), value.maxlen)
-    elif np is not None and isinstance(value, np.ndarray):
+        container_state = (
+            _capture_runtime_deepcopy(tuple(deque.__iter__(value)), memo),
+            _runtime_deque_maxlen(value),
+        )
+    elif Random in owners:
+        if type(value) is not Random:
+            raise TNFRValueError(
+                "random generator subclasses cannot be snapshotted without "
+                "executing user code"
+            )
+        container_kind = "random"
+        container_state = Random.getstate(value)
+    elif np is not None and np.ndarray in owners:
         container_kind = "ndarray"
         container_state = _RuntimeNDArrayState(
             values=np.array(value, copy=True, subok=True),
             writeable=bool(value.flags.writeable),
         )
-    elif isinstance(value, MutableSequence):
+    elif list in owners:
         container_kind = "sequence"
-        container_state = deepcopy(tuple(value), memo)
-    elif isinstance(value, MutableSet):
+        container_state = _capture_runtime_deepcopy(
+            tuple(list.__iter__(value)),
+            memo,
+        )
+    elif set in owners:
         container_kind = "set"
-        container_state = deepcopy(tuple(value), memo)
-    elif isinstance(value, tuple):
+        container_state = _capture_runtime_deepcopy(
+            tuple(set.__iter__(value)),
+            memo,
+        )
+    elif tuple in owners:
         member_snapshots: list[tuple[int, _RuntimeGraphValue]] = []
-        for index, item in enumerate(value):
-            if _known_immutable_runtime_value(item):
+        for index, item in enumerate(tuple.__iter__(value)):
+            if _runtime_value_has_stable_rollback_identity(item):
                 continue
             member_snapshots.append(
                 (
@@ -344,33 +1914,11 @@ def _capture_runtime_value(
         container_kind = "tuple_members"
         container_state = tuple(member_snapshots)
 
-    object_state = None
-    if hasattr(value, "__dict__") and not isinstance(
-        value, _IMMUTABLE_CALLABLE_TYPES
-    ):
-        try:
-            object_state = deepcopy(vars(value), memo)
-        except Exception as exc:
-            raise TNFRValueError(
-                f"runtime object {key!r} cannot be snapshotted atomically"
-            ) from exc
-
-    slot_state: list[tuple[str, bool, Any]] = []
-    if not isinstance(value, _IMMUTABLE_CALLABLE_TYPES):
-        try:
-            for name in _runtime_slot_names(value):
-                present = hasattr(value, name)
-                slot_state.append(
-                    (
-                        name,
-                        present,
-                        deepcopy(getattr(value, name), memo) if present else None,
-                    )
-                )
-        except Exception as exc:
-            raise TNFRValueError(
-                f"runtime object {key!r} cannot be snapshotted atomically"
-            ) from exc
+    object_namespace, object_state, slot_state = _capture_runtime_instance_state(
+        key,
+        value,
+        memo,
+    )
 
     if (
         container_kind is None
@@ -378,6 +1926,11 @@ def _capture_runtime_value(
         and not slot_state
         and not _known_immutable_runtime_value(value)
     ):
+        if _runtime_type_has_unmodeled_c_state(type(value)):
+            raise TNFRValueError(
+                "runtime metadata contains opaque interpreter state that "
+                "cannot be restored atomically"
+            )
         raise TNFRValueError(
             f"runtime object {key!r} has unsupported mutable state; "
             "atomic rollback cannot be guaranteed"
@@ -386,10 +1939,91 @@ def _capture_runtime_value(
     return _RuntimeGraphValue(
         key=key,
         value=value,
+        value_type=type(value),
         container_kind=container_kind,
         container_state=container_state,
+        object_namespace=object_namespace,
         object_state=object_state,
-        slot_state=tuple(slot_state),
+        slot_state=slot_state,
+    )
+
+
+def _capture_runtime_instance_state(
+    key: Any,
+    value: Any,
+    memo: dict[int, Any],
+    *,
+    include_callable_state: bool = False,
+) -> tuple[
+    dict[Any, Any] | None,
+    Mapping[str, Any] | None,
+    tuple[_RuntimeSlotState, ...],
+]:
+    """Capture only an object's namespace and concrete owner-qualified slots."""
+
+    kind = type(value)
+    if type in _runtime_class_mro(kind) or (
+        kind in _IMMUTABLE_CALLABLE_TYPES and not include_callable_state
+    ):
+        return None, None, ()
+    object_namespace = None
+    object_state = None
+    slot_state: list[_RuntimeSlotState] = []
+    try:
+        namespace = _runtime_instance_namespace(value)
+        if namespace is not None:
+            object_namespace = namespace
+            _seed_runtime_resource_memo(namespace, memo)
+            object_state = _capture_runtime_deepcopy(namespace, memo)
+        for slot in _runtime_slot_descriptors(value):
+            try:
+                slot_value = _read_runtime_slot(value, slot)
+            except AttributeError:
+                present = False
+                slot_value = None
+            else:
+                present = True
+                _seed_runtime_resource_memo(slot_value, memo)
+            slot_state.append(
+                _RuntimeSlotState(
+                    slot=slot,
+                    present=present,
+                    value=(
+                        _capture_runtime_deepcopy(slot_value, memo)
+                        if present
+                        else None
+                    ),
+                )
+            )
+    except Exception as exc:
+        raise TNFRValueError(
+            f"runtime object {key!r} cannot be snapshotted atomically"
+        ) from exc
+    return object_namespace, object_state, tuple(slot_state)
+
+
+def _capture_runtime_owned_state(
+    key: Any,
+    value: Any,
+    memo: dict[int, Any],
+) -> _RuntimeGraphValue:
+    """Capture identity and instance-owned state, excluding container entries."""
+
+    object_namespace, object_state, slot_state = _capture_runtime_instance_state(
+        key,
+        value,
+        memo,
+        include_callable_state=True,
+    )
+    return _RuntimeGraphValue(
+        key=key,
+        value=value,
+        value_type=type(value),
+        container_kind=None,
+        container_state=None,
+        object_namespace=object_namespace,
+        object_state=object_state,
+        slot_state=slot_state,
     )
 
 
@@ -448,13 +2082,54 @@ def _rebuild_runtime_tuple(value: tuple[Any, ...], members: list[Any]) -> Any:
     if type(value) is tuple:
         return tuple(members)
     try:
-        if hasattr(value, "_fields"):
-            return type(value)(*members)
-        return type(value)(members)
+        return tuple.__new__(type(value), tuple(members))
     except Exception as exc:
         raise TNFRValueError(
             f"runtime tuple {type(value).__qualname__} cannot be reconstructed"
         ) from exc
+
+
+def _restore_runtime_object_state(
+    snapshot: _RuntimeGraphValue,
+    value: Any,
+    memo: dict[int, Any],
+) -> None:
+    """Restore only instance-owned namespace and owner-qualified slot state."""
+
+    if type(value) is not snapshot.value_type:
+        try:
+            object.__setattr__(value, "__class__", snapshot.value_type)
+        except (AttributeError, TypeError) as exc:
+            raise TNFRValueError(
+                "runtime object type changed and cannot be restored atomically"
+            ) from exc
+    if snapshot.object_state is not None:
+        expected_namespace = snapshot.object_namespace
+        namespace = _runtime_instance_namespace(value)
+        if namespace is None or expected_namespace is None:
+            raise TNFRValueError("runtime object namespace disappeared")
+        if namespace is not expected_namespace:
+            descriptor = _runtime_instance_namespace_descriptor(value)
+            if descriptor is None:
+                raise TNFRValueError("runtime object namespace disappeared")
+            try:
+                type(descriptor).__set__(descriptor, value, expected_namespace)
+            except (AttributeError, TypeError) as exc:
+                raise TNFRValueError(
+                    "runtime object namespace changed and cannot be restored atomically"
+                ) from exc
+            namespace = expected_namespace
+        dict.clear(namespace)
+        dict.update(namespace, deepcopy(dict(snapshot.object_state), memo))
+    for slot_state in snapshot.slot_state:
+        if slot_state.present:
+            _write_runtime_slot(
+                value,
+                slot_state.slot,
+                deepcopy(slot_state.value, memo),
+            )
+        elif _runtime_slot_is_present(value, slot_state.slot):
+            _delete_runtime_slot(value, slot_state.slot)
 
 
 def _restore_runtime_value(
@@ -466,30 +2141,45 @@ def _restore_runtime_value(
     _prepare_runtime_copy_memo(snapshot.key, value, memo)
     state = snapshot.container_state
     if snapshot.container_kind == "mapping":
-        value.clear()
-        value.update(deepcopy(state, memo))
+        _replace_runtime_mapping(value, deepcopy(state, memo))
     elif snapshot.container_kind == "mapping_reference":
-        value.clear()
-        value.update(state)
+        _replace_runtime_mapping(value, state)
+    elif snapshot.container_kind == "defaultdict":
+        items, default_factory = state
+        _replace_runtime_mapping(value, deepcopy(items, memo))
+        type(_DEFAULTDICT_FACTORY_DESCRIPTOR).__set__(
+            _DEFAULTDICT_FACTORY_DESCRIPTOR,
+            value,
+            deepcopy(default_factory, memo),
+        )
+    elif snapshot.container_kind == "defaultdict_reference":
+        items, default_factory = state
+        _replace_runtime_mapping(value, items)
+        type(_DEFAULTDICT_FACTORY_DESCRIPTOR).__set__(
+            _DEFAULTDICT_FACTORY_DESCRIPTOR,
+            value,
+            default_factory,
+        )
     elif snapshot.container_kind == "deque":
         items, maxlen = state
-        if value.maxlen != maxlen:
+        if _runtime_deque_maxlen(value) != maxlen:
             raise TNFRValueError("runtime deque maxlen changed during transaction")
-        value.clear()
-        value.extend(deepcopy(items, memo))
+        deque.clear(value)
+        deque.extend(value, deepcopy(items, memo))
     elif snapshot.container_kind == "ndarray":
         value = _restore_runtime_ndarray(value, state)
+    elif snapshot.container_kind == "random":
+        Random.setstate(value, state)
     elif snapshot.container_kind == "sequence":
-        value.clear()
-        value.extend(deepcopy(state, memo))
+        list.clear(value)
+        list.extend(value, deepcopy(state, memo))
     elif snapshot.container_kind == "set":
-        value.clear()
-        value.update(deepcopy(state, memo))
+        set.clear(value)
+        set.update(value, deepcopy(state, memo))
     elif snapshot.container_kind == "cache_manager":
-        value._storage.clear()
-        value._storage.update(deepcopy(state, memo))
+        _replace_runtime_mapping(value._storage, deepcopy(state, memo))
     elif snapshot.container_kind == "tuple_members":
-        members = list(value)
+        members = list(tuple.__iter__(value))
         member_replaced = False
         for index, member_snapshot in state:
             restored_member = _restore_runtime_value(member_snapshot, memo)
@@ -499,14 +2189,7 @@ def _restore_runtime_value(
         if member_replaced:
             value = _rebuild_runtime_tuple(value, members)
 
-    if snapshot.object_state is not None:
-        vars(value).clear()
-        vars(value).update(deepcopy(dict(snapshot.object_state), memo))
-    for name, present, prior in snapshot.slot_state:
-        if present:
-            setattr(value, name, deepcopy(prior, memo))
-        elif hasattr(value, name):
-            delattr(value, name)
+    _restore_runtime_object_state(snapshot, value, memo)
 
     memo[id(snapshot.value)] = value
     return value
@@ -519,13 +2202,560 @@ def _restore_mapping_order(
 ) -> None:
     """Restore the exact insertion order without replacing the mapping object."""
 
-    if len(mapping) != len(order) or any(key not in mapping for key in order):
+    current_items = _runtime_mapping_items(mapping)
+    if len(current_items) != len(order):
         raise TNFRValueError(
             f"cannot restore {label}: mapping membership changed unexpectedly"
         )
-    ordered_items = tuple((key, mapping[key]) for key in order)
-    mapping.clear()
-    mapping.update(ordered_items)
+    current = dict(current_items)
+    if any(key not in current for key in order):
+        raise TNFRValueError(
+            f"cannot restore {label}: mapping membership changed unexpectedly"
+        )
+    ordered_items = tuple((key, current[key]) for key in order)
+    _replace_runtime_mapping(mapping, ordered_items)
+
+
+def _seed_runtime_snapshot_resource_memo(
+    snapshot: _RuntimeGraphValue,
+    memo: dict[int, Any],
+) -> None:
+    """Seed external resources held by captured state."""
+
+    _seed_runtime_resource_memo(snapshot.container_state, memo)
+    if snapshot.object_state is not None:
+        _seed_runtime_resource_memo(snapshot.object_state, memo)
+    for slot_state in snapshot.slot_state:
+        if slot_state.present:
+            _seed_runtime_resource_memo(slot_state.value, memo)
+
+
+def _runtime_callable_state_items(
+    runtime_items: tuple[tuple[Any, Any], ...],
+    *,
+    protected_values: tuple[Any, ...],
+) -> tuple[
+    tuple[tuple[Any, Any], ...],
+    tuple[tuple[Any, FunctionType], ...],
+]:
+    """Discover mutable state transitively owned by configured callables.
+
+    Bound methods own state through their receiver.  ``partial`` additionally
+    exposes a read-only function/argument binding and a mutable keyword mapping.
+    All mutable objects reachable through those components are snapshotted as
+    identity-bearing roots.  Graph structures already covered by the enclosing
+    transaction are opaque references, which preserves aliases such as
+    ``worker.graph is graph`` without recursively copying the live graph.
+    """
+
+    protected = {id(value) for value in protected_values}
+    discovered: dict[int, tuple[Any, Any]] = {}
+    functions: dict[int, tuple[Any, FunctionType]] = {}
+    seen: set[int] = set()
+
+    def add(value: Any, path: tuple[Any, ...]) -> None:
+        identity = id(value)
+        if identity not in protected:
+            discovered.setdefault(identity, (path, value))
+
+    def walk_namespace(
+        namespace: dict[Any, Any],
+        path: tuple[Any, ...],
+    ) -> None:
+        for index, (key, item) in enumerate(dict.items(namespace)):
+            _validate_runtime_identity_key(
+                key,
+                label="runtime namespace key",
+            )
+            walk(key, (*path, "attribute-key", index))
+            walk(item, (*path, "attribute", index))
+
+    def walk(value: Any, path: tuple[Any, ...], *, expand: bool = False) -> None:
+        identity = id(value)
+        if identity in seen:
+            return
+        seen.add(identity)
+        if identity in protected and not expand:
+            return
+        kind = type(value)
+        owners = _runtime_class_mro(kind)
+        if kind in _EXTERNAL_RUNTIME_RESOURCE_TYPES:
+            return
+        if kind is MappingProxyType:
+            _validate_runtime_mapping_proxy_references(value)
+            return
+        if kind in _IMMUTABLE_DESCRIPTOR_TYPES:
+            return
+        if _atomic_immutable_runtime_value(value) or type in owners:
+            return
+        if np is not None and np.ndarray in owners:
+            add(value, path)
+            _validate_runtime_ndarray_references(value)
+            return
+        if np is not None and np.void in owners:
+            raise TNFRValueError(
+                "NumPy void/record callback state cannot be snapshotted "
+                "observationally"
+            )
+        mapping_kind = any(
+            base in owners
+            for base in (dict, OrderedDict, defaultdict, WeakValueDictionary)
+        )
+        container_kind = any(
+            base in owners
+            for base in (tuple, list, set, frozenset, deque)
+        )
+        callable_kind = (
+            kind in (MethodType, BuiltinMethodType, FunctionType)
+            or partial in owners
+            or _runtime_special_method(kind, "__call__") is not None
+        )
+        supported_runtime_kind = bool(
+            mapping_kind
+            or container_kind
+            or Random in owners
+            or callable_kind
+            or (np is not None and np.generic in owners)
+        )
+        if (
+            not supported_runtime_kind
+            and _runtime_type_has_unmodeled_c_state(kind)
+        ):
+            if _runtime_special_method(kind, "__deepcopy__") is not None:
+                raise TNFRValueError(
+                    "runtime metadata with a custom __deepcopy__ hook cannot "
+                    "be snapshotted observationally or restored atomically; "
+                    "runtime object cannot be snapshotted atomically"
+                )
+            raise TNFRValueError(
+                "runtime metadata has unsupported mutable state in opaque "
+                "interpreter state that cannot be restored atomically"
+            )
+        _validate_runtime_deepcopy_protocol(value, manual_capture=True)
+        if kind is MethodType:
+            add(value, path)
+            walk(value.__func__, (*path, "function"))
+            walk(value.__self__, (*path, "receiver"))
+            return
+        if kind is BuiltinMethodType:
+            receiver = _runtime_descriptor_get(
+                _BUILTIN_METHOD_RECEIVER_DESCRIPTOR,
+                value,
+                BuiltinMethodType,
+            )
+            if receiver is not None and type(receiver) is not ModuleType:
+                add(value, path)
+                walk(receiver, (*path, "receiver"))
+            return
+        if partial in owners:
+            if kind is not partial:
+                raise TNFRValueError(
+                    "partial subclasses cannot be inspected without user code"
+                )
+            add(value, path)
+            walk(value.func, (*path, "function"))
+            for index, item in enumerate(value.args):
+                walk(item, (*path, "argument", index))
+            walk(value.keywords, (*path, "keywords"))
+            namespace = _runtime_instance_namespace(value)
+            if namespace is not None:
+                walk_namespace(namespace, path)
+            return
+        if kind is FunctionType:
+            functions.setdefault(identity, (path, value))
+            add(value, path)
+            namespace = _runtime_instance_namespace(value)
+            if namespace is not None:
+                walk_namespace(namespace, path)
+            defaults = value.__defaults__
+            if defaults is not None:
+                for index, item in enumerate(defaults):
+                    walk(item, (*path, "default", index))
+            keyword_defaults = value.__kwdefaults__
+            if keyword_defaults is not None:
+                walk(keyword_defaults, (*path, "keyword-defaults"))
+            walk(value.__annotations__, (*path, "annotations"))
+            if _FUNCTION_TYPE_PARAMETERS_DESCRIPTOR is not None:
+                type_parameters = _runtime_descriptor_get(
+                    _FUNCTION_TYPE_PARAMETERS_DESCRIPTOR,
+                    value,
+                    FunctionType,
+                )
+                walk(type_parameters, (*path, "type-parameters"))
+            closure = value.__closure__
+            if closure is not None:
+                for index, cell in enumerate(closure):
+                    try:
+                        cell_value = cell.cell_contents
+                    except ValueError:
+                        continue
+                    walk(cell_value, (*path, "closure", index))
+            return
+        if Random in owners:
+            if kind is not Random:
+                raise TNFRValueError(
+                    "random generator subclasses cannot be inspected without "
+                    "executing user code"
+                )
+            add(value, path)
+            namespace = _runtime_instance_namespace(value)
+            if namespace is not None:
+                walk_namespace(namespace, path)
+            return
+        if mapping_kind:
+            add(value, path)
+            for index, (key, item) in enumerate(_runtime_mapping_items(value)):
+                _validate_runtime_identity_key(
+                    key,
+                    label="nested mapping key",
+                )
+                walk(key, (*path, "mapping-key", index))
+                walk(item, (*path, "mapping-value", index))
+            if defaultdict in owners:
+                walk(
+                    _runtime_default_factory(value),
+                    (*path, "default-factory"),
+                )
+            return
+        if tuple in owners:
+            for index, item in enumerate(tuple.__iter__(value)):
+                walk(item, (*path, "immutable-item", index))
+            return
+        if frozenset in owners:
+            for index, item in enumerate(frozenset.__iter__(value)):
+                _validate_runtime_identity_key(
+                    item,
+                    label="nested frozenset member",
+                )
+                walk(item, (*path, "immutable-item", index))
+            return
+        if list in owners:
+            add(value, path)
+            for index, item in enumerate(list.__iter__(value)):
+                walk(item, (*path, "container-item", index))
+            return
+        if set in owners:
+            add(value, path)
+            for index, item in enumerate(set.__iter__(value)):
+                _validate_runtime_identity_key(
+                    item,
+                    label="nested set member",
+                )
+                walk(item, (*path, "container-item", index))
+            return
+        if deque in owners:
+            add(value, path)
+            for index, item in enumerate(deque.__iter__(value)):
+                walk(item, (*path, "container-item", index))
+            return
+
+        add(value, path)
+        namespace = _runtime_instance_namespace(value)
+        if namespace is not None:
+            walk_namespace(namespace, path)
+        for slot in _runtime_slot_descriptors(value):
+            try:
+                slot_value = _read_runtime_slot(value, slot)
+            except AttributeError:
+                continue
+            walk(
+                slot_value,
+                (
+                    *path,
+                    "slot",
+                    _runtime_class_text(slot.owner, "__module__"),
+                    _runtime_class_text(slot.owner, "__qualname__"),
+                    slot.declared_name,
+                ),
+            )
+
+    for key, value in runtime_items:
+        is_callback_registry = bool(
+            type(key) is tuple
+            and key
+            and key[0] == "graph-callback-registry"
+        )
+        kind = type(value)
+        owners = _runtime_class_mro(kind)
+        is_callable = (
+            kind in (MethodType, BuiltinMethodType, FunctionType)
+            or partial in owners
+            or (
+                type not in owners
+                and _runtime_special_method(kind, "__call__") is not None
+            )
+        )
+        if is_callable or is_callback_registry:
+            root_kind = (
+                "graph-callback-registry"
+                if is_callback_registry
+                else "runtime-callable"
+            )
+            walk(value, (root_kind, key), expand=True)
+    return tuple(discovered.values()), tuple(functions.values())
+
+
+def _discover_runtime_manual_state_items(
+    search_roots: tuple[tuple[Any, Any], ...],
+    *,
+    protected_values: tuple[Any, ...],
+) -> tuple[tuple[Any, Any], ...]:
+    """Find custom state that ordinary metadata must not pass to deepcopy.
+
+    Built-in containers remain owned by the enclosing graph snapshot. Custom
+    instances and callables are promoted to manually captured runtime roots so
+    deepcopy sees only their identity and never dispatches copy, reconstruction,
+    or attribute hooks. This avoids duplicate ownership of graph containers
+    while sealing custom state transitively.
+    """
+
+    protected = {id(value) for value in protected_values}
+    discovered: dict[int, tuple[Any, Any]] = {}
+    seen: set[int] = set()
+
+    def walk(value: Any, path: tuple[Any, ...], *, root: bool = False) -> None:
+        identity = id(value)
+        if identity in seen:
+            return
+        seen.add(identity)
+        if identity in protected and not root:
+            return
+        kind = type(value)
+        owners = _runtime_class_mro(kind)
+        if _atomic_immutable_runtime_value(value):
+            return
+        if (
+            kind in _EXTERNAL_RUNTIME_RESOURCE_TYPES
+            or kind in _IMMUTABLE_DESCRIPTOR_TYPES
+            or type in owners
+        ):
+            return
+        if kind is MappingProxyType:
+            _validate_runtime_mapping_proxy_references(value)
+            return
+        if np is not None and np.ndarray in owners:
+            _validate_runtime_ndarray_references(value)
+            return
+        if np is not None and np.void in owners:
+            raise TNFRValueError(
+                "NumPy void/record metadata cannot be snapshotted atomically"
+            )
+        if kind is BuiltinMethodType:
+            receiver = _runtime_descriptor_get(
+                _BUILTIN_METHOD_RECEIVER_DESCRIPTOR,
+                value,
+                BuiltinMethodType,
+            )
+            if receiver is None or type(receiver) is ModuleType:
+                return
+            _validate_runtime_deepcopy_protocol(value, manual_capture=True)
+            discovered.setdefault(
+                identity,
+                (
+                    (
+                        "graph-callback-registry",
+                        "graph-owned-state",
+                        path,
+                    ),
+                    value,
+                ),
+            )
+            return
+        is_callable = (
+            kind in (MethodType, FunctionType)
+            or partial in owners
+            or _runtime_special_method(kind, "__call__") is not None
+        )
+        if is_callable:
+            _validate_runtime_deepcopy_protocol(value, manual_capture=True)
+            discovered.setdefault(
+                identity,
+                (
+                    (
+                        "graph-callback-registry",
+                        "graph-owned-state",
+                        path,
+                    ),
+                    value,
+                ),
+            )
+            return
+        if any(
+            base in owners
+            for base in (dict, OrderedDict, defaultdict, WeakValueDictionary)
+        ):
+            if kind not in (dict, OrderedDict, defaultdict, WeakValueDictionary):
+                _validate_runtime_deepcopy_protocol(
+                    value,
+                    manual_capture=True,
+                )
+                discovered.setdefault(
+                    identity,
+                    (
+                        (
+                            "graph-callback-registry",
+                            "graph-owned-state",
+                            path,
+                        ),
+                        value,
+                    ),
+                )
+                return
+            _validate_runtime_deepcopy_protocol(value)
+            for index, (key, item) in enumerate(_runtime_mapping_items(value)):
+                walk(key, (*path, "mapping-key", index))
+                walk(item, (*path, "mapping-value", index))
+            if defaultdict in owners:
+                walk(
+                    _runtime_default_factory(value),
+                    (*path, "default-factory"),
+                )
+            return
+        _validate_runtime_deepcopy_protocol(value, manual_capture=True)
+        builtin_container_bases = (tuple, list, set, frozenset, deque)
+        if (
+            any(base in owners for base in builtin_container_bases)
+            and kind not in builtin_container_bases
+        ):
+            discovered.setdefault(
+                identity,
+                (
+                    (
+                        "graph-callback-registry",
+                        "graph-owned-state",
+                        path,
+                    ),
+                    value,
+                ),
+            )
+            return
+        if tuple in owners:
+            members = tuple.__iter__(value)
+        elif list in owners:
+            members = list.__iter__(value)
+        elif set in owners:
+            members = set.__iter__(value)
+        elif frozenset in owners:
+            members = frozenset.__iter__(value)
+        elif deque in owners:
+            members = deque.__iter__(value)
+        else:
+            discovered.setdefault(
+                identity,
+                (
+                    (
+                        "graph-callback-registry",
+                        "graph-owned-state",
+                        path,
+                    ),
+                    value,
+                ),
+            )
+            return
+        for index, item in enumerate(members):
+            walk(item, (*path, "container-item", index))
+
+    for path, value in search_roots:
+        walk(value, ("graph-owned-state", path), root=True)
+    return tuple(discovered.values())
+
+
+def _capture_runtime_function_state(
+    function: FunctionType,
+) -> _RuntimeFunctionState:
+    """Capture defaults and closure bindings without copying opaque resources."""
+
+    namespace = _runtime_instance_namespace(function)
+    if namespace is None:
+        raise TNFRValueError("runtime function namespace is unavailable")
+    closure = function.__closure__
+    cells: list[_RuntimeClosureCellState] = []
+    if closure is not None:
+        for cell in closure:
+            try:
+                value = cell.cell_contents
+            except ValueError:
+                cells.append(
+                    _RuntimeClosureCellState(cell=cell, present=False, value=None)
+                )
+            else:
+                cells.append(
+                    _RuntimeClosureCellState(cell=cell, present=True, value=value)
+                )
+    return _RuntimeFunctionState(
+        function=function,
+        namespace=namespace,
+        namespace_items=tuple(dict.items(namespace)),
+        annotations=function.__annotations__,
+        code=function.__code__,
+        defaults=function.__defaults__,
+        documentation=function.__doc__,
+        keyword_defaults=function.__kwdefaults__,
+        module=function.__module__,
+        name=function.__name__,
+        qualified_name=function.__qualname__,
+        type_parameters=(
+            _MISSING_RUNTIME_BINDING
+            if _FUNCTION_TYPE_PARAMETERS_DESCRIPTOR is None
+            else _runtime_descriptor_get(
+                _FUNCTION_TYPE_PARAMETERS_DESCRIPTOR,
+                function,
+                FunctionType,
+            )
+        ),
+        closure=closure,
+        closure_cells=tuple(cells),
+    )
+
+
+def _restore_runtime_function_state(snapshot: _RuntimeFunctionState) -> None:
+    """Restore one function's mutable bindings and closure cell contents."""
+
+    function = snapshot.function
+    namespace = _runtime_instance_namespace(function)
+    if namespace is not snapshot.namespace:
+        raise TNFRValueError("runtime function namespace identity changed")
+    _replace_runtime_mapping(namespace, snapshot.namespace_items)
+    function.__annotations__ = snapshot.annotations
+    function.__code__ = snapshot.code
+    function.__defaults__ = snapshot.defaults
+    function.__doc__ = snapshot.documentation
+    function.__kwdefaults__ = snapshot.keyword_defaults
+    function.__module__ = snapshot.module
+    function.__name__ = snapshot.name
+    function.__qualname__ = snapshot.qualified_name
+    if snapshot.type_parameters is not _MISSING_RUNTIME_BINDING:
+        type(_FUNCTION_TYPE_PARAMETERS_DESCRIPTOR).__set__(
+            _FUNCTION_TYPE_PARAMETERS_DESCRIPTOR,
+            function,
+            snapshot.type_parameters,
+        )
+    current_closure = function.__closure__
+    if (
+        (current_closure is None) is not (snapshot.closure is None)
+        or current_closure is not None
+        and snapshot.closure is not None
+        and (
+            len(current_closure) != len(snapshot.closure)
+            or any(
+                current is not expected
+                for current, expected in zip(
+                    current_closure,
+                    snapshot.closure,
+                    strict=True,
+                )
+            )
+        )
+    ):
+        raise TNFRValueError("runtime function closure identity changed")
+    for cell_state in snapshot.closure_cells:
+        if cell_state.present:
+            cell_state.cell.cell_contents = cell_state.value
+        else:
+            try:
+                del cell_state.cell.cell_contents
+            except ValueError:
+                pass
 
 
 class GraphTransactionSnapshot:
@@ -538,90 +2768,354 @@ class GraphTransactionSnapshot:
     """
 
     def __init__(self, graph: Any) -> None:
-        self._nodes = tuple(graph.nodes)
-        self._directed = bool(graph.is_directed())
-        self._multigraph = bool(graph.is_multigraph())
+        # Retain the concrete owner so a snapshot can never be supplied to a
+        # different, merely value-compatible graph. The strong reference also
+        # prevents process-local identity reuse for the snapshot lifetime.
+        self._graph = graph
+        self._graph_type = type(graph)
+        layout = _networkx_runtime_layout(graph)
+        self._nodes = tuple(node for node, _data in layout.node_data)
+        self._directed = layout.directed
+        self._multigraph = layout.multigraph
+        graph_namespace = _runtime_instance_namespace(graph)
+        if graph_namespace is None:
+            raise TNFRValueError("graph instance has no restorable namespace")
+        self._graph_namespace = graph_namespace
+        graph_mapping = layout.graph_mapping
+        node_outer_mapping = layout.node_outer
+        adjacency_outer_mapping = layout.adjacency_outer
+        predecessor_outer_mapping = layout.predecessor_outer
+        graph_mapping_items = _runtime_mapping_items(graph_mapping)
         runtime_items = tuple(
             (key, value)
-            for key, value in graph.graph.items()
-            if key in _RUNTIME_GRAPH_KEYS or "cache" in str(key).lower()
+            for key, value in graph_mapping_items
+            if _is_runtime_graph_key(key)
+        )
+        epi_history_object_referents = _preflight_runtime_epi_history(
+            runtime_items
+        )
+        epi_history_object_array_ids = frozenset(
+            array_id for array_id, _item in epi_history_object_referents
         )
         graph_attribute_items = tuple(
             (key, value)
-            for key, value in vars(graph).items()
-            if key not in _NETWORKX_GRAPH_INTERNAL_ATTRIBUTES
+            for key, value in graph_namespace.items()
+            if key not in _NETWORKX_STRUCTURAL_STORAGE_ATTRIBUTES
         )
+        graph_slot_descriptors = tuple(
+            slot
+            for slot in _runtime_slot_descriptors(graph)
+            if slot.storage_name not in _NETWORKX_STRUCTURAL_STORAGE_ATTRIBUTES
+        )
+        graph_slot_items_list: list[tuple[_RuntimeSlotDescriptor, Any]] = []
+        for slot in graph_slot_descriptors:
+            try:
+                value = _read_runtime_slot(graph, slot)
+            except AttributeError:
+                continue
+            graph_slot_items_list.append((slot, value))
+        graph_slot_items = tuple(graph_slot_items_list)
+        graph_factory_items = _graph_factory_items(graph)
+        node_mapping_items = layout.node_data
+        raw_edges = layout.edges
+        identity_key_items: list[tuple[tuple[str, int], Any]] = [
+            (("node-identity", index), node)
+            for index, node in enumerate(self._nodes)
+        ]
+        if self._multigraph:
+            identity_key_items.extend(
+                (("edge-key-identity", index), key)
+                for index, (_left, _right, key, _data) in enumerate(raw_edges)
+            )
+        identity_key_items.extend(
+            (("graph-attribute-key", index), key)
+            for index, (key, _value) in enumerate(graph_mapping_items)
+        )
+        metadata_mappings = (
+            *(data for _node, data in node_mapping_items),
+            *(edge[-1] for edge in raw_edges),
+        )
+        metadata_key_index = 0
+        for mapping in metadata_mappings:
+            for key, _value in _runtime_mapping_items(mapping):
+                identity_key_items.append(
+                    (("attribute-key", metadata_key_index), key)
+                )
+                metadata_key_index += 1
+        unique_identity_keys: dict[int, tuple[tuple[str, int], Any]] = {}
+        for label, key in identity_key_items:
+            _validate_runtime_identity_key(key, label=label[0])
+            if _runtime_identity_key_has_owned_state(key):
+                unique_identity_keys.setdefault(id(key), (label, key))
+        internal_mapping_items = _networkx_internal_mapping_items(
+            graph,
+            layout=layout,
+        )
+        for _label, mapping in internal_mapping_items:
+            _runtime_mapping_items(mapping)
+        protected_values = _graph_transaction_protected_values(
+            graph,
+            _layout=layout,
+        )
+        callable_search_roots: list[tuple[Any, Any]] = [
+            (("graph-metadata", index), value)
+            for index, (_key, value) in enumerate(graph_mapping_items)
+            if id(value) not in epi_history_object_array_ids
+        ]
+        callable_search_roots.extend(
+            (("epi-history-object", index), value)
+            for index, (_array_id, value) in enumerate(
+                epi_history_object_referents
+            )
+        )
+        callable_search_roots.extend(
+            (("graph-attribute", index), value)
+            for index, (_key, value) in enumerate(graph_attribute_items)
+            if _key not in _NETWORKX_GRAPH_INTERNAL_ATTRIBUTES
+        )
+        callable_search_roots.extend(
+            (("graph-slot", index), value)
+            for index, (_slot, value) in enumerate(graph_slot_items)
+            if _slot.storage_name not in _NETWORKX_GRAPH_INTERNAL_ATTRIBUTES
+        )
+        callable_search_roots.extend(
+            (("graph-factory", index), value)
+            for index, (_name, value) in enumerate(graph_factory_items)
+        )
+        callable_search_roots.extend(
+            (("node-metadata", node_index, value_index), value)
+            for node_index, (_node, data) in enumerate(node_mapping_items)
+            for value_index, (_key, value) in enumerate(
+                _runtime_mapping_items(data)
+            )
+        )
+        callable_search_roots.extend(
+            (("edge-metadata", edge_index, value_index), value)
+            for edge_index, edge in enumerate(raw_edges)
+            for value_index, (_key, value) in enumerate(
+                _runtime_mapping_items(edge[-1])
+            )
+        )
+        reachable_manual_state_items = _discover_runtime_manual_state_items(
+            tuple(callable_search_roots),
+            protected_values=protected_values,
+        )
+        configured_callable_items = (
+            *runtime_items,
+            *(
+                (("graph-callback-registry", index), value)
+                for index, (key, value) in enumerate(graph_mapping_items)
+                if type(key) is str and key == "callbacks"
+            ),
+            *(
+                (("graph-factory", name), value)
+                for name, value in graph_factory_items
+            ),
+            *reachable_manual_state_items,
+        )
+        callable_state_items, callable_functions = _runtime_callable_state_items(
+            configured_callable_items,
+            protected_values=protected_values,
+        )
+        self._node_outer_mapping = node_outer_mapping
+        self._adjacency_outer_mapping = adjacency_outer_mapping
+        self._predecessor_outer_mapping = (
+            predecessor_outer_mapping if self._directed else None
+        )
+        self._adjacency_inner_mappings = layout.adjacency_inner
+        self._predecessor_inner_mappings = layout.predecessor_inner
+        self._adjacency_edge_key_mappings = layout.adjacency_edge_keys
+        self._predecessor_edge_key_mappings = layout.predecessor_edge_keys
         runtime_memo = {id(graph): graph}
         runtime_memo.update({id(value): value for _key, value in runtime_items})
         runtime_memo.update(
             {id(value): value for _key, value in graph_attribute_items}
         )
+        runtime_memo.update(
+            {id(value): value for _slot, value in graph_slot_items}
+        )
+        runtime_memo.update(
+            {id(value): value for _name, value in graph_factory_items}
+        )
+        runtime_memo.update(
+            {id(value): value for _node, value in node_mapping_items}
+        )
+        runtime_memo.update(
+            {id(edge[-1]): edge[-1] for edge in raw_edges}
+        )
+        runtime_memo.update(
+            {id(value): value for _label, value in internal_mapping_items}
+        )
+        # Structural keys are identities owned by the graph topology. Keep
+        # every one of them opaque to detached metadata copies, including
+        # stateless keys: copying such a key would silently change support and
+        # could invoke an arbitrary user ``__deepcopy__`` hook. Keys with
+        # mutable owned state are captured separately below for in-place
+        # restoration.
+        runtime_memo.update(
+            {id(value): value for _label, value in identity_key_items}
+        )
+        runtime_memo.update(
+            {id(value): value for _label, value in unique_identity_keys.values()}
+        )
+        runtime_memo.update(
+            {id(value): value for _path, value in callable_state_items}
+        )
+        opaque_copy_ids = set(runtime_memo)
+        for key, value in graph_mapping_items:
+            if not _is_runtime_graph_key(key):
+                _validate_runtime_deepcopy_value(
+                    value,
+                    opaque_ids=opaque_copy_ids,
+                )
+        for _node, data in node_mapping_items:
+            for _key, value in _runtime_mapping_items(data):
+                _validate_runtime_deepcopy_value(
+                    value,
+                    opaque_ids=opaque_copy_ids,
+                )
+        for edge in raw_edges:
+            for _key, value in _runtime_mapping_items(edge[-1]):
+                _validate_runtime_deepcopy_value(
+                    value,
+                    opaque_ids=opaque_copy_ids,
+                )
+        graph_value_candidates: list[tuple[Any, Any]] = []
+        seen_graph_values: set[int] = set()
+        for label, value in callable_search_roots:
+            identity = id(value)
+            if identity in seen_graph_values or identity in runtime_memo:
+                continue
+            seen_graph_values.add(identity)
+            if (
+                _runtime_value_has_stable_rollback_identity(value)
+                or type(value) in _EXTERNAL_RUNTIME_RESOURCE_TYPES
+                or type(value) is MappingProxyType
+            ):
+                continue
+            graph_value_candidates.append((label, value))
+        # Preseed every direct graph-owned identity before capturing any one
+        # root. This preserves cross-root aliases and prevents an early root
+        # from recursively copying later roots that are captured in place.
+        runtime_memo.update(
+            {id(value): value for _label, value in graph_value_candidates}
+        )
+        graph_value_states = [
+            _capture_runtime_value(
+                ("graph-owned-value", label),
+                value,
+                runtime_memo,
+            )
+            for label, value in graph_value_candidates
+        ]
+        # Detached mapping copies retain each direct graph-owned object.
+        # Rollback repairs its state in place and then restores all graph,
+        # node, or edge bindings through this shared memo identity.
+        self._graph_value_states = tuple(graph_value_states)
+        self._graph_mapping = _capture_runtime_value(
+            "graph.graph",
+            graph_mapping,
+            runtime_memo,
+            preserve_mapping_items=True,
+        )
+        self._identity_key_states = tuple(
+            _capture_runtime_owned_state(label, value, runtime_memo)
+            for label, value in unique_identity_keys.values()
+        )
         for _key, value in runtime_items:
             _seed_runtime_tuple_member_memo(value, runtime_memo)
         for _key, value in graph_attribute_items:
             _seed_runtime_tuple_member_memo(value, runtime_memo)
-        for value in graph.graph.values():
-            _seed_runtime_lock_memo(value, runtime_memo)
-        for node in self._nodes:
-            _seed_runtime_lock_memo(graph.nodes[node], runtime_memo)
-        for edge in (
-            graph.edges(keys=True, data=True)
-            if self._multigraph
-            else graph.edges(data=True)
-        ):
-            _seed_runtime_lock_memo(edge[-1], runtime_memo)
+        for _slot, value in graph_slot_items:
+            _seed_runtime_tuple_member_memo(value, runtime_memo)
+        for _name, value in graph_factory_items:
+            _seed_runtime_tuple_member_memo(value, runtime_memo)
+        for _key, value in graph_mapping_items:
+            _seed_runtime_resource_memo(value, runtime_memo)
+        for _node, data in node_mapping_items:
+            _seed_runtime_resource_memo(data, runtime_memo)
+        for edge in raw_edges:
+            _seed_runtime_resource_memo(edge[-1], runtime_memo)
 
-        self._node_data = {
-            node: deepcopy(dict(graph.nodes[node]), runtime_memo)
-            for node in self._nodes
-        }
-        self._adjacency_order = {
-            node: tuple(graph.adj[node]) for node in self._nodes
-        }
-        self._predecessor_order = (
-            {node: tuple(graph.pred[node]) for node in self._nodes}
-            if self._directed
-            else {}
+        self._node_data = tuple(
+            (
+                node,
+                _capture_runtime_value(
+                    ("node-attribute-mapping", node),
+                    data,
+                    runtime_memo,
+                ),
+            )
+            for node, data in node_mapping_items
         )
+        self._adjacency_order = {
+            node: tuple(
+                neighbor
+                for neighbor, _value in _runtime_mapping_items(mapping)
+            )
+            for node, mapping in layout.adjacency_inner
+        }
+        self._predecessor_order = {
+            node: tuple(
+                neighbor
+                for neighbor, _value in _runtime_mapping_items(mapping)
+            )
+            for node, mapping in layout.predecessor_inner
+        }
         self._adjacency_key_order = (
             {
-                (node, neighbor): tuple(graph.adj[node][neighbor])
-                for node in self._nodes
-                for neighbor in self._adjacency_order[node]
+                (node, neighbor): tuple(
+                    key for key, _value in _runtime_mapping_items(mapping)
+                )
+                for node, neighbor, mapping in layout.adjacency_edge_keys
             }
             if self._multigraph
             else None
         )
-        self._predecessor_key_order = (
-            {
-                (node, neighbor): tuple(graph.pred[node][neighbor])
-                for node in self._nodes
-                for neighbor in self._predecessor_order[node]
-            }
-            if self._multigraph and self._directed
-            else {}
-        )
+        self._predecessor_key_order = {
+            (node, neighbor): tuple(
+                key for key, _value in _runtime_mapping_items(mapping)
+            )
+            for node, neighbor, mapping in layout.predecessor_edge_keys
+        }
         if self._multigraph:
             self._edges = tuple(
-                (left, right, key, deepcopy(dict(data), runtime_memo))
-                for left, right, key, data in graph.edges(keys=True, data=True)
+                (
+                    left,
+                    right,
+                    key,
+                    _capture_runtime_value(
+                        ("edge-attribute-mapping", left, right, key),
+                        data,
+                        runtime_memo,
+                    ),
+                )
+                for left, right, key, data in raw_edges
             )
         else:
             self._edges = tuple(
-                (left, right, deepcopy(dict(data), runtime_memo))
-                for left, right, data in graph.edges(data=True)
+                (
+                    left,
+                    right,
+                    _capture_runtime_value(
+                        ("edge-attribute-mapping", left, right),
+                        data,
+                        runtime_memo,
+                    ),
+                )
+                for left, right, data in raw_edges
             )
 
         ordinary: list[tuple[Any, Any]] = []
         runtime: list[_RuntimeGraphValue] = []
-        for key, value in graph.graph.items():
-            is_runtime = key in _RUNTIME_GRAPH_KEYS or "cache" in str(key).lower()
+        for key, value in graph_mapping_items:
+            is_runtime = _is_runtime_graph_key(key)
             if not is_runtime:
-                # Synchronization primitives are external resources, not
+                # Locks and standard loggers are external resources, not
                 # serializable graph state. Preserve their identity while
-                # copying the surrounding ordinary metadata so unrelated
-                # user locks do not make canonical stages unexecutable.
-                _seed_runtime_lock_memo(value, runtime_memo)
+                # copying surrounding metadata so they do not make canonical
+                # stages unexecutable.
+                _seed_runtime_resource_memo(value, runtime_memo)
                 ordinary.append((key, deepcopy(value, runtime_memo)))
                 continue
             runtime.append(
@@ -631,13 +3125,24 @@ class GraphTransactionSnapshot:
                     runtime_memo,
                     preserve_mapping_items=(
                         key in _REFERENCE_PRESERVING_RUNTIME_MAPPINGS
-                        or isinstance(value, WeakValueDictionary)
+                        or _runtime_derives_from(value, WeakValueDictionary)
+                    ),
+                    allow_captured_object_array_references=(
+                        id(value) in epi_history_object_array_ids
                     ),
                 )
             )
-        self._graph_data_order = tuple(graph.graph)
+        self._graph_data_order = tuple(key for key, _value in graph_mapping_items)
         self._ordinary_graph_data = tuple(ordinary)
         self._runtime_graph_data = tuple(runtime)
+        self._runtime_callable_states = tuple(
+            _capture_runtime_value(path, value, runtime_memo)
+            for path, value in callable_state_items
+        )
+        self._runtime_function_states = tuple(
+            _capture_runtime_function_state(function)
+            for _path, function in callable_functions
+        )
         self._graph_attribute_names = frozenset(
             key for key, _value in graph_attribute_items
         )
@@ -645,12 +3150,217 @@ class GraphTransactionSnapshot:
             _capture_runtime_value(key, value, runtime_memo)
             for key, value in graph_attribute_items
         )
-        self._had_last_operator = hasattr(graph, "_last_operator_applied")
-        self._last_operator = getattr(graph, "_last_operator_applied", None)
+        self._graph_slot_descriptors = graph_slot_descriptors
+        self._graph_slot_value_descriptor_ids = frozenset(
+            id(slot.descriptor) for slot, _value in graph_slot_items
+        )
+        self._graph_slots = tuple(
+            (
+                slot,
+                _capture_runtime_value(
+                    (
+                        "graph-slot",
+                        _runtime_class_text(slot.owner, "__module__"),
+                        _runtime_class_text(slot.owner, "__qualname__"),
+                        slot.declared_name,
+                    ),
+                    value,
+                    runtime_memo,
+                ),
+            )
+            for slot, value in graph_slot_items
+        )
+        self._graph_factories = tuple(
+            (
+                name,
+                _capture_runtime_owned_state(
+                    ("graph-factory", name),
+                    value,
+                    runtime_memo,
+                ),
+            )
+            for name, value in graph_factory_items
+        )
+        unique_internal_mappings: dict[int, tuple[Any, Any]] = {}
+        for label, value in internal_mapping_items:
+            unique_internal_mappings.setdefault(id(value), (label, value))
+        self._networkx_mapping_states = tuple(
+            _capture_runtime_owned_state(
+                ("networkx-mapping", label),
+                value,
+                runtime_memo,
+            )
+            for label, value in unique_internal_mappings.values()
+        )
+        try:
+            self._last_operator = _runtime_stored_attribute(
+                graph,
+                "_last_operator_applied",
+            )
+        except TNFRValueError:
+            self._had_last_operator = False
+            self._last_operator = None
+        else:
+            self._had_last_operator = True
+
+    def _restore_networkx_structural_mappings(
+        self,
+        graph: Any,
+        restored_node_data: tuple[tuple[Any, MutableMapping[Any, Any]], ...],
+        restored_edges: tuple[Any, ...],
+        runtime_memo: dict[int, Any],
+    ) -> None:
+        """Rebind factory-produced mappings with identity and own state intact."""
+
+        def clear_once(values: Sequence[MutableMapping[Any, Any]]) -> None:
+            seen: set[int] = set()
+            for value in values:
+                identity = id(value)
+                if identity in seen:
+                    continue
+                seen.add(identity)
+                _replace_runtime_mapping(value, ())
+
+        adjacency_inner = dict(self._adjacency_inner_mappings)
+        predecessor_inner = dict(self._predecessor_inner_mappings)
+        adjacency_edge_keys = {
+            (node, neighbor): value
+            for node, neighbor, value in self._adjacency_edge_key_mappings
+        }
+        predecessor_edge_keys = {
+            (node, neighbor): value
+            for node, neighbor, value in self._predecessor_edge_key_mappings
+        }
+
+        clear_once(tuple(adjacency_inner.values()))
+        clear_once(tuple(predecessor_inner.values()))
+        clear_once(tuple(adjacency_edge_keys.values()))
+        clear_once(tuple(predecessor_edge_keys.values()))
+
+        if self._multigraph:
+            edge_data: dict[tuple[Any, Any, Any], MutableMapping[Any, Any]] = {}
+            for left, right, key, data in restored_edges:
+                edge_data[(left, right, key)] = data
+                if not self._directed:
+                    edge_data[(right, left, key)] = data
+            for (node, neighbor), edge_keys in adjacency_edge_keys.items():
+                for key in self._adjacency_key_order[(node, neighbor)]:
+                    _set_runtime_mapping_item(
+                        edge_keys,
+                        key,
+                        edge_data[(node, neighbor, key)],
+                    )
+            for (node, neighbor), edge_keys in predecessor_edge_keys.items():
+                for key in self._predecessor_key_order[(node, neighbor)]:
+                    _set_runtime_mapping_item(
+                        edge_keys,
+                        key,
+                        edge_data[(neighbor, node, key)],
+                    )
+            for node, neighbors in self._adjacency_order.items():
+                for neighbor in neighbors:
+                    _set_runtime_mapping_item(
+                        adjacency_inner[node],
+                        neighbor,
+                        adjacency_edge_keys[(node, neighbor)],
+                    )
+            for node, neighbors in self._predecessor_order.items():
+                for neighbor in neighbors:
+                    _set_runtime_mapping_item(
+                        predecessor_inner[node],
+                        neighbor,
+                        predecessor_edge_keys[(node, neighbor)],
+                    )
+        else:
+            edge_data = {}
+            for left, right, data in restored_edges:
+                edge_data[(left, right)] = data
+                if not self._directed:
+                    edge_data[(right, left)] = data
+            for node, neighbors in self._adjacency_order.items():
+                for neighbor in neighbors:
+                    _set_runtime_mapping_item(
+                        adjacency_inner[node],
+                        neighbor,
+                        edge_data[(node, neighbor)],
+                    )
+            for node, neighbors in self._predecessor_order.items():
+                for neighbor in neighbors:
+                    _set_runtime_mapping_item(
+                        predecessor_inner[node],
+                        neighbor,
+                        edge_data[(neighbor, node)],
+                    )
+
+        _replace_runtime_mapping(self._node_outer_mapping, restored_node_data)
+        _replace_runtime_mapping(
+            self._adjacency_outer_mapping,
+            self._adjacency_inner_mappings,
+        )
+        if self._directed:
+            _replace_runtime_mapping(
+                self._predecessor_outer_mapping,
+                self._predecessor_inner_mappings,
+            )
+
+        _write_runtime_stored_attribute(
+            graph,
+            "_node",
+            self._node_outer_mapping,
+        )
+        _write_runtime_stored_attribute(
+            graph,
+            "_adj",
+            self._adjacency_outer_mapping,
+        )
+        if self._directed:
+            _write_runtime_stored_attribute(
+                graph,
+                "_succ",
+                self._adjacency_outer_mapping,
+            )
+            _write_runtime_stored_attribute(
+                graph,
+                "_pred",
+                self._predecessor_outer_mapping,
+            )
+
+        for snapshot in self._networkx_mapping_states:
+            _restore_runtime_object_state(
+                snapshot,
+                snapshot.value,
+                runtime_memo,
+            )
 
     def restore(self, graph: Any) -> None:
         """Restore topology, attributes, caches and monitor bookkeeping."""
 
+        if graph is not self._graph:
+            raise TNFRValueError(
+                "graph transaction snapshot belongs to a different graph"
+            )
+        if type(graph) is not self._graph_type:
+            try:
+                object.__setattr__(graph, "__class__", self._graph_type)
+            except (AttributeError, TypeError) as exc:
+                raise TNFRValueError(
+                    "graph type changed and cannot be restored atomically"
+                ) from exc
+        current_graph_namespace = _runtime_instance_namespace(graph)
+        if current_graph_namespace is not self._graph_namespace:
+            descriptor = _runtime_instance_namespace_descriptor(graph)
+            if descriptor is None:
+                raise TNFRValueError("graph instance namespace disappeared")
+            try:
+                type(descriptor).__set__(
+                    descriptor,
+                    graph,
+                    self._graph_namespace,
+                )
+            except (AttributeError, TypeError) as exc:
+                raise TNFRValueError(
+                    "graph namespace changed and cannot be restored atomically"
+                ) from exc
         runtime_memo = {id(graph): graph}
         runtime_memo.update(
             {
@@ -664,122 +3374,192 @@ class GraphTransactionSnapshot:
                 for snapshot in self._graph_attributes
             }
         )
-        for value in self._node_data.values():
-            _seed_runtime_lock_memo(value, runtime_memo)
+        runtime_memo.update(
+            {
+                id(snapshot.value): snapshot.value
+                for _slot, snapshot in self._graph_slots
+            }
+        )
+        runtime_memo.update(
+            {
+                id(snapshot.value): snapshot.value
+                for _name, snapshot in self._graph_factories
+            }
+        )
+        runtime_memo.update(
+            {
+                id(snapshot.value): snapshot.value
+                for _node, snapshot in self._node_data
+            }
+        )
+        runtime_memo.update(
+            {id(edge[-1].value): edge[-1].value for edge in self._edges}
+        )
+        runtime_memo.update(
+            {
+                id(snapshot.value): snapshot.value
+                for snapshot in self._networkx_mapping_states
+            }
+        )
+        runtime_memo.update(
+            {
+                id(snapshot.value): snapshot.value
+                for snapshot in self._identity_key_states
+            }
+        )
+        runtime_memo.update(
+            {
+                id(snapshot.value): snapshot.value
+                for snapshot in self._runtime_callable_states
+            }
+        )
+        runtime_memo.update(
+            {
+                id(snapshot.value): snapshot.value
+                for snapshot in self._graph_value_states
+            }
+        )
+        runtime_memo[id(self._graph_mapping.value)] = self._graph_mapping.value
+        for _node, snapshot in self._node_data:
+            _seed_runtime_snapshot_resource_memo(snapshot, runtime_memo)
         for edge in self._edges:
-            _seed_runtime_lock_memo(edge[-1], runtime_memo)
+            _seed_runtime_snapshot_resource_memo(edge[-1], runtime_memo)
         for _key, value in self._ordinary_graph_data:
-            _seed_runtime_lock_memo(value, runtime_memo)
+            _seed_runtime_resource_memo(value, runtime_memo)
+        _seed_runtime_snapshot_resource_memo(self._graph_mapping, runtime_memo)
+        for snapshot in self._runtime_graph_data:
+            _seed_runtime_snapshot_resource_memo(snapshot, runtime_memo)
+        for snapshot in self._runtime_callable_states:
+            _seed_runtime_snapshot_resource_memo(snapshot, runtime_memo)
+        for snapshot in self._graph_value_states:
+            _seed_runtime_snapshot_resource_memo(snapshot, runtime_memo)
+        for snapshot in self._graph_attributes:
+            _seed_runtime_snapshot_resource_memo(snapshot, runtime_memo)
+        for _slot, snapshot in self._graph_slots:
+            _seed_runtime_snapshot_resource_memo(snapshot, runtime_memo)
+        for _name, snapshot in self._graph_factories:
+            _seed_runtime_snapshot_resource_memo(snapshot, runtime_memo)
+        for snapshot in self._networkx_mapping_states:
+            _seed_runtime_snapshot_resource_memo(snapshot, runtime_memo)
+        for snapshot in self._identity_key_states:
+            _seed_runtime_snapshot_resource_memo(snapshot, runtime_memo)
+
+        # Structural identifiers must recover their original class and owned
+        # state before any dictionary keyed by them is queried or rebuilt.
+        for snapshot in self._identity_key_states:
+            _restore_runtime_value(snapshot, runtime_memo)
 
         restored_runtime_graph_data = tuple(
             (snapshot, _restore_runtime_value(snapshot, runtime_memo))
             for snapshot in self._runtime_graph_data
         )
+        for snapshot in self._runtime_function_states:
+            _restore_runtime_function_state(snapshot)
+        for snapshot in self._runtime_callable_states:
+            _restore_runtime_value(snapshot, runtime_memo)
+        for snapshot in self._graph_value_states:
+            _restore_runtime_value(snapshot, runtime_memo)
         restored_graph_attributes = tuple(
             (snapshot, _restore_runtime_value(snapshot, runtime_memo))
             for snapshot in self._graph_attributes
         )
-
-        if self._multigraph:
-            graph.remove_edges_from(tuple(graph.edges(keys=True)))
-        else:
-            graph.remove_edges_from(tuple(graph.edges))
-
-        original_nodes = frozenset(self._nodes)
-        graph.remove_nodes_from(
-            node for node in tuple(graph.nodes) if node not in original_nodes
+        restored_graph_slots = tuple(
+            (slot, snapshot, _restore_runtime_value(snapshot, runtime_memo))
+            for slot, snapshot in self._graph_slots
         )
-        for node in self._nodes:
-            if node not in graph:
-                graph.add_node(node)
-            data = graph.nodes[node]
-            data.clear()
-            data.update(deepcopy(self._node_data[node], runtime_memo))
-
+        for _name, snapshot in self._graph_factories:
+            _restore_runtime_value(snapshot, runtime_memo)
+        restored_node_data = tuple(
+            (node, _restore_runtime_value(snapshot, runtime_memo))
+            for node, snapshot in self._node_data
+        )
         if self._multigraph:
-            for left, right, key, data in self._edges:
-                graph.add_edge(
+            restored_edges = tuple(
+                (
                     left,
                     right,
-                    key=key,
-                    **deepcopy(data, runtime_memo),
+                    key,
+                    _restore_runtime_value(snapshot, runtime_memo),
                 )
+                for left, right, key, snapshot in self._edges
+            )
         else:
-            for left, right, data in self._edges:
-                graph.add_edge(left, right, **deepcopy(data, runtime_memo))
-
-        _restore_mapping_order(graph._node, self._nodes, label="node order")
-        if self._directed:
-            _restore_mapping_order(
-                graph._succ, self._nodes, label="successor node order"
-            )
-            _restore_mapping_order(
-                graph._pred, self._nodes, label="predecessor node order"
-            )
-            for node in self._nodes:
-                _restore_mapping_order(
-                    graph._succ[node],
-                    self._adjacency_order[node],
-                    label=f"successor order for node {node!r}",
+            restored_edges = tuple(
+                (
+                    left,
+                    right,
+                    _restore_runtime_value(snapshot, runtime_memo),
                 )
-                _restore_mapping_order(
-                    graph._pred[node],
-                    self._predecessor_order[node],
-                    label=f"predecessor order for node {node!r}",
-                )
-        else:
-            _restore_mapping_order(
-                graph._adj, self._nodes, label="adjacency node order"
-            )
-            for node in self._nodes:
-                _restore_mapping_order(
-                    graph._adj[node],
-                    self._adjacency_order[node],
-                    label=f"neighbor order for node {node!r}",
-                )
-
-        if self._multigraph:
-            for (node, neighbor), order in self._adjacency_key_order.items():
-                adjacency = graph._succ if self._directed else graph._adj
-                _restore_mapping_order(
-                    adjacency[node][neighbor],
-                    order,
-                    label=f"edge-key order for ({node!r}, {neighbor!r})",
-                )
-            if self._directed:
-                for (node, neighbor), order in self._predecessor_key_order.items():
-                    _restore_mapping_order(
-                        graph._pred[node][neighbor],
-                        order,
-                        label=(
-                            "predecessor edge-key order for "
-                            f"({node!r}, {neighbor!r})"
-                        ),
-                    )
-
-        graph.graph.clear()
-        graph.graph.update(deepcopy(dict(self._ordinary_graph_data), runtime_memo))
-        for snapshot, restored_value in restored_runtime_graph_data:
-            graph.graph[snapshot.key] = restored_value
-        _restore_mapping_order(
-            graph.graph, self._graph_data_order, label="graph-attribute order"
+                for left, right, snapshot in self._edges
+        )
+        restored_graph_mapping = _restore_runtime_value(
+            self._graph_mapping,
+            runtime_memo,
         )
 
         current_custom_attributes = tuple(
             key
-            for key in vars(graph)
-            if key not in _NETWORKX_GRAPH_INTERNAL_ATTRIBUTES
+            for key in (_runtime_instance_namespace(graph) or {})
+            if key not in _NETWORKX_STRUCTURAL_STORAGE_ATTRIBUTES
         )
         for key in current_custom_attributes:
             if key not in self._graph_attribute_names:
-                delattr(graph, key)
+                _delete_runtime_stored_attribute(graph, key)
         for snapshot, restored_value in restored_graph_attributes:
-            setattr(graph, snapshot.key, restored_value)
+            _write_runtime_stored_attribute(
+                graph,
+                snapshot.key,
+                restored_value,
+            )
+        for slot in self._graph_slot_descriptors:
+            if (
+                id(slot.descriptor)
+                not in self._graph_slot_value_descriptor_ids
+                and _runtime_slot_is_present(graph, slot)
+            ):
+                _delete_runtime_slot(graph, slot)
+        for slot, _snapshot, restored_value in restored_graph_slots:
+            _write_runtime_slot(graph, slot, restored_value)
+
+        self._restore_networkx_structural_mappings(
+            graph,
+            restored_node_data,
+            restored_edges,
+            runtime_memo,
+        )
+
+        _write_runtime_stored_attribute(graph, "graph", restored_graph_mapping)
+        _replace_runtime_mapping(
+            restored_graph_mapping,
+            deepcopy(self._ordinary_graph_data, runtime_memo),
+        )
+        for snapshot, restored_value in restored_runtime_graph_data:
+            _set_runtime_mapping_item(
+                restored_graph_mapping,
+                snapshot.key,
+                restored_value,
+            )
+        _restore_mapping_order(
+            restored_graph_mapping,
+            self._graph_data_order,
+            label="graph-attribute order",
+        )
+        _restore_runtime_object_state(
+            self._graph_mapping,
+            restored_graph_mapping,
+            runtime_memo,
+        )
+        for _name, snapshot in self._graph_factories:
+            _restore_runtime_value(snapshot, runtime_memo)
 
         if self._had_last_operator:
-            graph._last_operator_applied = self._last_operator
-        elif hasattr(graph, "_last_operator_applied"):
-            delattr(graph, "_last_operator_applied")
+            _write_runtime_stored_attribute(
+                graph,
+                "_last_operator_applied",
+                self._last_operator,
+            )
+        else:
+            _delete_runtime_stored_attribute(graph, "_last_operator_applied")
 
     def restore_after_failure(
         self,
@@ -804,6 +3584,25 @@ class GraphTransactionSnapshot:
                 pass
             return False
         return True
+
+
+def _select_graph_transaction(
+    graph: Any,
+    transaction_snapshot: GraphTransactionSnapshot | None,
+) -> GraphTransactionSnapshot:
+    """Return a fresh or owner-bound exact transaction snapshot."""
+
+    if transaction_snapshot is None:
+        return GraphTransactionSnapshot(graph)
+    if type(transaction_snapshot) is not GraphTransactionSnapshot:
+        raise TNFRValueError(
+            "transaction_snapshot must be an exact GraphTransactionSnapshot"
+        )
+    if object.__getattribute__(transaction_snapshot, "_graph") is not graph:
+        raise TNFRValueError(
+            "graph transaction snapshot belongs to a different graph"
+        )
+    return transaction_snapshot
 
 
 @dataclass(frozen=True, slots=True)
@@ -1014,8 +3813,7 @@ def _validate_mutation_decision_fields(
     """Validate the complete value-domain contract of one ZHIR observation."""
 
     if (
-        isinstance(observation.target_index, bool)
-        or not isinstance(observation.target_index, int)
+        type(observation.target_index) is not int
         or observation.target_index < 0
     ):
         raise ValueError("Mutation observation target_index must be nonnegative")
@@ -1069,10 +3867,8 @@ def _validate_mutation_decision_fields(
             raise ValueError("Fixed Mutation observations cannot declare regimes")
     elif (
         type(observation.regime_changed) is not bool
-        or isinstance(observation.regime_before, bool)
-        or not isinstance(observation.regime_before, int)
-        or isinstance(observation.regime_after, bool)
-        or not isinstance(observation.regime_after, int)
+        or type(observation.regime_before) is not int
+        or type(observation.regime_after) is not int
     ):
         raise ValueError("Dynamic Mutation observations require regime decisions")
     else:
@@ -1105,8 +3901,7 @@ def _validate_mutation_decision_fields(
     ) is not str:
         raise TypeError("Mutation observation destabilizer_operator is invalid")
     if observation.destabilizer_distance is not None and (
-        isinstance(observation.destabilizer_distance, bool)
-        or not isinstance(observation.destabilizer_distance, int)
+        type(observation.destabilizer_distance) is not int
         or observation.destabilizer_distance < 0
     ):
         raise ValueError("Mutation observation destabilizer_distance is invalid")
@@ -1115,8 +3910,7 @@ def _validate_mutation_decision_fields(
     ) is not str:
         raise TypeError("Mutation observation epi_kind_before is invalid")
     if (
-        isinstance(observation.operator_step, bool)
-        or not isinstance(observation.operator_step, int)
+        type(observation.operator_step) is not int
         or observation.operator_step < 0
     ):
         raise ValueError("Mutation observation operator_step must be nonnegative")
@@ -1160,10 +3954,15 @@ class MutationStageDecisionObservation:
         """Whether no decisive field or nested trigger evidence was altered."""
 
         try:
+            if not proof_stamps_are_identical(
+                object.__getattribute__(self, "_proof_stamp"),
+                _mutation_decision_stamp(self),
+            ):
+                return False
             _validate_mutation_decision_fields(self)
-            return self._proof_stamp == _mutation_decision_stamp(self)
-        except Exception:
+        except BaseException:
             return False
+        return True
 
 
 def _observe_mutation_proposal(
@@ -1329,7 +4128,7 @@ class _TwoPhasePreflight:
 
 
 def _discard_pending_monitor(graph: Any) -> None:
-    monitor = graph.graph.get("integrity_monitor")
+    monitor = _runtime_mapping_known_value(graph.graph, "integrity_monitor")
     discard = getattr(monitor, "discard_pending_operator", None)
     if callable(discard):
         try:
@@ -1356,49 +4155,75 @@ def _unique_stage_targets(targets: Sequence[Any]) -> tuple[Any, ...]:
 def _detached_stage_graph(graph: Any) -> Any:
     """Return a complete detached logical graph for immutable stage reads."""
 
-    if graph.is_directed():
-        snapshot = nx.MultiDiGraph() if graph.is_multigraph() else nx.DiGraph()
+    layout = _networkx_runtime_layout(graph)
+    if layout.directed:
+        snapshot = nx.MultiDiGraph() if layout.multigraph else nx.DiGraph()
     else:
-        snapshot = nx.MultiGraph() if graph.is_multigraph() else nx.Graph()
+        snapshot = nx.MultiGraph() if layout.multigraph else nx.Graph()
     copy_memo: dict[int, Any] = {
         id(graph): snapshot,
-        id(graph.graph): snapshot.graph,
+        id(layout.graph_mapping): snapshot.graph,
     }
-    for key, value in graph.graph.items():
-        if key in _RUNTIME_GRAPH_KEYS or "cache" in str(key).lower():
+    graph_mapping_items = _runtime_mapping_items(layout.graph_mapping)
+    detached_search_roots: list[tuple[Any, Any]] = [
+        (("graph-metadata", index), value)
+        for index, (key, value) in enumerate(graph_mapping_items)
+        if not _is_runtime_graph_key(key)
+    ]
+    detached_search_roots.extend(
+        (("node-metadata", node_index, value_index), value)
+        for node_index, (_node, data) in enumerate(layout.node_data)
+        for value_index, (_key, value) in enumerate(_runtime_mapping_items(data))
+    )
+    detached_search_roots.extend(
+        (("edge-metadata", edge_index, value_index), value)
+        for edge_index, edge in enumerate(layout.edges)
+        for value_index, (_key, value) in enumerate(
+            _runtime_mapping_items(edge[-1])
+        )
+    )
+    manual_state_items = _discover_runtime_manual_state_items(
+        tuple(detached_search_roots),
+        protected_values=_graph_transaction_protected_values(
+            graph,
+            _layout=layout,
+        ),
+    )
+    copy_memo.update({id(value): value for _path, value in manual_state_items})
+    for key, value in graph_mapping_items:
+        if _is_runtime_graph_key(key):
             copy_memo[id(value)] = value
-        _seed_runtime_lock_memo(value, copy_memo)
-    for _node, data in graph.nodes(data=True):
-        _seed_runtime_lock_memo(data, copy_memo)
-    for edge in (
-        graph.edges(keys=True, data=True)
-        if graph.is_multigraph()
-        else graph.edges(data=True)
-    ):
-        _seed_runtime_lock_memo(edge[-1], copy_memo)
-    for key, value in graph.graph.items():
-        if key in _RUNTIME_GRAPH_KEYS or "cache" in str(key).lower():
+        _seed_runtime_resource_memo(value, copy_memo)
+    for _node, data in layout.node_data:
+        _seed_runtime_resource_memo(data, copy_memo)
+    for edge in layout.edges:
+        _seed_runtime_resource_memo(edge[-1], copy_memo)
+    for key, value in graph_mapping_items:
+        if _is_runtime_graph_key(key):
             continue
         snapshot.graph[key] = deepcopy(value, copy_memo)
     # The monitor is never invoked while proposals are built, but its public
     # shape remains part of common operator argument preflight.
-    monitor = graph.graph.get("integrity_monitor")
+    monitor = _runtime_mapping_known_value(
+        layout.graph_mapping,
+        "integrity_monitor",
+    )
     if monitor is not None:
         snapshot.graph["integrity_monitor"] = monitor
 
     snapshot.add_nodes_from(
         (node, deepcopy(dict(data), copy_memo))
-        for node, data in graph.nodes(data=True)
+        for node, data in layout.node_data
     )
-    if graph.is_multigraph():
+    if layout.multigraph:
         snapshot.add_edges_from(
             (left, right, key, deepcopy(dict(data), copy_memo))
-            for left, right, key, data in graph.edges(keys=True, data=True)
+            for left, right, key, data in layout.edges
         )
     else:
         snapshot.add_edges_from(
             (left, right, deepcopy(dict(data), copy_memo))
-            for left, right, data in graph.edges(data=True)
+            for left, right, data in layout.edges
         )
     return snapshot
 
@@ -2827,7 +5652,7 @@ def execute_operator_major_stage(
 
     targets_tuple = _unique_stage_targets(targets)
 
-    transaction = transaction_snapshot or GraphTransactionSnapshot(graph)
+    transaction = _select_graph_transaction(graph, transaction_snapshot)
     try:
         _execute_gauss_seidel_targets(
             graph,
@@ -2937,7 +5762,7 @@ def execute_dissonance_stage(
         raise ValueError("Dissonance stage supports OZ only")
 
     targets_tuple = _unique_stage_targets(targets)
-    transaction = transaction_snapshot or GraphTransactionSnapshot(graph)
+    transaction = _select_graph_transaction(graph, transaction_snapshot)
     try:
         if not targets_tuple:
             if callable(compute_delta_nfr):
@@ -3127,7 +5952,7 @@ def execute_coupling_stage(
         raise ValueError("Coupling stage supports UM only")
 
     targets_tuple = _unique_stage_targets(targets)
-    transaction = transaction_snapshot or GraphTransactionSnapshot(graph)
+    transaction = _select_graph_transaction(graph, transaction_snapshot)
     try:
         if not targets_tuple:
             if callable(compute_delta_nfr):
@@ -3279,7 +6104,7 @@ def execute_self_organization_stage(
         raise ValueError("Self-organization stage supports THOL only")
 
     targets_tuple = _unique_stage_targets(targets)
-    transaction = transaction_snapshot or GraphTransactionSnapshot(graph)
+    transaction = _select_graph_transaction(graph, transaction_snapshot)
     try:
         if not targets_tuple:
             if callable(compute_delta_nfr):
@@ -3476,7 +6301,7 @@ def execute_pointwise_stage(
             "The pointwise EPI jump certificate requires at least one target"
         )
 
-    transaction = transaction_snapshot or GraphTransactionSnapshot(graph)
+    transaction = _select_graph_transaction(graph, transaction_snapshot)
     try:
         if not targets_tuple:
             if callable(compute_delta_nfr):
@@ -3764,7 +6589,7 @@ def execute_recursivity_stage(
         raise ValueError("Recursivity stage supports REMESH only")
 
     targets_tuple = _unique_stage_targets(targets)
-    transaction = transaction_snapshot or GraphTransactionSnapshot(graph)
+    transaction = _select_graph_transaction(graph, transaction_snapshot)
     try:
         if not targets_tuple:
             if callable(compute_delta_nfr):
@@ -3911,7 +6736,7 @@ def execute_neighbor_stage(
         raise TypeError("include_epi_jump_certificate must be a bool")
 
     targets_tuple = _unique_stage_targets(targets)
-    transaction = transaction_snapshot or GraphTransactionSnapshot(graph)
+    transaction = _select_graph_transaction(graph, transaction_snapshot)
     try:
         if not targets_tuple:
             if callable(compute_delta_nfr):

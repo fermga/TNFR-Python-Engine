@@ -208,7 +208,7 @@ import hashlib
 import heapq
 import math
 import random
-from collections import deque
+from collections import defaultdict, deque
 from collections.abc import Hashable, Iterable, Mapping, MutableMapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass, field
@@ -236,17 +236,31 @@ from ..mathematics.unified_numerical import np
 from ..rng import make_rng, resolve_graph_seed, validate_seed
 from ..types import RemeshMeta
 from ..utils import angle_diff, cached_import, edge_version_update
+from ..utils._structural_signature import (
+    StructuralSignatureError,
+    proof_stamps_are_identical,
+    structural_proof_signature,
+)
 from ._delayed_remesh_kernel import (
     DelayedRemeshNodeProposal,
     DelayedRemeshPlan,
     DelayedRemeshResult,
     DelayedRemeshStabilityEvidence,
+    _materialize_indexed_history,
     build_delayed_remesh_plan,
 )
 from .factor_contracts import (
     canonical_glyph_factor_defaults,
     validate_glyph_factor,
     validate_glyph_factors,
+)
+from .network_stage import (
+    GraphTransactionSnapshot,
+    _networkx_runtime_layout,
+    _runtime_class_mro,
+    _runtime_mapping_items,
+    _runtime_stored_attribute,
+    _set_runtime_mapping_item,
 )
 
 CommunityGraph: TypeAlias = Any
@@ -255,6 +269,35 @@ CommunityModule: TypeAlias = ModuleType
 RemeshEdge: TypeAlias = tuple[Hashable, Hashable]
 NetworkxModules: TypeAlias = tuple[NetworkxModule, CommunityModule]
 RemeshConfigValue: TypeAlias = bool | float | int
+
+_NUMPY_INTEGER_TYPE_NAMES = (
+    "int8",
+    "int16",
+    "int32",
+    "int64",
+    "uint8",
+    "uint16",
+    "uint32",
+    "uint64",
+)
+_NUMPY_EXACT_INTEGER_SCALAR_TYPES = (
+    frozenset(
+        scalar_type
+        for name in _NUMPY_INTEGER_TYPE_NAMES
+        if (scalar_type := getattr(np, name, None)) is not None
+    )
+    if np is not None
+    else frozenset()
+)
+_NUMPY_EXACT_REAL_SCALAR_TYPES = _NUMPY_EXACT_INTEGER_SCALAR_TYPES | (
+    frozenset(
+        scalar_type
+        for name in ("float16", "float32", "float64", "longdouble")
+        if (scalar_type := getattr(np, name, None)) is not None
+    )
+    if np is not None
+    else frozenset()
+)
 
 # ---------------------------------------------------------------------------
 # Latency detection threshold (νf → 0 for SHA-frozen nodes)
@@ -1216,29 +1259,106 @@ def _get_networkx_modules() -> NetworkxModules:
     return cast(NetworkxModule, nx), cast(CommunityModule, nx_comm)
 
 
-def _remesh_alpha_info(G: CommunityGraph) -> tuple[float, str]:
+_RAW_MISSING = object()
+
+
+def _raw_string_entry(
+    mapping: MutableMapping[Any, Any],
+    key: str,
+    default: Any = _RAW_MISSING,
+) -> tuple[bool, Any]:
+    """Read one known string key without invoking mapping overrides."""
+
+    for candidate, value in _runtime_mapping_items(mapping):
+        if type(candidate) is str and candidate == key:
+            return True, value
+    return False, default
+
+
+def _raw_graph_parameter(
+    graph_mapping: MutableMapping[Any, Any],
+    key: str,
+) -> Any:
+    """Resolve one graph configuration scalar through raw storage."""
+
+    present, value = _raw_string_entry(graph_mapping, key)
+    if present:
+        return value
+    return DEFAULTS[key]
+
+
+def _raw_alias_entry(
+    mapping: MutableMapping[Any, Any],
+    aliases: tuple[str, ...],
+    default: Any = _RAW_MISSING,
+) -> tuple[str | None, Any]:
+    """Resolve the first present canonical alias from raw mapping items."""
+
+    items = _runtime_mapping_items(mapping)
+    for alias in aliases:
+        for key, value in items:
+            if type(key) is str and key == alias:
+                return alias, value
+    return None, default
+
+
+def _set_raw_alias(
+    mapping: MutableMapping[Any, Any],
+    aliases: tuple[str, ...],
+    value: Any,
+) -> None:
+    """Write the first stored alias through a known mapping base."""
+
+    alias, _previous = _raw_alias_entry(mapping, aliases)
+    selected = aliases[0] if alias is None else alias
+    _set_runtime_mapping_item(mapping, selected, value)
+
+
+def _runtime_sequence_length(value: Any, *, label: str) -> int:
+    """Return the length of a safely materialized runtime sequence."""
+
+    return len(_materialize_indexed_history(value, label=label))
+
+
+def _remesh_alpha_info(
+    G: CommunityGraph,
+    *,
+    _layout: Any | None = None,
+) -> tuple[float, str]:
     """Return a validated ``(alpha, source)`` with explicit precedence."""
-    hard_override = G.graph.get(
-        "REMESH_ALPHA_HARD", REMESH_DEFAULTS["REMESH_ALPHA_HARD"]
+    layout = _networkx_runtime_layout(G) if _layout is None else _layout
+    graph_mapping = layout.graph_mapping
+    _present, hard_override = _raw_string_entry(
+        graph_mapping,
+        "REMESH_ALPHA_HARD",
+        REMESH_DEFAULTS["REMESH_ALPHA_HARD"],
     )
     if type(hard_override) is not bool:
         raise TNFRValueError("REMESH_ALPHA_HARD must be a bool")
     if hard_override:
-        value = G.graph.get("REMESH_ALPHA", REMESH_DEFAULTS["REMESH_ALPHA"])
+        _present, value = _raw_string_entry(
+            graph_mapping,
+            "REMESH_ALPHA",
+            REMESH_DEFAULTS["REMESH_ALPHA"],
+        )
         return (
             validate_glyph_factor("REMESH_alpha", value),
             "REMESH_ALPHA",
         )
 
-    raw_factors = G.graph.get("GLYPH_FACTORS")
+    _present, raw_factors = _raw_string_entry(graph_mapping, "GLYPH_FACTORS", None)
     if raw_factors is not None:
-        factors = validate_glyph_factors(raw_factors, glyph="REMESH")
+        factors = validate_glyph_factors(
+            dict(_runtime_mapping_items(raw_factors)),
+            glyph="REMESH",
+        )
         if "REMESH_alpha" in factors:
             return factors["REMESH_alpha"], "GLYPH_FACTORS.REMESH_alpha"
 
-    if "REMESH_ALPHA" in G.graph:
+    alpha_present, alpha_value = _raw_string_entry(graph_mapping, "REMESH_ALPHA")
+    if alpha_present:
         return (
-            validate_glyph_factor("REMESH_alpha", G.graph["REMESH_ALPHA"]),
+            validate_glyph_factor("REMESH_alpha", alpha_value),
             "REMESH_ALPHA",
         )
 
@@ -1251,18 +1371,96 @@ def _remesh_alpha_info(G: CommunityGraph) -> tuple[float, str]:
 
 def _materialize_network_remesh_configuration(
     G: CommunityGraph,
+    *,
+    _layout: Any | None = None,
 ) -> DelayedRemeshConfiguration:
     """Resolve and freeze every deterministic delayed-map control."""
 
-    alpha, alpha_source = _remesh_alpha_info(G)
+    layout = _networkx_runtime_layout(G) if _layout is None else _layout
+    graph_mapping = layout.graph_mapping
+    alpha, alpha_source = _remesh_alpha_info(G, _layout=layout)
     return materialize_delayed_remesh_configuration(
-        tau_local=get_param(G, "REMESH_TAU_LOCAL"),
-        tau_global=get_param(G, "REMESH_TAU_GLOBAL"),
+        tau_local=_raw_graph_parameter(graph_mapping, "REMESH_TAU_LOCAL"),
+        tau_global=_raw_graph_parameter(graph_mapping, "REMESH_TAU_GLOBAL"),
         alpha=alpha,
         alpha_source=alpha_source,
-        epi_min=G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)),
-        epi_max=G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)),
-        clip_mode=G.graph.get("CLIP_MODE", "hard"),
+        epi_min=_raw_graph_parameter(graph_mapping, "EPI_MIN"),
+        epi_max=_raw_graph_parameter(graph_mapping, "EPI_MAX"),
+        clip_mode=_raw_graph_parameter(graph_mapping, "CLIP_MODE"),
+    )
+
+
+_REMESH_CONFIGURATION_INPUT_KEYS = (
+    "REMESH_TAU_LOCAL",
+    "REMESH_TAU_GLOBAL",
+    "REMESH_ALPHA_HARD",
+    "REMESH_ALPHA",
+    "GLYPH_FACTORS",
+    "EPI_MIN",
+    "EPI_MAX",
+    "CLIP_MODE",
+)
+
+
+def _remesh_configuration_input_signature(
+    G: CommunityGraph,
+    *,
+    retained_references: list[Any] | None = None,
+) -> tuple[Any, ...]:
+    """Seal raw delayed-map controls without re-running numeric coercions."""
+
+    layout = _networkx_runtime_layout(G)
+    entries: list[tuple[str, bool, Any]] = []
+    for key in _REMESH_CONFIGURATION_INPUT_KEYS:
+        present, value = _raw_string_entry(layout.graph_mapping, key, None)
+        entries.append(
+            (
+                key,
+                present,
+                structural_proof_signature(
+                    value,
+                    identity_sensitive=True,
+                    _retained_references=retained_references,
+                ),
+            )
+        )
+    return (
+        type(G),
+        id(layout.graph_mapping),
+        tuple(entries),
+    )
+
+
+def _materialize_remesh_runtime_controls(
+    graph_mapping: MutableMapping[Any, Any],
+) -> tuple[bool, bool, bool, int]:
+    """Freeze strict logging/history controls outside the delayed-map record."""
+
+    from ..validation.window import validate_window
+
+    log_present, log_events = _raw_string_entry(
+        graph_mapping,
+        "REMESH_LOG_EVENTS",
+        REMESH_DEFAULTS["REMESH_LOG_EVENTS"],
+    )
+    if type(log_events) is not bool:
+        raise TNFRValueError("REMESH_LOG_EVENTS must be a bool")
+    maxlen_present, raw_maxlen = _raw_string_entry(
+        graph_mapping,
+        "HISTORY_MAXLEN",
+        DEFAULTS["HISTORY_MAXLEN"],
+    )
+    if type(raw_maxlen) is int:
+        maxlen = raw_maxlen
+    elif type(raw_maxlen) in _NUMPY_EXACT_INTEGER_SCALAR_TYPES:
+        maxlen = int(raw_maxlen)
+    else:
+        raise TNFRValueError("HISTORY_MAXLEN must be a nonnegative int")
+    return (
+        log_present,
+        log_events,
+        maxlen_present,
+        validate_window(maxlen),
     )
 
 
@@ -1270,58 +1468,86 @@ _REMESH_PROTECTED_GRAPH_MISSING = object()
 
 
 def _contract_values_equal(left: Any, right: Any) -> bool:
-    """Compare detached callback-boundary state without NumPy ambiguity."""
+    """Compare protected values by the shared bit-faithful structure."""
 
-    if isinstance(left, Mapping) and isinstance(right, Mapping):
-        if tuple(left) != tuple(right):
-            return False
-        return all(
-            _contract_values_equal(left[key], right[key]) for key in left
+    try:
+        return bool(
+            structural_proof_signature(left)
+            == structural_proof_signature(right)
         )
-    if isinstance(left, (list, tuple, deque)) and isinstance(
-        right, (list, tuple, deque)
-    ):
-        if type(left) is not type(right) or len(left) != len(right):
-            return False
-        if isinstance(left, deque) and left.maxlen != right.maxlen:
-            return False
-        return all(
-            _contract_values_equal(lhs, rhs)
-            for lhs, rhs in zip(left, right, strict=True)
-        )
-    try:
-        if isinstance(left, np.ndarray) or isinstance(right, np.ndarray):
-            return bool(np.array_equal(left, right, equal_nan=True))
-    except (AttributeError, TypeError, ValueError):
+    except (StructuralSignatureError, TypeError, ValueError):
         return False
-    try:
-        outcome = left == right
-    except Exception:
-        return False
-    if isinstance(outcome, bool):
-        return outcome
-    try:
-        return bool(outcome)
-    except (TypeError, ValueError):
-        return False
+
+
+def _remesh_configuration_input_signatures_are_identical(
+    left: tuple[Any, ...],
+    right: tuple[Any, ...],
+) -> bool:
+    """Compare two raw configuration seals without invoking live values."""
+
+    return bool(
+        len(left) == 3
+        and len(right) == 3
+        and left[0] is right[0]
+        and left[1] == right[1]
+        and proof_stamps_are_identical(left[2], right[2])
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class _RemeshGraphSurfaceState:
+    """Immutable proof of one graph-owned surface and optional list content."""
+
+    signature: Any
+    sequence_items: tuple[Any, ...] | None
+    sequence_signature: Any | None
+    opaque_references: tuple[Any, ...] = field(repr=False, compare=False)
+    retained_references: tuple[Any, ...] = field(repr=False, compare=False)
 
 
 def _snapshot_graph_surface(
     G: CommunityGraph,
     key: str,
 ) -> tuple[bool, Any, Any]:
-    """Capture graph-owned surface presence, identity and detached content."""
+    """Capture surface identity and structure without virtual mapping reads."""
 
-    if key not in G.graph:
+    layout = _networkx_runtime_layout(G)
+    present, value = _raw_string_entry(layout.graph_mapping, key)
+    if not present:
         return False, _REMESH_PROTECTED_GRAPH_MISSING, None
-    value = G.graph[key]
+    opaque_references = (
+        G,
+        *(node for node, _data in layout.node_data),
+    )
+    retained_references: list[Any] = []
     try:
-        detached = deepcopy(value)
-    except Exception as exc:
+        signature = structural_proof_signature(
+            value,
+            opaque_references=opaque_references,
+            identity_sensitive=True,
+            _retained_references=retained_references,
+        )
+        if list in _runtime_class_mro(type(value)):
+            sequence_items = tuple(list.__iter__(value))
+            sequence_signature = structural_proof_signature(
+                sequence_items,
+                opaque_references=opaque_references,
+            )
+        else:
+            sequence_items = None
+            sequence_signature = None
+    except (StructuralSignatureError, TNFRValueError, TypeError, ValueError) as exc:
         raise TNFRValueError(
             f"graph surface {key!r} cannot be frozen for REMESH"
         ) from exc
-    return True, value, detached
+    state = _RemeshGraphSurfaceState(
+        signature=signature,
+        sequence_items=sequence_items,
+        sequence_signature=sequence_signature,
+        opaque_references=opaque_references,
+        retained_references=tuple(retained_references),
+    )
+    return True, value, state
 
 
 def _require_same_graph_surface(
@@ -1332,11 +1558,13 @@ def _require_same_graph_surface(
     """Reject callback mutation of one frozen graph-owned surface."""
 
     observed = _snapshot_graph_surface(G, key)
-    if (
-        observed[0] != expected[0]
-        or observed[1] is not expected[1]
-        or not _contract_values_equal(observed[2], expected[2])
-    ):
+    changed = observed[0] != expected[0]
+    if not changed and expected[0]:
+        changed = bool(
+            observed[1] is not expected[1]
+            or observed[2].signature != expected[2].signature
+        )
+    if changed:
         raise TNFRValueError(
             f"REMESH callback changed protected graph surface {key!r}"
         )
@@ -1350,24 +1578,35 @@ def _snapshot_alias_channels(
 
     aliases = (ALIAS_VF, ALIAS_DNFR, ALIAS_THETA)
     try:
-        return tuple(
+        layout = _networkx_runtime_layout(G)
+        observed_nodes = tuple(node for node, _data in layout.node_data)
+        if structural_proof_signature(observed_nodes) != structural_proof_signature(
+            nodes
+        ):
+            raise TNFRValueError("REMESH node support changed")
+        state = tuple(
             (
                 node,
                 tuple(
                     tuple(
                         (
                             alias,
-                            alias in G.nodes[node],
-                            deepcopy(G.nodes[node].get(alias)),
+                            *(lambda entry: (entry[0], entry[1]))(
+                                _raw_string_entry(node_data, alias, None)
+                            ),
                         )
                         for alias in channel_aliases
                     )
                     for channel_aliases in aliases
                 ),
             )
-            for node in nodes
+            for node, node_data in layout.node_data
         )
-    except Exception as exc:
+        return structural_proof_signature(
+            state,
+            opaque_references=(G, *nodes),
+        )
+    except (StructuralSignatureError, TNFRValueError, TypeError, ValueError) as exc:
         raise TNFRValueError(
             "REMESH structural channels cannot be frozen"
         ) from exc
@@ -1377,16 +1616,22 @@ def _snapshot_edge_state(G: CommunityGraph) -> tuple[Any, ...]:
     """Freeze ordered edge support, keys and attributes."""
 
     try:
-        if G.is_multigraph():
-            return tuple(
-                (left, right, key, deepcopy(dict(data)))
-                for left, right, key, data in G.edges(keys=True, data=True)
-            )
-        return tuple(
-            (left, right, deepcopy(dict(data)))
-            for left, right, data in G.edges(data=True)
+        layout = _networkx_runtime_layout(G)
+        return structural_proof_signature(
+            (
+                layout.directed,
+                layout.multigraph,
+                tuple(
+                    (*edge[:-1], tuple(_runtime_mapping_items(edge[-1])))
+                    for edge in layout.edges
+                ),
+            ),
+            opaque_references=(
+                G,
+                *(node for node, _data in layout.node_data),
+            ),
         )
-    except Exception as exc:
+    except (StructuralSignatureError, TNFRValueError, TypeError, ValueError) as exc:
         raise TNFRValueError("REMESH edge state cannot be frozen") from exc
 
 
@@ -1397,13 +1642,22 @@ def _snapshot_epi_time_histories(
     """Freeze canonical physical EPI histories after the right endpoint."""
 
     snapshots = []
-    for node in nodes:
-        history = G.nodes[node].get("epi_time_history")
+    layout = _networkx_runtime_layout(G)
+    if structural_proof_signature(
+        tuple(node for node, _data in layout.node_data)
+    ) != structural_proof_signature(nodes):
+        raise TNFRValueError("REMESH EPI-time node support changed")
+    for node, node_data in layout.node_data:
+        _present, history = _raw_string_entry(
+            node_data,
+            "epi_time_history",
+            None,
+        )
         if type(history) is not deque:
             raise TNFRValueError(
                 "REMESH EPI-time boundary did not materialize a canonical deque"
             )
-        snapshots.append((node, history, tuple(history)))
+        snapshots.append((node, history, tuple(deque.__iter__(history))))
     return tuple(snapshots)
 
 
@@ -1418,9 +1672,10 @@ def _require_same_epi_time_histories(
     )
     for current, frozen in zip(observed, expected, strict=True):
         if (
-            current[0] != frozen[0]
+            current[0] is not frozen[0]
             or current[1] is not frozen[1]
-            or current[2] != frozen[2]
+            or structural_proof_signature(current[2])
+            != structural_proof_signature(frozen[2])
         ):
             raise TNFRValueError(
                 "REMESH callback changed authoritative epi_time_history"
@@ -1430,10 +1685,11 @@ def _require_same_epi_time_histories(
 def _snapshot_runtime_clock(G: CommunityGraph) -> tuple[bool, type[Any], Any]:
     """Freeze the physical-time coordinate used for the REMESH jump."""
 
-    if "_t" not in G.graph:
+    graph_mapping = _networkx_runtime_layout(G).graph_mapping
+    present, value = _raw_string_entry(graph_mapping, "_t")
+    if not present:
         return False, type(None), None
-    value = G.graph["_t"]
-    return True, type(value), deepcopy(value)
+    return True, type(value), structural_proof_signature(value)
 
 
 def _require_same_runtime_clock(
@@ -1450,14 +1706,29 @@ def _require_same_runtime_clock(
 
 
 def _snapshot_topology(G: CommunityGraph, nx: NetworkxModule) -> str | None:
-    """Return a hash representing the current graph topology."""
+    """Return a safe hash of full ordered topology and multigraph keys."""
+
+    del nx
     try:
-        n_nodes = G.number_of_nodes()
-        n_edges = G.number_of_edges()
-        degs = sorted(d for _, d in G.degree())
-        topo_str = f"n={n_nodes};m={n_edges};deg=" + ",".join(map(str, degs))
-        return hashlib.blake2b(topo_str.encode(), digest_size=6).hexdigest()
-    except (AttributeError, TypeError, nx.NetworkXError):
+        layout = _networkx_runtime_layout(G)
+        topology = (
+            layout.directed,
+            layout.multigraph,
+            tuple(node for node, _data in layout.node_data),
+            tuple(edge[:-1] for edge in layout.edges),
+        )
+        signature = structural_proof_signature(
+            topology,
+            opaque_references=(
+                G,
+                *(node for node, _data in layout.node_data),
+            ),
+        )
+        return hashlib.blake2b(
+            repr(signature).encode("utf-8"),
+            digest_size=16,
+        ).hexdigest()
+    except (StructuralSignatureError, TNFRValueError, TypeError, ValueError):
         return None
 
 
@@ -1492,36 +1763,56 @@ def _scalar_epi_state(G: CommunityGraph) -> tuple[tuple[Hashable, float], ...]:
 
     from ._epi_domain import require_real_scalar_epi
 
-    return tuple(
-        (
-            node,
-            require_real_scalar_epi(
-                get_attr(
-                    data,
-                    ALIAS_EPI,
-                    0.0,
-                    strict=True,
-                    conv=lambda value: value,
+    values: list[tuple[Hashable, float]] = []
+    for node, data in _networkx_runtime_layout(G).node_data:
+        _alias, raw = _raw_alias_entry(data, ALIAS_EPI, 0.0)
+        values.append(
+            (
+                node,
+                require_real_scalar_epi(
+                    raw,
+                    operator="Recursivity",
+                    label=f"node {node!r} EPI",
                 ),
-                operator="Recursivity",
-                label=f"node {node!r} EPI",
-            ),
+            )
         )
-        for node, data in G.nodes(data=True)
+    return tuple(values)
+
+
+def _snapshot_epi_values(
+    nodes: tuple[Hashable, ...],
+    values: tuple[float, ...],
+) -> tuple[float, str]:
+    """Return the exact checksum of one already materialized EPI vector."""
+
+    if len(nodes) != len(values):
+        raise TNFRValueError("EPI snapshot support and values must align")
+    records = tuple(
+        (
+            structural_proof_signature(node, identity_sensitive=True),
+            value,
+        )
+        for node, value in zip(nodes, values, strict=True)
     )
+    mean_val = _finite_remesh_mean(values, label="EPI snapshot mean")
+    signature = structural_proof_signature(records)
+    checksum = hashlib.blake2b(
+        repr(signature).encode("utf-8"),
+        digest_size=16,
+    ).hexdigest()
+    return float(mean_val), checksum
 
 
 def _snapshot_epi(G: CommunityGraph) -> tuple[float, str]:
-    """Return ``(mean, checksum)`` of the node EPI values."""
-    buf = StringIO()
-    values = []
-    for n, data in G.nodes(data=True):
-        v = _as_float(get_attr(data, ALIAS_EPI, 0.0))
-        values.append(v)
-        buf.write(f"{str(n)}:{round(v, 6)};")
-    mean_val = _finite_remesh_mean(values, label="EPI snapshot mean")
-    checksum = hashlib.blake2b(buf.getvalue().encode(), digest_size=6).hexdigest()
-    return float(mean_val), checksum
+    """Return mean and an exact binary64, hook-free node/EPI checksum."""
+
+    nodes: list[Hashable] = []
+    values: list[float] = []
+    for node, data in _networkx_runtime_layout(G).node_data:
+        _alias, raw = _raw_alias_entry(data, ALIAS_EPI, 0.0)
+        nodes.append(node)
+        values.append(_as_float(raw))
+    return _snapshot_epi_values(tuple(nodes), tuple(values))
 
 
 def _latest_remesh_history_scalar(
@@ -1530,20 +1821,31 @@ def _latest_remesh_history_scalar(
 ) -> float | None:
     """Read one optional finite scalar without retaining mutable metadata."""
 
-    series = history.get(key)
+    try:
+        present, series = _raw_string_entry(history, key, None)
+    except TNFRValueError as exc:
+        raise TNFRValueError("graph history must be a supported mapping") from exc
+    if not present:
+        return None
     if series is None:
         return None
-    if isinstance(series, (str, bytes, bytearray, Mapping)):
-        raise TNFRValueError(f"history {key!r} must be an indexed scalar series")
     try:
-        if len(series) == 0:
+        items = _materialize_indexed_history(
+            series,
+            label=f"history {key!r}",
+        )
+        if not items:
             return None
-        raw = series[-1]
-    except (IndexError, KeyError, TypeError) as exc:
+        raw = items[-1]
+    except TNFRValueError as exc:
         raise TNFRValueError(
             f"history {key!r} must be an indexed scalar series"
         ) from exc
-    if isinstance(raw, bool) or not isinstance(raw, Real):
+    raw_type = type(raw)
+    if (
+        raw_type not in (int, float, Fraction)
+        and raw_type not in _NUMPY_EXACT_REAL_SCALAR_TYPES
+    ):
         raise TNFRValueError(f"history {key!r} must contain finite scalars")
     try:
         value = float(raw)
@@ -1556,35 +1858,259 @@ def _latest_remesh_history_scalar(
     return value
 
 
-def _log_remesh_event(G: CommunityGraph, meta: RemeshMeta) -> None:
-    """Store canonical metadata and invoke read-only REMESH observers."""
-    from ..glyph_history import append_metric
-    from ..utils import CallbackEvent, callback_manager
+def _ensure_raw_remesh_history(
+    graph_mapping: MutableMapping[Any, Any],
+    *,
+    maxlen: int,
+) -> MutableMapping[Any, Any]:
+    """Materialize canonical telemetry history through raw mapping storage."""
 
-    G.graph["_REMESH_META"] = meta
+    from ..glyph_history import HistoryDict
+
+    present, history = _raw_string_entry(graph_mapping, "history", None)
+    replaced = False
+    if maxlen == 0:
+        if type(history) is HistoryDict:
+            history = dict(_runtime_mapping_items(history))
+            replaced = True
+        elif not present or history is None:
+            history = {}
+            replaced = True
+        else:
+            _runtime_mapping_items(history)
+    else:
+        history_maxlen = (
+            _runtime_stored_attribute(history, "_maxlen")
+            if type(history) is HistoryDict
+            else None
+        )
+        if type(history) is not HistoryDict or history_maxlen != maxlen:
+            source_items = () if history is None else _runtime_mapping_items(history)
+            safe_source: dict[Any, Any] = {}
+            for key, value in source_items:
+                owners = _runtime_class_mro(type(value))
+                safe_source[key] = (
+                    list(list.__iter__(value)) if list in owners else value
+                )
+            history = HistoryDict(safe_source, maxlen=maxlen)
+            replaced = True
+        excess = len(_runtime_mapping_items(history)) - maxlen
+        if excess > 0:
+            history.pop_least_used_batch(excess)
+    if replaced:
+        _set_runtime_mapping_item(graph_mapping, "history", history)
+    if history is None:
+        raise TNFRValueError("graph history must be a mapping")
+    _runtime_mapping_items(history)
+    return history
+
+
+def _raw_current_step_idx(history: MutableMapping[Any, Any]) -> int:
+    """Read the telemetry step without graph or mapping virtual methods."""
+
+    present, steps = _raw_string_entry(history, "C_steps", None)
+    if not present or steps is None:
+        return 0
+    return _runtime_sequence_length(steps, label="history 'C_steps'")
+
+
+def _append_raw_history_event(
+    history: MutableMapping[Any, Any],
+    meta: RemeshMeta,
+) -> Any:
+    """Append one event through built-in list/deque primitives."""
+
+    present, events = _raw_string_entry(history, "remesh_events", None)
+    if not present:
+        events = []
+        _set_runtime_mapping_item(history, "remesh_events", events)
+    owners = _runtime_class_mro(type(events))
+    record = dict(meta)
+    if deque in owners:
+        deque.append(events, record)
+    elif list in owners:
+        list.append(events, record)
+    else:
+        raise TNFRValueError(
+            "canonical remesh_events telemetry must be a list or deque"
+        )
+    return events
+
+
+def _log_remesh_event(
+    G: CommunityGraph,
+    meta: RemeshMeta,
+    *,
+    log_events: bool,
+    history_maxlen: int,
+) -> bool:
+    """Store canonical metadata and invoke read-only REMESH observers."""
+    from ..utils import CallbackEvent, CallbackSpec, callback_manager
+    from .event_runtime import (
+        _filtered_graph_configuration_signature,
+        _networkx_cached_view_items,
+        _remove_transient_networkx_cached_views,
+    )
+
+    if type(log_events) is not bool:
+        raise TNFRValueError("REMESH_LOG_EVENTS must be a bool")
+    layout = _networkx_runtime_layout(G)
+    graph_mapping = layout.graph_mapping
+    _set_runtime_mapping_item(graph_mapping, "_REMESH_META", meta)
     logged_history = None
     logged_events = None
-    logged_snapshot = None
-    if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
-        logged_history = G.graph.setdefault("history", {})
-        append_metric(logged_history, "remesh_events", dict(meta))
-        logged_events = logged_history.get("remesh_events")
+    logged_signature = None
+    if log_events:
+        logged_history = _ensure_raw_remesh_history(
+            graph_mapping,
+            maxlen=history_maxlen,
+        )
+        logged_events = _append_raw_history_event(logged_history, meta)
         try:
-            logged_snapshot = deepcopy(logged_events)
-        except Exception as exc:
+            logged_signature = structural_proof_signature(
+                logged_events,
+                identity_sensitive=True,
+            )
+        except StructuralSignatureError as exc:
             raise TNFRValueError(
                 "canonical REMESH telemetry cannot be frozen"
             ) from exc
 
-    callback_manager.invoke_callbacks(G, CallbackEvent.ON_REMESH.value, dict(meta))
-    if logged_history is not None and (
-        G.graph.get("history") is not logged_history
-        or logged_history.get("remesh_events") is not logged_events
-        or not _contract_values_equal(logged_events, logged_snapshot)
-    ):
-        raise TNFRValueError(
-            "REMESH callback changed canonical remesh_events telemetry"
+    callbacks_present, _callbacks = _raw_string_entry(
+        graph_mapping,
+        "callbacks",
+        None,
+    )
+    observer_graph_preserved = True
+    if callbacks_present:
+        if type(_callbacks) not in (dict, defaultdict):
+            raise TNFRValueError(
+                "REMESH callback registry must use canonical mapping storage"
+            )
+        normalization_layout = _networkx_runtime_layout(G)
+        normalization_nodes = tuple(
+            node for node, _data in normalization_layout.node_data
         )
+        normalization_state = (
+            _filtered_graph_configuration_signature(
+                G,
+                excluded_keys=frozenset({"callbacks", "_callbacks_dirty"}),
+                opaque_references=normalization_nodes,
+            ),
+            structural_proof_signature(
+                (
+                    normalization_layout.node_data,
+                    normalization_layout.edges,
+                ),
+                opaque_references=normalization_nodes,
+            ),
+        )
+        callback_registry = callback_manager._ensure_callbacks(G)
+        normalized_layout = _networkx_runtime_layout(G)
+        normalized_nodes = tuple(
+            node for node, _data in normalized_layout.node_data
+        )
+        normalized_state = (
+            _filtered_graph_configuration_signature(
+                G,
+                excluded_keys=frozenset({"callbacks", "_callbacks_dirty"}),
+                opaque_references=normalization_nodes,
+            ),
+            structural_proof_signature(
+                (normalized_layout.node_data, normalized_layout.edges),
+                opaque_references=normalization_nodes,
+            ),
+        )
+        if not proof_stamps_are_identical(
+            normalization_state,
+            normalized_state,
+        ):
+            raise TNFRValueError(
+                "REMESH callback normalization changed unrelated graph state"
+            )
+        normalized_callbacks_present, normalized_callbacks = _raw_string_entry(
+            normalized_layout.graph_mapping,
+            "callbacks",
+            None,
+        )
+        normalized_dirty_present, _normalized_dirty = _raw_string_entry(
+            normalized_layout.graph_mapping,
+            "_callbacks_dirty",
+            None,
+        )
+        if (
+            not normalized_callbacks_present
+            or normalized_callbacks is not callback_registry
+            or type(callback_registry) not in (dict, defaultdict)
+            or normalized_dirty_present
+        ):
+            raise TNFRValueError(
+                "REMESH callback registry normalization is not canonical"
+            )
+        opaque_callbacks: list[Any] = []
+        for _event, registry in _runtime_mapping_items(callback_registry):
+            for _name, spec in _runtime_mapping_items(registry):
+                if type(spec) is not CallbackSpec:
+                    raise TNFRValueError(
+                        "REMESH callback registry is not canonical"
+                    )
+                opaque_callbacks.append(tuple.__getitem__(spec, 1))
+        transient_views: list[tuple[str, Any]] = []
+        callback_references: list[Any] = []
+        _networkx_cached_view_items(G, transient_views=transient_views)
+        callback_graph_state = structural_proof_signature(
+            G,
+            opaque_references=tuple(opaque_callbacks),
+            identity_sensitive=True,
+            _retained_references=callback_references,
+        )
+        try:
+            callback_manager.invoke_callbacks(
+                G,
+                CallbackEvent.ON_REMESH.value,
+                dict(meta),
+            )
+            observed_callback_graph_state = structural_proof_signature(
+                G,
+                opaque_references=tuple(opaque_callbacks),
+                identity_sensitive=True,
+            )
+        finally:
+            _remove_transient_networkx_cached_views(G, transient_views)
+        observer_graph_preserved = proof_stamps_are_identical(
+            callback_graph_state,
+            observed_callback_graph_state,
+        )
+    if logged_history is not None:
+        observed_mapping = _networkx_runtime_layout(G).graph_mapping
+        history_present, observed_history = _raw_string_entry(
+            observed_mapping,
+            "history",
+            None,
+        )
+        events_present, observed_events = (
+            _raw_string_entry(observed_history, "remesh_events", None)
+            if history_present and observed_history is logged_history
+            else (False, None)
+        )
+        try:
+            observed_signature = structural_proof_signature(
+                observed_events,
+                identity_sensitive=True,
+            )
+        except StructuralSignatureError:
+            observed_signature = None
+        if (
+            not history_present
+            or observed_history is not logged_history
+            or not events_present
+            or observed_events is not logged_events
+            or observed_signature != logged_signature
+        ):
+            raise TNFRValueError(
+                "REMESH callback changed canonical remesh_events telemetry"
+            )
+    return observer_graph_preserved
 
 
 def plan_network_remesh(
@@ -1602,24 +2128,65 @@ def plan_network_remesh(
     value is replaced with current EPI.
     """
 
+    transaction = GraphTransactionSnapshot(G)
+    retained_references: list[Any] = []
+    try:
+        before = structural_proof_signature(
+            G,
+            identity_sensitive=True,
+            _retained_references=retained_references,
+        )
+        layout = _networkx_runtime_layout(G)
+        configuration = _materialize_network_remesh_configuration(
+            G,
+            _layout=layout,
+        )
+        plan = _plan_network_remesh_from_materialized(
+            G,
+            layout=layout,
+            configuration=configuration,
+            include_stability_evidence=include_stability_evidence,
+            metric_weights=metric_weights,
+        )
+        after = structural_proof_signature(G, identity_sensitive=True)
+        if after != before:
+            raise TNFRValueError(
+                "REMESH planning input materialization changed graph state"
+            )
+    except BaseException as failure:
+        transaction.restore_after_failure(G, failure)
+        raise
+    return plan
+
+
+def _plan_network_remesh_from_materialized(
+    G: CommunityGraph,
+    *,
+    layout: Any,
+    configuration: DelayedRemeshConfiguration,
+    include_stability_evidence: bool,
+    metric_weights: Mapping[Hashable, Any] | Sequence[Any] | None,
+) -> DelayedRemeshPlan:
+    """Build a proposal from one already materialized graph/layout boundary."""
+
     from ..dynamics.structural_clip import structural_clip
 
-    nodes = tuple(G.nodes)
-    current_epi = {
-        node: get_attr(
-            G.nodes[node],
-            ALIAS_EPI,
-            0.0,
-            strict=True,
-            conv=lambda value: value,
-        )
-        for node in nodes
-    }
-    configuration = _materialize_network_remesh_configuration(G)
+    nodes = tuple(node for node, _data in layout.node_data)
+    current_epi: dict[Hashable, Any] = {}
+    for node, node_data in layout.node_data:
+        _alias, value = _raw_alias_entry(node_data, ALIAS_EPI, 0.0)
+        current_epi[node] = value
+    history_present, history = _raw_string_entry(
+        layout.graph_mapping,
+        "_epi_hist",
+        (),
+    )
+    if not history_present:
+        history = ()
     return build_delayed_remesh_plan(
         node_order=nodes,
         current_epi=current_epi,
-        history=G.graph.get("_epi_hist", ()),
+        history=history,
         tau_local=configuration.tau_local,
         tau_global=configuration.tau_global,
         alpha=configuration.alpha,
@@ -1655,45 +2222,105 @@ def apply_network_remesh(
     alter capacity, pressure, phase, topology, delayed or physical EPI history,
     the runtime clock, hybrid event log, pressure hook, deterministic map
     configuration, alpha-source provenance or canonical event telemetry.
-    Violations restore graph-owned state; external effects already emitted by
-    a callback remain outside this graph snapshot.
+    Violations restore graph-owned state, including callback state reachable
+    from the graph. Effects outside graph and callback reachability cannot be
+    retracted by the transaction.
     """
 
-    from ..glyph_history import current_step_idx, ensure_history
-    from ._epi_domain import require_real_scalar_epi
-    from .network_stage import GraphTransactionSnapshot
-
-    configuration = _materialize_network_remesh_configuration(G)
-    plan = plan_network_remesh(
-        G,
-        include_stability_evidence=include_stability_evidence,
-        metric_weights=metric_weights,
+    preflight_layout = _networkx_runtime_layout(G)
+    history_present, raw_history = _raw_string_entry(
+        preflight_layout.graph_mapping,
+        "_epi_hist",
+        (),
     )
-    if not plan.applied:
-        return DelayedRemeshResult(status=plan.status, plan=plan)
-
-    nx, _ = _get_networkx_modules()
-    topo_hash = _snapshot_topology(G, nx)
-    epi_mean_before, epi_checksum_before = _snapshot_epi(G)
-    protected_channels = _snapshot_alias_channels(G, plan.node_order)
-    protected_edges = _snapshot_edge_state(G)
-    protected_epi_history = _snapshot_graph_surface(G, "_epi_hist")
-    protected_event_log = _snapshot_graph_surface(G, "hybrid_event_log")
-    protected_clock = _snapshot_runtime_clock(G)
-    pressure_hook_present = "compute_delta_nfr" in G.graph
-    pressure_hook = G.graph.get("compute_delta_nfr")
+    if history_present:
+        _materialize_indexed_history(raw_history)
     transaction = GraphTransactionSnapshot(G)
     try:
-        for proposal in plan.proposals:
-            set_attr(
-                G.nodes[proposal.node],
-                ALIAS_EPI,
-                proposal.bounded_epi,
+        retained_plan_references: list[Any] = []
+        plan_state_before = structural_proof_signature(
+            G,
+            identity_sensitive=True,
+            _retained_references=retained_plan_references,
+        )
+        layout = _networkx_runtime_layout(G)
+        retained_configuration_references: list[Any] = []
+        configuration_input_signature = _remesh_configuration_input_signature(
+            G,
+            retained_references=retained_configuration_references,
+        )
+        runtime_controls = _materialize_remesh_runtime_controls(
+            layout.graph_mapping
+        )
+        log_events = runtime_controls[1]
+        history_maxlen = runtime_controls[3]
+        configuration = _materialize_network_remesh_configuration(
+            G,
+            _layout=layout,
+        )
+        plan = _plan_network_remesh_from_materialized(
+            G,
+            layout=layout,
+            configuration=configuration,
+            include_stability_evidence=include_stability_evidence,
+            metric_weights=metric_weights,
+        )
+        if structural_proof_signature(G, identity_sensitive=True) != plan_state_before:
+            raise TNFRValueError(
+                "REMESH planning input materialization changed graph state"
             )
+        if not plan.applied:
+            return DelayedRemeshResult(status=plan.status, plan=plan)
 
-        G.graph["_REMESH_ALPHA_SRC"] = plan.alpha_source
-        epi_mean_after, epi_checksum_after = _snapshot_epi(G)
-        step_idx = current_step_idx(G)
+        nx, _ = _get_networkx_modules()
+        topo_hash = _snapshot_topology(G, nx)
+        epi_mean_before, epi_checksum_before = _snapshot_epi_values(
+            plan.node_order,
+            tuple(proposal.epi_now for proposal in plan.proposals),
+        )
+        protected_channels = _snapshot_alias_channels(G, plan.node_order)
+        protected_edges = _snapshot_edge_state(G)
+        protected_epi_history = _snapshot_graph_surface(G, "_epi_hist")
+        protected_event_log = _snapshot_graph_surface(G, "hybrid_event_log")
+        protected_clock = _snapshot_runtime_clock(G)
+        pressure_hook_present, pressure_hook = _raw_string_entry(
+            layout.graph_mapping,
+            "compute_delta_nfr",
+            None,
+        )
+
+        for proposal, (node, node_data) in zip(
+            plan.proposals,
+            layout.node_data,
+            strict=True,
+        ):
+            if proposal.node is not node:
+                raise RuntimeError("REMESH proposal lost node identity binding")
+            if type(node_data) is dict:
+                # Preserve the long-standing patch point for exact built-in
+                # mappings; factory subclasses use the raw writer below.
+                set_attr(node_data, ALIAS_EPI, proposal.bounded_epi)
+            else:
+                _set_raw_alias(
+                    node_data,
+                    ALIAS_EPI,
+                    proposal.bounded_epi,
+                )
+
+        _set_runtime_mapping_item(
+            layout.graph_mapping,
+            "_REMESH_ALPHA_SRC",
+            plan.alpha_source,
+        )
+        epi_mean_after, epi_checksum_after = _snapshot_epi_values(
+            plan.node_order,
+            tuple(proposal.bounded_epi for proposal in plan.proposals),
+        )
+        history = _ensure_raw_remesh_history(
+            layout.graph_mapping,
+            maxlen=history_maxlen,
+        )
+        step_idx = _raw_current_step_idx(history)
         raw_mean_after = _finite_remesh_mean(
             tuple(proposal.raw_epi for proposal in plan.proposals),
             label="raw REMESH proposal mean",
@@ -1712,14 +2339,10 @@ def apply_network_remesh(
             "epi_checksum_after": epi_checksum_after,
             "clip_mode": plan.clip_mode,
             "clipped_node_count": sum(
-                proposal.clipping_intervened
-                for proposal in plan.proposals
+                proposal.clipping_intervened for proposal in plan.proposals
             ),
         }
 
-        history = ensure_history(G)
-        if not isinstance(history, Mapping):
-            raise TNFRValueError("graph history must be a mapping")
         for history_key, meta_key in (
             ("stable_frac", "stable_frac_last"),
             ("phase_sync", "phase_sync_last"),
@@ -1733,34 +2356,66 @@ def apply_network_remesh(
 
         _record_mutation_flow_boundary(G)
         epi_time_histories = _snapshot_epi_time_histories(G, plan.node_order)
-        _log_remesh_event(G, meta)
+        observer_graph_preserved = _log_remesh_event(
+            G,
+            meta,
+            log_events=log_events,
+            history_maxlen=history_maxlen,
+        )
 
-        if tuple(G.nodes) != plan.node_order:
+        current_layout = _networkx_runtime_layout(G)
+        if (
+            len(current_layout.node_data) != len(plan.node_order)
+            or any(
+                observed is not expected
+                for (observed, _data), expected in zip(
+                    current_layout.node_data,
+                    plan.node_order,
+                    strict=True,
+                )
+            )
+        ):
             raise TNFRValueError(
                 "REMESH callback changed graph support during the transaction"
             )
-        for proposal in plan.proposals:
-            live_epi = require_real_scalar_epi(
-                get_attr(
-                    G.nodes[proposal.node],
-                    ALIAS_EPI,
-                    0.0,
-                    strict=True,
-                    conv=lambda value: value,
-                ),
-                operator="Recursivity",
-                label=f"node {proposal.node!r} committed EPI",
-            )
-            if live_epi != proposal.bounded_epi:
+        for proposal, (_node, node_data) in zip(
+            plan.proposals,
+            current_layout.node_data,
+            strict=True,
+        ):
+            _alias, raw_epi = _raw_alias_entry(node_data, ALIAS_EPI, 0.0)
+            if (
+                type(raw_epi) is not float
+                or structural_proof_signature(raw_epi)
+                != structural_proof_signature(proposal.bounded_epi)
+            ):
                 raise TNFRValueError(
                     "REMESH callback changed a committed EPI value",
                     context={"node": proposal.node},
                 )
-        if G.graph.get("_REMESH_META") != meta:
+        meta_present, observed_meta = _raw_string_entry(
+            current_layout.graph_mapping,
+            "_REMESH_META",
+            None,
+        )
+        if (
+            not meta_present
+            or observed_meta is not meta
+            or not _contract_values_equal(observed_meta, meta)
+        ):
             raise TNFRValueError(
                 "REMESH callback changed canonical event metadata"
             )
-        if G.graph.get("_REMESH_ALPHA_SRC") != plan.alpha_source:
+        alpha_present, observed_alpha_source = _raw_string_entry(
+            current_layout.graph_mapping,
+            "_REMESH_ALPHA_SRC",
+            None,
+        )
+        if (
+            not alpha_present
+            or structural_proof_signature(observed_alpha_source)
+            != structural_proof_signature(plan.alpha_source)
+        ):
             raise TNFRValueError(
                 "REMESH callback changed the canonical alpha source"
             )
@@ -1778,17 +2433,33 @@ def apply_network_remesh(
         _require_same_graph_surface(G, "hybrid_event_log", protected_event_log)
         _require_same_runtime_clock(G, protected_clock)
         _require_same_epi_time_histories(G, epi_time_histories)
-        if (
-            ("compute_delta_nfr" in G.graph) != pressure_hook_present
-            or G.graph.get("compute_delta_nfr") is not pressure_hook
+        observed_hook_present, observed_hook = _raw_string_entry(
+            _networkx_runtime_layout(G).graph_mapping,
+            "compute_delta_nfr",
+            None,
+        )
+        if observed_hook_present != pressure_hook_present or (
+            observed_hook_present and observed_hook is not pressure_hook
         ):
             raise TNFRValueError(
                 "REMESH callback changed the pressure-refresh hook"
             )
-        if _materialize_network_remesh_configuration(G) != configuration:
+        if not _remesh_configuration_input_signatures_are_identical(
+            _remesh_configuration_input_signature(G),
+            configuration_input_signature,
+        ):
             raise TNFRValueError(
                 "REMESH callback changed deterministic delayed-map configuration"
             )
+        current_controls = _materialize_remesh_runtime_controls(
+            current_layout.graph_mapping
+        )
+        if current_controls != runtime_controls:
+            raise TNFRValueError(
+                "REMESH callback changed logging or history configuration"
+            )
+        if observer_graph_preserved is False:
+            raise TNFRValueError("REMESH observer changed graph-owned state")
     except BaseException as failure:
         transaction.restore_after_failure(G, failure)
         raise

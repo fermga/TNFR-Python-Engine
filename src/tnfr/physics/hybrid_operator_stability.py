@@ -87,6 +87,10 @@ from .._exact_time import (
 )
 from ..mathematics._weight_normalization import normalize_weights
 from ..mathematics.unified_numerical import np
+from ..utils._structural_signature import (
+    proof_stamps_are_identical,
+    structural_proof_signature,
+)
 from ._exact_linear_algebra import (
     exact_matrix_inverse as _exact_matrix_inverse,
     exact_symmetric_semidefinite as _exact_symmetric_semidefinite,
@@ -556,7 +560,7 @@ def _affine_jump_proof_stamp(
 
     return (
         "affine_epi_jump_gain_v2",
-        tuple(nodes),
+        structural_proof_signature(tuple(nodes)),
         np.asarray(linear_map).shape,
         _finite_float_signature(linear_map),
         np.asarray(offset).shape,
@@ -687,9 +691,10 @@ class AffineEPIJumpGainCertificate:
                 self.consensus_counterexample_level,
                 self.exact_consensus_counterexample_energy_after,
             )
-        except (TypeError, ValueError, OverflowError):
+            observed = object.__getattribute__(self, "_proof_stamp")
+        except BaseException:
             return False
-        return self._proof_stamp == expected
+        return proof_stamps_are_identical(observed, expected)
 
     @property
     def supports_global_gain_theorem(self) -> bool:

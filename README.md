@@ -234,8 +234,29 @@ intervals that collapse or cannot land by direct binary64 addition, freezes the
 initial target tuple, and rolls back graph-owned flow and jump state on failure.
 Flow boundaries provide timestamped EPI evidence; zero-duration jumps are
 recorded separately and restart same-time EPI history after a state change.
-Every Mutation event therefore requires a positive immediately preceding flow
-whose displayed endpoint subtraction exactly equals its declared duration.
+During schedule execution the executor exclusively owns `epi_time_history`: any
+integrator write is rejected and rolls back the graph transaction, and only
+declared flow boundaries, including explicit physical-segment boundaries, are
+appended. Every Mutation event therefore requires a positive immediately
+preceding flow whose displayed endpoint subtraction exactly equals its declared
+duration.
+
+During one flow call an integrator may change only EPI, `dEPI_dt`,
+`d2EPI_dt2` and the runtime clock. A custom integrator is accepted only when
+the rationalized represented values satisfy, for every target,
+`EPI_right - EPI_left = dt * nu_f_left * DeltaNFR_left` exactly. This is a
+held-input nodal-equation identity; it does not certify numerical accuracy or
+solver order.
+
+The shared `GraphTransactionSnapshot` is bound to the graph that created it and
+cannot restore a merely value-equal graph. It preserves the identities and
+alias relations of NetworkX structural mappings and captures restorable state
+owned by configured callbacks. Snapshot preflight rejects mutable structural
+keys unless `__hash__` and `__eq__` use object identity, rejects custom
+`__deepcopy__` hooks, and rejects unmodelled opaque C state; common immutable C
+atoms remain admissible. Rollback covers capturable state reachable from the
+graph. Already emitted I/O or warnings, external resources, and aliases held
+only outside the graph remain outside that guarantee.
 
 `capture_nodal_flow_state(...)` and
 `certify_observed_nodal_flow_interval(...)` provide detached endpoint evidence
@@ -243,8 +264,11 @@ for one declared interval. They separate the exact rational nodal identity and
 pure-EPI diffusion/quotient result from binary64 held-pressure replays. The
 standalone certificate never infers runtime provenance.
 Passing `include_flow_certificates=True` to the event executor captures each
-positive interval immediately around the actual integrator call and returns an
-`ExecutedNodalFlowInterval`. Its broader
+positive unpartitioned interval immediately around its single actual integrator
+call and stores one `ExecutedNodalFlowInterval` in `flow_interval_evidence`. A
+physically partitioned parent instead stores its always-captured segment records
+inside `physical_flow_partition_evidence[*].segment_flow_evidence`. Each record's
+broader
 `runtime_bound_binary64_held_pressure_interval_identified` result covers one or
 more built-in Euler substeps when their represented duration sum equals the
 declared interval, Gamma is `none`, clipping and extended dynamics are inactive,
@@ -257,6 +281,39 @@ identity. Internal held-pressure substeps do not re-evaluate pressure and do not
 establish physical mesh refinement or a modal diffusion decision. No interval
 field by itself certifies solver accuracy, a glyph gain or future/repeated
 schedule stability.
+
+`build_physical_flow_partition(...)` instead divides one positive scheduled
+interval into at least two explicit physical segments. Passing the resulting
+`PhysicalFlowPartition` through `physical_flow_partitions=` makes the executor
+refresh `DeltaNFR` before every segment and once at the terminal boundary. Each
+refresh may modify pressure aliases and known derived pressure/cache
+state only. It must preserve EPI, capacity, phase, effective conductance,
+histories, the runtime clock, full edge state, persistent graph configuration
+and every non-pressure nodal field, including capturable state owned by a
+callable object used as the hook. Existing non-`None` cached pressure weights
+cannot change; the canonical default hook may initialize a missing or `None`
+cache. The same write restriction governs operator-stage pressure refreshes.
+The executor freezes the hook's presence and identity for the whole schedule
+and verifies them before invocation, so an integrator cannot install and run a
+replacement. Any violation or later failure rolls back the complete graph
+transaction. The executor returns one
+sealed `ExecutedPressureRefreshedFlowPartition` with all boundary snapshots,
+segment flow certificates and segment-start Euler modal diagnostics. Physical
+partitions force flow capture even when `include_flow_certificates=False`.
+
+For fixed pure-EPI diffusion, the exact-real held-pressure Euler model has modal
+factor `g_H(mu) = 1 - T*mu`; its pressure-refreshed counterpart has
+`g_R(mu) = product_k(1 - h_k*mu)`. These model factors generally differ even
+when `sum_k h_k = T`; internal numerical substeps still represent the held
+outer model. Actual endpoints remain binary64 observations and are not equated
+with either exact-real map by a modal diagnostic alone. The comparison reports
+ordinary binary64 evaluations of the factors only when every segment has a
+trusted held-pressure Euler replay and exactly the same node order, capacity and
+conductance as the baseline generator; equal spectra alone are insufficient.
+Exact endpoint identification and segment gain composition additionally require
+intact exact-affine certificates and one exact normalized metric ray. The record
+keeps solver accuracy, order, mesh convergence, adaptive grammar and future
+behavior explicitly uncertified.
 
 `observe_event_local_zhir_prejump(...)` pairs one sealed executed flow offline
 with a scheduled ZHIR boundary at the same exact and binary64 coordinate. It
@@ -272,9 +329,30 @@ support, duration, event coordinate and threshold but different positive
 substep counts. It certifies the represented gate decision only when both
 decisions agree and every exact binary64 rate difference is strictly smaller
 than the baseline distance to `xi`. Equality at the margin abstains. This is an
-internal held-pressure subdivision result; pressure-reevaluated refinement,
-modal decisions, solver accuracy/order, U4 readiness, adaptive grammar and
-future behavior remain open.
+internal held-pressure subdivision result; pressure-reevaluated execution and
+modal decisions lie outside its scope, as do solver accuracy/order, U4
+readiness, adaptive grammar and future behavior.
+
+`observe_event_local_zhir_physical_prejump(...)` reads the terminal segment of
+one sealed physical partition at a coordinate-paired ZHIR boundary. It keeps
+the actual terminal-segment Mutation secant separate from the offline secant
+over the whole parent interval. The live gate can use only the former.
+`compare_event_local_zhir_physical_refinement(...)` then compares that physical
+observation with a held-pressure baseline sharing the same initial state,
+duration, transport, threshold and event coordinate. It reports the observed
+gate decisions, the held outer modal factors and the product of the refreshed
+segment factors without asserting that they agree. A changed decision is a
+measured outcome, not a failed certificate.
+
+`observe_executed_event_local_zhir_physical_prejump(...)` takes one intact
+`OperatorEventExecutionResult` and a committed ZHIR `event_index`. It binds the
+scheduled event, executed event, immediately preceding physical partition,
+actual glyph stage, ordered Mutation decisions and their trigger certificates
+by identity within that one execution. Its positive claim is common execution
+provenance for that finite pre-jump window. This is stronger than
+`observe_event_local_zhir_physical_prejump(...)`, whose coordinate pairing is
+an offline observation and does not establish a shared execution.
+
 Passing `include_stage_certificates=True` implies flow capture and returns one
 `ExecutedGlyphStage` for every accepted event. The stage record binds the
 executor-owned pointwise certificate for AL/SHA/VAL/NUL/ZHIR/NAV, or the
@@ -314,9 +392,11 @@ and REMESH stability evidence; legacy REMESH metadata keeps unweighted means.
 Ordered node support, incoming history, the endpoint clock, the committed event
 log, phase, the pressure hook and deterministic REMESH configuration are
 protected. Edge support may change during the schedule, while delayed REMESH
-observers cannot change it or any stored non-EPI alias. Consensus drift,
-capacity changes and pressure
-refreshes remain separate. The optional post-REMESH refresh runs once only when
+observers are read-only over all graph-owned state, including topology,
+metadata, histories and stored non-EPI aliases. Capturable state reachable
+through a graph-owned callback is covered by the same rollback. Consensus
+drift, capacity changes and pressure refreshes remain separate. The optional
+post-REMESH refresh runs once only when
 the map applies. Exact observations remain authoritative when a derived float
 display is `None`. This is an atomic one-cycle execution contract, not a solver,
 delayed-REMESH gain or evolving-history repetition theorem.
@@ -325,6 +405,10 @@ The cycle forwards both certificate options to its event execution and can
 therefore retain the finite represented flow/glyph composition there. The
 separately invoked delayed-REMESH map remains outside that composition; its
 one-step evidence is never inserted as another gain factor.
+Any supplied `physical_flow_partitions` iterable is materialized exactly once
+inside the cycle's outer transaction and the resulting tuple is passed
+unchanged to the event executor. Iteration failure therefore occurs within the
+same rollback boundary, and a stateful iterable cannot define a second plan.
 
 Each cycle result also seals a `RemeshHistoryTransitionObservation`. For bounded
 history capacity `M` and exact pre-REMESH vector `x_pre`, it verifies
@@ -362,6 +446,50 @@ lag-one execution with `alpha=1`, initial EPI `(2, 0)` and prior history `(0, 2)
 alternates to `(0, 2)` and back to `(2, 0)`, although each fixed-history REMESH
 certificate has zero current-state coefficient.
 
+[`observe_event_remesh_three_mesh_refinement(...)`](src/tnfr/physics/event_remesh_refinement.py)
+compares three already executed and individually sealed event/REMESH cycles on
+strictly nested coarse, intermediate and fine physical partitions. It requires
+the same schedule, ordered full support, initial EPI/capacity/phase/pressure,
+captured conductance, normalized metric, executor and callback metadata,
+incoming REMESH history and REMESH configuration. It records exact represented
+EPI vectors at the pre-schedule, shared physical-boundary, pre-REMESH and
+post-REMESH checkpoints, with pairwise exact `L_inf` errors on persistent node
+identifiers. It binds executed ZHIR terminal rates and gate decisions whenever
+the required physical pre-jump and stage evidence exists; optional `zhir_xi`
+only checks that the three executed thresholds match the supplied value. Modal
+factors are published only for a common captured generator. An intact
+three-mesh record is a finite
+observation. Even decreasing finer errors do not certify solver accuracy or
+order, mesh convergence, Lyapunov decrease, a schedule-times-REMESH gain,
+whole-three-mesh atomicity or future behavior. The detached cycles omit the
+complete pre-schedule graph namespace, callback closure and RNG state, node
+metadata and sub-EPI state, so neither a complete common reference problem nor
+exclusive attribution of EPI differences to mesh is certified. Its contract is
+exercised by
+[`test_event_remesh_refinement.py`](tests/physics/test_event_remesh_refinement.py).
+The observer and its six record types are available from the curated
+`tnfr.physics` facade and their defining `tnfr.physics.event_remesh_refinement`
+submodule.
+
+The separate
+[`certify_uniform_remesh_history_stability(...)`](src/tnfr/physics/remesh_history_stability.py)
+closes the restricted evolving-history question for one uniform, unclipped
+REMESH recurrence on fixed ordered support and one fixed positive diagonal
+metric. For `beta=(1-alpha)^2`, `gamma=alpha*(1-alpha)` and `delta=alpha`, it
+builds the finite companion history matrix and its exact stationary temporal
+weights. The augmented disagreement functional
+`V=sum_j pi_j E_H(x[k-j])` satisfies an exact nonnegative Jensen dissipation
+identity. For `0 < alpha < 1`, the companion is primitive and every nodal EPI
+coordinate converges to the preserved stationary history barycenter. At
+`alpha=1`, the map is a pure-delay permutation: `V` is conserved and periodic
+histories remain possible. This result does not identify the clipped binary64
+runtime, imply spatial consensus or `DeltaNFR=0`, allow changing coefficients,
+metric or support, or combine schedule and REMESH gains. The derivation is
+centralized in
+[REMESH Fixed-Delay Models](theory/REMESH_INFINITY_DERIVATION.md#24-exact-finite-companion-history-stability)
+and verified by
+[`test_remesh_history_stability.py`](tests/physics/test_remesh_history_stability.py).
+
 The companion example exercises
 only the schedule and duration diagnostic, without executing this runtime
 binding: [`165_operator_event_relaxation.py`](examples/02_physics_regimes/165_operator_event_relaxation.py).
@@ -380,6 +508,8 @@ The current scope is centralized in:
 - [Core Dynamics Research Program](theory/CORE_RESEARCH_PROGRAM.md), with its
   [diffusion stability theorem](theory/TNFR_DIFFUSION_STABILITY_THEOREM.md) and
   [scale, geometry and bridge results](theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md)
+- [REMESH Fixed-Delay Models](theory/REMESH_INFINITY_DERIVATION.md), separating
+  the runtime, cyclic filter and exact finite companion-history theorem
 
 At the scale boundary, pure EPI and the fixed-branch pairwise phase realization
 admit exact reversible quotient tests. The actual circular mean-of-phasors

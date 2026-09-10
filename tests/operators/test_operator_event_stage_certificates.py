@@ -8,6 +8,7 @@ from fractions import Fraction
 import networkx as nx
 import pytest
 
+from tnfr.errors import TNFRValueError
 from tnfr.operators.event_runtime import (
     ExecutedGlyphStage,
     ObservedRepresentedEPIScheduleComposition,
@@ -141,7 +142,7 @@ def test_stage_certificate_flag_requires_a_strict_bool(value: object) -> None:
         )
 
 
-def test_callback_epi_mutation_is_observed_but_blocks_stage_gain() -> None:
+def test_callback_epi_mutation_rejects_and_rolls_back_stage() -> None:
     graph = _graph()
 
     def mutate_epi(live_graph: nx.Graph) -> None:
@@ -154,27 +155,21 @@ def test_callback_epi_mutation_is_observed_but_blocks_stage_gain() -> None:
         flow_durations=(0.0, 0.0),
     )
 
-    result = execute_operator_event_schedule(
-        graph,
-        schedule,
-        include_stage_certificates=True,
-    )
+    before_epi = tuple(graph.nodes[node]["EPI"] for node in graph)
 
-    stage = result.glyph_stage_evidence[0]
-    assert stage.endpoint_capture_complete
-    assert not stage.exact_runtime_endpoint_bound
-    assert not stage.represented_affine_gain_bound_at_observed_endpoint_certified
-    assert stage.exact_energy_gain_upper_bound is None
-    assert stage.certificate_abstention_reason is not None
-    assert "glyph_certificate_endpoint_mismatch" in (
-        stage.certificate_abstention_reason
-    )
-    assert result.pressure_refresh_callback_invocations == 1
-    assert result.all_glyph_stages_represented_affine is False
-    mixed = result.represented_epi_schedule_composition
-    assert mixed is not None
-    assert not mixed.represented_affine_composition_gain_certified
-    assert "all_glyph_stages_represented_affine" in mixed.failed_conditions
+    with pytest.raises(
+        TNFRValueError,
+        match="pressure callback changed non-pressure graph state",
+    ):
+        execute_operator_event_schedule(
+            graph,
+            schedule,
+            include_stage_certificates=True,
+        )
+
+    assert tuple(graph.nodes[node]["EPI"] for node in graph) == before_epi
+    assert all(graph.nodes[node]["glyph_history"] == [] for node in graph)
+    assert "hybrid_event_log" not in graph.graph
 
 
 def test_unsupported_glyphs_abstain_without_invalidating_the_schedule() -> None:
@@ -280,5 +275,5 @@ def test_stage_gain_claim_fails_closed_when_a_sealed_field_changes() -> None:
 
     assert not altered._proof_fields_are_intact()
     assert not altered.represented_affine_gain_bound_at_observed_endpoint_certified
-    with pytest.raises(ValueError, match="proof fields are not intact"):
+    with pytest.raises(ValueError, match="proof fields"):
         replace(result, glyph_stage_evidence=(altered,))

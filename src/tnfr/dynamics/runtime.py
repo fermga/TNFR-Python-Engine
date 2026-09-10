@@ -18,7 +18,7 @@ from .._spectral_expectation import (
     spectral_expectation_payload,
     validate_spectral_operator,
 )
-from ..alias import get_attr
+from ..alias import _bepi_to_float, get_attr
 from ..config.operator_names import BIFURCATION_WINDOW
 from ..constants import get_graph_param, get_param
 from ..errors import TNFRValueError
@@ -62,6 +62,7 @@ __all__ = (
     "ALIAS_SI",
     "_normalize_job_overrides",
     "_resolve_jobs_override",
+    "_refresh_delta_nfr",
     "_prepare_dnfr",
     "_record_mutation_flow_boundary",
     "_update_nodes",
@@ -109,29 +110,29 @@ def _validated_mutation_time_history(
 
     if raw is None:
         return []
-    if isinstance(raw, (str, bytes)):
+    if isinstance(raw, list):
+        entries = tuple(list.__iter__(raw))
+    elif isinstance(raw, tuple):
+        entries = tuple(tuple.__iter__(raw))
+    elif isinstance(raw, deque):
+        entries = tuple(deque.__iter__(raw))
+    else:
         raise TNFRValueError(
             "epi_time_history must be an indexed sequence of (time, EPI) pairs.",
             context={"node": node, "history_type": type(raw).__name__},
         )
-    try:
-        entries = list(raw)
-    except (OverflowError, TypeError) as exc:
-        raise TNFRValueError(
-            "epi_time_history must be replayable.",
-            context={"node": node, "history_type": type(raw).__name__},
-        ) from exc
 
     samples: list[tuple[float, float]] = []
     for index, entry in enumerate(entries):
-        if isinstance(entry, (str, bytes)):
-            pair = None
+        if isinstance(entry, list):
+            pair = tuple(list.__iter__(entry))
+        elif isinstance(entry, tuple):
+            pair = tuple(tuple.__iter__(entry))
+        elif isinstance(entry, deque):
+            pair = tuple(deque.__iter__(entry))
         else:
-            try:
-                pair = tuple(entry)
-            except (OverflowError, TypeError):
-                pair = None
-        if pair is None or len(pair) != 2:
+            pair = ()
+        if len(pair) != 2:
             raise TNFRValueError(
                 "epi_time_history entries must be (time, EPI) pairs.",
                 context={"node": node, "sample_index": index},
@@ -166,17 +167,59 @@ def _record_mutation_flow_boundary(G: TNFRGraph) -> None:
     ``G.graph['_t']`` therefore creates no fabricated physical rate.
     """
 
-    sample_time = _finite_mutation_sample_scalar(
-        G.graph.get("_t", 0.0), "graph runtime time"
+    # The event executor calls this function inside a graph transaction.  Use
+    # the same raw NetworkX layout primitives here so a mapping/list subclass
+    # cannot run user code merely because the recorder reads existing state.
+    from ..operators.network_stage import (
+        _networkx_runtime_layout,
+        _runtime_mapping_items,
+        _set_runtime_mapping_item,
     )
-    proposals: dict[NodeId, deque[tuple[float, float]]] = {}
-    for node, node_data in G.nodes(data=True):
+
+    layout = _networkx_runtime_layout(G)
+    graph_items = _runtime_mapping_items(layout.graph_mapping)
+    raw_time = next(
+        (
+            value
+            for key, value in graph_items
+            if type(key) is str and key == "_t"
+        ),
+        0.0,
+    )
+    sample_time = _finite_mutation_sample_scalar(
+        raw_time,
+        "graph runtime time",
+    )
+    proposals: list[
+        tuple[MutableMapping[Any, Any], deque[tuple[float, float]]]
+    ] = []
+    for node, node_data in layout.node_data:
         node_id = cast(NodeId, node)
+        node_items = _runtime_mapping_items(node_data)
+        raw_epi = next(
+            (
+                value
+                for alias in ALIAS_EPI
+                for key, value in node_items
+                if type(key) is str and key == alias
+            ),
+            0.0,
+        )
         epi = _finite_mutation_sample_scalar(
-            get_attr(node_data, ALIAS_EPI, 0.0), f"node {node!r} EPI"
+            _bepi_to_float(raw_epi),
+            f"node {node!r} EPI",
+        )
+        raw_history = next(
+            (
+                value
+                for key, value in node_items
+                if type(key) is str and key == _MUTATION_TIME_HISTORY_KEY
+            ),
+            None,
         )
         samples = _validated_mutation_time_history(
-            node_data.get(_MUTATION_TIME_HISTORY_KEY), node=node_id
+            raw_history,
+            node=node_id,
         )
         if samples:
             previous_time, previous_epi = samples[-1]
@@ -196,13 +239,22 @@ def _record_mutation_flow_boundary(G: TNFRGraph) -> None:
                 samples.append((sample_time, epi))
         else:
             samples.append((sample_time, epi))
-        proposals[node_id] = deque(
-            samples[-_MUTATION_TIME_HISTORY_MAXLEN:],
-            maxlen=_MUTATION_TIME_HISTORY_MAXLEN,
+        proposals.append(
+            (
+                node_data,
+                deque(
+                    samples[-_MUTATION_TIME_HISTORY_MAXLEN:],
+                    maxlen=_MUTATION_TIME_HISTORY_MAXLEN,
+                ),
+            )
         )
 
-    for node, history in proposals.items():
-        G.nodes[node][_MUTATION_TIME_HISTORY_KEY] = history
+    for node_data, history in proposals:
+        _set_runtime_mapping_item(
+            node_data,
+            _MUTATION_TIME_HISTORY_KEY,
+            history,
+        )
 
 
 def _normalize_job_overrides(
@@ -458,13 +510,50 @@ def _prepare_dnfr(
 ) -> None:
     """Recompute ΔNFR (and optionally Si) ahead of an integration step."""
 
-    compute_dnfr_cb = G.graph.get("compute_delta_nfr", default_compute_delta_nfr)
     overrides = job_overrides or {}
     n_jobs = _resolve_jobs_override(
         overrides,
         "DNFR",
         G.graph.get("DNFR_N_JOBS"),
         allow_non_positive=False,
+    )
+    _refresh_delta_nfr(G, n_jobs=n_jobs)
+
+    if use_Si:
+        si_jobs = _resolve_jobs_override(
+            overrides,
+            "SI",
+            G.graph.get("SI_N_JOBS"),
+            allow_non_positive=False,
+        )
+        dynamics_module = sys.modules.get("tnfr.dynamics")
+        compute_si_fn = (
+            getattr(dynamics_module, "compute_Si", None)
+            if dynamics_module is not None
+            else None
+        )
+        if compute_si_fn is None:
+            compute_si_fn = compute_Si
+        compute_si_fn(G, inplace=True, n_jobs=si_jobs)
+
+
+def _refresh_delta_nfr(
+    G: TNFRGraph,
+    *,
+    n_jobs: int | None,
+) -> Any:
+    """Refresh stored pressure through the effective graph callback.
+
+    Signature-aware dispatch keeps legacy callbacks that accept only the graph
+    usable without retrying a callback that raised ``TypeError`` internally.
+    When a callable has no inspectable signature, a narrowly identified
+    argument-binding error retains the historical no-``n_jobs`` fallback.
+    The effective callback is returned so runtime evidence can identify it.
+    """
+
+    compute_dnfr_cb = G.graph.get(
+        "compute_delta_nfr",
+        default_compute_delta_nfr,
     )
 
     supports_n_jobs = False
@@ -483,33 +572,31 @@ def _prepare_dnfr(
         elif any(p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values()):
             supports_n_jobs = True
 
-    if supports_n_jobs:
-        compute_dnfr_cb(G, n_jobs=n_jobs)
+    if signature is not None:
+        if supports_n_jobs:
+            compute_dnfr_cb(G, n_jobs=n_jobs)
+        else:
+            compute_dnfr_cb(G)
     else:
         try:
             compute_dnfr_cb(G, n_jobs=n_jobs)
         except TypeError as exc:
-            if "n_jobs" in str(exc):
+            traceback = exc.__traceback__
+            message = str(exc)
+            binding_failure = bool(
+                traceback is not None
+                and traceback.tb_next is None
+                and (
+                    "n_jobs" in message
+                    or "takes no keyword arguments" in message
+                )
+            )
+            if binding_failure:
                 compute_dnfr_cb(G)
             else:
                 raise
     G.graph.pop("_sel_norms", None)
-    if use_Si:
-        si_jobs = _resolve_jobs_override(
-            overrides,
-            "SI",
-            G.graph.get("SI_N_JOBS"),
-            allow_non_positive=False,
-        )
-        dynamics_module = sys.modules.get("tnfr.dynamics")
-        compute_si_fn = (
-            getattr(dynamics_module, "compute_Si", None)
-            if dynamics_module is not None
-            else None
-        )
-        if compute_si_fn is None:
-            compute_si_fn = compute_Si
-        compute_si_fn(G, inplace=True, n_jobs=si_jobs)
+    return compute_dnfr_cb
 
 
 def _update_nodes(

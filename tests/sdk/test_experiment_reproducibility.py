@@ -1,16 +1,22 @@
 """SDK seed, copy and initialization contracts are local to each experiment."""
 
+import logging
 import random
+import threading
 from copy import deepcopy
+from types import MappingProxyType
 
 import networkx as nx
 import pytest
 
 from tnfr.alias import get_attr
 from tnfr.constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from tnfr.node import NodeNX
 from tnfr.sdk import fluent
+from tnfr.sdk._state import copy_graph_state
 from tnfr.sdk.builders import TNFRExperimentBuilder as Builders
 from tnfr.sdk.fluent import NetworkConfig, TNFRNetwork
+from tnfr.utils.cache import GRAPH_RUNTIME_CACHE_KEYS
 
 
 def _template(name):
@@ -125,6 +131,97 @@ def test_clone_detaches_nested_node_edge_and_configuration_values():
     assert network.graph.nodes["node_0"]["nested"] == {"child": [1]}
     assert network.graph.edges["node_0", "node_1"]["nested"] == {"weight": [2]}
     assert network._config.default_epi_range == (0.1, 0.9)
+
+
+def test_copy_graph_state_preserves_external_resources_and_detaches_mutable_data():
+    graph = nx.MultiGraph()
+    lock = threading.Lock()
+    logger = logging.getLogger("tnfr.tests.sdk-copy-resource")
+    proxy = MappingProxyType({"mode": "none", "parameters": (0.0, None)})
+    graph.graph["resources"] = {"nested": [lock, logger, proxy]}
+    graph.add_edge("left", "right", key="parallel", payload={"values": [1]})
+
+    copied = copy_graph_state(graph)
+
+    copied_resources = copied.graph["resources"]["nested"]
+    assert copied_resources[0] is lock
+    assert copied_resources[1] is logger
+    assert copied_resources[2] is proxy
+    assert type(copied) is nx.MultiGraph
+    assert copied.has_edge("left", "right", key="parallel")
+    copied.edges["left", "right", "parallel"]["payload"]["values"].append(2)
+    assert graph.edges["left", "right", "parallel"]["payload"] == {"values": [1]}
+
+
+def test_copy_graph_state_discards_warmed_node_cache_and_rebinds_adapter():
+    graph = nx.path_graph(("left", "right"))
+    original_adapter = NodeNX.from_graph(graph, "left")
+    assert not GRAPH_RUNTIME_CACHE_KEYS.isdisjoint(graph.graph)
+
+    copied = copy_graph_state(graph)
+
+    assert GRAPH_RUNTIME_CACHE_KEYS.isdisjoint(copied.graph)
+    assert NodeNX.from_graph(graph, "left") is original_adapter
+    copied_adapter = NodeNX.from_graph(copied, "left")
+    assert copied_adapter is not original_adapter
+    assert copied_adapter.G is copied
+
+
+def test_copy_graph_state_does_not_inspect_opaque_node_or_edge_key_members():
+    class TrapValuesDict(dict):
+        def values(self):
+            raise AssertionError("virtual values must not run during graph copy")
+
+    class CustomMultiGraph(nx.MultiGraph):
+        node_dict_factory = TrapValuesDict
+
+    class IdentityPart:
+        def __init__(self) -> None:
+            self.proxy = MappingProxyType({"mutable": []})
+
+    part = IdentityPart()
+    node = (part,)
+    edge_key = (IdentityPart(),)
+    graph = CustomMultiGraph()
+    graph.add_node(node, payload=[1])
+    graph.add_edge("left", "right", key=edge_key, payload=[2])
+    graph.graph["node_reference"] = node
+    graph.edges["left", "right", edge_key]["key_reference"] = edge_key
+
+    copied = copy_graph_state(graph)
+
+    assert type(copied) is CustomMultiGraph
+    assert any(candidate is node for candidate in copied)
+    assert next(iter(copied["left"]["right"])) is edge_key
+    assert copied.graph["node_reference"] is node
+    assert copied.edges["left", "right", edge_key]["key_reference"] is edge_key
+    copied.nodes[node]["payload"].append(3)
+    copied.edges["left", "right", edge_key]["payload"].append(4)
+    assert graph.nodes[node]["payload"] == [1]
+    assert graph.edges["left", "right", edge_key]["payload"] == [2]
+
+
+def test_copy_graph_state_rebinds_python_method_to_copied_receiver():
+    class Worker:
+        def __init__(self) -> None:
+            self.state: list[str] = []
+            self.lock = threading.Lock()
+
+        def run(self) -> None:
+            self.state.append("called")
+
+    worker = Worker()
+    graph = nx.Graph()
+    graph.graph["handler"] = worker.run
+
+    copied = copy_graph_state(graph)
+    copied_python_method = copied.graph["handler"]
+
+    assert copied_python_method.__self__ is not worker
+    assert copied_python_method.__self__.lock is worker.lock
+    copied_python_method()
+    assert worker.state == []
+    assert copied_python_method.__self__.state == ["called"]
 
 
 def test_clone_continues_the_current_rng_state_independently():

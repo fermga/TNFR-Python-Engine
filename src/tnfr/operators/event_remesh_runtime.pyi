@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Hashable, Mapping, Sequence
+from collections.abc import Hashable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from fractions import Fraction
 from typing import Any
@@ -8,7 +8,7 @@ from typing import Any
 import networkx as nx
 
 from .event_runtime import OperatorEventExecutionResult
-from .event_timing import OperatorEventSchedule
+from .event_timing import OperatorEventSchedule, PhysicalFlowPartition
 from .remesh import DelayedRemeshResult
 
 
@@ -125,6 +125,7 @@ def execute_event_remesh_cycle(
     suppress_birth_warnings: bool = ...,
     include_flow_certificates: bool = ...,
     include_stage_certificates: bool = ...,
+    physical_flow_partitions: Iterable[PhysicalFlowPartition] = ...,
 ) -> EventRemeshCycleResult: ...
 
 

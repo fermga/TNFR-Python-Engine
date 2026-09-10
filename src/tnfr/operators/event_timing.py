@@ -32,8 +32,10 @@ from .registry import get_operator_class
 __all__ = (
     "OperatorEventRuntimeClockDiagnostic",
     "OperatorEventSchedule",
+    "PhysicalFlowPartition",
     "ScheduledOperatorEvent",
     "StructuralFlowInterval",
+    "build_physical_flow_partition",
     "build_operator_event_schedule",
     "diagnose_operator_event_runtime_clock",
 )
@@ -42,6 +44,12 @@ __all__ = (
 _PHYSICAL_TIME_BASIS = "physical_time"
 _TIMESTAMP_ROLE = "binary64_representation_only"
 _EVENT_HISTORY_CHANNEL = "hybrid_event_log"
+_CLOCK_DIAGNOSTIC_SCOPE = (
+    "schedule-only necessary conditions for binding exact operator-event "
+    "coordinates to the current binary64 runtime clock, including direct "
+    "interval addition, and timestamped ZHIR evidence; graph state, solver "
+    "accuracy and trigger magnitude remain untested"
+)
 
 
 def _positive_integer(value: Any, label: str) -> int:
@@ -134,7 +142,31 @@ class StructuralFlowInterval:
     duration_is_authoritative: bool = field(default=True, init=False)
     feeds_epi_time_history: bool = field(default=False, init=False)
 
+    def __getattribute__(self, name: str) -> Any:
+        """Expose the historical fixed metadata without allowing promotion."""
+
+        fixed = {
+            "time_basis": _PHYSICAL_TIME_BASIS,
+            "timestamp_role": _TIMESTAMP_ROLE,
+            "duration_is_authoritative": True,
+            "feeds_epi_time_history": False,
+        }
+        if name in fixed:
+            return fixed[name]
+        return object.__getattribute__(self, name)
+
     def __post_init__(self) -> None:
+        fixed = {
+            "time_basis": _PHYSICAL_TIME_BASIS,
+            "timestamp_role": _TIMESTAMP_ROLE,
+            "duration_is_authoritative": True,
+            "feeds_epi_time_history": False,
+        }
+        if any(
+            object.__getattribute__(self, name) != expected
+            for name, expected in fixed.items()
+        ):
+            raise ValueError("flow interval contract fields are inconsistent")
         index = _nonnegative_index(self.index, "interval index")
         start_exact_from_float = represented_fraction(
             self.start_time, "interval start_time"
@@ -179,6 +211,230 @@ class StructuralFlowInterval:
             raise ValueError("interval end_time must represent exact_end_time")
         object.__setattr__(self, "index", index)
 
+def _derive_physical_flow_segments(
+    parent_interval: StructuralFlowInterval,
+    segment_durations: tuple[float, ...],
+    exact_segment_durations: tuple[Fraction, ...],
+) -> tuple[StructuralFlowInterval, ...]:
+    """Derive an executable binary64 partition of one physical interval."""
+
+    if type(parent_interval) is not StructuralFlowInterval:
+        raise TypeError("parent_interval must be a StructuralFlowInterval")
+    parent_interval.__post_init__()
+    if parent_interval.exact_duration <= 0:
+        raise ValueError("parent_interval must have positive exact duration")
+    if not parent_interval.end_time > parent_interval.start_time:
+        raise ValueError("parent_interval collapses on the binary64 clock")
+    if (
+        parent_interval.start_time + parent_interval.duration
+        != parent_interval.end_time
+    ):
+        raise ValueError("parent_interval is nonadditive on the binary64 clock")
+    if (
+        parent_interval.end_time - parent_interval.start_time
+        != parent_interval.duration
+    ):
+        raise ValueError(
+            "parent_interval binary64 subtraction does not recover duration"
+        )
+    if len(segment_durations) < 2:
+        raise ValueError(
+            "segment_durations must contain at least two positive segments"
+        )
+    if len(exact_segment_durations) != len(segment_durations):
+        raise ValueError("exact segment durations must align with segment_durations")
+    if any(duration <= 0 for duration in exact_segment_durations):
+        raise ValueError("segment_durations must be strictly positive")
+    if (
+        sum(exact_segment_durations, Fraction(0))
+        != parent_interval.exact_duration
+    ):
+        raise ValueError(
+            "exact segment duration sum must equal parent exact_duration"
+        )
+
+    segments: list[StructuralFlowInterval] = []
+    current_offset = parent_interval.start_offset
+    exact_current_time = parent_interval.exact_start_time
+    for segment_index, (duration, exact_duration) in enumerate(
+        zip(segment_durations, exact_segment_durations)
+    ):
+        end_offset = current_offset + exact_duration
+        exact_end_time = exact_current_time + exact_duration
+        start_time = represented_fraction_as_float(
+            exact_current_time,
+            f"physical segments[{segment_index}] exact_start_time",
+        )
+        end_time = represented_fraction_as_float(
+            exact_end_time,
+            f"physical segments[{segment_index}] exact_end_time",
+        )
+        if not end_time > start_time:
+            raise ValueError(
+                f"physical segment {segment_index} collapses on the binary64 clock"
+            )
+        if start_time + duration != end_time:
+            raise ValueError(
+                f"physical segment {segment_index} is nonadditive on the "
+                "binary64 clock"
+            )
+        if end_time - start_time != duration:
+            raise ValueError(
+                f"physical segment {segment_index} binary64 subtraction does "
+                "not recover duration"
+            )
+        segment = StructuralFlowInterval(
+            index=segment_index,
+            start_time=start_time,
+            end_time=end_time,
+            duration=duration,
+            start_offset=current_offset,
+            end_offset=end_offset,
+            exact_start_time=exact_current_time,
+            exact_end_time=exact_end_time,
+            exact_duration=exact_duration,
+        )
+        if segments:
+            previous = segments[-1]
+            if (
+                previous.end_offset != segment.start_offset
+                or previous.exact_end_time != segment.exact_start_time
+                or previous.end_time != segment.start_time
+            ):
+                raise RuntimeError(
+                    "derived physical segment boundaries are not continuous"
+                )
+        segments.append(segment)
+        current_offset = end_offset
+        exact_current_time = exact_end_time
+
+    first = segments[0]
+    last = segments[-1]
+    if (
+        first.start_offset != parent_interval.start_offset
+        or first.exact_start_time != parent_interval.exact_start_time
+        or first.start_time != parent_interval.start_time
+        or last.end_offset != parent_interval.end_offset
+        or last.exact_end_time != parent_interval.exact_end_time
+        or last.end_time != parent_interval.end_time
+    ):
+        raise RuntimeError(
+            "derived physical segment boundaries do not cover parent_interval"
+        )
+    return tuple(segments)
+
+
+@dataclass(frozen=True, slots=True)
+class PhysicalFlowPartition:
+    """Immutable physical subdivision of one scheduled flow interval.
+
+    Every segment is an independently executable physical interval.  Its
+    boundaries are distinct from any numerical substeps an integrator may use
+    internally.  Construction rejects a partition unless exact rational time
+    and both directions of binary64 endpoint arithmetic agree for every
+    segment.
+    """
+
+    parent_interval: StructuralFlowInterval
+    segment_durations: tuple[float, ...]
+    segments: tuple[StructuralFlowInterval, ...]
+
+    def __post_init__(self) -> None:
+        if type(self.parent_interval) is not StructuralFlowInterval:
+            raise TypeError("parent_interval must be a StructuralFlowInterval")
+        if type(self.segment_durations) is not tuple:
+            raise TypeError("segment_durations must be an immutable tuple")
+        if any(type(value) is not float for value in self.segment_durations):
+            raise TypeError("segment_durations must contain binary64 floats")
+        if type(self.segments) is not tuple:
+            raise TypeError("segments must be an immutable tuple")
+        if any(type(item) is not StructuralFlowInterval for item in self.segments):
+            raise TypeError(
+                "segments must contain StructuralFlowInterval records"
+            )
+        durations, exact_durations = materialize_nonnegative_time_sequence(
+            self.segment_durations, "segment_durations"
+        )
+        expected_segments = _derive_physical_flow_segments(
+            self.parent_interval,
+            durations,
+            exact_durations,
+        )
+        if self.segments != expected_segments:
+            raise ValueError(
+                "physical partition segments do not match their canonical "
+                "timeline"
+            )
+
+    @property
+    def time_basis(self) -> str:
+        """Name the physical-time coordinate shared by all segments."""
+
+        return _PHYSICAL_TIME_BASIS
+
+    @property
+    def boundary_role(self) -> str:
+        """Identify each segment boundary as an explicit pressure refresh."""
+
+        return "explicit_physical_pressure_refresh"
+
+    @property
+    def numerical_substeps_are_physical_boundaries(self) -> bool:
+        """Keep integrator substeps distinct from declared physical segments."""
+
+        return False
+
+    @property
+    def segment_count(self) -> int:
+        """Number of explicit physical flow segments."""
+
+        return len(self.segments)
+
+    @property
+    def boundary_times(self) -> tuple[float, ...]:
+        """Ordered binary64 boundary representations, including both ends."""
+
+        return (self.segments[0].start_time,) + tuple(
+            segment.end_time for segment in self.segments
+        )
+
+    @property
+    def exact_boundary_times(self) -> tuple[Fraction, ...]:
+        """Ordered authoritative boundary coordinates, including both ends."""
+
+        return (self.segments[0].exact_start_time,) + tuple(
+            segment.exact_end_time for segment in self.segments
+        )
+
+
+def build_physical_flow_partition(
+    parent_interval: StructuralFlowInterval,
+    segment_durations: Iterable[Real],
+) -> PhysicalFlowPartition:
+    """Build an explicit pressure-refresh partition of one flow interval.
+
+    At least two strictly positive represented durations are required.  Their
+    exact binary64 rationals must sum to the parent's authoritative duration,
+    and every materialized segment must advance, land on, and subtract back
+    from its binary64 endpoint exactly.
+    """
+
+    if type(parent_interval) is not StructuralFlowInterval:
+        raise TypeError("parent_interval must be a StructuralFlowInterval")
+    durations, exact_durations = materialize_nonnegative_time_sequence(
+        segment_durations, "segment_durations"
+    )
+    segments = _derive_physical_flow_segments(
+        parent_interval,
+        durations,
+        exact_durations,
+    )
+    return PhysicalFlowPartition(
+        parent_interval=parent_interval,
+        segment_durations=durations,
+        segments=segments,
+    )
+
 
 @dataclass(frozen=True, slots=True)
 class ScheduledOperatorEvent:
@@ -204,7 +460,33 @@ class ScheduledOperatorEvent:
     feeds_epi_time_history: bool = field(default=False, init=False)
     coincident_event_order: str = field(default="event_index", init=False)
 
+    def __getattribute__(self, name: str) -> Any:
+        """Expose the historical fixed metadata without allowing promotion."""
+
+        fixed = {
+            "time_basis": _PHYSICAL_TIME_BASIS,
+            "timestamp_role": _TIMESTAMP_ROLE,
+            "history_channel": _EVENT_HISTORY_CHANNEL,
+            "feeds_epi_time_history": False,
+            "coincident_event_order": "event_index",
+        }
+        if name in fixed:
+            return fixed[name]
+        return object.__getattribute__(self, name)
+
     def __post_init__(self) -> None:
+        fixed = {
+            "time_basis": _PHYSICAL_TIME_BASIS,
+            "timestamp_role": _TIMESTAMP_ROLE,
+            "history_channel": _EVENT_HISTORY_CHANNEL,
+            "feeds_epi_time_history": False,
+            "coincident_event_order": "event_index",
+        }
+        if any(
+            object.__getattribute__(self, name) != expected
+            for name, expected in fixed.items()
+        ):
+            raise ValueError("scheduled event contract fields are inconsistent")
         event_index = _nonnegative_index(self.event_index, "event index")
         cycle_index = _nonnegative_index(self.cycle_index, "cycle index")
         word_position = _nonnegative_index(self.word_position, "word position")
@@ -231,7 +513,6 @@ class ScheduledOperatorEvent:
         object.__setattr__(self, "cycle_index", cycle_index)
         object.__setattr__(self, "word_position", word_position)
         object.__setattr__(self, "operator_name", names[0])
-
 
 def _derive_timeline(
     operator_names: tuple[str, ...],
@@ -361,7 +642,35 @@ class OperatorEventSchedule:
     )
     coincident_event_order: str = field(default="event_index", init=False)
 
+    def __getattribute__(self, name: str) -> Any:
+        """Expose the historical fixed metadata without allowing promotion."""
+
+        fixed = {
+            "time_basis": _PHYSICAL_TIME_BASIS,
+            "timestamp_role": _TIMESTAMP_ROLE,
+            "duration_and_offsets_are_authoritative": True,
+            "event_timestamps_feed_epi_time_history": False,
+            "event_history_channel": _EVENT_HISTORY_CHANNEL,
+            "coincident_event_order": "event_index",
+        }
+        if name in fixed:
+            return fixed[name]
+        return object.__getattribute__(self, name)
+
     def __post_init__(self) -> None:
+        fixed = {
+            "time_basis": _PHYSICAL_TIME_BASIS,
+            "timestamp_role": _TIMESTAMP_ROLE,
+            "duration_and_offsets_are_authoritative": True,
+            "event_timestamps_feed_epi_time_history": False,
+            "event_history_channel": _EVENT_HISTORY_CHANNEL,
+            "coincident_event_order": "event_index",
+        }
+        if any(
+            object.__getattribute__(self, name) != expected
+            for name, expected in fixed.items()
+        ):
+            raise ValueError("operator schedule contract fields are inconsistent")
         if type(self.operator_names) is not tuple:
             raise TypeError("operator_names must be an immutable tuple")
         if type(self.flow_durations) is not tuple:
@@ -521,17 +830,18 @@ class OperatorEventRuntimeClockDiagnostic:
     """
 
     schedule: OperatorEventSchedule
-    scope: str = field(
-        default=(
-            "schedule-only necessary conditions for binding exact operator-event "
-            "coordinates to the current binary64 runtime clock, including "
-            "direct interval addition, and timestamped ZHIR evidence; graph "
-            "state, solver accuracy and trigger magnitude remain untested"
-        ),
-        init=False,
-    )
+    scope: str = field(default=_CLOCK_DIAGNOSTIC_SCOPE, init=False)
+
+    def __getattribute__(self, name: str) -> Any:
+        """Expose the historical fixed scope without allowing promotion."""
+
+        if name == "scope":
+            return _CLOCK_DIAGNOSTIC_SCOPE
+        return object.__getattribute__(self, name)
 
     def __post_init__(self) -> None:
+        if object.__getattribute__(self, "scope") != _CLOCK_DIAGNOSTIC_SCOPE:
+            raise ValueError("runtime clock diagnostic scope is inconsistent")
         if type(self.schedule) is not OperatorEventSchedule:
             raise TypeError("schedule must be an OperatorEventSchedule")
         self.schedule.__post_init__()

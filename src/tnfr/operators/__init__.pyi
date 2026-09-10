@@ -19,7 +19,10 @@ from .event_runtime import (
     ExecutedGlyphStage as ExecutedGlyphStage,
     ExecutedNodalFlowInterval as ExecutedNodalFlowInterval,
     ExecutedOperatorEvent as ExecutedOperatorEvent,
+    ExecutedPressureRefreshedFlowPartition as ExecutedPressureRefreshedFlowPartition,
     ObservedRepresentedEPIScheduleComposition as _ObservedComposition,
+    PhysicalEulerModalObservation as PhysicalEulerModalObservation,
+    PressureRefreshBoundaryObservation as PressureRefreshBoundaryObservation,
     RepresentedEPIScheduleOperation as RepresentedEPIScheduleOperation,
     OperatorEventExecutionResult as OperatorEventExecutionResult,
     execute_operator_event_schedule as execute_operator_event_schedule,
@@ -27,8 +30,10 @@ from .event_runtime import (
 from .event_timing import (
     OperatorEventRuntimeClockDiagnostic as OperatorEventRuntimeClockDiagnostic,
     OperatorEventSchedule as OperatorEventSchedule,
+    PhysicalFlowPartition as PhysicalFlowPartition,
     ScheduledOperatorEvent as ScheduledOperatorEvent,
     StructuralFlowInterval as StructuralFlowInterval,
+    build_physical_flow_partition as build_physical_flow_partition,
     build_operator_event_schedule as build_operator_event_schedule,
     diagnose_operator_event_runtime_clock as diagnose_operator_event_runtime_clock,
 )

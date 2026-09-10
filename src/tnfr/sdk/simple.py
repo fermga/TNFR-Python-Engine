@@ -75,6 +75,7 @@ from ..types import BEPIProtocol, scalarize_epi
 
 # TNFR core imports
 from ..structural import create_nfr
+from ._state import copy_graph_state
 from ._topology import grid_edges, nonnegative_integer, probability as validate_probability
 from ._topology import ring_edges, small_world_edges
 
@@ -2091,12 +2092,12 @@ class Network:
 
         The snapshot read-outs (:meth:`rhythm`, :meth:`resonance`) see a single
         instant; the interesting structure appears only when the dynamics
-        *runs*. This evolves a **copy** of the network ``steps`` times (so the
-        caller's network is untouched) and records the canonical rhythm
-        trajectory at each step -- the collective resonance ``R(t)`` (Kuramoto
-        order), the coherence ``C(t)``, and the mean per-NFR local resonance --
-        then reports how the collective rhythm emerges from the resonating
-        per-NFR pulses.
+        *runs*. This records ``max(1, steps)`` samples from a **copy** of the
+        network, evolving once between consecutive samples so the caller's
+        network is untouched. Each sample contains the collective resonance
+        ``R(t)`` (Kuramoto order), coherence ``C(t)``, and mean per-NFR local
+        resonance; together they show how the collective rhythm emerges from
+        the resonating per-NFR pulses.
 
         Two grounded facts shape it: (1) the collective topological pulse
         ``omega_k = sqrt(lambda_k)`` is **invariant** under evolution on a fixed
@@ -2125,7 +2126,7 @@ class Network:
             compute_nodal_pulse,
         )
 
-        probe = Network(self.G.copy(), name=f"{self.name}:pulse")
+        probe = Network(copy_graph_state(self.G), name=f"{self.name}:pulse")
         r_t: list[float] = []
         c_t: list[float] = []
         local_t: list[float] = []

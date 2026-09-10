@@ -17,11 +17,16 @@ local/propagated pressure reduction, and Self-organization has a collision-safe
 snapshot-bound child-support and hierarchy merge. Recursivity has an immutable
 advisory-only glyph stage. The separate delayed REMESH operation now has an
 exact three-input recurrence, graph-state atomic execution and scoped one-step
-convex and fixed-history gain evidence. Event execution can bind supported flow
+convex and fixed-history gain evidence. A distinct exact, uniform, unclipped
+fixed-delay companion recurrence has a stationary-history Lyapunov theorem;
+see
+[`REMESH_INFINITY_DERIVATION.md` section 2.4](REMESH_INFINITY_DERIVATION.md#24-exact-finite-companion-history-stability).
+Event execution can bind supported flow
 and glyph certificates into an exact represented-map gain product for one fully
 eligible observed finite trace in one common metric; it does not identify a
-global executable binary64 map. Stability of history-updated repetition,
-unrestricted mixed words, nonlinear regimes and the full catalog remains open.
+global executable binary64 map. Stability of clipped binary64 runtime
+history-updated repetition, unrestricted mixed words, nonlinear regimes and
+the full catalog remains open.
 
 ## Question and hypotheses
 

@@ -166,8 +166,14 @@ separate facts. The bounded time-varying theorem instead treats the effective
 binary64 conductances materialized by the shared reader and the declared bounds
 as exact real coefficients, derives its Laplacian and rate rationally, and keeps
 ordinary binary64 spectral diagnostics separate. A proven positive exact rate
-may lack an operational float representation after underflow. Future-schedule
-and numerical-integration verification remain open.
+may lack an operational float representation after underflow. Finite
+executor-owned physical partitions now verify pressure refresh at
+explicit boundaries and conditionally identify represented Euler segment maps.
+Finite three-mesh event/REMESH observations are implemented; solver accuracy,
+mesh convergence and future-schedule verification remain open.
+A separate exact augmented-history theorem covers the uniform unclipped
+finite REMESH companion on fixed support and metric; it is not a theorem about
+these executor trajectories or the clipped binary64 runtime.
 These scoped identities do not certify U2 for arbitrary operator sequences.
 The exact Dirichlet balance below uses this same adjacency convention. See
 [src/tnfr/physics/structural_diffusion.py](src/tnfr/physics/structural_diffusion.py).
@@ -390,7 +396,10 @@ See [theory/STRUCTURAL_OPERATORS.md](theory/STRUCTURAL_OPERATORS.md).
 model prediction; it is not by itself an observed ZHIR trigger. Direct Mutation
 requires active capacity and a finite signed two-sample secant strictly above
 `ZHIR_THRESHOLD_XI`. Timestamped `epi_time_history` is authoritative, uses its
-physical interval, and must end at the current EPI state. Legacy `epi_history` and
+physical interval, and must end at the current EPI state. Under an explicit
+physical flow partition, its last two live samples span the terminal segment;
+a whole-parent secant is an offline comparison and never replaces the gate.
+Legacy `epi_history` and
 `_epi_history` retain an explicit unit-operator-step interpretation and make no
 physical-time claim. Missing, invalid, stale, equal-threshold or contracting evidence
 rejects direct execution; autonomous selection instead applies IL and records the
@@ -425,13 +434,19 @@ the initial targets, requires the live binary64 clock at every boundary, rejects
 collapsed or nonadditive positive intervals, and commits graph-owned flow, jump,
 history, cache and event-log state in one transaction. Flow boundaries supply
 timestamped EPI evidence; a same-time EPI jump restarts that history and remains
-a zero-duration event. ZHIR therefore requires a positive immediately preceding
-flow whose displayed endpoint subtraction equals its authoritative declared
-duration. With `include_flow_certificates=True`, detached
-snapshots around each actual positive flow produce an
-`ExecutedNodalFlowInterval`. Its evidence keeps the exact rational
-held-pressure nodal identity and pure-EPI quotient theorem separate from the
-binary64 replays. Trusted sequential held-pressure identification requires the
+a zero-duration event. During schedule execution the executor exclusively owns
+`epi_time_history`: any integrator write is rejected and rolls back the graph
+transaction, and only declared flow boundaries, including explicit physical-
+segment boundaries, are appended. ZHIR therefore requires a positive immediately
+preceding flow whose displayed endpoint subtraction equals its authoritative
+declared duration. With `include_flow_certificates=True`, detached snapshots
+around each positive unpartitioned flow produce an `ExecutedNodalFlowInterval` in
+`flow_interval_evidence`. A physically partitioned parent instead always stores
+its segment records under
+`physical_flow_partition_evidence[*].segment_flow_evidence`. Each record keeps
+the exact rational held-pressure nodal identity and pure-EPI quotient theorem
+separate from the binary64 replays. Trusted sequential held-pressure
+identification requires the
 exact built-in `DefaultIntegrator`, Euler with at least one substep, live Gamma
 type `none`, inactive clipping, disabled extended dynamics, stable support,
 unchanged capacity and pressure, an exact represented substep-duration sum equal
@@ -442,6 +457,59 @@ strengths and capacity, stored pressure `-L_rw EPI` and the exact nodal identity
 Internal substeps keep pressure fixed, so they establish neither a physical mesh
 refinement nor a modal diffusion decision. Runtime flow wrappers are value-sealed;
 direct construction or later replacement cannot assert executor provenance.
+
+During one positive flow an integrator may modify only EPI, `dEPI_dt`,
+`d2EPI_dt2` and the runtime clock. A custom integrator must realize exactly in
+rationalized represented values
+`EPI_right-EPI_left=dt*nu_f_left*DeltaNFR_left` at every target. This held-input
+identity does not certify solver accuracy or order. The shared graph transaction
+is bound to its originating graph and preserves NetworkX structural mapping
+identities and aliases plus graph-reachable capturable callback state. It rejects
+mutable structural keys with non-identity hash/equality, custom `__deepcopy__`
+hooks and unmodelled opaque C state before writes; common immutable atoms remain
+admissible. Emitted I/O and warnings, external resources and external-only aliases
+remain outside rollback.
+
+`PhysicalFlowPartition` instead declares at least two explicit positive
+segments over one scheduled parent interval. Passing it through
+`physical_flow_partitions=` refreshes `DeltaNFR` before every segment and at
+the terminal boundary, then seals all boundary snapshots, segment flows and
+segment-start modal diagnostics. The callback may modify pressure aliases and
+known derived pressure/cache outputs only. EPI, capacity, phase, histories,
+full edge state, effective conductance, clock and persistent graph configuration
+must remain fixed, as must capturable state owned by a callable hook. Existing
+non-`None` cached pressure weights cannot change;
+the canonical default hook may initialize a missing or `None` cache. The same
+restriction governs stage pressure callbacks. The executor freezes hook
+presence and identity for the whole schedule and verifies them before any
+invocation, preventing an integrator from installing and running a replacement. Any
+violation or later failure rolls back the graph transaction. Physical and stage
+callback counts are recorded separately and must sum to the total.
+
+For a fixed pure-EPI generator `A=diag(nu_f)L_rw`, the exact-real held-pressure
+Euler model has `g_H(mu)=1-T*mu` regardless of internal substeps whose exact
+represented durations sum to `T`; explicit pressure refresh gives the exact-real
+model factor `g_R(mu)=product_k(1-h_k*mu)`. Actual endpoints remain binary64
+observations. Modal diagnostics evaluate these factors in ordinary binary64 but
+do not identify an endpoint with either exact-real map. That stronger promotion
+requires the exact-affine certificate. Modal comparison requires trusted
+held-pressure segment replays and exact common node order, capacity and
+conductance; matching spectra alone do not identify a common eigenbasis.
+`observe_event_local_zhir_physical_prejump`
+uses the actual terminal-segment Mutation secant and retains the whole-parent
+secant offline. `compare_event_local_zhir_physical_refinement` reports its
+endpoint, rate, gate and modal differences from a matched held-pressure
+baseline. These sealed finite observations do not certify solver order,
+three-mesh convergence, U4 readiness, adaptive grammar or future behavior.
+
+`observe_executed_event_local_zhir_physical_prejump` starts from one intact
+stage-certified execution result and a committed ZHIR index. It binds the
+scheduled and executed event, preceding physical partition, terminal flow,
+glyph stage, ordered decisions and trigger certificates by identity, thereby
+certifying common execution provenance for that finite window. The offline
+coordinate-paired observer above does not make that provenance claim. Neither
+observer proves solver properties, convergence, general U4 readiness or future
+behavior.
 
 `observe_event_local_zhir_prejump` pairs one such sealed nonempty flow offline
 with a scheduled ZHIR boundary at the same exact and represented coordinate. It
@@ -491,7 +559,9 @@ endpoint in authoritative `epi_time_history`. The schedule must preserve ordered
 node support and incoming delayed history; edges may change there. The endpoint
 clock, committed event log, phase, pressure-hook identity and deterministic
 REMESH controls remain frozen. The EPI-only map treats ON_REMESH callbacks as
-observers and preserves the post-schedule topology and all stored non-EPI aliases.
+observers: they must preserve all graph-owned topology, metadata, histories and
+stored non-EPI aliases. Capturable observer-owned state reachable from the graph
+shares that rollback boundary.
 One frozen positive diagonal metric measures cycle-level weighted EPI
 observations and feeds delayed-map evidence; legacy metadata retains unweighted
 means. Exact values remain authoritative when an optional float display is
@@ -500,8 +570,12 @@ The optional refresh runs only after an applied map. The cycle can retain the
 finite represented flow/glyph composition inside its event result, but the
 delayed map and its one-step evidence remain separate. This certifies
 graph-owned one-cycle execution, not solver accuracy, delayed-REMESH gain or
-repeated stability with evolving history. External effects remain outside
-rollback.
+repeated stability with evolving history. Capturable graph-reachable integrator
+and callback state is covered; emitted I/O or warnings, external resources and
+external-only aliases remain outside rollback.
+Supplied `physical_flow_partitions` are materialized exactly once inside the
+outer transaction and the resulting tuple is forwarded unchanged to schedule
+execution.
 
 Each cycle seals a `RemeshHistoryTransitionObservation`. For bounded history
 capacity `M`, exact incoming history `H_in` and exact pre-REMESH state `x_pre`,
@@ -526,13 +600,48 @@ multiplication, evolving-history repetition, runtime-global gain, whole-sequence
 atomicity, full graph or grammar-history continuity, solver or future theorem
 follows. In one explicit sequential lag-one execution with `alpha=1`, `(2,0)`
 with delayed row `(0,2)` alternates to `(0,2)` and back even though each
-fixed-history result has zero current-state coefficient. See
+fixed-history result has zero current-state coefficient.
+
+`observe_event_remesh_three_mesh_refinement` compares three already executed,
+sealed cycles with strictly nested coarse, intermediate and fine physical
+partitions. Compatibility requires the same schedule, ordered full support,
+initial EPI/capacity/phase/pressure, captured conductance, normalized metric,
+executor/callback metadata, incoming history and REMESH controls. It records
+exact represented EPI at pre-schedule, physical-boundary, pre-REMESH and
+post-REMESH checkpoints and pairwise persistent-node `L_inf` errors. It reports
+executor-linked ZHIR rates/gates whenever the required evidence exists;
+optional `zhir_xi` only validates the executed threshold. Modal products require
+a common captured generator. Detached cycles omit the complete pre-schedule
+graph namespace, callback closure and RNG state, node metadata and sub-EPI
+state, so a complete common reference problem and exclusive attribution of EPI
+differences to mesh are not certified. Integrity and decreasing finite errors
+do not prove solver order, mesh convergence, Lyapunov decrease, a combined
+schedule/REMESH gain or future behavior.
+
+The distinct uniform exact delayed-REMESH recurrence has a finite
+augmented-history theorem. With fixed delays, ordered support, one fixed
+positive diagonal spatial metric, uniform `alpha` and no clipping, its
+companion matrix is row stochastic with an exact stationary temporal measure.
+The stationary-weighted sum of centered spatial disagreement energies has an
+exact nonnegative Jensen dissipation; equality holds exactly when all active
+centered input fields agree. For `0 < alpha < 1`, the companion is primitive
+and every spatial coordinate converges to the preserved stationary history
+barycenter. `alpha = 0` is the identity. At `alpha = 1`, the companion is a
+pure-delay permutation of order `tau_global + 1`; the augmented energy is
+conserved and individual orbit periods may divide that order. This retains the
+alternating-history obstruction to strict decay. It does not identify the
+clipped binary64 runtime, prove spatial consensus or `DeltaNFR = 0`, admit
+changing coefficients/metric/support, or combine schedule and REMESH gains.
+See
 [src/tnfr/operators/event_timing.py](src/tnfr/operators/event_timing.py),
 [src/tnfr/operators/event_runtime.py](src/tnfr/operators/event_runtime.py),
 [src/tnfr/operators/event_remesh_runtime.py](src/tnfr/operators/event_remesh_runtime.py),
 [src/tnfr/operators/event_remesh_sequence.py](src/tnfr/operators/event_remesh_sequence.py),
-[src/tnfr/physics/event_duration.py](src/tnfr/physics/event_duration.py) and
-[src/tnfr/physics/event_refinement.py](src/tnfr/physics/event_refinement.py).
+[src/tnfr/physics/event_duration.py](src/tnfr/physics/event_duration.py),
+[src/tnfr/physics/event_refinement.py](src/tnfr/physics/event_refinement.py),
+[src/tnfr/physics/event_remesh_refinement.py](src/tnfr/physics/event_remesh_refinement.py),
+[src/tnfr/physics/remesh_history_stability.py](src/tnfr/physics/remesh_history_stability.py),
+and [theory/REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md).
 
 ### Composition
 
@@ -828,9 +937,9 @@ program history** (the full milestone/gap/branch threads live in the notes).
 
 | Program | Status | Reference |
 |---------|--------|-----------|
-| **Core dynamics S1–S16** | Restricted results cover pure-EPI diffusion, rational quotient affine-reset budgets, exact operator-event timing, conditional stage certificates and exact represented-map composition for a fully eligible observed finite flow/glyph trace, plus observability, quotient geometry, temporal signatures and sampled-path certificates. All thirteen operators have atomic all-target Jacobi stages; EN/RA additionally have scoped repeated-map results. Every shared stage is failure-atomic; delayed REMESH remains separate. Global binary64 runtime-map, solver, full-multichannel, history-updated repetition, changing-support and catalog-completeness results remain open. | [CORE_RESEARCH_PROGRAM.md](theory/CORE_RESEARCH_PROGRAM.md) |
+| **Core dynamics S1–S16** | Restricted results cover pure-EPI diffusion, rational quotient affine-reset budgets, exact operator-event timing, conditional stage certificates and exact represented-map composition for a fully eligible observed finite flow/glyph trace, plus observability, quotient geometry, temporal signatures and sampled-path certificates. All thirteen operators have atomic all-target Jacobi stages; EN/RA additionally have scoped repeated-map results. A separate uniform unclipped REMESH companion has an exact augmented-history disagreement functional and temporal mixing theorem on fixed support and metric. Global binary64 runtime-map, solver, full-multichannel, mixed schedule/REMESH, changing-parameter/support and catalog-completeness results remain open. | [CORE_RESEARCH_PROGRAM.md](theory/CORE_RESEARCH_PROGRAM.md) |
 | **TNFR-Riemann** | Finite protocols estimate a critical-line-centered comparison and expose ζ/L diagnostic surfaces (P12–P50). No engine theorem identifies phase coherence with zero location. The bridge to RH, including control of `S(T) = (1/π)·arg ζ(½+iT)`, remains open. | [TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) |
-| **REMESH fixed-delay surrogate** | A finite cyclic, fixed-coefficient REMESH filter has a Cesàro fixed-mode projection and needs no additional registry entry to compute it. This is distinct from the clipped runtime map and does not establish the literal `τ_g → ∞` limit or completeness of the 13-operator catalog; both remain open. | [REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) |
+| **REMESH fixed-delay models** | A finite cyclic fixed-coefficient filter has a Cesàro fixed-mode projection. A distinct finite uniform companion recurrence has a stationary-weighted augmented disagreement functional; `0<alpha<1` mixes toward the history barycenter, while `alpha=1` permits periodic histories. Neither result identifies the clipped runtime, establishes the literal `τ_g → ∞` limit or proves completeness of the 13-operator catalog. | [REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) |
 | **TNFR-Navier–Stokes** | A declared linear mapping compares viscous diffusion with the overdamped limit of a separate graph-wave model (`ν_f = ν`). Finite pseudo-spectral runs measure enstrophy growth with Reynolds number. The nonlinear vortex-stretching term is compared with a `K_φ`/VAL cascade, but no equivalence or uniform regularity bound is derived; the `Re → ∞` problem remains open. | [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) |
 | **Number theory** | Primality as `ΔNFR = 0` (canonical **unit** coefficients, §4.2 coefficient independence); arithmetic structural triad; arithmetic networks can initialize the auxiliary symplectic read-out; the cyclotomy law `s_k(p) = gcd(k, p−1) + 1` is proved for the declared residue digraph and read as a finite arithmetic pulse diagnostic. | [TNFR_NUMBER_THEORY.md](theory/TNFR_NUMBER_THEORY.md) |
 | **Structural research program (R1–R9)** | Nine internal lines on arithmetic and spectral dynamics: observability, arithmetic pulse, CRT synthesis, p-adic transport, finite fields, additive reduction, arithmetic pressure, operator certification and directed non-normal evolution. Exact, measured, negative and open results are separated in the program index. | [STRUCTURAL_RESEARCH_PROGRAM.md](theory/STRUCTURAL_RESEARCH_PROGRAM.md) |

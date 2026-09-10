@@ -388,6 +388,55 @@ def test_stage_supports_ordinary_lock_metadata_without_replacing_it(
     assert observed is user_lock
 
 
+def test_hostile_callable_introspection_is_not_run_before_failed_preflight() -> None:
+    graph = _graph(glyph=Glyph.ZHIR)
+    graph.nodes[2]["epi_history"] = [0.0, 0.1]
+
+    class HostileCallback:
+        __slots__ = ("calls", "graph")
+
+        def __init__(self, live_graph: nx.Graph) -> None:
+            object.__setattr__(self, "calls", 0)
+            object.__setattr__(self, "graph", live_graph)
+
+        def __getattribute__(self, name: str) -> Any:
+            if name == "__dict__":
+                live_graph = object.__getattribute__(self, "graph")
+                live_graph.graph["hostile_introspection_marker"] = True
+            return object.__getattribute__(self, name)
+
+        def __call__(self, _graph: nx.Graph) -> None:
+            object.__setattr__(
+                self,
+                "calls",
+                object.__getattribute__(self, "calls") + 1,
+            )
+
+    callback = HostileCallback(graph)
+    graph.graph["compute_delta_nfr"] = callback
+    graph_keys_before = tuple(graph.graph)
+    nodes_before = tuple(
+        (node, deepcopy(dict(data))) for node, data in graph.nodes(data=True)
+    )
+
+    with pytest.raises(
+        OperatorPreconditionError, match="signed dEPI/dt > xi"
+    ):
+        execute_pointwise_stage(
+            graph,
+            Mutation(),
+            (0, 1, 2),
+            compute_delta_nfr=callback,
+        )
+
+    assert tuple(graph.graph) == graph_keys_before
+    assert "hostile_introspection_marker" not in graph.graph
+    assert object.__getattribute__(callback, "calls") == 0
+    assert tuple(
+        (node, dict(data)) for node, data in graph.nodes(data=True)
+    ) == nodes_before
+
+
 def test_zhir_rejects_late_target_evidence_before_any_target_commit() -> None:
     graph = _graph(glyph=Glyph.ZHIR)
     graph.nodes[2]["epi_history"] = [0.0, 0.1]

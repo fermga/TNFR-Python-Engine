@@ -303,6 +303,29 @@ def test_proof_stamp_rejects_result_promotion_and_rate_tampering() -> None:
     assert changed_unsealed_estimate._proof_fields_are_intact()
 
 
+def test_duration_proof_stamp_rejects_hostile_equality_without_dispatch() -> None:
+    class Probe:
+        called = False
+
+        def __eq__(self, _other):
+            self.called = True
+            raise SystemExit("proof-stamp equality must not be dispatched")
+
+        def __bool__(self):
+            self.called = True
+            raise SystemExit("proof-stamp truthiness must not be dispatched")
+
+    result = diagnose_continuous_relaxation_duration(
+        _state(nx.complete_graph(4)), flow_duration=1.0
+    )
+    probe = Probe()
+    original = object.__getattribute__(result, "_proof_stamp")
+    object.__setattr__(result, "_proof_stamp", (probe, *original[1:]))
+
+    assert not result._proof_fields_are_intact()
+    assert not probe.called
+
+
 @pytest.mark.parametrize(
     "replacement",
     [

@@ -101,6 +101,29 @@ def test_interval_theorem_claim_fails_closed_after_proof_field_tamper():
     assert not result.global_disagreement_contraction_certified
 
 
+def test_interval_proof_stamp_rejects_hostile_equality_without_dispatch():
+    calls: list[str] = []
+
+    class HostileEquality:
+        def __eq__(self, other: object) -> bool:
+            del other
+            calls.append("equality dispatched")
+            raise SystemExit("proof comparison must fail closed")
+
+    left = _two_node_graph([1.0, -1.0], [-2.0, 2.0])
+    right = _two_node_graph([0.5, -0.5], [-2.0, 2.0])
+    result = _certificate(left, right, 0.25)
+    object.__setattr__(
+        result,
+        "_proof_stamp",
+        ("injected", HostileEquality()),
+    )
+
+    assert not result._proof_fields_are_intact()
+    assert not result.global_disagreement_contraction_certified
+    assert calls == []
+
+
 def test_stale_pressure_passes_nodal_balance_but_blocks_diffusion():
     left = _two_node_graph([1.0, -1.0], [-1.0, 1.0])
     right = _two_node_graph([0.75, -0.75], [-1.0, 1.0])

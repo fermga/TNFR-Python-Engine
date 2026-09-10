@@ -11,6 +11,7 @@ import networkx as nx
 import pytest
 
 import tnfr.operators.network_stage as network_stage
+from tnfr.errors import TNFRValueError
 from tnfr.operators.definitions import Emission, Mutation
 from tnfr.operators.event_runtime import (
     OperatorEventExecutionResult,
@@ -174,6 +175,33 @@ def test_network_stage_result_rejects_mutation_observation_corruption() -> None:
     assert not observations[0]._proof_fields_are_intact()
     with pytest.raises(ValueError, match="proof fields"):
         result.__post_init__()
+
+
+def test_mutation_observation_stamp_comparison_never_dispatches_user_equality(
+) -> None:
+    result = execute_pointwise_stage(
+        _mutation_graph(), Mutation(), (0, 1, 2), tau=0.01
+    )
+    observation = result.mutation_decision_observations[0]
+
+    class ExitOnEquality:
+        calls = 0
+
+        def __eq__(self, _other: object) -> bool:
+            type(self).calls += 1
+            raise SystemExit("proof stamp equality must not run")
+
+        def __bool__(self) -> bool:
+            type(self).calls += 1
+            raise SystemExit("proof stamp truth conversion must not run")
+
+    object.__setattr__(observation, "_proof_stamp", ExitOnEquality())
+
+    assert not observation._proof_fields_are_intact()
+    assert ExitOnEquality.calls == 0
+    with pytest.raises(ValueError, match="proof fields"):
+        result.__post_init__()
+    assert ExitOnEquality.calls == 0
 
 
 def test_mutation_observation_rejects_forged_nested_decisions() -> None:
@@ -354,22 +382,30 @@ def test_distinct_identity_semantic_node_cannot_reuse_observation_seal() -> None
         )
 
 
-def test_hostile_equality_node_uses_identity_short_circuit() -> None:
+def test_mutable_hostile_equality_node_is_rejected_without_dispatch() -> None:
     left = _HostileEqualityNode("left")
     right = _HostileEqualityNode("right")
-
-    result = execute_pointwise_stage(
-        _identity_node_graph(left, right),
-        Mutation(),
-        (left, right),
-        tau=0.01,
+    graph = _identity_node_graph(left, right)
+    theta_before = (
+        graph._node[left]["theta"],
+        graph._node[right]["theta"],
     )
 
-    assert result.mutation_decision_observations[0].node is left
-    assert all(
-        observation._proof_fields_are_intact()
-        for observation in result.mutation_decision_observations
-    )
+    with pytest.raises(
+        TNFRValueError,
+        match="object-identity hash and equality",
+    ):
+        execute_pointwise_stage(
+            graph,
+            Mutation(),
+            (left, right),
+            tau=0.01,
+        )
+
+    assert (
+        graph._node[left]["theta"],
+        graph._node[right]["theta"],
+    ) == theta_before
 
 
 def test_variable_repr_does_not_destabilize_opaque_node_seal() -> None:
@@ -517,17 +553,17 @@ def test_event_result_rejects_removed_reordered_or_forged_stage_evidence(
     forged_stages = list(stages)
     forged_stages[3] = removed
 
-    with pytest.raises(ValueError, match="one record per committed event"):
+    with pytest.raises(ValueError, match="proof fields"):
         replace(result, glyph_stage_evidence=stages[:-1])
-    with pytest.raises(ValueError, match="proof fields are not intact"):
+    with pytest.raises(ValueError, match="proof fields"):
         replace(result, glyph_stage_evidence=tuple(forged_stages))
 
     reordered = list(stages)
     reordered[0], reordered[3] = reordered[3], reordered[0]
-    with pytest.raises(ValueError, match="committed event order"):
+    with pytest.raises(ValueError, match="proof fields"):
         replace(result, glyph_stage_evidence=tuple(reordered))
 
-    with pytest.raises(ValueError, match="disabled stage certification"):
+    with pytest.raises(ValueError, match="proof fields"):
         replace(result, stage_certification_requested=False)
 
 

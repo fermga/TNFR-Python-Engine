@@ -43,7 +43,11 @@ from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..mathematics._neighbor_differences import edge_mean_differences
 from ..mathematics.unified_numerical import np
 from ..types import real_scalar_epi
-from ..utils._structural_signature import structural_proof_signature
+from ..utils._structural_signature import (
+    binary64_vectors_are_identical as _binary64_vectors_match,
+    proof_stamps_are_identical,
+    structural_proof_signature,
+)
 from ._conductance import read_conductance
 from .hybrid_operator_stability import (
     _exact_matrix_product,
@@ -374,9 +378,10 @@ class NodalFlowIntervalCertificate:
 
         try:
             expected = _nodal_flow_interval_proof_stamp(self)
-        except (AttributeError, TypeError, ValueError, OverflowError):
+            observed = object.__getattribute__(self, "_proof_stamp")
+        except BaseException:
             return False
-        return type(self._proof_stamp) is tuple and self._proof_stamp == expected
+        return proof_stamps_are_identical(observed, expected)
 
     @property
     def global_disagreement_contraction_certified(self) -> bool:
@@ -453,18 +458,6 @@ class NodalFlowIntervalCertificate:
 
 _NODAL_FLOW_INTERVAL_PROOF_VERSION = "observed_nodal_flow_interval_v4"
 _NODAL_FLOW_SNAPSHOT_PROOF_VERSION = "nodal_flow_state_snapshot_v3"
-
-
-def _binary64_vectors_match(
-    observed: tuple[float, ...],
-    expected: tuple[float, ...],
-) -> bool:
-    """Compare finite binary64 vectors without erasing signed zero."""
-
-    return len(observed) == len(expected) and all(
-        left.hex() == right.hex()
-        for left, right in zip(observed, expected, strict=True)
-    )
 
 
 def _nodal_flow_snapshot_proof_signature(

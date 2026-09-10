@@ -175,7 +175,10 @@ def test_directly_constructed_runtime_flow_wrapper_has_no_provenance_seal() -> N
     copied = ExecutedNodalFlowInterval(**fields)
 
     assert not copied._proof_fields_are_intact()
+    assert not copied.integrator_provenance_certified
     assert not copied.runtime_bound_binary64_held_pressure_interval_identified
+    object.__setattr__(copied, "integrator_provenance_certified", True)
+    assert not copied.integrator_provenance_certified
 
 
 def test_default_path_remains_uncertified_when_opt_in_is_disabled() -> None:
@@ -502,7 +505,7 @@ def test_late_event_failure_publishes_no_partial_flow_evidence() -> None:
             include_flow_certificates=True,
         )
 
-    assert callback_calls == 1
+    assert callback_calls == 0
     assert graph.graph["marker"] == "before"
     assert dict(graph.nodes(data=True)) == before_nodes
     assert graph.graph["_t"] == 0.0
@@ -590,19 +593,11 @@ def test_forced_signed_zero_interval_mutation_invalidates_runtime_wrapper() -> N
 
 
 def test_mutable_identity_node_invalidates_nested_and_wrapper_proofs() -> None:
-    calls = {"repr": 0, "hash": 0, "eq": 0}
+    calls = {"repr": 0}
 
     class MutableIdentityNode:
         def __init__(self, label: str) -> None:
             self.label = label
-
-        def __hash__(self) -> int:
-            calls["hash"] += 1
-            return object.__hash__(self)
-
-        def __eq__(self, other: object) -> bool:
-            calls["eq"] += 1
-            return self is other
 
         def __repr__(self) -> str:
             calls["repr"] += 1

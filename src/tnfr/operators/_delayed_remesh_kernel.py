@@ -17,10 +17,11 @@ every proposal so clipping cannot be mistaken for affine dynamics.
 from __future__ import annotations
 
 import math
+from collections import deque
 from collections.abc import Hashable, Mapping, Sequence
 from dataclasses import dataclass
 from fractions import Fraction
-from numbers import Integral, Real
+from numbers import Real
 from typing import Any, Callable, Literal
 
 from .._remesh_contract import (
@@ -28,7 +29,10 @@ from .._remesh_contract import (
     materialize_positive_diagonal_metric,
 )
 from ..errors import TNFRValueError
+from ..mathematics.unified_numerical import np
+from ..utils._structural_signature import structural_proof_signature
 from ._epi_domain import require_real_scalar_epi
+from .network_stage import _runtime_class_mro, _runtime_mapping_items
 
 __all__ = [
     "DelayedRemeshNodeProposal",
@@ -217,20 +221,115 @@ def _finite_real(value: Any, label: str) -> float:
     return result
 
 
-def _history_length(history: Any) -> int:
-    """Validate the outer replayable indexed-history boundary."""
+def _materialize_indexed_history(
+    history: Any,
+    *,
+    label: str = "_epi_hist",
+) -> tuple[Any, ...]:
+    """Read a supported indexed history without invoking subclass methods.
 
-    if isinstance(history, (str, bytes, bytearray, Mapping)):
-        raise TNFRValueError("_epi_hist must be a replayable indexed history")
-    if not hasattr(history, "__getitem__"):
-        raise TNFRValueError("_epi_hist must be a replayable indexed history")
+    Runtime history is deliberately limited to the built-in sequence storage
+    families that the graph transaction can restore, plus one-dimensional
+    NumPy arrays.  Calling ``tuple(history)`` or ``history[index]`` here would
+    dispatch arbitrary user overrides after preflight.
+    """
+
+    owners = _runtime_class_mro(type(history))
+    if tuple in owners:
+        return tuple(tuple.__iter__(history))
+    if list in owners:
+        return tuple(list.__iter__(history))
+    if deque in owners:
+        return tuple(deque.__iter__(history))
+    if type(history) is range:
+        return tuple(range.__iter__(history))
+    if np is not None and np.ndarray in owners:
+        shape_descriptor = np.ndarray.__dict__["shape"]
+        flat_descriptor = np.ndarray.__dict__["flat"]
+        try:
+            shape = type(shape_descriptor).__get__(
+                shape_descriptor,
+                history,
+                type(history),
+            )
+            if type(shape) is not tuple or len(shape) != 1:
+                raise TNFRValueError(
+                    f"{label} NumPy storage must be one-dimensional"
+                )
+            flat = type(flat_descriptor).__get__(
+                flat_descriptor,
+                history,
+                type(history),
+            )
+            return tuple(flat)
+        except TNFRValueError:
+            raise
+        except BaseException as exc:
+            raise TNFRValueError(
+                f"{label} must be a replayable indexed history"
+            ) from exc
+    raise TNFRValueError(f"{label} must be a replayable indexed history")
+
+
+def _runtime_mapping_values_for_nodes(
+    snapshot: Any,
+    nodes: tuple[Hashable, ...],
+    *,
+    label: str,
+) -> tuple[Any, ...]:
+    """Bind raw mapping entries to graph nodes without virtual key lookup."""
+
     try:
-        length = len(history)
-    except (OverflowError, TypeError) as exc:
-        raise TNFRValueError("_epi_hist must be a replayable indexed history") from exc
-    if isinstance(length, bool) or not isinstance(length, Integral) or length < 0:
-        raise TNFRValueError("_epi_hist must report a nonnegative integer length")
-    return int(length)
+        items = _runtime_mapping_items(snapshot)
+    except (TNFRValueError, TypeError) as exc:
+        raise TNFRValueError(f"{label} must be a node-to-EPI mapping") from exc
+    if len(items) != len(nodes):
+        raise TNFRValueError(
+            f"{label} support must equal the current graph node support"
+        )
+
+    unmatched = list(items)
+    values: list[Any] = []
+    for node in nodes:
+        node_signature = structural_proof_signature(node)
+        match_index = None
+        for index, (candidate, _value) in enumerate(unmatched):
+            if candidate is node or structural_proof_signature(candidate) == node_signature:
+                match_index = index
+                break
+            # NetworkX node support follows hash/equality semantics.  This
+            # fallback is evaluated once while inputs are materialized; every
+            # subsequent value read uses the raw item captured here.
+            try:
+                equivalent = candidate == node
+            except BaseException as exc:
+                raise TNFRValueError(
+                    f"{label} node-key equality could not be evaluated"
+                ) from exc
+            boolean_result = type(equivalent) is bool or (
+                np is not None and type(equivalent) is np.bool_
+            )
+            if boolean_result and bool(equivalent):
+                try:
+                    hashes_match = hash(candidate) == hash(node)
+                except BaseException as exc:
+                    raise TNFRValueError(
+                        f"{label} node-key hash could not be evaluated"
+                    ) from exc
+                if hashes_match:
+                    match_index = index
+                    break
+        if match_index is None:
+            raise TNFRValueError(
+                f"{label} support must equal the current graph node support"
+            )
+        _candidate, value = unmatched.pop(match_index)
+        values.append(value)
+    if unmatched:
+        raise TNFRValueError(
+            f"{label} support must equal the current graph node support"
+        )
+    return tuple(values)
 
 
 def _exact_support(
@@ -238,25 +337,40 @@ def _exact_support(
     nodes: tuple[Hashable, ...],
     *,
     label: str,
-) -> Mapping[Hashable, Any]:
+) -> tuple[Any, ...]:
     """Require one selected snapshot to have exactly the live node support."""
 
-    if not isinstance(snapshot, Mapping):
-        raise TNFRValueError(f"{label} must be a node-to-EPI mapping")
-    node_set = frozenset(nodes)
+    return _runtime_mapping_values_for_nodes(snapshot, nodes, label=label)
+
+
+def _materialize_remesh_metric(
+    raw: Mapping[Hashable, Any] | Sequence[Any] | None,
+    nodes: tuple[Hashable, ...],
+) -> tuple[float, ...]:
+    """Freeze metric inputs through non-virtual built-in storage primitives."""
+
+    if raw is None:
+        return materialize_positive_diagonal_metric(None, nodes)
     try:
-        snapshot_keys = tuple(snapshot)
-        support = frozenset(snapshot_keys)
-    except (TypeError, ValueError) as exc:
-        raise TNFRValueError(f"{label} must have hashable node keys") from exc
-    if len(snapshot_keys) != len(nodes) or support != node_set:
-        missing = tuple(node for node in nodes if node not in snapshot)
-        extra = tuple(node for node in snapshot_keys if node not in node_set)
-        raise TNFRValueError(
-            f"{label} support must equal the current graph node support",
-            context={"missing_nodes": missing, "extra_nodes": extra},
+        _runtime_mapping_items(raw)
+    except (TNFRValueError, TypeError):
+        try:
+            values = _materialize_indexed_history(
+                raw,
+                label="metric_weights",
+            )
+        except TNFRValueError as exc:
+            raise TNFRValueError(
+                "metric_weights must use supported mapping or indexed "
+                "sequence storage"
+            ) from exc
+    else:
+        values = _runtime_mapping_values_for_nodes(
+            raw,
+            nodes,
+            label="metric_weights",
         )
-    return snapshot
+    return materialize_positive_diagonal_metric(values, nodes)
 
 
 def _fraction(value: float) -> Fraction:
@@ -539,11 +653,12 @@ def build_delayed_remesh_plan(
             "metric_weights requires include_stability_evidence=True"
         )
     weights = (
-        materialize_positive_diagonal_metric(metric_weights, nodes)
+        _materialize_remesh_metric(metric_weights, nodes)
         if include_stability_evidence
         else None
     )
-    history_length = _history_length(history)
+    history_items = _materialize_indexed_history(history)
+    history_length = len(history_items)
     required = max(local_delay, global_delay) + 1
     if not nodes:
         return DelayedRemeshPlan(
@@ -576,29 +691,30 @@ def build_delayed_remesh_plan(
             proposals=(),
         )
     current = _exact_support(current_epi, nodes, label="current EPI snapshot")
-    try:
-        local_raw = history[-(local_delay + 1)]
-        global_raw = history[-(global_delay + 1)]
-    except (IndexError, KeyError, TypeError) as exc:
-        raise TNFRValueError(
-            "_epi_hist must support indexed delayed access"
-        ) from exc
+    local_raw = history_items[-(local_delay + 1)]
+    global_raw = history_items[-(global_delay + 1)]
     local = _exact_support(local_raw, nodes, label="local delayed EPI snapshot")
     global_snapshot = _exact_support(
         global_raw, nodes, label="global delayed EPI snapshot"
     )
     proposals_list: list[DelayedRemeshNodeProposal] = []
-    for node in nodes:
+    for node, now_raw, local_raw_value, global_raw_value in zip(
+        nodes,
+        current,
+        local,
+        global_snapshot,
+        strict=True,
+    ):
         now = require_real_scalar_epi(
-            current[node], operator="Recursivity", label=f"node {node!r} EPI"
+            now_raw, operator="Recursivity", label=f"node {node!r} EPI"
         )
         old_local = require_real_scalar_epi(
-            local[node],
+            local_raw_value,
             operator="Recursivity",
             label=f"node {node!r} local delayed EPI",
         )
         old_global = require_real_scalar_epi(
-            global_snapshot[node],
+            global_raw_value,
             operator="Recursivity",
             label=f"node {node!r} global delayed EPI",
         )

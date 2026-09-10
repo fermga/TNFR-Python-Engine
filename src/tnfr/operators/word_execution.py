@@ -21,7 +21,7 @@ import networkx as nx
 from ..errors import TNFRValueError
 
 if TYPE_CHECKING:
-    from .network_stage import NetworkStageResult
+    from .network_stage import GraphTransactionSnapshot, NetworkStageResult
 
 
 def _validate_cycles(cycles: Any) -> int:
@@ -126,6 +126,7 @@ def execute_network_operator_stage(
     sequence_context: Any = None,
     compute_delta_nfr: Any = None,
     include_epi_jump_certificate: bool = False,
+    transaction_snapshot: "GraphTransactionSnapshot | None" = None,
 ) -> "NetworkStageResult":
     """Dispatch one fixed-target stage through the canonical network route.
 
@@ -155,6 +156,8 @@ def execute_network_operator_stage(
         "sequence_context": sequence_context,
         "compute_delta_nfr": compute_delta_nfr,
     }
+    if transaction_snapshot is not None:
+        kwargs["transaction_snapshot"] = transaction_snapshot
     if operator.name in {"reception", "resonance"}:
         return execute_neighbor_stage(
             graph,

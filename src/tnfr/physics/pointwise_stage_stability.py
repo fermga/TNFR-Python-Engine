@@ -44,6 +44,10 @@ from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..mathematics.unified_numerical import np
 from ..operators.factor_contracts import resolve_runtime_operator_factors
 from ..types import Glyph, real_scalar_epi
+from ..utils._structural_signature import (
+    proof_stamps_are_identical,
+    structural_proof_signature,
+)
 from ._exact_metric import exact_vectors_proportional_if_aligned
 from ._neighbor_epi_realization import validate_certificate_tolerance
 from .hybrid_operator_stability import (
@@ -504,6 +508,22 @@ def _replay_proposals_from_declared_inputs(
     return True, None
 
 
+def _nested_proof_stamp(
+    value: Any,
+    expected_type: type[Any],
+) -> tuple[Any, ...] | None:
+    """Read one canonical nested seal without dispatching custom attributes."""
+
+    if value is None:
+        return None
+    if type(value) is not expected_type:
+        raise TypeError("nested proof value has a noncanonical type")
+    stamp = object.__getattribute__(value, "_proof_stamp")
+    if type(stamp) is not tuple:
+        raise TypeError("nested proof stamp must be an exact tuple")
+    return stamp
+
+
 def _certificate_stamp(
     *,
     operator_name: str,
@@ -558,8 +578,8 @@ def _certificate_stamp(
         "pointwise_epi_jump_realization_v2",
         operator_name,
         glyph,
-        nodes,
-        target_nodes,
+        structural_proof_signature(nodes),
+        structural_proof_signature(target_nodes),
         stage_schedule,
         fixed_support_declared,
         _exact_vector(state_before),
@@ -578,8 +598,12 @@ def _certificate_stamp(
         proposal_builder_replayed,
         proposal_replay_abstention_reason,
         logical_copy_verified,
-        None if pre_flow is None else pre_flow._proof_stamp,
-        None if post_flow is None else post_flow._proof_stamp,
+        _nested_proof_stamp(
+            pre_flow, HeterogeneousDiffusionStabilityCertificate
+        ),
+        _nested_proof_stamp(
+            post_flow, HeterogeneousDiffusionStabilityCertificate
+        ),
         pre_flow_node_order_matches,
         post_flow_node_order_matches,
         metric_abstention_reason,
@@ -600,7 +624,7 @@ def _certificate_stamp(
         exact_nul_pressure_manifold_defect,
         nul_pressure_defect_norm,
         nul_pressure_abstention_reason,
-        None if affine_jump is None else affine_jump._proof_stamp,
+        _nested_proof_stamp(affine_jump, AffineEPIJumpGainCertificate),
         tolerance,
         scope,
     )
@@ -855,11 +879,29 @@ class PointwiseEPIJumpRealizationCertificate:
                 tolerance=self.tolerance,
                 scope=self.scope,
             )
-        except (AttributeError, TypeError, ValueError, OverflowError):
+            observed = object.__getattribute__(self, "_proof_stamp")
+        except BaseException:
+            return False
+        if not proof_stamps_are_identical(observed, expected):
             return False
         nested = self.affine_jump_certificate
         pre_flow = self.pre_diffusion_certificate
         post_flow = self.post_diffusion_certificate
+        try:
+            for flow in (pre_flow, post_flow):
+                if flow is None:
+                    continue
+                if type(flow) is not HeterogeneousDiffusionStabilityCertificate:
+                    return False
+                if flow._proof_fields_are_intact() is not True:
+                    return False
+            if nested is not None:
+                if type(nested) is not AffineEPIJumpGainCertificate:
+                    return False
+                if nested._proof_fields_are_intact() is not True:
+                    return False
+        except BaseException:
+            return False
         nested_matches_outer = nested is None
         if nested is not None:
             try:
@@ -891,37 +933,9 @@ class PointwiseEPIJumpRealizationCertificate:
                     and nested.exact_quotient_energy_gain_upper_bound
                     == self.exact_common_metric_energy_gain_bound
                 )
-            except (AttributeError, KeyError, TypeError, ValueError, OverflowError):
+            except BaseException:
                 nested_matches_outer = False
-        return bool(
-            self._proof_stamp == expected
-            and (
-                pre_flow is None
-                or (
-                    isinstance(
-                        pre_flow, HeterogeneousDiffusionStabilityCertificate
-                    )
-                    and pre_flow._proof_fields_are_intact()
-                )
-            )
-            and (
-                post_flow is None
-                or (
-                    isinstance(
-                        post_flow, HeterogeneousDiffusionStabilityCertificate
-                    )
-                    and post_flow._proof_fields_are_intact()
-                )
-            )
-            and (
-                nested is None
-                or (
-                    isinstance(nested, AffineEPIJumpGainCertificate)
-                    and nested._proof_fields_are_intact()
-                    and nested_matches_outer
-                )
-            )
-        )
+        return nested_matches_outer is True
 
     @property
     def supports_runtime_affine_gain(self) -> bool:

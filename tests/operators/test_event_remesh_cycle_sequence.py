@@ -9,6 +9,7 @@ from fractions import Fraction
 import networkx as nx
 import pytest
 
+from tnfr.errors import TNFRValueError
 from tnfr.operators.event_remesh_runtime import (
     EventRemeshCycleResult,
     execute_event_remesh_cycle,
@@ -428,40 +429,26 @@ def test_input_iterable_equality_is_never_consulted() -> None:
     assert sequence.exact_common_metric_cycle_sequence_certified
 
 
-def test_hostile_node_equality_fails_closed_without_leaking_runtime_error() -> None:
-    left_nodes = (_ExplodingEqualityNode(0), _ExplodingEqualityNode(1))
-    left_graph = _graph_with_nodes(
-        left_nodes,
+def test_mutable_structural_node_keys_fail_closed_before_execution() -> None:
+    nodes = (_ExplodingEqualityNode(0), _ExplodingEqualityNode(1))
+    graph = _graph_with_nodes(
+        nodes,
         current=(2.0, 0.0),
         history=((0.0, 2.0),),
     )
-    left = execute_event_remesh_cycle(
-        left_graph,
-        _schedule(left_graph),
-        refresh_pressure_after_remesh=True,
-    )
-    incoming = tuple(
-        tuple(float(value) for value in row)
-        for row in left.history_transition.outgoing_exact_history
-    )
-    right_nodes = (_ExplodingEqualityNode(0), _ExplodingEqualityNode(1))
-    right_graph = _graph_with_nodes(
-        right_nodes,
-        current=left.post_remesh_epi.epi_values,
-        history=incoming,
-    )
-    right = execute_event_remesh_cycle(
-        right_graph,
-        _schedule(right_graph),
-        refresh_pressure_after_remesh=True,
-    )
+    graph_data_before = dict(graph.graph)
+    node_data_before = tuple(dict(graph.nodes[node]) for node in nodes)
 
-    _ExplodingEqualityNode.explode = True
-    try:
-        with pytest.raises(ValueError, match="proof fields are not intact"):
-            compose_event_remesh_cycle_observations((left, right))
-    finally:
-        _ExplodingEqualityNode.explode = False
+    with pytest.raises(TNFRValueError, match="object-identity hash"):
+        execute_event_remesh_cycle(
+            graph,
+            _schedule(graph),
+            refresh_pressure_after_remesh=True,
+        )
+
+    assert tuple(graph) == nodes
+    assert graph.graph == graph_data_before
+    assert tuple(dict(graph.nodes[node]) for node in nodes) == node_data_before
 
 
 def test_conditions_require_exact_pairs_and_canonical_order() -> None:

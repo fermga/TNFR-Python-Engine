@@ -1039,8 +1039,12 @@ class TNFRNetwork:
         Computes coherence C(t), sense indices Si, and ΔNFR values for
         all nodes, plus aggregate statistics. The returned result contains a
         detached graph-data snapshot; subsequent evolution does not rewrite it.
-        Runtime caches are rebuilt and external callbacks remain shared under
-        Python deepcopy rules. Unsupported runtime objects raise explicitly.
+        Runtime caches are rebuilt. Registered callback specs, functions and
+        exact external resources accepted by the transaction boundary retain
+        identity; callable objects stored as ordinary data follow Python
+        deepcopy semantics and may be detached. Aliases crossing external
+        resources and explicit graph-container back-references are outside the
+        snapshot-independence contract.
 
         Returns
         -------
@@ -1492,8 +1496,12 @@ class TNFRNetwork:
         TNFRNetwork
             A new network preserving graph kind, node/key identity and nested
             data, with independent configuration and RNG state. Runtime caches
-            are rebuilt. External callbacks follow Python deepcopy semantics
-            and remain shared; unsupported runtime objects raise.
+            are rebuilt. Registered callback specs, functions and exact external
+            resources accepted by the transaction boundary retain identity;
+            callable objects stored as ordinary data follow Python deepcopy
+            semantics and may be detached. Aliases crossing external resources
+            and explicit graph-container back-references are outside the
+            copy-independence contract.
 
         Raises
         ------

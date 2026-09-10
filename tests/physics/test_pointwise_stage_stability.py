@@ -657,6 +657,53 @@ def test_replayed_proposal_and_returned_certificate_reject_tampering() -> None:
     assert not certificate.supports_runtime_affine_gain
 
 
+def test_pointwise_proof_stamp_rejects_hostile_equality_without_dispatch() -> None:
+    class Probe:
+        called = False
+
+        def __eq__(self, _other):
+            self.called = True
+            raise SystemExit("proof-stamp equality must not be dispatched")
+
+        def __bool__(self):
+            self.called = True
+            raise SystemExit("proof-stamp truthiness must not be dispatched")
+
+    graph = _graph(Glyph.ZHIR)
+    certificate = _certificate(
+        graph, Glyph.ZHIR, _stage_proposals(graph, Glyph.ZHIR)
+    )
+    probe = Probe()
+    original = object.__getattribute__(certificate, "_proof_stamp")
+    object.__setattr__(certificate, "_proof_stamp", (probe, *original[1:]))
+
+    assert not certificate._proof_fields_are_intact()
+    assert not certificate.supports_runtime_affine_gain
+    assert not probe.called
+
+
+def test_pointwise_nested_semantic_equality_cannot_escape_integrity_check() -> None:
+    class HostileName:
+        def __eq__(self, _other):
+            raise SystemExit("nested semantic equality must fail closed")
+
+    graph = _graph(Glyph.ZHIR)
+    certificate = _certificate(
+        graph, Glyph.ZHIR, _stage_proposals(graph, Glyph.ZHIR)
+    )
+    nested = certificate.affine_jump_certificate
+    assert nested is not None
+    forged_nested = replace(nested, operator_name=HostileName())
+    assert forged_nested._proof_fields_are_intact()
+    forged_outer = replace(
+        certificate,
+        affine_jump_certificate=forged_nested,
+    )
+
+    assert not forged_outer._proof_fields_are_intact()
+    assert not forged_outer.supports_runtime_affine_gain
+
+
 def test_stale_factor_configuration_rejects_proposal_instead_of_refitting() -> None:
     graph = _graph(Glyph.VAL)
     proposals = _stage_proposals(graph, Glyph.VAL)

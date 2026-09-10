@@ -163,26 +163,51 @@ their offsets are authoritative; absolute timestamps are display fields, and
 coincident jumps remain ordered by event index. The schedule builder itself
 does not execute the word or manufacture timestamped EPI secants.
 
-`execute_operator_event_schedule` supplies the separate runtime binding. It
-uses the configured nodal integrator for each positive interval and the shared
-all-target dispatcher for each jump, with the initial target tuple frozen.
-Collapsed or nonadditive binary64 intervals are rejected before writes. Flow
-boundaries become timestamped samples, while a same-time EPI jump restarts that
-history and is recorded only as a zero-duration event. One graph transaction
+`execute_operator_event_schedule` supplies the separate runtime binding. It uses
+the configured nodal integrator once for each positive unpartitioned interval.
+An explicit `PhysicalFlowPartition` instead invokes it once per segment and
+refreshes pressure at every segment boundary, including the terminal boundary.
+The shared all-target dispatcher executes each jump with the initial target tuple
+frozen. Collapsed or nonadditive binary64 intervals are rejected before writes.
+Flow boundaries become timestamped samples, while a same-time EPI jump restarts
+that history and is recorded only as a zero-duration event. One graph transaction
 covers flow, jump, history, cache and event-log state; emitted external effects
 remain outside rollback.
+
+An integrator may write only EPI, `dEPI_dt`, `d2EPI_dt2` and the runtime clock
+during one positive flow. A custom integrator must satisfy the exact
+represented-rational held-input nodal identity
+`EPI_right-EPI_left = dt*nu_f_left*DeltaNFR_left` for every target; this is not
+a solver-accuracy or order certificate. `GraphTransactionSnapshot` is bound to
+its originating graph. It restores NetworkX mapping identities and alias
+relations plus graph-reachable capturable callback state. Mutable structural
+keys with custom value hash/equality, custom `__deepcopy__` hooks and unmodelled
+opaque C state are rejected before writes; common immutable atoms are accepted.
+I/O, emitted warnings, external resources and aliases held only outside the
+graph are not rollback state.
+
+For physical ZHIR, `observe_event_local_zhir_physical_prejump` remains an
+offline coordinate pairing. The stricter
+`observe_executed_event_local_zhir_physical_prejump` starts from one intact
+stage-certified execution and binds its scheduled and committed event,
+preceding physical partition, terminal pre-flow, glyph stage, ordered decisions
+and trigger certificates by identity. It certifies common execution provenance
+for that finite window only; solver order, convergence, general U4 readiness
+and future behavior remain outside it.
 
 With `include_stage_certificates=True`, flow capture is implied. The runtime
 binds executor-owned pointwise AL/SHA/VAL/NUL/ZHIR/NAV or all-target EN/RA
 certificates to the EPI endpoints captured around each actual stage and to its
-adjacent positive-flow evidence. Unsupported glyphs and rejected certificate
-domains abstain explicitly. A complete
-`ObservedRepresentedEPIScheduleComposition` orders every positive flow and
-glyph as a `RepresentedEPIScheduleOperation` and multiplies exact gain factors
-only when every represented affine map is intact, node order and observed EPI
-endpoints are exactly continuous, and one normalized rational metric spans the
-finite trace. This globally bounds the represented maps and, through endpoint
-binding, the observed trace. `runtime_schedule_global_gain_certified` remains
+adjacent flow evidence. Unpartitioned parents use their direct interval record;
+physical parents use the terminal pre-jump or initial post-jump segment record.
+Unsupported glyphs and rejected certificate domains abstain explicitly. A
+complete `ObservedRepresentedEPIScheduleComposition` orders every positive
+scheduled parent and glyph as a `RepresentedEPIScheduleOperation`. A physical
+parent can contribute the product of its segment gains only when every exact
+affine map is intact and one normalized rational metric spans the segments. The
+complete trace additionally requires exact node order, endpoint continuity and
+one common metric. This globally bounds the represented maps and, through
+endpoint binding, the observed trace. `runtime_schedule_global_gain_certified` remains
 false: no global executable binary64 map, solver accuracy, refinement
 invariance, full-multichannel result, future schedule, repetition or adaptive
 U2/U4 policy is certified.
@@ -194,7 +219,9 @@ transaction. Ordered node support and incoming delayed history are fixed across
 the schedule; edges may change there. The endpoint clock, event log, phase,
 pressure hook and deterministic delayed-map controls remain bound to the
 schedule result. The EPI-only map treats ON_REMESH callbacks as observers and
-preserves the post-schedule edge state and all stored non-EPI aliases.
+requires them to leave all graph-owned topology, metadata, histories and stored
+non-EPI aliases unchanged. Capturable state reachable through a graph-owned
+observer belongs to the same rollback boundary.
 
 One frozen positive diagonal metric measures the cycle-level pre-schedule,
 pre-REMESH and post-REMESH EPI observations and is passed unchanged to
@@ -208,8 +235,11 @@ or appends the same-time `epi_time_history` right endpoint, so Mutation cannot
 read it as a finite flow secant. The cycle may retain the finite represented
 flow/glyph composition in its event result, but the delayed map and its one-step
 evidence remain separate. Atomic execution does not provide a global binary64
-runtime gain, solver-accuracy or history-updated repetition theorem; emitted
-external effects remain outside rollback.
+runtime gain, solver-accuracy or history-updated repetition theorem. Capturable
+graph-reachable integrator and callback state is covered; emitted I/O or warnings,
+external resources and external-only aliases remain outside rollback.
+The cycle materializes `physical_flow_partitions` exactly once inside this outer
+transaction and passes the resulting tuple unchanged to the event executor.
 
 Every cycle also seals a `RemeshHistoryTransitionObservation`. With bounded
 history size `M`, incoming exact history `H_in` and exact pre-REMESH EPI vector
@@ -243,6 +273,35 @@ continuity, solver or future theorem. The omission is material: for lag one,
 empty-schedule execution alternates `(2,0) -> (0,2) -> (2,0)`. Each fixed-history
 REMESH record has zero current-state coefficient, so its one-step factor cannot
 be multiplied across the changing history.
+
+`observe_event_remesh_three_mesh_refinement` compares three already executed
+and sealed cycles with strictly nested coarse, intermediate and fine physical
+boundaries. A common schedule, ordered full support, initial nodal channels,
+captured conductance, normalized metric, execution metadata, callback metadata,
+incoming history and REMESH configuration are required. The observer records
+exact represented EPI at pre-schedule, physical-boundary, pre-REMESH and
+post-REMESH checkpoints and exact pairwise `L_inf` errors on persistent node
+identifiers. ZHIR rows use executor-linked decisions whenever the evidence is
+present; optional `zhir_xi` only validates the executed threshold. Modal rows
+are available only for a common captured generator. Detached cycles omit the
+complete pre-schedule graph namespace, callback closure and RNG state, node
+metadata and sub-EPI state, so the observer withholds both complete-reference
+and mesh-only causal claims. This completes a finite S5/S16 observation. Neither
+its integrity nor decreasing measured errors proves solver order, mesh
+convergence, Lyapunov decrease or a combined schedule/REMESH gain.
+
+The separate uniform exact companion recurrence now has an augmented-history
+result. `certify_uniform_remesh_history_stability` derives a row-stochastic
+history matrix and its invariant temporal measure. For any one fixed positive
+diagonal spatial metric, `observe_uniform_remesh_history_transition` verifies
+an exact Jensen identity showing that the stationary-weighted disagreement
+energy is nonincreasing. `0 < alpha < 1` gives primitive temporal mixing and
+pointwise convergence to a preserved history barycenter; `alpha=1` gives a
+pure-delay permutation with conserved energy and possible periodic histories.
+The result is outside the named REMESH stage and does not identify the clipped
+binary64 runtime, imply spatial consensus or zero pressure, or combine its map
+with a schedule gain. See
+[`REMESH_INFINITY_DERIVATION.md`](REMESH_INFINITY_DERIVATION.md#24-exact-finite-companion-history-stability).
 
 The shared pointwise stage executor can opt into a conditional certificate for
 AL/SHA/VAL/NUL/ZHIR/NAV. Its successful `NetworkStageResult` carries evidence
@@ -1339,6 +1398,9 @@ channel, direction, scale and postcondition).
 | `src/tnfr/operators/event_runtime.py` | Observed flow/glyph binding and represented EPI-map composition |
 | `src/tnfr/operators/event_remesh_runtime.py` | Atomic event-schedule/delayed-REMESH cycle with separate evidence |
 | `src/tnfr/operators/event_remesh_sequence.py` | Exact continuity across ordered supplied event/REMESH cycle observations |
+| `src/tnfr/physics/event_refinement.py` | Offline and executor-linked event-local ZHIR observations |
+| `src/tnfr/physics/event_remesh_refinement.py` | Strict finite coarse/intermediate/fine event/REMESH observations |
+| `src/tnfr/physics/remesh_history_stability.py` | Exact uniform finite companion-history stability certificate |
 | `src/tnfr/operators/nodal_equation.py` | Nodal equation validation |
 | `src/tnfr/operators/canonical_patterns.py` | Canonical sequence definitions |
 | `src/tnfr/operators/introspection.py` | `OperatorMeta` metadata registry |

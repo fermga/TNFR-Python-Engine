@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import FrozenInstanceError, replace
+from dataclasses import FrozenInstanceError, asdict, fields, replace
 from fractions import Fraction
 
 import pytest
@@ -11,10 +11,54 @@ from tnfr.config.operator_names import CANONICAL_OPERATOR_NAMES
 from tnfr.operators.event_timing import (
     OperatorEventSchedule,
     build_operator_event_schedule,
+    build_physical_flow_partition,
     diagnose_operator_event_runtime_clock,
 )
 from tnfr.operators.registry import get_operator_class
 from tnfr.types import Glyph
+
+
+def _assert_slotless_constant_metadata(value, expected) -> None:
+    dataclass_fields = {item.name for item in fields(type(value))}
+    slots = set(type(value).__slots__)
+    for name, expected_value in expected.items():
+        assert name not in dataclass_fields
+        assert name not in slots
+        assert isinstance(type(value).__dict__.get(name), property)
+        assert getattr(value, name) == expected_value
+        replacement = not expected_value if type(expected_value) is bool else "forged"
+        with pytest.raises(AttributeError):
+            object.__setattr__(value, name, replacement)
+        with pytest.raises(TypeError):
+            replace(value, **{name: replacement})
+        assert getattr(value, name) == expected_value
+
+
+def _assert_historical_constant_metadata_fields(value, expected) -> None:
+    """Keep the published dataclass schema while guarding fixed metadata."""
+
+    dataclass_fields = {item.name for item in fields(type(value))}
+    slots = set(type(value).__slots__)
+    serialized = asdict(value)
+    representation = repr(value)
+    for name, expected_value in expected.items():
+        assert name in dataclass_fields
+        assert name in slots
+        assert name in serialized
+        assert serialized[name] == expected_value
+        assert f"{name}=" in representation
+        assert getattr(value, name) == expected_value
+        replacement = not expected_value if type(expected_value) is bool else "forged"
+        with pytest.raises(ValueError, match="init=False"):
+            replace(value, **{name: replacement})
+
+        original_raw = object.__getattribute__(value, name)
+        object.__setattr__(value, name, replacement)
+        assert getattr(value, name) == expected_value
+        with pytest.raises(ValueError, match="inconsistent"):
+            value.__post_init__()
+        object.__setattr__(value, name, original_raw)
+        value.__post_init__()
 
 
 def test_schedule_alternates_m_events_with_m_plus_one_flow_intervals() -> None:
@@ -66,6 +110,61 @@ def test_schedule_alternates_m_events_with_m_plus_one_flow_intervals() -> None:
         Fraction(3, 4),
         Fraction(3, 2),
     ]
+
+
+def test_constant_timing_metadata_preserves_historical_dataclass_schema() -> None:
+    schedule = build_operator_event_schedule(
+        ("emission",),
+        start_time=0.0,
+        flow_durations=(0.5, 0.5),
+    )
+    interval = schedule.intervals[0]
+    event = schedule.events[0]
+    partition = build_physical_flow_partition(interval, (0.25, 0.25))
+    diagnostic = diagnose_operator_event_runtime_clock(schedule)
+
+    _assert_historical_constant_metadata_fields(
+        interval,
+        {
+            "time_basis": "physical_time",
+            "timestamp_role": "binary64_representation_only",
+            "duration_is_authoritative": True,
+            "feeds_epi_time_history": False,
+        },
+    )
+    _assert_slotless_constant_metadata(
+        partition,
+        {
+            "time_basis": "physical_time",
+            "boundary_role": "explicit_physical_pressure_refresh",
+            "numerical_substeps_are_physical_boundaries": False,
+        },
+    )
+    _assert_historical_constant_metadata_fields(
+        event,
+        {
+            "time_basis": "physical_time",
+            "timestamp_role": "binary64_representation_only",
+            "history_channel": "hybrid_event_log",
+            "feeds_epi_time_history": False,
+            "coincident_event_order": "event_index",
+        },
+    )
+    _assert_historical_constant_metadata_fields(
+        schedule,
+        {
+            "time_basis": "physical_time",
+            "timestamp_role": "binary64_representation_only",
+            "duration_and_offsets_are_authoritative": True,
+            "event_timestamps_feed_epi_time_history": False,
+            "event_history_channel": "hybrid_event_log",
+            "coincident_event_order": "event_index",
+        },
+    )
+    _assert_historical_constant_metadata_fields(
+        diagnostic,
+        {"scope": diagnostic.scope},
+    )
 
 
 def test_every_public_operator_name_resolves_its_registry_glyph() -> None:

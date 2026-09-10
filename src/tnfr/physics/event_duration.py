@@ -23,6 +23,10 @@ from .._exact_time import (
     nonnegative_represented_time,
     represented_fraction,
 )
+from ..utils._structural_signature import (
+    proof_stamps_are_identical,
+    structural_proof_signature,
+)
 from .structural_diffusion import (
     HeterogeneousDiffusionStabilityCertificate,
     verify_heterogeneous_diffusion_stability,
@@ -75,7 +79,7 @@ def _duration_proof_stamp(
 
     return (
         "continuous_relaxation_duration_v2",
-        nodes,
+        structural_proof_signature(nodes),
         flow_duration.hex(),
         exact_flow_duration,
         target_fraction.hex(),
@@ -320,9 +324,10 @@ class ContinuousRelaxationDurationDiagnostic:
                 abstention_detail=self.abstention_detail,
                 source_certificate_stamp=self._source_certificate_stamp,
             )
-        except (TypeError, ValueError, OverflowError):
+            observed = object.__getattribute__(self, "_proof_stamp")
+        except BaseException:
             return False
-        return self._proof_stamp == expected
+        return proof_stamps_are_identical(observed, expected)
 
 
 def _diagnostic(
@@ -479,7 +484,7 @@ def diagnose_continuous_relaxation_duration(
     )
     try:
         source_intact = certificate._proof_fields_are_intact()
-    except (AttributeError, TypeError, ValueError, OverflowError):
+    except BaseException:
         source_intact = False
     if type(source_intact) is not bool or not source_intact:
         return _diagnostic(

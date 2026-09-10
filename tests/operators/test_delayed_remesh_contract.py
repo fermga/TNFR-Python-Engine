@@ -2,20 +2,26 @@
 
 from __future__ import annotations
 
-from collections import deque
+from collections import defaultdict, deque
+from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import FrozenInstanceError
+from numbers import Real
 
 import networkx as nx
 import pytest
 
 from tnfr.errors import TNFRValueError
+from tnfr.mathematics.unified_numerical import np
 from tnfr.operators import (
     DelayedRemeshResult,
     apply_network_remesh,
     plan_network_remesh,
 )
 from tnfr.operators import remesh as remesh_module
+from tnfr.operators._delayed_remesh_kernel import (
+    _runtime_mapping_values_for_nodes,
+)
 from tnfr.utils import CallbackEvent, callback_manager
 
 
@@ -183,7 +189,7 @@ def test_telemetry_failure_restores_epi_metadata_and_history(
     graph.graph["history"] = {"C_steps": [0.8]}
     before = _state(graph)
 
-    def fail_log(target, meta):
+    def fail_log(target, meta, **_controls):
         target.graph["_REMESH_META"] = {"corrupt": True}
         target.graph["history"]["remesh_events"] = [dict(meta)]
         raise RuntimeError("telemetry failed")
@@ -240,6 +246,80 @@ def test_successful_callback_cannot_replace_contracted_epi() -> None:
         apply_network_remesh(graph)
 
     assert _state(graph) == before
+
+
+def test_successful_remesh_observer_cannot_mutate_graph_metadata() -> None:
+    graph = _graph()
+    graph.graph["CALLBACKS_STRICT"] = True
+    external_observations: list[str] = []
+
+    def mutate_metadata(target, _context):
+        external_observations.append("called")
+        target.graph["unrelated_callback_metadata"] = True
+
+    callback_manager.register_callback(
+        graph,
+        CallbackEvent.ON_REMESH,
+        mutate_metadata,
+        name="invalid-remesh-metadata-mutation",
+    )
+
+    with pytest.raises(TNFRValueError, match="observer changed graph-owned state"):
+        apply_network_remesh(graph)
+
+    assert "unrelated_callback_metadata" not in graph.graph
+    assert external_observations == []
+
+
+def test_successful_remesh_observer_can_record_callback_owned_state() -> None:
+    graph = _graph()
+    observations: list[dict[str, object]] = []
+
+    def observe(_target, context):
+        observations.append(dict(context))
+
+    callback_manager.register_callback(
+        graph,
+        CallbackEvent.ON_REMESH,
+        observe,
+        name="remesh-observer",
+    )
+
+    result = apply_network_remesh(graph)
+
+    assert result.applied
+    assert len(observations) == 1
+    assert observations[0]["alpha"] == 0.5
+
+
+def test_callback_registry_normalization_does_not_dispatch_mapping_overrides() -> None:
+    graph = _graph()
+
+    class Registry(defaultdict):
+        calls = 0
+        owner: nx.Graph
+
+        def get(self, key, default=None):
+            type(self).calls += 1
+            if type(self).calls == 1:
+                self.owner.graph["materialization_marker"] = "changed"
+            return defaultdict.get(self, key, default)
+
+    registry = Registry(dict)
+    registry.owner = graph
+    registry[CallbackEvent.ON_REMESH.value] = {}
+    graph.graph["callbacks"] = registry
+    graph.graph["_callbacks_dirty"] = {CallbackEvent.ON_REMESH.value}
+
+    with pytest.raises(TNFRValueError, match="canonical mapping storage"):
+        apply_network_remesh(graph)
+
+    assert Registry.calls == 0
+    assert "materialization_marker" not in graph.graph
+    assert graph.graph["callbacks"] is registry
+    assert graph.graph["_callbacks_dirty"] == {
+        CallbackEvent.ON_REMESH.value
+    }
 
 
 def test_opt_in_evidence_separates_affine_mean_and_disagreement_claims() -> None:
@@ -696,3 +776,482 @@ def test_structural_memory_epi_write_records_a_second_right_endpoint(
 
     assert list(graph.nodes[0]["epi_time_history"]) == [(0.0, 0.5)]
     assert list(graph.nodes[1]["epi_time_history"]) == [(0.0, 7.0)]
+
+
+def test_absent_graph_surface_remains_valid_when_absent() -> None:
+    graph = nx.Graph()
+    snapshot = remesh_module._snapshot_graph_surface(graph, "missing")
+
+    remesh_module._require_same_graph_surface(graph, "missing", snapshot)
+
+
+def test_intact_nan_edge_metadata_does_not_cause_false_callback_rejection() -> None:
+    graph = _graph()
+    graph._adj[0][1]["note"] = float("nan")
+
+    result = apply_network_remesh(graph)
+
+    assert result.applied
+
+
+@pytest.mark.parametrize(("before", "after"), [(1.0, True), (0.0, -0.0)])
+def test_edge_protection_distinguishes_type_and_binary64_bits(
+    before: object,
+    after: object,
+) -> None:
+    graph = _graph()
+    graph._adj[0][1]["note"] = before
+
+    def mutate(target: nx.Graph, _context: object) -> None:
+        target._adj[0][1]["note"] = after
+
+    callback_manager.register_callback(
+        graph,
+        CallbackEvent.ON_REMESH,
+        mutate,
+        name="mutate-edge-bit-pattern",
+    )
+
+    with pytest.raises(TNFRValueError, match="edge support or attributes"):
+        apply_network_remesh(graph)
+
+    restored = graph._adj[0][1]["note"]
+    assert type(restored) is type(before)
+    if type(before) is float:
+        assert restored.hex() == before.hex()
+
+
+class _IdentityNode:
+    def __str__(self) -> str:
+        raise AssertionError("REMESH must not stringify node identifiers")
+
+
+def test_identity_hash_nodes_and_exact_epi_checksum_are_supported() -> None:
+    left = _IdentityNode()
+    right = _IdentityNode()
+    graph = nx.Graph()
+    graph.add_edge(left, right, weight=1.0)
+    graph.graph.update(
+        REMESH_TAU_GLOBAL=1,
+        REMESH_TAU_LOCAL=1,
+        REMESH_ALPHA=0.5,
+        REMESH_ALPHA_HARD=True,
+        REMESH_LOG_EVENTS=False,
+        EPI_MIN=-10.0,
+        EPI_MAX=10.0,
+        CLIP_MODE="hard",
+        _epi_hist=deque(
+            [
+                {left: 0.0, right: 2.0},
+                {left: 2.0, right: 0.0},
+            ],
+            maxlen=8,
+        ),
+    )
+    graph._node[left]["EPI"] = 2.0
+    graph._node[right]["EPI"] = 0.0
+
+    before_checksum = remesh_module._snapshot_epi(graph)[1]
+    result = apply_network_remesh(graph)
+    after_checksum = remesh_module._snapshot_epi(graph)[1]
+
+    assert result.applied
+    assert before_checksum != after_checksum
+    assert graph._node[left]["EPI"] == 0.5
+    assert graph._node[right]["EPI"] == 1.5
+
+
+def test_epi_checksum_distinguishes_sub_micro_binary64_changes() -> None:
+    graph = _graph(current=(1.0, 0.0))
+    before = remesh_module._snapshot_epi(graph)[1]
+    graph._node[0]["EPI"] = 1.0 + 2.0**-52
+
+    after = remesh_module._snapshot_epi(graph)[1]
+
+    assert before != after
+
+
+class _HostileMetric(Mapping[object, float]):
+    def __init__(self, graph: nx.Graph) -> None:
+        self.graph = graph
+
+    def __iter__(self):
+        self.graph.graph["metric_read_marker"] = "changed"
+        return iter((0, 1))
+
+    def __len__(self) -> int:
+        return 2
+
+    def __getitem__(self, key: object) -> float:
+        self.graph.graph["metric_read_marker"] = "changed"
+        return 1.0
+
+
+def test_plan_rejects_unsupported_metric_without_dispatch_or_mutation() -> None:
+    graph = _graph()
+
+    with pytest.raises(TNFRValueError, match="supported mapping"):
+        plan_network_remesh(
+            graph,
+            include_stability_evidence=True,
+            metric_weights=_HostileMetric(graph),
+        )
+
+    assert "metric_read_marker" not in graph.graph
+
+
+def _single_node_plan(
+    node: object,
+    history_node: object,
+):
+    graph = nx.Graph()
+    graph.add_node(node, EPI=10.0)
+    graph.graph.update(
+        REMESH_TAU_GLOBAL=1,
+        REMESH_TAU_LOCAL=1,
+        REMESH_ALPHA=0.5,
+        REMESH_ALPHA_HARD=True,
+        EPI_MIN=-10.0,
+        EPI_MAX=10.0,
+        CLIP_MODE="hard",
+        _epi_hist=deque(
+            [{history_node: 2.0}, {history_node: 10.0}],
+            maxlen=8,
+        ),
+    )
+    return plan_network_remesh(graph)
+
+
+def test_history_keys_follow_equal_hash_networkx_node_semantics() -> None:
+    node = tuple([1])
+    history_node = tuple([1])
+    assert node is not history_node
+
+    plan = _single_node_plan(node, history_node)
+
+    assert plan.proposals[0].raw_epi == 4.0
+
+
+def test_numpy_boolean_node_equality_follows_mapping_semantics() -> None:
+    np = pytest.importorskip("numpy")
+
+    plan = _single_node_plan(np.int64(1), 1)
+
+    assert plan.proposals[0].raw_epi == 4.0
+
+
+class _EqualUnequalHashNode:
+    def __init__(self, hash_value: int) -> None:
+        self.hash_value = hash_value
+
+    def __eq__(self, other: object) -> bool:
+        return type(other) is _EqualUnequalHashNode
+
+    def __hash__(self) -> int:
+        return self.hash_value
+
+
+def test_equal_history_key_with_different_hash_is_rejected() -> None:
+    node = _EqualUnequalHashNode(1)
+    history_node = _EqualUnequalHashNode(2)
+    with pytest.raises(TNFRValueError, match="support must equal"):
+        _runtime_mapping_values_for_nodes(
+            {history_node: 2.0},
+            (node,),
+            label="history",
+        )
+
+
+class _MarkerNodeAttributes(dict):
+    owner: nx.Graph | None = None
+    armed = False
+
+    def _touch(self) -> None:
+        if self.armed and self.owner is not None:
+            dict.__setitem__(
+                self.owner.graph,
+                "node_attr_read_marker",
+                "changed",
+            )
+
+    def __contains__(self, key: object) -> bool:
+        self._touch()
+        return dict.__contains__(self, key)
+
+    def get(self, key: object, default: object = None) -> object:
+        self._touch()
+        return dict.get(self, key, default)
+
+
+class _MarkerNodeGraph(nx.Graph):
+    node_attr_dict_factory = _MarkerNodeAttributes
+
+
+def test_standalone_remesh_does_not_dispatch_node_attribute_reads() -> None:
+    graph = _MarkerNodeGraph()
+    graph.add_edge(0, 1, weight=1.0)
+    graph.graph.update(
+        REMESH_TAU_GLOBAL=1,
+        REMESH_TAU_LOCAL=1,
+        REMESH_ALPHA=0.5,
+        REMESH_ALPHA_HARD=True,
+        REMESH_LOG_EVENTS=False,
+        EPI_MIN=-10.0,
+        EPI_MAX=10.0,
+        CLIP_MODE="hard",
+        _epi_hist=deque(
+            [{0: 0.0, 1: 2.0}, {0: 2.0, 1: 0.0}],
+            maxlen=8,
+        ),
+    )
+    dict.update(dict.__getitem__(graph._node, 0), {"EPI": 2.0})
+    dict.update(dict.__getitem__(graph._node, 1), {"EPI": 0.0})
+    for node_data in dict.values(graph._node):
+        node_data.owner = graph
+        node_data.armed = True
+
+    result = apply_network_remesh(graph)
+
+    assert result.applied
+    assert dict.get(graph.graph, "node_attr_read_marker") is None
+
+
+def test_standalone_remesh_does_not_dispatch_history_snapshot_lookup() -> None:
+    graph = _graph()
+    calls = 0
+
+    class ReadMapping(dict):
+        def __getitem__(self, key: object) -> object:
+            nonlocal calls
+            calls += 1
+            if calls >= 3:
+                dict.__setitem__(
+                    graph.graph,
+                    "history_read_marker",
+                    "changed",
+                )
+            return dict.__getitem__(self, key)
+
+    graph.graph["_epi_hist"] = deque(
+        [
+            ReadMapping({0: 0.0, 1: 0.1}),
+            ReadMapping({0: 0.5, 1: 0.2}),
+        ],
+        maxlen=8,
+    )
+
+    result = apply_network_remesh(graph)
+
+    assert result.applied
+    assert calls == 0
+    assert "history_read_marker" not in graph.graph
+
+
+class _LateReadGraphAttributes(dict):
+    def get(self, key: object, default: object = None) -> object:
+        if key == "_REMESH_META":
+            dict.__setitem__(self, "graph_attr_read_marker", "changed")
+        return dict.get(self, key, default)
+
+
+class _LateReadGraph(nx.Graph):
+    graph_attr_dict_factory = _LateReadGraphAttributes
+
+
+def test_standalone_remesh_does_not_dispatch_graph_attribute_reads() -> None:
+    graph = _LateReadGraph()
+    graph.add_edge(0, 1, weight=1.0)
+    graph.graph.update(_graph().graph)
+    graph._node[0]["EPI"] = 0.5
+    graph._node[1]["EPI"] = 0.2
+
+    result = apply_network_remesh(graph)
+
+    assert result.applied
+    assert dict.get(graph.graph, "graph_attr_read_marker") is None
+
+
+def test_standalone_remesh_does_not_materialize_networkx_cached_views() -> None:
+    graph = _graph()
+    for key in ("nodes", "edges", "degree", "adj"):
+        graph.__dict__.pop(key, None)
+
+    result = apply_network_remesh(graph)
+
+    assert result.applied
+    assert all(
+        key not in graph.__dict__ for key in ("nodes", "edges", "degree", "adj")
+    )
+
+
+def _single_node_graph(epi: object = 1.0) -> nx.Graph:
+    graph = nx.Graph()
+    graph.add_node("n", EPI=epi)
+    graph.graph.update(
+        REMESH_TAU_GLOBAL=1,
+        REMESH_TAU_LOCAL=1,
+        REMESH_ALPHA=0.5,
+        REMESH_ALPHA_HARD=True,
+        REMESH_LOG_EVENTS=False,
+        EPI_MIN=-10.0,
+        EPI_MAX=10.0,
+        CLIP_MODE="hard",
+        _epi_hist=deque([{"n": 2.0}, {"n": 2.0}], maxlen=8),
+    )
+    return graph
+
+
+def test_public_plan_rolls_back_hostile_epi_conversion() -> None:
+    graph = _single_node_graph()
+
+    class MarkingFloat(float):
+        target: nx.Graph
+
+        def __complex__(self) -> complex:
+            self.target.graph["converted"] = True
+            return complex(float.__float__(self), 0.0)
+
+    value = MarkingFloat(1.0)
+    value.target = graph
+    graph._node["n"]["EPI"] = value
+
+    with pytest.raises(TNFRValueError):
+        plan_network_remesh(graph)
+
+    assert graph._node["n"]["EPI"] is value
+    assert "converted" not in graph.graph
+
+
+class _MarkingFlag:
+    def __init__(self, graph: nx.Graph) -> None:
+        self.graph = graph
+
+    def __bool__(self) -> bool:
+        self.graph.graph["unexpected_bool"] = True
+        return False
+
+
+class _MarkingInt:
+    def __init__(self, graph: nx.Graph) -> None:
+        self.graph = graph
+
+    def __int__(self) -> int:
+        self.graph.graph["unexpected_int"] = True
+        return 0
+
+
+@pytest.mark.parametrize(
+    ("key", "value_factory", "message", "marker"),
+    [
+        (
+            "REMESH_LOG_EVENTS",
+            _MarkingFlag,
+            "REMESH_LOG_EVENTS must be a bool",
+            "unexpected_bool",
+        ),
+        (
+            "HISTORY_MAXLEN",
+            _MarkingInt,
+            "HISTORY_MAXLEN must be a nonnegative int",
+            "unexpected_int",
+        ),
+    ],
+)
+def test_runtime_controls_reject_coercion_hooks_without_dispatch(
+    key: str,
+    value_factory: type[object],
+    message: str,
+    marker: str,
+) -> None:
+    graph = _single_node_graph()
+    graph.graph[key] = value_factory(graph)
+
+    with pytest.raises(TNFRValueError, match=message):
+        apply_network_remesh(graph)
+
+    assert marker not in graph.graph
+
+
+@pytest.mark.skipif(np is None, reason="NumPy is unavailable")
+def test_history_maxlen_accepts_exact_numpy_integer() -> None:
+    graph = _single_node_graph()
+    graph.graph["HISTORY_MAXLEN"] = np.int64(8)
+
+    result = apply_network_remesh(graph)
+
+    assert result.applied
+    assert graph.graph["history"]._maxlen == 8
+
+
+class _RegisteredMarkingReal:
+    def __init__(self, graph: nx.Graph) -> None:
+        self.graph = graph
+
+    def __float__(self) -> float:
+        self.graph.graph["unexpected_float"] = True
+        return 0.5
+
+
+Real.register(_RegisteredMarkingReal)
+
+
+def test_optional_telemetry_rejects_registered_real_conversion_hooks() -> None:
+    graph = _single_node_graph()
+    graph.graph["history"] = {
+        "stable_frac": [_RegisteredMarkingReal(graph)],
+    }
+
+    with pytest.raises(TNFRValueError, match="finite scalars"):
+        apply_network_remesh(graph)
+
+    assert "unexpected_float" not in graph.graph
+
+
+@pytest.mark.skipif(np is None, reason="NumPy is unavailable")
+def test_optional_telemetry_rejects_numpy_scalar_subclass_hooks() -> None:
+    graph = _single_node_graph()
+
+    class PretendNumpy(np.float64):
+        __module__ = "numpy"
+        target: nx.Graph
+
+        def __float__(self) -> float:
+            self.target.graph["numpy_subclass_called"] = True
+            return np.float64.__float__(self)
+
+    value = PretendNumpy(0.5)
+    value.target = graph
+    graph.graph["history"] = {"stable_frac": [value]}
+
+    with pytest.raises(TNFRValueError, match="finite scalars"):
+        apply_network_remesh(graph)
+
+    assert "numpy_subclass_called" not in graph.graph
+
+
+class _DelayedConfigurationReal:
+    calls = 0
+    target: nx.Graph | None = None
+
+    def __float__(self) -> float:
+        type(self).calls += 1
+        if type(self).calls >= 2 and type(self).target is not None:
+            type(self).target.graph["unexpected_config_recheck"] = True
+        return -10.0
+
+
+Real.register(_DelayedConfigurationReal)
+
+
+def test_configuration_is_materialized_once_and_verified_raw() -> None:
+    graph = _single_node_graph()
+    value = _DelayedConfigurationReal()
+    type(value).calls = 0
+    type(value).target = graph
+    graph.graph["EPI_MIN"] = value
+
+    result = apply_network_remesh(graph)
+
+    assert result.applied
+    assert type(value).calls == 1
+    assert "unexpected_config_recheck" not in graph.graph

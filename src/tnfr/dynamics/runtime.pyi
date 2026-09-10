@@ -16,6 +16,7 @@ __all__ = [
     "ALIAS_SI",
     "_normalize_job_overrides",
     "_resolve_jobs_override",
+    "_refresh_delta_nfr",
     "_prepare_dnfr",
     "_record_mutation_flow_boundary",
     "_update_nodes",
@@ -38,6 +39,11 @@ def _resolve_jobs_override(
     *,
     allow_non_positive: bool,
 ) -> int | None: ...
+def _refresh_delta_nfr(
+    G: TNFRGraph,
+    *,
+    n_jobs: int | None,
+) -> Any: ...
 def _run_before_callbacks(
     G: TNFRGraph, *, step_idx: int, dt: float | None, use_Si: bool, apply_glyphs: bool
 ) -> None: ...

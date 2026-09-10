@@ -211,6 +211,28 @@ def test_affine_theorem_properties_reject_replaced_decisive_fields():
     assert not forged_mean.preserves_initial_weighted_consensus
 
 
+def test_affine_proof_stamp_rejects_hostile_equality_without_dispatch():
+    class Probe:
+        called = False
+
+        def __eq__(self, _other):
+            self.called = True
+            raise SystemExit("proof-stamp equality must not be dispatched")
+
+        def __bool__(self):
+            self.called = True
+            raise SystemExit("proof-stamp truthiness must not be dispatched")
+
+    result = _local_reception(_path_flow())
+    probe = Probe()
+    original = object.__getattribute__(result, "_proof_stamp")
+    object.__setattr__(result, "_proof_stamp", (probe, *original[1:]))
+
+    assert not result._proof_fields_are_intact()
+    assert not result.supports_global_gain_theorem
+    assert not probe.called
+
+
 def test_exact_gain_survives_ill_conditioned_positive_metric():
     tiny = sys.float_info.min
     result = certify_affine_epi_jump_gain(

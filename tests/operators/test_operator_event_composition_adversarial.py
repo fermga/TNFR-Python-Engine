@@ -12,10 +12,14 @@ import pytest
 
 from tnfr.operators.event_runtime import (
     ObservedRepresentedEPIScheduleComposition,
+    OperatorEventExecutionResult,
     RepresentedEPIScheduleOperation,
     execute_operator_event_schedule,
 )
-from tnfr.operators.event_timing import build_operator_event_schedule
+from tnfr.operators.event_timing import (
+    OperatorEventSchedule,
+    build_operator_event_schedule,
+)
 from tnfr.operators.network_stage import NetworkStageResult, TWO_PHASE_JACOBI
 
 
@@ -50,14 +54,88 @@ def _graph() -> nx.Graph:
 
 
 def _refresh_pure_epi_pressure(graph: nx.Graph) -> None:
-    left = float(graph.nodes[0]["EPI"])
-    right = float(graph.nodes[1]["EPI"])
-    graph.nodes[0]["delta_nfr"] = right - left
-    graph.nodes[1]["delta_nfr"] = left - right
+    left_node, right_node = tuple(graph)
+    left = float(graph.nodes[left_node]["EPI"])
+    right = float(graph.nodes[right_node]["EPI"])
+    graph.nodes[left_node]["delta_nfr"] = right - left
+    graph.nodes[right_node]["delta_nfr"] = left - right
+
+
+def _transition_result(
+    *,
+    epi: tuple[float, float] = (0.25, -0.25),
+    schedule: OperatorEventSchedule | None = None,
+) -> OperatorEventExecutionResult:
+    graph = _graph()
+    for node, value in zip(graph, epi, strict=True):
+        graph.nodes[node]["EPI"] = value
+    _refresh_pure_epi_pressure(graph)
+    graph.graph["compute_delta_nfr"] = _refresh_pure_epi_pressure
+    if schedule is None:
+        schedule = build_operator_event_schedule(
+            ("transition",),
+            start_time=0.0,
+            flow_durations=(0.125, 0.125),
+        )
+    return execute_operator_event_schedule(
+        graph,
+        schedule,
+        include_stage_certificates=True,
+    )
 
 
 def _transition_composition() -> ObservedRepresentedEPIScheduleComposition:
-    graph = _graph()
+    result = _transition_result()
+    composition = result.represented_epi_schedule_composition
+    assert composition is not None
+    return composition
+
+
+def test_result_rejects_foreign_flow_and_composition_evidence() -> None:
+    schedule = build_operator_event_schedule(
+        ("transition",),
+        start_time=0.0,
+        flow_durations=(0.125, 0.125),
+    )
+    result = _transition_result(schedule=schedule)
+    foreign = _transition_result(epi=(0.3, -0.3), schedule=schedule)
+
+    with pytest.raises(
+        ValueError,
+        match="proof fields",
+    ):
+        replace(
+            result,
+            flow_interval_evidence=foreign.flow_interval_evidence,
+        )
+    with pytest.raises(
+        ValueError,
+        match="proof fields",
+    ):
+        replace(
+            result,
+            represented_epi_schedule_composition=(
+                foreign.represented_epi_schedule_composition
+            ),
+        )
+    with pytest.raises(ValueError, match="proof fields"):
+        replace(
+            result,
+            flow_interval_evidence=tuple(
+                reversed(result.flow_interval_evidence)
+            ),
+        )
+
+
+def test_mutable_node_state_is_part_of_operation_and_composition_seals() -> None:
+    class MutableNode:
+        def __init__(self, label: str) -> None:
+            self.label = label
+
+    left = MutableNode("left")
+    right = MutableNode("right")
+    graph = nx.relabel_nodes(_graph(), {0: left, 1: right}, copy=True)
+    _refresh_pure_epi_pressure(graph)
     graph.graph["compute_delta_nfr"] = _refresh_pure_epi_pressure
     schedule = build_operator_event_schedule(
         ("transition",),
@@ -71,7 +149,13 @@ def _transition_composition() -> ObservedRepresentedEPIScheduleComposition:
     )
     composition = result.represented_epi_schedule_composition
     assert composition is not None
-    return composition
+    assert composition._proof_fields_are_intact()
+
+    left.label = "changed"
+
+    assert not composition.operations[0]._proof_fields_are_intact()
+    assert not composition._proof_fields_are_intact()
+    assert not result._proof_fields_are_intact()
 
 
 def test_complete_trace_records_every_flow_and_glyph_in_execution_order() -> None:
@@ -154,13 +238,13 @@ def test_composition_and_operation_proof_stamps_reject_replaced_claims() -> None
             first,
             exact_epi_after=tuple(value + 1 for value in first.exact_epi_after or ()),
         )
-    with pytest.raises(ValueError, match="composition gain"):
+    with pytest.raises(ValueError, match="proof fields"):
         replace(composition, exact_energy_gain_upper_bound=Fraction(0))
     changed_conditions = tuple(
         (name, False if name == "one_exact_normalized_metric" else passed)
         for name, passed in composition.conditions
     )
-    with pytest.raises(ValueError, match="conditions"):
+    with pytest.raises(ValueError, match="proof fields"):
         replace(composition, conditions=changed_conditions)
 
 
@@ -196,6 +280,122 @@ def test_object_setattr_tamper_cannot_promote_composition_gain() -> None:
         with pytest.raises(AttributeError):
             object.__setattr__(composition, field_name, True)
         assert getattr(composition, field_name) is False
+    # ``scope`` is a published ``init=False`` dataclass field.  Raw slot
+    # mutation must therefore invalidate the seal while the public read-out
+    # remains pinned to the canonical represented-only claim.
+    object.__setattr__(composition, "scope", "global executable schedule")
+    assert not composition._proof_fields_are_intact()
+    assert "represented" in composition.scope
+
+
+def test_runtime_proof_records_reject_hostile_stamp_tokens_without_dispatch() -> None:
+    class HostileProofToken:
+        calls = 0
+
+        def __bool__(self) -> bool:
+            type(self).calls += 1
+            raise SystemExit("proof validation invoked hostile truth conversion")
+
+        def __eq__(self, _other: object) -> bool:
+            type(self).calls += 1
+            raise SystemExit("proof validation invoked hostile equality")
+
+    cases = (
+        (lambda result: result.events[0], "zero_duration"),
+        (
+            lambda result: result.flow_interval_evidence[0],
+            "integrator_provenance_certified",
+        ),
+        (
+            lambda result: result.glyph_stage_evidence[0],
+            "represented_affine_gain_bound_at_observed_endpoint_certified",
+        ),
+        (
+            lambda result: result.represented_epi_schedule_composition.operations[0],
+            "represented_affine_gain_certified",
+        ),
+        (
+            lambda result: result.represented_epi_schedule_composition,
+            "represented_affine_composition_gain_certified",
+        ),
+        (lambda result: result, "runtime_clock_checked"),
+    )
+
+    for select, claim_name in cases:
+        result = _transition_result()
+        record = select(result)
+        assert record is not None
+        original = object.__getattribute__(record, "_proof_stamp")
+        assert type(original) is tuple and original
+        probe = HostileProofToken()
+        object.__setattr__(record, "_proof_stamp", (*original[:-1], probe))
+
+        assert getattr(record, claim_name) is False
+        assert HostileProofToken.calls == 0
+
+
+@pytest.mark.parametrize(
+    ("select", "deleted_slot", "claim_name", "has_event_record"),
+    (
+        (lambda result: result.events[0], "_proof_stamp", "zero_duration", True),
+        (lambda result: result.events[0], "zero_duration", "zero_duration", True),
+        (
+            lambda result: result.flow_interval_evidence[0],
+            "_proof_stamp",
+            "integrator_provenance_certified",
+            False,
+        ),
+        (
+            lambda result: result.flow_interval_evidence[0],
+            "integrator_provenance_certified",
+            "integrator_provenance_certified",
+            False,
+        ),
+        (
+            lambda result: result.glyph_stage_evidence[0],
+            "_proof_stamp",
+            "represented_affine_gain_bound_at_observed_endpoint_certified",
+            False,
+        ),
+        (
+            lambda result: result.represented_epi_schedule_composition.operations[0],
+            "_proof_stamp",
+            "represented_affine_gain_certified",
+            False,
+        ),
+        (
+            lambda result: result.represented_epi_schedule_composition,
+            "_proof_stamp",
+            "represented_affine_composition_gain_certified",
+            False,
+        ),
+        (lambda result: result, "_proof_stamp", "runtime_clock_checked", False),
+        (
+            lambda result: result,
+            "runtime_clock_checked",
+            "runtime_clock_checked",
+            False,
+        ),
+    ),
+)
+def test_runtime_proof_records_fail_closed_when_a_slot_is_deleted(
+    select: Any,
+    deleted_slot: str,
+    claim_name: str,
+    has_event_record: bool,
+) -> None:
+    result = _transition_result()
+    record = select(result)
+    assert record is not None
+    assert record._proof_fields_are_intact()
+
+    object.__delattr__(record, deleted_slot)
+
+    assert record._proof_fields_are_intact() is False
+    assert getattr(record, claim_name) is False
+    if has_event_record:
+        with pytest.raises(ValueError, match="proof fields are not intact"):
+            record.as_record()
 
 
 def test_replaced_flow_certificate_cannot_enter_composition(

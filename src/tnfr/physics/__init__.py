@@ -55,6 +55,13 @@ phase_transition : Operational structural-symmetry transition diagnostics
     - Critical exponent measured as an observable (audit 2026: NOT the
       universal closed-form scale; the fitted exponent is protocol-dependent)
     - No universal transition order or ξ_C divergence is asserted
+event_remesh_refinement : Finite three-mesh event/REMESH observations
+    - Exact persistent-node checkpoint errors, executed ZHIR gates and modal factors
+    - Excludes solver order, mesh convergence and mixed schedule/REMESH gain
+remesh_history_stability : Exact finite uniform delayed-history theorem
+    - Stationary-weighted Jensen disagreement balance
+    - Temporal mixing for 0 < alpha < 1; pure-delay cycles at alpha = 1
+    - Excludes clipping, changing support/metric and runtime identification
 
 See Also
 --------
@@ -439,6 +446,21 @@ from .runtime_flow_stability import (
     capture_nodal_flow_state,
     certify_observed_nodal_flow_interval,
 )
+from .event_remesh_refinement import (
+    EventRemeshEPICheckpointObservation,
+    EventRemeshMeshObservation,
+    EventRemeshPersistentEPIError,
+    EventRemeshThreeMeshModalObservation,
+    EventRemeshThreeMeshRefinementObservation,
+    EventRemeshThreeMeshZHIRObservation,
+    observe_event_remesh_three_mesh_refinement,
+)
+from .remesh_history_stability import (
+    UniformRemeshHistoryStabilityCertificate,
+    UniformRemeshHistoryTransitionObservation,
+    certify_uniform_remesh_history_stability,
+    observe_uniform_remesh_history_transition,
+)
 from .network_stage_stability import (
     AllTargetNeighborStageCertificate,
     AllTargetNeighborStageStep,
@@ -727,6 +749,19 @@ __all__ = [
     "NodalFlowIntervalCertificate",
     "capture_nodal_flow_state",
     "certify_observed_nodal_flow_interval",
+    # --- Finite event/REMESH three-mesh observations ---
+    "EventRemeshEPICheckpointObservation",
+    "EventRemeshMeshObservation",
+    "EventRemeshPersistentEPIError",
+    "EventRemeshThreeMeshModalObservation",
+    "EventRemeshThreeMeshRefinementObservation",
+    "EventRemeshThreeMeshZHIRObservation",
+    "observe_event_remesh_three_mesh_refinement",
+    # --- Exact uniform delayed-REMESH history stability ---
+    "UniformRemeshHistoryStabilityCertificate",
+    "UniformRemeshHistoryTransitionObservation",
+    "certify_uniform_remesh_history_stability",
+    "observe_uniform_remesh_history_transition",
     # --- Physical operator-event flow duration ---
     "ContinuousRelaxationDurationDiagnostic",
     "diagnose_continuous_relaxation_duration",

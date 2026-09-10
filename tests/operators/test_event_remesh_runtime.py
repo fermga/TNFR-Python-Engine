@@ -6,6 +6,7 @@ from collections import deque
 from copy import deepcopy
 from dataclasses import replace
 from fractions import Fraction
+from numbers import Real
 import sys
 from typing import Any
 
@@ -19,6 +20,7 @@ from tnfr.operators import (
     EventRemeshCycleResult,
     RemeshHistoryTransitionObservation,
     build_operator_event_schedule,
+    build_physical_flow_partition,
     execute_event_remesh_cycle,
 )
 from tnfr.utils import CallbackEvent, callback_manager
@@ -125,6 +127,236 @@ def test_cycle_preserves_pre_jump_history_index_and_one_metric() -> None:
     assert not result.remesh_history_repetition_certified
     assert not result.mixed_runtime_gain_certified
     assert not result.external_side_effects_rolled_back
+
+
+def test_cycle_propagates_physical_partition_and_changes_flow_endpoint() -> None:
+    held_graph = _graph()
+    refreshed_graph = _graph()
+
+    def refresh(live_graph: nx.Graph) -> None:
+        left = float(live_graph.nodes[0]["EPI"])
+        right = float(live_graph.nodes[1]["EPI"])
+        live_graph.nodes[0]["delta_nfr"] = right - left
+        live_graph.nodes[1]["delta_nfr"] = left - right
+
+    for graph in (held_graph, refreshed_graph):
+        graph.graph["compute_delta_nfr"] = refresh
+        refresh(graph)
+
+    held_schedule = _schedule(held_graph, durations=(0.5,))
+    refreshed_schedule = _schedule(refreshed_graph, durations=(0.5,))
+    partition = build_physical_flow_partition(
+        refreshed_schedule.intervals[0],
+        (0.25, 0.25),
+    )
+
+    held = execute_event_remesh_cycle(held_graph, held_schedule)
+    refreshed = execute_event_remesh_cycle(
+        refreshed_graph,
+        refreshed_schedule,
+        physical_flow_partitions=(partition,),
+    )
+
+    assert held.pre_remesh_epi.epi_values == (1.0, 1.0)
+    assert refreshed.pre_remesh_epi.epi_values == (1.25, 0.75)
+    assert refreshed.pre_remesh_epi.epi_values != held.pre_remesh_epi.epi_values
+    assert refreshed.schedule_pressure_refresh_callback_invocations == 3
+    evidence = refreshed.event_execution.physical_flow_partition_evidence
+    assert len(evidence) == 1
+    assert len(evidence[0].boundary_observations) == 3
+    assert len(evidence[0].segment_flow_evidence) == 2
+
+
+def test_cycle_proof_compacts_nested_runtime_seals_and_fails_closed() -> None:
+    graph = _graph()
+
+    def refresh(live_graph: nx.Graph) -> None:
+        left = float(live_graph.nodes[0]["EPI"])
+        right = float(live_graph.nodes[1]["EPI"])
+        live_graph.nodes[0]["delta_nfr"] = right - left
+        live_graph.nodes[1]["delta_nfr"] = left - right
+
+    graph.graph["compute_delta_nfr"] = refresh
+    refresh(graph)
+    schedule = _schedule(graph, durations=(0.5,))
+    partition = build_physical_flow_partition(
+        schedule.intervals[0],
+        (0.25, 0.25),
+    )
+    result = execute_event_remesh_cycle(
+        graph,
+        schedule,
+        physical_flow_partitions=(partition,),
+    )
+    execution = result.event_execution
+    executed_partition = execution.physical_flow_partition_evidence[0]
+
+    def assert_compact_token(token: object, child: object) -> None:
+        child_type = type(child)
+        assert type(token) is tuple
+        assert len(token) == 4
+        assert token[:3] == (
+            "tnfr-nested-proof-stamp-v1",
+            child_type.__module__,
+            child_type.__qualname__,
+        )
+        assert token[3] is object.__getattribute__(child, "_proof_stamp")
+
+    cycle_fields = dict(object.__getattribute__(result, "_proof_stamp")[1])
+    assert_compact_token(cycle_fields["event_execution"], execution)
+    assert_compact_token(
+        cycle_fields["history_transition"],
+        result.history_transition,
+    )
+    assert cycle_fields["remesh"][0] != "tnfr-nested-proof-stamp-v1"
+
+    execution_fields = dict(
+        object.__getattribute__(execution, "_proof_stamp")[1]
+    )
+    partition_sequence = execution_fields[
+        "physical_flow_partition_evidence"
+    ]
+    assert partition_sequence[0] == "tnfr-nested-proof-sequence-v1"
+    assert type(partition_sequence[1]) is tuple
+    assert len(partition_sequence[1]) == 1
+    assert_compact_token(partition_sequence[1][0], executed_partition)
+
+    partition_fields = dict(
+        object.__getattribute__(executed_partition, "_proof_stamp")[1]
+    )
+    for field_name, children in (
+        ("boundary_observations", executed_partition.boundary_observations),
+        ("segment_flow_evidence", executed_partition.segment_flow_evidence),
+        ("modal_observations", executed_partition.modal_observations),
+    ):
+        sequence = partition_fields[field_name]
+        assert sequence[0] == "tnfr-nested-proof-sequence-v1"
+        assert type(sequence[1]) is tuple
+        assert len(sequence[1]) == len(children)
+        for token, child in zip(sequence[1], children, strict=True):
+            assert_compact_token(token, child)
+
+    boundary = executed_partition.boundary_observations[0]
+    object.__setattr__(
+        boundary,
+        "pressure_changed",
+        not boundary.pressure_changed,
+    )
+
+    assert not boundary._proof_fields_are_intact()
+    assert not executed_partition._proof_fields_are_intact()
+    assert not execution._proof_fields_are_intact()
+    assert not result._proof_fields_are_intact()
+
+
+def test_cycle_materializes_physical_partitions_inside_outer_rollback() -> None:
+    graph = _graph()
+    schedule = _schedule(graph, durations=(0.5,))
+    before = _state(graph)
+    history = graph.graph["_epi_hist"]
+
+    class MutatingPartitions:
+        def __init__(self) -> None:
+            self.iterations = 0
+
+        def __iter__(self):
+            self.iterations += 1
+            graph.graph["partition_iteration_marker"] = True
+            graph.nodes[0]["EPI"] = 99.0
+            yield object()
+
+    partitions = MutatingPartitions()
+
+    with pytest.raises(
+        TypeError,
+        match="must contain PhysicalFlowPartition",
+    ):
+        execute_event_remesh_cycle(
+            graph,
+            schedule,
+            physical_flow_partitions=partitions,
+        )
+
+    assert partitions.iterations == 1
+    assert _state(graph) == before
+    assert graph.graph["_epi_hist"] is history
+    assert "partition_iteration_marker" not in graph.graph
+
+
+def test_valid_partition_iterable_cannot_mutate_graph_during_materialization() -> None:
+    graph = _graph()
+    schedule = _schedule(graph)
+    before = _state(graph)
+    history = graph.graph["_epi_hist"]
+
+    class MutatingEmptyPartitions:
+        def __init__(self) -> None:
+            self.iterations = 0
+
+        def __iter__(self):
+            self.iterations += 1
+            graph.graph["partition_iteration_marker"] = "persisted"
+            return iter(())
+
+    partitions = MutatingEmptyPartitions()
+
+    with pytest.raises(
+        TNFRValueError,
+        match="input materialization changed graph state",
+    ):
+        execute_event_remesh_cycle(
+            graph,
+            schedule,
+            physical_flow_partitions=partitions,
+        )
+
+    assert partitions.iterations == 1
+    assert _state(graph) == before
+    assert graph.graph["_epi_hist"] is history
+    assert "partition_iteration_marker" not in graph.graph
+
+
+def test_virtual_nodes_side_effect_is_rolled_back_during_preparation() -> None:
+    class SideEffectGraph(nx.Graph):
+        armed = False
+
+        @property
+        def nodes(self):
+            if self.armed:
+                self.graph.setdefault("virtual_read_side_effect", "persisted")
+            return nx.Graph.nodes.__get__(self, type(self))
+
+    source = _graph()
+    graph = SideEffectGraph()
+    graph.graph.update(deepcopy(source.graph))
+    graph.add_nodes_from(
+        (node, deepcopy(data)) for node, data in source._node.items()
+    )
+    graph.add_edges_from(source.edges)
+    schedule = _schedule(graph)
+    before = _state(graph)
+    graph.armed = True
+
+    with pytest.raises(
+        TNFRValueError,
+        match="input materialization changed graph state",
+    ):
+        execute_event_remesh_cycle(graph, schedule)
+
+    assert "virtual_read_side_effect" not in graph.graph
+    graph.armed = False
+    assert _state(graph) == before
+
+
+def test_uncached_networkx_nodes_view_is_valid_cycle_input() -> None:
+    graph = _graph()
+    graph.__dict__.pop("nodes", None)
+    assert "nodes" not in graph.__dict__
+
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert result.whole_cycle_graph_state_atomic
+    assert result.remesh_applied
 
 
 def test_uniform_metric_is_materialized_for_insufficient_history() -> None:
@@ -234,8 +466,8 @@ class _MutatingIntegrator(AbstractIntegrator):
 @pytest.mark.parametrize(
     ("mutation", "message"),
     [
-        ("history", "changed REMESH history"),
-        ("support", "fixed ordered node support"),
+        ("history", "may update only EPI"),
+        ("support", "may update only EPI"),
     ],
 )
 def test_schedule_cannot_hide_history_or_support_mutation(
@@ -281,7 +513,7 @@ def test_late_pressure_failure_rolls_back_schedule_history_and_remesh() -> None:
 
     assert _state(graph) == before
     assert graph.graph["_epi_hist"] is history
-    assert side_effects == ["emitted"]
+    assert side_effects == []
 
 
 @pytest.mark.parametrize(
@@ -434,6 +666,7 @@ def test_public_stub_exposes_event_remesh_cycle_contract() -> None:
         "suppress_birth_warnings",
         "include_flow_certificates",
         "include_stage_certificates",
+        "physical_flow_partitions",
     ]
     imported = {
         alias.name
@@ -729,6 +962,80 @@ def test_history_transition_records_exact_append_and_selected_lags() -> None:
     assert result._proof_fields_are_intact()
 
 
+def test_history_transition_rejects_node_state_changed_by_hash_validation() -> None:
+    class HashMutatingNode:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def __hash__(self) -> int:
+            self.calls += 1
+            return id(self)
+
+        def __eq__(self, other: object) -> bool:
+            return self is other
+
+    node = HashMutatingNode()
+    with pytest.raises(ValueError, match="changed during validation"):
+        event_remesh_runtime._build_history_transition(
+            nodes=(node,),
+            history_before=(False, None, ()),
+            appended_history=(True, deque(maxlen=3), ((1.0,),)),
+            appended_epi=(1.0,),
+            tau_local=1,
+            tau_global=1,
+            history_maxlen=3,
+            history_container_rebuilt=True,
+            oldest_snapshot_evicted=False,
+        )
+
+
+def test_cycle_support_validation_does_not_dispatch_node_inequality() -> None:
+    class Node:
+        __hash__ = object.__hash__
+        __eq__ = object.__eq__
+
+        def __init__(self, name: str) -> None:
+            self.name = name
+            self.ne_calls = 0
+
+        def __ne__(self, other: object) -> bool:
+            self.ne_calls += 1
+            return self is not other
+
+    left = Node("left")
+    right = Node("right")
+    graph = nx.Graph()
+    graph.add_edge(left, right, weight=1.0)
+    graph.graph.update(
+        _t=0.0,
+        RANDOM_SEED=19,
+        _gamma_spec={"type": "none"},
+        REMESH_TAU_GLOBAL=1,
+        REMESH_TAU_LOCAL=1,
+        REMESH_ALPHA=0.5,
+        REMESH_ALPHA_HARD=True,
+        REMESH_LOG_EVENTS=False,
+        EPI_MIN=-10.0,
+        EPI_MAX=10.0,
+        CLIP_MODE="hard",
+        _epi_hist=deque([{left: 0.0, right: 2.0}], maxlen=64),
+    )
+    for node, epi in ((left, 2.0), (right, 0.0)):
+        graph._node[node].update(
+            EPI=epi,
+            nu_f=1.0,
+            theta=0.0,
+            delta_nfr=0.0,
+            glyph_history=[],
+        )
+
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert result._proof_fields_are_intact()
+    assert result.remesh_applied
+    assert left.ne_calls == right.ne_calls == 0
+
+
 def test_history_transition_records_independent_insufficient_lags() -> None:
     graph = _graph()
     graph.graph["REMESH_TAU_LOCAL"] = 1
@@ -859,6 +1166,120 @@ def test_cycle_proof_detects_nested_remesh_plan_tampering_by_value() -> None:
     object.__setattr__(proposal, "epi_local", 9.0)
 
     assert not result._proof_fields_are_intact()
+    assert not result.remesh_applied
+
+
+def test_cycle_derived_refresh_fact_fails_closed_after_tampering() -> None:
+    graph = _graph()
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+
+    object.__setattr__(
+        result,
+        "post_remesh_pressure_refresh_callback_invocations",
+        1,
+    )
+
+    assert not result._proof_fields_are_intact()
+    assert not result.post_remesh_pressure_refresh_performed
+
+
+@pytest.mark.parametrize(
+    ("channel", "represented_value"),
+    [
+        ("EPI", 2.0),
+        ("nu_f", 1.0),
+        ("delta_nfr", 0.0),
+        ("theta", 0.0),
+    ],
+)
+def test_post_schedule_scalar_materialization_cannot_mutate_graph(
+    channel: str,
+    represented_value: float,
+) -> None:
+    graph = _graph()
+
+    class SecondReadReal:
+        calls = 0
+        target: nx.Graph | None = None
+
+        def __float__(self) -> float:
+            type(self).calls += 1
+            if type(self).calls == 2 and type(self).target is not None:
+                type(self).target.graph["post_preflight_change"] = channel
+            return represented_value
+
+    Real.register(SecondReadReal)
+    value = SecondReadReal()
+    type(value).target = graph
+    graph._node[0][channel] = value
+
+    with pytest.raises(
+        TNFRValueError,
+        match="observational materialization changed graph state",
+    ):
+        execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert "post_preflight_change" not in graph.graph
+    assert graph._node[0][channel] is value
+
+
+def test_post_schedule_materialization_cannot_change_remesh_controls() -> None:
+    graph = _graph()
+
+    class SecondReadReal:
+        calls = 0
+        target: nx.Graph | None = None
+
+        def __float__(self) -> float:
+            type(self).calls += 1
+            if type(self).calls == 2 and type(self).target is not None:
+                type(self).target.graph["REMESH_LOG_EVENTS"] = True
+            return 2.0
+
+    Real.register(SecondReadReal)
+    value = SecondReadReal()
+    type(value).target = graph
+    graph._node[0]["EPI"] = value
+
+    with pytest.raises(
+        TNFRValueError,
+        match="observational materialization changed graph state",
+    ):
+        execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert graph.graph["REMESH_LOG_EVENTS"] is False
+    assert "remesh_events" not in graph.graph.get("history", {})
+
+
+def test_post_schedule_history_materialization_cannot_mutate_graph() -> None:
+    graph = _graph()
+
+    class SecondReadReal:
+        calls = 0
+        target: nx.Graph | None = None
+
+        def __float__(self) -> float:
+            type(self).calls += 1
+            if type(self).calls == 2 and type(self).target is not None:
+                type(self).target.graph["history_post_preflight_change"] = True
+            return 0.0
+
+    Real.register(SecondReadReal)
+    value = SecondReadReal()
+    type(value).target = graph
+    graph.graph["_epi_hist"] = deque(
+        [{0: value, 1: 2.0}],
+        maxlen=64,
+    )
+
+    with pytest.raises(
+        TNFRValueError,
+        match="observational materialization changed graph state",
+    ):
+        execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert "history_post_preflight_change" not in graph.graph
+    assert graph.graph["_epi_hist"][0][0] is value
 
 
 def test_cycle_proof_detects_nested_schedule_composition_tampering() -> None:
@@ -926,7 +1347,7 @@ class _CyclicHashableNode:
         )
 
 
-def test_cycle_proof_serialization_accepts_cyclic_hashable_nodes() -> None:
+def test_cycle_rejects_mutable_cyclic_structural_node_keys() -> None:
     left = _CyclicHashableNode("left")
     right = _CyclicHashableNode("right")
     graph = _graph()
@@ -936,11 +1357,14 @@ def test_cycle_proof_serialization_accepts_cyclic_hashable_nodes() -> None:
         maxlen=64,
     )
 
-    result = execute_event_remesh_cycle(graph, _schedule(graph))
+    before = _state(graph)
+    history = graph.graph["_epi_hist"]
 
-    assert result.target_nodes == (left, right)
-    assert result.history_transition.nodes == (left, right)
-    assert result._proof_fields_are_intact()
+    with pytest.raises(TNFRValueError, match="object-identity hash"):
+        execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert _state(graph) == before
+    assert graph.graph["_epi_hist"] is history
 
 
 def test_cycle_hard_false_claims_are_read_only_properties() -> None:
@@ -974,7 +1398,7 @@ class _SlottedMutableNode:
         )
 
 
-def test_cycle_proof_serializes_mutable_slotted_nodes_by_mro_state() -> None:
+def test_cycle_rejects_mutable_slotted_structural_node_keys() -> None:
     left = _SlottedMutableNode("left")
     right = _SlottedMutableNode("right")
     graph = _graph()
@@ -984,12 +1408,14 @@ def test_cycle_proof_serializes_mutable_slotted_nodes_by_mro_state() -> None:
         maxlen=64,
     )
 
-    result = execute_event_remesh_cycle(graph, _schedule(graph))
+    before = _state(graph)
+    history = graph.graph["_epi_hist"]
 
-    assert result._proof_fields_are_intact()
-    left.payload = "tampered"
-    assert not result.history_transition._proof_fields_are_intact()
-    assert not result._proof_fields_are_intact()
+    with pytest.raises(TNFRValueError, match="object-identity hash"):
+        execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert _state(graph) == before
+    assert graph.graph["_epi_hist"] is history
 
 
 @pytest.mark.parametrize(
@@ -1060,3 +1486,236 @@ def test_outer_cycle_rejects_applied_remesh_without_exact_evidence(
 
     assert _state(graph) == before
     assert graph.graph["_epi_hist"] is history
+
+
+def test_cycle_history_snapshots_are_read_without_virtual_lookup() -> None:
+    graph = _graph()
+    calls = 0
+
+    class ReadMapping(dict):
+        def __getitem__(self, key: object) -> object:
+            nonlocal calls
+            calls += 1
+            if calls >= 3:
+                dict.__setitem__(
+                    graph.graph,
+                    "history_read_marker",
+                    "changed",
+                )
+            return dict.__getitem__(self, key)
+
+    graph.graph["_epi_hist"] = deque(
+        [ReadMapping({0: 0.0, 1: 2.0})],
+        maxlen=64,
+    )
+
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert result.remesh.applied
+    assert result._proof_fields_are_intact()
+    assert calls == 0
+    assert "history_read_marker" not in graph.graph
+
+
+class _MarkerNodeAttributes(dict):
+    owner: nx.Graph | None = None
+    armed = False
+
+    def _touch(self) -> None:
+        if self.armed and self.owner is not None:
+            dict.__setitem__(
+                self.owner.graph,
+                "node_attr_read_marker",
+                "changed",
+            )
+
+    def __contains__(self, key: object) -> bool:
+        self._touch()
+        return dict.__contains__(self, key)
+
+    def get(self, key: object, default: object = None) -> object:
+        self._touch()
+        return dict.get(self, key, default)
+
+
+class _MarkerNodeGraph(nx.Graph):
+    node_attr_dict_factory = _MarkerNodeAttributes
+
+
+class _LateReadGraphAttributes(dict):
+    def get(self, key: object, default: object = None) -> object:
+        if key == "_REMESH_META":
+            dict.__setitem__(self, "graph_attr_read_marker", "changed")
+        return dict.get(self, key, default)
+
+
+class _LateReadGraph(nx.Graph):
+    graph_attr_dict_factory = _LateReadGraphAttributes
+
+
+def _custom_storage_graph(kind: type[nx.Graph]) -> nx.Graph:
+    source = _graph()
+    graph = kind()
+    graph.add_edge(0, 1, weight=1.0)
+    dict.update(graph.graph, dict.items(source.graph))
+    for node, source_data in source._node.items():
+        dict.update(dict.__getitem__(graph._node, node), source_data)
+    return graph
+
+
+def test_cycle_does_not_dispatch_node_attribute_reads() -> None:
+    graph = _custom_storage_graph(_MarkerNodeGraph)
+    for node_data in dict.values(graph._node):
+        node_data.owner = graph
+        node_data.armed = True
+
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert result.remesh.applied
+    assert result._proof_fields_are_intact()
+    assert dict.get(graph.graph, "node_attr_read_marker") is None
+
+
+def test_cycle_does_not_dispatch_graph_attribute_reads() -> None:
+    graph = _custom_storage_graph(_LateReadGraph)
+
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert result.remesh.applied
+    assert result._proof_fields_are_intact()
+    assert dict.get(graph.graph, "graph_attr_read_marker") is None
+
+
+def test_cycle_does_not_materialize_networkx_cached_views() -> None:
+    graph = _graph()
+    for key in ("nodes", "edges", "degree", "adj"):
+        graph.__dict__.pop(key, None)
+
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert result.remesh.applied
+    assert result._proof_fields_are_intact()
+    assert all(
+        key not in graph.__dict__ for key in ("nodes", "edges", "degree", "adj")
+    )
+
+
+def test_post_remesh_refresh_rejects_unrelated_metadata_atomically() -> None:
+    graph = _graph()
+
+    def refresh(target: nx.Graph) -> None:
+        target.graph["post_refresh_marker"] = "changed"
+
+    graph.graph["compute_delta_nfr"] = refresh
+    before = _state(graph)
+
+    with pytest.raises(TNFRValueError, match="non-pressure graph state"):
+        execute_event_remesh_cycle(
+            graph,
+            _schedule(graph),
+            refresh_pressure_after_remesh=True,
+        )
+
+    assert _state(graph) == before
+    assert "post_refresh_marker" not in graph.graph
+
+
+def test_post_remesh_refresh_preserves_cross_surface_aliases() -> None:
+    graph = _graph()
+    shared: list[object] = []
+    graph.graph["shared_alias"] = shared
+    graph._adj[0][1]["payload"] = shared
+
+    def refresh(target: nx.Graph) -> None:
+        target._adj[0][1]["payload"] = list(shared)
+
+    graph.graph["compute_delta_nfr"] = refresh
+    before = _state(graph)
+
+    with pytest.raises(TNFRValueError, match="non-pressure graph state"):
+        execute_event_remesh_cycle(
+            graph,
+            _schedule(graph),
+            refresh_pressure_after_remesh=True,
+        )
+
+    assert _state(graph) == before
+    assert graph.graph["shared_alias"] is graph._adj[0][1]["payload"]
+
+
+def test_post_remesh_refresh_detects_signed_zero_epi_change() -> None:
+    graph = _graph(current=(0.0, 0.0), past=(0.0, 0.0))
+
+    def refresh(target: nx.Graph) -> None:
+        target._node[0]["EPI"] = -0.0
+
+    graph.graph["compute_delta_nfr"] = refresh
+
+    with pytest.raises(TNFRValueError, match="changed EPI"):
+        execute_event_remesh_cycle(
+            graph,
+            _schedule(graph),
+            refresh_pressure_after_remesh=True,
+        )
+
+    assert graph._node[0]["EPI"].hex() == "0x0.0p+0"
+
+
+class _ProofNamedNode:
+    __slots__ = ()
+
+    def _proof_fields_are_intact(self) -> bool:
+        return False
+
+
+def test_arbitrary_node_proof_named_method_is_not_duck_typed() -> None:
+    left = _ProofNamedNode()
+    right = _ProofNamedNode()
+    graph = nx.Graph()
+    graph.add_edge(left, right, weight=1.0)
+    graph.graph.update(
+        _t=0.0,
+        RANDOM_SEED=19,
+        _gamma_spec={"type": "none"},
+        REMESH_TAU_GLOBAL=1,
+        REMESH_TAU_LOCAL=1,
+        REMESH_ALPHA=0.5,
+        REMESH_ALPHA_HARD=True,
+        REMESH_LOG_EVENTS=False,
+        EPI_MIN=-10.0,
+        EPI_MAX=10.0,
+        CLIP_MODE="hard",
+        _epi_hist=deque([{left: 0.0, right: 2.0}], maxlen=64),
+    )
+    graph._node[left].update(
+        EPI=2.0,
+        nu_f=1.0,
+        theta=0.0,
+        delta_nfr=0.0,
+        glyph_history=[],
+    )
+    graph._node[right].update(
+        EPI=0.0,
+        nu_f=1.0,
+        theta=0.0,
+        delta_nfr=0.0,
+        glyph_history=[],
+    )
+
+    result = execute_event_remesh_cycle(graph, _schedule(graph))
+
+    assert result._proof_fields_are_intact()
+
+
+def test_shared_proof_serializer_does_not_dispatch_attribute_hooks() -> None:
+    calls = 0
+
+    class Hostile:
+        def __getattribute__(self, name: str) -> object:
+            nonlocal calls
+            calls += 1
+            return object.__getattribute__(self, name)
+
+    event_remesh_runtime._proof_value(Hostile())
+
+    assert calls == 0

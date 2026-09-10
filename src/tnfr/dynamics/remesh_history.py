@@ -9,13 +9,11 @@ convention: a delay tau is read later at history[-(tau + 1)].
 from __future__ import annotations
 
 from collections import deque
-from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
 from .._remesh_contract import remesh_history_maxlen
-from ..alias import get_attr
-from ..constants import get_param
+from ..constants import DEFAULTS
 from ..errors import TNFRValueError
 from ..types import TNFRGraph
 from .aliases import ALIAS_EPI
@@ -45,44 +43,107 @@ def append_remesh_epi_history_snapshot(
     post-jump output.
     """
 
-    maxlen = remesh_history_maxlen(
-        get_param(graph, "REMESH_TAU_GLOBAL"),
-        get_param(graph, "REMESH_TAU_LOCAL"),
+    from ..operators.network_stage import (
+        _networkx_runtime_layout,
+        _runtime_mapping_items,
     )
-    raw_history = graph.graph.get("_epi_hist")
-    if raw_history is None:
-        retained = ()
-    elif isinstance(raw_history, (str, bytes, bytearray, Mapping)):
-        raise TNFRValueError(
-            "_epi_hist must be a replayable indexed history"
+
+    layout = _networkx_runtime_layout(graph)
+    graph_items = _runtime_mapping_items(layout.graph_mapping)
+
+    def graph_value(key: str, default: Any) -> Any:
+        return next(
+            (
+                value
+                for candidate, value in graph_items
+                if type(candidate) is str and candidate == key
+            ),
+            default,
         )
-    elif not hasattr(raw_history, "__len__") or not hasattr(
-        raw_history,
-        "__getitem__",
+
+    maxlen = remesh_history_maxlen(
+        graph_value("REMESH_TAU_GLOBAL", DEFAULTS["REMESH_TAU_GLOBAL"]),
+        graph_value("REMESH_TAU_LOCAL", DEFAULTS["REMESH_TAU_LOCAL"]),
+    )
+    snapshot_items: list[tuple[Any, Any]] = []
+    for node, data in layout.node_data:
+        items = _runtime_mapping_items(data)
+        value = next(
+            (
+                stored
+                for alias in ALIAS_EPI
+                for candidate, stored in items
+                if type(candidate) is str and candidate == alias
+            ),
+            0.0,
+        )
+        snapshot_items.append((node, value))
+    return _append_remesh_epi_history_snapshot_from_materialized(
+        graph,
+        history_maxlen=maxlen,
+        snapshot_items=tuple(snapshot_items),
+    )
+
+
+def _append_remesh_epi_history_snapshot_from_materialized(
+    graph: TNFRGraph,
+    *,
+    history_maxlen: int,
+    snapshot_items: tuple[tuple[Any, Any], ...],
+) -> RemeshEPIHistoryAppend:
+    """Append one bridge-owned snapshot already bound to ordered support."""
+
+    from ..operators._delayed_remesh_kernel import _materialize_indexed_history
+    from ..operators.network_stage import (
+        _networkx_runtime_layout,
+        _runtime_mapping_items,
+        _set_runtime_mapping_item,
+    )
+
+    if type(history_maxlen) is not int or history_maxlen <= 0:
+        raise TNFRValueError("history_maxlen must be a positive int")
+    if type(snapshot_items) is not tuple:
+        raise TNFRValueError("snapshot_items must be an ordered tuple")
+    layout = _networkx_runtime_layout(graph)
+    if len(snapshot_items) != len(layout.node_data) or any(
+        observed_node is not expected_node
+        for (observed_node, _value), (expected_node, _data) in zip(
+            snapshot_items,
+            layout.node_data,
+            strict=True,
+        )
     ):
         raise TNFRValueError(
-            "_epi_hist must be a replayable indexed history"
+            "snapshot_items must match the frozen ordered node support"
         )
-    else:
-        try:
-            retained = tuple(raw_history)
-        except (OverflowError, TypeError) as exc:
-            raise TNFRValueError(
-                "_epi_hist must be a replayable indexed history"
-            ) from exc
-
-    if type(raw_history) is not deque or raw_history.maxlen != maxlen:
-        raw_history = deque(retained[-maxlen:], maxlen=maxlen)
-        graph.graph["_epi_hist"] = raw_history
-
-    length_before = len(raw_history)
-    snapshot_items = tuple(
-        (node, get_attr(data, ALIAS_EPI, 0.0))
-        for node, data in graph.nodes(data=True)
+    graph_items = _runtime_mapping_items(layout.graph_mapping)
+    raw_history = next(
+        (
+            value
+            for key, value in graph_items
+            if type(key) is str and key == "_epi_hist"
+        ),
+        None,
     )
-    raw_history.append(dict(snapshot_items))
-    length_after = len(raw_history)
-    expected_length_after = min(length_before + 1, maxlen)
+    if raw_history is None:
+        retained = ()
+    else:
+        retained = _materialize_indexed_history(raw_history)
+
+    if (
+        type(raw_history) is not deque
+        or raw_history.maxlen != history_maxlen
+    ):
+        raw_history = deque(
+            retained[-history_maxlen:],
+            maxlen=history_maxlen,
+        )
+        _set_runtime_mapping_item(layout.graph_mapping, "_epi_hist", raw_history)
+
+    length_before = deque.__len__(raw_history)
+    deque.append(raw_history, dict(snapshot_items))
+    length_after = deque.__len__(raw_history)
+    expected_length_after = min(length_before + 1, history_maxlen)
     if length_after != expected_length_after:
         raise TNFRValueError(
             "canonical _epi_hist append did not add exactly one snapshot"
@@ -90,9 +151,10 @@ def append_remesh_epi_history_snapshot(
     return RemeshEPIHistoryAppend(
         history_length_before=length_before,
         history_length_after=length_after,
-        history_maxlen=maxlen,
+        history_maxlen=history_maxlen,
         oldest_snapshot_evicted=(
-            length_before == maxlen and length_after == maxlen
+            length_before == history_maxlen
+            and length_after == history_maxlen
         ),
         snapshot_items=snapshot_items,
     )

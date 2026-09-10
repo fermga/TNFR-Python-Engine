@@ -96,6 +96,10 @@ from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..mathematics._weight_normalization import normalize_weights
 from ..mathematics.unified_numerical import np
 from ..types import real_scalar_epi
+from ..utils._structural_signature import (
+    proof_stamps_are_identical,
+    structural_proof_signature,
+)
 from ._conductance import ConductanceSnapshot, read_conductance
 from ._exact_linear_algebra import (
     exact_matrix_inverse as _exact_matrix_inverse,
@@ -199,7 +203,7 @@ def _fixed_flow_proof_stamp(
     """Snapshot the fields on which hybrid fixed-flow composition relies."""
     return (
         "fixed_heterogeneous_diffusion_v1",
-        tuple(nodes),
+        structural_proof_signature(tuple(nodes)),
         np.asarray(metric_weights).shape,
         _finite_float_signature(metric_weights),
         Fraction(exact_gap),
@@ -231,7 +235,7 @@ def _switching_flow_proof_stamp(
     """Snapshot the fields on which hybrid switching composition relies."""
     return (
         "exact_common_metric_switching_diffusion_v1",
-        tuple(nodes),
+        structural_proof_signature(tuple(nodes)),
         int(regime_count),
         np.asarray(reference_metric_weights).shape,
         _finite_float_signature(reference_metric_weights),
@@ -595,9 +599,10 @@ class HeterogeneousDiffusionStabilityCertificate:
                 self.exact_uniform_fixed_point_preservation,
                 self.exact_weighted_mean_preservation,
             )
-        except (TypeError, ValueError, OverflowError):
+            observed = object.__getattribute__(self, "_proof_stamp")
+        except BaseException:
             return False
-        return self._proof_stamp == expected
+        return proof_stamps_are_identical(observed, expected)
 
 
 @dataclass(frozen=True)
@@ -682,9 +687,10 @@ class SwitchingDiffusionStabilityCertificate:
                 self.exact_weighted_mean_preservation_by_regime,
                 self.exact_common_weighted_mean_preservation,
             )
-        except (TypeError, ValueError, OverflowError):
+            observed = object.__getattribute__(self, "_proof_stamp")
+        except BaseException:
             return False
-        return self._proof_stamp == expected
+        return proof_stamps_are_identical(observed, expected)
 
 
 @dataclass(frozen=True)
