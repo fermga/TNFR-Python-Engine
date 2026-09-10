@@ -61,6 +61,10 @@ event_remesh_refinement : Finite three-mesh event/REMESH observations
 reversible_eigenmode_reference : Exact reversible single-eigenmode Euler theorem
     - Derives the reversible metric, eigenvalue, modal factors and error bounds
     - Certifies conditional exact-real convergence, not binary64 asymptotics
+runtime_eigenmode_reference : Executed reversible single-eigenmode binding
+    - Separates exact pressure, held-input and combined binary64 defects
+    - Propagates off-mode defects through complete Euler matrices
+    - Excludes runtime convergence, solver order and common causal provenance
 event_remesh_reference : Exact P2 event/REMESH reference family
     - Rational continuous/Euler error enclosure and subdivision improvement
     - Exact beta-scaled ideal REMESH error plus bounded runtime residual
@@ -478,6 +482,11 @@ from .reversible_eigenmode_reference import (
     ReversibleSingleEigenmodeEulerReferenceCertificate,
     certify_reversible_single_eigenmode_euler_reference,
 )
+from .runtime_eigenmode_reference import (
+    ExecutedReversibleSingleEigenmodeEulerPartitionObservation,
+    ExecutedReversibleSingleEigenmodeEulerReferenceObservation,
+    observe_executed_reversible_single_eigenmode_euler_reference,
+)
 from .event_remesh_reference import (
     P2EventRemeshMeshReferenceObservation,
     P2EventRemeshReferenceFamilyObservation,
@@ -801,6 +810,10 @@ __all__ = [
     # --- Exact reversible single-eigenmode Euler reference ---
     "ReversibleSingleEigenmodeEulerReferenceCertificate",
     "certify_reversible_single_eigenmode_euler_reference",
+    # --- Executed reversible single-eigenmode reference binding ---
+    "ExecutedReversibleSingleEigenmodeEulerPartitionObservation",
+    "ExecutedReversibleSingleEigenmodeEulerReferenceObservation",
+    "observe_executed_reversible_single_eigenmode_euler_reference",
     # --- Exact P2 event/REMESH reference family ---
     "P2EventRemeshMeshReferenceObservation",
     "P2EventRemeshReferenceFamilyObservation",

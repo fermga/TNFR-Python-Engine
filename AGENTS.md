@@ -176,10 +176,18 @@ capacity, an exact single-eigenmode theorem uses `H=diag(d_i/nu_f_i)` and
 `A=diag(nu_f)L_rw`. When the H-centered initial field satisfies the exact
 rational identity `A v=mu v`, `mu>0`, it proves the refreshed-Euler
 `O(h_max)` endpoint bound and conditional exact-real convergence as
-`h_max -> 0`. The effective event-free `P2` runtime adapter delegates to that
-kernel, then propagates ideal error through unit-delay REMESH by
+`h_max -> 0`. A finite offline runtime adapter derives this exact reference
+from individually executor-certified pressure-refreshed partitions, separates
+binary64 pressure and held-input defects, and propagates their generally
+off-mode effect through the complete Euler matrices. It proves neither runtime
+mesh convergence nor common causal family provenance. The effective event-free
+`P2` adapter separately propagates ideal error through unit-delay REMESH by
 `beta=(1-alpha)^2` and adds the measured runtime residual. Neither result is a
-binary64 asymptotic convergence theorem.
+binary64 asymptotic convergence theorem. P2 submits its three physical
+partitions to the general runtime adapter once, then additionally requires
+exact-affine identification, zero pressure-realization and held-input
+residuals, and zero local and endpoint defects before applying its REMESH
+claims.
 A separate exact augmented-history theorem covers the uniform unclipped
 finite REMESH companion on fixed support and metric. One applied runtime
 transition is linked to it with signed binary64 rounding/clipping defects, and
@@ -647,6 +655,21 @@ directed transport, mixed modes or full TNFR stability. The rational enclosure
 caps `mu*T` at 4096 to limit its integer exponent, without bounding arbitrary
 `Fraction` input bit size.
 
+`observe_executed_reversible_single_eigenmode_euler_reference` binds that
+theorem to a finite ordered family of intact
+`ExecutedPressureRefreshedFlowPartition` records. It derives the exact node
+order, conductance, capacity, initial field and partitions from the executor
+evidence and rejects incompatible sources. For each segment it records
+`rho=p64-(-L_rw z)`, `eta=z_next-z-h*diag(nu_f)*p64` and
+`epsilon=h*diag(nu_f)*rho+eta`, then propagates the endpoint defect through the
+complete recurrence `r_next=(I-h*A)r+epsilon`; represented residuals need not
+remain modal. Signed coordinate intervals yield exact rational `L_inf` and
+`H`-error-energy bounds against the continuous solution. Every input partition
+retains its executor provenance, but their supplied family is offline. The
+observation does not certify binary64/runtime mesh convergence, solver accuracy
+or order, common causal provenance, glyph/REMESH dynamics, repetition, future
+behavior or full TNFR stability.
+
 `observe_p2_event_remesh_reference_family` certifies one compatible finite P2
 coordinate problem inside that observer. It requires three meshes related by
 two proper positive subdivisions of one event-free, homogeneous-capacity,
@@ -1011,7 +1034,7 @@ program history** (the full milestone/gap/branch threads live in the notes).
 
 | Program | Status | Reference |
 |---------|--------|-----------|
-| **Core dynamics S1–S16** | Restricted results cover pure-EPI diffusion, rational quotient affine-reset budgets, exact operator-event timing, conditional stage certificates and exact represented-map composition for a fully eligible observed finite flow/glyph trace, plus observability, quotient geometry, temporal signatures and sampled-path certificates. All thirteen operators have atomic all-target Jacobi stages; EN/RA additionally have scoped repeated-map results. A uniform unclipped REMESH companion has an exact augmented-history disagreement functional and temporal mixing theorem on fixed support and metric. One applied binary64 transition and finite adjacent schedule/history telescopes are linked to it with explicit residuals. A general exact rational reversible single-eigenmode theorem proves refreshed-Euler endpoint bounds, strict proper-subdivision improvement and conditional exact-real partition convergence; the effective `P2` runtime adapter adds exact ideal REMESH error scaling and its committed residual bound. General runtime eigenmode binding, shared causal provenance, repeated runtime stability, solver/full-multichannel results, changing parameters/support and catalog completeness remain open. | [CORE_RESEARCH_PROGRAM.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CORE_RESEARCH_PROGRAM.md) |
+| **Core dynamics S1–S16** | Restricted results cover pure-EPI diffusion, rational quotient affine-reset budgets, exact operator-event timing, conditional stage certificates and exact represented-map composition for a fully eligible observed finite flow/glyph trace, plus observability, quotient geometry, temporal signatures and sampled-path certificates. All thirteen operators have atomic all-target Jacobi stages; EN/RA additionally have scoped repeated-map results. A uniform unclipped REMESH companion has an exact augmented-history disagreement functional and temporal mixing theorem on fixed support and metric. One applied binary64 transition and finite adjacent schedule/history telescopes are linked to it with explicit residuals. A general exact rational reversible single-eigenmode theorem proves refreshed-Euler endpoint bounds, strict proper-subdivision improvement and conditional exact-real partition convergence. Its finite offline runtime adapter separates represented pressure/execution defects and propagates them through complete Euler matrices; the effective `P2` adapter separately adds exact ideal REMESH error scaling and its committed residual bound. Shared causal provenance, runtime/binary64 mesh convergence, repeated runtime stability, solver/full-multichannel results, changing parameters/support and catalog completeness remain open. | [CORE_RESEARCH_PROGRAM.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CORE_RESEARCH_PROGRAM.md) |
 | **TNFR-Riemann** | Finite protocols estimate a critical-line-centered comparison and expose ζ/L diagnostic surfaces (P12–P50). No engine theorem identifies phase coherence with zero location. The bridge to RH, including control of `S(T) = (1/π)·arg ζ(½+iT)`, remains open. | [TNFR_RIEMANN_RESEARCH_NOTES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_RIEMANN_RESEARCH_NOTES.md) |
 | **REMESH fixed-delay models** | A finite cyclic fixed-coefficient filter has a Cesàro fixed-mode projection. A distinct finite uniform companion recurrence has a stationary-weighted augmented disagreement functional; `0<alpha<1` mixes toward the history barycenter, while `alpha=1` permits periodic histories. One-transition residual and adjacent-cycle schedule/history observers identify finite binary64 records without proving repeated stability. The effective `P2` reference proves exact ideal error propagation by `beta=(1-alpha)^2` and keeps the committed runtime residual separate. The literal `τ_g → ∞` limit, repeated runtime theorem and catalog completeness remain open. | [REMESH_INFINITY_DERIVATION.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/REMESH_INFINITY_DERIVATION.md) |
 | **TNFR-Navier–Stokes** | A declared linear mapping compares viscous diffusion with the overdamped limit of a separate graph-wave model (`ν_f = ν`). Finite pseudo-spectral runs measure enstrophy growth with Reynolds number. The nonlinear vortex-stretching term is compared with a `K_φ`/VAL cascade, but no equivalence or uniform regularity bound is derived; the `Re → ∞` problem remains open. | [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) |

@@ -510,9 +510,32 @@ sub-EPI state. Accordingly, `complete_reference_problem_certified` and
 Even a decreasing intermediate/fine error diagnostic does not prove solver
 order, mesh convergence, Lyapunov decrease or a mixed gain.
 
+The general reversible exact-mode runtime adapter now binds any finite ordered
+family of compatible, individually executor-certified
+`ExecutedPressureRefreshedFlowPartition` records. It derives the exact
+rationalized conductance, capacity, initial field, reversible metric and
+partitions from captured evidence and rejects changes among those sources. For
+each segment it separates pressure realization
+`rho=p64-(-L_rw*z)`, held-input execution
+`eta=z_next-z-h*diag(nu_f)*p64`, and
+`epsilon=h*diag(nu_f)*rho+eta`. Since represented defects need not stay in the
+reference eigenspace, their endpoint contribution follows the complete
+recurrence `r_next=(I-h*A)r+epsilon`. Signed coordinate enclosures then give
+exact rational lower and upper bounds for represented-minus-continuous
+`L_inf` error and `H`-error energy. This is a finite offline family: the
+individual partitions retain executor provenance, while their caller ordering
+does not prove common causal provenance, runtime mesh convergence, solver
+accuracy/order, repetition or future stability. It contains no glyph or REMESH
+claim. The derivation is centralized in
+[`TNFR_DIFFUSION_STABILITY_THEOREM.md`](TNFR_DIFFUSION_STABILITY_THEOREM.md#finite-executor-binding-of-the-exact-mode).
+
 The compatible effective-P2 reference family closes one finite runtime-linked
-subcase of the general pure reversible single-eigenmode theorem. It
-requires an event-free two-node path, a nonuniform initial mode, fixed positive
+subcase of the general pure reversible single-eigenmode theorem. It routes all
+three physical partitions through the common runtime observer once, then
+requires exact-affine identification, zero pressure-realization and held-input
+residuals, and zero local and endpoint defects before adding the REMESH-specific
+result. It requires an
+event-free two-node path, a nonuniform initial mode, fixed positive
 conductance, homogeneous positive capacity, pure-EPI pressure refreshed at
 every boundary, exact represented Euler
 segments with `0 < lambda*h < 1`, and two proper positive subdivisions.
@@ -1155,6 +1178,7 @@ and
 | `src/tnfr/physics/event_remesh_refinement.py` | Finite strict three-mesh event/REMESH observations |
 | `src/tnfr/physics/event_remesh_reference.py` / `src/tnfr/physics/event_remesh_reference.pyi` | Effective-P2 finite reference-family certificate and exact public interface |
 | `src/tnfr/physics/reversible_eigenmode_reference.py` / `src/tnfr/physics/reversible_eigenmode_reference.pyi` | General exact-rational reversible single-eigenmode Euler theorem and public interface |
+| `src/tnfr/physics/runtime_eigenmode_reference.py` / `src/tnfr/physics/runtime_eigenmode_reference.pyi` | Finite executor binding with exact pressure/execution defects and full-matrix propagation |
 | `src/tnfr/physics/remesh_history_stability.py` | Exact uniform finite companion-history Lyapunov certificate |
 | `src/tnfr/physics/runtime_remesh_history_stability.py` | One-transition executed binary64 REMESH/companion bridge |
 | `src/tnfr/physics/remesh_schedule_stability.py` | Exact REMESH-head/schedule-head augmented-energy balance |
@@ -1179,6 +1203,11 @@ checked by
 [`test_reversible_eigenmode_reference.py`](../tests/physics/test_reversible_eigenmode_reference.py)
 and
 [`test_reversible_eigenmode_reference_example.py`](../tests/physics/test_reversible_eigenmode_reference_example.py).
+The finite executor binding, proof seals and public executed `P3` example are
+checked by
+[`test_runtime_eigenmode_reference.py`](../tests/physics/test_runtime_eigenmode_reference.py)
+and
+[`test_runtime_eigenmode_reference_example.py`](../tests/physics/test_runtime_eigenmode_reference_example.py).
 The finite companion-history theorem is checked exactly by
 [`test_remesh_history_stability.py`](../tests/physics/test_remesh_history_stability.py).
 The runtime residual and lifted-energy bridge is tested in
@@ -1213,6 +1242,7 @@ catalog = net.audit_operators()               # dict; 13 controlled probes
 | [164_resonance_runtime_bridge.py](../examples/02_physics_regimes/164_resonance_runtime_bridge.py) | U3-filtered RA identity gate, four realization layers, post-RA flow certificate and switching abstention |
 | [166_event_remesh_reference_family.py](../examples/02_physics_regimes/166_event_remesh_reference_family.py) | Effective-P2 `2/4/8`-segment finite Euler/REMESH reference family and explicit false scope |
 | [167_reversible_eigenmode_reference.py](../examples/02_physics_regimes/167_reversible_eigenmode_reference.py) | Both exact nonuniform modes of nonregular `P3`, with exact-real Euler refinement bounds and explicit runtime abstention |
+| [168_runtime_reversible_eigenmode_reference.py](../examples/02_physics_regimes/168_runtime_reversible_eigenmode_reference.py) | Finite `2/4/8`-segment executed nonregular-`P3` binding with nonzero `rho`, `eta`, `epsilon` and explicit false runtime-convergence scope |
 
 ## Cross-References
 

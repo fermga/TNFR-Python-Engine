@@ -438,28 +438,56 @@ def test_p2_module_does_not_duplicate_the_general_exponential_kernel() -> None:
     assert not hasattr(reference_module, "_negative_exp_bounds")
 
 
-def test_p2_observer_delegates_once_per_family(
+def test_p2_observer_delegates_once_to_runtime_reference_per_family(
     cycles,
     monkeypatch,
 ) -> None:
-    original = reference_module.certify_reversible_single_eigenmode_euler_reference
+    original = (
+        reference_module.observe_executed_reversible_single_eigenmode_euler_reference
+    )
     calls = []
 
     def tracked(*args, **kwargs):
-        calls.append((args, kwargs))
-        return original(*args, **kwargs)
+        result = original(*args, **kwargs)
+        calls.append((args, kwargs, result))
+        return result
 
     monkeypatch.setattr(
         reference_module,
-        "certify_reversible_single_eigenmode_euler_reference",
+        "observe_executed_reversible_single_eigenmode_euler_reference",
         tracked,
     )
     result = observe_p2_event_remesh_reference_family(*cycles)
 
     assert len(calls) == 1
-    assert calls[0][1]["partitions"] == tuple(
+    partitions = calls[0][0][0]
+    runtime_reference = calls[0][2]
+    assert tuple(
+        tuple(segment.exact_duration for segment in item.partition.segments)
+        for item in partitions
+    ) == tuple(
         mesh.exact_segment_durations for mesh in result.meshes
     )
+    assert runtime_reference.reference_certificate.exact_partitions == tuple(
+        mesh.exact_segment_durations for mesh in result.meshes
+    )
+    assert all(
+        row.all_segment_exact_affine_maps_identified
+        and all(
+            not any(residual)
+            for residual in (
+                *row.exact_pressure_realization_residuals,
+                *row.exact_held_input_execution_residuals,
+                *row.exact_local_runtime_defects,
+                row.exact_endpoint_runtime_defect,
+            )
+        )
+        for row in runtime_reference.partition_observations
+    )
+
+    calls.clear()
+    assert result.reference_family_certified
+    assert len(calls) == 1
 
 
 def test_wrong_public_input_type_is_rejected(cycles) -> None:

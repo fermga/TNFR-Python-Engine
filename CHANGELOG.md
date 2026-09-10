@@ -35,6 +35,18 @@ All notable changes to this project will be documented in this file.
   modes, directed or changing generators, glyph/REMESH dynamics and full TNFR
   stability remain outside the certificate. Example 167 checks both exact
   nonuniform modes of nonregular `P3` through the public `tnfr.physics` facade.
+- Added `runtime_eigenmode_reference.py`, its exact public stub, focused tests
+  and `168_runtime_reversible_eigenmode_reference.py`. The sealed adapter
+  derives one exact reversible single-mode reference from finite intact
+  executor-owned pressure-refreshed partitions. For every segment it separates
+  the rationalized binary64 pressure residual `rho`, held-input execution
+  residual `eta` and combined defect `epsilon`, then propagates general off-mode
+  errors through the complete Euler matrices. It also reports signed
+  represented-minus-continuous endpoint intervals and exact rational `L_inf`
+  and `H`-error-energy bounds. The supplied family remains an offline ordering
+  of individually certified executions; binary64/runtime mesh convergence,
+  solver accuracy/order, common causal provenance, glyph/REMESH dynamics,
+  repetition and future/full TNFR stability remain outside the observation.
 - Added `event_remesh_reference.py`, its exact public stub, focused tests and
   `166_event_remesh_reference_family.py`. The sealed effective-P2 family binds
   three event-free, fixed-conductance, homogeneous-capacity,
@@ -49,8 +61,9 @@ All notable changes to this project will be documented in this file.
   channels, soft clipping, changing support or metric, repetition and future
   behavior remain outside the certificate. Its continuous/Euler proof is now
   centralized as the two-node specialization of the general reversible
-  eigenmode theorem; the REMESH derivation retains only its scale and runtime
-  residual layer.
+  eigenmode theorem. Its three physical partitions now pass once through the
+  common runtime binding, with stronger exact-affine and zero-defect checks;
+  the REMESH derivation retains only its scale and runtime residual layer.
 - Added `remesh_history_stability.py` and
   `test_remesh_history_stability.py`. The exact finite companion certificate
   derives the invariant temporal distribution for uniform unclipped delayed

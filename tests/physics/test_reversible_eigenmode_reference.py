@@ -419,6 +419,24 @@ def test_exact_input_and_exponential_size_bound_fail_closed() -> None:
         reference_module._negative_exp_bounds(F(4097))
 
 
+def test_oversized_exponent_rejects_before_exact_products(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def unexpected_product(*args, **kwargs):
+        del args, kwargs
+        raise AssertionError("exact partition products must not be materialized")
+
+    monkeypatch.setattr(reference_module.math, "prod", unexpected_product)
+
+    with pytest.raises(TNFRValueError, match="exponent <= 4096"):
+        certify_reversible_single_eigenmode_euler_reference(
+            P2_CONDUCTANCE,
+            nu_f=(F(1), F(1)),
+            initial_epi=(F(1), F(-1)),
+            partitions=((F(1, 4),) * 8193,),
+        )
+
+
 @pytest.mark.parametrize(
     "surface",
     (

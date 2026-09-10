@@ -568,6 +568,9 @@ def _derive_values(
             "successive partitions must form a strict proper-subdivision chain"
         )
 
+    # Reject unsupported exponential ranges before materializing potentially
+    # large exact products for every partition.
+    exp_lower, exp_upper = _negative_exp_bounds(eigenvalue * total_duration)
     segment_factors = tuple(
         tuple(Fraction(1) - value for value in row) for row in scaled
     )
@@ -589,7 +592,6 @@ def _derive_values(
     ):
         raise RuntimeError("quadratic Euler bounds exceed their h_max bounds")
 
-    exp_lower, exp_upper = _negative_exp_bounds(eigenvalue * total_duration)
     factor_error_lower = tuple(
         max(Fraction(0), exp_lower - factor) for factor in euler_factors
     )

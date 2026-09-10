@@ -509,9 +509,40 @@ and
 [`167_reversible_eigenmode_reference.py`](examples/02_physics_regimes/167_reversible_eigenmode_reference.py)
 certifies both nonuniform exact modes of the nonregular path `P3`.
 
+[`observe_executed_reversible_single_eigenmode_euler_reference(...)`](src/tnfr/physics/runtime_eigenmode_reference.py)
+binds that theorem to one or more intact
+`ExecutedPressureRefreshedFlowPartition` records. It derives the fixed exact
+node order, rationalized conductance, capacity, initial field and partition
+durations directly from executor evidence, rejects mixed modes and incompatible
+families, and retains every represented boundary. Every segment must satisfy
+`0 < mu*h < 1`; multiple inputs must form a strict proper-subdivision chain.
+For segment `j` it separates
+the exact pressure-realization defect `rho_j`, held-input execution defect
+`eta_j`, and local defect
+`epsilon_j=h_j*diag(nu_f)*rho_j+eta_j`. Because these binary64 defects can leave
+the initial eigenmode, the adapter propagates them through the complete matrices
+`I-h_j*A`, rather than through the scalar modal factor. Each row also encloses
+the signed runtime-minus-continuous endpoint coordinates and the corresponding
+exact rational `L_inf` and `H`-error-energy bounds.
+
+This is a sealed finite offline family of individually executor-certified
+partitions. It does not establish binary64 asymptotic or runtime mesh
+convergence, solver accuracy or order, common causal provenance among the
+supplied executions, glyph or REMESH dynamics, repeated behavior or future
+stability. The exact public stub is
+[`runtime_eigenmode_reference.pyi`](src/tnfr/physics/runtime_eigenmode_reference.pyi),
+and
+[`168_runtime_reversible_eigenmode_reference.py`](examples/02_physics_regimes/168_runtime_reversible_eigenmode_reference.py)
+reports a finite `2/4/8`-segment nonregular-`P3` family with nonzero represented
+defects.
+
 [`observe_p2_event_remesh_reference_family(...)`](src/tnfr/physics/event_remesh_reference.py)
-turns that generic three-mesh record into one compatible finite reference
-family. It requires an event-free effective two-node path, a nonuniform initial
+specializes the common runtime binding for one compatible three-mesh reference
+family, then adds the REMESH layer. It sends the three physical partitions
+through that binding once and further requires every row to have an identified
+exact affine map with zero pressure-realization, held-input, local and endpoint
+defects.
+It also requires an event-free effective two-node path, a nonuniform initial
 mode, fixed positive conductance, homogeneous positive capacity, pure-EPI
 pressure refreshed at every physical boundary, exact
 represented Euler segments with `0 < lambda*h < 1`, two proper positive

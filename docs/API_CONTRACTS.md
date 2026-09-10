@@ -510,11 +510,62 @@ The theorem and proof are centralized in
 The public nonregular-`P3` construction is
 [`167_reversible_eigenmode_reference.py`](../examples/02_physics_regimes/167_reversible_eigenmode_reference.py).
 
+[`observe_executed_reversible_single_eigenmode_euler_reference`](../src/tnfr/physics/runtime_eigenmode_reference.py)
+is the finite executor-binding API for that exact theorem. It accepts a
+nonempty ordered iterable of intact
+`ExecutedPressureRefreshedFlowPartition` records. Every record must expose the
+same ordered support, rationalized conductance, positive capacity, exact initial
+EPI and total duration; every physical boundary must carry canonical binary64
+pure-EPI pressure, and every segment must identify the trusted held-pressure
+Euler replay. Every segment must satisfy `0 < mu*h < 1`, and multiple inputs
+must form a strict proper-subdivision chain. The adapter derives the exact
+reference certificate from those runtime inputs. It does not accept an
+independently supplied reference.
+
+For each segment, the sealed
+`ExecutedReversibleSingleEigenmodeEulerPartitionObservation` stores
+
+```text
+rho_j     = p64_j - (-L_rw z_j),
+eta_j     = z_(j+1) - z_j - h_j diag(nu_f) p64_j,
+epsilon_j = h_j diag(nu_f) rho_j + eta_j.
+```
+
+All displayed binary64 values are interpreted as exact `Fraction` values in
+these identities. The adapter verifies
+`z_(j+1)=(I-h_j A)z_j+epsilon_j` and propagates endpoint defects with the full
+matrix recurrence
+`r_(j+1)=(I-h_j A)r_j+epsilon_j`. This full propagation is required because
+`rho_j`, `eta_j` and `epsilon_j` need not remain in the reference eigenmode.
+The row also retains rational signed coordinate enclosures for the
+runtime-minus-continuous endpoint and exact `L_inf` and `H`-error-energy lower
+and upper bounds. Exact-affine-map identification is reported independently;
+it is not required when the measured represented residuals are nonzero.
+
+The enclosing
+`ExecutedReversibleSingleEigenmodeEulerReferenceObservation` binds the rows to
+one internally derived exact reference and revalidates their nested execution
+evidence. Its certification means only a finite offline binding of individually
+executor-certified partitions. Binary64 asymptotic convergence, runtime mesh
+convergence, solver accuracy/order, common causal provenance among the supplied
+executions, glyph/REMESH dynamics, repeated behavior and future/full TNFR
+stability remain false. Both record classes and the observer are re-exported
+from `tnfr.physics`; the typed surface is declared by
+[`runtime_eigenmode_reference.pyi`](../src/tnfr/physics/runtime_eigenmode_reference.pyi).
+Example
+[`168_runtime_reversible_eigenmode_reference.py`](../examples/02_physics_regimes/168_runtime_reversible_eigenmode_reference.py)
+exercises the public API on three independently executed nonregular-`P3`
+partitions.
+
 [`observe_p2_event_remesh_reference_family`](../src/tnfr/physics/event_remesh_reference.py)
 promotes exactly one compatible finite family beyond that generic observation.
 It accepts three intact coarse, intermediate and fine cycle results and binds
 the generic refinement record to an executor-linked runtime REMESH bridge for
-each mesh. The accepted domain is an event-free effective two-node path with a
+each mesh. It extracts the three physical partitions, invokes the common
+runtime eigenmode observer once, and requires each returned row to identify an
+exact affine map with zero `rho`, `eta`, `epsilon` and endpoint defect before
+applying its stronger P2/REMESH claims. The accepted domain is an event-free
+effective two-node path with a
 nonuniform initial mode, homogeneous positive capacity, fixed positive
 conductance, pure-EPI pressure refreshed at every boundary, and exact
 represented Euler segments satisfying `0 < lambda*h < 1`. Both refinements
@@ -681,6 +732,12 @@ re-exported from `tnfr.physics`.
   scope and fail-closed proof seal;
   [`test_reversible_eigenmode_reference_example.py`](../tests/physics/test_reversible_eigenmode_reference_example.py)
   verifies the facade, public stub and both nonuniform modes in example 167.
+- [`test_runtime_eigenmode_reference.py`](../tests/physics/test_runtime_eigenmode_reference.py)
+  verifies runtime-source binding, exact `rho`/`eta`/`epsilon` decomposition,
+  full-matrix defect propagation, rational continuous-error enclosures, family
+  compatibility, proof sealing and false scope;
+  [`test_runtime_eigenmode_reference_example.py`](../tests/physics/test_runtime_eigenmode_reference_example.py)
+  covers its facade, stub and executed `P3` report.
 - [`test_remesh_history_stability.py`](../tests/physics/test_remesh_history_stability.py)
   verifies the exact companion, stationary distribution, Jensen balance,
   equality case and all three alpha regimes.

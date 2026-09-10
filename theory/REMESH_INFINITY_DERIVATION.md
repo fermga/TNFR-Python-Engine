@@ -478,7 +478,11 @@ $$
 $$
 
 The implementation stores rational lower and upper enclosures of both errors
-and requires two successive proper positive subdivisions. The strict finite
+and requires two successive proper positive subdivisions. It submits the
+three executor-owned physical partitions to the general runtime eigenmode
+observer once, then strengthens that result by requiring exact-affine
+identification, zero pressure-realization and held-input residuals, and zero
+local and endpoint defects in every row. The strict finite
 improvements follow from the cited general theorem. Its rational exponential
 routine restricts $\lambda T\le4096$ solely to cap the integer-power exponent
 used by the enclosure. That restriction is not a dynamical threshold and does
@@ -968,9 +972,10 @@ The following problems remain open:
 2. Promote the finite adjacent-cycle telescope to repeated runtime stability
    only if shared causal execution provenance and a uniform positive margin can
    be established; otherwise retain counterexamples.
-3. Bind the general reversible exact-mode theorem to executor-owned runtime
-   evidence beyond effective $P_2$, including a signed represented endpoint
-   residual, before extending any runtime mesh claim.
+3. Determine the extra hypotheses needed to compose the implemented general
+   finite executor/eigenmode binding with REMESH beyond effective $P_2$; its
+   pressure, held-input and full-matrix endpoint defects currently stop at the
+   pre-REMESH boundary.
 4. Extend the companion result to changing $\alpha$, metric, delays or node
    support, or produce counterexamples.
 5. Determine when a lifted REMESH map preserves a declared structural charge
@@ -989,7 +994,11 @@ terms, and compatible adjacent recorded cycles have an exact finite additive
 schedule/history telescope. One event-free effective-$P_2$ family additionally
 has a rational continuous/Euler error enclosure, strict improvement across its
 two declared proper subdivisions, exact ideal REMESH scaling and an explicit
-runtime residual bound. Shared causal provenance, generic or binary64
-asymptotic convergence, repeated runtime stability, the clipped binary64
-runtime limit, full structural invariants and global operator completeness
-remain unresolved.**
+runtime residual bound. A separate
+[`general reversible exact-mode runtime adapter`](../src/tnfr/physics/runtime_eigenmode_reference.py)
+binds finite executor-owned pressure-refreshed partitions and propagates
+represented defects through complete Euler matrices, but it contains no REMESH
+claim.
+Shared causal provenance, generic or binary64 asymptotic convergence, repeated
+runtime stability, the clipped binary64 runtime limit, full structural
+invariants and global operator completeness remain unresolved.**

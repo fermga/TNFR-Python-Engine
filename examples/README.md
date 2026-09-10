@@ -61,3 +61,12 @@ enclosures, exact Euler products and conditional exact-real refinement scope.
 It does not execute a binary64 solver, glyph or REMESH operation. The complete
 proof is in the
 [diffusion stability theorem](../theory/TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem).
+
+`168_runtime_reversible_eigenmode_reference.py` executes three independent
+`2/4/8`-segment pressure-refreshed partitions of one nonregular-`P3` exact
+mode, then binds their captured binary64 boundaries to that rational reference.
+It reports nonzero pressure (`rho`), held-input (`eta`) and combined local
+(`epsilon`) defects, propagated through the complete Euler matrices. The family
+is a finite offline comparison of individually executor-certified records; it
+does not certify runtime mesh convergence, solver accuracy/order, common causal
+provenance, glyph/REMESH behavior, repetition or future stability.

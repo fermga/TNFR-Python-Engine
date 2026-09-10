@@ -500,6 +500,79 @@ certifies both exact nonuniform modes of the nonregular path `P3`; its facade,
 stub and report are checked by
 [`test_reversible_eigenmode_reference_example.py`](../tests/physics/test_reversible_eigenmode_reference_example.py).
 
+### Finite executor binding of the exact mode
+
+The pure theorem now has a finite runtime adapter:
+[`observe_executed_reversible_single_eigenmode_euler_reference`](../src/tnfr/physics/runtime_eigenmode_reference.py).
+Its inputs are one or more already executed, individually sealed
+`ExecutedPressureRefreshedFlowPartition` records. The adapter derives `W`,
+`nu`, `x_0`, the ordered node support and every exact represented duration from
+those records, requires them to define one fixed reference problem, and invokes
+the exact theorem once for the resulting partition family. Thus it rejects a
+changed support, conductance, capacity, initial field or total duration, as
+well as a centered initial field that is not one exact positive eigenmode.
+The inherited reference conditions also require `0 < mu*h < 1` for every
+segment and a strict proper-subdivision chain when several partitions are
+supplied.
+
+Let `z_j` denote the exact rationalization of the represented boundary EPI,
+`p64_j` the similarly rationalized stored pressure and
+
+```text
+p*_j = -L_rw z_j.
+```
+
+For each segment the observer separates two measured defects:
+
+```text
+rho_j = p64_j - p*_j,
+eta_j = z_(j+1) - z_j - h_j diag(nu) p64_j.
+```
+
+The first is the binary64 pressure-realization residual. The second is the
+held-input execution residual. Substitution into the nodal Euler step gives
+the exact represented-value identity
+
+```text
+z_(j+1) = (I-h_j A) z_j + epsilon_j,
+epsilon_j = h_j diag(nu) rho_j + eta_j.             (9)
+```
+
+These residual vectors are not assumed to lie in the initial eigenspace. If
+`y_j` is the exact-real pressure-refreshed Euler reference from equation (2)
+and `r_j=z_j-y_j`, then the observer uses the full generator matrix:
+
+```text
+r_0 = 0,
+r_(j+1) = (I-h_j A) r_j + epsilon_j.                (10)
+```
+
+Equation (10), rather than multiplication by `1-mu*h_j`, is essential for
+off-mode binary64 defects. The sealed partition row checks it against the
+actual represented endpoint. It also subtracts the rational lower and upper
+continuous endpoint enclosures coordinate by coordinate, producing signed
+runtime-minus-continuous intervals and conservative exact lower and upper
+bounds for the `L_inf` norm and `H`-error energy.
+
+Every boundary must identify canonical binary64 pure-EPI pressure and every
+segment must expose a trusted held-pressure Euler replay. An exact-affine-map
+flag is retained separately and may be false: nonzero `rho_j` and `eta_j` are
+the data measured by (9), rather than grounds for erasing the finite binding.
+Each input partition has executor provenance, but the supplied family is
+caller ordered and offline. Consequently the result proves neither common
+causal execution provenance nor binary64 asymptotic/runtime mesh convergence,
+solver accuracy or order, glyph/REMESH dynamics, repeated behavior, future
+stability or full TNFR stability.
+
+The exact public interface is declared in
+[`runtime_eigenmode_reference.pyi`](../src/tnfr/physics/runtime_eigenmode_reference.pyi).
+[`test_runtime_eigenmode_reference.py`](../tests/physics/test_runtime_eigenmode_reference.py)
+checks the source binding, residual identities, off-mode full-matrix
+propagation, norm enclosures, family compatibility and proof seals. The public
+[`168_runtime_reversible_eigenmode_reference.py`](../examples/02_physics_regimes/168_runtime_reversible_eigenmode_reference.py)
+reports three independently executed nonregular-`P3` partitions and keeps all
+stronger runtime claims false.
+
 ## Switching-topology common-metric theorem
 
 Let a finite family of connected symmetric graph regimes share one fixed node

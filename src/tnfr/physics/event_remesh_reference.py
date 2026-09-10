@@ -41,7 +41,6 @@ from typing import Any
 from ..errors import TNFRValueError
 from ..operators.event_remesh_runtime import EventRemeshCycleResult, _proof_value
 from ..utils._structural_signature import (
-    binary64_vectors_are_identical,
     proof_stamps_are_identical,
 )
 from . import event_remesh_refinement as _refinement_module
@@ -55,9 +54,9 @@ from .event_remesh_refinement import (
     EventRemeshThreeMeshZHIRObservation,
 )
 from .remesh_history_stability import ExactVector
-from .reversible_eigenmode_reference import (
-    ReversibleSingleEigenmodeEulerReferenceCertificate,
-    certify_reversible_single_eigenmode_euler_reference,
+from .runtime_eigenmode_reference import (
+    ExecutedReversibleSingleEigenmodeEulerReferenceObservation,
+    observe_executed_reversible_single_eigenmode_euler_reference,
 )
 from .runtime_remesh_history_stability import (
     RuntimeRemeshHistoryBridgeObservation,
@@ -558,38 +557,6 @@ def _canonical_nested_observations(
     return refinement, bridges
 
 
-def _partition_runtime_euler_facts_are_identified(partition: Any) -> bool:
-    """Read facts from one partition already validated in this query."""
-
-    try:
-        flows = partition.segment_flow_evidence
-        boundaries = partition.boundary_observations
-        return bool(
-            flows
-            and all(
-                object.__getattribute__(flow, "integrator_provenance_certified")
-                is True
-                and flow.certificate is not None
-                and object.__getattribute__(
-                    flow.certificate,
-                    "_binary64_held_pressure_runtime_identified",
-                )
-                is True
-                and flow.certificate.explicit_euler_map_identified is True
-                for flow in flows
-            )
-            and all(
-                binary64_vectors_are_identical(
-                    boundary.after.delta_nfr,
-                    boundary.after.binary64_pure_epi_pressure,
-                )
-                for boundary in boundaries
-            )
-        )
-    except BaseException:
-        return False
-
-
 @dataclass(frozen=True, slots=True)
 class P2EventRemeshMeshReferenceObservation:
     """One mesh row in the exact P2 event/REMESH reference family."""
@@ -725,9 +692,11 @@ def _derive_mesh_values(
     cycle: EventRemeshCycleResult,
     bridge: RuntimeRemeshHistoryBridgeObservation,
     *,
-    exact_reference: ReversibleSingleEigenmodeEulerReferenceCertificate | None = None,
-    reference_partition_index: int = 0,
-    reference_already_validated: bool = False,
+    runtime_reference: (
+        ExecutedReversibleSingleEigenmodeEulerReferenceObservation | None
+    ) = None,
+    runtime_partition_index: int = 0,
+    runtime_reference_already_validated: bool = False,
     bridge_already_validated: bool = False,
     partition_override: Any | None = None,
 ) -> dict[str, Any]:
@@ -789,30 +758,41 @@ def _derive_mesh_values(
     if total_duration != partition.partition.parent_interval.exact_duration:
         raise TNFRValueError("physical durations do not sum to the parent interval")
 
-    if exact_reference is None:
-        modal_reference = certify_reversible_single_eigenmode_euler_reference(
-            conductance,
-            nu_f=capacity,
-            initial_epi=initial,
-            partitions=(durations,),
+    if runtime_reference is None:
+        runtime_binding = (
+            observe_executed_reversible_single_eigenmode_euler_reference(
+                (partition,)
+            )
         )
         modal_index = 0
-        reference_already_validated = True
+        runtime_reference_already_validated = True
     else:
-        modal_reference = exact_reference
-        modal_index = reference_partition_index
+        runtime_binding = runtime_reference
+        modal_index = runtime_partition_index
     if (
-        type(modal_reference)
-        is not ReversibleSingleEigenmodeEulerReferenceCertificate
+        type(runtime_binding)
+        is not ExecutedReversibleSingleEigenmodeEulerReferenceObservation
         or type(modal_index) is not int
         or modal_index < 0
-        or modal_index >= len(modal_reference.exact_partitions)
+        or modal_index >= len(runtime_binding.partition_observations)
         or (
-            not reference_already_validated
-            and not modal_reference.reference_certificate_certified
+            not runtime_reference_already_validated
+            and not runtime_binding.runtime_reference_binding_certified
         )
     ):
-        raise TNFRValueError("the exact eigenmode reference is not canonical")
+        raise TNFRValueError("the runtime eigenmode reference is not canonical")
+    modal_reference = runtime_binding.reference_certificate
+    runtime_row = runtime_binding.partition_observations[modal_index]
+    if (
+        runtime_row.reference_certificate is not modal_reference
+        or runtime_row.execution is not partition
+        or runtime_row.partition_index != modal_index
+        or runtime_row.exact_segment_durations != durations
+        or runtime_row.nodes != nodes
+    ):
+        raise TNFRValueError(
+            "runtime eigenmode row is not bound to the P2 physical partition"
+        )
 
     mean = modal_reference.exact_weighted_mean
     mode = modal_reference.exact_centered_mode
@@ -837,9 +817,21 @@ def _derive_mesh_values(
     segment_factors = modal_reference.exact_euler_segment_factors[modal_index]
     euler_factor = modal_reference.exact_euler_factors[modal_index]
 
-    if not _partition_runtime_euler_facts_are_identified(partition):
+    zero = (Fraction(0), Fraction(0))
+    if (
+        not runtime_row.all_segment_exact_affine_maps_identified
+        or any(
+            residual != zero
+            for residual in (
+                *runtime_row.exact_pressure_realization_residuals,
+                *runtime_row.exact_held_input_execution_residuals,
+                *runtime_row.exact_local_runtime_defects,
+            )
+        )
+        or runtime_row.exact_endpoint_runtime_defect != zero
+    ):
         raise TNFRValueError(
-            "every physical segment must identify refreshed pure-EPI Euler"
+            "every P2 segment must identify one exact zero-defect Euler map"
         )
     running_factor = Fraction(1)
     for index, (duration, flow) in enumerate(zip(durations, flows, strict=True)):
@@ -848,6 +840,10 @@ def _derive_mesh_values(
         if (
             boundary_left.exact_epi != expected_left
             or boundary_left.exact_delta_nfr != _p2_pressure(expected_left)
+            or runtime_row.exact_runtime_boundary_epi[index]
+            != expected_left
+            or runtime_row.exact_reference_boundary_epi[index]
+            != expected_left
         ):
             raise TNFRValueError(
                 "represented checkpoints do not follow the exact P2 recurrence"
@@ -855,29 +851,20 @@ def _derive_mesh_values(
         certificate = flow.certificate
         if (
             certificate is None
-            or object.__getattribute__(
-                flow,
-                "integrator_provenance_certified",
-            )
-            is not True
-            or object.__getattribute__(
-                certificate,
-                "_binary64_held_pressure_runtime_identified",
-            )
-            is not True
-            or certificate.explicit_euler_map_identified is not True
             or certificate.exact_duration != duration
             or certificate.left.exact_epi != expected_left
             or certificate.left.exact_delta_nfr != _p2_pressure(expected_left)
-            or certificate.left.exact_nu_f != capacity
-            or certificate.right.exact_nu_f != capacity
-            or certificate.left.conductance != conductance
-            or certificate.right.conductance != conductance
         ):
             raise TNFRValueError("one segment lacks exact runtime P2 Euler evidence")
         running_factor *= segment_factors[index]
         expected_right = _p2_field(mean, amplitude * running_factor)
-        if certificate.right.exact_epi != expected_right:
+        if (
+            certificate.right.exact_epi != expected_right
+            or runtime_row.exact_runtime_boundary_epi[index + 1]
+            != expected_right
+            or runtime_row.exact_reference_boundary_epi[index + 1]
+            != expected_right
+        ):
             raise TNFRValueError("one represented Euler endpoint is not exact")
     expected_pre_remesh = _p2_field(mean, amplitude * euler_factor)
     terminal = boundaries[-1].after
@@ -1045,17 +1032,17 @@ def _build_mesh(
     mesh_name: str,
     cycle: EventRemeshCycleResult,
     bridge: RuntimeRemeshHistoryBridgeObservation,
-    exact_reference: ReversibleSingleEigenmodeEulerReferenceCertificate,
-    reference_partition_index: int,
+    runtime_reference: ExecutedReversibleSingleEigenmodeEulerReferenceObservation,
+    runtime_partition_index: int,
     partition: Any,
 ) -> P2EventRemeshMeshReferenceObservation:
     values = _derive_mesh_values(
         mesh_name,
         cycle,
         bridge,
-        exact_reference=exact_reference,
-        reference_partition_index=reference_partition_index,
-        reference_already_validated=True,
+        runtime_reference=runtime_reference,
+        runtime_partition_index=runtime_partition_index,
+        runtime_reference_already_validated=True,
         bridge_already_validated=True,
         partition_override=partition,
     )
@@ -1271,12 +1258,27 @@ def _derive_family_values(
         raise TNFRValueError(
             "P2 reference conductance must be one fixed effective edge"
         )
-    modal_reference = certify_reversible_single_eigenmode_euler_reference(
-        conductances[0],
-        nu_f=first_capacity,
-        initial_epi=initial_fields[0],
-        partitions=durations,
+    runtime_reference = (
+        observe_executed_reversible_single_eigenmode_euler_reference(
+            partitions
+        )
     )
+    modal_reference = runtime_reference.reference_certificate
+    runtime_rows = runtime_reference.partition_observations
+    if (
+        len(runtime_rows) != 3
+        or any(
+            row.execution is not partition
+            or row.partition_index != index
+            or row.reference_certificate is not modal_reference
+            for index, (row, partition) in enumerate(
+                zip(runtime_rows, partitions, strict=True)
+            )
+        )
+    ):
+        raise RuntimeError(
+            "the general runtime binding lost P2 partition identity"
+        )
     lambda_ = modal_reference.exact_mode_eigenvalue
     exp_bounds = (
         modal_reference.exact_continuous_factor_lower_bound,
@@ -1300,7 +1302,7 @@ def _derive_family_values(
                 name,
                 cycle,
                 bridge,
-                modal_reference,
+                runtime_reference,
                 index,
                 partitions[index],
             )
@@ -1316,9 +1318,9 @@ def _derive_family_values(
                 name,
                 cycle,
                 bridge,
-                exact_reference=modal_reference,
-                reference_partition_index=index,
-                reference_already_validated=True,
+                runtime_reference=runtime_reference,
+                runtime_partition_index=index,
+                runtime_reference_already_validated=True,
                 bridge_already_validated=True,
                 partition_override=partitions[index],
             )
