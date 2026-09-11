@@ -729,10 +729,10 @@ checks the exact `J`, defect and slack at every boundary, requires each
 represented gain `q_j<=q`, verifies the full energy-vector envelope and checks
 the endpoint factor `q_eff^floor(N/L)`. At `J=0` the inequality is tested
 directly and its ratio is undefined. This recorded block does not prove a
-uniform runtime class or forward invariance. Establishing a useful forward-
-invariant binary64 relative-defect class for `0<alpha<1` with common `eta` and
-`q_eff<1`, or promoting the finite P2 observation below to future complete
-runtime execution, remains the next repeated-runtime boundary.
+uniform runtime class or forward invariance. Extending the restricted
+half-alpha class below to broader represented states, or promoting the finite
+P2 observation to future complete-runtime execution, remains the next
+repeated-runtime boundary.
 
 The represented-number analysis now resolves two narrower boundaries. The
 exact pairwise identity lifts a scalar REMESH defect ratio to arbitrary finite
@@ -741,6 +741,34 @@ support and positive diagonal metric. A normal-valued `alpha=1/2` pair requires
 class for the `q=9/16` witness policy. At `alpha=1`, sufficient finite history
 inside one fixed hard interval instead gives an exact global-delay numeric copy,
 uniform `eta=0`, and REMESH-only forward invariance.
+
+The first useful `0<alpha<1` subclass is now exact. Fix ordered P2 support,
+any positive diagonal metric, positive delays, `alpha=1/2`, a symmetric hard
+interval `[-B,B]` with `B>=4s`, `s=2^-1074`, and sufficient represented
+history with every row `(a,-a)`. IEEE round-to-nearest-even and symmetric
+clipping preserve numeric antisymmetry, so REMESH alone maps the class into
+itself. For scalar amplitudes `c,l,g`, set
+`D=c^2+l^2+2g^2`, `x=sqrt(D)` and let `r` and `y` be the production and ideal
+heads. With `u=2^-53`, direct error propagation gives
+
+```text
+|r-y| <= A*x + C*s,
+A = 3*u/2 + u^2/2,
+C = 9/4 + 9*u/4 + u^2/2.
+```
+
+For `x>=11s`, the resulting exact relative-defect tail is strictly below
+`135/124`. For `x<11s`, all inputs reduce to bounded integer multiples of
+`s`; exact enumeration covers 6,615 candidates, 3,890 with `0<D/s^2<121`, and
+finds the sharp maximum `eta*=135/124` at `(-3,-2,-3)s`. The strict robust
+threshold is therefore `q<124/259`. In particular, `q=4/9` gives
+`q_eff=259/279` and normalized block margin `20/279`; `q=124/259` gives only
+nonincrease with zero margin, and `q=9/16` is inadmissible. This theorem does
+not include general positive-metric-centered rows: one exact centered input
+triple acquires represented center `-2^-84`. Nor does it include an
+unrestricted fixed lattice, since `(h,0,0)` maps to `h/4`. It certifies only
+the REMESH map on the declared class, without schedule, graph/event, repeated
+complete-runtime or future-execution claims.
 
 On P2, a configured half-Reception numeric EPI kernel supplies the first
 restricted global numeric EPI-kernel family for that boundary. Mutual
@@ -1346,7 +1374,7 @@ and
 | `src/tnfr/physics/remesh_history_stability.py` | Exact uniform finite companion-history Lyapunov certificate |
 | `src/tnfr/physics/remesh_schedule_policy_stability.py` / `src/tnfr/physics/remesh_schedule_policy_stability.pyi` | Conditional exact uniform REMESH/schedule spatial-disagreement theorem |
 | `src/tnfr/physics/remesh_schedule_relative_defect_stability.py` / `src/tnfr/physics/remesh_schedule_relative_defect_stability.pyi` | Conditional exact `q_eff=q*(1+eta)` robust policy theorem |
-| `src/tnfr/physics/binary64_remesh_relative_defect.py` / `src/tnfr/physics/binary64_remesh_relative_defect.pyi` | Exact pairwise REMESH defect boundary and the uniform `alpha=1`, `eta=0` hard-clip class |
+| `src/tnfr/physics/binary64_remesh_relative_defect.py` / `src/tnfr/physics/binary64_remesh_relative_defect.pyi` | Exact pairwise REMESH boundary; uniform `alpha=1`, `eta=0` class; and sharp `alpha=1/2` antisymmetric P2 class with `eta=135/124` |
 | `src/tnfr/physics/binary64_p2_reception_stability.py` / `src/tnfr/physics/binary64_p2_reception_stability.pyi` | Global `q=0` P2 half-Reception kernel composed with the `alpha=1` REMESH class |
 | `src/tnfr/physics/runtime_p2_reception_stage.py` / `src/tnfr/physics/runtime_p2_reception_stage.pyi` | Finite executor binding of one P2 two-phase EN EPI stage to the global `q=0` kernel |
 | `src/tnfr/physics/runtime_p2_reception_remesh_sequence.py` / `src/tnfr/physics/runtime_p2_reception_remesh_sequence.pyi` | Finite causal binding of executed P2 EN/REMESH cycles and observed active-suffix extinction |
@@ -1395,8 +1423,10 @@ and
 The binary64 REMESH boundary, P2 numeric EPI-kernel composition and public
 examples are checked by
 [`test_binary64_remesh_relative_defect.py`](../tests/physics/test_binary64_remesh_relative_defect.py),
+[`test_half_alpha_antisymmetric_remesh_class.py`](../tests/physics/test_half_alpha_antisymmetric_remesh_class.py),
 [`test_binary64_p2_reception_stability.py`](../tests/physics/test_binary64_p2_reception_stability.py),
-[`test_binary64_remesh_relative_defect_example.py`](../tests/physics/test_binary64_remesh_relative_defect_example.py)
+[`test_binary64_remesh_relative_defect_example.py`](../tests/physics/test_binary64_remesh_relative_defect_example.py),
+[`test_half_alpha_antisymmetric_remesh_class_example.py`](../tests/physics/test_half_alpha_antisymmetric_remesh_class_example.py)
 and
 [`test_binary64_p2_reception_stability_example.py`](../tests/physics/test_binary64_p2_reception_stability_example.py).
 The finite executed-stage binding and example are checked by
@@ -1464,6 +1494,7 @@ catalog = net.audit_operators()               # dict; 13 controlled probes
 | [175_runtime_p2_reception_stage.py](../examples/02_physics_regimes/175_runtime_p2_reception_stage.py) | One executed two-phase P2 EN EPI stage bound to the global `q=0` kernel, with REMESH graph binding and repeated runtime withheld |
 | [176_runtime_p2_reception_remesh_sequence.py](../examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py) | One completed same-invocation P2 EN/REMESH sequence with `N >= tau_global+1` and finite observed active-history extinction |
 | [177_runtime_p2_reception_remesh_policy.py](../examples/02_physics_regimes/177_runtime_p2_reception_remesh_policy.py) | Two successive independently validated finite P2 policy invocations with future and auxiliary-state claims withheld |
+| [178_half_alpha_antisymmetric_remesh_class.py](../examples/02_physics_regimes/178_half_alpha_antisymmetric_remesh_class.py) | Sharp `eta=135/124` for the REMESH-only `alpha=1/2` antisymmetric P2 class, exact IEEE tail/core proof, strict and zero-margin `q` boundaries, and excluded generalizations |
 
 ## Cross-References
 

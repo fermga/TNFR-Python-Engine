@@ -151,3 +151,15 @@ and finite post-certification share one outer graph transaction. The two returne
 certificates have independent finite provenance;
 neither certifies a later invocation, auxiliary-state stability, solver behavior
 or full TNFR stability.
+
+`178_half_alpha_antisymmetric_remesh_class.py` certifies the first useful
+represented REMESH subclass with `0<alpha<1`. On ordered P2 support, fixed
+positive metric and delays, `alpha=1/2`, a symmetric hard interval containing
+`4*2^-1074`, and sufficient antisymmetric rows `(a,-a)`, the production map is
+forward invariant and has sharp uniform `eta=135/124`. The report exposes the
+analytic `sqrt(D)>=11*2^-1074` tail and the exact 6,615-candidate/3,890-admissible
+finite core, whose maximizer is `(-3,-2,-3)`. It then composes `q=4/9` into
+`q_eff=259/279` with margin `20/279`, records the zero-margin boundary
+`q=124/259`, and shows why general metric-centered rows and a fixed unit lattice
+are outside the class. It does not certify a schedule implementation, graph or
+event execution, repeated complete-runtime behavior or future stability.

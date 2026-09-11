@@ -693,6 +693,29 @@ execution and future runtime behavior remain outside the certificate. Example
 [`173_binary64_remesh_relative_defect.py`](examples/02_physics_regimes/173_binary64_remesh_relative_defect.py)
 shows both the obstruction and this boundary class.
 
+[`certify_half_alpha_antisymmetric_hard_clip_remesh_class(...)`](src/tnfr/physics/binary64_remesh_relative_defect.py)
+closes the first useful represented subclass with `0<alpha<1`. It fixes an
+ordered two-node support, any positive diagonal metric, positive delays,
+`alpha=0.5`, a symmetric hard interval `[-B,B]` with
+`B>=4*2**-1074`, and sufficient histories whose rows are `(a,-a)`. Binary64
+round-to-nearest-even and the symmetric clamp preserve numeric antisymmetry,
+so this class is forward invariant under the REMESH map alone. Writing
+`s=2**-1074`, `u=2**-53`, `D=c**2+l**2+2*g**2` and `x=sqrt(D)`, the exact IEEE
+error proof gives `|r-y|<=A*x+C*s`, where
+`A=3*u/2+u**2/2` and `C=9/4+9*u/4+u**2/2`. For `x>=11*s`, its analytic tail is
+strictly below `135/124`. For `x<11*s`, exact integer enumeration checks 6,615
+candidates, of which 3,890 satisfy `0<D<121*s**2`, and attains
+`eta*=135/124` at `(c,l,g)=(-3,-2,-3)*s`. The robust composition is strict
+exactly for `q<124/259`: `q=4/9` gives `q_eff=259/279` and margin `20/279`,
+whereas `q=124/259` gives only nonincrease with zero margin and `q=9/16` is
+rejected. General positive-metric centering and fixed lattices are outside the
+class: represented rounding can move the former's center, and `(h,0,0)` maps
+to `h/4`. Schedule verification, graph/event execution, repeated complete
+runtime behavior and future stability remain unproved. Example
+[`178_half_alpha_antisymmetric_remesh_class.py`](examples/02_physics_regimes/178_half_alpha_antisymmetric_remesh_class.py)
+records the sharp witness, both composition boundaries and both excluded
+generalizations.
+
 [`certify_p2_half_reception_remesh_stability(...)`](src/tnfr/physics/binary64_p2_reception_stability.py)
 closes a restricted global numeric EPI-kernel composition. On two mutual singleton
 neighbors, an immutable all-target EPI snapshot, the exact configured

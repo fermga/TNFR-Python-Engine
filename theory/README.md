@@ -96,8 +96,14 @@ problems. Supporting maps include
   `q_eff=q*(1+eta)`, and a causal adapter verifies that bound, the represented
   gains and the full history-energy envelope on one recorded finite block. An
   exact pairwise reduction exposes a normal-valued `alpha=1/2` obstruction with
-  `eta=2^210-1/4`; the `alpha=1` hard-clip REMESH class instead has uniform
-  `eta=0`. On P2, the configured binary64 half-Reception Jacobi EPI kernel has
+  `eta=2^210-1/4` over the unrestricted bounded box. The first useful restricted
+  `0<alpha<1` class is now closed on antisymmetric P2 histories at `alpha=1/2`:
+  an analytic IEEE tail plus an exact 6,615/3,890 finite-core enumeration proves
+  the sharp uniform bound `eta=135/124`, REMESH-only forward invariance and the
+  strict schedule threshold `q<124/259`. The `q=4/9` example gives
+  `q_eff=259/279`; equality at the threshold has zero margin. The `alpha=1`
+  hard-clip REMESH class separately has uniform `eta=0`. On P2, the configured
+  binary64 half-Reception Jacobi EPI kernel has
   global gain `q=0`, so the restricted repeated composition extinguishes active-
   history spatial disagreement after `tau_global+1` cycles. One sealed
   graph-owned event now binds the kernel to its grammar-admitted two-phase EN
@@ -108,9 +114,9 @@ problems. Supporting maps include
   P2/REMESH preflight and finite post-certification inside one outer transaction
   on every call; two calls therefore yield two independently validated traces,
   without turning either trace into a future guarantee. Auditing all auxiliary
-  Reception state, finding a useful forward-invariant binary64
-  relative-defect class for `0<alpha<1` with uniform `eta` and `q_eff<1`, mesh
-  convergence, full runtime stability and the runtime infinity limit remain open.
+  Reception state, extending the half-alpha result beyond antisymmetric P2 or
+  binding it to repeated complete-runtime execution, mesh convergence, full
+  runtime stability and the runtime infinity limit remain open.
 - [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) records
   tested catalog extensions and their classification.
 - [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) links selected

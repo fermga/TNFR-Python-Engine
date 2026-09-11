@@ -1,4 +1,4 @@
-r"""Exact pairwise diagnostics and the binary64 ``alpha=1`` REMESH class.
+r"""Exact pairwise diagnostics and scoped binary64 REMESH classes.
 
 The pairwise observer evaluates the production nested binary64 recurrence and
 compares its squared spatial separation with the exact-rational REMESH model.
@@ -17,11 +17,42 @@ numerically equal to the global delayed row and the clamp is the identity.
 Thus its signed centered-energy defect is uniformly zero and the REMESH step
 preserves the represented class.  The certificate does not supply a global
 schedule family, repeated Event/REMESH execution, or future stability.
+
+The third certificate restricts the production ``alpha=1/2`` recurrence to
+two-node antisymmetric represented histories and one symmetric hard-clipping
+interval ``[-B, B]`` with ``B >= 4 * 2**-1074``.  Odd binary64 halving and
+symmetric clipping preserve this class.  Writing ``H(x)=RN(x/2)``, its scalar
+amplitude is evaluated by ``a=H(c)``, ``b=H(l)``, ``m=RN(a+b)``, ``d=H(m)``,
+``e=H(g)`` and ``r=RN(d+e)``, while the ideal amplitude is
+``y=(c+l)/4+g/2``.  Let ``s=2**-1074``, ``u=2**-53``,
+``D=c**2+l**2+2*g**2`` and ``x=sqrt(D)``.  Binary64 halving has absolute error
+at most ``s/2`` and every finite rounded sum has error at most
+``u*abs(z)+s/2``.  Propagating those errors through the four halvings and two
+sums gives the following bound; the sums cannot overflow because each combines
+halved finite operands:
+
+    abs(r-y) <= A*x + C*s,
+    A = 3*u/2 + u**2/2,
+    C = 9/4 + 9*u/4 + u**2/2.
+
+When ``x >= 11*s``, putting ``z=A+C/11`` gives the exact strict inequality
+``4*(z+z**2) < 135/124``.  When ``x < 11*s``, every input is an integer
+multiple of ``s`` with ``abs(c/s),abs(l/s)<=10`` and ``abs(g/s)<=7``.  The
+module exhausts those 6,615 integer triples exactly (3,890 have ``0<D<121``)
+and obtains
+
+    4 * (r**2 - y**2) / D <= 135/124.
+
+Equality occurs at ``(c,l,g)=(-3,-2,-3)*s``.  Symmetric hard clipping can only
+reduce the runtime squared separation.  Composition with the existing robust
+envelope is strict exactly when ``q < 124/259``.  These are REMESH-only numeric
+claims, not runtime execution or full TNFR stability claims.
 """
 
 from __future__ import annotations
 
 import math
+import sys
 from collections.abc import Hashable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field, fields, replace
 from fractions import Fraction
@@ -46,11 +77,20 @@ from .remesh_history_stability import (
     UniformRemeshHistoryStabilityCertificate,
     certify_uniform_remesh_history_stability,
 )
+from .remesh_schedule_policy_stability import (
+    certify_uniform_remesh_schedule_policy_stability,
+)
+from .remesh_schedule_relative_defect_stability import (
+    UniformRemeshScheduleRelativeDefectStabilityCertificate,
+    certify_uniform_remesh_schedule_relative_defect_stability,
+)
 
 __all__ = (
     "Binary64RemeshPairRelativeDefectObservation",
     "UniformAlphaOneHardClipRemeshClassCertificate",
+    "UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate",
     "certify_alpha_one_hard_clip_remesh_class",
+    "certify_half_alpha_antisymmetric_hard_clip_remesh_class",
     "observe_binary64_remesh_pair_relative_defect",
 )
 
@@ -59,6 +99,9 @@ Binary64Pair = tuple[float, float]
 
 _PAIR_PROOF_VERSION = "binary64_remesh_pair_relative_defect_v1"
 _CLASS_PROOF_VERSION = "uniform_alpha_one_hard_clip_remesh_class_v1"
+_HALF_CLASS_PROOF_VERSION = (
+    "uniform_half_alpha_antisymmetric_hard_clip_remesh_class_v1"
+)
 _PAIR_SCOPE = (
     "One exact pairwise comparison between the exact-rational REMESH head and "
     "the production nested binary64 evaluation followed by the configured "
@@ -77,6 +120,20 @@ _CLASS_SCOPE = (
     "zero bits need not be preserved. The certificate does not establish a "
     "global schedule family, repeated or future Event/REMESH execution, solver "
     "properties, adaptive grammar, or full TNFR stability."
+)
+_HALF_CLASS_SCOPE = (
+    "Uniform binary64 REMESH-only state class on one fixed ordered P2 support, "
+    "one fixed positive normalized diagonal metric, fixed positive delays and "
+    "one symmetric hard-clipping interval [-B, B] with represented "
+    "B >= 4*2**-1074. Every sufficient represented chronological history in "
+    "the class has antisymmetric rows (a, -a). The production alpha=1/2 "
+    "nested recurrence and symmetric clamp preserve numeric antisymmetry and "
+    "the interval. Its optimal uniform signed centered-energy relative-defect "
+    "bound is eta=135/124, so the existing robust envelope is strictly "
+    "contractive exactly for a declared schedule gain q<124/259. The "
+    "certificate does not verify a schedule family, graph or event execution, "
+    "future runtime behavior, solver properties, adaptive grammar, or full "
+    "TNFR stability."
 )
 
 _PAIR_CONDITION_NAMES = (
@@ -101,6 +158,123 @@ _CLASS_CONDITION_NAMES = (
     "uniform_relative_centered_energy_defect_is_zero",
     "remesh_output_preserves_declared_interval_and_support",
 )
+_HALF_CLASS_CONDITION_NAMES = (
+    "ordered_support_is_exactly_two_unique_nodes",
+    "exact_metric_is_positive_and_normalized",
+    "configuration_is_half_alpha_symmetric_hard_clip",
+    "represented_bound_contains_sharp_subnormal_witness",
+    "runtime_history_capacity_covers_both_delays",
+    "exact_remesh_coefficients_are_one_quarter_one_quarter_one_half",
+    "runtime_uses_required_ieee_binary64_rounding_model",
+    "ieee_sign_symmetry_preserves_numeric_antisymmetry",
+    "symmetric_hard_clip_preserves_antisymmetry_and_interval",
+    "pairwise_variance_identity_cancels_every_positive_metric_factor",
+    "analytic_large_norm_tail_is_strictly_below_uniform_eta",
+    "exact_subnormal_core_enumeration_has_sharp_uniform_eta",
+    "stored_subnormal_witness_attains_uniform_eta",
+    "remesh_output_preserves_antisymmetric_history_class",
+    "strict_robust_schedule_gain_threshold_is_reciprocal_one_plus_eta",
+    "four_ninths_example_has_positive_exact_robust_margin",
+)
+
+_MIN_BINARY64_SUBNORMAL = math.ulp(0.0)
+_MIN_HALF_CLASS_BOUND = 4.0 * _MIN_BINARY64_SUBNORMAL
+_HALF_CLASS_ETA = Fraction(135, 124)
+_HALF_CLASS_STRICT_Q_THRESHOLD = Fraction(124, 259)
+_HALF_CLASS_EXAMPLE_Q = Fraction(4, 9)
+_HALF_CLASS_EXAMPLE_Q_EFF = Fraction(259, 279)
+_HALF_CLASS_EXAMPLE_MARGIN = Fraction(20, 279)
+_BINARY64_UNIT_ROUNDOFF = Fraction(1, 2**53)
+_HALF_CLASS_TAIL_ERROR_LINEAR_COEFFICIENT = (
+    Fraction(3, 2) * _BINARY64_UNIT_ROUNDOFF
+    + Fraction(1, 2) * _BINARY64_UNIT_ROUNDOFF**2
+)
+_HALF_CLASS_TAIL_ERROR_ABSOLUTE_COEFFICIENT = (
+    Fraction(9, 4)
+    + Fraction(9, 4) * _BINARY64_UNIT_ROUNDOFF
+    + Fraction(1, 2) * _BINARY64_UNIT_ROUNDOFF**2
+)
+_HALF_CLASS_TAIL_ERROR_RATIO = (
+    _HALF_CLASS_TAIL_ERROR_LINEAR_COEFFICIENT
+    + _HALF_CLASS_TAIL_ERROR_ABSOLUTE_COEFFICIENT / 11
+)
+_HALF_CLASS_TAIL_RELATIVE_DEFECT_BOUND = 4 * (
+    _HALF_CLASS_TAIL_ERROR_RATIO + _HALF_CLASS_TAIL_ERROR_RATIO**2
+)
+_HALF_CLASS_CLEAN_TAIL_ERROR_RATIO_BOUND = Fraction(21, 100)
+_HALF_CLASS_CLEAN_TAIL_RELATIVE_DEFECT_BOUND = Fraction(2541, 2500)
+
+
+def _round_half_integer_ties_even(value: int) -> int:
+    """Round ``value/2`` to the nearest integer with ties to even."""
+
+    sign = -1 if value < 0 else 1
+    quotient, remainder = divmod(abs(value), 2)
+    if remainder and quotient % 2:
+        quotient += 1
+    return sign * quotient
+
+
+def _enumerate_half_class_subnormal_core(
+) -> tuple[Fraction, tuple[int, int, int], int, int]:
+    """Exhaust the exact ``sqrt(D) < 11*s`` integer reduction."""
+
+    maximum: Fraction | None = None
+    maximizer = (0, 0, 0)
+    candidate_count = 0
+    admissible_count = 0
+    for current in range(-10, 11):
+        for local in range(-10, 11):
+            for global_ in range(-7, 8):
+                candidate_count += 1
+                denominator = (
+                    current * current
+                    + local * local
+                    + 2 * global_ * global_
+                )
+                if denominator == 0 or denominator >= 121:
+                    continue
+                admissible_count += 1
+                runtime = _round_half_integer_ties_even(
+                    _round_half_integer_ties_even(current)
+                    + _round_half_integer_ties_even(local)
+                ) + _round_half_integer_ties_even(global_)
+                ideal = Fraction(current + local + 2 * global_, 4)
+                ratio = Fraction(4) * (runtime * runtime - ideal * ideal)
+                ratio /= denominator
+                if maximum is None or ratio > maximum:
+                    maximum = ratio
+                    maximizer = (current, local, global_)
+    if maximum is None:
+        raise RuntimeError("half-alpha subnormal core enumeration is empty")
+    return maximum, maximizer, candidate_count, admissible_count
+
+
+(
+    _HALF_CLASS_CORE_MAXIMUM,
+    _HALF_CLASS_CORE_MAXIMIZER,
+    _HALF_CLASS_CORE_CANDIDATE_COUNT,
+    _HALF_CLASS_CORE_ADMISSIBLE_COUNT,
+) = _enumerate_half_class_subnormal_core()
+
+
+def _runtime_uses_required_binary64_rounding_model() -> bool:
+    smallest = _MIN_BINARY64_SUBNORMAL
+    try:
+        return bool(
+            sys.float_info.radix == 2
+            and sys.float_info.mant_dig == 53
+            and sys.float_info.min_exp == -1021
+            and sys.float_info.max_exp == 1024
+            and sys.float_info.rounds == 1
+            and float.__getformat__("double").startswith("IEEE")
+            and smallest == float.fromhex("0x0.0000000000001p-1022")
+            and 0.5 * smallest == 0.0
+            and 0.5 * (3.0 * smallest) == 2.0 * smallest
+            and 0.5 * (-3.0 * smallest) == -2.0 * smallest
+        )
+    except BaseException:
+        return False
 
 
 def _proof_stamp(value: Any, expected_type: type[Any], version: str) -> tuple[Any, ...]:
@@ -1003,4 +1177,627 @@ def certify_alpha_one_hard_clip_remesh_class(
     result = _seal(value, type(value), _CLASS_PROOF_VERSION)
     if not result.alpha_one_hard_clip_class_certificate_certified:
         raise RuntimeError("constructed alpha-one REMESH class proof is inconsistent")
+    return result
+
+
+def _positive_half_class_bound(value: Any) -> float:
+    label = "epi_bound"
+    if isinstance(value, (bool, str, bytes, bytearray, complex)):
+        raise TNFRValueError(f"{label} must be a finite real scalar")
+    if not isinstance(value, Real):
+        raise TNFRValueError(f"{label} must be a finite real scalar")
+    try:
+        result = float(value)
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise TNFRValueError(f"{label} must be a finite real scalar") from exc
+    if not math.isfinite(result):
+        raise TNFRValueError(f"{label} must be finite")
+    if result < _MIN_HALF_CLASS_BOUND:
+        raise TNFRValueError(
+            "epi_bound must be at least four minimum binary64 subnormals"
+        )
+    return result
+
+
+def _half_class_sharpness_witness(
+    configuration: DelayedRemeshConfiguration,
+) -> Binary64RemeshPairRelativeDefectObservation:
+    smallest = _MIN_BINARY64_SUBNORMAL
+    return observe_binary64_remesh_pair_relative_defect(
+        (-3.0 * smallest, 3.0 * smallest),
+        (-2.0 * smallest, 2.0 * smallest),
+        (-3.0 * smallest, 3.0 * smallest),
+        alpha=0.5,
+        epi_min=configuration.epi_min,
+        epi_max=configuration.epi_max,
+        clip_mode="hard",
+    )
+
+
+def _half_class_conditions(
+    node_order: tuple[Hashable, ...],
+    metric: tuple[Fraction, ...],
+    configuration: DelayedRemeshConfiguration,
+    remesh: UniformRemeshHistoryStabilityCertificate,
+    witness: Binary64RemeshPairRelativeDefectObservation,
+) -> tuple[tuple[str, bool], ...]:
+    required = max(configuration.tau_local, configuration.tau_global) + 1
+    node_signatures = tuple(
+        structural_proof_signature(node) for node in node_order
+    )
+    support_valid = bool(
+        len(node_order) == 2
+        and len(node_order) == len(set(node_signatures))
+    )
+    metric_valid = bool(
+        len(metric) == 2
+        and all(type(value) is Fraction and value > 0 for value in metric)
+        and sum(metric, Fraction(0)) == 1
+    )
+    configuration_valid = bool(
+        configuration.alpha == 0.5
+        and configuration.clip_mode == "hard"
+        and math.isfinite(configuration.epi_min)
+        and math.isfinite(configuration.epi_max)
+        and configuration.epi_min == -configuration.epi_max
+        and configuration.epi_max >= _MIN_HALF_CLASS_BOUND
+    )
+    exact_coefficients = bool(
+        remesh.stability_certificate_certified
+        and remesh.alpha == Fraction(1, 2)
+        and remesh.beta == Fraction(1, 4)
+        and remesh.gamma == Fraction(1, 4)
+        and remesh.delta == Fraction(1, 2)
+    )
+    witness_valid = bool(
+        witness.pair_relative_defect_observation_certified
+        and witness.alpha == Fraction(1, 2)
+        and witness.binary64_current_pair
+        == (
+            -3.0 * _MIN_BINARY64_SUBNORMAL,
+            3.0 * _MIN_BINARY64_SUBNORMAL,
+        )
+        and witness.binary64_local_pair
+        == (
+            -2.0 * _MIN_BINARY64_SUBNORMAL,
+            2.0 * _MIN_BINARY64_SUBNORMAL,
+        )
+        and witness.binary64_global_pair
+        == (
+            -3.0 * _MIN_BINARY64_SUBNORMAL,
+            3.0 * _MIN_BINARY64_SUBNORMAL,
+        )
+        and witness.runtime_bounded_pair
+        == (
+            -4.0 * _MIN_BINARY64_SUBNORMAL,
+            4.0 * _MIN_BINARY64_SUBNORMAL,
+        )
+        and witness.exact_relative_signed_defect_ratio == _HALF_CLASS_ETA
+        and witness.exact_minimum_nonnegative_relative_defect_bound
+        == _HALF_CLASS_ETA
+    )
+    return (
+        ("ordered_support_is_exactly_two_unique_nodes", support_valid),
+        ("exact_metric_is_positive_and_normalized", metric_valid),
+        (
+            "configuration_is_half_alpha_symmetric_hard_clip",
+            configuration_valid,
+        ),
+        (
+            "represented_bound_contains_sharp_subnormal_witness",
+            configuration.epi_max >= _MIN_HALF_CLASS_BOUND,
+        ),
+        (
+            "runtime_history_capacity_covers_both_delays",
+            configuration.history_maxlen >= required,
+        ),
+        (
+            "exact_remesh_coefficients_are_one_quarter_one_quarter_one_half",
+            exact_coefficients,
+        ),
+        (
+            "runtime_uses_required_ieee_binary64_rounding_model",
+            _runtime_uses_required_binary64_rounding_model(),
+        ),
+        (
+            "ieee_sign_symmetry_preserves_numeric_antisymmetry",
+            _runtime_uses_required_binary64_rounding_model()
+            and _round_half_integer_ties_even(-3)
+            == -_round_half_integer_ties_even(3),
+        ),
+        (
+            "symmetric_hard_clip_preserves_antisymmetry_and_interval",
+            configuration_valid,
+        ),
+        (
+            "pairwise_variance_identity_cancels_every_positive_metric_factor",
+            metric_valid
+            and metric[0] * metric[1] / 2 > 0,
+        ),
+        (
+            "analytic_large_norm_tail_is_strictly_below_uniform_eta",
+            _HALF_CLASS_TAIL_ERROR_RATIO
+            < _HALF_CLASS_CLEAN_TAIL_ERROR_RATIO_BOUND
+            and 4
+            * (
+                _HALF_CLASS_CLEAN_TAIL_ERROR_RATIO_BOUND
+                + _HALF_CLASS_CLEAN_TAIL_ERROR_RATIO_BOUND**2
+            )
+            == _HALF_CLASS_CLEAN_TAIL_RELATIVE_DEFECT_BOUND
+            and _HALF_CLASS_CLEAN_TAIL_RELATIVE_DEFECT_BOUND
+            < _HALF_CLASS_ETA,
+        ),
+        (
+            "exact_subnormal_core_enumeration_has_sharp_uniform_eta",
+            _HALF_CLASS_CORE_CANDIDATE_COUNT == 6615
+            and _HALF_CLASS_CORE_ADMISSIBLE_COUNT == 3890
+            and _HALF_CLASS_CORE_MAXIMUM == _HALF_CLASS_ETA
+            and _HALF_CLASS_CORE_MAXIMIZER == (-3, -2, -3),
+        ),
+        ("stored_subnormal_witness_attains_uniform_eta", witness_valid),
+        (
+            "remesh_output_preserves_antisymmetric_history_class",
+            configuration_valid
+            and exact_coefficients
+            and _runtime_uses_required_binary64_rounding_model(),
+        ),
+        (
+            "strict_robust_schedule_gain_threshold_is_reciprocal_one_plus_eta",
+            _HALF_CLASS_STRICT_Q_THRESHOLD
+            == Fraction(1, 1) / (Fraction(1, 1) + _HALF_CLASS_ETA),
+        ),
+        (
+            "four_ninths_example_has_positive_exact_robust_margin",
+            _HALF_CLASS_EXAMPLE_Q
+            * (Fraction(1, 1) + _HALF_CLASS_ETA)
+            == _HALF_CLASS_EXAMPLE_Q_EFF
+            and Fraction(1, 1) - _HALF_CLASS_EXAMPLE_Q_EFF
+            == _HALF_CLASS_EXAMPLE_MARGIN
+            and _HALF_CLASS_EXAMPLE_MARGIN > 0,
+        ),
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate:
+    """Sealed sharp ``alpha=1/2`` antisymmetric P2 REMESH class."""
+
+    node_order: tuple[Hashable, Hashable]
+    exact_normalized_metric: tuple[Fraction, Fraction]
+    configuration: DelayedRemeshConfiguration = field(repr=False)
+    tau_local: int
+    tau_global: int
+    history_maxlen: int
+    required_history_length: int
+    epi_bound: Fraction
+    epi_min: Fraction
+    epi_max: Fraction
+    alpha: Fraction
+    clip_mode: Literal["hard"]
+    remesh_certificate: UniformRemeshHistoryStabilityCertificate = field(
+        repr=False
+    )
+    exact_uniform_relative_defect_upper_bound: Fraction
+    exact_tail_error_linear_coefficient: Fraction
+    exact_tail_error_absolute_coefficient: Fraction
+    exact_tail_error_ratio_at_eleven_subnormals: Fraction
+    exact_tail_relative_defect_upper_bound: Fraction
+    finite_core_candidate_count: int
+    finite_core_admissible_count: int
+    finite_core_maximizer_amplitudes: tuple[int, int, int]
+    exact_strict_schedule_gain_threshold: Fraction
+    example_schedule_energy_gain_upper_bound: Fraction
+    exact_example_effective_head_energy_gain_upper_bound: Fraction
+    exact_example_normalized_block_margin_lower_bound: Fraction
+    sharpness_witness: Binary64RemeshPairRelativeDefectObservation = field(
+        repr=False
+    )
+    conditions: tuple[tuple[str, bool], ...]
+    _proof_stamp: tuple[Any, ...] = field(default=(), repr=False, compare=False)
+
+    def _proof_fields_are_intact(self) -> bool:
+        try:
+            if (
+                type(self)
+                is not UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate
+            ):
+                return False
+            if not _sealed(
+                self,
+                UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate,
+                _HALF_CLASS_PROOF_VERSION,
+            ):
+                return False
+            configuration = object.__getattribute__(self, "configuration")
+            node_order = object.__getattribute__(self, "node_order")
+            metric = object.__getattribute__(self, "exact_normalized_metric")
+            remesh = object.__getattribute__(self, "remesh_certificate")
+            witness = object.__getattribute__(self, "sharpness_witness")
+            conditions = object.__getattribute__(self, "conditions")
+            exact_fraction_fields = (
+                "epi_bound",
+                "epi_min",
+                "epi_max",
+                "alpha",
+                "exact_uniform_relative_defect_upper_bound",
+                "exact_tail_error_linear_coefficient",
+                "exact_tail_error_absolute_coefficient",
+                "exact_tail_error_ratio_at_eleven_subnormals",
+                "exact_tail_relative_defect_upper_bound",
+                "exact_strict_schedule_gain_threshold",
+                "example_schedule_energy_gain_upper_bound",
+                "exact_example_effective_head_energy_gain_upper_bound",
+                "exact_example_normalized_block_margin_lower_bound",
+            )
+            if (
+                type(configuration) is not DelayedRemeshConfiguration
+                or type(node_order) is not tuple
+                or len(node_order) != 2
+                or type(metric) is not tuple
+                or len(metric) != 2
+                or not all(
+                    type(value) is Fraction and value > 0 for value in metric
+                )
+                or sum(metric, Fraction(0)) != 1
+                or type(remesh) is not UniformRemeshHistoryStabilityCertificate
+                or type(witness)
+                is not Binary64RemeshPairRelativeDefectObservation
+                or not _strict_conditions(
+                    conditions,
+                    _HALF_CLASS_CONDITION_NAMES,
+                )
+                or type(self.tau_local) is not int
+                or self.tau_local <= 0
+                or type(self.tau_global) is not int
+                or self.tau_global <= 0
+                or type(self.history_maxlen) is not int
+                or self.history_maxlen <= 0
+                or type(self.required_history_length) is not int
+                or self.required_history_length <= 0
+                or type(self.finite_core_candidate_count) is not int
+                or type(self.finite_core_admissible_count) is not int
+                or type(self.finite_core_maximizer_amplitudes) is not tuple
+                or len(self.finite_core_maximizer_amplitudes) != 3
+                or not all(
+                    type(value) is int
+                    for value in self.finite_core_maximizer_amplitudes
+                )
+                or not all(
+                    type(object.__getattribute__(self, name)) is Fraction
+                    for name in exact_fraction_fields
+                )
+                or type(self.clip_mode) is not str
+                or type(configuration.tau_local) is not int
+                or configuration.tau_local <= 0
+                or type(configuration.tau_global) is not int
+                or configuration.tau_global <= 0
+                or type(configuration.history_maxlen) is not int
+                or configuration.history_maxlen <= 0
+                or type(configuration.alpha) is not float
+                or type(configuration.alpha_source) is not str
+                or not configuration.alpha_source
+                or type(configuration.epi_min) is not float
+                or type(configuration.epi_max) is not float
+                or type(configuration.clip_mode) is not str
+            ):
+                return False
+            canonical = materialize_delayed_remesh_configuration(
+                tau_local=self.tau_local,
+                tau_global=self.tau_global,
+                alpha=0.5,
+                alpha_source=configuration.alpha_source,
+                epi_min=-configuration.epi_max,
+                epi_max=configuration.epi_max,
+                clip_mode="hard",
+            )
+            expected_remesh = certify_uniform_remesh_history_stability(
+                alpha=Fraction(1, 2),
+                tau_local=self.tau_local,
+                tau_global=self.tau_global,
+            )
+            expected_witness = _half_class_sharpness_witness(canonical)
+            expected_conditions = _half_class_conditions(
+                node_order,
+                metric,
+                canonical,
+                expected_remesh,
+                expected_witness,
+            )
+            return bool(
+                configuration == canonical
+                and self.history_maxlen == canonical.history_maxlen
+                and self.required_history_length
+                == max(self.tau_local, self.tau_global) + 1
+                and self.epi_bound == Fraction.from_float(canonical.epi_max)
+                and self.epi_bound
+                >= Fraction.from_float(_MIN_HALF_CLASS_BOUND)
+                and self.epi_min == -self.epi_bound
+                and self.epi_max == self.epi_bound
+                and self.alpha == Fraction(1, 2)
+                and self.clip_mode == "hard"
+                and self.exact_uniform_relative_defect_upper_bound
+                == _HALF_CLASS_ETA
+                and self.exact_tail_error_linear_coefficient
+                == _HALF_CLASS_TAIL_ERROR_LINEAR_COEFFICIENT
+                and self.exact_tail_error_absolute_coefficient
+                == _HALF_CLASS_TAIL_ERROR_ABSOLUTE_COEFFICIENT
+                and self.exact_tail_error_ratio_at_eleven_subnormals
+                == _HALF_CLASS_TAIL_ERROR_RATIO
+                and self.exact_tail_relative_defect_upper_bound
+                == _HALF_CLASS_TAIL_RELATIVE_DEFECT_BOUND
+                and self.finite_core_candidate_count
+                == _HALF_CLASS_CORE_CANDIDATE_COUNT
+                and self.finite_core_admissible_count
+                == _HALF_CLASS_CORE_ADMISSIBLE_COUNT
+                and self.finite_core_maximizer_amplitudes
+                == _HALF_CLASS_CORE_MAXIMIZER
+                and self.exact_strict_schedule_gain_threshold
+                == _HALF_CLASS_STRICT_Q_THRESHOLD
+                and self.example_schedule_energy_gain_upper_bound
+                == _HALF_CLASS_EXAMPLE_Q
+                and self.exact_example_effective_head_energy_gain_upper_bound
+                == _HALF_CLASS_EXAMPLE_Q_EFF
+                and self.exact_example_normalized_block_margin_lower_bound
+                == _HALF_CLASS_EXAMPLE_MARGIN
+                and remesh.stability_certificate_certified
+                and witness.pair_relative_defect_observation_certified
+                and proof_stamps_are_identical(
+                    object.__getattribute__(remesh, "_proof_stamp"),
+                    object.__getattribute__(expected_remesh, "_proof_stamp"),
+                )
+                and proof_stamps_are_identical(
+                    object.__getattribute__(witness, "_proof_stamp"),
+                    object.__getattribute__(expected_witness, "_proof_stamp"),
+                )
+                and conditions == expected_conditions
+            )
+        except BaseException:
+            return False
+
+    @property
+    def scope(self) -> str:
+        return _HALF_CLASS_SCOPE
+
+    @property
+    def half_alpha_antisymmetric_hard_clip_class_certificate_certified(
+        self,
+    ) -> bool:
+        return bool(
+            self._proof_fields_are_intact()
+            and all(passed for _name, passed in self.conditions)
+        )
+
+    @property
+    def failed_conditions(self) -> tuple[str, ...]:
+        if not self._proof_fields_are_intact():
+            return (
+                "half_alpha_antisymmetric_hard_clip_remesh_class_"
+                "proof_fields_intact",
+            )
+        return tuple(name for name, passed in self.conditions if not passed)
+
+    @property
+    def binary64_antisymmetry_preserved_certified(self) -> bool:
+        return self.half_alpha_antisymmetric_hard_clip_class_certificate_certified
+
+    @property
+    def hard_clip_preserves_antisymmetric_interval_certified(self) -> bool:
+        return self.half_alpha_antisymmetric_hard_clip_class_certificate_certified
+
+    @property
+    def uniform_binary64_relative_defect_bound_certified(self) -> bool:
+        return self.half_alpha_antisymmetric_hard_clip_class_certificate_certified
+
+    @property
+    def uniform_relative_defect_bound_is_sharp_certified(self) -> bool:
+        return self.half_alpha_antisymmetric_hard_clip_class_certificate_certified
+
+    @property
+    def remesh_class_forward_invariant_certified(self) -> bool:
+        return self.half_alpha_antisymmetric_hard_clip_class_certificate_certified
+
+    @property
+    def strict_schedule_composition_threshold_certified(self) -> bool:
+        return self.half_alpha_antisymmetric_hard_clip_class_certificate_certified
+
+    @property
+    def example_schedule_composition_certified(self) -> bool:
+        return self.half_alpha_antisymmetric_hard_clip_class_certificate_certified
+
+    def represented_history_belongs_to_class(self, history: Any) -> bool:
+        """Check one chronological P2 history against the closed class."""
+
+        if not self.half_alpha_antisymmetric_hard_clip_class_certificate_certified:
+            return False
+        if type(history) not in (tuple, list):
+            return False
+        try:
+            if type(history) is tuple:
+                rows = tuple(tuple.__iter__(history))
+            else:
+                rows = tuple(list.__iter__(history))
+        except BaseException:
+            return False
+        if not (
+            self.required_history_length <= len(rows) <= self.history_maxlen
+        ):
+            return False
+        lower = self.configuration.epi_min
+        upper = self.configuration.epi_max
+        for row in rows:
+            if type(row) is tuple:
+                values = tuple(tuple.__iter__(row))
+            elif type(row) is list:
+                values = tuple(list.__iter__(row))
+            else:
+                return False
+            if len(values) != 2:
+                return False
+            if any(
+                type(value) is not float
+                or not math.isfinite(value)
+                or value < lower
+                or value > upper
+                for value in values
+            ):
+                return False
+            if values[1] != -values[0]:
+                return False
+        return True
+
+    def certify_schedule_relative_defect_stability(
+        self,
+        schedule_energy_gain_upper_bound: Real,
+    ) -> UniformRemeshScheduleRelativeDefectStabilityCertificate:
+        """Compose this ``eta`` with one declared common schedule gain."""
+
+        if not self.half_alpha_antisymmetric_hard_clip_class_certificate_certified:
+            raise TNFRValueError(
+                "half-alpha REMESH class certificate is unsealed or inconsistent"
+            )
+        policy = certify_uniform_remesh_schedule_policy_stability(
+            self.remesh_certificate,
+            schedule_energy_gain_upper_bound,
+        )
+        return certify_uniform_remesh_schedule_relative_defect_stability(
+            policy,
+            self.exact_uniform_relative_defect_upper_bound,
+        )
+
+    @property
+    def schedule_family_certificate_certified(self) -> bool:
+        return False
+
+    @property
+    def repeated_binary64_stability_certified(self) -> bool:
+        return False
+
+    @property
+    def runtime_forward_invariance_certified(self) -> bool:
+        return False
+
+    @property
+    def binary64_runtime_stability_certified(self) -> bool:
+        return False
+
+    @property
+    def future_binary64_execution_certified(self) -> bool:
+        return False
+
+    @property
+    def solver_accuracy_certified(self) -> bool:
+        return False
+
+    @property
+    def full_tnfr_stability_certified(self) -> bool:
+        return False
+
+
+def certify_half_alpha_antisymmetric_hard_clip_remesh_class(
+    nodes_pair: Iterable[Hashable],
+    metric_weights: Mapping[Hashable, Real] | Sequence[Real] | None = None,
+    *,
+    tau_local: int,
+    tau_global: int,
+    epi_bound: Real,
+) -> UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate:
+    """Certify the sharp ``alpha=1/2`` antisymmetric P2 REMESH class."""
+
+    try:
+        node_order = _node_order(nodes_pair)
+        if len(node_order) != 2:
+            raise TNFRValueError(
+                "nodes_pair must contain exactly two unique identifiers"
+            )
+        typed_node_order = (node_order[0], node_order[1])
+        metric_raw = _normalized_metric(metric_weights, typed_node_order)
+        typed_metric = (metric_raw[0], metric_raw[1])
+        bound = _positive_half_class_bound(epi_bound)
+        configuration = materialize_delayed_remesh_configuration(
+            tau_local=tau_local,
+            tau_global=tau_global,
+            alpha=0.5,
+            alpha_source=(
+                "half_alpha_antisymmetric_hard_clip_class_certificate"
+            ),
+            epi_min=-bound,
+            epi_max=bound,
+            clip_mode="hard",
+        )
+    except TNFRValueError:
+        raise
+    except BaseException as exc:
+        raise TNFRValueError(
+            "invalid half-alpha antisymmetric REMESH class inputs"
+        ) from exc
+    remesh = certify_uniform_remesh_history_stability(
+        alpha=Fraction(1, 2),
+        tau_local=configuration.tau_local,
+        tau_global=configuration.tau_global,
+    )
+    witness = _half_class_sharpness_witness(configuration)
+    conditions = _half_class_conditions(
+        typed_node_order,
+        typed_metric,
+        configuration,
+        remesh,
+        witness,
+    )
+    if not all(passed for _name, passed in conditions):
+        failed = tuple(name for name, passed in conditions if not passed)
+        raise TNFRValueError(
+            f"half-alpha antisymmetric REMESH class proof failed: {failed}"
+        )
+    bound_q = Fraction.from_float(configuration.epi_max)
+    value = UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate(
+        node_order=typed_node_order,
+        exact_normalized_metric=typed_metric,
+        configuration=configuration,
+        tau_local=configuration.tau_local,
+        tau_global=configuration.tau_global,
+        history_maxlen=configuration.history_maxlen,
+        required_history_length=max(
+            configuration.tau_local,
+            configuration.tau_global,
+        )
+        + 1,
+        epi_bound=bound_q,
+        epi_min=-bound_q,
+        epi_max=bound_q,
+        alpha=Fraction(1, 2),
+        clip_mode="hard",
+        remesh_certificate=remesh,
+        exact_uniform_relative_defect_upper_bound=_HALF_CLASS_ETA,
+        exact_tail_error_linear_coefficient=(
+            _HALF_CLASS_TAIL_ERROR_LINEAR_COEFFICIENT
+        ),
+        exact_tail_error_absolute_coefficient=(
+            _HALF_CLASS_TAIL_ERROR_ABSOLUTE_COEFFICIENT
+        ),
+        exact_tail_error_ratio_at_eleven_subnormals=(
+            _HALF_CLASS_TAIL_ERROR_RATIO
+        ),
+        exact_tail_relative_defect_upper_bound=(
+            _HALF_CLASS_TAIL_RELATIVE_DEFECT_BOUND
+        ),
+        finite_core_candidate_count=_HALF_CLASS_CORE_CANDIDATE_COUNT,
+        finite_core_admissible_count=_HALF_CLASS_CORE_ADMISSIBLE_COUNT,
+        finite_core_maximizer_amplitudes=_HALF_CLASS_CORE_MAXIMIZER,
+        exact_strict_schedule_gain_threshold=_HALF_CLASS_STRICT_Q_THRESHOLD,
+        example_schedule_energy_gain_upper_bound=_HALF_CLASS_EXAMPLE_Q,
+        exact_example_effective_head_energy_gain_upper_bound=(
+            _HALF_CLASS_EXAMPLE_Q_EFF
+        ),
+        exact_example_normalized_block_margin_lower_bound=(
+            _HALF_CLASS_EXAMPLE_MARGIN
+        ),
+        sharpness_witness=witness,
+        conditions=conditions,
+    )
+    result = _seal(value, type(value), _HALF_CLASS_PROOF_VERSION)
+    if not result.half_alpha_antisymmetric_hard_clip_class_certificate_certified:
+        raise RuntimeError(
+            "constructed half-alpha antisymmetric REMESH class proof is "
+            "inconsistent"
+        )
     return result

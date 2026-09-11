@@ -88,6 +88,21 @@ every sufficient finite represented history inside a fixed hard-clipping
 interval instead has $\eta=0$ and is forward invariant under REMESH alone.
 This boundary class does not by itself certify a schedule or its execution.
 
+Between those two boundaries, the first useful restricted
+$0<\alpha<1$ class is now exact. On ordered $P_2$ support, fix any positive
+diagonal metric, positive delays, $\alpha=1/2$, a symmetric hard interval
+$[-B,B]$ with $B\geq4\,2^{-1074}$, and sufficient histories whose rows are
+$(a,-a)$. IEEE round-to-nearest-even and symmetric hard clipping preserve
+numeric antisymmetry. An analytic binary64 error bound for
+$\sqrt D\geq11\,2^{-1074}$ plus exact enumeration of 6,615 integer-core
+triples, 3,890 admissible, below that boundary proves the sharp uniform bound
+$\eta^*=135/124$. The maximizer is
+$(c,l,g)=(-3,-2,-3)2^{-1074}$. Hence strict robust composition requires
+$q<124/259$; $q=4/9$ gives $q_{\mathrm{eff}}=259/279$ and margin $20/279$,
+while equality at $q=124/259$ gives only nonincrease. This forward-invariance
+claim concerns the REMESH map alone and excludes general metric-centered rows,
+fixed lattices, verified schedule families and complete runtime execution.
+
 A first restricted global represented numeric EPI kernel closes the composition
 on $P_2$.
 With mutual singleton neighbor sets, an immutable all-target Reception snapshot,
@@ -887,7 +902,7 @@ fixed. A repeated binary64 theorem still requires that forward-invariance
 argument. Solver accuracy and order, adaptive grammar, and full multichannel
 TNFR stability also remain outside scope.
 
-### §2.13 Pairwise binary64 boundary and the $\alpha=1$ class
+### §2.13 Pairwise binary64 boundary and two uniform classes
 
 An EPI interval and hard clipping do not by themselves provide a useful
 uniform $\eta$. This follows from an exact scalar reduction. For the temporal
@@ -996,9 +1011,103 @@ seals the fixed-support, fixed-metric, bounded-history REMESH-only class above.
 It checks represented-history membership and explicitly leaves schedule-family,
 repeated-execution and future-runtime claims false.
 
-For $0<\alpha<1$, viable later branches include a quantization-aware invariant
-alphabet, a centered or antisymmetric representation with explicit
-normal-range guards, or an augmented defect budget. If only the lifted positive
+The antisymmetric $P_2$ branch closes the first useful uniform class with
+$0<\alpha<1$. Fix $\alpha=1/2$, two ordered nodes, any positive diagonal
+metric, two positive delays and the symmetric hard interval $[-B,B]$, where
+$B\geq4s$ and $s=2^{-1074}$ is the least positive binary64 subnormal. Require
+every row of a sufficient represented history to have the form $(a,-a)$.
+Write $H(x)=\operatorname{RN}(x/2)$ for binary64 halving and evaluate the
+production scalar kernel in its actual order:
+
+$$
+\begin{aligned}
+a&=H(c), & b&=H(l), & m&=\operatorname{RN}(a+b),\\
+d&=H(m), & e&=H(g), & r&=\operatorname{RN}(d+e).
+\end{aligned}
+$$
+
+The ideal amplitude is $y=(c+l)/4+g/2$. Round-to-nearest-even is odd as a
+numeric map, up to irrelevant signed-zero representation, and the symmetric
+clamp is odd. The runtime output therefore remains $(r,-r)$ inside $[-B,B]$.
+This proves REMESH-only forward invariance of the represented history class.
+
+The uniform defect bound is global over binary64 amplitudes, rather than an
+empirical sample. Put
+
+$$
+D=c^2+l^2+2g^2,\qquad x=\sqrt D,\qquad u=2^{-53}.
+$$
+
+The pairwise Jensen denominator for $(c,-c)$, $(l,-l)$ and $(g,-g)$ is exactly
+$D$, while the output signed defect is $4(r^2-y^2)$. Binary64 halving has
+absolute error at most $s/2$, and every finite rounded sum has error at most
+$u|z|+s/2$. Propagating those six operations gives
+
+$$
+|r-y|\leq Ax+Cs,\qquad
+A=\frac{3u}{2}+\frac{u^2}{2},\qquad
+C=\frac94+\frac{9u}{4}+\frac{u^2}{2}.
+$$
+
+The sums cannot overflow because each combines halved finite operands. Also
+$|y|\leq x/2$ by the weighted Cauchy inequality. For $x\geq11s$, let
+$z=A+C/11$. Then $z<21/100$ and
+
+$$
+\frac{4(r^2-y^2)}{D}
+\leq4(z+z^2)
+<\frac{2541}{2500}
+<\frac{135}{124}.
+$$
+
+For $0<x<11s$, all three inputs are integer multiples of $s$, with
+$|c/s|,|l/s|\leq10$ and $|g/s|\leq7$. The executable proof enumerates all
+$21\cdot21\cdot15=6615$ integer triples exactly. Of these, 3,890 satisfy
+$0<D/s^2<121$. Applying the exact integer ties-to-even map
+$h(n)=\operatorname{RN}(n/2)$ finds
+
+$$
+\max\frac{4(r^2-y^2)}{D}=\frac{135}{124}
+$$
+
+at $(c,l,g)=(-3,-2,-3)s$. Here $y=-11s/4$ and $r=-4s$; the centered Jensen
+energy and defect are respectively $31s^2/4$ and $135s^2/16$. Since $B\geq4s$,
+the witness and its runtime output belong to every declared class. The tail
+and finite core therefore prove that the optimal uniform constant is
+$\eta^*=135/124$.
+
+Composition with §2.12 is strict exactly when
+
+$$
+q<\frac{1}{1+\eta^*}=\frac{124}{259}.
+$$
+
+For $q=4/9$, $q_{\mathrm{eff}}=259/279$ and the normalized block margin is
+$20/279$. At $q=124/259$, $q_{\mathrm{eff}}=1$ and the theorem gives only
+nonincrease with zero margin. The prior $q=9/16$ policy gives
+$q_{\mathrm{eff}}=2331/1984>1$ and is rejected even on this class.
+
+The antisymmetric hypothesis is essential. General centering in the positive
+metric $(1,3)$ permits rows $(3a,-a)$ whose exact centers vanish, yet one
+binary64 triple acquires runtime center $-2^{-84}$. A fixed lattice is also
+not automatically closed: scalar inputs $(h,0,0)$ produce $h/4$. These
+falsifiers exclude broader claims without excluding future classes with
+additional structure or quantization.
+
+[`certify_half_alpha_antisymmetric_hard_clip_remesh_class`](../src/tnfr/physics/binary64_remesh_relative_defect.py)
+stores the analytic constants, exact 6,615/3,890 core result, maximizer and
+sharp witness; checks strict represented-history membership; and composes its
+bound through the existing robust theorem. Its class-forward-invariance claim
+is limited to REMESH. Schedule verification, graph/event execution, repeated
+complete-runtime behavior, solver properties and future stability remain
+false. Example
+[`178_half_alpha_antisymmetric_remesh_class.py`](../examples/02_physics_regimes/178_half_alpha_antisymmetric_remesh_class.py)
+reports both proof regions, the strict and zero-margin schedule boundaries and
+the two excluded generalizations.
+
+For broader $0<\alpha<1$ classes, viable later branches include a
+quantization-aware invariant alphabet, other symmetry representations with
+explicit guards, or an augmented defect budget. If only the lifted positive
 defect obeys $U_k\leq\rho V_k$, the correct envelope is a rank-one update of
 the companion matrix and must be analyzed with its induced block factors; it
 cannot be replaced by the scalar $q(1+\eta)$ formula.
@@ -1535,7 +1644,9 @@ The original commits remain useful provenance:
 - **Represented-number boundary**: §2.13 gives the exact pairwise reduction,
   a bounded normal-valued obstruction at $\alpha=1/2$, and the
   forward-invariant hard-clipped REMESH-only class at $\alpha=1$ with
-  $\eta=0$.
+  $\eta=0$. It also proves the first useful intermediate class: antisymmetric
+  $P_2$ histories at $\alpha=1/2$ have sharp uniform $\eta=135/124$ and strict
+  robust threshold $q<124/259$ under REMESH alone.
 - **Binary64 $P_2$ kernel branch**: the configured half-Reception Jacobi kernel
   has global gain $q=0$ and composes with that $\alpha=1$ class to extinguish
   active-history disagreement after $\tau_g+1$ restricted cycles. One sealed
@@ -1569,6 +1680,9 @@ The corrected results are internal and limited:
   causal verifier for its complete energy-vector envelope;
 - it characterizes pairwise represented REMESH defects and certifies the
   sufficient-history $\alpha=1$ hard-clip class under REMESH alone;
+- it proves REMESH-only forward invariance and sharp uniform
+  $\eta=135/124$ for the $\alpha=1/2$ antisymmetric $P_2$ hard-clip class by
+  an analytic IEEE tail bound and an exact 6,615/3,890 finite-core enumeration;
 - it composes that class with the global $P_2$ half-Reception numeric kernel and
   obtains exact finite-time spatial-disagreement extinction for the restricted
   repeated binary64 recurrence;
@@ -1645,6 +1759,18 @@ They verify shared-kernel replay, the exact $\alpha=1/2$ obstruction, the
 zero-denominator branch, hard-clamp nonexpansiveness, signed-zero scope, the
 $\alpha=1$ class at endpoints and subnormals, public type boundaries and
 fail-closed proof seals.
+
+The restricted half-alpha class and example are checked by
+[`test_half_alpha_antisymmetric_remesh_class.py`](../tests/physics/test_half_alpha_antisymmetric_remesh_class.py)
+and
+[`test_half_alpha_antisymmetric_remesh_class_example.py`](../tests/physics/test_half_alpha_antisymmetric_remesh_class_example.py).
+They verify the exact analytic-tail constants, exhaustive 6,615-candidate and
+3,890-admissible core, sharp subnormal witness, normal/subnormal/signed-zero
+history membership, REMESH forward invariance, strict and zero-margin schedule
+boundaries, `q=9/16` rejection, excluded metric-centered and fixed-lattice
+generalizations, public facade and fail-closed proof fields. Example
+[`178_half_alpha_antisymmetric_remesh_class.py`](../examples/02_physics_regimes/178_half_alpha_antisymmetric_remesh_class.py)
+records the same proof boundary.
 
 The global P2 half-Reception composition and its public example are checked by
 [`test_binary64_p2_reception_stability.py`](../tests/physics/test_binary64_p2_reception_stability.py)
@@ -1725,8 +1851,9 @@ The following problems remain open:
 
 1. Define a common state space and convergence mode for a nontrivial runtime
    $\tau_g\to\infty$ limit.
-2. Derive a useful uniform `eta` and a forward-invariant binary64
-   relative-defect class for $0<\alpha<1$ with `q_eff<1`; retain the common-mode, canonical-factor,
+2. Extend the $\alpha=1/2$ antisymmetric $P_2$ class to broader represented
+   states, support or other $0<\alpha<1$ coefficients while retaining a useful
+   uniform `eta` and `q_eff<1`; retain the common-mode, canonical-factor,
    zero-margin, scaling and soft-knee obstructions.
 3. Promote the finite same-graph $P_2$ EN/REMESH observation to a
    forward-invariant class under future complete grammar-aware event execution,
@@ -1767,7 +1894,12 @@ signed defect, represented gain, history-energy envelope and complete-block
 endpoint bound, including a positive binary64-defect witness. The exact
 pairwise boundary then shows that a bounded hard-clipped box can require
 $\eta=2^{210}-1/4$, while the $\alpha=1$ class has uniform $\eta=0$ and is
-forward invariant under REMESH alone. A global binary64 $P_2$ half-Reception
+forward invariant under REMESH alone. The restricted antisymmetric $P_2$
+hard-clip class at $\alpha=1/2$ separately has sharp uniform
+$\eta=135/124$, proved by an analytic IEEE tail and exact finite-core
+enumeration, and is REMESH-forward-invariant. Its strict schedule threshold is
+$q<124/259$; $q=4/9$ gives margin $20/279$, while equality gives zero margin.
+A global binary64 $P_2$ half-Reception
 EPI kernel has $q=0$ and composes with that class to extinguish active-history
 spatial disagreement after $\tau_g+1$ restricted cycles. This repeated result
 belongs to the numeric EPI kernels. One completed graph-owned event now binds
@@ -1788,9 +1920,9 @@ runtime residual bound. A separate
 binds finite executor-owned pressure-refreshed partitions and propagates
 represented defects through complete Euler matrices, but it contains no REMESH
 claim.
-Derivation of a useful forward-invariant binary64 relative-defect class with
-uniform `eta` for $0<\alpha<1$ and `q_eff<1`, a priori preservation of the P2
-EN/REMESH hypotheses for future unobserved complete event execution, generic or
-binary64 asymptotic convergence, repeated complete-runtime stability, the
-clipped binary64 runtime limit, full structural invariants and global operator
-completeness remain unresolved.**
+Extension of the half-alpha antisymmetric class to broader represented states,
+support or coefficients, a priori preservation of the P2 EN/REMESH hypotheses
+for future unobserved complete event execution, generic or binary64 asymptotic
+convergence, repeated complete-runtime stability, the clipped binary64 runtime
+limit, full structural invariants and global operator completeness remain
+unresolved.**

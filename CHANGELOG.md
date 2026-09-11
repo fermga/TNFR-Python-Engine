@@ -19,6 +19,19 @@ All notable changes to this project will be documented in this file.
   has uniform relative defect `eta=0`, and preserves the class under REMESH.
   Signed-zero bits, schedules, repeated event execution and future runtime
   behavior remain outside this certificate.
+- Added the first useful uniform represented class with `0<alpha<1`. On
+  ordered P2 support, any fixed positive diagonal metric, fixed delays,
+  `alpha=0.5`, a symmetric hard interval `[-B,B]` with
+  `B>=4*2^-1074`, and sufficient antisymmetric history rows `(a,-a)`, the
+  production REMESH map preserves the class and has sharp uniform relative
+  defect `eta*=135/124`. The proof combines an analytic IEEE error bound for
+  `sqrt(D)>=11*2^-1074` with exact enumeration of 6,615 integer-core candidates,
+  3,890 of them admissible; `(-3,-2,-3)*2^-1074` attains equality. Robust
+  composition is strict for `q<124/259`: `q=4/9` gives `q_eff=259/279` and
+  margin `20/279`, while equality at `q=124/259` has zero margin and `q=9/16`
+  is rejected. REMESH-only forward invariance does not extend to arbitrary
+  metric-centered rows, unrestricted fixed lattices, graph execution or future
+  complete-runtime behavior.
 - Added the restricted global binary64 P2 half-Reception composition. With two
   mutual singleton neighbors, an immutable all-target EPI snapshot, the exact
   configured mix `0.5` and one common hard clamp, both proposals are
@@ -51,12 +64,14 @@ All notable changes to this project will be documented in this file.
   occur inside one outer graph transaction, so a zero pair or any other failure
   restores graph-owned state. Success certifies only that invocation; future,
   unobserved-repetition and auxiliary-state claims remain false.
-- Added examples 173–177, including
+- Added examples 173–178, including
   `176_runtime_p2_reception_remesh_sequence.py`, exact public stubs, facade
   exports and adversarial tests covering normal/subnormal extremes, signed
   zero, inactive and active clipping, hostile inputs, private reseals and the
   exact energy-gain-four witness for the canonical default EN factor. Example
-  177 demonstrates two independently revalidated policy invocations.
+  177 demonstrates two independently revalidated policy invocations. Example
+  178 records the sharp half-alpha class, exact proof partition, robust gain
+  boundaries and the metric-centering and fixed-lattice falsifiers.
 
 ### Added — 2026-09-11 Relative-defect REMESH/schedule stability
 

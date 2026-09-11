@@ -786,6 +786,35 @@ preserves the class. Equality does not promise preservation of the signed-zero
 bit. Schedule, repeated event execution, future-runtime, solver and full-TNFR
 properties are explicitly false.
 
+[`certify_half_alpha_antisymmetric_hard_clip_remesh_class`](../src/tnfr/physics/binary64_remesh_relative_defect.py)
+accepts exactly two ordered nodes, an optional positive diagonal metric,
+positive local/global delays and a positive represented radius
+`epi_bound>=4*2**-1074`. It fixes `alpha=0.5` and the symmetric hard interval
+`[-epi_bound,epi_bound]`. A represented history belongs only when its length is
+between `max(tau_local,tau_global)+1` and `history_maxlen` and every row is a
+finite in-interval binary64 pair `(a,-a)`. The production nested recurrence and
+symmetric clamp preserve numeric antisymmetry and the interval.
+
+The certificate stores the sharp bound `eta*=135/124`. Its executable proof
+splits at `x=sqrt(D)=11*s`, where `s=2**-1074` and
+`D=c**2+l**2+2*g**2`. For the large-norm tail, it stores the exact constants
+`A=3*u/2+u**2/2` and `C=9/4+9*u/4+u**2/2`, with `u=2**-53`, in
+`|r-y|<=A*x+C*s`; the resulting tail ratio is strictly below `eta*`. For
+`x<11*s`, it exactly enumerates 6,615 bounded integer triples, retains the
+3,890 with `0<D/s**2<121`, and finds the maximum at `(-3,-2,-3)`. The stored
+subnormal witness has ideal amplitude `-11*s/4`, runtime amplitude `-4*s`, and
+relative defect `135/124`.
+
+`certify_schedule_relative_defect_stability(q)` composes that `eta*` through
+the existing robust theorem. Its strict threshold is `q<124/259`; `q=4/9`
+produces `q_eff=259/279` and normalized block margin `20/279`, equality at
+`q=124/259` produces nonincrease with zero margin, and `q=9/16` is rejected.
+This method certifies the conditional exact schedule theorem, not a verified
+runtime schedule family. The class is REMESH-forward-invariant only. It does
+not include arbitrary positive-metric-centered histories or unrestricted fixed
+lattices, and it leaves graph/event binding, repeated complete-runtime
+execution, solver and full-TNFR properties false.
+
 [`certify_p2_half_reception_remesh_stability`](../src/tnfr/physics/binary64_p2_reception_stability.py)
 requires an intact two-node `alpha=1` class certificate. It fixes mutual
 singleton neighbor indices, the exact binary64 configured factor `0.5`, a
@@ -1020,6 +1049,14 @@ re-exported from `tnfr.physics`.
   verifies that the planner and observer share the production scalar kernel;
   [`test_binary64_remesh_relative_defect_example.py`](../tests/physics/test_binary64_remesh_relative_defect_example.py)
   checks the public facade and example 173.
+- [`test_half_alpha_antisymmetric_remesh_class.py`](../tests/physics/test_half_alpha_antisymmetric_remesh_class.py)
+  verifies the sharp `eta=135/124` class, exact analytic-tail constants,
+  exhaustive 6,615/3,890 finite core, subnormal maximizer, strict/equality/
+  rejection gain boundaries, history membership, forward invariance, excluded
+  centered and lattice generalizations, public types and fail-closed seals;
+  [`test_half_alpha_antisymmetric_remesh_class_example.py`](../tests/physics/test_half_alpha_antisymmetric_remesh_class_example.py)
+  checks the public facade and example
+  [`178_half_alpha_antisymmetric_remesh_class.py`](../examples/02_physics_regimes/178_half_alpha_antisymmetric_remesh_class.py).
 - [`test_binary64_p2_reception_stability.py`](../tests/physics/test_binary64_p2_reception_stability.py)
   verifies global numeric consensus and `q=0` for the exact-half P2 kernel,
   its `eta=q_eff=0` composition and finite extinction horizon, extremes,

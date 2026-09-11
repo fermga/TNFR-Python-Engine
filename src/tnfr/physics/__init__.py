@@ -84,6 +84,7 @@ remesh_schedule_relative_defect_stability : Robust exact policy envelope
 binary64_remesh_relative_defect : Exact runtime-rounding boundary
     - Replays one production pair and exposes its signed relative defect
     - Certifies the alpha=1 bounded hard-clip REMESH-only class with eta=0
+    - Certifies the sharp alpha=1/2 antisymmetric P2 class with eta=135/124
     - Excludes schedule families, repeated execution and future behavior
 binary64_p2_reception_stability : Global restricted P2 kernel composition
     - Half-Reception sends every finite represented pair in its interval to consensus
@@ -545,7 +546,9 @@ from .remesh_schedule_relative_defect_stability import (
 from .binary64_remesh_relative_defect import (
     Binary64RemeshPairRelativeDefectObservation,
     UniformAlphaOneHardClipRemeshClassCertificate,
+    UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate,
     certify_alpha_one_hard_clip_remesh_class,
+    certify_half_alpha_antisymmetric_hard_clip_remesh_class,
     observe_binary64_remesh_pair_relative_defect,
 )
 from .binary64_p2_reception_stability import (
@@ -905,7 +908,9 @@ __all__ = [
     # --- Exact binary64 REMESH relative-defect boundary ---
     "Binary64RemeshPairRelativeDefectObservation",
     "UniformAlphaOneHardClipRemeshClassCertificate",
+    "UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate",
     "certify_alpha_one_hard_clip_remesh_class",
+    "certify_half_alpha_antisymmetric_hard_clip_remesh_class",
     "observe_binary64_remesh_pair_relative_defect",
     # --- Global binary64 P2 half-Reception/REMESH kernel family ---
     "P2HalfReceptionRemeshStabilityCertificate",
