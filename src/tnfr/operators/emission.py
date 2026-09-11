@@ -114,7 +114,7 @@ class Emission(Operator):
     --------
     Coherence : Stabilizes emitted structures
     Resonance : Propagates emitted coherence
-    Reception : Receives external emissions
+    Reception : Integrates neighbouring EPI
     """
 
     __slots__ = ()

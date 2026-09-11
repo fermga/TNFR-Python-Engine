@@ -35,7 +35,7 @@ separate stage contract.
 | Operator | Glyph | Primary channel | Scale | Direct postcondition |
 | --- | --- | --- | --- | --- |
 | Emission | AL | EPI | node | EPI does not decrease; frequency, pressure and phase stay unchanged |
-| Reception | EN | EPI | node | Coherence does not decrease during coherent integration |
+| Reception | EN | EPI | node | Immediate operator-local C(t), pressure and change rate stay unchanged |
 | Resonance | RA | EPI | node | EPI structural identity is preserved |
 | Silence | SHA | structural frequency | node | Structural frequency does not increase |
 | Expansion | VAL | structural frequency | node | Structural frequency does not decrease |
@@ -311,11 +311,41 @@ live metadata can change. Direct construction and coherent `dataclasses.replace`
 records remain unsealed. Event execution carries these observations into the
 corresponding opt-in `ExecutedGlyphStage`.
 
+Every accepted two-phase EN `NetworkStageResult` contains one ordered, sealed
+`ReceptionStageObservation` per target. A single owner-bound pre-EN snapshot
+drives the target/neighbor EPI calculation, semantic-kind selection, optional
+source detection and EN metrics. The observation records pre/post EPI and kind,
+the materialized neighbour read and the tracked source record. Final EPI, kind
+and tracked sources are checked after monitors, metrics, any requested pressure
+refresh and schedule recording, before final warning publication; divergence
+rejects the transaction without leaking that warning. With source tracking
+disabled,
+legacy metadata is left opaque: the stage observation reports only whether its
+key is present, while separately collected Reception metrics also report whether
+the stored value has the canonical list-of-triples form. Standalone
+`reception_metrics` calls set `source_tracking_enabled=None` because old metadata
+does not identify the call that produced it. `auxiliary_stability_certified` is
+always false because this record describes one accepted finite stage rather
+than a trajectory invariant.
+
+On directed support, an arc `source -> receiver` is an incoming EN input: the
+snapshot reads predecessors and source detection follows paths in that same
+direction. Detection is optional telemetry and neither selects nor gates the
+direct-neighbour numeric blend; its finite search can include more distant
+ancestors. The represented affine Reception certificate remains restricted to
+undirected support and therefore abstains on a directed stage.
+
+Direct EN execution publishes its empty-source advisory during the pre-write
+read, so treating warnings as errors aborts before the direct mutation. The
+transactional two-phase stage defers that advisory until its result has been
+validated; a warning promoted to an error then rolls the entire stage back.
+
 `ExecutedGlyphStage` also seals its complete event, endpoint, certificate,
-adjacent-flow and decision payload. `OperatorEventExecutionResult` requires one
-intact stage for every committed event, preserves event order, and binds ZHIR
-observation order to `target_nodes`. A nested flow abstention remains recordable
-but cannot be promoted into a flow or composition certificate.
+adjacent-flow, Mutation-decision and Reception-observation payload.
+`OperatorEventExecutionResult` requires one intact stage for every committed
+event, preserves event order, and binds both ZHIR and EN observation order to
+`target_nodes`. A nested flow abstention remains recordable but cannot be
+promoted into a flow or composition certificate.
 
 Setting `include_stage_certificates=True` is also opt-in and implies flow
 capture. `glyph_stage_evidence` then contains one `ExecutedGlyphStage` for every

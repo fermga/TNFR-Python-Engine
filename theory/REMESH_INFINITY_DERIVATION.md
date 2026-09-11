@@ -1219,6 +1219,13 @@ correctly abstains. Opposite signed-zero outputs remain valid numeric
 consensus. The result carries the finite grammar admission and graph-owned
 schedule atomicity of its source execution.
 
+The underlying `ExecutedGlyphStage` now also carries one sealed
+`ReceptionStageObservation` for each ordered target. These observations bind
+the EPI and semantic-kind endpoints, neighbour inputs and optional tracked
+source record to the same owner-bound pre-EN snapshot, and verify their final
+commit after fallible callbacks. The P2 energy certificate does not yet consume
+that richer evidence as an auxiliary-state invariant.
+
 This binding stops at one observed EPI stage. By itself it does not identify the source
 $\alpha=1$ REMESH history or configuration with that graph, certify all
 Reception auxiliary state, preserve raw topology or current live-graph

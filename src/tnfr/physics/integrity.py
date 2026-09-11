@@ -33,7 +33,7 @@ Each canonical operator has a contract (AGENTS.md §Operators):
     UM  → |wrap(φ_i − φ_j)| ≤ Δφ_max  (phase compatibility)
     RA  → effective coupling must increase (propagation)
     SHA → EPI unchanged           (silence)
-    EN  → C(t) must not decrease  (reception)
+    EN  → immediate operator-local C(t) is unchanged  (reception)
     AL  → EPI nondecrease; νf, ΔNFR and phase unchanged
     ...
 
@@ -58,6 +58,7 @@ from typing import Any, Callable
 
 from ..alias import get_attr
 from ..constants.aliases import (
+    ALIAS_DEPI,
     ALIAS_DNFR,
     ALIAS_EPI,
     ALIAS_EPI_KIND,
@@ -383,13 +384,22 @@ def _postcond_reception(
     before: dict[str, Any],
     after: dict[str, Any],
 ) -> str | None:
-    """EN: C(t) must not decrease."""
+    """EN: pressure, change rate and C(t) stay fixed before refresh."""
     c_before = before.get("coherence", 0.0)
     c_after = after.get("coherence", 0.0)
-    if c_after < c_before - 1e-9:
+    if abs(c_after - c_before) > 1e-9:
         return (
-            f"Coherence decreased during Reception: " f"{c_before:.6f} → {c_after:.6f}"
+            "Immediate operator-local coherence changed during Reception: "
+            f"{c_before:.6f} → {c_after:.6f}"
         )
+    for key, label in (("dnfr", "ΔNFR"), ("depi", "dEPI")):
+        value_before = before.get(key, 0.0)
+        value_after = after.get(key, 0.0)
+        if abs(value_after - value_before) > 1e-9:
+            return (
+                f"{label} changed during Reception: "
+                f"{value_before:.6f} → {value_after:.6f}"
+            )
     return None
 
 
@@ -667,6 +677,7 @@ def _capture_node_state(G: TNFRGraph, node: Any) -> dict[str, Any]:
         "epi": float(get_attr(G.nodes[node], ALIAS_EPI, 0.0)),
         "vf": float(get_attr(G.nodes[node], ALIAS_VF, 0.0)),
         "dnfr": float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)),
+        "depi": float(get_attr(G.nodes[node], ALIAS_DEPI, 0.0)),
         "theta": float(get_attr(G.nodes[node], ALIAS_THETA, 0.0)),
         "epi_kind": get_attr(
             G.nodes[node],
@@ -1042,12 +1053,12 @@ def enable_integrity_monitor(
 # catalog itself.
 #
 # Honest scope: the contracts are measured at the context where each one
-# canonically manifests — network level for stabilisers (IL, UM, EN, THOL,
-# whose effect is on the emergent ΔNFR / C(t) fields), single-node level for
-# the local destabiliser OZ, identity (EPI-sign) preservation for RA, and
+# canonically manifests — network level for IL, UM and THOL, and for EN's
+# immediate aggregate of unchanged node-local C(t) values; single-node level
+# for the local destabiliser OZ; identity (EPI-sign) preservation for RA; and
 # the phase channel for ZHIR (with its U4b precondition: prior IL + recent
-# destabiliser).  The emergent field ΔNFR is recomputed after application,
-# since it is a network property, not a node-local one.
+# destabiliser).  The emergent field ΔNFR is normally recomputed after
+# application; EN is deliberately measured before that later boundary.
 
 
 @dataclass(frozen=True)
@@ -1170,9 +1181,10 @@ def audit_operator_contracts(
 
     Applies all 13 canonical operators, each in one declared test context,
     and measures whether the corresponding finite probe passes.
-    Network readouts recompute the emergent ΔNFR field after application.
-    The direct OZ pressure postcondition is measured before recomputation,
-    which would overwrite that channel. Every probe also checks the recorded
+    Network readouts normally recompute the emergent ΔNFR field after
+    application. The direct OZ pressure postcondition and the immediate EN
+    coherence postcondition are measured before recomputation, which would
+    overwrite or move the channel under test. Every probe also checks the recorded
     glyph: a grammar fallback cannot count as evidence for the requested
     operator. Passing this finite suite is regression evidence, not a proof
     over all graph states, parameters or operator compositions.
@@ -1357,14 +1369,21 @@ def audit_operator_contracts(
                 before = _audit_metrics(G)
                 for nd in list(G.nodes()):
                     apply_probe(nd)
-                default_compute_delta_nfr(G)
+                # EN's direct jump leaves stored ΔNFR and dEPI unchanged, so its
+                # canonical C(t) postcondition belongs to this immediate boundary.
+                # A refresh observes a later pressure-realisation boundary.
+                if glyph != "EN":
+                    default_compute_delta_nfr(G)
                 after = _audit_metrics(G)
                 if glyph == "AL":
                     satisfied = after["epi"] >= before["epi"] - tol
                     detail = f"|EPI| {before['epi']:.4f}→{after['epi']:.4f}"
                 elif glyph == "EN":
-                    satisfied = after["C"] >= before["C"] - tol
-                    detail = f"C(t) {before['C']:.4f}→{after['C']:.4f}"
+                    satisfied = abs(after["C"] - before["C"]) <= tol
+                    detail = (
+                        "immediate operator-local C(t) "
+                        f"{before['C']:.4f}→{after['C']:.4f}"
+                    )
                 elif glyph == "IL":
                     satisfied = (
                         after["dnfr"] <= before["dnfr"] + tol

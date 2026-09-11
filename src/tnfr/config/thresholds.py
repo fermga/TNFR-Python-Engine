@@ -59,14 +59,14 @@ MIN_NETWORK_DEGREE_COUPLING: int = 1
 # EN (Reception) Thresholds
 # -------------------------
 
-# Maximum EPI for reception - EN requires nodes with receptive capacity
-# According to TNFR.pdf §2.2.1, reception integrates external coherence
-# into local structure. If EPI is saturated, node cannot receive more coherence.
+# Selected stored-EPI upper admission bound for Reception. This policy ceiling
+# is not a theorem about receptive capacity; the runtime compares the signed
+# stored coordinate and otherwise blends the current neighbour EPI field.
 EPI_SATURATION_MAX: float = 0.9
 
-# Maximum DNFR for stable reception - EN requires low dissonance
-# Excessive reorganization pressure prevents effective integration
-# of external coherence. Consider IL (Coherence) first to stabilize.
+# Selected signed-pressure upper admission bound for Reception. It is not an
+# absolute-pressure stability threshold and does not certify post-refresh C(t).
+# EN itself leaves this stored pressure unchanged.
 DNFR_RECEPTION_MAX: float = 0.15
 
 # -------------------------

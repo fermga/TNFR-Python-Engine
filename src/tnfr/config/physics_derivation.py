@@ -347,7 +347,7 @@ def derive_start_operators_from_physics() -> frozenset[str]:
 
     **Why Others Cannot Start:**
 
-    - **reception**: Needs external source + existing EPI to anchor
+    - **reception**: Blends existing EPI fields and has no generative term
     - **coherence**: Stabilizes existing form, cannot create from null
     - **dissonance**: Perturbs existing structure, needs EPI > 0
     - **coupling**: Links existing nodes, requires both nodes active
@@ -495,8 +495,9 @@ def increases_structural_pressure(operator: str) -> bool:
     **Why others are NOT destabilizers:**
     - TRANSITION (NAV): a *controlled* trajectory between attractors — it is a
       generator/closure, not an assigned U2 destabilizer.
-    - RECEPTION (EN): integrates incoming resonance (contract: must not reduce
-      C(t)) — neutral, not positive feedback.
+    - RECEPTION (EN): integrates the neighbour EPI field while leaving stored
+      pressure and change rate fixed at the immediate jump boundary — neutral,
+      not positive feedback.
     - CONTRACTION (NUL): reduces νf while densifying ΔNFR by the reciprocal
       factor; the registry treats it as a simplifier rather than U2 debt.
     """

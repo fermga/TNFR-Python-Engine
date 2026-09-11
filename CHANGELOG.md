@@ -4,6 +4,40 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed — 2026-09-11 Reception temporal evidence
+
+- Centralized graph-backed Reception reads in one owner-bound, value-sealed
+  pre-EN snapshot. Direct operator execution, low-level graph dispatch and the
+  all-target Jacobi stage now use the same target, neighbour, kind and optional
+  source inputs, and reject a stale or cross-graph prepared snapshot before any
+  structural write.
+- Added one sealed `ReceptionStageObservation` per accepted two-phase target.
+  It records pre/post EPI and kind plus the exact pre-EN neighbour/source read;
+  tracked source metadata is checked again after metrics, monitors, any
+  requested pressure refresh and schedule recording, before final warning
+  publication. Late EPI,
+  kind or tracked-source mutation rejects the stage and rolls back graph-owned
+  state without leaking that warning. Disabled source tracking preserves opaque
+  legacy metadata without claiming its contents.
+- Carried Reception observations through `NetworkStageResult`,
+  `ExecutedGlyphStage` and the enclosing event-execution seal. This is finite
+  provenance evidence, not a proof of auxiliary-state stability.
+- Made Reception metrics state their read boundaries explicitly, separated
+  stored-metadata presence from the pre-EN source snapshot, and changed the
+  coarse effectiveness predicate to `abs(DeltaNFR) < 0.1`, sharing that policy
+  constant with Coherence. Corrected the low-level EN doctest to the canonical
+  half-mix result `0.45`.
+- Aligned the public strict precondition with the canonical validator and made
+  empty-source advice a single non-gating warning. Standalone metrics now reuse
+  the same empty-neighbour and missing-EPI policy as execution.
+- Defined directed Reception input as incoming `source -> receiver` arcs across
+  graph dispatch, object dispatch, domain preflight, metrics and optional source
+  telemetry. Source discovery remains diagnostic and does not select or gate the
+  direct neighbours used by the numeric blend.
+- Corrected EN's postcondition boundary: the jump leaves stored `DeltaNFR` and
+  `dEPI` unchanged, so operator-local `C(t)` is immediately unchanged. Pressure
+  refresh is a later observation and may change coherence.
+
 ### Added — 2026-09-11 Binary64 REMESH boundary and P2 causal binding
 
 - Centralized the production delayed-REMESH scalar evaluation in

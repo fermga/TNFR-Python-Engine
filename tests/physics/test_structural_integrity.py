@@ -31,7 +31,13 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.alias import get_attr, set_attr
-from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from tnfr.constants.aliases import (
+    ALIAS_DEPI,
+    ALIAS_DNFR,
+    ALIAS_EPI,
+    ALIAS_THETA,
+    ALIAS_VF,
+)
 from tnfr.physics.integrity import (
     IntegrityReport,
     IntegritySummary,
@@ -225,6 +231,28 @@ class TestPostconditions:
         G.nodes[0]["EPI"] = 999.0
         report = monitor.after_operator(G, 0, "Silence")
         assert report.postcondition_ok is False
+
+    @pytest.mark.parametrize(
+        ("aliases", "before", "after", "detail"),
+        [
+            (ALIAS_DNFR, 0.05, -0.05, "ΔNFR changed"),
+            (ALIAS_DEPI, 0.10, -0.10, "dEPI changed"),
+        ],
+    )
+    def test_reception_postcondition_checks_unchanged_local_channels(
+        self, aliases, before, after, detail
+    ) -> None:
+        """EN rejects signed channel changes hidden from |.|-based C(t)."""
+        G = _make_graph()
+        set_attr(G.nodes[0], aliases, before)
+        monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
+        monitor.before_operator(G, 0)
+        set_attr(G.nodes[0], aliases, after)
+
+        report = monitor.after_operator(G, 0, "Reception")
+
+        assert report.postcondition_ok is False
+        assert detail in report.postcondition_detail
 
     def test_emission_postcondition_accepts_epi_increase_only(self) -> None:
         """AL accepts its EPI source while secondary channels stay fixed."""
@@ -904,6 +932,44 @@ class TestOperatorContractAudit:
         il = next(r for r in audit.results if r.glyph == "IL")
         assert il.satisfied
         assert il.context == "network"
+
+    def test_reception_audit_uses_the_immediate_pre_refresh_boundary(
+        self, monkeypatch
+    ) -> None:
+        """A later pressure realization cannot decide EN's local contract."""
+
+        from tnfr.dynamics import default_compute_delta_nfr as real_refresh
+        from tnfr.operators.grammar_types import glyph_function_name
+
+        refresh_after_reception = False
+
+        def guarded_refresh(graph) -> None:
+            nonlocal refresh_after_reception
+            last_glyphs = tuple(
+                glyph_function_name(history[-1])
+                for node in graph
+                if (history := graph.nodes[node].get("glyph_history"))
+            )
+            if last_glyphs and all(
+                name == "reception" for name in last_glyphs
+            ):
+                refresh_after_reception = True
+                for node in graph:
+                    set_attr(graph.nodes[node], ALIAS_DNFR, 1e6)
+                return
+            real_refresh(graph)
+
+        monkeypatch.setattr(
+            "tnfr.dynamics.default_compute_delta_nfr",
+            guarded_refresh,
+        )
+
+        audit = audit_operator_contracts()
+        reception = next(result for result in audit.results if result.glyph == "EN")
+
+        assert refresh_after_reception is False
+        assert reception.satisfied
+        assert reception.detail.startswith("immediate operator-local C(t)")
 
     def test_coupling_um_reduces_dnfr(self) -> None:
         audit = audit_operator_contracts()

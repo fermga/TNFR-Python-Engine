@@ -719,7 +719,14 @@ retains the historical N15 milestones and commit anchors (`a1f298fd`,
 
 ### 5.1 Reception (EN)
 
-**Physics**: Captures and integrates incoming resonance from the network environment. Reduces $\Delta\text{NFR}$ via structured integration of external signals.
+**Physics**: Captures and integrates incoming neighbour resonance from the
+network environment. EN does not write $\Delta\text{NFR}$; a later pressure
+refresh is a separate realization boundary.
+
+On directed support, an arc $j\to i$ makes $j$ an incoming EN input for receiver
+$i$: the numeric snapshot reads predecessors and source discovery follows the
+same source-to-receiver path orientation. The current affine realization
+certificate remains restricted to undirected support.
 
 **Runtime transformation**: let `r(EPI)` denote the centralized real-scalar
 glyph reader. It is defined for raw finite real values and uniform-real BEPI
@@ -775,16 +782,22 @@ configuration uses the selected $1/(\pi+1)$ policy value).
   `delta L_rw e_i`. On connected positive conductance this is nonzero, so the
   pressure must be recomputed before subsequent evolution is treated as the
   pure-EPI channel.
-- **Coherence contract**: The requested reception is accepted only when the
-  measured $C(t)$ postcondition is non-decreasing. Convex EPI mixing alone does
-  not imply that network-level result.
+- **Immediate coherence contract**: The EN jump writes EPI, semantic kind and
+  optional source metadata while leaving stored $\Delta\text{NFR}$ and
+  $d\mathrm{EPI}$ unchanged. Because canonical $C(t)$ reads only those two
+  channels, its operator-local value is unchanged at that boundary. This says
+  nothing about $C(t)$ after pressure refresh or along a later trajectory.
 - **Source telemetry**: Records detected sources in metadata for analysis.
 
 **Grammar**: Integrator (no active destabilizer/stabilizer role).
 
 **Contract**:
-- Pre: Active structure with capacity; external sources available.
-- Post: External resonance integrated; $C(t)$ not reduced.
+- Pre: Target EPI and signed pressure lie below their configured Reception
+  admission ceilings. Isolation and an empty detected-source set are admitted
+  rather than treated as hard failures; graph-backed execution with source
+  tracking enabled emits one advisory for the latter.
+- Post: Neighbour EPI is integrated; stored pressure and change rate are
+  unchanged, hence immediate operator-local $C(t)$ is unchanged.
 
 ---
 
@@ -1467,7 +1480,7 @@ Every operator has a postcondition contract anchored to the **direct effect on n
 | # | Operator | Glyph | Channel | Postcondition |
 |---|----------|-------|---------|---------------|
 | 1 | Emission | AL | EPI | EPI not decreased; $\nu_f$, phase and $\Delta\text{NFR}$ unchanged |
-| 2 | Reception | EN | EPI | $C(t)$ not decreased (coherent integration) |
+| 2 | Reception | EN | EPI | Immediate operator-local $C(t)$, $\Delta\mathrm{NFR}$ and $d\mathrm{EPI}$ unchanged |
 | 3 | Coherence | IL | $\Delta\text{NFR}$ | $C(t)$ non-decreasing; $\lvert\Delta\text{NFR}\rvert$ reduced |
 | 4 | Dissonance | OZ | $\Delta\text{NFR}$ | $\lvert\Delta\text{NFR}\rvert$ not decreased |
 | 5 | Coupling | UM | $\theta$ | Phase compatibility $\lvert\phi_i - \phi_j\rvert \le \Delta\phi_{\max}$ |

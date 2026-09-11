@@ -89,7 +89,12 @@ def validate_emission(G: "TNFRGraph", node: "NodeId") -> None:
 
 
 def validate_reception(G: "TNFRGraph", node: "NodeId") -> None:
-    """EN - Reception requires node to have neighbors to receive from.
+    """Validate the canonical stored-state admission bounds for EN.
+
+    This compatibility entry point delegates to
+    :func:`validate_reception_strict`. Isolation and an empty compatible-source
+    set are valid Reception states; the operator execution path emits the one
+    canonical source advisory after its temporal snapshot is available.
 
     Parameters
     ----------
@@ -100,14 +105,12 @@ def validate_reception(G: "TNFRGraph", node: "NodeId") -> None:
 
     Raises
     ------
-    OperatorPreconditionError
-        If node has no neighbors to receive energy from
+    ValueError
+        If stored EPI or signed pressure reaches its configured upper bound.
     """
-    neighbors = list(G.neighbors(node))
-    if not neighbors:
-        raise OperatorPreconditionError(
-            "Reception", "Node has no neighbors to receive energy from"
-        )
+    from .reception import validate_reception_strict
+
+    validate_reception_strict(G, node)
 
 
 def validate_coherence(G: "TNFRGraph", node: "NodeId") -> None:

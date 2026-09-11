@@ -296,11 +296,13 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         name=RECEPTION,
         english_name="Reception",
         glyph="EN",
-        purpose="Integrates an external emission, reorganizing EPI coherently.",
+        purpose="Blends local EPI with the current neighbour EPI field.",
         primary_channel=StateChannel.EPI,
         primary_direction=EffectDirection.REORGANIZE,
         scale=OperatorScale.NODE,
-        postcondition="C(t) not decreased (coherent integration)",
+        postcondition=(
+            "Immediate operator-local C(t) unchanged; ΔNFR and dEPI unchanged"
+        ),
         context=ContractContext.NETWORK,
         nodal_expression="E'N ⇒ coherent input → modulation of Wᵢ(t)",
         pdf_reference="TNFR.pdf §2.2.1 (2) E'N — Recepción estructural",

@@ -443,8 +443,15 @@ against the actual EPI endpoints and adjacent positive-flow evidence. Accepted
 two-phase ZHIR stages additionally seal one complete decision observation per
 target before commit metadata can change; the event-stage record retains these
 observations independently of whether its EPI map is certifiable.
+Accepted two-phase EN stages similarly seal one observation per target. One
+owner-bound pre-EN snapshot supplies neighbour integration, semantic-kind
+selection, optional source detection and metrics. The record then verifies the
+committed EPI, kind and tracked source list after all graph-mutating stage checks
+and before warning publication.
+This closes temporal provenance for those finite fields while leaving the
+complete auxiliary trajectory and all future executions outside the claim.
 The complete `ExecutedGlyphStage` is value-sealed, and the enclosing execution
-result checks stage cardinality, event order and ordered ZHIR target support.
+result checks stage cardinality, event order and ordered ZHIR/EN target support.
 An adjacent flow that explicitly abstains remains observable while its failed
 inner proof cannot enter the represented schedule product.
 `ObservedRepresentedEPIScheduleComposition` then retains a complete
@@ -1226,7 +1233,7 @@ entries check only a measurable proxy and REMESH is explicitly advisory:
 | Operator | Check currently performed by the reactive registry |
 |----------|----------------------------------------------------|
 | **AL** | EPI does not decrease; $\nu_f$, phase and $\Delta\mathrm{NFR}$ do not change |
-| **EN** | $C(t)$ does not decrease |
+| **EN** | immediate operator-local $C(t)$ is unchanged before pressure refresh |
 | **IL** | $C(t)$ does not decrease and $\lvert\Delta\mathrm{NFR}\rvert$ does not increase |
 | **OZ** | $\lvert\Delta\mathrm{NFR}\rvert$ does not decrease |
 | **UM** | $\lvert\Delta\mathrm{NFR}\rvert$ does not increase |

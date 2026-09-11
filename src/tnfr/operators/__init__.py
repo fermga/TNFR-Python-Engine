@@ -698,7 +698,7 @@ def _op_EN(node: NodeProtocol, gf: GlyphFactors) -> None:  # EN — Reception
     >>> node = MockNode(0.4, neigh)
     >>> _op_EN(node, {"EN_mix": 0.5})
     >>> round(node.EPI, 2)
-    0.7
+    0.45
     """
     mix = get_factor(gf, "EN_mix", EN_MIX_FACTOR)
     _mix_epi_with_neighbors(node, mix, Glyph.EN)
@@ -1052,7 +1052,8 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     difference. The difference may be negative, zero, or positive.
 
     **Identity Preservation (Canonical)**: EPI structure (kind and sign) are preserved
-    during propagation to ensure structural identity is maintained as required by theory.
+    during propagation to ensure structural identity is maintained as required
+    by theory.
 
     Examples
     --------
@@ -1142,7 +1143,8 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
             scalar = real_scalar_epi(neighbor.EPI)
             if scalar is None:
                 raise TNFRValueError(
-                    "Resonance identity requires raw scalar or uniform-real BEPI neighbors",
+                    "Resonance identity requires raw scalar or uniform-real "
+                    "BEPI neighbors",
                     context={
                         "operator": "Resonance",
                         "failed_condition": "scalar_neighbor_epi",
@@ -1831,8 +1833,12 @@ def _validate_u3_graph_application(
         ) from exc
 
 
-def apply_glyph_obj(
-    node: NodeProtocol, glyph: Glyph | str, *, window: int | None = None
+def _apply_glyph_obj_impl(
+    node: NodeProtocol,
+    glyph: Glyph | str,
+    *,
+    window: int | None = None,
+    _prepared_operator_state: Any = None,
 ) -> None:
     """Apply a canonical name or glyph to a :class:`NodeProtocol` object.
 
@@ -1852,17 +1858,65 @@ def apply_glyph_obj(
         from ._mutation_gate import validate_mutation_runtime_gate
 
         validate_mutation_runtime_gate(node._glyph_storage(), node.graph)
-    op(node, gf)
+    if _prepared_operator_state is None and g is Glyph.EN:
+        NodeNX = get_nodenx()
+        if NodeNX is not None and isinstance(node, NodeNX):
+            from ._reception_kernel import capture_reception_read_snapshot
+
+            _prepared_operator_state = capture_reception_read_snapshot(
+                node.G,
+                node.n,
+                track_sources=False,
+            )
+    if _prepared_operator_state is None:
+        op(node, gf)
+    else:
+        from ._reception_kernel import (
+            ReceptionReadSnapshot,
+            apply_reception_read_snapshot,
+        )
+
+        if g is not Glyph.EN or type(
+            _prepared_operator_state
+        ) is not ReceptionReadSnapshot:
+            raise TypeError(
+                "prepared operator state is valid only for Reception"
+            )
+        apply_reception_read_snapshot(
+            node,
+            get_factor(gf, "EN_mix", EN_MIX_FACTOR),
+            _prepared_operator_state,
+        )
     storage = node._glyph_storage()
     glyph_history.push_glyph(storage, g.value, window)
     # Structural identity and operator provenance are independent channels.
     # The ordered history is authoritative; source_glyph is the serialized
     # single-value fallback and must never overwrite epi_kind.
     set_attr_str(storage, ALIAS_SOURCE_GLYPH, g.value)
+    if _prepared_operator_state is not None:
+        sources = _prepared_operator_state.reception_sources
+        if sources is not None:
+            storage["_reception_sources"] = list(sources)
 
 
-def apply_glyph(
-    G: TNFRGraph, n: NodeId, glyph: Glyph | str, *, window: int | None = None
+def apply_glyph_obj(
+    node: NodeProtocol,
+    glyph: Glyph | str,
+    *,
+    window: int | None = None,
+) -> None:
+    """Apply a canonical glyph directly to a protocol node."""
+
+    _apply_glyph_obj_impl(node, glyph, window=window)
+
+
+def _apply_glyph_impl(
+    G: TNFRGraph,
+    n: NodeId,
+    glyph: Glyph | str,
+    *,
+    window: int | None = None,
+    _prepared_operator_state: Any = None,
 ) -> None:
     """Adapter to operate on ``networkx`` graphs."""
     from ..validation.input_validation import (
@@ -1894,6 +1948,24 @@ def apply_glyph(
     )
     _validate_u3_graph_application(G, n, glyph)
     validate_affine_epi_graph_input(G, n, glyph)
+    if glyph is Glyph.EN and _prepared_operator_state is None:
+        from ._reception_kernel import capture_reception_read_snapshot
+
+        _prepared_operator_state = capture_reception_read_snapshot(
+            G,
+            n,
+            track_sources=False,
+        )
+    elif _prepared_operator_state is not None and glyph is not Glyph.EN:
+        raise TypeError("prepared operator state is valid only for Reception")
+    if _prepared_operator_state is not None:
+        from ._reception_kernel import reception_read_snapshot_matches_graph
+
+        if not reception_read_snapshot_matches_graph(
+            G,
+            _prepared_operator_state,
+        ):
+            raise RuntimeError("prepared Reception state is stale")
     if glyph is Glyph.ZHIR:
         from ._mutation_gate import validate_mutation_runtime_gate
 
@@ -1904,4 +1976,50 @@ def apply_glyph(
     if NodeNX is None:
         raise ImportError("NodeNX is unavailable")
     node = NodeNX(G, n)
-    apply_glyph_obj(node, glyph, window=window)
+    _apply_glyph_obj_impl(
+        node,
+        glyph,
+        window=window,
+        _prepared_operator_state=_prepared_operator_state,
+    )
+
+
+def apply_glyph(
+    G: TNFRGraph,
+    n: NodeId,
+    glyph: Glyph | str,
+    *,
+    window: int | None = None,
+) -> None:
+    """Adapter to operate on ``networkx`` graphs."""
+
+    _apply_glyph_impl(G, n, glyph, window=window)
+
+
+def _apply_prepared_reception_glyph(
+    G: TNFRGraph,
+    n: NodeId,
+    glyph: Glyph | str,
+    *,
+    window: int | None,
+    prepared_state: Any,
+) -> None:
+    """Apply one internally prepared EN read through the normal dispatcher."""
+
+    from ._reception_kernel import ReceptionReadSnapshot
+
+    if type(prepared_state) is not ReceptionReadSnapshot:
+        raise TypeError("prepared Reception state has an invalid type")
+    if (
+        not prepared_state._proof_fields_are_intact()
+        or prepared_state._read_graph_owner is not G
+        or object.__getattribute__(prepared_state, "_graph_identity") != id(G)
+    ):
+        raise ValueError("prepared Reception state belongs to another graph")
+    _apply_glyph_impl(
+        G,
+        n,
+        glyph,
+        window=window,
+        _prepared_operator_state=prepared_state,
+    )

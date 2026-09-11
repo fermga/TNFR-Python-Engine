@@ -77,8 +77,14 @@ OPERATOR_METADATA: Mapping[str, OperatorMeta] = {
         mnemonic="EN",
         category="integrator",
         grammar_roles=(),
-        contracts=("Integrates incoming resonance", "Does not reduce C(t)"),
-        doc="Integrates external resonance without coherence loss.",
+        contracts=(
+            "Integrates incoming resonance",
+            "Leaves immediate operator-local C(t) unchanged",
+        ),
+        doc=(
+            "Integrates neighbour resonance while leaving stored pressure and "
+            "change rate unchanged during the operator-local jump."
+        ),
     ),
     "IL": OperatorMeta(
         name="Coherence",

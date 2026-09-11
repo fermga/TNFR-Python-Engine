@@ -73,11 +73,29 @@ def apply_glyph_with_grammar(
         _apply_selected_glyph(G, node, selected_glyph, window)
 
 
-def _apply_selected_glyph(G, node, glyph, window) -> None:
+def _apply_selected_glyph(
+    G,
+    node,
+    glyph,
+    window,
+    *,
+    prepared_state: Any = None,
+) -> None:
     """Execute a selected glyph and recognize patterns without reselecting it."""
-    from . import apply_glyph
+    if prepared_state is None:
+        from . import apply_glyph
 
-    apply_glyph(G, node, glyph, window=window)
+        apply_glyph(G, node, glyph, window=window)
+    else:
+        from . import _apply_prepared_reception_glyph
+
+        _apply_prepared_reception_glyph(
+            G,
+            node,
+            glyph,
+            window=window,
+            prepared_state=prepared_state,
+        )
 
     _recognize_applied_patterns(G, node)
 

@@ -115,8 +115,9 @@ def validate_affine_epi_graph_input(
     """Preflight every EPI value a scalar-writing local glyph would consume.
 
     The check is deliberately read-only and runs before construction of a
-    ``NodeNX`` adapter or any public-operator metadata. Reception consumes every
-    graph neighbor; Resonance consumes only its U3-compatible subset.
+    ``NodeNX`` adapter or any public-operator metadata. Reception consumes each
+    incoming neighbour on directed support and each ordinary neighbour on
+    undirected support. Resonance consumes only its U3-compatible subset.
     """
 
     if glyph not in AFFINE_EPI_GLYPHS:
@@ -126,7 +127,10 @@ def validate_affine_epi_graph_input(
     require_real_scalar_epi(target, operator=name, label="target EPI")
 
     if glyph is Glyph.EN:
-        neighbors = tuple(graph.neighbors(node))
+        # Local import avoids the kernel/domain initialization cycle.
+        from ._reception_kernel import reception_input_neighbors
+
+        neighbors = reception_input_neighbors(graph, node)
     elif glyph is Glyph.RA:
         neighbors = _resonance_neighbors(graph, node)
     else:

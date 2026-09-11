@@ -64,11 +64,13 @@ from .event_timing import (
     build_physical_flow_partition,
     diagnose_operator_event_runtime_clock,
 )
+from ._reception_kernel import RECEPTION_NO_SOURCES_WARNING_PATTERN
 from .network_stage import (
     TWO_PHASE_JACOBI,
     GraphTransactionSnapshot,
     MutationStageDecisionObservation,
     NetworkStageResult,
+    ReceptionStageObservation,
     _NETWORKX_GRAPH_INTERNAL_ATTRIBUTES,
     _graph_factory_items,
     _graph_factory_state_signature,
@@ -597,6 +599,11 @@ def _sealed_runtime_field_signature(
             return _nested_runtime_proof_sequence(
                 value,
                 MutationStageDecisionObservation,
+            )
+        if name == "reception_observations":
+            return _nested_runtime_proof_sequence(
+                value,
+                ReceptionStageObservation,
             )
     elif owner_type is OperatorEventExecutionResult:
         sequence_types = {
@@ -1242,6 +1249,10 @@ class ExecutedGlyphStage:
     mutation_decision_observations: tuple[
         MutationStageDecisionObservation, ...
     ] = field(default=(), repr=False)
+    reception_observations: tuple[ReceptionStageObservation, ...] = field(
+        default=(),
+        repr=False,
+    )
     solver_accuracy_certified: bool = field(default=False, init=False)
     future_or_repeated_schedule_stability_certified: bool = field(
         default=False,
@@ -1288,7 +1299,7 @@ class ExecutedGlyphStage:
         )
 
 
-_EXECUTED_GLYPH_STAGE_PROOF_VERSION = "executed_glyph_stage_v1"
+_EXECUTED_GLYPH_STAGE_PROOF_VERSION = "executed_glyph_stage_v2"
 
 
 def _same_structural_value(left: Any, right: Any) -> bool:
@@ -1319,6 +1330,74 @@ def _executed_glyph_stage_stamp(value: Any) -> tuple[Any, ...]:
             for item in fields(ExecutedGlyphStage)
             if item.name != "_proof_stamp"
         ),
+    )
+
+
+def _same_binary64_scalar(left: Any, right: Any) -> bool:
+    """Compare scalar payloads by their exact represented binary64 bits."""
+
+    try:
+        return _binary64_vectors_are_identical(
+            (float(left),),
+            (float(right),),
+        )
+    except (TypeError, ValueError, OverflowError):
+        return False
+
+
+def _reception_observation_matches_neighbor_step(
+    observation: ReceptionStageObservation,
+    index: int,
+    step: Any,
+) -> bool:
+    """Bind one EN observation to its exact all-target certificate row."""
+
+    try:
+        local = step.local_certificates[index]
+        runtime_neighbors = tuple(local.runtime_neighbors)
+        neighbor_indices = tuple(local.runtime_neighbor_indices)
+        state_before = tuple(float(item) for item in local.state_before)
+        neighbor_values = tuple(
+            state_before[neighbor_index]
+            for neighbor_index in neighbor_indices
+        )
+        accepted_after = float(step.runtime_accepted_state_after[index])
+    except (AttributeError, IndexError, TypeError, ValueError, OverflowError):
+        return False
+    return bool(
+        local.target_index == index
+        and _same_structural_value(local.target, observation.node)
+        and _same_structural_value(runtime_neighbors, observation.neighbors)
+        and _same_structural_value(
+            step.runtime_neighbor_sets[index],
+            observation.neighbors,
+        )
+        and _same_binary64_scalar(
+            local.unweighted_runtime_neighbor_mean,
+            observation.neighbor_epi_mean,
+        )
+        and _same_binary64_scalar(
+            state_before[index],
+            observation.target_epi_before,
+        )
+        and _same_binary64_scalar(
+            local.runtime_target_value,
+            observation.target_epi_after,
+        )
+        and _same_binary64_scalar(
+            accepted_after,
+            observation.target_epi_after,
+        )
+        and _binary64_vectors_are_identical(
+            neighbor_values,
+            observation.neighbor_epi_values,
+        )
+        and _binary64_vectors_are_identical(
+            neighbor_values,
+            observation.neighbor_dominant_values,
+        )
+        and local.epi_kind_before == observation.target_epi_kind_before
+        and local.epi_kind_after == observation.target_epi_kind_after
     )
 
 
@@ -1438,27 +1517,103 @@ def _executed_glyph_stage_fields_are_valid(value: Any) -> bool:
     observations = value.mutation_decision_observations
     if type(observations) is not tuple:
         return False
-    if event.glyph is not Glyph.ZHIR:
-        return not observations
-    if len(observations) != event.nodes_processed:
+    if event.glyph is Glyph.ZHIR:
+        if len(observations) != event.nodes_processed:
+            return False
+        for index, observation in enumerate(observations):
+            if (
+                type(observation) is not MutationStageDecisionObservation
+                or observation.target_index != index
+                or observation.glyph is not Glyph.ZHIR
+                or not observation._proof_fields_are_intact()
+            ):
+                return False
+            observation_signature = structural_proof_signature(observation.node)
+            if any(
+                all(
+                    observation_signature != structural_proof_signature(node)
+                    for node in nodes
+                )
+                for nodes in endpoint_nodes
+            ):
+                return False
+    elif observations:
         return False
-    for index, observation in enumerate(observations):
+
+    reception_observations = value.reception_observations
+    if type(reception_observations) is not tuple:
+        return False
+    if event.glyph is Glyph.EN:
+        if len(reception_observations) != event.nodes_processed:
+            return False
+        left = value.left
+        right = value.right
+        if left is None or right is None:
+            return False
         if (
-            type(observation) is not MutationStageDecisionObservation
-            or observation.target_index != index
-            or observation.glyph is not Glyph.ZHIR
-            or not observation._proof_fields_are_intact()
+            len(left.nodes) != event.nodes_processed
+            or len(right.nodes) != event.nodes_processed
         ):
             return False
-        observation_signature = structural_proof_signature(observation.node)
-        if any(
-            all(
-                observation_signature != structural_proof_signature(node)
-                for node in nodes
+
+        neighbor_step = None
+        if value.certificate is not None or value.certificate_kind is not None:
+            from ..physics.network_stage_stability import (
+                AllTargetNeighborStageCertificate,
+                _validate_bridge_stage_certificate,
             )
-            for nodes in endpoint_nodes
-        ):
-            return False
+
+            certificate = value.certificate
+            if (
+                value.certificate_kind != "neighbor"
+                or type(certificate) is not AllTargetNeighborStageCertificate
+                or certificate.glyph != Glyph.EN.value
+            ):
+                return False
+            try:
+                neighbor_step = _validate_bridge_stage_certificate(
+                    certificate
+                ).step
+            except (AttributeError, TypeError, ValueError, OverflowError):
+                return False
+        for index, observation in enumerate(reception_observations):
+            if (
+                type(observation) is not ReceptionStageObservation
+                or observation.target_index != index
+                or observation.glyph is not Glyph.EN
+                or not observation._proof_fields_are_intact()
+            ):
+                return False
+            if (
+                not _same_structural_value(observation.node, left.nodes[index])
+                or not _same_structural_value(
+                    observation.node,
+                    right.nodes[index],
+                )
+                or Fraction.from_float(observation.target_epi_before)
+                != left.exact_epi[index]
+                or Fraction.from_float(observation.target_epi_after)
+                != right.exact_epi[index]
+                or not _same_binary64_scalar(
+                    observation.target_epi_before,
+                    left.epi[index],
+                )
+                or not _same_binary64_scalar(
+                    observation.target_epi_after,
+                    right.epi[index],
+                )
+            ):
+                return False
+            if neighbor_step is not None and not (
+                _reception_observation_matches_neighbor_step(
+                    observation,
+                    index,
+                    neighbor_step,
+                )
+            ):
+                return False
+    elif reception_observations:
+        return False
     return True
 
 
@@ -2394,6 +2549,24 @@ class OperatorEventExecutionResult:
                 if not mutation_targets_match:
                     raise ValueError(
                         "Mutation stage observations do not match execution targets"
+                    )
+            if event.glyph is Glyph.EN:
+                observation_nodes = tuple(
+                    observation.node
+                    for observation in stage.reception_observations
+                )
+                try:
+                    reception_targets_match = _same_structural_value(
+                        observation_nodes,
+                        self.target_nodes,
+                    )
+                except Exception as exc:
+                    raise ValueError(
+                        "Reception stage target support is unreadable"
+                    ) from exc
+                if not reception_targets_match:
+                    raise ValueError(
+                        "Reception stage observations do not match execution targets"
                     )
 
         composition = self.represented_epi_schedule_composition
@@ -5191,6 +5364,7 @@ def _finalize_glyph_stage(
         mutation_decision_observations=(
             pending.result.mutation_decision_observations
         ),
+        reception_observations=pending.result.reception_observations,
     )
     return replace(
         stage,
@@ -6093,7 +6267,7 @@ def execute_operator_event_schedule(
             if suppress_birth_warnings:
                 warnings.filterwarnings(
                     "ignore",
-                    message=r".*has no sources.*",
+                    message=RECEPTION_NO_SOURCES_WARNING_PATTERN,
                 )
             for interval in schedule.intervals:
                 _require_pressure_callback_binding(

@@ -291,6 +291,7 @@ def test_private_outer_reseal_cannot_hide_inconsistent_local_factor_evidence(
             altered_stage
         ),
     )
+    assert not altered_stage._proof_fields_are_intact()
 
     execution_payload = {
         item.name: object.__getattribute__(default_factor_execution, item.name)
@@ -300,19 +301,11 @@ def test_private_outer_reseal_cannot_hide_inconsistent_local_factor_evidence(
     stages = list(default_factor_execution.glyph_stage_evidence)
     stages[0] = altered_stage
     execution_payload["glyph_stage_evidence"] = tuple(stages)
-    unsealed_execution = OperatorEventExecutionResult(**execution_payload)
-    altered_execution = replace(
-        unsealed_execution,
-        _proof_stamp=event_runtime_module._sealed_dataclass_stamp(
-            unsealed_execution,
-            event_runtime_module._OPERATOR_EVENT_EXECUTION_RESULT_PROOF_VERSION,
-        ),
-    )
-    assert altered_execution._proof_fields_are_intact()
-
-    kernel = _kernel(lower=-1.0, upper=1.0)
-    with pytest.raises(TNFRValueError, match="deep revalidation"):
-        certify_executed_p2_half_reception_stage(kernel, altered_execution)
+    with pytest.raises(
+        ValueError,
+        match="glyph-stage evidence proof fields are not intact",
+    ):
+        OperatorEventExecutionResult(**execution_payload)
 
 
 @pytest.mark.parametrize(

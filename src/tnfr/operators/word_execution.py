@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, Any, Callable
 import networkx as nx
 
 from ..errors import TNFRValueError
+from ._reception_kernel import RECEPTION_NO_SOURCES_WARNING_PATTERN
 
 if TYPE_CHECKING:
     from .network_stage import GraphTransactionSnapshot, NetworkStageResult
@@ -273,7 +274,10 @@ def run_network_sequence(
     nodes = list(graph.nodes())
     with warnings.catch_warnings():
         if suppress_birth_warnings:
-            warnings.filterwarnings("ignore", message=r".*has no sources.*")
+            warnings.filterwarnings(
+                "ignore",
+                message=RECEPTION_NO_SOURCES_WARNING_PATTERN,
+            )
         for _ in range(cycles):
             for index, operator in enumerate(ops):
                 sequence_step = (

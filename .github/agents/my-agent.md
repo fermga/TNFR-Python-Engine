@@ -458,7 +458,7 @@ transformation remains open under research line S10.
 | # | Operator (glyph) | Physics / effect | Grammar role | Contract |
 |---|------------------|------------------|--------------|----------|
 | 1 | **Emission** (AL) | Sources EPI from vacuum at pre-existing basal νf; leaves νf unchanged | Generator (U1a) | Sources new form without writing capacity, pressure or phase |
-| 2 | **Reception** (EN) | Integrates incoming resonance | — | Must not reduce C(t) |
+| 2 | **Reception** (EN) | Integrates incoming resonance | — | Leaves stored ΔNFR and dEPI unchanged, hence immediate operator-local C(t) unchanged |
 | 3 | **Coherence** (IL) | Negative feedback; reduces \|ΔNFR\|, raises C(t) | Stabilizer (U2) | Must not reduce C(t) (outside dissonance test) |
 | 4 | **Dissonance** (OZ) | Controlled instability; raises \|ΔNFR\| | Destabilizer (U2), bifurcation trigger (U4a), closure (U1b) | Must increase \|ΔNFR\| |
 | 5 | **Coupling** (UM) | Phase synchronization link `φᵢ → φⱼ` | Requires phase check (U3) | Valid only if `\|wrap(φᵢ − φⱼ)\| ≤ Δφ_max` |
@@ -633,6 +633,22 @@ The complete `ExecutedGlyphStage` is value-sealed; its execution result requires
 one intact stage per committed event and binds ordered ZHIR observations to the
 ordered target support. An adjacent flow abstention remains observable but
 cannot enter a represented schedule product.
+
+Every accepted two-phase EN stage also seals one ordered
+`ReceptionStageObservation` per target. One owner-bound pre-EN snapshot supplies
+target/neighbor EPI, semantic kinds, optional source detection and metrics; the
+observation verifies final EPI, kind and tracked sources after all graph-mutating
+stage checks and before warning publication. Disabled tracking preserves opaque
+legacy source metadata without claiming its contents. Event execution binds
+these observations to ordered
+targets. Their `auxiliary_stability_certified` field is hard false: this is one
+finite provenance record, while counter/log cocycles and trajectory invariance
+remain open.
+On directed support, `source -> receiver` defines the incoming EN orientation:
+the numeric snapshot reads predecessors and source discovery follows the same
+path direction. Source discovery is optional telemetry: it neither selects nor
+gates the direct-neighbour numeric blend and may include more distant ancestors.
+The affine Reception certificate remains undirected-only.
 
 With `include_stage_certificates=True`, interval capture is implied and every
 accepted event returns an `ExecutedGlyphStage`. The event runtime binds the

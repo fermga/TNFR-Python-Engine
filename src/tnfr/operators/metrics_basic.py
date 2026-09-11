@@ -2,10 +2,15 @@
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
 from ..alias import get_attr_str
 from ..utils import angle_diff
+from ..utils._structural_signature import (
+    proof_stamps_are_identical,
+    structural_proof_signature,
+)
 from .metrics_core import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from .metrics_core import EMISSION_TIMESTAMP_TUPLE as _ALIAS_EMISSION_TIMESTAMP_TUPLE
 from .metrics_core import HAS_EMISSION_TIMESTAMP_ALIAS as _HAS_EMISSION_TIMESTAMP_ALIAS
@@ -15,6 +20,40 @@ from ._diagnostic_scores import (
     nonnegative_magnitude,
     sum_nonnegative_magnitudes,
 )
+from ._reception_kernel import (
+    RECEPTION_PRE_STATE_BOUNDARY,
+    RECEPTION_PRESSURE_OBSERVATION_BOUNDARY,
+    ReceptionReadSnapshot,
+    capture_reception_read_snapshot,
+)
+
+_COARSE_PRESSURE_MAGNITUDE_THRESHOLD = 0.1
+
+
+def _normalize_stored_reception_sources(
+    value: Any,
+) -> tuple[tuple[Any, float, float], ...] | None:
+    """Normalize valid legacy EN metadata without trusting opaque payloads."""
+
+    if type(value) not in (list, tuple):
+        return None
+    normalized: list[tuple[Any, float, float]] = []
+    for source in value:
+        if type(source) not in (list, tuple) or len(source) != 3:
+            return None
+        compatibility = source[1]
+        activity = source[2]
+        if (
+            type(compatibility) is not float
+            or not math.isfinite(compatibility)
+            or not 0.0 <= compatibility <= 1.0
+            or type(activity) is not float
+            or not math.isfinite(activity)
+            or activity < 0.0
+        ):
+            return None
+        normalized.append((source[0], compatibility, activity))
+    return tuple(normalized)
 
 
 def emission_metrics(G, node, epi_before: float, vf_before: float) -> dict[str, Any]:
@@ -124,6 +163,43 @@ def emission_metrics(G, node, epi_before: float, vf_before: float) -> dict[str, 
 
 
 def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
+    """Collect EN metrics from values observable at this call boundary."""
+
+    return _reception_metrics_impl(G, node, epi_before, read_snapshot=None)
+
+
+def _reception_metrics_from_snapshot(
+    G,
+    node,
+    epi_before: float,
+    *,
+    read_snapshot: ReceptionReadSnapshot,
+) -> dict[str, Any]:
+    """Consume executor-owned pre-EN evidence through an internal boundary."""
+
+    if type(read_snapshot) is not ReceptionReadSnapshot:
+        raise TypeError("read_snapshot must be a ReceptionReadSnapshot")
+    if (
+        not read_snapshot._proof_fields_are_intact()
+        or read_snapshot._metric_consumer_graph_owner is not G
+        or read_snapshot._metric_consumer_graph_identity != id(G)
+    ):
+        raise ValueError("Reception metrics snapshot belongs to another graph")
+    return _reception_metrics_impl(
+        G,
+        node,
+        epi_before,
+        read_snapshot=read_snapshot,
+    )
+
+
+def _reception_metrics_impl(
+    G,
+    node,
+    epi_before: float,
+    *,
+    read_snapshot: ReceptionReadSnapshot | None,
+) -> dict[str, Any]:
     """EN EPI-intake, source-activity and phase-compatibility diagnostics.
 
     These operational readouts include a signed activity ratio and a bounded
@@ -152,26 +228,76 @@ def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
           - most_compatible_source: Most phase-compatible source node
           - mean_phase_compatibility_score: Bounded score mean
           - legacy compatibility aliases for the renamed fields
-          - stabilization_effective: Whether ΔNFR reduced below threshold
+          - pressure_magnitude_below_effectiveness_threshold: Whether the
+            stored post-EN |ΔNFR| is below the coarse threshold
+          - stabilization_effective: compatibility alias for that predicate
+          - explicit read and pressure-observation boundaries
     """
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
     dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
+    storage = G.nodes[node]
+    stored_source_metadata_present = "_reception_sources" in storage
+    normalized_stored_sources = (
+        _normalize_stored_reception_sources(storage["_reception_sources"])
+        if stored_source_metadata_present
+        else None
+    )
+    stored_source_metadata_valid = (
+        stored_source_metadata_present
+        and normalized_stored_sources is not None
+    )
 
-    # Legacy neighbor metrics (backward compatibility)
-    neighbors = list(G.neighbors(node))
-    neighbor_count = len(neighbors)
-
-    # Calculate mean neighbor EPI
-    neighbor_epi_sum = 0.0
-    for n in neighbors:
-        neighbor_epi_sum += _get_node_attr(G, n, ALIAS_EPI)
-    neighbor_epi_mean = neighbor_epi_sum / neighbor_count if neighbor_count > 0 else 0.0
+    if read_snapshot is None:
+        # Standalone metrics observe the live call boundary, but their EN input
+        # domain still comes from the canonical snapshot policy: incoming arcs
+        # on directed support, target substitution for missing neighbour EPI,
+        # and no effective neighbour set when none has explicit EPI.
+        live_read = capture_reception_read_snapshot(
+            G,
+            node,
+            track_sources=False,
+        )
+        neighbors = live_read.neighbors
+        neighbor_count = len(neighbors)
+        neighbor_epi_mean = live_read.neighbor_epi_mean
+        sources = normalized_stored_sources or ()
+        read_boundary = "metrics_call_live_state"
+        pressure_boundary = "metrics_call_live_state"
+        source_tracking_enabled = None
+        source_max_distance = None
+        stored_source_metadata_boundary = "metrics_call_live_state"
+    else:
+        if type(read_snapshot) is not ReceptionReadSnapshot:
+            raise TypeError("read_snapshot must be a ReceptionReadSnapshot")
+        if (
+            not read_snapshot._proof_fields_are_intact()
+            or read_snapshot._metric_consumer_graph_owner is not G
+            or read_snapshot._metric_consumer_graph_identity != id(G)
+        ):
+            raise ValueError("Reception metrics snapshot belongs to another graph")
+        if not proof_stamps_are_identical(
+            structural_proof_signature(read_snapshot.node),
+            structural_proof_signature(node),
+        ):
+            raise ValueError("Reception metrics snapshot target changed")
+        if epi_before != read_snapshot.target_epi:
+            raise ValueError("Reception metrics pre-state contradicts its snapshot")
+        neighbors = read_snapshot.neighbors
+        neighbor_count = len(neighbors)
+        neighbor_epi_mean = read_snapshot.neighbor_epi_mean
+        sources = read_snapshot.reception_sources or ()
+        read_boundary = RECEPTION_PRE_STATE_BOUNDARY
+        pressure_boundary = RECEPTION_PRESSURE_OBSERVATION_BOUNDARY
+        source_tracking_enabled = read_snapshot.source_tracking_enabled
+        source_max_distance = read_snapshot.source_max_distance
+        stored_source_metadata_boundary = (
+            RECEPTION_PRESSURE_OBSERVATION_BOUNDARY
+        )
 
     # Compute the signed EPI change. This is form change, not C(t).
     delta_epi = epi_after - epi_before
 
     # EN-specific: Source tracking and integration efficiency
-    sources = G.nodes[node].get("_reception_sources", [])
     num_sources = len(sources)
 
     source_activities = tuple(
@@ -190,8 +316,13 @@ def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
         else 0.0
     )
 
-    # Most compatible source (first in sorted list)
-    most_compatible_source = sources[0][0] if sources else None
+    # Source detection is sorted, while standalone legacy metadata need not be.
+    # ``max`` retains the first record when compatibility scores tie.
+    most_compatible_source = (
+        max(sources, key=lambda source: source[1])[0]
+        if sources
+        else None
+    )
 
     mean_phase_compatibility_score = (
         mean_unit_score(
@@ -202,8 +333,9 @@ def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
         else 0.0
     )
 
-    # Stabilization effectiveness (ΔNFR reduced?)
-    stabilization_effective = dnfr_after < 0.1
+    pressure_magnitude_below_threshold = (
+        abs(dnfr_after) < _COARSE_PRESSURE_MAGNITUDE_THRESHOLD
+    )
 
     return {
         "operator": "Reception",
@@ -212,12 +344,32 @@ def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
         "delta_epi": delta_epi,
         "epi_final": epi_after,
         "dnfr_after": dnfr_after,
+        "observed_dnfr": dnfr_after,
+        "reception_read_boundary": read_boundary,
+        "neighbor_state_observation_boundary": read_boundary,
+        "source_state_observation_boundary": read_boundary,
+        "stored_source_metadata_observation_boundary": (
+            stored_source_metadata_boundary
+        ),
+        "dnfr_observation_boundary": pressure_boundary,
         # Legacy metrics (backward compatibility)
         "neighbor_count": neighbor_count,
         "neighbor_epi_mean": neighbor_epi_mean,
         "integration_strength": abs(delta_epi),
         # EN-specific (NEW)
         "num_sources": num_sources,
+        "source_tracking_enabled": source_tracking_enabled,
+        "source_max_distance": source_max_distance,
+        "sources_observed": (
+            source_tracking_enabled
+            if source_tracking_enabled is not None
+            else None
+        ),
+        "source_absence_observed": (
+            not sources if source_tracking_enabled else None
+        ),
+        "stored_source_metadata_present": stored_source_metadata_present,
+        "stored_source_metadata_valid": stored_source_metadata_valid,
         "total_source_emission_activity": total_source_emission_activity,
         "epi_delta_per_source_activity": epi_delta_per_source_activity,
         "most_compatible_source": most_compatible_source,
@@ -227,7 +379,13 @@ def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
         "integration_efficiency": epi_delta_per_source_activity,
         "phase_compatibility_avg": mean_phase_compatibility_score,
         "coherence_received": delta_epi,
-        "stabilization_effective": stabilization_effective,
+        "pressure_magnitude_below_effectiveness_threshold": (
+            pressure_magnitude_below_threshold
+        ),
+        "pressure_effectiveness_threshold": (
+            _COARSE_PRESSURE_MAGNITUDE_THRESHOLD
+        ),
+        "stabilization_effective": pressure_magnitude_below_threshold,
     }
 
 
@@ -313,7 +471,9 @@ def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
         "vf_final": vf,
         # Coarse operator-effectiveness flag, NOT structural equilibrium (the
         # canonical fixed point is |ΔNFR| <= 1e-3; see is_structural_equilibrium)
-        "is_stabilized": abs(dnfr_after) < 0.1,
+        "is_stabilized": (
+            abs(dnfr_after) < _COARSE_PRESSURE_MAGNITUDE_THRESHOLD
+        ),
     }
 
 

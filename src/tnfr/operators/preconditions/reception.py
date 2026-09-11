@@ -2,19 +2,16 @@
 
 This module implements canonical precondition validation for the Reception (EN)
 structural operator according to TNFR.pdf §2.2.1. EN requires specific structural
-conditions to maintain TNFR operational fidelity:
+conditions selected by the configurable Reception admission policy:
 
-1. **Receptive capacity**: EPI must be below saturation threshold (node not saturated)
-2. **Minimal dissonance**: DNFR must be below threshold (low reorganization pressure)
-3. **Emission sources**: Network should have active emission sources (warning for isolated nodes)
+1. **EPI bound**: stored EPI must be below the configured upper threshold
+2. **Pressure bound**: stored signed DNFR must be below its configured upper bound
 
-These validations protect structural integrity by ensuring EN is only applied to
-nodes in the appropriate state for coherence integration.
+These checks do not claim that EN writes DNFR or measures structural coherence.
 """
 
 from __future__ import annotations
 
-import warnings
 from typing import TYPE_CHECKING, Any
 
 from ...errors import TNFRValueError
@@ -30,9 +27,8 @@ def validate_reception_strict(G: TNFRGraph, node: Any) -> None:
 
     According to TNFR.pdf §2.2.1, Reception (EN - Recepción estructural) requires:
 
-    1. **Receptive capacity**: EPI < saturation threshold (node has capacity to receive)
-    2. **Minimal dissonance**: DNFR < threshold (low reorganization pressure for stable integration)
-    3. **Emission sources**: Network connectivity with active sources (warning if isolated)
+    1. Stored EPI is below its configured Reception upper bound.
+    2. Stored signed DNFR is below its configured Reception upper bound.
 
     Parameters
     ----------
@@ -44,18 +40,13 @@ def validate_reception_strict(G: TNFRGraph, node: Any) -> None:
     Raises
     ------
     ValueError
-        If EPI >= saturation threshold (node saturated - cannot receive more coherence)
-        If DNFR >= threshold (excessive dissonance - consider IL/Coherence first)
-
-    Warnings
-    --------
-    UserWarning
-        If node is isolated in a multi-node network (no emission sources available)
+        If EPI or signed DNFR reaches its configured Reception upper bound.
 
     Notes
     -----
     Thresholds are configurable via:
-    - Graph metadata: ``G.graph["EPI_SATURATION_MAX"]``, ``G.graph["DNFR_RECEPTION_MAX"]``
+    - Graph metadata: ``G.graph["EPI_SATURATION_MAX"]`` and
+      ``G.graph["DNFR_RECEPTION_MAX"]``
     - Module defaults: :data:`tnfr.config.thresholds.EPI_SATURATION_MAX`, etc.
 
     Examples
@@ -70,7 +61,7 @@ def validate_reception_strict(G: TNFRGraph, node: Any) -> None:
     >>> validate_reception_strict(G2, node2)  # doctest: +SKIP
     Traceback (most recent call last):
         ...
-    ValueError: EN precondition failed: EPI=0.950 >= 0.9. Node saturated, cannot receive more coherence.
+    ValueError: EN precondition failed: EPI=0.950 >= 0.9.
 
     See Also
     --------
@@ -90,41 +81,26 @@ def validate_reception_strict(G: TNFRGraph, node: Any) -> None:
     epi_threshold = float(G.graph.get("EPI_SATURATION_MAX", EPI_SATURATION_MAX))
     dnfr_threshold = float(G.graph.get("DNFR_RECEPTION_MAX", DNFR_RECEPTION_MAX))
 
-    # Precondition 1: EPI must be below saturation threshold (receptive capacity available)
-    # Reception integrates external coherence into local structure.
-    # If EPI is saturated, node cannot accommodate more coherence.
+    # Precondition 1: enforce the selected stored-EPI upper admission bound.
     if epi >= epi_threshold:
         raise TNFRValueError(
             f"EN precondition failed: EPI={epi:.3f} >= {epi_threshold:.3f}. "
-            f"Node saturated, cannot receive more coherence. "
-            f"Apply IL (Coherence) first to stabilize and compress structure, "
-            f"or apply NUL (Contraction) to reduce complexity if appropriate.",
+            f"Stored EPI is outside the configured Reception range. "
+            f"Apply Reception only below the configured EPI upper bound.",
             context={"epi": epi, "epi_threshold": epi_threshold},
-            suggestion="Apply IL (Coherence) first to stabilize and compress structure, or apply NUL (Contraction) to reduce complexity if appropriate.",
+            suggestion=(
+                "Apply Reception only below the configured EPI upper bound."
+            ),
         )
 
-    # Precondition 2: DNFR must be below threshold (minimal dissonance for stable integration)
-    # Excessive reorganization pressure prevents effective integration of external coherence.
-    # Node must first stabilize before receiving more information.
+    # Precondition 2: enforce the selected signed-pressure upper bound.
     if dnfr >= dnfr_threshold:
         raise TNFRValueError(
             f"EN precondition failed: DNFR={dnfr:.3f} >= {dnfr_threshold:.3f}. "
-            f"Excessive dissonance prevents reception. "
+            f"Stored DNFR exceeds the configured Reception upper bound. "
             f"Consider IL (Coherence) first to reduce reorganization pressure.",
             context={"dnfr": dnfr, "dnfr_threshold": dnfr_threshold},
-            suggestion="Consider IL (Coherence) first to reduce reorganization pressure.",
-        )
-
-    # Precondition 3: Emission sources check (warning only - not a hard failure)
-    # Isolated nodes can still apply EN, but there are no external sources to receive from
-    node_degree = G.degree(node)
-    network_size = len(G)
-
-    if node_degree == 0 and network_size > 1:
-        warnings.warn(
-            f"EN warning: Node {node!r} isolated. No emission sources available. "
-            f"Reception possible but no external coherence to integrate. "
-            f"Consider UM (Coupling) to establish network connections first.",
-            UserWarning,
-            stacklevel=3,
+            suggestion=(
+                "Consider IL (Coherence) first to reduce reorganization pressure."
+            ),
         )

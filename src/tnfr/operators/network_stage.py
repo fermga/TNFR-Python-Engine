@@ -96,6 +96,13 @@ from ._neighbor_epi_kernel import (
     reception_proposed_epi_kind,
 )
 from ._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
+from ._reception_kernel import (
+    RECEPTION_PRE_STATE_BOUNDARY,
+    ReceptionReadSnapshot,
+    _reception_read_payload_stamp,
+    capture_reception_read_snapshot,
+    reception_no_sources_warning,
+)
 from ._recursivity_stage_kernel import RecursivityAdvisoryProposal
 from ._resonance_identity import (
     RA_RUNTIME_AMPLIFICATION_TRIGGER,
@@ -3626,6 +3633,7 @@ class NeighborStageProposal:
     neighbor_epi_mean: float
     neighbors: tuple[Any, ...]
     reception_sources: tuple[tuple[Any, float, float], ...] | None = None
+    reception_read_snapshot: ReceptionReadSnapshot | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -3644,6 +3652,328 @@ class RecursivityStageProposal:
     node: Any
     glyph: Glyph
     advisory: RecursivityAdvisoryProposal
+
+
+_RECEPTION_STAGE_OBSERVATION_VERSION = "reception_stage_observation_v1"
+_RECEPTION_STAGE_POST_STATE_BOUNDARY = "completed_en_stage_before_result"
+
+
+def _same_reception_value(left: Any, right: Any) -> bool:
+    """Compare EN evidence without invoking node-identifier equality."""
+
+    return proof_stamps_are_identical(
+        structural_proof_signature(left),
+        structural_proof_signature(right),
+    )
+
+
+def _reception_stage_observation_stamp(
+    observation: "ReceptionStageObservation",
+) -> tuple[Any, ...]:
+    """Seal one public EN read independently of the detached graph."""
+
+    return (
+        _RECEPTION_STAGE_OBSERVATION_VERSION,
+        structural_proof_signature(
+            (
+                observation.target_index,
+                observation.node,
+                observation.target_epi_before,
+                observation.target_epi_after,
+                observation.target_epi_kind_before,
+                observation.target_epi_kind_after,
+                observation.neighbors,
+                observation.neighbor_epi_values,
+                observation.neighbor_dominant_values,
+                observation.neighbor_epi_kinds,
+                observation.neighbor_epi_mean,
+                observation.source_tracking_enabled,
+                observation.source_max_distance,
+                observation.reception_sources,
+                observation.reception_sources_present_after,
+                observation.reception_sources_after,
+                observation.read_boundary,
+                observation.post_state_boundary,
+                observation.glyph,
+                object.__getattribute__(
+                    observation,
+                    "auxiliary_stability_certified",
+                ),
+                object.__getattribute__(
+                    observation,
+                    "_read_payload_stamp",
+                ),
+                object.__getattribute__(
+                    observation,
+                    "_post_state_payload_stamp",
+                ),
+            )
+        ),
+    )
+
+
+def _reception_observation_read_snapshot(
+    observation: "ReceptionStageObservation",
+) -> ReceptionReadSnapshot:
+    """Reconstruct the published read payload without graph ownership."""
+
+    validation_owner = object()
+    return ReceptionReadSnapshot(
+        node=observation.node,
+        target_epi=observation.target_epi_before,
+        target_epi_kind=observation.target_epi_kind_before,
+        neighbors=observation.neighbors,
+        neighbor_epi_values=observation.neighbor_epi_values,
+        neighbor_dominant_values=observation.neighbor_dominant_values,
+        neighbor_epi_kinds=observation.neighbor_epi_kinds,
+        neighbor_epi_mean=observation.neighbor_epi_mean,
+        source_tracking_enabled=observation.source_tracking_enabled,
+        source_max_distance=observation.source_max_distance,
+        reception_sources=observation.reception_sources,
+        _read_graph_owner=validation_owner,
+        _metric_consumer_graph_owner=validation_owner,
+        _graph_identity=id(validation_owner),
+        _metric_consumer_graph_identity=id(validation_owner),
+        read_boundary=observation.read_boundary,
+    )
+
+
+def _reception_observation_post_state_stamp(
+    observation: "ReceptionStageObservation",
+) -> tuple[Any, ...]:
+    """Sign executor-observed EN state after the complete stage."""
+
+    return structural_proof_signature(
+        (
+            observation.target_index,
+            observation.node,
+            observation.target_epi_after,
+            observation.target_epi_kind_after,
+            observation.reception_sources_present_after,
+            observation.reception_sources_after,
+            observation.post_state_boundary,
+        )
+    )
+
+
+def _validate_reception_stage_observation(
+    observation: "ReceptionStageObservation",
+) -> None:
+    """Validate the value-domain and explicit scope of one EN observation."""
+
+    if type(observation.target_index) is not int or observation.target_index < 0:
+        raise ValueError("Reception observation index must be nonnegative")
+    _reception_observation_read_snapshot(observation)
+    if (
+        type(observation.target_epi_after) is not float
+        or not math.isfinite(observation.target_epi_after)
+        or type(observation.target_epi_kind_after) is not str
+    ):
+        raise ValueError("Reception observation post-state is invalid")
+    if observation.glyph is not Glyph.EN:
+        raise ValueError("Reception observation glyph must be EN")
+    if type(observation.reception_sources_present_after) is not bool:
+        raise TypeError("Reception source-presence observation must be a bool")
+    after_sources = observation.reception_sources_after
+    if observation.source_tracking_enabled:
+        if not observation.reception_sources_present_after or after_sources is None:
+            raise ValueError("Reception tracked source state is missing")
+    elif after_sources is not None:
+        raise ValueError("Disabled source tracking cannot claim source contents")
+    if after_sources is not None:
+        if type(after_sources) is not tuple:
+            raise TypeError("Reception post-state sources must be a tuple")
+        for source in after_sources:
+            if type(source) is not tuple or len(source) != 3:
+                raise TypeError("Reception post-state source records are invalid")
+            if (
+                type(source[1]) is not float
+                or not math.isfinite(source[1])
+                or not 0.0 <= source[1] <= 1.0
+                or type(source[2]) is not float
+                or not math.isfinite(source[2])
+                or source[2] < 0.0
+            ):
+                raise ValueError("Reception post-state source scores are invalid")
+    if (
+        observation.source_tracking_enabled
+        and not _same_reception_value(
+            after_sources,
+            observation.reception_sources,
+        )
+    ):
+        raise ValueError("Reception tracked sources did not survive the stage")
+    if (
+        observation.post_state_boundary
+        != _RECEPTION_STAGE_POST_STATE_BOUNDARY
+    ):
+        raise ValueError("Reception post-state boundary changed")
+    if object.__getattribute__(
+        observation,
+        "auxiliary_stability_certified",
+    ) is not False:
+        raise ValueError("Reception observations cannot claim stability")
+
+
+@dataclass(frozen=True, slots=True)
+class ReceptionStageObservation:
+    """Sealed per-target EN read captured at one two-phase stage boundary."""
+
+    target_index: int
+    node: Any
+    target_epi_before: float
+    target_epi_after: float
+    target_epi_kind_before: str
+    target_epi_kind_after: str
+    neighbors: tuple[Any, ...]
+    neighbor_epi_values: tuple[float, ...]
+    neighbor_dominant_values: tuple[float, ...]
+    neighbor_epi_kinds: tuple[str, ...]
+    neighbor_epi_mean: float
+    source_tracking_enabled: bool
+    source_max_distance: int | None
+    reception_sources: tuple[tuple[Any, float, float], ...] | None
+    reception_sources_present_after: bool
+    reception_sources_after: tuple[tuple[Any, float, float], ...] | None
+    read_boundary: str = field(
+        default=RECEPTION_PRE_STATE_BOUNDARY,
+        init=False,
+    )
+    post_state_boundary: str = field(
+        default=_RECEPTION_STAGE_POST_STATE_BOUNDARY,
+        init=False,
+    )
+    glyph: Glyph = field(default=Glyph.EN, init=False)
+    auxiliary_stability_certified: bool = field(default=False, init=False)
+    _read_payload_stamp: tuple[Any, ...] = field(
+        default=(),
+        init=False,
+        repr=False,
+        compare=False,
+    )
+    _post_state_payload_stamp: tuple[Any, ...] = field(
+        default=(),
+        init=False,
+        repr=False,
+        compare=False,
+    )
+    _proof_stamp: tuple[Any, ...] = field(
+        default=(),
+        repr=False,
+        compare=False,
+    )
+
+    def __getattribute__(self, name: str) -> Any:
+        if name == "auxiliary_stability_certified":
+            return False
+        return object.__getattribute__(self, name)
+
+    def __post_init__(self) -> None:
+        _validate_reception_stage_observation(self)
+
+    def _proof_fields_are_intact(self) -> bool:
+        """Whether the captured EN read and its false scope claim are intact."""
+
+        try:
+            read_snapshot = _reception_observation_read_snapshot(self)
+            if not proof_stamps_are_identical(
+                object.__getattribute__(self, "_read_payload_stamp"),
+                _reception_read_payload_stamp(read_snapshot),
+            ):
+                return False
+            if not proof_stamps_are_identical(
+                object.__getattribute__(self, "_post_state_payload_stamp"),
+                _reception_observation_post_state_stamp(self),
+            ):
+                return False
+            if not proof_stamps_are_identical(
+                object.__getattribute__(self, "_proof_stamp"),
+                _reception_stage_observation_stamp(self),
+            ):
+                return False
+            _validate_reception_stage_observation(self)
+        except BaseException:
+            return False
+        return True
+
+
+def _observe_reception_proposal(
+    graph: Any,
+    proposal: NeighborStageProposal,
+    *,
+    target_index: int,
+) -> ReceptionStageObservation:
+    """Detach one sealed public record from a frozen internal EN proposal."""
+
+    read = proposal.reception_read_snapshot
+    if proposal.glyph is not Glyph.EN or type(read) is not ReceptionReadSnapshot:
+        raise TypeError("Reception observation requires an EN proposal")
+    if not read._proof_fields_are_intact():
+        raise RuntimeError("Reception proposal read proof fields changed")
+    committed_epi = require_real_scalar_epi(
+        _raw_alias(graph, proposal.node, ALIAS_EPI, 0.0),
+        operator="Reception",
+        label="committed target EPI state",
+    )
+    committed_kind = _node_kind(graph, proposal.node)
+    if (
+        committed_epi != proposal.epi_after
+        or committed_kind != proposal.epi_kind_after
+    ):
+        raise RuntimeError("Reception commit diverged from its frozen proposal")
+    storage = graph.nodes[proposal.node]
+    sources_present_after = "_reception_sources" in storage
+    committed_sources = None
+    if read.source_tracking_enabled and sources_present_after:
+        raw_sources = storage["_reception_sources"]
+        if type(raw_sources) is not list:
+            raise RuntimeError("Reception source metadata has an invalid type")
+        try:
+            committed_sources = tuple(tuple(source) for source in raw_sources)
+        except TypeError as exc:
+            raise RuntimeError("Reception source metadata is not iterable") from exc
+    if read.source_tracking_enabled:
+        if not sources_present_after:
+            raise RuntimeError("Reception did not commit its source list")
+        if not _same_reception_value(
+            committed_sources,
+            read.reception_sources,
+        ):
+            raise RuntimeError("Reception source commit diverged from its snapshot")
+    candidate = ReceptionStageObservation(
+        target_index=target_index,
+        node=proposal.node,
+        target_epi_before=proposal.epi_before,
+        target_epi_after=committed_epi,
+        target_epi_kind_before=proposal.epi_kind_before,
+        target_epi_kind_after=committed_kind,
+        neighbors=read.neighbors,
+        neighbor_epi_values=read.neighbor_epi_values,
+        neighbor_dominant_values=read.neighbor_dominant_values,
+        neighbor_epi_kinds=read.neighbor_epi_kinds,
+        neighbor_epi_mean=read.neighbor_epi_mean,
+        source_tracking_enabled=read.source_tracking_enabled,
+        source_max_distance=read.source_max_distance,
+        reception_sources=read.reception_sources,
+        reception_sources_present_after=sources_present_after,
+        reception_sources_after=committed_sources,
+    )
+    object.__setattr__(
+        candidate,
+        "_read_payload_stamp",
+        _reception_read_payload_stamp(read),
+    )
+    object.__setattr__(
+        candidate,
+        "_post_state_payload_stamp",
+        _reception_observation_post_state_stamp(candidate),
+    )
+    object.__setattr__(
+        candidate,
+        "_proof_stamp",
+        _reception_stage_observation_stamp(candidate),
+    )
+    return candidate
 
 
 _MUTATION_DECISION_PROOF_VERSION = "mutation_stage_decision_observation_v1"
@@ -4035,6 +4365,7 @@ class NetworkStageResult:
     mutation_decision_observations: tuple[
         MutationStageDecisionObservation, ...
     ] = ()
+    reception_observations: tuple[ReceptionStageObservation, ...] = ()
 
     def __post_init__(self) -> None:
         """Reject contradictory evidence payloads at their source."""
@@ -4069,6 +4400,32 @@ class NetworkStageResult:
         elif observations:
             raise ValueError(
                 "Only two-phase Mutation results may carry decision observations"
+            )
+
+        reception_observations = self.reception_observations
+        if type(reception_observations) is not tuple:
+            raise TypeError("reception_observations must be a tuple")
+        is_two_phase_reception = bool(
+            self.glyph == Glyph.EN.value and self.schedule == TWO_PHASE_JACOBI
+        )
+        if is_two_phase_reception and reception_observations:
+            if len(reception_observations) != self.nodes_processed:
+                raise ValueError(
+                    "Reception evidence requires one observation per target"
+                )
+            for index, observation in enumerate(reception_observations):
+                if (
+                    type(observation) is not ReceptionStageObservation
+                    or observation.target_index != index
+                    or observation.glyph is not Glyph.EN
+                    or not observation._proof_fields_are_intact()
+                ):
+                    raise ValueError(
+                        "Reception stage observations are not intact or ordered"
+                    )
+        elif reception_observations:
+            raise ValueError(
+                "Only two-phase Reception results may carry EN observations"
             )
 
         certificates = (
@@ -4152,6 +4509,35 @@ def _unique_stage_targets(targets: Sequence[Any]) -> tuple[Any, ...]:
     return resolved
 
 
+def _restore_detached_neighbor_order(
+    snapshot: Any,
+    layout: _NetworkXRuntimeLayout,
+) -> None:
+    """Make the detached graph retain every live adjacency iteration order."""
+
+    def reorder(target: MutableMapping[Any, Any], source: Any) -> None:
+        target_by_identity = {
+            id(key): (key, value)
+            for key, value in _runtime_mapping_items(target)
+        }
+        ordered = tuple(
+            target_by_identity[id(key)]
+            for key, _value in _runtime_mapping_items(source)
+        )
+        if len(ordered) != len(target_by_identity):
+            raise RuntimeError("detached stage adjacency does not match live graph")
+        target.clear()
+        target.update(ordered)
+
+    adjacency = _runtime_stored_attribute(snapshot, "_adj")
+    for node, source in layout.adjacency_inner:
+        reorder(adjacency[node], source)
+    if layout.directed:
+        predecessors = _runtime_stored_attribute(snapshot, "_pred")
+        for node, source in layout.predecessor_inner:
+            reorder(predecessors[node], source)
+
+
 def _detached_stage_graph(graph: Any) -> Any:
     """Return a complete detached logical graph for immutable stage reads."""
 
@@ -4225,6 +4611,7 @@ def _detached_stage_graph(graph: Any) -> Any:
             (left, right, deepcopy(dict(data), copy_memo))
             for left, right, data in layout.edges
         )
+    _restore_detached_neighbor_order(snapshot, layout)
     return snapshot
 
 
@@ -4292,37 +4679,21 @@ def _propose_reception(
     *,
     track_sources: bool,
     max_distance: Any,
+    metric_consumer_graph: Any,
 ) -> NeighborStageProposal:
     raw_epi = _raw_alias(snapshot, node, ALIAS_EPI, 0.0)
-    epi_before = require_real_scalar_epi(
-        raw_epi, operator="Reception", label="target EPI state"
+    read_snapshot = capture_reception_read_snapshot(
+        snapshot,
+        node,
+        track_sources=track_sources,
+        max_distance=max_distance,
+        _metric_consumer_graph_owner=metric_consumer_graph,
     )
-    candidate_neighbors = tuple(snapshot.neighbors(node))
-    neighbor_values: list[float] = []
-    dominant_values: list[float] = []
-    has_explicit_neighbor_epi = False
-    for neighbor in candidate_neighbors:
-        raw_neighbor_epi = _raw_alias(snapshot, neighbor, ALIAS_EPI, None)
-        if raw_neighbor_epi is None:
-            # Match get_neighbor_epi: a missing neighbour EPI contributes the
-            # target value to the mean once another explicit source exists,
-            # while its NodeNX identity fallback has zero magnitude.
-            neighbor_values.append(epi_before)
-            dominant_values.append(0.0)
-            continue
-        scalar = require_real_scalar_epi(
-            raw_neighbor_epi,
-            operator="Reception",
-            label=f"neighbor EPI for {neighbor!r}",
-        )
-        neighbor_values.append(scalar)
-        dominant_values.append(scalar)
-        has_explicit_neighbor_epi = True
-
-    current_kind = _node_kind(snapshot, node)
-    if candidate_neighbors and has_explicit_neighbor_epi:
-        neighbors = candidate_neighbors
-        epi_bar = neighbor_epi_unweighted_mean(neighbor_values)
+    epi_before = read_snapshot.target_epi
+    current_kind = read_snapshot.target_epi_kind
+    neighbors = read_snapshot.neighbors
+    epi_bar = read_snapshot.neighbor_epi_mean
+    if neighbors:
         proposed = neighbor_epi_blend_value(
             epi_before, epi_bar, float(factors["EN_mix"])
         )
@@ -4330,11 +4701,10 @@ def _propose_reception(
 
         final_kind = reception_proposed_epi_kind(
             current_kind,
-            (
-                (value, _node_kind(snapshot, neighbor))
-                for neighbor, value in zip(
-                    neighbors, dominant_values, strict=True
-                )
+            zip(
+                read_snapshot.neighbor_dominant_values,
+                read_snapshot.neighbor_epi_kinds,
+                strict=True,
             ),
             unclipped_target_epi=proposed,
             fallback_kind=Glyph.EN.value,
@@ -4346,14 +4716,6 @@ def _propose_reception(
         epi_after = epi_before
         final_kind = Glyph.EN.value
         write_epi = False
-
-    sources = None
-    if track_sources:
-        from .network_analysis.source_detection import detect_emission_sources
-
-        sources = tuple(
-            detect_emission_sources(snapshot, node, max_distance=max_distance)
-        )
 
     return NeighborStageProposal(
         node=node,
@@ -4373,7 +4735,8 @@ def _propose_reception(
         write_theta=False,
         neighbor_epi_mean=epi_bar,
         neighbors=neighbors,
-        reception_sources=sources,
+        reception_sources=read_snapshot.reception_sources,
+        reception_read_snapshot=read_snapshot,
     )
 
 
@@ -5027,6 +5390,31 @@ def _validate_proposals(
     if any(proposal.glyph is not glyph for proposal in proposals):
         raise RuntimeError("Network stage proposal glyph changed")
     for proposal in proposals:
+        read_snapshot = proposal.reception_read_snapshot
+        if glyph is Glyph.EN:
+            if type(read_snapshot) is not ReceptionReadSnapshot:
+                raise RuntimeError("Reception proposal lost its pre-state snapshot")
+            if not read_snapshot._proof_fields_are_intact():
+                raise RuntimeError("Reception proposal read proof fields changed")
+            if (
+                not _same_reception_value(read_snapshot.node, proposal.node)
+                or read_snapshot.target_epi != proposal.epi_before
+                or read_snapshot.target_epi_kind
+                != proposal.epi_kind_before
+                or not _same_reception_value(
+                    read_snapshot.neighbors,
+                    proposal.neighbors,
+                )
+                or read_snapshot.neighbor_epi_mean
+                != proposal.neighbor_epi_mean
+                or not _same_reception_value(
+                    read_snapshot.reception_sources,
+                    proposal.reception_sources,
+                )
+            ):
+                raise RuntimeError("Reception proposal read snapshot changed")
+        elif read_snapshot is not None:
+            raise RuntimeError("Only Reception proposals may carry EN reads")
         values = [("EPI", proposal.epi_after)]
         if glyph is Glyph.RA:
             values.extend(
@@ -5452,8 +5840,19 @@ def _run_postcommit_checks(
             )
 
         if collect_metrics:
+            metric_state = states_before[node]
+            if (
+                isinstance(proposal, NeighborStageProposal)
+                and proposal.glyph is Glyph.EN
+            ):
+                from .definitions_base import _PREPARED_OPERATOR_STATE_KEY
+
+                metric_state = dict(metric_state)
+                metric_state[_PREPARED_OPERATOR_STATE_KEY] = (
+                    proposal.reception_read_snapshot
+                )
             graph.graph.setdefault("operator_metrics", []).append(
-                operator._collect_metrics(graph, node, states_before[node])
+                operator._collect_metrics(graph, node, metric_state)
             )
 
 
@@ -6823,6 +7222,7 @@ def execute_neighbor_stage(
                     factors,
                     track_sources=track_sources,
                     max_distance=max_distance,
+                    metric_consumer_graph=graph,
                 )
                 for node in targets_tuple
             )
@@ -6867,20 +7267,20 @@ def execute_neighbor_stage(
             count=len(targets_tuple),
         )
 
-        # Reception's user-facing absence warning belongs to the accepted
-        # transaction.  Warning-as-error policies therefore still roll back.
-        if operator.glyph is Glyph.EN and bool(
-            execution_kwargs.get("track_sources", True)
-        ):
-            for proposal in proposals:
-                if not proposal.reception_sources:
-                    warnings.warn(
-                        f"EN: node {proposal.node} has no sources; "
-                        "external coherence not integrated.",
-                        stacklevel=3,
-                    )
+        reception_observations = (
+            tuple(
+                _observe_reception_proposal(
+                    graph,
+                    proposal,
+                    target_index=index,
+                )
+                for index, proposal in enumerate(proposals)
+            )
+            if operator.glyph is Glyph.EN
+            else ()
+        )
 
-        return NetworkStageResult(
+        result = NetworkStageResult(
             operator=operator.name,
             glyph=operator.glyph.value,
             schedule=TWO_PHASE_JACOBI,
@@ -6889,7 +7289,21 @@ def execute_neighbor_stage(
             epi_jump_certificate_abstention_reason=(
                 certificate_abstention_reason
             ),
+            reception_observations=reception_observations,
         )
+
+        # Emit accepted-transaction telemetry last. Invalid final evidence
+        # cannot leak a warning, while warning-as-error still rolls back.
+        if operator.glyph is Glyph.EN and bool(
+            execution_kwargs.get("track_sources", True)
+        ):
+            for proposal in proposals:
+                if not proposal.reception_sources:
+                    warnings.warn(
+                        reception_no_sources_warning(proposal.node),
+                        stacklevel=3,
+                    )
+        return result
     except BaseException as failure:
         _discard_pending_monitor(graph)
         transaction.restore_after_failure(graph, failure)
@@ -6913,5 +7327,6 @@ __all__ = [
     "execute_self_organization_stage",
     "POINTWISE_EPI_JUMP_GLYPHS",
     "POINTWISE_TWO_PHASE_GLYPHS",
+    "ReceptionStageObservation",
     "record_gauss_seidel_stage",
 ]

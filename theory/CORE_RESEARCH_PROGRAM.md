@@ -1147,10 +1147,23 @@ mutation during that observational phase also roll back. Two accepted calls are
 two separately certified finite invocations; neither is an a priori theorem
 about the other.
 
+The first auxiliary boundary is now implemented below that open theorem. Every
+accepted two-phase EN target has one owner-bound, value-sealed pre-EN snapshot
+shared by neighbour integration, semantic-kind selection, optional source
+detection and metrics. A sealed stage observation verifies pre/post EPI and kind
+and the tracked source commit after all graph-mutating stage checks and before
+warning publication; event execution binds the ordered observations to its
+target support. This removes
+the former mixed-time metric read and the missing kind/source provenance. It
+does not establish raw auxiliary invariance: absolute counters and logs still
+change between calls and must be treated as cocycles, and the finite projection
+that normalizes those increments remains the next active problem.
+
 Other open branches remain:
 
-- audit the complete auxiliary Reception state and determine whether the
-  per-invocation P2/REMESH hypotheses define an a priori invariant
+- formalize the finite auxiliary Reception projection from the new sealed
+  kind/source observations and normalized counter/log cocycles, then determine
+  whether the per-invocation P2/REMESH hypotheses define an a priori invariant
   complete-runtime class;
 - extend the `alpha=1/2` antisymmetric P2 result to broader represented state
   classes, support or other `0<alpha<1` coefficients while retaining a useful

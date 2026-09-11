@@ -21,6 +21,9 @@ from .registry import OperatorMetaAuto
 
 __all__ = ["Operator"]
 
+_PREPARED_OPERATOR_STATE_KEY = "_prepared_operator_state"
+
+
 class Operator(metaclass=OperatorMetaAuto):
     """Base class for TNFR structural operators.
 
@@ -89,7 +92,12 @@ class Operator(metaclass=OperatorMetaAuto):
         # Select before entering any subclass workflow. A fallback must run
         # its own metadata/metrics and effects, never those of the rejected
         # request (e.g. THOL nesting after an IL replacement).
-        selected = enforce_canonical_grammar(G, node, self.glyph, kw.get("sequence_context"))
+        selected = enforce_canonical_grammar(
+            G,
+            node,
+            self.glyph,
+            kw.get("sequence_context"),
+        )
         if glyph_function_name(selected) != glyph_function_name(self.glyph):
             fallback = get_operator_class(glyph_function_name(selected))()
             fallback(G, node, **kw)
@@ -105,7 +113,12 @@ class Operator(metaclass=OperatorMetaAuto):
         )
         self._execute(G, node, **kw)
 
-    def _validate_application_preconditions(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+    def _validate_application_preconditions(
+        self,
+        G: TNFRGraph,
+        node: Any,
+        **kw: Any,
+    ) -> None:
         """Validate shared execution controls and configured preconditions."""
 
         from ._argument_validation import (
@@ -171,8 +184,22 @@ class Operator(metaclass=OperatorMetaAuto):
 
         from .grammar_application import _apply_selected_glyph
 
+        prepared_state = None
         try:
-            _apply_selected_glyph(G, node, self.glyph, kw.get("window"))
+            prepared_state = self._prepare_glyph_application(G, node, **kw)
+            if prepared_state is not None and state_before is not None:
+                # A pre-operator monitor is permitted to inspect or even alter
+                # the graph. Prepared reads therefore own the immediate EN
+                # boundary and replace the earlier generic metrics snapshot.
+                state_before = self._capture_state(G, node)
+                state_before[_PREPARED_OPERATOR_STATE_KEY] = prepared_state
+            _apply_selected_glyph(
+                G,
+                node,
+                self.glyph,
+                kw.get("window"),
+                prepared_state=prepared_state,
+            )
             self._after_glyph_application(G, node, **kw)
         except Exception:
             if _integrity_monitor is not None:
@@ -213,6 +240,16 @@ class Operator(metaclass=OperatorMetaAuto):
             if "operator_metrics" not in G.graph:
                 G.graph["operator_metrics"] = []
             G.graph["operator_metrics"].append(metrics)
+
+    def _prepare_glyph_application(
+        self,
+        G: TNFRGraph,
+        node: Any,
+        **kw: Any,
+    ) -> Any:
+        """Materialize an optional operator-specific pre-write read set."""
+
+        return None
 
     def _after_glyph_application(
         self, G: TNFRGraph, node: Any, **kw: Any

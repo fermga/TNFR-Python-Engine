@@ -9,17 +9,21 @@ Operational Source-Discovery Policy
 The engine's EN source-discovery helper applies:
 
 1. **Source Detection**: Identify nodes above the selected EPI activity cut
-2. **Phase Compatibility**: Validate θᵢ ≈ θⱼ for effective coupling
+2. **Phase Compatibility**: Measure and rank the circular phase score
 3. **Emission Activity**: Measure capacity-weighted form (EPI × nu_f)
 4. **Network Distance**: Respect structural proximity in network
 
-These functions enable Reception to operate as "active reorganization from
-the exterior" rather than passive data absorption.
+For directed support, an arc ``source -> receiver`` defines incoming EN
+causality. Source paths and the direct-neighbour numeric Reception input use
+the same orientation. Source discovery is optional telemetry: it neither
+selects nor gates the neighbours used by the numeric EN blend, and its bounded
+search can report more distant ancestors that are absent from that blend.
 """
 
 from __future__ import annotations
 
 import math
+from numbers import Integral
 from typing import TYPE_CHECKING, Any
 
 from ...constants.operational import ACTIVE_EMISSION_THRESHOLD
@@ -31,17 +35,87 @@ from .._diagnostic_scores import (
 )
 from .._epi_domain import require_real_scalar_epi
 
-try:
-    import networkx as nx
-except ImportError:
-    nx = None  # Fallback to neighbor-only detection if networkx unavailable
-
 if TYPE_CHECKING:
     from ...types import TNFRGraph
 
 __all__ = [
     "detect_emission_sources",
 ]
+
+
+def _same_node_key(left: Any, right: Any) -> bool:
+    """Compare node keys without requiring hostile equality to succeed."""
+
+    if left is right:
+        return True
+    try:
+        return bool(left == right)
+    except BaseException:
+        return False
+
+
+def _canonical_node_buckets(
+    node_order: tuple[Any, ...],
+) -> dict[int, tuple[Any, ...]]:
+    """Index canonical graph keys by hash without comparing caller objects."""
+
+    pending: dict[int, list[Any]] = {}
+    for node in node_order:
+        try:
+            key_hash = hash(node)
+        except BaseException:
+            continue
+        pending.setdefault(key_hash, []).append(node)
+    return {key_hash: tuple(nodes) for key_hash, nodes in pending.items()}
+
+
+def _canonical_node_key(
+    node: Any,
+    buckets: dict[int, tuple[Any, ...]],
+) -> Any:
+    """Resolve an equal fresh adjacency key to its node-view representative."""
+
+    try:
+        candidates = buckets.get(hash(node), ())
+    except BaseException:
+        return node
+    return next(
+        (candidate for candidate in candidates if _same_node_key(candidate, node)),
+        node,
+    )
+
+
+def _bounded_source_identity_distances(
+    graph: Any,
+    receiver_node: Any,
+    max_distance: int,
+    canonical_buckets: dict[int, tuple[Any, ...]],
+) -> dict[int, int]:
+    """Return one reverse-BFS distance per canonical source object identity."""
+
+    from .._reception_kernel import reception_input_neighbors
+
+    seen_identities = {id(receiver_node)}
+    frontier = (receiver_node,)
+    distances: dict[int, int] = {}
+    for distance in range(1, max_distance + 1):
+        next_frontier: list[Any] = []
+        for target in frontier:
+            for observed_source in reception_input_neighbors(graph, target):
+                source = _canonical_node_key(
+                    observed_source,
+                    canonical_buckets,
+                )
+                source_identity = id(source)
+                if source_identity in seen_identities:
+                    continue
+                seen_identities.add(source_identity)
+                distances[source_identity] = distance
+                next_frontier.append(source)
+        if not next_frontier:
+            break
+        frontier = tuple(next_frontier)
+    return distances
 
 
 def detect_emission_sources(
@@ -51,21 +125,19 @@ def detect_emission_sources(
 ) -> list[tuple[Any, float, float]]:
     """Detect potential emission sources for EN receiver node.
 
-    Identifies nodes in the network that can serve as active sources for
-    the receiving node, ranked by phase compatibility. This operational
-    prefilter validates candidate sources before EN integrates resonance
-    intake.
+    Classifies potential sources in the network for telemetry at the receiving
+    node, ranked by phase compatibility. The result does not validate, select
+    or gate the direct neighbours that EN integrates numerically.
 
     Parameters
     ----------
     G : TNFRGraph
         Network graph containing TNFR nodes
     receiver_node : Any
-        Node applying EN (Reception) that needs to detect sources
+        Node whose optional EN source telemetry is being evaluated
     max_distance : int, optional
-        Maximum network distance to search for sources (default: 2)
-        Respects structural locality principle - distant nodes have
-        negligible coupling
+        Selected finite graph-distance window for source telemetry (default: 2).
+        This cutoff does not weight or gate the numeric EN blend.
 
     Returns
     -------
@@ -113,12 +185,12 @@ def detect_emission_sources(
 
     Examples
     --------
-    >>> from tnfr.structural import create_nfr
     >>> import networkx as nx
     >>> # Create network with emitter and receiver
     >>> G = nx.Graph()
-    >>> G, emitter = create_nfr("teacher", epi=0.5, vf=1.0, theta=0.3, G=G)
-    >>> _, receiver = create_nfr("student", epi=0.25, vf=0.9, theta=0.35, G=G)
+    >>> emitter, receiver = "teacher", "student"
+    >>> G.add_node(emitter, EPI=0.5, nu_f=1.0, theta=0.3)
+    >>> G.add_node(receiver, EPI=0.25, nu_f=0.9, theta=0.35)
     >>> G.add_edge(emitter, receiver)
     >>> # Detect sources
     >>> sources = detect_emission_sources(G, receiver)
@@ -134,10 +206,35 @@ def detect_emission_sources(
 
     See Also
     --------
-    Reception : Operator that uses source detection
+    Reception : Operator that can record this optional telemetry
     """
     from ...alias import get_attr
     from ...constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+
+    if (
+        isinstance(max_distance, bool)
+        or not isinstance(max_distance, Integral)
+        or max_distance < 0
+    ):
+        raise ValueError("Reception max_distance must be nonnegative integer")
+    source_max_distance = int(max_distance)
+
+    node_order = tuple(G.nodes())
+    canonical_buckets = _canonical_node_buckets(node_order)
+    canonical_receiver = next(
+        (
+            candidate
+            for candidate in node_order
+            if _same_node_key(candidate, receiver_node)
+        ),
+        receiver_node,
+    )
+    source_distances = _bounded_source_identity_distances(
+        G,
+        canonical_receiver,
+        source_max_distance,
+        canonical_buckets,
+    )
 
     # Get receiver phase
     receiver_theta = finite_real(
@@ -153,22 +250,11 @@ def detect_emission_sources(
     sources: list[tuple[Any, float, float]] = []
 
     # Scan network for potential sources
-    for source in G.nodes():
-        if source == receiver_node:
+    for source in node_order:
+        if _same_node_key(source, canonical_receiver):
             continue
-
-        # Check network distance
-        if nx is not None:
-            try:
-                distance = nx.shortest_path_length(G, source, receiver_node)
-                if distance > max_distance:
-                    continue
-            except nx.NetworkXNoPath:
-                continue
-        else:
-            # Fallback: only check immediate neighbors
-            if source not in G.neighbors(receiver_node):
-                continue
+        if id(source) not in source_distances:
+            continue
 
         # Apply the selected EPI activity threshold.
         source_epi = require_real_scalar_epi(

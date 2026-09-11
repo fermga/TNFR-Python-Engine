@@ -20,7 +20,11 @@ from .event_timing import (
     ScheduledOperatorEvent,
     StructuralFlowInterval,
 )
-from .network_stage import MutationStageDecisionObservation, NetworkStageResult
+from .network_stage import (
+    MutationStageDecisionObservation,
+    NetworkStageResult,
+    ReceptionStageObservation,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -230,6 +234,7 @@ class ExecutedGlyphStage:
     mutation_decision_observations: tuple[
         MutationStageDecisionObservation, ...
     ] = field(...)
+    reception_observations: tuple[ReceptionStageObservation, ...] = field(...)
     solver_accuracy_certified: bool = field(default=..., init=False)
     future_or_repeated_schedule_stability_certified: bool = field(
         default=...,

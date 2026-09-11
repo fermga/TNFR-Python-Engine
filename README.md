@@ -118,6 +118,15 @@ Silence, Expansion, Contraction, Mutation and Transition; Coupling's
 overlapping phase/topology proposal; Dissonance's overlapping pressure
 proposal; Self-organization's child-support and hierarchy merge; and
 Recursivity's deduplicated network advisory.
+Reception additionally materializes one owner-bound, value-sealed pre-EN read
+per target. The same record supplies its target and neighbour EPI values,
+semantic kinds, optional source detection and metrics; all graph-backed direct
+entry points reuse the same kernel and reject stale or cross-graph prepared
+state before writing.
+For directed support, `source -> receiver` defines an incoming EN input, so the
+numeric blend reads predecessors and source detection uses the same causality.
+That detection is optional telemetry; it does not select or gate the direct
+neighbours integrated by EN.
 Coherence contracts each target's pressure magnitude and locks its phase from
 that shared snapshot;
 its canonical stage/global and radius-local structural `C(t)` fields are
@@ -364,8 +373,15 @@ one sealed `MutationStageDecisionObservation` per target, including its complete
 threshold certificate, phase/regime decision, acceleration/bifurcation read-out
 and U4 context. `NetworkStageResult` retains these observations even when no EPI
 certificate was requested; opt-in event-stage evidence carries them forward.
+Every accepted two-phase EN stage likewise preserves one sealed
+`ReceptionStageObservation` per target. It binds pre/post EPI and kind to one
+pre-EN neighbour/source snapshot and verifies the final kind and tracked source
+record after all graph-mutating stage checks and before warning publication.
+Its hard-false auxiliary-stability
+claim keeps this finite provenance separate from a trajectory invariant.
 Each `ExecutedGlyphStage` is value-sealed across its event, endpoints,
-certificate, adjacent-flow records and Mutation observations. The execution
+certificate, adjacent-flow records, Mutation observations and Reception
+observations. The execution
 result requires one intact stage per committed event in the same order, so
 construction or replacement cannot promote a represented-gain claim.
 
