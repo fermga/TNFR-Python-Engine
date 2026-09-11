@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added — 2026-09-11 Relative-defect REMESH/schedule stability
+
+- Added `remesh_schedule_relative_defect_stability.py` and its public stub. For
+  one intact common-`q` policy certificate, a declared signed pre-schedule
+  defect bound `E_H(z)-E_H(y) <= eta*J`, with
+  `J=sum_d c_d E_H(x[k-d])`, yields the exact effective head gain
+  `q_eff=q*(1+eta)`. The theorem reuses the existing companion envelope,
+  rejects `q_eff>1`, gives nonincrease at `q_eff=1`, and gives block margin
+  `1-q_eff` plus geometric spatial-disagreement decay when `q_eff<1`.
+- Added `runtime_remesh_schedule_relative_defect.py` and focused causal tests.
+  Its finite observer binds an intact executed cycle sequence to the theorem,
+  verifies every selected signed defect and represented schedule gain, checks
+  the full history-energy vector envelope, and applies the complete-block
+  endpoint bound. `J=0` is checked algebraically without forming a ratio.
+  This finite evidence does not establish a forward-invariant runtime class,
+  repeated or future binary64 stability, solver properties, or full TNFR
+  stability.
+- Re-exported both robust APIs from `tnfr.physics` and added
+  `172_runtime_remesh_relative_defect.py`, which records an exact-zero defect
+  complete block and a positive binary64 defect accepted at its exact minimum
+  `eta`.
+- Centralized same-call integrity validation in the causal block adapters. The
+  relative-defect constructor and each public integrity query now perform one
+  deep source, certificate and nested-block validation apiece; every later
+  query validates afresh, so no mutable trust cache is retained.
+
 ### Added — 2026-09-11 Uniform exact REMESH/schedule policy stability
 
 - Added `remesh_schedule_policy_stability.py`, its public stub, focused tests

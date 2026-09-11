@@ -639,6 +639,35 @@ The exact derivation is
 with a public witness in
 [`171_remesh_schedule_policy_stability.py`](examples/02_physics_regimes/171_remesh_schedule_policy_stability.py).
 
+The robust extension
+[`certify_uniform_remesh_schedule_relative_defect_stability(...)`](src/tnfr/physics/remesh_schedule_relative_defect_stability.py)
+separates the ideal REMESH head `y` from the bounded head `z` presented to the
+schedule. Define the Jensen input envelope
+`J=sum_d c_d E_H(x[k-d])` and assume the signed energy defect satisfies
+`E_H(z)-E_H(y) <= eta*J`, with `eta >= 0`, at every transition. Since
+`E_H(y) <= J`, a schedule with disagreement-energy gain at most `q` gives the
+effective head gain `q_eff=q*(1+eta)`. The sealed theorem reuses the common-`q`
+companion proof with `q_eff`: it rejects `q_eff>1`, proves nonincrease and zero
+margin at `q_eff=1`, and proves block margin `1-q_eff` and geometric spatial-
+disagreement decay when `q_eff<1`. The defect is a signed difference of
+energies; it is not the energy or norm of the rounding/clipping residual. The
+pure certificate assumes this uniform bound and does not verify a runtime
+family or its forward invariance.
+
+[`observe_executed_event_remesh_relative_defect_block(...)`](src/tnfr/physics/runtime_remesh_schedule_relative_defect.py)
+checks that hypothesis on one nonempty contiguous block of an intact causal
+execution. At each boundary it reconstructs `J`, the ideal and bounded head
+energies, the signed defect and its exact slack; requires the represented
+schedule gain to be no larger than the declared `q`; and verifies the complete
+history-energy vector against `diag(q_eff,1,...,1)P`. It then checks the finite
+endpoint bound using only complete universal blocks. When `J=0`, it tests the
+zero defect budget directly and leaves the ratio undefined. This binds the
+theorem to recorded finite evidence, while forward invariance, repetition and
+future binary64 stability remain open.
+[`172_runtime_remesh_relative_defect.py`](examples/02_physics_regimes/172_runtime_remesh_relative_defect.py)
+presents both an exact-zero defect block and a positive binary64 defect
+accepted at its exact minimum `eta`.
+
 [`observe_runtime_remesh_history_bridge(...)`](src/tnfr/physics/runtime_remesh_history_stability.py)
 binds one applied executor-sealed cycle to that exact companion. It converts
 the retained runtime history to newest-first order, replays the nested

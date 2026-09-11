@@ -369,6 +369,24 @@ This result does not control spatially uniform temporal means, verify the
 schedule hypotheses or promote the binary64 runtime and its defects. See
 [`REMESH_INFINITY_DERIVATION.md`](REMESH_INFINITY_DERIVATION.md#211-uniform-exact-remeshschedule-policy-stability).
 
+`certify_uniform_remesh_schedule_relative_defect_stability` adds the exact
+robust budget needed between the binary64 REMESH realization and that policy
+theorem. For Jensen input energy `J`, ideal head `y` and bounded head `z`, the
+declared signed defect `E_H(z)-E_H(y)<=eta*J` changes the common head gain to
+`q_eff=q*(1+eta)`. The certificate rejects `q_eff>1`; equality gives a zero-
+margin nonincrease result, while strict inequality gives normalized block
+margin `1-q_eff` and repeated exact-model spatial-disagreement decay. It does
+not identify a runtime class or derive `eta` from rounding/clipping semantics.
+
+`observe_executed_event_remesh_relative_defect_block` performs the missing
+finite check on one contiguous part of an intact causal execution. It verifies
+each exact defect and schedule gain, the componentwise `D_qeff P` history-
+energy envelope, continuity and the complete-block endpoint factor. Its
+runtime claims stop at the selected block: a forward-invariant class,
+repetition, future binary64 behavior and full TNFR stability remain open.
+See
+[`REMESH_INFINITY_DERIVATION.md`](REMESH_INFINITY_DERIVATION.md#212-relative-signed-defect-envelope-and-finite-causal-verification).
+
 `observe_runtime_remesh_history_bridge` identifies one applied,
 executor-sealed REMESH result with that companion while retaining exact signed
 binary64 rounding and clipping residuals. It lifts the runtime head into the
@@ -1494,9 +1512,12 @@ channel, direction, scale and postcondition).
 | `src/tnfr/physics/reversible_eigenmode_reference.py` / `src/tnfr/physics/reversible_eigenmode_reference.pyi` | Pure exact-rational reversible single-eigenmode Euler theorem and public interface |
 | `src/tnfr/physics/remesh_history_stability.py` | Exact uniform finite companion-history stability certificate |
 | `src/tnfr/physics/remesh_schedule_policy_stability.py` / `src/tnfr/physics/remesh_schedule_policy_stability.pyi` | Conditional exact common-`q` REMESH/schedule spatial-disagreement theorem |
+| `src/tnfr/physics/remesh_schedule_relative_defect_stability.py` / `src/tnfr/physics/remesh_schedule_relative_defect_stability.pyi` | Conditional exact robust policy theorem with `q_eff=q*(1+eta)` |
 | `src/tnfr/physics/runtime_remesh_history_stability.py` | One-transition runtime REMESH/companion bridge with signed residuals |
 | `src/tnfr/physics/remesh_schedule_stability.py` | Exact REMESH-head/schedule-head augmented-energy balance |
 | `src/tnfr/physics/runtime_remesh_schedule_stability.py` | Adjacent-cycle runtime/history energy telescope |
+| `src/tnfr/physics/runtime_remesh_schedule_block_margin.py` / `src/tnfr/physics/runtime_remesh_schedule_block_margin.pyi` | Exact normalized margin for one finite causal boundary block |
+| `src/tnfr/physics/runtime_remesh_schedule_relative_defect.py` / `src/tnfr/physics/runtime_remesh_schedule_relative_defect.pyi` | Finite causal verification of signed defects and the robust energy envelope |
 | `src/tnfr/operators/nodal_equation.py` | Nodal equation validation |
 | `src/tnfr/operators/canonical_patterns.py` | Canonical sequence definitions |
 | `src/tnfr/operators/introspection.py` | `OperatorMeta` metadata registry |
@@ -1544,6 +1565,7 @@ The `Operator.__call__(G, node, **kw)` method implements the canonical execution
 | [167_reversible_eigenmode_reference.py](../examples/02_physics_regimes/167_reversible_eigenmode_reference.py) | No glyph execution: pure exact-real references for both nonuniform modes of nonregular `P3` |
 | [169_event_remesh_causal_runtime.py](../examples/02_physics_regimes/169_event_remesh_causal_runtime.py) | One finite same-invocation event/REMESH cycle sequence with causal receipts, outer graph atomicity, and an explicit stability boundary |
 | [171_remesh_schedule_policy_stability.py](../examples/02_physics_regimes/171_remesh_schedule_policy_stability.py) | Conditional exact common-`q` REMESH/schedule theorem, including strict pure-delay disagreement decay and the zero-margin `q=1` boundary |
+| [172_runtime_remesh_relative_defect.py](../examples/02_physics_regimes/172_runtime_remesh_relative_defect.py) | Robust `q_eff=q*(1+eta)` envelope verified on exact-zero and positive-binary64-defect finite causal blocks |
 
 ### 15.4 SDK Entry Points
 

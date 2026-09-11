@@ -91,9 +91,13 @@ problems. Supporting maps include
   uniform positive absolute drop. A separate conditional exact policy theorem
   gives prefix gain upper bound one, uniform normalized block margin `1-q` and repeated
   geometric spatial-disagreement decay for fixed-companion schedule families
-  with one common exact gain `q<1`. Binary64/runtime promotion of that class,
-  relative rounding/clipping control, mesh convergence, repeated runtime
-  stability and the runtime infinity limit remain open.
+  with one common exact gain `q<1`. Its robust extension absorbs any declared
+  signed head-energy defect `delta<=eta*J` through
+  `q_eff=q*(1+eta)`, and a causal adapter verifies that bound, the represented
+  gains and the full history-energy envelope on one recorded finite block.
+  Deriving a uniform `eta` and proving the fixed policy and defect class
+  forward invariant under future binary64 execution, mesh convergence,
+  repeated runtime stability and the runtime infinity limit remain open.
 - [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) records
   tested catalog extensions and their classification.
 - [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) links selected

@@ -713,6 +713,41 @@ solver accuracy/order, adaptive grammar or full TNFR stability. The class and
 builder are re-exported from `tnfr.physics`; example 171 exercises the strict
 mixed-delay, strict pure-delay and `q=1` boundary cases.
 
+[`certify_uniform_remesh_schedule_relative_defect_stability`](../src/tnfr/physics/remesh_schedule_relative_defect_stability.py)
+accepts an intact common-`q` policy certificate and a finite nonnegative
+relative signed-defect bound `eta`. For the ideal head `y`, runtime-bounded head
+`z`, and Jensen input envelope
+
+```text
+J = sum_d c_d E_H(history[d]),
+delta = E_H(z) - E_H(y) <= eta*J,
+q_eff = q*(1+eta),
+```
+
+Jensen's inequality and the declared schedule gain imply
+`E_H(schedule(z)) <= q_eff*J`. The builder delegates its matrices and block
+powers to the common-gain theorem, preserving `q` as the schedule-only bound.
+It rejects `q_eff>1`; `q_eff=1` gives nonincrease and zero margin, while
+`q_eff<1` gives normalized block margin `1-q_eff` and the repeated exact-model
+bound `q_eff^floor(n/L)`. A zero schedule gain absorbs every finite `eta`.
+The defect is the signed difference between two centered energies, not the
+energy of the state residual. The certificate declares rather than verifies
+the per-transition hypothesis and therefore makes no runtime or future claim.
+
+[`observe_executed_event_remesh_relative_defect_block`](../src/tnfr/physics/runtime_remesh_schedule_relative_defect.py)
+accepts one intact `ExecutedEventRemeshCycleSequence`, one intact relative-
+defect certificate, and an optional nonempty contiguous boundary range. It
+reuses the causal block binding and, for each selected boundary, verifies the
+REMESH configuration, represented schedule gain `q_j <= q`, exact signed
+defect `delta_j <= eta*J_j`, and the componentwise history-energy envelope
+under `diag(q_eff,1,...,1)P`. It records exact defect ratios only when
+`J_j>0`; at `J_j=0`, it checks the inequality without division. The endpoint
+bound is `q_eff^floor(N/L)` for `N` selected boundaries, so an incomplete first
+block retains factor one. The result certifies only that recorded finite
+causal block. It does not prove that the bounds are forward invariant, recur
+on later executions, establish solver accuracy/order, or stabilize the full
+TNFR state.
+
 [`observe_runtime_remesh_history_bridge`](../src/tnfr/physics/runtime_remesh_history_stability.py)
 accepts one intact, applied `EventRemeshCycleResult` and binds it to that exact
 companion model. The returned `RuntimeRemeshHistoryBridgeObservation` retains
@@ -840,6 +875,16 @@ re-exported from `tnfr.physics`.
   prefix and block inequalities, endpoint regimes, input domain and fail-closed
   seals; [`test_remesh_schedule_policy_stability_example.py`](../tests/physics/test_remesh_schedule_policy_stability_example.py)
   checks the facade, stub, import order and public example 171.
+- [`test_remesh_schedule_relative_defect_stability.py`](../tests/physics/test_remesh_schedule_relative_defect_stability.py)
+  verifies exact `q_eff`, the reused envelope, zero/equality/rejection
+  boundaries, Jensen cancellation and `J=0`, exact rationalization, hostile
+  inputs and fail-closed nested seals.
+- [`test_runtime_remesh_schedule_relative_defect.py`](../tests/physics/test_runtime_remesh_schedule_relative_defect.py)
+  verifies causal identity, normalized signed defects, minimum accepted `eta`,
+  represented `q_j<=q`, every history-vector envelope, incomplete and complete
+  blocks, zero energy and tamper resistance;
+  [`test_runtime_remesh_schedule_relative_defect_example.py`](../tests/physics/test_runtime_remesh_schedule_relative_defect_example.py)
+  checks the public facade and example 172.
 - [`test_runtime_remesh_history_stability.py`](../tests/physics/test_runtime_remesh_history_stability.py)
   verifies bit-exact replay, signed residual and energy identities, hard-clip
   nonexpansiveness, the soft-clip counterexample, inactive-delay handling and

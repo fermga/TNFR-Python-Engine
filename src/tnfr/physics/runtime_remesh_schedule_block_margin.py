@@ -412,7 +412,15 @@ class RuntimeRemeshScheduleBlockMarginObservation:
     conditions: tuple[tuple[str, bool], ...]
     _proof_stamp: tuple[Any, ...] = field(repr=False, compare=False)
 
-    def _proof_fields_are_intact(self) -> bool:
+    def _proof_fields_are_intact_after_source_validation(self) -> bool:
+        """Revalidate this block after its source passed in the same call.
+
+        This private path retains no trust between calls.  Its only caller must
+        have completed the canonical deep source validation immediately before
+        invoking it.  The block's own stamp, selected-boundary identities and
+        every derived semantic field are still rederived here.
+        """
+
         try:
             current = _observation_values(self)
             current_stamp = _proof_stamp_from_values(current)
@@ -422,8 +430,6 @@ class RuntimeRemeshScheduleBlockMarginObservation:
             ):
                 return False
             source = object.__getattribute__(self, "source_execution")
-            if not _execution_is_intact(source):
-                return False
             expected = _derive_values(
                 source,
                 object.__getattribute__(self, "start_boundary"),
@@ -436,6 +442,15 @@ class RuntimeRemeshScheduleBlockMarginObservation:
                 object.__getattribute__(self, "_proof_stamp"),
                 expected_stamp,
             )
+        except BaseException:
+            return False
+
+    def _proof_fields_are_intact(self) -> bool:
+        try:
+            source = object.__getattribute__(self, "source_execution")
+            if not _execution_is_intact(source):
+                return False
+            return self._proof_fields_are_intact_after_source_validation()
         except BaseException:
             return False
 
@@ -542,6 +557,31 @@ class RuntimeRemeshScheduleBlockMarginObservation:
         return False
 
 
+def _observe_executed_event_remesh_block_margin_after_source_validation(
+    execution: ExecutedEventRemeshCycleSequence,
+    *,
+    start_boundary: int = 0,
+    boundary_count: int | None = None,
+) -> RuntimeRemeshScheduleBlockMarginObservation:
+    """Build a block after deep source validation in the current call."""
+
+    values = _derive_values(
+        execution,
+        start_boundary,
+        boundary_count,
+        source_already_validated=True,
+    )
+    result = RuntimeRemeshScheduleBlockMarginObservation(
+        **values,
+        _proof_stamp=_proof_stamp_from_values(values),
+    )
+    if not result._proof_fields_are_intact_after_source_validation():
+        raise RuntimeError(
+            "constructed runtime REMESH block-margin proof is inconsistent"
+        )
+    return result
+
+
 def observe_executed_event_remesh_block_margin(
     execution: ExecutedEventRemeshCycleSequence,
     *,
@@ -550,13 +590,16 @@ def observe_executed_event_remesh_block_margin(
 ) -> RuntimeRemeshScheduleBlockMarginObservation:
     """Derive an exact margin for a contiguous causal execution block."""
 
-    values = _derive_values(execution, start_boundary, boundary_count)
-    result = RuntimeRemeshScheduleBlockMarginObservation(
-        **values,
-        _proof_stamp=_proof_stamp_from_values(values),
-    )
-    if not result._proof_fields_are_intact():
-        raise RuntimeError(
-            "constructed runtime REMESH block-margin proof is inconsistent"
+    if type(execution) is not ExecutedEventRemeshCycleSequence:
+        raise TypeError(
+            "execution must be an ExecutedEventRemeshCycleSequence"
         )
-    return result
+    if not _execution_is_intact(execution):
+        raise TNFRValueError(
+            "executed cycle sequence is unsealed, tampered, or inconsistent"
+        )
+    return _observe_executed_event_remesh_block_margin_after_source_validation(
+        execution,
+        start_boundary=start_boundary,
+        boundary_count=boundary_count,
+    )

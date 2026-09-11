@@ -97,3 +97,13 @@ and the repeated bound `q^floor(n/L)`. Its strict mixed-delay and pure-delay
 witnesses use `q=1/4`; the `q=1` witness has zero certified margin. This example
 does not execute or verify a binary64 schedule, control runtime defects or
 claim stability of spatially uniform temporal means or full TNFR state.
+
+`172_runtime_remesh_relative_defect.py` adds the conditional robust envelope
+`q_eff=q*(1+eta)`, where `eta` bounds the signed pre-schedule centered-energy
+defect relative to the Jensen input energy `J`. Its three-cycle dyadic witness
+has zero defect and spans one complete universal block; its `alpha=0.4`
+witness retains a positive binary64 defect and accepts the exact minimum
+`eta`. The causal observer verifies every selected `J`, defect, schedule gain,
+history-energy vector and finite endpoint bound. It does not establish a
+forward-invariant runtime class, repeated or future binary64 stability, solver
+properties or full TNFR stability.

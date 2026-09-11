@@ -77,6 +77,10 @@ remesh_schedule_policy_stability : Uniform exact REMESH/schedule policy theorem
     - Common schedule gain q gives prefix bound 1 and block gain q
     - Repeated spatial-disagreement decay for q < 1 over L = max_delay + 1
     - Conditional on exact maps; excludes binary64 runtime identification
+remesh_schedule_relative_defect_stability : Robust exact policy envelope
+    - Signed pre-schedule defect delta <= eta J gives q_eff = q(1 + eta)
+    - Reuses the common-q theorem; q_eff < 1 gives geometric disagreement decay
+    - Assumes a uniform defect bound; excludes runtime forward invariance
 runtime_remesh_history_stability : Executed runtime/companion bridge
     - Exact signed binary64 rounding and clipping residual decomposition
     - Lifted one-step augmented-energy balances and sufficient lower bounds
@@ -89,6 +93,10 @@ runtime_remesh_schedule_stability : Adjacent-cycle runtime/history binding
     - Identifies the next represented schedule and recorded history append
     - Telescopes exact finite augmented-energy balances in one metric
     - Excludes shared execution provenance, global gain and repetition
+runtime_remesh_schedule_relative_defect : Finite robust-policy verification
+    - Checks signed relative defects, represented gains and vector envelopes
+    - Applies the complete-block q_eff endpoint bound to one causal block
+    - Excludes forward invariance, repetition and future binary64 stability
 runtime_remesh_schedule_block_margin : Causal finite-block margin observation
     - Normalizes a contiguous block lower bound by its initial energy
     - Binds the block to one graph-owned causal finite execution
@@ -510,6 +518,10 @@ from .remesh_schedule_policy_stability import (
     UniformRemeshSchedulePolicyStabilityCertificate,
     certify_uniform_remesh_schedule_policy_stability,
 )
+from .remesh_schedule_relative_defect_stability import (
+    UniformRemeshScheduleRelativeDefectStabilityCertificate,
+    certify_uniform_remesh_schedule_relative_defect_stability,
+)
 from .runtime_remesh_history_stability import (
     RuntimeRemeshHistoryBridgeObservation,
     observe_runtime_remesh_history_bridge,
@@ -526,6 +538,10 @@ from .runtime_remesh_schedule_stability import (
 from .runtime_remesh_schedule_block_margin import (
     RuntimeRemeshScheduleBlockMarginObservation,
     observe_executed_event_remesh_block_margin,
+)
+from .runtime_remesh_schedule_relative_defect import (
+    RuntimeRemeshScheduleRelativeDefectBlockObservation,
+    observe_executed_event_remesh_relative_defect_block,
 )
 from .network_stage_stability import (
     AllTargetNeighborStageCertificate,
@@ -842,6 +858,9 @@ __all__ = [
     # --- Uniform exact REMESH/schedule policy stability ---
     "UniformRemeshSchedulePolicyStabilityCertificate",
     "certify_uniform_remesh_schedule_policy_stability",
+    # --- Relative-defect robust REMESH/schedule policy stability ---
+    "UniformRemeshScheduleRelativeDefectStabilityCertificate",
+    "certify_uniform_remesh_schedule_relative_defect_stability",
     # --- Executed REMESH runtime/companion bridge ---
     "RuntimeRemeshHistoryBridgeObservation",
     "observe_runtime_remesh_history_bridge",
@@ -855,6 +874,9 @@ __all__ = [
     # --- Causally executed finite REMESH/schedule block margin ---
     "RuntimeRemeshScheduleBlockMarginObservation",
     "observe_executed_event_remesh_block_margin",
+    # --- Finite causal relative-defect REMESH/schedule block ---
+    "RuntimeRemeshScheduleRelativeDefectBlockObservation",
+    "observe_executed_event_remesh_relative_defect_block",
     # --- Physical operator-event flow duration ---
     "ContinuousRelaxationDurationDiagnostic",
     "diagnose_continuous_relaxation_duration",

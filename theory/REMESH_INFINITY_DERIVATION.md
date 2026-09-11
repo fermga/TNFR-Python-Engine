@@ -1,19 +1,22 @@
 # REMESH Fixed-Delay Models and Runtime-Limit Boundary
 
 **Status**: CORRECTED N15 HISTORICAL RECORD — restricted finite cyclic,
-companion and conditional policy results; runtime limit and catalog completeness
-open
+companion, conditional policy and finite robust-defect results; runtime limit
+and catalog completeness open
 **Date**: May 26, 2026 — corrected September 2026
 **Owner**: `theory/REMESH_INFINITY_DERIVATION.md`
 **Source implementations**: `src/tnfr/operators/remesh.py::apply_network_remesh`,
 `src/tnfr/physics/remesh_history_stability.py`,
 `src/tnfr/physics/remesh_schedule_policy_stability.py`,
 `src/tnfr/physics/remesh_schedule_policy_stability.pyi`,
+`src/tnfr/physics/remesh_schedule_relative_defect_stability.py`,
+`src/tnfr/physics/remesh_schedule_relative_defect_stability.pyi`,
 `src/tnfr/physics/runtime_remesh_history_stability.py`,
-`src/tnfr/physics/remesh_schedule_stability.py`, and
+`src/tnfr/physics/remesh_schedule_stability.py`,
 `src/tnfr/physics/runtime_remesh_schedule_stability.py`,
-`src/tnfr/operators/event_remesh_causal_runtime.py`, and
-`src/tnfr/physics/runtime_remesh_schedule_block_margin.py`, with their typed
+`src/tnfr/operators/event_remesh_causal_runtime.py`,
+`src/tnfr/physics/runtime_remesh_schedule_block_margin.py`, and
+`src/tnfr/physics/runtime_remesh_schedule_relative_defect.py`, with their typed
 interfaces where present, plus the finite
 reference-family certificate and typed interface in
 `src/tnfr/physics/event_remesh_reference.py` and
@@ -54,6 +57,16 @@ prefix gain at most one and block gain at most $q$ over the sufficient horizon
 $L=\texttt{active\_max\_delay}+1$. Thus $q<1$ gives uniform normalized margin
 $1-q$ and repeated geometric decay of spatial disagreement. This theorem does
 not verify the schedule family or identify it with the binary64 runtime.
+
+A robust conditional extension admits a bounded signed pre-schedule head
+defect. If $J_k$ is the Jensen energy envelope of the active REMESH history,
+$y_k$ is the ideal head, $z_k$ is the bounded head and
+$E_H(z_k)-E_H(y_k)\leq\eta J_k$, then the combined head gain is
+$q_{\mathrm{eff}}=q(1+\eta)$. The same companion proof gives nonincrease for
+$q_{\mathrm{eff}}\leq1$ and geometric spatial-disagreement decay for
+$q_{\mathrm{eff}}<1$. A finite causal observer checks these inequalities on a
+recorded execution block. It does not prove that one uniform $\eta$ is forward
+invariant for a runtime class.
 
 Neither base finite model is the complete clipped, history-gated runtime
 operation.
@@ -732,9 +745,104 @@ schedule map, metric or runtime record;
 the common-gain and consensus-preservation statements are explicit hypotheses.
 It is therefore a repeated theorem for the declared exact family, not a
 promotion of the causal binary64 observer in §2.10. Such a promotion still
-needs a forward-invariant runtime class, fixed support and metric, and uniform
-relative bounds for centered rounding and clipping defects. Absolute additive
-defect bounds can at most imply convergence to a neighborhood.
+needs a forward-invariant runtime class, fixed support and metric, and a
+derived uniform centered relative defect bound. Section §2.12 shows how such a
+bound enters the exact margin; absolute additive defect bounds can at most
+imply convergence to a neighborhood.
+
+### §2.12 Relative signed-defect envelope and finite causal verification
+
+The common-$q$ theorem can absorb a bounded discrepancy between the ideal
+REMESH head and the bounded head actually presented to the next schedule.
+For one transition, write
+
+$$
+J_k=\sum_d c_d E_H(x_{k-d}),
+\qquad
+y_k=\sum_d c_d x_{k-d},
+$$
+
+where the nonnegative active coefficients sum to one. Let $z_k$ be the
+bounded binary64 head represented as an exact rational vector. The relevant
+quantity is the signed centered-energy defect
+
+$$
+\delta_k=E_H(z_k)-E_H(y_k).
+$$
+
+It is not $E_H(z_k-y_k)$ and it is not a norm of the state residual: the
+energy cross term prevents either substitution. Assume one finite
+$\eta\geq0$ satisfies
+
+$$
+\delta_k\leq\eta J_k
+$$
+
+for every transition in the declared fixed-support, fixed-metric family.
+Jensen gives $E_H(y_k)\leq J_k$, hence
+
+$$
+E_H(z_k)\leq(1+\eta)J_k.
+$$
+
+If the following consensus-preserving schedule has disagreement-energy gain
+at most $q$, including on $z_k$, then
+
+$$
+E_H(S_k z_k)\leq q(1+\eta)J_k
+  =q_{\mathrm{eff}}J_k,
+\qquad
+q_{\mathrm{eff}}=q(1+\eta).
+$$
+
+Therefore the proof in §2.11 applies verbatim with $q_{\mathrm{eff}}$ in the
+head row:
+
+$$
+B_{q_{\mathrm{eff}}}
+  =\operatorname{diag}(q_{\mathrm{eff}},1,\ldots,1)P,
+\qquad
+V_{k+n}\leq
+q_{\mathrm{eff}}^{\lfloor n/L\rfloor}V_k.
+$$
+
+The exact certificate rejects $q_{\mathrm{eff}}>1$. At
+$q_{\mathrm{eff}}=1$ it proves prefix and block nonexpansion with zero
+margin. At $q_{\mathrm{eff}}<1$ it proves normalized block-margin lower bound
+$1-q_{\mathrm{eff}}$ and geometric decay of spatial disagreement in every
+retained history row. If $q=0$, every finite $\eta$ gives
+$q_{\mathrm{eff}}=0$. These conclusions still leave spatially uniform
+temporal means uncontrolled.
+
+The normalization by $J_k$ is essential. Opposing active centered fields can
+cancel in $y_k$, making $E_H(y_k)=0$ while $J_k>0$; a ratio against the ideal
+energy would then be singular even though a finite robust budget exists. If
+$J_k=0$, Jensen forces $E_H(y_k)=0$, and the declared inequality directly
+requires $E_H(z_k)=0$. Implementations must check that algebraic condition and
+must not divide by zero.
+
+[`certify_uniform_remesh_schedule_relative_defect_stability`](../src/tnfr/physics/remesh_schedule_relative_defect_stability.py)
+materializes this conditional theorem by reusing the sealed policy envelope,
+rather than maintaining a second matrix-power implementation. It keeps the
+schedule-only $q$ separate from $q_{\mathrm{eff}}$ and exact-rationalizes the
+caller-supplied $\eta$.
+
+[`observe_executed_event_remesh_relative_defect_block`](../src/tnfr/physics/runtime_remesh_schedule_relative_defect.py)
+provides the finite causal bridge. For every selected adjacent boundary of one
+intact `ExecutedEventRemeshCycleSequence`, it reconstructs $J_k$, $E_H(y_k)$,
+$E_H(z_k)$ and $\delta_k$; checks $\delta_k\leq\eta J_k$ and the represented
+schedule gain $q_k\leq q$; and verifies the complete post-schedule
+history-energy vector against $B_{q_{\mathrm{eff}}}$ times its input vector.
+For $N$ selected boundaries it checks the finite endpoint factor
+$q_{\mathrm{eff}}^{\lfloor N/L\rfloor}$. A prefix shorter than $L$ therefore
+retains factor one.
+
+This observer establishes the inequalities only on the recorded causal block.
+It does not show that future heads remain in a class satisfying the same
+$\eta$, or that support, metric, REMESH coefficients and schedule policy stay
+fixed. A repeated binary64 theorem still requires that forward-invariance
+argument. Solver accuracy and order, adaptive grammar, and full multichannel
+TNFR stability also remain outside scope.
 
 ---
 
@@ -1081,6 +1189,9 @@ The original commits remain useful provenance:
 - **Exact policy branch**: under the common fixed-metric schedule-gain
   hypothesis of §2.11, prefix gain is at most one and `q<1` gives uniform
   geometric spatial-disagreement decay, including at $\alpha=1$.
+- **Relative-defect branch**: under the uniform signed bound of §2.12, the
+  effective factor is `q_eff=q*(1+eta)`; a causal adapter verifies that bound
+  and its vector envelope on finite executed blocks, but not future invariance.
 - **Branch B1**: no universality conclusion follows without a scaling family
   and an intertwining map.
 - **Branch B2**: no extra registry entry is needed to compute this projection;
@@ -1100,6 +1211,8 @@ The corrected results are internal and limited:
   limit for one fixed uniform unclipped companion recurrence;
 - it supplies a conditional exact common-$q$ schedule-family theorem with a
   uniform normalized margin and prefix bound;
+- it supplies a conditional signed relative-defect extension and a finite
+  causal verifier for its complete energy-vector envelope;
 - it separates an auxiliary linear model from the canonical clipped runtime;
 - it corrects the fixed-mode arithmetic from LCM to GCD;
 - it leaves all classical open problems unchanged;
@@ -1147,6 +1260,16 @@ witnesses, prefix and repeated bounds, endpoint regimes, public facade and
 fail-closed seals. A separate consensus-amplification witness confirms that the
 result controls spatial disagreement rather than uniform temporal means.
 
+The relative-defect theorem, causal adapter and public example are checked by
+[`test_remesh_schedule_relative_defect_stability.py`](../tests/physics/test_remesh_schedule_relative_defect_stability.py),
+[`test_runtime_remesh_schedule_relative_defect.py`](../tests/physics/test_runtime_remesh_schedule_relative_defect.py)
+and
+[`test_runtime_remesh_schedule_relative_defect_example.py`](../tests/physics/test_runtime_remesh_schedule_relative_defect_example.py).
+They verify exact `q_eff`, cancellation-safe normalization by `J`, the `J=0`
+case without division, schedule-gain and componentwise envelope inequalities,
+complete-block endpoint factors, a positive binary64 defect at its exact
+minimum `eta`, causal identity and fail-closed seals.
+
 The graph-owned finite causal wrapper and public example are checked by
 [`test_event_remesh_causal_runtime.py`](../tests/operators/test_event_remesh_causal_runtime.py)
 and
@@ -1186,9 +1309,9 @@ The following problems remain open:
 
 1. Define a common state space and convergence mode for a nontrivial runtime
    $\tau_g\to\infty$ limit.
-2. Promote the exact common-$q$ theorem to a forward-invariant runtime class by
-   proving uniform centered relative rounding/clipping defect bounds that leave
-   a positive net block margin; retain the zero-margin, scaling and soft-knee
+2. Derive one uniform `eta` and prove a fixed-support, fixed-metric,
+   fixed-REMESH and common-policy class forward invariant under binary64
+   execution with `q_eff<1`; retain the zero-margin, scaling and soft-knee
    obstructions.
 3. Determine the extra hypotheses needed to compose the implemented general
    finite executor/eigenmode binding with REMESH beyond effective $P_2$; its
@@ -1215,7 +1338,11 @@ observer extracts exact normalized lower margins from its contiguous finite
 blocks; the implemented witnesses give `139/256` and zero without establishing
 uniform runtime-class coercivity. A separate conditional exact common-$q$
 policy theorem gives prefix gain upper bound one, uniform normalized margin $1-q$ and
-repeated geometric spatial-disagreement decay on the fixed companion. One
+repeated geometric spatial-disagreement decay on the fixed companion. Its
+conditional relative-defect extension replaces $q$ by
+$q_{\mathrm{eff}}=q(1+\eta)$, and a finite causal observer verifies every
+signed defect, represented gain, history-energy envelope and complete-block
+endpoint bound, including a positive binary64-defect witness. One
 event-free effective-$P_2$ family additionally
 has a rational continuous/Euler error enclosure, strict improvement across its
 two declared proper subdivisions, exact ideal REMESH scaling and an explicit
@@ -1224,7 +1351,7 @@ runtime residual bound. A separate
 binds finite executor-owned pressure-refreshed partitions and propagates
 represented defects through complete Euler matrices, but it contains no REMESH
 claim.
-Promotion of the exact policy theorem to a declared forward-invariant runtime
-class with relative defect control, generic or binary64 asymptotic convergence,
+Derivation of a uniform `eta` and proof of a forward-invariant robust runtime
+class, generic or binary64 asymptotic convergence,
 repeated runtime stability, the clipped binary64 runtime limit, full structural
 invariants and global operator completeness remain unresolved.**
