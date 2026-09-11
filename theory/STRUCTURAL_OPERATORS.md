@@ -440,6 +440,24 @@ stability. See
 and example
 [`176_runtime_p2_reception_remesh_sequence.py`](../examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py).
 
+`execute_p2_half_reception_remesh_policy_invocation` adds the reusable
+operational boundary. Each call snapshots the graph before materializing caller
+inputs, preflights the current P2 support, metric, exact half-Reception factor,
+`alpha=1` hard-clipped REMESH controls, active history, clock and canonical
+zero-flow `EN -> IL -> REMESH` specifications, rederives U1a admission from the
+live pair at every cycle start, then executes and constructs the finite
+certificate before the outer transaction can commit. A zero cycle-start pair or
+any failed preflight, execution or post-certification restores graph-owned state.
+This is orchestration
+of existing canonical operators, not a fourteenth operator or a new grammar
+rule. Every successful call certifies only its completed finite trace; later
+calls are checked independently, and auxiliary Reception-state stability remains
+outside the result. See
+[`runtime_p2_reception_remesh_policy.py`](../src/tnfr/physics/runtime_p2_reception_remesh_policy.py),
+[`test_runtime_p2_reception_remesh_policy.py`](../tests/physics/test_runtime_p2_reception_remesh_policy.py)
+and example
+[`177_runtime_p2_reception_remesh_policy.py`](../examples/02_physics_regimes/177_runtime_p2_reception_remesh_policy.py).
+
 `observe_runtime_remesh_history_bridge` identifies one applied,
 executor-sealed REMESH result with that companion while retaining exact signed
 binary64 rounding and clipping residuals. It lifts the runtime head into the
@@ -1570,6 +1588,7 @@ channel, direction, scale and postcondition).
 | `src/tnfr/physics/binary64_p2_reception_stability.py` / `src/tnfr/physics/binary64_p2_reception_stability.pyi` | Global `q=0` P2 half-Reception EPI-kernel composition |
 | `src/tnfr/physics/runtime_p2_reception_stage.py` / `src/tnfr/physics/runtime_p2_reception_stage.pyi` | One executed two-phase P2 EN EPI stage bound to the global `q=0` kernel |
 | `src/tnfr/physics/runtime_p2_reception_remesh_sequence.py` / `src/tnfr/physics/runtime_p2_reception_remesh_sequence.pyi` | One completed causal P2 EN/REMESH sequence with observed active-suffix extinction |
+| `src/tnfr/physics/runtime_p2_reception_remesh_policy.py` / `src/tnfr/physics/runtime_p2_reception_remesh_policy.pyi` | Per-invocation P2 preflight, causal execution, finite post-certification and outer rollback |
 | `src/tnfr/physics/runtime_remesh_history_stability.py` | One-transition runtime REMESH/companion bridge with signed residuals |
 | `src/tnfr/physics/remesh_schedule_stability.py` | Exact REMESH-head/schedule-head augmented-energy balance |
 | `src/tnfr/physics/runtime_remesh_schedule_stability.py` | Adjacent-cycle runtime/history energy telescope |
@@ -1627,6 +1646,7 @@ The `Operator.__call__(G, node, **kw)` method implements the canonical execution
 | [174_binary64_p2_reception_remesh_stability.py](../examples/02_physics_regimes/174_binary64_p2_reception_remesh_stability.py) | Global `q=0` half-Reception EPI kernel and finite-horizon disagreement extinction in the restricted repeated model |
 | [175_runtime_p2_reception_stage.py](../examples/02_physics_regimes/175_runtime_p2_reception_stage.py) | One grammar-admitted graph-owned P2 EN EPI stage bound to the global `q=0` kernel, with REMESH and future repetition withheld |
 | [176_runtime_p2_reception_remesh_sequence.py](../examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py) | One completed same-invocation P2 EN/REMESH sequence with an active suffix of length `tau_global+1` and finite observed spatial-disagreement extinction |
+| [177_runtime_p2_reception_remesh_policy.py](../examples/02_physics_regimes/177_runtime_p2_reception_remesh_policy.py) | Two successive P2 policy invocations, each independently preflighted, executed and finite-certified inside its own outer transaction |
 
 ### 15.4 SDK Entry Points
 

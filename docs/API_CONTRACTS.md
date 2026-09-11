@@ -844,6 +844,37 @@ source execution. This is a finite observed certificate. Future or unobserved
 repetition, auxiliary Reception state, current live-graph binding, solver
 accuracy and full TNFR stability remain explicitly false.
 
+[`execute_p2_half_reception_remesh_policy_invocation`](../src/tnfr/physics/runtime_p2_reception_remesh_policy.py)
+is the reusable execution boundary for that restricted finite protocol. A fresh
+outer `GraphTransactionSnapshot` is taken before caller-owned specifications or
+metric weights are materialized. Static preflight requires an intact P2
+kernel certificate; the same ordered undirected two-node mutual-singleton
+support and positive diffusion metric ray; positive capacity and symmetric
+conductance; exact binary64
+`EN_mix=0.5`; matching hard-clipped `alpha=1` REMESH controls, delays, bounds and
+history capacity; an in-interval live EPI pair that is not identically zero,
+an in-interval active incoming history; and
+at least `tau_global+1` distinct one-cycle zero-flow
+`Reception -> Coherence -> Recursivity` specifications chained to the live
+clock. Physical flow partitions are excluded from this initial policy.
+The incoming history may use any supported indexed container; the canonical
+append rebuilds it as a bounded deque. Enough rows must exist for the first
+append to satisfy `max(tau_local,tau_global)+1`, but only the last `tau_global`
+incoming rows are active and therefore required to lie inside the interval.
+
+The function passes a read-only live context to
+`execute_event_remesh_cycle_sequence`; schedule materialization therefore
+rederives U1a admission from the current EPI pair at every cycle start. If a
+REMESH result makes that pair identically zero, the next cycle is rejected and
+the whole invocation rolls back. The policy requests no affine telescope and
+constructs the existing
+`ExecutedP2HalfReceptionRemeshSequenceCertificate` before the outer transaction
+can commit. Any preflight, execution, callback, observation or
+post-certification failure restores graph-owned state. Each successful call
+certifies only its own finite trace. A later call is revalidated independently;
+future and unobserved repetition, auxiliary Reception-state stability, solver
+properties and full TNFR stability remain false.
+
 [`observe_runtime_remesh_history_bridge`](../src/tnfr/physics/runtime_remesh_history_stability.py)
 accepts one intact, applied `EventRemeshCycleResult` and binds it to that exact
 companion model. The returned `RuntimeRemeshHistoryBridgeObservation` retains
@@ -1009,6 +1040,13 @@ re-exported from `tnfr.physics`.
   checks the public facade, stub and example
   [`176_runtime_p2_reception_remesh_sequence.py`](../examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py)
   with its same-invocation two-cycle witness.
+- [`test_runtime_p2_reception_remesh_policy.py`](../tests/physics/test_runtime_p2_reception_remesh_policy.py)
+  verifies per-call preflight, two independent successful invocations, complete
+  rollback after invalid or graph-mutating post-certification, live U1a
+  derivation, active-history scope and directed preflight rejection;
+  [`test_runtime_p2_reception_remesh_policy_example.py`](../tests/physics/test_runtime_p2_reception_remesh_policy_example.py)
+  checks the public facade, stub and example
+  [`177_runtime_p2_reception_remesh_policy.py`](../examples/02_physics_regimes/177_runtime_p2_reception_remesh_policy.py).
 - [`test_runtime_remesh_history_stability.py`](../tests/physics/test_runtime_remesh_history_stability.py)
   verifies bit-exact replay, signed residual and energy identities, hard-clip
   nonexpansiveness, the soft-clip counterexample, inactive-delay handling and

@@ -743,6 +743,22 @@ properties or full TNFR stability. Example
 [`176_runtime_p2_reception_remesh_sequence.py`](examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py)
 records the finite causal extinction boundary.
 
+[`execute_p2_half_reception_remesh_policy_invocation(...)`](src/tnfr/physics/runtime_p2_reception_remesh_policy.py)
+turns that observer pipeline into one reusable transactional entry point. Every
+call revalidates an intact P2 kernel certificate, the live two-node support and
+diffusion metric, `EN_mix=0.5`, the `alpha=1` hard-clipped REMESH controls, the
+active incoming history, the runtime clock, and a finite sequence of zero-flow
+`Reception -> Coherence -> Recursivity` cycle specifications. It then executes
+the no-telescope causal sequence, rederiving U1a admission from the live EPI
+pair at every cycle start, and constructs the finite extinction certificate
+before the outer transaction can commit. A zero cycle-start pair or any failed
+preflight, execution, callback, observation, or post-certification restores
+graph-owned state. Two successful calls produce independently validated traces;
+neither trace certifies a later call, auxiliary-state stability, solver
+properties, or full TNFR stability. Example
+[`177_runtime_p2_reception_remesh_policy.py`](examples/02_physics_regimes/177_runtime_p2_reception_remesh_policy.py)
+executes two such calls on the same graph.
+
 [`observe_runtime_remesh_history_bridge(...)`](src/tnfr/physics/runtime_remesh_history_stability.py)
 binds one applied executor-sealed cycle to that exact companion. It converts
 the retained runtime history to newest-first order, replays the nested

@@ -42,11 +42,21 @@ All notable changes to this project will be documented in this file.
   post-horizon spatial-disagreement extinction. Stale retained rows before that
   suffix, future or unobserved repetition, auxiliary state, solver properties
   and full TNFR stability remain outside its scope.
-- Added examples 173–176, including
+- Added a reusable transactional P2 runtime-policy entry point. Every call
+  preflights the intact
+  kernel, undirected P2 support and metric, exact half-Reception factor,
+  hard-clipped `alpha=1` REMESH controls, active history, clock and canonical
+  zero-flow cycle specifications. It rederives U1a admission from the live EPI
+  pair at every cycle start. Causal execution and finite post-certification
+  occur inside one outer graph transaction, so a zero pair or any other failure
+  restores graph-owned state. Success certifies only that invocation; future,
+  unobserved-repetition and auxiliary-state claims remain false.
+- Added examples 173–177, including
   `176_runtime_p2_reception_remesh_sequence.py`, exact public stubs, facade
   exports and adversarial tests covering normal/subnormal extremes, signed
   zero, inactive and active clipping, hostile inputs, private reseals and the
-  exact energy-gain-four witness for the canonical default EN factor.
+  exact energy-gain-four witness for the canonical default EN factor. Example
+  177 demonstrates two independently revalidated policy invocations.
 
 ### Added — 2026-09-11 Relative-defect REMESH/schedule stability
 

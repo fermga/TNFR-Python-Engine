@@ -104,8 +104,11 @@ problems. Supporting maps include
   EPI stage and captured endpoints. A finite same-invocation adapter also binds
   every selected EN stage and same-cycle `alpha=1` REMESH, checks the active
   history suffix, and records post-horizon spatial extinction on one
-  executor-owned graph. Preserving those bindings through future
-  complete-runtime repetition, finding a useful forward-invariant binary64
+  executor-owned graph. A reusable policy entry point now performs the strict
+  P2/REMESH preflight and finite post-certification inside one outer transaction
+  on every call; two calls therefore yield two independently validated traces,
+  without turning either trace into a future guarantee. Auditing all auxiliary
+  Reception state, finding a useful forward-invariant binary64
   relative-defect class for `0<alpha<1` with uniform `eta` and `q_eff<1`, mesh
   convergence, full runtime stability and the runtime infinity limit remain open.
 - [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) records

@@ -97,6 +97,10 @@ runtime_p2_reception_remesh_sequence : Finite causal P2 extinction binding
     - Binds each executed EN stage and delayed REMESH to one causal graph trace
     - Verifies active-history disagreement extinction after tau_global + 1 cycles
     - Excludes unobserved repetition, future runtime and auxiliary-state stability
+runtime_p2_reception_remesh_policy : Transactional finite P2 policy invocation
+    - Revalidates current P2/REMESH preconditions before every finite invocation
+    - Encloses execution and post-certification in one graph transaction
+    - Excludes future, unobserved-repetition and auxiliary-state stability
 runtime_remesh_history_stability : Executed runtime/companion bridge
     - Exact signed binary64 rounding and clipping residual decomposition
     - Lifted one-step augmented-energy balances and sufficient lower bounds
@@ -556,6 +560,9 @@ from .runtime_p2_reception_remesh_sequence import (
     ExecutedP2HalfReceptionRemeshSequenceCertificate,
     certify_executed_p2_half_reception_remesh_sequence,
 )
+from .runtime_p2_reception_remesh_policy import (
+    execute_p2_half_reception_remesh_policy_invocation,
+)
 from .runtime_remesh_history_stability import (
     RuntimeRemeshHistoryBridgeObservation,
     observe_runtime_remesh_history_bridge,
@@ -909,6 +916,8 @@ __all__ = [
     # --- Finite causal P2 Reception/REMESH extinction binding ---
     "ExecutedP2HalfReceptionRemeshSequenceCertificate",
     "certify_executed_p2_half_reception_remesh_sequence",
+    # --- Transactional finite P2 runtime policy invocation ---
+    "execute_p2_half_reception_remesh_policy_invocation",
     # --- Executed REMESH runtime/companion bridge ---
     "RuntimeRemeshHistoryBridgeObservation",
     "observe_runtime_remesh_history_bridge",

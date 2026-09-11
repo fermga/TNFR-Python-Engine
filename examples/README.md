@@ -141,3 +141,13 @@ post-horizon endpoint have zero spatial disagreement. Older inactive history
 rows may remain outside the source interval. The example does not certify
 future or unobserved repetition, auxiliary state, solver behavior or full TNFR
 stability.
+
+`177_runtime_p2_reception_remesh_policy.py` executes that restricted word
+through the reusable transactional policy twice on the same graph. Before each
+call it revalidates the live P2 support, metric, exact half-Reception factor,
+hard-clipped `alpha=1` REMESH controls, active incoming history and zero-flow
+cycle schedules, and it rederives U1a admission at every cycle start. Execution
+and finite post-certification share one outer graph transaction. The two returned
+certificates have independent finite provenance;
+neither certifies a later invocation, auxiliary-state stability, solver behavior
+or full TNFR stability.

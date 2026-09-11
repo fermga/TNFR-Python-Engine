@@ -2,8 +2,8 @@
 
 **Status**: CORRECTED N15 HISTORICAL RECORD — restricted finite cyclic,
 companion, conditional policy, robust-defect and represented-number boundary
-results, including one finite executor-bound P2 EN/REMESH sequence; runtime limit and
-catalog completeness open
+results, including transactional per-invocation P2 EN/REMESH execution and
+finite certification; runtime limit and catalog completeness open
 **Date**: May 26, 2026 — corrected September 2026
 **Owner**: `theory/REMESH_INFINITY_DERIVATION.md`
 **Source implementations**: `src/tnfr/operators/remesh.py::apply_network_remesh`,
@@ -20,6 +20,8 @@ catalog completeness open
 `src/tnfr/physics/runtime_p2_reception_stage.pyi`,
 `src/tnfr/physics/runtime_p2_reception_remesh_sequence.py`,
 `src/tnfr/physics/runtime_p2_reception_remesh_sequence.pyi`,
+`src/tnfr/physics/runtime_p2_reception_remesh_policy.py`,
+`src/tnfr/physics/runtime_p2_reception_remesh_policy.pyi`,
 `src/tnfr/physics/runtime_remesh_history_stability.py`,
 `src/tnfr/physics/remesh_schedule_stability.py`,
 `src/tnfr/physics/runtime_remesh_schedule_stability.py`,
@@ -1147,6 +1149,41 @@ the current live graph after observation, audit auxiliary Reception writes,
 prove future or unobserved complete-runtime repetition, establish solver
 accuracy or extend the result to full TNFR stability.
 
+### §2.17 Transactional policy for each finite $P_2$ invocation
+
+[`execute_p2_half_reception_remesh_policy_invocation`](../src/tnfr/physics/runtime_p2_reception_remesh_policy.py)
+closes the operational gap between preparing a live graph and constructing the
+certificate of §2.16. Every call takes an outer graph snapshot before
+materializing caller-owned specifications or metric weights. Its
+read-only preflight requires the intact abstract kernel; the same ordered
+undirected mutual-singleton two-node support and positive diffusion-metric ray;
+positive capacities and
+symmetric conductance; exact binary64 `EN_mix=0.5`; matching hard-clipped
+$\alpha=1$ controls, delays, interval and history capacity; an in-interval live
+EPI pair that is not identically zero; active global-delay history; and at least
+$L=\tau_g+1$ distinct,
+clock-chained, one-cycle zero-flow `EN -> IL -> REMESH` specifications. This
+initial policy excludes physical flow partitions.
+
+The policy then invokes the graph-owned causal executor with a live grammar
+context that rederives the U1a premise at every cycle start. A cycle-start pair
+that is identically zero rejects the next Reception. The policy requests no
+affine telescope and constructs, revalidates and identity-binds the existing
+finite certificate before the outer transaction can commit. Post-certification
+must leave the graph unchanged. Any preflight, execution, callback, observation,
+certificate or post-certification-read failure restores graph-owned state to
+the call boundary.
+Emitted I/O, warnings, external resources and aliases that exist only outside
+the graph remain subject to the executor's existing rollback boundary.
+
+This mechanism permits successive calls, but each call is validated from its
+own live entry state and produces a distinct finite trace. It does not prove
+that the hypotheses will hold before a later unobserved call. Reception also
+writes auxiliary kind, source, operator-history and pattern telemetry; those
+fields are transactionally restored on failure, but their stability is not part
+of the centered-EPI theorem. The forward-invariant complete-runtime class,
+solver properties and full TNFR stability therefore remain open.
+
 ---
 
 ## §3. The Literal $\tau_g\to\infty$ Question
@@ -1506,7 +1543,9 @@ The original commits remain useful provenance:
   captured endpoint. A finite sequence adapter additionally binds every
   selected EN and same-cycle REMESH, verifies the active suffix of length
   $\tau_g+1$, and records post-horizon extinction on one executor-owned graph.
-  Future or unobserved repeated complete-runtime composition remains open.
+  A transactional policy now revalidates and executes this restricted protocol
+  per call and post-certifies before commit. Future or unobserved repeated
+  complete-runtime composition remains open.
 - **Branch B1**: no universality conclusion follows without a scaling family
   and an intertwining map.
 - **Branch B2**: no extra registry entry is needed to compute this projection;
@@ -1538,6 +1577,8 @@ The corrected results are internal and limited:
 - it binds every selected EN and $\alpha=1$ REMESH in one finite graph-owned P2
   sequence and verifies extinction on the active suffix, without promoting the
   observation to future repetition;
+- it supplies a reusable outer transaction that preflights, executes and
+  post-certifies every finite P2 invocation independently;
 - it separates an auxiliary linear model from the canonical clipped runtime;
 - it corrects the fixed-mode arithmetic from LCM to GCD;
 - it leaves all classical open problems unchanged;
@@ -1634,6 +1675,17 @@ Example
 [`176_runtime_p2_reception_remesh_sequence.py`](../examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py)
 records the finite same-invocation witness.
 
+The transactional per-invocation policy is checked by
+[`test_runtime_p2_reception_remesh_policy.py`](../tests/physics/test_runtime_p2_reception_remesh_policy.py).
+It covers successful and successive calls, exact static preconditions, active
+history scope, live U1a derivation, directed preflight rejection and
+complete rollback when execution or post-certification fails or mutates the
+graph. Its public facade, stub and example are checked by
+[`test_runtime_p2_reception_remesh_policy_example.py`](../tests/physics/test_runtime_p2_reception_remesh_policy_example.py).
+Example
+[`177_runtime_p2_reception_remesh_policy.py`](../examples/02_physics_regimes/177_runtime_p2_reception_remesh_policy.py)
+records two independently validated finite invocations.
+
 The graph-owned finite causal wrapper and public example are checked by
 [`test_event_remesh_causal_runtime.py`](../tests/operators/test_event_remesh_causal_runtime.py)
 and
@@ -1723,7 +1775,11 @@ the P2 kernel to a grammar-admitted two-phase Reception EPI stage and its
 captured endpoints. A second finite adapter binds every selected stage and
 same-cycle $\alpha=1$ REMESH on one graph, verifies only the active suffix of
 length $\tau_g+1$, and records post-horizon extinction. It does not establish
-future or unobserved repetition. One
+future or unobserved repetition. A reusable transactional policy now revalidates
+the current restricted conditions on every call, runs the causal sequence and
+constructs that finite certificate before commit; successive accepted calls
+remain separate observations, and auxiliary Reception-state stability is not
+certified. One
 event-free effective-$P_2$ family additionally
 has a rational continuous/Euler error enclosure, strict improvement across its
 two declared proper subdivisions, exact ideal REMESH scaling and an explicit
@@ -1733,8 +1789,8 @@ binds finite executor-owned pressure-refreshed partitions and propagates
 represented defects through complete Euler matrices, but it contains no REMESH
 claim.
 Derivation of a useful forward-invariant binary64 relative-defect class with
-uniform `eta` for $0<\alpha<1$ and `q_eff<1`, promotion of the finite P2
-EN/REMESH observation to future complete event execution, generic or
+uniform `eta` for $0<\alpha<1$ and `q_eff<1`, a priori preservation of the P2
+EN/REMESH hypotheses for future unobserved complete event execution, generic or
 binary64 asymptotic convergence, repeated complete-runtime stability, the
 clipped binary64 runtime limit, full structural invariants and global operator
 completeness remain unresolved.**

@@ -777,6 +777,19 @@ graph after observation, future or unobserved repetition, solver accuracy or
 full TNFR stability. See
 [`runtime_p2_reception_remesh_sequence.py`](../src/tnfr/physics/runtime_p2_reception_remesh_sequence.py).
 
+The reusable
+[`execute_p2_half_reception_remesh_policy_invocation`](../src/tnfr/physics/runtime_p2_reception_remesh_policy.py)
+closes the per-call transaction boundary. It snapshots the graph before
+materializing caller inputs, preflights the current restricted P2/REMESH
+conditions, rederives U1a admission from the live EPI pair at every cycle start,
+executes the zero-flow `EN -> IL -> REMESH` sequence without an affine telescope,
+and constructs the finite certificate before commit. A zero cycle-start pair or
+any other failure, including invalid or graph-mutating post-certification,
+restores graph-owned state. Two successful calls are therefore independently
+validated finite observations. The first does not certify the second in advance,
+and neither establishes auxiliary Reception-state stability, a forward-invariant
+complete-runtime class, solver properties or full TNFR stability.
+
 This execution contract does not prove solver accuracy or invariance under an
 equivalent timestep refinement, assign an affine gain to every jump, establish
 full-multichannel or repeated stability, or convert the continuous duration or
@@ -1337,6 +1350,7 @@ and
 | `src/tnfr/physics/binary64_p2_reception_stability.py` / `src/tnfr/physics/binary64_p2_reception_stability.pyi` | Global `q=0` P2 half-Reception kernel composed with the `alpha=1` REMESH class |
 | `src/tnfr/physics/runtime_p2_reception_stage.py` / `src/tnfr/physics/runtime_p2_reception_stage.pyi` | Finite executor binding of one P2 two-phase EN EPI stage to the global `q=0` kernel |
 | `src/tnfr/physics/runtime_p2_reception_remesh_sequence.py` / `src/tnfr/physics/runtime_p2_reception_remesh_sequence.pyi` | Finite causal binding of executed P2 EN/REMESH cycles and observed active-suffix extinction |
+| `src/tnfr/physics/runtime_p2_reception_remesh_policy.py` / `src/tnfr/physics/runtime_p2_reception_remesh_policy.pyi` | Transactional per-invocation P2 preflight, execution and finite certification |
 | `src/tnfr/physics/runtime_remesh_history_stability.py` | One-transition executed binary64 REMESH/companion bridge |
 | `src/tnfr/physics/remesh_schedule_stability.py` | Exact REMESH-head/schedule-head augmented-energy balance |
 | `src/tnfr/physics/runtime_remesh_schedule_stability.py` | Adjacent-cycle runtime/history energy telescope |
@@ -1394,6 +1408,10 @@ example are checked by
 [`test_runtime_p2_reception_remesh_sequence.py`](../tests/physics/test_runtime_p2_reception_remesh_sequence.py)
 and
 [`test_runtime_p2_reception_remesh_sequence_example.py`](../tests/physics/test_runtime_p2_reception_remesh_sequence_example.py).
+The reusable policy, its rollback boundaries and two-call example are checked by
+[`test_runtime_p2_reception_remesh_policy.py`](../tests/physics/test_runtime_p2_reception_remesh_policy.py)
+and
+[`test_runtime_p2_reception_remesh_policy_example.py`](../tests/physics/test_runtime_p2_reception_remesh_policy_example.py).
 The runtime residual and lifted-energy bridge is tested in
 [`test_runtime_remesh_history_stability.py`](../tests/physics/test_runtime_remesh_history_stability.py).
 The pure schedule-head telescope and gain-based lower bound are tested in
@@ -1445,6 +1463,7 @@ catalog = net.audit_operators()               # dict; 13 controlled probes
 | [174_binary64_p2_reception_remesh_stability.py](../examples/02_physics_regimes/174_binary64_p2_reception_remesh_stability.py) | Global `q=0` P2 half-Reception numeric kernel composed with `alpha=1`, giving active-history extinction after `tau_global+1` restricted cycles |
 | [175_runtime_p2_reception_stage.py](../examples/02_physics_regimes/175_runtime_p2_reception_stage.py) | One executed two-phase P2 EN EPI stage bound to the global `q=0` kernel, with REMESH graph binding and repeated runtime withheld |
 | [176_runtime_p2_reception_remesh_sequence.py](../examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py) | One completed same-invocation P2 EN/REMESH sequence with `N >= tau_global+1` and finite observed active-history extinction |
+| [177_runtime_p2_reception_remesh_policy.py](../examples/02_physics_regimes/177_runtime_p2_reception_remesh_policy.py) | Two successive independently validated finite P2 policy invocations with future and auxiliary-state claims withheld |
 
 ## Cross-References
 
