@@ -193,12 +193,14 @@ finite REMESH companion on fixed support and metric. One applied runtime
 transition is linked to it with signed binary64 rounding/clipping defects, and
 adjacent compatible cycle records provide an exact finite schedule/history
 energy telescope. A finite outer executor now runs declared cycle specs on one
-graph, binds each result to its ordinal and exact spec, and gives that telescope
-same-invocation causal provenance plus graph-owned atomicity. It does not prove
-repeated runtime stability, solver convergence, a global gain or future
+graph and binds each result to its ordinal and exact spec. By default it requires
+the compatible telescope and gives it same-invocation causal provenance plus
+graph-owned atomicity; its explicit no-telescope branch retains the same finite
+causal and atomic execution evidence with `runtime_telescope=None`. It does not
+prove repeated runtime stability, solver convergence, a global gain or future
 behavior.
-A sealed block observer now selects a nonempty contiguous part of that causal
-telescope and verifies `D=K+S`, `S>=0`. For positive initial augmented energy it
+A sealed block observer now selects a nonempty contiguous part of a retained
+causal telescope and verifies `D=K+S`, `S>=0`. For positive initial augmented energy it
 reports the block-specific normalized lower margin `kappa=K/V_before` and the
 endpoint bound `V_after/V_before<=1-kappa`. One implemented witness has
 `kappa=139/256`; the lag-one `alpha=1` orbit has `kappa=0`. Equilibrium and
@@ -208,16 +210,48 @@ margin `1-q` over `active_max_delay+1` cycles for any sequence of
 consensus-preserving schedules with one common fixed-metric disagreement gain
 `q<1`. It proves repeated geometric decay of spatial disagreement, including
 the `alpha=1` pure-delay case, but does not control spatially uniform temporal
-means. Runtime forward invariance, derivation of uniform centered relative
-rounding/clipping defect bounds and promotion to repeated binary64 stability
-remain open. A robust conditional extension now assumes the signed bound
+means. A robust conditional extension now assumes the signed bound
 `E_H(z)-E_H(y)<=eta*J`, where `J` is the active-history Jensen energy, and
 derives `q_eff=q*(1+eta)`. It reuses the same envelope theorem: `q_eff<1`
 gives margin `1-q_eff` and geometric spatial-disagreement decay, while
 `q_eff=1` gives only nonincrease. A causal adapter verifies `J`, the defect,
 the represented gain, the full energy-vector envelope and the complete-block
-endpoint factor on one finite executed block. Deriving one uniform `eta` and
-proving the fixed runtime class forward invariant remain open.
+endpoint factor on one finite executed block.
+An exact pairwise observer now computes the optimal nonnegative `eta` for one
+admissible binary64 tuple; it neither enumerates nor certifies a uniform runtime
+class. One normal-valued `alpha=1/2` witness requires `eta=2^210-1/4`, so strict
+robust-envelope contraction requires
+`q<4/(2^212+3)`; a bounded binary64 interval alone therefore does not give a
+useful bound for the implemented `q=9/16` witness policy. At the exact
+`alpha=1` boundary, a fixed-support, fixed-metric hard-clip class with sufficient
+represented history inside one fixed finite interval has uniform `eta=0` and
+is forward invariant under the REMESH map alone. On the abstract two-node
+mutual-singleton support, a configured immutable-snapshot Reception EPI kernel
+with exact binary64 mix `0.5` maps every finite pair in the source interval to
+numeric consensus, hence its disagreement gain is `q=0` in every positive
+diagonal metric. Its
+composition with the `alpha=1` class extinguishes all active-history spatial
+disagreement after `tau_global+1` restricted cycles, under arbitrary finite
+repetition of those numeric kernels. The abstract certificate alone does not
+certify a live graph or executor. A sealed adapter now binds one completed
+graph-owned event to its grammar-admitted two-phase EN EPI stage, exact runtime
+neighbors, matching interval and metric, and captured `q=0` endpoint. It does
+not by itself bind the source REMESH history/configuration to that graph. A
+second sealed adapter now binds every such selected EN stage and every applied
+`alpha=1` hard-clipped REMESH to the same executor-owned finite P2 cycle
+sequence. For `N>=L=tau_global+1`, it verifies that the active chronological
+history suffix of length `L` lies in the source interval and that the observed
+post-horizon and final post-REMESH fields have zero spatial disagreement. Older
+retained history rows are inactive and outside the claim. This finite causal
+certificate does not audit every auxiliary Reception write, retain current
+live-graph state or prove future or unobserved repeated complete-runtime
+stability. The
+canonical default Reception factor has a normal-valued witness
+with disagreement-energy gain four; the half-factor proof therefore cannot be
+silently transferred to that broader configuration. A useful forward-invariant
+binary64 relative-defect class for `0<alpha<1` with uniform `eta` and
+`q_eff<1`, repeated complete-runtime execution and
+broader verified binary64 kernel families remain open.
 These scoped identities do not certify U2 for arbitrary operator sequences.
 The exact Dirichlet balance below uses this same adjacency convention. See
 [src/tnfr/physics/structural_diffusion.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/structural_diffusion.py).
@@ -771,9 +805,12 @@ inside one outer graph transaction. Each sealed
 `CausalEventRemeshCycleReceipt` binds its execution ordinal, exact spec and
 resulting cycle, including identity of the executed and declared schedule. The
 sealed `ExecutedEventRemeshCycleSequence` retains the cycles, the ordinary
-offline cycle sequence and the compatible runtime schedule/history telescope.
-Only this wrapper certifies same-invocation causal order, one graph identity and
-finite graph-owned atomicity. It does not compose schedule and REMESH gains,
+offline cycle sequence and, by default, the compatible runtime schedule/history
+telescope. With `require_runtime_telescope=False`, the result always retains
+`runtime_telescope=None`; this admits a word without one common affine schedule
+metric. Exact
+telescope properties stay false while causal order, one graph identity and
+finite graph-owned atomicity remain certified. It does not compose schedule and REMESH gains,
 prove a uniform positive normalized block margin over a declared
 forward-invariant runtime class or an intrablock runtime prefix bound, solver accuracy/order,
 convergence, repeated or future stability, or rollback emitted I/O, warnings,
@@ -782,7 +819,7 @@ their own false causal scope when used separately.
 
 `observe_executed_event_remesh_block_margin` derives an exact observation from
 one nonempty contiguous boundary block of an intact
-`ExecutedEventRemeshCycleSequence`. It identity-binds the causal source,
+`ExecutedEventRemeshCycleSequence` that retains its runtime telescope. It identity-binds the causal source,
 telescope and selected boundary objects; sums the exact observed drop `D`,
 gain-based lower bound `K` and nonnegative schedule slack `S`; and verifies
 `D=K+S`. When `V_before>0`, it records `kappa=K/V_before`, the observed drop
@@ -804,7 +841,8 @@ the energy or norm of `z-y`. At `J=0` the inequality is checked directly and
 no ratio is formed.
 
 `observe_executed_event_remesh_relative_defect_block` binds that robust
-envelope to one nonempty contiguous block of an intact causal execution. It
+envelope to one nonempty contiguous block of an intact causal execution that
+retained its compatible runtime telescope. It
 verifies every exact `J`, defect and slack, every represented schedule gain
 `q_j<=q`, the complete `diag(q_eff,1,...,1)P` history-energy envelope and the
 finite endpoint factor `q_eff^floor(N/L)`. It inherits same-invocation graph
@@ -812,6 +850,21 @@ provenance and atomicity only for that recorded block. It does not prove a
 uniform runtime defect class, forward invariance, a global runtime gain,
 repetition, future binary64 stability, solver properties, adaptive grammar or
 full TNFR stability.
+
+`certify_executed_p2_half_reception_remesh_sequence` supplies a distinct finite
+P2 adapter that does not require the schedule/history energy telescope. It
+selects one executor-owned EN stage per cycle, binds its EPI endpoints to the
+global half-Reception `q=0` kernel, and binds the same cycle's applied
+`alpha=1` hard-clipped REMESH to its exact represented global-delay row with
+`eta=0`. Ordered support, metric, interval, delays, history capacity and runtime
+alpha-source provenance remain fixed. For an observed sequence with
+`N>=L=tau_global+1`, the active suffix of `L` chronological rows remains inside
+the source interval and the recorded post-horizon and final post-REMESH spatial
+energies are zero. If `tau_local>tau_global`, that suffix is shorter than the
+full source-class history requirement; its extra local-delay rows are inactive
+because `alpha=1`. Stale older rows, auxiliary Reception state, live-graph binding,
+future or unobserved repetition, solver properties and full TNFR stability are
+not certified.
 See
 [src/tnfr/operators/event_timing.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/event_timing.py),
 [src/tnfr/operators/event_runtime.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/event_runtime.py),
@@ -826,6 +879,10 @@ See
 [src/tnfr/physics/remesh_history_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/remesh_history_stability.py),
 [src/tnfr/physics/remesh_schedule_policy_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/remesh_schedule_policy_stability.py),
 [src/tnfr/physics/remesh_schedule_relative_defect_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/remesh_schedule_relative_defect_stability.py),
+[src/tnfr/physics/binary64_remesh_relative_defect.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/binary64_remesh_relative_defect.py),
+[src/tnfr/physics/binary64_p2_reception_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/binary64_p2_reception_stability.py),
+[src/tnfr/physics/runtime_p2_reception_stage.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_p2_reception_stage.py),
+[src/tnfr/physics/runtime_p2_reception_remesh_sequence.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_p2_reception_remesh_sequence.py),
 [src/tnfr/physics/runtime_remesh_history_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_remesh_history_stability.py),
 [src/tnfr/physics/remesh_schedule_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/remesh_schedule_stability.py),
 [src/tnfr/physics/runtime_remesh_schedule_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_remesh_schedule_stability.py),
@@ -1127,9 +1184,9 @@ program history** (the full milestone/gap/branch threads live in the notes).
 
 | Program | Status | Reference |
 |---------|--------|-----------|
-| **Core dynamics S1–S16** | Restricted results cover pure-EPI diffusion, rational quotient affine-reset budgets, exact operator-event timing, conditional stage certificates and exact represented-map composition for a fully eligible observed finite flow/glyph trace, plus observability, quotient geometry, temporal signatures and sampled-path certificates. All thirteen operators have atomic all-target Jacobi stages; EN/RA additionally have scoped repeated-map results. A uniform unclipped REMESH companion has an exact augmented-history disagreement functional and temporal mixing theorem on fixed support and metric. One applied binary64 transition and finite adjacent schedule/history telescopes are linked to it with explicit residuals. A graph-owned finite cycle-sequence executor gives one such telescope same-invocation causal provenance and outer atomicity; a sealed block observer reports exact normalized lower margins on its contiguous finite blocks, including `139/256` and zero witnesses. A conditional exact common-`q` schedule theorem proves prefix gain upper bound one, uniform normalized block margin `1-q` and repeated geometric spatial-disagreement decay. Its robust extension absorbs a declared signed relative defect through `q_eff=q*(1+eta)`, and a causal observer verifies that envelope on finite runtime blocks, including positive binary64 defect. A general exact rational reversible single-eigenmode theorem proves refreshed-Euler endpoint bounds, strict proper-subdivision improvement and conditional exact-real partition convergence. Its finite offline runtime adapter separates represented pressure/execution defects and propagates them through complete Euler matrices; the effective `P2` adapter separately adds exact ideal REMESH error scaling and its committed residual bound. Runtime/binary64 mesh convergence, derivation of one uniform `eta` and forward invariance of the robust executor class, repeated runtime stability, solver/full-multichannel results, changing parameters/support and catalog completeness remain open. | [CORE_RESEARCH_PROGRAM.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CORE_RESEARCH_PROGRAM.md) |
+| **Core dynamics S1–S16** | Restricted results cover pure-EPI diffusion, rational quotient affine-reset budgets, exact operator-event timing, conditional stage certificates and exact represented-map composition for a fully eligible observed finite flow/glyph trace, plus observability, quotient geometry, temporal signatures and sampled-path certificates. All thirteen operators have atomic all-target Jacobi stages; EN/RA additionally have scoped repeated-map results. A uniform unclipped REMESH companion has an exact augmented-history disagreement functional and temporal mixing theorem on fixed support and metric. One applied binary64 transition and finite adjacent schedule/history telescopes are linked to it with explicit residuals. A graph-owned finite cycle-sequence executor gives a compatible requested telescope same-invocation causal provenance and outer atomicity, while its explicit no-telescope branch retains only the causal trace; a sealed block observer reports exact normalized lower margins on its contiguous finite blocks, including `139/256` and zero witnesses. A conditional exact common-`q` schedule theorem proves prefix gain upper bound one, uniform normalized block margin `1-q` and repeated geometric spatial-disagreement decay. Its robust extension absorbs a declared signed relative defect through `q_eff=q*(1+eta)`, and a causal observer verifies that envelope on finite runtime blocks, including positive binary64 defect. The exact pairwise binary64 boundary includes an `alpha=1/2` witness requiring `eta=2^210-1/4` and `q<4/(2^212+3)`, while the sufficient-history `alpha=1` hard-clip class has `eta=0` and REMESH-only forward invariance. On abstract P2 support, the exact-half Reception binary64 EPI kernel has global disagreement gain `q=0`; composing the two restricted kernels extinguishes active-history spatial disagreement after `tau_global+1` cycles. One sealed graph-owned event binds that kernel to a grammar-admitted two-phase EN EPI stage and its captured endpoint; a finite same-invocation adapter now binds every selected EN and same-cycle `alpha=1` REMESH, checks the active suffix of length `tau_global+1`, and records post-horizon spatial extinction. A general exact rational reversible single-eigenmode theorem proves refreshed-Euler endpoint bounds, strict proper-subdivision improvement and conditional exact-real partition convergence. Its finite offline runtime adapter separates represented pressure/execution defects and propagates them through complete Euler matrices; the effective `P2` adapter separately adds exact ideal REMESH error scaling and its committed residual bound. Runtime/binary64 mesh convergence, a useful forward-invariant binary64 relative-defect class for `0<alpha<1` with uniform `eta` and `q_eff<1`, broader binary64 kernel families, repeated/future complete-runtime stability, solver/full-multichannel results, changing parameters/support and catalog completeness remain open. | [CORE_RESEARCH_PROGRAM.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CORE_RESEARCH_PROGRAM.md) |
 | **TNFR-Riemann** | Finite protocols estimate a critical-line-centered comparison and expose ζ/L diagnostic surfaces (P12–P50). No engine theorem identifies phase coherence with zero location. The bridge to RH, including control of `S(T) = (1/π)·arg ζ(½+iT)`, remains open. | [TNFR_RIEMANN_RESEARCH_NOTES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_RIEMANN_RESEARCH_NOTES.md) |
-| **REMESH fixed-delay models** | A finite cyclic fixed-coefficient filter has a Cesàro fixed-mode projection. A distinct finite uniform companion recurrence has a stationary-weighted augmented disagreement functional; `0<alpha<1` mixes toward the history barycenter, while `alpha=1` permits periodic histories. One-transition residual and adjacent-cycle schedule/history observers identify finite binary64 records; a graph-owned causal executor and finite-block observer add same-invocation provenance, atomicity and exact block-specific normalized margins. A conditional exact common-`q` policy class has prefix gain upper bound one, uniform normalized block margin `1-q` and repeated geometric spatial-disagreement decay. Its robust theorem gives `q_eff=q*(1+eta)` for signed defect `delta<=eta*J`; a finite causal adapter verifies the hypothesis and vector envelope on recorded blocks. The effective `P2` reference proves exact ideal error propagation by `beta=(1-alpha)^2` and keeps the committed runtime residual separate. Deriving a uniform `eta` and proving the robust binary64 class forward invariant, the literal `τ_g → ∞` limit, repeated runtime stability and catalog completeness remain open. | [REMESH_INFINITY_DERIVATION.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/REMESH_INFINITY_DERIVATION.md) |
+| **REMESH fixed-delay models** | A finite cyclic fixed-coefficient filter has a Cesàro fixed-mode projection. A distinct finite uniform companion recurrence has a stationary-weighted augmented disagreement functional; `0<alpha<1` mixes toward the history barycenter, while `alpha=1` permits periodic histories. One-transition residual and adjacent-cycle schedule/history observers identify finite binary64 records; a graph-owned causal executor and finite-block observer add same-invocation provenance, atomicity and exact block-specific normalized margins. A conditional exact common-`q` policy class has prefix gain upper bound one, uniform normalized block margin `1-q` and repeated geometric spatial-disagreement decay. Its robust theorem gives `q_eff=q*(1+eta)` for signed defect `delta<=eta*J`; a finite causal adapter verifies the hypothesis and vector envelope on recorded blocks. The exact pairwise boundary gives a normal-valued `alpha=1/2` obstruction with `eta=2^210-1/4` and strict threshold `q<4/(2^212+3)`. The sufficient-history `alpha=1` hard-clip class instead has `eta=0` and REMESH-only forward invariance on fixed support and metric. The abstract P2 exact-half Reception EPI kernel has global `q=0` and composes with it to extinguish active-history disagreement after `tau_global+1` restricted cycles; one graph-owned event binds the kernel to a two-phase EN EPI stage and captured endpoint, and a finite causal adapter binds every observed EN/REMESH cycle through the active suffix of length `tau_global+1`. The effective `P2` reference proves exact ideal error propagation by `beta=(1-alpha)^2` and keeps the committed runtime residual separate. A useful forward-invariant binary64 relative-defect class for `0<alpha<1` with uniform `eta` and `q_eff<1`, broader binary64 kernel families, repeated/future complete-runtime stability, the literal `τ_g → ∞` limit and catalog completeness remain open. | [REMESH_INFINITY_DERIVATION.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/REMESH_INFINITY_DERIVATION.md) |
 | **TNFR-Navier–Stokes** | A declared linear mapping compares viscous diffusion with the overdamped limit of a separate graph-wave model (`ν_f = ν`). Finite pseudo-spectral runs measure enstrophy growth with Reynolds number. The nonlinear vortex-stretching term is compared with a `K_φ`/VAL cascade, but no equivalence or uniform regularity bound is derived; the `Re → ∞` problem remains open. | [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) |
 | **Number theory** | Primality as `ΔNFR = 0` (canonical **unit** coefficients, §4.2 coefficient independence); arithmetic structural triad; arithmetic networks can initialize the auxiliary symplectic read-out; the cyclotomy law `s_k(p) = gcd(k, p−1) + 1` is proved for the declared residue digraph and read as a finite arithmetic pulse diagnostic. | [TNFR_NUMBER_THEORY.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_NUMBER_THEORY.md) |
 | **Structural research program (R1–R9)** | Nine internal lines on arithmetic and spectral dynamics: observability, arithmetic pulse, CRT synthesis, p-adic transport, finite fields, additive reduction, arithmetic pressure, operator certification and directed non-normal evolution. Exact, measured, negative and open results are separated in the program index. | [STRUCTURAL_RESEARCH_PROGRAM.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_RESEARCH_PROGRAM.md) |

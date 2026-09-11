@@ -94,10 +94,20 @@ problems. Supporting maps include
   with one common exact gain `q<1`. Its robust extension absorbs any declared
   signed head-energy defect `delta<=eta*J` through
   `q_eff=q*(1+eta)`, and a causal adapter verifies that bound, the represented
-  gains and the full history-energy envelope on one recorded finite block.
-  Deriving a uniform `eta` and proving the fixed policy and defect class
-  forward invariant under future binary64 execution, mesh convergence,
-  repeated runtime stability and the runtime infinity limit remain open.
+  gains and the full history-energy envelope on one recorded finite block. An
+  exact pairwise reduction exposes a normal-valued `alpha=1/2` obstruction with
+  `eta=2^210-1/4`; the `alpha=1` hard-clip REMESH class instead has uniform
+  `eta=0`. On P2, the configured binary64 half-Reception Jacobi EPI kernel has
+  global gain `q=0`, so the restricted repeated composition extinguishes active-
+  history spatial disagreement after `tau_global+1` cycles. One sealed
+  graph-owned event now binds the kernel to its grammar-admitted two-phase EN
+  EPI stage and captured endpoints. A finite same-invocation adapter also binds
+  every selected EN stage and same-cycle `alpha=1` REMESH, checks the active
+  history suffix, and records post-horizon spatial extinction on one
+  executor-owned graph. Preserving those bindings through future
+  complete-runtime repetition, finding a useful forward-invariant binary64
+  relative-defect class for `0<alpha<1` with uniform `eta` and `q_eff<1`, mesh
+  convergence, full runtime stability and the runtime infinity limit remain open.
 - [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) records
   tested catalog extensions and their classification.
 - [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) links selected

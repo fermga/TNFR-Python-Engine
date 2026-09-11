@@ -107,3 +107,37 @@ witness retains a positive binary64 defect and accepts the exact minimum
 history-energy vector and finite endpoint bound. It does not establish a
 forward-invariant runtime class, repeated or future binary64 stability, solver
 properties or full TNFR stability.
+
+`173_binary64_remesh_relative_defect.py` isolates the sharp represented-number
+boundary. Its normal-valued `alpha=1/2` pair requires exactly
+`eta=2^210-1/4`, hence strict robust-envelope contraction requires
+`q<4/(2^212+3)`; the bounded interval alone cannot promote the implemented
+`q=9/16` witness policy. Separately, the sufficient-history `alpha=1`
+hard-clip class has uniform `eta=0` and is forward invariant under REMESH alone
+on its fixed support and metric. It does not certify a common schedule family,
+schedule composition, repeated runtime stability or future execution.
+
+`174_binary64_p2_reception_remesh_stability.py` supplies the first restricted
+global numeric EPI-kernel composition. On two mutual singleton neighbors, the
+configured binary64 half-Reception Jacobi kernel maps every finite represented
+pair in a common hard interval to numeric consensus, so `q=0`. With the `alpha=1`,
+`eta=0` REMESH class, active-history spatial disagreement is exactly zero after
+`tau_global+1` cycles of the restricted kernels. The example keeps the complete
+Reception stage, grammar, live graph execution and solver outside scope.
+
+`175_runtime_p2_reception_stage.py` crosses the finite causal stage boundary.
+It executes one grammar-admitted two-phase EN event on a real P2 graph and
+binds the sealed targets, runtime neighbors, exact half mix, hard interval,
+metric ray and captured endpoints to the global `q=0` kernel by bit-exact
+replay. It does not bind REMESH history/configuration to that graph, certify
+all auxiliary Reception state, or establish repeated/future runtime stability.
+
+`176_runtime_p2_reception_remesh_sequence.py` binds the two restricted kernels
+inside one completed graph-owned causal sequence. Each observed cycle retains
+an executor-owned half-Reception EN stage with `q=0` and an applied
+`alpha=1` hard-clipped REMESH global-delay copy with `eta=0`. Once
+`N >= L = tau_global+1`, the active suffix of `L` history rows and the recorded
+post-horizon endpoint have zero spatial disagreement. Older inactive history
+rows may remain outside the source interval. The example does not certify
+future or unobserved repetition, auxiliary state, solver behavior or full TNFR
+stability.

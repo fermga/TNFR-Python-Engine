@@ -7,8 +7,8 @@ operator contracts remain authoritative.
 
 | Line | Question | Current status |
 | --- | --- | --- |
-| S1 | Stability for nontrivial dynamics | Fixed and bounded time-varying EPI diffusion derived; exact-common-metric switching plus declared affine EPI resets have a conservative hybrid gain budget. All thirteen runtime glyph stages use immutable all-target proposals. Event execution composes eligible represented affine gains for one observed finite trace. Ordered supplied event/REMESH cycle results expose sealed exact nodal/history boundaries. A separate exact finite companion theorem gives nonincreasing augmented disagreement for uniform, unclipped REMESH with fixed delays, support and metric; `0<alpha<1` mixes temporally, while `alpha=1` preserves possible cycles. One applied executor-sealed REMESH transition is identified against that companion with exact signed binary64 rounding/clipping defects. A stricter adjacent-cycle adapter binds the next represented schedule to the recorded next-history head and telescopes finite energy balances in one common metric. A graph-owned outer executor gives this telescope same-invocation causal provenance and finite graph-owned atomicity. A sealed observer measures exact normalized margins on contiguous finite blocks; one witness has `kappa=139/256`, while the causal `alpha=1` boundary has zero margin. Equilibrium and amplitude scaling rule out a uniform positive absolute drop. A conditional exact policy theorem closes the normalized spatial-disagreement margin `1-q` and prefix gain upper bound one for consensus-preserving common-`q` schedules. Its robust extension proves `q_eff=q*(1+eta)` under the signed bound `E_H(z)-E_H(y)<=eta*J`; a causal observer verifies this hypothesis, every represented gain and the full energy-vector envelope on one finite block. Deriving one uniform `eta` and proving the fixed support/metric/REMESH/policy defect class forward invariant, repeated binary64 stability, solver accuracy, full multichannel dynamics and changing parameters/support remain open |
-| S2 | A TNFR Lyapunov functional | Exact weighted fixed-capacity and common time-varying functionals derived; an affine reset has finite global gain exactly when it preserves the consensus subspace. Composition uses rational quotient-gain bounds and requires exact endpoint continuity. The uniform exact delayed-REMESH companion has a stationary-weighted augmented disagreement functional with an exact Jensen dissipation identity. A sealed runtime bridge separates exact Jensen dissipation from signed rounding and clipping defects. The adjacent schedule layer adds a represented schedule defect, gain slack and sufficient lower bound, then sums these balances across a finite compatible cycle sequence without multiplying fixed-history gains. One outer graph transaction binds that finite sum to actual causal cycle execution, and the block observer normalizes its lower bound by positive initial energy. Hard clipping onto one common scalar interval is disagreement-nonexpansive; soft-knee and rounding counterexamples block unconditional promotion. Absolute uniform drop is obstructed by equilibrium and amplitude scaling. For the conditional exact schedule family, the augmented spatial-disagreement functional has prefix gain at most one and geometric decay under `q<1`. A signed relative head defect is now absorbed exactly by `q_eff=q*(1+eta)` when `delta<=eta*J`; the finite causal adapter verifies the resulting sufficient Lyapunov envelope on selected executions. A forward-invariant uniform runtime defect budget, changing coefficients/metric/support and a full tetrad/nonlinear-operator functional remain open |
+| S1 | Stability for nontrivial dynamics | Fixed and bounded time-varying EPI diffusion derived; exact-common-metric switching plus declared affine EPI resets have a conservative hybrid gain budget. All thirteen runtime glyph stages use immutable all-target proposals. Event execution composes eligible represented affine gains for one observed finite trace. Ordered supplied event/REMESH cycle results expose sealed exact nodal/history boundaries. A separate exact finite companion theorem gives nonincreasing augmented disagreement for uniform, unclipped REMESH with fixed delays, support and metric; `0<alpha<1` mixes temporally, while `alpha=1` preserves possible cycles. One applied executor-sealed REMESH transition is identified against that companion with exact signed binary64 rounding/clipping defects. A stricter adjacent-cycle adapter binds the next represented schedule to the recorded next-history head and telescopes finite energy balances in one common metric. A graph-owned outer executor gives a compatible requested telescope same-invocation causal provenance and finite graph-owned atomicity; its explicit no-telescope branch retains the causal trace for words without a common affine schedule metric. A sealed observer measures exact normalized margins on contiguous finite blocks; one witness has `kappa=139/256`, while the causal `alpha=1` boundary has zero margin. Equilibrium and amplitude scaling rule out a uniform positive absolute drop. A conditional exact policy theorem closes the normalized spatial-disagreement margin `1-q` and prefix gain upper bound one for consensus-preserving common-`q` schedules. Its robust extension proves `q_eff=q*(1+eta)` under the signed bound `E_H(z)-E_H(y)<=eta*J`; a causal observer verifies this hypothesis, every represented gain and the full energy-vector envelope on one finite block. The broad bounded binary64 box is refuted by an exact `alpha=1/2` defect witness; the `alpha=1`, `eta=0` REMESH class and the P2 half-Reception `q=0` EPI kernel close one restricted repeated numeric composition. One executed graph-owned EN EPI stage is bound to the P2 kernel and its captured endpoint. A finite same-invocation adapter now binds every selected EN and same-cycle `alpha=1` REMESH, verifies the active suffix of length `tau_global+1`, and records post-horizon spatial extinction. Future or unobserved repeated complete-runtime execution, finding a useful forward-invariant binary64 relative-defect class for `0<alpha<1` with uniform `eta` and `q_eff<1`, solver accuracy, full multichannel dynamics and changing parameters/support remain open |
+| S2 | A TNFR Lyapunov functional | Exact weighted fixed-capacity and common time-varying functionals derived; an affine reset has finite global gain exactly when it preserves the consensus subspace. Composition uses rational quotient-gain bounds and requires exact endpoint continuity. The uniform exact delayed-REMESH companion has a stationary-weighted augmented disagreement functional with an exact Jensen dissipation identity. A sealed runtime bridge separates exact Jensen dissipation from signed rounding and clipping defects. The adjacent schedule layer adds a represented schedule defect, gain slack and sufficient lower bound, then sums these balances across a finite compatible cycle sequence without multiplying fixed-history gains. One outer graph transaction binds that finite sum to actual causal cycle execution, and the block observer normalizes its lower bound by positive initial energy. Hard clipping onto one common scalar interval is disagreement-nonexpansive; soft-knee and rounding counterexamples block unconditional promotion. Absolute uniform drop is obstructed by equilibrium and amplitude scaling. For the conditional exact schedule family, the augmented spatial-disagreement functional has prefix gain at most one and geometric decay under `q<1`. A signed relative head defect is now absorbed exactly by `q_eff=q*(1+eta)` when `delta<=eta*J`; the finite causal adapter verifies the resulting sufficient Lyapunov envelope on selected executions. The `alpha=1` boundary supplies a forward-invariant REMESH-only zero-defect budget and the P2 half-Reception EPI kernel supplies `q=0`; one executed EN EPI stage is bound to `q=0`, and a finite same-invocation adapter binds every selected EN and same-cycle REMESH through the active suffix; future or unobserved repeated complete-runtime binding, a useful forward-invariant binary64 relative-defect class for `0<alpha<1` with uniform `eta` and `q_eff<1`, changing coefficients/metric/support and a full tetrad/nonlinear-operator functional remain open |
 | S3 | Tetrad observability and minimality | Tetrad-only prediction disproved; full `Phi_s` plus one zero-mode scalar conditionally reconstructs EPI; universal rank/minimality open |
 | S4 | Spectrum of heterogeneous `nu_f` | Generalized fixed-capacity gap, time-varying bound and minimum common-metric switching-family gap derived. A sealed exact-rational kernel treats any one exact nonuniform eigenmode of a fixed connected symmetric rational conductance with arbitrary positive heterogeneous rational capacity. Its finite runtime adapter now derives the same fixed generator, metric, mode and partition family from executor-owned pressure-refreshed flows, separates represented pressure/execution defects and propagates them with the full Euler matrices. The directed case remains open |
 | S5 | Spectral adaptive grammar | Explicit physical flow partitions execute pressure refresh at every boundary and retain sealed segment/modal evidence. The exact reversible single-mode kernel proves conditional exact-real convergence as `h_max -> 0`; its general runtime adapter now binds finite individually certified executions and provides signed rational continuous-error enclosures. The effective-P2 specialization separately adds finite REMESH scaling and a committed residual. Binary64/runtime mesh convergence, solver order or accuracy, common causal family provenance, mixed modes and adaptive U2/U4 remain open |
@@ -22,7 +22,7 @@ operator contracts remain authoritative.
 | S13 | Non-normality and dissonance bursts | Logarithmic-norm sign exactly characterizes fixed linear pressure growth; numerical signs within backward error abstain; finite-family prediction measured and canonical directed U2 metric open |
 | S14 | Structural information geometry | A relabeling-invariant structural-state metric is exact within a declared finite simple-graph topology/label class; cross-topology, nesting and history geometry open |
 | S15 | Inverse identification from telemetry | Known-target, node-level one-step signatures separate all 13 operators on declared probes and have a finite-prototype noise margin. ZHIR now has a replayable prediction/observation residual, immutable accepted-stage decision records and offline pre-jump observations that preserve rejected gates and distinguish rational secants from its actual binary64 threshold arithmetic. All thirteen atomic stages remove contracted target-order and partial-commit confounds before pressure refresh; target localization, aggregate inversion, mixed schedules, unseen states and complete words remain open |
-| S16 | Observable, stable and scale-persistent NFR structure | Endpoint and sampled-path certificates compose restricted pure-EPI hypotheses, stable forward-Euler updates and a common switching metric. All thirteen glyphs have atomic all-target Jacobi stages. Executed schedules and individually atomic event/REMESH cycles feed a sealed finite three-mesh comparison. The uniform exact companion theorem closes augmented-history monotonicity and temporal convergence on fixed support/metric without clipping; an adjacent-cycle layer gives a finite represented history telescope. A graph-owned executor binds that telescope to one causal finite invocation with atomicity. A block observer extracts exact normalized lower margins without promoting them to class-wide results. The exact policy theorem gives common-`q` repeated spatial-disagreement decay; its relative-defect extension preserves it with `q_eff=q*(1+eta)` and its causal adapter verifies the robust vector envelope on finite runtime blocks, including positive binary64 defect. The general reversible exact mode is also bound offline to executor-owned pressure-refreshed partitions with complete-matrix defect propagation. A forward-invariant binary64 class with uniform `eta`, generic runtime convergence, full graph/grammar-history continuity and changing node support remain open |
+| S16 | Observable, stable and scale-persistent NFR structure | Endpoint and sampled-path certificates compose restricted pure-EPI hypotheses, stable forward-Euler updates and a common switching metric. All thirteen glyphs have atomic all-target Jacobi stages. Executed schedules and individually atomic event/REMESH cycles feed a sealed finite three-mesh comparison. The uniform exact companion theorem closes augmented-history monotonicity and temporal convergence on fixed support/metric without clipping; an adjacent-cycle layer gives a finite represented history telescope. A graph-owned executor binds a compatible requested telescope to one causal finite invocation with atomicity and can retain the causal trace without that telescope when no common affine schedule metric exists. A block observer extracts exact normalized lower margins without promoting them to class-wide results. The exact policy theorem gives common-`q` repeated spatial-disagreement decay; its relative-defect extension preserves it with `q_eff=q*(1+eta)` and its causal adapter verifies the robust vector envelope on finite runtime blocks, including positive binary64 defect. The general reversible exact mode is also bound offline to executor-owned pressure-refreshed partitions with complete-matrix defect propagation. A restricted P2 half-Reception/`alpha=1` binary64 EPI-kernel class is now forward invariant and extinguishes spatial disagreement after the finite companion horizon; one graph-owned EN EPI event is bound to that kernel and its endpoint, and a finite same-invocation adapter binds every observed EN/REMESH cycle, the active suffix and post-horizon extinction. Preserving the hypotheses across future or unobserved repeated complete-runtime execution, a useful forward-invariant binary64 relative-defect class for `0<alpha<1` with uniform `eta` and `q_eff<1`, generic runtime convergence and changing node support remain open |
 
 ## Implementation map
 
@@ -36,6 +36,9 @@ next to the subsystem they certify.
 | S1, S2, S16 causal finite-block margin | [`runtime_remesh_schedule_block_margin.py`](../src/tnfr/physics/runtime_remesh_schedule_block_margin.py), [`runtime_remesh_schedule_block_margin.pyi`](../src/tnfr/physics/runtime_remesh_schedule_block_margin.pyi) | [`test_runtime_remesh_schedule_block_margin.py`](../tests/physics/test_runtime_remesh_schedule_block_margin.py), [`test_runtime_remesh_schedule_block_margin_example.py`](../tests/physics/test_runtime_remesh_schedule_block_margin_example.py) |
 | S1, S2, S16 exact uniform REMESH/schedule policy | [`remesh_schedule_policy_stability.py`](../src/tnfr/physics/remesh_schedule_policy_stability.py), [`remesh_schedule_policy_stability.pyi`](../src/tnfr/physics/remesh_schedule_policy_stability.pyi) | [`test_remesh_schedule_policy_stability.py`](../tests/physics/test_remesh_schedule_policy_stability.py), [`test_remesh_schedule_policy_stability_example.py`](../tests/physics/test_remesh_schedule_policy_stability_example.py) |
 | S1, S2, S16 relative-defect policy and causal verification | [`remesh_schedule_relative_defect_stability.py`](../src/tnfr/physics/remesh_schedule_relative_defect_stability.py), [`remesh_schedule_relative_defect_stability.pyi`](../src/tnfr/physics/remesh_schedule_relative_defect_stability.pyi), [`runtime_remesh_schedule_relative_defect.py`](../src/tnfr/physics/runtime_remesh_schedule_relative_defect.py), [`runtime_remesh_schedule_relative_defect.pyi`](../src/tnfr/physics/runtime_remesh_schedule_relative_defect.pyi) | [`test_remesh_schedule_relative_defect_stability.py`](../tests/physics/test_remesh_schedule_relative_defect_stability.py), [`test_runtime_remesh_schedule_relative_defect.py`](../tests/physics/test_runtime_remesh_schedule_relative_defect.py), [`test_runtime_remesh_schedule_relative_defect_example.py`](../tests/physics/test_runtime_remesh_schedule_relative_defect_example.py) |
+| S1, S2, S16 binary64 REMESH boundary and P2 kernel composition | [`binary64_remesh_relative_defect.py`](../src/tnfr/physics/binary64_remesh_relative_defect.py), [`binary64_remesh_relative_defect.pyi`](../src/tnfr/physics/binary64_remesh_relative_defect.pyi), [`binary64_p2_reception_stability.py`](../src/tnfr/physics/binary64_p2_reception_stability.py), [`binary64_p2_reception_stability.pyi`](../src/tnfr/physics/binary64_p2_reception_stability.pyi) | [`test_binary64_remesh_relative_defect.py`](../tests/physics/test_binary64_remesh_relative_defect.py), [`test_binary64_remesh_relative_defect_example.py`](../tests/physics/test_binary64_remesh_relative_defect_example.py), [`test_binary64_p2_reception_stability.py`](../tests/physics/test_binary64_p2_reception_stability.py), [`test_binary64_p2_reception_stability_example.py`](../tests/physics/test_binary64_p2_reception_stability_example.py) |
+| S1, S2, S16 finite executed P2 EN binding | [`runtime_p2_reception_stage.py`](../src/tnfr/physics/runtime_p2_reception_stage.py), [`runtime_p2_reception_stage.pyi`](../src/tnfr/physics/runtime_p2_reception_stage.pyi) | [`test_runtime_p2_reception_stage.py`](../tests/physics/test_runtime_p2_reception_stage.py), [`test_runtime_p2_reception_stage_example.py`](../tests/physics/test_runtime_p2_reception_stage_example.py) |
+| S1, S2, S16 finite causal P2 EN/REMESH sequence | [`runtime_p2_reception_remesh_sequence.py`](../src/tnfr/physics/runtime_p2_reception_remesh_sequence.py), [`runtime_p2_reception_remesh_sequence.pyi`](../src/tnfr/physics/runtime_p2_reception_remesh_sequence.pyi) | [`test_runtime_p2_reception_remesh_sequence.py`](../tests/physics/test_runtime_p2_reception_remesh_sequence.py), [`176_runtime_p2_reception_remesh_sequence.py`](../examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py) |
 | S3 | [`observability.py`](../src/tnfr/physics/observability.py) | [`test_tetrad_observability.py`](../tests/physics/test_tetrad_observability.py) |
 | S6 | [`phase_transition.py`](../src/tnfr/physics/phase_transition.py), [`phase_scaling.py`](../src/tnfr/physics/phase_scaling.py) | [`test_phase_transition.py`](../tests/physics/test_phase_transition.py), [`test_phase_scaling.py`](../tests/physics/test_phase_scaling.py) |
 | S7 | [`topology_transitions.py`](../src/tnfr/physics/topology_transitions.py) | [`test_topology_transitions.py`](../tests/physics/test_topology_transitions.py) |
@@ -469,16 +472,20 @@ crosses that provenance boundary for one declared finite run. It executes
 ordered `EventRemeshCycleExecutionSpec` values on one graph under one outer
 graph transaction. Each sealed `CausalEventRemeshCycleReceipt` retains its
 zero-based ordinal, exact spec and `EventRemeshCycleResult`, including schedule
-identity. The enclosing `ExecutedEventRemeshCycleSequence` retains both the
-offline cycle observation and its runtime schedule/history telescope. It alone
-certifies same-invocation causal order, one graph identity and finite graph-owned
-atomicity. The nested observers keep their negative provenance properties when
-used separately. No schedule/REMESH gain product, solver accuracy or order,
+identity. The enclosing `ExecutedEventRemeshCycleSequence` always retains the
+offline cycle observation. By default, `require_runtime_telescope=True` also
+requires and retains its compatible runtime schedule/history telescope. The
+explicit `False` branch always records `runtime_telescope=None`, thereby
+admitting words without one common affine schedule metric; telescope-specific properties remain false while
+same-invocation causal order, one graph identity and finite graph-owned
+atomicity remain certified. The nested observers keep their negative provenance
+properties when used separately. No schedule/REMESH gain product, solver accuracy or order,
 mesh convergence, repeated stability, future behavior or rollback of external
 effects follows.
 
 [`observe_executed_event_remesh_block_margin`](../src/tnfr/physics/runtime_remesh_schedule_block_margin.py)
-now selects any nonempty contiguous block of the causally bound telescope. It
+now selects any nonempty contiguous block of a causal execution that retained
+its telescope. It
 retains the authoritative boundary objects and verifies exactly
 `D_block=K_block+S_block`, with nonnegative schedule slack `S_block`. For
 positive initial augmented energy it records
@@ -521,12 +528,27 @@ than `E_H(y_k)`, remains valid under ideal-head cancellation, and `J_k=0` is
 handled without division.
 
 [`observe_executed_event_remesh_relative_defect_block`](../src/tnfr/physics/runtime_remesh_schedule_relative_defect.py)
-binds this theorem to one selected causal execution block. It verifies every
+binds this theorem to one selected causal execution block whose source retained
+the compatible runtime telescope. It verifies every
 signed defect, represented schedule gain, componentwise history-energy
 envelope and complete-block endpoint factor. This closes finite runtime
-measurement, not repetition. The next runtime target is to derive one uniform
-`eta` and prove a fixed-support, fixed-metric, fixed-REMESH and common-policy
-class forward invariant under the binary64 executor.
+measurement, not repetition in general. The represented-number boundary is now
+sharper: an exact pairwise reduction exposes a normal-valued `alpha=1/2`
+witness requiring `eta=2^210-1/4`, so a bounded hard-clipped box alone cannot
+supply a useful general budget. At `alpha=1`, sufficient in-interval history
+does give a REMESH-only forward-invariant class with `eta=0`. On abstract P2
+support, the immutable-snapshot Reception EPI kernel with exact binary64 mix
+`0.5` has global disagreement gain `q=0`; composing these two restricted
+kernels extinguishes active-history disagreement after `tau_global+1` cycles.
+One sealed graph-owned event binds the kernel to its grammar-admitted two-phase
+EN EPI stage and captured endpoint. A second adapter now binds every selected
+EN and every same-cycle `alpha=1` hard-clipped REMESH in one executor-owned
+finite P2 sequence. For `N>=L=tau_global+1`, it verifies the in-interval active
+suffix of length `L` and records zero spatial disagreement at every observed
+post-horizon and final post-REMESH endpoint. Older retained rows remain outside
+the active suffix. Future or unobserved complete-runtime repetition, and a
+useful forward-invariant binary64 relative-defect class for `0<alpha<1` with
+uniform `eta` and `q_eff<1`, are the next runtime boundaries.
 
 ZHIR now supplies a narrower event-local temporal boundary shared by S5 and
 S15. The nodal equation predicts the instantaneous rate
@@ -1013,7 +1035,7 @@ measurements. See
 
 | Line | Next precise test | Result that blocks promotion |
 | --- | --- | --- |
-| S1-S2 | Extend the finite causal `delta<=eta*J` observations to a declared forward-invariant runtime class with one uniform `eta` and `q_eff<1` | The class is not forward invariant; support, metric, REMESH or policy changes; no finite uniform `eta` exists; or `q_eff` reaches one |
+| S1-S2 | Extend the finite same-graph P2 EN/REMESH binding to a declared future-runtime class, or derive a useful forward-invariant binary64 relative-defect class for `0<alpha<1` with uniform `eta` and `q_eff<1` | The observed finite hypotheses do not remain invariant under additional execution; support, metric, configuration or policy changes; no useful finite uniform `eta` exists; or `q_eff` reaches one |
 | S3 | Prove or refute `rank(-K L_rw)=N-1` beyond the finite atlas | One connected positive-conductance graph with nullity greater than one |
 | S4 | With the fixed reversible runtime boundary implemented, study a directed contraction quantity and its transient bound | A stable directed spectrum has an unbounded claimed metric transient, or the proposed quantity silently assumes reversibility |
 | S5 | Determine which additional causal and consistency hypotheses could turn finite runtime error observations into a reproducible refinement protocol | Any protocol treats caller-ordered runs as causally shared, omits off-mode defect propagation, or promotes finite residuals to convergence, accuracy or solver order |
@@ -1027,7 +1049,7 @@ measurements. See
 | S13 | Repeat the benchmark across held-out graph families and operator-driven trajectories | The exact linear sign criterion fails in scope, or spectral baselines match finite predictive rankings out of sample |
 | S14 | Extend the fixed-class metric across topology, nesting and histories with explicit edit costs | Triangle inequality, relabeling invariance or phase-wrap invariance fails |
 | S15 | Estimate observation scales/noise laws, then test unseen graph families, mixed schedules and complete grammar words | Operators or words claimed identifiable have overlapping observation laws, or empirical errors exceed the certified finite-prototype margin |
-| S16 | Prove that the robust fixed-policy hypotheses verified on finite blocks persist under future binary64 execution | Support, metric, REMESH configuration or policy changes; the signed defect loses a uniform `J`-relative bound; or the resulting block factor reaches one |
+| S16 | Determine whether the finite executor-bound P2 EN/REMESH hypotheses persist under future complete-runtime repetition | A later cycle leaves the fixed support, metric, interval, delays, alpha source or exact `q=eta=0` kernel class; auxiliary channels invalidate the proposed extension; or causal provenance cannot be retained |
 
 ## Completed runtime and causal-binding milestones
 
@@ -1072,11 +1094,33 @@ finite endpoint factor on one selected block. The `alpha=0.4` fixture confirms
 that a positive binary64 defect can be admitted at its exact minimum `eta`.
 This evidence does not establish one uniform future budget.
 
+The represented binary64 boundary and the first restricted repeated
+composition are also complete. Pairwise variance reduces the uniform REMESH
+defect question to scalar pairs and supplies the exact `alpha=1/2` obstruction
+`eta=2^210-1/4`. The sufficient-history `alpha=1` hard-clipped class instead
+has `eta=0` under REMESH alone. On abstract mutual-singleton P2 support, an
+exact-half immutable-snapshot Reception EPI kernel maps every finite binary64
+pair in the source interval to numeric consensus, so `q=0` in every positive
+diagonal metric. Their
+restricted composition eliminates active-history spatial disagreement after
+`tau_global+1` cycles. Signed-zero bit identity, a real graph, complete EN
+stage validation, grammar admission, event execution, solver accuracy and full
+TNFR stability are outside the abstract result. A separate sealed adapter now
+binds one completed graph-owned event to its grammar-admitted two-phase EN EPI
+stage, exact runtime neighbors, metric and captured `q=0` endpoint. The finite
+sequence adapter additionally binds each observed EN stage and its same-cycle
+`alpha=1` REMESH bridge to one executor-owned P2 invocation. Once
+`N>=tau_global+1`, it checks only the active chronological suffix and records
+zero post-horizon and final spatial disagreement. It does not audit all
+auxiliary Reception state, bind the current live graph after observation or
+prove future or unobserved execution.
+
 Other open branches remain:
 
-- derive a uniform `eta` and prove the fixed-support, fixed-metric, fixed-REMESH
-  and common-policy relative-defect class forward invariant under future
-  binary64 execution while retaining `q_eff<1`;
+- determine whether the finite same-graph P2 EN/REMESH hypotheses remain
+  invariant under future complete-runtime use;
+- derive a useful uniform `eta` for a fixed-support, fixed-metric class with
+  `0<alpha<1` while retaining `q_eff<1`;
 - extend phase and nonlinear quotient analysis to branch transitions, zero
   phasor resultants and changing support;
 - test topology precursors and temporal operator signatures on held-out graph

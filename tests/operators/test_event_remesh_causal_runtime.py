@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
+import ast
 from collections import deque
+from dataclasses import replace
 from fractions import Fraction
+from pathlib import Path
 
 import networkx as nx
 import pytest
 
 import tnfr.operators.event_remesh_causal_runtime as causal_module
 import tnfr.physics.runtime_remesh_schedule_stability as telescope_module
+from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.errors import TNFRValueError
 from tnfr.operators.event_remesh_causal_runtime import (
     CausalEventRemeshCycleReceipt,
@@ -23,6 +27,21 @@ from tnfr.operators.event_remesh_sequence import (
 from tnfr.operators.event_timing import (
     build_operator_event_schedule,
     build_physical_flow_partition,
+)
+from tnfr.physics.remesh_history_stability import (
+    certify_uniform_remesh_history_stability,
+)
+from tnfr.physics.remesh_schedule_policy_stability import (
+    certify_uniform_remesh_schedule_policy_stability,
+)
+from tnfr.physics.remesh_schedule_relative_defect_stability import (
+    certify_uniform_remesh_schedule_relative_defect_stability,
+)
+from tnfr.physics.runtime_remesh_schedule_block_margin import (
+    observe_executed_event_remesh_block_margin,
+)
+from tnfr.physics.runtime_remesh_schedule_relative_defect import (
+    observe_executed_event_remesh_relative_defect_block,
 )
 from tnfr.utils._structural_signature import structural_proof_signature
 
@@ -161,6 +180,7 @@ def test_two_cycles_receive_same_invocation_provenance_and_telescope() -> None:
     )
     assert result.observed_sequence.cycles[0] is result.cycles[0]
     assert result.observed_sequence.cycles[1] is result.cycles[1]
+    assert result.runtime_telescope_required
     assert result.runtime_telescope.source_sequence is result.observed_sequence
     assert result.exact_start_time == Fraction(0)
     assert result.exact_end_time == Fraction(1, 4)
@@ -178,6 +198,8 @@ def test_two_cycles_receive_same_invocation_provenance_and_telescope() -> None:
     assert not result.observed_sequence.whole_sequence_atomicity_certified
     assert not result.runtime_telescope.shared_graph_execution_provenance_certified
     assert not result.runtime_telescope.whole_sequence_atomicity_certified
+    with pytest.raises(ValueError, match="causal conditions are inconsistent"):
+        replace(result, runtime_telescope=None)
 
     assert not result.runtime_global_gain_certified
     assert not result.repeated_runtime_stability_certified
@@ -211,6 +233,154 @@ def test_three_partitioned_cycles_bind_every_physical_partition_identity() -> No
         assert receipt.physical_flow_partitions[0] is partition
         evidence = receipt.cycle_result.event_execution
         assert evidence.physical_flow_partition_evidence[0].partition is partition
+
+
+def test_causal_sequence_can_explicitly_omit_an_inapplicable_telescope(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    graph = _graph(alpha=1.0)
+    graph.graph.update(
+        GAMMA={"type": "none"},
+        GLYPH_FACTORS={
+            "EN_mix": 0.5,
+            "IL_lambda": 0.1,
+            "REMESH_alpha": 1.0,
+        },
+        compute_delta_nfr=default_compute_delta_nfr,
+    )
+    for node in graph:
+        graph.nodes[node].update(
+            epi_kind="test",
+            latent=False,
+            glyph_history=["AL"],
+            epi_history=[float(graph.nodes[node]["EPI"])] * 2,
+        )
+    word = ("reception", "coherence", "recursivity")
+    specs = tuple(
+        EventRemeshCycleExecutionSpec(
+            build_operator_event_schedule(
+                word,
+                start_time=0.0,
+                flow_durations=(0.0, 0.0, 0.0, 0.0),
+            )
+        )
+        for _index in range(2)
+    )
+
+    def forbidden_telescope(_sequence):
+        raise AssertionError("the optional telescope observer was called")
+
+    monkeypatch.setattr(
+        telescope_module,
+        "observe_runtime_remesh_schedule_sequence",
+        forbidden_telescope,
+    )
+    result = execute_event_remesh_cycle_sequence(
+        graph,
+        specs,
+        metric_weights=(1.0, 1.0),
+        context={"initial_epi_nonzero": True},
+        suppress_birth_warnings=True,
+        require_runtime_telescope=False,
+    )
+
+    assert not result.runtime_telescope_required
+    assert result.runtime_telescope is None
+    assert result.causal_cycle_order_certified
+    assert result.same_graph_execution_provenance_certified
+    assert result.whole_sequence_graph_state_atomic
+    assert result.exact_recorded_boundary_continuity_certified
+    assert not result.exact_finite_energy_telescope_certified
+    assert result.failed_conditions == ()
+    assert result.observed_sequence.nested_schedule_metric_alignment == (
+        None,
+        None,
+    )
+    assert not result.observed_sequence.exact_common_metric_cycle_sequence_certified
+    with pytest.raises(ValueError, match="must be absent"):
+        replace(result, runtime_telescope=object())
+    with pytest.raises(ValueError, match="causal conditions are inconsistent"):
+        replace(result, runtime_telescope_required=True)
+
+    with pytest.raises(TNFRValueError, match="no intact runtime telescope"):
+        observe_executed_event_remesh_block_margin(result)
+
+    remesh = certify_uniform_remesh_history_stability(
+        alpha=Fraction(1),
+        tau_local=1,
+        tau_global=1,
+    )
+    policy = certify_uniform_remesh_schedule_policy_stability(
+        remesh,
+        Fraction(0),
+    )
+    relative = certify_uniform_remesh_schedule_relative_defect_stability(
+        policy,
+        Fraction(0),
+    )
+    with pytest.raises(TNFRValueError, match="no intact runtime telescope"):
+        observe_executed_event_remesh_relative_defect_block(result, relative)
+
+
+def test_causal_runtime_stub_exposes_optional_telescope_contract() -> None:
+    stub_path = Path(causal_module.__file__).with_suffix(".pyi")
+    tree = ast.parse(stub_path.read_text(encoding="utf-8"))
+    sequence_class = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.ClassDef)
+        and node.name == "ExecutedEventRemeshCycleSequence"
+    )
+    annotations = {
+        node.target.id: ast.unparse(node.annotation)
+        for node in sequence_class.body
+        if isinstance(node, ast.AnnAssign)
+        and isinstance(node.target, ast.Name)
+    }
+    assert annotations["runtime_telescope_required"] == "bool"
+    assert annotations["runtime_telescope"] == (
+        "RuntimeRemeshScheduleSequenceObservation | None"
+    )
+
+    executor = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef)
+        and node.name == "execute_event_remesh_cycle_sequence"
+    )
+    keyword_annotations = {
+        argument.arg: ast.unparse(argument.annotation)
+        for argument in executor.args.kwonlyargs
+        if argument.annotation is not None
+    }
+    assert keyword_annotations["require_runtime_telescope"] == "bool"
+    keyword_defaults = dict(
+        zip(
+            (argument.arg for argument in executor.args.kwonlyargs),
+            executor.args.kw_defaults,
+            strict=True,
+        )
+    )
+    telescope_default = keyword_defaults["require_runtime_telescope"]
+    assert isinstance(telescope_default, ast.Constant)
+    assert telescope_default.value is Ellipsis
+
+
+@pytest.mark.parametrize("value", [None, 0, 1, "false"])
+def test_runtime_telescope_flag_requires_an_exact_bool_before_writes(
+    value: object,
+) -> None:
+    graph = _graph()
+    before = _graph_signature(graph)
+
+    with pytest.raises(TypeError, match="require_runtime_telescope must be a bool"):
+        execute_event_remesh_cycle_sequence(
+            graph,
+            _specs(),
+            require_runtime_telescope=value,  # type: ignore[arg-type]
+        )
+
+    assert _graph_signature(graph) == before
 
 
 def test_outer_transaction_precedes_specs_iterable_materialization() -> None:

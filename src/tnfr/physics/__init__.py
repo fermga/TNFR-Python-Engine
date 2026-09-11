@@ -81,6 +81,22 @@ remesh_schedule_relative_defect_stability : Robust exact policy envelope
     - Signed pre-schedule defect delta <= eta J gives q_eff = q(1 + eta)
     - Reuses the common-q theorem; q_eff < 1 gives geometric disagreement decay
     - Assumes a uniform defect bound; excludes runtime forward invariance
+binary64_remesh_relative_defect : Exact runtime-rounding boundary
+    - Replays one production pair and exposes its signed relative defect
+    - Certifies the alpha=1 bounded hard-clip REMESH-only class with eta=0
+    - Excludes schedule families, repeated execution and future behavior
+binary64_p2_reception_stability : Global restricted P2 kernel composition
+    - Half-Reception sends every finite represented pair in its interval to consensus
+    - Composes q=0 with the alpha=1, eta=0 REMESH class
+    - Excludes complete EN stages, grammar and live graph execution
+runtime_p2_reception_stage : Finite executor binding for the P2 kernel
+    - Binds one sealed two-phase EN event and its endpoints to the q=0 kernel
+    - Verifies P2 neighbours, exact half mix, hard interval and metric ray
+    - Excludes REMESH graph binding and repeated/future runtime stability
+runtime_p2_reception_remesh_sequence : Finite causal P2 extinction binding
+    - Binds each executed EN stage and delayed REMESH to one causal graph trace
+    - Verifies active-history disagreement extinction after tau_global + 1 cycles
+    - Excludes unobserved repetition, future runtime and auxiliary-state stability
 runtime_remesh_history_stability : Executed runtime/companion bridge
     - Exact signed binary64 rounding and clipping residual decomposition
     - Lifted one-step augmented-energy balances and sufficient lower bounds
@@ -522,6 +538,24 @@ from .remesh_schedule_relative_defect_stability import (
     UniformRemeshScheduleRelativeDefectStabilityCertificate,
     certify_uniform_remesh_schedule_relative_defect_stability,
 )
+from .binary64_remesh_relative_defect import (
+    Binary64RemeshPairRelativeDefectObservation,
+    UniformAlphaOneHardClipRemeshClassCertificate,
+    certify_alpha_one_hard_clip_remesh_class,
+    observe_binary64_remesh_pair_relative_defect,
+)
+from .binary64_p2_reception_stability import (
+    P2HalfReceptionRemeshStabilityCertificate,
+    certify_p2_half_reception_remesh_stability,
+)
+from .runtime_p2_reception_stage import (
+    ExecutedP2HalfReceptionStageCertificate,
+    certify_executed_p2_half_reception_stage,
+)
+from .runtime_p2_reception_remesh_sequence import (
+    ExecutedP2HalfReceptionRemeshSequenceCertificate,
+    certify_executed_p2_half_reception_remesh_sequence,
+)
 from .runtime_remesh_history_stability import (
     RuntimeRemeshHistoryBridgeObservation,
     observe_runtime_remesh_history_bridge,
@@ -861,6 +895,20 @@ __all__ = [
     # --- Relative-defect robust REMESH/schedule policy stability ---
     "UniformRemeshScheduleRelativeDefectStabilityCertificate",
     "certify_uniform_remesh_schedule_relative_defect_stability",
+    # --- Exact binary64 REMESH relative-defect boundary ---
+    "Binary64RemeshPairRelativeDefectObservation",
+    "UniformAlphaOneHardClipRemeshClassCertificate",
+    "certify_alpha_one_hard_clip_remesh_class",
+    "observe_binary64_remesh_pair_relative_defect",
+    # --- Global binary64 P2 half-Reception/REMESH kernel family ---
+    "P2HalfReceptionRemeshStabilityCertificate",
+    "certify_p2_half_reception_remesh_stability",
+    # --- Finite executed P2 half-Reception stage binding ---
+    "ExecutedP2HalfReceptionStageCertificate",
+    "certify_executed_p2_half_reception_stage",
+    # --- Finite causal P2 Reception/REMESH extinction binding ---
+    "ExecutedP2HalfReceptionRemeshSequenceCertificate",
+    "certify_executed_p2_half_reception_remesh_sequence",
     # --- Executed REMESH runtime/companion bridge ---
     "RuntimeRemeshHistoryBridgeObservation",
     "observe_runtime_remesh_history_bridge",

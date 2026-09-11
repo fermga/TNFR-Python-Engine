@@ -4,6 +4,50 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added — 2026-09-11 Binary64 REMESH boundary and P2 causal binding
+
+- Centralized the production delayed-REMESH scalar evaluation in
+  `_delayed_remesh_kernel.py` and added an exact pairwise observer. It records
+  the Jensen denominator, ideal/raw/bounded separations and signed rounding,
+  clipping and total defects without promoting one pair to a uniform class.
+  A normal-valued `alpha=1/2` witness requires exactly `eta=2^210-1/4`, so
+  strict robust-envelope contraction requires `q<4/(2^212+3)`; a bounded hard-
+  clipped interval alone is insufficient for the existing `q=9/16` policy.
+- Added the sealed `alpha=1` hard-clip REMESH class. On fixed ordered support,
+  fixed positive metric and sufficient finite represented history inside one
+  interval, the runtime recurrence copies the global delayed row numerically,
+  has uniform relative defect `eta=0`, and preserves the class under REMESH.
+  Signed-zero bits, schedules, repeated event execution and future runtime
+  behavior remain outside this certificate.
+- Added the restricted global binary64 P2 half-Reception composition. With two
+  mutual singleton neighbors, an immutable all-target EPI snapshot, the exact
+  configured mix `0.5` and one common hard clamp, both proposals are
+  numerically equal for every finite represented pair in the source interval.
+  The numeric kernel gain
+  is therefore `q=0`; combined with `alpha=1`, active-history spatial
+  disagreement is exactly zero after `tau_global+1` cycles. The certificate
+  covers arbitrary finite repetition of these numeric EPI kernels while
+  withholding complete Reception-stage, grammar, live graph and solver claims.
+- Added a finite causal adapter for one executed P2 half-Reception stage. It
+  binds a sealed event result, two-phase EN evidence, ordered graph support,
+  runtime singleton neighbors, exact half mix, hard interval, metric ray and
+  captured endpoints to the global `q=0` kernel by bit-exact replay. REMESH
+  graph binding, auxiliary Reception state and repeated/future runtime claims
+  remain outside its scope.
+- Added a sealed finite causal P2 Reception/REMESH sequence certificate. It
+  binds every selected executor-owned EN stage to the global `q=0` kernel and
+  every same-cycle `alpha=1` hard-clipped REMESH to its represented global-delay
+  row with `eta=0`. For an observed sequence with
+  `N >= tau_global+1`, it verifies the active history suffix and exact
+  post-horizon spatial-disagreement extinction. Stale retained rows before that
+  suffix, future or unobserved repetition, auxiliary state, solver properties
+  and full TNFR stability remain outside its scope.
+- Added examples 173–176, including
+  `176_runtime_p2_reception_remesh_sequence.py`, exact public stubs, facade
+  exports and adversarial tests covering normal/subnormal extremes, signed
+  zero, inactive and active clipping, hostile inputs, private reseals and the
+  exact energy-gain-four witness for the canonical default EN factor.
+
 ### Added — 2026-09-11 Relative-defect REMESH/schedule stability
 
 - Added `remesh_schedule_relative_defect_stability.py` and its public stub. For
@@ -64,9 +108,12 @@ All notable changes to this project will be documented in this file.
   and `169_event_remesh_causal_runtime.py`. The outer executor runs ordered
   `EventRemeshCycleExecutionSpec` values on one graph in one transaction and
   seals ordinal/spec/result receipts, including exact schedule identity. Its
-  result retains the ordinary offline cycle observation and compatible runtime
-  schedule/history telescope, thereby certifying same-invocation causal order,
-  common graph identity and finite graph-owned atomicity. It does not compose
+  result always retains the ordinary offline cycle observation and, by default,
+  the compatible runtime schedule/history telescope. The explicit
+  `require_runtime_telescope=False` branch always stores `None`, so causal words
+  without a common affine metric still retain same-invocation order, common
+  graph identity and finite graph-owned atomicity; telescope-specific claims
+  remain false. It does not compose
   schedule and REMESH gains or prove a uniform positive normalized block
   margin over a declared forward-invariant runtime class, intrablock runtime prefix control,
   solver accuracy/order, mesh convergence, repetition or future stability.

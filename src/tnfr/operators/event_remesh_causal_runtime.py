@@ -6,9 +6,13 @@ provenance, causal order, or cross-cycle atomicity.  This module supplies that
 stronger finite boundary: it executes every declared cycle on one graph under
 one controlling graph transaction and only then constructs those observers.
 
-The promoted facts remain local to the returned finite trace.  They do not
-establish a global mixed schedule/REMESH gain, repeated or future stability,
-solver accuracy or order, mesh convergence, or rollback of external effects.
+The exact schedule/history energy telescope is an optional strengthening of
+that causal trace.  Some valid operator words have no common affine schedule
+metric, so provenance and graph-owned atomicity must not depend on that
+additional observation.  The promoted facts remain local to the returned
+finite trace.  They do not establish a global mixed schedule/REMESH gain,
+repeated or future stability, solver accuracy or order, mesh convergence, or
+rollback of external effects.
 """
 
 from __future__ import annotations
@@ -52,14 +56,15 @@ __all__ = (
 
 
 _RECEIPT_PROOF_VERSION = "causal_event_remesh_cycle_receipt_v1"
-_SEQUENCE_PROOF_VERSION = "executed_event_remesh_cycle_sequence_v1"
+_SEQUENCE_PROOF_VERSION = "executed_event_remesh_cycle_sequence_v2"
 _SCOPE = (
     "One finite same-invocation execution of at least two declared "
     "operator-event/REMESH cycles on one graph. A controlling outer graph "
     "transaction encloses input materialization, all nested cycle savepoints, "
-    "offline sequence composition, the exact schedule/history telescope and "
-    "final sealing. Receipts bind each ordinal, exact spec identity, schedule "
-    "identity, materialized physical partitions and cycle result to one opaque "
+    "offline sequence composition, an optional exact schedule/history telescope "
+    "when requested, and final sealing. Receipts bind each ordinal, exact spec "
+    "identity, schedule identity, materialized physical partitions and cycle "
+    "result to one opaque "
     "process-local token. This certifies causal order and graph-owned atomicity "
     "only for the returned finite invocation. It does not certify a global "
     "mixed schedule/REMESH gain, a uniform repeated margin, repeated or future "
@@ -78,7 +83,7 @@ _CONDITION_NAMES = (
     "exact_schedule_clock_chain",
     "common_ordered_target_support",
     "offline_sequence_bound_by_identity",
-    "runtime_telescope_bound_by_identity",
+    "runtime_telescope_requirement_satisfied",
 )
 
 
@@ -349,6 +354,7 @@ def _conditions_for(
     graph_owner: nx.Graph,
     execution_token: _CausalExecutionToken,
     observed_sequence: ObservedEventRemeshCycleSequence,
+    runtime_telescope_required: bool,
     runtime_telescope: Any,
 ) -> tuple[tuple[str, bool], ...]:
     exact_clock_chain = bool(
@@ -362,31 +368,46 @@ def _conditions_for(
     common_targets = all(
         _ordered_identity_is(cycle.target_nodes, target_nodes) for cycle in cycles
     )
+    telescope_bound = False
+    if runtime_telescope is not None:
+        try:
+            from ..physics.runtime_remesh_schedule_stability import (
+                RuntimeRemeshScheduleSequenceObservation,
+            )
+
+            telescope_bound = bool(
+                type(runtime_telescope)
+                is RuntimeRemeshScheduleSequenceObservation
+                and runtime_telescope.sequence_observation_certified
+                and runtime_telescope.source_sequence is observed_sequence
+                and len(runtime_telescope.boundaries) == len(cycles) - 1
+            )
+        except BaseException:
+            telescope_bound = False
     try:
-        telescope_intact = bool(runtime_telescope.sequence_observation_certified)
-        telescope_bound = bool(
-            telescope_intact
-            and runtime_telescope.source_sequence is observed_sequence
-            and len(runtime_telescope.boundaries) == len(cycles) - 1
+        offline_bound = bool(
+            type(observed_sequence) is ObservedEventRemeshCycleSequence
+            and ObservedEventRemeshCycleSequence._proof_fields_are_intact(
+                observed_sequence
+            )
+            is True
+            and len(observed_sequence.cycles) == len(cycles)
+            and all(
+                observed is expected
+                for observed, expected in zip(
+                    observed_sequence.cycles,
+                    cycles,
+                    strict=True,
+                )
+            )
         )
     except BaseException:
-        telescope_intact = False
-        telescope_bound = False
-    # The telescope's authoritative rederivation validates its exact source
-    # sequence, every adjacent boundary and every nested cycle.  Reuse that
-    # result within this one validation pass instead of walking the same proof
-    # graph again through the offline observer and every receipt.
-    offline_bound = bool(
-        telescope_intact
-        and type(observed_sequence) is ObservedEventRemeshCycleSequence
-        and len(observed_sequence.cycles) == len(cycles)
-        and all(
-            observed is expected
-            for observed, expected in zip(
-                observed_sequence.cycles,
-                cycles,
-                strict=True,
-            )
+        offline_bound = False
+    telescope_requirement_satisfied = bool(
+        type(runtime_telescope_required) is bool
+        and (
+            (runtime_telescope_required and telescope_bound)
+            or (not runtime_telescope_required and runtime_telescope is None)
         )
     )
     return (
@@ -424,7 +445,10 @@ def _conditions_for(
         ("exact_schedule_clock_chain", exact_clock_chain),
         ("common_ordered_target_support", common_targets),
         ("offline_sequence_bound_by_identity", offline_bound),
-        ("runtime_telescope_bound_by_identity", telescope_bound),
+        (
+            "runtime_telescope_requirement_satisfied",
+            telescope_requirement_satisfied,
+        ),
     )
 
 
@@ -442,6 +466,7 @@ def _sequence_stamp(
     exact_start_time: Fraction,
     exact_end_time: Fraction,
     observed_sequence: ObservedEventRemeshCycleSequence,
+    runtime_telescope_required: bool,
     runtime_telescope: Any,
     conditions: tuple[tuple[str, bool], ...],
     graph_owner: nx.Graph,
@@ -468,6 +493,7 @@ def _sequence_stamp(
             id(observed_sequence),
             _raw_proof_stamp(observed_sequence),
         ),
+        ("runtime-telescope-required", runtime_telescope_required),
         (
             "runtime-telescope",
             id(runtime_telescope),
@@ -504,6 +530,7 @@ class ExecutedEventRemeshCycleSequence:
         repr=False,
         compare=False,
     )
+    runtime_telescope_required: bool
     runtime_telescope: Any = field(repr=False, compare=False)
     conditions: tuple[tuple[str, bool], ...]
     _graph_owner: nx.Graph = field(repr=False, compare=False)
@@ -551,6 +578,12 @@ class ExecutedEventRemeshCycleSequence:
             raise TypeError("receipts must contain exact causal receipts")
         if any(type(item) is not EventRemeshCycleResult for item in self.cycles):
             raise TypeError("cycles must contain exact cycle results")
+        if type(self.runtime_telescope_required) is not bool:
+            raise TypeError("runtime_telescope_required must be a bool")
+        if not self.runtime_telescope_required and self.runtime_telescope is not None:
+            raise ValueError(
+                "runtime_telescope must be absent when it was not requested"
+            )
         if any(
             type(row) is not tuple
             or any(type(item) is not PhysicalFlowPartition for item in row)
@@ -584,6 +617,7 @@ class ExecutedEventRemeshCycleSequence:
             graph_owner=self._graph_owner,
             execution_token=self._execution_token,
             observed_sequence=self.observed_sequence,
+            runtime_telescope_required=self.runtime_telescope_required,
             runtime_telescope=self.runtime_telescope,
         )
         if (
@@ -608,6 +642,7 @@ class ExecutedEventRemeshCycleSequence:
             exact_start_time=self.exact_start_time,
             exact_end_time=self.exact_end_time,
             observed_sequence=self.observed_sequence,
+            runtime_telescope_required=self.runtime_telescope_required,
             runtime_telescope=self.runtime_telescope,
             conditions=self.conditions,
             graph_owner=self._graph_owner,
@@ -637,13 +672,22 @@ class ExecutedEventRemeshCycleSequence:
 
     @property
     def exact_recorded_boundary_continuity_certified(self) -> bool:
-        # Telescope integrity already rederives and requires every exact source
-        # boundary, so a second offline-sequence walk would be redundant.
-        return self._proof_fields_are_intact()
+        return bool(
+            self._proof_fields_are_intact()
+            and self.observed_sequence.exact_recorded_boundary_continuity_certified
+        )
 
     @property
     def exact_finite_energy_telescope_certified(self) -> bool:
-        return self._proof_fields_are_intact()
+        if not self._proof_fields_are_intact() or self.runtime_telescope is None:
+            return False
+        try:
+            return bool(
+                self.runtime_telescope.source_sequence is self.observed_sequence
+                and self.runtime_telescope.exact_finite_energy_telescope_certified
+            )
+        except BaseException:
+            return False
 
     @property
     def failed_conditions(self) -> tuple[str, ...]:
@@ -715,6 +759,7 @@ def _sealed_sequence(
     cycles: tuple[EventRemeshCycleResult, ...],
     target_nodes: tuple[Hashable, ...],
     observed_sequence: ObservedEventRemeshCycleSequence,
+    runtime_telescope_required: bool,
     runtime_telescope: Any,
     graph_owner: nx.Graph,
     execution_token: _CausalExecutionToken,
@@ -730,6 +775,7 @@ def _sealed_sequence(
         graph_owner=graph_owner,
         execution_token=execution_token,
         observed_sequence=observed_sequence,
+        runtime_telescope_required=runtime_telescope_required,
         runtime_telescope=runtime_telescope,
     )
     if not all(passed for _name, passed in conditions):
@@ -748,6 +794,7 @@ def _sealed_sequence(
         exact_start_time=exact_start,
         exact_end_time=exact_end,
         observed_sequence=observed_sequence,
+        runtime_telescope_required=runtime_telescope_required,
         runtime_telescope=runtime_telescope,
         conditions=conditions,
         graph_owner=graph_owner,
@@ -764,6 +811,7 @@ def _sealed_sequence(
         exact_start_time=exact_start,
         exact_end_time=exact_end,
         observed_sequence=observed_sequence,
+        runtime_telescope_required=runtime_telescope_required,
         runtime_telescope=runtime_telescope,
         conditions=conditions,
         _graph_owner=graph_owner,
@@ -841,20 +889,23 @@ def execute_event_remesh_cycle_sequence(
     method: str | None = None,
     n_jobs: int | None = None,
     suppress_birth_warnings: bool = False,
+    require_runtime_telescope: bool = True,
 ) -> ExecutedEventRemeshCycleSequence:
     """Execute and seal one causal finite sequence of cycle specifications.
 
     The outer snapshot is created before ``specs``, every per-spec physical
     partition iterable, or ``metric_weights`` is consumed.  Each nested cycle
     keeps its ordinary transaction as an internal savepoint.  Any exception
-    from input materialization, cycle execution, observation, telescope
-    construction or sealing restores the graph to the state captured before
-    the whole sequence began while preserving the primary exception.
+    from input materialization, cycle execution, observation, requested
+    telescope construction or sealing restores the graph to the state captured
+    before the whole sequence began while preserving the primary exception.
     """
 
     graph = _require_graph(graph)
     if type(suppress_birth_warnings) is not bool:
         raise TypeError("suppress_birth_warnings must be a bool")
+    if type(require_runtime_telescope) is not bool:
+        raise TypeError("require_runtime_telescope must be a bool")
     transaction = GraphTransactionSnapshot(graph)
     try:
         preparation_state = _read_only_graph_state(graph)
@@ -919,15 +970,17 @@ def execute_event_remesh_cycle_sequence(
         observation_state = _read_only_graph_state(graph)
         observed_sequence = compose_event_remesh_cycle_observations(cycles)
 
-        # Local import avoids a package-initialization cycle: tnfr.physics
-        # imports the public operator facade during ordinary package startup.
-        from ..physics.runtime_remesh_schedule_stability import (
-            observe_runtime_remesh_schedule_sequence,
-        )
+        runtime_telescope = None
+        if require_runtime_telescope:
+            # Local import avoids a package-initialization cycle: tnfr.physics
+            # imports the public operator facade during ordinary package startup.
+            from ..physics.runtime_remesh_schedule_stability import (
+                observe_runtime_remesh_schedule_sequence,
+            )
 
-        runtime_telescope = observe_runtime_remesh_schedule_sequence(
-            observed_sequence
-        )
+            runtime_telescope = observe_runtime_remesh_schedule_sequence(
+                observed_sequence
+            )
         result = _sealed_sequence(
             specs=materialized_specs,
             schedules=schedules,
@@ -936,6 +989,7 @@ def execute_event_remesh_cycle_sequence(
             cycles=cycles,
             target_nodes=target_nodes,
             observed_sequence=observed_sequence,
+            runtime_telescope_required=require_runtime_telescope,
             runtime_telescope=runtime_telescope,
             graph_owner=graph,
             execution_token=token,

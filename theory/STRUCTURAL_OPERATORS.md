@@ -279,10 +279,15 @@ without changing that observer. It executes ordered
 `EventRemeshCycleExecutionSpec` values on one graph in one transaction. Every
 sealed `CausalEventRemeshCycleReceipt` binds an execution ordinal, the exact
 spec and the resulting cycle, including identity of the declared and executed
-schedule. The sealed `ExecutedEventRemeshCycleSequence` retains the ordinary
-offline cycle observation and compatible runtime schedule/history telescope.
-Only the outer result proves same-invocation causal order, common graph identity
-and finite graph-owned atomicity. It supplies no global schedule/REMESH gain,
+schedule. The sealed `ExecutedEventRemeshCycleSequence` always retains the
+ordinary offline cycle observation. By default it requires and retains a
+compatible runtime schedule/history telescope. The explicit
+`require_runtime_telescope=False` branch always records
+`runtime_telescope=None`, thereby admitting grammar-valid words that have no
+common represented affine metric. In both branches only the outer result proves same-invocation
+causal order, common graph identity and finite graph-owned atomicity. The
+no-telescope branch makes every telescope-specific claim false. The wrapper
+supplies no global schedule/REMESH gain,
 uniform repeated margin, solver accuracy/order, mesh convergence, repetition or
 future stability. Emitted I/O, warnings, external resources and external-only
 aliases remain outside rollback.
@@ -379,13 +384,61 @@ margin `1-q_eff` and repeated exact-model spatial-disagreement decay. It does
 not identify a runtime class or derive `eta` from rounding/clipping semantics.
 
 `observe_executed_event_remesh_relative_defect_block` performs the missing
-finite check on one contiguous part of an intact causal execution. It verifies
+finite check on one contiguous part of an intact causal execution that retained
+its compatible runtime telescope. It verifies
 each exact defect and schedule gain, the componentwise `D_qeff P` history-
 energy envelope, continuity and the complete-block endpoint factor. Its
 runtime claims stop at the selected block: a forward-invariant class,
 repetition, future binary64 behavior and full TNFR stability remain open.
 See
 [`REMESH_INFINITY_DERIVATION.md`](REMESH_INFINITY_DERIVATION.md#212-relative-signed-defect-envelope-and-finite-causal-verification).
+
+The exact represented-number boundary narrows that open statement. The
+pairwise observer replays the shared REMESH kernel and computes the exact local
+relative defect. A normal-valued `alpha=1/2` witness requires
+`eta=2^210-1/4`, which refutes a useful uniform bound over a general bounded
+hard-clipped box for the `q=9/16` policy. The separate `alpha=1` certificate
+fixes support, metric, delays and interval; sufficient represented history then
+has `eta=0` and is forward invariant under REMESH alone.
+
+On an abstract P2 support, the configured `EN_mix=0.5` Reception EPI kernel
+closes the first restricted global numeric EPI-kernel composition. Mutual
+singleton neighbor sets and one immutable Jacobi snapshot give two reversed
+sums of the same half-scaled operands, hence numeric consensus for every finite
+represented pair in the source interval.
+The centered-energy gain is globally `q=0`; with `alpha=1`, active-history
+spatial disagreement vanishes after `tau_global+1` restricted kernel cycles.
+This does not certify a graph or complete EN stage. Grammar replacement,
+preconditions, semantic writes, callbacks, event ownership and transactions
+remain outside the theorem. See
+[`REMESH_INFINITY_DERIVATION.md`](REMESH_INFINITY_DERIVATION.md#214-a-global-binary64-p_2-half-reception-kernel-family).
+
+`certify_executed_p2_half_reception_stage` now binds that numeric theorem to
+one graph-owned event. It requires an intact event result and deeply
+revalidated neighbor-stage certificate, then checks the ordered P2 targets,
+mutual singleton runtime neighbors, exact half mix, matching hard interval and
+diffusion metric, preserved capacity/conductance and bit-exact captured
+endpoint replay. This establishes one grammar-admitted two-phase EN EPI stage
+with observed `q=0` and finite schedule atomicity. It does not bind REMESH to
+that graph, certify all auxiliary Reception state or prove repeated execution.
+
+`certify_executed_p2_half_reception_remesh_sequence` closes that same-graph
+boundary for one completed finite invocation. It takes the abstract kernel
+certificate and one intact `ExecutedEventRemeshCycleSequence`. In every cycle it
+requires an executor-owned P2 half-Reception stage whose endpoints span the
+complete schedule EPI transition, and a same-cycle hard-clipped `alpha=1`
+REMESH bridge with the common runtime alpha source and exact `eta=0` global-delay
+copy. Support, metric, interval, delays and history capacity remain fixed.
+For `N >= L = tau_global+1` observed cycles it certifies zero spatial energy on
+the active history suffix of length `L` and on the observed post-horizon REMESH
+endpoints. Older retained history rows are outside the claim. The certificate
+does not cover Reception auxiliary writes, the current live graph after
+observation, future or unobserved repetition, solver accuracy or full TNFR
+stability. See
+[`runtime_p2_reception_remesh_sequence.py`](../src/tnfr/physics/runtime_p2_reception_remesh_sequence.py),
+[`test_runtime_p2_reception_remesh_sequence.py`](../tests/physics/test_runtime_p2_reception_remesh_sequence.py)
+and example
+[`176_runtime_p2_reception_remesh_sequence.py`](../examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py).
 
 `observe_runtime_remesh_history_bridge` identifies one applied,
 executor-sealed REMESH result with that companion while retaining exact signed
@@ -1513,6 +1566,10 @@ channel, direction, scale and postcondition).
 | `src/tnfr/physics/remesh_history_stability.py` | Exact uniform finite companion-history stability certificate |
 | `src/tnfr/physics/remesh_schedule_policy_stability.py` / `src/tnfr/physics/remesh_schedule_policy_stability.pyi` | Conditional exact common-`q` REMESH/schedule spatial-disagreement theorem |
 | `src/tnfr/physics/remesh_schedule_relative_defect_stability.py` / `src/tnfr/physics/remesh_schedule_relative_defect_stability.pyi` | Conditional exact robust policy theorem with `q_eff=q*(1+eta)` |
+| `src/tnfr/physics/binary64_remesh_relative_defect.py` / `src/tnfr/physics/binary64_remesh_relative_defect.pyi` | Pairwise REMESH defect boundary and `alpha=1`, `eta=0` hard-clip class |
+| `src/tnfr/physics/binary64_p2_reception_stability.py` / `src/tnfr/physics/binary64_p2_reception_stability.pyi` | Global `q=0` P2 half-Reception EPI-kernel composition |
+| `src/tnfr/physics/runtime_p2_reception_stage.py` / `src/tnfr/physics/runtime_p2_reception_stage.pyi` | One executed two-phase P2 EN EPI stage bound to the global `q=0` kernel |
+| `src/tnfr/physics/runtime_p2_reception_remesh_sequence.py` / `src/tnfr/physics/runtime_p2_reception_remesh_sequence.pyi` | One completed causal P2 EN/REMESH sequence with observed active-suffix extinction |
 | `src/tnfr/physics/runtime_remesh_history_stability.py` | One-transition runtime REMESH/companion bridge with signed residuals |
 | `src/tnfr/physics/remesh_schedule_stability.py` | Exact REMESH-head/schedule-head augmented-energy balance |
 | `src/tnfr/physics/runtime_remesh_schedule_stability.py` | Adjacent-cycle runtime/history energy telescope |
@@ -1566,6 +1623,10 @@ The `Operator.__call__(G, node, **kw)` method implements the canonical execution
 | [169_event_remesh_causal_runtime.py](../examples/02_physics_regimes/169_event_remesh_causal_runtime.py) | One finite same-invocation event/REMESH cycle sequence with causal receipts, outer graph atomicity, and an explicit stability boundary |
 | [171_remesh_schedule_policy_stability.py](../examples/02_physics_regimes/171_remesh_schedule_policy_stability.py) | Conditional exact common-`q` REMESH/schedule theorem, including strict pure-delay disagreement decay and the zero-margin `q=1` boundary |
 | [172_runtime_remesh_relative_defect.py](../examples/02_physics_regimes/172_runtime_remesh_relative_defect.py) | Robust `q_eff=q*(1+eta)` envelope verified on exact-zero and positive-binary64-defect finite causal blocks |
+| [173_binary64_remesh_relative_defect.py](../examples/02_physics_regimes/173_binary64_remesh_relative_defect.py) | Exact pairwise REMESH obstruction and the bounded `alpha=1`, `eta=0` REMESH-only class |
+| [174_binary64_p2_reception_remesh_stability.py](../examples/02_physics_regimes/174_binary64_p2_reception_remesh_stability.py) | Global `q=0` half-Reception EPI kernel and finite-horizon disagreement extinction in the restricted repeated model |
+| [175_runtime_p2_reception_stage.py](../examples/02_physics_regimes/175_runtime_p2_reception_stage.py) | One grammar-admitted graph-owned P2 EN EPI stage bound to the global `q=0` kernel, with REMESH and future repetition withheld |
+| [176_runtime_p2_reception_remesh_sequence.py](../examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py) | One completed same-invocation P2 EN/REMESH sequence with an active suffix of length `tau_global+1` and finite observed spatial-disagreement extinction |
 
 ### 15.4 SDK Entry Points
 

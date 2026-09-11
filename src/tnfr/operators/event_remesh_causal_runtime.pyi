@@ -5,7 +5,9 @@ from typing import Any, Hashable, Iterable, Mapping, Sequence
 
 import networkx as nx
 
-from ..physics.runtime_remesh_schedule_stability import RuntimeRemeshScheduleSequenceObservation
+from ..physics.runtime_remesh_schedule_stability import (
+    RuntimeRemeshScheduleSequenceObservation,
+)
 from .event_remesh_runtime import EventRemeshCycleResult
 from .event_remesh_sequence import ObservedEventRemeshCycleSequence
 from .event_timing import OperatorEventSchedule, PhysicalFlowPartition
@@ -47,7 +49,8 @@ class ExecutedEventRemeshCycleSequence:
     exact_start_time: Fraction
     exact_end_time: Fraction
     observed_sequence: ObservedEventRemeshCycleSequence
-    runtime_telescope: RuntimeRemeshScheduleSequenceObservation
+    runtime_telescope_required: bool
+    runtime_telescope: RuntimeRemeshScheduleSequenceObservation | None
     conditions: tuple[tuple[str, bool], ...]
     scope: str
     @property
@@ -99,6 +102,7 @@ def execute_event_remesh_cycle_sequence(
     method: str | None = ...,
     n_jobs: int | None = ...,
     suppress_birth_warnings: bool = ...,
+    require_runtime_telescope: bool = ...,
 ) -> ExecutedEventRemeshCycleSequence: ...
 
 

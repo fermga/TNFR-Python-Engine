@@ -20,6 +20,7 @@ from tnfr.operators import (
 )
 from tnfr.operators import remesh as remesh_module
 from tnfr.operators._delayed_remesh_kernel import (
+    _evaluate_delayed_remesh_binary64,
     _runtime_mapping_values_for_nodes,
 )
 from tnfr.utils import CallbackEvent, callback_manager
@@ -66,6 +67,103 @@ def _state(graph: nx.Graph) -> tuple[object, ...]:
         ),
         deepcopy(graph.graph),
     )
+
+
+@pytest.mark.parametrize(
+    ("current", "local", "global_value", "alpha"),
+    [
+        (0.5, 0.25, -0.75, 0.4),
+        (17.0, -3.0, 11.0, 1.0),
+        (-0.0, -0.0, -0.0, 1.0),
+        (
+            float.fromhex("-0x1.22b7026aa779cp+412"),
+            float.fromhex("0x1.a1e8581bf5ee6p+16"),
+            float.fromhex("0x1.9d760ed0932a2p+405"),
+            float.fromhex("0x1.ccccccccccccdp-1"),
+        ),
+    ],
+)
+def test_binary64_scalar_kernel_replays_nested_production_expression_by_bits(
+    current: float,
+    local: float,
+    global_value: float,
+    alpha: float,
+) -> None:
+    mixed_local = (1.0 - alpha) * current + alpha * local
+    expected = (1.0 - alpha) * mixed_local + alpha * global_value
+
+    observed = _evaluate_delayed_remesh_binary64(
+        current,
+        local,
+        global_value,
+        alpha,
+    )
+
+    assert observed.hex() == expected.hex()
+
+
+def test_binary64_scalar_kernel_preserves_nested_zero_crossing() -> None:
+    current = float.fromhex("-0x1.22b7026aa779cp+412")
+    local = float.fromhex("0x1.a1e8581bf5ee6p+16")
+    global_value = float.fromhex("0x1.9d760ed0932a2p+405")
+    alpha = float.fromhex("0x1.ccccccccccccdp-1")
+
+    nested = _evaluate_delayed_remesh_binary64(
+        current,
+        local,
+        global_value,
+        alpha,
+    )
+    one_minus = 1.0 - alpha
+    expanded = (
+        one_minus * one_minus * current
+        + alpha * one_minus * local
+        + alpha * global_value
+    )
+
+    assert nested.hex() == "0x0.0p+0"
+    assert expanded.hex() == "0x1.0000000000000p+353"
+
+
+def test_alpha_one_uses_nested_signed_zero_arithmetic() -> None:
+    global_value = -0.0
+
+    observed = _evaluate_delayed_remesh_binary64(
+        1.0,
+        1.0,
+        global_value,
+        1.0,
+    )
+
+    assert global_value.hex() == "-0x0.0p+0"
+    assert observed.hex() == "0x0.0p+0"
+
+
+def test_plan_uses_binary64_scalar_kernel_without_reassociation() -> None:
+    current = float.fromhex("-0x1.22b7026aa779cp+412")
+    local = float.fromhex("0x1.a1e8581bf5ee6p+16")
+    global_value = float.fromhex("0x1.9d760ed0932a2p+405")
+    alpha = float.fromhex("0x1.ccccccccccccdp-1")
+    graph = nx.Graph()
+    graph.add_node(0, EPI=current)
+    graph.graph.update(
+        REMESH_TAU_GLOBAL=2,
+        REMESH_TAU_LOCAL=1,
+        REMESH_ALPHA=alpha,
+        REMESH_ALPHA_HARD=True,
+        EPI_MIN=-float.fromhex("0x1.fffffffffffffp+1023"),
+        EPI_MAX=float.fromhex("0x1.fffffffffffffp+1023"),
+        CLIP_MODE="hard",
+        _epi_hist=deque(
+            [{0: global_value}, {0: local}, {0: current}],
+            maxlen=8,
+        ),
+    )
+
+    plan = plan_network_remesh(graph)
+
+    assert plan.applied
+    assert plan.proposals[0].raw_epi.hex() == "0x0.0p+0"
 
 
 def test_plan_and_result_are_immutable_and_noop_is_explicit() -> None:

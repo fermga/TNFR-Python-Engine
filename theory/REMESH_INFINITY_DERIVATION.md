@@ -1,8 +1,9 @@
 # REMESH Fixed-Delay Models and Runtime-Limit Boundary
 
 **Status**: CORRECTED N15 HISTORICAL RECORD — restricted finite cyclic,
-companion, conditional policy and finite robust-defect results; runtime limit
-and catalog completeness open
+companion, conditional policy, robust-defect and represented-number boundary
+results, including one finite executor-bound P2 EN/REMESH sequence; runtime limit and
+catalog completeness open
 **Date**: May 26, 2026 — corrected September 2026
 **Owner**: `theory/REMESH_INFINITY_DERIVATION.md`
 **Source implementations**: `src/tnfr/operators/remesh.py::apply_network_remesh`,
@@ -11,6 +12,14 @@ and catalog completeness open
 `src/tnfr/physics/remesh_schedule_policy_stability.pyi`,
 `src/tnfr/physics/remesh_schedule_relative_defect_stability.py`,
 `src/tnfr/physics/remesh_schedule_relative_defect_stability.pyi`,
+`src/tnfr/physics/binary64_remesh_relative_defect.py`,
+`src/tnfr/physics/binary64_remesh_relative_defect.pyi`,
+`src/tnfr/physics/binary64_p2_reception_stability.py`,
+`src/tnfr/physics/binary64_p2_reception_stability.pyi`,
+`src/tnfr/physics/runtime_p2_reception_stage.py`,
+`src/tnfr/physics/runtime_p2_reception_stage.pyi`,
+`src/tnfr/physics/runtime_p2_reception_remesh_sequence.py`,
+`src/tnfr/physics/runtime_p2_reception_remesh_sequence.pyi`,
 `src/tnfr/physics/runtime_remesh_history_stability.py`,
 `src/tnfr/physics/remesh_schedule_stability.py`,
 `src/tnfr/physics/runtime_remesh_schedule_stability.py`,
@@ -67,6 +76,33 @@ $q_{\mathrm{eff}}\leq1$ and geometric spatial-disagreement decay for
 $q_{\mathrm{eff}}<1$. A finite causal observer checks these inequalities on a
 recorded execution block. It does not prove that one uniform $\eta$ is forward
 invariant for a runtime class.
+
+The represented-number boundary is now exact at two complementary points.
+A pairwise reduction computes the optimal nonnegative relative defect for one
+admissible pair of binary64 temporal tuples. A normal-valued
+$\alpha=1/2$ witness requires $\eta=2^{210}-1/4$, so a bounded hard-clipped
+box alone is far too broad for the existing $q=9/16$ policy. At $\alpha=1$,
+every sufficient finite represented history inside a fixed hard-clipping
+interval instead has $\eta=0$ and is forward invariant under REMESH alone.
+This boundary class does not by itself certify a schedule or its execution.
+
+A first restricted global represented numeric EPI kernel closes the composition
+on $P_2$.
+With mutual singleton neighbor sets, an immutable all-target Reception snapshot,
+the exact binary64 mix `0.5` and one common hard clamp, both target proposals
+are the same reversed sum of two half-scaled operands. They are numerically
+equal for every finite represented input pair in the source interval, so the
+global kernel gain is
+$q=0$. Composed with the $\alpha=1$, $\eta=0$ REMESH class, the active
+post-schedule history has zero spatial disagreement after
+$L=\tau_g+1$ cycles. This proves arbitrary finite repetition of the restricted
+numeric EPI kernels. One sealed adapter binds a single executed,
+grammar-admitted two-phase EN EPI stage and its captured endpoint to the first
+kernel. A second adapter binds each such stage and its same-cycle $\alpha=1$
+REMESH transition inside one completed graph-owned causal sequence. For an
+observed sequence of $N\geq L$ cycles, it certifies extinction only on the active
+history suffix of length $L$. It does not prove future or unobserved complete
+runtime repetition.
 
 Neither base finite model is the complete clipped, history-gated runtime
 operation.
@@ -585,11 +621,15 @@ It accepts ordered `EventRemeshCycleExecutionSpec` values and executes every
 cycle on one graph inside one outer graph transaction. Each sealed
 `CausalEventRemeshCycleReceipt` retains its zero-based ordinal, exact submitted
 spec and `EventRemeshCycleResult`; the executed schedule is the schedule object
-carried by that spec. The sealed `ExecutedEventRemeshCycleSequence` then retains
-the receipts, the ordinary offline `ObservedEventRemeshCycleSequence` and the
-compatible `RuntimeRemeshScheduleSequenceObservation`.
+carried by that spec. The sealed `ExecutedEventRemeshCycleSequence` always
+retains the receipts and the ordinary offline
+`ObservedEventRemeshCycleSequence`. By default,
+`require_runtime_telescope=True` also requires and retains the compatible
+`RuntimeRemeshScheduleSequenceObservation`. The explicit `False` branch always
+stores `runtime_telescope=None`, thereby admitting a valid word without one
+common affine schedule metric; telescope-specific properties then remain false.
 
-This outer wrapper proves same-invocation causal order, one graph identity and
+Both branches of the outer wrapper prove same-invocation causal order, one graph identity and
 finite graph-owned atomicity. It does not alter the contracts of the nested
 offline observers when they are used separately. The finite additive energy
 identity is still not a global schedule-times-REMESH gain and has no uniform
@@ -829,7 +869,8 @@ caller-supplied $\eta$.
 
 [`observe_executed_event_remesh_relative_defect_block`](../src/tnfr/physics/runtime_remesh_schedule_relative_defect.py)
 provides the finite causal bridge. For every selected adjacent boundary of one
-intact `ExecutedEventRemeshCycleSequence`, it reconstructs $J_k$, $E_H(y_k)$,
+intact `ExecutedEventRemeshCycleSequence` that retained the compatible runtime
+telescope, it reconstructs $J_k$, $E_H(y_k)$,
 $E_H(z_k)$ and $\delta_k$; checks $\delta_k\leq\eta J_k$ and the represented
 schedule gain $q_k\leq q$; and verifies the complete post-schedule
 history-energy vector against $B_{q_{\mathrm{eff}}}$ times its input vector.
@@ -843,6 +884,268 @@ $\eta$, or that support, metric, REMESH coefficients and schedule policy stay
 fixed. A repeated binary64 theorem still requires that forward-invariance
 argument. Solver accuracy and order, adaptive grammar, and full multichannel
 TNFR stability also remain outside scope.
+
+### §2.13 Pairwise binary64 boundary and the $\alpha=1$ class
+
+An EPI interval and hard clipping do not by themselves provide a useful
+uniform $\eta$. This follows from an exact scalar reduction. For the temporal
+coefficients $c=(\beta,\gamma,\delta)$, let $a$ and $b$ contain the current,
+local-delay and global-delay values at two spatial coordinates, and define
+
+$$
+D_c(a,b)=\sum_d c_d(a_d-b_d)^2.
+$$
+
+Fix the represented $\alpha$, the production evaluation order and one common
+hard clamp. Let $g$ be the exact-rational convex combination and let
+$\widehat g$ be that actual nested binary64 evaluation followed by the clamp.
+For a finite binary64 alphabet
+$K=[\mathrm{EPI}_{\min},\mathrm{EPI}_{\max}]\cap\mathbb F_{64}$ and any finite
+set $A\subseteq K^3$ of admissible nodewise temporal tuples, including the
+equality of local and global entries when the two delays coincide, define
+
+$$
+\eta_A^\star=
+\max_{a,b\in A,\,D_c(a,b)>0}
+\frac{\left[(\widehat g(a)-\widehat g(b))^2
+ -(g(a)-g(b))^2\right]_+}{D_c(a,b)}.
+$$
+
+The weighted centered energy has the pairwise identity
+
+$$
+E_H(v)=\frac{1}{2\sum_i h_i}
+       \sum_{i<j}h_i h_j(v_i-v_j)^2.
+$$
+
+Applying the scalar inequality to every pair proves
+$E_H(z)-E_H(y)\leq\eta_A^\star J$ for every finite support and positive
+diagonal metric whose nodewise tuples belong to $A$. The constant is optimal
+for that tuple class because a two-node support realizes each admissible pair.
+If no pair has positive $D_c$, set the maximum to zero. A common hard clamp
+cannot increase the pairwise difference. If $D_c=0$, the two input tuples agree
+on every active coefficient; the deterministic evaluator gives equal outputs
+as numeric values, although an IEEE signed-zero bit may differ, and the branch
+closes without division. This characterizes a finite tuple class exactly, but
+it does not imply that its maximum is small enough for
+$q(1+\eta_A^\star)<1$.
+
+The obstruction already occurs with normal values and inactive clipping. Set
+$\alpha=1/2$, use two equally weighted nodes, and take
+
+$$
+\begin{aligned}
+x_{0,1}=x_{0,2}&=2^{-52},\\
+x_{g,1}=x_{g,2}&=1,\\
+x_{l,1}&=2^{-105},\\
+x_{l,2}&=2^{-105}+2^{-157}.
+\end{aligned}
+$$
+
+All inputs lie in $[0,1]$. The exact head separation is $2^{-159}$, whereas
+the nested runtime evaluation crosses two rounding-cell boundaries and returns
+a separation $2^{-53}$. With the repository energy convention,
+
+$$
+J=2^{-318},\qquad E_H(y)=2^{-320},\qquad E_H(z)=2^{-108},
+$$
+
+so this one witness requires
+
+$$
+\eta\geq 2^{210}-\frac14.
+$$
+
+Consequently, strict contraction would require
+$q<4/(2^{212}+3)\approx2^{-210}$; the finite witness policy $q=9/16$ cannot
+be promoted over the whole bounded binary64 box. The cause is structural:
+$J$ removes spatially uniform modes, while floating-point evaluation is not
+translation equivariant. Large common temporal components can therefore move
+nearby coordinates across different rounding cells. Replacing $J$ by the
+centered augmented energy $V$ does not see those common components either.
+
+There is one immediate positive class. Fix a nonempty ordered support, one
+positive spatial metric, two positive delays, and a sufficient represented
+history of at least $\max(\tau_l,\tau_g)+1$ rows. At $\alpha=1$, the exact
+recurrence is the pure global delay and the nested runtime expression returns
+the global delayed value numerically. If every retained value is finite and
+lies inside one fixed hard-clipping interval, the clamp is the identity, hence
+
+$$
+E_H(z)=E_H(y),\qquad \eta=0,\qquad q_{\mathrm{eff}}=q.
+$$
+
+This REMESH-only step preserves that interval and the fixed support. IEEE signed
+zero may be canonicalized by the zero multiplications and addition, so the
+claim is equality as a real/binary64 numeric value and in exact-rational EPI,
+not preservation of the zero sign bit. This REMESH-only class supplies no
+schedule. Section §2.14 supplies one restricted global P2 numeric EPI-kernel
+family that preserves the interval and has common gain $q=0$. Promoting that
+composition to repeated complete runtime execution still requires real-graph,
+stage, grammar and event provenance plus preservation of support, metric and
+configuration. A gain measured on a finite trace is insufficient.
+
+[`observe_binary64_remesh_pair_relative_defect`](../src/tnfr/physics/binary64_remesh_relative_defect.py)
+replays the shared production scalar kernel and records $D_c$, both exact
+squared separations, the signed rounding and clipping defects, and the local
+$\eta$ witness without promoting it to a uniform class bound.
+[`certify_alpha_one_hard_clip_remesh_class`](../src/tnfr/physics/binary64_remesh_relative_defect.py)
+seals the fixed-support, fixed-metric, bounded-history REMESH-only class above.
+It checks represented-history membership and explicitly leaves schedule-family,
+repeated-execution and future-runtime claims false.
+
+For $0<\alpha<1$, viable later branches include a quantization-aware invariant
+alphabet, a centered or antisymmetric representation with explicit
+normal-range guards, or an augmented defect budget. If only the lifted positive
+defect obeys $U_k\leq\rho V_k$, the correct envelope is a rank-one update of
+the companion matrix and must be analyzed with its induced block factors; it
+cannot be replaced by the scalar $q(1+\eta)$ formula.
+
+### §2.14 A global binary64 $P_2$ half-Reception kernel family
+
+The first restricted global numeric EPI-kernel family closes on the smallest
+connected support.
+Fix two ordered nodes with mutual singleton neighbor sets, the exact binary64
+factor `EN_mix=0.5`, one immutable all-target Jacobi snapshot and one common
+hard-clipping interval. For an input pair $(x_1,x_2)$, the shared Reception
+kernel evaluates
+
+$$
+\begin{aligned}
+\widehat S_1(x)&=
+ \operatorname{clip}\!\left(\operatorname{fl}
+ (\operatorname{fl}(x_1/2)+\operatorname{fl}(x_2/2))\right),\\
+\widehat S_2(x)&=
+ \operatorname{clip}\!\left(\operatorname{fl}
+ (\operatorname{fl}(x_2/2)+\operatorname{fl}(x_1/2))\right).
+\end{aligned}
+$$
+
+A singleton `fmean` reproduces its nonzero operand; for zero it may normalize
+the sign without changing the numeric value. Multiplication by one half leaves
+both terms finite, IEEE addition is commutative, and the two raw outputs are
+therefore numerically equal. A common hard clamp preserves that equality and
+returns a finite value in the interval. Thus, for every positive diagonal
+spatial metric,
+
+$$
+E_H(\widehat S(x))=0,
+\qquad q=0.
+$$
+
+This is a global statement over every finite represented pair in the declared
+interval; it is not a gain fitted to a finite trace. It remains true when
+underflow makes the numeric consensus value differ from the exact-real average.
+Consequently the binary64 kernel is not promoted to a global affine map.
+Signed-zero bits are also outside the theorem.
+
+Compose this numeric EPI kernel with the $\alpha=1$ class of §2.13. REMESH has
+$\eta=0$, so $q_{\mathrm{eff}}=0$. Each cycle inserts one consensus row into
+the post-schedule history. Since the only active delay is $\tau_g$, the common
+policy theorem has
+
+$$
+L=\tau_g+1,
+\qquad
+V_{k+n}=0\quad\text{for every }n\geq L.
+$$
+
+This proves arbitrary finite repetition and exact spatial-disagreement
+extinction for the restricted pair of numeric EPI kernels. It does not certify
+the complete Reception stage: operator preconditions, grammar replacement,
+semantic EPI-kind and history writes, callbacks, graph transactions and event
+ownership still require a causal execution binding. It also says nothing about
+solver accuracy, temporal consensus values or full TNFR stability.
+
+The selected half mix is essential to this interval-independent commutative
+argument. Narrow or degenerate intervals may admit other factors. The canonical
+default represented factor is
+`0x1.ee7eea04ddca0p-3`. For the adjacent normal values
+
+```text
+x1 = 0x1.d2775ff0a1eccp-1021
+x2 = 0x1.d2775ff0a1ecdp-1021,
+```
+
+the two default-factor outputs are respectively
+`0x1.d2775ff0a1eccp-1021` and `0x1.d2775ff0a1ecep-1021`. Their separation is
+twice the input separation, so the centered-energy gain is exactly four.
+Any broad interval containing this inactive-clipping witness therefore admits
+no global default-factor bound $q<1$.
+
+[`certify_p2_half_reception_remesh_stability`](../src/tnfr/physics/binary64_p2_reception_stability.py)
+seals the fixed-support, fixed-metric composition by reusing the $\alpha=1$
+REMESH class, the common-$q$ theorem and its relative-defect extension. Its
+pair evaluator calls the shared production mean, blend and clipping kernels.
+The result exposes the restricted global and finite-repetition claims while
+keeping complete-stage, grammar, live-execution and solver properties false.
+
+### §2.15 Finite causal binding of one executed $P_2$ Reception stage
+
+The abstract kernel can now be identified with one completed executor event.
+[`certify_executed_p2_half_reception_stage`](../src/tnfr/physics/runtime_p2_reception_stage.py)
+accepts one intact kernel certificate and one intact
+`OperatorEventExecutionResult`. It selects an executor-owned EN stage and
+requires same-invocation event identity, zero duration, exact two-phase Jacobi
+scheduling, two captured EPI endpoints and a deeply revalidated one-step
+neighbor-stage certificate. The observed targets must equal the ordered P2
+support; runtime neighbor sets must be the two mutual singletons; the binary64
+mix must be exactly one half; and the hard interval, fixed effective
+conductance, capacity and normalized diffusion-metric ray must match the source
+class.
+
+The adapter then replays both coordinates through the shared production mean,
+blend and clipping kernel and requires bit identity with the accepted stage
+state and captured right endpoint. This proves for that completed EPI jump
+
+$$
+E_H(x^+)=0,
+\qquad q=0,
+$$
+
+including underflow cases where the generic represented-affine stage bridge
+correctly abstains. Opposite signed-zero outputs remain valid numeric
+consensus. The result carries the finite grammar admission and graph-owned
+schedule atomicity of its source execution.
+
+This binding stops at one observed EPI stage. By itself it does not identify the source
+$\alpha=1$ REMESH history or configuration with that graph, certify all
+Reception auxiliary state, preserve raw topology or current live-graph
+identity, or prove repeated/future runtime stability, solver accuracy or full
+TNFR stability.
+
+### §2.16 Finite causal binding of executed $P_2$ Reception/REMESH cycles
+
+[`certify_executed_p2_half_reception_remesh_sequence`](../src/tnfr/physics/runtime_p2_reception_remesh_sequence.py)
+closes the finite same-graph boundary left open by §2.15. It accepts the global
+kernel certificate and one intact `ExecutedEventRemeshCycleSequence`. For each
+cycle it selects one executor-owned EN event, constructs the stage certificate
+of §2.15 and requires its two EPI endpoints to equal the complete schedule EPI
+endpoints. Thus the observed schedule EPI transition is the represented
+half-Reception kernel with $q=0$, even when the schedule has no common affine
+metric and the causal executor was invoked with
+`require_runtime_telescope=False`.
+
+The adapter also constructs a `RuntimeRemeshHistoryBridgeObservation` for every
+cycle, including the last. Each bridge must be identity-bound to that cycle and
+must identify an applied hard-clipped binary64 $\alpha=1$ REMESH as the exact
+numeric copy of its selected global-delay row. The signed rounding and clipping
+residuals vanish, realizing the source class's $\eta=0$ boundary. Ordered P2
+support, the positive metric ray, interval, delays, history capacity and the
+runtime alpha-source provenance are fixed across the finite invocation.
+
+Let $L=\tau_g+1$ and write the outgoing runtime history chronologically. Only
+its last $L$ rows are active in this pure-global-delay recurrence. Each cycle
+appends its consensus post-schedule row before REMESH, so after $N\geq L$
+observed cycles the final active suffix has zero spatial-disagreement energy in
+every row. The same-cycle bridges identify zero-energy post-REMESH fields from
+the horizon onward and at the final committed endpoint. Retained rows before
+the suffix may be stale or outside the source interval; no claim uses them.
+
+This is a sealed certificate of one completed finite trace. It does not bind
+the current live graph after observation, audit auxiliary Reception writes,
+prove future or unobserved complete-runtime repetition, establish solver
+accuracy or extend the result to full TNFR stability.
 
 ---
 
@@ -1192,6 +1495,18 @@ The original commits remain useful provenance:
 - **Relative-defect branch**: under the uniform signed bound of §2.12, the
   effective factor is `q_eff=q*(1+eta)`; a causal adapter verifies that bound
   and its vector envelope on finite executed blocks, but not future invariance.
+- **Represented-number boundary**: §2.13 gives the exact pairwise reduction,
+  a bounded normal-valued obstruction at $\alpha=1/2$, and the
+  forward-invariant hard-clipped REMESH-only class at $\alpha=1$ with
+  $\eta=0$.
+- **Binary64 $P_2$ kernel branch**: the configured half-Reception Jacobi kernel
+  has global gain $q=0$ and composes with that $\alpha=1$ class to extinguish
+  active-history disagreement after $\tau_g+1$ restricted cycles. One sealed
+  executor event binds this kernel to a real two-phase EN EPI stage and its
+  captured endpoint. A finite sequence adapter additionally binds every
+  selected EN and same-cycle REMESH, verifies the active suffix of length
+  $\tau_g+1$, and records post-horizon extinction on one executor-owned graph.
+  Future or unobserved repeated complete-runtime composition remains open.
 - **Branch B1**: no universality conclusion follows without a scaling family
   and an intertwining map.
 - **Branch B2**: no extra registry entry is needed to compute this projection;
@@ -1213,6 +1528,16 @@ The corrected results are internal and limited:
   uniform normalized margin and prefix bound;
 - it supplies a conditional signed relative-defect extension and a finite
   causal verifier for its complete energy-vector envelope;
+- it characterizes pairwise represented REMESH defects and certifies the
+  sufficient-history $\alpha=1$ hard-clip class under REMESH alone;
+- it composes that class with the global $P_2$ half-Reception numeric kernel and
+  obtains exact finite-time spatial-disagreement extinction for the restricted
+  repeated binary64 recurrence;
+- it binds one completed graph-owned EN event and its captured EPI endpoints to
+  that global $P_2$ kernel by exact binary64 replay;
+- it binds every selected EN and $\alpha=1$ REMESH in one finite graph-owned P2
+  sequence and verifies extinction on the active suffix, without promoting the
+  observation to future repetition;
 - it separates an auxiliary linear model from the canonical clipped runtime;
 - it corrects the fixed-mode arithmetic from LCM to GCD;
 - it leaves all classical open problems unchanged;
@@ -1270,6 +1595,45 @@ case without division, schedule-gain and componentwise envelope inequalities,
 complete-block endpoint factors, a positive binary64 defect at its exact
 minimum `eta`, causal identity and fail-closed seals.
 
+The represented-number boundary and its public example are checked by
+[`test_binary64_remesh_relative_defect.py`](../tests/physics/test_binary64_remesh_relative_defect.py),
+[`test_delayed_remesh_contract.py`](../tests/operators/test_delayed_remesh_contract.py)
+and
+[`test_binary64_remesh_relative_defect_example.py`](../tests/physics/test_binary64_remesh_relative_defect_example.py).
+They verify shared-kernel replay, the exact $\alpha=1/2$ obstruction, the
+zero-denominator branch, hard-clamp nonexpansiveness, signed-zero scope, the
+$\alpha=1$ class at endpoints and subnormals, public type boundaries and
+fail-closed proof seals.
+
+The global P2 half-Reception composition and its public example are checked by
+[`test_binary64_p2_reception_stability.py`](../tests/physics/test_binary64_p2_reception_stability.py)
+and
+[`test_binary64_p2_reception_stability_example.py`](../tests/physics/test_binary64_p2_reception_stability_example.py).
+They cover the exact `q=eta=q_eff=0` composition, finite extinction horizon,
+maximum finite values, subnormals, noncentered and degenerate intervals,
+numeric-but-not-bitwise signed-zero consensus, hostile reseals and the canonical
+default-factor energy-gain-four counterexample.
+
+The finite executor binding and its public example are checked by
+[`test_runtime_p2_reception_stage.py`](../tests/physics/test_runtime_p2_reception_stage.py)
+and
+[`test_runtime_p2_reception_stage_example.py`](../tests/physics/test_runtime_p2_reception_stage_example.py).
+They verify same-invocation event/stage identity, grammar-aware two-phase EN,
+runtime P2 neighbors, exact half mix, hard interval, capacity/conductance and
+metric continuity, bit-exact endpoint replay, underflow and signed-zero scope,
+nested proof revalidation and explicit negative future-runtime claims.
+
+The finite causal P2 EN/REMESH sequence is checked by
+[`test_runtime_p2_reception_remesh_sequence.py`](../tests/physics/test_runtime_p2_reception_remesh_sequence.py).
+It covers same-cycle stage/REMESH identity, fixed support, metric and
+configuration provenance, the active suffix of length $\tau_g+1$, observed
+post-horizon extinction and fail-closed broader claims. Its public facade, stub
+and example are checked by
+[`test_runtime_p2_reception_remesh_sequence_example.py`](../tests/physics/test_runtime_p2_reception_remesh_sequence_example.py).
+Example
+[`176_runtime_p2_reception_remesh_sequence.py`](../examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py)
+records the finite same-invocation witness.
+
 The graph-owned finite causal wrapper and public example are checked by
 [`test_event_remesh_causal_runtime.py`](../tests/operators/test_event_remesh_causal_runtime.py)
 and
@@ -1309,21 +1673,25 @@ The following problems remain open:
 
 1. Define a common state space and convergence mode for a nontrivial runtime
    $\tau_g\to\infty$ limit.
-2. Derive one uniform `eta` and prove a fixed-support, fixed-metric,
-   fixed-REMESH and common-policy class forward invariant under binary64
-   execution with `q_eff<1`; retain the zero-margin, scaling and soft-knee
-   obstructions.
-3. Determine the extra hypotheses needed to compose the implemented general
+2. Derive a useful uniform `eta` and a forward-invariant binary64
+   relative-defect class for $0<\alpha<1$ with `q_eff<1`; retain the common-mode, canonical-factor,
+   zero-margin, scaling and soft-knee obstructions.
+3. Promote the finite same-graph $P_2$ EN/REMESH observation to a
+   forward-invariant class under future complete grammar-aware event execution,
+   including the auxiliary Reception state; or extend the numeric result to a
+   broader verified kernel family without replacing class-wide proof by finite
+   traces.
+4. Determine the extra hypotheses needed to compose the implemented general
    finite executor/eigenmode binding with REMESH beyond effective $P_2$; its
    pressure, held-input and full-matrix endpoint defects currently stop at the
    pre-REMESH boundary.
-4. Extend the companion result to changing $\alpha$, metric, delays or node
+5. Extend the companion result to changing $\alpha$, metric, delays or node
    support, or produce counterexamples.
-5. Determine when a lifted REMESH map preserves a declared structural charge
+6. Determine when a lifted REMESH map preserves a declared structural charge
    or dissipates the full tetrad energy.
-6. Establish any bridge from the finite periodic projection to the Riemann,
+7. Establish any bridge from the finite periodic projection to the Riemann,
    Navier–Stokes, or other programme observables.
-7. Define the admissible TNFR transformation space independently and resolve
+8. Define the admissible TNFR transformation space independently and resolve
    catalog generation and irreducibility within it.
 
 The exact current conclusion is therefore narrow: **a fixed finite cyclic
@@ -1332,8 +1700,10 @@ fixed finite companion recurrence has a nonincreasing augmented disagreement
 functional with sharply separated mixing and pure-delay regimes. One applied
 binary64 transition is decomposed into exact ideal, rounding and clipping
 terms, and compatible adjacent recorded cycles have an exact finite additive
-schedule/history telescope. One graph-owned outer executor now supplies that
-telescope with same-invocation causal provenance and finite atomicity. A sealed
+schedule/history telescope. One graph-owned outer executor supplies a compatible
+requested telescope with same-invocation causal provenance and finite atomicity;
+its explicit no-telescope branch retains the finite causal trace when the
+schedule has no common affine metric. A sealed
 observer extracts exact normalized lower margins from its contiguous finite
 blocks; the implemented witnesses give `139/256` and zero without establishing
 uniform runtime-class coercivity. A separate conditional exact common-$q$
@@ -1342,7 +1712,18 @@ repeated geometric spatial-disagreement decay on the fixed companion. Its
 conditional relative-defect extension replaces $q$ by
 $q_{\mathrm{eff}}=q(1+\eta)$, and a finite causal observer verifies every
 signed defect, represented gain, history-energy envelope and complete-block
-endpoint bound, including a positive binary64-defect witness. One
+endpoint bound, including a positive binary64-defect witness. The exact
+pairwise boundary then shows that a bounded hard-clipped box can require
+$\eta=2^{210}-1/4$, while the $\alpha=1$ class has uniform $\eta=0$ and is
+forward invariant under REMESH alone. A global binary64 $P_2$ half-Reception
+EPI kernel has $q=0$ and composes with that class to extinguish active-history
+spatial disagreement after $\tau_g+1$ restricted cycles. This repeated result
+belongs to the numeric EPI kernels. One completed graph-owned event now binds
+the P2 kernel to a grammar-admitted two-phase Reception EPI stage and its
+captured endpoints. A second finite adapter binds every selected stage and
+same-cycle $\alpha=1$ REMESH on one graph, verifies only the active suffix of
+length $\tau_g+1$, and records post-horizon extinction. It does not establish
+future or unobserved repetition. One
 event-free effective-$P_2$ family additionally
 has a rational continuous/Euler error enclosure, strict improvement across its
 two declared proper subdivisions, exact ideal REMESH scaling and an explicit
@@ -1351,7 +1732,9 @@ runtime residual bound. A separate
 binds finite executor-owned pressure-refreshed partitions and propagates
 represented defects through complete Euler matrices, but it contains no REMESH
 claim.
-Derivation of a uniform `eta` and proof of a forward-invariant robust runtime
-class, generic or binary64 asymptotic convergence,
-repeated runtime stability, the clipped binary64 runtime limit, full structural
-invariants and global operator completeness remain unresolved.**
+Derivation of a useful forward-invariant binary64 relative-defect class with
+uniform `eta` for $0<\alpha<1$ and `q_eff<1`, promotion of the finite P2
+EN/REMESH observation to future complete event execution, generic or
+binary64 asymptotic convergence, repeated complete-runtime stability, the
+clipped binary64 runtime limit, full structural invariants and global operator
+completeness remain unresolved.**

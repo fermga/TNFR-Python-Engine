@@ -380,6 +380,18 @@ def _fraction(value: float) -> Fraction:
     return Fraction.from_float(value)
 
 
+def _evaluate_delayed_remesh_binary64(
+    current: float,
+    local: float,
+    global_value: float,
+    alpha: float,
+) -> float:
+    """Evaluate the production nested binary64 REMESH recurrence."""
+
+    mixed_local = (1.0 - alpha) * current + alpha * local
+    return (1.0 - alpha) * mixed_local + alpha * global_value
+
+
 def _weighted_mean(
     values: tuple[Fraction, ...],
     weights: tuple[Fraction, ...],
@@ -726,8 +738,12 @@ def build_delayed_remesh_plan(
             operator="Recursivity",
             label=f"node {node!r} global delayed EPI",
         )
-        mixed_local = (1.0 - alpha_value) * now + alpha_value * old_local
-        raw_epi = (1.0 - alpha_value) * mixed_local + alpha_value * old_global
+        raw_epi = _evaluate_delayed_remesh_binary64(
+            now,
+            old_local,
+            old_global,
+            alpha_value,
+        )
         raw_epi = _finite_real(raw_epi, f"node {node!r} REMESH proposal")
         try:
             bounded_epi = clipper(
