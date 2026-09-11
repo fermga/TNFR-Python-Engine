@@ -88,10 +88,12 @@ problems. Supporting maps include
   offline observers' narrower contracts. A sealed observer derives exact
   normalized lower margins on its contiguous finite blocks; the public
   witnesses give `kappa=139/256` and zero. Equilibrium and scaling obstruct a
-  uniform positive absolute drop. Binary64/runtime mesh convergence, a uniform
-  positive normalized block margin over a declared forward-invariant class,
-  intrablock prefix control, repeated runtime stability and the runtime infinity
-  limit remain open.
+  uniform positive absolute drop. A separate conditional exact policy theorem
+  gives prefix gain upper bound one, uniform normalized block margin `1-q` and repeated
+  geometric spatial-disagreement decay for fixed-companion schedule families
+  with one common exact gain `q<1`. Binary64/runtime promotion of that class,
+  relative rounding/clipping control, mesh convergence, repeated runtime
+  stability and the runtime infinity limit remain open.
 - [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) records
   tested catalog extensions and their classification.
 - [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) links selected

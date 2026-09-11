@@ -202,9 +202,14 @@ telescope and verifies `D=K+S`, `S>=0`. For positive initial augmented energy it
 reports the block-specific normalized lower margin `kappa=K/V_before` and the
 endpoint bound `V_after/V_before<=1-kappa`. One implemented witness has
 `kappa=139/256`; the lag-one `alpha=1` orbit has `kappa=0`. Equilibrium and
-amplitude scaling block a uniform positive absolute drop. A uniform positive
-normalized block margin over a declared forward-invariant class, plus a finite
-intrablock prefix-amplification bound, remains open.
+amplitude scaling block a uniform positive absolute drop. A distinct conditional
+exact-model theorem now supplies prefix gain upper bound one and uniform normalized block
+margin `1-q` over `active_max_delay+1` cycles for any sequence of
+consensus-preserving schedules with one common fixed-metric disagreement gain
+`q<1`. It proves repeated geometric decay of spatial disagreement, including
+the `alpha=1` pure-delay case, but does not control spatially uniform temporal
+means. Runtime forward invariance, centered relative rounding/clipping defect
+bounds and promotion to repeated binary64 stability remain open.
 These scoped identities do not certify U2 for arbitrary operator sequences.
 The exact Dirichlet balance below uses this same adjacency convention. See
 [src/tnfr/physics/structural_diffusion.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/structural_diffusion.py).
@@ -714,6 +719,21 @@ alternating-history obstruction to strict decay. It does not identify the
 clipped binary64 runtime, prove spatial consensus or `DeltaNFR = 0`, admit
 changing coefficients/metric/support, or combine schedule and REMESH gains.
 
+`certify_uniform_remesh_schedule_policy_stability` supplies the separate
+conditional exact composition theorem. Histories are indexed immediately after
+each schedule, so one abstract transition mixes them by REMESH and then applies
+the next schedule. If every possibly varying exact schedule preserves spatial
+consensus and has disagreement-energy gain at most a common `q` in the same
+fixed metric, then `B_q=diag(q,1,...,1)P`. Nonnegative-matrix domination gives
+prefix gain at most one. For the sufficient universal horizon
+`L=active_max_delay+1`, every companion path visits the head and
+`B_q^L<=qP^L`; hence `V[k+n]<=q^floor(n/L)V[k]`. Strict `q<1` yields uniform
+normalized block margin `1-q` and geometric spatial-disagreement decay in every
+history row. `L` need not be minimal for a particular interior companion. At
+`q=1`, only nonincrease and zero certified margin follow. The certificate does
+not inspect the schedule maps or prove anything about binary64 defects, solver
+behavior, adaptive grammar or full TNFR state.
+
 `observe_runtime_remesh_history_bridge` closes one narrower boundary by
 identifying an applied executor-sealed REMESH result with the exact companion.
 It retains the exact signed identity
@@ -734,8 +754,8 @@ recorded history head. Compatible adjacent balances telescope additively in one
 normalized metric and fixed REMESH configuration. The source sequence remains
 caller ordered; shared graph provenance, causal succession, cross-call
 atomicity, a global executable map, a uniform positive normalized block margin
-over a declared forward-invariant class, an intrablock prefix bound and future
-stability remain open.
+over a declared forward-invariant runtime class, an intrablock runtime prefix
+bound and future stability remain open.
 
 `execute_event_remesh_cycle_sequence` supplies the stronger finite execution
 boundary. It runs ordered `EventRemeshCycleExecutionSpec` values on one graph
@@ -747,7 +767,7 @@ offline cycle sequence and the compatible runtime schedule/history telescope.
 Only this wrapper certifies same-invocation causal order, one graph identity and
 finite graph-owned atomicity. It does not compose schedule and REMESH gains,
 prove a uniform positive normalized block margin over a declared
-forward-invariant class or an intrablock prefix bound, solver accuracy/order,
+forward-invariant runtime class or an intrablock runtime prefix bound, solver accuracy/order,
 convergence, repeated or future stability, or rollback emitted I/O, warnings,
 external resources or external-only aliases. The nested offline observers keep
 their own false causal scope when used separately.
@@ -761,8 +781,9 @@ gain-based lower bound `K` and nonnegative schedule slack `S`; and verifies
 fraction and endpoint gain upper bound `1-kappa`. At `V_before=0`, these
 normalized fields are undefined. A positive value certifies only the recorded
 finite block. Absolute uniform margin is obstructed by quadratic amplitude
-scaling and equilibrium; uniform normalized class coercivity, intrablock prefix
-control, repetition and future stability remain false.
+scaling and equilibrium; uniform normalized runtime-class coercivity,
+intrablock runtime prefix control, repetition and future stability remain false
+for this finite observer.
 See
 [src/tnfr/operators/event_timing.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/event_timing.py),
 [src/tnfr/operators/event_runtime.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/event_runtime.py),
@@ -775,6 +796,7 @@ See
 [src/tnfr/physics/reversible_eigenmode_reference.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/reversible_eigenmode_reference.py),
 [src/tnfr/physics/event_remesh_reference.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/event_remesh_reference.py),
 [src/tnfr/physics/remesh_history_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/remesh_history_stability.py),
+[src/tnfr/physics/remesh_schedule_policy_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/remesh_schedule_policy_stability.py),
 [src/tnfr/physics/runtime_remesh_history_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_remesh_history_stability.py),
 [src/tnfr/physics/remesh_schedule_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/remesh_schedule_stability.py),
 [src/tnfr/physics/runtime_remesh_schedule_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_remesh_schedule_stability.py),
@@ -1075,9 +1097,9 @@ program history** (the full milestone/gap/branch threads live in the notes).
 
 | Program | Status | Reference |
 |---------|--------|-----------|
-| **Core dynamics S1–S16** | Restricted results cover pure-EPI diffusion, rational quotient affine-reset budgets, exact operator-event timing, conditional stage certificates and exact represented-map composition for a fully eligible observed finite flow/glyph trace, plus observability, quotient geometry, temporal signatures and sampled-path certificates. All thirteen operators have atomic all-target Jacobi stages; EN/RA additionally have scoped repeated-map results. A uniform unclipped REMESH companion has an exact augmented-history disagreement functional and temporal mixing theorem on fixed support and metric. One applied binary64 transition and finite adjacent schedule/history telescopes are linked to it with explicit residuals. A graph-owned finite cycle-sequence executor gives one such telescope same-invocation causal provenance and outer atomicity; a sealed block observer reports exact normalized lower margins on its contiguous finite blocks, including `139/256` and zero witnesses. A general exact rational reversible single-eigenmode theorem proves refreshed-Euler endpoint bounds, strict proper-subdivision improvement and conditional exact-real partition convergence. Its finite offline runtime adapter separates represented pressure/execution defects and propagates them through complete Euler matrices; the effective `P2` adapter separately adds exact ideal REMESH error scaling and its committed residual bound. Runtime/binary64 mesh convergence, a uniform positive normalized block margin over a declared forward-invariant class, intrablock prefix control, repeated runtime stability, solver/full-multichannel results, changing parameters/support and catalog completeness remain open. | [CORE_RESEARCH_PROGRAM.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CORE_RESEARCH_PROGRAM.md) |
+| **Core dynamics S1–S16** | Restricted results cover pure-EPI diffusion, rational quotient affine-reset budgets, exact operator-event timing, conditional stage certificates and exact represented-map composition for a fully eligible observed finite flow/glyph trace, plus observability, quotient geometry, temporal signatures and sampled-path certificates. All thirteen operators have atomic all-target Jacobi stages; EN/RA additionally have scoped repeated-map results. A uniform unclipped REMESH companion has an exact augmented-history disagreement functional and temporal mixing theorem on fixed support and metric. One applied binary64 transition and finite adjacent schedule/history telescopes are linked to it with explicit residuals. A graph-owned finite cycle-sequence executor gives one such telescope same-invocation causal provenance and outer atomicity; a sealed block observer reports exact normalized lower margins on its contiguous finite blocks, including `139/256` and zero witnesses. A conditional exact common-`q` schedule theorem additionally proves prefix gain upper bound one, uniform normalized block margin `1-q` and repeated geometric spatial-disagreement decay on the fixed companion. A general exact rational reversible single-eigenmode theorem proves refreshed-Euler endpoint bounds, strict proper-subdivision improvement and conditional exact-real partition convergence. Its finite offline runtime adapter separates represented pressure/execution defects and propagates them through complete Euler matrices; the effective `P2` adapter separately adds exact ideal REMESH error scaling and its committed residual bound. Runtime/binary64 mesh convergence, promotion of the common-`q` theorem through uniform relative defects and a forward-invariant executor class, repeated runtime stability, solver/full-multichannel results, changing parameters/support and catalog completeness remain open. | [CORE_RESEARCH_PROGRAM.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CORE_RESEARCH_PROGRAM.md) |
 | **TNFR-Riemann** | Finite protocols estimate a critical-line-centered comparison and expose ζ/L diagnostic surfaces (P12–P50). No engine theorem identifies phase coherence with zero location. The bridge to RH, including control of `S(T) = (1/π)·arg ζ(½+iT)`, remains open. | [TNFR_RIEMANN_RESEARCH_NOTES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_RIEMANN_RESEARCH_NOTES.md) |
-| **REMESH fixed-delay models** | A finite cyclic fixed-coefficient filter has a Cesàro fixed-mode projection. A distinct finite uniform companion recurrence has a stationary-weighted augmented disagreement functional; `0<alpha<1` mixes toward the history barycenter, while `alpha=1` permits periodic histories. One-transition residual and adjacent-cycle schedule/history observers identify finite binary64 records; a graph-owned causal executor and finite-block observer add same-invocation provenance, atomicity and exact block-specific normalized margins. The effective `P2` reference proves exact ideal error propagation by `beta=(1-alpha)^2` and keeps the committed runtime residual separate. A uniform positive normalized margin on a declared forward-invariant class, intrablock prefix control, the literal `τ_g → ∞` limit, repeated runtime stability and catalog completeness remain open. | [REMESH_INFINITY_DERIVATION.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/REMESH_INFINITY_DERIVATION.md) |
+| **REMESH fixed-delay models** | A finite cyclic fixed-coefficient filter has a Cesàro fixed-mode projection. A distinct finite uniform companion recurrence has a stationary-weighted augmented disagreement functional; `0<alpha<1` mixes toward the history barycenter, while `alpha=1` permits periodic histories. One-transition residual and adjacent-cycle schedule/history observers identify finite binary64 records; a graph-owned causal executor and finite-block observer add same-invocation provenance, atomicity and exact block-specific normalized margins. A conditional exact common-`q` policy class has prefix gain upper bound one, uniform normalized block margin `1-q` and repeated geometric spatial-disagreement decay, including strict-gain pure-delay companions. The effective `P2` reference proves exact ideal error propagation by `beta=(1-alpha)^2` and keeps the committed runtime residual separate. Binary64 promotion with uniform relative defect control, the literal `τ_g → ∞` limit, repeated runtime stability and catalog completeness remain open. | [REMESH_INFINITY_DERIVATION.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/REMESH_INFINITY_DERIVATION.md) |
 | **TNFR-Navier–Stokes** | A declared linear mapping compares viscous diffusion with the overdamped limit of a separate graph-wave model (`ν_f = ν`). Finite pseudo-spectral runs measure enstrophy growth with Reynolds number. The nonlinear vortex-stretching term is compared with a `K_φ`/VAL cascade, but no equivalence or uniform regularity bound is derived; the `Re → ∞` problem remains open. | [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) |
 | **Number theory** | Primality as `ΔNFR = 0` (canonical **unit** coefficients, §4.2 coefficient independence); arithmetic structural triad; arithmetic networks can initialize the auxiliary symplectic read-out; the cyclotomy law `s_k(p) = gcd(k, p−1) + 1` is proved for the declared residue digraph and read as a finite arithmetic pulse diagnostic. | [TNFR_NUMBER_THEORY.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_NUMBER_THEORY.md) |
 | **Structural research program (R1–R9)** | Nine internal lines on arithmetic and spectral dynamics: observability, arithmetic pulse, CRT synthesis, p-adic transport, finite fields, additive reduction, arithmetic pressure, operator certification and directed non-normal evolution. Exact, measured, negative and open results are separated in the program index. | [STRUCTURAL_RESEARCH_PROGRAM.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_RESEARCH_PROGRAM.md) |

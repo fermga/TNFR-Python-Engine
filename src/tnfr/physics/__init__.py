@@ -73,6 +73,10 @@ remesh_history_stability : Exact finite uniform delayed-history theorem
     - Stationary-weighted Jensen disagreement balance
     - Temporal mixing for 0 < alpha < 1; pure-delay cycles at alpha = 1
     - Excludes clipping, changing support/metric and runtime identification
+remesh_schedule_policy_stability : Uniform exact REMESH/schedule policy theorem
+    - Common schedule gain q gives prefix bound 1 and block gain q
+    - Repeated spatial-disagreement decay for q < 1 over L = max_delay + 1
+    - Conditional on exact maps; excludes binary64 runtime identification
 runtime_remesh_history_stability : Executed runtime/companion bridge
     - Exact signed binary64 rounding and clipping residual decomposition
     - Lifted one-step augmented-energy balances and sufficient lower bounds
@@ -502,6 +506,10 @@ from .remesh_history_stability import (
     certify_uniform_remesh_history_stability,
     observe_uniform_remesh_history_transition,
 )
+from .remesh_schedule_policy_stability import (
+    UniformRemeshSchedulePolicyStabilityCertificate,
+    certify_uniform_remesh_schedule_policy_stability,
+)
 from .runtime_remesh_history_stability import (
     RuntimeRemeshHistoryBridgeObservation,
     observe_runtime_remesh_history_bridge,
@@ -831,6 +839,9 @@ __all__ = [
     "UniformRemeshHistoryTransitionObservation",
     "certify_uniform_remesh_history_stability",
     "observe_uniform_remesh_history_transition",
+    # --- Uniform exact REMESH/schedule policy stability ---
+    "UniformRemeshSchedulePolicyStabilityCertificate",
+    "certify_uniform_remesh_schedule_policy_stability",
     # --- Executed REMESH runtime/companion bridge ---
     "RuntimeRemeshHistoryBridgeObservation",
     "observe_runtime_remesh_history_bridge",

@@ -84,6 +84,16 @@ causally executed finite sequences. The contractive block has
 `kappa=139/256` and endpoint gain upper bound `117/256`; the lag-one
 `alpha=1` identity-schedule block has `kappa=0`. Both results are finite
 observations. They do not prove a uniform positive normalized margin over a
-declared forward-invariant class, an intrablock prefix-amplification bound,
+declared forward-invariant runtime class, an intrablock runtime
+prefix-amplification bound,
 repetition or future stability. A positive absolute uniform drop is excluded
 by equilibrium and quadratic amplitude scaling.
+
+`171_remesh_schedule_policy_stability.py` treats the separate exact model class
+in which every schedule preserves spatial consensus and has one common
+fixed-metric disagreement gain bound `q`. It displays the sufficient universal
+horizon `active_max_delay+1`, prefix gain upper bound one, normalized block margin `1-q`
+and the repeated bound `q^floor(n/L)`. Its strict mixed-delay and pure-delay
+witnesses use `q=1/4`; the `q=1` witness has zero certified margin. This example
+does not execute or verify a binary64 schedule, control runtime defects or
+claim stability of spatially uniform temporal means or full TNFR state.

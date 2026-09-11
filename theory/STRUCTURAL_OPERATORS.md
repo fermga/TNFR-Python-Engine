@@ -357,6 +357,18 @@ binary64 runtime, imply spatial consensus or zero pressure, or combine its map
 with a schedule gain. See
 [`REMESH_INFINITY_DERIVATION.md`](REMESH_INFINITY_DERIVATION.md#24-exact-finite-companion-history-stability).
 
+The conditional exact composition theorem
+`certify_uniform_remesh_schedule_policy_stability` indexes histories after each
+schedule. For a fixed companion and metric, any sequence of exact schedules
+that preserves spatial consensus and has one common disagreement gain bound
+`q` is dominated by `B_q=diag(q,1,...,1)P`. Every prefix has gain at most one;
+over the sufficient universal horizon `L=active_max_delay+1`, the gain is at
+most `q`. Thus `q<1` gives uniform normalized block margin `1-q` and repeated
+geometric spatial-disagreement decay, including for pure-delay `alpha=1`.
+This result does not control spatially uniform temporal means, verify the
+schedule hypotheses or promote the binary64 runtime and its defects. See
+[`REMESH_INFINITY_DERIVATION.md`](REMESH_INFINITY_DERIVATION.md#211-uniform-exact-remeshschedule-policy-stability).
+
 `observe_runtime_remesh_history_bridge` identifies one applied,
 executor-sealed REMESH result with that companion while retaining exact signed
 binary64 rounding and clipping residuals. It lifts the runtime head into the
@@ -1481,6 +1493,7 @@ channel, direction, scale and postcondition).
 | `src/tnfr/physics/event_remesh_reference.py` / `src/tnfr/physics/event_remesh_reference.pyi` | Effective-P2 finite reference-family certificate and exact public interface |
 | `src/tnfr/physics/reversible_eigenmode_reference.py` / `src/tnfr/physics/reversible_eigenmode_reference.pyi` | Pure exact-rational reversible single-eigenmode Euler theorem and public interface |
 | `src/tnfr/physics/remesh_history_stability.py` | Exact uniform finite companion-history stability certificate |
+| `src/tnfr/physics/remesh_schedule_policy_stability.py` / `src/tnfr/physics/remesh_schedule_policy_stability.pyi` | Conditional exact common-`q` REMESH/schedule spatial-disagreement theorem |
 | `src/tnfr/physics/runtime_remesh_history_stability.py` | One-transition runtime REMESH/companion bridge with signed residuals |
 | `src/tnfr/physics/remesh_schedule_stability.py` | Exact REMESH-head/schedule-head augmented-energy balance |
 | `src/tnfr/physics/runtime_remesh_schedule_stability.py` | Adjacent-cycle runtime/history energy telescope |
@@ -1530,6 +1543,7 @@ The `Operator.__call__(G, node, **kw)` method implements the canonical execution
 | [164_resonance_runtime_bridge.py](../examples/02_physics_regimes/164_resonance_runtime_bridge.py) | RA U3 filter, identity gate, four realization layers, post-flow certificate, and switching abstention |
 | [167_reversible_eigenmode_reference.py](../examples/02_physics_regimes/167_reversible_eigenmode_reference.py) | No glyph execution: pure exact-real references for both nonuniform modes of nonregular `P3` |
 | [169_event_remesh_causal_runtime.py](../examples/02_physics_regimes/169_event_remesh_causal_runtime.py) | One finite same-invocation event/REMESH cycle sequence with causal receipts, outer graph atomicity, and an explicit stability boundary |
+| [171_remesh_schedule_policy_stability.py](../examples/02_physics_regimes/171_remesh_schedule_policy_stability.py) | Conditional exact common-`q` REMESH/schedule theorem, including strict pure-delay disagreement decay and the zero-margin `q=1` boundary |
 
 ### 15.4 SDK Entry Points
 

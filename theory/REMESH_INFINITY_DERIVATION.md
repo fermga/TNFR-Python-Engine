@@ -1,14 +1,20 @@
 # REMESH Fixed-Delay Models and Runtime-Limit Boundary
 
-**Status**: CORRECTED N15 HISTORICAL RECORD — restricted finite cyclic and
-companion results; runtime limit and catalog completeness open
+**Status**: CORRECTED N15 HISTORICAL RECORD — restricted finite cyclic,
+companion and conditional policy results; runtime limit and catalog completeness
+open
 **Date**: May 26, 2026 — corrected September 2026
 **Owner**: `theory/REMESH_INFINITY_DERIVATION.md`
 **Source implementations**: `src/tnfr/operators/remesh.py::apply_network_remesh`,
 `src/tnfr/physics/remesh_history_stability.py`,
+`src/tnfr/physics/remesh_schedule_policy_stability.py`,
+`src/tnfr/physics/remesh_schedule_policy_stability.pyi`,
 `src/tnfr/physics/runtime_remesh_history_stability.py`,
 `src/tnfr/physics/remesh_schedule_stability.py`, and
-`src/tnfr/physics/runtime_remesh_schedule_stability.py`, plus the finite
+`src/tnfr/physics/runtime_remesh_schedule_stability.py`,
+`src/tnfr/operators/event_remesh_causal_runtime.py`, and
+`src/tnfr/physics/runtime_remesh_schedule_block_margin.py`, with their typed
+interfaces where present, plus the finite
 reference-family certificate and typed interface in
 `src/tnfr/physics/event_remesh_reference.py` and
 `src/tnfr/physics/event_remesh_reference.pyi`.
@@ -41,7 +47,16 @@ converges to its stationary history barycenter. At $\alpha=1$, the companion is
 a permutation: the functional is conserved and periodic histories remain
 possible.
 
-Neither finite model is the complete clipped, history-gated runtime operation.
+For a further conditional **exact REMESH/schedule policy class**, assume every
+possibly varying schedule preserves spatial consensus and has one common
+fixed-metric disagreement gain bound $q$. The post-schedule history energy has
+prefix gain at most one and block gain at most $q$ over the sufficient horizon
+$L=\texttt{active\_max\_delay}+1$. Thus $q<1$ gives uniform normalized margin
+$1-q$ and repeated geometric decay of spatial disagreement. This theorem does
+not verify the schedule family or identify it with the binary64 runtime.
+
+Neither base finite model is the complete clipped, history-gated runtime
+operation.
 They do not establish a literal $\tau_g\to\infty$ limit, conserve the TNFR
 structural charge, make the full tetrad energy monotone, imply spatial
 consensus or $\Delta\mathrm{NFR}=0$, or prove that the 13 registered operators
@@ -565,8 +580,8 @@ This outer wrapper proves same-invocation causal order, one graph identity and
 finite graph-owned atomicity. It does not alter the contracts of the nested
 offline observers when they are used separately. The finite additive energy
 identity is still not a global schedule-times-REMESH gain and has no uniform
-positive normalized block margin over a forward-invariant class or intrablock
-prefix-amplification bound. Solver accuracy/order, mesh convergence, repeated
+positive normalized block margin over a forward-invariant runtime class or
+runtime intrablock prefix-amplification bound. Solver accuracy/order, mesh convergence, repeated
 or future stability and rollback of emitted I/O, warnings, external resources
 or external-only aliases remain outside the result. In particular, the lag-one
 `alpha=1` alternating history remains a valid causal counterexample to
@@ -622,6 +637,104 @@ has zero drop. A repeated result would instead need a declared forward-invariant
 class with one uniform $\kappa_*>0$ for every positive-energy block, together
 with a finite constant bounding energy amplification at each intrablock prefix.
 The finite observer proves neither condition.
+
+### §2.11 Uniform exact REMESH/schedule policy stability
+
+The missing uniform margin and prefix bound can be proved for a restricted
+exact-model class. Fix the REMESH companion $P$, its positive stationary row
+vector $\pi$, the ordered spatial support and one positive spatial metric $H$.
+Let every schedule map $S_k$ preserve the spatial-consensus subspace and obey
+the same disagreement-energy estimate
+
+$$
+E_H(S_kx)\leq qE_H(x),
+\qquad 0\leq q\leq1.
+$$
+
+The maps may vary with $k$. The hypotheses, fixed metric and common $q$ must
+hold for every member of the declared family. Index the augmented history
+immediately after each schedule. The next operation mixes those stored heads by
+REMESH, after which the next schedule acts on the new mixture. If
+
+$$
+e_k=(E_H(x_k),E_H(x_{k-1}),\ldots,E_H(x_{k-m}))^\mathsf T,
+$$
+
+Jensen's inequality and the schedule bound give the componentwise envelope
+
+$$
+e_{k+1}\leq B_qe_k,
+\qquad
+B_q=D_qP,
+\qquad
+D_q=\operatorname{diag}(q,1,\ldots,1).
+$$
+
+The order $D_qP$ is essential: the schedule contracts the newly mixed head.
+Since $0\leq B_q\leq P$ entrywise and both matrices are nonnegative,
+$B_q^s\leq P^s$ for every $s\geq0$. With
+
+$$
+V_k=\pi^\mathsf Te_k,
+\qquad
+\pi^\mathsf TP=\pi^\mathsf T,
+$$
+
+every finite prefix is nonexpansive:
+
+$$V_{k+s}\leq V_k.$$
+
+Set $L=m+1$. A length-$L$ path through a companion matrix cannot remain in the
+shift rows: every such path visits the head at least once. Equivalently, the
+head-avoiding matrix $B_0=D_0P$ satisfies $B_0^L=0$. Every monomial contributing
+to $B_q^L$ therefore contains at least one factor $q$, so
+
+$$
+B_q^L\leq qP^L,
+\qquad
+\pi^\mathsf TB_q^L\leq q\pi^\mathsf T,
+\qquad
+V_{k+L}\leq qV_k.
+$$
+
+Repeated blocks and their remaining prefix yield
+
+$$
+V_{k+n}\leq q^{\lfloor n/L\rfloor}V_k.
+$$
+
+Thus this exact class has intrablock amplification bound one and uniform
+normalized block-margin lower bound $1-q$. If $q<1$, the augmented spatial
+disagreement converges geometrically to zero. Positivity of every $\pi_j$ then
+forces the spatial disagreement of every retained history row to vanish. This
+does not control differences among their spatially uniform temporal means.
+
+The horizon $L$ is a sufficient universal path bound. It is sharp for the
+worst-case pure-delay companion, but it need not be the smallest contractive
+horizon for a particular interior coefficient choice. The endpoint cases are
+also exact:
+
+- at $\alpha=0$, $L=1$ and the bound is the ordinary schedule gain $q$;
+- at $\alpha=1$ and $q<1$, each spatial-disagreement component is damped once
+  per pure-delay circuit, so the former periodic disagreement obstruction is
+  removed;
+- at $q=1$, the margin supplied by this theorem is zero. Identity schedules
+  and a nonzero constant centered history retain the earlier counterexample,
+  but the loose bound $q=1$ alone does not prove that another concrete family
+  fails to converge.
+
+[`certify_uniform_remesh_schedule_policy_stability`](../src/tnfr/physics/remesh_schedule_policy_stability.py)
+materializes $P$, $B_q$, the head-avoiding matrix and every rational power
+needed at the $L$-cycle block boundary, then rechecks the one-step induction
+hypotheses and all block and stationary-weight inequalities in its sealed
+result. Intermediate prefix powers are not retained. The API receives no
+schedule map, metric or runtime record;
+the common-gain and consensus-preservation statements are explicit hypotheses.
+It is therefore a repeated theorem for the declared exact family, not a
+promotion of the causal binary64 observer in §2.10. Such a promotion still
+needs a forward-invariant runtime class, fixed support and metric, and uniform
+relative bounds for centered rounding and clipping defects. Absolute additive
+defect bounds can at most imply convergence to a neighborhood.
 
 ---
 
@@ -965,6 +1078,9 @@ The original commits remain useful provenance:
 - **Finite companion branch**: the stationary-weighted disagreement functional
   of §2.4 is nonincreasing; strict temporal mixing holds only for
   $0<\alpha<1$, while $\alpha=1$ retains periodic orbits.
+- **Exact policy branch**: under the common fixed-metric schedule-gain
+  hypothesis of §2.11, prefix gain is at most one and `q<1` gives uniform
+  geometric spatial-disagreement decay, including at $\alpha=1$.
 - **Branch B1**: no universality conclusion follows without a scaling family
   and an intertwining map.
 - **Branch B2**: no extra registry entry is needed to compute this projection;
@@ -982,6 +1098,8 @@ The corrected results are internal and limited:
 - it supplies a finite periodic-history diagnostic;
 - it supplies an exact augmented-history disagreement balance and temporal
   limit for one fixed uniform unclipped companion recurrence;
+- it supplies a conditional exact common-$q$ schedule-family theorem with a
+  uniform normalized margin and prefix bound;
 - it separates an auxiliary linear model from the canonical clipped runtime;
 - it corrects the fixed-mode arithmetic from LCM to GCD;
 - it leaves all classical open problems unchanged;
@@ -1019,6 +1137,15 @@ the exact stationary distribution, Jensen dissipation, equality case,
 preserved ideal-history barycenter, signed runtime defects, recorded history
 advance, finite additive telescoping and the distinct $\alpha=0$, $\alpha=1$
 and $0<\alpha<1$ regimes.
+
+The exact common-$q$ policy theorem and its public example are checked by
+[`test_remesh_schedule_policy_stability.py`](../tests/physics/test_remesh_schedule_policy_stability.py)
+and
+[`test_remesh_schedule_policy_stability_example.py`](../tests/physics/test_remesh_schedule_policy_stability_example.py).
+They verify the `D_q P` order, exact block powers, varying rational schedule
+witnesses, prefix and repeated bounds, endpoint regimes, public facade and
+fail-closed seals. A separate consensus-amplification witness confirms that the
+result controls spatial disagreement rather than uniform temporal means.
 
 The graph-owned finite causal wrapper and public example are checked by
 [`test_event_remesh_causal_runtime.py`](../tests/operators/test_event_remesh_causal_runtime.py)
@@ -1059,9 +1186,9 @@ The following problems remain open:
 
 1. Define a common state space and convergence mode for a nontrivial runtime
    $\tau_g\to\infty$ limit.
-2. Define a forward-invariant runtime class and prove or refute a uniform
-   positive normalized block margin plus a finite intrablock prefix-amplification
-   bound; retain the `alpha=1`, equilibrium, scaling, clipping and rounding
+2. Promote the exact common-$q$ theorem to a forward-invariant runtime class by
+   proving uniform centered relative rounding/clipping defect bounds that leave
+   a positive net block margin; retain the zero-margin, scaling and soft-knee
    obstructions.
 3. Determine the extra hypotheses needed to compose the implemented general
    finite executor/eigenmode binding with REMESH beyond effective $P_2$; its
@@ -1086,7 +1213,10 @@ schedule/history telescope. One graph-owned outer executor now supplies that
 telescope with same-invocation causal provenance and finite atomicity. A sealed
 observer extracts exact normalized lower margins from its contiguous finite
 blocks; the implemented witnesses give `139/256` and zero without establishing
-uniform class coercivity. One event-free effective-$P_2$ family additionally
+uniform runtime-class coercivity. A separate conditional exact common-$q$
+policy theorem gives prefix gain upper bound one, uniform normalized margin $1-q$ and
+repeated geometric spatial-disagreement decay on the fixed companion. One
+event-free effective-$P_2$ family additionally
 has a rational continuous/Euler error enclosure, strict improvement across its
 two declared proper subdivisions, exact ideal REMESH scaling and an explicit
 runtime residual bound. A separate
@@ -1094,8 +1224,7 @@ runtime residual bound. A separate
 binds finite executor-owned pressure-refreshed partitions and propagates
 represented defects through complete Euler matrices, but it contains no REMESH
 claim.
-A uniform positive normalized block margin on a declared forward-invariant
-class, an intrablock prefix-amplification bound, generic or binary64 asymptotic
-convergence, repeated runtime stability, the clipped binary64 runtime limit,
-full structural invariants and global operator completeness remain
-unresolved.**
+Promotion of the exact policy theorem to a declared forward-invariant runtime
+class with relative defect control, generic or binary64 asymptotic convergence,
+repeated runtime stability, the clipped binary64 runtime limit, full structural
+invariants and global operator completeness remain unresolved.**

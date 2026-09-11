@@ -481,11 +481,12 @@ recorded block has `K_block > 0`; it is not uniform class coercivity.
 
 No positive absolute lower bound can be uniform across equilibrium and
 amplitude-scaled copies because the quadratic energy and drop scale to zero.
-The remaining theorem target is a uniform positive normalized block margin on
-a declared forward-invariant class plus a finite intrablock prefix-amplification
-bound. Neither target, repeated/future stability, a runtime-global gain, solver
-accuracy/order, mesh convergence nor full TNFR stability is certified by this
-finite observer.
+The remaining runtime-promotion target is a uniform positive normalized block
+margin on a declared forward-invariant executor class plus a finite runtime
+intrablock prefix bound. Neither target, repeated/future runtime stability, a
+runtime-global gain, solver accuracy/order, mesh convergence nor full TNFR
+stability is certified by this finite observer. The separate exact-model
+analogue below proves both bounds conditionally from a common schedule gain.
 
 [`observe_event_remesh_three_mesh_refinement`](../src/tnfr/physics/event_remesh_refinement.py)
 is a pure observer over three already committed `EventRemeshCycleResult`
@@ -678,6 +679,40 @@ gain by a REMESH gain. Both functions and result classes are re-exported from
 `tnfr.physics`; the full derivation lives in
 [`REMESH_INFINITY_DERIVATION.md`](../theory/REMESH_INFINITY_DERIVATION.md#24-exact-finite-companion-history-stability).
 
+[`certify_uniform_remesh_schedule_policy_stability`](../src/tnfr/physics/remesh_schedule_policy_stability.py)
+accepts one intact companion certificate and an exact-rationalized common
+schedule disagreement-energy gain bound `q` in `[0,1]`. It describes a
+conditional family whose histories are sampled after each schedule: REMESH
+first forms the next input from the stored heads, and the next schedule then
+acts on that mixture. The componentwise energy envelope is therefore
+
+```text
+B_q = diag(q, 1, ..., 1) P.
+```
+
+The sealed `UniformRemeshSchedulePolicyStabilityCertificate` stores the exact
+one-step envelopes and the three decisive block powers at
+`L=active_max_delay+1`, verifies `B_q^L <= q*P^L` entrywise and exposes
+
+```text
+prefix gain <= 1,
+L-cycle block gain <= q,
+normalized block-margin lower bound >= 1-q,
+V[k+n] <= q^floor(n/L) V[k].
+```
+
+`L` is a sufficient universal companion-path horizon and need not be minimal
+for a particular interior coefficient choice. Strict `q<1` proves geometric
+decay of spatial disagreement in every history row. It does not control their
+spatially uniform temporal means. `q=1` proves nonincrease with zero certified
+margin and makes no convergence decision. The caller must separately prove the
+common schedule gain and consensus preservation for every member of the
+intended exact family. No schedule map or runtime execution is an input, so the
+certificate does not establish binary64 invariance, rounding/clipping control,
+solver accuracy/order, adaptive grammar or full TNFR stability. The class and
+builder are re-exported from `tnfr.physics`; example 171 exercises the strict
+mixed-delay, strict pure-delay and `q=1` boundary cases.
+
 [`observe_runtime_remesh_history_bridge`](../src/tnfr/physics/runtime_remesh_history_stability.py)
 accepts one intact, applied `EventRemeshCycleResult` and binds it to that exact
 companion model. The returned `RuntimeRemeshHistoryBridgeObservation` retains
@@ -800,6 +835,11 @@ re-exported from `tnfr.physics`.
 - [`test_remesh_history_stability.py`](../tests/physics/test_remesh_history_stability.py)
   verifies the exact companion, stationary distribution, Jensen balance,
   equality case and all three alpha regimes.
+- [`test_remesh_schedule_policy_stability.py`](../tests/physics/test_remesh_schedule_policy_stability.py)
+  verifies the exact `D_q P` ordering, rational powers, universal path horizon,
+  prefix and block inequalities, endpoint regimes, input domain and fail-closed
+  seals; [`test_remesh_schedule_policy_stability_example.py`](../tests/physics/test_remesh_schedule_policy_stability_example.py)
+  checks the facade, stub, import order and public example 171.
 - [`test_runtime_remesh_history_stability.py`](../tests/physics/test_runtime_remesh_history_stability.py)
   verifies bit-exact replay, signed residual and energy identities, hard-clip
   nonexpansiveness, the soft-clip counterexample, inactive-delay handling and

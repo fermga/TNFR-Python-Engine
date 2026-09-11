@@ -637,7 +637,7 @@ telescope from that same invocation. This establishes causal order, common
 graph identity and atomic graph rollback for that finite block. The offline
 observers retain their negative provenance scope when called independently.
 The wrapper still proves no global schedule/REMESH gain, uniform positive
-normalized block margin over a declared forward-invariant class, intrablock
+normalized block margin over a declared forward-invariant runtime class, intrablock runtime
 prefix-amplification bound, solver accuracy/order, mesh convergence, repetition
 or future stability; emitted I/O, warnings, external resources and
 external-only aliases remain outside rollback.
@@ -668,8 +668,35 @@ $\kappa_B=0$. A uniform positive absolute drop is impossible across equilibrium
 and amplitude-scaled copies because this quadratic energy and its drop scale to
 zero. A positive margin on one observed block proves no uniform class
 coercivity. Repeated stability would additionally require a uniform positive
-normalized block margin over a declared forward-invariant class and a finite
-intrablock prefix-amplification bound. Both remain open.
+normalized block margin over a declared forward-invariant runtime class and a
+finite runtime intrablock prefix-amplification bound. Both remain open for the binary64
+runtime class observed here.
+
+A distinct exact-model theorem now supplies both bounds under explicit policy
+hypotheses. Index histories immediately after each schedule, retain one fixed
+REMESH companion `P` and one fixed positive spatial metric, and require every
+possibly varying exact schedule to preserve spatial consensus and have
+disagreement-energy gain at most the same `q` in `[0,1]`. The componentwise
+energy envelope is
+
+$$B_q=\operatorname{diag}(q,1,\ldots,1)P.$$
+
+Nonnegative-matrix domination gives prefix gain at most one. Every companion
+path visits the head within the sufficient universal horizon
+$L=\texttt{active\_max\_delay}+1$, so $B_q^L\leq qP^L$. Stationarity of the
+temporal weights then yields
+
+$$V_{k+n}\leq q^{\lfloor n/L\rfloor}V_k.$$
+
+Consequently, `q<1` gives uniform normalized block-margin lower bound `1-q`
+and geometric decay of spatial disagreement in every retained history row.
+This seminorm does not control their spatially uniform temporal means. At
+`q=1`, the exact result proves nonincrease and zero certified margin only. The
+sealed implementation is
+[`remesh_schedule_policy_stability.py`](../src/tnfr/physics/remesh_schedule_policy_stability.py).
+It assumes rather than inspects the schedule family and does not absorb
+binary64 rounding or clipping defects; runtime forward invariance and a
+strictly positive net runtime margin remain open.
 
 This execution contract does not prove solver accuracy or invariance under an
 equivalent timestep refinement, assign an affine gain to every jump, establish
@@ -1225,6 +1252,7 @@ and
 | `src/tnfr/physics/reversible_eigenmode_reference.py` / `src/tnfr/physics/reversible_eigenmode_reference.pyi` | General exact-rational reversible single-eigenmode Euler theorem and public interface |
 | `src/tnfr/physics/runtime_eigenmode_reference.py` / `src/tnfr/physics/runtime_eigenmode_reference.pyi` | Finite executor binding with exact pressure/execution defects and full-matrix propagation |
 | `src/tnfr/physics/remesh_history_stability.py` | Exact uniform finite companion-history Lyapunov certificate |
+| `src/tnfr/physics/remesh_schedule_policy_stability.py` / `src/tnfr/physics/remesh_schedule_policy_stability.pyi` | Conditional exact uniform REMESH/schedule spatial-disagreement theorem |
 | `src/tnfr/physics/runtime_remesh_history_stability.py` | One-transition executed binary64 REMESH/companion bridge |
 | `src/tnfr/physics/remesh_schedule_stability.py` | Exact REMESH-head/schedule-head augmented-energy balance |
 | `src/tnfr/physics/runtime_remesh_schedule_stability.py` | Adjacent-cycle runtime/history energy telescope |
@@ -1256,6 +1284,10 @@ and
 [`test_runtime_eigenmode_reference_example.py`](../tests/physics/test_runtime_eigenmode_reference_example.py).
 The finite companion-history theorem is checked exactly by
 [`test_remesh_history_stability.py`](../tests/physics/test_remesh_history_stability.py).
+The common-`q` exact policy theorem, public facade and example are checked by
+[`test_remesh_schedule_policy_stability.py`](../tests/physics/test_remesh_schedule_policy_stability.py)
+and
+[`test_remesh_schedule_policy_stability_example.py`](../tests/physics/test_remesh_schedule_policy_stability_example.py).
 The runtime residual and lifted-energy bridge is tested in
 [`test_runtime_remesh_history_stability.py`](../tests/physics/test_runtime_remesh_history_stability.py).
 The pure schedule-head telescope and gain-based lower bound are tested in
@@ -1301,6 +1333,7 @@ catalog = net.audit_operators()               # dict; 13 controlled probes
 | [168_runtime_reversible_eigenmode_reference.py](../examples/02_physics_regimes/168_runtime_reversible_eigenmode_reference.py) | Finite `2/4/8`-segment executed nonregular-`P3` binding with nonzero `rho`, `eta`, `epsilon` and explicit false runtime-convergence scope |
 | [169_event_remesh_causal_runtime.py](../examples/02_physics_regimes/169_event_remesh_causal_runtime.py) | One finite same-invocation event/REMESH cycle sequence with causal receipts, graph-owned atomicity, and the lag-one `alpha=1` stability boundary |
 | [170_runtime_remesh_block_margin.py](../examples/02_physics_regimes/170_runtime_remesh_block_margin.py) | Exact `kappa=139/256` finite-block lower margin and the causal `alpha=1`, `kappa=0` boundary, with uniform-class and prefix claims withheld |
+| [171_remesh_schedule_policy_stability.py](../examples/02_physics_regimes/171_remesh_schedule_policy_stability.py) | Conditional exact common-`q` policy theorem with prefix gain upper bound one, uniform block margin `1-q`, strict pure-delay disagreement decay and the zero-margin `q=1` boundary |
 
 ## Cross-References
 

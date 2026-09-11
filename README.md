@@ -493,9 +493,11 @@ one finite block and `kappa = 0` at the lag-one `alpha=1` boundary.
 A uniform positive absolute drop is blocked by equilibrium and by amplitude
 scaling, under which the quadratic energy and its drop both approach zero.
 One positive finite `kappa` therefore does not prove uniform coercivity or
-repeated stability. The next open theorem requires a uniform positive
-normalized block margin over a declared forward-invariant class, together
-with a finite bound on every intrablock prefix amplification.
+repeated stability. Promoting this observer to runtime repetition requires a
+uniform positive normalized block margin over a declared forward-invariant
+runtime class, together with a finite bound on every runtime intrablock prefix.
+The separate exact-model analogue is proved below under a common schedule-gain
+hypothesis.
 
 [`observe_event_remesh_three_mesh_refinement(...)`](src/tnfr/physics/event_remesh_refinement.py)
 compares three already executed and individually sealed event/REMESH cycles on
@@ -616,6 +618,26 @@ centralized in
 [REMESH Fixed-Delay Models](theory/REMESH_INFINITY_DERIVATION.md#24-exact-finite-companion-history-stability)
 and verified by
 [`test_remesh_history_stability.py`](tests/physics/test_remesh_history_stability.py).
+
+[`certify_uniform_remesh_schedule_policy_stability(...)`](src/tnfr/physics/remesh_schedule_policy_stability.py)
+adds a conditional repeated-policy theorem to that exact companion. Histories
+are sampled immediately after each schedule. If every possibly varying exact
+schedule preserves spatial consensus and has disagreement-energy gain at most
+one common `q` in the same fixed metric, `0 <= q <= 1`, then the energy envelope
+is `B_q=diag(q,1,...,1)P`. For the sufficient universal horizon
+`L=active_max_delay+1`, every prefix is nonexpansive and every `L`-cycle block
+has gain at most `q`. Thus
+`V[k+n] <= q**floor(n/L)*V[k]`; when `q < 1`, every retained history row
+converges to spatial consensus with normalized block-margin lower bound `1-q`.
+The horizon is a worst-case path bound, not a claim of minimality for each
+REMESH coefficient choice. At `q=1` the certificate proves only nonincrease and
+a zero margin. This theorem assumes the schedule bounds; it does not verify
+schedule maps or promote binary64 executions, rounding, clipping, solver
+behavior, changing support/metric, adaptive grammar or full TNFR dynamics.
+The exact derivation is
+[§2.11 of REMESH Fixed-Delay Models](theory/REMESH_INFINITY_DERIVATION.md#211-uniform-exact-remeshschedule-policy-stability),
+with a public witness in
+[`171_remesh_schedule_policy_stability.py`](examples/02_physics_regimes/171_remesh_schedule_policy_stability.py).
 
 [`observe_runtime_remesh_history_bridge(...)`](src/tnfr/physics/runtime_remesh_history_stability.py)
 binds one applied executor-sealed cycle to that exact companion. It converts

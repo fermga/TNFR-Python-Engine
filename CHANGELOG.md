@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added — 2026-09-11 Uniform exact REMESH/schedule policy stability
+
+- Added `remesh_schedule_policy_stability.py`, its public stub, focused tests
+  and `171_remesh_schedule_policy_stability.py`. For one fixed exact REMESH
+  companion and any sequence of consensus-preserving exact schedule maps with
+  common fixed-metric disagreement gain at most `q` in `[0,1]`, the sealed
+  theorem verifies `B_q=diag(q,1,...,1)P`, prefix gain at most one and block
+  gain at most `q` over the sufficient universal horizon
+  `L=active_max_delay+1`. Thus `q<1` gives uniform normalized margin `1-q` and
+  repeated geometric spatial-disagreement decay. `q=1` supplies only
+  nonincrease and a zero certified margin. Schedule-map verification, binary64
+  runtime promotion, rounding/clipping control, solver claims, adaptive grammar
+  and full TNFR stability remain outside scope.
+- Centralized strict exact square-matrix multiplication and nonnegative integer
+  powers in `_exact_linear_algebra.py`; rectangular proof kernels retain their
+  separate contracts.
+
 ### Added — 2026-09-11 Causal event/REMESH execution
 
 - Added `runtime_remesh_schedule_block_margin.py`, its exact public stub,
@@ -15,7 +32,7 @@ All notable changes to this project will be documented in this file.
   give `kappa=139/256` and the lag-one `alpha=1` boundary `kappa=0`.
   Equilibrium and amplitude scaling exclude a positive uniform absolute drop;
   a uniform positive normalized block margin over a declared forward-invariant
-  class, intrablock prefix control, repetition and future stability remain
+  runtime class, intrablock runtime prefix control, repetition and future stability remain
   unproved.
 - Added `event_remesh_causal_runtime.py`, its exact public stub, focused tests
   and `169_event_remesh_causal_runtime.py`. The outer executor runs ordered
@@ -25,7 +42,7 @@ All notable changes to this project will be documented in this file.
   schedule/history telescope, thereby certifying same-invocation causal order,
   common graph identity and finite graph-owned atomicity. It does not compose
   schedule and REMESH gains or prove a uniform positive normalized block
-  margin over a declared forward-invariant class, intrablock prefix control,
+  margin over a declared forward-invariant runtime class, intrablock runtime prefix control,
   solver accuracy/order, mesh convergence, repetition or future stability.
   Emitted I/O, warnings, external resources and external-only aliases remain
   outside rollback.
