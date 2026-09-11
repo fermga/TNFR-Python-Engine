@@ -1,0 +1,1762 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/TNFR_YANG_MILLS_RESEARCH_NOTES/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>TNFR–Yang–Mills Structural Gap Research Notes - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfryangmills-structural-gap-research-notes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              TNFR–Yang–Mills Structural Gap Research Notes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-terminology-discipline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Terminology Discipline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-existing-field-and-diagnostic-base-in-the-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Existing field and diagnostic base in the repository
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-tnfr-native-reformulation-of-the-mass-gap-question" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. TNFR-Native Reformulation of the Mass Gap Question
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-structural-interpretation-of-the-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Structural Interpretation of the Gap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-candidate-operator-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Candidate Operator Surface
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-gap-ledger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Gap Ledger
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-pre-registered-milestones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Pre-Registered Milestones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Pre-Registered Milestones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#y1-finite-structural-gauge-gap-diagnostic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Y1 — Finite Structural Gauge Gap Diagnostic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#y2-legacy-u6-named-potential-magnitude-sweep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Y2 — legacy U6-named potential-magnitude sweep
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#y3-non-abelian-derivability-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Y3 — Non-Abelian Derivability Audit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#y4-scaling-study" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Y4 — Scaling Study
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#y5-closure-obstruction-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Y5 — Closure / Obstruction Classification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-acceptance-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Acceptance Criteria
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-immediate-next-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Immediate Next Step
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfryangmills-structural-gap-research-notes">TNFR–Yang–Mills Structural Gap Research Notes<a class="headerlink" href="#tnfryangmills-structural-gap-research-notes" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: Pre-registered research programme; Y1–Y5 diagnostics implemented; finite result remains pre-branch and the Clay-strength obstruction is classified as Branch B
+<strong>Date</strong>: 2026-09-06 (scope audit; implementation milestones dated 2026-05-31)
+<strong>Scope</strong>: auxiliary TNFR field-coordinate diagnostics and a finite structural spectral matrix; not a proof of the Clay Yang–Mills and Mass Gap problem
+<strong>Primary anchors</strong>: nodal equation <code>∂EPI/∂t = νf · ΔNFR(t)</code>, canonical operators, grammar U1–U6, structural field tetrad <code>(Φ_s, |∇φ|, K_φ, ξ_C)</code>, complex geometric field <code>Ψ = K_φ + i·J_φ</code></p>
+<hr />
+<h2 id="0-terminology-discipline">0. Terminology Discipline<a class="headerlink" href="#0-terminology-discipline" title="Permanent link">&para;</a></h2>
+<p>This programme must be formulated in TNFR language only.</p>
+<p>TNFR does <strong>not</strong> introduce an independent entity called "quantum mechanics" or a separate microscopic ontology.  The same nodal equation,</p>
+<p>$$
+\frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t),
+$$</p>
+<p>admits different coherence regimes:</p>
+<ul>
+<li>smooth-trajectory regimes, externally comparable to classical mechanics;</li>
+<li>discrete-mode / high-dissonance regimes, externally comparable to quantum-mechanical behaviour;</li>
+<li>auxiliary field-coordinate rotations of <code>Ψ = K_φ + i·J_φ</code>, without a derived independent gauge degree of freedom.</li>
+</ul>
+<p>Therefore, references to Yang–Mills and mass gap are treated as <strong>external comparison targets</strong>. The TNFR object implemented here is a finite nodal spectral diagnostic with an auxiliary pure-gauge twist: construct the declared matrix, measure its spectral separation, and test associations with TNFR telemetry. Y1–Y4 neither execute an operator history nor compare two structural-potential snapshots, so they cannot infer that U1–U6 enforce the measured gap.</p>
+<p>No claim in this document should be read as a solution of the Clay Millennium Problem.  The Clay problem concerns rigorous four-dimensional non-Abelian Yang–Mills existence and a positive mass gap in the continuum.  The current TNFR codebase contains an auxiliary nodewise <strong>U(1)</strong> rotation model with the pure-gauge connection <code>A=d(arg Ψ)</code>. It does not contain an independently dynamical gauge sector. Any such Abelian or non-Abelian extension must be derived from the nodal equation and grammar before being called canonical.</p>
+<hr />
+<h2 id="1-existing-field-and-diagnostic-base-in-the-repository">1. Existing field and diagnostic base in the repository<a class="headerlink" href="#1-existing-field-and-diagnostic-base-in-the-repository" title="Permanent link">&para;</a></h2>
+<p>The programme starts from already-shipped TNFR machinery:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Existing source</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Complex geometric field</td>
+<td><code>src/tnfr/physics/fields.py</code>, <code>src/tnfr/physics/unified.py</code></td>
+<td><code>Ψ = K_φ + i·J_φ</code>, geometric-transport sector</td>
+</tr>
+<tr>
+<td>Auxiliary U(1) action</td>
+<td><code>src/tnfr/physics/gauge.py</code></td>
+<td>nodewise coordinate rotation <code>Ψ(i) → e^{iα(i)}Ψ(i)</code>; not an engine operator</td>
+</tr>
+<tr>
+<td>Gauge connection</td>
+<td><code>compute_gauge_connection()</code></td>
+<td>exact vertex-phase difference <code>A_ij = arg(Ψ_j) − arg(Ψ_i)</code> on edges</td>
+</tr>
+<tr>
+<td>Gauge curvature</td>
+<td><code>compute_gauge_curvature()</code></td>
+<td>cycle holonomy <code>F_C = Σ A_ij</code>; zero in exact arithmetic for this exact one-form, with only floating residuals in the present implementation</td>
+</tr>
+<tr>
+<td>Covariant derivative</td>
+<td><code>compute_covariant_derivative()</code></td>
+<td><code>D_ijΨ = Ψ(j) − e^{iA_ij}Ψ(i)</code></td>
+</tr>
+<tr>
+<td>Yang–Mills-named action</td>
+<td><code>compute_yang_mills_action()</code></td>
+<td><code>S_YM = 1/2 Σ_C F_C^2</code>; squared floating closure residual only</td>
+</tr>
+<tr>
+<td>Equation-named diagnostic</td>
+<td><code>compute_yang_mills_equations()</code></td>
+<td>pure-gauge snapshot consistency residual; not a TNFR equation of motion</td>
+</tr>
+<tr>
+<td>Conservation-gauge comparison</td>
+<td><code>src/tnfr/physics/conservation_gauge_unification.py</code></td>
+<td>auxiliary and finite-snapshot compatibility diagnostics</td>
+</tr>
+</tbody>
+</table>
+<p>This means the first TNFR–Yang–Mills step is only a spectral diagnostic built from existing fields. A genuine gauge-dynamics step would require a newly derived independent edge degree of freedom and its relation to canonical operators; the present API does not supply either.</p>
+<hr />
+<h2 id="2-tnfr-native-reformulation-of-the-mass-gap-question">2. TNFR-Native Reformulation of the Mass Gap Question<a class="headerlink" href="#2-tnfr-native-reformulation-of-the-mass-gap-question" title="Permanent link">&para;</a></h2>
+<p>The external Clay statement asks for a rigorous four-dimensional Yang–Mills theory with compact simple gauge group and positive mass gap.  TNFR reframes the first attack surface as follows.</p>
+<p>Given a declared family of finite nodal graphs <code>G</code>, construct a self-adjoint structural diagnostic matrix</p>
+<p>$$
+H_{\mathrm{structural}}(G)
+$$</p>
+<p>from declared TNFR telemetry and auxiliary transforms:</p>
+<p>$$
+(\Phi_s, |\nabla\phi|, K_\phi, \xi_C, J_\phi, J_{\Delta\mathrm{NFR}}, A_{ij}, F_C, D_{ij}\Psi).
+$$</p>
+<p>Define the finite-graph structural gap</p>
+<p>$$
+\Delta_{\mathrm{TNFR}}(G) = \lambda_1!\left(H_{\mathrm{structural}}(G)\right) - \lambda_0!\left(H_{\mathrm{structural}}(G)\right).
+$$</p>
+<p>The first TNFR question is not the full Clay theorem, but the discrete structural precursor:</p>
+<blockquote>
+<p><strong>YMG-1</strong>: Does the declared pure-gauge-covariant finite matrix built from <code>Ψ</code> have a reproducible positive separation between its two lowest distinct modes?</p>
+</blockquote>
+<p>The continuum-strength question is deferred:</p>
+<blockquote>
+<p><strong>YMG-5</strong>: Does <code>liminf_{a→0, L→∞} Δ_TNFR(a,L) &gt; 0</code> hold under a canonically specified scaling regime?</p>
+</blockquote>
+<p>YMG-5 is the Clay-hard boundary and is not assumed.</p>
+<hr />
+<h2 id="3-structural-interpretation-of-the-gap">3. Structural Interpretation of the Gap<a class="headerlink" href="#3-structural-interpretation-of-the-gap" title="Permanent link">&para;</a></h2>
+<p>TNFR does not treat "particle mass" as primitive. In this finite programme,
+"mass gap" is only an external analogy for the separation between the two
+lowest distinct eigenvalues of a selected structural matrix. Stability and
+dynamical admissibility require separate proofs.</p>
+<table>
+<thead>
+<tr>
+<th>External term</th>
+<th>TNFR structural object</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vacuum</td>
+<td>lowest mode of the selected finite structural matrix</td>
+</tr>
+<tr>
+<td>Excitation</td>
+<td>next distinct eigenmode of the selected finite matrix</td>
+</tr>
+<tr>
+<td>Mass gap</td>
+<td>external analogy for its lowest distinct-mode separation; no dynamical admissibility theorem is supplied</td>
+</tr>
+<tr>
+<td>Confinement</td>
+<td>Future hypothesis requiring an independently derived non-flat edge connection; absent from the current pure-gauge surface</td>
+</tr>
+<tr>
+<td>Gauge field</td>
+<td>Not implemented independently; the current <code>A</code> is only <code>d(arg Ψ)</code></td>
+</tr>
+</tbody>
+</table>
+<p>The working hypothesis is:</p>
+<p>$$
+\Delta_{\mathrm{TNFR}} &gt; 0
+\quad\Longleftrightarrow\quad
+\text{U6 drift control + independently derived curvature + declared evolution hypotheses exclude zero-cost non-trivial modes.}
+$$</p>
+<p>This is an open TNFR working hypothesis about nodal dynamics, not an established
+consequence of U6 and not an ontological statement about a separate quantum layer.
+The present Y1–Y4 surface cannot test the hypothesis: it supplies neither a U6
+reference trajectory nor an independent edge connection with nonzero holonomy.
+Its positive finite gaps can already arise from finite graph connectivity and
+the selected single-snapshot potential penalty.</p>
+<hr />
+<h2 id="4-candidate-operator-surface">4. Candidate Operator Surface<a class="headerlink" href="#4-candidate-operator-surface" title="Permanent link">&para;</a></h2>
+<p>The initial finite-graph matrix combines canonical graph read-outs with the
+auxiliary pure-gauge connection. A minimal candidate family is:</p>
+<p>$$
+H_{\mathrm{structural}} = L_A + V_{F} + V_{\Phi},
+$$</p>
+<p>where:</p>
+<ul>
+<li><code>L_A</code> is a gauge-covariant graph Laplacian derived from <code>D_ijΨ</code>;</li>
+<li><code>V_F</code> is a formal curvature potential derived from cycle holonomies <code>F_C</code>; for the current exact phase-difference connection it vanishes analytically, so computed values are floating-point residuals;</li>
+<li><code>V_Φ</code> is the single-snapshot magnitude penalty <code>Φ_s²/(π/2)²</code>. Borrowing the U6 drift threshold as a denominator is a legacy normalization choice, not a U6 drift test and not the separate <code>π/4</code> per-node magnitude warning.</li>
+</ul>
+<p>The implementation exposes non-negative weights for sensitivity studies and uses unit defaults. A result with non-unit weights is conditional on those declared diagnostic coefficients; the nodal equation has not derived them as canonical constants.</p>
+<hr />
+<h2 id="5-gap-ledger">5. Gap Ledger<a class="headerlink" href="#5-gap-ledger" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Gap</th>
+<th>Question</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>YMG-0</strong></td>
+<td>TNFR-native terminology and scope discipline</td>
+<td><strong>CLOSED by pre-registration</strong></td>
+</tr>
+<tr>
+<td><strong>YMG-1</strong></td>
+<td>Finite-graph TNFR gauge gap diagnostic</td>
+<td><strong>IMPLEMENTED</strong> by <code>tnfr.yang_mills.compute_structural_gauge_gap()</code>; finite graph only</td>
+</tr>
+<tr>
+<td><strong>YMG-2</strong></td>
+<td>Auxiliary U(1) covariance of the finite gap operator</td>
+<td><strong>PURE-GAUGE COVARIANCE SUPPORTED</strong> by seeded spectral-invariance checks; no Ward identity for engine dynamics follows</td>
+</tr>
+<tr>
+<td><strong>YMG-3</strong></td>
+<td>Relate a genuine two-snapshot U6 drift condition to a finite gap lower bound</td>
+<td><strong>OPEN</strong>; compatibility-named <code>run_u6_confinement_sweep()</code> measures only a single-snapshot <code>Φ_s</code> magnitude coordinate</td>
+</tr>
+<tr>
+<td><strong>YMG-4</strong></td>
+<td>Independent/non-Abelian gauge derivability audit from the nodal equation</td>
+<td><strong>AUDITED: OPEN_DERIVABILITY_GAP</strong>; current implementation is only an auxiliary U(1) pure-gauge construction</td>
+</tr>
+<tr>
+<td><strong>YMG-5</strong></td>
+<td>Continuum + thermodynamic scaling <code>liminf Δ &gt; 0</code></td>
+<td><strong>FINITE SCALING DIAGNOSTIC IMPLEMENTED</strong> by Y4; continuum limit remains <strong>OPEN / Clay-hard</strong></td>
+</tr>
+<tr>
+<td><strong>YMG-6</strong></td>
+<td>Closure / obstruction classification</td>
+<td><strong>CLASSIFIED: BRANCH_B_OBSTRUCTION_CLASSIFIED</strong> by Y5</td>
+</tr>
+</tbody>
+</table>
+<p>The key honesty constraint is YMG-4: classical Yang–Mills mass gap is non-Abelian.  A multi-channel or non-Abelian TNFR gauge sector cannot be assumed merely because external Yang–Mills uses it.  It must be derived as a structural consequence of the nodal equation, tetrad, operators, and U1–U6.</p>
+<hr />
+<h2 id="6-pre-registered-milestones">6. Pre-Registered Milestones<a class="headerlink" href="#6-pre-registered-milestones" title="Permanent link">&para;</a></h2>
+<h3 id="y1-finite-structural-gauge-gap-diagnostic">Y1 — Finite Structural Gauge Gap Diagnostic<a class="headerlink" href="#y1-finite-structural-gauge-gap-diagnostic" title="Permanent link">&para;</a></h3>
+<p><strong>Implementation status (2026-05-31)</strong>: <code>DIAGNOSTIC_SURFACE_CREATED</code>.</p>
+<p>Implemented in:</p>
+<ul>
+<li><code>src/tnfr/yang_mills/__init__.py</code></li>
+<li><code>src/tnfr/yang_mills/structural_gap.py</code></li>
+<li><code>tests/physics/test_yang_mills_structural_gap.py</code></li>
+</ul>
+<p>The implemented operator is:</p>
+<p>$$
+H_{\mathrm{structural}} = L_A + V_F + V_{\Phi},
+$$</p>
+<p>where <code>L_A</code> is the gauge-covariant graph Laplacian assembled from <code>A_ij</code>, <code>V_F</code> is the cycle-closure penalty normalised by <code>π²</code>, and <code>V_Φ</code> is a structural-potential magnitude penalty normalised by <code>(π/2)²</code>. Because the bundled <code>A_ij</code> is the coboundary of a vertex phase, every cycle sum telescopes to zero modulo <code>2π</code>; <code>V_F</code> is therefore zero in exact arithmetic in Y1. The code records its maximum floating residual and rejects a supplied connection outside the same pure-gauge orbit. The diagnostic reports <code>(λ0, λ1, Δ)</code>, self-adjointness, seeded auxiliary-U(1) spectral covariance, both the actual <code>π/4</code> magnitude-warning ratio and legacy <code>π/2</code> normalization metadata, legacy squared-closure/coupling statistics, and the subset of snapshot checks that is actually applicable. It is read-only with respect to EPI and phase attributes. Compatibility metadata keys containing <code>u6</code> denote the historical magnitude proxy and explicitly report <code>u6_drift_assessed=False</code>, the mean-absolute nodewise aggregation, and a strict threshold comparison.</p>
+<p>Implement a finite-graph diagnostic that:</p>
+<ol>
+<li>constructs a phase-compatible finite gauge graph without claiming full word-grammar validation;</li>
+<li>computes <code>Ψ</code>, <code>A_ij</code>, the analytically flat <code>F_C</code>, <code>D_ijΨ</code>, and <code>S_YM</code> residuals;</li>
+<li>assembles the self-adjoint finite matrix <code>H_structural</code>;</li>
+<li>reports <code>(λ0, λ1, Δ)</code> with seed, graph, and threshold metadata;</li>
+<li>verifies the declared algebraic invariants and spectral covariance before and after auxiliary local <code>U(1)</code> rotations.</li>
+</ol>
+<p>First verdict: <strong>DIAGNOSTIC_SURFACE_CREATED</strong>, not closure. The gap reported by Y1 is a finite-graph structural spectral gap only. With the current pure-gauge connection, it cannot be attributed to nonzero curvature; it also does not address non-Abelian derivability or the continuum / thermodynamic limit.</p>
+<h3 id="y2-legacy-u6-named-potential-magnitude-sweep">Y2 — legacy U6-named potential-magnitude sweep<a class="headerlink" href="#y2-legacy-u6-named-potential-magnitude-sweep" title="Permanent link">&para;</a></h3>
+<p><strong>Implementation status (2026-05-31)</strong>: <code>EMPIRICAL_FINITE_GRAPH_ONLY</code>.</p>
+<p>Implemented in:</p>
+<ul>
+<li><code>src/tnfr/yang_mills/u6_sweep.py</code></li>
+<li><code>tests/physics/test_yang_mills_u6_sweep.py</code></li>
+</ul>
+<p>The Y2 sweep wraps the Y1 operator across finite graph families and target ratios</p>
+<p>$$
+\rho_{\mathrm{U6}} = \frac{\max_i |\Phi_s(i)|}{\pi/2},
+$$</p>
+<p>Despite the historical symbol and public API name, this is a single-snapshot magnitude coordinate. <code>ρ_U6 &lt; 1</code> says only that <code>max|Φ_s|</code> is below the numerical scale borrowed from the U6 threshold; it does not say that U6 passed or that the separate <code>π/4</code> magnitude warning passed. A canonical U6 decision requires aligned reference and observed fields and evaluates <code>mean_i |Φ_s,after(i)-Φ_s,before(i)| &lt; π/2</code>. The sweep reports the <code>π/4</code> magnitude-warning ratio separately, along with gap statistics, pure-gauge consistency residuals under legacy Yang–Mills names, applicable snapshot checks, self-adjointness, and seeded auxiliary-U(1) spectral covariance.</p>
+<p>Sweep graph families across the declared magnitude coordinate. Test whether the finite gap correlates with:</p>
+<ul>
+<li>sampled <code>Φ_s</code> magnitude relative to both declared scales;</li>
+<li>the expected numerical flatness residual of <code>F_C</code>;</li>
+<li>low pure-gauge consistency residual exposed under the legacy equation name;</li>
+<li>the currently applicable snapshot diagnostics. Operator-history grammar is not assessed.</li>
+</ul>
+<p>First verdict: <strong>EMPIRICAL_FINITE_GRAPH_ONLY</strong>. This creates a finite potential-magnitude surface, but it does not yet test YMG-3's two-snapshot U6 premise and does not address YMG-4/YMG-5.</p>
+<h3 id="y3-non-abelian-derivability-audit">Y3 — Non-Abelian Derivability Audit<a class="headerlink" href="#y3-non-abelian-derivability-audit" title="Permanent link">&para;</a></h3>
+<p><strong>Implementation status (2026-05-31)</strong>: <code>OPEN_DERIVABILITY_GAP</code>.</p>
+<p>Implemented in:</p>
+<ul>
+<li><code>src/tnfr/yang_mills/derivability.py</code></li>
+<li><code>tests/physics/test_yang_mills_derivability.py</code></li>
+</ul>
+<p>The Y3 audit evaluates whether any candidate route supplies all of the following without external input: a TNFR-native multiplet, a canonical connection mixing multiplet components, non-commuting generators derived from nodal dynamics, and U1–U6 compatibility.  The implemented candidate routes are:</p>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Result</th>
+<th>Obstruction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>u5_nested_epi_multiplet</code></td>
+<td><code>OPEN_MULTIPLET_WITHOUT_CANONICAL_CONNECTION</code> if nested EPI data are present; otherwise <code>FAILED_NO_TNFR_MULTIPLET</code></td>
+<td>Nested EPI can provide components, but no canonical component-mixing connection or non-commuting generator algebra is derived</td>
+</tr>
+<tr>
+<td><code>thol_remesh_internal_space</code></td>
+<td><code>OPEN_HISTORY_WITHOUT_CANONICAL_GENERATORS</code> if operator history exists; otherwise <code>FAILED_NO_OPERATOR_INTERNAL_SPACE</code></td>
+<td>THOL/REMESH history does not expose a derived non-commuting generator algebra</td>
+</tr>
+<tr>
+<td><code>cycle_basis_bundle</code></td>
+<td><code>FAILED_BASIS_DEPENDENT_EXTERNAL_SELECTION</code> when enough cycles exist</td>
+<td>Cycle-basis generator selection depends on non-canonical basis/orientation choices</td>
+</tr>
+</tbody>
+</table>
+<p>Net verdict: the repository has an auxiliary local <code>U(1)</code> coordinate action and pure-gauge derived connection, not a canonical dynamical gauge sector. No independent Abelian or non-Abelian TNFR gauge sector is promoted by Y3.</p>
+<p>Attempt to derive multi-component gauge structure from TNFR-internal data only.  Candidate routes:</p>
+<ul>
+<li>multi-channel <code>Ψ</code> multiplets from nested EPI levels (U5);</li>
+<li>operator-induced internal state spaces from THOL/REMESH;</li>
+<li>graph-cycle basis bundles from canonical topology.</li>
+</ul>
+<p>Acceptance requires a nodal-equation derivation.  If the construction needs external group labels or hand-selected generators, it is non-canonical.</p>
+<p>First verdict: <strong>OPEN_DERIVABILITY_GAP</strong>.</p>
+<h3 id="y4-scaling-study">Y4 — Scaling Study<a class="headerlink" href="#y4-scaling-study" title="Permanent link">&para;</a></h3>
+<p><strong>Implementation status (2026-05-31)</strong>: <code>FINITE_SCALING_EVIDENCE</code> or <code>GAP_COLLAPSE_OBSERVED</code>, depending on the sampled finite family.</p>
+<p>Implemented in:</p>
+<ul>
+<li><code>src/tnfr/yang_mills/scaling.py</code></li>
+<li><code>tests/physics/test_yang_mills_scaling.py</code></li>
+</ul>
+<p>The Y4 diagnostic evaluates graph-size surrogates using the realized node count <code>n</code> and fixed values of the legacy <code>ρ_U6</code> magnitude coordinate. This distinction matters for the grid builder, which realizes the largest square graph not exceeding the requested size. For each <code>(topology, ρ_U6)</code> family it records mean gap by realized size and a finite log-log slope of gap versus <code>n</code>. The slope is a diagnostic of sampled finite behaviour only; it is not a continuum exponent, does not define a thermodynamic limit, and does not assess U6 drift.</p>
+<p>The report classifies finite samples as:</p>
+<table>
+<thead>
+<tr>
+<th>Verdict</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FINITE_SCALING_EVIDENCE</code></td>
+<td>all sampled finite points are self-adjoint, auxiliary-U(1) spectrally covariant, and have positive gap above tolerance</td>
+</tr>
+<tr>
+<td><code>GAP_COLLAPSE_OBSERVED</code></td>
+<td>at least one sampled finite point has gap at or below tolerance</td>
+</tr>
+<tr>
+<td><code>SCALING_FAILED_NON_SELF_ADJOINT</code></td>
+<td>a sampled operator violates Hermiticity</td>
+</tr>
+<tr>
+<td><code>SCALING_FAILED_GAUGE_VARIANCE</code></td>
+<td>a sampled spectrum is not invariant under seeded local <code>U(1)</code> rotation</td>
+</tr>
+</tbody>
+</table>
+<p>If Y1–Y3 provide a stable finite diagnostic surface while keeping YMG-4 explicitly open, evaluate <code>Δ(a,L)</code> across graph spacing / size surrogates.  This is still not the Clay theorem; it is a TNFR scaling diagnostic.</p>
+<p>First verdict: <strong>FINITE_SCALING_EVIDENCE</strong> for stable finite samples, or <strong>GAP_COLLAPSE_OBSERVED</strong> for sampled collapse.  Both verdicts remain finite-diagnostic only.</p>
+<h3 id="y5-closure-obstruction-classification">Y5 — Closure / Obstruction Classification<a class="headerlink" href="#y5-closure-obstruction-classification" title="Permanent link">&para;</a></h3>
+<p><strong>Implementation status (2026-05-31)</strong>: <code>BRANCH_B_OBSTRUCTION_CLASSIFIED</code>.</p>
+<p>Implemented in:</p>
+<ul>
+<li><code>src/tnfr/yang_mills/closure.py</code></li>
+<li><code>tests/physics/test_yang_mills_closure.py</code></li>
+</ul>
+<p>Y5 separates two logically different questions:</p>
+<ol>
+<li><strong>Finite field-derived diagnostic</strong> — Y1–Y4 support a finite, self-adjoint, seeded auxiliary-U(1)-covariant matrix surface built from <code>Ψ</code>, the pure-gauge <code>A_ij</code>, its cycle-closure residual, and <code>Φ_s</code>; this is pre-branch evidence rather than a dynamical gap result.</li>
+<li><strong>Clay-strength result</strong> — not closed, because Y3 leaves non-Abelian derivability open and Y4 does not prove a continuum / thermodynamic lower-bound theorem.</li>
+</ol>
+<p>Current classification:</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Verdict</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Finite diagnostic layer</td>
+<td><code>A_FINITE_U1_DIAGNOSTIC_SURFACE</code></td>
+<td>legacy API verdict name for a pre-branch auxiliary-U(1), pure-gauge matrix diagnostic; it does not satisfy Branch A</td>
+</tr>
+<tr>
+<td>Clay-strength layer</td>
+<td><code>B_REQUIRES_NEW_CANONICAL_NONABELIAN_DERIVATION</code></td>
+<td>a Clay-strength route requires a new TNFR-native non-Abelian derivation plus a continuum lower-bound theorem</td>
+</tr>
+<tr>
+<td>Programme verdict</td>
+<td><code>BRANCH_B_OBSTRUCTION_CLASSIFIED</code></td>
+<td>the obstruction is now localized, not removed</td>
+</tr>
+</tbody>
+</table>
+<p>Y5 therefore does <strong>not</strong> claim the Yang–Mills Millennium Problem is solved.  It closes the first TNFR programme pass by identifying the exact boundary: finite pure-gauge structural diagnostics are available; an independently derived gauge sector, non-Abelian derivability, and continuum lower bounds remain open requirements.</p>
+<p>Classify the programme into one of three branches:</p>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A</strong></td>
+<td>a finite TNFR structural gap is derived from declared dynamics plus a genuine U6 reference-state condition</td>
+</tr>
+<tr>
+<td><strong>B</strong></td>
+<td>finite gap requires a new canonical derivation, likely non-Abelian/multiplet</td>
+</tr>
+<tr>
+<td><strong>C</strong></td>
+<td>no TNFR-internal mass-gap analogue survives canonical constraints</td>
+</tr>
+</tbody>
+</table>
+<p>Current Y5 result: <strong>a pre-branch finite diagnostic surface plus the Branch-B
+obstruction at Clay-strength scope</strong>. Branch A remains unestablished: Y1–Y4 do
+not evolve an independent connection, apply a genuine two-state U6 condition,
+or derive their positive finite gap from canonical nodal dynamics.</p>
+<hr />
+<h2 id="7-acceptance-criteria">7. Acceptance Criteria<a class="headerlink" href="#7-acceptance-criteria" title="Permanent link">&para;</a></h2>
+<p>Any claimed TNFR–Yang–Mills result must satisfy:</p>
+<ol>
+<li><strong>Nodal derivability</strong> — every term traces to <code>∂EPI/∂t = νf · ΔNFR(t)</code> or canonical tetrad telemetry.</li>
+<li><strong>Operator discipline</strong> — no EPI mutation outside the 13 canonical operators.</li>
+<li><strong>Grammar compliance</strong> — U1–U6 constraints are checked or explicitly scoped.</li>
+<li><strong>Auxiliary U(1) covariance</strong> — the reported finite spectrum must be invariant under the paired <code>Ψ → e^{iα}Ψ</code>, <code>A → A+dα</code> analysis transformation, or any dependence must be classified as a diagnostic failure; this check is not an engine symmetry theorem.</li>
+<li><strong>Declared coefficients</strong> — every diagnostic weight and normalization is recorded; promotion to a canonical constant requires a nodal-dynamics derivation.</li>
+<li><strong>Reproducibility</strong> — graph family, seed, spectra, thresholds, and residuals are recorded.</li>
+<li><strong>Scope honesty</strong> — finite TNFR gap results are not called a Clay proof unless non-Abelian existence and continuum scaling are addressed rigorously.</li>
+</ol>
+<hr />
+<h2 id="8-immediate-next-step">8. Immediate Next Step<a class="headerlink" href="#8-immediate-next-step" title="Permanent link">&para;</a></h2>
+<p>The next research target is <strong>Y6 / Branch-B derivation search</strong>: first derive an independent TNFR edge degree of freedom that can carry nonzero cycle holonomy, then determine whether it supports a TNFR-native non-Abelian connection and non-commuting generator algebra from the nodal equation, nested EPI structure, and canonical operator histories. If such a derivation cannot be found without external group labels, the Yang–Mills programme should remain paused at Branch B rather than extending finite diagnostics indefinitely.</p>
+<p>The programme begins from TNFR's own structural dynamics.  External Yang–Mills terminology is used only to name the comparison problem and to define the mass-gap target surface.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

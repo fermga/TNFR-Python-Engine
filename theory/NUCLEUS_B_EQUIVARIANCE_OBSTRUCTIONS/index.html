@@ -1,0 +1,1852 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Nucleus B — Equivariance Obstructions to Spectral RH Approaches on Prime-Path Graphs - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nucleus-b-equivariance-obstructions-to-spectral-rh-approaches-on-prime-path-graphs" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Nucleus B — Equivariance Obstructions to Spectral RH Approaches on Prime-Path Graphs
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-thesis-one-sentence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Thesis (one sentence)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-why-this-might-be-new-subject-to-bibliographic-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Why this might be new (subject to bibliographic audit)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-asset-inventory-what-we-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Asset inventory (what we have)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Asset inventory (what we have)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-foundational-lemmas-proven-source-auditable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Foundational lemmas (proven, source-auditable)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-closed-candidates-negative-results-f7-a-diagnostic-when-numerical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Closed candidates (negative results, F7-A diagnostic when numerical)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-proposed-external-paper-structure-draft-2535-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Proposed external paper structure (draft, ~25–35 pages)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Proposed external paper structure (draft, ~25–35 pages)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#section-outline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Section outline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-appendices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required appendices
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-translation-work-tnfr-standard-vocabulary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Translation work (TNFR → standard vocabulary)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-required-bibliographic-audit-before-submission" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Required bibliographic audit (before submission)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Required bibliographic audit (before submission)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-spectral-approaches-to-rh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Spectral approaches to RH
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-spectral-graph-theory-and-equivariance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Spectral graph theory and equivariance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-prime-indexed-graphs-specifically" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Prime-indexed graphs specifically
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-equivariant-operator-theory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Equivariant operator theory
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-risk-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Risk assessment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-effort-estimate-honest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Effort estimate (honest)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-decision-needed-from-author" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Decision needed from author
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-cross-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Cross-references
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="nucleus-b-equivariance-obstructions-to-spectral-rh-approaches-on-prime-path-graphs">Nucleus B — Equivariance Obstructions to Spectral RH Approaches on Prime-Path Graphs<a class="headerlink" href="#nucleus-b-equivariance-obstructions-to-spectral-rh-approaches-on-prime-path-graphs" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: Organisation plan for potential external publication. NOT a finished paper.
+<strong>Date</strong>: May 27, 2026.
+<strong>Authority</strong>: Subordinate to <a href="../TNFR_RIEMANN_RESEARCH_NOTES/">TNFR_RIEMANN_RESEARCH_NOTES.md §13sexagesima-{tertia..novena}</a>.</p>
+<hr />
+<h2 id="1-thesis-one-sentence">1. Thesis (one sentence)<a class="headerlink" href="#1-thesis-one-sentence" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><em>On the prime-path graph $G_{P14}$ and a wide class of canonical extensions, every operator built by elementary categorical graph operations and graph-uniform parameter rules commutes with the natural $S_n$ prime-relabelling action, and therefore cannot encode the prime-specific information ($\log p_i$) required to reach the oscillatory residue $S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$ that is RH-equivalent.</em></p>
+</blockquote>
+<p>This is a <strong>structural no-go theorem</strong> for a specific class of constructions. It does <strong>not</strong> say RH is false, and it does <strong>not</strong> rule out spectral approaches in general (e.g. Connes' adelic construction lives outside this class). It says: <em>within this well-defined class, the route is closed</em>.</p>
+<hr />
+<h2 id="2-why-this-might-be-new-subject-to-bibliographic-audit">2. Why this might be new (subject to bibliographic audit)<a class="headerlink" href="#2-why-this-might-be-new-subject-to-bibliographic-audit" title="Permanent link">&para;</a></h2>
+<p>The class of constructions covered is well-known to mainstream literature (graph automorphism + parameter-uniform spectral graph theory), and individual instances of the obstruction have certainly been observed informally. What seems to <strong>not</strong> be in the literature is:</p>
+<ol>
+<li><strong>A unified statement</strong> spanning edge-channel composition, spectral-channel tensor lifts, augmented graphs with $S_n$-invariant weight laws, line graphs, principal $S^1$-bundles, and Kronecker products — all reduced to two source-auditable facts (parameter uniformity + Prime-Cancellation Lemma).</li>
+<li><strong>The explicit connection</strong> to RH via the precise identification of $S(T)$ as the structural residue living in $\mathrm{Fix}(S_n)^\perp$.</li>
+<li><strong>The CCET methodology</strong> (Canonical Catalog Equivariance Theorem) as a closure protocol: given a finite operator catalog and a base graph with non-trivial automorphism group, decide which constructions are reachable and which are blocked.</li>
+</ol>
+<p><strong>This must be audited before claiming novelty.</strong> Required reading list in §6.</p>
+<hr />
+<h2 id="3-asset-inventory-what-we-have">3. Asset inventory (what we have)<a class="headerlink" href="#3-asset-inventory-what-we-have" title="Permanent link">&para;</a></h2>
+<p>All from §13sexagesima-{tertia..novena} of the research notes. Listed in dependency order.</p>
+<h3 id="31-foundational-lemmas-proven-source-auditable">3.1 Foundational lemmas (proven, source-auditable)<a class="headerlink" href="#31-foundational-lemmas-proven-source-auditable" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Lemma</th>
+<th>Location</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fact A — Parameter Uniformity</strong></td>
+<td>source audit at <a href="../../src/tnfr/operators/remesh.py">src/tnfr/operators/remesh.py:1159, 1212–1252</a>, <a href="../../src/tnfr/operators/coherence.py">coherence.py</a>, <a href="../../src/tnfr/dynamics/propagation.py">propagation.py:42–156</a>, <a href="../../src/tnfr/operators/self_organization.py">self_organization.py:21–22, 44, 53</a></td>
+<td>Every canonical operator's coupling constants are graph-level scalars (no per-node parameters)</td>
+</tr>
+<tr>
+<td><strong>Fact B — Prime-Cancellation Lemma</strong></td>
+<td>§13vicies-novies.11</td>
+<td>On $G_{P14}$, every edge-propagating canonical operator decomposes as $I_{n_\text{primes}} \otimes O_{P_4}$ with prime-independent kernel</td>
+</tr>
+<tr>
+<td><strong>Euler-Orthogonality Lemma</strong></td>
+<td>§13vicies-novies.11</td>
+<td>Catalog-wide edge-channel compositions on $G_{P14}$ commute with $S_n$</td>
+</tr>
+<tr>
+<td><strong>CCET on $G_{P14}$</strong> (Theorem 2, §13vicies-novies.16)</td>
+<td>§13vicies-novies</td>
+<td>Every operator built from the 13 canonical operators by composition / real-linear combination / auxiliary tensor lift / spectral functional calculus on $G_{P14}$ commutes with $\Pi_\sigma \otimes I_\text{aux}$</td>
+</tr>
+<tr>
+<td><strong>Tetrad-Fix($S_n$) Lemma</strong></td>
+<td>§13sexagesima-octava.3</td>
+<td>On $G_{P14}$ with graph-uniform canonical parameters, every tetrad component and every emergent field lives entirely in $\mathrm{Fix}(S_n)$</td>
+</tr>
+<tr>
+<td><strong>CCET-ext</strong></td>
+<td>§13sexagesima-octava.4</td>
+<td>Extension to UM/IL/THOL composites lifted canonically to $\mathcal{H}<em P14="P14">\text{ext} = \mathcal{H}</em>$} \oplus \bigoplus_v \mathcal{H}_v^\text{sub</td>
+</tr>
+<tr>
+<td><strong>Canonical Product Equivariance Lemma</strong></td>
+<td>§13sexagesima-quinta.3</td>
+<td>Tensor-product / Kronecker-sum lifts inherit equivariance</td>
+</tr>
+<tr>
+<td><strong>Line-Graph Equivariance Lemma</strong></td>
+<td>§13sexagesima-novena.2</td>
+<td>Equivariance survives transition to $L(G_{P14})$; orbit-invariance collapses to non-prime-distinguishing</td>
+</tr>
+<tr>
+<td><strong>Lifted-Bundle Dichotomy Lemma</strong></td>
+<td>§13sexagesima-novena.4</td>
+<td>Principal $S^1$-bundles on $G_{P14}$: either $S_n$-invariant connection (C4 FAIL) or non-invariant (requires external prime-pair rule, C1'-β FAIL)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-closed-candidates-negative-results-f7-a-diagnostic-when-numerical">3.2 Closed candidates (negative results, F7-A diagnostic when numerical)<a class="headerlink" href="#32-closed-candidates-negative-results-f7-a-diagnostic-when-numerical" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Location</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R∞-1a-operator (REMESH iterated)</td>
+<td>§13vicies-novies.8</td>
+<td>Refuted (structural + empirical)</td>
+</tr>
+<tr>
+<td>R∞-1a-composed (REMESH ∘ IL)</td>
+<td>§13vicies-novies.9</td>
+<td>Refuted (structural + empirical)</td>
+</tr>
+<tr>
+<td>R∞-1c (augmented graph)</td>
+<td>§13vicies-novies.12–13</td>
+<td><code>INDETERMINATE_DEGENERATE_CONSTRUCTION</code>, $|D_\text{can} - D_\text{shuf}| = 3.13 \times 10^{-13}$</td>
+</tr>
+<tr>
+<td>R∞-1b (canonical tensor-product spectral lift)</td>
+<td>§13vicies-novies.14–15</td>
+<td><code>INDETERMINATE_DEGENERATE_CONSTRUCTION</code>, $|D_\text{can} - D_\text{shuf}| = 1.08 \times 10^{-13}$</td>
+</tr>
+<tr>
+<td>Q1 = $G_{P14} \square G_{P14}$ (Cartesian)</td>
+<td>§13sexagesima-quinta</td>
+<td><code>INDETERMINATE_DEGENERATE_CONSTRUCTION</code>, exact zero</td>
+</tr>
+<tr>
+<td>Q2 = $G_{P14} \times G_{P14}$ (tensor)</td>
+<td>§13sexagesima-quinta</td>
+<td><code>INDETERMINATE_DEGENERATE_CONSTRUCTION</code>, exact zero</td>
+</tr>
+<tr>
+<td>Q3 (disjoint union)</td>
+<td>§13sexagesima-quinta</td>
+<td>Implicit closure by Canonical Product Equivariance Lemma</td>
+</tr>
+<tr>
+<td>Q4 ($S_n$-non-invariant quotient)</td>
+<td>§13sexagesima-quinta</td>
+<td>C1'-α FAIL</td>
+</tr>
+<tr>
+<td>Q5 = $L(G_{P14})$ (line graph)</td>
+<td>§13sexagesima-novena.3</td>
+<td>C4 FAIL by Line-Graph Equivariance + $S_n$-transitivity</td>
+</tr>
+<tr>
+<td>Q6 ($S_n$-invariant induced subgraph)</td>
+<td>§13sexagesima-quinta</td>
+<td>Implicit closure</td>
+</tr>
+<tr>
+<td>E2 LiftedCircleBundleOnPhi</td>
+<td>§13sexagesima-novena.5</td>
+<td>Both branches fail (Lifted-Bundle Dichotomy)</td>
+</tr>
+<tr>
+<td>UM/IL/THOL emergent sub-EPI route</td>
+<td>§13sexagesima-octava</td>
+<td>C4 FAIL via Tetrad-Fix($S_n$) Lemma</td>
+</tr>
+<tr>
+<td>P1 = E0 Pontryagin-dual νf measure</td>
+<td>§13sexagesima-sexta</td>
+<td>C1 NOT-DERIVED; C4 FAIL</td>
+</tr>
+<tr>
+<td>P2 = NodeIndexedCouplingWeights</td>
+<td>§13sexagesima-sexta</td>
+<td>C1 FAIL at slot level</td>
+</tr>
+<tr>
+<td>Dirección A (carrier-type promotion of ΔNFR)</td>
+<td>§13sexagesima-septima</td>
+<td>A1 FAIL, A2 CLOSED, A3 SUPERSEDED</td>
+</tr>
+</tbody>
+</table>
+<p>This is a substantial body of evidence: roughly <strong>15 distinct construction families closed</strong>, all reducing to the same two structural facts.</p>
+<hr />
+<h2 id="4-proposed-external-paper-structure-draft-2535-pages">4. Proposed external paper structure (draft, ~25–35 pages)<a class="headerlink" href="#4-proposed-external-paper-structure-draft-2535-pages" title="Permanent link">&para;</a></h2>
+<p>Working title (no TNFR vocabulary):</p>
+<blockquote>
+<p><em>Permutation Equivariance Obstructions to Spectral Approaches to the Riemann Hypothesis on Prime-Path Graphs</em></p>
+</blockquote>
+<h3 id="section-outline">Section outline<a class="headerlink" href="#section-outline" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Introduction</strong> (~3 pages)</li>
+<li>Spectral approaches to RH: Hilbert–Pólya, Berry–Keating, Connes, Meyer</li>
+<li>Prime-indexed Hamiltonians (P14 as motivation; cite Nucleus A internal report)</li>
+<li>Weil–Guinand explicit formula as the natural target</li>
+<li>Smooth/oscillatory decomposition; $S(T)$ as the RH-equivalent residue</li>
+<li>
+<p><strong>Thesis</strong>: a wide class of natural constructions cannot reach $S(T)$</p>
+</li>
+<li>
+<p><strong>The setting</strong> (~3 pages)</p>
+</li>
+<li>Prime-path graph $G_n$ on $n$ primes</li>
+<li>Natural $S_n$ action by prime relabelling</li>
+<li>$\mathrm{Fix}(S_n)$ vs $\mathrm{Fix}(S_n)^\perp$ on $L^2(V(G_n))$ and tensor lifts</li>
+<li>
+<p>Self-adjoint operator with prime-ladder spectrum (analogue of P14, stripped of TNFR vocabulary)</p>
+</li>
+<li>
+<p><strong>The construction class</strong> (~2 pages)</p>
+</li>
+<li>Finite operator catalog $\mathcal{O}$ with graph-uniform parameters</li>
+<li>Closure operations: composition, real-linear combination, tensor lift, spectral functional calculus</li>
+<li>Elementary categorical graph operations: disjoint union, Cartesian product, tensor product, strong product, line graph, subdivision, induced subgraph, quotient</li>
+<li>
+<p>Principal $S^1$-bundles with graph-uniform connection</p>
+</li>
+<li>
+<p><strong>Main theorem</strong> (~5 pages)</p>
+</li>
+<li><strong>Equivariance Theorem</strong>: every operator in the closure class commutes with the natural $S_n$ action (on $V(G_n)$, on $E(G_n)$ via the line graph, or on the total space of the bundle)</li>
+<li>
+<p>Proof reduces to two facts: parameter uniformity (axiomatic for the class) + Prime-Cancellation Lemma (combinatorial)</p>
+</li>
+<li>
+<p><strong>Corollary</strong> (~3 pages)</p>
+</li>
+<li><strong>Obstruction Corollary</strong>: no operator in the closure class can distinguish $\log p_i$ from $\log p_{\sigma(i)}$ for any $\sigma \in S_n$</li>
+<li>
+<p>Hence: spectral data of any such operator is invariant under prime relabelling, hence cannot encode the prime-specific phase information required to reproduce $S(T)$</p>
+</li>
+<li>
+<p><strong>Explicit no-go instances</strong> (~5 pages)</p>
+</li>
+<li>Line graph $L(G_n)$ (corresponds to Q5)</li>
+<li>Cartesian / tensor / strong products $G_n \square G_n$, $G_n \times G_n$ (Q1/Q2/Q4)</li>
+<li>Principal $S^1$-bundles (E2)</li>
+<li>Augmented graphs with $S_n$-invariant weight laws (R∞-1c)</li>
+<li>
+<p>Tensor-product spectral lifts (R∞-1b)</p>
+</li>
+<li>
+<p><strong>What is NOT covered</strong> (~2 pages, important for honest framing)</p>
+</li>
+<li>Non-graph-uniform parameters (genuinely prime-specific rules — requires external input not derivable from the bare catalog)</li>
+<li>Adelic constructions à la Connes (different category entirely)</li>
+<li>Constructions on a fundamentally different base object (not $G_n$ or its categorical neighbourhood)</li>
+<li>
+<p>Off-<code>G_P14</code> canonical constructions: each requires its own derivation</p>
+</li>
+<li>
+<p><strong>Discussion and open questions</strong> (~2 pages)</p>
+</li>
+<li>Where can prime-specific phase information enter without violating parameter uniformity?</li>
+<li>Relationship to the explicit formula and to the Mertens / Selberg trace formula approaches</li>
+<li>Possible connection to Burnol's adelic Hilbert space</li>
+</ol>
+<h3 id="required-appendices">Required appendices<a class="headerlink" href="#required-appendices" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Appendix A</strong>: source audit for parameter uniformity (in TNFR canonical implementation; can be presented abstractly)</li>
+<li><strong>Appendix B</strong>: full proof of Prime-Cancellation Lemma</li>
+<li><strong>Appendix C</strong>: F7-A diagnostic methodology and numerical results for the closed candidates</li>
+</ul>
+<hr />
+<h2 id="5-translation-work-tnfr-standard-vocabulary">5. Translation work (TNFR → standard vocabulary)<a class="headerlink" href="#5-translation-work-tnfr-standard-vocabulary" title="Permanent link">&para;</a></h2>
+<p>A glossary for the translation, in dependency order.</p>
+<table>
+<thead>
+<tr>
+<th>TNFR term</th>
+<th>Standard analogue</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Canonical 13-operator catalog</td>
+<td>Finite operator family with graph-uniform parameters</td>
+<td>Drop the count; emphasise <em>parameter uniformity</em>, not the specific 13</td>
+</tr>
+<tr>
+<td>Tetrad $(\Phi_s, |\nabla\varphi|, K_\varphi, \xi_C)$</td>
+<td>Graph-Laplacian-derived feature vector</td>
+<td>Optional; the obstruction does not depend on the tetrad</td>
+</tr>
+<tr>
+<td>ΔNFR</td>
+<td>Discrete graph Laplacian acting on a scalar field</td>
+<td>Standard</td>
+</tr>
+<tr>
+<td>νf</td>
+<td>Coupling rate / eigenfrequency parameter</td>
+<td>Standard</td>
+</tr>
+<tr>
+<td>EPI</td>
+<td>State vector on $L^2(V(G_n))$ or its tensor lifts</td>
+<td>Standard</td>
+</tr>
+<tr>
+<td>U1–U6 grammar</td>
+<td>Admissible-sequence constraints</td>
+<td>Mostly not needed in the no-go; can be relegated to a footnote</td>
+</tr>
+<tr>
+<td>CCET</td>
+<td>"Catalog-class Equivariance Theorem"</td>
+<td>Rename for external audience</td>
+</tr>
+<tr>
+<td>Fix($S_n$) / Fix($S_n$)$^\perp$</td>
+<td>Invariant / coinvariant subspace under the symmetric group action</td>
+<td>Standard rep theory</td>
+</tr>
+<tr>
+<td><code>INDETERMINATE_DEGENERATE_CONSTRUCTION</code></td>
+<td>Spectral data invariant under shuffle to within machine precision</td>
+<td>Reframe as "numerical confirmation of the equivariance theorem"</td>
+</tr>
+<tr>
+<td>F7-A diagnostic</td>
+<td>Numerical equivariance test</td>
+<td>Standard</td>
+</tr>
+<tr>
+<td>T-HP, G4, B0★/B1/B2/B3, §13septies trichotomy</td>
+<td>Drop entirely</td>
+<td>Internal program structure, not part of the mathematical statement</td>
+</tr>
+<tr>
+<td>P14, P28, P30, P12–P49</td>
+<td>Drop in the main paper; cite as "the prime-ladder Hamiltonian construction of (internal reference / preprint)"</td>
+<td>Keep in an internal preprint or in Nucleus A external version</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-required-bibliographic-audit-before-submission">6. Required bibliographic audit (before submission)<a class="headerlink" href="#6-required-bibliographic-audit-before-submission" title="Permanent link">&para;</a></h2>
+<p>The novelty claim <strong>depends on</strong> confirming the unified statement does not already exist. Required reading and explicit comparison:</p>
+<h3 id="61-spectral-approaches-to-rh">6.1 Spectral approaches to RH<a class="headerlink" href="#61-spectral-approaches-to-rh" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Berry, M. V., &amp; Keating, J. P.</strong> — "The Riemann zeros and eigenvalue asymptotics" (SIAM Rev. 1999) and follow-ups. Their $xp$-Hamiltonian conjecture.</li>
+<li><strong>Connes, A.</strong> — "Trace formula in noncommutative geometry and the zeros of the Riemann zeta function" (Selecta Math. 1999). Adelic construction.</li>
+<li><strong>Meyer, R.</strong> — "On a representation of the idele class group related to primes and zeros of L-functions" (Duke Math. J. 2005).</li>
+<li><strong>Burnol, J.-F.</strong> — work on the Hilbert space of the explicit formula.</li>
+<li><strong>Bombieri, E., &amp; Lagarias, J. C.</strong> — "Complements to Li's criterion for the Riemann hypothesis" (J. Number Theory 1999).</li>
+<li><strong>Sarnak, P.</strong> — survey articles on the Riemann zeta function and random matrix theory.</li>
+</ul>
+<h3 id="62-spectral-graph-theory-and-equivariance">6.2 Spectral graph theory and equivariance<a class="headerlink" href="#62-spectral-graph-theory-and-equivariance" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Chung, F. R. K.</strong> — <em>Spectral Graph Theory</em> (CBMS 1997).</li>
+<li><strong>Bannai, E., &amp; Ito, T.</strong> — <em>Algebraic Combinatorics I</em> (1984).</li>
+<li><strong>Godsil, C., &amp; Royle, G.</strong> — <em>Algebraic Graph Theory</em> (2001).</li>
+<li><strong>Babai, L.</strong> — work on graph automorphism and the Weisfeiler–Leman algorithm.</li>
+</ul>
+<h3 id="63-prime-indexed-graphs-specifically">6.3 Prime-indexed graphs specifically<a class="headerlink" href="#63-prime-indexed-graphs-specifically" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Literature on <strong>prime graphs</strong> (a separate, group-theoretic notion — clarify it is <em>not</em> the same object).</li>
+<li>Recent work on <strong>Cayley graphs of $(\mathbb{Z}/p\mathbb{Z})^*$</strong> and related spectral structures.</li>
+</ul>
+<h3 id="64-equivariant-operator-theory">6.4 Equivariant operator theory<a class="headerlink" href="#64-equivariant-operator-theory" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Any text on representations of the symmetric group acting on tensor lifts of graph-theoretic Hilbert spaces.</li>
+<li>Schur–Weyl-type decompositions relevant to the Kronecker constructions (Q1/Q2).</li>
+</ul>
+<p><strong>Audit outcome will determine paper viability</strong>: if the unified statement is already in the literature in any form, the paper either pivots to (a) a survey, (b) an explicit catalog of no-go instances framed as a corollary, or (c) is shelved entirely.</p>
+<hr />
+<h2 id="7-risk-assessment">7. Risk assessment<a class="headerlink" href="#7-risk-assessment" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Likelihood</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unified statement already published</td>
+<td>Medium-high</td>
+<td>Audit (§6); if confirmed, reframe as expository / corollary</td>
+</tr>
+<tr>
+<td>Individual obstructions are folklore</td>
+<td>High</td>
+<td>Acknowledge openly; novelty is the unification + RH connection</td>
+</tr>
+<tr>
+<td>Reviewer demands proof of RH</td>
+<td>Low (with honest framing)</td>
+<td>Title / abstract explicitly limit scope: "obstructions to a class of approaches"</td>
+</tr>
+<tr>
+<td>Reviewer dismisses as "negative result"</td>
+<td>Medium</td>
+<td>Cite precedent (Razborov–Rudich, Aaronson–Wigderson natural-proofs barriers in complexity theory)</td>
+</tr>
+<tr>
+<td>TNFR vocabulary leaks into the paper</td>
+<td>High during drafting</td>
+<td>Apply translation glossary (§5) at every revision pass</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-effort-estimate-honest">8. Effort estimate (honest)<a class="headerlink" href="#8-effort-estimate-honest" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Effort</th>
+<th>Deliverable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bibliographic audit</td>
+<td>2–4 weeks</td>
+<td>Annotated reading list with explicit comparisons</td>
+</tr>
+<tr>
+<td>First draft (sections 1–5)</td>
+<td>3–4 weeks</td>
+<td>Self-contained statement + proof</td>
+</tr>
+<tr>
+<td>First draft (sections 6–8 + appendices)</td>
+<td>2–3 weeks</td>
+<td>Worked examples + source audit</td>
+</tr>
+<tr>
+<td>Internal review + translation pass</td>
+<td>2 weeks</td>
+<td>TNFR-free manuscript</td>
+</tr>
+<tr>
+<td>External preprint (arXiv)</td>
+<td>1 week</td>
+<td>Submission</td>
+</tr>
+<tr>
+<td>Journal submission + revisions</td>
+<td>6–12 months</td>
+<td>Published version</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total to arXiv</strong>: ~3 months of focused work.
+<strong>Total to journal acceptance</strong>: ~12–18 months.</p>
+<hr />
+<h2 id="9-decision-needed-from-author">9. Decision needed from author<a class="headerlink" href="#9-decision-needed-from-author" title="Permanent link">&para;</a></h2>
+<p>Three plausible paths (recommend choosing one before drafting):</p>
+<ol>
+<li><strong>Audit-first</strong> (recommended): spend 2–4 weeks on §6 before any drafting. If the unified statement is already published, pivot or shelve.</li>
+<li><strong>Draft-first</strong>: write the §4 outline assuming novelty, audit in parallel. Risk: wasted writing if §6 turns up a duplicate.</li>
+<li><strong>Internal-only</strong>: keep Nucleus B as internal documentation (this file + the existing §13sexagesima-<em> notes) and do not pursue external publication. This is the </em><em>honest, low-risk default</em>* if the bibliographic audit is not undertaken.</li>
+</ol>
+<hr />
+<h2 id="10-cross-references">10. Cross-references<a class="headerlink" href="#10-cross-references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../NUCLEUS_A_PRIME_LADDER_ATLAS/">NUCLEUS_A_PRIME_LADDER_ATLAS.md</a> — companion internal atlas for P12–P30</li>
+<li><a href="../TNFR_RIEMANN_RESEARCH_NOTES/">TNFR_RIEMANN_RESEARCH_NOTES.md §13sexagesima-{tertia..novena}</a> — full derivations of every lemma cited above</li>
+<li><a href="../TNFR_RIEMANN_RESEARCH_NOTES/">TNFR_RIEMANN_RESEARCH_NOTES.md §13septies</a> — T-HP statement and B0★/B1/B2/B3 trichotomy context</li>
+<li><a href="../REMESH_INFINITY_DERIVATION/">REMESH_INFINITY_DERIVATION.md</a> — fixed-delay surrogate analysis; the literal $\tau_g\to\infty$ operator and any range/kernel identification with the smooth or oscillatory terms remain open</li>
+<li><a href="../../AGENTS/">AGENTS.md</a> §"TNFR-Riemann Program Overview" — top-level program status</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

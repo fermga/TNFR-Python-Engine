@@ -1,0 +1,2341 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/SECURITY/">
+      
+      
+        <link rel="prev" href="../CONTRIBUTING/">
+      
+      
+        <link rel="next" href="../WORKFLOWS/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Security - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#security-policy" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Security
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../theory/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#supported-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Versions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reporting-a-vulnerability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reporting a Vulnerability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reporting a Vulnerability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-report-a-security-vulnerability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Report a Security Vulnerability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#response-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response Timeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disclosure-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disclosure Policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-best-practices-for-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Best Practices for Users
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Best Practices for Users">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sql-injection-prevention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SQL Injection Prevention
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secret-and-credential-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secret and Credential Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pickle-serialization-warning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pickle Serialization Warning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secure-cache-configuration-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secure Cache Configuration (Recommended)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Secure Cache Configuration (Recommended)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-start-with-secure-caches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start with Secure Caches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-hmac-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual HMAC Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hardened-cache-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardened Cache Signatures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migration-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration Guide
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependency-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dependency Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pip-audit-automated-dependency-vulnerability-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pip-audit: Automated Dependency Vulnerability Scanning
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#static-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tnfr-structural-integrity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TNFR Structural Integrity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#domain-neutrality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain Neutrality
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known Security Considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Known Security Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documented-pickle-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documented Pickle Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#excluded-security-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Excluded Security Checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-update-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Update Policy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#attribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attribution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#supported-versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Versions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reporting-a-vulnerability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reporting a Vulnerability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reporting a Vulnerability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-report-a-security-vulnerability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Report a Security Vulnerability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#response-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response Timeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disclosure-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disclosure Policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-best-practices-for-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Best Practices for Users
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Best Practices for Users">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sql-injection-prevention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SQL Injection Prevention
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secret-and-credential-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secret and Credential Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pickle-serialization-warning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pickle Serialization Warning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secure-cache-configuration-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secure Cache Configuration (Recommended)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Secure Cache Configuration (Recommended)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-start-with-secure-caches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start with Secure Caches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-hmac-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual HMAC Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hardened-cache-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardened Cache Signatures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migration-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Migration Guide
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependency-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dependency Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pip-audit-automated-dependency-vulnerability-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pip-audit: Automated Dependency Vulnerability Scanning
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#static-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tnfr-structural-integrity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TNFR Structural Integrity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#domain-neutrality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain Neutrality
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known Security Considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Known Security Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documented-pickle-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documented Pickle Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#excluded-security-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Excluded Security Checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-update-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Update Policy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#attribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attribution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="security-policy">Security Policy<a class="headerlink" href="#security-policy" title="Permanent link">&para;</a></h1>
+<h2 id="supported-versions">Supported Versions<a class="headerlink" href="#supported-versions" title="Permanent link">&para;</a></h2>
+<p>We release patches for security vulnerabilities in the following versions:</p>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.x.x</td>
+<td>:white_check_mark:</td>
+</tr>
+<tr>
+<td>&lt; 1.0</td>
+<td>:x:</td>
+</tr>
+</tbody>
+</table>
+<h2 id="reporting-a-vulnerability">Reporting a Vulnerability<a class="headerlink" href="#reporting-a-vulnerability" title="Permanent link">&para;</a></h2>
+<p>The TNFR Python Engine team takes security vulnerabilities seriously. We appreciate your efforts to responsibly disclose your findings and will make every effort to acknowledge your contributions.</p>
+<h3 id="how-to-report-a-security-vulnerability">How to Report a Security Vulnerability<a class="headerlink" href="#how-to-report-a-security-vulnerability" title="Permanent link">&para;</a></h3>
+<p><strong>Please do not report security vulnerabilities through public GitHub issues.</strong></p>
+<p>Instead, please report them via one of the following methods:</p>
+<ol>
+<li><strong>GitHub Security Advisories</strong>: Use the <a href="https://github.com/fermga/TNFR-Python-Engine/security/advisories/new">Security Advisory</a> feature (preferred)</li>
+<li><strong>Email</strong>: Contact the maintainers directly (check repository for current contact)</li>
+</ol>
+<p>Please include the following information in your report:</p>
+<ul>
+<li>Type of vulnerability</li>
+<li>Full paths of source file(s) related to the manifestation of the vulnerability</li>
+<li>The location of the affected source code (tag/branch/commit or direct URL)</li>
+<li>Step-by-step instructions to reproduce the vulnerability</li>
+<li>Proof-of-concept or exploit code (if possible)</li>
+<li>Impact of the vulnerability, including how an attacker might exploit it</li>
+</ul>
+<h3 id="response-timeline">Response Timeline<a class="headerlink" href="#response-timeline" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Initial Response</strong>: Within 48 hours of report submission</li>
+<li><strong>Status Update</strong>: Within 7 days with assessment and potential timeline</li>
+<li><strong>Resolution</strong>: Varies by severity; critical issues prioritized</li>
+</ul>
+<h3 id="disclosure-policy">Disclosure Policy<a class="headerlink" href="#disclosure-policy" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Security vulnerabilities will be coordinated with reporters before public disclosure</li>
+<li>We aim to patch critical vulnerabilities within 30 days</li>
+<li>Public disclosure will occur after patch is released and users have time to update</li>
+</ul>
+<h2 id="security-best-practices-for-users">Security Best Practices for Users<a class="headerlink" href="#security-best-practices-for-users" title="Permanent link">&para;</a></h2>
+<h3 id="sql-injection-prevention">SQL Injection Prevention<a class="headerlink" href="#sql-injection-prevention" title="Permanent link">&para;</a></h3>
+<p><strong>TNFR provides proactive SQL injection prevention utilities:</strong></p>
+<p>The TNFR engine currently uses in-memory NetworkX graphs and file-based persistence (JSON, YAML, Pickle). While no SQL databases are currently used, the codebase includes comprehensive SQL injection prevention utilities for future database functionality.</p>
+<p><strong>Security Utilities Available:</strong></p>
+<pre><code class="language-python">from tnfr.security import (
+    SecureQueryBuilder,
+    validate_identifier,
+    sanitize_string_input,
+    validate_nodal_input,
+)
+
+# Always use parameterized queries
+builder = SecureQueryBuilder()
+query, params = builder.select(&quot;nfr_nodes&quot;, [&quot;id&quot;, &quot;nu_f&quot;, &quot;phase&quot;])\
+    .where(&quot;nu_f &gt; ?&quot;, 0.5)\
+    .order_by(&quot;nu_f&quot;, &quot;DESC&quot;)\
+    .build()
+
+# Validate all identifiers (table/column names)
+table_name = validate_identifier(&quot;nfr_nodes&quot;)
+column_name = validate_identifier(&quot;nu_f&quot;)
+
+# Sanitize string inputs
+user_input = sanitize_string_input(user_provided_data, max_length=1000)
+
+# Validate TNFR structural data before persistence
+node_data = validate_nodal_input({
+    &quot;nu_f&quot;: 0.75,
+    &quot;phase&quot;: 1.57,
+    &quot;coherence&quot;: 0.85,
+})
+</code></pre>
+<p><strong>Security Principles:</strong></p>
+<ol>
+<li><strong>Parameterized Queries</strong>: Always use placeholders (?, :name) for values</li>
+<li><strong>Identifier Validation</strong>: Validate table/column names against whitelist pattern</li>
+<li><strong>No String Concatenation</strong>: Never build queries with f-strings or + operators</li>
+<li><strong>Input Sanitization</strong>: Validate and sanitize all user inputs</li>
+<li><strong>TNFR Structural Validation</strong>: Ensure structural frequency, phase, and coherence values are valid</li>
+</ol>
+<p><strong>Example of Safe vs Unsafe Patterns:</strong></p>
+<pre><code class="language-python"># ❌ UNSAFE: Never do this!
+# query = f&quot;SELECT * FROM nfr_nodes WHERE id = {user_input}&quot;
+
+# ✓ SAFE: Use parameterized queries
+builder = SecureQueryBuilder()
+query, params = builder.select(&quot;nfr_nodes&quot;)\
+    .where(&quot;id = ?&quot;, user_input)\
+    .build()
+# Execute: cursor.execute(query, params)
+</code></pre>
+<h3 id="secret-and-credential-management">Secret and Credential Management<a class="headerlink" href="#secret-and-credential-management" title="Permanent link">&para;</a></h3>
+<p><strong>TNFR follows strict security practices to prevent hardcoded secrets:</strong></p>
+<ol>
+<li><strong>No Hardcoded Secrets</strong>: All API keys, passwords, tokens, and credentials are loaded from environment variables</li>
+<li><strong>Environment Variables</strong>: Use <code>.env</code> files for local development (never commit these!)</li>
+<li><strong>Configuration Template</strong>: Copy <code>.env.example</code> to <code>.env</code> and fill in your credentials</li>
+<li><strong>Secure Defaults</strong>: Development defaults are safe and non-functional placeholders</li>
+</ol>
+<p><strong>Environment Configuration:</strong></p>
+<pre><code class="language-bash"># Copy the example configuration
+cp .env.example .env
+
+# Edit .env with your actual credentials
+# This file is gitignored and will not be committed
+</code></pre>
+<p><strong>Using Configuration Utilities:</strong></p>
+<pre><code class="language-python">from tnfr.secure_config import (
+    load_pypi_credentials,
+    load_github_credentials,
+    load_redis_config,
+    get_cache_secret,
+)
+
+# Load credentials from environment
+pypi_creds = load_pypi_credentials()
+github_creds = load_github_credentials()
+redis_config = load_redis_config()
+
+# Get cache signing secret
+cache_secret = get_cache_secret()
+</code></pre>
+<p><strong>Security Best Practices:</strong></p>
+<ul>
+<li>Use API tokens instead of passwords (e.g., PyPI tokens, GitHub tokens)</li>
+<li>Rotate credentials regularly</li>
+<li>Use different credentials for development, staging, and production</li>
+<li>Store production secrets in secure secret management systems (AWS Secrets Manager, HashiCorp Vault, etc.)</li>
+<li>Grant minimal necessary permissions to all tokens</li>
+<li>Revoke tokens immediately if compromised</li>
+</ul>
+<p><strong>Automated Security Testing:</strong></p>
+<p>TNFR includes automated tests that scan for hardcoded secrets:
+- GitHub token detection
+- PyPI token detection
+- Suspicious long strings that might be secrets
+- Verification of <code>.env</code> in <code>.gitignore</code></p>
+<h3 id="pickle-serialization-warning">Pickle Serialization Warning<a class="headerlink" href="#pickle-serialization-warning" title="Permanent link">&para;</a></h3>
+<p>The TNFR engine uses Python's <code>pickle</code> module for caching complex TNFR structures (NetworkX graphs, EPIs, coherence states). <strong>Pickle can execute arbitrary code during deserialization.</strong></p>
+<p><strong>Important Security Considerations:</strong></p>
+<ol>
+<li><strong>ShelveCacheLayer</strong>: Only load shelf files from trusted sources</li>
+<li><strong>RedisCacheLayer</strong>: </li>
+<li>Use Redis authentication (AUTH command or ACL)</li>
+<li>Implement network access controls</li>
+<li>Use TLS for Redis connections</li>
+<li>Never cache untrusted user input</li>
+</ol>
+<p><strong>Security Warnings:</strong></p>
+<p>Starting from version 1.x, TNFR will emit <code>SecurityWarning</code> when cache layers are created without signature validation. To suppress these warnings in trusted environments, set:</p>
+<pre><code class="language-bash">export TNFR_ALLOW_UNSIGNED_PICKLE=1
+</code></pre>
+<h3 id="secure-cache-configuration-recommended">Secure Cache Configuration (Recommended)<a class="headerlink" href="#secure-cache-configuration-recommended" title="Permanent link">&para;</a></h3>
+<p>TNFR provides convenient helper functions to create secure cache layers with HMAC signature validation. <strong>This is the recommended approach for production deployments.</strong></p>
+<h4 id="quick-start-with-secure-caches">Quick Start with Secure Caches<a class="headerlink" href="#quick-start-with-secure-caches" title="Permanent link">&para;</a></h4>
+<pre><code class="language-python">from tnfr.utils import create_secure_shelve_layer, create_secure_redis_layer
+
+# Set your cache secret via environment variable (recommended)
+# export TNFR_CACHE_SECRET=&quot;your-secure-random-secret-key&quot;
+
+# Create secure cache layers (reads secret from environment)
+shelf_layer = create_secure_shelve_layer(&quot;coherence.db&quot;)
+redis_layer = create_secure_redis_layer()
+
+# Store and retrieve TNFR structures safely
+shelf_layer.store(&quot;nfr_state&quot;, {&quot;epi&quot;: [1.5, 2.3], &quot;theta&quot;: [0.1, 0.2]})
+restored = shelf_layer.load(&quot;nfr_state&quot;)
+</code></pre>
+<h4 id="environment-variables">Environment Variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>TNFR_CACHE_SECRET</code>: Secret key for HMAC signature validation (required for secure layers)</li>
+<li><code>TNFR_ALLOW_UNSIGNED_PICKLE</code>: Set to <code>1</code> to suppress security warnings for unsigned pickle usage</li>
+</ul>
+<h4 id="manual-hmac-configuration">Manual HMAC Configuration<a class="headerlink" href="#manual-hmac-configuration" title="Permanent link">&para;</a></h4>
+<p>For more control, you can use the HMAC helper functions:</p>
+<pre><code class="language-python">from tnfr.utils import (
+    create_hmac_signer,
+    create_hmac_validator,
+    ShelveCacheLayer,
+    RedisCacheLayer,
+)
+
+# Create HMAC signer and validator
+secret = b&quot;your-secure-secret-key&quot;
+signer = create_hmac_signer(secret)
+validator = create_hmac_validator(secret)
+
+# Create cache layers with signature validation
+shelf_layer = ShelveCacheLayer(
+    &quot;cache.db&quot;,
+    signer=signer,
+    validator=validator,
+    require_signature=True,
+)
+
+redis_layer = RedisCacheLayer(
+    namespace=&quot;tnfr:cache&quot;,
+    signer=signer,
+    validator=validator,
+    require_signature=True,
+)
+</code></pre>
+<h3 id="hardened-cache-signatures">Hardened Cache Signatures<a class="headerlink" href="#hardened-cache-signatures" title="Permanent link">&para;</a></h3>
+<p><code>ShelveCacheLayer</code> and <code>RedisCacheLayer</code> support payload signing to detect tampering in environments where cache files or Redis instances are not fully trusted.</p>
+<ul>
+<li>Configure a shared secret HMAC (or any signing/verification callable pair) using the <code>signer</code> and <code>validator</code> parameters.</li>
+<li>Enable <code>require_signature=True</code> to activate hardened mode. In hardened mode the cache deletes unsigned or invalid entries and raises a :class:<code>tnfr.utils.SecurityError</code>.</li>
+<li><strong>New in 1.x</strong>: Warnings are emitted when creating cache layers without signatures. Use the secure helper functions for best practices.</li>
+</ul>
+<p><strong>Example with custom signing:</strong></p>
+<pre><code class="language-python">import hashlib
+import hmac
+
+from tnfr.utils import RedisCacheLayer, SecurityError, ShelveCacheLayer
+
+SECRET = b&quot;tnfr-shared-secret&quot;
+
+def signer(payload: bytes) -&gt; bytes:
+    return hmac.new(SECRET, payload, hashlib.sha256).digest()
+
+def validator(payload: bytes, signature: bytes) -&gt; bool:
+    expected = hmac.new(SECRET, payload, hashlib.sha256).digest()
+    return hmac.compare_digest(expected, signature)
+
+shelf_layer = ShelveCacheLayer(
+    &quot;cache.db&quot;,
+    signer=signer,
+    validator=validator,
+    require_signature=True,
+)
+
+redis_layer = RedisCacheLayer(
+    namespace=&quot;tnfr:cache&quot;,
+    signer=signer,
+    validator=validator,
+    require_signature=True,
+)
+
+try:
+    shelf_layer.store(&quot;alpha&quot;, {&quot;value&quot;: 1})
+    data = shelf_layer.load(&quot;alpha&quot;)
+except SecurityError:
+    # Hardened mode rejected tampered payload
+    ...
+</code></pre>
+<p><strong>Tamper Detection:</strong></p>
+<p>When hardened mode is active, any tampered cache entry is automatically purged and causes an immediate <code>SecurityError</code>, preventing poisoned payloads from propagating through TNFR simulations.</p>
+<h3 id="migration-guide">Migration Guide<a class="headerlink" href="#migration-guide" title="Permanent link">&para;</a></h3>
+<p>If you're using <code>ShelveCacheLayer</code> or <code>RedisCacheLayer</code> without signatures:</p>
+<ol>
+<li>
+<p><strong>For trusted, local-only caches</strong> (development):
+   <code>bash
+   export TNFR_ALLOW_UNSIGNED_PICKLE=1</code></p>
+</li>
+<li>
+<p><strong>For production deployments</strong> (recommended):
+   ```python
+   # Before
+   layer = ShelveCacheLayer("cache.db")</p>
+</li>
+</ol>
+<p># After (secure)
+   from tnfr.utils import create_secure_shelve_layer
+   layer = create_secure_shelve_layer("cache.db")
+   ```</p>
+<ol>
+<li><strong>Set environment variable</strong> in production:
+   <code>bash
+   export TNFR_CACHE_SECRET="$(openssl rand -hex 32)"</code></li>
+</ol>
+<h3 id="dependency-management">Dependency Management<a class="headerlink" href="#dependency-management" title="Permanent link">&para;</a></h3>
+<p>All project dependencies are continuously monitored for security vulnerabilities using automated tools and processes.</p>
+<h4 id="pip-audit-automated-dependency-vulnerability-scanning">pip-audit: Automated Dependency Vulnerability Scanning<a class="headerlink" href="#pip-audit-automated-dependency-vulnerability-scanning" title="Permanent link">&para;</a></h4>
+<p><strong>What is pip-audit?</strong></p>
+<p><code>pip-audit</code> is a tool that scans Python dependencies for known security vulnerabilities by checking them against the Python Packaging Advisory Database (PyPA).</p>
+<p><strong>Automated Scanning Schedule:</strong></p>
+<ul>
+<li><strong>On every push</strong> to main/master branches</li>
+<li><strong>On every pull request</strong> to main/master branches</li>
+<li><strong>Weekly scheduled scan</strong> (every Monday at 5 AM UTC)</li>
+</ul>
+<p><strong>How to Run pip-audit Locally:</strong></p>
+<pre><code class="language-bash"># Install pip-audit
+pip install pip-audit
+
+# Install project dependencies
+pip install -e .[all]
+
+# Scan installed packages in your environment
+pip-audit
+
+# Or scan a specific site-packages directory
+SITE_PACKAGES=$(python -c &quot;import sysconfig; print(sysconfig.get_path('purelib'))&quot;)
+pip-audit --path &quot;$SITE_PACKAGES&quot;
+</code></pre>
+<p><strong>Understanding pip-audit Results:</strong></p>
+<p>When vulnerabilities are found, pip-audit reports:
+- <strong>Package name and version</strong>: The vulnerable dependency
+- <strong>Vulnerability ID</strong>: GHSA-<em>, PYSEC-</em>, or CVE identifier
+- <strong>Fix versions</strong>: The version(s) that resolve the vulnerability
+- <strong>Severity</strong>: Critical, High, Medium, or Low (when available)</p>
+<p><strong>Security Update Process:</strong></p>
+<p>When pip-audit detects vulnerabilities in the CI/CD pipeline:</p>
+<ol>
+<li><strong>Automatic Detection</strong>: The pip-audit workflow runs and uploads a JSON report as an artifact</li>
+<li><strong>Review</strong>: Maintainers review the <code>pip-audit-report</code> artifact from the workflow run</li>
+<li><strong>Assessment</strong>: Evaluate if the vulnerability affects TNFR's use case:</li>
+<li>Check if the vulnerable code path is actually used by TNFR</li>
+<li>Assess the severity and exploitability in TNFR's context</li>
+<li>Review available fixes and their compatibility</li>
+<li><strong>Resolution Options</strong>:</li>
+<li><strong>Update dependency</strong>: Update to the fixed version in <code>pyproject.toml</code></li>
+<li><strong>Pin to safe version</strong>: If latest version causes breaking changes, pin to nearest safe version</li>
+<li><strong>Document exception</strong>: If the vulnerability doesn't affect TNFR, document why in a security review</li>
+<li><strong>Find alternatives</strong>: Consider replacing the dependency if no safe version exists</li>
+<li><strong>Testing</strong>: Run full test suite to ensure the update doesn't break functionality</li>
+<li><strong>Document</strong>: Update changelog with security fix information</li>
+</ol>
+<p><strong>Example Workflow for Fixing a Vulnerability:</strong></p>
+<pre><code class="language-bash"># 1. Review the pip-audit report (download from GitHub Actions artifacts)
+cat pip-audit.json
+
+# 2. Update the vulnerable dependency in pyproject.toml
+# For example, if networkx 2.6 is vulnerable and 3.0 fixes it:
+# Change: &quot;networkx&gt;=2.6,&lt;3.0&quot;
+# To:     &quot;networkx&gt;=3.0,&lt;4.0&quot;
+
+# 3. Update your local environment
+pip install -e .[all]
+
+# 4. Run pip-audit again to verify the fix
+pip-audit
+
+# 5. Run the test suite
+pytest
+
+# 6. Commit and create a pull request
+git add pyproject.toml
+git commit -m &quot;fix: update networkx to resolve GHSA-xxxx-xxxx-xxxx&quot;
+git push origin fix/update-networkx
+</code></pre>
+<p><strong>Why pip-audit is NOT in pre-commit hooks:</strong></p>
+<p>While pip-audit is valuable for CI/CD, it is <strong>not included in pre-commit hooks</strong> because:
+- It requires network access to query the PyPA advisory database
+- It can be slow (5-30 seconds depending on network and number of packages)
+- It would slow down developer workflow for every commit
+- The automated CI/CD scanning catches issues before merge</p>
+<p><strong>Dependabot:</strong></p>
+<p>Automated Dependabot <strong>version updates</strong> (the <code>.github/dependabot.yml</code>
+configuration that opened <code>dependabot/*</code> branches) have been <strong>removed</strong> to
+avoid automated branch/PR noise. Dependabot <strong>security updates</strong> and
+<strong>alerts</strong> are disabled at the repository settings level. Dependency
+vulnerability coverage is provided by the pip-audit CI workflow described
+above, which scans installed packages against the PyPA advisory database on
+every push/PR to <code>main</code>, on a weekly schedule, and on manual dispatch.</p>
+<h3 id="static-analysis">Static Analysis<a class="headerlink" href="#static-analysis" title="Permanent link">&para;</a></h3>
+<p>The repository relies on a single automated vulnerability scanner plus
+notification-only repository safeguards:</p>
+<ul>
+<li><strong>pip-audit</strong>: Dependency vulnerability scanner (CI workflow; never creates
+  branches or pull requests)</li>
+<li><strong>Secret scanning</strong> + <strong>push protection</strong>: Enabled at the repository
+  settings level (notification-only; prevents committing credentials)</li>
+</ul>
+<p>The previous CodeQL and Bandit/Semgrep (SAST) <strong>CI workflows were removed</strong> to
+eliminate redundant automated scanning. <code>bandit.yaml</code> and
+<code>tools/bandit_to_sarif.py</code> remain available for optional manual local audits
+(<code>bandit -r src -c bandit.yaml</code>).</p>
+<h2 id="security-features">Security Features<a class="headerlink" href="#security-features" title="Permanent link">&para;</a></h2>
+<h3 id="tnfr-structural-integrity">TNFR Structural Integrity<a class="headerlink" href="#tnfr-structural-integrity" title="Permanent link">&para;</a></h3>
+<p>TNFR maintains structural fidelity through canonical invariants that prevent:</p>
+<ol>
+<li><strong>Uncontrolled mutations</strong>: EPI changes only through structural operators</li>
+<li><strong>Non-deterministic behavior</strong>: Reproducible simulations with seed control</li>
+<li><strong>Phase violations</strong>: Explicit phase verification for all couplings</li>
+<li><strong>Frequency failures</strong>: Validation of structural frequency (νf) in Hz_str</li>
+</ol>
+<p>These invariants ensure predictable, auditable behavior across all TNFR operations.</p>
+<h3 id="domain-neutrality">Domain Neutrality<a class="headerlink" href="#domain-neutrality" title="Permanent link">&para;</a></h3>
+<p>The TNFR engine is domain-neutral by design, supporting:</p>
+<ul>
+<li>Multiple backend choices (NumPy, JAX, PyTorch)</li>
+<li>Configurable determinism for reproducibility</li>
+<li>Transparent structural logging for audit trails</li>
+</ul>
+<h2 id="known-security-considerations">Known Security Considerations<a class="headerlink" href="#known-security-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="documented-pickle-usage">Documented Pickle Usage<a class="headerlink" href="#documented-pickle-usage" title="Permanent link">&para;</a></h3>
+<p>The following components use pickle serialization with documented security warnings:</p>
+<ol>
+<li><strong><code>src/tnfr/utils/cache.py</code></strong>:</li>
+<li><code>ShelveCacheLayer</code>: Persistent file-based caching</li>
+<li>
+<p><code>RedisCacheLayer</code>: Distributed Redis-based caching</p>
+</li>
+<li>
+<p><strong><code>src/tnfr/dynamics/dnfr.py</code></strong>:</p>
+</li>
+<li>Pickle serialization check for parallel processing compatibility</li>
+</ol>
+<p>All pickle usage includes:
+- Comprehensive security warnings in docstrings
+- Clear documentation of trust requirements
+- <code># nosec</code> annotations where risk is accepted and documented</p>
+<h3 id="excluded-security-checks">Excluded Security Checks<a class="headerlink" href="#excluded-security-checks" title="Permanent link">&para;</a></h3>
+<p>The following Bandit checks are intentionally excluded in <code>bandit.yaml</code>:</p>
+<ul>
+<li><strong>B610</strong>: Django QuerySet.extra - Not applicable (TNFR uses internal callables only)</li>
+<li><strong>B324</strong>: SHA1 usage - Non-cryptographic use (topology fingerprints for logging/caching)</li>
+</ul>
+<h2 id="security-update-policy">Security Update Policy<a class="headerlink" href="#security-update-policy" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Critical vulnerabilities</strong>: Patched within 48-72 hours</li>
+<li><strong>High severity</strong>: Patched within 1 week</li>
+<li><strong>Medium/Low severity</strong>: Patched in next minor release</li>
+<li><strong>Dependency updates</strong>: Reviewed and applied manually (surfaced by the
+   pip-audit CI workflow)</li>
+</ol>
+<h2 id="attribution">Attribution<a class="headerlink" href="#attribution" title="Permanent link">&para;</a></h2>
+<p>We believe in responsible disclosure and will credit security researchers who report vulnerabilities (unless they prefer to remain anonymous).</p>
+<h2 id="questions">Questions?<a class="headerlink" href="#questions" title="Permanent link">&para;</a></h2>
+<p>If you have questions about this security policy, please open a <a href="https://github.com/fermga/TNFR-Python-Engine/discussions">GitHub Discussion</a> or contact the maintainers.</p>
+<hr />
+<p><strong>Last Updated</strong>: November 2025
+<strong>Policy Version</strong>: 1.0</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

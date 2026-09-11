@@ -1,0 +1,242 @@
+"""TNFR Grammar Memoization - Optimize Sequence Validation
+
+Provides caching for sequence validation that preserves TNFR semantics:
+- Caches ONLY static/structural aspects of sequences (operator roles, basic rules)
+- NEVER caches dynamic/contextual evaluations (U4a/U4b, bifurcation windows)
+- Maintains canonical grammar fidelity while reducing redundant computations
+
+Physics-First Design:
+- Signature based on sequence structure + compatibility mode
+- Preserves all U1-U6 constraints exactly
+- No "frozen context" bugs - dynamic aspects still evaluated per-call
+"""
+
+from __future__ import annotations
+
+from functools import lru_cache
+from types import SimpleNamespace
+from typing import Any, NamedTuple
+
+from ..validation.compatibility import CompatibilityLevel
+from .grammar_types import glyph_function_name
+
+
+# Static sequence properties that can be safely memoized
+class SequenceSignature(NamedTuple):
+    """Immutable signature for sequence memoization."""
+
+    glyph_names: tuple[str, ...]
+    compatibility_level: str
+    epi_zero_start: bool  # Initiation required, matching the canonical EPI > 0 rule.
+
+    def __str__(self) -> str:
+        sep = ",".join(self.glyph_names)
+        return f"Seq({sep}, {self.compatibility_level}, EPI0={self.epi_zero_start})"
+
+
+class StaticValidationResult(NamedTuple):
+    """Static validation results that are safe to cache."""
+
+    has_generators: bool
+    has_closures: bool
+    has_destabilizers: bool
+    has_stabilizers: bool
+    has_bifurcation_triggers: bool
+    has_transformers: bool
+    u1a_compliant: bool  # Start rule
+    u1b_compliant: bool  # End rule
+    u2_needs_check: bool  # Needs dynamic U2 check
+    u3_needs_check: bool  # Needs dynamic U3 check
+    u4_needs_check: bool  # Needs dynamic U4 check
+    static_errors: list[str]  # Only structural errors
+
+
+def create_sequence_signature(
+    sequence: list[Any],
+    epi_initial: float = 0.0,
+    compatibility_level: CompatibilityLevel | None = None,
+) -> SequenceSignature:
+    """Create memoization signature from sequence parameters."""
+    glyph_names = tuple(
+        glyph_function_name(
+            getattr(op, "canonical_name", getattr(op, "name", op)), default=str(op)
+        )
+        for op in sequence
+    )
+
+    return SequenceSignature(
+        glyph_names=glyph_names,
+        # Compatibility levels describe operator pairs, not global state.
+        # An explicit level remains cache metadata; it cannot relax U1-U6.
+        compatibility_level=(
+            compatibility_level.name if compatibility_level is not None else "canonical"
+        ),
+        epi_zero_start=not (epi_initial > 0.0),
+    )
+
+
+@lru_cache(maxsize=512)
+def _validate_sequence_static(signature: SequenceSignature) -> StaticValidationResult:
+    """Validate static/structural aspects of sequence (CACHED).
+
+    This function ONLY validates aspects that depend purely on the
+    sequence structure and compatibility level - never on dynamic
+    network state or operator history.
+    """
+    from ..config.operator_names import CANONICAL_OPERATOR_NAMES
+    from .grammar_types import (
+        BIFURCATION_TRIGGERS,
+        CLOSURES,
+        COUPLING_RESONANCE,
+        DESTABILIZERS,
+        GENERATORS,
+        STABILIZERS,
+        TRANSFORMERS,
+    )
+
+    glyph_names = signature.glyph_names
+    errors = []
+
+    if not glyph_names:
+        errors.append("Empty sequence")
+        return StaticValidationResult(
+            has_generators=False,
+            has_closures=False,
+            has_destabilizers=False,
+            has_stabilizers=False,
+            has_bifurcation_triggers=False,
+            has_transformers=False,
+            u1a_compliant=False,
+            u1b_compliant=False,
+            u2_needs_check=False,
+            u3_needs_check=False,
+            u4_needs_check=False,
+            static_errors=errors,
+        )
+
+    # Check for unknown operators
+    for glyph in glyph_names:
+        if glyph not in CANONICAL_OPERATOR_NAMES:
+            errors.append(f"Unknown operator: {glyph}")
+
+    # Classify operators
+    has_generators = any(g in GENERATORS for g in glyph_names)
+    has_closures = any(g in CLOSURES for g in glyph_names)
+    has_destabilizers = any(g in DESTABILIZERS for g in glyph_names)
+    has_stabilizers = any(g in STABILIZERS for g in glyph_names)
+    has_bifurcation_triggers = any(g in BIFURCATION_TRIGGERS for g in glyph_names)
+    has_transformers = any(g in TRANSFORMERS for g in glyph_names)
+
+    # U1a: Start rule (static check)
+    u1a_compliant = True
+    if signature.epi_zero_start:
+        # Starting from EPI=0 requires generator
+        if glyph_names[0] not in GENERATORS:
+            u1a_compliant = False
+            errors.append("U1a violation: EPI=0 start requires generator")
+
+    # U1b: End rule (static check)
+    u1b_compliant = glyph_names[-1] in CLOSURES
+    if not u1b_compliant:
+        errors.append("U1b violation: Invalid closure operator")
+
+    # U2, U3, U4 require dynamic checking (not cached)
+    u2_needs_check = has_destabilizers
+    u3_needs_check = any(g in COUPLING_RESONANCE for g in glyph_names)
+    u4_needs_check = has_bifurcation_triggers or has_transformers
+
+    return StaticValidationResult(
+        has_generators=has_generators,
+        has_closures=has_closures,
+        has_destabilizers=has_destabilizers,
+        has_stabilizers=has_stabilizers,
+        has_bifurcation_triggers=has_bifurcation_triggers,
+        has_transformers=has_transformers,
+        u1a_compliant=u1a_compliant,
+        u1b_compliant=u1b_compliant,
+        u2_needs_check=u2_needs_check,
+        u3_needs_check=u3_needs_check,
+        u4_needs_check=u4_needs_check,
+        static_errors=errors,
+    )
+
+
+def validate_sequence_optimized(
+    sequence: list[Any],
+    epi_initial: float = 0.0,
+    compatibility_level: CompatibilityLevel | None = None,
+    # Dynamic context (NEVER cached)
+    graph: Any | None = None,
+    recent_destabilizers: list[str] | None = None,
+    bifurcation_window: int | None = None,
+) -> tuple[bool, list[str]]:
+    """Canonical sequence validation with a cached structural preflight.
+
+    Static syntax/initiation/closure failures can return from the cache. All
+    remaining grammar decisions delegate to :class:`GrammarValidator` on every
+    call so ordered U4b context and per-operator U5 metadata stay current.
+
+    ``compatibility_level`` remains cache metadata. ``recent_destabilizers`` and
+    ``bifurcation_window`` are retained for call compatibility; they cannot
+    substitute for the ordered sequence or override the canonical relaxation
+    window. ``graph`` requests a U3 reminder, not runtime phase certification:
+    the sequence does not specify target nodes, and operators enforce that gate
+    when applied. Canonical U6 is a separate graph-telemetry check.
+
+    Returns
+    -------
+    (is_valid, messages) : tuple[bool, list[str]]
+        Validation result and any error/warning messages
+    """
+    # Get cached static validation
+    signature = create_sequence_signature(sequence, epi_initial, compatibility_level)
+    static_result = _validate_sequence_static(signature)
+
+    # Early return if static validation failed
+    if static_result.static_errors:
+        return False, static_result.static_errors.copy()
+
+    from .grammar_core import GrammarValidator
+
+    # Strings carry no extra metadata. Preserve real operator instances so
+    # changes such as REMESH depth remain visible even when the signature hits.
+    normalized = [
+        SimpleNamespace(name=name) if isinstance(op, str) else op
+        for op, name in zip(sequence, signature.glyph_names)
+    ]
+    is_valid, messages = GrammarValidator().validate(normalized, epi_initial)
+
+    # No node targets are available here for the runtime U3 phase gate.
+    if static_result.u3_needs_check and graph is not None:
+        messages.append("U3 check: Phase compatibility validation required")
+
+    return is_valid, messages
+
+
+def get_memoization_stats() -> dict[str, Any]:
+    """Get cache statistics for monitoring."""
+    cache_info = _validate_sequence_static.cache_info()
+    return {
+        "static_validation_cache": {
+            "hits": cache_info.hits,
+            "misses": cache_info.misses,
+            "current_size": cache_info.currsize,
+            "max_size": cache_info.maxsize,
+            "hit_rate": (cache_info.hits / max(1, cache_info.hits + cache_info.misses)),
+        }
+    }
+
+
+def clear_memoization_cache() -> None:
+    """Clear all memoization caches."""
+    _validate_sequence_static.cache_clear()
+
+
+__all__ = [
+    "SequenceSignature",
+    "StaticValidationResult",
+    "create_sequence_signature",
+    "validate_sequence_optimized",
+    "get_memoization_stats",
+    "clear_memoization_cache",
+]

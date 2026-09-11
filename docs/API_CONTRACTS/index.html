@@ -1,0 +1,2536 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/docs/API_CONTRACTS/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../SINGLE_FILE_MODULES/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Operator contracts - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-operator-api-contracts" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Operator contracts
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contract-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contract model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#canonical-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Canonical contracts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#six-global-invariants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Six global invariants
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#valid-execution-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Valid execution example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operator-event-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator-event timeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contract-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contract verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extension-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extension rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auxiliary-spectral-expectation-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auxiliary spectral-expectation contract
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../theory/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contract-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contract model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#canonical-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Canonical contracts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#six-global-invariants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Six global invariants
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#valid-execution-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Valid execution example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operator-event-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator-event timeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contract-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contract verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extension-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extension rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auxiliary-spectral-expectation-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auxiliary spectral-expectation contract
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-operator-api-contracts">TNFR Operator API Contracts<a class="headerlink" href="#tnfr-operator-api-contracts" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> Active normative view
+<strong>Repository version:</strong> 0.0.3.5
+<strong>Owner:</strong> <a href="../../src/tnfr/operators/operator_contracts.py"><code>tnfr.operators.operator_contracts</code></a></p>
+<p>This document is a readable view of the canonical operator contracts. The code
+module above owns channel, scale, direction, postcondition, and source anchors.
+Changes begin in that module and must pass its consistency assertions and tests.</p>
+<h2 id="contract-model">Contract model<a class="headerlink" href="#contract-model" title="Permanent link">&para;</a></h2>
+<p>Every canonical operator has:</p>
+<ul>
+<li>a lowercase English execution token, a public display/class name, and an
+  internal glyph;</li>
+<li>one primary nodal-equation channel;</li>
+<li>node or network scale;</li>
+<li>a direct-effect direction;</li>
+<li>a verifiable postcondition;</li>
+<li>independent grammar and state preconditions.</li>
+</ul>
+<p>The channel classification does not replace grammar roles. For example,
+Mutation acts primarily on phase while also being a U2 destabilizer and U4
+transformer.</p>
+<p><code>Scale</code> is the U5 fractality axis: <code>node</code> acts at the current fiber/level and
+<code>network</code> denotes the multi-scale REMESH echo. It is not an execution-footprint
+field. Coupling remains node-scale on this axis even though one application may
+write neighbouring phases and edge support; those overlaps belong to the
+separate stage contract.</p>
+<h2 id="canonical-contracts">Canonical contracts<a class="headerlink" href="#canonical-contracts" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Glyph</th>
+<th>Primary channel</th>
+<th>Scale</th>
+<th>Direct postcondition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Emission</td>
+<td>AL</td>
+<td>EPI</td>
+<td>node</td>
+<td>EPI does not decrease; frequency, pressure and phase stay unchanged</td>
+</tr>
+<tr>
+<td>Reception</td>
+<td>EN</td>
+<td>EPI</td>
+<td>node</td>
+<td>Immediate operator-local C(t), pressure and change rate stay unchanged</td>
+</tr>
+<tr>
+<td>Resonance</td>
+<td>RA</td>
+<td>EPI</td>
+<td>node</td>
+<td>EPI structural identity is preserved</td>
+</tr>
+<tr>
+<td>Silence</td>
+<td>SHA</td>
+<td>structural frequency</td>
+<td>node</td>
+<td>Structural frequency does not increase</td>
+</tr>
+<tr>
+<td>Expansion</td>
+<td>VAL</td>
+<td>structural frequency</td>
+<td>node</td>
+<td>Structural frequency does not decrease</td>
+</tr>
+<tr>
+<td>Contraction</td>
+<td>NUL</td>
+<td>structural frequency</td>
+<td>node</td>
+<td>Structural frequency does not increase</td>
+</tr>
+<tr>
+<td>Coupling</td>
+<td>UM</td>
+<td>phase</td>
+<td>node</td>
+<td>Pressure magnitude does not increase under mutual stabilization</td>
+</tr>
+<tr>
+<td>Mutation</td>
+<td>ZHIR</td>
+<td>phase</td>
+<td>node</td>
+<td>Phase is transformed when mutation preconditions hold</td>
+</tr>
+<tr>
+<td>Coherence</td>
+<td>IL</td>
+<td>pressure</td>
+<td>node</td>
+<td>Pressure magnitude and coherence do not worsen</td>
+</tr>
+<tr>
+<td>Dissonance</td>
+<td>OZ</td>
+<td>pressure</td>
+<td>node</td>
+<td>Pressure magnitude does not decrease</td>
+</tr>
+<tr>
+<td>Self-organization</td>
+<td>THOL</td>
+<td>pressure</td>
+<td>node</td>
+<td>Global form is preserved without catastrophic coherence loss</td>
+</tr>
+<tr>
+<td>Transition</td>
+<td>NAV</td>
+<td>pressure</td>
+<td>node</td>
+<td>At least one controlled state channel changes</td>
+</tr>
+<tr>
+<td>Recursivity</td>
+<td>REMESH</td>
+<td>EPI</td>
+<td>network</td>
+<td>EPI mixes with two delayed per-node snapshots</td>
+</tr>
+</tbody>
+</table>
+<p>The REMESH row describes the separately invoked network operation
+apply_network_remesh. Its public planner, plan_network_remesh, returns an
+immutable all-node proposal. Insufficient history or empty live support is an
+explicit no-op; after the history guard passes, each selected temporal snapshot
+must be a node mapping with
+exactly the live support. Missing values are never replaced by current EPI.</p>
+<p>The executor returns an immutable result that exposes raw affine and bounded
+values separately. Optional evidence reports the three-snapshot convex
+disagreement bound, weighted-mean drift and only sufficient fixed-history gain
+conditions. These fields do not infer stability from the operator name. The
+commit is atomic over graph-owned state, topology, metadata, history, caches
+and capturable callback state. Effects already emitted to external systems by a
+callback cannot be rolled back.</p>
+<p>A direct node-level Recursivity glyph and its shared word stage are
+advisory-only: the stage derives one immutable advisory from its snapshot,
+deduplicates one graph event per telemetry step and leaves structural channels
+unchanged. It never triggers delayed EPI mixing implicitly.</p>
+<p>For exact wording and measured context, inspect
+<a href="../../src/tnfr/operators/operator_contracts.py"><code>OPERATOR_CONTRACTS</code></a>.</p>
+<h2 id="six-global-invariants">Six global invariants<a class="headerlink" href="#six-global-invariants" title="Permanent link">&para;</a></h2>
+<p>The canonical invariant list is owned by
+<a href="../../AGENTS/#8-canonical-invariants">AGENTS.md</a>:</p>
+<ol>
+<li>nodal-equation integrity;</li>
+<li>phase-coherent coupling;</li>
+<li>multi-scale fractality;</li>
+<li>grammar compliance;</li>
+<li>structural metrology;</li>
+<li>reproducible dynamics.</li>
+</ol>
+<p>This document does not define a parallel invariant list.</p>
+<h2 id="valid-execution-example">Valid execution example<a class="headerlink" href="#valid-execution-example" title="Permanent link">&para;</a></h2>
+<pre><code class="language-python">from tnfr.operators.definitions import Coherence, Emission, Silence
+from tnfr.structural import create_nfr, run_sequence
+
+G, node = create_nfr(&quot;seed&quot;, epi=0.1, vf=1.0, theta=0.0)
+run_sequence(G, node, [Emission(), Coherence(), Silence()])
+</code></pre>
+<p>The word starts with a U1 generator, contains a stabilizer, and ends with a U1
+closure. State-dependent operator preconditions remain mandatory during
+execution. Coupling and Resonance additionally enforce U3 before mutation.</p>
+<h2 id="operator-event-timeline">Operator-event timeline<a class="headerlink" href="#operator-event-timeline" title="Permanent link">&para;</a></h2>
+<p><a href="../../src/tnfr/operators/event_timing.py"><code>build_operator_event_schedule</code></a>
+accepts canonical lowercase execution tokens. It represents operators as
+zero-duration jumps and requires exactly one more declared flow interval than
+events. Exact rationalized binary64 durations and offsets define physical time;
+absolute float timestamps are display-only, and coincident events use their
+explicit index order. The schedule validates structure without executing an
+operator or writing EPI history.</p>
+<p><a href="../../src/tnfr/physics/event_duration.py"><code>diagnose_continuous_relaxation_duration</code></a>
+maps one declared interval to the existing fixed symmetric pure-EPI diffusion
+certificate. Its target decision uses the exact rate and rational
+transcendental enclosures; eigensolver and libm values remain estimates. This
+diagnostic does not alter U2 or U4 policy.</p>
+<p><a href="../../src/tnfr/operators/event_runtime.py"><code>execute_operator_event_schedule</code></a>
+executes a valid schedule with the graph's configured nodal integrator and the
+shared canonical all-target stage dispatcher. It freezes the initial target
+tuple, requires exact agreement with the live binary64 clock at each boundary,
+and rejects collapsed or nonadditive positive intervals before writes. A ZHIR
+pre-flow is also rejected when subtracting its displayed endpoints would differ
+from its authoritative declared duration. One outer graph transaction covers
+flows, jumps, histories, runtime caches and the hybrid event log. Completed
+pressure-refresh callbacks are counted; effects already emitted outside the
+graph cannot be rolled back. Flow boundaries feed timestamped EPI evidence,
+while same-time jumps restart that evidence and remain zero-duration events.
+During schedule execution the executor exclusively owns <code>epi_time_history</code>: any
+integrator write is rejected and rolls back the graph transaction, and only
+declared flow boundaries, including explicit physical-segment boundaries, are
+appended.</p>
+<p>For each positive call, the integrator write footprint is limited to EPI,
+<code>dEPI_dt</code>, <code>d2EPI_dt2</code> and the runtime clock. A custom integrator or subclass
+must additionally realize the held-input nodal equation exactly in the
+rationalized represented binary64 values:</p>
+<pre><code class="language-text">EPI_right[i] - EPI_left[i]
+    = dt * nu_f_left[i] * DeltaNFR_left[i]
+</code></pre>
+<p>Failure to capture either endpoint or any nonzero exact residual rejects the
+schedule and restores the graph. Passing this residual establishes the declared
+finite nodal identity only; it does not establish solver accuracy or order.</p>
+<p>The outer <code>GraphTransactionSnapshot</code> retains its originating graph and rejects
+use with any other graph, including a value-equal copy. It restores NetworkX
+structural mapping identities and their alias topology, graph-reachable mutable
+state, and capturable namespace, slot and closure state owned by configured
+callbacks. Snapshot preflight rejects mutable node, edge and attribute keys
+whose equality or hash is not object-identity based, custom <code>__deepcopy__</code>
+hooks, and unmodelled opaque interpreter/C state. Common immutable atoms,
+including supported date/time, <code>Fraction</code>, <code>Decimal</code>, regular-expression and
+<code>ZoneInfo</code> values, are safe atomic metadata. The rollback boundary covers state capturable from the graph;
+already emitted I/O and warnings, external resources, and references reachable
+only through external aliases are outside it.</p>
+<p><a href="../../src/tnfr/physics/runtime_flow_stability.py"><code>capture_nodal_flow_state</code></a>
+captures a detached ordered endpoint containing only scalar EPI, <code>nu_f</code>,
+<code>DeltaNFR</code> and effective conductance.
+<a href="../../src/tnfr/physics/runtime_flow_stability.py"><code>certify_observed_nodal_flow_interval</code></a>
+compares two such endpoints over one materialized binary64 duration. Its exact
+rational nodal residual, exact pure-EPI pressure identity, one-step Euler replay,
+sequential held-pressure replay and exact rational quotient-gain theorem are
+independent claims. Caller-supplied endpoint metadata does not prove which
+runtime produced the observations.</p>
+<p>Setting <code>include_flow_certificates=True</code> on
+<code>execute_operator_event_schedule</code> binds capture to both sides of each actual
+positive flow call. Each <code>ExecutedNodalFlowInterval</code> records its interval and
+actual integrator provenance together with the detached certificate or an
+explicit state-capture abstention; failed conditions remain visible in the
+nested certificate. The broader
+<code>runtime_bound_binary64_held_pressure_interval_identified</code> property requires the
+exact built-in <code>DefaultIntegrator</code>, Euler with at least one substep, live Gamma
+type <code>none</code>, inactive clipping, disabled extended dynamics, stable node support,
+unchanged capacity and pressure, equality between the exact sum of represented
+substep durations and the declared interval, and a matching sequential replay.
+A custom integrator or subclass, RK4, any other Gamma type, active clipping,
+extended dynamics or a duration-sum mismatch prevents that identification.</p>
+<p>The older one-step binary64 property and exact rational pure-EPI affine
+promotion remain restricted to one Euler substep. The latter additionally
+requires at least two
+nodes, fixed symmetric nonnegative conductance with positive row strengths,
+positive capacity, the exact stored pressure <code>-L_rw EPI</code> and the exact rational
+nodal identity. Changed support, conductance, capacity or pressure blocks the
+corresponding promotion. Stale pressure exposes the levels directly: the
+held-pressure nodal identity and trusted binary64 sequential replay can pass
+while the pure-EPI affine map and quotient theorem abstain. Internal substeps
+hold pressure fixed; they are not a pressure-reevaluated physical partition and
+do not carry a diffusion modal decision.</p>
+<p><a href="../../src/tnfr/operators/event_timing.py"><code>build_physical_flow_partition</code></a>
+materializes at least two strictly positive physical segments over one positive
+scheduled interval. Exact represented durations must cover the parent interval,
+and every binary64 segment must advance, land by direct addition and subtract
+back to its declared duration. These segments are execution boundaries, unlike
+an integrator's internal substeps.</p>
+<p>Passing the partitions through <code>physical_flow_partitions=</code> makes
+<code>execute_operator_event_schedule</code> refresh stored pressure before every segment
+and once more at the terminal boundary. Physical execution therefore performs
+<code>segment_count + 1</code> pressure callbacks and forces interval capture independently
+of the general flow-certificate option. Each sealed
+<code>PressureRefreshBoundaryObservation</code> binds the callback identity and before/after
+state. The callback may write pressure aliases and known derived pressure/cache
+outputs only. It must preserve EPI, capacity, phase, derivatives, histories,
+node and edge support, every edge attribute, effective conductance, the clock,
+persistent graph configuration, capturable state owned by a callable hook and
+any existing non-<code>None</code> cached <code>_dnfr_weights</code>. Only the canonical default hook
+may initialize missing or <code>None</code> cached weights. The same restriction applies
+to stage pressure callbacks. The executor freezes hook presence and identity
+for the complete schedule and checks them before invocation. A failed
+preservation check, callback or later segment restores the complete graph
+transaction; effects emitted outside the graph remain outside rollback.</p>
+<p><code>ExecutedPressureRefreshedFlowPartition</code> stores all boundary observations,
+segment <code>ExecutedNodalFlowInterval</code> records and one segment-start
+<code>PhysicalEulerModalObservation</code> per segment. For a fixed pure-EPI generator
+<code>A = diag(nu_f)L_rw</code>, the exact-real held-pressure outer model is <code>I - T A</code>,
+even when one integrator call uses several internal substeps. Its exact-real
+physical counterpart is <code>product_k(I - h_k A)</code>. Actual endpoints remain
+binary64 observations: a modal diagnostic alone does not identify them with
+either exact-real map. The comparison checks trusted held-pressure Euler replays,
+node order, capacity and conductance directly; equal decay-rate spectra do not
+establish a common eigenbasis. Its ordinary binary64 evaluations of the model
+mode factors are respectively <code>1 - T*mu</code> and
+<code>product_k(1 - h_k*mu)</code>, which need not have the same stability decision. Exact
+endpoint identification and segment gain composition additionally require
+intact exact-affine certificates and one exact normalized metric ray. The modal
+records certify no solver order, mesh convergence, adaptive grammar, or future
+execution. The result reports physical and stage pressure callback counts
+separately, and their sum must equal the total.</p>
+<p><code>flow_certification_requested</code> distinguishes the disabled path.
+<code>flow_interval_evidence</code> stores unpartitioned positive-parent records;
+<code>physical_flow_partition_evidence</code> stores each physical parent and nests its
+segment records in <code>segment_flow_evidence</code>. Runtime wrappers are value-sealed,
+so direct construction or later replacement cannot assert executor provenance.
+The tri-state <code>all_positive_flow_intervals_binary64_identified</code>,
+<code>all_positive_flow_intervals_binary64_held_pressure_identified</code>,
+<code>all_positive_flow_intervals_exact_affine</code> and
+<code>all_positive_flow_intervals_contracting</code> aggregates return <code>None</code> when capture
+is disabled and otherwise summarize all executed positive parents through the
+corresponding unpartitioned record or all-segment physical property. They do not
+turn endpoint agreement into solver-accuracy, refinement, glyph-gain or
+repeated-schedule evidence.</p>
+<p><a href="../../src/tnfr/physics/event_refinement.py"><code>observe_event_local_zhir_prejump</code></a>
+requires a sealed, nonempty <code>ExecutedNodalFlowInterval</code> with trusted sequential
+held-pressure provenance. It pairs that record offline with a canonical
+scheduled ZHIR event whose exact and represented coordinate is the flow end and
+whose timestamp subtraction equals the declared duration. It reproduces the
+runtime gate in its actual binary64 order—EPI subtraction, timestamp
+subtraction, then division—and retains the exact rational endpoint secant as a
+separate quantity. <code>xi</code> must be finite and nonnegative. A rejected threshold is
+a valid observation; the object certifies neither a common originating schedule
+nor operator admission or U4b readiness.</p>
+<p><a href="../../src/tnfr/physics/event_refinement.py"><code>compare_event_local_zhir_held_pressure_subdivision</code></a>
+requires two intact observations with equal event coordinate, interval index,
+node order, initial EPI, capacity, pressure, conductance, duration and threshold,
+and different positive substep counts. For node <code>i</code>, let <code>r_i</code> be the exact
+representation of the actual binary64 observed rate and <code>xi</code> the exact
+representation of its threshold. The local sufficient test is
+<code>|r_i(candidate)-r_i(baseline)| &lt; |r_i(baseline)-xi|</code>, together with observed
+decision agreement. It is strict: touching the threshold margin abstains. The
+sealed aggregate covers only that offline held-pressure gate comparison and
+keeps all physical-refinement, modal, solver, adaptive-policy, U4 and future
+claims false.</p>
+<p><a href="../../src/tnfr/physics/event_refinement.py"><code>observe_event_local_zhir_physical_prejump</code></a>
+requires one intact pressure-refreshed partition and a coordinate-paired
+scheduled ZHIR event. Mutation's authoritative observed rate is the secant over
+the terminal physical segment because those are the last two live history
+samples. The object also records an offline secant over the complete parent
+interval; that longer secant never substitutes for the live gate.</p>
+<p><a href="../../src/tnfr/physics/event_refinement.py"><code>observe_executed_event_local_zhir_physical_prejump</code></a>
+accepts an intact <code>OperatorEventExecutionResult</code> with stage certification and a
+committed ZHIR <code>event_index</code>. It identifies the unique scheduled and executed
+event, preceding physical parent, glyph stage, ordered target decisions and
+trigger certificates, and requires the stage's pre-flow evidence to be the
+terminal segment of that same parent. The resulting
+<code>ExecutedEventLocalZHIRPhysicalPrejumpObservation</code> revalidates those objects by
+identity and certifies common provenance for this one executor-owned finite
+window. The coordinate-paired observer above remains the reusable offline
+component and does not by itself certify that the partition and jump came from
+one execution.</p>
+<p><a href="../../src/tnfr/physics/event_refinement.py"><code>compare_event_local_zhir_physical_refinement</code></a>
+pairs this observation with an intact held-pressure baseline sharing the initial
+binary64 state, capacity, pressure, conductance, duration, event coordinate and
+threshold. It reports physical-minus-baseline endpoint and rate differences,
+both gate decisions, the held outer modal factors and the composite physical
+factors. Decision agreement is an observation rather than a prerequisite: a
+physical refresh may legitimately move the ZHIR gate or change modal stability.
+Common spectra and modal configuration are required before modal comparison;
+otherwise it abstains. The sealed record establishes neither equivalence,
+solver accuracy/order, convergence, U4 readiness, adaptive policy nor future
+behavior.</p>
+<p>Every accepted two-phase ZHIR <code>NetworkStageResult</code> also contains one ordered,
+sealed <code>MutationStageDecisionObservation</code> per target, independent of the EPI
+certificate option. It freezes the complete trigger certificate, capacity gate,
+phase/regime decision, acceleration and bifurcation result, and U4 context before
+live metadata can change. Direct construction and coherent <code>dataclasses.replace</code>
+records remain unsealed. Event execution carries these observations into the
+corresponding opt-in <code>ExecutedGlyphStage</code>.</p>
+<p>Every accepted two-phase EN <code>NetworkStageResult</code> contains one ordered, sealed
+<code>ReceptionStageObservation</code> per target. A single owner-bound pre-EN snapshot
+drives the target/neighbor EPI calculation, semantic-kind selection, optional
+source detection and EN metrics. The observation records pre/post EPI and kind,
+the materialized neighbour read and the tracked source record. Final EPI, kind
+and tracked sources are checked after monitors, metrics, any requested pressure
+refresh and schedule recording, before final warning publication; divergence
+rejects the transaction without leaking that warning. With source tracking
+disabled,
+legacy metadata is left opaque: the stage observation reports only whether its
+key is present, while separately collected Reception metrics also report whether
+the stored value has the canonical list-of-triples form. Standalone
+<code>reception_metrics</code> calls set <code>source_tracking_enabled=None</code> because old metadata
+does not identify the call that produced it. <code>auxiliary_stability_certified</code> is
+always false because this record describes one accepted finite stage rather
+than a trajectory invariant.</p>
+<p>On directed support, an arc <code>source -&gt; receiver</code> is an incoming EN input: the
+snapshot reads predecessors and source detection follows paths in that same
+direction. Detection is optional telemetry and neither selects nor gates the
+direct-neighbour numeric blend; its finite search can include more distant
+ancestors. The represented affine Reception certificate remains restricted to
+undirected support and therefore abstains on a directed stage.</p>
+<p>Direct EN execution publishes its empty-source advisory during the pre-write
+read, so treating warnings as errors aborts before the direct mutation. The
+transactional two-phase stage defers that advisory until its result has been
+validated; a warning promoted to an error then rolls the entire stage back.</p>
+<p><code>ExecutedGlyphStage</code> also seals its complete event, endpoint, certificate,
+adjacent-flow, Mutation-decision and Reception-observation payload.
+<code>OperatorEventExecutionResult</code> requires one intact stage for every committed
+event, preserves event order, and binds both ZHIR and EN observation order to
+<code>target_nodes</code>. A nested flow abstention remains recordable but cannot be
+promoted into a flow or composition certificate.</p>
+<p>Setting <code>include_stage_certificates=True</code> is also opt-in and implies flow
+capture. <code>glyph_stage_evidence</code> then contains one <code>ExecutedGlyphStage</code> for every
+accepted scheduled event. Pointwise AL/SHA/VAL/NUL/ZHIR/NAV stages reuse their
+executor-owned frozen-proposal certificate; EN/RA reuse their executor-owned
+all-target neighbour certificate. IL/OZ/UM/THOL/REMESH and any domain-rejected
+certificate expose a specific abstention reason. Each successful stage record
+binds the represented certificate to detached EPI snapshots captured around the
+actual jump, derives normalized exact pre/post metric rays, and checks its
+immediately adjacent positive-flow endpoints and metrics. A stage pressure
+callback that changes EPI or any other non-pressure state rejects the schedule
+and rolls back graph-owned state before stage evidence can be published.</p>
+<p><code>represented_epi_schedule_composition</code> returns an
+<code>ObservedRepresentedEPIScheduleComposition</code> whenever stage capture was
+requested. Its <code>operations</code> tuple contains one
+<code>RepresentedEPIScheduleOperation</code> for every positive flow and every glyph in
+chronological order, including explicit ineligibility reasons. Exact factors,
+the common metric and their product are published only if the operation count
+is complete, every operation has intact represented affine evidence, all node
+orders match, consecutive observed EPI endpoints are exactly continuous, and
+one normalized positive rational metric applies throughout. On success,
+<code>represented_affine_composition_gain_certified</code> certifies that product and
+<code>represented_map_global_disagreement_contraction_certified</code> reports whether it
+is strictly below one. <code>runtime_schedule_global_gain_certified</code> is always
+false. These properties do not identify a global executable binary64 map or
+certify solver accuracy, refinement, full multichannel stability, future
+schedules or repeated execution. The underlying flow certificate and the
+operation/composition records seal their proof fields; wrapper and aggregate
+properties revalidate those seals and fail closed if a factor or claim flag is
+replaced.</p>
+<p><a href="../../src/tnfr/operators/event_remesh_runtime.py"><code>execute_event_remesh_cycle</code></a>
+composes one such schedule with exactly one canonical pre-REMESH <code>_epi_hist</code>
+sample and one separately invoked delayed map. The outer transaction rejects
+ordered node-support changes or schedule-owned delayed-history writes. It also
+binds the immutable schedule result to the live event log and freezes the
+endpoint clock, phase, pressure-hook identity and deterministic REMESH controls.
+Edges may change during the schedule; the EPI-only delayed map and its ON_REMESH
+observers are read-only over all graph-owned state, including the resulting
+topology, metadata, histories and stored non-EPI aliases. Capturable state
+reachable through a graph-owned observer is therefore restored on failure.</p>
+<p>The supplied metric is materialized once, exposed even for the uniform default,
+and reused for cycle-level weighted EPI observations and optional REMESH
+evidence. Legacy REMESH metadata retains unweighted summaries. Exact means,
+drifts and disagreements remain authoritative; an unrepresentable binary64
+display is <code>None</code>. Capacity vectors, pressure vectors, schedule refreshes and
+the optional post-REMESH pressure callback remain distinct. The latter runs
+only when REMESH applies and is counted only after returning. Delay <code>tau</code> reads
+<code>_epi_hist[-(tau + 1)]</code>, with no post-jump delayed-history duplicate. A committed
+jump separately records its same-time <code>epi_time_history</code> endpoint for Mutation.
+The cycle forwards <code>include_flow_certificates</code> and
+<code>include_stage_certificates</code>, preserving the resulting interval, glyph and
+represented finite-schedule records inside <code>event_execution</code>. The delayed
+REMESH operation remains separate and its one-step evidence is never a factor
+in <code>represented_epi_schedule_composition</code>. The cycle does not certify a global
+binary64 runtime gain or repeated stability with evolving history. Capturable
+graph-reachable callback and integrator state is covered by the transaction;
+their emitted I/O or warnings and external-only resources or aliases are not.
+The optional <code>physical_flow_partitions</code> iterable is materialized once inside
+the cycle's outer graph transaction and that exact tuple is forwarded unchanged
+to <code>execute_operator_event_schedule</code>. Iterator failure aborts and restores the
+graph, and a stateful iterable cannot define a second partition plan; its own
+external-only state is not graph rollback state.</p>
+<p>Each successful cycle also returns a sealed
+<a href="../../src/tnfr/operators/event_remesh_runtime.py"><code>RemeshHistoryTransitionObservation</code></a>.
+Writing <code>M=history_maxlen</code>, <code>H_in</code> for the exact represented incoming rows and
+<code>x_pre</code> for the exact pre-REMESH EPI vector, its decisive identity is
+<code>H_out = tail_M(tail_M(H_in) || (x_pre,))</code>. It records container rebuild and
+truncation, append eviction, and the vectors at
+<code>H_out[-(tau_local + 1)]</code> and <code>H_out[-(tau_global + 1)]</code> independently. Either
+lag can therefore be unavailable while the other is present. Its proof seal,
+and the enclosing <code>EventRemeshCycleResult</code> seal, fail closed after replacement
+or nested evidence mutation.</p>
+<p><a href="../../src/tnfr/operators/event_remesh_sequence.py"><code>compose_event_remesh_cycle_observations</code></a>
+is a pure observer over at least two sealed cycle results supplied in caller
+order. It returns an <code>ObservedEventRemeshCycleSequence</code> containing one sealed
+<code>EventRemeshCycleBoundaryObservation</code> per adjacent supplied pair. A passing
+boundary requires intact individually atomic cycles, ordered node support, exact
+schedule end/start time, post-REMESH/pre-schedule EPI, complete outgoing/incoming
+REMESH history, capacity, post-refresh/pre-schedule pressure and phase equality.
+When an applied left REMESH changed EPI, the observer additionally requires one
+completed explicitly requested post-REMESH pressure callback. Callback
+completion is operational evidence; it does not certify the constitutive
+identity <code>DeltaNFR = -L_rw EPI</code>.</p>
+<p><code>cycle_indices</code> are zero-based local ordinals assigned by the composer, not
+runtime call identifiers. Reusing the identical result object at two positions
+is rejected as a self-pairing guard. Distinct value-equal copies remain
+admissible, so neither that guard nor exact boundary equality proves causal
+ordering, consecutive calls or shared-graph execution provenance.</p>
+<p>The sequence records each exact raw metric vector and its normalized positive
+rational ray. <code>raw_metric_weights_equal</code> requires the original vectors to be
+identical; <code>exact_common_normalized_metric_ray</code> also admits exact proportional
+vectors, which share disagreement geometry while using different raw energy
+scales. <code>nested_schedule_metric_alignment</code> is tri-state per cycle and compares
+an available nested <code>ObservedRepresentedEPIScheduleComposition</code> metric with
+that cycle's ray; absence of a nested metric remains <code>None</code>. This alignment is
+not silently substituted for recorded boundary continuity.
+<code>exact_recorded_boundary_continuity_certified</code> checks the sealed adjacent-state
+conditions without requiring a common metric. The stronger
+<code>exact_common_metric_cycle_sequence_certified</code> additionally requires one exact
+normalized ray and <code>True</code> alignment for every nested schedule; exact equality
+of raw metric vectors is not a condition. A <code>None</code> or <code>False</code> alignment blocks
+only this stronger result, not exact recorded-boundary continuity.
+<code>schedule_compositions</code> and <code>remesh_results</code> preserve both evidence families
+without combining their gain claims.</p>
+<p>No sequence field multiplies schedule and REMESH gains or certifies
+evolving-history REMESH gain or repetition, a runtime-global gain,
+whole-sequence atomicity across separate calls, full graph-state or
+grammar-history continuity, solver accuracy, shared graph provenance, or a
+future-cycle theorem. A concrete obstruction uses lag one and <code>alpha=1</code>:
+starting from EPI <code>(2, 0)</code> with delayed row <code>(0, 2)</code>, two empty-schedule cycles
+produce <code>(0, 2)</code> and then <code>(2, 0)</code>. Both one-step REMESH records have zero
+current-state coefficient, so multiplying those fixed-history factors would
+contradict the observed alternating history.</p>
+<p><a href="../../src/tnfr/operators/event_remesh_causal_runtime.py"><code>execute_event_remesh_cycle_sequence</code></a>
+is the graph-mutating finite causal wrapper. Each
+<code>EventRemeshCycleExecutionSpec</code> declares one cycle invocation. The executor
+runs the specs in order on one graph under one outer graph transaction and
+returns an <code>ExecutedEventRemeshCycleSequence</code>. Every sealed
+<code>CausalEventRemeshCycleReceipt</code> binds a zero-based execution ordinal, the exact
+spec object and the resulting <code>EventRemeshCycleResult</code>; in particular, the
+cycle's executed schedule is the schedule carried by that spec. The enclosing
+result always retains the ordinary <code>ObservedEventRemeshCycleSequence</code>. The
+default <code>require_runtime_telescope=True</code> additionally requires and retains its
+compatible <code>RuntimeRemeshScheduleSequenceObservation</code>. With
+<code>require_runtime_telescope=False</code>, <code>runtime_telescope</code> is always exactly <code>None</code>;
+this lets a word without one common affine schedule metric still produce sealed
+causal evidence, and <code>exact_finite_energy_telescope_certified</code> is false. The flag and the
+optional object are both proof-bound.</p>
+<p>The new positive claim is restricted to same-invocation causal order, common
+graph identity and finite graph-owned atomicity. Failure anywhere in the
+declared block restores the outer graph transaction. This does not compose a
+global executable schedule/REMESH gain, certify solver accuracy/order or mesh
+convergence, or establish repeated or future stability. Emitted I/O, warnings,
+external resources and aliases reachable only outside the graph remain outside
+rollback. Caller-ordered results passed directly to either underlying observer
+still have no causal provenance.</p>
+<p><a href="../../src/tnfr/physics/runtime_remesh_schedule_block_margin.py"><code>observe_executed_event_remesh_block_margin</code></a>
+accepts only an intact <code>ExecutedEventRemeshCycleSequence</code> with the compatible
+runtime telescope present. Optional
+<code>start_boundary</code> and <code>boundary_count</code> select one nonempty contiguous block of
+its identity-bound runtime telescope. The sealed
+<code>RuntimeRemeshScheduleBlockMarginObservation</code> retains those exact boundary
+objects and verifies</p>
+<pre><code class="language-text">D_block = V_before - V_after = K_block + S_block,
+S_block &gt;= 0.
+</code></pre>
+<p>Here <code>K_block</code> is the sum of the gain-based energy-drop lower bounds and
+<code>S_block</code> is the sum of represented-schedule slacks. For <code>V_before &gt; 0</code>, the
+stored normalized diagnostics are
+<code>kappa = K_block / V_before</code>, the observed fraction <code>D_block / V_before</code>, and
+the endpoint gain upper bound <code>1 - kappa</code>. They are <code>None</code> at zero initial
+energy. <code>positive_normalized_block_margin_certified</code> means only that this
+recorded block has <code>K_block &gt; 0</code>; it is not uniform class coercivity.</p>
+<p>No positive absolute lower bound can be uniform across equilibrium and
+amplitude-scaled copies because the quadratic energy and drop scale to zero.
+The remaining runtime-promotion target is a uniform positive normalized block
+margin on a declared forward-invariant executor class plus a finite runtime
+intrablock prefix bound. Neither target, repeated/future runtime stability, a
+runtime-global gain, solver accuracy/order, mesh convergence nor full TNFR
+stability is certified by this finite observer. The separate exact-model
+analogue below proves both bounds conditionally from a common schedule gain.</p>
+<p><a href="../../src/tnfr/physics/event_remesh_refinement.py"><code>observe_event_remesh_three_mesh_refinement</code></a>
+is a pure observer over three already committed <code>EventRemeshCycleResult</code>
+objects. Every positive interval must have physical partition evidence, and
+the intermediate boundary sets must strictly contain the coarse sets while the
+fine sets strictly contain the intermediate sets. The observer rejects an
+incompatible schedule, ordered full support, initial EPI/capacity/phase/pressure,
+captured effective conductance, normalized cycle metric, executor/integrator or
+pressure-callback metadata, incoming REMESH history, or REMESH configuration.
+The observer and its six record types are re-exported by the curated
+<code>tnfr.physics</code> facade and remain available from their defining
+<code>tnfr.physics.event_remesh_refinement</code> submodule.</p>
+<p>The returned <code>EventRemeshThreeMeshRefinementObservation</code> retains the three cycle
+and schedule-composition objects and their separate delayed REMESH results. Its
+checkpoint records cover pre-schedule EPI, every physical boundary,
+pre-REMESH EPI and post-REMESH EPI. Pairwise
+<code>EventRemeshPersistentEPIError</code> records report exact represented component
+errors and the exact <code>L_inf</code> error on persistent node identifiers at every
+coarser checkpoint. ZHIR comparison is available whenever intact
+<code>ExecutedEventLocalZHIRPhysicalPrejumpObservation</code> records exist for all three
+runs. Optional <code>zhir_xi</code> validates that their executed thresholds match the
+supplied value; omitting it does not request an abstention.
+Per-parent modal factors are available only where all runs expose one identical
+ordered support, capacity/conductance generator and modal spectrum.</p>
+<p><code>three_mesh_observation_certified</code> means that the finite inputs, strict nesting,
+compatibility checks and proof seals are intact. The separate
+<code>intermediate_fine_error_decreases_at_coarse_checkpoints</code> property reports a
+finite non-increase with at least one strict decrease; neither property proves
+solver accuracy or order, mesh convergence, Lyapunov decrease, runtime-global
+gain, a combined schedule/REMESH gain, whole-three-mesh atomicity or future
+behavior. <code>complete_reference_problem_certified</code> and
+<code>epi_differences_attributable_only_to_mesh_certified</code> are always false: detached
+cycle artifacts do not retain the complete pre-schedule graph namespace,
+callback closure or RNG state, node metadata, or sub-EPI state.</p>
+<p><a href="../../src/tnfr/physics/reversible_eigenmode_reference.py"><code>certify_reversible_single_eigenmode_euler_reference</code></a>
+is the pure exact-rational reference API for one mode of a general reversible
+pure-EPI generator. It accepts ordered <code>Fraction</code> sequences only. The
+conductance must be square, symmetric, nonnegative and zero-diagonal, with at
+least two nodes and connected positive support; every capacity must be
+positive. From <code>d_i=sum_j W_ij</code> it derives
+<code>A=diag(nu_f)(I-D^-1 W)</code>, <code>H=diag(d_i/nu_i)</code>, the <code>H</code>-weighted mean, and the
+centered initial field. That field must be nonzero and satisfy the exact
+rational identity <code>A*v=mu*v</code> for one <code>mu&gt;0</code>; mixed modes are rejected rather
+than projected.</p>
+<p>Every supplied partition must be positive, have the same exact duration <code>T</code>
+and satisfy <code>0 &lt; mu*h &lt; 1</code>. Successive partitions, when present, must form a
+strict proper-subdivision chain. The sealed
+<code>ReversibleSingleEigenmodeEulerReferenceCertificate</code> retains the exact
+generator and metric, modal residual, rational enclosure of <code>exp(-mu*T)</code>,
+Euler products and endpoints, and factor, <code>L_inf</code> and <code>H</code>-error-energy bounds.
+One partition certifies the theorem but has no observed pairwise subdivision;
+with at least two partitions the separate strict-improvement property verifies
+every declared refinement. For fixed data and an admissible family with
+<code>h_max -&gt; 0</code>, the certificate exposes the conditional exact-real convergence
+theorem. Its binary64-asymptotic, mixed-mode, directed/nonreversible,
+changing-generator, glyph/REMESH, solver-order and full-TNFR scope properties
+remain false. Direct mutation and inconsistent private resealing fail closed.</p>
+<p>The rational exponential implementation requires <code>mu*T &lt;= 4096</code> solely to
+cap the integer-power exponent used by the enclosure. It places no bound on the
+total bit size of arbitrary <code>Fraction</code> inputs or derived rational values. The
+function and result class are re-exported from <code>tnfr.physics</code>, and the complete
+typed surface is declared by
+<a href="../../src/tnfr/physics/reversible_eigenmode_reference.pyi"><code>reversible_eigenmode_reference.pyi</code></a>.
+The theorem and proof are centralized in
+<a href="../../theory/TNFR_DIFFUSION_STABILITY_THEOREM/#exact-reversible-single-eigenmode-euler-reference-theorem"><code>TNFR_DIFFUSION_STABILITY_THEOREM.md</code></a>.
+The public nonregular-<code>P3</code> construction is
+<a href="../../examples/02_physics_regimes/167_reversible_eigenmode_reference.py"><code>167_reversible_eigenmode_reference.py</code></a>.</p>
+<p><a href="../../src/tnfr/physics/runtime_eigenmode_reference.py"><code>observe_executed_reversible_single_eigenmode_euler_reference</code></a>
+is the finite executor-binding API for that exact theorem. It accepts a
+nonempty ordered iterable of intact
+<code>ExecutedPressureRefreshedFlowPartition</code> records. Every record must expose the
+same ordered support, rationalized conductance, positive capacity, exact initial
+EPI and total duration; every physical boundary must carry canonical binary64
+pure-EPI pressure, and every segment must identify the trusted held-pressure
+Euler replay. Every segment must satisfy <code>0 &lt; mu*h &lt; 1</code>, and multiple inputs
+must form a strict proper-subdivision chain. The adapter derives the exact
+reference certificate from those runtime inputs. It does not accept an
+independently supplied reference.</p>
+<p>For each segment, the sealed
+<code>ExecutedReversibleSingleEigenmodeEulerPartitionObservation</code> stores</p>
+<pre><code class="language-text">rho_j     = p64_j - (-L_rw z_j),
+eta_j     = z_(j+1) - z_j - h_j diag(nu_f) p64_j,
+epsilon_j = h_j diag(nu_f) rho_j + eta_j.
+</code></pre>
+<p>All displayed binary64 values are interpreted as exact <code>Fraction</code> values in
+these identities. The adapter verifies
+<code>z_(j+1)=(I-h_j A)z_j+epsilon_j</code> and propagates endpoint defects with the full
+matrix recurrence
+<code>r_(j+1)=(I-h_j A)r_j+epsilon_j</code>. This full propagation is required because
+<code>rho_j</code>, <code>eta_j</code> and <code>epsilon_j</code> need not remain in the reference eigenmode.
+The row also retains rational signed coordinate enclosures for the
+runtime-minus-continuous endpoint and exact <code>L_inf</code> and <code>H</code>-error-energy lower
+and upper bounds. Exact-affine-map identification is reported independently;
+it is not required when the measured represented residuals are nonzero.</p>
+<p>The enclosing
+<code>ExecutedReversibleSingleEigenmodeEulerReferenceObservation</code> binds the rows to
+one internally derived exact reference and revalidates their nested execution
+evidence. Its certification means only a finite offline binding of individually
+executor-certified partitions. Binary64 asymptotic convergence, runtime mesh
+convergence, solver accuracy/order, common causal provenance among the supplied
+executions, glyph/REMESH dynamics, repeated behavior and future/full TNFR
+stability remain false. Both record classes and the observer are re-exported
+from <code>tnfr.physics</code>; the typed surface is declared by
+<a href="../../src/tnfr/physics/runtime_eigenmode_reference.pyi"><code>runtime_eigenmode_reference.pyi</code></a>.
+Example
+<a href="../../examples/02_physics_regimes/168_runtime_reversible_eigenmode_reference.py"><code>168_runtime_reversible_eigenmode_reference.py</code></a>
+exercises the public API on three independently executed nonregular-<code>P3</code>
+partitions.</p>
+<p><a href="../../src/tnfr/physics/event_remesh_reference.py"><code>observe_p2_event_remesh_reference_family</code></a>
+promotes exactly one compatible finite family beyond that generic observation.
+It accepts three intact coarse, intermediate and fine cycle results and binds
+the generic refinement record to an executor-linked runtime REMESH bridge for
+each mesh. It extracts the three physical partitions, invokes the common
+runtime eigenmode observer once, and requires each returned row to identify an
+exact affine map with zero <code>rho</code>, <code>eta</code>, <code>epsilon</code> and endpoint defect before
+applying its stronger P2/REMESH claims. The accepted domain is an event-free
+effective two-node path with a
+nonuniform initial mode, homogeneous positive capacity, fixed positive
+conductance, pure-EPI pressure refreshed at every boundary, and exact
+represented Euler segments satisfying <code>0 &lt; lambda*h &lt; 1</code>. Both refinements
+must be proper positive subdivisions. REMESH must use unit local/global delays,
+the exact initial field as its delayed row, and hard clipping on one common
+nonempty scalar interval. The exact rational exponential enclosure is limited
+to <code>lambda*T &lt;= 4096</code> to cap its integer-power exponent. This cutoff does not
+bound the bit size of arbitrary <code>Fraction</code> inputs.</p>
+<p>Each <code>P2EventRemeshMeshReferenceObservation</code> retains the exact Euler factor,
+the rational continuous-factor interval, both finite-mesh error bounds, the
+ideal <code>beta=(1-alpha)^2</code> REMESH error scaling, the signed runtime residual and
+the resulting <code>L_inf</code> runtime error bound. The enclosing
+<code>P2EventRemeshReferenceFamilyObservation</code> verifies the two strict subdivision
+improvements and binds all three rows to one reference problem. Its explicit
+false-scope properties withhold solver order, generic mesh convergence,
+binary64 asymptotic convergence, arbitrary glyph or mixed-mode dynamics, soft
+clipping, changing support or metric, repeated runtime stability and future
+behavior. The observer and both result classes are re-exported from
+<code>tnfr.physics</code>; its complete typed surface is declared by
+<a href="../../src/tnfr/physics/event_remesh_reference.pyi"><code>event_remesh_reference.pyi</code></a>.
+Its continuous/Euler proof is the two-node homogeneous-capacity specialization
+of the
+<a href="../../theory/TNFR_DIFFUSION_STABILITY_THEOREM/#exact-reversible-single-eigenmode-euler-reference-theorem"><code>general reversible eigenmode theorem</code></a>.
+The additional REMESH equations and runtime boundary are centralized in
+<a href="../../theory/REMESH_INFINITY_DERIVATION/#28-effective-p2-three-mesh-reference-family"><code>REMESH_INFINITY_DERIVATION.md</code></a>.
+The public <code>2/4/8</code>-segment construction is
+<a href="../../examples/02_physics_regimes/166_event_remesh_reference_family.py"><code>166_event_remesh_reference_family.py</code></a>.</p>
+<p><a href="../../src/tnfr/physics/remesh_history_stability.py"><code>certify_uniform_remesh_history_stability</code></a>
+constructs a sealed exact-rational certificate for the distinct finite
+companion recurrence</p>
+<pre><code class="language-text">x[k+1] = (1-alpha)^2*x[k]
+       + alpha*(1-alpha)*x[k-tau_local]
+       + alpha*x[k-tau_global].
+</code></pre>
+<p>Its public <code>UniformRemeshHistoryStabilityCertificate</code> exposes the combined
+delay coefficients, row-stochastic companion matrix and invariant stationary
+temporal distribution. For any fixed positive diagonal spatial metric,
+<a href="../../src/tnfr/physics/remesh_history_stability.py"><code>observe_uniform_remesh_history_transition</code></a>
+checks one exact transition and the identity</p>
+<pre><code class="language-text">V_before - V_after
+  = pi[0]/2 * sum_(a&lt;b) c[a]*c[b]
+      * ||Q_H*x[k-a] - Q_H*x[k-b]||_H^2 &gt;= 0.
+</code></pre>
+<p>For <code>0 &lt; alpha &lt; 1</code>, the companion is primitive and each spatial coordinate
+converges to the preserved stationary history barycenter. <code>alpha=0</code> is the
+identity. At <code>alpha=1</code>, the companion is a pure-delay permutation of order
+<code>tau_global+1</code>; its augmented energy is conserved and a particular orbit may
+have any period dividing that order. These are theorem-level properties of the
+uniform exact recurrence. They do not identify <code>apply_network_remesh</code> with its
+binary64 evaluation and clipping, certify spatial consensus or zero pressure,
+admit changing parameters/support/metric, or multiply a represented schedule
+gain by a REMESH gain. Both functions and result classes are re-exported from
+<code>tnfr.physics</code>; the full derivation lives in
+<a href="../../theory/REMESH_INFINITY_DERIVATION/#24-exact-finite-companion-history-stability"><code>REMESH_INFINITY_DERIVATION.md</code></a>.</p>
+<p><a href="../../src/tnfr/physics/remesh_schedule_policy_stability.py"><code>certify_uniform_remesh_schedule_policy_stability</code></a>
+accepts one intact companion certificate and an exact-rationalized common
+schedule disagreement-energy gain bound <code>q</code> in <code>[0,1]</code>. It describes a
+conditional family whose histories are sampled after each schedule: REMESH
+first forms the next input from the stored heads, and the next schedule then
+acts on that mixture. The componentwise energy envelope is therefore</p>
+<pre><code class="language-text">B_q = diag(q, 1, ..., 1) P.
+</code></pre>
+<p>The sealed <code>UniformRemeshSchedulePolicyStabilityCertificate</code> stores the exact
+one-step envelopes and the three decisive block powers at
+<code>L=active_max_delay+1</code>, verifies <code>B_q^L &lt;= q*P^L</code> entrywise and exposes</p>
+<pre><code class="language-text">prefix gain &lt;= 1,
+L-cycle block gain &lt;= q,
+normalized block-margin lower bound &gt;= 1-q,
+V[k+n] &lt;= q^floor(n/L) V[k].
+</code></pre>
+<p><code>L</code> is a sufficient universal companion-path horizon and need not be minimal
+for a particular interior coefficient choice. Strict <code>q&lt;1</code> proves geometric
+decay of spatial disagreement in every history row. It does not control their
+spatially uniform temporal means. <code>q=1</code> proves nonincrease with zero certified
+margin and makes no convergence decision. The caller must separately prove the
+common schedule gain and consensus preservation for every member of the
+intended exact family. No schedule map or runtime execution is an input, so the
+certificate does not establish binary64 invariance, rounding/clipping control,
+solver accuracy/order, adaptive grammar or full TNFR stability. The class and
+builder are re-exported from <code>tnfr.physics</code>; example 171 exercises the strict
+mixed-delay, strict pure-delay and <code>q=1</code> boundary cases.</p>
+<p><a href="../../src/tnfr/physics/remesh_schedule_relative_defect_stability.py"><code>certify_uniform_remesh_schedule_relative_defect_stability</code></a>
+accepts an intact common-<code>q</code> policy certificate and a finite nonnegative
+relative signed-defect bound <code>eta</code>. For the ideal head <code>y</code>, runtime-bounded head
+<code>z</code>, and Jensen input envelope</p>
+<pre><code class="language-text">J = sum_d c_d E_H(history[d]),
+delta = E_H(z) - E_H(y) &lt;= eta*J,
+q_eff = q*(1+eta),
+</code></pre>
+<p>Jensen's inequality and the declared schedule gain imply
+<code>E_H(schedule(z)) &lt;= q_eff*J</code>. The builder delegates its matrices and block
+powers to the common-gain theorem, preserving <code>q</code> as the schedule-only bound.
+It rejects <code>q_eff&gt;1</code>; <code>q_eff=1</code> gives nonincrease and zero margin, while
+<code>q_eff&lt;1</code> gives normalized block margin <code>1-q_eff</code> and the repeated exact-model
+bound <code>q_eff^floor(n/L)</code>. A zero schedule gain absorbs every finite <code>eta</code>.
+The defect is the signed difference between two centered energies, not the
+energy of the state residual. The certificate declares rather than verifies
+the per-transition hypothesis and therefore makes no runtime or future claim.</p>
+<p><a href="../../src/tnfr/physics/runtime_remesh_schedule_relative_defect.py"><code>observe_executed_event_remesh_relative_defect_block</code></a>
+accepts one intact <code>ExecutedEventRemeshCycleSequence</code> with its compatible
+runtime telescope present, one intact relative-defect certificate, and an
+optional nonempty contiguous boundary range. It
+reuses the causal block binding and, for each selected boundary, verifies the
+REMESH configuration, represented schedule gain <code>q_j &lt;= q</code>, exact signed
+defect <code>delta_j &lt;= eta*J_j</code>, and the componentwise history-energy envelope
+under <code>diag(q_eff,1,...,1)P</code>. It records exact defect ratios only when
+<code>J_j&gt;0</code>; at <code>J_j=0</code>, it checks the inequality without division. The endpoint
+bound is <code>q_eff^floor(N/L)</code> for <code>N</code> selected boundaries, so an incomplete first
+block retains factor one. The result certifies only that recorded finite
+causal block. It does not prove that the bounds are forward invariant, recur
+on later executions, establish solver accuracy/order, or stabilize the full
+TNFR state.</p>
+<p><a href="../../src/tnfr/physics/binary64_remesh_relative_defect.py"><code>observe_binary64_remesh_pair_relative_defect</code></a>
+accepts three strict two-coordinate binary64 pairs plus the represented REMESH
+factor and clipping interval. It invokes the same nested scalar evaluator used
+by the planner and returns a sealed
+<code>Binary64RemeshPairRelativeDefectObservation</code> containing</p>
+<pre><code class="language-text">D_c = beta*d_current^2 + gamma*d_local^2 + delta*d_global^2,
+rounding defect = raw separation^2 - ideal separation^2,
+clipping defect = bounded separation^2 - raw separation^2,
+eta_pair = max(0, total defect / D_c) when D_c &gt; 0.
+</code></pre>
+<p>At <code>D_c=0</code> the observer closes the deterministic equality branch without
+division. The value is the exact minimum nonnegative bound for that pair; it
+does not maximize over a state class. The retained normal-valued <code>alpha=1/2</code>
+witness has <code>eta_pair=2**210-1/4</code>, giving the strict threshold
+<code>q&lt;4/(2**212+3)</code>. Hard clipping is pairwise nonexpansive, but that fact cannot
+control the preceding rounding amplification.</p>
+<p><a href="../../src/tnfr/physics/binary64_remesh_relative_defect.py"><code>certify_alpha_one_hard_clip_remesh_class</code></a>
+accepts one nonempty ordered support, an optional positive diagonal metric,
+positive local/global delays and one finite interval. It fixes <code>alpha=1</code>, hard
+clipping and the runtime history capacity, then reuses the exact REMESH
+companion certificate. Every represented chronological history with length
+between <code>max(tau_local,tau_global)+1</code> and <code>history_maxlen</code>, exact row width,
+finite binary64 entries and values inside the interval belongs to the class.
+REMESH copies the global delayed row numerically, has uniform <code>eta=0</code>, and
+preserves the class. Equality does not promise preservation of the signed-zero
+bit. Schedule, repeated event execution, future-runtime, solver and full-TNFR
+properties are explicitly false.</p>
+<p><a href="../../src/tnfr/physics/binary64_remesh_relative_defect.py"><code>certify_half_alpha_antisymmetric_hard_clip_remesh_class</code></a>
+accepts exactly two ordered nodes, an optional positive diagonal metric,
+positive local/global delays and a positive represented radius
+<code>epi_bound&gt;=4*2**-1074</code>. It fixes <code>alpha=0.5</code> and the symmetric hard interval
+<code>[-epi_bound,epi_bound]</code>. A represented history belongs only when its length is
+between <code>max(tau_local,tau_global)+1</code> and <code>history_maxlen</code> and every row is a
+finite in-interval binary64 pair <code>(a,-a)</code>. The production nested recurrence and
+symmetric clamp preserve numeric antisymmetry and the interval.</p>
+<p>The certificate stores the sharp bound <code>eta*=135/124</code>. Its executable proof
+splits at <code>x=sqrt(D)=11*s</code>, where <code>s=2**-1074</code> and
+<code>D=c**2+l**2+2*g**2</code>. For the large-norm tail, it stores the exact constants
+<code>A=3*u/2+u**2/2</code> and <code>C=9/4+9*u/4+u**2/2</code>, with <code>u=2**-53</code>, in
+<code>|r-y|&lt;=A*x+C*s</code>; the resulting tail ratio is strictly below <code>eta*</code>. For
+<code>x&lt;11*s</code>, it exactly enumerates 6,615 bounded integer triples, retains the
+3,890 with <code>0&lt;D/s**2&lt;121</code>, and finds the maximum at <code>(-3,-2,-3)</code>. The stored
+subnormal witness has ideal amplitude <code>-11*s/4</code>, runtime amplitude <code>-4*s</code>, and
+relative defect <code>135/124</code>.</p>
+<p><code>certify_schedule_relative_defect_stability(q)</code> composes that <code>eta*</code> through
+the existing robust theorem. Its strict threshold is <code>q&lt;124/259</code>; <code>q=4/9</code>
+produces <code>q_eff=259/279</code> and normalized block margin <code>20/279</code>, equality at
+<code>q=124/259</code> produces nonincrease with zero margin, and <code>q=9/16</code> is rejected.
+This method certifies the conditional exact schedule theorem, not a verified
+runtime schedule family. The class is REMESH-forward-invariant only. It does
+not include arbitrary positive-metric-centered histories or unrestricted fixed
+lattices, and it leaves graph/event binding, repeated complete-runtime
+execution, solver and full-TNFR properties false.</p>
+<p><a href="../../src/tnfr/physics/binary64_p2_reception_stability.py"><code>certify_p2_half_reception_remesh_stability</code></a>
+requires an intact two-node <code>alpha=1</code> class certificate. It fixes mutual
+singleton neighbor indices, the exact binary64 configured factor <code>0.5</code>, a
+common hard clamp and an immutable all-target EPI snapshot. For every finite
+represented pair in the interval, the two shared Reception-kernel evaluations
+are numerically equal; hence their centered energy is zero in the supplied
+metric and the global numeric EPI-kernel gain is <code>q=0</code>. The builder reuses the
+common-<code>q</code> and relative-defect certificates with <code>eta=q_eff=0</code>. Its exact cycle
+bound is one before the sufficient horizon and zero from
+<code>tau_global+1</code> onward. <code>evaluate_binary64_schedule_pair</code> replays one strict
+pair and checks numeric consensus and interval membership. The certificate is
+global over its numeric EPI-kernel class and supports arbitrary finite kernel
+repetition; it does not bind a real graph, the complete EN stage, grammar,
+events, callbacks, transactions or a solver.</p>
+<p><a href="../../src/tnfr/physics/runtime_p2_reception_stage.py"><code>certify_executed_p2_half_reception_stage</code></a>
+accepts one intact P2 half-Reception kernel certificate and one intact
+<code>OperatorEventExecutionResult</code>. Unless <code>event_index</code> selects it explicitly,
+the execution must contain exactly one Reception event. The adapter requires
+the selected event and its executor-owned <code>ExecutedGlyphStage</code> to retain
+same-invocation identity, zero duration, two-phase scheduling, two exact
+captured endpoints and a revalidated one-step neighbor-stage certificate. It
+then verifies ordered P2 targets, mutual singleton runtime neighbors, exact
+binary64 mix <code>0.5</code>, the source hard interval, unchanged capacity and effective
+conductance, the source diffusion-metric ray, accepted output identity and a
+bit-exact replay through the shared production mean/blend/clipping kernel.</p>
+<p>The sealed <code>ExecutedP2HalfReceptionStageCertificate</code> therefore binds the
+global <code>q=0</code> conclusion to one executed EPI stage with finite grammar admission
+and whole-schedule graph atomicity. Opposite signed-zero output bits remain
+valid numeric consensus. The certificate does not bind the source REMESH
+history or configuration to the graph, audit all auxiliary Reception state or
+raw topology, retain current live-graph identity, or certify future/repeated
+runtime stability, solver accuracy or full TNFR stability.</p>
+<p><a href="../../src/tnfr/physics/runtime_p2_reception_remesh_sequence.py"><code>certify_executed_p2_half_reception_remesh_sequence</code></a>
+accepts one intact P2 half-Reception kernel certificate and one intact
+<code>ExecutedEventRemeshCycleSequence</code>. It selects one Reception event per cycle,
+automatically only when the event is unique, and constructs both an
+<code>ExecutedP2HalfReceptionStageCertificate</code> and a
+<code>RuntimeRemeshHistoryBridgeObservation</code> for that same cycle. Each selected EN
+stage must span the complete schedule EPI endpoints and retain the exact P2
+support, half mix, hard interval and metric ray, so the observed schedule EPI
+transition has <code>q=0</code>. Each applied REMESH must use exact binary64 <code>alpha=1</code>, the
+same delays, bounds, history capacity and alpha-source provenance, and must be
+an exact numeric copy of its selected global-delay row with zero represented
+defect.</p>
+<p>For <code>N &gt;= L = tau_global+1</code>, the adapter checks the active suffix of exactly
+<code>L</code> chronological rows rather than every retained history row. That suffix lies
+inside the source interval, while stale older rows are outside the recurrence
+and outside the certificate. The result records exact zero spatial disagreement
+for the observed post-horizon REMESH fields and the final committed endpoint,
+and inherits same-invocation cycle order and graph-owned atomicity from the
+source execution. This is a finite observed certificate. Future or unobserved
+repetition, auxiliary Reception state, current live-graph binding, solver
+accuracy and full TNFR stability remain explicitly false.</p>
+<p><a href="../../src/tnfr/physics/runtime_p2_reception_remesh_policy.py"><code>execute_p2_half_reception_remesh_policy_invocation</code></a>
+is the reusable execution boundary for that restricted finite protocol. A fresh
+outer <code>GraphTransactionSnapshot</code> is taken before caller-owned specifications or
+metric weights are materialized. Static preflight requires an intact P2
+kernel certificate; the same ordered undirected two-node mutual-singleton
+support and positive diffusion metric ray; positive capacity and symmetric
+conductance; exact binary64
+<code>EN_mix=0.5</code>; matching hard-clipped <code>alpha=1</code> REMESH controls, delays, bounds and
+history capacity; an in-interval live EPI pair that is not identically zero,
+an in-interval active incoming history; and
+at least <code>tau_global+1</code> distinct one-cycle zero-flow
+<code>Reception -&gt; Coherence -&gt; Recursivity</code> specifications chained to the live
+clock. Physical flow partitions are excluded from this initial policy.
+The incoming history may use any supported indexed container; the canonical
+append rebuilds it as a bounded deque. Enough rows must exist for the first
+append to satisfy <code>max(tau_local,tau_global)+1</code>, but only the last <code>tau_global</code>
+incoming rows are active and therefore required to lie inside the interval.</p>
+<p>The function passes a read-only live context to
+<code>execute_event_remesh_cycle_sequence</code>; schedule materialization therefore
+rederives U1a admission from the current EPI pair at every cycle start. If a
+REMESH result makes that pair identically zero, the next cycle is rejected and
+the whole invocation rolls back. The policy requests no affine telescope and
+constructs the existing
+<code>ExecutedP2HalfReceptionRemeshSequenceCertificate</code> before the outer transaction
+can commit. Any preflight, execution, callback, observation or
+post-certification failure restores graph-owned state. Each successful call
+certifies only its own finite trace. A later call is revalidated independently;
+future and unobserved repetition, auxiliary Reception-state stability, solver
+properties and full TNFR stability remain false.</p>
+<p><a href="../../src/tnfr/physics/runtime_remesh_history_stability.py"><code>observe_runtime_remesh_history_bridge</code></a>
+accepts one intact, applied <code>EventRemeshCycleResult</code> and binds it to that exact
+companion model. The returned <code>RuntimeRemeshHistoryBridgeObservation</code> retains
+the exact represented ideal, raw and bounded heads and the signed identity</p>
+<pre><code class="language-text">bounded = ideal_companion + rounding_residual + clipping_residual.
+</code></pre>
+<p>It replays the nested affine expression and canonical <code>structural_clip</code> call
+bit for bit. Its exact lifted augmented-energy balances separate Jensen
+dissipation from the signed rounding and clipping defects. The accompanying
+absolute perturbation bounds are a posteriori sufficient conditions for this
+one step; the signed balances remain available when those bounds are too
+conservative. Hard clipping on one common interval is nonexpansive in the
+declared positive diagonal disagreement metric. Soft clipping can increase
+disagreement and therefore receives no such promotion.</p>
+<p>The word <code>lifted</code> is part of the contract: the runtime appends the pre-REMESH
+head and does not immediately append the bounded result. The bridge does not
+certify live history advance, repeated runtime stability, transfer of the
+companion convergence theorem, schedule/REMESH composition or future behavior.
+Its result class and observer are re-exported from <code>tnfr.physics</code>.</p>
+<p><a href="../../src/tnfr/physics/remesh_schedule_stability.py"><code>observe_remesh_schedule_history_transition</code></a>
+is the pure exact layer for one REMESH-head/schedule-head transition. Given an
+intact companion transition, represented raw and bounded heads, a scheduled
+head and a declared nonnegative bound <code>q</code> that it verifies against those
+supplied heads, it retains separate raw, clipping and schedule
+disagreement-energy defects. The returned
+<code>RemeshScheduleHistoryStabilityObservation</code> checks</p>
+<pre><code class="language-text">exact_drop = Jensen_dissipation - raw_defect - clip_defect - schedule_defect
+exact_drop = gain_based_lower_bound + pi[0] * schedule_gain_slack.
+</code></pre>
+<p>The lower bound is a sufficient one-step nonincrease condition. The exact
+signed balance remains authoritative when that sufficient bound is negative.
+The observation also records the stationary-history barycenter drift caused by
+replacing the ideal head with the scheduled head. This layer has no executable
+provenance and certifies neither repetition nor future stability. Its class and
+observer are re-exported from <code>tnfr.physics</code>.</p>
+<p><a href="../../src/tnfr/physics/runtime_remesh_schedule_stability.py"><code>observe_runtime_remesh_schedule_sequence</code></a>
+accepts an intact <code>ObservedEventRemeshCycleSequence</code> only when its exact
+recorded boundaries are continuous, every nested schedule exposes one common
+normalized positive metric and the REMESH configuration is fixed. For each
+adjacent pair, <code>RuntimeRemeshScheduleBoundaryObservation</code> binds the left
+cycle's applied runtime bridge to the right cycle's represented schedule. The
+schedule must start at the bounded REMESH head, finish at the right pre-REMESH
+head and satisfy its sealed represented-map gain.</p>
+<p>The boundary also reconstructs the next cycle's newest-first history window
+and requires it to equal the scheduled head followed by the preceding
+companion tail. Its exact energy record therefore applies to the runtime
+values retained by those two cycle artifacts. The enclosing
+<code>RuntimeRemeshScheduleSequenceObservation</code> checks cancellation of every
+intermediate augmented energy and publishes the finite identity</p>
+<pre><code class="language-text">total_drop = initial_augmented_energy - final_augmented_energy
+total_drop = sum(gain_based_lower_bounds)
+             + sum(schedule_augmented_energy_gain_slacks).
+</code></pre>
+<p>Each augmented slack is <code>pi[0] * schedule_energy_gain_slack</code> in the fixed
+companion metric.</p>
+<p>This is an additive finite telescope, without multiplication of fixed-history
+REMESH gains. The source sequence remains a caller-supplied ordering of
+individually atomic cycles, so the result does not certify shared graph
+provenance, causal succession, cross-call atomicity, a global executable gain,
+repetition or future behavior. Both result classes and the observer are
+re-exported from <code>tnfr.physics</code>.</p>
+<h2 id="contract-verification">Contract verification<a class="headerlink" href="#contract-verification" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../tests/operators/test_operator_contracts.py"><code>test_operator_contracts.py</code></a>
+  verifies catalog coverage and direct effects.</li>
+<li><a href="../../tests/operators/test_u3_hard_invariant.py"><code>test_u3_hard_invariant.py</code></a>
+  verifies rejection before Coupling or Resonance mutation.</li>
+<li><a href="../../tests/operators/test_canonical_operators_modern.py"><code>test_canonical_operators_modern.py</code></a>
+  covers operator behavior and latency.</li>
+<li><a href="../../tests/operators/test_event_remesh_runtime.py"><code>test_event_remesh_runtime.py</code></a>
+  verifies sealed exact history transitions and one-cycle boundaries.</li>
+<li><a href="../../tests/operators/test_event_remesh_cycle_sequence.py"><code>test_event_remesh_cycle_sequence.py</code></a>
+  verifies ordered recorded-state continuity, metric rays, proof seals and
+  the alternating-history obstruction to gain multiplication.</li>
+<li><a href="../../tests/operators/test_event_remesh_causal_runtime.py"><code>test_event_remesh_causal_runtime.py</code></a>
+  verifies same-invocation receipts, graph identity, outer graph rollback,
+  nested sequence bindings, seal integrity and explicit false stability scope;
+  <a href="../../tests/operators/test_event_remesh_causal_runtime_example.py"><code>test_event_remesh_causal_runtime_example.py</code></a>
+  checks the public facade, stub and finite causal example.</li>
+<li><a href="../../tests/physics/test_runtime_remesh_schedule_block_margin.py"><code>test_runtime_remesh_schedule_block_margin.py</code></a>
+  verifies exact contiguous-block telescoping, normalized diagnostics, zero
+  initial energy, source/boundary identity and fail-closed proof seals;
+  <a href="../../tests/physics/test_runtime_remesh_schedule_block_margin_example.py"><code>test_runtime_remesh_schedule_block_margin_example.py</code></a>
+  checks the public facade, import order and the <code>139/256</code> versus <code>0</code> examples.</li>
+<li><a href="../../tests/physics/test_event_remesh_refinement.py"><code>test_event_remesh_refinement.py</code></a>
+  verifies strict three-mesh compatibility, checkpoint errors, executed ZHIR
+  binding, common-generator modal abstention and fail-closed proof seals.</li>
+<li><a href="../../tests/physics/test_event_remesh_reference.py"><code>test_event_remesh_reference.py</code></a>
+  verifies the effective-P2 hypotheses, rational Euler bounds, strict proper
+  subdivisions, exact REMESH scaling, runtime residual bound and fail-closed
+  scope; <a href="../../tests/physics/test_event_remesh_reference_example.py"><code>test_event_remesh_reference_example.py</code></a>
+  executes and checks the public <code>2/4/8</code>-segment example.</li>
+<li><a href="../../tests/physics/test_reversible_eigenmode_reference.py"><code>test_reversible_eigenmode_reference.py</code></a>
+  verifies the general reversible metric and exact-mode hypotheses, exponential
+  enclosure, Euler and norm bounds, strict subdivision identities, convergence
+  scope and fail-closed proof seal;
+  <a href="../../tests/physics/test_reversible_eigenmode_reference_example.py"><code>test_reversible_eigenmode_reference_example.py</code></a>
+  verifies the facade, public stub and both nonuniform modes in example 167.</li>
+<li><a href="../../tests/physics/test_runtime_eigenmode_reference.py"><code>test_runtime_eigenmode_reference.py</code></a>
+  verifies runtime-source binding, exact <code>rho</code>/<code>eta</code>/<code>epsilon</code> decomposition,
+  full-matrix defect propagation, rational continuous-error enclosures, family
+  compatibility, proof sealing and false scope;
+  <a href="../../tests/physics/test_runtime_eigenmode_reference_example.py"><code>test_runtime_eigenmode_reference_example.py</code></a>
+  covers its facade, stub and executed <code>P3</code> report.</li>
+<li><a href="../../tests/physics/test_remesh_history_stability.py"><code>test_remesh_history_stability.py</code></a>
+  verifies the exact companion, stationary distribution, Jensen balance,
+  equality case and all three alpha regimes.</li>
+<li><a href="../../tests/physics/test_remesh_schedule_policy_stability.py"><code>test_remesh_schedule_policy_stability.py</code></a>
+  verifies the exact <code>D_q P</code> ordering, rational powers, universal path horizon,
+  prefix and block inequalities, endpoint regimes, input domain and fail-closed
+  seals; <a href="../../tests/physics/test_remesh_schedule_policy_stability_example.py"><code>test_remesh_schedule_policy_stability_example.py</code></a>
+  checks the facade, stub, import order and public example 171.</li>
+<li><a href="../../tests/physics/test_remesh_schedule_relative_defect_stability.py"><code>test_remesh_schedule_relative_defect_stability.py</code></a>
+  verifies exact <code>q_eff</code>, the reused envelope, zero/equality/rejection
+  boundaries, Jensen cancellation and <code>J=0</code>, exact rationalization, hostile
+  inputs and fail-closed nested seals.</li>
+<li><a href="../../tests/physics/test_runtime_remesh_schedule_relative_defect.py"><code>test_runtime_remesh_schedule_relative_defect.py</code></a>
+  verifies causal identity, normalized signed defects, minimum accepted <code>eta</code>,
+  represented <code>q_j&lt;=q</code>, every history-vector envelope, incomplete and complete
+  blocks, zero energy and tamper resistance;
+  <a href="../../tests/physics/test_runtime_remesh_schedule_relative_defect_example.py"><code>test_runtime_remesh_schedule_relative_defect_example.py</code></a>
+  checks the public facade and example 172.</li>
+<li><a href="../../tests/physics/test_binary64_remesh_relative_defect.py"><code>test_binary64_remesh_relative_defect.py</code></a>
+  verifies shared-kernel replay, the exact normal-valued <code>alpha=1/2</code>
+  obstruction, zero denominators, hard-clamp nonexpansiveness, signed-zero
+  scope, the <code>alpha=1</code> class and fail-closed seals;
+  <a href="../../tests/operators/test_delayed_remesh_contract.py"><code>test_delayed_remesh_contract.py</code></a>
+  verifies that the planner and observer share the production scalar kernel;
+  <a href="../../tests/physics/test_binary64_remesh_relative_defect_example.py"><code>test_binary64_remesh_relative_defect_example.py</code></a>
+  checks the public facade and example 173.</li>
+<li><a href="../../tests/physics/test_half_alpha_antisymmetric_remesh_class.py"><code>test_half_alpha_antisymmetric_remesh_class.py</code></a>
+  verifies the sharp <code>eta=135/124</code> class, exact analytic-tail constants,
+  exhaustive 6,615/3,890 finite core, subnormal maximizer, strict/equality/
+  rejection gain boundaries, history membership, forward invariance, excluded
+  centered and lattice generalizations, public types and fail-closed seals;
+  <a href="../../tests/physics/test_half_alpha_antisymmetric_remesh_class_example.py"><code>test_half_alpha_antisymmetric_remesh_class_example.py</code></a>
+  checks the public facade and example
+  <a href="../../examples/02_physics_regimes/178_half_alpha_antisymmetric_remesh_class.py"><code>178_half_alpha_antisymmetric_remesh_class.py</code></a>.</li>
+<li><a href="../../tests/physics/test_binary64_p2_reception_stability.py"><code>test_binary64_p2_reception_stability.py</code></a>
+  verifies global numeric consensus and <code>q=0</code> for the exact-half P2 kernel,
+  its <code>eta=q_eff=0</code> composition and finite extinction horizon, extremes,
+  signed-zero scope, the canonical-factor gain-four witness and hostile seals;
+  <a href="../../tests/physics/test_binary64_p2_reception_stability_example.py"><code>test_binary64_p2_reception_stability_example.py</code></a>
+  checks the public facade and example 174.</li>
+<li><a href="../../tests/physics/test_runtime_p2_reception_stage.py"><code>test_runtime_p2_reception_stage.py</code></a>
+  verifies real event/stage provenance, exact P2 support, mix, interval, metric,
+  endpoint replay, underflow and signed-zero behavior, default-factor rejection,
+  nested reseal resistance and explicit negative scope;
+  <a href="../../tests/physics/test_runtime_p2_reception_stage_example.py"><code>test_runtime_p2_reception_stage_example.py</code></a>
+  checks the public facade and example 175.</li>
+<li><a href="../../tests/physics/test_runtime_p2_reception_remesh_sequence.py"><code>test_runtime_p2_reception_remesh_sequence.py</code></a>
+  verifies per-cycle EN and REMESH identity, fixed P2 configuration, the active
+  suffix boundary, finite post-horizon extinction and fail-closed negative
+  scope;
+  <a href="../../tests/physics/test_runtime_p2_reception_remesh_sequence_example.py"><code>test_runtime_p2_reception_remesh_sequence_example.py</code></a>
+  checks the public facade, stub and example
+  <a href="../../examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py"><code>176_runtime_p2_reception_remesh_sequence.py</code></a>
+  with its same-invocation two-cycle witness.</li>
+<li><a href="../../tests/physics/test_runtime_p2_reception_remesh_policy.py"><code>test_runtime_p2_reception_remesh_policy.py</code></a>
+  verifies per-call preflight, two independent successful invocations, complete
+  rollback after invalid or graph-mutating post-certification, live U1a
+  derivation, active-history scope and directed preflight rejection;
+  <a href="../../tests/physics/test_runtime_p2_reception_remesh_policy_example.py"><code>test_runtime_p2_reception_remesh_policy_example.py</code></a>
+  checks the public facade, stub and example
+  <a href="../../examples/02_physics_regimes/177_runtime_p2_reception_remesh_policy.py"><code>177_runtime_p2_reception_remesh_policy.py</code></a>.</li>
+<li><a href="../../tests/physics/test_runtime_remesh_history_stability.py"><code>test_runtime_remesh_history_stability.py</code></a>
+  verifies bit-exact replay, signed residual and energy identities, hard-clip
+  nonexpansiveness, the soft-clip counterexample, inactive-delay handling and
+  fail-closed derivation seals.</li>
+<li><a href="../../tests/physics/test_remesh_schedule_stability.py"><code>test_remesh_schedule_stability.py</code></a>
+  verifies the exact defect telescope, schedule-gain slack and lower bound,
+  expansive and contracting cases, barycenter drift and fail-closed seals.</li>
+<li><a href="../../tests/physics/test_runtime_remesh_schedule_stability.py"><code>test_runtime_remesh_schedule_stability.py</code></a>
+  verifies adjacent represented schedule endpoints, the recorded history
+  advance, common normalized metrics, finite energy telescoping and fail-closed
+  nested proof bindings.</li>
+<li><a href="../grammar/PHYSICS_VERIFICATION/">Grammar Physics Verification Map</a> maps U1-U6
+  to their implementation and scope.</li>
+</ul>
+<h2 id="extension-rule">Extension rule<a class="headerlink" href="#extension-rule" title="Permanent link">&para;</a></h2>
+<p>The catalog is fixed at 13 canonical operators. A domain feature should compose
+existing operators or remain a diagnostic/morphism outside the catalog. Any
+proposal to alter the catalog requires a nodal-equation channel, scale,
+postcondition, grammar classification, tests, and an update to the canonical
+synthesis; adding a class or registry entry alone does not establish
+canonicity.</p>
+<h2 id="auxiliary-spectral-expectation-contract">Auxiliary spectral-expectation contract<a class="headerlink" href="#auxiliary-spectral-expectation-contract" title="Permanent link">&para;</a></h2>
+<p><code>SpectralExpectationOperator</code> evaluates the Hermitian observable
+<code>&lt;psi|A|psi&gt;</code>. Its value lies in the real spectral interval of <code>A</code>; values
+above one are valid. This auxiliary value is never the structural coherence
+<code>C(t)</code>, never inherits a <code>[0, 1]</code> bound, and never enters <code>C_steps</code>.</p>
+<p><code>NodeNX</code>, <code>create_math_nfr</code>, the dynamics runtime and the CLI expose the
+canonical names <code>spectral_operator</code>, <code>spectral_expectation_threshold</code> and
+<code>spectral_operator_expectation</code>. Every result payload contains <code>value</code>,
+<code>threshold</code>, <code>passed</code>, <code>metric_kind</code>, <code>range</code>, <code>bounded</code>,
+<code>provenance</code>, <code>canonical_coherence_certified=False</code> and
+<code>records_to_C_steps=False</code>.</p>
+<p>Historical <code>coherence_operator</code>, <code>coherence_threshold</code>, <code>coherence_value</code>,
+<code>coherence_passed</code> and runtime history keys remain explicit compatibility
+aliases. They mirror the same auxiliary spectral value and carry no <code>C(t)</code>
+meaning. Supplying contradictory canonical and historical inputs is rejected.</p>
+<p>The CLI accepts <code>--math-spectral-expectation-spectrum</code>,
+<code>--math-spectral-expectation-floor</code> and
+<code>--math-spectral-expectation-threshold</code>. The former
+<code>--math-coherence-*</code> spellings remain accepted as aliases.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

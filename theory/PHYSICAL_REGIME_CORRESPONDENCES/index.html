@@ -1,0 +1,2168 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/PHYSICAL_REGIME_CORRESPONDENCES/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Physical Regime Correspondences - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#physical-regime-correspondences" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Physical Regime Correspondences
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Scope
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Scope">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verification-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification Status
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-classical-adapter-and-overdamped-limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Classical Adapter and Overdamped Limit
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Classical Adapter and Overdamped Limit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-regime-conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Regime Conditions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-observable-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Observable Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-first-order-law-and-second-order-adapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 First-order law and second-order adapter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-force-interpretation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Force Interpretation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-integration-scheme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Integration Scheme
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-zero-pressure-and-kinematic-comparisons" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Zero-pressure and Kinematic Comparisons
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Zero-pressure and Kinematic Comparisons">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-canonical-zero-pressure-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Canonical zero-pressure statement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-two-train-adapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Two-train adapter
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-finite-spectral-and-wave-correspondence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Finite Spectral and Wave Correspondence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Finite Spectral and Wave Correspondence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-observable-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Observable Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-mode-selection-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Mode-selection mechanism
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-validation-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Validation boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-fourier-width-and-interference-correspondence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Fourier Width and Interference Correspondence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Fourier Width and Interference Correspondence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-fourier-width-product" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Fourier-width product
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-two-path-interference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Two-path interference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-validation-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Validation boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-coupled-oscillator-thermal-proxy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Coupled-oscillator Thermal Proxy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Coupled-oscillator Thermal Proxy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-declared-proxy-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Declared proxy mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-pairwise-u3-compatibility-is-not-transitive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Pairwise U3 compatibility is not transitive
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-balance-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Balance boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-stochastic-desynchronization-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Stochastic desynchronization boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-cooling-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Cooling comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-regime-transition-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Regime Transition Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-implementation-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Implementation Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation &amp; Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation &amp; Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tnfr-classical-mechanics-dictionary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TNFR ↔ Classical Mechanics Dictionary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executable-demonstrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executable Demonstrations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-source-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Source Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="physical-regime-correspondences">Physical Regime Correspondences<a class="headerlink" href="#physical-regime-correspondences" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: Technical reference
+<strong>Version</strong>: 0.0.3.5
+<strong>Date</strong>: March 2026</p>
+<hr />
+<h2 id="1-scope">1. Scope<a class="headerlink" href="#1-scope" title="Permanent link">&para;</a></h2>
+<p>This document records five scoped comparisons between TNFR observables and
+separately declared physical models. Each comparison states its assumptions,
+telemetry and validation artifact. The nodal equation
+$\partial\mathrm{EPI}/\partial t = \nu_f\,\Delta\mathrm{NFR}(t)$ directly gives a
+first-order structural drift law. It does not, by itself, derive Newtonian,
+quantum or thermodynamic dynamics. Those labels apply only to the adapters or
+auxiliary models named below.</p>
+<h3 id="verification-status">Verification Status<a class="headerlink" href="#verification-status" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Comparison</th>
+<th>Implementation</th>
+<th>External reference</th>
+<th>Test coverage</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Classical adapter</td>
+<td><code>classical_mechanics.py</code></td>
+<td>Harmonic and circular-orbit closure</td>
+<td><code>test_classical_mechanics.py</code></td>
+<td>Finite regression</td>
+</tr>
+<tr>
+<td>Kinematic adapter</td>
+<td><code>classical_mechanics.py</code></td>
+<td>Two-train analytical</td>
+<td>Embedded in example</td>
+<td>Demonstrated</td>
+</tr>
+<tr>
+<td>Finite spectral model</td>
+<td><code>quantum_mechanics.py</code></td>
+<td>Particle in a box</td>
+<td>None</td>
+<td>Partial</td>
+</tr>
+<tr>
+<td>Fourier/interference model</td>
+<td>Example only</td>
+<td>Fourier bound</td>
+<td>None</td>
+<td>Partial</td>
+</tr>
+<tr>
+<td>Coupled-oscillator thermal proxy</td>
+<td>Example only</td>
+<td>Newton cooling law</td>
+<td>None</td>
+<td>Demonstration</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-classical-adapter-and-overdamped-limit">2. Classical Adapter and Overdamped Limit<a class="headerlink" href="#2-classical-adapter-and-overdamped-limit" title="Permanent link">&para;</a></h2>
+<h3 id="21-regime-conditions">2.1 Regime Conditions<a class="headerlink" href="#21-regime-conditions" title="Permanent link">&para;</a></h3>
+<p>A high-coherence structural snapshot requires small aggregate pressure and EPI
+rate:</p>
+<p>$$
+\operatorname{mean}|\Delta\mathrm{NFR}| \ll 1, \qquad
+\operatorname{mean}|d\mathrm{EPI}/dt| \ll 1.
+$$</p>
+<p>Under these measured assumptions the canonical read-out
+$C(t)=1/(1+\operatorname{mean}|\Delta\mathrm{NFR}|+
+\operatorname{mean}|d\mathrm{EPI}/dt|)$ is close to one. Phase spread and a
+constant capacity may be assumptions of a selected mechanical comparison, but
+neither quantity enters the constitutive kernel directly. A small phase
+gradient alone does not establish high $C(t)$.</p>
+<h3 id="22-observable-mapping">2.2 Observable Mapping<a class="headerlink" href="#22-observable-mapping" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Model quantity</th>
+<th>TNFR comparison</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Position $q$</td>
+<td>Selected spatial component of EPI</td>
+<td>Adapter convention</td>
+</tr>
+<tr>
+<td>Velocity $\dot q$</td>
+<td>Selected flow component</td>
+<td>Adapter convention</td>
+</tr>
+<tr>
+<td>Mobility</td>
+<td>$\nu_f$</td>
+<td>Exact coefficient in the first-order nodal law</td>
+</tr>
+<tr>
+<td>Inertial mass $m$</td>
+<td>Explicit adapter parameter</td>
+<td>No identity $m=1/\nu_f$ follows from TNFR</td>
+</tr>
+<tr>
+<td>Force slot $F$</td>
+<td>Optional $\Delta\mathrm{NFR}$ bridge</td>
+<td>Must be declared and dimensionally specified</td>
+</tr>
+<tr>
+<td>Potential comparison</td>
+<td>$\Phi_s$</td>
+<td>Structural source aggregation, not mechanical potential energy</td>
+</tr>
+<tr>
+<td>Action comparison</td>
+<td>Optional phase accumulation</td>
+<td>Mapper does not construct this bridge</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23-first-order-law-and-second-order-adapter">2.3 First-order law and second-order adapter<a class="headerlink" href="#23-first-order-law-and-second-order-adapter" title="Permanent link">&para;</a></h3>
+<p>Reading an EPI coordinate as $q$ and pressure as $F$ gives the exact algebraic
+form</p>
+<p>$$
+\dot q = \nu_f F,
+$$</p>
+<p>so $\nu_f$ is a mobility. Newtonian motion instead requires an additional state
+and a separately chosen law,</p>
+<p>$$
+\dot q=v,\qquad \dot v=F/m.
+$$</p>
+<p>The classical examples implement this second-order adapter. Their inertial mass
+is an adapter parameter; substituting $\nu_f=1/m$ is an optional dimensional
+identification, not a consequence of the nodal equation. A damped graph wave has
+a restricted pure-EPI diffusion limit under its own stated hypotheses. Neither
+construction derives the full inertial regime from the isotropic auxiliary
+substrate.</p>
+<h3 id="24-force-interpretation">2.4 Force Interpretation<a class="headerlink" href="#24-force-interpretation" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Adapter mechanism</th>
+<th>Directly available telemetry</th>
+<th>Optional TNFR comparison</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Externally supplied pair force</td>
+<td>$q$, $p$, force/acceleration and classical energy</td>
+<td>$\Delta\mathrm{NFR}$ and $\Phi_s$ only after an explicit scalar pressure bridge</td>
+</tr>
+<tr>
+<td>Configured damping</td>
+<td>Adapter state and dissipation rate</td>
+<td>$C(t)$ only after pressure and EPI-rate channels are materialized</td>
+</tr>
+<tr>
+<td>Configured restoring force</td>
+<td>Adapter state and force</td>
+<td>Phase-gradient and curvature only from a separately constructed graph state</td>
+</tr>
+</tbody>
+</table>
+<p>These rows specify possible comparisons. The mapper and N-body solver do not
+materialize canonical pressure, $C(t)$ or the tetrad, and the tetrad does not
+generate the adapter's force law.</p>
+<h3 id="25-integration-scheme">2.5 Integration Scheme<a class="headerlink" href="#25-integration-scheme" title="Permanent link">&para;</a></h3>
+<p>The Verlet/Yoshida integrators in <code>src/tnfr/dynamics/symplectic.py</code> preserve the
+symplectic structure of the declared Hamiltonian map up to numerical error. This
+property does not certify all TNFR structural invariants or any arbitrary
+operator schedule.</p>
+<p>Workflow:</p>
+<ol>
+<li>Select and record the adapter, force law, units and integrator order.</li>
+<li>Export $q$, $p$, force/acceleration and adapter energy with numerical
+   tolerances.</li>
+<li>If a graph comparison is required, declare how adapter state maps to scalar
+   EPI and $\Delta\mathrm{NFR}$, materialize $d\mathrm{EPI}/dt$, and record its
+   provenance before computing $C(t)$ or the tetrad.</li>
+<li>Compare the adapter trajectory against its stated reference.</li>
+</ol>
+<h3 id="26-validation">2.6 Validation<a class="headerlink" href="#26-validation" title="Permanent link">&para;</a></h3>
+<p>The focused tests check one-period harmonic and circular-orbit closure under
+explicitly supplied force evaluators. The Kepler demonstration
+(<code>examples/02_physics_regimes/12_classical_mechanics_demo.py</code>) plots a selected
+inverse-square central-force trajectory. These finite checks validate the
+declared force/integration paths at their tolerances; they do not derive gravity
+from the nodal equation.</p>
+<h2 id="3-zero-pressure-and-kinematic-comparisons">3. Zero-pressure and Kinematic Comparisons<a class="headerlink" href="#3-zero-pressure-and-kinematic-comparisons" title="Permanent link">&para;</a></h2>
+<h3 id="31-canonical-zero-pressure-statement">3.1 Canonical zero-pressure statement<a class="headerlink" href="#31-canonical-zero-pressure-statement" title="Permanent link">&para;</a></h3>
+<p>$$
+\Delta\mathrm{NFR}=0 \quad\Rightarrow\quad
+\partial\mathrm{EPI}/\partial t=0.
+$$</p>
+<p>This freezes the EPI coordinate represented by the nodal equation. Constant
+translation does not follow unless a separate kinematic adapter stores velocity
+and advances an external position coordinate.</p>
+<p>A reproducible zero-pressure experiment should record the pressure and EPI-rate
+residuals, fixed/moving coordinate convention, operator schedule and structural
+telemetry. Excluding named destabilizers is insufficient: any custom pressure
+law or initial state can still carry nonzero pressure.</p>
+<h3 id="32-two-train-adapter">3.2 Two-train adapter<a class="headerlink" href="#32-two-train-adapter" title="Permanent link">&para;</a></h3>
+<p><code>examples/02_physics_regimes/15_train_crossing_demo.py</code> uses prescribed constant
+velocities:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Train A</th>
+<th>Train B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Initial position</td>
+<td>$x=0$ km</td>
+<td>$x=600$ km</td>
+</tr>
+<tr>
+<td>Velocity</td>
+<td>$+300$ km/h</td>
+<td>$-250$ km/h</td>
+</tr>
+</tbody>
+</table>
+<p>Its analytical crossing is</p>
+<p>$$
+t_c=\frac{600}{300+250}\approx1.0909\ \mathrm{h},\qquad
+x_c=300t_c\approx327.27\ \mathrm{km}.
+$$</p>
+<p>Numerical agreement checks the kinematic adapter. It does not turn the
+zero-pressure fixed EPI chart into a derivation of Newton's first law.</p>
+<h2 id="4-finite-spectral-and-wave-correspondence">4. Finite Spectral and Wave Correspondence<a class="headerlink" href="#4-finite-spectral-and-wave-correspondence" title="Permanent link">&para;</a></h2>
+<h3 id="41-scope">4.1 Scope<a class="headerlink" href="#41-scope" title="Permanent link">&para;</a></h3>
+<p>Finite graph or cavity operators possess discrete modes because their state
+space and boundary-value problem are finite. Large wrapped phase gradients can
+be useful stress diagnostics, but they do not by themselves select a quantum
+model or cause quantization.</p>
+<h3 id="42-observable-mapping">4.2 Observable Mapping<a class="headerlink" href="#42-observable-mapping" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Auxiliary-model quantity</th>
+<th>TNFR comparison</th>
+<th>Boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Complex wave field $\psi$</td>
+<td>$\Psi=K_\phi+iJ_\phi$</td>
+<td>Auxiliary geometric sector</td>
+</tr>
+<tr>
+<td>Modal energy/frequency</td>
+<td>Eigenvalue-derived model value</td>
+<td>Not identical to nodal $\nu_f$</td>
+</tr>
+<tr>
+<td>Potential $V(x)$</td>
+<td>Declared function compared with $\Phi_s(x)$</td>
+<td>Matching must be specified</td>
+</tr>
+<tr>
+<td>Mode index $n$</td>
+<td>Eigenmode or winding label</td>
+<td>Depends on boundary operator</td>
+</tr>
+<tr>
+<td>Damping/selection</td>
+<td>Explicit dissipative adapter</td>
+<td>IL/SHA labels alone do not define measurement collapse</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-mode-selection-mechanism">4.3 Mode-selection mechanism<a class="headerlink" href="#43-mode-selection-mechanism" title="Permanent link">&para;</a></h3>
+<p>A finite spectral experiment must specify its wave operator, boundary
+conditions, initial field, normalization and damping rule. Those additional
+assumptions produce standing modes and their eigenvalues. The nodal law can
+supply structural telemetry along the experiment, but it does not supply the
+wave equation, superposition principle or a measurement rule on its own.</p>
+<h3 id="44-validation-boundary">4.4 Validation boundary<a class="headerlink" href="#44-validation-boundary" title="Permanent link">&para;</a></h3>
+<p><code>examples/02_physics_regimes/13_quantum_mechanics_demo.py</code> compares a declared
+one-dimensional cavity operator with its finite standing-wave spectrum. Until a
+dedicated quantitative test fixes operator, normalization and tolerances, this
+remains a partial spectral correspondence rather than a TNFR derivation of
+quantum mechanics.</p>
+<h2 id="5-fourier-width-and-interference-correspondence">5. Fourier Width and Interference Correspondence<a class="headerlink" href="#5-fourier-width-and-interference-correspondence" title="Permanent link">&para;</a></h2>
+<h3 id="51-fourier-width-product">5.1 Fourier-width product<a class="headerlink" href="#51-fourier-width-product" title="Permanent link">&para;</a></h3>
+<p>For a declared signal window, temporal and frequency widths satisfy the
+uncertainty relation associated with the selected Fourier convention. A
+Gaussian value near $0.16$ is convention-dependent; it is not a universal TNFR
+constant. Every reported product must name the width estimator, normalization
+and sampling window.</p>
+<h3 id="52-two-path-interference">5.2 Two-path interference<a class="headerlink" href="#52-two-path-interference" title="Permanent link">&para;</a></h3>
+<p>A two-path auxiliary wave model can compare detector intensity with wrapped
+phase separation. Constructive and destructive bands change phase-order and
+phase-gradient diagnostics. They change structural $C(t)$ only when the model
+also specifies how phase affects $\Delta\mathrm{NFR}$ or $d\mathrm{EPI}/dt$ and
+the recorded channels confirm the resulting change. Phase separation is not a
+direct argument of the constitutive $C(t)$ kernel.</p>
+<h3 id="53-validation-boundary">5.3 Validation boundary<a class="headerlink" href="#53-validation-boundary" title="Permanent link">&para;</a></h3>
+<p><code>examples/02_physics_regimes/14_uncertainty_and_interference.py</code> demonstrates a
+finite Fourier-width product and an auxiliary interference pattern. It does not
+currently validate a fixed analytical bound or a canonical pressure-to-phase
+bridge, and it has no dedicated test module.</p>
+<h2 id="6-coupled-oscillator-thermal-proxy">6. Coupled-oscillator Thermal Proxy<a class="headerlink" href="#6-coupled-oscillator-thermal-proxy" title="Permanent link">&para;</a></h2>
+<p>This section concerns <code>17_thermodynamics_demo.py</code>, which uses a Kuramoto-style
+phase model and thermal labels for selected diagnostics. It does not derive the
+laws of thermodynamics from TNFR and currently has no dedicated quantitative
+test.</p>
+<h3 id="61-declared-proxy-mapping">6.1 Declared proxy mapping<a class="headerlink" href="#61-declared-proxy-mapping" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Demonstration quantity</th>
+<th>Chosen structural proxy</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Heat/noise</td>
+<td>Phase dispersion $\sigma_\phi$</td>
+<td>Model convention</td>
+</tr>
+<tr>
+<td>Temperature</td>
+<td>Local phase-gradient variance</td>
+<td>Model convention</td>
+</tr>
+<tr>
+<td>Entropy</td>
+<td>Separately defined monotone diagnostic</td>
+<td>No identity $S\propto1/C(t)$</td>
+</tr>
+<tr>
+<td>Synchronized state</td>
+<td>Small pairwise wrapped separation</td>
+<td>Phase condition, not full structural equilibrium</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-pairwise-u3-compatibility-is-not-transitive">6.2 Pairwise U3 compatibility is not transitive<a class="headerlink" href="#62-pairwise-u3-compatibility-is-not-transitive" title="Permanent link">&para;</a></h3>
+<p>U3 checks each active pair independently. If A and B are each within
+$\Delta\phi_{\max}$ of C, their mutual separation may reach
+$2\Delta\phi_{\max}$ and fail the gate. Therefore a synchronized cluster needs
+explicit pairwise or edgewise evidence; compatibility through a shared neighbor
+is insufficient.</p>
+<h3 id="63-balance-boundary">6.3 Balance boundary<a class="headerlink" href="#63-balance-boundary" title="Permanent link">&para;</a></h3>
+<p>Conservation of a structural current requires a stated symmetry and model. The
+auxiliary symplectic substrate conserves its declared charges under its exact
+flow. A general engine operator sequence, Kuramoto experiment or sum of
+$J_\phi$ values has no automatic conservation law; its residual must be measured
+along the actual trajectory.</p>
+<h3 id="64-stochastic-desynchronization-boundary">6.4 Stochastic desynchronization boundary<a class="headerlink" href="#64-stochastic-desynchronization-boundary" title="Permanent link">&para;</a></h3>
+<p>Random perturbations can increase phase spread in a specified stochastic
+schedule, while sufficiently strong coupling can also resynchronize the same
+network without invoking IL or THOL. The direction of $C(t)$ depends on the
+observed pressure and EPI-rate channels. No universal time arrow follows from
+omitting named stabilizers or closure operators.</p>
+<h3 id="65-cooling-comparison">6.5 Cooling comparison<a class="headerlink" href="#65-cooling-comparison" title="Permanent link">&para;</a></h3>
+<p>The coffee-cup example evolves a central random-phase patch and an outer aligned
+ring with a coupled-oscillator equation. A Newton-cooling comparison would fit</p>
+<p>$$
+T(t)=T_{\mathrm{env}}+(T_0-T_{\mathrm{env}})e^{-kt}
+$$</p>
+<p>to a predeclared temperature proxy and report residuals and uncertainty. The
+current demonstration does not yet extract that time constant, so exponential
+cooling remains a hypothesis to test.</p>
+<h2 id="7-regime-transition-summary">7. Regime Transition Summary<a class="headerlink" href="#7-regime-transition-summary" title="Permanent link">&para;</a></h2>
+<p>The comparisons can be organized by their declared pressure and phase
+conditions. This table is a model index, not a phase diagram derived from TNFR:</p>
+<p>| Comparison | $\Delta\mathrm{NFR}$ | $|\nabla\phi|$ | Primary telemetry | Declared model |
+|--------|---------------------|----------------|-------------------|-------------------|
+| Zero-pressure chart | $=0$ | Measured separately | EPI rate, $C(t)$ | Fixed EPI |
+| Classical adapter | External force value; graph bridge optional | Optional low-spread regime | Adapter $q,p,F$; tetrad only through a declared bridge | Explicit $F=ma$ adapter |
+| Thermal proxy | Model-dependent | Distributed | Phase variance, pressure/rate | Coupled oscillators |
+| Finite spectral model | Model-dependent | Model-dependent | Eigenpairs, $\Psi$ | Declared boundary operator |
+| Fourier-width model | Not required | Broadband | Width estimators | Declared Fourier convention |</p>
+<p>These regimes organize several implemented TNFR read-outs and declared auxiliary
+models. Only reductions with explicit hypotheses, such as fixed-graph EPI
+diffusion, follow from the nodal equation. The classical, thermodynamic, and
+quantum-labelled constructions are scoped correspondences or adapters; their
+presence in one package does not derive those physical theories from the nodal
+equation.</p>
+<hr />
+<h2 id="8-implementation-reference">8. Implementation Reference<a class="headerlink" href="#8-implementation-reference" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Classical mechanics mapper</td>
+<td><code>src/tnfr/physics/classical_mechanics.py</code></td>
+</tr>
+<tr>
+<td>Quantum mechanics module</td>
+<td><code>src/tnfr/physics/quantum_mechanics.py</code></td>
+</tr>
+<tr>
+<td>Symplectic integrators</td>
+<td><code>src/tnfr/dynamics/symplectic.py</code></td>
+</tr>
+<tr>
+<td>Structural field computation</td>
+<td><code>src/tnfr/physics/fields.py</code></td>
+</tr>
+<tr>
+<td>Central-force demonstration</td>
+<td><code>examples/02_physics_regimes/12_classical_mechanics_demo.py</code></td>
+</tr>
+<tr>
+<td>Quantum cavity benchmark</td>
+<td><code>examples/02_physics_regimes/13_quantum_mechanics_demo.py</code></td>
+</tr>
+<tr>
+<td>Uncertainty/interference</td>
+<td><code>examples/02_physics_regimes/14_uncertainty_and_interference.py</code></td>
+</tr>
+<tr>
+<td>Two-train kinematics</td>
+<td><code>examples/02_physics_regimes/15_train_crossing_demo.py</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="implementation-examples">Implementation &amp; Examples<a class="headerlink" href="#implementation-examples" title="Permanent link">&para;</a></h2>
+<h3 id="tnfr-classical-mechanics-dictionary">TNFR ↔ Classical Mechanics Dictionary<a class="headerlink" href="#tnfr-classical-mechanics-dictionary" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>Originally <code>docs/TNFR_CLASSICAL_MAPPING.md</code>. Consolidated here as the canonical mapping reference.</p>
+</blockquote>
+<p><strong>Scope</strong>: This is an adapter dictionary. <code>dynamics/nbody.py</code> assumes the
+Newtonian potential, while <code>dynamics/nbody_tnfr.py</code> assumes a different
+regularized phase-coupled pair law. Neither model derives Newtonian mechanics
+from coherence or from the nodal equation.</p>
+<table>
+<thead>
+<tr>
+<th>TNFR Quantity</th>
+<th>Definition (TNFR)</th>
+<th>Classical Analog</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>EPI</strong></td>
+<td>Canonical coherent form</td>
+<td>Adapter payload for $q$ and $\dot q$</td>
+<td>The payload convention does not redefine EPI generally</td>
+</tr>
+<tr>
+<td><strong>νf</strong></td>
+<td>Reorganization rate (Hz_str)</td>
+<td>Mobility in the overdamped projection</td>
+<td>High νf → faster drift for fixed pressure</td>
+</tr>
+<tr>
+<td><strong>ΔNFR</strong></td>
+<td>Scalar structural pressure in the engine</td>
+<td>Optional force/acceleration bridge</td>
+<td>The Newtonian solver returns acceleration but does not materialize canonical graph pressure</td>
+</tr>
+<tr>
+<td><strong>Φ_s</strong></td>
+<td>Inverse-square ΔNFR accumulation</td>
+<td>Potential-like readout</td>
+<td>U6 monitors drift between declared snapshots; a well analogy adds no bound</td>
+</tr>
+<tr>
+<td><strong>|∇φ|</strong></td>
+<td>Local desynchronization</td>
+<td>Optional stress comparison</td>
+<td>No mechanical stress or force identity is implied</td>
+</tr>
+<tr>
+<td><strong>K_φ</strong></td>
+<td>Phase torsion read-out</td>
+<td>Curvature comparison</td>
+<td>Does not generate the adapter force</td>
+</tr>
+<tr>
+<td><strong>ξ_C</strong></td>
+<td>Correlation decay scale</td>
+<td>Interaction-range comparison</td>
+<td>Does not set either N-body pair law</td>
+</tr>
+<tr>
+<td><strong>Ψ = K_φ + i·J_φ</strong></td>
+<td>Complex auxiliary geometric field</td>
+<td>Phase-space comparison</td>
+<td>No Hamilton-Jacobi identity is established</td>
+</tr>
+<tr>
+<td><strong>Operator sequences</strong></td>
+<td>Canonical engine transformations</td>
+<td>Work/impulse comparison</td>
+<td>No equivalence between grammar validity and mechanical admissibility is established</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Structural Triad ↔ Phase Space comparison</strong>:
+- Form (EPI) → configuration coordinate in the overdamped projection
+- Frequency (νf) → mobility; inverse inertial mass is only an assignment in a
+  separately specified second-order adapter or model
+- Phase (φ/θ) → oscillator phase; action-angle status requires the auxiliary
+  Hamiltonian construction</p>
+<p><strong>Field Tetrad ↔ Energetics</strong>:
+- Φ_s → source-aggregation diagnostic; mean $|\Delta\Phi_s| &lt; \pi/2$ is a
+  selected before/after policy, not a potential-energy bound
+- |∇φ| → local phase-stress comparison
+- K_φ → phase-curvature comparison; no centripetal/Coriolis force follows from it
+- ξ_C → fitted correlation-range comparison; the N-body force laws do not read it</p>
+<h3 id="executable-demonstrations">Executable Demonstrations<a class="headerlink" href="#executable-demonstrations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Concept from this document</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../examples/02_physics_regimes/11_classical_limit_comparison.py">11_classical_limit_comparison.py</a></td>
+<td>Finite comparison of Newtonian and declared phase-coupled N-body adapters</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/12_classical_mechanics_demo.py">12_classical_mechanics_demo.py</a></td>
+<td>Declared inverse-square central-force trajectory</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/13_quantum_mechanics_demo.py">13_quantum_mechanics_demo.py</a></td>
+<td>Finite standing-wave spectral correspondence</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/14_uncertainty_and_interference.py">14_uncertainty_and_interference.py</a></td>
+<td>Auxiliary Fourier-width and interference correspondence</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/15_train_crossing_demo.py">15_train_crossing_demo.py</a></td>
+<td>Prescribed constant-velocity kinematic adapter</td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-source-modules">Key Source Modules<a class="headerlink" href="#key-source-modules" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>src/tnfr/physics/classical_mechanics.py</code> — Explicit classical adapter and diagnostics</li>
+<li><code>src/tnfr/physics/quantum_mechanics.py</code> — Finite spectral correspondence utilities</li>
+</ul>
+<hr />
+<h2 id="9-references">9. References<a class="headerlink" href="#9-references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../FUNDAMENTAL_THEORY/">FUNDAMENTAL_THEORY.md</a> — the structural-field tetrad</li>
+<li><a href="../UNIFIED_GRAMMAR_RULES/">UNIFIED_GRAMMAR_RULES.md</a> — U1–U6 derivations</li>
+<li><a href="../STRUCTURAL_CONSERVATION_THEOREM/">STRUCTURAL_CONSERVATION_THEOREM.md</a> — Conservation laws</li>
+<li><a href="../TNFR_VARIATIONAL_PRINCIPLE/">TNFR_VARIATIONAL_PRINCIPLE.md</a> — Lagrangian formulation</li>
+<li><a href="../GLOSSARY/">GLOSSARY.md</a> — Operational definitions</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

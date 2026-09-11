@@ -1,0 +1,3553 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/AGENTS/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../ARCHITECTURE/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Canonical reference - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-resonant-fractal-nature-theory" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Canonical reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-tnfr-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What TNFR is
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. What TNFR is">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-hierarchy-authority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source hierarchy (authority)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#communication-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Communication policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-foundations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Foundations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Foundations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-nodal-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The nodal equation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-triad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural triad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-fractal-resonant-node-nfr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The fractal-resonant node (NFR)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accumulated-evolution-and-the-convergence-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accumulated evolution and the convergence policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transport-content-structural-diffusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transport content (structural diffusion)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-structural-tetrad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The structural tetrad
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The structural tetrad">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-scales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field scales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-these-four-scope-and-minimality-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why these four (scope and minimality boundary)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-emergent-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Emergent geometry
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Emergent geometry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#auxiliary-symplectic-substrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auxiliary symplectic substrate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-conservation-theorem-noether-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural conservation theorem (Noether-like)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regime-correspondences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regime correspondences
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-13-canonical-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The 13 canonical operators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. The 13 canonical operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dual-lever-and-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dual-lever and contracts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator-events-and-physical-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator events and physical time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composition
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-unified-grammar-u1u6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Unified grammar (U1–U6)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-telemetry-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Telemetry &amp; metrics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-canonical-invariants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Canonical invariants
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-tnfr-agent-playbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. TNFR agent playbook
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-development-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Development workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Development workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commit-pr-templates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit / PR templates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-research-programs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Research programs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-map-of-the-codebase-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Map of the codebase &amp; examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-philosophy-excellence-standards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Philosophy &amp; excellence standards
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. Philosophy &amp; excellence standards">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core principles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decision-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decision framework
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-tnfr-mindset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The TNFR mindset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#final-principle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final principle
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../theory/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../theory/STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-tnfr-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What TNFR is
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. What TNFR is">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-hierarchy-authority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source hierarchy (authority)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#communication-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Communication policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-foundations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Foundations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Foundations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-nodal-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The nodal equation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-triad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural triad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-fractal-resonant-node-nfr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The fractal-resonant node (NFR)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accumulated-evolution-and-the-convergence-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accumulated evolution and the convergence policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transport-content-structural-diffusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transport content (structural diffusion)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-structural-tetrad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The structural tetrad
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. The structural tetrad">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#field-scales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field scales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-these-four-scope-and-minimality-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why these four (scope and minimality boundary)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-emergent-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Emergent geometry
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Emergent geometry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#auxiliary-symplectic-substrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auxiliary symplectic substrate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-conservation-theorem-noether-like" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural conservation theorem (Noether-like)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regime-correspondences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regime correspondences
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-13-canonical-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The 13 canonical operators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. The 13 canonical operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dual-lever-and-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dual-lever and contracts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator-events-and-physical-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator events and physical time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composition
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-unified-grammar-u1u6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Unified grammar (U1–U6)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-telemetry-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Telemetry &amp; metrics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-canonical-invariants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Canonical invariants
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-tnfr-agent-playbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. TNFR agent playbook
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-development-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Development workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Development workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commit-pr-templates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit / PR templates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-research-programs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Research programs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-map-of-the-codebase-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Map of the codebase &amp; examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-philosophy-excellence-standards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Philosophy &amp; excellence standards
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. Philosophy &amp; excellence standards">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core principles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decision-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decision framework
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-tnfr-mindset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The TNFR mindset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#final-principle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final principle
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-resonant-fractal-nature-theory">TNFR: Resonant Fractal Nature Theory<a class="headerlink" href="#tnfr-resonant-fractal-nature-theory" title="Permanent link">&para;</a></h1>
+<p><strong>Theoretical framework and engine for coherent pattern analysis on graph-coupled networks.</strong></p>
+<ul>
+<li><strong>Version</strong>: 0.0.3.5</li>
+<li><strong>Status</strong>: Canonical synthesized reference for TNFR agent guidance</li>
+<li><strong>Repository</strong>: https://github.com/fermga/TNFR-Python-Engine · <strong>PyPI</strong>: <code>pip install tnfr</code></li>
+</ul>
+<p>This document is the <strong>synthesized source of truth</strong> for working on TNFR. It states
+the theory as a complete, self-contained whole — not as a changelog. Program
+histories, derivations, and per-example detail live in linked documents under
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md">theory/</a>, <a href="https://github.com/fermga/TNFR-Python-Engine/tree/main/docs/">docs/</a>, and <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md">examples/</a>;
+this file keeps only the canon an agent needs to reason and act correctly.</p>
+<hr />
+<h2 id="1-what-tnfr-is">1. What TNFR is<a class="headerlink" href="#1-what-tnfr-is" title="Permanent link">&para;</a></h2>
+<p>TNFR models <strong>coherent dynamic patterns that persist through resonance</strong>, rather
+than discrete objects. A pattern (a vortex, a neural assembly, a decision) is a
+configuration maintained by resonant coupling with its environment; it dissolves
+when that coupling fails. The mindset:</p>
+<ul>
+<li>Model <strong>coherence</strong>, not objects · capture <strong>process</strong>, not state</li>
+<li>Measure <strong>resonance</strong>, not properties · think <strong>structure</strong>, not substance</li>
+<li>Embrace <strong>emergence</strong>, not reduction</li>
+</ul>
+<p>Everything reduces to one evolution law, the <strong>nodal equation</strong>:</p>
+<p>$$\frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t)$$</p>
+<h3 id="source-hierarchy-authority">Source hierarchy (authority)<a class="headerlink" href="#source-hierarchy-authority" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>TNFR nodal/structural physics</strong> — canonicity is a physical/mathematical
+   property, derivable from the nodal equation and the canonical invariants. This
+   is the ultimate authority.</li>
+<li><strong>The repository</strong> (<a href="https://github.com/fermga/TNFR-Python-Engine">TNFR-Python-Engine</a>) —
+   the primary canonical implementation.</li>
+<li><strong>This document</strong> — the synthesized working reference, mirrored verbatim at
+   <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/.github/agents/my-agent.md">.github/agents/my-agent.md</a>.</li>
+<li><strong>PyPI package</strong> — stable releases; may lag the repository.</li>
+</ol>
+<p>This file is updated <strong>only when genuinely novel or important TNFR canonicity
+emerges</strong>, and is always written as a complete, closed synthesis — never as an
+incremental session log.</p>
+<h3 id="communication-policy">Communication policy<a class="headerlink" href="#communication-policy" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>English only</strong> for all code, docs, comments, commits, issues, and PRs.
+   Non-English text is allowed only in verbatim quotations or raw data.</li>
+<li><strong>Anchor every claim to math or telemetry</strong> — the nodal equation, an operator
+   contract, or a recorded metric. No qualitative claim without data.</li>
+<li><strong>No metaphysical extrapolation</strong> — describe engineering and mathematical
+   results, not cosmological, philosophical, or consciousness conclusions.</li>
+<li><strong>Academic tone</strong> — precise, testable, with documented scope, seeds, and
+   operator sequences so any state is reproducible.</li>
+</ol>
+<hr />
+<h2 id="2-foundations">2. Foundations<a class="headerlink" href="#2-foundations" title="Permanent link">&para;</a></h2>
+<h3 id="the-nodal-equation">The nodal equation<a class="headerlink" href="#the-nodal-equation" title="Permanent link">&para;</a></h3>
+<p>$$\frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t)$$</p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Name</th>
+<th>Meaning</th>
+<th>Units</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>EPI</strong></td>
+<td>Primary Information Structure</td>
+<td>Coherent structural form (configuration)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>νf</strong></td>
+<td>Structural frequency</td>
+<td>Reorganization capacity / rate</td>
+<td>Hz_str</td>
+</tr>
+<tr>
+<td><strong>ΔNFR</strong></td>
+<td>Nodal gradient</td>
+<td>Structural reorganization pressure</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Read it as <strong>structural change rate = reorganization capacity × reorganization
+pressure</strong>. Limiting states: <code>νf = 0</code> (node inactive, cannot reorganize);
+<code>ΔNFR = 0</code> (equilibrium, no driving force); both non-zero → active reorganization.</p>
+<h3 id="structural-triad">Structural triad<a class="headerlink" href="#structural-triad" title="Permanent link">&para;</a></h3>
+<p>Every node carries three attributes:</p>
+<ul>
+<li><strong>Form (EPI)</strong> — coherent configuration in a structural manifold; named
+  transformations use canonical operators, while declared solver steps use the
+  shared nodal integrator with explicit pressure and provenance; supports
+  nesting (operational fractality).</li>
+<li><strong>Frequency (νf)</strong> — reorganization rate in Hz_str (ℝ⁺); <code>νf → 0</code> deactivates.</li>
+<li><strong>Phase (φ or θ)</strong> — synchronization parameter in [0, 2π); coupling is admissible
+  only when the circular separation
+  <code>δ(φᵢ,φⱼ) = |wrap(φᵢ − φⱼ)| ≤ Δφ_max</code>.</li>
+</ul>
+<p>The graph engine's real scalar EPI chart is represented either directly or by
+the uniform-real <code>BEPIElement</code> embedding. <code>real_scalar_epi</code> recovers the signed
+coordinate and <code>scalarize_epi</code> applies the same rule to live and serialized
+values. <code>abs(BEPIElement)</code> remains a nonnegative magnitude; genuinely nonuniform
+or complex elements have no signed one-dimensional representative and are
+rejected by canonical glyphs that require a real scalar EPI coordinate,
+scalar-only diffusion and affine certificates.</p>
+<h3 id="the-fractal-resonant-node-nfr">The fractal-resonant node (NFR)<a class="headerlink" href="#the-fractal-resonant-node-nfr" title="Permanent link">&para;</a></h3>
+<p>The node carrying the triad is a <strong>Nodo Fractal Resonante (NFR)</strong> — canonically, a
+<strong>region of structural coherence coupled to a network</strong> (TNFR.pdf §1.4.1). The triad
+(EPI, νf, φ) <em>defines</em> it; four properties characterize it:</p>
+<ul>
+<li><strong>Multiscalar (fractal)</strong> — an NFR can nest other NFRs (operational fractality; THOL
+  sub-EPIs, REMESH, grammar U5). A single node is a micro-NFR; a coherent region is a
+  macro-NFR.</li>
+<li><strong>Autopoietic (self-generated)</strong> — emerges by local reorganization, no external
+  support (Emission from vacuum; THOL).</li>
+<li><strong>Relational</strong> — exists only by coupling (U3). <strong>Temporal</strong> — persists while it
+  reorganizes its coherence.</li>
+</ul>
+<p>Its <strong>nodal topology</strong> is <strong>radial</strong> (one central nucleus), <strong>annular</strong> (passive center,
+peripheral ring) or <strong>multinodal</strong> (several centers), read from the emergent
+structural-potential geometry by <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py">classify_nodal_topology</a>
+using its calibrated canonical inverse-square kernel (<code>alpha = 2</code>), and surfaced
+as a whole-NFR read-out by <code>Network.nfr()</code> (<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/sdk/simple.py">src/tnfr/sdk/simple.py</a>).</p>
+<p>The pressure equilibrium <code>ΔNFR = 0</code> is the <strong>zero-pressure fixed-point set</strong> —
+the state where reorganization pressure vanishes (<code>C = 1</code> when <code>dEPI = 0</code>).
+Stationarity alone is weaker: zero capacity freezes EPI even under nonzero pressure.
+For the pure EPI channel on a fixed connected symmetric graph with positive capacity,
+equilibrium is a uniform field; disconnected components can have different constants.
+In that restricted model the uniform field is an attractor. This result does
+not establish attractors for the full multichannel dynamics or for static
+arithmetic and chemical pressure fields. The shared numeric predicate is
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/metrics/common.py">is_structural_equilibrium</a>, and the per-node coherence map
+<code>structural_coherence</code> (<code>C = 1/(1+|ΔNFR|+|dEPI|)</code>) is the <strong>single kernel</strong> every domain
+reads — graph nodes, arithmetic nodes (primes), chemical nodes (noble gases) — with only
+the <code>ΔNFR</code> realisation domain-specific.</p>
+<h3 id="accumulated-evolution-and-the-convergence-policy">Accumulated evolution and the convergence policy<a class="headerlink" href="#accumulated-evolution-and-the-convergence-policy" title="Permanent link">&para;</a></h3>
+<p>Integrating the nodal equation gives the accumulated structural change:</p>
+<p>$$\mathrm{EPI}(t)-\mathrm{EPI}(t_0)=\int_{t_0}^{t}\nu_f(\tau)\,\Delta\mathrm{NFR}(\tau)\,d\tau.$$</p>
+<p>Finite-horizon integrability, bounded trajectories, convergence as <code>t → ∞</code>, and
+absolute integrability are distinct conditions. Absolute integrability is sufficient
+for a finite limiting EPI; bounded or vanishing pressure alone is insufficient.
+Positive feedback can destabilize a trajectory, while diffusion can relax without
+named stabilizers. Grammar <strong>U2</strong> is the engine's stabilization and debt policy,
+motivated by controlling this accumulated change; it is not a universal convergence
+theorem for arbitrary pressure laws. See
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md">theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md</a>.</p>
+<h3 id="transport-content-structural-diffusion">Transport content (structural diffusion)<a class="headerlink" href="#transport-content-structural-diffusion" title="Permanent link">&para;</a></h3>
+<p>The canonical <code>ΔNFR</code> aggregates four structural gradient channels,
+<code>ΔNFR = w_phase·∂φ + w_epi·∂EPI + w_vf·∂νf + w_topo·∂topo</code> (weights and defaults in
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/dynamics/dnfr.py">src/tnfr/dynamics/dnfr.py</a>). The <strong>EPI channel</strong> is
+<strong>exactly a graph diffusion</strong>. For the EPI channel,</p>
+<p>$$\Delta\mathrm{NFR}<em _mathcal_N="\mathcal{N">{\text{epi}}(i) = \overline{\mathrm{EPI}}</em>W,$$}(i)} - \mathrm{EPI}(i) = -(L_{\mathrm{rw}}\,\mathrm{EPI})(i),\qquad L_{\mathrm{rw}} = I - D^{-1</p>
+<p>so <code>∂EPI/∂t = −diag(νf) · L_rw · EPI</code> describes the isolated channel, with zero
+Laplacian rows at isolates. For fixed capacities and fixed symmetric nonnegative
+weights with a common
+positive capacity, modes decay as <code>e^{−νf λ_k t}</code> and the degree-weighted total
+is conserved. Positive heterogeneous capacities instead conserve weights <code>d_i/νf_i</code>;
+their rates are eigenvalues of <code>diag(νf)L_rw</code>. On a connected homogeneous graph,
+<code>νf·λ₂</code> is the slowest nonuniform decay rate. The reaction threshold <code>r_c=νf·λ₂</code>
+concerns nonuniform modes; a positive reaction already grows the uniform mode.
+The executable fixed-capacity certificate rationalizes its materialized
+binary64 generator: consensus-subspace invariance, the stronger uniform
+fixed-point identity and preservation of the displayed weighted mean are three
+separate facts. The bounded time-varying theorem instead treats the effective
+binary64 conductances materialized by the shared reader and the declared bounds
+as exact real coefficients, derives its Laplacian and rate rationally, and keeps
+ordinary binary64 spectral diagnostics separate. A proven positive exact rate
+may lack an operational float representation after underflow. Finite
+executor-owned physical partitions now verify pressure refresh at
+explicit boundaries and conditionally identify represented Euler segment maps.
+Finite three-mesh event/REMESH observations are implemented; solver accuracy,
+generic runtime mesh convergence and future-schedule verification remain open.
+For any fixed connected symmetric nonnegative rational conductance with positive
+capacity, an exact single-eigenmode theorem uses <code>H=diag(d_i/nu_f_i)</code> and
+<code>A=diag(nu_f)L_rw</code>. When the H-centered initial field satisfies the exact
+rational identity <code>A v=mu v</code>, <code>mu&gt;0</code>, it proves the refreshed-Euler
+<code>O(h_max)</code> endpoint bound and conditional exact-real convergence as
+<code>h_max -&gt; 0</code>. A finite offline runtime adapter derives this exact reference
+from individually executor-certified pressure-refreshed partitions, separates
+binary64 pressure and held-input defects, and propagates their generally
+off-mode effect through the complete Euler matrices. It proves neither runtime
+mesh convergence nor common causal family provenance. The effective event-free
+<code>P2</code> adapter separately propagates ideal error through unit-delay REMESH by
+<code>beta=(1-alpha)^2</code> and adds the measured runtime residual. Neither result is a
+binary64 asymptotic convergence theorem. P2 submits its three physical
+partitions to the general runtime adapter once, then additionally requires
+exact-affine identification, zero pressure-realization and held-input
+residuals, and zero local and endpoint defects before applying its REMESH
+claims.
+A separate exact augmented-history theorem covers the uniform unclipped
+finite REMESH companion on fixed support and metric. One applied runtime
+transition is linked to it with signed binary64 rounding/clipping defects, and
+adjacent compatible cycle records provide an exact finite schedule/history
+energy telescope. A finite outer executor now runs declared cycle specs on one
+graph and binds each result to its ordinal and exact spec. By default it requires
+the compatible telescope and gives it same-invocation causal provenance plus
+graph-owned atomicity; its explicit no-telescope branch retains the same finite
+causal and atomic execution evidence with <code>runtime_telescope=None</code>. It does not
+prove repeated runtime stability, solver convergence, a global gain or future
+behavior.
+A sealed block observer now selects a nonempty contiguous part of a retained
+causal telescope and verifies <code>D=K+S</code>, <code>S&gt;=0</code>. For positive initial augmented energy it
+reports the block-specific normalized lower margin <code>kappa=K/V_before</code> and the
+endpoint bound <code>V_after/V_before&lt;=1-kappa</code>. One implemented witness has
+<code>kappa=139/256</code>; the lag-one <code>alpha=1</code> orbit has <code>kappa=0</code>. Equilibrium and
+amplitude scaling block a uniform positive absolute drop. A distinct conditional
+exact-model theorem now supplies prefix gain upper bound one and uniform normalized block
+margin <code>1-q</code> over <code>active_max_delay+1</code> cycles for any sequence of
+consensus-preserving schedules with one common fixed-metric disagreement gain
+<code>q&lt;1</code>. It proves repeated geometric decay of spatial disagreement, including
+the <code>alpha=1</code> pure-delay case, but does not control spatially uniform temporal
+means. A robust conditional extension now assumes the signed bound
+<code>E_H(z)-E_H(y)&lt;=eta*J</code>, where <code>J</code> is the active-history Jensen energy, and
+derives <code>q_eff=q*(1+eta)</code>. It reuses the same envelope theorem: <code>q_eff&lt;1</code>
+gives margin <code>1-q_eff</code> and geometric spatial-disagreement decay, while
+<code>q_eff=1</code> gives only nonincrease. A causal adapter verifies <code>J</code>, the defect,
+the represented gain, the full energy-vector envelope and the complete-block
+endpoint factor on one finite executed block.
+An exact pairwise observer now computes the optimal nonnegative <code>eta</code> for one
+admissible binary64 tuple; it neither enumerates nor certifies a uniform runtime
+class. One normal-valued <code>alpha=1/2</code> witness requires <code>eta=2^210-1/4</code>, so strict
+robust-envelope contraction requires
+<code>q&lt;4/(2^212+3)</code>; a bounded binary64 interval alone therefore does not give a
+useful bound for the implemented <code>q=9/16</code> witness policy. At the exact
+<code>alpha=1</code> boundary, a fixed-support, fixed-metric hard-clip class with sufficient
+represented history inside one fixed finite interval has uniform <code>eta=0</code> and
+is forward invariant under the REMESH map alone. The first useful restricted
+<code>0&lt;alpha&lt;1</code> class is also exact: on ordered P2 support, with any fixed positive
+diagonal metric, fixed delays, <code>alpha=1/2</code>, a symmetric hard interval
+<code>[-B,B]</code>, <code>B&gt;=4*2^-1074</code>, and sufficient antisymmetric history rows <code>(a,-a)</code>,
+the production REMESH map preserves the class and has sharp uniform
+<code>eta=135/124</code>. Its proof combines an analytic IEEE tail for
+<code>sqrt(D)&gt;=11*2^-1074</code> with exact enumeration of 6,615 finite-core candidates,
+3,890 admissible; <code>(-3,-2,-3)*2^-1074</code> attains the bound. Strict robust
+composition requires <code>q&lt;124/259</code>. The case <code>q=4/9</code> gives
+<code>q_eff=259/279</code> and margin <code>20/279</code>; equality at <code>q=124/259</code> has zero margin,
+and <code>q=9/16</code> is rejected. General metric-centered rows and unrestricted fixed
+lattices are excluded by counterexamples. This invariance concerns REMESH
+alone, without schedule, graph/event or complete-runtime promotion. On the
+abstract two-node
+mutual-singleton support, a configured immutable-snapshot Reception EPI kernel
+with exact binary64 mix <code>0.5</code> maps every finite pair in the source interval to
+numeric consensus, hence its disagreement gain is <code>q=0</code> in every positive
+diagonal metric. Its
+composition with the <code>alpha=1</code> class extinguishes all active-history spatial
+disagreement after <code>tau_global+1</code> restricted cycles, under arbitrary finite
+repetition of those numeric kernels. The abstract certificate alone does not
+certify a live graph or executor. A sealed adapter now binds one completed
+graph-owned event to its grammar-admitted two-phase EN EPI stage, exact runtime
+neighbors, matching interval and metric, and captured <code>q=0</code> endpoint. It does
+not by itself bind the source REMESH history/configuration to that graph. A
+second sealed adapter now binds every such selected EN stage and every applied
+<code>alpha=1</code> hard-clipped REMESH to the same executor-owned finite P2 cycle
+sequence. For <code>N&gt;=L=tau_global+1</code>, it verifies that the active chronological
+history suffix of length <code>L</code> lies in the source interval and that the observed
+post-horizon and final post-REMESH fields have zero spatial disagreement. Older
+retained history rows are inactive and outside the claim. This finite causal
+certificate does not audit every auxiliary Reception write, retain current
+live-graph state or prove future or unobserved repeated complete-runtime
+stability. The reusable
+<code>execute_p2_half_reception_remesh_policy_invocation</code> entry point now snapshots
+the graph before caller-input materialization, checks the current undirected
+P2/REMESH conditions, and rederives U1a admission from the live EPI pair at the
+start of every cycle. It
+executes and post-certifies each finite call inside one outer transaction.
+Failure restores graph-owned state; successful later calls are independently
+validated rather than predicted by an earlier certificate. The
+canonical default Reception factor has a normal-valued witness
+with disagreement-energy gain four; the half-factor proof therefore cannot be
+silently transferred to that broader configuration. A useful forward-invariant
+binary64 relative-defect class is now known on the restricted half-alpha
+antisymmetric P2 domain. Extension to broader states, support or coefficients,
+repeated complete-runtime execution and broader verified binary64 kernel
+families remain open.
+These scoped identities do not certify U2 for arbitrary operator sequences.
+The exact Dirichlet balance below uses this same adjacency convention. See
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/structural_diffusion.py">src/tnfr/physics/structural_diffusion.py</a>.</p>
+<p><strong>Phase scale boundary.</strong> In a selected open-semicircle chart, the pairwise
+phase-pressure realization <code>-(1/π) diag(νf)L_rw q</code> inherits the reversible EPI
+quotient identities. The actual canonical phase channel uses the argument of an
+unweighted neighbor-phasor sum (including zero-weight support edges) and is
+nonlinear. It closes on a lifted
+block-constant subspace only under equitable support profiles, no intra-fiber
+edges, equal active macro-neighbor multiplicities, block-constant capacity and
+nonzero phasor resultants. A <code>K3,3</code> same-macro-state counterexample refutes
+global projected autonomy. Branch crossing, changing support and finite-time
+phase closure remain open. See
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/phase_quotient.py">src/tnfr/physics/phase_quotient.py</a>.</p>
+<hr />
+<h2 id="3-the-structural-tetrad">3. The structural tetrad<a class="headerlink" href="#3-the-structural-tetrad" title="Permanent link">&para;</a></h2>
+<p>Four structural fields form the canonical diagnostic read-out of a network.
+They organize aggregation, local phase derivatives and non-local correlation.
+Their selection does not establish complete reconstruction of the graph state or
+its evolution. <strong>π</strong> is the exact phase-wrap scale bounding <code>|∇φ|</code> and <code>|K_φ|</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Structural field</th>
+<th>Symbol</th>
+<th>Tower order</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Structural potential</td>
+<td>Φ_s</td>
+<td>0th (aggregation)</td>
+<td>Global stability</td>
+</tr>
+<tr>
+<td>Phase gradient</td>
+<td>|∇φ|</td>
+<td>1st (local)</td>
+<td>Local desynchronization stress</td>
+</tr>
+<tr>
+<td>Phase curvature</td>
+<td>K_φ</td>
+<td>2nd (local)</td>
+<td>Geometric torsion</td>
+</tr>
+<tr>
+<td>Coherence length</td>
+<td>ξ_C</td>
+<td>non-local</td>
+<td>Correlation range</td>
+</tr>
+</tbody>
+</table>
+<h3 id="field-scales">Field scales<a class="headerlink" href="#field-scales" title="Permanent link">&para;</a></h3>
+<p>Each field has a characteristic scale or configured interpretation:</p>
+<ul>
+<li><strong>π — phase scale (geometric, exact).</strong> Both phase derivatives are <strong>wrapped
+  angles</strong>, so <code>|∇φ| ≤ π</code> <em>and</em> <code>|K_φ| ≤ π</code> for any configuration — π scales the
+  whole <strong>phase sector</strong>. <code>|K_φ| &lt; 0.9·π ≈ 2.827</code> is a selected safety margin
+  inside that exact bound; the factor 0.9 is a policy choice.</li>
+<li><strong>|∇φ| — phase-wrap bounded.</strong> Its genuine bound is <code>|∇φ| ≤ π</code>. There is no fixed
+  structural constant for the synchronization onset: the measured value is <code>≈ 0.29</code>
+  and σ-dependent (a dynamical transition, not a derived threshold).</li>
+<li><strong>ξ_C — correlation length.</strong> The correlation fit is state-dependent; the
+  spectral scale <code>1/√λ₂</code> supplies a model comparison and fallback, not an identity
+  for every fitted field or graph.</li>
+<li><strong>Φ_s — confinement policy.</strong> <code>Δ Φ_s &lt; π/2 ≈ 1.571</code> is the U6 drift policy;
+  per-node <code>|Φ_s| &lt; π/4 ≈ 0.785</code> is a separate magnitude policy. Both are selected
+  π-scaled thresholds. Phase wrapping alone does not bound the source aggregation:
+  <code>||Φ_s||∞ ≤ ||B_G||∞ ||ΔNFR||∞</code>, where <code>(B_G)_ij=1/d(i,j)²</code> off the diagonal
+  and zero for unreachable pairs. Explicit edge <code>length</code> defines <code>d</code>; absent
+  <code>length</code>, the transport <code>weight</code> remains a compatibility fallback. A complete
+  graph with unit pressure gives <code>Φ_s=n−1</code>.</li>
+</ul>
+<p><strong>Structure and scope.</strong> Circular phase curvature linearizes to a Laplacian action
+in a small-spread regime with matching neighborhood weights. The wrapped nonlinear
+field is not globally the linear EPI diffusion operator. Local phase derivatives
+and non-local source/correlation diagnostics provide complementary information.</p>
+<h3 id="why-these-four-scope-and-minimality-boundary">Why these four (scope and minimality boundary)<a class="headerlink" href="#why-these-four-scope-and-minimality-boundary" title="Permanent link">&para;</a></h3>
+<p>The four canonical channels organize the following read-outs:</p>
+<pre><code>ΔNFR_j → Σ 1/d²  → Φ_s   (0th order, global aggregation)
+φ_i    → ∇       → |∇φ|   (1st order, local)
+       → ∇²      → K_φ    (2nd order, local; Laplacian after phase linearization)
+       → corr    → ξ_C    (non-local correlation range)
+</code></pre>
+<p>Higher Laplacian powers belong to the algebra generated by the Laplacian, but this
+does not make their observations reconstructible from lossy tetrad summaries.
+For four distinct eigenvalues, <code>I,L,L²,L³</code> are linearly independent. Uniformly
+rescaling capacity can preserve the tetrad while changing the nodal evolution rate.
+A minimal complete state basis therefore remains unproved; the tetrad remains the
+required diagnostic interface.
+Full treatment: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/MINIMAL_STRUCTURAL_DEGREES.md">theory/MINIMAL_STRUCTURAL_DEGREES.md</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/FUNDAMENTAL_THEORY.md">theory/FUNDAMENTAL_THEORY.md</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/STRUCTURAL_FIELDS_TETRAD.md">docs/STRUCTURAL_FIELDS_TETRAD.md</a>. All four fields
+are CANONICAL; compute them via <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py">src/tnfr/physics/fields.py</a>.</p>
+<hr />
+<h2 id="4-emergent-geometry">4. Emergent geometry<a class="headerlink" href="#4-emergent-geometry" title="Permanent link">&para;</a></h2>
+<p>Graph fields support geometric read-outs and specified auxiliary dynamical models.
+Their algebraic identities, model flows and correspondence with engine trajectories
+must be stated separately. The implementations expose the corresponding scope.</p>
+<h3 id="auxiliary-symplectic-substrate">Auxiliary symplectic substrate<a class="headerlink" href="#auxiliary-symplectic-substrate" title="Permanent link">&para;</a></h3>
+<p>The substrate model uses an ambient symplectic space <code>P = ℝ^{4N}</code> with two canonical
+conjugate pairs per node, initialized from extracted graph fields:</p>
+<ul>
+<li><strong>Geometric sector</strong> <code>(K_φ, J_φ)</code> — curvature ↔ phase current</li>
+<li><strong>Potential sector</strong> <code>(Φ_s, J_ΔNFR)</code> — potential ↔ ΔNFR flux</li>
+</ul>
+<p>with canonical brackets <code>{K_φ, J_φ} = {Φ_s, J_ΔNFR} = 1</code>. The Hamiltonian is the
+structural <strong>energy functional</strong> <code>H_sub = ½Σ(K_φ² + J_φ² + Φ_s² + J_ΔNFR²)</code> (plus
+the held-fixed <code>½Σ|∇φ|²</code> background). Its exact harmonic flow is a
+<strong>symplectomorphism</strong>, preserving phase volume. This does not certify the 13 engine
+operators: each induced map would need its own symplecticity check, and extracted
+graph fields need not fill or remain on the ambient space under that flow.
+<strong>Noether</strong> ties each continuous symmetry to a conserved charge: time translation →
+<code>H_sub</code>; the geometric U(1) (<code>Ψ → e^{iα}Ψ</code>) → <code>E_geo = ½Σ|Ψ|²</code>; the potential U(1)
+→ <code>E_pot</code>. The complex coordinate <code>Ψ = K_φ + i·J_φ</code> is the geometric sector under
+the substrate's complex structure (flat Kähler). The substrate further carries a
+<strong>U(2) polarization symmetry</strong> with conserved Stokes parameters on a per-node
+<strong>Poincaré sphere</strong> — this is classical wave polarization (Stokes/Poincaré), a
+product (un-entangled) classical texture, <strong>not</strong> a quantum state.</p>
+<p>The full nodal equation has not been derived as an overdamped projection of this
+isotropic Hamiltonian. A restricted exact bridge exists for EPI-only diffusion
+on fixed symmetric nonnegative conductance: with <code>B=D−W</code>,
+<code>E_D=½ EPIᵀ B EPI</code>, and <code>M=diag(νf_i/d_i)</code> (zero at isolates),
+<code>dEPI/dt=−M∇E_D</code> and <code>dE_D/dt=−∇E_Dᵀ M∇E_D≤0</code>.
+<code>compute_diffusion_energy</code> reads this balance without evolving the graph.
+This Dirichlet energy differs from the tetrad potential; zero capacity yields
+degenerate mobility. A separate damped graph wave with stiffness <code>L_rw</code> has a
+slow diffusion limit, while the isotropic substrate has identity stiffness.
+See <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_VARIATIONAL_PRINCIPLE.md">theory/TNFR_VARIATIONAL_PRINCIPLE.md</a>.
+Implementation and certificates: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/symplectic_substrate.py">src/tnfr/physics/symplectic_substrate.py</a>;
+gauge / U(2) structure: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/GAUGE_SYMMETRY_AND_UNIFICATION.md">theory/GAUGE_SYMMETRY_AND_UNIFICATION.md</a>.</p>
+<h3 id="structural-conservation-theorem-noether-like">Structural conservation theorem (Noether-like)<a class="headerlink" href="#structural-conservation-theorem-noether-like" title="Permanent link">&para;</a></h3>
+<p>The structural conservation diagnostics measure the balance</p>
+<p>$$\frac{\partial \rho}{\partial t} + \nabla\cdot\mathbf{J} = S_{\text{grammar}},\qquad \rho = \Phi_s + K_\phi,\quad \mathbf{J} = (J_\phi, J_{\Delta\mathrm{NFR}}),$$</p>
+<p>where the residual <code>S_grammar</code> must be measured along the actual trajectory;
+valid operator labels alone do not prove it vanishes. The energy functional
+<code>E = ½Σ(Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²) ≥ 0</code> is a <strong>Lyapunov candidate</strong>:
+its non-increase requires trajectory evidence or a model-specific proof. A
+complete general proof of asymptotic stability remains open. The six derived fields
+(<code>χ, 𝒮, 𝒞, ℰ, 𝒜, 𝒬</code>) are bilinear contractions of the singlets (<code>Φ_s</code>, <code>|∇φ|</code>) and
+the complex fields <code>Ψ = K_φ + i·J_φ</code> and <code>Ω = |∇φ| + i·J_ΔNFR</code> (e.g. chirality
+<code>χ = Re(Ψ·Ω)</code>). Conservation theorem:
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/conservation.py">src/tnfr/physics/conservation.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_CONSERVATION_THEOREM.md">theory/STRUCTURAL_CONSERVATION_THEOREM.md</a>;
+emergent fields: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py">src/tnfr/physics/fields.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md">theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md</a>.</p>
+<h3 id="regime-correspondences">Regime correspondences<a class="headerlink" href="#regime-correspondences" title="Permanent link">&para;</a></h3>
+<p>The nodal law and graph-wave diagnostics admit the following scoped comparisons
+(external labels "classical"/"quantum-like" are not TNFR primitives):</p>
+<ul>
+<li><strong>Smooth-trajectory / overdamped drift</strong>: first order in time,
+  <code>q̇ = νf·F</code> — drift velocity ∝ force, <code>νf</code> is <strong>mobility</strong> (Stokes/Einstein), not
+  inverse mass. The inertial (second-order) regime lives in the conservative
+  substrate flow.</li>
+<li><strong>Discrete-mode</strong>: finite graphs give a finite spectrum independently of dissonance.
+  Symmetric normalized diffusion supplies an orthonormal basis; graph-wave
+  frequencies are <code>√λ_k</code>. Nodal-domain upper bounds do not imply monotonic counts
+  across every degenerate eigenbasis. Directed transport needs separate analysis.</li>
+</ul>
+<p>The graph-wave model has a <strong>sustained vibration — the pulse</strong>, read at two scales: the
+<strong>collective</strong> network rhythm (resonances <code>ω_k = √λ_k</code>, the fundamental, the dominant beat
+<code>ω_j − ω_k</code>, vibration energy; <code>compute_emergent_pulse</code>, SDK <code>net.rhythm()</code>) and the <strong>per-NFR</strong>
+pulse — every NFR a phase oscillator pulsing at its own <code>νf</code> with phase <code>φ</code>, coupled by
+<strong>resonance</strong> (<code>local_phase_sync</code> per NFR, the Kuramoto order <code>R</code>, gate <code>Δφ_max = π/2</code>;
+<code>compute_nodal_pulse</code>, SDK <code>net.resonance()</code>). These report modal rhythm and phase
+synchronization separately; a high Kuramoto order does not by itself establish
+an engine trajectory following the auxiliary conservative wave.</p>
+<p>See <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/structural_diffusion.py">src/tnfr/physics/structural_diffusion.py</a>
+and <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md">examples/02_physics_regimes/</a>.</p>
+<hr />
+<h2 id="5-the-13-canonical-operators">5. The 13 canonical operators<a class="headerlink" href="#5-the-13-canonical-operators" title="Permanent link">&para;</a></h2>
+<p>Within the engine, registered canonical operators are the <strong>semantic interface</strong>
+for named node and network transformations. Declared numerical solvers form a
+separate evolution path: they may advance EPI only through the shared nodal
+integrator from explicit <code>nu_f</code> and <code>DeltaNFR</code>, with provenance or a residual;
+ad hoc state assignment is forbidden. The current registry contains 13
+transformations with defined physical contracts. Whether their composition,
+nesting and branching generate every mathematically admissible TNFR
+transformation remains open under research line S10.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Operator (glyph)</th>
+<th>Physics / effect</th>
+<th>Grammar role</th>
+<th>Contract</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Emission</strong> (AL)</td>
+<td>Sources EPI from vacuum at pre-existing basal νf; leaves νf unchanged</td>
+<td>Generator (U1a)</td>
+<td>Sources new form without writing capacity, pressure or phase</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Reception</strong> (EN)</td>
+<td>Integrates incoming resonance</td>
+<td>—</td>
+<td>Leaves stored ΔNFR and dEPI unchanged, hence immediate operator-local C(t) unchanged</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Coherence</strong> (IL)</td>
+<td>Negative feedback; reduces |ΔNFR|, raises C(t)</td>
+<td>Stabilizer (U2)</td>
+<td>Must not reduce C(t) (outside dissonance test)</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Dissonance</strong> (OZ)</td>
+<td>Controlled instability; raises |ΔNFR|</td>
+<td>Destabilizer (U2), bifurcation trigger (U4a), closure (U1b)</td>
+<td>Must increase |ΔNFR|</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Coupling</strong> (UM)</td>
+<td>Phase synchronization link <code>φᵢ → φⱼ</code></td>
+<td>Requires phase check (U3)</td>
+<td>Valid only if <code>\|wrap(φᵢ − φⱼ)\| ≤ Δφ_max</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Resonance</strong> (RA)</td>
+<td>Coherent amplification / propagation</td>
+<td>Requires phase check (U3)</td>
+<td>Blends scalar EPI over U3-compatible neighbours while preserving sign/kind identity</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Silence</strong> (SHA)</td>
+<td>Freezes evolution; <code>νf → 0</code>, EPI fixed</td>
+<td>Closure (U1b)</td>
+<td>Preserves EPI over time</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Expansion</strong> (VAL)</td>
+<td>Adds structural complexity; raises νf</td>
+<td>Destabilizer (U2)</td>
+<td>νf not decreased (capacity lever)</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Contraction</strong> (NUL)</td>
+<td>Removes complexity; νf↓ and ΔNFR densifies</td>
+<td>—</td>
+<td>νf not increased (acts on both levers)</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Self-organization</strong> (THOL)</td>
+<td>Autopoietic sub-EPI formation</td>
+<td>Stabilizer (U2), handler (U4a), transformer (U4b)</td>
+<td>Preserves global form while creating sub-EPIs</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>Mutation</strong> (ZHIR)</td>
+<td>Phase transform <code>θ → θ'</code> when <code>ΔEPI/Δt &gt; ξ</code></td>
+<td>Destabilizer (U2), trigger (U4a), transformer (U4b)</td>
+<td>Requires prior IL + recent destabilizer (U4b)</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>Transition</strong> (NAV)</td>
+<td>Controlled regime shift; activates latent EPI</td>
+<td>Generator (U1a), closure (U1b)</td>
+<td>Trajectory controlled (not a U2 destabilizer)</td>
+</tr>
+<tr>
+<td>13</td>
+<td><strong>Recursivity</strong> (REMESH)</td>
+<td>Echoes structure across scales (U5 fractality)</td>
+<td>Generator (U1a), closure (U1b)</td>
+<td>Network-scale; <code>EPI(t)</code> references <code>EPI(t−τ)</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Public naming</strong>: the lowercase English token (<code>emission</code>, <code>reception</code>, …) is
+the canonical executable identifier. Title-case names (Emission, Reception, …)
+are public display/class names; glyph codes (AL, EN, …) are internal symbols.</p>
+<h3 id="dual-lever-and-contracts">Dual-lever and contracts<a class="headerlink" href="#dual-lever-and-contracts" title="Permanent link">&para;</a></h3>
+<p>Each operator's primary effect lands on <strong>one nodal channel</strong> — the channel partition
+is simultaneously the <strong>dual-lever</strong> (capacity νf vs pressure ΔNFR), the tetrad driver,
+and the number-theory grading:</p>
+<ul>
+<li><strong>νf (capacity)</strong>: Silence, Expansion, Contraction</li>
+<li><strong>ΔNFR (pressure)</strong>: Coherence, Dissonance, Self-organization, Transition</li>
+<li><strong>θ (phase)</strong>: Coupling, Mutation</li>
+<li><strong>EPI (form, written directly)</strong>: Emission, Reception, Resonance, Recursivity</li>
+</ul>
+<p>The single source of truth for contracts (channel, scale NODE/NETWORK, postcondition,
+TNFR.pdf anchor) is <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/operator_contracts.py">src/tnfr/operators/operator_contracts.py</a>;
+the proactive audit, reactive monitor, and introspection metadata all derive from it.
+See <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_OPERATORS.md">theory/STRUCTURAL_OPERATORS.md</a>.</p>
+<p><strong>Mutation evidence boundary.</strong> The nodal product <code>νf·ΔNFR</code> is the instantaneous
+model prediction; it is not by itself an observed ZHIR trigger. Direct Mutation
+requires active capacity and a finite signed two-sample secant strictly above
+<code>ZHIR_THRESHOLD_XI</code>. Timestamped <code>epi_time_history</code> is authoritative, uses its
+physical interval, and must end at the current EPI state. Under an explicit
+physical flow partition, its last two live samples span the terminal segment;
+a whole-parent secant is an offline comparison and never replaces the gate.
+Legacy <code>epi_history</code> and
+<code>_epi_history</code> retain an explicit unit-operator-step interpretation and make no
+physical-time claim. Missing, invalid, stale, equal-threshold or contracting evidence
+rejects direct execution; autonomous selection instead applies IL and records the
+abstention. The SDK preflights every target before a word containing ZHIR. Structural
+acceleration is a separate three-sample diagnostic, centralized by
+<code>compute_d2epi_dt2</code>; it does not replace the two-sample gate or U4b context. The
+<code>νf = 0.5</code> bifurcation-router threshold only proposes a branch and is not a Mutation
+admission condition. <code>ZHIR_BIFURCATION_MODE</code> supports detection only; the legacy
+<code>variant_creation</code> value is rejected before any write. ZHIR remains a theta-only
+transformation with bifurcation detection; topology and sub-EPI creation belong to
+THOL. Pure certificates and <code>Network.nodal_state()</code> report prediction and evidence
+without certifying U4b execution readiness.</p>
+<h3 id="operator-events-and-physical-time">Operator events and physical time<a class="headerlink" href="#operator-events-and-physical-time" title="Permanent link">&para;</a></h3>
+<p>Canonical operator events are represented as zero-duration hybrid jumps. A
+finite schedule with <code>m</code> events therefore declares exactly <code>m + 1</code> nodal-flow
+intervals: before, between and after the jumps. Materialized binary64 durations
+have authoritative exact-rational values and offsets; absolute float timestamps
+are display values, schedule logic never subtracts them to recover duration,
+and the builder does not insert them into <code>epi_time_history</code>. Coincident events
+retain their explicit event-index order in <code>hybrid_event_log</code>. For fixed
+connected symmetric positive-capacity pure-EPI diffusion, the exact
+quotient-rate certificate and rational log/exp enclosures provide a sufficient
+duration for a requested disagreement-energy fraction. These schedule and
+duration objects are read-only
+and do not turn U2/U4 into an adaptive policy.</p>
+<p><code>execute_operator_event_schedule</code> binds a valid finite schedule to the
+configured nodal integrator and shared all-target stage dispatcher. It freezes
+the initial targets, requires the live binary64 clock at every boundary, rejects
+collapsed or nonadditive positive intervals, and commits graph-owned flow, jump,
+history, cache and event-log state in one transaction. Flow boundaries supply
+timestamped EPI evidence; a same-time EPI jump restarts that history and remains
+a zero-duration event. During schedule execution the executor exclusively owns
+<code>epi_time_history</code>: any integrator write is rejected and rolls back the graph
+transaction, and only declared flow boundaries, including explicit physical-
+segment boundaries, are appended. ZHIR therefore requires a positive immediately
+preceding flow whose displayed endpoint subtraction equals its authoritative
+declared duration. With <code>include_flow_certificates=True</code>, detached snapshots
+around each positive unpartitioned flow produce an <code>ExecutedNodalFlowInterval</code> in
+<code>flow_interval_evidence</code>. A physically partitioned parent instead always stores
+its segment records under
+<code>physical_flow_partition_evidence[*].segment_flow_evidence</code>. Each record keeps
+the exact rational held-pressure nodal identity and pure-EPI quotient theorem
+separate from the binary64 replays. Trusted sequential held-pressure
+identification requires the
+exact built-in <code>DefaultIntegrator</code>, Euler with at least one substep, live Gamma
+type <code>none</code>, inactive clipping, disabled extended dynamics, stable support,
+unchanged capacity and pressure, an exact represented substep-duration sum equal
+to the declared interval, and a matching replay. The older binary64 interval
+property and exact rational pure-EPI affine promotion still require one substep;
+the latter also requires fixed symmetric nonnegative conductance, positive row
+strengths and capacity, stored pressure <code>-L_rw EPI</code> and the exact nodal identity.
+Internal substeps keep pressure fixed, so they establish neither a physical mesh
+refinement nor a modal diffusion decision. Runtime flow wrappers are value-sealed;
+direct construction or later replacement cannot assert executor provenance.</p>
+<p>During one positive flow an integrator may modify only EPI, <code>dEPI_dt</code>,
+<code>d2EPI_dt2</code> and the runtime clock. A custom integrator must realize exactly in
+rationalized represented values
+<code>EPI_right-EPI_left=dt*nu_f_left*DeltaNFR_left</code> at every target. This held-input
+identity does not certify solver accuracy or order. The shared graph transaction
+is bound to its originating graph and preserves NetworkX structural mapping
+identities and aliases plus graph-reachable capturable callback state. It rejects
+mutable structural keys with non-identity hash/equality, custom <code>__deepcopy__</code>
+hooks and unmodelled opaque C state before writes; common immutable atoms remain
+admissible. Emitted I/O and warnings, external resources and external-only aliases
+remain outside rollback.</p>
+<p><code>PhysicalFlowPartition</code> instead declares at least two explicit positive
+segments over one scheduled parent interval. Passing it through
+<code>physical_flow_partitions=</code> refreshes <code>DeltaNFR</code> before every segment and at
+the terminal boundary, then seals all boundary snapshots, segment flows and
+segment-start modal diagnostics. The callback may modify pressure aliases and
+known derived pressure/cache outputs only. EPI, capacity, phase, histories,
+full edge state, effective conductance, clock and persistent graph configuration
+must remain fixed, as must capturable state owned by a callable hook. Existing
+non-<code>None</code> cached pressure weights cannot change;
+the canonical default hook may initialize a missing or <code>None</code> cache. The same
+restriction governs stage pressure callbacks. The executor freezes hook
+presence and identity for the whole schedule and verifies them before any
+invocation, preventing an integrator from installing and running a replacement. Any
+violation or later failure rolls back the graph transaction. Physical and stage
+callback counts are recorded separately and must sum to the total.</p>
+<p>For a fixed pure-EPI generator <code>A=diag(nu_f)L_rw</code>, the exact-real held-pressure
+Euler model has <code>g_H(mu)=1-T*mu</code> regardless of internal substeps whose exact
+represented durations sum to <code>T</code>; explicit pressure refresh gives the exact-real
+model factor <code>g_R(mu)=product_k(1-h_k*mu)</code>. Actual endpoints remain binary64
+observations. Modal diagnostics evaluate these factors in ordinary binary64 but
+do not identify an endpoint with either exact-real map. That stronger promotion
+requires the exact-affine certificate. Modal comparison requires trusted
+held-pressure segment replays and exact common node order, capacity and
+conductance; matching spectra alone do not identify a common eigenbasis.
+<code>observe_event_local_zhir_physical_prejump</code>
+uses the actual terminal-segment Mutation secant and retains the whole-parent
+secant offline. <code>compare_event_local_zhir_physical_refinement</code> reports its
+endpoint, rate, gate and modal differences from a matched held-pressure
+baseline. These sealed finite observations do not certify solver order,
+three-mesh convergence, U4 readiness, adaptive grammar or future behavior.</p>
+<p><code>observe_executed_event_local_zhir_physical_prejump</code> starts from one intact
+stage-certified execution result and a committed ZHIR index. It binds the
+scheduled and executed event, preceding physical partition, terminal flow,
+glyph stage, ordered decisions and trigger certificates by identity, thereby
+certifying common execution provenance for that finite window. The offline
+coordinate-paired observer above does not make that provenance claim. Neither
+observer proves solver properties, convergence, general U4 readiness or future
+behavior.</p>
+<p><code>observe_event_local_zhir_prejump</code> pairs one such sealed nonempty flow offline
+with a scheduled ZHIR boundary at the same exact and represented coordinate. It
+keeps the rational endpoint secant separate from the actual binary64
+subtraction/division used by Mutation; only the latter decides <code>rate &gt; xi</code>, and
+both passing and failing thresholds are observations. The pairing does not prove
+a common schedule execution. For two observations with identical initial state,
+capacity, pressure, conductance, support, duration, event coordinate and <code>xi</code>
+but different positive substep counts,
+<code>compare_event_local_zhir_held_pressure_subdivision</code> certifies the represented
+gate outcome only when decisions agree and every exact rate difference is
+strictly below the baseline threshold distance. It does not certify physical
+pressure-reevaluated refinement, modal equivalence, solver accuracy/order, U4
+readiness, adaptive grammar or future behavior.</p>
+<p>Every accepted two-phase ZHIR stage seals one ordered
+<code>MutationStageDecisionObservation</code> per target from its immutable proposal. It
+retains the complete threshold certificate, capacity gate, phase/regime decision,
+acceleration/bifurcation read-out and U4 context independently of EPI-map
+certification. Opt-in event-stage evidence carries these observations forward.
+The complete <code>ExecutedGlyphStage</code> is value-sealed; its execution result requires
+one intact stage per committed event and binds ordered ZHIR observations to the
+ordered target support. An adjacent flow abstention remains observable but
+cannot enter a represented schedule product.</p>
+<p>Every accepted two-phase EN stage also seals one ordered
+<code>ReceptionStageObservation</code> per target. One owner-bound pre-EN snapshot supplies
+target/neighbor EPI, semantic kinds, optional source detection and metrics; the
+observation verifies final EPI, kind and tracked sources after all graph-mutating
+stage checks and before warning publication. Disabled tracking preserves opaque
+legacy source metadata without claiming its contents. Event execution binds
+these observations to ordered
+targets. Their <code>auxiliary_stability_certified</code> field is hard false: this is one
+finite provenance record, while counter/log cocycles and trajectory invariance
+remain open.
+On directed support, <code>source -&gt; receiver</code> defines the incoming EN orientation:
+the numeric snapshot reads predecessors and source discovery follows the same
+path direction. Source discovery is optional telemetry: it neither selects nor
+gates the direct-neighbour numeric blend and may include more distant ancestors.
+The affine Reception certificate remains undirected-only.</p>
+<p>With <code>include_stage_certificates=True</code>, interval capture is implied and every
+accepted event returns an <code>ExecutedGlyphStage</code>. The event runtime binds the
+executor-owned pointwise certificate for AL/SHA/VAL/NUL/ZHIR/NAV or all-target
+neighbour certificate for EN/RA to the actual captured EPI endpoints; other
+glyphs and failed certificate domains abstain explicitly. One
+<code>RepresentedEPIScheduleOperation</code> records each positive flow and glyph in
+chronological order. <code>ObservedRepresentedEPIScheduleComposition</code> publishes an
+exact represented-map gain product only when all operations are eligible, node
+order and consecutive EPI endpoints match exactly, and one normalized positive
+rational metric spans the trace. Its represented-map contraction result is not
+a global executable binary64-map result;
+<code>runtime_schedule_global_gain_certified</code> is always false. Solver accuracy,
+refinement equivalence, full multichannel stability, delayed-REMESH gain,
+adaptive U2/U4 and future or repeated schedule stability remain unproved.</p>
+<p><code>execute_event_remesh_cycle</code> composes one finite schedule with the separately
+invoked delayed map under an outer graph transaction. It appends exactly one
+full-support pre-REMESH <code>_epi_hist</code> sample through the ordinary runtime helper,
+so delay <code>tau</code> remains <code>history[-(tau + 1)]</code>; no post-jump delayed-history
+sample is stored. An applied jump separately records its same-time right
+endpoint in authoritative <code>epi_time_history</code>. The schedule must preserve ordered
+node support and incoming delayed history; edges may change there. The endpoint
+clock, committed event log, phase, pressure-hook identity and deterministic
+REMESH controls remain frozen. The EPI-only map treats ON_REMESH callbacks as
+observers: they must preserve all graph-owned topology, metadata, histories and
+stored non-EPI aliases. Capturable observer-owned state reachable from the graph
+shares that rollback boundary.
+One frozen positive diagonal metric measures cycle-level weighted EPI
+observations and feeds delayed-map evidence; legacy metadata retains unweighted
+means. Exact values remain authoritative when an optional float display is
+<code>None</code>. Weighted-consensus drift, capacity and pressure refresh remain separate.
+The optional refresh runs only after an applied map. The cycle can retain the
+finite represented flow/glyph composition inside its event result, but the
+delayed map and its one-step evidence remain separate. This certifies
+graph-owned one-cycle execution, not solver accuracy, delayed-REMESH gain or
+repeated stability with evolving history. Capturable graph-reachable integrator
+and callback state is covered; emitted I/O or warnings, external resources and
+external-only aliases remain outside rollback.
+Supplied <code>physical_flow_partitions</code> are materialized exactly once inside the
+outer transaction and the resulting tuple is forwarded unchanged to schedule
+execution.</p>
+<p>Each cycle seals a <code>RemeshHistoryTransitionObservation</code>. For bounded history
+capacity <code>M</code>, exact incoming history <code>H_in</code> and exact pre-REMESH state <code>x_pre</code>,
+it verifies <code>H_out = tail_M(tail_M(H_in) || (x_pre,))</code>, including truncation and
+append eviction. Local and global lag availability are recorded independently.
+A completed post-REMESH pressure callback is an operational fact and does not
+prove <code>DeltaNFR = -L_rw EPI</code>.</p>
+<p><code>compose_event_remesh_cycle_observations</code> binds at least two sealed cycle results
+supplied in caller order into an <code>ObservedEventRemeshCycleSequence</code>. Its sealed
+<code>EventRemeshCycleBoundaryObservation</code> records compare exact EPI, capacity,
+pressure, phase, clock and full delayed history across adjacent supplied results.
+Indices are local ordinals. Identical-object reuse is rejected, while distinct
+copies do not prove causal order or shared-graph execution provenance. Exact
+raw metric equality remains separate from normalized-ray compatibility;
+tri-state nested schedule metric alignment is diagnostic. Schedule compositions
+and REMESH results remain separate. Recorded-boundary continuity is independent
+of metric compatibility; the stronger sequence result requires one normalized
+ray aligned with every nested schedule, without requiring raw metric equality.
+<code>None</code> or <code>False</code> alignment blocks only that stronger result. No gain
+multiplication, evolving-history repetition, runtime-global gain, whole-sequence
+atomicity, full graph or grammar-history continuity, solver or future theorem
+follows. In one explicit sequential lag-one execution with <code>alpha=1</code>, <code>(2,0)</code>
+with delayed row <code>(0,2)</code> alternates to <code>(0,2)</code> and back even though each
+fixed-history result has zero current-state coefficient.</p>
+<p><code>observe_event_remesh_three_mesh_refinement</code> compares three already executed,
+sealed cycles with strictly nested coarse, intermediate and fine physical
+partitions. Compatibility requires the same schedule, ordered full support,
+initial EPI/capacity/phase/pressure, captured conductance, normalized metric,
+executor/callback metadata, incoming history and REMESH controls. It records
+exact represented EPI at pre-schedule, physical-boundary, pre-REMESH and
+post-REMESH checkpoints and pairwise persistent-node <code>L_inf</code> errors. It reports
+executor-linked ZHIR rates/gates whenever the required evidence exists;
+optional <code>zhir_xi</code> only validates the executed threshold. Modal products require
+a common captured generator. Detached cycles omit the complete pre-schedule
+graph namespace, callback closure and RNG state, node metadata and sub-EPI
+state, so a complete common reference problem and exclusive attribution of EPI
+differences to mesh are not certified. Integrity and decreasing finite errors
+do not prove solver order, mesh convergence, Lyapunov decrease, a combined
+schedule/REMESH gain or future behavior.</p>
+<p><code>certify_reversible_single_eigenmode_euler_reference</code> is the pure exact source
+for a wider fixed-generator class. It derives the positive reversible metric
+<code>H=diag(d_i/nu_f_i)</code>, its conserved mean and the rational generator from an
+ordered symmetric nonnegative conductance matrix and positive capacities. It
+accepts only a nonzero H-centered field satisfying <code>A v=mu v</code> exactly with
+<code>mu&gt;0</code>; mixed modes are rejected rather than projected. For positive partitions
+of one horizon with <code>0 &lt; mu*h_j &lt; 1</code>, it rationally encloses the exact modal
+solution and proves
+<code>0 &lt;= exp(-mu*T)-g_P &lt;= mu^2/2 sum_j h_j^2 &lt;= mu^2/2 T h_max</code>.
+Proper subdivision strictly improves the factor and quadratic bound. Therefore
+the exact-real endpoints converge conditionally for any admissible fixed-data
+partition family with <code>h_max -&gt; 0</code>; this does not observe an infinite family or
+certify binary64 execution, solver order, glyphs, REMESH, changing generators,
+directed transport, mixed modes or full TNFR stability. The rational enclosure
+caps <code>mu*T</code> at 4096 to limit its integer exponent, without bounding arbitrary
+<code>Fraction</code> input bit size.</p>
+<p><code>observe_executed_reversible_single_eigenmode_euler_reference</code> binds that
+theorem to a finite ordered family of intact
+<code>ExecutedPressureRefreshedFlowPartition</code> records. It derives the exact node
+order, conductance, capacity, initial field and partitions from the executor
+evidence and rejects incompatible sources. For each segment it records
+<code>rho=p64-(-L_rw z)</code>, <code>eta=z_next-z-h*diag(nu_f)*p64</code> and
+<code>epsilon=h*diag(nu_f)*rho+eta</code>, then propagates the endpoint defect through the
+complete recurrence <code>r_next=(I-h*A)r+epsilon</code>; represented residuals need not
+remain modal. Signed coordinate intervals yield exact rational <code>L_inf</code> and
+<code>H</code>-error-energy bounds against the continuous solution. Every input partition
+retains its executor provenance, but their supplied family is offline. The
+observation does not certify binary64/runtime mesh convergence, solver accuracy
+or order, common causal provenance, glyph/REMESH dynamics, repetition, future
+behavior or full TNFR stability.</p>
+<p><code>observe_p2_event_remesh_reference_family</code> certifies one compatible finite P2
+coordinate problem inside that observer. It requires three meshes related by
+two proper positive subdivisions of one event-free, homogeneous-capacity,
+effective two-node pure-EPI flow, with
+<code>0 &lt; lambda*h_j &lt; 1</code>, unit REMESH delays, the exact initial field as delayed row
+and hard clipping on one common scalar interval. From the executor-owned exact
+durations and checkpoints it independently reconstructs
+<code>g_P=product_j(1-lambda*h_j)</code> and rationally encloses
+<code>exp(-lambda*T)</code>. It proves
+<code>0 &lt;= exp(-lambda*T)-g_P &lt;= lambda^2/2 sum_j h_j^2 &lt;= lambda^2/2 T h_max</code>,
+strict factor and quadratic-bound improvement under proper subdivision, and
+the ideal post-REMESH error factor <code>beta=(1-alpha)^2</code>; the committed binary64
+endpoint bound adds <code>||r_round+r_clip||_inf</code>. It does not certify solver order,
+generic or binary64 asymptotic convergence, arbitrary glyphs or mixed channels,
+soft clipping, changing support/metric, repeated stability or future behavior.
+Its modal factors, enclosures, bounds and subdivision decisions delegate to the
+general reversible single-eigenmode certificate.</p>
+<p>The distinct uniform exact delayed-REMESH recurrence has a finite
+augmented-history theorem. With fixed delays, ordered support, one fixed
+positive diagonal spatial metric, uniform <code>alpha</code> and no clipping, its
+companion matrix is row stochastic with an exact stationary temporal measure.
+The stationary-weighted sum of centered spatial disagreement energies has an
+exact nonnegative Jensen dissipation; equality holds exactly when all active
+centered input fields agree. For <code>0 &lt; alpha &lt; 1</code>, the companion is primitive
+and every spatial coordinate converges to the preserved stationary history
+barycenter. <code>alpha = 0</code> is the identity. At <code>alpha = 1</code>, the companion is a
+pure-delay permutation of order <code>tau_global + 1</code>; the augmented energy is
+conserved and individual orbit periods may divide that order. This retains the
+alternating-history obstruction to strict decay. It does not identify the
+clipped binary64 runtime, prove spatial consensus or <code>DeltaNFR = 0</code>, admit
+changing coefficients/metric/support, or combine schedule and REMESH gains.</p>
+<p><code>certify_uniform_remesh_schedule_policy_stability</code> supplies the separate
+conditional exact composition theorem. Histories are indexed immediately after
+each schedule, so one abstract transition mixes them by REMESH and then applies
+the next schedule. If every possibly varying exact schedule preserves spatial
+consensus and has disagreement-energy gain at most a common <code>q</code> in the same
+fixed metric, then <code>B_q=diag(q,1,...,1)P</code>. Nonnegative-matrix domination gives
+prefix gain at most one. For the sufficient universal horizon
+<code>L=active_max_delay+1</code>, every companion path visits the head and
+<code>B_q^L&lt;=qP^L</code>; hence <code>V[k+n]&lt;=q^floor(n/L)V[k]</code>. Strict <code>q&lt;1</code> yields uniform
+normalized block margin <code>1-q</code> and geometric spatial-disagreement decay in every
+history row. <code>L</code> need not be minimal for a particular interior companion. At
+<code>q=1</code>, only nonincrease and zero certified margin follow. The certificate does
+not inspect the schedule maps or prove anything about binary64 defects, solver
+behavior, adaptive grammar or full TNFR state.</p>
+<p><code>observe_runtime_remesh_history_bridge</code> closes one narrower boundary by
+identifying an applied executor-sealed REMESH result with the exact companion.
+It retains the exact signed identity
+<code>bounded = ideal + rounding_residual + clipping_residual</code>, the corresponding
+lifted augmented-energy defects and a posteriori sufficient margins. Hard
+clipping onto one common scalar interval is disagreement-nonexpansive in the
+common positive diagonal metric;
+soft clipping and rounding retain explicit counterexamples to unconditional
+decrease. The runtime does not append the post-REMESH head immediately, so this
+single-cycle bridge does not establish live repetition.</p>
+<p><code>observe_remesh_schedule_history_transition</code> adds a supplied scheduled head,
+verifies its declared gain bound and separates the schedule energy defect from
+the ideal, rounding and clipping terms. The stricter
+<code>observe_runtime_remesh_schedule_sequence</code> binds each applied REMESH result to
+the next represented schedule and verifies that its endpoint becomes the next
+recorded history head. Compatible adjacent balances telescope additively in one
+normalized metric and fixed REMESH configuration. The source sequence remains
+caller ordered; shared graph provenance, causal succession, cross-call
+atomicity, a global executable map, a uniform positive normalized block margin
+over a declared forward-invariant runtime class, an intrablock runtime prefix
+bound and future stability remain open.</p>
+<p><code>execute_event_remesh_cycle_sequence</code> supplies the stronger finite execution
+boundary. It runs ordered <code>EventRemeshCycleExecutionSpec</code> values on one graph
+inside one outer graph transaction. Each sealed
+<code>CausalEventRemeshCycleReceipt</code> binds its execution ordinal, exact spec and
+resulting cycle, including identity of the executed and declared schedule. The
+sealed <code>ExecutedEventRemeshCycleSequence</code> retains the cycles, the ordinary
+offline cycle sequence and, by default, the compatible runtime schedule/history
+telescope. With <code>require_runtime_telescope=False</code>, the result always retains
+<code>runtime_telescope=None</code>; this admits a word without one common affine schedule
+metric. Exact
+telescope properties stay false while causal order, one graph identity and
+finite graph-owned atomicity remain certified. It does not compose schedule and REMESH gains,
+prove a uniform positive normalized block margin over a declared
+forward-invariant runtime class or an intrablock runtime prefix bound, solver accuracy/order,
+convergence, repeated or future stability, or rollback emitted I/O, warnings,
+external resources or external-only aliases. The nested offline observers keep
+their own false causal scope when used separately.</p>
+<p><code>observe_executed_event_remesh_block_margin</code> derives an exact observation from
+one nonempty contiguous boundary block of an intact
+<code>ExecutedEventRemeshCycleSequence</code> that retains its runtime telescope. It identity-binds the causal source,
+telescope and selected boundary objects; sums the exact observed drop <code>D</code>,
+gain-based lower bound <code>K</code> and nonnegative schedule slack <code>S</code>; and verifies
+<code>D=K+S</code>. When <code>V_before&gt;0</code>, it records <code>kappa=K/V_before</code>, the observed drop
+fraction and endpoint gain upper bound <code>1-kappa</code>. At <code>V_before=0</code>, these
+normalized fields are undefined. A positive value certifies only the recorded
+finite block. Absolute uniform margin is obstructed by quadratic amplitude
+scaling and equilibrium; uniform normalized runtime-class coercivity,
+intrablock runtime prefix control, repetition and future stability remain false
+for this finite observer.</p>
+<p><code>certify_uniform_remesh_schedule_relative_defect_stability</code> extends the
+conditional common-<code>q</code> theorem with the signed centered-energy defect
+<code>delta=E_H(z)-E_H(y)&lt;=eta*J</code>, where
+<code>J=sum_d c_d E_H(history[d])</code>. Jensen yields
+<code>q_eff=q*(1+eta)</code>. The certificate rejects <code>q_eff&gt;1</code>; equality gives
+nonincrease with zero margin, while <code>q_eff&lt;1</code> gives uniform block margin
+<code>1-q_eff</code> and repeated exact-model spatial-disagreement decay. <code>delta</code> is not
+the energy or norm of <code>z-y</code>. At <code>J=0</code> the inequality is checked directly and
+no ratio is formed.</p>
+<p><code>observe_executed_event_remesh_relative_defect_block</code> binds that robust
+envelope to one nonempty contiguous block of an intact causal execution that
+retained its compatible runtime telescope. It
+verifies every exact <code>J</code>, defect and slack, every represented schedule gain
+<code>q_j&lt;=q</code>, the complete <code>diag(q_eff,1,...,1)P</code> history-energy envelope and the
+finite endpoint factor <code>q_eff^floor(N/L)</code>. It inherits same-invocation graph
+provenance and atomicity only for that recorded block. It does not prove a
+uniform runtime defect class, forward invariance, a global runtime gain,
+repetition, future binary64 stability, solver properties, adaptive grammar or
+full TNFR stability.</p>
+<p><code>certify_half_alpha_antisymmetric_hard_clip_remesh_class</code> certifies the first
+useful restricted represented class with <code>0&lt;alpha&lt;1</code>. It requires exactly two
+ordered nodes, any positive diagonal metric, fixed positive delays,
+<code>alpha=1/2</code>, a symmetric hard interval <code>[-B,B]</code> with <code>B&gt;=4s</code>,
+<code>s=2^-1074</code>, and sufficient finite history whose rows are <code>(a,-a)</code>. The
+production nested binary64 recurrence and the symmetric clamp preserve numeric
+antisymmetry and the interval. For <code>D=c^2+l^2+2g^2</code>, <code>x=sqrt(D)</code> and
+<code>u=2^-53</code>, the proof stores
+<code>|r-y|&lt;=A*x+C*s</code>, with <code>A=3u/2+u^2/2</code> and
+<code>C=9/4+9u/4+u^2/2</code>. The analytic <code>x&gt;=11s</code> tail is strictly below
+<code>eta=135/124</code>; the exact <code>x&lt;11s</code> enumeration checks 6,615 integer triples,
+3,890 admissible, and attains equality at <code>(-3,-2,-3)s</code>. Consequently the
+robust composition is strict exactly for <code>q&lt;124/259</code>. The implemented
+<code>q=4/9</code> example has <code>q_eff=259/279</code> and margin <code>20/279</code>; equality at the
+threshold gives only nonincrease, and <code>q=9/16</code> is rejected. General
+positive-metric centering and fixed-lattice closure are not inherited. The
+certificate proves REMESH-only forward invariance and leaves schedule-family,
+graph/event, repeated complete-runtime, future, solver and full-TNFR claims
+false.</p>
+<p><code>certify_executed_p2_half_reception_remesh_sequence</code> supplies a distinct finite
+P2 adapter that does not require the schedule/history energy telescope. It
+selects one executor-owned EN stage per cycle, binds its EPI endpoints to the
+global half-Reception <code>q=0</code> kernel, and binds the same cycle's applied
+<code>alpha=1</code> hard-clipped REMESH to its exact represented global-delay row with
+<code>eta=0</code>. Ordered support, metric, interval, delays, history capacity and runtime
+alpha-source provenance remain fixed. For an observed sequence with
+<code>N&gt;=L=tau_global+1</code>, the active suffix of <code>L</code> chronological rows remains inside
+the source interval and the recorded post-horizon and final post-REMESH spatial
+energies are zero. If <code>tau_local&gt;tau_global</code>, that suffix is shorter than the
+full source-class history requirement; its extra local-delay rows are inactive
+because <code>alpha=1</code>. Stale older rows, auxiliary Reception state, live-graph binding,
+future or unobserved repetition, solver properties and full TNFR stability are
+not certified.</p>
+<p><code>execute_p2_half_reception_remesh_policy_invocation</code> supplies the reusable
+per-call boundary for that adapter. Before any caller-owned specification or
+metric is materialized, it takes an outer graph snapshot. Static preflight
+requires an intact kernel certificate; exact ordered undirected P2 support;
+positive capacity, symmetric conductance and the source metric ray; exact
+binary64 <code>EN_mix=0.5</code>; matching hard-clipped <code>alpha=1</code> REMESH controls; an entry
+EPI pair nonzero in at least one coordinate; sufficient active history;
+the live clock; and at least <code>tau_global+1</code> distinct, clock-chained, one-cycle
+zero-flow <code>EN -&gt; IL -&gt; REMESH</code> specifications with no physical partitions. It
+then rederives the U1a premise from the live pair at every cycle start, runs the
+no-telescope causal executor and constructs, identity-checks and deeply
+revalidates the finite certificate before commit. Post-certification must be
+read-only. A zero cycle-start pair or any other failure restores graph-owned
+state. Every accepted call
+certifies only that completed invocation; auxiliary Reception-state stability,
+future or unobserved execution, solver properties and full TNFR stability remain
+false.
+See
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/event_timing.py">src/tnfr/operators/event_timing.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/event_runtime.py">src/tnfr/operators/event_runtime.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/event_remesh_runtime.py">src/tnfr/operators/event_remesh_runtime.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/event_remesh_sequence.py">src/tnfr/operators/event_remesh_sequence.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/event_remesh_causal_runtime.py">src/tnfr/operators/event_remesh_causal_runtime.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/event_duration.py">src/tnfr/physics/event_duration.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/event_refinement.py">src/tnfr/physics/event_refinement.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/event_remesh_refinement.py">src/tnfr/physics/event_remesh_refinement.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/reversible_eigenmode_reference.py">src/tnfr/physics/reversible_eigenmode_reference.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/event_remesh_reference.py">src/tnfr/physics/event_remesh_reference.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/remesh_history_stability.py">src/tnfr/physics/remesh_history_stability.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/remesh_schedule_policy_stability.py">src/tnfr/physics/remesh_schedule_policy_stability.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/remesh_schedule_relative_defect_stability.py">src/tnfr/physics/remesh_schedule_relative_defect_stability.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/binary64_remesh_relative_defect.py">src/tnfr/physics/binary64_remesh_relative_defect.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/binary64_p2_reception_stability.py">src/tnfr/physics/binary64_p2_reception_stability.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_p2_reception_stage.py">src/tnfr/physics/runtime_p2_reception_stage.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_p2_reception_remesh_sequence.py">src/tnfr/physics/runtime_p2_reception_remesh_sequence.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_p2_reception_remesh_policy.py">src/tnfr/physics/runtime_p2_reception_remesh_policy.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_remesh_history_stability.py">src/tnfr/physics/runtime_remesh_history_stability.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/remesh_schedule_stability.py">src/tnfr/physics/remesh_schedule_stability.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_remesh_schedule_stability.py">src/tnfr/physics/runtime_remesh_schedule_stability.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_remesh_schedule_block_margin.py">src/tnfr/physics/runtime_remesh_schedule_block_margin.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_remesh_schedule_relative_defect.py">src/tnfr/physics/runtime_remesh_schedule_relative_defect.py</a>,
+and <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/REMESH_INFINITY_DERIVATION.md">theory/REMESH_INFINITY_DERIVATION.md</a>.</p>
+<h3 id="composition">Composition<a class="headerlink" href="#composition" title="Permanent link">&para;</a></h3>
+<p>Operators compose into sequences satisfying U1–U6. The named building blocks are
+structural <strong>fragments (macros)</strong>, not standalone valid words:</p>
+<ul>
+<li><strong>Bootstrap</strong> = [Emission, Coupling, Coherence] · <strong>Stabilize</strong> = [Coherence, Silence]</li>
+<li><strong>Explore</strong> = [Dissonance, Mutation, Coherence] · <strong>Propagate</strong> = [Resonance, Coupling]</li>
+</ul>
+<p>A fragment becomes a valid word by adding the grammar glue (a U1a generator prefix, a
+U1b closure suffix, and the U4b context a transformer needs), e.g. <code>[Emission,
+Coupling, Coherence, Silence]</code>. Nesting <code>THOL[ body ]</code> lifts sequences to
+context-free (nested sub-EPIs, U5); branching <code>OZ → [ZHIR | NUL]</code> is the U4a
+bifurcation. SDK words and supported GPU blocks preserve operator order. When
+grammar keeps the requested glyph for every target, all thirteen stages
+read one immutable snapshot and commit atomically (two-phase Jacobi):
+neighbour-reading EN/IL/RA, pointwise AL/SHA/VAL/NUL/ZHIR/NAV, overlapping
+phase/topology stage UM, overlapping-pressure stage OZ, and child-support and
+hierarchy stage THOL, and advisory stage REMESH. IL contracts
+target <code>DeltaNFR</code> magnitude and
+locks target phase from the shared snapshot; its canonical stage/global and
+radius-local structural <code>C(t)</code> telemetry is distinct from retained legacy
+pressure-dispersion fields. Supported GPU AL/RA blocks reuse the same paths.
+Their committed primary structural channels are target-order invariant before
+the opaque pressure-refresh callback; AL/SHA also share one stage timestamp.
+NAV binds <code>nu_f</code>, phase, <code>DeltaNFR</code> and per-node RNG progress to the snapshot,
+resolves a missing graph seed inside the stage transaction, and uses one shared
+latency-observation instant. The resolved seed persists only after a successful
+commit; stable per-node offsets and draw counts make committed RNG progress
+target-order invariant. Ordered lifecycle, audit/telemetry and monitor streams
+retain the requested target order; IL warnings are the final transactional
+effect. UM merges overlapping circular displacements in immutable snapshot-rank
+order, normalizes final phases, rechecks U3 after the merge, and coalesces new
+functional links deterministically. This is an engine policy rather than a
+Lyapunov or relabeling theorem. OZ derives every local action and outgoing
+propagation increment from the same snapshot, then reduces overlapping incoming
+increments with <code>math.fsum</code> in snapshot-node rank. Its local pressure-magnitude
+postcondition precedes signed accumulation, where positive propagation can
+partially cancel a negative pressure; pressure and per-node RNG progress remain
+target-order invariant. THOL plans every target from the snapshot, resolves
+cross-parent child-ID collisions and commits <code>d2EPI</code>, <code>DeltaNFR</code>, child
+nodes, <code>sub_nodes</code>, <code>sub_epis</code> and graph <code>hierarchy</code> in snapshot-node
+rank after validating the complete merge on a detached graph. REMESH derives
+one shared advisory from the snapshot, records it at most once per telemetry
+step and leaves EPI, nu_f, phase, DeltaNFR and support unchanged. Explicit
+delayed EPI mixing remains the separate <code>apply_network_remesh</code> operation. Its
+<code>plan_network_remesh</code> boundary freezes exact-support history inputs and keeps
+the represented affine recurrence, nested binary64 result and clipping
+separate. Insufficient history or empty support is an explicit no-op; a
+successful graph-owned commit is atomic. Optional one-step evidence reports
+mean drift, a convex three-input disagreement bound and only a conditional
+fixed-history gain. It does not prove stability under history-updated
+repetition.
+Identity-bearing caches remain tied to their live graph and node objects; cache
+state and the pressure-refresh callback lie outside the target-order result.
+Relabeling equivariance remains unproved. Multi-target IL historically used
+the sequential schedule; the canonical word runner now uses its snapshot rule.
+A grammar replacement or Recursivity execution override still uses and reports
+the transactional Gauss-Seidel path.</p>
+<p>The shared pointwise stage executor can opt into a conditional certificate for
+AL/SHA/VAL/NUL/ZHIR/NAV by declaring whether support is fixed. A successful
+<code>NetworkStageResult</code> then carries the certificate computed from the executor's
+own detached snapshot and frozen proposals before commit. Certification
+requests reject IL, empty stages, grammar replacements and noncanonical
+operator overrides atomically. The three levels distinguish exact runtime
+realization, consensus-preserving affine action and an aligned positive
+pre/post diffusion metric. By themselves they do not certify mixed words,
+histories, the opaque pressure refresh or future repetition. The event runtime
+can compose supported pointwise and EN/RA represented maps only after exact
+observed-endpoint and common-metric gates pass. See
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/pointwise_stage_stability.py">src/tnfr/physics/pointwise_stage_stability.py</a>.</p>
+<p>Read/write footprints, merge status, rollback scope and scoped structural-state
+target-order/relabeling claims are centralized in
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/stage_contracts.py">src/tnfr/operators/stage_contracts.py</a>. See
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/08_emergent_geometry/143_glyphic_function_sublanguage.py">examples/08_emergent_geometry/143_glyphic_function_sublanguage.py</a>
+and <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/08_emergent_geometry/144_branching_combinator.py">144_branching_combinator.py</a>.</p>
+<hr />
+<h2 id="6-unified-grammar-u1u6">6. Unified grammar (U1–U6)<a class="headerlink" href="#6-unified-grammar-u1u6" title="Permanent link">&para;</a></h2>
+<p>The grammar is the engine's structural contract, motivated by the nodal equation
+and encoded operator roles. Its policy choices are distinguished from mathematical
+implications in <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md">theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md</a>.
+Validation entry point:
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar.py">src/tnfr/operators/grammar.py</a>; canonical specification
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar_canon.py">src/tnfr/operators/grammar_canon.py</a>; full
+derivations <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/UNIFIED_GRAMMAR_RULES.md">theory/UNIFIED_GRAMMAR_RULES.md</a>.</p>
+<ul>
+<li><strong>U1 — Initiation &amp; closure.</strong> A standalone sequence must start with a generator
+  <code>{AL, NAV, REMESH}</code> (U1a) and end with a closure <code>{SHA, NAV, REMESH, OZ}</code> (U1b).
+  These are operator-history contracts: the nodal derivative is defined at <code>EPI=0</code>
+  for finite capacity and pressure. Context-aware execution may extend existing history.</li>
+<li><strong>U2 — Convergence &amp; boundedness.</strong> The stabilization policy requires that any
+  destabilizer <code>{OZ, ZHIR, VAL}</code> requires a stabilizer <code>{IL, THOL}</code>. The max
+  uncompensated-destabilizer debt is the configured <strong>relaxation absorption capacity</strong>
+  <code>⌊1/(νf·dt·ρ)⌋ = 2</code> under canonical mean-rate calibration
+  (<code>derive_u2_debt_capacity_from_physics</code>), not a graph-uniform absorption theorem. Specialized
+  sub-rule: REMESH combined with a destabilizer also requires <code>{IL, THOL}</code> (recursive
+  amplification control).</li>
+<li><strong>U3 — Resonant coupling.</strong> Coupling/resonance <code>{UM, RA}</code> require phase compatibility
+  <code>δ(φᵢ,φⱼ) = |wrap(φᵢ − φⱼ)| ≤ Δφ_max</code> (antiphase is destructive). RA filters
+  its neighbourhood by this condition: incompatible neighbours contribute to
+  neither its EPI mean, phase mean, nor frequency-amplification trigger.</li>
+<li><strong>U4 — Bifurcation dynamics.</strong> (a) Triggers <code>{OZ, ZHIR}</code> need handlers <code>{THOL, IL}</code>.
+  (b) Transformers <code>{ZHIR, THOL}</code> need a recent destabilizer within the <strong>structural-relaxation
+  window</strong> — canonically 3 ops, <strong>one window for every destabilizer</strong>,
+  calibrated by a mean-rate relaxation surrogate to the band <code>1/(π+1)</code>
+  (<code>derive_bifurcation_window_from_physics</code>). Individual graph modes can take
+  substantially longer to relax; this recency policy is not a universal decay time.
+  ZHIR also needs a prior
+  IL (stable base).</li>
+<li><strong>U5 — Multi-scale coherence.</strong> Nested EPIs require stabilizers at each level;
+  <code>C_parent ≥ α · Σ C_child</code> is a hierarchy-dependent target requiring a
+  specified α and normalization. Evaluate a concrete hierarchy with
+  <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/multiscale_coherence.py"><code>assess_u5_parent_child_coherence</code></a>.
+  THOL amplitude alignment is a separate dispersion diagnostic, not <code>C(t)</code> or U5.
+  <code>THOL_MIN_COLLECTIVE_COHERENCE</code> is an inert legacy alias of the general
+  fragmentation-risk cut; THOL does not consume it.</li>
+<li><strong>U6 — Structural potential confinement.</strong> Telemetry safety: monitor <code>Δ Φ_s &lt; π/2 ≈ 1.571</code>
+  (selected half-wrap threshold; <code>Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)²</code>). This compares
+  potential with a reference state; it is a read-only check, not a sequence constraint
+  or a graph-independent bound on source aggregation.</li>
+</ul>
+<p><strong>Single source of truth.</strong> The operator-classification sets (generators, closures,
+stabilizers <code>{IL, THOL}</code>, destabilizers <code>{OZ, ZHIR, VAL}</code>, transformers <code>{ZHIR, THOL}</code>)
+are <strong>derived</strong> from per-operator nodal-equation predicates in
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/config/physics_derivation.py">src/tnfr/config/physics_derivation.py</a> and
+re-exported by <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar_types.py">src/tnfr/operators/grammar_types.py</a>;
+every consumer imports from there. NAV is <strong>not</strong> a destabilizer (its trajectory is
+controlled). Proactive, incremental enforcement during dynamic operator selection lives
+in <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar_dynamics.py">src/tnfr/operators/grammar_dynamics.py</a> and
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar_application.py">grammar_application.py</a>.</p>
+<hr />
+<h2 id="7-telemetry-metrics">7. Telemetry &amp; metrics<a class="headerlink" href="#7-telemetry-metrics" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>C(t) — total coherence</strong> <code>[0,1]</code>, the primary stability indicator:
+  <code>C(t) = 1 / (1 + mean|ΔNFR| + mean|dEPI|)</code>, the canonical nodal read-out
+  (equilibrium → <code>C → 1</code>). Strong coherence <code>C &gt; π/(π+1) ≈ 0.7585</code>; fragmentation
+  risk <code>C &lt; 1/(π+1) ≈ 0.2415</code>. The two cuts are the coherence band
+  <code>[1/(π+1), π/(π+1)]</code> — the single structural quantity <code>1/(π+1)</code> and its complement
+  (π the sole structural scale); using this π-band as the C(t) interpretation is a
+  telemetry convention. <strong>Dual status</strong>: beyond a
+  read-out, its per-node kernel <code>structural_coherence</code>
+  (<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/metrics/common.py">src/tnfr/metrics/common.py</a>) is the single
+  <em>constitutive</em> coherence map — an NFR is canonically a region of structural
+  coherence (§2). At one instant, <code>1/C-1</code> is the local L1 diagnostic distance
+  <code>|ΔNFR|+|dEPI|</code> to <code>(0,0)</code>; this monotone transform does not imply temporal
+  monotonicity or a general attractor. Every domain (graph, arithmetic,
+  chemical) reads this one kernel, while only the restricted pure-EPI diffusion
+  model in §2 has the stated uniform attractor. At fixed nonempty order <code>N</code>,
+  <code>C_N=c</code> is exactly the boundary of a <code>2N</code>-dimensional cross-polytope with L1
+  radius <code>N(1/c-1)</code>; imposing fixed positive capacity gives the weighted
+  pressure section <code>Σ(1+νf_i)|ΔNFR_i|=N(1/c-1)</code>. These instantaneous
+  stratifications do not imply basin geometry or attraction.</li>
+<li><strong>Si — sense index</strong> <code>[0,1+]</code>, reorganization-capacity predictor: <code>Si &gt; 0.8</code>
+  excellent; <code>Si &lt; 0.4</code> bifurcation-prone. Unlike <code>C(t)</code>, Si is a <strong>heuristic
+  composite</strong> (weighted νf, phase sync, |ΔNFR|) — predictive/diagnostic, <strong>not</strong>
+  constitutive of NFR-hood.</li>
+<li><strong>Structural affinity matrix</strong> — <code>coherence_matrix</code> is an auxiliary bounded
+  pairwise similarity built from phase, EPI, νf and Si. Its historical
+  coherence-operator notation does not define canonical <code>C(t)</code>. The matrix is
+  real symmetric but need not be positive semidefinite: identical nodes on the
+  three-node path give <code>W = I + A_path</code>, with eigenvalue <code>1 - sqrt(2) &lt; 0</code>.
+  Its normalized unit-diagonal trace is therefore not a coherence read-out.</li>
+<li><strong>Tetrad safety</strong> (telemetry; see §3): <code>|∇φ|≤π</code> and <code>|K_φ|≤π</code> are phase-wrap
+  bounds. The curvature margin <code>0.9·π</code>, U6 drift <code>π/2</code> and potential magnitude
+  <code>π/4</code> are selected safety policies. The measured synchronization onset <code>≈0.29</code>
+  depends on the experiment; fitted <code>ξ_C</code> and the spectral fallback <code>1/√λ₂</code>
+  must be reported with their respective scope.</li>
+</ul>
+<p>Required telemetry must stay in TNFR-coherent terms (C(t), Si, phase, νf, and the
+tetrad), in Hz_str units. Computation: <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py">src/tnfr/physics/fields.py</a>,
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/telemetry.py">src/tnfr/physics/telemetry.py</a>.</p>
+<hr />
+<h2 id="8-canonical-invariants">8. Canonical invariants<a class="headerlink" href="#8-canonical-invariants" title="Permanent link">&para;</a></h2>
+<p>Six invariants define TNFR consistency; preserve all of them.</p>
+<ol>
+<li><strong>Nodal equation integrity</strong> — EPI changes only via <code>∂EPI/∂t = νf·ΔNFR</code>; ΔNFR keeps
+   structural-pressure semantics; <code>νf → 0</code> inactivates. (Grammar U1, U2.)</li>
+<li><strong>Phase-coherent coupling</strong> — circular separation
+   <code>|wrap(φᵢ − φⱼ)| ≤ Δφ_max</code> is required before any coupling.
+   (Grammar U3; <code>validate_resonant_coupling()</code>.)</li>
+<li><strong>Multi-scale fractality</strong> — EPIs nest without identity loss. (Grammar U5.)</li>
+<li><strong>Grammar compliance</strong> — operator sequences pass U1–U6; named semantic
+   transformations map to existing operators or define a new operator with full
+   contracts; declared solvers use the shared nodal integrator.</li>
+<li><strong>Structural metrology</strong> — νf in Hz_str; C(t), Si, phase, νf exposed in telemetry.</li>
+<li><strong>Reproducible dynamics</strong> — identical seeds give identical trajectories; operations
+   are traceable.</li>
+</ol>
+<hr />
+<h2 id="9-tnfr-agent-playbook">9. TNFR agent playbook<a class="headerlink" href="#9-tnfr-agent-playbook" title="Permanent link">&para;</a></h2>
+<p>How a TNFR agent (human or AI) should reason and act.</p>
+<ol>
+<li><strong>Start from physics.</strong> Treat <code>∂EPI/∂t = νf·ΔNFR</code> as the source of truth; keep EPI,
+   νf, and phase well-defined; interpret behavior through the tetrad.</li>
+<li><strong>Use declared state-transition paths.</strong> Map named behavior to canonical
+   operators (or justify a new one with full physics, contracts, and tests).
+   Numerical evolution must use the shared nodal integrator from explicit
+   <code>nu_f</code> and <code>DeltaNFR</code>, with provenance or residual; never assign EPI ad hoc.</li>
+<li><strong>Enforce U1–U6.</strong> Check sequence validity; guard destabilizers with stabilizers;
+   never couple without an explicit phase check.</li>
+<li><strong>Preserve invariants.</strong> Keep Hz_str units; treat ΔNFR as structural pressure (not an
+   ML loss); maintain operational fractality.</li>
+<li><strong>Demand reproducible, telemetry-rich experiments.</strong> Fix seeds; expose C(t), Si,
+   phase, νf, and the tetrad; test monotonicity and safety.</li>
+<li><strong>Accept / reject by structural criteria.</strong> Accept changes that raise C(t) or reduce
+   harmful ΔNFR, strengthen U1–U6 compliance, and improve physics→math→code→tests
+   traceability. Reject changes that introduce magic constants, bypass operators, or
+   break phase verification, units, or invariants.</li>
+<li><strong>Communicate physics-first, in English</strong>, tracing every significant decision back to
+   a specific piece of TNFR physics or grammar.</li>
+</ol>
+<p>If a change "prettifies" code but weakens TNFR fidelity, reject it. If it strengthens
+structural coherence and traceability, proceed.</p>
+<hr />
+<h2 id="10-development-workflow">10. Development workflow<a class="headerlink" href="#10-development-workflow" title="Permanent link">&para;</a></h2>
+<p><strong>Before writing code</strong>: read the relevant doctrine here and in
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/UNIFIED_GRAMMAR_RULES.md">theory/UNIFIED_GRAMMAR_RULES.md</a>; check whether the
+utility already exists; run the test suite to understand current state.</p>
+<p><strong>Implementing changes</strong>: search first; map named transformations to operators and
+numerical evolution to the shared nodal integrator; preserve all six invariants; add
+tests covering contracts and invariants; document the structural effect; trace the
+physics → math → code chain.</p>
+<p><strong>Acceptable</strong> changes increase C(t) or reduce ΔNFR where appropriate, preserve operator
+closure and fractality, and keep APIs stable or mapped. <strong>Unacceptable</strong>: recasting ΔNFR
+as an ML error gradient; replacing semantic operators with unmapped imperative code;
+advancing EPI outside the shared nodal integrator; flattening nested EPIs; coupling
+without phase checks; ad hoc state assignment; changing units (Hz_str → Hz).</p>
+<h3 id="commit-pr-templates">Commit / PR templates<a class="headerlink" href="#commit-pr-templates" title="Permanent link">&para;</a></h3>
+<pre><code class="language-text">Intent: [which coherence is improved]
+Operators involved: [Emission|Reception|...]
+Affected invariants: [#1-6]
+Key changes: [bullets]
+Expected risks/dissonances: [and containment]
+Metrics: [C(t), Si, νf, phase] before/after
+</code></pre>
+<p>PRs should show what reorganizes (C(t)↑ / ΔNFR↓, closure &amp; fractality preserved),
+evidence (phase/νf logs, C(t)/Si curves, controlled bifurcations), compatibility
+(stable/mapped API, reproducible seed), and tests.</p>
+<h3 id="testing-requirements">Testing requirements<a class="headerlink" href="#testing-requirements" title="Permanent link">&para;</a></h3>
+<p>Cover, at minimum: coherence <strong>monotonicity</strong> (IL does not reduce C(t) outside dissonance
+tests), <strong>bifurcation</strong> (OZ triggers with handlers present), <strong>propagation</strong> (RA raises
+phase sync), <strong>latency</strong> (SHA keeps EPI invariant), <strong>mutation threshold</strong> (ZHIR changes θ
+only when <code>ΔEPI/Δt &gt; ξ</code>), <strong>multi-scale</strong> (nested EPIs keep identity), and
+<strong>reproducibility</strong> (same seed → same trajectory). See <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/TESTING.md">TESTING.md</a>.</p>
+<hr />
+<h2 id="11-troubleshooting">11. Troubleshooting<a class="headerlink" href="#11-troubleshooting" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Needs generator"</td>
+<td>Start from EPI=0 without U1a</td>
+<td>Prefix <code>{AL, NAV, REMESH}</code></td>
+</tr>
+<tr>
+<td>"Destabilizer without stabilizer"</td>
+<td>OZ/ZHIR/VAL without IL/THOL (U2)</td>
+<td>Add a stabilizer</td>
+</tr>
+<tr>
+<td>"Phase mismatch in coupling"</td>
+<td><code>abs(wrap(φᵢ − φⱼ)) &gt; Δφ_max</code> (U3)</td>
+<td>Ensure phase compatibility first</td>
+</tr>
+<tr>
+<td>"Mutation without context"</td>
+<td>ZHIR without recent destabilizer / prior IL (U4b)</td>
+<td>Add a destabilizer (~3 ops) and a prior IL</td>
+</tr>
+<tr>
+<td>C(t) decreasing unexpectedly</td>
+<td>Monotonicity contract violated</td>
+<td>Verify operator preserves C(t)</td>
+</tr>
+<tr>
+<td>Node collapse</td>
+<td><code>νf → 0</code>, extreme dissonance, or decoupling</td>
+<td>Apply coherence earlier; ensure coupling</td>
+</tr>
+</tbody>
+</table>
+<p>Debugging order: inspect telemetry (C(t), Si, νf, phase, ΔNFR) → verify grammar U1–U6 →
+check operator contracts → identify the violated invariant → trace against nodal-equation
+predictions.</p>
+<hr />
+<h2 id="12-research-programs">12. Research programs<a class="headerlink" href="#12-research-programs" title="Permanent link">&para;</a></h2>
+<p>TNFR applies the nodal dynamics to several open mathematical and physical questions. Each
+has a dedicated theory note; this file keeps only a one-line status and <strong>never inlines
+program history</strong> (the full milestone/gap/branch threads live in the notes).</p>
+<table>
+<thead>
+<tr>
+<th>Program</th>
+<th>Status</th>
+<th>Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Core dynamics S1–S16</strong></td>
+<td>Restricted results cover pure-EPI diffusion, rational quotient affine-reset budgets, exact operator-event timing, conditional stage certificates and exact represented-map composition for a fully eligible observed finite flow/glyph trace, plus observability, quotient geometry, temporal signatures and sampled-path certificates. All thirteen operators have atomic all-target Jacobi stages; EN/RA additionally have scoped repeated-map results. A uniform unclipped REMESH companion has an exact augmented-history disagreement functional and temporal mixing theorem on fixed support and metric. One applied binary64 transition and finite adjacent schedule/history telescopes are linked to it with explicit residuals. A graph-owned finite cycle-sequence executor gives a compatible requested telescope same-invocation causal provenance and outer atomicity, while its explicit no-telescope branch retains only the causal trace; a sealed block observer reports exact normalized lower margins on its contiguous finite blocks, including <code>139/256</code> and zero witnesses. A conditional exact common-<code>q</code> schedule theorem proves prefix gain upper bound one, uniform normalized block margin <code>1-q</code> and repeated geometric spatial-disagreement decay. Its robust extension absorbs a declared signed relative defect through <code>q_eff=q*(1+eta)</code>, and a causal observer verifies that envelope on finite runtime blocks, including positive binary64 defect. The exact pairwise binary64 boundary includes an <code>alpha=1/2</code> witness requiring <code>eta=2^210-1/4</code> and <code>q&lt;4/(2^212+3)</code>. The restricted antisymmetric P2 hard-clip class at <code>alpha=1/2</code> instead has sharp uniform <code>eta=135/124</code>, an exact analytic-tail/finite-core proof, REMESH-only forward invariance and strict robust composition for <code>q&lt;124/259</code>. The sufficient-history <code>alpha=1</code> hard-clip class has <code>eta=0</code> and REMESH-only forward invariance. On abstract P2 support, the exact-half Reception binary64 EPI kernel has global disagreement gain <code>q=0</code>; composing the two restricted kernels extinguishes active-history spatial disagreement after <code>tau_global+1</code> cycles. One sealed graph-owned event binds that kernel to a grammar-admitted two-phase EN EPI stage and its captured endpoint; a finite same-invocation adapter now binds every selected EN and same-cycle <code>alpha=1</code> REMESH, checks the active suffix of length <code>tau_global+1</code>, and records post-horizon spatial extinction. A reusable transactional policy now derives live U1a admission and independently preflights, executes and post-certifies every finite P2 invocation with graph-owned rollback; it does not certify future calls or auxiliary Reception-state stability. A general exact rational reversible single-eigenmode theorem proves refreshed-Euler endpoint bounds, strict proper-subdivision improvement and conditional exact-real partition convergence. Its finite offline runtime adapter separates represented pressure/execution defects and propagates them through complete Euler matrices; the effective <code>P2</code> adapter separately adds exact ideal REMESH error scaling and its committed residual bound. Runtime/binary64 mesh convergence, extension of the half-alpha class beyond antisymmetric P2 or to complete runtime, broader binary64 kernel families, repeated/future complete-runtime stability, solver/full-multichannel results, changing parameters/support and catalog completeness remain open.</td>
+<td><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CORE_RESEARCH_PROGRAM.md">CORE_RESEARCH_PROGRAM.md</a></td>
+</tr>
+<tr>
+<td><strong>TNFR-Riemann</strong></td>
+<td>Finite protocols estimate a critical-line-centered comparison and expose ζ/L diagnostic surfaces (P12–P50). No engine theorem identifies phase coherence with zero location. The bridge to RH, including control of <code>S(T) = (1/π)·arg ζ(½+iT)</code>, remains open.</td>
+<td><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_RIEMANN_RESEARCH_NOTES.md">TNFR_RIEMANN_RESEARCH_NOTES.md</a></td>
+</tr>
+<tr>
+<td><strong>REMESH fixed-delay models</strong></td>
+<td>A finite cyclic fixed-coefficient filter has a Cesàro fixed-mode projection. A distinct finite uniform companion recurrence has a stationary-weighted augmented disagreement functional; <code>0&lt;alpha&lt;1</code> mixes toward the history barycenter, while <code>alpha=1</code> permits periodic histories. One-transition residual and adjacent-cycle schedule/history observers identify finite binary64 records; a graph-owned causal executor and finite-block observer add same-invocation provenance, atomicity and exact block-specific normalized margins. A conditional exact common-<code>q</code> policy class has prefix gain upper bound one, uniform normalized block margin <code>1-q</code> and repeated geometric spatial-disagreement decay. Its robust theorem gives <code>q_eff=q*(1+eta)</code> for signed defect <code>delta&lt;=eta*J</code>; a finite causal adapter verifies the hypothesis and vector envelope on recorded blocks. The exact pairwise boundary gives a normal-valued <code>alpha=1/2</code> obstruction with <code>eta=2^210-1/4</code> and strict threshold <code>q&lt;4/(2^212+3)</code>. The restricted antisymmetric P2 hard-clip class at <code>alpha=1/2</code> instead has sharp uniform <code>eta=135/124</code>, REMESH-only forward invariance and strict robust threshold <code>q&lt;124/259</code>, proved by an analytic IEEE tail and exact finite-core enumeration. The sufficient-history <code>alpha=1</code> hard-clip class has <code>eta=0</code> and REMESH-only forward invariance on fixed support and metric. The abstract P2 exact-half Reception EPI kernel has global <code>q=0</code> and composes with it to extinguish active-history disagreement after <code>tau_global+1</code> restricted cycles; one graph-owned event binds the kernel to a two-phase EN EPI stage and captured endpoint, and a finite causal adapter binds every observed EN/REMESH cycle through the active suffix of length <code>tau_global+1</code>. A reusable transactional policy independently enforces and certifies the restricted P2 conditions on each finite invocation while retaining false future and auxiliary-state claims. The effective <code>P2</code> reference proves exact ideal error propagation by <code>beta=(1-alpha)^2</code> and keeps the committed runtime residual separate. Extension of the half-alpha class beyond antisymmetric P2 or to complete runtime, broader binary64 kernel families, repeated/future complete-runtime stability, the literal <code>τ_g → ∞</code> limit and catalog completeness remain open.</td>
+<td><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/REMESH_INFINITY_DERIVATION.md">REMESH_INFINITY_DERIVATION.md</a></td>
+</tr>
+<tr>
+<td><strong>TNFR-Navier–Stokes</strong></td>
+<td>A declared linear mapping compares viscous diffusion with the overdamped limit of a separate graph-wave model (<code>ν_f = ν</code>). Finite pseudo-spectral runs measure enstrophy growth with Reynolds number. The nonlinear vortex-stretching term is compared with a <code>K_φ</code>/VAL cascade, but no equivalence or uniform regularity bound is derived; the <code>Re → ∞</code> problem remains open.</td>
+<td><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md">TNFR_NAVIER_STOKES_RESEARCH_NOTES.md</a></td>
+</tr>
+<tr>
+<td><strong>Number theory</strong></td>
+<td>Primality as <code>ΔNFR = 0</code> (canonical <strong>unit</strong> coefficients, §4.2 coefficient independence); arithmetic structural triad; arithmetic networks can initialize the auxiliary symplectic read-out; the cyclotomy law <code>s_k(p) = gcd(k, p−1) + 1</code> is proved for the declared residue digraph and read as a finite arithmetic pulse diagnostic.</td>
+<td><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_NUMBER_THEORY.md">TNFR_NUMBER_THEORY.md</a></td>
+</tr>
+<tr>
+<td><strong>Structural research program (R1–R9)</strong></td>
+<td>Nine internal lines on arithmetic and spectral dynamics: observability, arithmetic pulse, CRT synthesis, p-adic transport, finite fields, additive reduction, arithmetic pressure, operator certification and directed non-normal evolution. Exact, measured, negative and open results are separated in the program index.</td>
+<td><a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_RESEARCH_PROGRAM.md">STRUCTURAL_RESEARCH_PROGRAM.md</a></td>
+</tr>
+<tr>
+<td><strong>Millennium reformulations</strong></td>
+<td>P vs NP, BSD, Hodge, Yang–Mills: TNFR-internal structural reformulations and diagnostics — none a proof.</td>
+<td><code>theory/TNFR_*_RESEARCH_NOTES.md</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Honest scope, global</strong>: these programs produce TNFR-internal structural results and
+numerical evidence; none currently closes a classical open problem. Do not extend a
+program's diagnostic surface without a new structural idea, and never claim a proof of RH,
+Navier–Stokes regularity, or any Millennium problem.</p>
+<p>Core graph-dynamics publication artifacts use the domain-neutral
+<a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/research/core_manifests.py"><code>CoreExperimentManifest</code></a> for graph construction,
+capacity, solver/timestep, seed, operator sequence, telemetry, canonical claim status,
+Git revision and an explicit clean/dirty source declaration. Dirty source requires a
+SHA-256 content digest of the declared working-source snapshot.
+The historical <code>ExperimentManifest</code> retains arithmetic-specific factor and bit-size fields.</p>
+<hr />
+<h2 id="13-map-of-the-codebase-examples">13. Map of the codebase &amp; examples<a class="headerlink" href="#13-map-of-the-codebase-examples" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Physics</strong> — <a href="https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/physics/">src/tnfr/physics/</a>: <code>fields.py</code> (tetrad +
+  <code>classify_nodal_topology</code> for NFR radial/annular/multinodal topology),
+  <code>conservation.py</code> (finite structural-balance diagnostics),
+  <code>symplectic_substrate.py</code> (auxiliary harmonic phase-space model),
+  <code>structural_diffusion.py</code> (transport), <code>hybrid_operator_stability.py</code> (affine
+  EPI-reset gains and hybrid flow/reset budgets), <code>network_stage_stability.py</code>
+  (repeated all-target EN/RA realization), <code>reception_realization.py</code>
+  (EN runtime-to-theorem boundary), <code>resonance_realization.py</code> (RA four-layer
+  identity-gated boundary and post-RA metric audit),
+  <code>runtime_p2_reception_remesh_policy.py</code> (transactional per-invocation P2
+  enforcement), <code>core_research_integration.py</code> (restricted
+  executable S16 endpoint intersection), <code>core_research_trajectory.py</code> (sampled
+  S16 path and mesh agreement), <code>gauge.py</code> (Ψ, gauge), <code>integrity.py</code>
+  (operator-postcondition monitor + audit).</li>
+<li><strong>Operators &amp; grammar</strong> — <a href="https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/operators/">src/tnfr/operators/</a>: <code>definitions.py</code>
+  (13 operators + registry), <code>operator_contracts.py</code> (contract source of truth),
+  <code>stage_contracts.py</code> (all-target schedule/read/write/merge boundaries),
+  <code>network_stage.py</code> (transactional stage execution), <code>grammar*.py</code> (U1–U6
+  validation, dynamics, application), <code>nodal_equation.py</code>.</li>
+<li><strong>Engines</strong> — <a href="https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/engines/">src/tnfr/engines/</a>: self-optimization, pattern
+  discovery, computation, integration, engine-scoped constants.</li>
+<li><strong>Programs</strong> — <a href="https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/riemann/">src/tnfr/riemann/</a>, <a href="https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/navier_stokes/">src/tnfr/navier_stokes/</a>,
+  and number theory in <a href="https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/mathematics/">src/tnfr/mathematics/</a>.</li>
+<li><strong>Structural research (R1–R9, post-review N00–N13)</strong> — <a href="https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/physics/">src/tnfr/physics/</a>:
+  <code>symmetry_sectors.py</code> / <code>equivariance.py</code> / <code>operator_equivariance.py</code> /
+  <code>word_equivariance.py</code> / <code>pointed_symmetry.py</code> (R1 sectors, word-composition closure,
+  pointed selectors), <code>directed_diffusion.py</code> / <code>transient_u2.py</code> / <code>heterogeneous_vf.py</code>
+  (R9 non-normal metric, transient U2/U6, heterogeneous <code>ν_f</code> boundary),
+  <code>structural_morphism.py</code> (R4/R8 nodal-flow morphism taxonomy); and
+  <a href="https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/mathematics/">src/tnfr/mathematics/</a>: <code>arithmetic_pulse.py</code> / <code>pulse_amplitudes.py</code>
+  (R2 rank + amplitudes), <code>crt_multiscale.py</code> (R3), <code>padic_tower.py</code> / <code>remesh_audit.py</code>
+  (R4 transport + REMESH audit), <code>finite_fields.py</code> / <code>trace_collisions.py</code> (R5),
+  <code>arithmetic_pressure.py</code> (R7), <code>operator_certificates.py</code> (R8). Ledger:
+  <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_RESEARCH_PROGRAM.md">STRUCTURAL_RESEARCH_PROGRAM.md</a>.</li>
+<li><strong>SDK</strong> — <a href="https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/sdk/">src/tnfr/sdk/</a>: <code>simple.py</code> (<code>TNFR.create(...)</code>, tetrad,
+  conservation, substrate, integrity, audit, <code>nfr()</code> whole-NFR read-out,
+  <code>nodal_state</code>/<code>nodal_scan</code> micro-NFR), <code>fluent.py</code> (<code>auto_optimize()</code>). The shared
+  coherence kernel and zero-pressure predicate (<code>structural_coherence</code>,
+  <code>is_structural_equilibrium</code>) live in
+  <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/metrics/common.py">src/tnfr/metrics/common.py</a>.</li>
+<li><strong>Examples</strong> — <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md">examples/README.md</a>: ten thematic folders
+  (<code>01_foundations</code> … <code>10_applications</code>); each file keeps a stable global number.</li>
+<li><strong>Theory hub</strong> — <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md">theory/README.md</a> · <strong>Glossary</strong> —
+  <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/GLOSSARY.md">theory/GLOSSARY.md</a> · <strong>Architecture</strong> — <a href="https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md">ARCHITECTURE.md</a>
+  · <strong>Benchmarks</strong> — <a href="https://github.com/fermga/TNFR-Python-Engine/tree/main/benchmarks/">benchmarks/</a> · <strong>Tests</strong> — <a href="https://github.com/fermga/TNFR-Python-Engine/tree/main/tests/">tests/</a>.</li>
+</ul>
+<p>The Simple SDK exposes the research-grade stack directly:</p>
+<pre><code class="language-python">from tnfr.sdk import TNFR
+net = TNFR.create(20).ring().evolve(5)
+net.tetrad()                 # TetradSnapshot (Φ_s, |∇φ|, K_φ, ξ_C) + is_safe()
+net.conservation()           # Noether-like charge and candidate-energy diagnostics
+net.symplectic_substrate()   # auxiliary harmonic phase-space diagnostics
+net.winding()                # declared-cycle winding sector and scoped telemetry
+net.rhythm()                 # the collective pulse (ω_k=√λ_k, beats, energy)
+net.resonance()              # the per-NFR pulses (νf_i, φ_i) + resonance (R)
+net.pulse_trajectory(8)      # the pulse in motion: R(t), C(t), local→global lock
+net.telemetry()              # C(t), Si, phase_sync, tetrad, pulse, resonance
+net.audit_operators()        # finite-probe catalog postcondition report
+analysis = TNFR.analyze(net) # one-shot comprehensive report
+</code></pre>
+<hr />
+<h2 id="14-philosophy-excellence-standards">14. Philosophy &amp; excellence standards<a class="headerlink" href="#14-philosophy-excellence-standards" title="Permanent link">&para;</a></h2>
+<h3 id="core-principles">Core principles<a class="headerlink" href="#core-principles" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Physics first</strong> — every feature derives from TNFR physics.</li>
+<li><strong>No arbitrary choices</strong> — decisions trace to the nodal equation or the invariants.</li>
+<li><strong>Coherence over convenience</strong> — preserve theoretical integrity even when the code is
+   harder.</li>
+<li><strong>Reproducibility always</strong> — every simulation is reproducible.</li>
+<li><strong>Document the chain</strong> — theory → math → code → tests.</li>
+</ol>
+<h3 id="decision-framework">Decision framework<a class="headerlink" href="#decision-framework" title="Permanent link">&para;</a></h3>
+<p>A change should be implemented only if it strengthens TNFR fidelity, maps to operators,
+preserves the invariants, is derivable from physics, and is testable. Organizational
+convenience is not physical necessity; untestable "magic" is rejected.</p>
+<h3 id="the-tnfr-mindset">The TNFR mindset<a class="headerlink" href="#the-tnfr-mindset" title="Permanent link">&para;</a></h3>
+<p>Think in <strong>patterns</strong>, not objects ("the neural pattern reorganizes", not "the neuron
+fires"); in <strong>dynamics</strong>, not states (trajectory and attractor, not snapshot); in
+<strong>networks</strong>, not individuals (resonant propagation, not isolated change).</p>
+<h3 id="final-principle">Final principle<a class="headerlink" href="#final-principle" title="Permanent link">&para;</a></h3>
+<p>TNFR models coherent dynamic patterns; development practice reflects that. If a change
+prettifies code but weakens TNFR fidelity, reject it. If it strengthens structural
+coherence and paradigm traceability, proceed.</p>
+<hr />
+<p><strong>Status</strong>: CANONICAL — synthesized primary reference for TNFR agent guidance.
+<strong>Policy</strong>: English-only; updated only when novel, important TNFR canonicity emerges, and
+always written as a complete, self-contained synthesis.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

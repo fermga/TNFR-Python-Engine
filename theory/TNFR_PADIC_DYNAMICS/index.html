@@ -1,0 +1,1472 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/TNFR_PADIC_DYNAMICS/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>TNFR p-adic Dynamics — the Projective Network Tower (R4) - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-p-adic-dynamics-the-projective-network-tower-r4" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              TNFR p-adic Dynamics — the Projective Network Tower (R4)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-tower-and-its-scale-maps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The tower and its scale maps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-reduction-compatible-family" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The reduction-compatible family
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-projective-transport-derived-measured-exact-over-q" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Projective transport (DERIVED + MEASURED, exact over ℚ)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-surviving-modes-derived-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Surviving modes (DERIVED + MEASURED)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-remesh-is-not-claimed-the-contract-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. REMESH is not claimed (the contract audit)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. REMESH is not claimed (the contract audit)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#5b-the-r4b-campaign-temporal-memory-and-the-u5-boundary-n09" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5b. The R4b campaign — temporal memory and the U5 boundary (N09)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-claim-ledger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Claim ledger
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-p-adic-dynamics-the-projective-network-tower-r4">TNFR p-adic Dynamics — the Projective Network Tower (R4)<a class="headerlink" href="#tnfr-p-adic-dynamics-the-projective-network-tower-r4" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: transport consistency <strong>DERIVED</strong> (fiber-averaging intertwining) +
+<strong>MEASURED</strong> (exact rational residual <code>0</code>; spectrum containment <code>~1e-15</code>). The
+tower→REMESH identification (<code>NT-P04</code>) is <strong>CONJECTURAL</strong> — the REMESH operator
+contract is deliberately left <strong>unverified</strong>. No factoring, complexity,
+cryptographic, or Millennium claim; no extrapolation to the limit <code>ℤ_p</code>.
+<strong>Module</strong>: <a href="../../src/tnfr/mathematics/padic_tower.py">src/tnfr/mathematics/padic_tower.py</a> ·
+<strong>Tests</strong>: <a href="../../tests/mathematics/test_padic_tower.py">tests/mathematics/test_padic_tower.py</a> ·
+<strong>Benchmark</strong>: <a href="../../benchmarks/padic_scale_consistency.py">benchmarks/padic_scale_consistency.py</a> ·
+<strong>Depends on</strong>: R3 (multiscale composition), C4 (spectral tolerance),
+C5 (claim manifest).</p>
+<h2 id="1-the-tower-and-its-scale-maps">1. The tower and its scale maps<a class="headerlink" href="#1-the-tower-and-its-scale-maps" title="Permanent link">&para;</a></h2>
+<p>The p-adic tower is the inverse system</p>
+<p>$$\mathbb{Z}/p\mathbb{Z} \xleftarrow{\pi_1} \mathbb{Z}/p^2\mathbb{Z}
+\xleftarrow{\pi_2} \mathbb{Z}/p^3\mathbb{Z} \xleftarrow{\pi_3}\cdots,
+\qquad \pi_e(x) = x \bmod p^e.$$</p>
+<p>Each coarse node has a <strong>fiber</strong> of <code>p</code> fine nodes. Two linear maps encode the
+scale change between level <code>e+1</code> and level <code>e</code>:</p>
+<ul>
+<li>the <strong>fiber-averaging</strong> (aggregation) map <code>R_e</code> (<code>projective_scale_map</code>),
+  a row-stochastic <code>p^e × p^{e+1}</code> operator,
+  $(R_e f)(y) = \tfrac1p \sum_{x \equiv y\,(p^e)} f(x)$;</li>
+<li>the <strong>lift</strong> (prolongation) map <code>Lift_e</code> (<code>padic_lift_map</code>), the
+  <code>p^{e+1} × p^e</code> pullback $(Lift_e\,g)(x) = g(x \bmod p^e)$, constant on fibers.</li>
+</ul>
+<p>The scale map is given the <strong>neutral</strong> name <code>projective_scale_map</code> — <strong>not</strong>
+REMESH (§5).</p>
+<h2 id="2-the-reduction-compatible-family">2. The reduction-compatible family<a class="headerlink" href="#2-the-reduction-compatible-family" title="Permanent link">&para;</a></h2>
+<p>Transport is projective only for connection sets that reduce uniformly over
+fibers. The canonical family lifts any base pattern mod <code>p</code> by ignoring higher
+p-adic digits:</p>
+<p>$$S_e = {\, x \in \mathbb{Z}/p^e\mathbb{Z} : x \bmod p \in \text{base} \,},
+\qquad \text{base} \subseteq (\mathbb{Z}/p\mathbb{Z})\setminus{0}.$$</p>
+<p>Because fiber-averaging only sees the residue mod <code>p</code>, every coarse connection
+element is represented with equal multiplicity <code>p</code> at the finer level — the
+condition that makes the diagrams below commute. Special cases: <code>base = {1}</code>
+(a lifted successor pattern) and <code>base = (ℤ/pℤ)^*</code> (the unit tower, connecting to
+R3).</p>
+<h2 id="3-projective-transport-derived-measured-exact-over-q">3. Projective transport (DERIVED + MEASURED, exact over ℚ)<a class="headerlink" href="#3-projective-transport-derived-measured-exact-over-q" title="Permanent link">&para;</a></h2>
+<p>Writing <code>P_e = (1/|S_e|) W_e</code> for the random-walk transition and <code>L_e = I − P_e</code>,
+the compatible family satisfies <strong>three exact identities</strong> (<code>fractions.Fraction</code>,
+residual <code>0</code>):</p>
+<p>$$\boxed{\,R_e\,P_{e+1} = P_e\,R_e\,}\qquad
+\boxed{\,P_{e+1}\,Lift_e = Lift_e\,P_e\,}\qquad
+\boxed{\,R_e\,Lift_e = I\,}.$$</p>
+<ul>
+<li><strong>Commutation</strong> <code>R_e P_{e+1} = P_e R_e</code>: fiber-averaging the fine transport
+  equals coarse-transporting the averaged state — transport is <em>projective</em>
+  (<code>projective_commutation_residual</code>, and its Laplacian form
+  <code>laplacian_commutation_residual</code>).</li>
+<li><strong>Intertwining</strong> <code>P_{e+1} Lift_e = Lift_e P_e</code>: the lift is an operator
+  intertwiner (<code>lift_intertwining_residual</code>).</li>
+<li><strong>Right inverse</strong> <code>R_e Lift_e = I</code>: averaging a lifted (fiber-constant) state
+  returns it (<code>lift_reduction_residual</code>).</li>
+</ul>
+<p><strong>Proof sketch (commutation).</strong> For <code>s ∈ S_{e+1}</code>, <code>(x+s) mod p^e</code> depends only
+on <code>x mod p^e</code> and <code>s mod p^e</code>; since each coarse shift <code>t ∈ S_e</code> has exactly <code>p</code>
+fine preimages in <code>S_{e+1}</code>, summing over the fiber of <code>y</code> and over <code>S_{e+1}</code>
+reproduces <code>p·d_e</code> copies of the coarse sum, and the two <code>1/p</code> and <code>1/d</code>
+normalisations collapse to <code>P_e R_e</code>. The control (<code>test_non_uniform_fine_set_
+breaks_commutation</code>) drops one fiber element to make the multiplicity non-uniform
+and the residual becomes non-zero — compatibility is necessary.</p>
+<h2 id="4-surviving-modes-derived-measured">4. Surviving modes (DERIVED + MEASURED)<a class="headerlink" href="#4-surviving-modes-derived-measured" title="Permanent link">&para;</a></h2>
+<p>The intertwining <code>P_{e+1} Lift_e = Lift_e P_e</code> has an immediate spectral
+consequence. If <code>P_e v = λ v</code> then</p>
+<p>$$P_{e+1}(Lift_e\,v) = Lift_e(P_e\,v) = \lambda\,(Lift_e\,v),$$</p>
+<p>and <code>Lift_e v ≠ 0</code> (the lift is injective), so <code>λ ∈ spec(P_{e+1})</code>. Hence</p>
+<p>$$\operatorname{spec}(L_e) \subseteq \operatorname{spec}(L_{e+1}):$$</p>
+<p><strong>every coarse mode survives the lift</strong>, and level <code>e+1</code> only <em>adds</em> finer,
+fiber-varying modes (those annihilated by <code>R_e</code>). Numerically the coarse
+spectrum sits within the fine spectrum to <code>~1e-15</code>
+(<code>surviving_spectrum_containment</code>, below the derived tolerance <code>√ε·‖L‖₂</code>). The
+measured spectral gap <code>λ₂(L_e)</code> decreases from level 1 and then <strong>stabilises</strong>
+(e.g. <code>p = 3</code>, unit base: <code>1.5 → 1.0 → 1.0</code>) — the slow-mode timescale reaches a
+fixed p-adic scale.</p>
+<h2 id="5-remesh-is-not-claimed-the-contract-audit">5. REMESH is not claimed (the contract audit)<a class="headerlink" href="#5-remesh-is-not-claimed-the-contract-audit" title="Permanent link">&para;</a></h2>
+<p>TNFR's REMESH operator (recursivity, <a href="../../AGENTS/">AGENTS.md</a> §5) has a specific
+contract: a recursive <strong>EPI echo across scales</strong>, <strong>NETWORK</strong>-scale
+generator/closure, <strong>preserved nodal identity</strong>, and <strong>U5</strong> multiscale coherence.
+Projective transport consistency (§3–4) is <strong>necessary but not sufficient</strong> for
+that contract. <code>RemeshContractAudit</code> records the four conditions, all
+<strong>unverified</strong>, so <code>remesh_contract_audit().realizes_remesh == False</code> and the
+map keeps its neutral name. The claim <em>"a compatible p-adic tower realises
+REMESH"</em> (<code>NT-P04</code>) is therefore <strong>CONJECTURAL</strong>; naming the reduction REMESH is
+forbidden until every contract field is independently established.</p>
+<h3 id="5b-the-r4b-campaign-temporal-memory-and-the-u5-boundary-n09">5b. The R4b campaign — temporal memory and the U5 boundary (N09)<a class="headerlink" href="#5b-the-r4b-campaign-temporal-memory-and-the-u5-boundary-n09" title="Permanent link">&para;</a></h3>
+<p>The campaign measures the missing temporal ingredient
+(<a href="../../src/tnfr/mathematics/remesh_audit.py">remesh_audit.py</a>) without conflating
+field dispersion with hierarchy coherence. The static tower candidate is the
+same-scale projection <code>P = Lift_e · R_e</code>; the temporal candidate is
+<code>EPI_new = (1-α)² EPI(t) + α(1-α) EPI(t-τ_l) + α EPI(t-τ_g)</code>.
+Their default audits are:</p>
+<table>
+<thead>
+<tr>
+<th>candidate</th>
+<th>temporal echo</th>
+<th>NETWORK probe</th>
+<th>identity probe</th>
+<th><code>1/(1+std(EPI))</code></th>
+<th>declared U5</th>
+<th>REMESH</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>static <code>Lift·R_e</code></td>
+<td><strong>no</strong> (<code>0</code>)</td>
+<td>yes</td>
+<td>yes</td>
+<td>preserved</td>
+<td>unverified</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>temporal recurrence</td>
+<td>yes (<code>≈ 1.5</code>)</td>
+<td>yes</td>
+<td>yes</td>
+<td>preserved</td>
+<td>unverified</td>
+<td><strong>no</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The dispersion score is now reported as <code>field_uniformity_*</code>. It reads only the
+sampled scalar EPI field; it does not read <code>DeltaNFR</code> or <code>dEPI</code> and declares no
+parent/child relation. It therefore cannot set <code>u5_multiscale_verified</code>.
+The default campaign establishes only that the recurrence responds to delayed
+inputs while the projection does not: <code>temporal_echo_discriminates == True</code>, but
+<code>audit_discriminates == False</code> because U5 has no declared evidence.</p>
+<p>A caller can provide candidate-specific <code>RemeshU5Evidence</code> for a concrete graph
+materialized after the update. The audit then invokes
+<code>assess_u5_parent_child_coherence</code> with the declared parent, children, alpha and
+tolerance. A satisfying assessment can complete the temporal candidate's scoped
+four-condition audit. This is evidence for that hierarchy and state; it is not a
+universal U5-preservation theorem for later states or arbitrary recurrences.</p>
+<h2 id="6-claim-ledger">6. Claim ledger<a class="headerlink" href="#6-claim-ledger" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Basis</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>R_e P_{e+1} = P_e R_e</code> (compatible family)</td>
+<td>uniform-fiber reduction</td>
+<td><strong>DERIVED</strong> + MEASURED (exact <code>0</code>)</td>
+</tr>
+<tr>
+<td><code>P_{e+1} Lift_e = Lift_e P_e</code></td>
+<td>operator intertwining</td>
+<td><strong>DERIVED</strong> + MEASURED (exact <code>0</code>)</td>
+</tr>
+<tr>
+<td><code>R_e Lift_e = I</code></td>
+<td>fiber-constant averaging</td>
+<td><strong>DERIVED</strong> + MEASURED (exact <code>0</code>)</td>
+</tr>
+<tr>
+<td><code>spec(L_e) ⊆ spec(L_{e+1})</code></td>
+<td>intertwining corollary</td>
+<td><strong>DERIVED</strong> + MEASURED (<code>~1e-15</code>)</td>
+</tr>
+<tr>
+<td>compatibility necessary</td>
+<td>non-uniform control</td>
+<td><strong>MEASURED</strong> (residual <code>≠ 0</code>)</td>
+</tr>
+<tr>
+<td>tower realises REMESH</td>
+<td>contract unverified</td>
+<td><strong>CONJECTURAL</strong> (<code>NT-P04</code>, <code>realizes_remesh = False</code>)</td>
+</tr>
+<tr>
+<td>static <code>Lift·R_e</code> lacks temporal echo and declared U5 evidence</td>
+<td>scoped audit (N09)</td>
+<td><strong>MEASURED</strong> (2/4 pass, echo <code>= 0</code>)</td>
+</tr>
+<tr>
+<td>temporal recurrence has delayed-input sensitivity</td>
+<td>temporal probe (N09)</td>
+<td><strong>MEASURED</strong> (<code>temporal_echo_discriminates = True</code>)</td>
+</tr>
+<tr>
+<td>default campaign realises REMESH</td>
+<td>no declared hierarchy</td>
+<td><strong>UNVERIFIED</strong> (<code>audit_discriminates = False</code>)</td>
+</tr>
+<tr>
+<td>recurrence with declared hierarchy evidence</td>
+<td>canonical U5 assessment</td>
+<td><strong>SCOPED</strong> to the supplied post-update state</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Scope.</strong> The reduction-compatible p-adic tower carries a genuinely
+projective transport: coarse and fine dynamics commute with fiber-averaging, the
+lift intertwines the levels, and coarse modes survive exactly. This is a
+structural scale-consistency result on small <code>p</code> and low exponents. It does
+<strong>not</strong> identify the scale map with REMESH, and it closes no open problem.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2387 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/TNFR_DIFFUSION_STABILITY_THEOREM/">
+      
+      
+        <link rel="prev" href="../CORE_RESEARCH_PROGRAM/">
+      
+      
+        <link rel="next" href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Heterogeneous diffusion stability - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#heterogeneous-epi-diffusion-stability-theorem" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Heterogeneous diffusion stability
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#question-and-hypotheses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Question and hypotheses
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideal-real-arithmetic-theorem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ideal real-arithmetic theorem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proof
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#executable-represented-coefficient-theorem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executable represented-coefficient theorem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#engine-certificate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine certificate
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boundaries-and-falsification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boundaries and falsification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#time-varying-heterogeneous-capacities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Time-varying heterogeneous capacities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Time-varying heterogeneous capacities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#proportional-schedule-corollary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proportional-schedule corollary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explicit-euler-modal-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit-Euler modal window
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Explicit-Euler modal window">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exact-reversible-single-eigenmode-euler-reference-theorem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact reversible single-eigenmode Euler reference theorem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finite-executor-binding-of-the-exact-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finite executor binding of the exact mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#switching-topology-common-metric-theorem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Switching-topology common-metric theorem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#affine-reset-gain-and-hybrid-word-theorem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Affine-reset gain and hybrid-word theorem
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Affine-reset gain and hybrid-word theorem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reception-and-resonance-runtime-realizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reception and Resonance runtime realizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#directed-pressure-transient-criterion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Directed pressure-transient criterion
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#question-and-hypotheses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Question and hypotheses
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ideal-real-arithmetic-theorem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ideal real-arithmetic theorem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proof
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#executable-represented-coefficient-theorem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executable represented-coefficient theorem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#engine-certificate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine certificate
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boundaries-and-falsification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boundaries and falsification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#time-varying-heterogeneous-capacities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Time-varying heterogeneous capacities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Time-varying heterogeneous capacities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#proportional-schedule-corollary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proportional-schedule corollary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explicit-euler-modal-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit-Euler modal window
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Explicit-Euler modal window">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exact-reversible-single-eigenmode-euler-reference-theorem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact reversible single-eigenmode Euler reference theorem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finite-executor-binding-of-the-exact-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finite executor binding of the exact mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#switching-topology-common-metric-theorem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Switching-topology common-metric theorem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#affine-reset-gain-and-hybrid-word-theorem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Affine-reset gain and hybrid-word theorem
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Affine-reset gain and hybrid-word theorem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reception-and-resonance-runtime-realizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reception and Resonance runtime realizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#directed-pressure-transient-criterion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Directed pressure-transient criterion
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="heterogeneous-epi-diffusion-stability-theorem">Heterogeneous EPI diffusion stability theorem<a class="headerlink" href="#heterogeneous-epi-diffusion-stability-theorem" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: Derived for fixed, connected, symmetric conductance with positive
+fixed structural frequencies or time-varying frequencies bounded above and
+away from zero, and for
+fixed-node-set symmetric switching families with a common metric. A directed
+fixed-capacity pressure-transient criterion is also exact. Affine EPI resets
+now have an exact finite-gain criterion in the same common metric and a
+conservative hybrid-word bound. Reception and Resonance are the first two
+catalog realizations connected to that theorem at local and all-target stage
+boundaries, with fixed-map repetition under explicit domains. Emission, Silence,
+Expansion, Contraction, Mutation and Transition additionally have a conditional
+internal frozen-proposal realization/gain certificate; Coherence has an
+immutable execution contract without such a gain. Coupling has an explicit
+simultaneous circular/topological merge, Dissonance has a snapshot-bound
+local/propagated pressure reduction, and Self-organization has a collision-safe
+snapshot-bound child-support and hierarchy merge. Recursivity has an immutable
+advisory-only glyph stage. The separate delayed REMESH operation now has an
+exact three-input recurrence, graph-state atomic execution and scoped one-step
+convex and fixed-history gain evidence. A distinct exact, uniform, unclipped
+fixed-delay companion recurrence has a stationary-history Lyapunov theorem;
+see
+<a href="../REMESH_INFINITY_DERIVATION/#24-exact-finite-companion-history-stability"><code>REMESH_INFINITY_DERIVATION.md</code> section 2.4</a>.
+For any fixed connected symmetric rational conductance and positive rational
+capacity, a separate sealed reference theorem now gives the exact exponential
+solution, pressure-refreshed Euler product and finite error bounds for one
+exact nonuniform eigenmode. It also proves conditional exact-real convergence
+under admissible partitions whose maximum step tends to zero. This pure theorem
+has no runtime provenance; the effective-P2 event/REMESH family remains its
+first executor-linked specialization.
+Event execution can bind supported flow
+and glyph certificates into an exact represented-map gain product for one fully
+eligible observed finite trace in one common metric; it does not identify a
+global executable binary64 map. Stability of clipped binary64 runtime
+history-updated repetition, unrestricted mixed words, nonlinear regimes and
+the full catalog remains open.</p>
+<h2 id="question-and-hypotheses">Question and hypotheses<a class="headerlink" href="#question-and-hypotheses" title="Permanent link">&para;</a></h2>
+<p>For the isolated EPI channel of the nodal equation, does heterogeneous
+structural frequency preserve convergence?</p>
+<p>Let <code>W</code> be a fixed symmetric nonnegative conductance matrix on a finite connected
+graph with at least two nodes. Write <code>d_i = sum_j W_ij</code>, <code>D = diag(d_i)</code>,
+<code>B = D-W</code>, and assume <code>d_i &gt; 0</code> and <code>nu_i &gt; 0</code> for every node. With
+<code>x = EPI</code>, the canonical EPI pressure gives</p>
+<pre><code class="language-text">x' = -diag(nu) L_rw x = -diag(nu_i/d_i) Bx.
+</code></pre>
+<p>Here <code>W</code> is read from the repository edge attribute <code>weight</code>, with unit
+conductance when <code>weight</code> is absent. The independent <code>length</code> attribute belongs
+to shortest-path geometry and does not enter this diffusion theorem. Structural
+potential uses explicit <code>length</code> when present, otherwise falls back to <code>weight</code>
+for compatibility and then to unit length. A model whose coupling strength and
+path distance differ should declare both explicitly; see
+<a href="../../src/tnfr/physics/_edge_semantics.py"><code>_edge_semantics.py</code></a>.</p>
+<p>The null hypothesis was that heterogeneous <code>nu_i</code> could destroy a common
+Lyapunov function even in this restricted setting. The theorem below rejects
+that hypothesis. It does not address the other pressure channels or arbitrary
+operator sequences.</p>
+<h2 id="ideal-real-arithmetic-theorem">Ideal real-arithmetic theorem<a class="headerlink" href="#ideal-real-arithmetic-theorem" title="Permanent link">&para;</a></h2>
+<p>Define</p>
+<pre><code class="language-text">H = diag(d_i/nu_i),
+c = (1^T H x)/(1^T H 1),
+y = x-c*1,
+V(x) = 1/2 y^T H y.
+</code></pre>
+<p>Then <code>1^T H x</code> and therefore <code>c</code> are conserved. Moreover,</p>
+<pre><code class="language-text">V' = -y^T B y.
+</code></pre>
+<p>Because the graph is connected, <code>B</code> is positive semidefinite with kernel
+<code>span{1}</code>. Let <code>lambda_* &gt; 0</code> be the first positive generalized eigenvalue of</p>
+<pre><code class="language-text">Bv = lambda Hv.
+</code></pre>
+<p>The generalized Poincare inequality on the <code>H</code>-orthogonal complement of <code>1</code>
+gives</p>
+<pre><code class="language-text">V' &lt;= -2 lambda_* V,
+V(t) &lt;= exp(-2 lambda_* t) V(0).
+</code></pre>
+<p>Thus the continuous-time EPI field converges exponentially to the uniform
+state <code>c*1</code>. Heterogeneous structural frequency changes both the conserved mean
+and the relaxation rate; replacing it by its arithmetic mean generally changes
+the dynamics.</p>
+<h2 id="proof">Proof<a class="headerlink" href="#proof" title="Permanent link">&para;</a></h2>
+<p>Since <code>H diag(nu) D^-1 = I</code>, the flow is <code>x'=-H^-1 Bx</code>. Symmetry gives
+<code>1^T B=0</code>, hence</p>
+<pre><code class="language-text">d/dt (1^T Hx) = -1^T Bx = 0.
+</code></pre>
+<p>The centered field therefore satisfies <code>y'=x'</code>. Differentiating its weighted
+energy yields</p>
+<pre><code class="language-text">V' = y^T H y' = -y^T Bx = -y^T By,
+</code></pre>
+<p>where <code>B1=0</code> was used in the last equality. Finally, <code>1^T Hy=0</code>, so the
+Rayleigh characterization of the first positive eigenvalue of
+<code>H^-1/2 B H^-1/2</code> gives <code>y^T By &gt;= lambda_* y^T Hy = 2 lambda_* V</code>.</p>
+<h2 id="executable-represented-coefficient-theorem">Executable represented-coefficient theorem<a class="headerlink" href="#executable-represented-coefficient-theorem" title="Permanent link">&para;</a></h2>
+<p>The analytic cancellation <code>H diag(nu) D^-1=I</code> uses exact real arithmetic.
+The engine performs several binary64 operations: it materializes a Laplacian
+<code>B_r</code>, mobility <code>M_r</code> and displayed metric</p>
+<pre><code class="language-text">H_r = diag(fl(d_i/nu_i)).
+</code></pre>
+<p>Even when every input is finite and positive, <code>H_r M_r</code> need not equal the
+identity exactly. Consequently, the displayed weighted mean need not be an
+exact invariant and the numerical generalized eigenvalue of the ideal pair
+<code>(B,H)</code> is not by itself a safe lower bound for the executed coefficients.</p>
+<p>The executable certificate instead treats every already materialized
+binary64 coefficient of <code>B_r</code>, <code>M_r</code> and <code>H_r</code> as an exact rational number and
+sets <code>A_r=M_r B_r</code>. Binary64 row accumulation can make <code>B_r 1</code> nonzero as an
+exact rational identity, even when the underlying real-weight Laplacian kills
+constants. A global homogeneous disagreement bound therefore first requires</p>
+<pre><code class="language-text">Q_r A_r 1 = 0,
+Q_r = I - 1 h_r^T/(h_r^T 1).
+</code></pre>
+<p>This is the exact invariance condition for the consensus subspace. For the
+instantaneous <code>H_r</code>-orthogonal projection</p>
+<pre><code class="language-text">c_r(x) = (1^T H_r x)/(1^T H_r 1),
+y = x-c_r(x)1,
+V_r(x) = (1/2)y^T H_r y,
+</code></pre>
+<p>the projection derivative and the uniform image of <code>A_r 1</code> drop out because
+<code>1^T H_r y=0</code>. Therefore</p>
+<pre><code class="language-text">V_r' = -y^T S_r y,
+S_r = (H_r M_r B_r + B_r^T M_r H_r)/2.
+</code></pre>
+<p>The implementation verifies the consensus-subspace identity, restricts <code>S_r</code>
+and <code>H_r</code> to the exact rational subspace <code>1^T H_r y=0</code>, proves positive
+definiteness by rational LDL elimination and computes a rigorous
+generalized-quotient lower bound <code>lambda_cert</code>. When both checks pass, it
+follows that</p>
+<pre><code class="language-text">V_r(t) &lt;= exp(-2 lambda_cert t) V_r(0).
+</code></pre>
+<p>Canonical pure-EPI diffusion has the stronger fixed-point contract
+<code>A_r 1=0</code>: every uniform EPI field must remain stationary. The executable
+certificate reports the weaker quotient condition <code>Q_r A_r 1=0</code>, but promotes
+<code>is_certified</code> only when the rational quotient bound is positive <strong>and</strong> the
+uniform fixed-point identity holds exactly. A represented matrix can therefore
+have a valid quotient contraction calculation while still being rejected as a
+canonical diffusion flow.</p>
+<p>The separately reported eigensolver gap and rate remain estimates. The public
+<code>certified_exponential_rate_lower_bound</code> is a downward-rounded representation
+of <code>2 lambda_cert</code> and is the only rate consumed by hybrid composition.
+Exact conservation of the displayed weighted mean is checked independently as
+<code>1^T H_r A_r=0</code>. This is separate from consensus-subspace invariance. If the
+mean identity fails while <code>Q_r A_r 1=0</code> passes, contraction to the consensus
+subspace remains certified, while the initial displayed weighted mean is not
+promoted as the limiting consensus value. If consensus-subspace invariance
+itself fails, a uniform zero-energy input supplies an exact obstruction to any
+global multiplicative disagreement bound and the executable certificate
+abstains.</p>
+<h2 id="engine-certificate">Engine certificate<a class="headerlink" href="#engine-certificate" title="Permanent link">&para;</a></h2>
+<p><a href="../../src/tnfr/physics/structural_diffusion.py"><code>verify_heterogeneous_diffusion_stability</code></a>
+computes the displayed metric, snapshot projection center and total,
+instantaneous Lyapunov balance,
+generalized-gap estimate, exact quotient lower bound and certified exponential
+rate. Its compatibility fields <code>conserved_total</code> and <code>equilibrium_value</code> are
+snapshot projection values unless <code>exact_weighted_mean_preservation</code> is true.
+<code>is_consensus</code> tests whether the snapshot lies in the uniform subspace within
+the declared numerical tolerance; <code>is_equilibrium</code> instead checks the exact
+rational identity <code>M_r B_r x=0</code> for the represented coefficients. These need
+not agree: on the weighted triangle with conductances <code>0.1</code>, <code>0.2</code> and <code>0.3</code>,
+binary64 degree accumulation makes a uniform field consensus while the
+materialized generator does not leave it fixed, so the executable theorem
+abstains.
+The displayed <code>lyapunov_value</code>, <code>lyapunov_derivative</code> and
+<code>derivative_upper_bound</code> are binary64 snapshot diagnostics. Hybrid composition
+uses only the downward-rounded certified rate.
+The certificate arrays are detached and read-only, and the function rejects
+graphs outside the theorem's assumptions. Tests include a closed-form
+two-node equality case, weighted heterogeneous paths, the uniform equilibrium,
+shift invariance, zero capacity, zero-weight disconnection and asymmetric
+transport.</p>
+<p>This fixed-capacity certificate is the stability component used at both frozen
+endpoints by the restricted
+<a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/#5-executable-s16-endpoint-certificate"><code>S16 integration certificate</code></a>.
+Running it twice does not establish a trajectory between those endpoints.</p>
+<h2 id="boundaries-and-falsification">Boundaries and falsification<a class="headerlink" href="#boundaries-and-falsification" title="Permanent link">&para;</a></h2>
+<p>The ideal theorem would be falsified by an in-scope exact-real graph for which
+the weighted quantity changes, <code>V' &gt; -2 lambda_* V</code>, or <code>lambda_* &lt;= 0</code>.
+The executable theorem is auditable through coefficient-level conditions:
+exact uniform fixed-point preservation, positive rational quotient
+dissipation, and the separately reported consensus-subspace and weighted-mean
+identities. Failure of a required certificate condition is an abstention about
+that represented matrix, not a refutation of the ideal theorem.</p>
+<p>The fixed-graph theorem above does not cover:</p>
+<ul>
+<li>phase, frequency-gradient or topology pressure channels;</li>
+<li>time-dependent <code>W</code> outside the separately stated finite common-metric
+  switching family, or time-dependent <code>nu_i</code> without the positive finite bounds
+  treated below; nesting or REMESH;</li>
+<li>zero-capacity nodes or disconnected effective conductance;</li>
+<li>directed non-normal transport;</li>
+<li>explicit finite-step stability;</li>
+<li>convergence of every grammar-compliant operator word.</li>
+</ul>
+<p>These exclusions define the next stability research steps rather than implicit
+extensions of this theorem.</p>
+<h2 id="time-varying-heterogeneous-capacities">Time-varying heterogeneous capacities<a class="headerlink" href="#time-varying-heterogeneous-capacities" title="Permanent link">&para;</a></h2>
+<p>The fixed-capacity weighted energy above depends on <code>nu_i</code> and is therefore not
+a common time-independent functional when capacity ratios change. The
+Dirichlet energy itself supplies the required common functional.</p>
+<p>Assume a measurable schedule with declared bounds</p>
+<pre><code class="language-text">0 &lt; lower_i &lt;= nu_i(t) &lt;= upper_i &lt; infinity
+</code></pre>
+<p>for every node and time. Set <code>M(t)=diag(nu_i(t)/d_i)</code> and
+<code>E_D=x^T Bx/2</code>. The same pure EPI channel obeys</p>
+<pre><code class="language-text">E_D' = -(Bx)^T M(t)(Bx).
+</code></pre>
+<p>Let <code>mu=min_i(lower_i/d_i)</code> and let <code>lambda_2(B)&gt;0</code> be the first
+positive combinatorial eigenvalue. Since <code>B^2 &gt;= lambda_2(B) B</code> on the
+nonuniform subspace,</p>
+<pre><code class="language-text">E_D' &lt;= -mu ||Bx||^2
+     &lt;= -2 mu lambda_2(B) E_D.
+</code></pre>
+<p>Therefore</p>
+<pre><code class="language-text">E_D(t) &lt;= exp(-2 mu lambda_2(B)t) E_D(0).
+</code></pre>
+<p>The upper capacity bounds make <code>M(t)</code> bounded. Together with exponential
+decay this makes <code>x'(t)</code> integrable, so <code>x(t)</code> converges to a uniform state.
+Unlike the fixed-capacity theorem, its consensus value is generally dependent
+on the capacity schedule. Exact piecewise-constant two-node evolutions in the
+test suite give different final consensus values when the same two capacity
+profiles are applied in opposite order.</p>
+<p><a href="../../src/tnfr/physics/structural_diffusion.py"><code>derive_time_varying_diffusion_stability_bound</code></a>
+computes this conditional common-Lyapunov rate from per-node lower and upper
+capacity bounds. The bounds are declared assumptions; the read-only function
+cannot certify that an unknown future schedule respects them.</p>
+<p>The executable certificate interprets each effective binary64 conductance and
+capacity bound as an exact real coefficient. It forms <code>W</code>, <code>D</code>, <code>B=D-W</code>, the
+quotient gap, mobilities, current Dirichlet energy and decay rate with rational
+arithmetic. The ordinary binary64 eigengap, products and energy are retained as
+estimates only. In particular, floating accumulation in the separately
+materialized <code>diag(strength)-adjacency</code> may fail to annihilate constants even
+though the induced exact-real <code>B</code> does; both facts are reported without mixing
+their scopes. If the exact positive rate underflows when rounded downward for
+publication, <code>exact_real_continuous_time_model_certified</code> remains true while
+<code>operational_binary64_rate_available</code> and its compatibility alias
+<code>is_certified</code> are false. <code>runtime_integration_certified</code> is always false: this
+function proves the conditional continuous-time model and does not inspect a
+solver trajectory.</p>
+<h3 id="proportional-schedule-corollary">Proportional-schedule corollary<a class="headerlink" href="#proportional-schedule-corollary" title="Permanent link">&para;</a></h3>
+<p>If <code>nu_i(t)=a(t) nu_bar_i</code>, all generators are scalar multiples of one fixed
+generator. Structural time <code>s(t)=integral_0^t a(tau) dtau</code> gives</p>
+<pre><code class="language-text">x(t) = exp(-s(t) diag(nu_bar) L_rw) x(0).
+</code></pre>
+<p>The weights <code>d_i/nu_bar_i</code> then define a conserved mean. If <code>s(t)</code> diverges,
+the fixed-capacity theorem applies in structural time and determines the final
+uniform value. This is the exact boundary between a clock change and genuinely
+time-ordered heterogeneous transport.</p>
+<h2 id="explicit-euler-modal-window">Explicit-Euler modal window<a class="headerlink" href="#explicit-euler-modal-window" title="Permanent link">&para;</a></h2>
+<p>For a frozen symmetric network, the continuous decay rates are the eigenvalues
+<code>lambda_k</code> of <code>diag(nu_f)L_rw</code>. An explicit-Euler step acts on each
+nonstationary mode by</p>
+<pre><code class="language-text">q_k = 1-dt lambda_k.
+</code></pre>
+<p>All nonstationary modal amplitudes contract exactly when
+<code>max_k |q_k| &lt; 1</code>, equivalently <code>0 &lt; dt &lt; 2/lambda_max</code>. For target fraction
+<code>epsilon</code>, the graph-specific step
+count is the first <code>n</code> satisfying</p>
+<pre><code class="language-text">(max_k |q_k|)^n &lt; epsilon.
+</code></pre>
+<p><a href="../../src/tnfr/physics/structural_diffusion.py"><code>diagnose_euler_relaxation_window</code></a>
+reports the actual heterogeneous spectrum, stability limit and modal step
+count. At <code>dt=0.5</code>, <code>nu_f=1</code> and <code>epsilon=1/(pi+1)</code>, the 21-node path requires
+231 solver steps while <code>K4</code> requires 2. The canonical U4 window remains 3
+<strong>operator positions</strong> in both cases. The operator-event contract now supplies
+the missing physical timeline—zero-duration jumps separated by declared flow
+intervals—but it does not convert the positional U4 policy into a spectral one.
+Stationary-mode resolution uses a reported
+dimensionless tolerance times the fastest decay rate. It is not an absolute
+frequency threshold and is kept separate from any scaled EPI-update tolerance.</p>
+<h3 id="exact-reversible-single-eigenmode-euler-reference-theorem">Exact reversible single-eigenmode Euler reference theorem<a class="headerlink" href="#exact-reversible-single-eigenmode-euler-reference-theorem" title="Permanent link">&para;</a></h3>
+<p>This section centralizes the complete proof used by the pure reference kernel.
+Let <code>W</code> be an exact rational symmetric nonnegative conductance matrix with zero
+diagonal and connected positive support. Set</p>
+<pre><code class="language-text">d_i = sum_j W_ij,        D = diag(d_i),        B = D-W,
+A = diag(nu) L_rw = diag(nu) D^-1 B,
+H = diag(d_i/nu_i),
+</code></pre>
+<p>where every <code>d_i</code> and <code>nu_i</code> is positive. Then</p>
+<pre><code class="language-text">H A = B = B^T,
+</code></pre>
+<p>so <code>A</code> is self-adjoint in the weighted inner product
+<code>&lt;p,q&gt;_H = p^T H q</code>. Define</p>
+<pre><code class="language-text">m_H = (1^T H x_0)/(1^T H 1),        v = x_0-m_H*1.
+</code></pre>
+<p>Assume that <code>v != 0</code> and that the exact rational identity</p>
+<pre><code class="language-text">A v = mu v,        mu &gt; 0,
+</code></pre>
+<p>holds. Since <code>A 1=0</code>, the pure-EPI equation <code>x'=-Ax</code> has the exact solution</p>
+<pre><code class="language-text">x(t) = m_H*1 + exp(-mu*t)*v.                         (1)
+</code></pre>
+<p>The weighted mean is conserved, and this mode has centered energy</p>
+<pre><code class="language-text">E_H(v) = (1/2) v^T H v &gt; 0.
+</code></pre>
+<p>Now let <code>P=(h_1,...,h_s)</code> be a positive partition of one fixed duration <code>T</code>,
+and refresh the pressure before every exact-real explicit-Euler segment:</p>
+<pre><code class="language-text">x_(j+1) = (I-h_j A)x_j,        sum_j h_j=T.
+</code></pre>
+<p>If <code>0 &lt; mu*h_j &lt; 1</code> for every segment, the modal recurrence closes exactly and
+its endpoint is</p>
+<pre><code class="language-text">x_P(T) = m_H*1 + g_P*v,
+g_P = product_j (1-mu*h_j).                         (2)
+</code></pre>
+<p>Write <code>a_j=mu*h_j</code>. For <code>0 &lt;= a &lt;= 1</code>, the exact integral remainder identity</p>
+<pre><code class="language-text">exp(-a)-(1-a) = integral_0^a (a-s) exp(-s) ds
+</code></pre>
+<p>gives</p>
+<pre><code class="language-text">0 &lt;= exp(-a)-(1-a) &lt;= a^2/2.                       (3)
+</code></pre>
+<p>Set <code>b_j=exp(-a_j)</code> and <code>c_j=1-a_j</code>. Because
+<code>0 &lt; c_j &lt;= b_j &lt;= 1</code>, the product-difference identity</p>
+<pre><code class="language-text">product_j b_j - product_j c_j
+  = sum_j (b_j-c_j)
+      product_(k&lt;j) b_k product_(k&gt;j) c_k
+</code></pre>
+<p>and (3) prove</p>
+<pre><code class="language-text">0 &lt;= exp(-mu*T)-g_P
+   &lt;= (mu^2/2) sum_j h_j^2
+   &lt;= (mu^2/2) T h_max,                             (4)
+</code></pre>
+<p>where <code>h_max=max_j h_j</code>. This is an enclosure of the exact continuous factor,
+not a floating-point estimate. The endpoint consequences are the exact
+identities</p>
+<pre><code class="language-text">||x(T)-x_P(T)||_inf
+  = ||v||_inf [exp(-mu*T)-g_P],                     (5)
+
+E_H(x(T)-x_P(T))
+  = E_H(v) [exp(-mu*T)-g_P]^2,                     (6)
+</code></pre>
+<p>where <code>E_H(z)=(1/2)z^T H z</code>. Combining (4) with (5) and (6) gives the
+reported <code>L_inf</code> and weighted error-energy upper bounds. The implementation
+also stores rational lower and upper enclosures obtained from its rational
+enclosure of <code>exp(-mu*T)</code>.</p>
+<p>A proper positive subdivision replaces at least one step <code>h=a+b</code> by two
+positive steps <code>a,b</code>, without moving an existing boundary. Its local factor
+changes by</p>
+<pre><code class="language-text">(1-mu*a)(1-mu*b) - (1-mu*(a+b)) = mu^2*a*b &gt; 0.    (7)
+</code></pre>
+<p>All untouched factors are positive, so (7) strictly raises <code>g_P</code> and strictly
+lowers the exact factor error. At the same time,</p>
+<pre><code class="language-text">(mu^2/2)[(a+b)^2-a^2-b^2] = mu^2*a*b &gt; 0,          (8)
+</code></pre>
+<p>so the quadratic factor bound and its nonzero <code>L_inf</code> and <code>H</code>-error-energy
+consequences strictly improve. Repeating this argument proves the result for a
+proper subdivision that splits several coarse intervals.</p>
+<p>Finally, fix <code>W</code>, <code>nu</code>, <code>x_0</code>, the exact mode and <code>T</code>. For any family of
+positive partitions satisfying <code>0 &lt; mu*h &lt; 1</code> and <code>h_max -&gt; 0</code>, (4) tends to
+zero. Equations (5) and (6) therefore prove convergence of the exact-real Euler
+endpoints to (1). This is a mathematical partition-family theorem. It does not
+certify a binary64 trajectory, numerical solver order, mixed-mode initial data,
+directed or changing generators, glyph or REMESH dynamics, or full TNFR
+stability.</p>
+<p><a href="../../src/tnfr/physics/reversible_eigenmode_reference.py"><code>certify_reversible_single_eigenmode_euler_reference</code></a>
+implements the theorem entirely over exact <code>Fraction</code> inputs and returns a
+sealed <code>ReversibleSingleEigenmodeEulerReferenceCertificate</code>. One supplied
+partition is sufficient for the theorem; when several are supplied they must
+form a strict proper-subdivision chain, and only then is an observed strict
+subdivision improvement reported. The public surface is declared exactly in
+<a href="../../src/tnfr/physics/reversible_eigenmode_reference.pyi"><code>reversible_eigenmode_reference.pyi</code></a>
+and re-exported from <code>tnfr.physics</code>. The rational exponential routine requires
+<code>mu*T &lt;= 4096</code> solely to cap the integer-power exponent used by that enclosure.
+This implementation limit is not a dynamical threshold and does not bound the
+total bit size of arbitrary <code>Fraction</code> inputs or derived rational values.</p>
+<p><a href="../../tests/physics/test_reversible_eigenmode_reference.py"><code>test_reversible_eigenmode_reference.py</code></a>
+checks the hypotheses, both norm bounds, subdivision identities, scope flags
+and proof sealing. The public
+<a href="../../examples/02_physics_regimes/167_reversible_eigenmode_reference.py"><code>167_reversible_eigenmode_reference.py</code></a>
+certifies both exact nonuniform modes of the nonregular path <code>P3</code>; its facade,
+stub and report are checked by
+<a href="../../tests/physics/test_reversible_eigenmode_reference_example.py"><code>test_reversible_eigenmode_reference_example.py</code></a>.</p>
+<h3 id="finite-executor-binding-of-the-exact-mode">Finite executor binding of the exact mode<a class="headerlink" href="#finite-executor-binding-of-the-exact-mode" title="Permanent link">&para;</a></h3>
+<p>The pure theorem now has a finite runtime adapter:
+<a href="../../src/tnfr/physics/runtime_eigenmode_reference.py"><code>observe_executed_reversible_single_eigenmode_euler_reference</code></a>.
+Its inputs are one or more already executed, individually sealed
+<code>ExecutedPressureRefreshedFlowPartition</code> records. The adapter derives <code>W</code>,
+<code>nu</code>, <code>x_0</code>, the ordered node support and every exact represented duration from
+those records, requires them to define one fixed reference problem, and invokes
+the exact theorem once for the resulting partition family. Thus it rejects a
+changed support, conductance, capacity, initial field or total duration, as
+well as a centered initial field that is not one exact positive eigenmode.
+The inherited reference conditions also require <code>0 &lt; mu*h &lt; 1</code> for every
+segment and a strict proper-subdivision chain when several partitions are
+supplied.</p>
+<p>Let <code>z_j</code> denote the exact rationalization of the represented boundary EPI,
+<code>p64_j</code> the similarly rationalized stored pressure and</p>
+<pre><code class="language-text">p*_j = -L_rw z_j.
+</code></pre>
+<p>For each segment the observer separates two measured defects:</p>
+<pre><code class="language-text">rho_j = p64_j - p*_j,
+eta_j = z_(j+1) - z_j - h_j diag(nu) p64_j.
+</code></pre>
+<p>The first is the binary64 pressure-realization residual. The second is the
+held-input execution residual. Substitution into the nodal Euler step gives
+the exact represented-value identity</p>
+<pre><code class="language-text">z_(j+1) = (I-h_j A) z_j + epsilon_j,
+epsilon_j = h_j diag(nu) rho_j + eta_j.             (9)
+</code></pre>
+<p>These residual vectors are not assumed to lie in the initial eigenspace. If
+<code>y_j</code> is the exact-real pressure-refreshed Euler reference from equation (2)
+and <code>r_j=z_j-y_j</code>, then the observer uses the full generator matrix:</p>
+<pre><code class="language-text">r_0 = 0,
+r_(j+1) = (I-h_j A) r_j + epsilon_j.                (10)
+</code></pre>
+<p>Equation (10), rather than multiplication by <code>1-mu*h_j</code>, is essential for
+off-mode binary64 defects. The sealed partition row checks it against the
+actual represented endpoint. It also subtracts the rational lower and upper
+continuous endpoint enclosures coordinate by coordinate, producing signed
+runtime-minus-continuous intervals and conservative exact lower and upper
+bounds for the <code>L_inf</code> norm and <code>H</code>-error energy.</p>
+<p>Every boundary must identify canonical binary64 pure-EPI pressure and every
+segment must expose a trusted held-pressure Euler replay. An exact-affine-map
+flag is retained separately and may be false: nonzero <code>rho_j</code> and <code>eta_j</code> are
+the data measured by (9), rather than grounds for erasing the finite binding.
+Each input partition has executor provenance, but the supplied family is
+caller ordered and offline. Consequently the result proves neither common
+causal execution provenance nor binary64 asymptotic/runtime mesh convergence,
+solver accuracy or order, glyph/REMESH dynamics, repeated behavior, future
+stability or full TNFR stability.</p>
+<p>The exact public interface is declared in
+<a href="../../src/tnfr/physics/runtime_eigenmode_reference.pyi"><code>runtime_eigenmode_reference.pyi</code></a>.
+<a href="../../tests/physics/test_runtime_eigenmode_reference.py"><code>test_runtime_eigenmode_reference.py</code></a>
+checks the source binding, residual identities, off-mode full-matrix
+propagation, norm enclosures, family compatibility and proof seals. The public
+<a href="../../examples/02_physics_regimes/168_runtime_reversible_eigenmode_reference.py"><code>168_runtime_reversible_eigenmode_reference.py</code></a>
+reports three independently executed nonregular-<code>P3</code> partitions and keeps all
+stronger runtime claims false.</p>
+<h2 id="switching-topology-common-metric-theorem">Switching-topology common-metric theorem<a class="headerlink" href="#switching-topology-common-metric-theorem" title="Permanent link">&para;</a></h2>
+<p>Let a finite family of connected symmetric graph regimes share one fixed node
+set. Regime <code>r</code> has Laplacian <code>B_r</code>, capacity vector <code>nu_r</code> and metric</p>
+<pre><code class="language-text">h_r,i = d_r,i / nu_r,i.
+</code></pre>
+<p>In exact real arithmetic, if every <code>h_r</code> is a positive scalar multiple of one
+vector <code>p</code>, the normalized metric and its conserved consensus value are common
+to every regime. For</p>
+<pre><code class="language-text">V_p = (1/2) sum_i p_i (x_i-c)^2,
+</code></pre>
+<p>each active regime satisfies <code>V_p' &lt;= -2 lambda_r V_p</code>, where <code>lambda_r</code> is
+the first positive generalized eigenvalue of <code>(B_r, diag(h_r))</code>. Consequently,
+arbitrary switching obeys</p>
+<pre><code class="language-text">V_p(t) &lt;= exp(-2 min_r(lambda_r) t) V_p(0).
+</code></pre>
+<p><a href="../../src/tnfr/physics/structural_diffusion.py"><code>verify_switching_diffusion_stability</code></a>
+applies the represented-coefficient theorem rather than assuming the ideal
+cancellation survives rounding. It tests exact projective equality of the
+displayed binary64 metric vectors by rational cross-products, constructs the
+rational quotient dissipation for every materialized regime and takes the
+minimum certified rate. It separately reports eigensolver estimates, normalized
+metric mismatch, caller-tolerance proximity and exact weighted-mean
+preservation by regime. Exact common-metric equality, positive certified
+quotient bounds and exact <code>A_r 1=0</code> in every regime promote
+arbitrary-switching disagreement contraction;
+tolerance alone is a numerical diagnostic. Convergence to the <em>initial</em>
+displayed weighted mean additionally requires the separate common
+mean-preservation flag. A path, cycle and
+complete graph with capacities adjusted so <code>d_i/nu_i</code> remains proportional
+pass the same exponential envelope under a switched exact flow. Keeping
+capacity fixed while degrees change generally fails the common-metric test.
+That failure delimits this theorem; it does not prove instability.</p>
+<p>The switching object's <code>equilibrium_value</code>, <code>lyapunov_value</code> and
+<code>derivative_upper_bound</code> describe the first supplied snapshot in ordinary
+binary64 arithmetic with the displayed normalized metric. They are diagnostics,
+not inputs to the proof. Hybrid composition and the sampled S16 certificate use
+the rationalized <code>reference_metric_weights</code>; S16 recomputes the corresponding
+weighted center at every snapshot. Only the certified rational rate is consumed
+as flow decay.</p>
+<p>The theorem covers changing edge sets and <code>weight</code> conductances on one fixed node
+set. Node creation, deletion, directed transport and the
+radial/annular/multinodal classification require separate models. The next
+section treats only explicitly declared affine EPI resets.</p>
+<h2 id="affine-reset-gain-and-hybrid-word-theorem">Affine-reset gain and hybrid-word theorem<a class="headerlink" href="#affine-reset-gain-and-hybrid-word-theorem" title="Permanent link">&para;</a></h2>
+<p>Let <code>h</code> be the positive metric shared by the continuous regimes, set
+<code>H=diag(h)</code>, and define the <code>H</code>-orthogonal consensus projector</p>
+<pre><code class="language-text">Q = I - 1 h^T/(h^T 1),
+V(x) = (1/2) ||Qx||_H^2.
+</code></pre>
+<p>Consider one declared affine EPI reset</p>
+<pre><code class="language-text">J(x) = A x + b.
+</code></pre>
+<p>A finite global multiplicative bound <code>V(J(x)) &lt;= gamma V(x)</code> exists for every
+<code>x</code> <strong>if and only if</strong></p>
+<pre><code class="language-text">Q A 1 = 0,       Q b = 0.
+</code></pre>
+<p>These identities say that <code>A1</code> and <code>b</code> are uniform vectors, so the affine map
+preserves the consensus subspace. Necessity follows immediately from a
+zero-energy input: if <code>Qb != 0</code>, use <code>x=0</code>; otherwise, if <code>QA1 != 0</code>, use
+<code>x=1</code>. In either case <code>V(x)=0</code> and <code>V(J(x))&gt;0</code>, excluding every finite
+multiplicative gain. For sufficiency, write <code>x=Qx+c1</code>. The two identities give</p>
+<pre><code class="language-text">QJ(x) = Q A Qx,
+gamma_sharp = ||H^(1/2) Q A Q H^(-1/2)||_2^2.
+</code></pre>
+<p>The sharp formula is an exact mathematical characterization. Its binary64 SVD
+evaluation is only a diagnostic. The executable theorem instead works with
+rational arithmetic on the represented coefficients. It always forms the
+weighted-Frobenius fallback</p>
+<pre><code class="language-text">Gamma_F = sum_ij (h_i/h_j) (QAQ)_ij^2 &gt;= gamma_sharp.
+</code></pre>
+<p><code>Gamma_F</code> is the squared weighted Frobenius norm. The certificate then tightens
+this value on the disagreement quotient without using a floating eigensolver.
+If <code>QAQ=cQ</code>, the gain is exactly <code>c^2</code>. One- and two-dimensional quotient
+problems use exact rational reduction, with a rational upper enclosure for the
+quadratic root in the two-dimensional case. Other small quotient problems use
+exact positive-semidefinite tests and rational bisection of the generalized
+Rayleigh quotient. Larger non-scalar problems retain <code>Gamma_F</code>. The resulting
+<code>Gamma_Q &lt;= Gamma_F</code> is therefore always a proved rational upper bound; its
+published binary64 value is rounded upward. In particular, the identity map has
+<code>Gamma_Q=1</code> instead of the dimension-dependent Frobenius value <code>N-1</code>.</p>
+<p>A failure of either bound to prove contraction does not show that the sharp
+gain is at least one. A caller-declared bound is certified when it is no smaller
+than <code>Gamma_Q</code>; the stronger legacy diagnostic records independently whether it
+also dominates <code>Gamma_F</code>. A declared value never replaces the internally
+derived compositional bound.</p>
+<p>Now interleave affine resets <code>J_k</code> with continuous common-metric diffusion for
+durations whose sum is <code>T_flow</code>. If the represented diffusion certificate gives
+the rigorous lower-rate bound <code>V' &lt;= -r_cert V</code> and every reset has a certified
+finite bound <code>Gamma_k</code>, then</p>
+<pre><code class="language-text">V(T) &lt;= exp(-r_cert T_flow) product_k(Gamma_k) V(0).
+</code></pre>
+<p>The implementation evaluates the budget in log space. A declared finite word
+has <code>len(jumps)+1</code> nonnegative flow durations: before the first reset, between
+resets, and after the last reset. Mathematically it contracts disagreement
+whenever</p>
+<pre><code class="language-text">sum_k log(Gamma_k) - r_cert T_flow &lt; 0.
+</code></pre>
+<p>The executable decision does not use rounded logarithms or a caller tolerance.
+It forms an exact rational lower bound for the represented flow decay. Each
+precise rational quotient-gain bound remains certificate data; for log-space
+composition alone, the implementation rounds that gain upward to an exact
+32-bit-significand dyadic rational. This conservatively bounds the gain while
+limiting every logarithm-series input. The actual factors remain visible in
+<code>exact_log_composition_gain_factors</code>, separately from the precise product in
+<code>exact_cumulative_jump_energy_gain_bound</code>. A rational upper enclosure for each
+resulting logarithm is summed, and strict negativity of that rational upper
+budget is the decision. The published multiplier uses an upward-rounded
+rational exponential enclosure. The compatibility field
+<code>log_contraction_decision_margin</code> is zero; <code>tolerance</code> affects only numerical
+diagnostics.</p>
+<p>Duration inputs, including integers and <code>Fraction</code> values, are first
+materialized as binary64; the exact budget then rationalizes those represented
+duration values. It therefore certifies the declared executable timeline,
+rather than the pre-conversion source rational. Nonzero durations that
+underflow to zero are rejected. <code>build_operator_event_schedule</code> centralizes the
+same <code>m</code> jumps/<code>m + 1</code> intervals convention, exact prefix offsets and explicit
+ordering for coincident events. Absolute float timestamps are display fields and
+are never subtracted to obtain duration. The separate fixed-flow diagnostic uses
+the exact quotient-rate lower bound plus rational log/exp enclosures to decide a
+sufficient duration for a requested energy fraction. Neither interface executes
+the operator word or the continuous solver. The finite-horizon multiplicative bound only
+needs valid flow and reset proofs. Asymptotic fields remain <code>None</code> unless
+<code>repeat_schedule=True</code>; a repeated schedule must have positive total flow time
+to exclude Zeno accumulation. Under those conditions a negative certified
+budget certifies exponential disagreement decay at the word boundaries.
+Preservation of the initial weighted consensus is a separate property:</p>
+<pre><code class="language-text">h^T A_k = h^T,       h^T b_k = 0
+</code></pre>
+<p>for every reset. The represented continuous flow must also preserve that same
+weighted mean exactly. When all of those identities hold, the repeated word
+converges to the initial <code>h</code>-weighted uniform state. They are a sufficient exact
+route to that particular limit, not a necessary condition for every affine
+consensus dynamics to possess some other fixed point.</p>
+<p><a href="../../src/tnfr/physics/hybrid_operator_stability.py"><code>certify_affine_epi_jump_gain</code></a>
+returns the exact subspace and mean-preservation decisions, the sharp numerical
+estimate, the rational quotient bound, the Frobenius fallback and a
+zero-to-positive witness when finite gain is impossible. Its proof stamp covers
+the decisive affine inputs and conclusions, so ordinary replacement or mutation
+cannot promote a forged certificate property.
+<a href="../../src/tnfr/physics/hybrid_operator_stability.py"><code>compose_hybrid_epi_stability</code></a>
+combines those certificates with either the fixed heterogeneous-flow theorem or
+the exact-common-metric switching theorem. It requires the same persistent node
+order and exact projective metric; tolerance proximity cannot join different
+Lyapunov functions. It reconstructs each jump proof from the supplied affine
+inputs instead of trusting copied result fields. Flow proof stamps detect
+ordinary stale, replaced or mutated payloads; they are consistency checks, not
+an authentication or security boundary.</p>
+<p>The reproducible
+<a href="../../examples/02_physics_regimes/162_hybrid_epi_stability.py"><code>162_hybrid_epi_stability.py</code></a>
+uses a two-node heterogeneous flow with the exact represented metric <code>h=(1,3)</code>.
+It exhibits three distinct boundaries: diffusion overcomes a certified
+weighted-mean-preserving disagreement amplification, although the represented
+flow need not conserve that same displayed mean exactly; a uniform translation
+contracts disagreement while shifting the consensus coordinate; and a local
+offset produces the exact <code>V=0 -&gt; V&gt;0</code> obstruction. These are declared affine
+maps, not identifications of the named operators' runtime implementations.</p>
+<h3 id="reception-and-resonance-runtime-realizations">Reception and Resonance runtime realizations<a class="headerlink" href="#reception-and-resonance-runtime-realizations" title="Permanent link">&para;</a></h3>
+<p>Reception (EN) and Resonance (RA) now supply the first two catalog bridges at
+both the local and all-target stage boundaries. The Reception graph-backed
+handler reads one target, forms the unweighted binary64 <code>fmean</code> of its runtime
+neighbours, blends with the configured factor <code>m</code>, reads the target in the
+canonical real-scalar EPI domain, and applies structural clipping. Raw finite
+real values and uniform-real BEPI embeddings retain their signed scalar value.
+Genuinely nonuniform or complex BEPI values have a maximum-component magnitude
+for generic read-only diagnostics, but EN rejects them before proposing a blend.
+The runtime is not globally the matrix multiplication used above: the mean and
+blend round in separate stages, and soft or active hard clipping is nonlinear.</p>
+<p>On a declared fixed connected undirected support, the EN bridge therefore
+requires a uniform real scalar embedding, <code>0&lt;=m&lt;=1</code>, values inside the
+configured bounds, and inactive runtime hard clipping at the audited snapshot.
+No sign restriction is needed. In exact real arithmetic the neighbour mean and
+the second blend are convex combinations, so hard clipping is automatically
+inactive throughout the declared bounded domain. The ideal map for target <code>i</code>
+is</p>
+<pre><code class="language-text">A_i = I + m e_i (p_i^T-e_i^T),
+p_i,j = 1/|N_i| for j in N_i, and 0 otherwise.
+</code></pre>
+<p>It preserves constants because <code>A_i 1=1</code>. It does <strong>not</strong> preserve a positive
+weighted mean as a global functional for any nonisolated target and <code>m&gt;0</code>:</p>
+<pre><code class="language-text">h^T A_i-h^T = m h_i (p_i^T-e_i^T) != 0.
+</code></pre>
+<p>The EN bridge also constructs the coefficient matrix produced by the
+individual binary64 coefficient operations. That represented map is nested
+into the affine jump theorem only if its row sum equals one as an exact rational
+identity. Agreement of the actual two-stage runtime result with either matrix
+is reported only for the supplied snapshot; it does not assert global binary64
+affinity.</p>
+<p>RA reuses the same unweighted blend kernel but first filters graph neighbours
+individually by the circular U3 condition
+<code>|wrap(theta_i-theta_j)| &lt;= Delta_phi_max</code>. Incompatible neighbours contribute
+to neither its EPI mean, circular phase mean, nor capacity-amplification
+trigger. The runtime requires a non-isolated target with at least one compatible
+neighbour; its graph phase limit must be finite and in <code>[0,pi/2]</code>, so a local
+configuration may tighten but cannot relax the canonical gate. The EPI mix,
+capacity amplification, and phase coupling factors must respectively satisfy</p>
+<pre><code class="language-text">0 &lt;= RA_epi_diff &lt;= 1,
+RA_vf_amplification &gt;= 0,
+0 &lt;= RA_phase_coupling &lt;= 1.
+</code></pre>
+<p>These checks, scalarization, the proposed finite post-frequency, and the
+identity gate all precede mutation. Resonance may change the scalar EPI through
+the convex blend. “Preserves identity” instead means that a proposed strict
+negative-to-positive or positive-to-negative crossing is rejected and an
+established nonempty <code>epi_kind</code> is retained exactly. Exact zero is a neutral
+sign boundary, and an absent kind may be initialized by the existing runtime
+convention. Sign and kind are independent conditions; satisfying one cannot
+repair failure of the other.</p>
+<p>The RA certificate separates four layers:</p>
+<ol>
+<li>the ideal-real convex EPI blend;</li>
+<li>the affine matrix assembled from represented binary64 coefficients;</li>
+<li>the actual two-stage binary64 target proposal at the audited snapshot; and</li>
+<li>the accepted identity-gated runtime snapshot.</li>
+</ol>
+<p>Only the second layer is eligible for the affine-jump theorem, and only when
+its exact rational consensus-row identity and the declared scalar,
+fixed-support, clipping-free domain pass. The accepted layer can equal the
+pre-state after an identity rejection even though the proposal is nontrivial.
+The two-stage mean/blend rounding, clipping, identity and U3 gates, circular
+phase map, and conditional capacity change rule out a global binary64 affinity
+claim for the runtime operator.</p>
+<p>A successful RA capacity boost changes <code>nu_i</code> at one target and therefore
+generally changes the diffusion metric <code>h_i=d_i/nu_i</code>. The certificate still
+constructs the fixed post-RA heterogeneous diffusion theorem and audits the
+represented jump in that post-RA metric. It withholds an arbitrary pre/post
+switching theorem unless the represented metric vectors are exactly
+proportional. Optional recovery composes the represented jump with this fixed
+post-RA flow; the displayed break-even duration is only an estimate, while the
+Boolean recovery decision uses the exact hybrid composer.</p>
+<p>The node-local EN and RA writes do not recompute the stored pressure field.
+If the pre-event pure-EPI pressure is <code>p=-L_rw x</code> and an accepted target update
+changes EPI by <code>delta</code>, retaining <code>p</code> gives the exact post-event manifold defect</p>
+<pre><code class="language-text">p + L_rw(x+delta e_i) = delta L_rw e_i.
+</code></pre>
+<p>On connected positive conductance this defect vanishes exactly iff the update
+is trivial. Pressure refresh is therefore required before the next segment is
+interpreted as pure-EPI flow. The shared all-target executor invokes the graph's
+configured <code>compute_delta_nfr</code> callback after structural commit and keeps that
+refresh inside the same rollback boundary. The exact support theorem and the
+observed binary64 defect norm are separate certificate fields.</p>
+<p><a href="../../src/tnfr/physics/reception_realization.py"><code>certify_reception_epi_realization</code></a>
+and
+<a href="../../src/tnfr/physics/resonance_realization.py"><code>certify_resonance_epi_realization</code></a>
+perform these audits without mutating the graph.</p>
+<p><a href="../../src/tnfr/physics/network_stage_stability.py"><code>certify_all_target_neighbor_stage</code></a>
+assembles every local EN or RA row from one stage snapshot and records a finite
+repeated trace. For a convex factor and an initial field inside finite hard
+bounds, every ideal-real row is a convex combination; the interval is forward
+invariant, so hard clipping remains inactive for arbitrarily many ideal-real
+stages. A fixed-map EN theorem additionally requires declared fixed support. RA
+also requires declared fixed U3 neighbour sets and a forward-invariant common
+sign/kind domain. The certificate checks the observed neighbour sets, maps,
+identity admissions and pre/post diffusion metrics at every requested stage.</p>
+<p>The represented fixed map is promoted only when its rational row sums preserve
+the consensus subspace exactly. Its repeated disagreement bound is
+<code>Gamma_Q^k</code>; weighted-mean drift and RA metric drift remain separate outputs.
+Regression tests compare every finite structural-trace step with the public
+all-target runtime, but no global binary64 runtime-affinity theorem is asserted:
+the two-stage
+<code>fmean</code>/blend evaluation can differ from matrix multiplication even when every
+snapshot agrees within tolerance. Soft or active clipping, changing RA gate
+sets, identity rejection and metric changes therefore produce explicit
+observations or abstentions rather than being hidden inside the affine claim.</p>
+<p><a href="../../src/tnfr/physics/network_stage_stability.py"><code>compose_neighbor_stage_diffusion_stability</code></a>
+closes the finite one-stage boundary. It accepts exactly one certified
+all-target EN or RA stage and a binary64-representable strictly positive flow
+duration. It rebuilds every reconstructible local domain condition, validates
+node order, represented coefficients, exact row algebra, nested proof stamps and
+the post-stage metric, then composes the stage map with the fixed post-stage flow
+using <code>repeat_schedule=False</code>. The raw scalar EPI embedding cannot be revisited
+after the graph has been discarded and remains an explicit carried observation.
+Honest support, clipping or gate failures return an abstention; inconsistent
+records are rejected.</p>
+<p>The resulting finite disagreement bound and strict-contraction decision do not
+assert weighted-mean preservation. The exact represented-map identity, the
+observed runtime mean shift and any RA pre/post metric change are separate
+fields. Linearity of pure-EPI pressure allows the single-target defects from the
+common snapshot to be summed into an all-target binary64 diagnostic. This is not
+the local exact refresh-iff-nontrivial theorem, and RA phase or capacity may
+require a full runtime pressure refresh even when EPI does not change. The bridge
+therefore leaves stored-pressure refresh, global binary64 runtime affinity and
+repetition of the stage-flow schedule explicitly uncertified.</p>
+<p>The scheduler result is broader than this theorem. AL, IL, OZ, SHA, VAL, NUL,
+THOL, ZHIR, NAV, UM and REMESH join EN/RA in the implemented thirteen-stage
+two-phase set: every
+target proposal is derived from one stage-start snapshot and the complete stage
+is failure-atomic. Their committed primary channels are target-order invariant
+before the opaque pressure-refresh callback. IL contracts signed pressure
+magnitude and locks phase through one direct/stage kernel; its canonical
+structural <code>C(t)</code> fields remain distinct from auxiliary pressure-dispersion
+telemetry. OZ reduces snapshot-bound local and propagated pressure and advances
+per-node RNG progress independently of target order. ZHIR binds phase and
+structural-acceleration telemetry to
+snapshot-bound temporal evidence and U4 context; AL/SHA share one timestamp
+across the stage. NAV binds <code>nu_f</code>, phase, <code>DeltaNFR</code> and per-node RNG progress
+to the snapshot, resolves a missing graph seed within the transaction and uses
+one shared latency-observation instant. The seed is restored on rollback and
+persists on success. Ordered lifecycle, audit/telemetry and monitor streams
+retain requested target order. IL warnings are the final transactional effect;
+cache state and the opaque pressure refresh are excluded. Identity-bearing
+caches remain tied to their live graph and node objects. UM uses a deterministic
+snapshot-rank circular-displacement reducer, final U3 validation and
+deterministic functional-link coalescing; this is an execution policy rather
+than a Lyapunov result. THOL allocates cross-parent child-ID collisions and
+commits <code>d2EPI</code>, <code>DeltaNFR</code>, child nodes, <code>sub_nodes</code>, <code>sub_epis</code> and
+graph <code>hierarchy</code> in snapshot-node rank after detached validation. REMESH leaves structural channels unchanged and deduplicates one advisory event per telemetry step.</p>
+<p>For AL/SHA/VAL/NUL/ZHIR/NAV, the shared pointwise stage executor can request a
+certificate computed from the same detached snapshot and frozen proposals used
+by its commit. A successful <code>NetworkStageResult</code> conditionally proves exact
+runtime EPI realization, a consensus-preserving affine gain in the pre-flow
+metric, and an aligned pre/post diffusion metric. NUL's pressure channel
+remains separate. Unsupported, empty and grammar-replaced stages reject the
+request before live mutation. This seam does not certify future repetition;
+IL, OZ and THOL receive no affine gain from their execution contracts.</p>
+<p>OZ nevertheless has an immutable all-target execution contract: local actions
+and outgoing propagation read the stage snapshot, and overlapping incoming
+increments are summed with <code>math.fsum</code> in snapshot-node rank. Its local
+pressure-magnitude postcondition is distinct from the final signed field, where
+positive propagation can partially cancel a negative pressure. REMESH has an
+immutable advisory proposal and deterministic graph-event merge; it does not
+invoke the separate delayed EPI operation. Multi-target IL historically used
+the sequential schedule; the canonical word path now uses its immutable
+proposal.</p>
+<p>Canonical names remain metadata outside such a realization proof. Neither a
+U2 role nor a legacy policy multiplier supplies a runtime gain. Branching,
+richer BEPI, arbitrary multichannel pressure laws, topology or history mutation,
+unsupported glyph gains, unrestricted mixed operator words and global binary64
+runtime affinity remain outside this theorem. The event runtime's finite
+composition applies only to exact represented maps bound to one observed trace
+with a common metric. Repetition is covered only for the explicitly certified
+fixed ideal-real or represented EN/RA map. The RA bridge also
+requires finite positive capacities on a fixed connected undirected
+positive-conductance support; it does not certify finite-step integration or a
+general phase/nonlinear trajectory.</p>
+<h2 id="directed-pressure-transient-criterion">Directed pressure-transient criterion<a class="headerlink" href="#directed-pressure-transient-criterion" title="Permanent link">&para;</a></h2>
+<p>For a fixed strongly connected directed graph with outgoing random-walk
+Laplacian <code>L</code> and scalar structural frequency absorbed into structural time,
+the pure-EPI pressure is</p>
+<pre><code class="language-text">p = DeltaNFR_epi = -Lx,        p' = -Lp.
+</code></pre>
+<p>If the graph has one consensus mode, <code>range(L)=ker(pi^T)</code>. Let <code>V</code> be an
+orthonormal basis of this invariant subspace and <code>L_sub=V^T L V</code>. Then</p>
+<pre><code class="language-text">max_t ||exp(-t L_sub)||_2
+</code></pre>
+<p>is precisely the worst-case Euclidean amplification of an attainable pressure
+state. The logarithmic norm</p>
+<pre><code class="language-text">mu_2(-L_sub) = lambda_max((-L_sub-L_sub^T)/2)
+</code></pre>
+<p>gives the exact qualitative criterion: <code>mu_2&lt;=0</code> implies contraction for all
+times, while <code>mu_2&gt;0</code> gives a direction with immediate norm growth. By
+contrast, <code>alpha(-L_sub)&lt;0</code> proves asymptotic decay only.</p>
+<p><a href="../../src/tnfr/physics/nonnormal_prediction.py"><code>measure_nonnormal_pressure_prediction</code></a>
+implements the matrix certificate and a finite-window peak scan. Its companion
+benchmark fixes a seeded family of 16 ten-node directed graphs and an
+even/odd calibration split. Four graphs show sampled pressure amplification;
+all 16 have stable spectra. The logarithmic-norm sign agrees with every case,
+whereas the stable-spectrum rule misses the four bursts. The sign theorem is
+exact under the stated fixed linear hypotheses. Peak magnitudes, correlations
+and benchmark accuracy are measurements of this finite family only.</p>
+<p>This result does not select the canonical U2 metric for directed graphs. It
+also excludes changing support, nonlinear operators, time-dependent
+heterogeneous capacity and claims about total coherence <code>C(t)</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

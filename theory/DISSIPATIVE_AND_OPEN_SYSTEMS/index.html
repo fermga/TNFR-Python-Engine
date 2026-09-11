@@ -1,0 +1,1527 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/DISSIPATIVE_AND_OPEN_SYSTEMS/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Dissipative and Open-System Diagnostics - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dissipative-and-open-system-diagnostics" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Dissipative and Open-System Diagnostics
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-gksl-generator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. GKSL generator
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. GKSL generator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unitality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unitality
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-universal-norm-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Universal norm bounds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-purity-and-entropy-require-channel-hypotheses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Purity and entropy require channel hypotheses
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Purity and entropy require channel hypotheses">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#amplitude-damping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Amplitude damping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pure-dephasing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pure dephasing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-contractivity-and-stationary-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Contractivity and stationary states
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-what-each-diagnostic-means" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. What each diagnostic means
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-validation-and-reproducibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Validation and reproducibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="dissipative-and-open-system-diagnostics">Dissipative and Open-System Diagnostics<a class="headerlink" href="#dissipative-and-open-system-diagnostics" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> scoped auxiliary model with exact finite-dimensional identities and
+numerical trajectory diagnostics.</p>
+<p>This note describes the density-operator tools in
+<code>src/tnfr/physics/dissipative_conservation.py</code>. The matrix density operator
+<code>rho</code> used by these tools is distinct from the structural density
+<code>rho_s = Phi_s + K_phi</code> used by the graph-field conservation diagnostics. No
+implemented map identifies the two objects.</p>
+<p>The module therefore does not extend the TNFR structural balance to all open
+systems as a theorem. It supplies a conventional finite-dimensional GKSL model
+that can be studied alongside TNFR telemetry. Likewise, a collapse operator is
+an environmental-model input; it is not evidence of a U1--U6 grammar violation.</p>
+<hr />
+<h2 id="1-gksl-generator">1. GKSL generator<a class="headerlink" href="#1-gksl-generator" title="Permanent link">&para;</a></h2>
+<p>For a density operator <code>rho</code>, Hamiltonian <code>H</code>, and collapse operators <code>L_k</code>,</p>
+<p>$$
+\dot\rho=-i[H,\rho]+D[\rho],
+\qquad
+D[\rho]=\sum_k\left(
+L_k\rho L_k^\dagger-
+\frac12{L_k^\dagger L_k,\rho}
+\right).
+$$</p>
+<p>The dissipator is trace preserving because</p>
+<p>$$
+\operatorname{Tr}D[\rho]=0.
+$$</p>
+<p>When the generator is constructed by <code>build_lindblad_delta_nfr</code>, exponentiating
+it gives a completely positive trace-preserving semigroup, up to numerical
+error. Spectral non-expansion of an arbitrary matrix is weaker than the GKSL
+conditions and does not independently prove complete positivity.</p>
+<h3 id="unitality">Unitality<a class="headerlink" href="#unitality" title="Permanent link">&para;</a></h3>
+<p>The dissipative part is unital precisely when</p>
+<p>$$
+D[I]=\sum_k(L_kL_k^\dagger-L_k^\dagger L_k)=0.
+$$</p>
+<p><code>is_unital_dissipator</code> checks this residual numerically. Pure dephasing is
+unital. Zero-temperature amplitude damping is not: it drives states toward the
+pure ground state.</p>
+<p>All functions that accept collapse operators interpret them as the effective
+operators of the modeled generator. If a Liouville generator is multiplied by
+a positive factor <code>a = nu_f * scale</code>, the equivalent dissipative inputs are
+<code>sqrt(a) L_k</code>; passing the unscaled <code>L_k</code> would under-report instantaneous rates.</p>
+<hr />
+<h2 id="2-universal-norm-bounds">2. Universal norm bounds<a class="headerlink" href="#2-universal-norm-bounds" title="Permanent link">&para;</a></h2>
+<p>For the Frobenius norm on states and spectral norm on collapse operators,
+submultiplicativity gives, term by term,</p>
+<p>$$
+|D[\rho]|_F
+\le 2\sum_k|L_k|_2^2\,|\rho|_F
+=2\sum_k|L_k|_2^2\sqrt{P},
+\qquad P=\operatorname{Tr}(\rho^2).
+$$</p>
+<p>This is the bound returned by <code>compute_dissipation_bound</code>. It is universal but
+usually loose. It does not vanish for every pure state. For example, with
+<code>L=sqrt(gamma)|0&gt;&lt;1|</code>,</p>
+<p>$$
+D[|1\rangle\langle1|]
+=\gamma\left(|0\rangle\langle0|-|1\rangle\langle1|\right)\ne0.
+$$</p>
+<p>Combining the first bound with Cauchy--Schwarz yields</p>
+<p>$$
+\left|\frac{dP}{dt}\right|
+=\left|2\operatorname{Tr}(\rho D[\rho])\right|
+\le4\sum_k|L_k|_2^2P.
+$$</p>
+<p><code>compute_instantaneous_purity_rate</code> evaluates the exact signed dissipative
+contribution. <code>compute_purity_decay_bound</code> retains its historical public name,
+but now returns the valid bound on the absolute purity-change rate.</p>
+<hr />
+<h2 id="3-purity-and-entropy-require-channel-hypotheses">3. Purity and entropy require channel hypotheses<a class="headerlink" href="#3-purity-and-entropy-require-channel-hypotheses" title="Permanent link">&para;</a></h2>
+<p>The Hamiltonian commutator does not change purity, so</p>
+<p>$$
+\frac{dP}{dt}=2\operatorname{Tr}(\rho D[\rho]).
+$$</p>
+<p>Its sign is not fixed for a general GKSL generator. For a unital semigroup,
+purity is non-increasing and von Neumann entropy</p>
+<p>$$
+S(\rho)=-\operatorname{Tr}(\rho\log\rho)
+$$</p>
+<p>is non-decreasing. Without unitality, both directions can occur.</p>
+<h3 id="amplitude-damping">Amplitude damping<a class="headerlink" href="#amplitude-damping" title="Permanent link">&para;</a></h3>
+<p>For a qubit with <code>L=sqrt(gamma)|0&gt;&lt;1|</code> and
+<code>eta=exp(-gamma t)</code>, write the initial state as</p>
+<p>$$
+\rho(0)=\begin{pmatrix}1-p&amp;c\c^*&amp;p\end{pmatrix}.
+$$</p>
+<p>Then</p>
+<p>$$
+\rho_{11}(t)=\eta p,\qquad
+\rho_{01}(t)=\sqrt\eta\,c,
+$$</p>
+<p>and</p>
+<p>$$
+P(t)=(1-\eta p)^2+(\eta p)^2+2\eta|c|^2.
+$$</p>
+<p>An initially excited pure state first loses purity, reaches <code>P=1/2</code>, and then
+regains purity as it approaches the pure ground state. Initial purity alone is
+insufficient to predict this curve: two states with equal purity can have
+different <code>p</code> and <code>c</code>. <code>predict_amplitude_damping_purity</code> therefore gives an
+exact result only when passed the full <code>2 x 2</code> density matrix. Scalar input is a
+deprecated compatibility interpolation and emits <code>DeprecationWarning</code>.</p>
+<h3 id="pure-dephasing">Pure dephasing<a class="headerlink" href="#pure-dephasing" title="Permanent link">&para;</a></h3>
+<p>When <code>gamma</code> denotes the off-diagonal amplitude decay rate,</p>
+<p>$$
+\rho_{ij}(t)=e^{-\gamma t}\rho_{ij}(0)\quad(i\ne j),
+$$</p>
+<p>while populations remain fixed. Consequently,</p>
+<p>$$
+P(t)=\sum_i|\rho_{ii}(0)|^2
++e^{-2\gamma t}\sum_{i\ne j}|\rho_{ij}(0)|^2.
+$$</p>
+<p>This is the convention used by <code>predict_dephasing_purity</code>. It matches both the
+qubit operator <code>sqrt(gamma/2) sigma_z</code> and the complete projector family
+<code>sqrt(gamma)|k&gt;&lt;k|</code>.</p>
+<hr />
+<h2 id="4-contractivity-and-stationary-states">4. Contractivity and stationary states<a class="headerlink" href="#4-contractivity-and-stationary-states" title="Permanent link">&para;</a></h2>
+<p>A CPTP map contracts trace distance between two states:</p>
+<p>$$
+T(\mathcal E(\rho),\mathcal E(\sigma))
+\le T(\rho,\sigma),
+\qquad
+T(\rho,\sigma)=\frac12|\rho-\sigma|_1.
+$$</p>
+<p>If <code>rho_ss</code> is fixed by the same map, its trace distance from a trajectory is
+therefore non-increasing. <code>verify_dissipative_balance</code> reports the ratio of
+these trace distances when a reference state is supplied through the historical
+<code>steady_state</code> parameter. The standalone balance function has no generator and
+cannot verify that the reference is actually stationary. Without a reference,
+the result is explicitly unevaluated; the function does not silently certify
+contractivity. Arbitrary pairs of snapshots also do not prove that an
+underlying map is CPTP. The tracker, which does own a generator, rejects a
+supplied steady state with a nonzero stationarity residual.</p>
+<p><code>steady_state_from_generator</code> solves the stationary and trace-one constraints
+by least squares and verifies positivity and the generator residual. A
+generator can have a stationary manifold. Pure dephasing, for example, fixes
+all density matrices diagonal in the dephasing basis. The returned state is one
+minimum-norm representative, not a uniqueness certificate.</p>
+<p><code>analyze_dissipation_rates</code> reports the stationary-mode count, stable decay
+rates, positive-real-part modes, and the trace-preservation residual. A positive
+spectral gap measures relaxation toward the stationary subspace. Convergence
+to one unique state additionally requires a one-dimensional stationary space.</p>
+<hr />
+<h2 id="5-what-each-diagnostic-means">5. What each diagnostic means<a class="headerlink" href="#5-what-each-diagnostic-means" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Diagnostic</th>
+<th>Implemented quantity</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Purity change rate</td>
+<td><code>(P_after-P_before)/dt</code></td>
+<td>Signed; either sign is possible</td>
+</tr>
+<tr>
+<td>Entropy change rate</td>
+<td><code>(S_after-S_before)/dt</code></td>
+<td>Signed; monotone for unital channels</td>
+</tr>
+<tr>
+<td>State change rate</td>
+<td><code>||rho_after-rho_before||_F/dt</code></td>
+<td>Includes coherent and dissipative motion</td>
+</tr>
+<tr>
+<td>Dissipator action norm</td>
+<td><code>||D[rho_before]||_F</code></td>
+<td>Instantaneous environmental term</td>
+</tr>
+<tr>
+<td>Dissipation bound</td>
+<td><code>2 sum ||L_k||_2^2 sqrt(P)</code></td>
+<td>Universal Frobenius bound</td>
+</tr>
+<tr>
+<td>Fixed-point contraction ratio</td>
+<td><code>T_after/T_before</code></td>
+<td>Requires a supplied stationary state</td>
+</tr>
+<tr>
+<td>Frobenius-norm loss rate</td>
+<td><code>(||rho_before||_F-||rho_after||_F)/dt</code></td>
+<td>Purity proxy; not a Noether charge</td>
+</tr>
+<tr>
+<td>Change tier</td>
+<td>Maximum absolute purity/entropy rate</td>
+<td>Empirical reporting bin</td>
+</tr>
+</tbody>
+</table>
+<p>The compatibility names <code>purity_decay_rate</code>, <code>entropy_production_rate</code>,
+<code>actual_dissipation</code>, and <code>charge_leak_rate</code> remain accessible. Their canonical
+counterparts state the measured quantity without assuming a sign or a Noether
+interpretation.</p>
+<p>The four change tiers (<code>weak</code>, <code>moderate</code>, <code>strong</code>, <code>large</code>) use configured
+rate thresholds <code>0.001</code>, <code>0.05</code>, and <code>0.2</code>. They are descriptive bins rather
+than physical phase boundaries. <code>classify_dissipative_regime</code> retains legacy
+keys for compatibility and always reports <code>grammar_status_inferred=False</code>.</p>
+<hr />
+<h2 id="6-validation-and-reproducibility">6. Validation and reproducibility<a class="headerlink" href="#6-validation-and-reproducibility" title="Permanent link">&para;</a></h2>
+<p>Public calculations reject density matrices that are non-square,
+non-Hermitian, non-finite, non-positive, or not trace one. Collapse operators
+must be finite square matrices of the same dimension. Time steps, rates, and
+times must be finite and non-negative where their definitions require it.</p>
+<p>The executable demonstration compares exact amplitude damping and dephasing
+channels, including the non-monotone purity of amplitude damping and the
+monotone mixing of unital dephasing:</p>
+<ul>
+<li><a href="../../examples/02_physics_regimes/28_dissipative_systems_demo.py">28_dissipative_systems_demo.py</a></li>
+</ul>
+<p>Direct regression coverage:</p>
+<ul>
+<li><a href="../../tests/physics/test_dissipative_conservation.py">test_dissipative_conservation.py</a></li>
+</ul>
+<p>Related implementation:</p>
+<ul>
+<li><a href="../../src/tnfr/physics/dissipative_conservation.py">dissipative_conservation.py</a></li>
+<li><a href="../../src/tnfr/mathematics/generators.py">generators.py</a></li>
+<li><a href="../../src/tnfr/mathematics/dynamics.py">dynamics.py</a></li>
+</ul>
+<p>TNFR scope references:</p>
+<ul>
+<li><a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/">DIAGNOSTIC_AND_GRAMMAR_SCOPE.md</a></li>
+<li><a href="../STRUCTURAL_CONSERVATION_THEOREM/">STRUCTURAL_CONSERVATION_THEOREM.md</a></li>
+<li><a href="../UNIFIED_GRAMMAR_RULES/">UNIFIED_GRAMMAR_RULES.md</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

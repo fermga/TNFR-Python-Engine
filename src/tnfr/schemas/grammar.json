@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://tnfr.io/schemas/grammar.json",
+  "title": "TNFR Grammar Configuration",
+  "type": "object",
+  "definitions": {
+    "glyphCode": {
+      "description": "Canonical glyph identifier in uppercase notation.",
+      "type": "string",
+      "pattern": "^[A-Z][A-Z_]*$"
+    },
+    "probability": {
+      "description": "Threshold constrained to the [0, 1] interval.",
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "cfg_soft": {
+      "type": "object",
+      "description": "Soft grammar preferences applied before canonical automaton rules.",
+      "properties": {
+        "window": {
+          "description": "History window inspected to avoid short-term glyph repetitions.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "avoid_repeats": {
+          "description": "Glyph codes that should be substituted when repeated inside the window.",
+          "type": "array",
+          "items": { "$ref": "#/definitions/glyphCode" },
+          "uniqueItems": true
+        },
+        "fallbacks": {
+          "description": "Mapping of glyph codes to their explicit substitution when repetition is detected.",
+          "type": "object",
+          "additionalProperties": { "$ref": "#/definitions/glyphCode" }
+        },
+        "force_dnfr": {
+          "description": "Minimum |ΔNFR| normalised score that bypasses soft filtering.",
+          "$ref": "#/definitions/probability"
+        },
+        "force_accel": {
+          "description": "Minimum acceleration normalised score that bypasses soft filtering.",
+          "$ref": "#/definitions/probability"
+        }
+      },
+      "additionalProperties": true
+    },
+    "cfg_canon": {
+      "type": "object",
+      "description": "Canonical grammar thresholds enforced by the automaton.",
+      "properties": {
+        "enabled": {
+          "description": "Toggle canonical grammar enforcement during metric runs.",
+          "type": "boolean"
+        },
+        "zhir_requires_oz_window": {
+          "description": "Window requiring a DISSONANCE glyph before a MUTATION.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "zhir_dnfr_min": {
+          "description": "Minimum normalised |ΔNFR| required to allow MUTATION without recent DISSONANCE.",
+          "type": "number",
+          "minimum": 0.0
+        },
+        "thol_min_len": {
+          "description": "Minimum number of THOL glyphs before canonical closure is allowed.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "thol_max_len": {
+          "description": "Maximum number of THOL glyphs tolerated before forcing closure.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "thol_close_dnfr": {
+          "description": "Upper bound on normalised |ΔNFR| that triggers THOL closure.",
+          "$ref": "#/definitions/probability"
+        },
+        "si_high": {
+          "description": "Sense index threshold: Si at or above this resolves THOL closures with silence; lower Si forces contraction.",
+          "$ref": "#/definitions/probability"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "properties": {
+    "cfg_soft": { "$ref": "#/definitions/cfg_soft" },
+    "cfg_canon": { "$ref": "#/definitions/cfg_canon" }
+  },
+  "additionalProperties": false
+}

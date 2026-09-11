@@ -1,0 +1,2284 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/docs/STRUCTURAL_INTERFACE_THEORY/">
+      
+      
+        <link rel="prev" href="../grammar/PHYSICS_VERIFICATION/">
+      
+      
+        <link rel="next" href="../../theory/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Interface theory - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-structural-interface-theory" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Interface theory
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-concept" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core concept
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core concept">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structural-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tnfr-observables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TNFR observables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator-prescription" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator prescription
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-1-static-spatial-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting 1 — static spatial interfaces
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setting 1 — static spatial interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fair-benchmark-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fair benchmark design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#results-held-out-model-error-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Results (held-out model-error target)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-2-temporal-single-series-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting 2 — temporal single-series interfaces
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setting 2 — temporal single-series interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#temporal-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Temporal pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#result-grid-frequency-real-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Result (grid-frequency real data)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-3-multi-channel-coupled-oscillators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting 3 — multi-channel coupled oscillators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setting 3 — multi-channel coupled oscillators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multi-channel-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-channel pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#honest-redundancy-caveat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Honest redundancy caveat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#result-eeg-eye-state-real-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Result (EEG Eye State real data)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#try-it-offline-deterministic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Try it (offline, deterministic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmarks-windows-make-targets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmarks (Windows make targets)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-spatial-tnfrvalidationstructural_interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static spatial — tnfr.validation.structural_interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#temporal-tnfrvalidationtemporal_interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Temporal — tnfr.validation.temporal_interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-channel-tnfrvalidationmultichannel_interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-channel — tnfr.validation.multichannel_interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-and-non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations and non-goals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../theory/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-concept" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core concept
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core concept">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#structural-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tnfr-observables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TNFR observables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operator-prescription" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operator prescription
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-1-static-spatial-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting 1 — static spatial interfaces
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setting 1 — static spatial interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fair-benchmark-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fair benchmark design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#results-held-out-model-error-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Results (held-out model-error target)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-2-temporal-single-series-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting 2 — temporal single-series interfaces
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setting 2 — temporal single-series interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#temporal-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Temporal pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#result-grid-frequency-real-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Result (grid-frequency real data)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-3-multi-channel-coupled-oscillators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting 3 — multi-channel coupled oscillators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setting 3 — multi-channel coupled oscillators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multi-channel-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-channel pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#honest-redundancy-caveat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Honest redundancy caveat
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#result-eeg-eye-state-real-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Result (EEG Eye State real data)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#try-it-offline-deterministic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Try it (offline, deterministic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmarks-windows-make-targets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmarks (Windows make targets)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-spatial-tnfrvalidationstructural_interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static spatial — tnfr.validation.structural_interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#temporal-tnfrvalidationtemporal_interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Temporal — tnfr.validation.temporal_interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-channel-tnfrvalidationmultichannel_interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-channel — tnfr.validation.multichannel_interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-and-non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations and non-goals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-structural-interface-theory">TNFR Structural Interface Theory<a class="headerlink" href="#tnfr-structural-interface-theory" title="Permanent link">&para;</a></h1>
+<h2 id="status">Status<a class="headerlink" href="#status" title="Permanent link">&para;</a></h2>
+<p>Active.  This document describes a completed, reproducible TNFR programme for
+<strong>structural-interface analysis</strong> on real graph and time-series data.  It
+consolidates the earlier planning work and reports the validated results,
+including the cases where classical baselines win.</p>
+<p>This is an <strong>operational framework</strong>, not a new fundamental physical law.  It
+reuses the existing TNFR Structural Field Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) and the
+13 canonical operators; it adds no new operator and mutates no graph state
+during validation.</p>
+<h2 id="executive-summary">Executive summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>A <strong>structural interface</strong> is a graph-local region where neighbouring nodes are
+close under the graph relation but differ sharply in phase, state, label,
+measurement band, or regime.  Structural Interface Theory ranks such regions
+from TNFR phase telemetry and expresses the diagnosis as a grammar-valid
+operator prescription:</p>
+<pre><code class="language-text">real system -&gt; graph / proximity construction -&gt; phase or state field
+            -&gt; local interface stress (tetrad telemetry)
+            -&gt; grammar-valid operator prescription
+</code></pre>
+<p>The framework is evaluated in three settings, each with its own module, honest
+verdict, and failure cases:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Module</th>
+<th>Native field role</th>
+<th>Honest verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Static spatial</td>
+<td><a href="../../src/tnfr/validation/structural_interface.py">structural_interface.py</a></td>
+<td>Phase encodes an injected label</td>
+<td>Competitive with local classical baselines; the strongest global baseline (label-propagation residual) wins on hard data</td>
+</tr>
+<tr>
+<td>Temporal single-series</td>
+<td><a href="../../src/tnfr/validation/temporal_interface.py">temporal_interface.py</a></td>
+<td>Phase is <strong>measured</strong> (Hilbert)</td>
+<td>Classical critical-slowing-down indicators are the right tool for a single scalar series</td>
+</tr>
+<tr>
+<td>Multi-channel</td>
+<td><a href="../../src/tnfr/validation/multichannel_interface.py">multichannel_interface.py</a></td>
+<td>Phase is <strong>measured</strong> per channel</td>
+<td>ξ_C and K_φ are genuinely distinct from the Kuramoto order parameter; ξ_C is competitive on real EEG</td>
+</tr>
+</tbody>
+</table>
+<p>The distinctive TNFR contribution is the combination
+<code>local interface detection + tetrad telemetry + grammar-valid prescription</code>,
+not a claim of universal superiority over classical graph metrics.</p>
+<h2 id="core-concept">Core concept<a class="headerlink" href="#core-concept" title="Permanent link">&para;</a></h2>
+<h3 id="structural-interface">Structural interface<a class="headerlink" href="#structural-interface" title="Permanent link">&para;</a></h3>
+<p>Examples of structural interfaces:</p>
+<ul>
+<li>tumour samples that are morphologically close but diagnostically different;</li>
+<li>chemical samples that are similar but assigned to different quality bands;</li>
+<li>sensors that are physically adjacent but report incompatible phases;</li>
+<li>a time series approaching a regime change (bifurcation / transition);</li>
+<li>a network of oscillators crossing a synchronisation transition.</li>
+</ul>
+<h3 id="tnfr-observables">TNFR observables<a class="headerlink" href="#tnfr-observables" title="Permanent link">&para;</a></h3>
+<p>All interface observables derive from existing canonical fields (see
+<a href="../STRUCTURAL_FIELDS_TETRAD/">STRUCTURAL_FIELDS_TETRAD.md</a>):</p>
+<ul>
+<li>edge phase-gate compliance (U3 resonant-coupling condition
+  <code>|wrap(φᵢ − φⱼ)| ≤ Δφ_max</code>);</li>
+<li>phase-gradient stress <code>|∇φ|</code> (local desynchronisation);</li>
+<li>phase-curvature stress <code>|K_φ|</code> (geometric phase torsion);</li>
+<li>structural potential <code>Φ_s</code> (global pressure, reported as telemetry, not folded
+  into the ranking);</li>
+<li>coherence length <code>ξ_C</code> (spatial correlation scale), where meaningful;</li>
+<li>incident gate-violation pressure;</li>
+<li>a grammar-valid operator prescription.</li>
+</ul>
+<h3 id="operator-prescription">Operator prescription<a class="headerlink" href="#operator-prescription" title="Permanent link">&para;</a></h3>
+<p>Prescriptions are <strong>read-only recommendations</strong>.  Every prescribed sequence
+passes the repository's sequence validators
+(<code>tnfr.operators.grammar_patterns</code> and <code>tnfr.operators.grammar_dynamics</code>).  The
+three validated patterns are:</p>
+<table>
+<thead>
+<tr>
+<th>Interface state</th>
+<th>Sequence</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fully phase-compatible</td>
+<td><code>UM → RA → SHA</code></td>
+<td>couple, propagate resonance, close</td>
+</tr>
+<tr>
+<td>Mostly compatible with local hotspots</td>
+<td><code>IL → UM → SHA</code></td>
+<td>stabilize, then guarded coupling</td>
+</tr>
+<tr>
+<td>Failed interface / boundary hotspot</td>
+<td><code>IL → OZ → THOL → SHA</code></td>
+<td>stabilize, open controlled reorganization, self-organize, close</td>
+</tr>
+</tbody>
+</table>
+<h2 id="setting-1-static-spatial-interfaces">Setting 1 — static spatial interfaces<a class="headerlink" href="#setting-1-static-spatial-interfaces" title="Permanent link">&para;</a></h2>
+<h3 id="static-pipeline">Static pipeline<a class="headerlink" href="#static-pipeline" title="Permanent link">&para;</a></h3>
+<pre><code class="language-text">records -&gt; z-scored k-NN proximity graph -&gt; binary state encoded as phase
+        -&gt; per-node interface stress -&gt; ranking vs classical baselines
+        -&gt; non-circular target evaluation (ROC-AUC, precision@review)
+</code></pre>
+<p>When a binary state is encoded into phase (positive class at φ = 0, negative at
+φ = π), the TNFR interface stress is, <strong>by construction</strong>, related to the
+classical k-NN label-disagreement baseline.  It is therefore reported <em>beside</em>
+that baseline, not as an independent discovery.  Non-circular claims require an
+independent target through <code>evaluate_interface_scores</code>.</p>
+<h3 id="fair-benchmark-design">Fair benchmark design<a class="headerlink" href="#fair-benchmark-design" title="Permanent link">&para;</a></h3>
+<p>Every static benchmark compares TNFR against the full classical baseline suite
+(<a href="../../src/tnfr/validation/interface_baselines.py">interface_baselines.py</a>):</p>
+<ol>
+<li>local k-NN disagreement (closest classical analogue);</li>
+<li>graph total variation;</li>
+<li>local class entropy;</li>
+<li>label-propagation residual;</li>
+<li>graph-cut contribution;</li>
+<li>mean neighbour distance;</li>
+<li>degree / topology-only;</li>
+<li>a simple domain-feature baseline;</li>
+<li>constant / random control.</li>
+</ol>
+<p>Non-circular targets (at least one required for any claim): independent
+expert/review label, <strong>held-out downstream model error</strong>, temporal transition,
+perturbation sensitivity, or an explicit classical-interface target.</p>
+<h3 id="results-held-out-model-error-target">Results (held-out model-error target)<a class="headerlink" href="#results-held-out-model-error-target" title="Permanent link">&para;</a></h3>
+<p>Ranking power (ROC-AUC) of each score against held-out classifier errors.  These
+are the <strong>non-circular</strong> numbers; the circular "local-disagreement" target gives
+≈ 1.0 for all local scores and is used only as a localization sanity check.</p>
+<table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>TNFR</th>
+<th>local disagreement</th>
+<th>graph TV</th>
+<th>local entropy</th>
+<th>label-prop residual</th>
+<th>errors / N</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WDBC (breast cancer)</td>
+<td><strong>0.9590</strong></td>
+<td>0.9493</td>
+<td>0.9493</td>
+<td>0.9345</td>
+<td>0.9563</td>
+<td>12 / 569</td>
+</tr>
+<tr>
+<td>Iris</td>
+<td><strong>0.9860</strong></td>
+<td>0.9820</td>
+<td>0.9820</td>
+<td>0.9695</td>
+<td>0.9850</td>
+<td>7 / 150</td>
+</tr>
+<tr>
+<td>Digits</td>
+<td>0.6984</td>
+<td>0.6962</td>
+<td>0.6962</td>
+<td>0.6980</td>
+<td><strong>0.8200</strong></td>
+<td>146 / 1797</td>
+</tr>
+<tr>
+<td>Wine quality (red)</td>
+<td>0.8739</td>
+<td>0.8623</td>
+<td>—</td>
+<td>—</td>
+<td><strong>0.9423</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Honest reading.</strong>  TNFR's interface stress edges the <em>simpler</em> local baselines
+(local disagreement, graph total variation, local entropy) on clean datasets,
+and on WDBC and Iris it also edges the label-propagation residual.  It does
+<strong>not</strong> dominate that strongest global baseline in general: the
+<strong>label-propagation residual beats TNFR on the harder, noisier datasets</strong>
+(digits 0.820 vs 0.698; wine red 0.942 vs 0.874).  On Wine red the remaining
+baselines are weak (graph cut 0.845; mean neighbour distance 0.472; degree
+0.531; feature deviation 0.409; random ≈ 0.5), confirming the target is a real
+boundary signal and not noise.</p>
+<h2 id="setting-2-temporal-single-series-interfaces">Setting 2 — temporal single-series interfaces<a class="headerlink" href="#setting-2-temporal-single-series-interfaces" title="Permanent link">&para;</a></h2>
+<h3 id="temporal-pipeline">Temporal pipeline<a class="headerlink" href="#temporal-pipeline" title="Permanent link">&para;</a></h3>
+<pre><code class="language-text">real time series -&gt; Hilbert instantaneous phase -&gt; delay-embedding proximity graph
+                 -&gt; per-window TNFR tetrad -&gt; Kendall-τ trend toward a transition
+                 -&gt; comparison vs classical early-warning signals
+</code></pre>
+<p>Here the phase is <strong>measured</strong>, not injected.  The classical baselines are the
+standard early-warning signals (EWS) for critical slowing down: rolling variance
+and lag-1 autocorrelation (Scheffer et al. 2009; Dakos et al. 2012).</p>
+<h3 id="result-grid-frequency-real-data">Result (grid-frequency real data)<a class="headerlink" href="#result-grid-frequency-real-data" title="Permanent link">&para;</a></h3>
+<p>On real power-grid frequency data the classical variance trend (Kendall-τ ≈
+0.255) slightly <strong>beats</strong> the strongest TNFR channel (Φ_s, τ ≈ 0.184), and both
+are weak (&lt; 0.26).  Grid frequency is a fast stochastic signal rather than a
+slow bifurcation, so neither approach has a strong pre-transition trend.</p>
+<p><strong>Honest reading.</strong>  For a single scalar series, classical critical-slowing-down
+indicators are the appropriate tool.  TNFR's added value appears in the
+multi-channel setting, where a coherence <em>length</em> and a phase <em>curvature</em> exist.</p>
+<h2 id="setting-3-multi-channel-coupled-oscillators">Setting 3 — multi-channel coupled oscillators<a class="headerlink" href="#setting-3-multi-channel-coupled-oscillators" title="Permanent link">&para;</a></h2>
+<h3 id="multi-channel-pipeline">Multi-channel pipeline<a class="headerlink" href="#multi-channel-pipeline" title="Permanent link">&para;</a></h3>
+<pre><code class="language-text">multi-channel signals -&gt; per-channel Hilbert phase + amplitude
+                      -&gt; phase-locking coupling graph (nodes = channels)
+                      -&gt; per-window spatial tetrad
+                      -&gt; synchrony discrimination vs Kuramoto order parameter R
+</code></pre>
+<p>This is the tetrad's native setting.  The gold-standard baseline is the
+Kuramoto order parameter <code>R</code>; secondary baselines are mean phase-locking value
+(PLV) and phase dispersion.</p>
+<h3 id="honest-redundancy-caveat">Honest redundancy caveat<a class="headerlink" href="#honest-redundancy-caveat" title="Permanent link">&para;</a></h3>
+<p>The phase-gradient field <code>|∇φ|</code> is <strong>partially redundant</strong> with <code>1 − R</code>: both
+measure global desynchronisation.  The genuinely distinct fields are:</p>
+<ul>
+<li><strong>ξ_C</strong> — a coherence <em>length</em> (spatial correlation scale), which has no
+  order-parameter analogue;</li>
+<li><strong>K_φ</strong> — phase curvature.</li>
+</ul>
+<p>Because the structural pressure ΔNFR is derived from the amplitude envelope
+(phase-independent), Φ_s and ξ_C are not trivial reproductions of <code>|∇φ|</code>.</p>
+<h3 id="result-eeg-eye-state-real-data">Result (EEG Eye State real data)<a class="headerlink" href="#result-eeg-eye-state-real-data" title="Permanent link">&para;</a></h3>
+<p>Discrimination (ROC-AUC) of the eyes-open vs eyes-closed regime:</p>
+<table>
+<thead>
+<tr>
+<th>Indicator</th>
+<th>AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>phase dispersion (baseline)</td>
+<td><strong>0.641</strong></td>
+</tr>
+<tr>
+<td>ξ_C (TNFR)</td>
+<td>0.615</td>
+</tr>
+<tr>
+<td>Kuramoto R (baseline)</td>
+<td>0.559</td>
+</tr>
+<tr>
+<td>mean PLV (baseline)</td>
+<td>0.530</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Honest reading.</strong>  ξ_C (0.615) beats the Kuramoto order parameter (0.559) and
+mean PLV (0.530); phase dispersion (0.641) edges ξ_C.  The gap between the best
+TNFR field and the best baseline is ≈ 0.026, which the framework reports as
+<strong>comparable</strong> rather than as a TNFR win.  The point is that ξ_C and K_φ carry
+information the global order parameter cannot express, not that TNFR dominates.</p>
+<h2 id="how-to-run">How to run<a class="headerlink" href="#how-to-run" title="Permanent link">&para;</a></h2>
+<p>All benchmarks have offline defaults (synthetic fixtures or bundled scikit-learn
+data) and skip gracefully when an online dataset is unreachable.  Set
+<code>PYTHONPATH</code> to <code>./src</code> first.</p>
+<h3 id="try-it-offline-deterministic">Try it (offline, deterministic)<a class="headerlink" href="#try-it-offline-deterministic" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash">python examples/10_applications/93_structural_interface_demo.py
+</code></pre>
+<p><a href="../../examples/10_applications/93_structural_interface_demo.py">examples/10_applications/93_structural_interface_demo.py</a>
+runs the static-spatial pipeline on a synthetic two-cluster graph and a
+synthetic multi-channel regime switch, printing the honest baseline comparison
+and a grammar-valid prescription.</p>
+<h3 id="benchmarks-windows-make-targets">Benchmarks (Windows make targets)<a class="headerlink" href="#benchmarks-windows-make-targets" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>Setting</th>
+<th>Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>structural-interface-offline</code></td>
+<td>static spatial</td>
+<td>bundled scikit-learn (offline)</td>
+</tr>
+<tr>
+<td><code>structural-interface-all</code></td>
+<td>static spatial</td>
+<td>WDBC + Wine + Iris + Digits</td>
+</tr>
+<tr>
+<td><code>structural-interface-wdbc</code></td>
+<td>static spatial</td>
+<td>WDBC</td>
+</tr>
+<tr>
+<td><code>structural-interface-wine</code></td>
+<td>static spatial</td>
+<td>UCI Wine Quality (online)</td>
+</tr>
+<tr>
+<td><code>structural-interface-model-error</code></td>
+<td>static spatial</td>
+<td>held-out model-error target</td>
+</tr>
+<tr>
+<td><code>temporal-interface-benchmark</code></td>
+<td>temporal</td>
+<td>synthetic fixture (offline)</td>
+</tr>
+<tr>
+<td><code>temporal-interface-grid</code></td>
+<td>temporal</td>
+<td>real grid frequency (online, cached)</td>
+</tr>
+<tr>
+<td><code>multichannel-interface-benchmark</code></td>
+<td>multi-channel</td>
+<td>synthetic Kuramoto (offline)</td>
+</tr>
+<tr>
+<td><code>multichannel-interface-eeg</code></td>
+<td>multi-channel</td>
+<td>real EEG Eye State (online, cached)</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<pre><code class="language-bash">.\make.cmd structural-interface-offline
+.\make.cmd multichannel-interface-benchmark
+</code></pre>
+<p>Reports are written to <code>results/reports/</code> as JSON, Markdown, and HTML.</p>
+<h2 id="api-reference">API reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h2>
+<h3 id="static-spatial-tnfrvalidationstructural_interface">Static spatial — <code>tnfr.validation.structural_interface</code><a class="headerlink" href="#static-spatial-tnfrvalidationstructural_interface" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>StructuralInterfaceProblem</code>, <code>StructuralInterfaceScore</code> — frozen dataclasses;</li>
+<li><code>build_knn_graph(records, feature_keys, *, k=10, ...)</code> — z-scored k-NN graph;</li>
+<li><code>encode_phase_from_binary_state(G, state_key, *, positive_value, ...)</code> —
+  in-place phase encoding;</li>
+<li><code>score_structural_interfaces(problem_or_graph, *, state_key=None, ...)</code> —
+  list of <code>StructuralInterfaceScore</code>;</li>
+<li><code>interface_score_maps</code>, <code>baseline_score_maps</code>, <code>full_baseline_score_maps</code> —
+  node → score maps;</li>
+<li><code>evaluate_interface_scores(labels, score_maps)</code> — ROC-AUC and
+  precision@review-count per score;</li>
+<li><code>render_structural_interface_markdown</code> / <code>_html</code>,
+  <code>export_structural_interface_report</code>.</li>
+</ul>
+<h3 id="temporal-tnfrvalidationtemporal_interface">Temporal — <code>tnfr.validation.temporal_interface</code><a class="headerlink" href="#temporal-tnfrvalidationtemporal_interface" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>TemporalInterfaceConfig</code>, <code>WindowTetradSeries</code>, <code>EarlyWarningComparison</code>;</li>
+<li><code>hilbert_instantaneous_phase</code>, <code>delay_embedding</code>, <code>local_structural_pressure</code>,
+  <code>build_temporal_proximity_graph</code>;</li>
+<li><code>window_tetrad_series(signal, *, config=None)</code>;</li>
+<li><code>rolling_variance</code>, <code>rolling_lag1_autocorrelation</code>, <code>kendall_tau</code>;</li>
+<li><code>evaluate_early_warning(signal, *, transition_index=None, config=None)</code>.</li>
+</ul>
+<h3 id="multi-channel-tnfrvalidationmultichannel_interface">Multi-channel — <code>tnfr.validation.multichannel_interface</code><a class="headerlink" href="#multi-channel-tnfrvalidationmultichannel_interface" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>MultichannelConfig</code>, <code>MultichannelWindowSeries</code>, <code>SynchronyDiscrimination</code>;</li>
+<li><code>fft_bandpass</code>, <code>analytic_phase_amplitude</code>, <code>phase_amplitude_matrices</code>;</li>
+<li><code>kuramoto_order_parameter</code>, <code>phase_locking_matrix</code>, <code>phase_offsets</code>,
+  <code>amplitude_pressure</code>, <code>build_coupling_graph</code>;</li>
+<li><code>multichannel_window_series(signals, *, config=None)</code>;</li>
+<li><code>evaluate_synchrony_discrimination(signals, labels, *, config=None)</code>.</li>
+</ul>
+<h2 id="limitations-and-non-goals">Limitations and non-goals<a class="headerlink" href="#limitations-and-non-goals" title="Permanent link">&para;</a></h2>
+<ul>
+<li>No clinical diagnosis, food-quality certification, or physical-law claims.</li>
+<li>No superiority claim where the target is identical to local disagreement
+  (those cases are reported as localization sanity checks at ≈ 1.0 AUC).</li>
+<li>The label-propagation residual is a strong global baseline that <strong>beats TNFR
+  on hard static datasets</strong> (digits, wine red); this is reported, not hidden.</li>
+<li>For a single scalar time series, classical critical-slowing-down indicators
+  are preferred; TNFR's value is multi-channel.</li>
+<li>In the multi-channel setting <code>|∇φ|</code> is partially redundant with <code>1 − R</code>; only
+  ξ_C and K_φ are genuinely distinct.</li>
+<li>No new TNFR operator is introduced; no graph state is mutated during
+  validation (prescriptions are read-only).</li>
+</ul>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Field definitions: <a href="../STRUCTURAL_FIELDS_TETRAD/">STRUCTURAL_FIELDS_TETRAD.md</a></li>
+<li>Grammar derivations: <a href="../grammar/PHYSICS_VERIFICATION/">grammar/PHYSICS_VERIFICATION.md</a></li>
+<li>Primary theory: <a href="../../AGENTS/">AGENTS.md</a></li>
+<li>Scheffer et al. (2009), <em>Early-warning signals for critical transitions</em>, Nature.</li>
+<li>Dakos et al. (2012), <em>Methods for detecting early warnings of critical
+  transitions in time series</em>, PLoS ONE.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

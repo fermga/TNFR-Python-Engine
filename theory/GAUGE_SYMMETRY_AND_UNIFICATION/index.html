@@ -1,0 +1,2030 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/GAUGE_SYMMETRY_AND_UNIFICATION/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Gauge Symmetry and Conservation-Gauge Unification - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#gauge-symmetry-and-conservation-gauge-unification" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Gauge Symmetry and Conservation-Gauge Unification
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-nodewise-u1-field-coordinate-action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Nodewise U(1) field-coordinate action
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Nodewise U(1) field-coordinate action">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-gauge-transformation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Gauge Transformation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-gauge-invariant-observables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Gauge-Invariant Observables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-rotation-doublets-and-variant-quantities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Rotation doublets and variant quantities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-derivation-outline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Derivation Outline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-exact-connection-and-cycle-closure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Exact connection and cycle closure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Exact connection and cycle closure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-gauge-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Gauge Connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-covariant-derivative" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Covariant Derivative
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-cycle-closure-residual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Cycle-closure residual
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-yang-mills-action" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Yang-Mills Action
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-historical-four-label-heuristic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Historical four-label heuristic
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-operator-and-grammar-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Operator and grammar boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-auxiliary-conservation-gauge-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Auxiliary Conservation-Gauge Comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Auxiliary Conservation-Gauge Comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-legacy-auxiliary-action-functional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Legacy auxiliary action functional
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-scoped-symmetry-statements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Scoped symmetry statements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-unification-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Unification Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-grammar-conservation-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Grammar → Conservation Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-symplectic-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Symplectic Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-spectral-balance-diagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Spectral Balance Diagnostics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Spectral Balance Diagnostics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-graph-fourier-transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Graph Fourier Transform
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-physical-interpretation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Physical Interpretation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-parseval-conservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Parseval Conservation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-spectral-energy-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Spectral Energy Decomposition
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-historical-spectral-gauge-conjecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Historical Spectral-Gauge Conjecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation &amp; Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation &amp; Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#executable-demonstrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executable Demonstrations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-source-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Source Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="gauge-symmetry-and-conservation-gauge-unification">Gauge Symmetry and Conservation-Gauge Unification<a class="headerlink" href="#gauge-symmetry-and-conservation-gauge-unification" title="Permanent link">&para;</a></h1>
+<p>The complex geometric field $\Psi = K_\phi + i \cdot J_\phi$ admits a
+nodewise <strong>U(1) field-coordinate action</strong> in the auxiliary model. This document
+derives its algebraic invariants and records diagnostic comparisons with
+conservation, grammar and spectral projections.</p>
+<p><strong>Status</strong>: HISTORICAL RESEARCH MODEL — algebraic U(1) identities retained; dynamical claims scoped below.</p>
+<blockquote>
+<p><strong>Current scope and supersession (2026-09).</strong> The rotation identities,
+gauge-invariant norms, Parseval identity and the exact harmonic substrate flow
+are valid within their stated auxiliary models. They do not derive the full
+nodal equation from the displayed action, make U1–U6 symmetries of that
+action, prove that engine operators are symplectomorphisms, or establish a
+conservation/Lyapunov theorem for arbitrary operator trajectories. The
+implemented connection is the exact one-form
+$A_{ij}=d(\arg\Psi)_{ij}$. Its cycle holonomy is zero analytically, so the
+current implementation has no independent gauge curvature, vortices, flux,
+confinement sector or non-trivial Yang-Mills dynamics. The corresponding
+public names are retained as compatibility diagnostics. The
+structural energy is a non-negative finite-snapshot diagnostic and Lyapunov
+candidate. The separate exact decrease theorem concerns the Dirichlet energy
+of restricted pure-EPI diffusion; see
+<a href="../STRUCTURAL_CONSERVATION_THEOREM/">STRUCTURAL_CONSERVATION_THEOREM.md</a>,
+<a href="../TNFR_VARIATIONAL_PRINCIPLE/">TNFR_VARIATIONAL_PRINCIPLE.md</a>, and
+<a href="../TNFR_DIFFUSION_STABILITY_THEOREM/">TNFR_DIFFUSION_STABILITY_THEOREM.md</a>.</p>
+</blockquote>
+<hr />
+<h2 id="1-nodewise-u1-field-coordinate-action">1. Nodewise U(1) field-coordinate action<a class="headerlink" href="#1-nodewise-u1-field-coordinate-action" title="Permanent link">&para;</a></h2>
+<h3 id="11-gauge-transformation">1.1 Gauge Transformation<a class="headerlink" href="#11-gauge-transformation" title="Permanent link">&para;</a></h3>
+<p>The auxiliary transformation rotates the geometric-transport coordinates
+$(K_\phi,J_\phi)$ at each node while holding the other snapshot fields fixed:</p>
+<p>$$
+\Psi(i) \;\to\; e^{i\alpha(i)}\,\Psi(i)
+$$</p>
+<p>In component form:</p>
+<p>$$
+K_\phi'(i) = K_\phi(i)\cos\alpha(i) - J_\phi(i)\sin\alpha(i)
+$$</p>
+<p>$$
+J_\phi'(i) = K_\phi(i)\sin\alpha(i) + J_\phi(i)\cos\alpha(i)
+$$</p>
+<p>The fields $\Phi_s$, $|\nabla\phi|$, $J_{\Delta\mathrm{NFR}}$, and $\xi_C$ are
+singlets by definition of this analysis transform. This transformation is not
+an engine operator and is not shown to map one reachable TNFR state or
+trajectory to another.</p>
+<h3 id="12-gauge-invariant-observables">1.2 Gauge-Invariant Observables<a class="headerlink" href="#12-gauge-invariant-observables" title="Permanent link">&para;</a></h3>
+<p>The following quantities are invariant under this auxiliary rotation:</p>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Definition</th>
+<th>Established statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Energy density $\mathcal{E}(i)$</td>
+<td>$\Phi_s^2 +</td>
+<td>\nabla\phi</td>
+</tr>
+<tr>
+<td>Field magnitude $</td>
+<td>\Psi(i)</td>
+<td>^2$</td>
+</tr>
+<tr>
+<td>Coherence $C(t)$</td>
+<td>Depends on the unchanged graph fields</td>
+<td>Unchanged because the analysis transform does not mutate the graph</td>
+</tr>
+<tr>
+<td>Legacy topological norm $</td>
+<td>\mathcal{T}</td>
+<td>^2$</td>
+</tr>
+<tr>
+<td>Legacy chirality norm $</td>
+<td>\mathcal{X}</td>
+<td>^2$</td>
+</tr>
+</tbody>
+</table>
+<p>where:
+- $\tilde{\mathcal{Q}} = K_\phi \cdot |\nabla\phi| + J_\phi \cdot J_{\Delta\mathrm{NFR}}$ (dual topological charge)
+- $\tilde{\chi} = |\nabla\phi| \cdot J_\phi + K_\phi \cdot J_{\Delta\mathrm{NFR}}$ (dual chirality)</p>
+<h3 id="13-rotation-doublets-and-variant-quantities">1.3 Rotation doublets and variant quantities<a class="headerlink" href="#13-rotation-doublets-and-variant-quantities" title="Permanent link">&para;</a></h3>
+<p>The following pairs transform as 2D rotation doublets under $\alpha$:</p>
+<ul>
+<li>$(\mathcal{Q},\;\tilde{\mathcal{Q}})$ — topological charge doublet</li>
+<li>$(\chi,\;\tilde{\chi})$ — chirality doublet</li>
+</ul>
+<p>Two further historical quantities are gauge-frame dependent but are not
+members of those doublets:</p>
+<ul>
+<li>Legacy quantity named Noether charge $Q = \sum(\Phi_s + K_\phi)$ — not invariant</li>
+<li>Symmetry breaking $\mathcal{S} = (|\nabla\phi|^2 - K_\phi^2) + (J_\phi^2 - J_{\Delta\mathrm{NFR}}^2)$ — NOT invariant</li>
+</ul>
+<p>Their <strong>norms</strong> $|\mathcal{T}|^2$ and $|\mathcal{X}|^2$ are invariant because quadratic sums are preserved under rotation.</p>
+<h3 id="14-derivation-outline">1.4 Derivation Outline<a class="headerlink" href="#14-derivation-outline" title="Permanent link">&para;</a></h3>
+<p>The proof is the Euclidean norm identity for a two-dimensional rotation:</p>
+<ol>
+<li><strong>Step 1</strong>: Rotate only $(K_\phi,J_\phi)$ and hold four fields fixed.</li>
+<li><strong>Step 2</strong>: Component rotation formulas (§1.1).</li>
+<li><strong>Step 3</strong>: Bilinear forms involving one $\Psi$-component and one singlet transform as 2D doublets; their quadratic norms are invariant.</li>
+</ol>
+<p><strong>Implementation</strong>: <code>src/tnfr/physics/gauge.py</code> — <code>verify_gauge_invariance()</code>, <code>GaugeInvarianceResult</code> dataclass.</p>
+<hr />
+<h2 id="2-exact-connection-and-cycle-closure">2. Exact connection and cycle closure<a class="headerlink" href="#2-exact-connection-and-cycle-closure" title="Permanent link">&para;</a></h2>
+<h3 id="21-gauge-connection">2.1 Gauge Connection<a class="headerlink" href="#21-gauge-connection" title="Permanent link">&para;</a></h3>
+<p>The implementation defines the edge connection from a vertex scalar:</p>
+<p>$$
+A_{ij} = \arg(\Psi_j) - \arg(\Psi_i) \quad\text{(wrapped to } [-\pi,\pi]\text{)}
+$$</p>
+<p>Let $\theta_i=\arg\Psi_i$, with the implementation's deterministic zero phase
+when $|\Psi_i|$ is numerically zero. For an integer $k_{ij}$,</p>
+<p>$$
+A_{ij}=\theta_j-\theta_i-2\pi k_{ij}.
+$$</p>
+<p>Thus $A=d\theta$ modulo the branch convention: it is a <strong>pure-gauge exact
+one-form</strong>, not an independent edge variable.</p>
+<h3 id="22-covariant-derivative">2.2 Covariant Derivative<a class="headerlink" href="#22-covariant-derivative" title="Permanent link">&para;</a></h3>
+<p>The discrete covariant derivative along edge $(i,j)$:</p>
+<p>$$
+D_{ij}\Psi = \Psi(j) - e^{iA_{ij}}\,\Psi(i)
+$$</p>
+<p>At nonzero field endpoints, under gauge transformation
+$\Psi \to e^{i\alpha}\Psi$ and reconstruction of the link:</p>
+<p>$$
+D_{ij}\Psi \;\to\; e^{i\alpha(j)}\,D_{ij}\Psi \quad\text{(covariant)}
+$$</p>
+<p>Therefore $|D_{ij}\Psi|$ is gauge-invariant. At a zero of $\Psi$, its phase is
+undefined and the implementation selects phase zero; the complex covariance
+formula then has no intrinsic meaning there, while the magnitude identity
+below remains valid.</p>
+<p>More strongly, writing $\Psi_i=r_i e^{i\theta_i}$ gives</p>
+<p>$$
+D_{ij}\Psi=e^{i\theta_j}(r_j-r_i),\qquad
+|D_{ij}\Psi|=|r_j-r_i|.
+$$</p>
+<p>The implemented covariant difference therefore measures endpoint amplitude
+contrast after the derived phase alignment. It does not introduce independent
+parallel-transport dynamics.</p>
+<h3 id="23-cycle-closure-residual">2.3 Cycle-closure residual<a class="headerlink" href="#23-cycle-closure-residual" title="Permanent link">&para;</a></h3>
+<p>The legacy-named curvature function sums the exact connection around a cycle:</p>
+<p>$$
+F_C = \sum_{(i,j) \in C} A_{ij} \quad\text{(wrapped to } [-\pi,\pi]\text{)}
+$$</p>
+<p>For $C=(v_0,\ldots,v_{m-1},v_0)$ the vertex-phase terms telescope:</p>
+<p>$$
+F_C
+= \sum_{r=0}^{m-1}(\theta_{v_{r+1}}-\theta_{v_r}-2\pi k_r)
+= -2\pi\sum_r k_r
+\equiv 0 \pmod {2\pi}.
+$$</p>
+<p>Accordingly, any nonzero returned value is a floating-point wrapping or
+accumulation residual. It is not evidence of an independent field strength,
+vortex, topological defect, magnetic flux or confinement. Such phenomena
+would require independently specified edge degrees of freedom with nonzero
+cycle holonomy, which this API does not expose.</p>
+<h3 id="24-yang-mills-action">2.4 Yang-Mills Action<a class="headerlink" href="#24-yang-mills-action" title="Permanent link">&para;</a></h3>
+<p>The compatibility diagnostic</p>
+<p>$$
+S_{\mathrm{YM}} = \frac{1}{2}\sum_C F_C^2
+$$</p>
+<p>is therefore zero analytically and reports squared numerical closure error in
+floating arithmetic. Deriving field equations with a matter current would
+require an independently varied connection, a coupled matter action and
+boundary conditions; those are not supplied by this implementation. The
+<code>compute_yang_mills_equations</code> result is a legacy-named snapshot consistency
+evaluation, not an equation of motion for TNFR.</p>
+<p><strong>Implementation</strong>: <code>src/tnfr/physics/gauge.py</code> — <code>compute_gauge_curvature()</code>, <code>compute_covariant_derivative_magnitude()</code>, <code>compute_yang_mills_action()</code>.</p>
+<hr />
+<h2 id="3-historical-four-label-heuristic">3. Historical four-label heuristic<a class="headerlink" href="#3-historical-four-label-heuristic" title="Permanent link">&para;</a></h2>
+<p>The API retains four historical labels. They summarize selected coordinates;
+they are not derived fundamental interactions:</p>
+<table>
+<thead>
+<tr>
+<th>Legacy label</th>
+<th>Input coordinate</th>
+<th>Valid scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>em_like</strong></td>
+<td>$\arg(\Psi) \approx 0$</td>
+<td>Projection on the selected $K_\phi$ axis; gauge-frame dependent</td>
+</tr>
+<tr>
+<td><strong>weak_like</strong></td>
+<td>$\arg(\Psi) \approx \pi/2$</td>
+<td>Projection on the selected $J_\phi$ axis; gauge-frame dependent</td>
+</tr>
+<tr>
+<td><strong>strong_like</strong></td>
+<td>numerical $</td>
+<td>F_C</td>
+</tr>
+<tr>
+<td><strong>gravity_like</strong></td>
+<td>$</td>
+<td>\Phi_s</td>
+</tr>
+</tbody>
+</table>
+<p>The four scores share a unit reporting budget. The API marks a label active
+when its normalized score exceeds the equal-share reference
+$1/N_\text{labels}=1/4$. This is a compatibility convention, not a derived
+TNFR threshold. In particular, numerical closure noise is suppressed so the
+<code>strong_like</code> slot cannot be promoted into a physical claim.</p>
+<p><strong>Implementation</strong>: <code>src/tnfr/physics/gauge.py</code> — <code>classify_interaction_regime()</code>, <code>classify_interaction_regime_formal()</code>, <code>GaugeSnapshot</code> dataclass.</p>
+<hr />
+<h2 id="4-operator-and-grammar-boundary">4. Operator and grammar boundary<a class="headerlink" href="#4-operator-and-grammar-boundary" title="Permanent link">&para;</a></h2>
+<p>Earlier versions assigned gauge roles to four canonical operators. Those roles
+are not derived by the implementation:</p>
+<table>
+<thead>
+<tr>
+<th>Historical claim</th>
+<th>Current status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UM creates $A_{ij}$</td>
+<td>Unsupported: $A$ is computed after the fact from $\Psi$ on every existing graph edge</td>
+</tr>
+<tr>
+<td>IL minimizes $</td>
+<td>D\Psi</td>
+</tr>
+<tr>
+<td>OZ sources $F_C$</td>
+<td>Incompatible with the current exact connection, whose cycle sum is always zero</td>
+</tr>
+<tr>
+<td>RA transports gauge invariants</td>
+<td>Unsupported without an induced-map covariance check</td>
+</tr>
+</tbody>
+</table>
+<p>Grammar rule <strong>U3</strong> constrains the node phase $\phi$ before coupling via
+$|\phi_i-\phi_j|\le\Delta\phi_{\max}$. It is not a gauge-fixing rule for this
+auxiliary construction. Since $\Psi$ itself is extracted from graph fields,
+$\arg\Psi$ has not been established as an independent dynamical degree of
+freedom.</p>
+<hr />
+<h2 id="5-auxiliary-conservation-gauge-comparison">5. Auxiliary Conservation-Gauge Comparison<a class="headerlink" href="#5-auxiliary-conservation-gauge-comparison" title="Permanent link">&para;</a></h2>
+<h3 id="51-legacy-auxiliary-action-functional">5.1 Legacy auxiliary action functional<a class="headerlink" href="#51-legacy-auxiliary-action-functional" title="Permanent link">&para;</a></h3>
+<p>The historical model introduced the finite field functional</p>
+<p>$$
+S_{\mathrm{TNFR}} = \sum_n \Delta t \cdot \sum_i \left[\frac{1}{2}(J_\phi^2 + J_{\Delta\mathrm{NFR}}^2) - \frac{1}{2}(\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2)\right]
+$$</p>
+<p>The same five squared fields also appear in the structural energy diagnostic,
+so the corresponding Hamiltonian and energy read-outs agree algebraically
+when evaluated on one snapshot. A variational derivation of
+$\partial\mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$ from
+this functional has not been established: EPI and $\nu_f\Delta\mathrm{NFR}$
+are not supplied here as an Euler-Lagrange coordinate/force pair.</p>
+<h3 id="52-scoped-symmetry-statements">5.2 Scoped symmetry statements<a class="headerlink" href="#52-scoped-symmetry-statements" title="Permanent link">&para;</a></h3>
+<p>The auxiliary model and the runtime diagnostics support different statements:</p>
+<table>
+<thead>
+<tr>
+<th>Structure</th>
+<th>What is established</th>
+<th>Boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Time translation</td>
+<td>Conserves the auxiliary Hamiltonian along the exact autonomous auxiliary flow</td>
+<td>Does not imply conservation along engine trajectories</td>
+</tr>
+<tr>
+<td>Internal U(1)</td>
+<td>The isotropic $(K_\phi,J_\phi)$ quadratic sector and listed norms are rotation invariant</td>
+<td>This is an auxiliary field-space identity</td>
+</tr>
+<tr>
+<td>Structural balance</td>
+<td>$\partial_t\rho+\nabla\cdot\mathbf J=S_{\text{grammar}}$ defines a measurable residual</td>
+<td>Grammar validity does not force $S_{\text{grammar}}=0$</td>
+</tr>
+<tr>
+<td>Symplectic form</td>
+<td>Defines the ambient two-pair phase space; its exact harmonic flow preserves $\omega$</td>
+<td>Each engine operator needs its own Jacobian-level check</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53-unification-structure">5.3 Unification Structure<a class="headerlink" href="#53-unification-structure" title="Permanent link">&para;</a></h3>
+<p>The historical unification diagram joined four arrows: stationarity to the
+nodal equation, time translation to energy conservation, U(1) invariance to
+the gauge construction, and U1–U6 to structural continuity. Only the U(1)
+algebra and the auxiliary-flow symmetry statements are established as exact
+identities here. The first and fourth arrows remain correspondence questions,
+and trajectory-level energy change must be measured.</p>
+<h3 id="54-grammar-conservation-mapping">5.4 Grammar → Conservation Mapping<a class="headerlink" href="#54-grammar-conservation-mapping" title="Permanent link">&para;</a></h3>
+<p>The legacy implementation exposes the following diagnostic associations. They
+are useful labels for measurements; they are not Noether correspondences or
+conservation consequences of sequence validity.</p>
+<table>
+<thead>
+<tr>
+<th>Grammar rule</th>
+<th>Diagnostic association</th>
+<th>What must be checked separately</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>U1</strong> (Initiation/Closure)</td>
+<td>Sequence boundary conditions</td>
+<td>Finite values on the actual trajectory</td>
+</tr>
+<tr>
+<td><strong>U2</strong> (Stabilization/debt)</td>
+<td>Energy and coherence trend</td>
+<td>The sign of measured $\Delta E$</td>
+</tr>
+<tr>
+<td><strong>U3</strong> (Resonant Coupling)</td>
+<td>External phase-admissibility gate</td>
+<td>Gauge-link behaviour of the induced map</td>
+</tr>
+<tr>
+<td><strong>U4</strong> (Bifurcation)</td>
+<td>Trigger/handler and transformer context</td>
+<td>Any proposed topological invariant</td>
+</tr>
+<tr>
+<td><strong>U5</strong> (Multi-Scale)</td>
+<td>Hierarchical coherence checks</td>
+<td>Factorisation for a specified nesting model</td>
+</tr>
+<tr>
+<td><strong>U6</strong> (Confinement)</td>
+<td>Selected drift policy $\Delta\Phi_s&lt;\pi/2$</td>
+<td>It is not a magnitude or potential-energy bound</td>
+</tr>
+</tbody>
+</table>
+<h3 id="55-symplectic-structure">5.5 Symplectic Structure<a class="headerlink" href="#55-symplectic-structure" title="Permanent link">&para;</a></h3>
+<p>The symplectic 2-form on the structural phase space:</p>
+<p>$$
+\omega = \sum_i \left[dK_\phi(i) \wedge dJ_\phi(i) + d\Phi_s(i) \wedge dJ_{\Delta\mathrm{NFR}}(i)\right]
+$$</p>
+<p>Two conjugate pairs:
+- <strong>Geometric sector</strong>: $(K_\phi, J_\phi)$ — curvature and current
+- <strong>Potential sector</strong>: $(\Phi_s, J_{\Delta\mathrm{NFR}})$ — potential and flux</p>
+<p>The exact harmonic flow of the auxiliary substrate preserves $\omega$. The 13
+engine operators have not been proved to preserve this form; a before/after
+snapshot or the fact that an operator is canonical in the TNFR registry is not
+a symplecticity certificate.</p>
+<p><strong>Implementation</strong>: <code>src/tnfr/physics/conservation_gauge_unification.py</code> —
+<code>ConservationGaugeUnification</code>, <code>GrammarSymmetryMapping</code>, and
+<code>SymplecticGaugeCompatibility</code> are legacy-named diagnostic dataclasses; their
+names do not promote the reported checks to dynamical theorems.</p>
+<hr />
+<h2 id="6-spectral-balance-diagnostics">6. Spectral Balance Diagnostics<a class="headerlink" href="#6-spectral-balance-diagnostics" title="Permanent link">&para;</a></h2>
+<h3 id="61-graph-fourier-transform">6.1 Graph Fourier Transform<a class="headerlink" href="#61-graph-fourier-transform" title="Permanent link">&para;</a></h3>
+<p>The measured structural-balance residual can be represented in the spectral
+domain using the Graph Fourier Transform (GFT) in the Laplacian eigenbasis
+${\psi_k}$.</p>
+<p>Given the discrete structural continuity equation:</p>
+<p>$$
+\frac{\Delta\rho(i)}{\Delta t} + \operatorname{div}\mathbf{J}(i) = S_{\text{grammar}}(i)
+$$</p>
+<p>Projecting the measured balance onto eigenvectors $\psi_k$:</p>
+<p>$$
+\frac{d\hat{\rho}_k}{dt} + \widehat{\operatorname{div}\mathbf J}_k = \hat{S}_k
+$$</p>
+<p>where:
+- $\hat{\rho}_k = \langle\psi_k | \rho\rangle$ — charge density in mode $k$
+- $\widehat{\operatorname{div}\mathbf J}_k = \langle\psi_k | \operatorname{div}\mathbf{J}\rangle$ — current divergence in mode $k$
+- $\hat{S}_k = \langle\psi_k | S\rangle$ — source term in mode $k$
+- $\lambda_k$ — Laplacian eigenvalue (mode frequency)</p>
+<p>A factor $\lambda_k$ appears only after separately representing the divergence
+as a Laplacian acting on a declared scalar current potential; it must not be
+multiplied into a quantity already defined as the projected divergence.</p>
+<h3 id="62-physical-interpretation">6.2 Physical Interpretation<a class="headerlink" href="#62-physical-interpretation" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Mode regime</th>
+<th>Condition</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Low-frequency (small $\lambda_k$)</td>
+<td>Global graph modes</td>
+<td>Measure $\hat S_k$; neither small residual nor a U5 interpretation follows from frequency alone</td>
+</tr>
+<tr>
+<td>High-frequency (large $\lambda_k$)</td>
+<td>Local graph modes</td>
+<td>Measure redistribution and residuals; rapid dissipation requires a specified dissipative evolution</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63-parseval-conservation">6.3 Parseval Conservation<a class="headerlink" href="#63-parseval-conservation" title="Permanent link">&para;</a></h3>
+<p>Energy in the spatial domain equals energy in the spectral domain:</p>
+<p>$$
+|\rho|^2 = \sum_k |\hat{\rho}_k|^2
+$$</p>
+<p>For one field and one fixed orthonormal basis this is an exact coordinate
+identity. Apparent drift signals numerical error, a changed graph/basis, or a
+mismatched normalization; it is not by itself a grammar violation.</p>
+<h3 id="64-spectral-energy-decomposition">6.4 Spectral Energy Decomposition<a class="headerlink" href="#64-spectral-energy-decomposition" title="Permanent link">&para;</a></h3>
+<p>The non-negative structural energy diagnostic decomposes mode-by-mode:</p>
+<p>$$
+E_k = \frac{1}{2}\left(|\hat{\Phi}<em _phi_k="\phi,k">{s,k}|^2 + |\widehat{\nabla\phi}_k|^2 + |\hat{K}</em>}|^2 + |\hat{J<em _Delta_mathrm_NFR="\Delta\mathrm{NFR">{\phi,k}|^2 + |\hat{J}</em>|^2\right)
+$$},k</p>
+<p>For two supplied snapshots, the implementation reports finite differences
+$\Delta E_k/\Delta t$. Their sign is empirical. U2 grammar compliance alone
+does not imply $dE_k/dt\le0$, even for a word containing stabilizers.</p>
+<p><strong>Implementation</strong>: <code>src/tnfr/physics/spectral_conservation.py</code> — <code>SpectralConservationBalance</code>, <code>SpectralWardIdentity</code>, <code>SpectralLyapunovResult</code> dataclasses.</p>
+<hr />
+<h2 id="7-historical-spectral-gauge-conjecture">7. Historical Spectral-Gauge Conjecture<a class="headerlink" href="#7-historical-spectral-gauge-conjecture" title="Permanent link">&para;</a></h2>
+<p>The original note proposed that the TNFR-Riemann operator
+$H^{(k)}(\sigma) = L_k + V_\sigma$ might have spectral properties constrained
+by both:</p>
+<ul>
+<li><strong>Conservation</strong>: Eigenvalues satisfy sum rules from $E = \text{const}$</li>
+<li><strong>Gauge</strong>: U(1)-symmetric spectrum at $\sigma = 1/2$ (self-dual point)</li>
+<li><strong>Together</strong>: Critical parameter $\sigma_c^{(k)} \to 1/2$ as $k \to \infty$</li>
+</ul>
+<p>These bullets are a research conjecture, not a consequence of the U(1)
+rotation identities or of Parseval's theorem. In particular, neither
+$\sigma_c^{(k)}\to1/2$ nor the Riemann critical line follows from the results
+in this note. The nodal-pulse implementation can supply numerical evidence for
+a declared experiment, but it does not turn the correspondence into a proof.</p>
+<hr />
+<h2 id="implementation-reference">Implementation Reference<a class="headerlink" href="#implementation-reference" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/tnfr/physics/gauge.py</code></td>
+<td>Auxiliary U(1) rotations, exact connection, closure residuals and legacy four-label heuristic</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/conservation_gauge_unification.py</code></td>
+<td>Auxiliary action and finite-snapshot compatibility diagnostics</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/spectral_conservation.py</code></td>
+<td>Spectral residual, Parseval and finite-difference energy diagnostics</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tests</strong>: <a href="../../tests/physics/test_gauge.py">test_gauge.py</a>,
+<a href="../../tests/physics/test_conservation_gauge_unification.py">test_conservation_gauge_unification.py</a>,
+<a href="../../tests/physics/test_spectral_conservation.py">test_spectral_conservation.py</a></p>
+<p><strong>Example</strong>: <code>examples/02_physics_regimes/26_gauge_structure_demo.py</code></p>
+<hr />
+<h2 id="implementation-examples">Implementation &amp; Examples<a class="headerlink" href="#implementation-examples" title="Permanent link">&para;</a></h2>
+<h3 id="executable-demonstrations">Executable Demonstrations<a class="headerlink" href="#executable-demonstrations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Concept from this document</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../examples/02_physics_regimes/26_gauge_structure_demo.py">26_gauge_structure_demo.py</a></td>
+<td>U(1) rotation identities, exact connection and numerical cycle closure</td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-source-modules">Key Source Modules<a class="headerlink" href="#key-source-modules" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>src/tnfr/physics/gauge.py</code> — Auxiliary U(1) field-coordinate diagnostics</li>
+<li><code>src/tnfr/physics/fields.py</code> — Complex geometric field Ψ = K_φ + i·J_φ</li>
+</ul>
+<hr />
+<h2 id="cross-references">Cross-References<a class="headerlink" href="#cross-references" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Nodal equation: <a href="../FUNDAMENTAL_THEORY/">FUNDAMENTAL_THEORY.md</a> §1</li>
+<li>Conservation laws: <a href="../STRUCTURAL_CONSERVATION_THEOREM/">STRUCTURAL_CONSERVATION_THEOREM.md</a></li>
+<li>Variational principle: <a href="../TNFR_VARIATIONAL_PRINCIPLE/">TNFR_VARIATIONAL_PRINCIPLE.md</a></li>
+<li>Grammar rules: <a href="../UNIFIED_GRAMMAR_RULES/">UNIFIED_GRAMMAR_RULES.md</a></li>
+<li>Extended fields ($J_\phi$, $J_{\Delta\mathrm{NFR}}$): <a href="../EXTENDED_FIELDS_AND_DERIVED_QUANTITIES/">EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,396 @@
+"""Cycle detection and operational scoring for regenerative sequences.
+
+The bounded scores in this module are token-sequence rubrics. They inspect no
+DeltaNFR or dEPI values and therefore do not estimate structural coherence C(t).
+"""
+
+from __future__ import annotations
+
+from enum import Enum
+from typing import TYPE_CHECKING, Sequence
+
+if TYPE_CHECKING:
+    pass
+
+from ..compat.dataclass import dataclass
+from ..config.operator_names import (
+    COHERENCE,
+    COUPLING,
+    EMISSION,
+    RECEPTION,
+    RECURSIVITY,
+    RESONANCE,
+    SILENCE,
+    TRANSITION,
+)
+from ..constants.canonical import (
+    CYCLE_OPTIMAL_BALANCE_CANONICAL,
+    PI,
+)
+from ..constants.operational import (
+    CYCLE_BALANCE_MULTIPLIER_CANONICAL,
+    CYCLE_BALANCE_RANGE_HIGH_CANONICAL,
+    CYCLE_BALANCE_RANGE_LOW_CANONICAL,
+    CYCLE_FALLBACK_SCORE_CANONICAL,
+    CYCLE_MIN_HEALTH_CANONICAL,
+)
+
+# Import canonical stabilizer set from grammar_types (single source of truth)
+# Extended with silence, resonance, coupling for cycle detection context
+from ._diagnostic_scores import mean_unit_score, unit_score
+from .grammar_types import STABILIZERS as _GRAMMAR_STABILIZERS
+
+_STABILIZERS_SET = _GRAMMAR_STABILIZERS | frozenset([SILENCE, RESONANCE, COUPLING])
+
+__all__ = [
+    "REGENERATORS",
+    "MIN_CYCLE_LENGTH",
+    "MAX_CYCLE_LENGTH",
+    "CycleType",
+    "CycleAnalysis",
+    "CycleDetector",
+]
+
+# Regenerators: operators that enable structural renewal and regeneration
+REGENERATORS = [TRANSITION, RECURSIVITY, SILENCE]  # NAV, REMESH, SHA
+
+# Cycle length constraints
+MIN_CYCLE_LENGTH = 5  # Minimum operators for meaningful cyclic behavior
+MAX_CYCLE_LENGTH = 13  # Maximum = all canonical operators once
+
+
+class CycleType(Enum):
+    """Types of regenerative cycles based on dominant regenerator."""
+
+    LINEAR = "linear"  # Traditional non-cyclic sequence
+    REGENERATIVE = "regenerative"  # Cycle with regenerators
+    RECURSIVE = "recursive"  # REMESH-driven (fractal regeneration)
+    MEDITATIVE = "meditative"  # SHA-driven (paused renewal)
+    TRANSFORMATIVE = "transformative"  # NAV-driven (phase transition)
+
+
+@dataclass(slots=True)
+class CycleAnalysis:
+    """Results of regenerative cycle analysis."""
+
+    is_valid_regenerative: bool
+    reason: str = ""
+    cycle_type: CycleType = CycleType.LINEAR
+    health_score: float = 0.0
+    regenerator_position: int = -1
+    stabilizer_count_before: int = 0
+    stabilizer_count_after: int = 0
+    balance_score: float = 0.0
+    diversity_score: float = 0.0
+    cycle_integrity_score: float = 0.0
+
+    @property
+    def coherence_score(self) -> float:
+        """Compatibility alias for cycle_integrity_score; it is not C(t)."""
+
+        return self.cycle_integrity_score
+
+    @coherence_score.setter
+    def coherence_score(self, value: float) -> None:
+        self.cycle_integrity_score = unit_score(
+            value, label="cycle integrity"
+        )
+
+
+class CycleDetector:
+    """Detects and validates regenerative cycles in TNFR sequences.
+
+    Implements R5_REGENERATIVE_CYCLES validation rules:
+    - Cycles must have minimum length (MIN_CYCLE_LENGTH)
+    - Must include stabilizers before AND after regenerator
+    - Must meet the configured operational cycle-health threshold
+    - Validates balance, diversity, and a bounded cycle-integrity rubric
+
+    Note: Uses _STABILIZERS_SET with canonical operator names to match
+    the sequence validation format. Reuses pattern detector methods for
+    balance, diversity, and health calculations to avoid code duplication.
+    """
+
+    # Minimum health score for valid regenerative cycle
+    MIN_HEALTH_SCORE = (
+        CYCLE_MIN_HEALTH_CANONICAL  # ≈ 0.4910 (operational health threshold)
+    )
+
+    def analyze_potential_cycle(
+        self, sequence: Sequence[str], regenerator_index: int
+    ) -> CycleAnalysis:
+        """Analyze if a regenerator creates a valid regenerative cycle.
+
+        Parameters
+        ----------
+        sequence : Sequence[str]
+            Complete operator sequence (canonical names).
+        regenerator_index : int
+            Position of the regenerator operator.
+
+        Returns
+        -------
+        CycleAnalysis
+            Detailed analysis of cycle validity and characteristics.
+        """
+        # 1. Check minimum length
+        if len(sequence) < MIN_CYCLE_LENGTH:
+            return CycleAnalysis(
+                is_valid_regenerative=False,
+                reason="too_short",
+                cycle_type=CycleType.LINEAR,
+            )
+
+        # 2. Check maximum length
+        if len(sequence) > MAX_CYCLE_LENGTH:
+            return CycleAnalysis(
+                is_valid_regenerative=False,
+                reason="too_long",
+                cycle_type=CycleType.LINEAR,
+            )
+
+        # 3. Verify regenerator is valid
+        if regenerator_index < 0 or regenerator_index >= len(sequence):
+            return CycleAnalysis(
+                is_valid_regenerative=False,
+                reason="invalid_regenerator_position",
+                cycle_type=CycleType.LINEAR,
+            )
+
+        regenerator = sequence[regenerator_index]
+        if regenerator not in REGENERATORS:
+            return CycleAnalysis(
+                is_valid_regenerative=False,
+                reason="not_a_regenerator",
+                cycle_type=CycleType.LINEAR,
+            )
+
+        # 4. Check stabilizers before and after regenerator
+        before_segment = sequence[:regenerator_index]
+        after_segment = sequence[regenerator_index + 1 :]
+
+        stabilizers_before = self._count_stabilizers(before_segment)
+        stabilizers_after = self._count_stabilizers(after_segment)
+
+        if stabilizers_before == 0 or stabilizers_after == 0:
+            return CycleAnalysis(
+                is_valid_regenerative=False,
+                reason="no_stabilization",
+                cycle_type=CycleType.LINEAR,
+                stabilizer_count_before=stabilizers_before,
+                stabilizer_count_after=stabilizers_after,
+            )
+
+        # 5. Calculate structural health
+        balance = self._calculate_balance(sequence)
+        diversity = self._calculate_diversity(sequence)
+        cycle_integrity = self._calculate_cycle_integrity(sequence)
+
+        health_score = mean_unit_score(
+            (balance, diversity, cycle_integrity),
+            label="cycle health",
+        )
+
+        # 6. Determine cycle type
+        cycle_type = self._determine_cycle_type(regenerator)
+
+        # 7. Validate health threshold
+        is_valid = health_score >= self.MIN_HEALTH_SCORE
+
+        return CycleAnalysis(
+            is_valid_regenerative=is_valid,
+            reason="valid" if is_valid else "low_health_score",
+            cycle_type=cycle_type,
+            health_score=health_score,
+            regenerator_position=regenerator_index,
+            stabilizer_count_before=stabilizers_before,
+            stabilizer_count_after=stabilizers_after,
+            balance_score=balance,
+            diversity_score=diversity,
+            cycle_integrity_score=cycle_integrity,
+        )
+
+    def analyze_full_cycle(self, sequence: Sequence[str]) -> CycleAnalysis:
+        """Analyze complete sequence for regenerative cycle properties.
+
+        Searches for regenerators in the sequence and validates the
+        strongest regenerative cycle found.
+
+        Parameters
+        ----------
+        sequence : Sequence[str]
+            Complete operator sequence (canonical names).
+
+        Returns
+        -------
+        CycleAnalysis
+            Analysis of the best regenerative cycle found, or
+            indication that sequence is not regenerative.
+        """
+        if len(sequence) < MIN_CYCLE_LENGTH:
+            return CycleAnalysis(
+                is_valid_regenerative=False,
+                reason="too_short",
+                cycle_type=CycleType.LINEAR,
+            )
+
+        # Find all regenerators in sequence
+        regenerator_positions = [
+            i for i, op in enumerate(sequence) if op in REGENERATORS
+        ]
+
+        if not regenerator_positions:
+            return CycleAnalysis(
+                is_valid_regenerative=False,
+                reason="no_regenerator",
+                cycle_type=CycleType.LINEAR,
+            )
+
+        # Analyze each regenerator position and keep best result
+        best_analysis = None
+        best_health = -1.0
+
+        for pos in regenerator_positions:
+            analysis = self.analyze_potential_cycle(sequence, pos)
+            if analysis.health_score > best_health:
+                best_health = analysis.health_score
+                best_analysis = analysis
+
+        return best_analysis or CycleAnalysis(
+            is_valid_regenerative=False,
+            reason="no_valid_cycle",
+            cycle_type=CycleType.LINEAR,
+        )
+
+    def _count_stabilizers(self, segment: Sequence[str]) -> int:
+        """Count stabilizing operators in a sequence segment.
+
+        Counts canonical IL/THOL stabilizers plus the selected cycle-support
+        tokens SHA, RA and UM.
+        """
+        return sum(1 for op in segment if op in _STABILIZERS_SET)
+
+    def _calculate_balance(self, sequence: Sequence[str]) -> float:
+        """Calculate structural balance score (0.0-1.0).
+
+        Reuses the existing pattern detector's health calculation approach
+        but adapted for cycle-specific validation. Balance measures equilibrium
+        between stabilizing operators.
+        """
+        from .patterns import AdvancedPatternDetector
+
+        if not sequence:
+            return 0.0
+
+        # Use existing pattern detector for consistent health metrics
+        detector = AdvancedPatternDetector()
+        health_metrics = detector._structural_health(sequence)
+
+        # Adapt balance calculation for cycle validation
+        # Cycles need good balance (not too much stabilization, not too chaotic)
+        balance_raw = health_metrics.get("balance", 0.0)
+
+        # Normalize using canonical constants: optimal balance from TNFR theory
+        # Convert to 0-1 score where CYCLE_OPTIMAL_BALANCE_CANONICAL is optimal
+        if (
+            CYCLE_BALANCE_RANGE_LOW_CANONICAL
+            <= balance_raw
+            <= CYCLE_BALANCE_RANGE_HIGH_CANONICAL
+        ):
+            # Good range: 1.0 at optimal, declining linearly
+            score = (
+                1.0
+                - abs(balance_raw - CYCLE_OPTIMAL_BALANCE_CANONICAL)
+                * CYCLE_BALANCE_MULTIPLIER_CANONICAL
+            )
+        else:
+            # Outside good range
+            score = max(
+                0.0,
+                CYCLE_FALLBACK_SCORE_CANONICAL
+                - abs(balance_raw - CYCLE_OPTIMAL_BALANCE_CANONICAL)
+                * CYCLE_FALLBACK_SCORE_CANONICAL,
+            )
+
+        return max(0.0, min(1.0, score))
+
+    def _calculate_diversity(self, sequence: Sequence[str]) -> float:
+        """Calculate operator diversity score (0.0-1.0).
+
+        Reuses complexity calculation from AdvancedPatternDetector which
+        includes diversity as a component.
+        """
+        if not sequence:
+            return 0.0
+
+        # For cycles, we primarily care about diversity component
+        unique_count = len(set(sequence))
+        total_count = len(sequence)
+        diversity_ratio = unique_count / total_count
+
+        # Bonus for using many unique operators (> 5)
+        if unique_count >= 5:
+            bonus = min(0.2, (unique_count - 5) * 0.05)
+            diversity_ratio = min(1.0, diversity_ratio + bonus)
+
+        return diversity_ratio
+
+    def _calculate_cycle_integrity(self, sequence: Sequence[str]) -> float:
+        """Calculate a bounded cycle-integrity rubric in [0, 1].
+
+        The checklist covers selected start/end tokens, network operators and
+        information-flow tokens. It is not canonical structural C(t).
+        """
+        from .patterns import AdvancedPatternDetector
+
+        if not sequence:
+            return 0.0
+
+        detector = AdvancedPatternDetector()
+        health_metrics = detector._structural_health(sequence)
+
+        score = 0.0
+
+        # 1. Good start (emission or reception)
+        if sequence[0] in {EMISSION, RECEPTION, COHERENCE}:
+            score += round(
+                1.0 / (PI + 1.0), 3
+            )  # 1/(π+1) ≈ 0.242 (operational: initiation bonus)
+
+        # 2. Good ending (check has_closure from health metrics)
+        if health_metrics.get("has_closure", False):
+            score += round(
+                1.0 / (PI + 1.0), 3
+            )  # 1/(π+1) ≈ 0.242 (operational: closure bonus)
+
+        # 3. Contains coupling (network integration)
+        if COUPLING in sequence:
+            score += 0.1  # operational: coupling bonus
+
+        # 4. Contains resonance (amplification)
+        if RESONANCE in sequence:
+            score += 0.1  # operational: resonance bonus
+
+        # 5. Has emission or reception (information flow)
+        if EMISSION in sequence or RECEPTION in sequence:
+            score += 0.17  # operational: flow bonus
+
+        # 6. Bonus for cyclic closure (starts and ends with stabilizers)
+        if len(sequence) >= 2:
+            if sequence[0] in _STABILIZERS_SET and sequence[-1] in _STABILIZERS_SET:
+                score += 0.17  # operational: closure bonus
+
+        return unit_score(
+            min(1.0, score), label="cycle integrity"
+        )
+
+    def _determine_cycle_type(self, regenerator: str) -> CycleType:
+        """Determine cycle type based on dominant regenerator."""
+        if regenerator == TRANSITION:
+            return CycleType.TRANSFORMATIVE  # NAV
+        elif regenerator == RECURSIVITY:
+            return CycleType.RECURSIVE  # REMESH
+        elif regenerator == SILENCE:
+            return CycleType.MEDITATIVE  # SHA
+        else:
+            return CycleType.REGENERATIVE  # Generic

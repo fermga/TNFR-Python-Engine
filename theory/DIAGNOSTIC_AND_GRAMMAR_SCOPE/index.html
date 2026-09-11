@@ -1,0 +1,1575 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE/">
+      
+      
+        <link rel="prev" href="../UNIFIED_GRAMMAR_RULES/">
+      
+      
+        <link rel="next" href="../MINIMAL_STRUCTURAL_DEGREES/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Diagnostic scope - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mathematical-scope-of-structural-diagnostics-and-grammar" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Diagnostic scope
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-existence-boundedness-and-convergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Existence, boundedness, and convergence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-modal-relaxation-and-the-grammar-calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Modal relaxation and the grammar calibration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-assumption-explicit-model-thresholds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Assumption-explicit model thresholds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-structural-potential-and-topology-dependent-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Structural potential and topology-dependent bounds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-diagnostic-channels-and-state-reconstruction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Diagnostic channels and state reconstruction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-authoritative-entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Authoritative entry points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-existence-boundedness-and-convergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Existence, boundedness, and convergence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-modal-relaxation-and-the-grammar-calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Modal relaxation and the grammar calibration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-assumption-explicit-model-thresholds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Assumption-explicit model thresholds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-structural-potential-and-topology-dependent-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Structural potential and topology-dependent bounds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-diagnostic-channels-and-state-reconstruction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Diagnostic channels and state reconstruction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-authoritative-entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Authoritative entry points
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="mathematical-scope-of-structural-diagnostics-and-grammar">Mathematical Scope of Structural Diagnostics and Grammar<a class="headerlink" href="#mathematical-scope-of-structural-diagnostics-and-grammar" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> Exact identities under stated hypotheses, canonical engine policies,
+and open sufficiency questions. This note fixes the distinction between these
+three categories without changing the operator catalog or numerical policies.</p>
+<p>The nodal equation is</p>
+<pre><code>x'(t) = ν_f(t) p(t),    x = EPI,    p = ΔNFR.
+</code></pre>
+<p>It specifies the relation between structural change, capacity, and pressure.
+A theorem about its solutions also needs a pressure law, graph assumptions,
+initial conditions, and, for a discrete evolution, an integrator and step size.
+Operator contracts supply additional constraints; they do not follow from the
+scalar identity without those premises.</p>
+<h2 id="1-existence-boundedness-and-convergence">1. Existence, boundedness, and convergence<a class="headerlink" href="#1-existence-boundedness-and-convergence" title="Permanent link">&para;</a></h2>
+<p>If f(t) = ν_f(t)p(t) is locally integrable on a finite-dimensional structural
+coordinate space, then</p>
+<pre><code>x(t) = x(t₀) + ∫[t₀,t] f(s) ds
+</code></pre>
+<p>defines an absolutely continuous trajectory on each finite interval, with the
+nodal equation holding almost everywhere. Continuity of f gives the usual
+pointwise derivative. In particular, x = 0 is not a singularity of this equation:
+ν_f = 1 and p = 1 give x' = 1 at zero. U1's generator requirement is an
+initialization contract for the operator language, including its supported
+pre-existing-structure context, rather than a claim that this derivative is
+undefined.</p>
+<p>On an infinite horizon the following properties are different:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Exact statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bounded trajectory</td>
+<td>The partial integrals of f remain bounded.</td>
+</tr>
+<tr>
+<td>Convergence to a finite limit</td>
+<td>The vector improper integral of f converges.</td>
+</tr>
+<tr>
+<td>Absolute integrability</td>
+<td>The integral of the norm of f is finite. This is sufficient for convergence and gives finite total variation.</td>
+</tr>
+</tbody>
+</table>
+<p>Neither boundedness nor p(t) tending to zero establishes the last two properties:</p>
+<ul>
+<li>x(t) = sin(t), ν_f = 1, p(t) = cos(t) is bounded and satisfies the nodal
+  equation, but x(t) has no limit.</li>
+<li>p(t) = 1/(1+t), ν_f = 1 gives x(t) = x(0) + log(1+t). Its pressure is bounded
+  and tends to zero, while its accumulated displacement diverges.</li>
+<li>On a finite connected undirected graph, fixed homogeneous ν_f &gt; 0 and the
+  pure EPI law p = −L_rw x give autonomous negative feedback. Relaxation does
+  not mathematically require an additional named operator during that flow.</li>
+</ul>
+<p>An example of a sufficient analytic assumption is</p>
+<pre><code>||ν_f(t)p(t)|| ≤ M exp(−a(t−t₀)),    M &lt; ∞, a &gt; 0.
+</code></pre>
+<p>Then the tail displacement is at most (M/a) exp(−a(t−t₀)). For repeated operator
+applications, proving such a bound requires control of their gains, elapsed
+times, and intervening feedback. U2's prescribed stabilizers and debt accounting
+remain mandatory engine policy; grammar acceptance by itself is not an
+infinite-horizon convergence certificate.</p>
+<h2 id="2-modal-relaxation-and-the-grammar-calibration">2. Modal relaxation and the grammar calibration<a class="headerlink" href="#2-modal-relaxation-and-the-grammar-calibration" title="Permanent link">&para;</a></h2>
+<p>On a fixed undirected graph with positive edge weights, homogeneous frequency,
+and pure EPI diffusion, each nonstationary mode of an explicit Euler step has
+multiplier</p>
+<pre><code>q_k = 1 − ν_f dt λ_k.
+</code></pre>
+<p>Its amplitude after n steps is q_kⁿ times the initial amplitude. Decay requires
+|q_k| &lt; 1; a negative multiplier alternates sign and need not decay. The
+continuous solution instead has multiplier exp(−ν_f λ_k t). These are different
+evolution laws at finite dt.</p>
+<p>For a loopless graph without isolated vertices, trace(L_rw)/N = 1. This is the
+mean of all eigenvalues, including stationary modes, not the relaxation rate
+of each mode. Isolates and self-loops require different trace accounting.</p>
+<p>The functions derive_bifurcation_window_from_physics and
+derive_u2_debt_capacity_from_physics retain their public names and formulas.
+They use the fixed surrogate rate ρ = 1 and q = 1 − ν_f dt ρ. At the canonical
+ν_f = 1 and dt = 0.5:</p>
+<ul>
+<li>The first n with qⁿ &lt; 1/(π+1) is <strong>3</strong>, the U4b recency policy.</li>
+<li>The floor of 1/(1−q) is <strong>2</strong>, the U2 debt-capacity policy.</li>
+</ul>
+<p>The geometric sum describes a scalar recurrence with unit forcing and
+0 ≤ q &lt; 1. Its finite steady state is not a maximum physical pressure or a
+criterion for integrability of a sustained forcing. Mapping its floor to a
+count of destabilizing operators is the engine's calibration choice.</p>
+<p>The actual functions also retain their finite fallbacks: a nonpositive q returns
+a one-operation window, and the search stops at 64; nonpositive ν_f dt returns
+zero debt capacity. These are compatibility policies, not stability results for
+the corresponding Euler modes.</p>
+<p><strong>Finite-graph witness.</strong> On the 21-node unweighted path,</p>
+<pre><code>λ₂ = 1 − cos(π/20) = 0.012311659404862...
+q₂³ = (1 − 0.5 λ₂)³ = 0.981645960340198...
+1/(π+1) = 0.241453007005224...
+</code></pre>
+<p>The Fiedler amplitude needs 231 steps to cross that target. The same graph
+still has mean eigenvalue 1. Thus the three-operation grammar window is not a
+mode-uniform relaxation theorem. A trajectory bound must use the relevant
+spectrum, norm, Euler stability region, stationary-mode treatment, and
+operator-induced gains. Directed non-normal and heterogeneous-frequency
+generators require their own analysis.</p>
+<p>The read-only
+<a href="../../src/tnfr/physics/structural_diffusion.py"><code>diagnose_euler_relaxation_window</code></a>
+now performs that analysis for frozen symmetric pure-EPI diffusion with
+heterogeneous frequency. It returns the actual modal multipliers, explicit-Euler
+stability limit and first solver step below a declared target. It also reports
+the canonical U4 window for comparison while keeping the units distinct:
+solver steps are not operator positions. Directed non-normal transport and any
+policy mapping remain open.</p>
+<h2 id="3-assumption-explicit-model-thresholds">3. Assumption-explicit model thresholds<a class="headerlink" href="#3-assumption-explicit-model-thresholds" title="Permanent link">&para;</a></h2>
+<p><a href="../../src/tnfr/physics/life.py"><code>physics.life</code></a> is a supplied-series diagnostic
+model, not a consequence of the nodal equation and not a biological
+classifier. It rejects Boolean, non-finite, multidimensional and implicitly
+broadcast inputs; the combined detector additionally requires nonnegative EPI,
+matched lengths and strictly increasing times. Its selected event $A(t)&gt;1$
+means only that the declared time-local ratio
+$G(t)\dot x(t)/(|\Delta\mathrm{NFR}<em _rm="\rm" num="num">{\rm ext}(t)|^2+\epsilon</em>)$
+exceeds one on the supplied samples. The reported time is the first sample
+already above one or the linear interpolation of the first upward crossing. It
+does not establish persistence, autonomy or biological life. Formulas and
+parameter domains are centralized in
+<a href="../STRUCTURAL_STABILITY_AND_DYNAMICS/#3-life-telemetry-diagnostics">Structural Stability and Dynamics</a>.</p>
+<h2 id="4-structural-potential-and-topology-dependent-bounds">4. Structural potential and topology-dependent bounds<a class="headerlink" href="#4-structural-potential-and-topology-dependent-bounds" title="Permanent link">&para;</a></h2>
+<p>For a fixed distance convention and positive finite distances, define</p>
+<pre><code>B_ij = d(i,j)⁻² for reachable j ≠ i; otherwise 0,
+Φ_s = B p.
+</code></pre>
+<p>The field is linear in pressure. The triangle inequality gives the exact bound</p>
+<pre><code>|Φ_s(i)| ≤ Σ_j B_ij |p_j|,
+||Φ_s||∞ ≤ b_G ||p||∞,    b_G = max_i Σ_j B_ij.
+</code></pre>
+<p>For two pressure fields on the same graph,</p>
+<pre><code>||Φ_s(t₁) − Φ_s(t₀)||∞ ≤ b_G ||p(t₁) − p(t₀)||∞.
+</code></pre>
+<p>If the graph changes, an additional term is necessary. Writing B₀ and B₁ for
+the two kernels gives</p>
+<pre><code>Φ₁ − Φ₀ = B₁(p₁−p₀) + (B₁−B₀)p₀.
+</code></pre>
+<p>These bounds explicitly depend on pressure, graph geometry, and normalization.
+There is no phase angle in Bp. Setting every phase to zero and p_j = 1 on K₄
+gives Φ_s(i) = 3 at every vertex. On K_n it gives n−1, and multiplying p by a
+multiplies Φ_s by a. A transition from p = 0 to p = 1 has the same n−1 drift.</p>
+<p>Consequently the canonical <strong>π/4 per-node</strong> and <strong>π/2 drift</strong> thresholds are
+selected safety policies. A state can exceed them and trigger telemetry; phase
+wrapping does not enforce them. Establishing them as trajectory bounds would
+require explicit pressure and topology hypotheses implying the inequalities
+above. U6 remains a read-only monitor, separate from the word grammar.</p>
+<p>The inverse-square exponent α = 2 is the canonical kernel choice. Chain
+summability does not uniquely select it: Σ d⁻α converges for every α &gt; 1,
+and independent unit-variance pressure gives variance Σ d⁻²α, convergent for
+every α &gt; 1/2. On a graph family with shell counts bounded by C r^(d−1),
+α &gt; d is sufficient for absolute accumulation and 2α &gt; d for independent
+unit-variance accumulation. These are sufficient shell-growth conditions;
+they need not hold on every graph family. Particular ζ(2) and ζ(4) values do
+not establish universal π-fraction confinement.</p>
+<p>In contrast, the phase definitions give exact kinematic bounds:</p>
+<pre><code>|∇φ| ≤ π,    |K_φ| ≤ π.
+</code></pre>
+<p>The curvature warning level 0.9π is a selected margin inside that bound. The
+phase-gradient warning level π/16 is also a policy value.</p>
+<h2 id="5-diagnostic-channels-and-state-reconstruction">5. Diagnostic channels and state reconstruction<a class="headerlink" href="#5-diagnostic-channels-and-state-reconstruction" title="Permanent link">&para;</a></h2>
+<p>The tetrad selects four useful readouts: source accumulation Φ_s, local phase
+mismatch |∇φ|, local circular curvature K_φ, and correlation length ξ_C. These
+are canonical telemetry channels. Canonical status does not establish that
+their values reconstruct all state variables or every independent observable.</p>
+<p>On a graph, edge derivatives and Laplacian powers can be generated by composing
+a gradient and a Laplacian. Algebraic generation does not imply that successive
+operators, or lossy scalar summaries of their outputs, are linearly dependent.
+If L has at least four distinct eigenvalues, I, L, L², and L³ are linearly
+independent: a dependence would give a polynomial of degree at most three
+vanishing at four distinct points. More generally, independence is controlled
+by the minimal polynomial, not a universal second-order cutoff.</p>
+<p>An independent obstruction comes from the nodal equation. At fixed graph,
+phase, and pure-EPI pressure, rescaling homogeneous ν_f leaves the tetrad
+unchanged but rescales x' = ν_f p. Therefore the tetrad does not determine the
+full dynamical state. Canonical coherence also depends on pressure amplitude:
+with dEPI = 0 and uniform |p| = 1 it equals 1/2; doubling pressure gives 1/3.
+Only the separate normalized dispersion statistic is scale invariant.</p>
+<p>A reconstruction or minimality theorem must specify the state space, gauge
+identifications, full fields versus node/global summaries, allowed observables,
+and the desired equivalence relation. A diagnostic removal study instead needs
+explicit fixtures and detection thresholds. Neither a test count nor an
+operator-composition identity supplies those missing hypotheses. Completeness
+and minimality in this stronger sense remain open.</p>
+<p>For fixed connected undirected pure EPI diffusion, this specification yields a
+conditional reconstruction result. The full nodal potential has observation
+operator <code>O=-K L_rw</code>; if <code>rank(O)=N-1</code>, it recovers EPI modulo a uniform shift.
+The conserved <code>d_i/nu_i</code> mean supplies that last scalar. Capacity is still
+required to determine the generator. The repository certificate evaluates the
+rank per graph; the condition has been measured on the 142 connected simple
+graph-atlas cases through six nodes and is not asserted universally.</p>
+<h2 id="6-authoritative-entry-points">6. Authoritative entry points<a class="headerlink" href="#6-authoritative-entry-points" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../UNIFIED_GRAMMAR_RULES/">Unified grammar</a>: current U1–U6 requirements.</li>
+<li><a href="../MINIMAL_STRUCTURAL_DEGREES/">Tetrad scope</a>: interpretation and limitations.</li>
+<li><a href="../../docs/STRUCTURAL_FIELDS_TETRAD/">Field definitions and API</a>.</li>
+<li><a href="../../src/tnfr/config/physics_derivation.py">Canonical calibration functions</a>.</li>
+<li><a href="../../src/tnfr/constants/canonical.py">Threshold values</a>.</li>
+<li>The deterministic finite-graph witnesses used by this scope statement are
+  recorded directly in the sections above and covered by the linked tests.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

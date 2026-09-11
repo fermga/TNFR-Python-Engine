@@ -1,0 +1,9 @@
+from .definitions import Operator
+
+__all__ = ["OPERATORS", "register_operator", "discover_operators", "get_operator_class"]
+
+OPERATORS: dict[str, type[Operator]]
+
+def register_operator(cls: type[Operator]) -> type[Operator]: ...
+def get_operator_class(name: str) -> type[Operator]: ...
+def discover_operators() -> None: ...

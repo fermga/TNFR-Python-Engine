@@ -1,0 +1,226 @@
+"""TNFR Grammar: Grammar Application
+
+Functions for applying operators with grammar enforcement at runtime.
+
+Terminology (TNFR semantics):
+- "node" == resonant locus (structural coherence site); kept for NetworkX compatibility
+- Future semantic aliasing ("locus") must preserve public API stability
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+from ..types import Glyph
+from .grammar_patterns import recognize_il_sequences
+
+
+def apply_glyph_with_grammar(
+    G,  # TNFRGraph
+    nodes: Any,
+    glyph: Any,
+    window: Any = None,
+) -> None:
+    """Apply glyph to nodes with grammar validation.
+
+    Applies the specified glyph to each node in the iterable using the canonical
+    TNFR operator implementation.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing nodes
+    nodes : Any
+        Node, list of nodes, or node iterable to apply glyph to
+    glyph : Any
+        Glyph to apply
+    window : Any, optional
+        Maximum stored glyph-history length
+
+    Notes
+    -----
+    Targets and trace arguments are validated before the first application.
+    Each selected glyph then delegates to apply_glyph. A failure during a
+    later structural operation does not roll back earlier accepted targets.
+    """
+    from . import _resolve_glyph_operation, _validated_execution_window
+    from .grammar_debt import require_replayable_history
+
+    glyph, _ = _resolve_glyph_operation(glyph)
+    window = _validated_execution_window(G, window)
+
+    # Membership distinguishes a tuple/frozenset node from an iterable of
+    # nodes. Hashability alone also classified generators as single nodes.
+    try:
+        single_node = nodes in G
+    except TypeError:
+        single_node = False
+    if single_node or isinstance(nodes, (str, bytes)):
+        nodes_iter = [nodes]
+    else:
+        try:
+            nodes_iter = list(nodes)
+        except TypeError:
+            nodes_iter = [nodes]
+
+    # Invalid targets/histories must not leave an earlier target modified.
+    # Runtime failures after valid operations are not a batch transaction.
+    for node in nodes_iter:
+        require_replayable_history(G.nodes[node].get("glyph_history"))
+
+    for node in nodes_iter:
+        selected_glyph = enforce_canonical_grammar(G, node, glyph)
+        _apply_selected_glyph(G, node, selected_glyph, window)
+
+
+def _apply_selected_glyph(
+    G,
+    node,
+    glyph,
+    window,
+    *,
+    prepared_state: Any = None,
+) -> None:
+    """Execute a selected glyph and recognize patterns without reselecting it."""
+    if prepared_state is None:
+        from . import apply_glyph
+
+        apply_glyph(G, node, glyph, window=window)
+    else:
+        from . import _apply_prepared_reception_glyph
+
+        _apply_prepared_reception_glyph(
+            G,
+            node,
+            glyph,
+            window=window,
+            prepared_state=prepared_state,
+        )
+
+    _recognize_applied_patterns(G, node)
+
+
+def _recognize_applied_patterns(G, node) -> None:
+    """Recognize history patterns after an already committed canonical glyph."""
+
+    # Check for IL sequences in node history after applying glyph
+    if "glyph_history" in G.nodes[node]:
+        history = G.nodes[node]["glyph_history"]
+        if len(history) >= 2:
+            # Check last two glyphs for canonical patterns
+            # Convert to list to support slicing
+            history_list = list(history)
+
+            # Convert string names to Glyphs for recognition
+            glyph_history = []
+            for item in history_list[-2:]:
+                if isinstance(item, str):
+                    if item.startswith("Glyph."):
+                        # Handle 'Glyph.AL' format
+                        glyph_name = item.split(".")[1]
+                        try:
+                            glyph_history.append(Glyph[glyph_name])
+                        except KeyError:
+                            glyph_history.append(item)
+                    else:
+                        # Handle direct glyph name 'IL'
+                        try:
+                            glyph_history.append(Glyph[item])
+                        except KeyError:
+                            glyph_history.append(item)
+                else:
+                    glyph_history.append(item)
+
+            recognized = recognize_il_sequences(glyph_history)
+
+            if recognized:
+                # Initialize graph-level pattern tracking if needed
+                if "recognized_coherence_patterns" not in G.graph:
+                    G.graph["recognized_coherence_patterns"] = []
+
+                # Add recognized patterns to graph tracking
+                for pattern in recognized:
+                    pattern_info = {
+                        "node": node,
+                        "pattern_name": pattern["pattern_name"],
+                        "position": len(history) - 2 + pattern["position"],
+                        "is_antipattern": pattern.get("is_antipattern", False),
+                    }
+                    G.graph["recognized_coherence_patterns"].append(pattern_info)
+
+                    # Emit warnings for antipatterns if not already done
+                    is_antipattern = pattern.get("is_antipattern", False)
+                    severity = pattern.get("severity", "")
+                    if is_antipattern and severity in ("warning", "error"):
+                        import warnings
+
+                        pattern_name = pattern["pattern_name"]
+                        warnings.warn(
+                            f"Anti-pattern detected: {pattern_name}", UserWarning
+                        )
+
+
+def on_applied_glyph(G, n, applied: Any) -> None:  # G: TNFRGraph, n: NodeId
+    """Record glyph application in node history.
+
+    Minimal stub for tracking operator sequences.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing node
+    n : NodeId
+        Node identifier
+    applied : Any
+        Applied glyph or operator name
+    """
+    from .grammar_debt import (
+        PRIOR_COHERENCE_KEY, U2_DEBT_KEY, advance_debt, advance_prior_coherence,
+        node_debt, node_has_prior_coherence,
+    )
+
+    debt = node_debt(G.nodes[n])
+    prior_coherence = node_has_prior_coherence(G.nodes[n])
+    if "glyph_history" not in G.nodes[n]:
+        G.nodes[n]["glyph_history"] = []
+    G.nodes[n]["glyph_history"].append(applied)
+    G.nodes[n][U2_DEBT_KEY] = advance_debt(debt, applied)
+    G.nodes[n][PRIOR_COHERENCE_KEY] = advance_prior_coherence(prior_coherence, applied)
+
+
+def enforce_canonical_grammar(
+    G,  # TNFRGraph
+    n,  # NodeId
+    cand: Any,
+    ctx: Any = None,
+) -> Any:
+    """Enforce incremental grammar rules (U1a, U2, U3, U4) on *cand*.
+
+    Delegates to :func:`grammar_dynamics.enforce_grammar_on_glyph` for
+    proactive validation.  If *cand* would violate a grammar rule, it is
+    replaced with a safe alternative during standalone selection. An explicit
+    validated sequence context instead raises before a blocked step; it can
+    supply a future U4a handler without bypassing other live grammar checks.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing node
+    n : NodeId
+        Node identifier
+    cand : Any
+        Candidate glyph/operator
+    ctx : Any, optional
+        A ValidatedSequenceStep may supply a future U4a handler. Other legacy
+        context values retain their previous behavior and are ignored.
+
+    Returns
+    -------
+    Any
+        The validated (or replaced) glyph code.
+    """
+    from .grammar_dynamics import enforce_grammar_on_glyph
+    from .grammar_execution import ValidatedSequenceStep
+
+    sequence_context = ctx if isinstance(ctx, ValidatedSequenceStep) else None
+    return enforce_grammar_on_glyph(G, n, cand, sequence_context=sequence_context)

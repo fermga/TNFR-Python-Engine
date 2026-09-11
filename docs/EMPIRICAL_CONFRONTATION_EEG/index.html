@@ -1,0 +1,1447 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/docs/EMPIRICAL_CONFRONTATION_EEG/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Empirical Confrontation — Real EEG (the falsifiable arm) - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#empirical-confrontation-real-eeg-the-falsifiable-arm" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Empirical Confrontation — Real EEG (the falsifiable arm)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../theory/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../theory/STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#findings-real-chb-mit-eeg-the-empirical-arm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Findings (real CHB-MIT EEG; the empirical arm)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-subject-confrontation-physionet-eegmmidb-reproducible-in-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-subject confrontation (PhysioNet eegmmidb; reproducible in-engine)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynamics-confrontation-the-nodal-equation-as-a-predictor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamics confrontation (the nodal equation as a predictor)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#honest-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Honest scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="empirical-confrontation-real-eeg-the-falsifiable-arm">Empirical Confrontation — Real EEG (the falsifiable arm)<a class="headerlink" href="#empirical-confrontation-real-eeg-the-falsifiable-arm" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> validation record. The value here is a <strong>falsifiable instrument</strong>, not
+an out-prediction claim. Closes no open problem.</p>
+<h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
+<p>TNFR's structural read-outs (the tetrad <code>|∇φ|</code>, <code>K_φ</code>, <code>Φ_s</code>, <code>ξ_C</code>;
+the pulse <code>ω_k = √λ_k</code>; static pressure coherence <code>C_static</code>; structural
+frequency <code>νf</code>) are
+meant to be <strong>confronted with real data</strong> — tests that <em>can</em> fail. The engine
+ships the <strong>data-agnostic instrument</strong>; it does <strong>not</strong> bundle datasets.</p>
+<ul>
+<li><strong>Instrument (in-engine):</strong> <a href="../../src/tnfr/validation/signal_confrontation.py"><code>confront_signal</code></a>
+  maps any real multichannel signal → the <strong>emergent phase-locking graph</strong>
+  (<a href="../../src/tnfr/validation/multichannel_interface.py"><code>build_coupling_graph</code></a>,
+  U3/PLV) → the scoped read-outs (tetrad, pulse, <code>ξ_C</code> via the emergent
+  spectral gap, static pressure coherence <code>C_static</code>) → the <strong>emergent two-face
+  diagnosis</strong>
+  (<a href="../../src/tnfr/validation/signal_confrontation.py"><code>emergent_wave_fraction</code></a>:
+  project the signal onto the emergent <code>L_sym</code> eigenmodes and read the damping
+  from each modal coordinate's own AR(2) dynamics — oscillate ⇒ conservative-
+  wave face, relax ⇒ diffusive face — so the verdict is set by the emergent
+  dynamics, not by a fixed γ or the raw input spectrum).
+  The signal window has no TNFR EPI-rate channel. Consequently the public
+  <code>coherence</code> result evaluates <code>structural_coherence(mean|DeltaNFR|, 0)</code>.
+  It is a static snapshot read-out, not canonical dynamic <code>C(t)</code> and not an
+  attractor or convergence certificate.
+  Demo: <a href="../../examples/10_applications/159_empirical_confrontation_pipeline.py">example 159</a>
+  (<code>python examples/10_applications/159_empirical_confrontation_pipeline.py path/to/signal.npy</code>).</li>
+<li><strong>Findings below</strong> come from the <strong>TNFR-IA empirical arm</strong> (a separate,
+  downstream repository that consumes this engine) run on the public CHB-MIT
+  scalp-EEG corpus. They are recorded here as the engine's validation evidence;
+  the raw data and experiment scripts live in TNFR-IA, not here.</li>
+</ul>
+<h2 id="findings-real-chb-mit-eeg-the-empirical-arm">Findings (real CHB-MIT EEG; the empirical arm)<a class="headerlink" href="#findings-real-chb-mit-eeg-the-empirical-arm" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Confrontation</th>
+<th>Result</th>
+<th>Reading</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Local phase tetrad</strong> <code>|∇φ|</code>, <code>|K_φ|</code> vs seizure/interictal</td>
+<td>cross-patient (leave-one-patient-out) <strong>AUC ≈ 0.66–0.67</strong>, higher at ictal</td>
+<td>a canonical magnitude carries <strong>labelled clinical state</strong>, and it is the <em>local</em> tetrad the theory centres</td>
+</tr>
+<tr>
+<td><strong>Global Kuramoto <code>R</code></strong> vs seizure</td>
+<td><strong>AUC ≈ 0.49</strong> (chance)</td>
+<td>global hypersynchrony does <strong>not</strong> rise under the bipolar montage / focal onset — the state is <em>local</em>, not mean-field</td>
+</tr>
+<tr>
+<td><strong><code>νf</code></strong> (single structural frequency)</td>
+<td>tracks the measured dominant EEG frequency (<strong>Spearman ρ ≈ 0.86</strong>); fingerprints subjects</td>
+<td><code>νf</code> is canonical <em>and</em> provably meaningful (a robust rhythm meter)</td>
+</tr>
+<tr>
+<td><strong>Single-<code>νf</code> conservative-wave forecaster</strong> (few-shot, leave-one-patient-out)</td>
+<td><strong>ties</strong> a strong Gaussian process and a stabilised DMD/Koopman model (within ~1%); beats a parameter-matched neural net</td>
+<td>strong-baseline accuracy from <strong>1–3 physical constants</strong> on emergent geometry, ~20× cheaper than the neural TNFR</td>
+</tr>
+<tr>
+<td><strong>Face diagnosis</strong> (<code>verify_overdamped_projection</code> at the data-fitted <code>γ</code>)</td>
+<td>real EEG sits on the <strong>under-damped (conservative / oscillatory) face</strong></td>
+<td>the engine's own certificate locates real data on the correct face</td>
+</tr>
+<tr>
+<td><strong>Pre-ictal</strong> (5 min before onset) tetrad</td>
+<td>every magnitude at <strong>chance</strong></td>
+<td>the tetrad is a <strong>detection</strong> marker (concurrent), <strong>not</strong> a <strong>prediction</strong> marker</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cross-subject-confrontation-physionet-eegmmidb-reproducible-in-engine">Cross-subject confrontation (PhysioNet eegmmidb; reproducible in-engine)<a class="headerlink" href="#cross-subject-confrontation-physionet-eegmmidb-reproducible-in-engine" title="Permanent link">&para;</a></h2>
+<p>A second, independent confrontation run <strong>through the shipped instrument</strong>
+(<code>confront_signal</code>, data-fitted face) on the PhysioNet <strong>eegmmidb</strong> eyes-open
+(R01) vs eyes-closed (R02) baselines — 10 subjects, 64-channel, drift removed
+(<code>fft_bandpass</code> 1–40 Hz), paired across subjects with a two-sided binomial sign
+test.  Data are <strong>not</strong> bundled (fetched to a scratch dir); the run is
+reproducible from the engine alone.</p>
+<table>
+<thead>
+<tr>
+<th>Confrontation (open→closed)</th>
+<th>Result</th>
+<th>Reading</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Emergent face</strong> (modal AR(2) on <code>L_sym</code>)</td>
+<td><strong>WAVE / under-damped in 18/20</strong> conditions</td>
+<td>the emergent two-face verdict: real EEG is on the conservative (wave) face; a real thermal field (heat diffusion) lands on the <strong>diffusive</strong> face (97–99% of 2-day windows), so the certificate <strong>discriminates</strong> two real systems</td>
+</tr>
+<tr>
+<td><strong><code>K_φ</code></strong> (phase curvature, local)</td>
+<td>rises in <strong>10/10</strong> subjects (paired dz ≈ +1.1, sign-test <strong>p ≈ 0.002</strong>)</td>
+<td>the phase-curvature field — a canonical TNFR magnitude with no standard analogue — is the <strong>most consistent cross-subject state marker</strong></td>
+</tr>
+<tr>
+<td><strong><code>|∇φ|</code></strong> (phase gradient, local)</td>
+<td>rises in <strong>9/10</strong> (<strong>p ≈ 0.021</strong>)</td>
+<td>the local phase field carries the state consistently across subjects</td>
+</tr>
+<tr>
+<td><strong><code>C_static</code></strong> (pressure snapshot) / <strong><code>Q</code></strong> (quality factor)</td>
+<td>both rise (8/10 each)</td>
+<td>a sharper rhythm; <code>C_static</code> is a pressure-only trend (p ≈ 0.11), not dynamic total <code>C(t)</code></td>
+</tr>
+<tr>
+<td><strong>Global Kuramoto <code>R</code></strong></td>
+<td><strong>falls</strong> in 9/10 (dz ≈ −0.9)</td>
+<td>mean-field synchrony moves <strong>opposite</strong> to the local fields — the local tetrad and <code>R</code> <strong>dissociate</strong></td>
+</tr>
+<tr>
+<td><strong>Collective pulse</strong> <code>ω₀=√λ₂</code></td>
+<td>structural <code>ω₀ ∈ [0.12, 0.27]</code> vs measured <code>1–11 Hz</code> (Spearman ≈ −0.3); flat open↔closed (dz ≈ −0.2, <strong>p = 1.0</strong>)</td>
+<td>the pulse <code>ω_k=√λ_k</code> is the coupling graph's <strong>spatial / topological</strong> standing-wave spectrum — <strong>not</strong> the temporal Hz spectrum, and not a state marker here (the k-NN PLV topology is state-insensitive by construction); the <em>local</em> tetrad carries the state</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Falsification and correction.</strong> The naive single-subject reading (eyes-closed
+⇒ <code>|∇φ|</code> <em>down</em>) did <strong>not</strong> generalise: cross-subject, <code>|∇φ|</code> and <code>K_φ</code> rise
+while <code>R</code> falls.  Measured first, then reported — the cross-subject test
+corrected a premature single-subject conclusion.  The consistent structural fact
+is a <strong>local↔global dissociation</strong>: eyes-closed alpha is a spatially-structured
+rhythm (local phase curvature up, global in-phase order down), an established
+phenomenon (alpha as a spatial / travelling wave) that the canonical <em>local</em>
+tetrad reads correctly where the mean-field order parameter mis-signs it.
+Recovers a known phenomenon structurally; closes nothing, beats nothing, is not
+new physics.</p>
+<h2 id="dynamics-confrontation-the-nodal-equation-as-a-predictor">Dynamics confrontation (the nodal equation as a predictor)<a class="headerlink" href="#dynamics-confrontation-the-nodal-equation-as-a-predictor" title="Permanent link">&para;</a></h2>
+<p>Beyond the static read-outs, the <strong>evolution law</strong> itself is confrontable
+in-engine (<a href="../../src/tnfr/validation/signal_confrontation.py"><code>nodal_prediction_skill</code></a>):
+the EPI channel of <code>∂EPI/∂t = ν_f·ΔNFR</code> is graph diffusion, so its one-step
+predictor <code>x̂(t+1) = x(t) − c·L_rw·x(t)</code> (a single fitted diffusion step
+<code>c = ν_f·dt</code>) is scored by the one-step increment variance it explains beyond
+persistence, against a per-channel AR-1 baseline.</p>
+<table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>nodal 1-step skill</th>
+<th>AR-1</th>
+<th>Reading</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>synthetic graph diffusion</td>
+<td><strong>+0.16–+0.21</strong> (recovers <code>c</code>)</td>
+<td>+0.03</td>
+<td>validated: the predictor recovers a genuine diffusion law</td>
+</tr>
+<tr>
+<td>real EEG (eyes-closed)</td>
+<td>+0.02</td>
+<td><strong>+0.05</strong></td>
+<td>oscillatory — the EPI <em>diffusion</em> channel is weak; AR-1 wins</td>
+</tr>
+<tr>
+<td>real thermal field (60–120 min steps)</td>
+<td><strong>+0.015–+0.029</strong></td>
+<td>+0.013–+0.025</td>
+<td>diffusive — the nodal diffusion <strong>matches/edges</strong> AR-1 at diffusive timescales</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Diffusion-selective, internally consistent with the two faces.</strong> The nodal EPI
+channel is a <em>diffusion</em> law, so its one-step skill tracks how diffusive the
+system is: positive and AR-1-matching for the thermal (diffusive-face) field,
+weak for oscillatory EEG (wave-face, where AR-1 wins).  Absolute skills are
+small (~0.02–0.03 on real data) — a <strong>structural-fidelity</strong> result, not superior
+forecasting.  This anchors the paradigm's core <em>evolution law</em> on real data, not
+just its static observables.</p>
+<h2 id="honest-scope">Honest scope<a class="headerlink" href="#honest-scope" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Ties, does not beat.</strong> On real EEG the canonical conservative-wave model
+  reaches the same accuracy band as strong classical baselines (GP, stabilised
+  DMD); it does <strong>not</strong> out-predict them. The distinctive value is <em>structural</em>:
+  parsimony (few physical constants), a canonical/emergent construction,
+  interpretability (<code>νf</code>, the local tetrad), stability by construction.</li>
+<li><strong>Detection, not prediction.</strong> The tetrad tracks the seizure while it happens
+  (AUC ≈ 0.67), not its approach (pre-ictal at chance).</li>
+<li><strong>One substrate, modest margins.</strong> Single corpus; relative-MSE margins over the
+  baselines are ~1%; AUC ≈ 0.67 is not a competitive seizure detector.</li>
+<li><strong>Cross-subject, still one paradigm.</strong> The eegmmidb generalisation is n = 10,
+  a single eyes-open/closed paradigm; effect sizes are medium–large (<code>K_φ</code>
+  p ≈ 0.002) but <code>C</code> is only a trend. It recovers a known phenomenon (spatial
+  alpha) rather than out-predicting a baseline.</li>
+<li><strong>The emergent face needs adequate windows.</strong> The two-face verdict reads the
+  damping from the emergent modal dynamics (AR(2) per <code>L_sym</code> mode), not from
+  the input spectrum. It certifies <strong>both</strong> faces on real data — EEG on the
+  <em>wave</em> face (18/20) and a real thermal field on the <em>diffusive</em> face (97–99%),
+  completing the discrimination the input-spectrum Q could not — but the per-mode
+  fit is under-powered for very short windows (EEG converges to <em>wave</em> only for
+  windows of roughly a thousand samples or more).</li>
+<li><strong>The falsifiable positive:</strong> the <em>canonical, emergent</em> representation carries
+  labelled state and lands exactly where the theory's <em>local</em> tetrad fields live
+  — the first labelled evidence that a canonical TNFR magnitude carries real
+  clinical state. Closes no open problem.</li>
+</ul>
+<p>See also <a href="../STRUCTURAL_INTERFACE_THEORY/"><code>docs/STRUCTURAL_INTERFACE_THEORY.md</code></a>
+(the tetrad vs the Kuramoto order parameter on real EEG) and
+<a href="../../theory/EMERGENT_ONTOLOGY/"><code>theory/EMERGENT_ONTOLOGY.md</code></a> §0 (the empirical
+caveat this record nuances).</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

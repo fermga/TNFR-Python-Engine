@@ -1,0 +1,1450 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/TNFR_STRUCTURAL_OBSERVABILITY/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>TNFR Structural Observability — the Symmetry-Sector Theorem (R1) - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-structural-observability-the-symmetry-sector-theorem-r1" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              TNFR Structural Observability — the Symmetry-Sector Theorem (R1)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-question" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The question
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-diffusion-sector-result-derived" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The diffusion-sector result (DERIVED)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-certification-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Certification (MEASURED)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-pointed-graphs-declared-symmetry-breaking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Pointed graphs (declared symmetry breaking)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4b-per-operator-equivariance-all-13-certified-under-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4b. Per-operator equivariance (all 13, certified under isolation)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4c-word-composition-closure-n06" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4c. Word composition closure (N06)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-honest-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Honest scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-structural-observability-the-symmetry-sector-theorem-r1">TNFR Structural Observability — the Symmetry-Sector Theorem (R1)<a class="headerlink" href="#tnfr-structural-observability-the-symmetry-sector-theorem-r1" title="Permanent link">&para;</a></h1>
+<p><strong>Status</strong>: diffusion-sector base case — DERIVED (representation theory) +
+MEASURED (implementation-certified). The full operator-by-operator equivariance
+theorem is a later R1 stage and is <strong>not</strong> claimed here.
+<strong>Modules</strong>: <a href="../../src/tnfr/physics/symmetry_sectors.py">src/tnfr/physics/symmetry_sectors.py</a>,
+<a href="../../src/tnfr/physics/equivariance.py">src/tnfr/physics/equivariance.py</a> ·
+<strong>Tests</strong>: <a href="../../tests/physics/test_symmetry_sectors.py">tests/physics/test_symmetry_sectors.py</a> ·
+<strong>Origin</strong>: formalises <a href="../../examples/08_emergent_geometry/123_symmetry_sector_decomposition.py">example 123</a>.</p>
+<h2 id="1-the-question">1. The question<a class="headerlink" href="#1-the-question" title="Permanent link">&para;</a></h2>
+<p>What information can a TNFR dynamics generate or resolve when the graph, the
+initial condition, <code>νf</code>, the node selection and the operators all respect a
+symmetry group? The answer bounds every "wall" in the §9.5–§9.10 number-theory
+arc: some information is local, some lives in collective modes, some was injected
+from outside.</p>
+<h2 id="2-the-diffusion-sector-result-derived">2. The diffusion-sector result (DERIVED)<a class="headerlink" href="#2-the-diffusion-sector-result-derived" title="Permanent link">&para;</a></h2>
+<p>Let <code>Γ = Aut(G, W)</code> act on <code>ℝᴺ</code> by the permutation representation <code>σ ↦ P_σ</code>. The
+canonical structural-diffusion operator <code>L_rw = I − D⁻¹W</code> (the EPI channel of the
+nodal equation, <a href="../../src/tnfr/physics/structural_diffusion.py">structural_diffusion.py</a>)
+is <strong>equivariant</strong>:</p>
+<p>$$P_\sigma\, L_{rw} = L_{rw}\, P_\sigma \qquad \forall\,\sigma\in\Gamma .$$</p>
+<p>The <strong>Reynolds projector</strong> $Q_\Gamma = \tfrac{1}{|\Gamma|}\sum_{\sigma}P_\sigma$
+satisfies $\operatorname{im}(Q_\Gamma)=\mathrm{Fix}(\Gamma)$ and
+$\ker(Q_\Gamma)=\mathrm{Fix}(\Gamma)^\perp$, with</p>
+<p>$$\dim\mathrm{Fix}(\Gamma) = #{\text{vertex orbits of }\Gamma}.$$</p>
+<p>By Schur's lemma an equivariant operator commutes with $Q_\Gamma$, so it
+block-diagonalises:</p>
+<p>$$\mathbb{R}^N = \mathrm{Fix}(\Gamma)\ \oplus\ \mathrm{Fix}(\Gamma)^\perp,\qquad
+[L_{rw}, Q_\Gamma] = 0 .$$</p>
+<p><strong>Consequence for the flow.</strong> With an orbit-constant <code>νf</code> (so <code>D_νf</code> also
+commutes with <code>P_σ</code>), the overdamped nodal-equation flow
+$\dot x = -D_{\nu f} L_{rw} x$ preserves both sectors. A symmetric seed stays in
+<code>Fix(Γ)</code>; the canonical dynamics alone cannot manufacture per-node structure that
+separates two nodes in the same orbit. Any such separation must come from the
+seed or an external per-node lever, not from the operator.</p>
+<h2 id="3-certification-measured">3. Certification (MEASURED)<a class="headerlink" href="#3-certification-measured" title="Permanent link">&para;</a></h2>
+<p><a href="../../src/tnfr/physics/equivariance.py">verify_diffusion_equivariance</a> measures, on
+each test graph, the equivariance residual $\max_\sigma\lVert P_\sigma L - L
+P_\sigma\rVert_2$ and the sector-preservation residual $\lVert L Q_\Gamma -
+Q_\Gamma L\rVert_2$, both against the derived tolerance $\tau=\sqrt{\varepsilon}\,
+\lVert L\rVert_2$. Across cycle, complete, star, path and torus:</p>
+<table>
+<thead>
+<tr>
+<th>Graph</th>
+<th>orbits = <code>dim Fix(Γ)</code></th>
+<th>equivariant</th>
+<th>sectors preserved</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cycle <code>C₈</code> (vertex-transitive)</td>
+<td>1</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>complete <code>K₆</code></td>
+<td>1</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>star <code>K₁,₅</code></td>
+<td>2 (center, leaves)</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path <code>P₆</code></td>
+<td>3 (ends, near-ends, middle)</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>torus <code>C₃×C₃</code></td>
+<td>1</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><code>rank Q_Γ = #orbits</code> in every case; the residuals are at machine precision. The
+star shows the result does <strong>not</strong> need a symmetric operator: <code>L_rw</code> there is
+non-symmetric yet still commutes with <code>Aut = S₅</code>. Results are relabel-invariant
+and weight/direction aware (a distinguished heavy edge lowers the symmetry and
+raises the orbit count; a directed cycle stays single-orbit under rotations).</p>
+<h2 id="4-pointed-graphs-declared-symmetry-breaking">4. Pointed graphs (declared symmetry breaking)<a class="headerlink" href="#4-pointed-graphs-declared-symmetry-breaking" title="Permanent link">&para;</a></h2>
+<p>Selecting a single origin node <code>o</code> (a localized emission) is <strong>not</strong> equivariant.
+It changes the object of study from <code>G</code> to the <strong>pointed graph</strong> <code>(G, o)</code> and
+reduces the relevant group to the stabilizer <code>Γ_o</code>. This is legitimate provided
+the break is <em>declared</em>: the reduced symmetry is stated, not presented as
+spontaneous emergence. This distinction is the basis of the arithmetic-pulse
+programme (R2), which studies the pointed residue network <code>(G_{p,k}, 0)</code>.</p>
+<p><strong>Formal structure (N07).</strong> The stabilizer
+<code>Γ_o = {g ∈ Aut(G) : g(o) = o}</code> is a subgroup of <code>Aut(G)</code>
+(<a href="../../src/tnfr/physics/pointed_symmetry.py">pointed_symmetry.py</a>), and three facts
+make the break <em>exactly</em> <code>Aut(G) → Γ_o</code>:</p>
+<ul>
+<li><strong>Orbit–stabilizer</strong> (DERIVED group theory, MEASURED): <code>|Aut(G)| = |Γ_o| · |orbit(o)|</code>
+  — verified <code>24 = 6·4</code> (star leaf) and <code>12 = 2·6</code> (cycle vertex).</li>
+<li><strong>Residual sectors refine, never coarsen</strong> (DERIVED): <code>Fix(Aut(G)) ⊆ Fix(Γ_o)</code>
+  and <code>dim Fix(Γ_o) = #orbits(Γ_o) ≥ #orbits(Aut(G))</code>. The origin splits its
+  orbit: star <code>2 → 3</code> sectors (<code>{0},{1,2,3,4} → {0},{1},{2,3,4}</code>), cycle <code>1 → 4</code>.</li>
+<li><strong>Break localization</strong> (MEASURED): a pointed Emission maps <code>Fix(Aut(G))</code> <strong>out</strong>
+  of <code>Fix(Aut(G))</code> (<code>break_magnitude ≈ 0.07 &gt; 0</code>) yet <strong>into</strong> <code>Fix(Γ_o)</code>
+  (<code>stabilizer_residual = 0</code>). The broken directions are exactly the coset space
+  <code>Aut(G)/Γ_o = orbit(o)</code>; a singleton-orbit origin (the star centre) breaks
+  nothing (<code>break_magnitude = 0</code>).</li>
+</ul>
+<p><strong>No privileged origin (conjugation).</strong> Origins in one orbit are conjugate:
+<code>Γ_{g(o)} = g Γ_o g⁻¹</code> and <code>O@{g(o)} = g (O@o) g⁻¹</code> (MEASURED), so the pointed
+structures at <code>o</code> and <code>g(o)</code> are isomorphic — the choice of <code>0</code> in <code>(G_{p,k}, 0)</code>
+is a labelling convention, and the arithmetic-pulse observables are independent
+of it.</p>
+<h2 id="4b-per-operator-equivariance-all-13-certified-under-isolation">4b. Per-operator equivariance (all 13, certified under isolation)<a class="headerlink" href="#4b-per-operator-equivariance-all-13-certified-under-isolation" title="Permanent link">&para;</a></h2>
+<p>The non-linear stage asks whether each operator <code>O</code> is equivariant,
+<code>O(P_σ x) = P_σ O(x)</code>. The testable form: an equivariant operator maps a
+<code>Fix(Γ)</code> state to a <code>Fix(Γ)</code> state, so applying it at <code>v</code> and at <code>σ(v)</code> on a
+σ-invariant seed gives σ-related results
+(<a href="../../src/tnfr/physics/operator_equivariance.py">operator_equivariance.py</a>,
+<a href="../../tests/operators/test_operator_equivariance.py">test_operator_equivariance.py</a>).</p>
+<p><strong>Result (MEASURED).</strong> On the vertex-transitive cycle (uniform seed) and the
+two-orbit star (orbit-constant seed), <strong>all 13 canonical operators</strong> — AL, EN,
+IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH — are equivariant to
+machine precision (residual $&lt;10^{-6}$, most exactly $0$). Combined with the
+diffusion base case, a grammar-composed <em>word</em> of equivariant operators is
+equivariant, so no canonical word can move a symmetric state into
+$\mathrm{Fix}(\Gamma)^\perp$ — the §8.1.7 falsification search finds no
+counterexample.</p>
+<p><strong>Root cause and fix (N01).</strong> The certification requires each operator to be
+measured from an <strong>independent, clean graph cache</strong>. TNFR content-keyed caches
+(<code>_dnfr_prep_cache</code>, <code>_node_set_checksum_cache</code>, the graph cache managers) live in
+<code>G.graph</code> and survive <code>networkx</code>'s <code>G.copy()</code> by <strong>shared reference</strong>; keyed on a
+<strong>label-independent</strong> node-set checksum, they collide between the two isomorphic
+copies <code>A</code> and <code>B = σ(A)</code>, so <code>B</code> reads <code>A</code>'s cached ΔNFR prep. On reused seed
+graphs this leaked across operators and made a <em>batch</em> audit report spurious
+$\sim 10^{-3}$ residuals (verified: Silence is $0$ in isolation, $\sim 10^{-3}$
+only after other operators run). The fix (<code>_isolate_graph_caches</code>) drops those
+content caches on each copy, so every measurement is an <strong>independent
+experiment</strong> with a private cache (report R1-T01: prefer per-experiment local
+cache when a global content key cannot distinguish isomorphic siblings). With it
+the batch audit is exactly $0$ for all 13 operators, independent of cache warmth,
+operator order, or repeated runs
+(<a href="../../tests/physics/test_equivariance_cache_isolation.py">test_equivariance_cache_isolation.py</a>).
+The config keys (<code>_dnfr_weights</code>, <code>_DNFR_META</code>) are preserved — only the caches
+are isolated.</p>
+<h2 id="4c-word-composition-closure-n06">4c. Word composition closure (N06)<a class="headerlink" href="#4c-word-composition-closure-n06" title="Permanent link">&para;</a></h2>
+<p>The base case (§4b) plus one algebraic step give the <em>general</em> word theorem.</p>
+<p><strong>Theorem (composition closure).</strong> If each factor <code>O_i</code> is Γ-equivariant
+(<code>O_i ρ(g) = ρ(g) O_i</code> for every automorphism <code>g</code>), then the grammar word
+<code>W = O_k ∘ … ∘ O_1</code> is Γ-equivariant. <em>Proof (induction on length).</em> Length 1 is
+the per-operator base case. For <code>W' = O ∘ W</code> with <code>W, O</code> equivariant,</p>
+<p>$$W' \rho(g) = O\,(W \rho(g)) = O\,(\rho(g)\,W) = (O \rho(g))\,W = \rho(g)\,(O W) = \rho(g)\,W'. \qquad\blacksquare$$</p>
+<p><strong>Corollary (<code>Fix(Γ)</code> preservation).</strong> An equivariant <code>W</code> maps <code>Fix(Γ)</code> into
+<code>Fix(Γ)</code>: if <code>ρ(g)x = x</code> for all <code>g</code> then <code>ρ(g) W(x) = W(ρ(g)x) = W(x)</code>. A
+symmetric configuration therefore <strong>cannot</strong> be pushed into <code>Fix(Γ)^⊥</code> by any
+grammar word — the wall of examples 117–122 and the Riemann residual
+<code>S(T) ∈ Fix(S_n)^⊥</code>.</p>
+<p><strong>Status.</strong> The inductive <strong>step is DERIVED</strong> (the algebra above); the length-1
+<strong>base case is MEASURED</strong> (§4b, all 13 operators). The composition-closure
+<em>conclusion</em> is therefore DERIVED conditional on the measured base case — not a
+new empirical claim per word. The measurement in
+<a href="../../src/tnfr/physics/word_equivariance.py">word_equivariance.py</a> confirms it: the
+five canonical words (Bootstrap, Bootstrap+close, Stabilize, Propagate, Explore)
+have <strong>exactly zero</strong> residual on both test cases, every prefix stays within
+tolerance (<code>composition_closure_holds</code>), and a Γ-symmetric sweep keeps the seed
+orbit-constant (<code>word_preserves_fix</code>)
+(<a href="../../tests/physics/test_word_equivariance.py">test_word_equivariance.py</a>). This
+closes remaining item (i) of §5; the non-equivariant <strong>selector</strong> (ii) is the
+pointed structure of §4 (N07).</p>
+<h2 id="5-honest-scope">5. Honest scope<a class="headerlink" href="#5-honest-scope" title="Permanent link">&para;</a></h2>
+<p>This is the representation theory of graph automorphisms (Schur's lemma)
+re-expressed in the canonical emergent operator, with an implementation
+certificate. It <strong>explains and unifies</strong> the walls of the §9.5–§9.10 arc — the
+residue-digraph vertex-transitivity wall (ex 120), the substrate blindness, the
+spectral primality (ex 119) and the Riemann residual
+$S(T)\in\ker(\mathcal R_\infty)\cap\mathrm{Fix}(S_n)^\perp$ — as one
+<code>Fix(Γ)/Fix(Γ)^⊥</code> split for different groups. It is <strong>not</strong> new mathematics and
+closes no open problem. The diffusion base case, the per-operator audit (§4b, all
+13 equivariant under isolation), the word composition-closure theorem (§4c)
+<strong>and</strong> the pointed selector structure (§4, N07) are now established: composition
+preserves equivariance by a derived induction on the measured base case, and a
+localized selector performs a <em>declared</em> reduction <code>Aut(G) → Γ_o</code> (orbit–
+stabilizer, residual-sector refinement, origin conjugation) rather than a
+spontaneous break. The representation-theoretic picture of R1 is therefore
+complete; what it does <strong>not</strong> do is close any external open problem — it
+organizes and certifies the walls, nothing more.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

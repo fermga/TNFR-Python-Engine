@@ -1,0 +1,2254 @@
+"""
+TNFR Arithmetic Network: Prime Numbers as Zero-Pressure Fixed Points
+
+Implementation of the theoretical framework for detecting structural primality
+(ΔNFR = 0) in TNFR arithmetic networks over the natural numbers.
+
+Theoretical foundation: theory/TNFR_NUMBER_THEORY.md (Canonical)
+  - Primality as structural equilibrium (ΔNFR = 0)
+  - Arithmetic structural triad (EPI, νf, ΔNFR)
+  - Canonical unit coefficients (per AGENTS.md §3 only π is a genuine
+    structural scale; by the §4.2 coefficient-independence theorem the triad
+    weights are canonically unity — no fitted overlay)
+  - Spectral factorization via Paley-Jacobi decoding
+
+Scope (theory/TNFR_NUMBER_THEORY.md §9.5): distinct domains can reuse the
+numeric predicate ΔNFR = 0 without sharing a state space or dynamics. For
+numbers there are three sectors: this
+module is SECTOR A -- the per-node arithmetic ΔNFR (an exact but *circular*
+re-expression) CONSUMES divisibility (Ω, τ, σ); SECTOR B -- the spectral
+Paley/residue Fiedler gap (input only x^2 mod n) -- is a non-circular spectral
+probe carried by the factorizer
+(factorization-lab); SECTOR C (rep-theoretic irreducibility) is refuted. Only
+the equilibrium criterion (tnfr.metrics.common.is_structural_equilibrium) is
+shared across domains; the ΔNFR realisations are domain-specific.
+
+Author: TNFR Research Team
+Date: 2025-11-13
+Status: CANONICAL (theory/TNFR_NUMBER_THEORY.md)
+"""
+
+from __future__ import annotations
+
+import logging
+import math
+import operator
+from dataclasses import dataclass
+from typing import Iterable
+
+import networkx as nx
+
+from ..config.defaults_core import K_PHI_CURVATURE_THRESHOLD  # 0.9×π ≈ 2.827
+from ..constants.canonical import (
+    DELTA_PHI_MAX,
+    MATH_DELTA_NFR_THRESHOLD_2X_CANONICAL,
+    MATH_DELTA_NFR_THRESHOLD_CANONICAL,
+)
+from ..errors import TNFRValueError
+from ..utils import angle_diff
+from .unified_numerical import np
+
+logger = logging.getLogger(__name__)
+
+# The arithmetic triad uses canonical UNIT coefficients. Per AGENTS.md §3 only π
+# is a genuine structural scale; φ, γ and e are not. By the coefficient-
+# independence theorem (theory/TNFR_NUMBER_THEORY.md §4.2) the primality criterion
+# ΔNFR = 0 is invariant to any positive rescaling, so the canonical weights are
+# unity and the structural content lives entirely in the arithmetic invariants
+# (Ω, τ, σ, n). See ArithmeticTNFRParameters.
+
+# Centralized TNFR cache infrastructure (robust, shared across repo)
+from .unified_cache import CacheLevel, cache_tnfr_computation
+
+_CACHE_OK = True
+
+# Import centralized TNFR physics functions for maximum reuse and cache efficiency
+try:
+    from ..physics.fields import (
+        compute_dnfr_flux,
+        compute_phase_current,
+        compute_phase_curvature,
+        compute_phase_gradient,
+    )
+    from ..physics.fields import compute_structural_potential as centralized_phi_s
+    from ..physics.fields import estimate_coherence_length as centralized_xi_c
+
+    HAS_CENTRALIZED_FIELDS = True
+except ImportError:
+    HAS_CENTRALIZED_FIELDS = False
+
+# Local imports (will integrate with existing TNFR modules)
+try:
+    from sympy import divisor_count, divisor_sigma, factorint, isprime
+
+    HAS_SYMPY = True
+except ImportError:
+    HAS_SYMPY = False
+    logger.warning(" sympy not available. Using basic implementations.")
+
+# ============================================================================
+# ARITHMETIC TNFR NETWORK CLASS
+# ============================================================================
+
+
+@dataclass
+class ArithmeticTNFRParameters:
+    """Canonical weights for the arithmetic TNFR triad (EPI, νf, ΔNFR).
+
+    All weights are **unity**. Per AGENTS.md §3 the only genuine structural
+    constant is π. The earlier weight overlay was a post-hoc *operational*
+    convention fitted to approximate empirical values (ζ=1.0, η=0.8, θ=0.6),
+    not a derivation. By the
+    Coefficient Independence theorem (theory/TNFR_NUMBER_THEORY.md §4.2) the
+    primality criterion ``ΔNFR = 0`` holds for *any* positive coefficients, so
+    the canonical choice is unity: the structural content lives entirely in the
+    arithmetic invariants (Ω, τ, σ, n), with no fitted/numerological scale.
+
+    The fields remain configurable so callers can explore the (off-equilibrium)
+    pressure landscape; only the canonical *defaults* are fixed at 1.0.
+    """
+
+    # EPI weights (structural form): EPI = 1 + α·Ω + β·lnτ + γ·(σ/n − 1)
+    alpha: float = 1.0  # factorization-complexity weight (Ω)
+    beta: float = 1.0  # divisor-complexity weight (ln τ)
+    gamma: float = 1.0  # abundance-deviation weight (σ/n − 1)
+
+    # νf weights (structural frequency): νf = ν₀·(1 + δ·τ/n + ε·Ω/ln n)
+    nu_0: float = 1.0  # base structural frequency
+    delta: float = 1.0  # divisor-density modulation (τ/n)
+    epsilon: float = 1.0  # factorization modulation (Ω/ln n)
+
+    # ΔNFR weights (structural pressure, §4.2 coefficient-independent):
+    # ΔNFR = ζ·(Ω−1) + η·(τ−2) + θ·(σ/n − (1 + 1/n))
+    zeta: float = 1.0  # factorization pressure (Ω − 1)
+    eta: float = 1.0  # divisor pressure (τ − 2)
+    theta: float = 1.0  # abundance pressure (σ/n − (1 + 1/n))
+
+
+@dataclass(frozen=True)
+class ArithmeticStructuralTerms:
+    """Canonical arithmetic invariants per natural number node."""
+
+    tau: int
+    sigma: int
+    omega: int
+
+    def as_dict(self) -> dict[str, int]:
+        return {"tau": self.tau, "sigma": self.sigma, "omega": self.omega}
+
+
+@dataclass(frozen=True)
+class PrimeCertificate:
+    """Structured report for the TNFR prime criterion ΔNFR = 0."""
+
+    number: int
+    delta_nfr: float
+    structural_prime: bool
+    tolerance: float
+    tau: int
+    sigma: int
+    omega: int
+    explanation: str
+    components: dict[str, float] | None = None
+
+    def as_dict(self) -> dict[str, object]:
+        return {
+            "number": self.number,
+            "delta_nfr": self.delta_nfr,
+            "structural_prime": self.structural_prime,
+            "tolerance": self.tolerance,
+            "tau": self.tau,
+            "sigma": self.sigma,
+            "omega": self.omega,
+            "components": (
+                dict(self.components) if self.components is not None else None
+            ),
+            "explanation": self.explanation,
+        }
+
+
+class ArithmeticTNFRFormalism:
+    """Explicit formulas that tie TNFR physics to arithmetic invariants."""
+
+    @staticmethod
+    def epi_value(
+        n: int, terms: ArithmeticStructuralTerms, params: ArithmeticTNFRParameters
+    ) -> float:
+        divisor_complexity = params.beta * math.log(max(terms.tau, 1))
+        divisor_excess = params.gamma * (terms.sigma / n - 1)
+        factorization_complexity = params.alpha * terms.omega
+        return 1.0 + factorization_complexity + divisor_complexity + divisor_excess
+
+    @staticmethod
+    def frequency_value(
+        n: int, terms: ArithmeticStructuralTerms, params: ArithmeticTNFRParameters
+    ) -> float:
+        divisor_density = params.delta * terms.tau / n
+        factorization_term = params.epsilon * terms.omega / math.log(n)
+        return params.nu_0 * (1.0 + divisor_density + factorization_term)
+
+    @staticmethod
+    def delta_nfr_value(
+        n: int, terms: ArithmeticStructuralTerms, params: ArithmeticTNFRParameters
+    ) -> float:
+        factorization_pressure = params.zeta * (terms.omega - 1)
+        divisor_pressure = params.eta * (terms.tau - 2)
+        sigma_pressure = params.theta * (terms.sigma / n - (1 + 1 / n))
+        return factorization_pressure + divisor_pressure + sigma_pressure
+
+    @staticmethod
+    def component_breakdown(
+        n: int, terms: ArithmeticStructuralTerms, params: ArithmeticTNFRParameters
+    ) -> dict[str, float]:
+        return {
+            "factorization_pressure": params.zeta * (terms.omega - 1),
+            "divisor_pressure": params.eta * (terms.tau - 2),
+            "sigma_pressure": params.theta * (terms.sigma / n - (1 + 1 / n)),
+        }
+
+    @staticmethod
+    def local_coherence(delta_nfr: float) -> float:
+        """Per-node arithmetic coherence ``C = 1/(1 + |ΔNFR_arith|)``.
+
+        Delegates to the canonical single-node coherence kernel
+        :func:`tnfr.metrics.common.structural_coherence`. A structural prime
+        and a relaxed graph node both map zero pressure and zero change to the
+        numeric value ``C = 1``. This shared kernel does not identify their
+        state spaces, pressure definitions or dynamics.
+        """
+        from ..metrics.common import structural_coherence
+
+        return structural_coherence(delta_nfr)
+
+    @staticmethod
+    def symbolic_delta_nfr(params: ArithmeticTNFRParameters | None = None):
+        params = params or ArithmeticTNFRParameters()
+        try:
+            import sympy as sp  # type: ignore
+
+            omega, tau, sigma, n = sp.symbols("omega tau sigma n", positive=True)
+            expr = (
+                params.zeta * (omega - 1)
+                + params.eta * (tau - 2)
+                + params.theta * (sigma / n - (1 + 1 / n))
+            )
+            return expr
+        except Exception:
+            return (
+                f"ΔNFR(n)= {params.zeta}(ω-1) + {params.eta}(τ-2) + "
+                f"{params.theta}(σ/n - (1+1/n))"
+            )
+
+    @staticmethod
+    def prime_certificate(
+        n: int,
+        terms: ArithmeticStructuralTerms,
+        params: ArithmeticTNFRParameters,
+        *,
+        tolerance: float = 1e-12,
+        components: dict[str, float] | None = None,
+    ) -> PrimeCertificate:
+        from ..metrics.common import is_structural_equilibrium
+
+        if components is None:
+            components = ArithmeticTNFRFormalism.component_breakdown(n, terms, params)
+        delta = ArithmeticTNFRFormalism.delta_nfr_value(n, terms, params)
+        # Primality is the zero-pressure fixed-point predicate read on this
+        # state-independent arithmetic field.  Other domains can reuse the
+        # numeric predicate while retaining different dynamics and pressures.
+        structural_prime = is_structural_equilibrium(delta, eps_dnfr=tolerance)
+        explanation = (
+            "ΔNFR vanishes within tolerance; node is a zero-pressure fixed point"
+            if structural_prime
+            else "ΔNFR ≠ 0, coherence pressure reveals composite structure"
+        )
+        return PrimeCertificate(
+            number=n,
+            delta_nfr=float(delta),
+            structural_prime=structural_prime,
+            tolerance=float(tolerance),
+            tau=terms.tau,
+            sigma=terms.sigma,
+            omega=terms.omega,
+            components=components,
+            explanation=explanation,
+        )
+
+
+class ArithmeticTNFRNetwork:
+    """
+    TNFR network where nodes are natural numbers and dynamics reveal prime structure.
+
+    Each number n becomes a TNFR node with:
+    - EPI_n: Arithmetic structural form
+    - νf_n: Arithmetic frequency
+    - ΔNFR_n: Factorization pressure
+
+    Prime numbers are zero-pressure fixed points in the declared arithmetic field.
+    """
+
+    def __init__(
+        self, max_number: int = 100, parameters: ArithmeticTNFRParameters | None = None
+    ):
+        """
+        Initialize arithmetic TNFR network.
+
+        Args:
+            max_number: Maximum number to include in network (default 100)
+            parameters: TNFR calibration parameters
+        """
+        if isinstance(max_number, bool) or type(max_number).__name__ == "bool_":
+            raise TypeError("max_number must be an integer, not bool")
+        try:
+            normalized_max = operator.index(max_number)
+        except TypeError as exc:
+            raise TypeError("max_number must be an integer") from exc
+        self.max_number = int(normalized_max)
+        if self.max_number < 2:
+            raise ValueError("max_number must be >= 2")
+        self.params = parameters or ArithmeticTNFRParameters()
+
+        # Optimization: Precompute Sieve for fast factorization
+        self._min_prime_factor = self._precompute_sieve(self.max_number)
+
+        # Build the network
+        self.graph = self._construct_arithmetic_network()
+        self._graph_undirected_cache: nx.Graph | None = None
+        self._compute_tnfr_properties()
+
+    def _precompute_sieve(self, n: int) -> np.ndarray:
+        """
+        Precompute Minimum Prime Factor (LPF) for all numbers up to n.
+        Allows O(log n) factorization.
+        """
+        # Use numpy for speed
+        lpf = np.arange(n + 1)
+        lpf[0] = 0
+        lpf[1] = 1
+
+        # Sieve of Eratosthenes logic
+        for i in range(2, int(math.sqrt(n)) + 1):
+            if lpf[i] == i:  # i is prime
+                # Mark multiples
+                # We use slicing for vectorization (FFT-like speedup for arithmetic)
+                lpf[i * i : n + 1 : i] = i
+
+        return lpf
+
+    def _construct_arithmetic_network(self) -> nx.DiGraph:
+        """Construct directed graph representing arithmetic relationships."""
+        G = nx.DiGraph()
+
+        # Add number nodes
+        for n in range(2, self.max_number + 1):  # Start from 2 (first prime)
+            G.add_node(n, number=n)
+
+        # Add edges based on arithmetic relationships
+        for n1 in range(2, self.max_number + 1):
+            for n2 in range(n1 + 1, self.max_number + 1):
+
+                # Divisibility links
+                if n2 % n1 == 0:  # n1 divides n2
+                    weight = self._divisibility_weight(n1, n2)
+                    G.add_edge(n1, n2, weight=weight, type="divisibility")
+
+                # GCD links (for numbers sharing factors)
+                gcd_val = math.gcd(n1, n2)
+                if gcd_val > 1:
+                    weight = self._gcd_weight(n1, n2, gcd_val)
+                    G.add_edge(n1, n2, weight=weight, type="gcd")
+                    G.add_edge(n2, n1, weight=weight, type="gcd")  # Symmetric
+
+        return G
+
+    def _divisibility_weight(self, n1: int, n2: int) -> float:
+        """Compute link weight for divisibility relationship."""
+        if n2 % n1 != 0:
+            return 0.0
+        quotient = n2 // n1
+        return 1.0 / math.log(quotient + 1)
+
+    def _gcd_weight(self, n1: int, n2: int, gcd_val: int) -> float:
+        """Compute link weight based on GCD."""
+        return gcd_val / max(n1, n2)
+
+    def _compute_tnfr_properties(self) -> None:
+        """Compute TNFR properties (EPI, νf, ΔNFR) for each number."""
+        for n in self.graph.nodes():
+            # Compute arithmetic functions
+            tau_n = self._divisor_count(n)
+            sigma_n = self._divisor_sum(n)
+            omega_n = self._prime_factor_count(n)
+            terms = ArithmeticStructuralTerms(tau=tau_n, sigma=sigma_n, omega=omega_n)
+
+            # Compute TNFR properties via the formalism helpers
+            epi_n = ArithmeticTNFRFormalism.epi_value(n, terms, self.params)
+            nu_f_n = ArithmeticTNFRFormalism.frequency_value(n, terms, self.params)
+            delta_nfr_n = ArithmeticTNFRFormalism.delta_nfr_value(n, terms, self.params)
+            local_coherence = ArithmeticTNFRFormalism.local_coherence(delta_nfr_n)
+            component_pressures = ArithmeticTNFRFormalism.component_breakdown(
+                n, terms, self.params
+            )
+
+            # Store TNFR telemetry for this number node
+            self.graph.nodes[n].update(
+                {
+                    "tau": tau_n,  # Number of divisors
+                    "sigma": sigma_n,  # Sum of divisors
+                    "omega": omega_n,  # Prime factor count (with multiplicity)
+                    "EPI": epi_n,  # Structural form
+                    "nu_f": nu_f_n,  # Structural frequency
+                    "delta_nfr": delta_nfr_n,  # Factorization pressure
+                    "is_prime": self._is_prime(n),  # Ground truth for validation
+                    "structural_terms": terms,
+                    "delta_components": component_pressures,
+                    "coherence_local": local_coherence,
+                }
+            )
+
+    # ========================================================================
+    # NUMBER THEORY FUNCTIONS
+    # ========================================================================
+
+    def _divisor_count(self, n: int) -> int:
+        """Count the number of divisors of n (tau function)."""
+        # Use Sieve-based factorization if available (Fastest)
+        if hasattr(self, "_min_prime_factor") and n <= self.max_number:
+            factors = self._get_prime_factors(n)
+            tau = 1
+            for exponent in factors.values():
+                tau *= exponent + 1
+            return tau
+
+        if HAS_SYMPY:
+            return int(divisor_count(n))
+        else:
+            # Basic implementation
+            count = 0
+            for i in range(1, int(math.sqrt(n)) + 1):
+                if n % i == 0:
+                    count += 1
+                    if i != n // i:  # Avoid counting square root twice
+                        count += 1
+            return count
+
+    def _divisor_sum(self, n: int) -> int:
+        """Sum of all divisors of n (sigma function)."""
+        # Use Sieve-based factorization if available (Fastest)
+        if hasattr(self, "_min_prime_factor") and n <= self.max_number:
+            factors = self._get_prime_factors(n)
+            sigma = 1
+            for p, exponent in factors.items():
+                # Geometric series sum: (p^(e+1) - 1) / (p - 1)
+                sigma *= (p ** (exponent + 1) - 1) // (p - 1)
+            return sigma
+
+        if HAS_SYMPY:
+            return int(divisor_sigma(n, 1))
+        else:
+            # Basic implementation
+            total = 0
+            for i in range(1, int(math.sqrt(n)) + 1):
+                if n % i == 0:
+                    total += i
+                    if i != n // i:
+                        total += n // i
+            return total
+
+    def _prime_factor_count(self, n: int) -> int:
+        """Count prime factors with multiplicity (Omega function)."""
+        # Use Sieve-based factorization if available (Fastest)
+        if hasattr(self, "_min_prime_factor") and n <= self.max_number:
+            factors = self._get_prime_factors(n)
+            return sum(factors.values())
+
+        if HAS_SYMPY:
+            return sum(factorint(n).values())
+        else:
+            # Basic implementation
+            count = 0
+            d = 2
+            while d * d <= n:
+                while n % d == 0:
+                    count += 1
+                    n //= d
+                d += 1
+            if n > 1:
+                count += 1
+            return count
+
+    def _is_prime(self, n: int) -> bool:
+        """Check if number is prime."""
+        if HAS_SYMPY:
+            return isprime(n)
+        else:
+            if n < 2:
+                return False
+            if n == 2:
+                return True
+            if n % 2 == 0:
+                return False
+            for i in range(3, int(math.sqrt(n)) + 1, 2):
+                if n % i == 0:
+                    return False
+            return True
+
+    def _get_prime_factors(self, n: int) -> dict[int, int]:
+        """Get prime factorization {p: exponent} using Sieve if available."""
+        # Use Sieve if within range (O(log n))
+        if hasattr(self, "_min_prime_factor") and n <= self.max_number:
+            factors = {}
+            temp = n
+            while temp > 1:
+                p = self._min_prime_factor[temp]
+                factors[p] = factors.get(p, 0) + 1
+                temp //= int(p)
+            return factors
+
+        # Fallback to SymPy or Trial Division
+        if HAS_SYMPY:
+            return factorint(n)
+        else:
+            factors = {}
+            d = 2
+            temp = n
+            while d * d <= temp:
+                while temp % d == 0:
+                    factors[d] = factors.get(d, 0) + 1
+                    temp //= d
+                d += 1
+            if temp > 1:
+                factors[temp] = factors.get(temp, 0) + 1
+            return factors
+
+    def update_phases_from_primes(self, prime_phases: dict[int, float]) -> None:
+        """
+        Update the phase of all numbers based on their prime factorization.
+        phi(n) = Sum a_i * phi(p_i)
+
+        This allows the Adelic Dynamics (which evolves primes) to drive the
+        Arithmetic Network (which contains composites).
+        """
+        for n in self.graph.nodes():
+            if n < 2:
+                continue
+
+            factors = self._get_prime_factors(n)
+
+            total_phase = 0.0
+            for p, exponent in factors.items():
+                if p in prime_phases:
+                    total_phase += exponent * prime_phases[p]
+
+            # Update node phase
+            self.graph.nodes[n]["phase"] = total_phase
+            # Also update 'theta' alias if used
+            self.graph.nodes[n]["theta"] = total_phase
+
+    # ========================================================================
+    # PRIME DETECTION AND ANALYSIS
+    # ========================================================================
+
+    def detect_prime_candidates(
+        self,
+        delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_CANONICAL,  # ≈ 0.0676 (operational prime detection threshold)
+        *,
+        tolerance: float = 1e-12,
+        return_certificates: bool = False,
+    ) -> list[tuple[int, float] | PrimeCertificate]:
+        """
+        Detect numbers that behave like primes (low ΔNFR).
+
+        Args:
+            delta_nfr_threshold: Maximum ΔNFR for prime candidates
+            tolerance: Absolute tolerance for ΔNFR when returning certificates
+            return_certificates: When True, return full PrimeCertificate objects
+
+        Returns:
+            list of (number, ΔNFR) pairs for prime candidates
+        """
+        candidates = []
+
+        for n in self.graph.nodes():
+            delta_nfr = self.graph.nodes[n]["delta_nfr"]
+            if abs(delta_nfr) <= delta_nfr_threshold:
+                if return_certificates:
+                    candidates.append(
+                        self.get_prime_certificate(n, tolerance=tolerance)
+                    )
+                else:
+                    candidates.append((n, delta_nfr))
+
+        # Sort by ΔNFR (most stable first)
+        if return_certificates:
+            candidates.sort(key=lambda cert: abs(cert.delta_nfr))
+        else:
+            candidates.sort(key=lambda x: abs(x[1]))
+        return candidates
+
+    def get_structural_terms(self, n: int) -> ArithmeticStructuralTerms:
+        """Return the canonical structural terms (τ, σ, ω) for node n."""
+        if n not in self.graph.nodes:
+            raise TNFRValueError(
+                f"Number {n} not in network (max: {self.max_number})",
+                context={"number": n, "max_number": self.max_number},
+                suggestion="Ensure the number is within the initialized network range.",
+            )
+        terms = self.graph.nodes[n].get("structural_terms")
+        if isinstance(terms, ArithmeticStructuralTerms):
+            return terms
+        # Reconstruct if older cache stored dicts
+        return ArithmeticStructuralTerms(
+            tau=int(self.graph.nodes[n]["tau"]),
+            sigma=int(self.graph.nodes[n]["sigma"]),
+            omega=int(self.graph.nodes[n]["omega"]),
+        )
+
+    def get_delta_components(self, n: int) -> dict[str, float]:
+        """Return component-level contributions to ΔNFR for node n."""
+        if n not in self.graph.nodes:
+            raise TNFRValueError(
+                f"Number {n} not in network (max: {self.max_number})",
+                context={"number": n, "max_number": self.max_number},
+                suggestion="Ensure the number is within the initialized network range.",
+            )
+        components = self.graph.nodes[n].get("delta_components")
+        if components is None:
+            terms = self.get_structural_terms(n)
+            components = ArithmeticTNFRFormalism.component_breakdown(
+                n, terms, self.params
+            )
+            self.graph.nodes[n]["delta_components"] = components
+        return dict(components)
+
+    def get_prime_certificate(
+        self,
+        n: int,
+        *,
+        tolerance: float = 1e-12,
+        include_components: bool = True,
+    ) -> PrimeCertificate:
+        """Generate a PrimeCertificate using the stored TNFR telemetry."""
+        if n not in self.graph.nodes:
+            raise TNFRValueError(
+                f"Number {n} not in network (max: {self.max_number})",
+                context={"number": n, "max_number": self.max_number},
+                suggestion="Ensure the number is within the initialized network range.",
+            )
+        terms = self.get_structural_terms(n)
+        components = self.get_delta_components(n) if include_components else None
+        return ArithmeticTNFRFormalism.prime_certificate(
+            n,
+            terms,
+            self.params,
+            tolerance=tolerance,
+            components=components,
+        )
+
+    def generate_prime_certificates(
+        self,
+        numbers: Iterable[int] | None = None,
+        *,
+        tolerance: float = 1e-12,
+        include_components: bool = True,
+    ) -> list[PrimeCertificate]:
+        """Return PrimeCertificates for the provided numbers (or all nodes)."""
+        if numbers is None:
+            numbers = list(self.graph.nodes())
+        certificates: list[PrimeCertificate] = []
+        for n in numbers:
+            if n in self.graph.nodes:
+                certificates.append(
+                    self.get_prime_certificate(
+                        n,
+                        tolerance=tolerance,
+                        include_components=include_components,
+                    )
+                )
+        certificates.sort(key=lambda cert: cert.number)
+        return certificates
+
+    def validate_prime_detection(
+        self, delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_CANONICAL
+    ) -> dict[str, float]:
+        """
+        Validate TNFR prime detection against known primes.
+
+        Returns:
+            Dictionary with precision, recall, F1-score
+        """
+        candidates = self.detect_prime_candidates(delta_nfr_threshold)
+        predicted_primes = {x[0] for x in candidates}
+
+        actual_primes = {
+            n for n in self.graph.nodes() if self.graph.nodes[n]["is_prime"]
+        }
+
+        # Compute metrics
+        true_positives = len(predicted_primes & actual_primes)
+        false_positives = len(predicted_primes - actual_primes)
+        false_negatives = len(actual_primes - predicted_primes)
+
+        precision = (
+            true_positives / (true_positives + false_positives)
+            if (true_positives + false_positives) > 0
+            else 0
+        )
+        recall = (
+            true_positives / (true_positives + false_negatives)
+            if (true_positives + false_negatives) > 0
+            else 0
+        )
+        f1_score = (
+            2 * precision * recall / (precision + recall)
+            if (precision + recall) > 0
+            else 0
+        )
+
+        return {
+            "precision": precision,
+            "recall": recall,
+            "f1_score": f1_score,
+            "true_positives": true_positives,
+            "false_positives": false_positives,
+            "false_negatives": false_negatives,
+            "predicted_primes": sorted(predicted_primes),
+            "actual_primes": sorted(actual_primes),
+            "missed_primes": sorted(actual_primes - predicted_primes),
+            "false_alarms": sorted(predicted_primes - actual_primes),
+        }
+
+    def get_tnfr_properties(self, n: int) -> dict[str, float]:
+        """Get all TNFR properties for a specific number."""
+        if n not in self.graph.nodes():
+            raise TNFRValueError(
+                f"Number {n} not in network (max: {self.max_number})",
+                context={"number": n, "max_number": self.max_number},
+                suggestion="Ensure the number is within the initialized network range.",
+            )
+
+        node_data = self.graph.nodes[n]
+        return {
+            "number": n,
+            "tau": node_data["tau"],
+            "sigma": node_data["sigma"],
+            "omega": node_data["omega"],
+            "EPI": node_data["EPI"],
+            "nu_f": node_data["nu_f"],
+            "DELTA_NFR": node_data["delta_nfr"],
+            "is_prime": node_data["is_prime"],
+            "structural_terms": (
+                node_data["structural_terms"].as_dict()
+                if isinstance(
+                    node_data.get("structural_terms"), ArithmeticStructuralTerms
+                )
+                else node_data.get("structural_terms")
+            ),
+            "delta_components": (
+                dict(node_data["delta_components"])
+                if node_data.get("delta_components") is not None
+                else None
+            ),
+            "coherence_local": node_data.get("coherence_local"),
+        }
+
+    def analyze_prime_characteristics(self) -> dict[str, list[float]]:
+        """Analyze TNFR characteristics of all primes in the network."""
+        primes = [n for n in self.graph.nodes() if self.graph.nodes[n]["is_prime"]]
+
+        characteristics = {
+            "numbers": primes,
+            "EPI_values": [],
+            "nu_f_values": [],
+            "DELTA_NFR_values": [],
+        }
+
+        for p in primes:
+            node_data = self.graph.nodes[p]
+            characteristics["EPI_values"].append(node_data["EPI"])
+            characteristics["nu_f_values"].append(node_data["nu_f"])
+            characteristics["DELTA_NFR_values"].append(node_data["delta_nfr"])
+
+        return characteristics
+
+    def summary_statistics(self) -> dict[str, float]:
+        """Compute summary statistics for the entire network."""
+        all_nodes = list(self.graph.nodes())
+        primes = [n for n in all_nodes if self.graph.nodes[n]["is_prime"]]
+        composites = [n for n in all_nodes if not self.graph.nodes[n]["is_prime"]]
+
+        # Prime statistics
+        prime_delta_nfr = [self.graph.nodes[p]["delta_nfr"] for p in primes]
+        prime_epi = [self.graph.nodes[p]["EPI"] for p in primes]
+
+        # Composite statistics
+        composite_delta_nfr = [self.graph.nodes[c]["delta_nfr"] for c in composites]
+        composite_epi = [self.graph.nodes[c]["EPI"] for c in composites]
+
+        return {
+            "total_numbers": len(all_nodes),
+            "prime_count": len(primes),
+            "composite_count": len(composites),
+            "prime_ratio": len(primes) / len(all_nodes),
+            # Prime characteristics
+            "prime_mean_DELTA_NFR": np.mean(prime_delta_nfr) if prime_delta_nfr else 0,
+            "prime_std_DELTA_NFR": np.std(prime_delta_nfr) if prime_delta_nfr else 0,
+            "prime_mean_EPI": np.mean(prime_epi) if prime_epi else 0,
+            # Composite characteristics
+            "composite_mean_DELTA_NFR": (
+                np.mean(composite_delta_nfr) if composite_delta_nfr else 0
+            ),
+            "composite_std_DELTA_NFR": (
+                np.std(composite_delta_nfr) if composite_delta_nfr else 0
+            ),
+            "composite_mean_EPI": np.mean(composite_epi) if composite_epi else 0,
+            # Separation metrics
+            "DELTA_NFR_separation": (
+                (np.mean(composite_delta_nfr) - np.mean(prime_delta_nfr))
+                if (composite_delta_nfr and prime_delta_nfr)
+                else 0
+            ),
+            "EPI_separation": (
+                (np.mean(composite_epi) - np.mean(prime_epi))
+                if (composite_epi and prime_epi)
+                else 0
+            ),
+        }
+
+    # ========================================================================
+    # STRUCTURAL FIELD TELEMETRY (Φ_s, |∇φ|, K_φ, ξ_C)
+    # ========================================================================
+
+    # Cached helpers (use centralized repo cache infra when available)
+    @staticmethod
+    @cache_tnfr_computation(
+        level=CacheLevel.DERIVED_METRICS if _CACHE_OK else None,
+        dependencies={"delta_nfr", "graph_structure"},
+    )
+    def _cached_phi_s_helper(
+        G: nx.Graph,
+        *,
+        alpha: float = 2.0,
+        distance_mode: str = "topological",
+        dnfr_attr: str = "delta_nfr",
+    ) -> dict[int, float]:
+        phi_s: dict[int, float] = {}
+        if distance_mode == "topological":
+            spl = dict(nx.all_pairs_shortest_path_length(G))
+            for i in G.nodes():
+                acc = 0.0
+                for j, dij in spl[i].items():
+                    if i == j or dij == 0:
+                        continue
+                    acc += float(G.nodes[j].get(dnfr_attr, 0.0)) / (dij**alpha)
+                phi_s[i] = acc
+            return phi_s
+
+        # arithmetic distance
+        nodes = sorted(G.nodes())
+        delta = np.array(
+            [float(G.nodes[n].get(dnfr_attr, 0.0)) for n in nodes], dtype=float
+        )
+        x = np.arange(len(nodes))
+        for i_idx, i in enumerate(nodes):
+            dist = np.abs(x - i_idx)
+            dist[i_idx] = 1
+            save = delta[i_idx]
+            delta[i_idx] = 0.0
+            acc = float(np.sum(delta / (dist**alpha)))
+            delta[i_idx] = save
+            phi_s[i] = acc
+        return phi_s
+
+    @staticmethod
+    @cache_tnfr_computation(
+        level=CacheLevel.DERIVED_METRICS if _CACHE_OK else None,
+        dependencies={"delta_nfr", "graph_structure"},
+    )
+    def _cached_xi_c_helper(
+        G: nx.Graph,
+        *,
+        min_pairs: int = 5,
+        distance_mode: str = "topological",
+        dnfr_attr: str = "delta_nfr",
+    ) -> dict[str, object]:
+        from ..metrics.common import structural_coherence
+
+        c = {
+            i: structural_coherence(float(G.nodes[i].get(dnfr_attr, 0.0)))
+            for i in G.nodes()
+        }
+        accum: dict[int, list[float]] = {}
+        nodes = sorted(G.nodes())
+        if distance_mode == "topological":
+            spl = dict(nx.all_pairs_shortest_path_length(G))
+            for i in nodes:
+                for j, dist in spl[i].items():
+                    if j <= i or dist <= 0:
+                        continue
+                    accum.setdefault(dist, []).append(c[i] * c[j])
+        else:
+            for a_idx, i in enumerate(nodes):
+                for b_idx in range(a_idx + 1, len(nodes)):
+                    j = nodes[b_idx]
+                    dist = abs(i - j)
+                    accum.setdefault(dist, []).append(c[i] * c[j])
+
+        r_vals: list[int] = []
+        C_vals: list[float] = []
+        for r in sorted(accum.keys()):
+            pairs = accum[r]
+            if len(pairs) >= min_pairs:
+                mv = float(np.mean(pairs))
+                if mv > 0:
+                    r_vals.append(r)
+                    C_vals.append(mv)
+        result: dict[str, object] = {
+            "r": r_vals,
+            "C_r": C_vals,
+            "xi_c": None,
+            "fit_intercept": None,
+            "fit_slope": None,
+            "R2": None,
+        }
+        if len(C_vals) >= 2:
+            y = np.log(np.array(C_vals))
+            x = np.array(r_vals)
+            coeffs = np.polyfit(x, y, 1)
+            slope, intercept = coeffs[0], coeffs[1]
+            y_pred = slope * x + intercept
+            ss_res = float(np.sum((y - y_pred) ** 2))
+            ss_tot = float(np.sum((y - np.mean(y)) ** 2)) if len(y) > 1 else 0.0
+            r2 = 1.0 - ss_res / ss_tot if ss_tot > 0 else 1.0
+            xi_c = (-1.0 / slope) if slope < 0 else None
+            result.update(
+                {
+                    "xi_c": xi_c,
+                    "fit_intercept": float(intercept),
+                    "fit_slope": float(slope),
+                    "R2": float(r2),
+                }
+            )
+        return result
+
+    def _get_undirected_graph(self) -> nx.Graph:
+        """Return an undirected view/cached copy for distance and neighbor ops."""
+        if self._graph_undirected_cache is None:
+            self._graph_undirected_cache = self.graph.to_undirected()
+        return self._graph_undirected_cache
+
+    @cache_tnfr_computation(
+        level=CacheLevel.DERIVED_METRICS if _CACHE_OK else None,
+        dependencies={"graph_structure", "nu_f"},
+    )
+    def _cached_compute_phase_helper(
+        self, method: str = "spectral"
+    ) -> dict[int, float]:
+        """Cached helper for phase computation to avoid recomputation."""
+        G = self._get_undirected_graph()
+        phi: dict[int, float] = {}
+
+        if method == "spectral":
+            try:
+                pos = nx.spectral_layout(G, dim=2)
+                for n, (x, y) in pos.items():
+                    theta = math.atan2(y, x)
+                    if theta < 0:
+                        theta += 2 * math.pi
+                    phi[n] = theta
+            except Exception:
+                method = "logn"  # Fallback
+
+        if method == "logn":
+            denom = math.log(self.max_number + 1)
+            for n in G.nodes():
+                frac = (math.log(n) / denom) % 1.0
+                phi[n] = 2 * math.pi * frac
+
+        if method == "nuf":
+            vals = [self.graph.nodes[i]["nu_f"] for i in G.nodes()]
+            maxv = max(vals) if vals else 1.0
+            for n in G.nodes():
+                frac = (self.graph.nodes[n]["nu_f"] / maxv) % 1.0
+                phi[n] = 2 * math.pi * frac
+
+        return phi
+
+    def compute_phase(
+        self, method: str = "spectral", store: bool = True
+    ) -> dict[int, float]:
+        """
+        Compute per-node phase φ ∈ [0, 2π).
+
+        Methods:
+        - spectral: angle from 2D spectral layout (graph Laplacian eigen-embedding)
+        - logn: φ = 2π * frac(log(n)/log(max_n+1))
+        - nuf: φ = 2π * frac(nu_f / max_nu_f)
+        """
+        # Use cached computation
+        phi = self._cached_compute_phase_helper(method=method)
+
+        if store:
+            for n, v in phi.items():
+                self.graph.nodes[n]["phi"] = v
+        return phi
+
+    def compute_phase_gradient(self) -> dict[int, float]:
+        """Compute |∇φ|(i) as the mean wrapped neighbor-phase separation."""
+        if any("phi" not in self.graph.nodes[i] for i in self.graph.nodes()):
+            self.compute_phase(store=True)
+
+        # Use centralized cached function from physics.fields (CANONICAL)
+        if HAS_CENTRALIZED_FIELDS:
+            G = self._get_undirected_graph()
+            phi_grad = compute_phase_gradient(G)
+        else:
+            # Fallback implementation
+            G = self._get_undirected_graph()
+            phi_grad = {}
+            for i in G.nodes():
+                nbrs = list(G.neighbors(i))
+                if not nbrs:
+                    val = 0.0
+                else:
+                    diffs = [
+                        abs(
+                            angle_diff(
+                                self.graph.nodes[i]["phi"],
+                                self.graph.nodes[j]["phi"],
+                            )
+                        )
+                        for j in nbrs
+                    ]
+                    val = sum(diffs) / len(diffs)
+                phi_grad[i] = val
+
+        # Store results on graph
+        for i, val in phi_grad.items():
+            self.graph.nodes[i]["phi_grad"] = val
+        return phi_grad
+
+    def compute_phase_curvature(self) -> dict[int, float]:
+        """Compute K_φ(i) = φ_i - (1/deg(i)) Σ_{j∈N(i)} φ_j (neighbors undirected)."""
+        if any("phi" not in self.graph.nodes[i] for i in self.graph.nodes()):
+            self.compute_phase(store=True)
+
+        # Use centralized cached function from physics.fields (CANONICAL)
+        if HAS_CENTRALIZED_FIELDS:
+            G = self._get_undirected_graph()
+            k_phi = compute_phase_curvature(G)
+        else:
+            # Fallback implementation
+            G = self._get_undirected_graph()
+            k_phi = {}
+            for i in G.nodes():
+                nbrs = list(G.neighbors(i))
+                if not nbrs:
+                    val = 0.0
+                else:
+                    mean_phi = sum(self.graph.nodes[j]["phi"] for j in nbrs) / len(nbrs)
+                    # Normalize curvature into principal range [-pi, pi) for interpretable magnitude
+                    raw = self.graph.nodes[i]["phi"] - mean_phi
+                    # Wrap to [-pi, pi)
+                    while raw >= math.pi:
+                        raw -= 2 * math.pi
+                    while raw < -math.pi:
+                        raw += 2 * math.pi
+                    val = raw
+                k_phi[i] = val
+
+        # Store results on graph
+        for i, val in k_phi.items():
+            self.graph.nodes[i]["k_phi"] = val
+        return k_phi
+
+    def compute_kphi_safety(
+        self, threshold: float = K_PHI_CURVATURE_THRESHOLD
+    ) -> dict[str, float]:
+        """Compute simple K_φ safety metric: fraction of nodes with |K_φ| ≥ threshold.
+
+        Returns a dict with fields:
+        - frac_abs_ge_threshold
+        - count_abs_ge_threshold
+        - total
+        - threshold
+        """
+        if any("k_phi" not in self.graph.nodes[i] for i in self.graph.nodes()):
+            self.compute_phase_curvature()
+        vals = [abs(float(self.graph.nodes[i]["k_phi"])) for i in self.graph.nodes()]
+        cnt = int(sum(v >= threshold for v in vals))
+        total = len(vals) if vals else 1
+        frac = cnt / total
+        return {
+            "frac_abs_ge_threshold": float(frac),
+            "count_abs_ge_threshold": float(cnt),
+            "total": float(total),
+            "threshold": float(threshold),
+        }
+
+    def k_phi_multiscale_safety(
+        self,
+        *,
+        distance_mode: str = "arithmetic",
+        max_r: int | None = None,
+        min_windows: int = 5,
+        alpha_hint: float = 2.76,
+    ) -> dict[str, object]:
+        """Estimate multiscale decay of K_φ variance and fit α in var ~ r^{-α}.
+
+        For distance_mode='arithmetic', uses sliding windows of size r over the
+        node index ordering (natural numbers). For 'topological', uses balls of
+        graph distance ≤ r to compute per-node neighborhood means.
+
+        Returns dict with:
+        - r_list, var_list (per-scale variance of neighborhood-mean K_φ)
+        - alpha_fit, R2_fit
+        - alpha_hint, safe_flags based on AGENTS.md criteria
+        """
+        if any("k_phi" not in self.graph.nodes[i] for i in self.graph.nodes()):
+            self.compute_phase_curvature()
+        G = self._get_undirected_graph()
+        nodes = sorted(G.nodes())
+        kphi = np.array(
+            [float(self.graph.nodes[n]["k_phi"]) for n in nodes], dtype=float
+        )
+
+        r_list: list[int] = []
+        var_list: list[float] = []
+
+        if distance_mode == "arithmetic":
+            # Use contiguous windows over natural index order
+            N = len(nodes)
+            if max_r is None:
+                max_r = max(2, int(min(N // 3, max(5, math.sqrt(N)))))
+            for r in range(1, max_r + 1):
+                window_means = np.convolve(kphi, np.ones(r) / r, mode="valid")
+                if window_means.size >= min_windows and np.var(window_means) > 0:
+                    r_list.append(r)
+                    var_list.append(float(np.var(window_means)))
+        else:
+            # Topological neighborhoods (balls of radius r)
+            if not nx.is_connected(G):
+                # Work with the largest connected component to avoid degenerate balls
+                components = sorted(nx.connected_components(G), key=len, reverse=True)
+                H = G.subgraph(components[0]).copy()
+                nodes = sorted(H.nodes())
+                G2 = H
+            else:
+                G2 = G
+            # Precompute shortest paths
+            spl = dict(nx.all_pairs_shortest_path_length(G2))
+            diam = max(max(d.values()) for d in spl.values()) if spl else 1
+            if max_r is None:
+                max_r = max(2, min(diam, 10))
+            # Build list
+            for r in range(1, max_r + 1):
+                means: list[float] = []
+                for i in nodes:
+                    neighborhood = [j for j, dist in spl[i].items() if dist <= r]
+                    if neighborhood:
+                        means.append(
+                            float(
+                                np.mean(
+                                    [self.graph.nodes[j]["k_phi"] for j in neighborhood]
+                                )
+                            )
+                        )
+                if len(means) >= min_windows and np.var(means) > 0:
+                    r_list.append(r)
+                    var_list.append(float(np.var(means)))
+
+        alpha_fit: float | None = None
+        R2_fit: float | None = None
+        intercept: float | None = None
+        slope: float | None = None
+        if len(var_list) >= 3 and all(v > 0 for v in var_list):
+            xv = np.log(np.array(r_list, dtype=float))
+            yv = np.log(np.array(var_list, dtype=float))
+            coeffs = np.polyfit(xv, yv, 1)
+            slope = float(coeffs[0])
+            intercept = float(coeffs[1])
+            alpha_fit = float(-slope)
+            y_pred = slope * xv + intercept
+            ss_res = float(np.sum((yv - y_pred) ** 2))
+            ss_tot = float(np.sum((yv - np.mean(yv)) ** 2))
+            R2_fit = 1.0 - ss_res / ss_tot if ss_tot > 0 else 1.0
+
+        # Safety flags per AGENTS.md
+        safe_A = (
+            alpha_fit is not None
+            and alpha_fit > 0
+            and R2_fit is not None
+            and R2_fit >= 0.5
+        )
+        # Check tolerance that observed aligns with alpha_hint approximately
+        tol_ok = False
+        if alpha_fit is not None:
+            tol_ok = abs(alpha_fit - alpha_hint) <= max(0.5, 0.2 * alpha_hint)
+        safe_flags = {
+            "criterion_A_alpha_positive_R2_good": bool(safe_A),
+            "criterion_B_alpha_close_to_hint": bool(tol_ok),
+        }
+
+        return {
+            "r_list": r_list,
+            "var_list": var_list,
+            "alpha_fit": alpha_fit,
+            "R2_fit": R2_fit,
+            "slope_loglog": slope,
+            "intercept_loglog": intercept,
+            "alpha_hint": float(alpha_hint),
+            "safe_flags": safe_flags,
+            "distance_mode": distance_mode,
+        }
+
+    def compute_structural_potential(
+        self, alpha: float = 2.0, distance_mode: str = "topological"
+    ) -> dict[int, float]:
+        """
+        Compute Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)^α.
+
+        distance_mode:
+        - 'topological': d(i,j) = shortest path length in undirected graph
+        - 'arithmetic' : d(i,j) = |i - j|
+        """
+        G = self._get_undirected_graph()
+
+        # Use centralized CANONICAL function when distance_mode is topological
+        if HAS_CENTRALIZED_FIELDS and distance_mode == "topological":
+            phi_s = centralized_phi_s(G, alpha=alpha)
+        else:
+            # Use arithmetic distance or fallback
+            phi_s = self._cached_phi_s_helper(
+                G, alpha=alpha, distance_mode=distance_mode
+            )
+
+        for i, v in phi_s.items():
+            self.graph.nodes[i]["phi_s"] = v
+        return phi_s
+
+    def estimate_coherence_length(
+        self, min_pairs: int = 5, distance_mode: str = "topological"
+    ) -> dict[str, object]:
+        """
+        Estimate coherence length ξ_C from spatial autocorrelation of local coherence c_i.
+
+        c_i = 1 / (1 + |ΔNFR_i|)
+        C(r) = ⟨c_i c_j⟩ where graph distance(i,j) = r (undirected)
+        Fit: C(r) ≈ A * exp(-r / ξ_C) → ln C(r) = ln A - r / ξ_C
+        """
+        G = self._get_undirected_graph()
+        # store local coherence (used by downstream analyses)
+        from ..metrics.common import structural_coherence
+
+        for i in G.nodes():
+            self.graph.nodes[i]["coherence_local"] = structural_coherence(
+                float(self.graph.nodes[i]["delta_nfr"])
+            )
+
+        # Use centralized CANONICAL function when distance_mode is topological
+        if HAS_CENTRALIZED_FIELDS and distance_mode == "topological":
+            # Centralized function returns scalar ξ_C, build compatible dict structure
+            try:
+                xi_c_value = centralized_xi_c(G, coherence_key="coherence_local")
+                res = {
+                    "r": [],
+                    "C_r": [],
+                    "xi_c": xi_c_value,
+                    "fit_intercept": None,
+                    "fit_slope": None,
+                    "R2": None,
+                }
+            except Exception:
+                # Fallback to custom implementation
+                res = self._cached_xi_c_helper(
+                    G, min_pairs=min_pairs, distance_mode=distance_mode
+                )
+        else:
+            # Use arithmetic distance or fallback
+            res = self._cached_xi_c_helper(
+                G, min_pairs=min_pairs, distance_mode=distance_mode
+            )
+
+        nodes = sorted(G.nodes())
+        # enrich with safety baselines
+        extra = {
+            "system_diameter": (
+                nx.diameter(G)
+                if (distance_mode == "topological" and nx.is_connected(G))
+                else (
+                    (max(nodes) - min(nodes)) if distance_mode == "arithmetic" else None
+                )
+            ),
+            "mean_node_distance": (
+                np.mean([d for _, d in nx.shortest_path_length(G)])
+                if (distance_mode == "topological" and nx.is_connected(G))
+                else (
+                    np.mean(np.abs(np.subtract.outer(nodes, nodes)))
+                    if distance_mode == "arithmetic"
+                    else None
+                )
+            ),
+        }
+        res.update(extra)
+        return res
+
+    def compute_phase_current(self) -> dict[int, float]:
+        """Compute phase current J_φ (Extended Canonical Field)."""
+        G = self._get_undirected_graph()
+        if HAS_CENTRALIZED_FIELDS:
+            current = compute_phase_current(G)
+        else:
+            current = {}  # Fallback or empty
+
+        for i, v in current.items():
+            self.graph.nodes[i]["phase_current"] = v
+        return current
+
+    def compute_dnfr_flux(self) -> dict[int, float]:
+        """Compute ΔNFR flux J_ΔNFR (Extended Canonical Field)."""
+        G = self._get_undirected_graph()
+        if HAS_CENTRALIZED_FIELDS:
+            flux = compute_dnfr_flux(G)
+        else:
+            flux = {}  # Fallback or empty
+
+        for i, v in flux.items():
+            self.graph.nodes[i]["dnfr_flux"] = v
+        return flux
+
+    def compute_structural_fields(
+        self, phase_method: str = "spectral"
+    ) -> dict[str, object]:
+        """Convenience wrapper to compute all structural telemetry fields (Canonical + Extended)."""
+        phi = self.compute_phase(method=phase_method, store=True)
+        grad = self.compute_phase_gradient()
+        curv = self.compute_phase_curvature()
+        phi_s = self.compute_structural_potential(alpha=2.0)
+        xi = self.estimate_coherence_length()
+        kphi_safety = self.compute_kphi_safety()
+        kphi_multiscale = self.k_phi_multiscale_safety(distance_mode="arithmetic")
+
+        # Extended Fields
+        j_phi = self.compute_phase_current()
+        j_dnfr = self.compute_dnfr_flux()
+
+        return {
+            "phi": phi,
+            "phi_grad": grad,
+            "k_phi": curv,
+            "phi_s": phi_s,
+            "xi_c": xi,
+            "kphi_safety": kphi_safety,
+            "kphi_multiscale": kphi_multiscale,
+            "phase_current": j_phi,
+            "dnfr_flux": j_dnfr,
+        }
+
+    # ====================================================================
+    # FRACTAL-RESONANT NODE (NFR) + EMERGENT GEOMETRY
+    # ====================================================================
+
+    def nfr(self) -> dict[str, object]:
+        """Characterize the arithmetic network as a Fractal-Resonant Node (NFR).
+
+        Per TNFR.pdf §1.4.1 an NFR is "a region of structural coherence coupled
+        to a network", defined by the triad (EPI, νf, phase) with a nodal
+        topology and the multiescalar (fractal) + autopoietic properties. This
+        surfaces the arithmetic network as the joint read-out of its three
+        emergent facets, each from canonical quantities:
+
+        - RESONANT: proximity to the arithmetic ΔNFR = 0 fixed-point set
+          (:func:`~tnfr.metrics.common.is_structural_equilibrium`). The
+          **canonical payoff**: by the §4.1 primality theorem the equilibrium
+          set ``{n : ΔNFR(n) = 0}`` is *exactly* the primes. Because this
+          pressure is state-independent, this is a fixed-point identity, not
+          a restoring-attractor or basin statement.
+        - GEOMETRIC: the nodal topology radial / annular / multinodal
+          (:func:`~tnfr.physics.fields.classify_nodal_topology`), read from the
+          structural-potential geometry of the divisibility/GCD coupling.
+        - FRACTAL: the multi-scale coherence range ξ_C (region size).
+
+        Phase synchrony is reported only if a phase field has been computed
+        (e.g. via :meth:`compute_phase`); otherwise it is NaN. Most informative
+        once the structural fields are populated.
+
+        Returns
+        -------
+        dict
+            ``topology``, ``centers``, ``concentration`` (geometry);
+            canonical static ``coherence``, ``mean_abs_dnfr``, the descriptive
+            ``mean_local_coherence``, ``equilibrium_fraction`` and
+            ``equilibrium_is_primes`` (resonance); ``coherence_length`` (ξ_C);
+            ``triad`` (mean EPI, νf and the Kuramoto phase synchrony);
+            ``readout_available`` and ``n_nodes``. Aggregate fields are ``None``
+            when the arithmetic domain is empty.
+        """
+        from ..metrics.common import (
+            finite_mean_absolute,
+            is_structural_equilibrium,
+            structural_coherence,
+        )
+        from ..physics.fields import classify_nodal_topology
+
+        nodes = list(self.graph.nodes())
+        n = len(nodes)
+        if n:
+            und = self._get_undirected_graph()
+            topo = classify_nodal_topology(und)
+            dnfr = [float(self.graph.nodes[k]["delta_nfr"]) for k in nodes]
+            eq_nodes = [k for k, d in zip(nodes, dnfr) if is_structural_equilibrium(d)]
+            eq_frac = len(eq_nodes) / n
+            mean_abs_dnfr = finite_mean_absolute(
+                dnfr, name="arithmetic delta_nfr"
+            )
+            coherence = structural_coherence(mean_abs_dnfr, 0.0)
+            mean_local_coherence = (
+                sum(structural_coherence(d, 0.0) for d in dnfr) / n
+            )
+            epi_mean = sum(float(self.graph.nodes[k]["EPI"]) for k in nodes) / n
+            vf_mean = sum(float(self.graph.nodes[k]["nu_f"]) for k in nodes) / n
+            primes = [k for k in nodes if self.graph.nodes[k]["is_prime"]]
+            eq_is_primes = sorted(eq_nodes) == sorted(primes)
+            phis = [self.graph.nodes[k].get("phi") for k in nodes]
+            if all(p is not None for p in phis):
+                phase_sync = float(
+                    abs(np.mean(np.exp(1j * np.asarray(phis, dtype=float))))
+                )
+            else:
+                phase_sync = float("nan")
+            try:
+                xi_c_val = self.estimate_coherence_length().get("xi_c")
+                xi_c = float(xi_c_val) if xi_c_val is not None else float("nan")
+            except Exception:
+                xi_c = float("nan")
+        else:
+            topo = {"topology": None, "centers": [], "concentration": None}
+            mean_abs_dnfr = None
+            coherence = None
+            mean_local_coherence = None
+            eq_frac = None
+            epi_mean = None
+            vf_mean = None
+            phase_sync = None
+            eq_is_primes = None
+            xi_c = None
+        return {
+            "topology": topo["topology"],
+            "centers": topo["centers"],
+            "concentration": topo["concentration"],
+            "coherence": coherence,
+            "mean_abs_dnfr": mean_abs_dnfr,
+            "mean_local_coherence": mean_local_coherence,
+            "equilibrium_fraction": eq_frac,
+            "equilibrium_is_primes": eq_is_primes,
+            "coherence_length": xi_c,
+            "triad": {
+                "epi_mean": epi_mean,
+                "vf_mean": vf_mean,
+                "phase_sync": phase_sync,
+            },
+            "readout_available": bool(n),
+            "n_nodes": n,
+        }
+
+    def nfr_observation(self):
+        """Return the arithmetic NFR readout with explicit provenance."""
+        from ..metrics.observations import observe_arithmetic_nfr
+
+        return observe_arithmetic_nfr(self.nfr())
+
+    def _geometry_graph(self, phase_method: str = "logn") -> nx.Graph:
+        """Undirected arithmetic graph prepared for the canonical emergent-
+        geometry functions.
+
+        The structural phase is written under the canonical ``phase``/``theta``
+        keys (the divisibility-driven ΔNFR already lives under ``delta_nfr``),
+        so the canonical field functions read both sectors of the substrate.
+        The default ``logn`` phase ``φ(n) ∝ log n`` is the arithmetic *size /
+        capacity grading* (the monoid homomorphism ``(ℕ,×) → (ℝ,+)``); unlike
+        the spectral layout it is non-degenerate on the dense divisibility
+        graph, so the geometric sector (|∇φ|, K_φ, J_φ) is populated.
+        """
+        phi = self.compute_phase(method=phase_method, store=True)
+        G = self.graph.to_undirected()
+        for i in G.nodes():
+            ph = float(phi.get(i, 0.0))
+            G.nodes[i]["phase"] = ph
+            G.nodes[i]["theta"] = ph
+        return G
+
+    def conservation(self, *, phase_method: str = "logn") -> dict[str, float]:
+        """Emergent-geometry conservation diagnostics for the arithmetic NFR.
+
+        Delegates to the canonical Structural Conservation Theorem machinery
+        (AGENTS.md §4): the Noether charge ``Q = Σ_i (Φ_s(i) + K_φ(i))`` and the
+        structural energy functional
+        ``E = ½ Σ_i (Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²)``. The arithmetic
+        ΔNFR (sourced by Ω, τ, σ) drives the structural-potential sector Φ_s;
+        the structural phase drives the geometric sector. Single source of
+        truth: the same functions the SDK ``Network.conservation`` uses.
+        """
+        from ..physics.conservation import (
+            compute_energy_functional,
+            compute_noether_charge,
+        )
+
+        G = self._geometry_graph(phase_method=phase_method)
+        return {
+            "noether_charge": float(compute_noether_charge(G)),
+            "energy": float(compute_energy_functional(G)),
+            "n_nodes": float(G.number_of_nodes()),
+        }
+
+    def symplectic_substrate(
+        self, *, phase_method: str = "logn"
+    ) -> dict[str, object]:
+        """Evaluate the auxiliary symplectic model on an arithmetic graph.
+
+        Extracted arithmetic-network fields initialize the declared ambient
+        phase space ``P = ℝ^{4N}`` with pairs ``(K_φ, J_φ)`` and
+        ``(Φ_s, J_ΔNFR)``. Its isotropic harmonic flow preserves phase volume.
+        This construction does not derive that flow from arithmetic nodal
+        dynamics or certify arithmetic operator trajectories as symplectic.
+
+        Returns
+        -------
+        dict
+            ``phase_space_dimension`` (= 4N), ``is_valid_manifold``,
+            ``hamiltonian`` H_sub, ``background_potential`` U
+            (H_sub + U = energy functional) and ``liouville_divergence``.
+        """
+        from ..physics.symplectic_substrate import (
+            background_potential,
+            extract_phase_space_point,
+            substrate_hamiltonian,
+            verify_canonical_structure,
+        )
+
+        G = self._geometry_graph(phase_method=phase_method)
+        cert = verify_canonical_structure(G)
+        pt = extract_phase_space_point(G)
+        return {
+            "phase_space_dimension": cert.dimension,
+            "is_valid_manifold": cert.is_valid_symplectic_manifold,
+            "hamiltonian": float(substrate_hamiltonian(pt)),
+            "background_potential": float(background_potential(pt)),
+            "liouville_divergence": float(cert.liouville_divergence),
+        }
+
+    # ====================================================================
+    # TNFR OPERATORS: COUPLING (UM) AND RESONANCE (RA)
+    # ====================================================================
+
+    def apply_coupling(
+        self, delta_phi_max: float = DELTA_PHI_MAX
+    ) -> dict[tuple[int, int], bool]:
+        """Apply UM (Coupling): mark edges as coupled if phase compatible.
+
+        Contract (U3): valid only if |wrap(φ_i - φ_j)| ≤ Δφ_max.
+        Stores edge attribute 'coupled' = True/False on the undirected view.
+
+        Returns a dict mapping undirected edge (min(i,j), max(i,j)) to boolean.
+        """
+        if any("phi" not in self.graph.nodes[i] for i in self.graph.nodes()):
+            self.compute_phase(store=True)
+
+        G = self._get_undirected_graph()
+        coupled: dict[tuple[int, int], bool] = {}
+
+        for u, v, data in G.edges(data=True):
+            d = abs(
+                angle_diff(
+                    self.graph.nodes[u]["phi"], self.graph.nodes[v]["phi"]
+                )
+            )
+            is_ok = d <= float(delta_phi_max)
+            data["coupled"] = bool(is_ok)
+            key = (u, v) if u < v else (v, u)
+            coupled[key] = is_ok
+
+        # Telemetry: store fraction coupled
+        total_edges = G.number_of_edges()
+        frac = (
+            (sum(1 for v in coupled.values() if v) / total_edges)
+            if total_edges > 0
+            else 0.0
+        )
+        self.graph.graph["um_fraction_coupled"] = float(frac)
+        self.graph.graph["um_delta_phi_max"] = float(delta_phi_max)
+        return coupled
+
+    def _neighbor_contrib(
+        self, i: int, *, delta_phi_max: float
+    ) -> list[tuple[int, float]]:
+        """Helper: list of (j, weight) from neighbors j of i satisfying phase check."""
+        G = self._get_undirected_graph()
+        out: list[tuple[int, float]] = []
+        for j in G.neighbors(i):
+            d = abs(
+                angle_diff(
+                    self.graph.nodes[i].get("phi", 0.0),
+                    self.graph.nodes[j].get("phi", 0.0),
+                )
+            )
+            if d <= delta_phi_max:
+                # Use mean of parallel edges (gcd/divisibility) if exist in DiGraph
+                w = 0.0
+                if self.graph.has_edge(i, j):
+                    w += float(self.graph[i][j].get("weight", 1.0))
+                if self.graph.has_edge(j, i):
+                    w += float(self.graph[j][i].get("weight", 1.0))
+                if w == 0.0:
+                    w = 1.0
+                out.append((j, w))
+        return out
+
+    def resonance_step(
+        self,
+        activation: dict[int, float],
+        *,
+        gain: float = 1.0,
+        decay: float = 0.0,
+        delta_phi_max: float = DELTA_PHI_MAX,
+        normalize: bool = True,
+    ) -> dict[int, float]:
+        """Apply one RA (Resonance) step on an activation field.
+
+        Physics (RA): Propagates patterns coherently through coupled links, without
+        altering identity (keeps activation as a separate field; does not mutate EPI).
+        Contract: Requires phase verification (U3) via delta_phi_max.
+        """
+        G = self._get_undirected_graph()
+        # Ensure phases available
+        if any("phi" not in self.graph.nodes[n] for n in G.nodes()):
+            self.compute_phase(store=True)
+
+        new_act: dict[int, float] = {}
+        for i in G.nodes():
+            acc = 0.0
+            contribs = self._neighbor_contrib(i, delta_phi_max=delta_phi_max)
+            total_w = sum(w for _, w in contribs) or 1.0
+            for j, w in contribs:
+                acc += (w / total_w) * activation.get(j, 0.0)
+            # Gain/decay dynamics
+            val = (1 - decay) * activation.get(i, 0.0) + gain * acc
+            new_act[i] = max(0.0, float(val))
+
+        if normalize and new_act:
+            m = max(new_act.values())
+            if m > 0:
+                for k in new_act:
+                    new_act[k] /= m
+        return new_act
+
+    def resonance_from_primes(
+        self,
+        steps: int = 5,
+        *,
+        init_value: float = 1.0,
+        gain: float = 1.0,
+        decay: float = 0.1,
+        delta_phi_max: float = DELTA_PHI_MAX,
+        normalize: bool = True,
+        seed: int | None = None,
+        jitter: bool = True,
+    ) -> list[dict[int, float]]:
+        """Seed activation on primes and run RA propagation.
+
+        Returns a list of activation dicts for steps [0..steps].
+        Step 0 is the seed activation (possibly jittered for seed fairness).
+        """
+        if seed is not None:
+            # Controlled determinism for activation jitter
+            import random
+
+            random.seed(seed)
+            np.random.seed(seed)
+        primes = [
+            n for n in self.graph.nodes() if self.graph.nodes[n].get("is_prime", False)
+        ]
+        act: dict[int, float] = {
+            n: (init_value if n in primes else 0.0) for n in self.graph.nodes()
+        }
+        if normalize:
+            # normalizing initial seed
+            m0 = max(act.values()) if act else 1.0
+            if m0 > 0:
+                for k in act:
+                    act[k] /= m0
+        if jitter and primes:
+            # Introduce infinitesimal jitter to distinguish seeds if needed
+            for p in primes:
+                act[p] *= 1.0 + np.random.uniform(-1e-6, 1e-6)
+
+        history: list[dict[int, float]] = [dict(act)]
+        # Apply UM for bookkeeping/telemetry
+        self.apply_coupling(delta_phi_max=delta_phi_max)
+        for _ in range(steps):
+            act = self.resonance_step(
+                act,
+                gain=gain,
+                decay=decay,
+                delta_phi_max=delta_phi_max,
+                normalize=normalize,
+            )
+            history.append(dict(act))
+        # Telemetry metrics
+        self.graph.graph["ra_steps"] = int(steps)
+        self.graph.graph["ra_gain"] = float(gain)
+        self.graph.graph["ra_decay"] = float(decay)
+        self.graph.graph["ra_delta_phi_max"] = float(delta_phi_max)
+        return history
+
+    def resonance_metrics(self, activation: dict[int, float]) -> dict[str, float]:
+        """Compute simple metrics on an activation field for analysis."""
+        values = np.array(list(activation.values()), dtype=float)
+        mean_act = float(np.mean(values)) if values.size else 0.0
+        frac_high = float(np.mean(values >= 0.5)) if values.size else 0.0
+        # Correlation with prime indicator
+        y = np.array(
+            [
+                1.0 if self.graph.nodes[n].get("is_prime", False) else 0.0
+                for n in sorted(self.graph.nodes())
+            ],
+            dtype=float,
+        )
+        x = np.array(
+            [activation.get(n, 0.0) for n in sorted(self.graph.nodes())], dtype=float
+        )
+        if x.size and y.size:
+            xm, ym = x - x.mean(), y - y.mean()
+            denom = float(np.sqrt((xm**2).sum()) * np.sqrt((ym**2).sum()))
+            corr = float((xm * ym).sum() / denom) if denom > 0 else 0.0
+        else:
+            corr = 0.0
+        return {
+            "mean_activation": mean_act,
+            "fraction_ge_0_5": frac_high,
+            "corr_with_primes": corr,
+        }
+
+    # ====================================================================
+    # TELEMETRY EXPORT FUNCTIONS (JSONL / CSV)
+    # ====================================================================
+
+    def export_prime_certificates(
+        self,
+        path: str,
+        *,
+        delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_2X_CANONICAL,  # ≈ 0.1352 (operational higher threshold for emergent patterns)
+        fmt: str = "jsonl",
+        include_components: bool = True,
+    ) -> int:
+        """Export prime certificates for all numbers up to max_number.
+
+        Parameters
+        ----------
+        path : str
+            Output file path.
+        delta_nfr_threshold : float, default 0.2
+            Threshold used for candidate detection (telemetry context).
+        fmt : {"jsonl","csv"}, default "jsonl"
+            Output format.
+        include_components : bool, default True
+            Include component breakdown (zeta/eta/theta contributions).
+
+        Returns
+        -------
+        int
+            Number of certificates exported.
+        """
+        import csv
+        import json
+        import os
+
+        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+        candidates = self.detect_prime_candidates(
+            delta_nfr_threshold=delta_nfr_threshold
+        )
+        count = 0
+        if fmt.lower() == "jsonl":
+            with open(path, "w", encoding="utf-8") as f:
+                for n, _delta in candidates:
+                    cert = self.get_prime_certificate(n)
+                    data = cert.as_dict()
+                    if not include_components:
+                        data.pop("components", None)
+                    f.write(json.dumps(data, ensure_ascii=False) + "\n")
+                    count += 1
+        elif fmt.lower() == "csv":
+            # Determine fields
+            sample_cert = (
+                self.get_prime_certificate(candidates[0][0]).as_dict()
+                if candidates
+                else {}
+            )
+            if not include_components:
+                sample_cert.pop("components", None)
+            fields = list(sample_cert.keys())
+            with open(path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=fields)
+                writer.writeheader()
+                for n, _delta in candidates:
+                    cert = self.get_prime_certificate(n).as_dict()
+                    if not include_components:
+                        cert.pop("components", None)
+                    writer.writerow(cert)
+                    count += 1
+        else:
+            raise TNFRValueError(
+                f"Unsupported format: {fmt}",
+                context={"format": fmt, "supported": ["csv"]},
+                suggestion="Use 'csv' format.",
+            )
+        logger.info(f"Exported {count} prime certificates to {path} (fmt={fmt})")
+        return count
+
+    def export_structural_fields(
+        self,
+        path: str,
+        *,
+        phase_method: str = "logn",
+        fmt: str = "jsonl",
+    ) -> int:
+        """Export structural field telemetry (φ, |∇φ|, K_φ, Φ_s, ξ_C).
+
+        The coherence length ξ_C is exported as its summary entries.
+        Returns number of nodes exported.
+        """
+        import csv
+        import json
+        import os
+
+        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+        fields = self.compute_structural_fields(phase_method=phase_method)
+        phi = fields["phi"]
+        grad = fields["phi_grad"]
+        kphi = fields["k_phi"]
+        phi_s = fields["phi_s"]
+        xi = fields["xi_c"]  # dict with summary stats
+        nodes = sorted(self.graph.nodes())
+        count = 0
+        if fmt.lower() == "jsonl":
+            with open(path, "w", encoding="utf-8") as f:
+                for n in nodes:
+                    row = {
+                        "n": n,
+                        "phi": float(phi.get(n, 0.0)),
+                        "phi_grad": float(grad.get(n, 0.0)),
+                        "k_phi": float(kphi.get(n, 0.0)),
+                        "phi_s": float(phi_s.get(n, 0.0)),
+                    }
+                    f.write(json.dumps(row, ensure_ascii=False) + "\n")
+                    count += 1
+            # Append coherence length summary as a separate JSON object
+            with open(path, "a", encoding="utf-8") as f:
+                f.write(json.dumps({"xi_c_summary": xi}, ensure_ascii=False) + "\n")
+        elif fmt.lower() == "csv":
+            with open(path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.writer(f)
+                writer.writerow(["n", "phi", "phi_grad", "k_phi", "phi_s"])
+                for n in nodes:
+                    writer.writerow(
+                        [
+                            n,
+                            float(phi.get(n, 0.0)),
+                            float(grad.get(n, 0.0)),
+                            float(kphi.get(n, 0.0)),
+                            float(phi_s.get(n, 0.0)),
+                        ]
+                    )
+                    count += 1
+                # Write ξ_C summary below as key,value pairs
+                writer.writerow([])
+                writer.writerow(["xi_c_summary_key", "xi_c_summary_value"])
+                for k, v in xi.items():
+                    writer.writerow([k, v])
+        else:
+            raise TNFRValueError(
+                f"Unsupported format: {fmt}",
+                context={"format": fmt, "supported": ["jsonl", "csv"]},
+                suggestion="Use 'jsonl' or 'csv' format.",
+            )
+        logger.info(
+            "Exported structural fields for %d nodes to %s (fmt=%s)"
+            % (
+                count,
+                path,
+                fmt,
+            )
+        )
+        return count
+
+
+# ============================================================================
+# TESTING AND VALIDATION FUNCTIONS
+# ============================================================================
+
+
+def run_basic_validation(max_number: int = 50) -> None:
+    """Run basic validation of TNFR prime detection."""
+    logger.info("=" * 60)
+    logger.info("TNFR ARITHMETIC NETWORK: Prime Detection Validation")
+    logger.info("=" * 60)
+
+    # Create network
+    logger.info(f"Creating arithmetic TNFR network (n ≤ {max_number})...")
+    network = ArithmeticTNFRNetwork(max_number)
+
+    # Summary statistics
+    stats = network.summary_statistics()
+    logger.info("Network Statistics:")
+    logger.info(f"  Total numbers: {stats['total_numbers']}")
+    logger.info(f"  Known primes: {stats['prime_count']}")
+    logger.info(f"  Prime ratio: {stats['prime_ratio']:.3f}")
+    logger.info(f"  Prime mean ΔNFR: {stats['prime_mean_DELTA_NFR']:.6f}")
+    logger.info(f"  Composite mean ΔNFR: {stats['composite_mean_DELTA_NFR']:.6f}")
+    logger.info(f"  ΔNFR separation: {stats['DELTA_NFR_separation']:.6f}")
+
+    # Test prime detection
+    logger.info("Testing prime detection...")
+    validation = network.validate_prime_detection(
+        delta_nfr_threshold=MATH_DELTA_NFR_THRESHOLD_CANONICAL
+    )  # operational threshold
+    logger.info(f"  Precision: {validation['precision']:.3f}")
+    logger.info(f"  Recall: {validation['recall']:.3f}")
+    logger.info(f"  F1-score: {validation['f1_score']:.3f}")
+
+    if validation["false_alarms"]:
+        logger.info(f"  False alarms: {validation['false_alarms']}")
+    if validation["missed_primes"]:
+        logger.info(f"  Missed primes: {validation['missed_primes']}")
+
+    # Show first few primes
+    logger.info("First 10 primes with TNFR properties:")
+    primes = [n for n in range(2, max_number + 1) if network._is_prime(n)][:10]
+    for p in primes:
+        props = network.get_tnfr_properties(p)
+        logger.info(
+            "  %2d: EPI=%.3f, νf=%.3f, ΔNFR=%.6f"
+            % (
+                p,
+                props["EPI"],
+                props["nu_f"],
+                props["DELTA_NFR"],
+            )
+        )
+
+
+if __name__ == "__main__":
+    # Run basic validation
+    run_basic_validation(max_number=100)
+
+# ============================================================================
+# ADELIC TOOLS (Gap 5 Resolution)
+# ============================================================================
+
+
+def get_primitive_root(p: int) -> int | None:
+    """Find the smallest primitive root modulo p."""
+    p = int(p)  # Ensure native int for pow()
+    if p == 2:
+        return 1
+    if not isprime(p):
+        return None
+    for g in range(2, p):
+        is_primitive = True
+        for i in range(1, p - 1):
+            if pow(g, i, p) == 1:
+                is_primitive = False
+                break
+        if is_primitive:
+            return g
+    return None
+
+
+def compute_dirichlet_characters(p: int) -> np.ndarray:
+    """
+    Compute all Dirichlet characters modulo p.
+    Returns a matrix where row k is the k-th character evaluated on 1..p-1.
+
+    Used for constructing the local Hilbert space H_p.
+    """
+    if not isprime(p):
+        raise TNFRValueError(
+            f"Modulus {p} must be prime for local field construction.",
+            context={"modulus": p},
+            suggestion="Provide a prime number as modulus.",
+        )
+
+    g = get_primitive_root(p)
+    if g is None:
+        raise TNFRValueError(
+            f"Could not find primitive root for {p}",
+            context={"modulus": p},
+            suggestion="Ensure the modulus is a prime number.",
+        )
+
+    # Mapping from value a to index (discrete log)
+    val_to_idx = np.zeros(p, dtype=int)
+    curr = 1
+    for k in range(p - 1):
+        val_to_idx[curr] = k
+        curr = (curr * g) % p
+
+    k_vals = np.arange(p - 1).reshape(-1, 1)  # Character indices
+    a_vals = np.arange(1, p).reshape(1, -1)  # Group elements
+
+    log_a = val_to_idx[a_vals]
+    exponents = k_vals * log_a
+
+    # Character table: chi_k(a) = exp(2pi i k log_g(a) / (p-1))
+    chi_matrix = np.exp(2j * np.pi * exponents / (p - 1))
+    return chi_matrix
+
+
+def compute_gauss_sums(p: int) -> np.ndarray:
+    """
+    Compute normalized Gauss sums for all characters mod p.
+    Implements the local operator U_p action.
+
+    Returns:
+        Array of eigenvalues (normalized Gauss sums).
+        By Hasse-Davenport, |lambda| should be 1.0 for non-trivial chars.
+    """
+    chi_matrix = compute_dirichlet_characters(p)
+
+    # Additive exponential term: exp(2pi i a / p)
+    a_vals = np.arange(1, p)
+    additive_term = np.exp(2j * np.pi * a_vals / p)
+
+    # Compute sums: dot product
+    gauss_sums = np.dot(chi_matrix, additive_term)
+
+    # Normalize by sqrt(p) (Unitary definition)
+    normalized_sums = gauss_sums / np.sqrt(p)
+
+    return normalized_sums
+
+
+class AdelicOperator:
+    """
+    Represents the local unitary operator U_p acting on H_p.
+    """
+
+    def __init__(self, p: int):
+        self.p = p
+        self.eigenvalues = compute_gauss_sums(p)
+
+    def apply(self, wavefunction: np.ndarray) -> np.ndarray:
+        """Apply U_p to a wavefunction in the character basis."""
+        if len(wavefunction) != self.p - 1:
+            raise TNFRValueError(
+                f"Wavefunction dimension {len(wavefunction)} mismatch for p={self.p}",
+                context={
+                    "dimension": len(wavefunction),
+                    "expected": self.p - 1,
+                    "modulus": self.p,
+                },
+                suggestion="Ensure wavefunction dimension matches p-1.",
+            )
+        return self.eigenvalues * wavefunction
+
+
+# ---------------------------------------------------------------------------
+# Arithmetic residue networks and their structural-frequency rank
+# ---------------------------------------------------------------------------
+# The canonical structural-diffusion operator (physics.structural_diffusion,
+# L_rw = I − D⁻¹W = the ΔNFR EPI channel) applied to a directed Cayley network
+# on ℤ/mℤ with an arithmetic connection set has a distinct-eigenvalue STRUCTURAL
+# RANK that detects primality and cyclotomy. Documented in
+# examples/07_number_theory/153 and theory/TNFR_NUMBER_THEORY.md.
+# Honest scope: the underlying spectra are classical (Gauss periods, Ramanujan
+# sums); this is their canonical TNFR structural-diffusion framing.
+
+
+def quadratic_residue_set(m: int) -> set[int]:
+    """Nonzero quadratic residues modulo ``m``: ``{x^2 mod m} \\ {0}``."""
+    m = int(m)
+    if m < 2:
+        raise TNFRValueError(
+            f"Modulus {m} must be at least 2.",
+            context={"modulus": m},
+            suggestion="Provide an integer modulus >= 2.",
+        )
+    return {(x * x) % m for x in range(1, m)} - {0}
+
+
+def power_residue_set(m: int, k: int) -> set[int]:
+    """Nonzero ``k``-th power residues modulo ``m``: ``{x^k mod m} \\ {0}``."""
+    m, k = int(m), int(k)
+    if m < 2:
+        raise TNFRValueError(
+            f"Modulus {m} must be at least 2.",
+            context={"modulus": m},
+            suggestion="Provide an integer modulus >= 2.",
+        )
+    if k < 1:
+        raise TNFRValueError(
+            f"Power {k} must be at least 1.",
+            context={"power": k},
+            suggestion="Provide a positive integer power.",
+        )
+    return {pow(x, k, m) for x in range(1, m)} - {0}
+
+
+def unitary_residue_set(m: int) -> set[int]:
+    """Units modulo ``m``: ``{u : gcd(u, m) = 1}`` (the Ramanujan-sum network)."""
+    m = int(m)
+    if m < 2:
+        raise TNFRValueError(
+            f"Modulus {m} must be at least 2.",
+            context={"modulus": m},
+            suggestion="Provide an integer modulus >= 2.",
+        )
+    return {u for u in range(1, m) if math.gcd(u, m) == 1}
+
+
+def unit_power_residue_set(m: int, k: int) -> set[int]:
+    """Nonzero ``k``-th powers of the units modulo ``m``:
+    ``{u^k mod m : gcd(u, m) = 1}``.
+
+    Unlike :func:`power_residue_set` (which powers every residue), this restricts
+    to the unit group ``(Z/mZ)^*``.  That restriction is what makes the set
+    factor **exactly** under CRT: for ``gcd(a, b) = 1`` the CRT isomorphism
+    ``Z/abZ ~ Z/aZ x Z/bZ`` carries ``unit_power_residue_set(a*b, k)`` onto the
+    product ``unit_power_residue_set(a, k) x unit_power_residue_set(b, k)``.  For
+    prime ``m`` it coincides with :func:`power_residue_set`.
+    """
+    m, k = int(m), int(k)
+    if m < 2:
+        raise TNFRValueError(
+            f"Modulus {m} must be at least 2.",
+            context={"modulus": m},
+            suggestion="Provide an integer modulus >= 2.",
+        )
+    if k < 1:
+        raise TNFRValueError(
+            f"Power {k} must be at least 1.",
+            context={"power": k},
+            suggestion="Provide a positive integer power.",
+        )
+    return {pow(u, k, m) for u in range(1, m) if math.gcd(u, m) == 1} - {0}
+
+
+def arithmetic_cayley_digraph(m: int, connection: Iterable[int]) -> nx.DiGraph:
+    """Directed Cayley graph ``Cay(ℤ/mℤ, connection)``.
+
+    Vertex set ``{0, …, m−1}``; a directed edge ``a → a+c (mod m)`` for each
+    ``c`` in the connection set. This is the substrate on which the canonical
+    structural-diffusion operator is evaluated.
+    """
+    m = int(m)
+    connection = list(connection)
+    graph = nx.DiGraph()
+    graph.add_nodes_from(range(m))
+    for a in range(m):
+        for c in connection:
+            graph.add_edge(a, (a + c) % m)
+    return graph
+
+
+def _prime_factorization(m: int) -> dict[int, int]:
+    """Prime factorization exponents of ``m`` (sympy if present, else trial)."""
+    m = int(m)
+    if m < 1:
+        raise TNFRValueError(
+            f"Cannot factorize {m}; expected a positive integer.",
+            context={"value": m},
+            suggestion="Provide a positive integer.",
+        )
+    if HAS_SYMPY:
+        return {int(p): int(e) for p, e in factorint(m).items()}
+    factors: dict[int, int] = {}
+    remaining, divisor = m, 2
+    while divisor * divisor <= remaining:
+        while remaining % divisor == 0:
+            factors[divisor] = factors.get(divisor, 0) + 1
+            remaining //= divisor
+        divisor += 1
+    if remaining > 1:
+        factors[remaining] = factors.get(remaining, 0) + 1
+    return factors
+
+
+def power_residue_rank(p: int, k: int) -> int:
+    r"""Closed-form structural rank of the ``k``-th power residue network on a
+    prime ``p``: the cyclotomy law ``s_k(p) = gcd(k, p−1) + 1``.
+
+    Equivalently the number of Gauss periods of degree ``gcd(k, p−1)`` plus the
+    trivial frequency. The maximal rank ``k+1`` is reached iff ``p ≡ 1 (mod k)``,
+    i.e. iff ``p`` splits completely in the cyclotomic field ``ℚ(ζ_k)``. The
+    quadratic-residue case is ``k = 2`` (``gcd(2, p−1) = 2`` ⟹ uniform rank 3).
+
+    Proved for all ``k`` via Gauss periods (theory/TNFR_NUMBER_THEORY.md §9.11):
+    the ``k``-th power Cayley eigenvalues are the ``gcd(k, p-1)`` Gauss periods
+    (distinct, none rational) plus the trivial frequency. Honest scope: classical
+    cyclotomy in the canonical TNFR structural-diffusion framing; verified
+    computationally for ``k <= 40``, ``p < 64`` (680 cases, 0 failures) and proved
+    in general. The formula is odd-prime only: ``(Z/2^e)^*`` is non-cyclic for
+    ``e >= 3``, so the even sector is the arithmetic continuation (§9.11).
+    """
+    p, k = int(p), int(k)
+    return math.gcd(k, p - 1) + 1
+
+
+def quadratic_residue_annotated_rank(m: int) -> int:
+    r"""Multiplicative conductor-annotated quadratic-residue structural rank
+    ``A(m)``.
+
+    ``A`` is multiplicative with ``A(p^e) = e + ceil(e/2) + 1 = floor(3(e+1)/2)``.
+    For odd ``m`` it equals the distinct-eigenvalue count of the
+    conductor-annotated quadratic-residue Cayley digraph; on squarefree ``m`` it
+    is ``3^ω(m)`` (the per-prime rank 3 raised to the number of prime factors),
+    and ``A(m) ≥ τ(m)`` always. The unannotated scalar count can be smaller on
+    mixed composites (the first separation is at ``3^7·5^2·41^2``).
+
+    Honest scope: a classical multiplicative arithmetic function generalizing
+    ``3^ω`` (OEIS A074816) in the canonical TNFR framing.
+    """
+    rank = 1
+    for exponent in _prime_factorization(m).values():
+        rank *= exponent + (exponent + 1) // 2 + 1
+    return rank
+
+
+def residue_network_rank(m: int, kind: str = "quadratic", k: int = 2) -> int:
+    """Structural-frequency rank of an arithmetic residue network on ``ℤ/mℤ``.
+
+    Builds the canonical Cayley network for the requested connection set and
+    returns its :func:`~tnfr.physics.structural_diffusion.structural_frequency_rank`
+    (the canonical spectral diagnostic — the distinct-eigenvalue count of the
+    structural-diffusion operator ``L_rw``).
+
+    Parameters
+    ----------
+    m : int
+        The modulus.
+    kind : {"quadratic", "power", "unitary"}
+        Which arithmetic connection set to use.
+    k : int
+        The power, used only when ``kind == "power"``.
+
+    Returns
+    -------
+    int
+        The structural rank. For an odd prime ``m``: quadratic → 3, power →
+        ``gcd(k, m−1) + 1`` (the cyclotomy law), unitary → 2.
+    """
+    from ..physics.structural_diffusion import structural_frequency_rank
+
+    if kind == "quadratic":
+        connection = quadratic_residue_set(m)
+    elif kind == "power":
+        connection = power_residue_set(m, k)
+    elif kind == "unitary":
+        connection = unitary_residue_set(m)
+    else:
+        raise TNFRValueError(
+            f"Unknown residue-network kind {kind!r}.",
+            context={"kind": kind},
+            suggestion="Use one of: 'quadratic', 'power', 'unitary'.",
+        )
+    return structural_frequency_rank(arithmetic_cayley_digraph(m, connection))

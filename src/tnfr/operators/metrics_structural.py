@@ -1,0 +1,1174 @@
+"""Operator metrics: structural operators."""
+
+from __future__ import annotations
+
+from typing import Any
+
+from ..alias import get_attr
+from ..config.operator_names import BIFURCATION_WINDOW
+from ..constants.aliases import ALIAS_EPI_KIND
+from ..metrics.trig import neighbor_phase_mean
+from ..utils import angle_diff
+from .metrics_core import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from .metrics_core import get_node_attr as _get_node_attr
+
+# --- Regime classification thresholds ---
+_VF_LATENT_THRESHOLD = 0.05  # νf below this → latent node
+_EPI_RESONANT_THRESHOLD = 0.5  # EPI above this (+ high νf) → resonant
+_VF_RESONANT_THRESHOLD = 0.8  # νf above this (+ high EPI) → resonant
+_PHASE_COHERENCE_COUPLING = 0.5  # phase coherence above → network coupled
+_NEIGHBOR_CHANGE_THRESHOLD = 0.05  # neighbor delta above → significant
+_PHASE_SHIFT_THRESHOLD = 0.5  # |Δθ| above → phase change event
+_SIGNIFICANT_PHASE_SHIFT = 0.3  # |Δθ| above → regime transition type
+
+
+def _detect_regime_from_state(epi: float, vf: float, latent: bool) -> str:
+    """Detect structural regime from node state.
+
+    Helper function for transition_metrics to classify regime without
+    accessing the Transition operator directly.
+
+    Parameters
+    ----------
+    epi : float
+        EPI value
+    vf : float
+        νf value
+    latent : bool
+        Latent flag
+
+    Returns
+    -------
+    str
+        Regime classification: "latent", "active", or "resonant"
+
+    Notes
+    -----
+    Matches logic in Transition._detect_regime (definitions.py).
+    """
+    if latent or vf < _VF_LATENT_THRESHOLD:
+        return "latent"
+    elif epi > _EPI_RESONANT_THRESHOLD and vf > _VF_RESONANT_THRESHOLD:
+        return "resonant"
+    else:
+        return "active"
+
+
+def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str, Any]:
+    """VAL - Enhanced expansion metrics with structural indicators (Issue #2724).
+
+    Captures comprehensive metrics reflecting canonical VAL effects:
+    - Basic growth metrics (Δνf, ΔEPI)
+    - Bifurcation risk (∂²EPI/∂t²)
+    - Coherence preservation (local C(t))
+    - Fractality indicators (growth ratios)
+    - Network impact (phase coherence with neighbors)
+    - Structural stability (ΔNFR bounds)
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to collect metrics from
+    vf_before : float
+        νf value before operator application
+    epi_before : float
+        EPI value before operator application
+    Returns
+    -------
+    dict
+        Comprehensive expansion metrics including:
+
+        **Core Metrics (existing)**:
+        - operator, glyph: Identification
+        - vf_increase, vf_final: Frequency changes
+        - delta_epi, epi_final: EPI changes
+        - expansion_factor: Relative νf increase
+
+        **Structural Stability (NEW)**:
+        - dnfr_final: Final reorganization gradient
+        - dnfr_positive: True if ΔNFR > 0 (required for expansion)
+        - dnfr_stable: True if 0 < ΔNFR < 1.0 (bounded growth)
+
+        **Bifurcation Risk (ENHANCED)**:
+        - d2epi: EPI acceleration (∂²EPI/∂t²)
+        - bifurcation_risk: True when |∂²EPI/∂t²| > threshold
+        - bifurcation_magnitude: Ratio of d2epi to threshold
+        - bifurcation_threshold: Configurable threshold value
+
+        **Coherence Preservation (ENHANCED)**:
+        - coherence_local: Local coherence measurement [0,1]
+        - coherence_preserved: True when C_local > threshold
+
+        **Fractality Indicators (ENHANCED)**:
+        - epi_growth_rate: Relative EPI growth
+        - vf_growth_rate: Relative νf growth
+        - growth_ratio: vf_growth_rate / epi_growth_rate
+        - fractal_preserved: True when ratio in valid range [0.5, 2.0]
+
+        **Network Impact (NEW)**:
+        - neighbor_count: Number of neighbors
+        - phase_coherence_neighbors: Phase alignment with neighbors [0,1]
+        - network_coupled: True if neighbors exist and phase_coherence > 0.5
+        - theta_final: Final phase value
+
+        **Overall Health (NEW)**:
+        - expansion_healthy: Combined indicator of all health metrics
+
+    Notes
+    -----
+    Key indicators:
+    - bifurcation_risk: True when |∂²EPI/∂t²| > threshold
+    - fractal_preserved: True when growth rates maintain scaling relationship
+    - coherence_preserved: True when local C(t) remains above threshold
+    - dnfr_positive: True when ΔNFR > 0 (required for expansion)
+
+    Thresholds are configurable via graph metadata:
+    - VAL_BIFURCATION_THRESHOLD (default: 0.3)
+    - VAL_MIN_COHERENCE (default: 0.5)
+    - VAL_FRACTAL_RATIO_MIN (default: 0.5)
+    - VAL_FRACTAL_RATIO_MAX (default: 2.0)
+
+    Examples
+    --------
+    >>> from tnfr.structural import create_nfr, run_sequence
+    >>> from tnfr.operators.definitions import Expansion
+    >>>
+    >>> G, node = create_nfr("test", epi=0.4, vf=1.0)
+    >>> G.graph["COLLECT_OPERATOR_METRICS"] = True
+    >>> run_sequence(G, node, [Expansion()])
+    >>>
+    >>> metrics = G.graph["operator_metrics"][-1]
+    >>> if metrics["bifurcation_risk"]:
+    ...     print(f"WARNING: Bifurcation risk! d2epi={metrics['d2epi']:.3f}")
+    >>> if not metrics["coherence_preserved"]:
+    ...     print(f"WARNING: Coherence degraded! C={metrics['coherence_local']:.3f}")
+
+    See Also
+    --------
+    Expansion : VAL operator that produces these metrics
+    validate_expansion : Preconditions ensuring valid expansion
+    """
+    import math
+
+    # Basic state
+    vf_after = _get_node_attr(G, node, ALIAS_VF)
+    epi_after = _get_node_attr(G, node, ALIAS_EPI)
+    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+    d2epi = _get_node_attr(G, node, ALIAS_D2EPI)
+    theta = _get_node_attr(G, node, ALIAS_THETA)
+
+    # Network context
+    neighbors = list(G.neighbors(node))
+    neighbor_count = len(neighbors)
+
+    # Thresholds (configurable)
+    bifurcation_threshold = float(G.graph.get("VAL_BIFURCATION_THRESHOLD", 0.3))
+    coherence_threshold = float(G.graph.get("VAL_MIN_COHERENCE", 0.5))
+    fractal_ratio_min = float(G.graph.get("VAL_FRACTAL_RATIO_MIN", 0.5))
+    fractal_ratio_max = float(G.graph.get("VAL_FRACTAL_RATIO_MAX", 2.0))
+
+    # Growth deltas
+    delta_epi = epi_after - epi_before
+    delta_vf = vf_after - vf_before
+
+    # Growth rates (relative to initial values)
+    epi_growth_rate = (delta_epi / epi_before) if epi_before > 1e-9 else 0.0
+    vf_growth_rate = (delta_vf / vf_before) if vf_before > 1e-9 else 0.0
+    growth_ratio = (
+        vf_growth_rate / epi_growth_rate if abs(epi_growth_rate) > 1e-9 else 0.0
+    )
+
+    # Coherence preservation
+    # Local coherence via extracted helper
+    from ..metrics.local_coherence import compute_local_coherence_fallback
+
+    c_local = compute_local_coherence_fallback(G, node)
+
+    # Phase coherence with neighbors
+    if neighbor_count > 0:
+        mean_neighbor_theta = float(neighbor_phase_mean(G, node))
+        phase_diff = abs(angle_diff(theta, mean_neighbor_theta))
+        # Normalize to [0, 1], 1 = perfect alignment
+        phase_coherence_neighbors = 1.0 - phase_diff / math.pi
+    else:
+        phase_coherence_neighbors = 0.0
+
+    # Bifurcation magnitude (ratio to threshold)
+    bifurcation_magnitude = (
+        abs(d2epi) / bifurcation_threshold if bifurcation_threshold > 0 else 0.0
+    )
+
+    # Boolean indicators
+    bifurcation_risk = abs(d2epi) > bifurcation_threshold
+    coherence_preserved = c_local > coherence_threshold
+    dnfr_positive = dnfr > 0
+    dnfr_stable = 0 < dnfr < 1.0
+    fractal_preserved = (
+        fractal_ratio_min < growth_ratio < fractal_ratio_max
+        if abs(epi_growth_rate) > 1e-9
+        else True
+    )
+    network_coupled = (
+        neighbor_count > 0 and phase_coherence_neighbors > _PHASE_COHERENCE_COUPLING
+    )
+
+    # Overall health indicator
+    expansion_healthy = (
+        dnfr_positive
+        and not bifurcation_risk
+        and coherence_preserved
+        and fractal_preserved
+    )
+
+    return {
+        # Core identification
+        "operator": "Expansion",
+        "glyph": "VAL",
+        # Existing basic metrics
+        "vf_increase": delta_vf,
+        "vf_final": vf_after,
+        "delta_epi": delta_epi,
+        "epi_final": epi_after,
+        "expansion_factor": vf_after / vf_before if vf_before > 1e-9 else 1.0,
+        # NEW: Structural stability
+        "dnfr_final": dnfr,
+        "dnfr_positive": dnfr_positive,
+        "dnfr_stable": dnfr_stable,
+        # NEW: Bifurcation risk (enhanced)
+        "d2epi": d2epi,
+        "bifurcation_risk": bifurcation_risk,
+        "bifurcation_magnitude": bifurcation_magnitude,
+        "bifurcation_threshold": bifurcation_threshold,
+        # NEW: Coherence preservation
+        "coherence_local": c_local,
+        "coherence_preserved": coherence_preserved,
+        # NEW: Fractality indicators
+        "epi_growth_rate": epi_growth_rate,
+        "vf_growth_rate": vf_growth_rate,
+        "growth_ratio": growth_ratio,
+        "fractal_preserved": fractal_preserved,
+        # NEW: Network impact
+        "neighbor_count": neighbor_count,
+        "phase_coherence_neighbors": max(0.0, phase_coherence_neighbors),
+        "network_coupled": network_coupled,
+        "theta_final": theta,
+        # NEW: Overall health
+        "expansion_healthy": expansion_healthy,
+        # Metadata
+        "metrics_version": "3.0_canonical",
+    }
+
+
+def contraction_metrics(
+    G,
+    node,
+    vf_before,
+    epi_before,
+    *,
+    dnfr_before=None,
+):
+    """NUL - Contraction metrics: νf decrease, core concentration, ΔNFR densification.
+
+    Collects comprehensive contraction metrics including structural density dynamics
+    that validate canonical NUL behavior and enable early warning for over-compression.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to collect metrics from
+    vf_before : float
+        νf value before operator application
+    epi_before : float
+        EPI value before operator application
+    dnfr_before : float, optional keyword-only
+        Bound pre-operation pressure. When omitted, the latest telemetry event
+        carrying the same node identifier is used, with unlabelled historical
+        records retained only as a compatibility fallback.
+
+    Returns
+    -------
+    dict
+        Contraction-specific metrics including:
+
+        **Basic metrics:**
+
+        - operator: "Contraction"
+        - glyph: "NUL"
+        - vf_decrease: Absolute reduction in νf
+        - vf_final: Post-contraction νf
+        - delta_epi: EPI change
+        - epi_final: Post-contraction EPI
+        - dnfr_final: Post-contraction ΔNFR
+        - contraction_factor: Ratio of vf_after / vf_before
+
+        **Densification metrics (if available):**
+
+        - densification_factor: Canonical reciprocal capacity factor
+          (approximately 1.0865 by default)
+        - dnfr_densified: Whether the magnitude of ΔNFR increased
+        - dnfr_before: ΔNFR value before contraction
+        - dnfr_increase: Increase in ΔNFR magnitude
+        - dnfr_signed_change: Signed ΔNFR change
+
+        **Structural density metrics (NEW):**
+
+        - density_before: |ΔNFR| / max(EPI, ε) before contraction
+        - density_after: |ΔNFR| / max(EPI, ε) after contraction
+        - densification_ratio: density_after / density_before
+        - is_critical_density: Warning flag (density > threshold)
+
+    Notes
+    -----
+    **Structural Density**: Defined as ρ = |ΔNFR| / max(EPI, ε) where ε = 1e-9.
+    This captures the concentration of reorganization pressure per unit structure.
+
+    **Critical Density**: When density exceeds CRITICAL_DENSITY_THRESHOLD (default: 5.0),
+    it indicates over-compression risk where the node may become unstable.
+
+    **Densification Ratio**: Quantifies how much density increased during contraction.
+    Canonical NUL should produce densification_ratio ≈ densification_factor / contraction_factor.
+
+    See Also
+    --------
+    Contraction : NUL operator implementation
+    validate_contraction : Preconditions for safe contraction
+    """
+    # Small epsilon for numerical stability
+    EPSILON = 1e-9
+
+    vf_after = _get_node_attr(G, node, ALIAS_VF)
+    epi_after = _get_node_attr(G, node, ALIAS_EPI)
+    dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
+
+    # Extract densification telemetry if available
+    densification_log = G.graph.get("nul_densification_log", [])
+    densification_factor = None
+    latest_node_entry = None
+    latest_legacy_entry = None
+    for entry in reversed(densification_log):
+        if not isinstance(entry, dict):
+            continue
+        if "node" not in entry:
+            if latest_legacy_entry is None:
+                latest_legacy_entry = entry
+            continue
+        if entry.get("node") == node:
+            latest_node_entry = entry
+            break
+    selected_entry = latest_node_entry or latest_legacy_entry
+    if selected_entry is not None:
+        densification_factor = selected_entry.get("densification_factor")
+        if dnfr_before is None:
+            dnfr_before = selected_entry.get("dnfr_before")
+
+    # Calculate structural density before and after
+    # Density = |ΔNFR| / max(EPI, ε)
+    density_before = (
+        abs(dnfr_before) / max(abs(epi_before), EPSILON)
+        if dnfr_before is not None
+        else 0.0
+    )
+    density_after = abs(dnfr_after) / max(abs(epi_after), EPSILON)
+
+    # Calculate densification ratio (how much density increased)
+    if density_before > EPSILON:
+        densification_ratio = density_after / density_before
+    elif density_after <= EPSILON:
+        densification_ratio = 1.0
+    else:
+        densification_ratio = float("inf")
+
+    # Get critical density threshold from graph config or use default
+    critical_density_threshold = float(G.graph.get("CRITICAL_DENSITY_THRESHOLD", 5.0))
+    is_critical_density = density_after > critical_density_threshold
+
+    metrics = {
+        "operator": "Contraction",
+        "glyph": "NUL",
+        "vf_decrease": vf_before - vf_after,
+        "vf_final": vf_after,
+        "delta_epi": epi_after - epi_before,
+        "epi_final": epi_after,
+        "dnfr_final": dnfr_after,
+        "contraction_factor": vf_after / vf_before if vf_before > 0 else 1.0,
+    }
+
+    # Add densification metrics if available
+    if densification_factor is not None:
+        metrics["densification_factor"] = densification_factor
+    if dnfr_before is not None:
+        magnitude_increase = abs(dnfr_after) - abs(dnfr_before)
+        metrics["dnfr_before"] = dnfr_before
+        metrics["dnfr_increase"] = magnitude_increase
+        metrics["dnfr_signed_change"] = dnfr_after - dnfr_before
+        metrics["dnfr_densified"] = magnitude_increase > 0.0
+
+    # Add NEW structural density metrics
+    metrics["density_before"] = density_before
+    metrics["density_after"] = density_after
+    metrics["densification_ratio"] = densification_ratio
+    metrics["is_critical_density"] = is_critical_density
+
+    return metrics
+
+
+def self_organization_metrics(G, node, epi_before, vf_before):
+    """THOL metrics for bifurcation, cascade, and measured sub-EPI alignment.
+
+    Collects comprehensive THOL metrics including bifurcation, cascade propagation,
+    amplitude alignment of sub-EPIs and network-input provenance.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to collect metrics from
+    epi_before : float
+        EPI value before operator application
+    vf_before : float
+        νf value before operator application
+
+    Returns
+    -------
+    dict
+        Self-organization-specific metrics including:
+
+        **Base operator metrics:**
+
+        - operator: "Self-organization"
+        - glyph: "THOL"
+        - delta_epi: Change in EPI
+        - delta_vf: Change in νf
+        - epi_final: Final EPI value
+        - vf_final: Final νf value
+        - d2epi: Structural acceleration
+        - dnfr_final: Final ΔNFR
+
+        **Bifurcation metrics:**
+
+        - bifurcation_occurred: Boolean indicator
+        - nested_epi_count: Number of sub-EPIs created
+        - d2epi_magnitude: Absolute acceleration
+
+        **Cascade dynamics (NEW):**
+
+        - cascade_depth: Maximum hierarchical bifurcation depth
+        - propagation_radius: Total unique nodes affected
+        - cascade_detected: Boolean cascade indicator
+        - affected_node_count: Nodes reached by cascade
+        - total_propagations: Total propagation events
+
+        **Sub-EPI amplitude alignment:**
+
+        - subepi_amplitude_alignment: Variance-based magnitude alignment [0,1]
+        - subepi_coherence: Deprecated compatibility alias for that alignment
+        - metabolic_activity_index: Network context usage [0,1]
+
+        **U5 target:**
+
+        - u5_target_satisfied: Result only when THOL_U5_ALPHA is explicit
+        - u5_coherence_residual: C_parent - alpha*sum(C_child)
+        - network_emergence: Cascade plus an explicitly satisfied U5 target
+
+    Notes
+    -----
+    These metrics support reconstruction of cascade evolution. Amplitude
+    alignment, network-input provenance, and U5 coherence remain separate
+    observations.
+
+    See Also
+    --------
+    operators.metabolism.compute_cascade_depth : Cascade depth computation
+    operators.metabolism.compute_subepi_amplitude_alignment : Amplitude diagnostic
+    physics.assess_u5_parent_child_coherence : Explicit U5 target
+    operators.metabolism.compute_metabolic_activity_index : Metabolic tracking
+    operators.cascade.detect_cascade : Cascade detection
+    """
+    from .cascade import detect_cascade
+    from .metabolism import (
+        compute_cascade_depth,
+        compute_metabolic_activity_index,
+        compute_propagation_radius,
+        compute_subepi_amplitude_alignment,
+    )
+
+    epi_after = _get_node_attr(G, node, ALIAS_EPI)
+    vf_after = _get_node_attr(G, node, ALIAS_VF)
+    d2epi = _get_node_attr(G, node, ALIAS_D2EPI)
+    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+
+    # Track nested EPI count from node attribute or graph (backward compatibility)
+    nested_epi_count = len(G.nodes[node].get("sub_epis", []))
+    if nested_epi_count == 0:
+        # Fallback to old location for backward compatibility
+        nested_epi_count = len(G.graph.get("sub_epi", []))
+
+    # Cascade and propagation analysis
+    cascade_analysis = detect_cascade(G)
+
+    # NEW: Enhanced cascade and emergence metrics
+    cascade_depth = compute_cascade_depth(G, node)
+    propagation_radius = compute_propagation_radius(G)
+    subepi_alignment = compute_subepi_amplitude_alignment(G, node)
+    u5_target_satisfied = None
+    u5_coherence_residual = None
+    if nested_epi_count and "THOL_U5_ALPHA" in G.graph:
+        from ..physics.multiscale_coherence import (
+            assess_u5_parent_child_coherence,
+        )
+
+        u5 = assess_u5_parent_child_coherence(
+            G, node, alpha=G.graph["THOL_U5_ALPHA"]
+        )
+        u5_target_satisfied = u5.satisfies_target
+        u5_coherence_residual = u5.residual
+    metabolic_activity = compute_metabolic_activity_index(G, node)
+
+    return {
+        # Base operator metrics
+        "operator": "Self-organization",
+        "glyph": "THOL",
+        "delta_epi": epi_after - epi_before,
+        "delta_vf": vf_after - vf_before,
+        "epi_final": epi_after,
+        "vf_final": vf_after,
+        "d2epi": d2epi,
+        "dnfr_final": dnfr,
+        # Bifurcation metrics
+        "bifurcation_occurred": nested_epi_count > 0,
+        "nested_epi_count": nested_epi_count,
+        "d2epi_magnitude": abs(d2epi),
+        # NEW: Cascade dynamics
+        "cascade_depth": cascade_depth,
+        "propagation_radius": propagation_radius,
+        "cascade_detected": cascade_analysis["is_cascade"],
+        "affected_node_count": len(cascade_analysis["affected_nodes"]),
+        "total_propagations": cascade_analysis["total_propagations"],
+        # Amplitude dispersion is not canonical coherence or U5.
+        "subepi_amplitude_alignment": subepi_alignment,
+        "subepi_coherence": subepi_alignment,  # compatibility alias
+        "metabolic_activity_index": metabolic_activity,
+        # No U5 claim is made unless alpha was supplied explicitly.
+        "u5_target_satisfied": u5_target_satisfied,
+        "u5_coherence_residual": u5_coherence_residual,
+        "network_emergence": (
+            cascade_analysis["is_cascade"] and u5_target_satisfied
+            if u5_target_satisfied is not None
+            else None
+        ),
+    }
+
+
+def mutation_metrics(
+    G,
+    node,
+    theta_before,
+    epi_before,
+    vf_before=None,
+    dnfr_before=None,
+    epi_kind_before=None,
+):
+    """ZHIR - Comprehensive mutation metrics with canonical structural indicators.
+
+    Collects extended metrics reflecting canonical ZHIR effects:
+    - Threshold verification (∂EPI/∂t > ξ)
+    - Phase transformation quality (θ → θ')
+    - Bifurcation potential (∂²EPI/∂t² > τ)
+    - Structural identity preservation
+    - Network impact and propagation
+    - Destabilizer context (R4 Extended)
+    - Grammar validation status
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to collect metrics from
+    theta_before : float
+        Phase value before operator application
+    epi_before : float
+        EPI value before operator application
+    vf_before : float, optional
+        νf before mutation (for frequency shift tracking)
+    dnfr_before : float, optional
+        ΔNFR before mutation (for pressure tracking)
+    epi_kind_before : str or None, optional
+        Structural identity captured before mutation. Operator provenance is
+        carried separately by ``source_glyph``/``last_glyph``.
+
+    Returns
+    -------
+    dict
+        Comprehensive mutation metrics organized by category:
+
+        **Core metrics (existing):**
+
+        - operator, glyph: Identification
+        - theta_shift, theta_final: Phase changes
+        - delta_epi, epi_final: EPI changes
+        - phase_change: Boolean indicator
+
+        **Threshold verification (ENHANCED):**
+
+        - depi_dt: Structural velocity (∂EPI/∂t)
+        - threshold_xi: Configured threshold
+        - threshold_met: Boolean (∂EPI/∂t > ξ)
+        - threshold_ratio: depi_dt / ξ
+        - threshold_exceeded_by: max(0, depi_dt - ξ)
+
+        **Phase transformation (ENHANCED):**
+
+        - theta_regime_before: Initial phase regime [0-3]
+        - theta_regime_after: Final phase regime [0-3]
+        - regime_changed: Boolean regime transition
+        - theta_shift_direction: +1 (forward) or -1 (backward)
+        - phase_transformation_magnitude: Normalized shift [0, 1]
+
+        **Bifurcation analysis (NEW):**
+
+        - d2epi: Structural acceleration
+        - bifurcation_threshold_tau: Configured τ
+        - bifurcation_potential: Boolean (∂²EPI/∂t² > τ)
+        - bifurcation_score: Quantitative potential [0, 1]
+        - bifurcation_triggered: Boolean (event recorded)
+        - bifurcation_event_count: Number of bifurcation events
+
+        **Structural preservation (NEW):**
+
+        - epi_kind_before: Identity before mutation
+        - epi_kind_after: Identity after mutation
+        - identity_preserved: Boolean (must be True)
+        - delta_vf: Change in structural frequency
+        - vf_final: Final νf
+        - delta_dnfr: Change in reorganization pressure
+        - dnfr_final: Final ΔNFR
+
+        **Network impact (NEW):**
+
+        - neighbor_count: Number of neighbors
+        - impacted_neighbors: Count with phase shift detected
+        - network_impact_radius: Ratio of impacted neighbors
+        - phase_coherence_neighbors: Phase alignment after mutation
+
+        **Destabilizer context (NEW - R4 Extended):**
+
+        - destabilizer_operator: Glyph that enabled mutation
+        - destabilizer_distance: Operators since destabilizer
+        - recent_history: Last N operators
+
+        **Grammar validation (NEW):**
+
+        - grammar_u4b_satisfied: Boolean (IL precedence + destabilizer)
+        - il_precedence_found: Boolean (prior IL in lifetime grammar context)
+        - destabilizer_recent: Boolean (within window)
+
+    Examples
+    --------
+    >>> from tnfr.structural import create_nfr, run_sequence
+    >>> from tnfr.operators.definitions import Coherence, Dissonance, Mutation
+    >>>
+    >>> G, node = create_nfr("test", epi=0.5, vf=1.2)
+    >>> G.graph["COLLECT_OPERATOR_METRICS"] = True
+    >>>
+    >>> # Apply canonical sequence (IL → OZ → ZHIR)
+    >>> run_sequence(G, node, [Coherence(), Dissonance(), Mutation()])
+    >>>
+    >>> # Retrieve comprehensive metrics
+    >>> metrics = G.graph["operator_metrics"][-1]
+    >>> print(f"Threshold met: {metrics['threshold_met']}")
+    >>> print(f"Bifurcation score: {metrics['bifurcation_score']:.2f}")
+    >>> print(f"Identity preserved: {metrics['identity_preserved']}")
+    >>> print(f"Grammar satisfied: {metrics['grammar_u4b_satisfied']}")
+
+    See Also
+    --------
+    operators.definitions.Mutation : ZHIR operator implementation
+    dynamics.bifurcation.compute_bifurcation_score : Bifurcation scoring
+    operators.preconditions.validate_mutation : Precondition validation with context tracking
+    """
+    import math
+
+    # === GET POST-MUTATION STATE ===
+    theta_after = _get_node_attr(G, node, ALIAS_THETA)
+    epi_after = _get_node_attr(G, node, ALIAS_EPI)
+    vf_after = _get_node_attr(G, node, ALIAS_VF)
+    dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
+    node_data = G.nodes[node]
+    from .nodal_equation import compute_d2epi_dt2
+
+    # Public ZHIR execution commits proposal-bound values before collecting
+    # metrics. Isolated metric calls retain a read-only history fallback.
+    if "_zhir_d2epi" in node_data:
+        d2epi = float(node_data["_zhir_d2epi"])
+    else:
+        d2epi = abs(compute_d2epi_dt2(G, node, store=False))
+
+    # === THRESHOLD VERIFICATION ===
+    # Read the exact immutable sample used by ZHIR's hard runtime gate. This
+    # keeps metrics signed and strict: contraction and equality do not trigger
+    # Mutation. A successful runtime application necessarily reports True.
+    from ._mutation_gate import mutation_threshold_sample
+
+    if "_zhir_gate_depi_dt" in node_data and "_zhir_gate_xi" in node_data:
+        depi_dt = float(node_data["_zhir_gate_depi_dt"])
+        xi = float(node_data["_zhir_gate_xi"])
+        threshold_met = depi_dt > xi
+    else:
+        threshold_sample = mutation_threshold_sample(node_data, G.graph)
+        depi_dt = threshold_sample.depi_dt
+        xi = threshold_sample.xi
+        threshold_met = threshold_sample.crossed
+    threshold_ratio = None if xi == 0.0 else depi_dt / xi
+
+    # === PHASE TRANSFORMATION ===
+    # Extract transformation telemetry from glyph storage
+    theta_shift_stored = node_data.get("_zhir_theta_shift", None)
+    regime_changed = node_data.get("_zhir_regime_changed", False)
+    regime_before_stored = node_data.get("_zhir_regime_before", None)
+    regime_after_stored = node_data.get("_zhir_regime_after", None)
+    fixed_mode = node_data.get("_zhir_fixed_mode", False)
+    if fixed_mode:
+        # The compatibility fixed-shift kernel deliberately preserves old
+        # dynamic-branch telemetry. It is inactive evidence and must not leak
+        # into the current metric sample.
+        regime_changed = False
+        regime_before_stored = None
+        regime_after_stored = None
+
+    # Compute theta shift
+    theta_shift = angle_diff(theta_after, theta_before)
+    theta_shift_magnitude = abs(theta_shift)
+
+    # Compute regimes if not stored
+    regime_before = (
+        regime_before_stored
+        if regime_before_stored is not None
+        else int(theta_before // (math.pi / 2))
+    )
+    regime_after = (
+        regime_after_stored
+        if regime_after_stored is not None
+        else int(theta_after // (math.pi / 2))
+    )
+
+    # Normalized phase transformation magnitude [0, 1]
+    phase_transformation_magnitude = min(theta_shift_magnitude / math.pi, 1.0)
+
+    # === BIFURCATION ANALYSIS ===
+    tau = float(
+        node_data.get(
+            "_zhir_tau",
+            G.graph.get(
+                "BIFURCATION_THRESHOLD_TAU",
+                G.graph.get("ZHIR_BIFURCATION_THRESHOLD", 0.5),
+            ),
+        )
+    )
+    bifurcation_potential = bool(
+        node_data.get("_zhir_bifurcation_potential", d2epi > tau)
+    )
+
+    # Compute bifurcation score using canonical formula
+    from ..dynamics.bifurcation import compute_bifurcation_score
+
+    bifurcation_score = compute_bifurcation_score(
+        d2epi=d2epi, dnfr=dnfr_after, vf=vf_after, epi=epi_after, tau=tau
+    )
+
+    # Check if bifurcation was triggered (event recorded)
+    bifurcation_events = G.graph.get("zhir_bifurcation_events", [])
+    if not isinstance(bifurcation_events, list):
+        bifurcation_events = []
+    from ..glyph_history import current_operator_step
+
+    operator_step = node_data.get(
+        "_zhir_operator_step", current_operator_step(node_data)
+    )
+    bifurcation_triggered = any(
+        event.get("node") == node
+        and event.get("timestamp") == operator_step
+        and event.get("d2_epi") == d2epi
+        and event.get("tau") == tau
+        for event in bifurcation_events
+        if isinstance(event, dict)
+    )
+    bifurcation_event_count = len(bifurcation_events)
+
+    # === STRUCTURAL PRESERVATION ===
+    epi_kind_after = get_attr(
+        G.nodes[node],
+        ALIAS_EPI_KIND,
+        None,
+        strict=True,
+        conv=lambda value: None if value is None else str(value),
+    )
+    identity_preserved = (
+        epi_kind_before == epi_kind_after if epi_kind_before is not None else True
+    )
+
+    # Track frequency and pressure changes
+    delta_vf = vf_after - vf_before if vf_before is not None else 0.0
+    delta_dnfr = dnfr_after - dnfr_before if dnfr_before is not None else 0.0
+
+    # === NETWORK IMPACT ===
+    neighbors = list(G.neighbors(node))
+    neighbor_count = len(neighbors)
+
+    # Count neighbors that experienced phase shifts
+    # This is a simplified heuristic - we check if neighbors have recent phase changes
+    impacted_neighbors = 0
+    phase_impact_threshold = 0.1
+
+    if neighbor_count > 0:
+        # Check neighbors for phase alignment/disruption
+        for n in neighbors:
+            neighbor_theta = _get_node_attr(G, n, ALIAS_THETA)
+            # Simplified: check if neighbor is in similar phase regime after mutation
+            phase_diff = abs(angle_diff(neighbor_theta, theta_after))
+            # If phase diff is large, neighbor might be impacted
+            if phase_diff > phase_impact_threshold:
+                # Check if neighbor has changed recently (has history)
+                neighbor_theta_history = G.nodes[n].get("theta_history", [])
+                if len(neighbor_theta_history) >= 2:
+                    neighbor_change = abs(
+                        angle_diff(
+                            neighbor_theta_history[-1], neighbor_theta_history[-2]
+                        )
+                    )
+                    if (
+                        neighbor_change > _NEIGHBOR_CHANGE_THRESHOLD
+                    ):  # Neighbor experienced change
+                        impacted_neighbors += 1
+
+        # Phase coherence with neighbors after mutation
+        from ..metrics.phase_coherence import compute_phase_alignment
+
+        phase_coherence = compute_phase_alignment(G, node, radius=1)
+    else:
+        phase_coherence = 0.0
+
+    # === DESTABILIZER CONTEXT (R4 Extended) ===
+    mutation_context = G.nodes[node].get("_mutation_context", {})
+    destabilizer_operator = mutation_context.get("destabilizer_operator")
+    destabilizer_distance = mutation_context.get("destabilizer_distance")
+    recent_history = mutation_context.get("recent_history", [])
+
+    # === GRAMMAR VALIDATION (U4b) ===
+    # Check if U4b satisfied (IL precedence + recent destabilizer)
+    from .grammar_debt import node_has_prior_coherence
+
+    il_precedence_found = node_has_prior_coherence(G.nodes[node])
+
+    # Check if destabilizer is recent (within the relaxation window)
+    destabilizer_recent = (
+        destabilizer_distance is not None
+        and destabilizer_distance <= BIFURCATION_WINDOW
+    )
+
+    grammar_u4b_satisfied = il_precedence_found and destabilizer_recent
+
+    # === RETURN COMPREHENSIVE METRICS ===
+    return {
+        # === CORE (existing) ===
+        "operator": "Mutation",
+        "glyph": "ZHIR",
+        "theta_shift": theta_shift_magnitude,
+        "theta_shift_signed": (
+            theta_shift_stored if theta_shift_stored is not None else theta_shift
+        ),
+        "theta_before": theta_before,
+        "theta_after": theta_after,
+        "theta_final": theta_after,
+        "phase_change": theta_shift_magnitude > _PHASE_SHIFT_THRESHOLD,
+        "transformation_mode": "fixed" if fixed_mode else "canonical",
+        # === THRESHOLD VERIFICATION (ENHANCED) ===
+        "depi_dt": depi_dt,
+        "threshold_xi": xi,
+        "threshold_met": threshold_met,
+        "threshold_ratio": threshold_ratio,
+        "threshold_exceeded_by": max(0.0, depi_dt - xi),
+        "threshold_warning": not threshold_met,
+        "threshold_validated": threshold_met,
+        "threshold_unknown": False,
+        # === PHASE TRANSFORMATION (ENHANCED) ===
+        "theta_regime_before": regime_before,
+        "theta_regime_after": regime_after,
+        "regime_changed": regime_changed or (regime_before != regime_after),
+        "theta_regime_change": regime_changed
+        or (regime_before != regime_after),  # Backwards compat
+        "regime_before": regime_before,  # Backwards compat
+        "regime_after": regime_after,  # Backwards compat
+        "theta_shift_direction": math.copysign(1.0, theta_shift),
+        "phase_transformation_magnitude": phase_transformation_magnitude,
+        # === BIFURCATION ANALYSIS (NEW) ===
+        "d2epi": d2epi,
+        "bifurcation_threshold_tau": tau,
+        "bifurcation_potential": bifurcation_potential,
+        "bifurcation_score": bifurcation_score,
+        "bifurcation_triggered": bifurcation_triggered,
+        "bifurcation_event_count": bifurcation_event_count,
+        # === EPI METRICS ===
+        "delta_epi": epi_after - epi_before,
+        "epi_before": epi_before,
+        "epi_after": epi_after,
+        "epi_final": epi_after,
+        # === STRUCTURAL PRESERVATION (NEW) ===
+        "epi_kind_before": epi_kind_before,
+        "epi_kind_after": epi_kind_after,
+        "identity_preserved": identity_preserved,
+        "delta_vf": delta_vf,
+        "vf_before": vf_before if vf_before is not None else vf_after,
+        "vf_final": vf_after,
+        "delta_dnfr": delta_dnfr,
+        "dnfr_before": dnfr_before if dnfr_before is not None else dnfr_after,
+        "dnfr_final": dnfr_after,
+        # === NETWORK IMPACT (NEW) ===
+        "neighbor_count": neighbor_count,
+        "impacted_neighbors": impacted_neighbors,
+        "network_impact_radius": (
+            impacted_neighbors / neighbor_count if neighbor_count > 0 else 0.0
+        ),
+        "phase_coherence_neighbors": phase_coherence,
+        # === DESTABILIZER CONTEXT (NEW - R4 Extended) ===
+        "destabilizer_operator": destabilizer_operator,
+        "destabilizer_distance": destabilizer_distance,
+        "recent_history": recent_history,
+        # === GRAMMAR VALIDATION (NEW) ===
+        "grammar_u4b_satisfied": grammar_u4b_satisfied,
+        "il_precedence_found": il_precedence_found,
+        "destabilizer_recent": destabilizer_recent,
+        # === METADATA ===
+        "metrics_version": "2.0_canonical",
+    }
+
+
+def transition_metrics(
+    G,
+    node,
+    dnfr_before,
+    vf_before,
+    theta_before,
+    epi_before=None,
+):
+    """NAV - Transition metrics: regime classification, phase shift, frequency scaling.
+
+    Collects comprehensive transition metrics including regime origin/destination,
+    phase shift magnitude (properly wrapped), transition type classification, and
+    structural preservation ratios as specified in TNFR.pdf Table 2.3.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to collect metrics from
+    dnfr_before : float
+        ΔNFR value before operator application
+    vf_before : float
+        νf value before operator application
+    theta_before : float
+        Phase value before operator application
+    epi_before : float, optional
+        EPI value before operator application (for preservation tracking)
+
+    Returns
+    -------
+    dict
+        Transition-specific metrics including:
+
+        **Core metrics (existing)**:
+
+        - operator: "Transition"
+        - glyph: "NAV"
+        - delta_theta: Signed phase change
+        - delta_vf: Change in νf
+        - delta_dnfr: Change in ΔNFR
+        - dnfr_final: Final ΔNFR value
+        - vf_final: Final νf value
+        - theta_final: Final phase value
+        - transition_complete: Boolean (|ΔNFR| < |νf|)
+
+        **Regime classification (NEW)**:
+
+        - regime_origin: "latent" | "active" | "resonant"
+        - regime_destination: "latent" | "active" | "resonant"
+        - transition_type: "reactivation" | "phase_shift" | "regime_change"
+
+        **Phase metrics (NEW)**:
+
+        - phase_shift_magnitude: Absolute phase change (radians, 0-π)
+        - phase_shift_signed: Signed phase change (radians, wrapped to [-π, π])
+
+        **Structural scaling (NEW)**:
+
+        - vf_scaling_factor: vf_after / vf_before
+        - dnfr_damping_ratio: dnfr_after / dnfr_before
+        - epi_preservation: epi_after / epi_before (if epi_before provided)
+
+        **Latency tracking (NEW)**:
+
+        - latency_duration: Time in silence (seconds) if transitioning from SHA
+
+    Notes
+    -----
+    **Regime Classification**:
+
+    - **Latent**: latent flag set OR νf < 0.05
+    - **Active**: Default operational state
+    - **Resonant**: EPI > 0.5 AND νf > 0.8
+
+    **Transition type**:
+
+    - **reactivation**: From latent state (SHA → NAV flow)
+    - **phase_shift**: Significant phase change (|Δθ| > 0.3 rad)
+    - **regime_change**: Regime switch without significant phase shift
+
+    **Phase Shift Wrapping**:
+
+    Phase shifts are properly wrapped to [-π, π] range to handle 0-2π boundary
+    crossings correctly, ensuring accurate phase change measurement.
+
+    Examples
+    --------
+    >>> from tnfr.structural import create_nfr, run_sequence
+    >>> from tnfr.operators.definitions import Silence, Transition
+    >>>
+    >>> # Example: SHA → NAV reactivation
+    >>> G, node = create_nfr("test", epi=0.5, vf=0.8)
+    >>> G.graph["COLLECT_OPERATOR_METRICS"] = True
+    >>> run_sequence(G, node, [Silence(), Transition()])
+    >>>
+    >>> metrics = G.graph["operator_metrics"][-1]
+    >>> assert metrics["operator"] == "Transition"
+    >>> assert metrics["transition_type"] == "reactivation"
+    >>> assert metrics["regime_origin"] == "latent"
+    >>> assert metrics["latency_duration"] is not None
+
+    See Also
+    --------
+    operators.definitions.Transition : NAV operator implementation
+    operators.definitions.Transition._detect_regime : Regime detection logic
+    """
+    import math
+
+    # Get current state (after transformation)
+    epi_after = _get_node_attr(G, node, ALIAS_EPI)
+    dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
+    vf_after = _get_node_attr(G, node, ALIAS_VF)
+    theta_after = _get_node_attr(G, node, ALIAS_THETA)
+
+    # === REGIME CLASSIFICATION ===
+    # Get regime origin from node attribute (stored by Transition operator before super().__call__)
+    regime_origin = G.nodes[node].get("_regime_before", None)
+    if regime_origin is None:
+        # Fallback: detect regime from before state
+        regime_origin = _detect_regime_from_state(
+            epi_before or epi_after,
+            vf_before,
+            False,  # Cannot access latent flag from before
+        )
+
+    # Detect destination regime
+    regime_destination = _detect_regime_from_state(
+        epi_after, vf_after, G.nodes[node].get("latent", False)
+    )
+
+    # === TRANSITION TYPE CLASSIFICATION ===
+    # Calculate phase shift (properly wrapped)
+    phase_shift_raw = angle_diff(theta_after, theta_before)
+
+    # Classify transition type
+    if regime_origin == "latent":
+        transition_type = "reactivation"
+    elif abs(phase_shift_raw) > _SIGNIFICANT_PHASE_SHIFT:
+        transition_type = "phase_shift"
+    else:
+        transition_type = "regime_change"
+
+    # === STRUCTURAL SCALING FACTORS ===
+    vf_scaling = vf_after / vf_before if vf_before > 0 else 1.0
+    dnfr_damping = dnfr_after / dnfr_before if abs(dnfr_before) > 1e-9 else 1.0
+
+    # === EPI PRESERVATION ===
+    epi_preservation = None
+    if epi_before is not None and epi_before > 0:
+        epi_preservation = epi_after / epi_before
+
+    # === LATENCY DURATION ===
+    # Get from node if transitioning from silence
+    latency_duration = G.nodes[node].get("silence_duration", None)
+
+    return {
+        # === CORE (existing, preserved) ===
+        "operator": "Transition",
+        "glyph": "NAV",
+        "delta_theta": phase_shift_raw,
+        "delta_vf": vf_after - vf_before,
+        "delta_dnfr": dnfr_after - dnfr_before,
+        "dnfr_final": dnfr_after,
+        "vf_final": vf_after,
+        "theta_final": theta_after,
+        "transition_complete": abs(dnfr_after) < abs(vf_after),
+        # Legacy compatibility
+        "dnfr_change": abs(dnfr_after - dnfr_before),
+        "vf_change": abs(vf_after - vf_before),
+        "theta_shift": abs(phase_shift_raw),
+        # === REGIME CLASSIFICATION (NEW) ===
+        "regime_origin": regime_origin,
+        "regime_destination": regime_destination,
+        "transition_type": transition_type,
+        # === PHASE METRICS (NEW) ===
+        "phase_shift_magnitude": abs(phase_shift_raw),
+        "phase_shift_signed": phase_shift_raw,
+        # === STRUCTURAL SCALING (NEW) ===
+        "vf_scaling_factor": vf_scaling,
+        "dnfr_damping_ratio": dnfr_damping,
+        "epi_preservation": epi_preservation,
+        # === LATENCY TRACKING (NEW) ===
+        "latency_duration": latency_duration,
+    }
+
+
+def recursivity_metrics(G, node, epi_before, vf_before):
+    """REMESH advisory metrics and existing external echo-trace state.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to collect metrics from
+    epi_before : float
+        EPI value before operator application
+    vf_before : float
+        νf value before operator application
+
+    Returns
+    -------
+    dict
+        Advisory deltas plus legacy external echo-trace indicators
+    """
+    epi_after = _get_node_attr(G, node, ALIAS_EPI)
+    vf_after = _get_node_attr(G, node, ALIAS_VF)
+
+    # The glyph does not create echoes; report any externally maintained trace.
+    echo_traces = G.graph.get("echo_trace", [])
+    echo_count = len(echo_traces)
+
+    return {
+        "operator": "Recursivity",
+        "glyph": "REMESH",
+        "delta_epi": epi_after - epi_before,
+        "delta_vf": vf_after - vf_before,
+        "epi_final": epi_after,
+        "vf_final": vf_after,
+        "echo_count": echo_count,
+        "fractal_depth": echo_count,
+        "multi_scale_active": echo_count > 0,
+    }

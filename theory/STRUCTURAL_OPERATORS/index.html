@@ -1,0 +1,4404 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/STRUCTURAL_OPERATORS/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>TNFR Structural Operators - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-structural-operators" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              TNFR Structural Operators
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#complete-specification-of-the-13-canonical-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Specification of the 13 Canonical Operators
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-scope-and-motivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Scope and Motivation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Scope and Motivation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-why-the-registered-catalog-has-13-members" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Why the registered catalog has 13 members
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Conventions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-operator-algebra-from-the-nodal-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Operator Algebra from the Nodal Equation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Operator Algebra from the Nodal Equation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-structural-triad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Structural Triad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-operator-as-transformation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Operator as Transformation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-composition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Composition
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-operator-taxonomy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. The Operator Taxonomy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-generators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Generators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Generators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-emission-al" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Emission (AL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-transition-nav" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Transition (NAV)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-recursivity-remesh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Recursivity (REMESH)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-integrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Integrator
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Integrator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-reception-en" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Reception (EN)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-stabilizers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Stabilizers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Stabilizers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-coherence-il" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Coherence (IL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-self-organization-thol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Self-Organization (THOL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-destabilizers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Destabilizers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Destabilizers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-dissonance-oz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Dissonance (OZ)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-expansion-val" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Expansion (VAL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-coupling-and-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Coupling and Propagation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Coupling and Propagation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-coupling-um" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Coupling (UM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-resonance-ra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Resonance (RA)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-transformers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Transformers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Transformers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-mutation-zhir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Mutation (ZHIR)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-closure-and-regime-operators" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Closure and Regime Operators
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Closure and Regime Operators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-silence-sha" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Silence (SHA)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-contraction-nul" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Contraction (NUL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-fragments-and-complete-words" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Fragments and Complete Words
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Fragments and Complete Words">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#111-named-workflow-fragments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.1 Named workflow fragments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#112-complete-word-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.2 Complete-word examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#113-validation-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.3 Validation boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-operator-roles-and-energy-diagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Operator roles and energy diagnostics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. Operator roles and energy diagnostics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#121-grammar-u2-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.1 Grammar U2 roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#122-nominal-operator-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.2 Nominal operator parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#123-grammar-u2-stability-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.3 Grammar U2 stability boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-postcondition-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Postcondition Contracts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-operator-constants-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Operator Constants Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. Operator Constants Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#141-the-structural-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14.1 The structural scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#142-operator-gain-magnitudes-operational" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14.2 Operator gain magnitudes (operational)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#143-constant-operator-grammar-traceability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14.3 Constant-Operator-Grammar Traceability
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-implementation-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Implementation Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="15. Implementation Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#151-source-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15.1 Source Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#152-base-operator-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15.2 Base Operator Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#153-executable-demonstrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15.3 Executable Demonstrations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#154-sdk-entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15.4 SDK Entry Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#17-experimental-operator-tetrad-synergies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17. Experimental Operator-Tetrad Synergies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="17. Experimental Operator-Tetrad Synergies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#171-centralized-operator-channel-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17.1 Centralized Operator-Channel Classification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#172-operator-tetrad-fingerprint-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17.2 Operator-Tetrad Fingerprint Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#173-il-oz-tetrad-symmetry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17.3 IL-OZ Tetrad Symmetry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#174-structural-potential-linear-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17.4 Structural Potential Linear Response
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#175-diagnostic-dependency-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17.5 Diagnostic dependency chain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#176-grammar-energy-landscape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17.6 Grammar-Energy Landscape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#177-executable-demonstrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17.7 Executable Demonstrations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-structural-operators">TNFR Structural Operators<a class="headerlink" href="#tnfr-structural-operators" title="Permanent link">&para;</a></h1>
+<h2 id="complete-specification-of-the-13-canonical-operators">Complete Specification of the 13 Canonical Operators<a class="headerlink" href="#complete-specification-of-the-13-canonical-operators" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: CANONICAL registry specification; generative completeness over an
+independently defined admissible-transformation space remains open
+<strong>Date</strong>: March 2026<br />
+<strong>Version</strong>: 0.0.3.5
+<strong>Prerequisite</strong>: <a href="../FUNDAMENTAL_THEORY/">FUNDAMENTAL_THEORY.md</a> §2 (Nodal Equation), <a href="../UNIFIED_GRAMMAR_RULES/">UNIFIED_GRAMMAR_RULES.md</a> (Grammar U1–U6)</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#1-scope-and-motivation">Scope and Motivation</a></li>
+<li><a href="#2-operator-algebra-from-the-nodal-equation">Operator Algebra from the Nodal Equation</a></li>
+<li><a href="#3-the-operator-taxonomy">The Operator Taxonomy</a></li>
+<li><a href="#4-generators">Generators</a></li>
+<li><a href="#5-integrator">Integrator</a></li>
+<li><a href="#6-stabilizers">Stabilizers</a></li>
+<li><a href="#7-destabilizers">Destabilizers</a></li>
+<li><a href="#8-coupling-and-propagation">Coupling and Propagation</a></li>
+<li><a href="#9-transformers">Transformers</a></li>
+<li><a href="#10-closure-and-regime-operators">Closure and Regime Operators</a></li>
+<li><a href="#11-fragments-and-complete-words">Fragments and Complete Words</a></li>
+<li><a href="#12-operator-roles-and-energy-diagnostics">Operator Roles and Energy Diagnostics</a></li>
+<li><a href="#13-postcondition-contracts">Postcondition Contracts</a></li>
+<li><a href="#14-operator-constants-reference">Operator Constants Reference</a></li>
+<li><a href="#15-implementation-reference">Implementation Reference</a></li>
+<li><a href="#16-summary">Summary</a></li>
+<li><a href="#17-experimental-operator-tetrad-synergies">Experimental Operator-Tetrad Synergies</a></li>
+</ol>
+<hr />
+<h2 id="1-scope-and-motivation">1. Scope and Motivation<a class="headerlink" href="#1-scope-and-motivation" title="Permanent link">&para;</a></h2>
+<p>Registered structural operators are the canonical semantic interface for named
+node and network transformations. Declared numerical solvers are a separate,
+explicit evolution path: they may advance EPI only through the shared nodal
+integrator from finite <code>nu_f</code> and <code>DeltaNFR</code>, while recording the associated
+provenance or residual. Ad hoc state assignment outside these two declared
+paths is forbidden. Both paths remain constrained by the nodal equation:</p>
+<p>$$
+\frac{\partial \text{EPI}}{\partial t} = \nu_f \cdot \Delta\text{NFR}(t) \tag{NE}
+$$</p>
+<p>Each registered operator implements a specific transformation tied to (NE). The
+13-operator catalog covers the engine's declared transformation categories:
+creation, integration, stabilization, destabilization, coupling, propagation,
+freezing, dimensional change, self-organization, phase transformation, regime
+transition, and multi-scale recursion. Coverage of this declared catalog does
+not prove that it generates every independently admissible TNFR transformation.</p>
+<h3 id="11-why-the-registered-catalog-has-13-members">1.1 Why the registered catalog has 13 members<a class="headerlink" href="#11-why-the-registered-catalog-has-13-members" title="Permanent link">&para;</a></h3>
+<p>The registry contains 13 public semantic transformations satisfying:</p>
+<ol>
+<li><strong>Nodal equation compatibility</strong>: Every transformation must declare its effect on
+   EPI, $\nu_f$, $\Delta\text{NFR}$, phase, or the coupling structure.</li>
+<li><strong>Grammar closure</strong>: The set must include generators (U1a), closures (U1b), stabilizers (U2), destabilizers (U2), coupling operators (U3), bifurcation triggers and handlers (U4), and multi-scale operators (U5).</li>
+<li><strong>Semantic distinction</strong>: Each member has a named physical contract. The
+   finite temporal-signature experiment separates their implementations on its
+   declared probes, but global algebraic irreducibility remains open.</li>
+</ol>
+<p>A proof of completeness first requires a transformation space defined without
+reference to this catalog. That is research line S10 in
+<a href="../CORE_RESEARCH_PROGRAM/">CORE_RESEARCH_PROGRAM.md</a>.</p>
+<h3 id="12-conventions">1.2 Conventions<a class="headerlink" href="#12-conventions" title="Permanent link">&para;</a></h3>
+<p>Throughout this document:
+- Glyph codes (AL, EN, IL, ...) reference the structural symbols.
+- Lowercase English tokens (<code>emission</code>, <code>reception</code>, ...) are executable API
+  identifiers; title-case names are public display/class names.
+- Operator gain magnitudes are operational parameters (only $\pi$ is a genuine structural scale); the engine-configuration tier in <code>canonical.py</code> is calibrated, not derived.
+- Grammar roles reference rules U1–U6 from <a href="../UNIFIED_GRAMMAR_RULES/">UNIFIED_GRAMMAR_RULES.md</a>.
+- Energy diagnostics and their proof boundaries are discussed in <a href="../STRUCTURAL_STABILITY_AND_DYNAMICS/">STRUCTURAL_STABILITY_AND_DYNAMICS.md</a>.</p>
+<hr />
+<h2 id="2-operator-algebra-from-the-nodal-equation">2. Operator Algebra from the Nodal Equation<a class="headerlink" href="#2-operator-algebra-from-the-nodal-equation" title="Permanent link">&para;</a></h2>
+<h3 id="21-structural-triad">2.1 Structural Triad<a class="headerlink" href="#21-structural-triad" title="Permanent link">&para;</a></h3>
+<p>Each node $i$ carries three irreducible attributes:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Symbol</th>
+<th>Domain</th>
+<th>Units</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Form</td>
+<td>$\text{EPI}_i$</td>
+<td>$\mathcal{B}_{\text{EPI}}$ (Banach space)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Frequency</td>
+<td>$\nu_{f,i}$</td>
+<td>$\mathbb{R}^+$</td>
+<td>Hz_str</td>
+</tr>
+<tr>
+<td>Phase</td>
+<td>$\phi_i$ (or $\theta_i$)</td>
+<td>$[0, 2\pi)$</td>
+<td>rad</td>
+</tr>
+</tbody>
+</table>
+<p>The derived quantity $\Delta\text{NFR}_i$ (structural pressure) drives evolution.
+Every operator has exactly one registered <strong>primary</strong> channel among
+$(\text{EPI}, \nu_f, \phi, \Delta\text{NFR})$; a concrete implementation may
+also update declared secondary channels.</p>
+<h3 id="22-operator-as-transformation">2.2 Operator as Transformation<a class="headerlink" href="#22-operator-as-transformation" title="Permanent link">&para;</a></h3>
+<p>An operator $\hat{O}$ maps the node state $\sigma_i = (\text{EPI}<em f_i="f,i">i, \nu</em>_i)$ to a new state:}, \phi_i, \Delta\text{NFR</p>
+<p>$$
+\hat{O}: \sigma_i \mapsto \sigma_i' = (\text{EPI}<em f_i="f,i">i', \nu</em>_i')
+$$}', \phi_i', \Delta\text{NFR</p>
+<p>subject to:
+1. <strong>Nodal equation</strong>: The resulting state must be consistent with $\partial\text{EPI}/\partial t = \nu_f \cdot \Delta\text{NFR}$.
+2. <strong>Grammar constraints</strong>: The operator must satisfy its declared U1--U5 role;
+   U6 is evaluated from before/after $\Phi_s$ telemetry.
+3. <strong>Contracts</strong>: Pre-conditions and post-conditions specific to each operator.</p>
+<h3 id="23-composition">2.3 Composition<a class="headerlink" href="#23-composition" title="Permanent link">&para;</a></h3>
+<p>Operators compose into sequences $[\hat{O}_1, \hat{O}_2, \ldots, \hat{O}_n]$ applied left-to-right. Grammar validation operates on the full sequence. The grammar is not commutative: the order of operators affects validity and outcome.</p>
+<p>SDK execution is operator-major across sequence positions, as are the
+supported GPU blocks. All thirteen SDK positions use a shared atomic two-phase
+Jacobi stage when grammar accepts the requested glyph for every target:
+EN/IL/RA build neighbour-reading proposals, AL/SHA/VAL/NUL/ZHIR/NAV build
+pointwise proposals, UM merges overlapping phase/topology proposals, OZ reduces
+overlapping local and propagated pressure proposals, and THOL merges child
+support and hierarchy proposals, and REMESH merges one shared advisory per telemetry step. IL contracts each target's
+pressure magnitude and computes circular
+phase locking from the immutable stage snapshot; canonical structural <code>C(t)</code>
+telemetry and auxiliary pressure dispersion remain separate.
+Supported GPU AL/RA blocks reuse the corresponding path. Every target reads one
+immutable stage-start snapshot before any proposal commits. The committed
+primary channels are invariant to target iteration order before the opaque
+pressure-refresh callback; AL and SHA additionally use one shared timestamp
+per stage, while NAV uses one shared latency-observation instant. A random NAV
+stage binds each node's draw and RNG progress to the snapshot; a missing graph
+seed is resolved inside the transaction and persists only after successful
+commit. Ordered lifecycle, audit/telemetry and monitor streams retain target
+order. UM averages shortest-arc phase displacements in immutable snapshot-rank
+order, normalizes the result, revalidates U3 after the merge and deterministically
+coalesces accepted functional links. This reducer is an engine policy, not a
+stability theorem. OZ derives local actions and outgoing propagation from the
+same snapshot, then sums incoming increments with <code>math.fsum</code> in snapshot-node
+rank. Its local pressure-magnitude postcondition precedes signed accumulation:
+positive incoming increments can partially cancel a negative pressure. THOL
+allocates colliding child identifiers in snapshot-node rank and validates all
+child nodes, <code>sub_nodes</code>, <code>sub_epis</code> and graph <code>hierarchy</code> writes on a
+detached candidate before committing <code>d2EPI</code>, <code>DeltaNFR</code> and support. IL
+warnings are emitted as the final transactional effect. Cache state
+and the opaque pressure refresh are excluded from the invariance claim;
+identity-bearing caches remain tied to their live graph and node objects. No
+relabeling-equivariance result follows.</p>
+<p>The REMESH glyph stage is advisory-only: it leaves structural channels and
+support unchanged and deterministically deduplicates one graph event per
+telemetry step. The separate apply_network_remesh operation owns delayed EPI
+mixing. Multi-target IL previously used the sequential schedule; its canonical
+word runner now uses the snapshot rule. A grammar replacement or Recursivity
+execution override still follows and reports the transactional Gauss-Seidel
+path. Thus the guarantee is stage-local and does not make a mixed word
+simultaneous.</p>
+<p>The hybrid time contract treats each operator position as a zero-duration jump
+and assigns physical time only to the <code>m + 1</code> declared nodal-flow intervals
+around <code>m</code> events. Exact rational values of materialized binary64 durations and
+their offsets are authoritative; absolute timestamps are display fields, and
+coincident jumps remain ordered by event index. The schedule builder itself
+does not execute the word or manufacture timestamped EPI secants.</p>
+<p><code>execute_operator_event_schedule</code> supplies the separate runtime binding. It uses
+the configured nodal integrator once for each positive unpartitioned interval.
+An explicit <code>PhysicalFlowPartition</code> instead invokes it once per segment and
+refreshes pressure at every segment boundary, including the terminal boundary.
+The shared all-target dispatcher executes each jump with the initial target tuple
+frozen. Collapsed or nonadditive binary64 intervals are rejected before writes.
+Flow boundaries become timestamped samples, while a same-time EPI jump restarts
+that history and is recorded only as a zero-duration event. One graph transaction
+covers flow, jump, history, cache and event-log state; emitted external effects
+remain outside rollback.</p>
+<p>An integrator may write only EPI, <code>dEPI_dt</code>, <code>d2EPI_dt2</code> and the runtime clock
+during one positive flow. A custom integrator must satisfy the exact
+represented-rational held-input nodal identity
+<code>EPI_right-EPI_left = dt*nu_f_left*DeltaNFR_left</code> for every target; this is not
+a solver-accuracy or order certificate. <code>GraphTransactionSnapshot</code> is bound to
+its originating graph. It restores NetworkX mapping identities and alias
+relations plus graph-reachable capturable callback state. Mutable structural
+keys with custom value hash/equality, custom <code>__deepcopy__</code> hooks and unmodelled
+opaque C state are rejected before writes; common immutable atoms are accepted.
+I/O, emitted warnings, external resources and aliases held only outside the
+graph are not rollback state.</p>
+<p>For physical ZHIR, <code>observe_event_local_zhir_physical_prejump</code> remains an
+offline coordinate pairing. The stricter
+<code>observe_executed_event_local_zhir_physical_prejump</code> starts from one intact
+stage-certified execution and binds its scheduled and committed event,
+preceding physical partition, terminal pre-flow, glyph stage, ordered decisions
+and trigger certificates by identity. It certifies common execution provenance
+for that finite window only; solver order, convergence, general U4 readiness
+and future behavior remain outside it.</p>
+<p>With <code>include_stage_certificates=True</code>, flow capture is implied. The runtime
+binds executor-owned pointwise AL/SHA/VAL/NUL/ZHIR/NAV or all-target EN/RA
+certificates to the EPI endpoints captured around each actual stage and to its
+adjacent flow evidence. Unpartitioned parents use their direct interval record;
+physical parents use the terminal pre-jump or initial post-jump segment record.
+Unsupported glyphs and rejected certificate domains abstain explicitly. A
+complete <code>ObservedRepresentedEPIScheduleComposition</code> orders every positive
+scheduled parent and glyph as a <code>RepresentedEPIScheduleOperation</code>. A physical
+parent can contribute the product of its segment gains only when every exact
+affine map is intact and one normalized rational metric spans the segments. The
+complete trace additionally requires exact node order, endpoint continuity and
+one common metric. This globally bounds the represented maps and, through
+endpoint binding, the observed trace. <code>runtime_schedule_global_gain_certified</code> remains
+false: no global executable binary64 map, solver accuracy, refinement
+invariance, full-multichannel result, future schedule, repetition or adaptive
+U2/U4 policy is certified.</p>
+<p><code>execute_event_remesh_cycle</code> supplies a narrower executable composition. It
+runs one event schedule, appends its endpoint through the ordinary pre-REMESH
+<code>_epi_hist</code> helper, and invokes the separate delayed map inside an outer graph
+transaction. Ordered node support and incoming delayed history are fixed across
+the schedule; edges may change there. The endpoint clock, event log, phase,
+pressure hook and deterministic delayed-map controls remain bound to the
+schedule result. The EPI-only map treats ON_REMESH callbacks as observers and
+requires them to leave all graph-owned topology, metadata, histories and stored
+non-EPI aliases unchanged. Capturable state reachable through a graph-owned
+observer belongs to the same rollback boundary.</p>
+<p>One frozen positive diagonal metric measures the cycle-level pre-schedule,
+pre-REMESH and post-REMESH EPI observations and is passed unchanged to
+stability evidence; REMESH metadata retains legacy unweighted summaries. Exact
+weighted-mean drift and disagreement remain authoritative when their optional
+binary64 display is <code>None</code>. Capacity vectors, stage refresh counts and an
+explicitly requested post-REMESH pressure refresh stay separate. That refresh
+runs only after an applied map. Delay <code>tau</code> reads <code>_epi_hist[-(tau + 1)]</code>, and no
+post-jump delayed-history sample is appended. The applied jump instead restarts
+or appends the same-time <code>epi_time_history</code> right endpoint, so Mutation cannot
+read it as a finite flow secant. The cycle may retain the finite represented
+flow/glyph composition in its event result, but the delayed map and its one-step
+evidence remain separate. Atomic execution does not provide a global binary64
+runtime gain, solver-accuracy or history-updated repetition theorem. Capturable
+graph-reachable integrator and callback state is covered; emitted I/O or warnings,
+external resources and external-only aliases remain outside rollback.
+The cycle materializes <code>physical_flow_partitions</code> exactly once inside this outer
+transaction and passes the resulting tuple unchanged to the event executor.</p>
+<p>Every cycle also seals a <code>RemeshHistoryTransitionObservation</code>. With bounded
+history size <code>M</code>, incoming exact history <code>H_in</code> and exact pre-REMESH EPI vector
+<code>x_pre</code>, it verifies <code>H_out = tail_M(tail_M(H_in) || (x_pre,))</code>. Rebuild
+truncation, append eviction and the local and global selections
+<code>H_out[-(tau + 1)]</code> are explicit; the two declared lags are tested
+independently. Completion of a requested post-REMESH pressure callback is an
+operational fact and does not establish <code>DeltaNFR = -L_rw EPI</code>.</p>
+<p>The pure <code>compose_event_remesh_cycle_observations</code> observer binds at least two
+sealed results supplied in caller order. Its sealed
+<code>EventRemeshCycleBoundaryObservation</code>
+objects compare exact recorded EPI, capacity, pressure, phase, clock and full
+delayed history at adjacent supplied-result boundaries. Sequence indices are
+local ordinals. Identical-object reuse is rejected, but distinct copies do not
+prove consecutive calls or shared-graph provenance.
+<code>ObservedEventRemeshCycleSequence</code> distinguishes identical raw metric weights
+from exact normalized-ray compatibility and reports tri-state alignment with
+each nested represented schedule metric. It retains nested schedule
+compositions and REMESH results as separate evidence.
+Its exact recorded-boundary result is independent of metric compatibility. A
+separate stronger sequence result requires one common normalized ray and a
+matching exposed metric from every nested schedule; raw metric equality remains
+diagnostic. A <code>None</code> or <code>False</code> nested alignment blocks only the stronger result,
+not exact recorded-boundary continuity.</p>
+<p>This boundary supplies no mixed gain product, evolving-history repetition,
+runtime-global gain, whole-sequence atomicity, full graph or grammar-history
+continuity, solver or future theorem. The omission is material: for lag one,
+<code>alpha=1</code>, EPI <code>(2,0)</code> and prior delayed row <code>(0,2)</code>, one explicit sequential
+empty-schedule execution alternates <code>(2,0) -&gt; (0,2) -&gt; (2,0)</code>. Each fixed-history
+REMESH record has zero current-state coefficient, so its one-step factor cannot
+be multiplied across the changing history.</p>
+<p><code>execute_event_remesh_cycle_sequence</code> adds one graph-mutating outer boundary
+without changing that observer. It executes ordered
+<code>EventRemeshCycleExecutionSpec</code> values on one graph in one transaction. Every
+sealed <code>CausalEventRemeshCycleReceipt</code> binds an execution ordinal, the exact
+spec and the resulting cycle, including identity of the declared and executed
+schedule. The sealed <code>ExecutedEventRemeshCycleSequence</code> always retains the
+ordinary offline cycle observation. By default it requires and retains a
+compatible runtime schedule/history telescope. The explicit
+<code>require_runtime_telescope=False</code> branch always records
+<code>runtime_telescope=None</code>, thereby admitting grammar-valid words that have no
+common represented affine metric. In both branches only the outer result proves same-invocation
+causal order, common graph identity and finite graph-owned atomicity. The
+no-telescope branch makes every telescope-specific claim false. The wrapper
+supplies no global schedule/REMESH gain,
+uniform repeated margin, solver accuracy/order, mesh convergence, repetition or
+future stability. Emitted I/O, warnings, external resources and external-only
+aliases remain outside rollback.</p>
+<p><code>observe_event_remesh_three_mesh_refinement</code> compares three already executed
+and sealed cycles with strictly nested coarse, intermediate and fine physical
+boundaries. A common schedule, ordered full support, initial nodal channels,
+captured conductance, normalized metric, execution metadata, callback metadata,
+incoming history and REMESH configuration are required. The observer records
+exact represented EPI at pre-schedule, physical-boundary, pre-REMESH and
+post-REMESH checkpoints and exact pairwise <code>L_inf</code> errors on persistent node
+identifiers. ZHIR rows use executor-linked decisions whenever the evidence is
+present; optional <code>zhir_xi</code> only validates the executed threshold. Modal rows
+are available only for a common captured generator. Detached cycles omit the
+complete pre-schedule graph namespace, callback closure and RNG state, node
+metadata and sub-EPI state, so the observer withholds both complete-reference
+and mesh-only causal claims. This completes a finite S5/S16 observation. Neither
+its integrity nor decreasing measured errors proves solver order, mesh
+convergence, Lyapunov decrease or a combined schedule/REMESH gain.</p>
+<p>The pure <code>certify_reversible_single_eigenmode_euler_reference</code> kernel now
+supplies the mathematical reference independently of any operator. On fixed
+connected symmetric rational conductance with positive capacity, it verifies
+one exact centered eigenmode in <code>H=diag(d_i/nu_i)</code>, its exponential solution,
+pressure-refreshed Euler products, <code>L_inf</code> and <code>H</code>-error-energy bounds, strict
+proper-subdivision improvement, and conditional exact-real convergence as
+<code>h_max -&gt; 0</code>. The
+<a href="../TNFR_DIFFUSION_STABILITY_THEOREM/#exact-reversible-single-eigenmode-euler-reference-theorem"><code>complete proof</code></a>
+also records that <code>mu*T &lt;= 4096</code> caps only the rational enclosure's
+integer-power exponent, not arbitrary rational bit size. The certificate has
+no executor or glyph provenance.</p>
+<p><code>observe_p2_event_remesh_reference_family</code> closes one compatible finite
+runtime-linked specialization: an event-free effective two-node path with a
+nonuniform initial mode,
+fixed positive conductance, homogeneous positive capacity, pure-EPI pressure
+refreshed at every boundary, exact represented
+Euler segments satisfying <code>0 &lt; lambda*h &lt; 1</code>, and two proper positive
+subdivisions. Unit REMESH delays, the exact initial field as delayed data and
+hard clipping on one common scalar interval yield rational finite error bounds,
+strict subdivision improvement, exact ideal scaling by
+<code>beta=(1-alpha)^2</code>, and a runtime bound with the signed
+rounding-plus-clipping residual norm. It does not establish solver order,
+generic or binary64 asymptotic convergence, arbitrary glyphs or mixed channels,
+soft clipping, changing support or metric, repetition or future behavior. The
+continuous/Euler equations and proof are centralized in
+<a href="../TNFR_DIFFUSION_STABILITY_THEOREM/#exact-reversible-single-eigenmode-euler-reference-theorem"><code>TNFR_DIFFUSION_STABILITY_THEOREM.md</code></a>;
+the REMESH specialization is in
+<a href="../REMESH_INFINITY_DERIVATION/#28-effective-p2-three-mesh-reference-family"><code>REMESH_INFINITY_DERIVATION.md</code></a>;
+the implementation and exact typed interface are
+<a href="../../src/tnfr/physics/event_remesh_reference.py"><code>event_remesh_reference.py</code></a> and
+<a href="../../src/tnfr/physics/event_remesh_reference.pyi"><code>event_remesh_reference.pyi</code></a>,
+verified by
+<a href="../../tests/physics/test_event_remesh_reference.py"><code>test_event_remesh_reference.py</code></a>
+and
+<a href="../../tests/physics/test_event_remesh_reference_example.py"><code>test_event_remesh_reference_example.py</code></a>,
+with the public <code>2/4/8</code> witness in
+<a href="../../examples/02_physics_regimes/166_event_remesh_reference_family.py"><code>166_event_remesh_reference_family.py</code></a>.
+The pure nonregular-<code>P3</code> witness is
+<a href="../../examples/02_physics_regimes/167_reversible_eigenmode_reference.py"><code>167_reversible_eigenmode_reference.py</code></a>.</p>
+<p>The separate uniform exact companion recurrence now has an augmented-history
+result. <code>certify_uniform_remesh_history_stability</code> derives a row-stochastic
+history matrix and its invariant temporal measure. For any one fixed positive
+diagonal spatial metric, <code>observe_uniform_remesh_history_transition</code> verifies
+an exact Jensen identity showing that the stationary-weighted disagreement
+energy is nonincreasing. <code>0 &lt; alpha &lt; 1</code> gives primitive temporal mixing and
+pointwise convergence to a preserved history barycenter; <code>alpha=1</code> gives a
+pure-delay permutation with conserved energy and possible periodic histories.
+The result is outside the named REMESH stage and does not identify the clipped
+binary64 runtime, imply spatial consensus or zero pressure, or combine its map
+with a schedule gain. See
+<a href="../REMESH_INFINITY_DERIVATION/#24-exact-finite-companion-history-stability"><code>REMESH_INFINITY_DERIVATION.md</code></a>.</p>
+<p>The conditional exact composition theorem
+<code>certify_uniform_remesh_schedule_policy_stability</code> indexes histories after each
+schedule. For a fixed companion and metric, any sequence of exact schedules
+that preserves spatial consensus and has one common disagreement gain bound
+<code>q</code> is dominated by <code>B_q=diag(q,1,...,1)P</code>. Every prefix has gain at most one;
+over the sufficient universal horizon <code>L=active_max_delay+1</code>, the gain is at
+most <code>q</code>. Thus <code>q&lt;1</code> gives uniform normalized block margin <code>1-q</code> and repeated
+geometric spatial-disagreement decay, including for pure-delay <code>alpha=1</code>.
+This result does not control spatially uniform temporal means, verify the
+schedule hypotheses or promote the binary64 runtime and its defects. See
+<a href="../REMESH_INFINITY_DERIVATION/#211-uniform-exact-remeshschedule-policy-stability"><code>REMESH_INFINITY_DERIVATION.md</code></a>.</p>
+<p><code>certify_uniform_remesh_schedule_relative_defect_stability</code> adds the exact
+robust budget needed between the binary64 REMESH realization and that policy
+theorem. For Jensen input energy <code>J</code>, ideal head <code>y</code> and bounded head <code>z</code>, the
+declared signed defect <code>E_H(z)-E_H(y)&lt;=eta*J</code> changes the common head gain to
+<code>q_eff=q*(1+eta)</code>. The certificate rejects <code>q_eff&gt;1</code>; equality gives a zero-
+margin nonincrease result, while strict inequality gives normalized block
+margin <code>1-q_eff</code> and repeated exact-model spatial-disagreement decay. It does
+not identify a runtime class or derive <code>eta</code> from rounding/clipping semantics.</p>
+<p><code>observe_executed_event_remesh_relative_defect_block</code> performs the missing
+finite check on one contiguous part of an intact causal execution that retained
+its compatible runtime telescope. It verifies
+each exact defect and schedule gain, the componentwise <code>D_qeff P</code> history-
+energy envelope, continuity and the complete-block endpoint factor. Its
+runtime claims stop at the selected block: a forward-invariant class,
+repetition, future binary64 behavior and full TNFR stability remain open.
+See
+<a href="../REMESH_INFINITY_DERIVATION/#212-relative-signed-defect-envelope-and-finite-causal-verification"><code>REMESH_INFINITY_DERIVATION.md</code></a>.</p>
+<p>The exact represented-number boundary narrows that open statement. The
+pairwise observer replays the shared REMESH kernel and computes the exact local
+relative defect. A normal-valued <code>alpha=1/2</code> witness requires
+<code>eta=2^210-1/4</code>, which refutes a useful uniform bound over a general bounded
+hard-clipped box for the <code>q=9/16</code> policy. The separate <code>alpha=1</code> certificate
+fixes support, metric, delays and interval; sufficient represented history then
+has <code>eta=0</code> and is forward invariant under REMESH alone.</p>
+<p>On an abstract P2 support, the configured <code>EN_mix=0.5</code> Reception EPI kernel
+closes the first restricted global numeric EPI-kernel composition. Mutual
+singleton neighbor sets and one immutable Jacobi snapshot give two reversed
+sums of the same half-scaled operands, hence numeric consensus for every finite
+represented pair in the source interval.
+The centered-energy gain is globally <code>q=0</code>; with <code>alpha=1</code>, active-history
+spatial disagreement vanishes after <code>tau_global+1</code> restricted kernel cycles.
+This does not certify a graph or complete EN stage. Grammar replacement,
+preconditions, semantic writes, callbacks, event ownership and transactions
+remain outside the theorem. See
+<a href="../REMESH_INFINITY_DERIVATION/#214-a-global-binary64-p_2-half-reception-kernel-family"><code>REMESH_INFINITY_DERIVATION.md</code></a>.</p>
+<p><code>certify_executed_p2_half_reception_stage</code> now binds that numeric theorem to
+one graph-owned event. It requires an intact event result and deeply
+revalidated neighbor-stage certificate, then checks the ordered P2 targets,
+mutual singleton runtime neighbors, exact half mix, matching hard interval and
+diffusion metric, preserved capacity/conductance and bit-exact captured
+endpoint replay. This establishes one grammar-admitted two-phase EN EPI stage
+with observed <code>q=0</code> and finite schedule atomicity. It does not bind REMESH to
+that graph, certify all auxiliary Reception state or prove repeated execution.</p>
+<p><code>certify_executed_p2_half_reception_remesh_sequence</code> closes that same-graph
+boundary for one completed finite invocation. It takes the abstract kernel
+certificate and one intact <code>ExecutedEventRemeshCycleSequence</code>. In every cycle it
+requires an executor-owned P2 half-Reception stage whose endpoints span the
+complete schedule EPI transition, and a same-cycle hard-clipped <code>alpha=1</code>
+REMESH bridge with the common runtime alpha source and exact <code>eta=0</code> global-delay
+copy. Support, metric, interval, delays and history capacity remain fixed.
+For <code>N &gt;= L = tau_global+1</code> observed cycles it certifies zero spatial energy on
+the active history suffix of length <code>L</code> and on the observed post-horizon REMESH
+endpoints. Older retained history rows are outside the claim. The certificate
+does not cover Reception auxiliary writes, the current live graph after
+observation, future or unobserved repetition, solver accuracy or full TNFR
+stability. See
+<a href="../../src/tnfr/physics/runtime_p2_reception_remesh_sequence.py"><code>runtime_p2_reception_remesh_sequence.py</code></a>,
+<a href="../../tests/physics/test_runtime_p2_reception_remesh_sequence.py"><code>test_runtime_p2_reception_remesh_sequence.py</code></a>
+and example
+<a href="../../examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py"><code>176_runtime_p2_reception_remesh_sequence.py</code></a>.</p>
+<p><code>execute_p2_half_reception_remesh_policy_invocation</code> adds the reusable
+operational boundary. Each call snapshots the graph before materializing caller
+inputs, preflights the current P2 support, metric, exact half-Reception factor,
+<code>alpha=1</code> hard-clipped REMESH controls, active history, clock and canonical
+zero-flow <code>EN -&gt; IL -&gt; REMESH</code> specifications, rederives U1a admission from the
+live pair at every cycle start, then executes and constructs the finite
+certificate before the outer transaction can commit. A zero cycle-start pair or
+any failed preflight, execution or post-certification restores graph-owned state.
+This is orchestration
+of existing canonical operators, not a fourteenth operator or a new grammar
+rule. Every successful call certifies only its completed finite trace; later
+calls are checked independently, and auxiliary Reception-state stability remains
+outside the result. See
+<a href="../../src/tnfr/physics/runtime_p2_reception_remesh_policy.py"><code>runtime_p2_reception_remesh_policy.py</code></a>,
+<a href="../../tests/physics/test_runtime_p2_reception_remesh_policy.py"><code>test_runtime_p2_reception_remesh_policy.py</code></a>
+and example
+<a href="../../examples/02_physics_regimes/177_runtime_p2_reception_remesh_policy.py"><code>177_runtime_p2_reception_remesh_policy.py</code></a>.</p>
+<p><code>observe_runtime_remesh_history_bridge</code> identifies one applied,
+executor-sealed REMESH result with that companion while retaining exact signed
+binary64 rounding and clipping residuals. It lifts the runtime head into the
+companion history and separates those defects from the ideal Jensen
+dissipation. Hard clipping onto one common scalar interval is
+disagreement-nonexpansive in the fixed positive diagonal metric; soft clipping
+and rounding can block unconditional decrease.
+The runtime does not immediately append the post-REMESH head, so this isolated
+bridge proves neither live history advance nor repetition.</p>
+<p><code>observe_remesh_schedule_history_transition</code> adds one supplied scheduled head
+to the exact balance. It keeps the raw, clipping and schedule energy defects,
+verifies the declared schedule gain against the supplied heads, and publishes
+a sufficient lower bound plus its exact gain slack. The pure observation has no
+runtime provenance. <code>observe_runtime_remesh_schedule_sequence</code> supplies the
+stricter adjacent-cycle binding: in one common normalized metric and fixed
+REMESH configuration it requires the next represented schedule to start at the
+bounded REMESH head, finish at the next pre-REMESH head, and become the next
+recorded history head. Compatible boundary balances telescope additively over
+the finite caller-ordered sequence. Shared causal graph provenance, cross-call
+atomicity, a global executable gain, repeated stability and future behavior
+remain open.</p>
+<p>The shared pointwise stage executor can opt into a conditional certificate for
+AL/SHA/VAL/NUL/ZHIR/NAV. Its successful <code>NetworkStageResult</code> carries evidence
+computed from the same detached snapshot and frozen proposals used by the
+commit. The three levels separate exact realization, pre-flow affine gain and
+an aligned pre/post diffusion metric. Requests reject unsupported, empty or
+grammar-replaced stages before live writes. By itself the result supplies no
+IL, mixed-word, pressure-refresh or repeated-runtime theorem; the event runtime
+can compose it with EN/RA and flow evidence only after exact endpoint and
+common-metric gates pass.</p>
+<hr />
+<h2 id="3-the-operator-taxonomy">3. The Operator Taxonomy<a class="headerlink" href="#3-the-operator-taxonomy" title="Permanent link">&para;</a></h2>
+<p>The 13 operators partition into functional classes defined by their effect on the nodal equation:</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Operators</th>
+<th>Declared structural role</th>
+<th>Grammar Roles</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Generators</strong></td>
+<td>AL, NAV, REMESH</td>
+<td>Create or activate EPI</td>
+<td>U1a</td>
+</tr>
+<tr>
+<td><strong>Integrator</strong></td>
+<td>EN</td>
+<td>Integrates external input</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Stabilizers</strong></td>
+<td>IL, THOL</td>
+<td>Direct pressure reduction (IL) or stabilizing reorganization (THOL)</td>
+<td>U2</td>
+</tr>
+<tr>
+<td><strong>Destabilizers</strong></td>
+<td>OZ, ZHIR, VAL</td>
+<td>Incur pressure, phase, or capacity debt</td>
+<td>U2</td>
+</tr>
+<tr>
+<td><strong>Coupling</strong></td>
+<td>UM, RA</td>
+<td>Phase synchronization</td>
+<td>U3</td>
+</tr>
+<tr>
+<td><strong>Transformers</strong></td>
+<td>ZHIR, THOL</td>
+<td>Bifurcation-driven change</td>
+<td>U4a, U4b</td>
+</tr>
+<tr>
+<td><strong>Closure</strong></td>
+<td>SHA, NAV, REMESH, OZ</td>
+<td>Terminate sequences</td>
+<td>U1b</td>
+</tr>
+<tr>
+<td><strong>Simplifier</strong></td>
+<td>NUL</td>
+<td>Reduces dimensionality</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Some operators appear in multiple classes. THOL is simultaneously a stabilizer (U2) and a transformer (U4b). NAV and REMESH serve as both generators (U1a) and closures (U1b). OZ is both a destabilizer (U2) and closure (U1b). This multiplicity reflects the richness of their physics.</p>
+<hr />
+<h2 id="4-generators">4. Generators<a class="headerlink" href="#4-generators" title="Permanent link">&para;</a></h2>
+<p>Generators declare creation or latent-state activation. Grammar rule U1a requires
+that a standalone sequence beginning from $\text{EPI}=0$ start with a registered
+generator.</p>
+<p><strong>Scope</strong>: The nodal derivative $\nu_f\Delta\text{NFR}$ is defined at
+$\text{EPI}=0$ whenever its factors are finite. U1a is an operator-history
+contract that makes the origin or reactivation of form explicit; it is not a
+repair for a mathematical singularity.</p>
+<h3 id="41-emission-al">4.1 Emission (AL)<a class="headerlink" href="#41-emission-al" title="Permanent link">&para;</a></h3>
+<p><strong>Physics</strong>: Foundational activation of nodal resonance. Creates EPI from vacuum via resonant emission.</p>
+<p><strong>Primary-channel transformation</strong>:</p>
+<p>$$
+\text{EPI}' = \operatorname{clip}(\text{EPI} + b)
+$$</p>
+<p>where $b&gt;0$ is the configured <code>AL_boost</code>. The direct glyph handler does not
+also write $\nu_f$, phase, or $\Delta\text{NFR}$.</p>
+<p><strong>Activation threshold</strong>: $\text{EPI} &lt; \text{EPI}<em _text_threshold="\text{threshold">{\text{threshold}}$ where the
+default $\text{EPI}</em>=0.8$ is configurable through
+}<code>AL_MAX_EPI_FOR_EMISSION</code> (an operational gate; the AL contract fixes the
+channel and sign, not this threshold).</p>
+<p><strong>Key constants</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Derivation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Emission amplitude $b$</td>
+<td>configured positive gain</td>
+<td>Operational parameter; channel and direction are contractual</td>
+</tr>
+<tr>
+<td>Activation threshold</td>
+<td>$0.8$ by default</td>
+<td>Configurable operational gate</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Properties</strong>:
+- <strong>Irreversible</strong>: Sets an immutable activation flag. Re-emission increments an activation counter but preserves the original timestamp.
+- <strong>Genealogical</strong>: Maintains structural lineage tracking (origin timestamp, parent references, derived node list).
+- <strong>Latency-aware</strong>: Detects and clears silence (SHA) latency state on reactivation.
+- <strong>All-target time basis</strong>: One accepted AL stage assigns one common timestamp
+  to all newly emitted targets; repeated targets retain their original origin.</p>
+<p><strong>Grammar</strong>: Generator (U1a).</p>
+<p><strong>Contract</strong>:
+- Pre: $\text{EPI} &lt; 0.8$ and $\nu_f$ at or above the configured basal
+  threshold when strict preconditions are enabled.
+- Post: EPI does not decrease; $\nu_f$, phase and $\Delta\text{NFR}$ remain
+  unchanged; the activation flag is set.</p>
+<h3 id="42-transition-nav">4.2 Transition (NAV)<a class="headerlink" href="#42-transition-nav" title="Permanent link">&para;</a></h3>
+<p><strong>Physics</strong>: Controlled regime shift. Navigates between attractor states (dormant → active → resonant) with regime-specific parameter adjustment.</p>
+<p><strong>Transformation</strong> (regime-dependent):</p>
+<table>
+<thead>
+<tr>
+<th>Regime</th>
+<th>$\nu_f$ change</th>
+<th>$\theta$ shift</th>
+<th>$\Delta\text{NFR}$ reduction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Latent → Active</td>
+<td>+20%</td>
+<td>$+0.1$</td>
+<td>$-30\%$</td>
+</tr>
+<tr>
+<td>Active → Active</td>
+<td>configurable</td>
+<td>$+0.2$</td>
+<td>$-20\%$</td>
+</tr>
+<tr>
+<td>Resonant → Active</td>
+<td>$-5\%$</td>
+<td>$+0.15$</td>
+<td>$-10\%$</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Regime detection</strong>:</p>
+<p>$$
+\text{regime} = \begin{cases}
+\text{latent} &amp; \text{if } \nu_f &lt; 0.05 \text{ or latent flag set} \
+\text{resonant} &amp; \text{if } \text{EPI} &gt; 0.5 \text{ and } \nu_f &gt; 0.8 \
+\text{active} &amp; \text{otherwise}
+\end{cases}
+$$</p>
+<p><strong>Properties</strong>:
+- <strong>Latency recovery</strong>: When transitioning from latent state, verifies EPI drift against preserved snapshot (tolerance: 1% for established nodes, $0.330$ for initial nodes).
+- <strong>Regime traceability</strong>: Records origin regime, before/after state, and phase
+  shift in telemetry. Pressure telemetry distinguishes the true pre-handler
+  value, the low-level handler result, and the final regime-retained value.
+- <strong>All-target stage</strong>: One immutable proposal binds each target's <code>nu_f</code>, phase,
+  <code>DeltaNFR</code>, latency state and optional jitter draw/RNG progress before any
+  write. A missing graph seed is resolved inside the outer transaction, copied
+  into the detached snapshot, restored on rejection and retained on success.
+  Stable per-node offsets and draw counts make the committed RNG progress
+  independent of target iteration order.
+- <strong>Shared latency clock</strong>: Every target computes silence duration from one
+  stage instant. Ordered warnings, histories, transition events, metrics and
+  monitor callbacks still follow requested target order. Cache state, the
+  opaque pressure-refresh result and relabeling equivariance remain outside the
+  structural target-order claim.</p>
+<p><strong>Grammar</strong>: Generator (U1a), Closure (U1b).</p>
+<p><strong>Contract</strong>:
+- Pre: Valid regime state detectable.
+- Post: Smooth transition without coherence collapse; latency attributes cleared if applicable.</p>
+<h3 id="43-recursivity-remesh">4.3 Recursivity (REMESH)<a class="headerlink" href="#43-recursivity-remesh" title="Permanent link">&para;</a></h3>
+<p><strong>Physics</strong>: Propagates fractal pattern echoes across nested EPIs. Tracks
+multi-scale identity by linking current structure to prior states; whether a
+particular trajectory preserves identity is checked from the resulting state.</p>
+<p><strong>Transformation</strong>:</p>
+<p>$$
+\text{EPI}<em _rm="\rm" new="new">{\rm raw}(t) = (1-\alpha)^2\text{EPI}(t)
+ + \alpha(1-\alpha)\text{EPI}(t-\tau_l)
+ + \alpha\text{EPI}(t-\tau_g),
+\qquad
+\text{EPI}</em>)
+$$}=\operatorname{clip}(\text{EPI}_{\rm raw</p>
+<p>where the default is alpha = 0.5, but graph configuration can override it.
+The runtime validates 0 &lt; alpha &lt;= 1 rather than clamping, so the three raw
+coefficients are a convex partition and sum to one. Both delays must be strict
+positive integers; neither booleans nor fractional values are coerced.</p>
+<p>The operation is guarded by max(tau_l, tau_g) + 1 stored snapshots. Before that
+point it returns an immutable insufficient-history no-op. Empty live support is
+a separate side-effect-free no-op. Once the guard passes, the selected
+local-lag and global-lag entries must each be a node-to-EPI mapping
+whose support equals the current graph support. Both are temporal per-node
+snapshots; the global lag is not a spatial network mean. Hard or soft structural
+clipping acts only after the raw recurrence and can make the committed map
+nonlinear.</p>
+<p><strong>Properties</strong>:
+- <strong>Depth parameter</strong>: Recursion depth $\geq 1$ (validated at construction; raises error if $&lt; 1$).
+- <strong>U5 assessment boundary</strong>: Declared depth records recursive structure but
+  does not prove a parent/child coherence target. For a concrete hierarchy,
+  <code>assess_u5_parent_child_coherence(..., alpha=...)</code> evaluates
+  $C_{\rm parent}\geq\alpha\sum C_{\rm child}$ from canonical per-node $C$;
+  $alpha$ is explicit and has no graph-independent default.
+- <strong>Constant-history fixed point</strong>: identical current, local-delay and
+  global-delay EPI snapshots are preserved before clipping.
+- <strong>Energy scope</strong>: for one positive diagonal metric h, let V_h denote
+  weighted disagreement from the h-weighted mean. Convexity gives</p>
+<p>$$
+  V_h(x_{\rm raw})\leq
+  \beta V_h(x_0)+\gamma V_h(x_l)+\delta V_h(x_g).
+  $$</p>
+<p>This bound uses all three inputs. It is not a gain bound relative to the
+  current state alone when delayed histories are free. With the two delayed
+  vectors fixed, write b = gamma x_l + delta x_g. The raw map of the current
+  vector preserves the consensus subspace, and has disagreement gain at most
+  beta squared, when b is uniform. Otherwise a consensus current vector can be
+  sent to positive disagreement, so no finite global multiplicative gain
+  exists. Weighted-mean preservation is reported separately from disagreement.
+  Clipping intervention is reported separately from the raw recurrence. None
+  of these one-step facts establishes repeated-map stability, pressure closure,
+  a structural-charge conservation law or U2 convergence.</p>
+<ul>
+<li><strong>Execution boundary</strong>: plan_network_remesh returns the immutable proposal;
+  apply_network_remesh commits it and returns an immutable result. Strict
+  validation precedes writes. A commit, metadata, history or propagated
+  callback failure restores graph-owned state, topology, caches and capturable
+  callback state. External effects already emitted by callbacks are outside
+  this rollback boundary. Exact evidence values that exceed the finite
+  binary64 diagnostic range are rejected explicitly before commit. The
+  function reads the EPI history but does not append or shift it.</li>
+</ul>
+<p><strong>Grammar</strong>: Generator (U1a), Closure (U1b).</p>
+<p><strong>Contract</strong>:
+- Pre: Parent EPI properly formed; depth $\geq 1$.
+- Post: Nested structure maintained; parent identity preserved.</p>
+<p><strong>Fixed-delay Cesàro surrogate (historical N15 programme)</strong>:</p>
+<p>For a finite cyclic history window, remove clipping, fix
+$(\tau_l,\tau_g,\alpha)$ with $0&lt;\alpha&lt;1$, and let $S$ be the unitary cyclic
+shift. The auxiliary filter</p>
+<p>$$F=\beta I+\gamma S^{\tau_l}+\delta S^{\tau_g}$$</p>
+<p>is a normal contraction. Its Cesàro averages converge to the orthogonal
+projection onto $\ker(I-F)$. If the window length is compatible with the
+delays, those fixed modes satisfy both $z^{\tau_l}=1$ and $z^{\tau_g}=1$;
+their periods therefore divide $\gcd(\tau_l,\tau_g)$; they are not
+determined by the historically stated $\operatorname{lcm}(\tau_l,\tau_g)$.</p>
+<p>This finite cyclic filter is not the runtime history-update map. In particular,
+it does not prove a literal $\tau_g\to\infty$ limit for
+<code>apply_network_remesh</code>, whose required history, selected snapshot and clipping
+change with $\tau_g$. Orthogonality gives contraction only in the surrogate's
+declared history norm; it does not conserve the TNFR structural charge, make
+the structural candidate energy monotone, or provide a universal convergence
+rate.</p>
+<p>The projection can be computed without registering another engine operator.
+That is a software-reuse observation, not a catalog-completeness theorem. A
+proof that the 13 operators exhaust admissible TNFR transformations remains an
+open inverse problem requiring an independently defined transformation space.</p>
+<p><strong>Full corrected analysis</strong>:
+<a href="../REMESH_INFINITY_DERIVATION/">REMESH_INFINITY_DERIVATION.md</a> §§1–23. It
+retains the historical N15 milestones and commit anchors (<code>a1f298fd</code>,
+<code>badac156</code>, <code>48b0574a</code>) while separating them from the current result.</p>
+<hr />
+<h2 id="5-integrator">5. Integrator<a class="headerlink" href="#5-integrator" title="Permanent link">&para;</a></h2>
+<h3 id="51-reception-en">5.1 Reception (EN)<a class="headerlink" href="#51-reception-en" title="Permanent link">&para;</a></h3>
+<p><strong>Physics</strong>: Captures and integrates incoming neighbour resonance from the
+network environment. EN does not write $\Delta\text{NFR}$; a later pressure
+refresh is a separate realization boundary.</p>
+<p>On directed support, an arc $j\to i$ makes $j$ an incoming EN input for receiver
+$i$: the numeric snapshot reads predecessors and source discovery follows the
+same source-to-receiver path orientation. The current affine realization
+certificate remains restricted to undirected support.</p>
+<p><strong>Runtime transformation</strong>: let <code>r(EPI)</code> denote the centralized real-scalar
+glyph reader. It is defined for raw finite real values and uniform-real BEPI
+embeddings, retaining their signed value. Genuinely nonuniform or complex BEPI
+values have a maximum-component magnitude for generic read-only diagnostics,
+but Reception rejects them before proposing a blend. Let
+<code>B_i=ensure_bepi(EPI_i)</code> be the accepted target operand. Reception first
+forms the unweighted arithmetic mean of the runtime neighbours,</p>
+<p>$$
+\bar r_i = \frac{1}{|N_i|}\sum_{j\in N_i}r(\mathrm{EPI}_j),
+$$</p>
+<p>then evaluates and structurally clips</p>
+<p>$$
+x_i' = \operatorname{clip}!\left(\operatorname{float}
+\left((1-m)B_i+m\bar r_i\right)\right).
+$$</p>
+<p>Edge <code>weight</code> does not enter this neighbour average. For every uniform-real
+scalar embedding, including negative EPI, <code>float(B_i)=x_i</code>; the runtime and
+pure-EPI scalar readings therefore share the same signed state. With
+<code>0&lt;=m&lt;=1</code>, fixed support and values inside the declared EPI interval, the ideal
+real update is affine and its hard clip is inactive by convexity:</p>
+<p>$$
+\text{EPI}' = (1 - m) \cdot \text{EPI} + m \cdot \text{EPI}_{\text{in}}
+$$</p>
+<p>where $m$ is the configured reception mixing fraction (the standard graph
+configuration uses the selected $1/(\pi+1)$ policy value).</p>
+<p><strong>Key constants</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Derivation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mixing fraction $m$</td>
+<td>configured; standard policy $1/(\pi+1)$</td>
+<td>Operational interpolation weight</td>
+</tr>
+<tr>
+<td>Convexity term</td>
+<td>$m(1-m)$</td>
+<td>Algebraic mixing diagnostic, not a full-energy contraction theorem</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Properties</strong>:
+- <strong>Source detection</strong>: Detects emission sources within configurable distance (default: 2 hops) via <code>detect_emission_sources()</code>.
+- <strong>Runtime/transport separation</strong>: Reception's unweighted neighbour mean can
+  differ from the conductance-weighted mean defining pure-EPI diffusion.
+- <strong>Affine certificate boundary</strong>: <code>certify_reception_epi_realization()</code> keeps
+  the ideal real map, represented binary64 coefficient matrix and actual
+  two-stage runtime value separate. It promotes the represented map only when
+  the declared scalar chart and clipping conditions pass and its consensus-row
+  identity is exact. Snapshot agreement with the runtime is diagnostic, not a
+  global floating-point linearity proof.
+- <strong>Pressure refresh</strong>: If a nontrivial local update changes the target by
+  <code>delta</code>, retaining the pre-update pure-EPI pressure leaves the exact defect
+  <code>delta L_rw e_i</code>. On connected positive conductance this is nonzero, so the
+  pressure must be recomputed before subsequent evolution is treated as the
+  pure-EPI channel.
+- <strong>Immediate coherence contract</strong>: The EN jump writes EPI, semantic kind and
+  optional source metadata while leaving stored $\Delta\text{NFR}$ and
+  $d\mathrm{EPI}$ unchanged. Because canonical $C(t)$ reads only those two
+  channels, its operator-local value is unchanged at that boundary. This says
+  nothing about $C(t)$ after pressure refresh or along a later trajectory.
+- <strong>Source telemetry</strong>: Records detected sources in metadata for analysis.</p>
+<p><strong>Grammar</strong>: Integrator (no active destabilizer/stabilizer role).</p>
+<p><strong>Contract</strong>:
+- Pre: Target EPI and signed pressure lie below their configured Reception
+  admission ceilings. Isolation and an empty detected-source set are admitted
+  rather than treated as hard failures; graph-backed execution with source
+  tracking enabled emits one advisory for the latter.
+- Post: Neighbour EPI is integrated; stored pressure and change rate are
+  unchanged, hence immediate operator-local $C(t)$ is unchanged.</p>
+<hr />
+<h2 id="6-stabilizers">6. Stabilizers<a class="headerlink" href="#6-stabilizers" title="Permanent link">&para;</a></h2>
+<p>Stabilizers are assigned negative-feedback roles intended to reduce U2 debt.
+Grammar rule U2 requires that every destabilizer ({OZ, ZHIR, VAL}) be
+compensated by a stabilizer ({IL, THOL}); this finite-word condition does not by
+itself prove that $\int \nu_f\Delta\mathrm{NFR}\,dt$ is bounded for every runtime
+realization.</p>
+<h3 id="61-coherence-il">6.1 Coherence (IL)<a class="headerlink" href="#61-coherence-il" title="Permanent link">&para;</a></h3>
+<p><strong>Physics</strong>: Stabilizes structural form through direct negative feedback on
+$|\Delta\text{NFR}|$. Bounded evolution still requires a specified trajectory,
+gains, timing and pressure law.</p>
+<p><strong>Transformation</strong>:</p>
+<p>$$
+\Delta\text{NFR}' = \Delta\text{NFR} \cdot (1 - \rho)
+$$</p>
+<p>where the default retention is
+$1-\rho=\pi/(\pi+1)\approx0.7585$, hence
+$\rho=1/(\pi+1)\approx0.2415$. The gain remains configurable.</p>
+<p><strong>Phase locking</strong> (optional):</p>
+<p>$$
+\theta' = \theta + \lambda \cdot \text{wrap}!\left(\bar{\theta}_{\mathcal{N}} - \theta\right)
+$$</p>
+<p>where $\lambda \approx 0.3$ is the phase locking coefficient and $\bar{\theta}_{\mathcal{N}}$ is the circular mean of neighbor phases.</p>
+<p><strong>Key constants</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Derivation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ΔNFR retention factor $f$</td>
+<td>$\pi/(\pi+1)\approx0.7585$</td>
+<td>Default <code>IL_dnfr_factor</code>; configurable gain</td>
+</tr>
+<tr>
+<td>Pressure-square reduction</td>
+<td>$1-f^2\approx0.425$</td>
+<td>Isolated $\Delta\mathrm{NFR}^2$ term at the default; not a full-energy bound</td>
+</tr>
+<tr>
+<td>Phase locking $\lambda$</td>
+<td>$\approx 0.3$</td>
+<td>Configurable coupling strength</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Properties</strong>:
+- <strong>Monotonic $C(t)$</strong>: Global coherence must not decrease (except within explicit dissonance tests).
+- <strong>Phase alignment</strong>: Optional circular averaging drives neighborhood synchronization.
+- <strong>Telemetry</strong>: Records $C(t)$ before/after, ΔNFR reduction factors, and phase locking events.</p>
+<p><strong>Grammar</strong>: Stabilizer (U2); Bifurcation Handler (U4a).</p>
+<p><strong>Contract</strong>:
+- Pre: Active structure exists.
+- Post: $|\Delta\text{NFR}|$ reduced; $C(t)$ non-decreasing.</p>
+<h3 id="62-self-organization-thol">6.2 Self-Organization (THOL)<a class="headerlink" href="#62-self-organization-thol" title="Permanent link">&para;</a></h3>
+<p><strong>Physics</strong>: Autonomous emergence via bifurcation. Creates sub-EPIs when the structural acceleration exceeds the bifurcation threshold, implementing operational fractality.</p>
+<p>Its primary contract channel is $\Delta\text{NFR}$ with direction
+<strong>reorganize</strong>:</p>
+<p>$$
+\Delta\text{NFR}'=\Delta\text{NFR}+a\,\frac{\partial^2\text{EPI}}{\partial t^2}.
+$$</p>
+<p>The instantaneous magnitude can rise or fall with the signed acceleration.
+THOL's U2 stabilizer role comes from organizing a bifurcation while preserving
+global form; it is not a universal one-step pressure contraction.</p>
+<p><strong>Bifurcation detection</strong>:</p>
+<p>$$
+\frac{\partial^2 \text{EPI}}{\partial t^2} = \text{EPI}(t) - 2\,\text{EPI}(t-1) + \text{EPI}(t-2) \tag{finite difference}
+$$</p>
+<p>When $|\partial^2\text{EPI}/\partial t^2| &gt; \tau$ (bifurcation threshold), sub-EPIs are spawned.</p>
+<p><strong>Sub-EPI creation</strong>:</p>
+<p>$$
+\text{EPI}<em _text_parent="\text{parent">{\text{sub}} = \text{EPI}</em>
+$$}} \cdot 0.3 + \text{contribution}_{\text{metabolic}</p>
+<p>where $0.3$ is the operational fractal scaling factor (a free parameter).
+The child is a nested coordinate with an explicit parent reference; it is not
+an additive mass term. THOL leaves the parent's scalar EPI coordinate and all
+neighbour EPI coordinates unchanged. Propagation of form belongs to Resonance
+(RA) and must appear explicitly in a grammar-valid word.</p>
+<p><strong>Key constants</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Derivation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fractal scale</td>
+<td>$\approx 0.3$</td>
+<td>Operational fractal nesting (free parameter)</td>
+</tr>
+<tr>
+<td>U5 hierarchy coefficient $\alpha$</td>
+<td>explicit per assessment</td>
+<td>No graph-independent default</td>
+</tr>
+<tr>
+<td>Sub-$\nu_f$ damping</td>
+<td>$0.95$</td>
+<td>Child inherits 95% of parent frequency</td>
+</tr>
+<tr>
+<td>Bifurcation threshold $\tau$</td>
+<td>configurable (default $0.1$)</td>
+<td>From graph configuration</td>
+</tr>
+<tr>
+<td>Pressure-reorganization gain $a$</td>
+<td>$1/(4\pi)\approx0.0796$</td>
+<td>Default <code>THOL_accel</code>; operational gain</td>
+</tr>
+</tbody>
+</table>
+<p><code>THOL_MIN_COLLECTIVE_COHERENCE</code> is a deprecated, inert compatibility
+alias for the general fragmentation-risk cut. It is not read by THOL and does
+not supply the explicit U5 coefficient.</p>
+<p><strong>Properties</strong>:
+- <strong>Autopoietic</strong>: Creates independent sub-nodes with hierarchy metadata (bifurcation level, hierarchy path, parent reference).
+- <strong>Metabolic integration</strong>: When enabled, captures network signals and metabolizes them into sub-EPI values.
+- <strong>Amplitude-alignment telemetry</strong>: <code>compute_subepi_amplitude_alignment</code>
+  returns $1/(1+\operatorname{var}(a_{\rm child}))$ for stored child EPI
+  amplitudes (or zero when fewer than two exist). It is neither canonical
+  $C(t)$ nor a U5 decision. The historical
+  <code>compute_subepi_collective_coherence</code> name is only a compatibility alias.
+- <strong>Explicit U5 telemetry</strong>: <code>assess_u5_parent_child_coherence</code> evaluates
+  $C_{\rm parent}\geq\alpha\sum C_{\rm child}$ only when the hierarchy and
+  $\alpha$ are supplied. THOL does not enforce a hidden collective threshold.
+- <strong>Depth-limited</strong>: Maximum nesting depth prevents unbounded recursion
+  (default: 5 levels). At the limit THOL still applies its signed pressure
+  reorganization but records that no child was created.
+- <strong>Channel-pure</strong>: The parent and its neighbours keep their EPI coordinates;
+  any subsequent form propagation is an explicit RA stage.</p>
+<p><strong>Grammar</strong>: Stabilizer (U2); Bifurcation Handler (U4a); Transformer (U4b).</p>
+<p><strong>Contract</strong>:
+- Pre: Sufficient EPI history ($\geq 3$ points); $\nu_f &gt; 0$; elevated $\Delta\text{NFR}$.
+- Post: Sub-EPIs spawned (if bifurcation); parent identity and hierarchy metadata preserved.</p>
+<hr />
+<h2 id="7-destabilizers">7. Destabilizers<a class="headerlink" href="#7-destabilizers" title="Permanent link">&para;</a></h2>
+<p>Destabilizers increase pressure or capacity stress under their contracts.
+Grammar rule U2 requires compensation by a stabilizer as a syntactic safety
+policy. Integral convergence additionally needs a declared pressure law,
+operator gains, timing, and state-space bounds.</p>
+<h3 id="71-dissonance-oz">7.1 Dissonance (OZ)<a class="headerlink" href="#71-dissonance-oz" title="Permanent link">&para;</a></h3>
+<p><strong>Physics</strong>: Injects controlled instability by amplifying structural pressure. Probes bifurcation readiness by elevating $|\Delta\text{NFR}|$.</p>
+<p><strong>Transformation</strong>:</p>
+<p>$$
+\Delta\text{NFR}' = f \cdot \Delta\text{NFR}
+$$</p>
+<p>where the default amplification is
+$f=(\pi+1)/\pi\approx1.3183$, the reciprocal of the default IL retention.
+It remains an operational gain; the contract fixes only $f&gt;1$.</p>
+<p><strong>Bifurcation trigger</strong>: When $\partial^2\text{EPI}/\partial t^2 &gt; \tau$, the system enters a bifurcation-active state requiring a handler (IL or THOL per U4a).</p>
+<p><strong>Key constants</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Derivation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Amplification factor $f$</td>
+<td>$(\pi+1)/\pi\approx1.3183$</td>
+<td>Default <code>OZ_dnfr_factor</code>; configurable gain</td>
+</tr>
+<tr>
+<td>Pressure-square increase</td>
+<td>$f^2-1\approx0.738$</td>
+<td>Isolated $\Delta\mathrm{NFR}^2$ term at the default; not a full-energy bound</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Properties</strong>:
+- <strong>Network propagation</strong>: Optional cascading to neighbors via phase-weighted, uniform, or frequency-weighted modes.
+- <strong>Bifurcation detection</strong>: Monitors $\partial^2\text{EPI}/\partial t^2$ against threshold $\tau$.
+- <strong>Telemetry</strong>: Records propagation events, affected nodes, and bifurcation flags.</p>
+<p><strong>Grammar</strong>: Destabilizer (U2); Bifurcation Trigger (U4a); Closure (U1b).</p>
+<p><strong>Contract</strong>:
+- Pre: Sufficient EPI/$\nu_f$; $\Delta\text{NFR}$ below critical.
+- Post: $|\Delta\text{NFR}|$ increased; bifurcation flag set if acceleration exceeds $\tau$.</p>
+<h3 id="72-expansion-val">7.2 Expansion (VAL)<a class="headerlink" href="#72-expansion-val" title="Permanent link">&para;</a></h3>
+<p><strong>Physics</strong>: Raises the $\nu_f$ capacity channel. This increases the response
+rate to any nonzero pressure without asserting an instantaneous $\Delta\text{NFR}$
+or EPI change.</p>
+<p><strong>Transformation</strong>:</p>
+<p>$$
+\nu_f' = f_{\text{VAL}}\nu_f, \qquad
+f_{\text{VAL}}=\text{VAL_scale}&gt;1
+$$</p>
+<p><strong>Key constants</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Derivation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default scale factor $f_{\text{VAL}}$</td>
+<td>$1+1/(4\pi)\approx1.0796$</td>
+<td>Operational capacity step</td>
+</tr>
+<tr>
+<td>Nominal square-factor change</td>
+<td>$f^2-1\approx0.166$ at the default</td>
+<td>Algebraic $\nu_f^2$ diagnostic; the structural candidate energy has no explicit $\nu_f$ term</td>
+</tr>
+<tr>
+<td>Min EPI</td>
+<td>$1/(2\pi) \approx 0.159$</td>
+<td>minimum structural base (π-fraction, tunable)</td>
+</tr>
+<tr>
+<td>Min coherence</td>
+<td>$\sin(\pi/3) \approx 0.866$</td>
+<td>60° harmonic coherence</td>
+</tr>
+<tr>
+<td>Bifurcation threshold</td>
+<td>$1/(\pi + 1) \approx 0.2415$</td>
+<td>Detection threshold</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Grammar</strong>: Destabilizer (U2).</p>
+<p><strong>Contract</strong>:
+- Pre: EPI above minimum; coherence above 0.866; bounded $\Delta\text{NFR}$.
+- Post: Dimensionality increased; requires IL/THOL compensation. Avoid VAL$\to$VAL chaining.</p>
+<hr />
+<h2 id="8-coupling-and-propagation">8. Coupling and Propagation<a class="headerlink" href="#8-coupling-and-propagation" title="Permanent link">&para;</a></h2>
+<p>Coupling operators establish and utilize phase-synchronized links between nodes. Grammar rule U3 requires phase compatibility verification: $|\phi_i - \phi_j| \leq \Delta\phi_{\max}$.</p>
+<h3 id="81-coupling-um">8.1 Coupling (UM)<a class="headerlink" href="#81-coupling-um" title="Permanent link">&para;</a></h3>
+<p><strong>Physics</strong>: Synchronizes phases across neighbors, establishing structural links for resonance exchange.</p>
+<p><strong>Transformation</strong>:</p>
+<p>$$
+\phi_i' \to \phi_j', \qquad |\phi_i - \phi_j| \leq \Delta\phi_{\max}
+$$</p>
+<p><strong>Compatibility threshold</strong>: $\pi/(\pi+1) \approx 0.7585$ (the high-coherence gate, complement of the fragmentation threshold $1/(\pi+1)$).</p>
+<p><strong>Key constants</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Derivation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compatibility threshold</td>
+<td>$\pi/(\pi+1) \approx 0.7585$</td>
+<td>high-coherence gate</td>
+</tr>
+<tr>
+<td>Phase push</td>
+<td>$1/(\pi + 1) \approx 0.241$</td>
+<td>Same physics as EN mixing</td>
+</tr>
+<tr>
+<td>$\Delta\text{NFR}$ reduction</td>
+<td>$1/(2\pi)\approx0.1592$</td>
+<td>Default phase-alignment pressure-relief gain</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Properties</strong>:
+- <strong>Phase verification mandatory</strong>: Antiphase ($|\phi_i - \phi_j| &gt; \Delta\phi_{\max}$) produces destructive interference; coupling is forbidden.
+- <strong>EPI identity preserving</strong>: Form is not modified; only phase alignment changes.
+- <strong>$\nu_f$ synchronization</strong>: Optional frequency alignment across coupled nodes.</p>
+<p><strong>Grammar</strong>: Coupling (U3); requires phase verification.</p>
+<p><strong>Contract</strong>:
+- Pre: Active EPI and $\nu_f$ above thresholds; $|\phi_i - \phi_j| \leq \Delta\phi_{\max}$; network edges exist.
+- Post: Phase spread narrowed; EPI identity preserved; links established.</p>
+<h3 id="82-resonance-ra">8.2 Resonance (RA)<a class="headerlink" href="#82-resonance-ra" title="Permanent link">&para;</a></h3>
+<p><strong>Physics</strong>: Propagates coherent patterns through phase-aligned nodes. It may
+change the target's scalar EPI through neighbour mixing while preserving the
+pattern's signed/kind identity, and it conditionally amplifies local structural
+frequency.</p>
+<p>Let the active RA neighbourhood be the individually U3-compatible subset</p>
+<p>$$
+N_i^{\mathrm{U3}}=
+{j\in N_i:|\operatorname{wrap}(\theta_i-\theta_j)|\leq\Delta\phi_{\max}}.
+$$</p>
+<p>The runtime rejects an isolate or an empty compatible subset. Its configured
+phase limit must satisfy $0\leq\Delta\phi_{\max}\leq\pi/2$; configuration may
+tighten but cannot relax the canonical gate. Only this subset contributes to
+the EPI mean, circular phase mean, and frequency trigger. With
+$r=\texttt{RA_epi_diff}$ and $c=\texttt{RA_phase_coupling}$,</p>
+<p>$$
+\bar x_i=\frac{1}{|N_i^{\mathrm{U3}}|}\sum_{j\in N_i^{\mathrm{U3}}}x_j,
+\qquad
+x_i^*=\operatorname{clip}!\left((1-r)x_i+r\bar x_i\right),
+$$</p>
+<p>$$
+\theta_i^*=\operatorname{wrap}_{[0,2\pi)}
+\left(\theta_i+c\,\operatorname{wrap}(\bar\theta_i-\theta_i)\right).
+$$</p>
+<p>Here $\bar\theta_i$ is the unweighted circular mean of compatible phases. If
+the runtime's exact antipodal-pair guard or exactly zero represented resultant
+marks that mean undefined, phase remains unchanged; this operational guard is
+sufficient for those cancellation classes and is not a universal symbolic
+zero-resultant test. When $|\bar x_i|&gt;10^{-9}$, the selected runtime trigger,</p>
+<p>$$
+\nu_{f,i}^*=(1+a)\nu_{f,i},\qquad
+a=\texttt{RA_vf_amplification}.
+$$</p>
+<p>The $10^{-9}$ trigger is operational binary64 policy, not a derived structural
+constant. Before EPI, phase, $\nu_f$, history, or RA metadata changes, the
+runtime requires</p>
+<p>$$
+0\leq r\leq1,\qquad a\geq0,\qquad0\leq c\leq1,
+$$</p>
+<p>finite scalar or uniform-real BEPI operands, a finite nondecreasing proposed
+frequency, and the identity gate below.</p>
+<p><strong>Key constants and domains</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Default</th>
+<th>Runtime domain / status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EPI mix $r$</td>
+<td>$1/(2\pi)\approx0.1592$</td>
+<td><code>[0,1]</code>; convex propagation</td>
+</tr>
+<tr>
+<td>Frequency amplification $a$</td>
+<td>$1/(8\pi)\approx0.0398$</td>
+<td><code>[0,+infinity)</code>; nondecreasing capacity</td>
+</tr>
+<tr>
+<td>Phase coupling $c$</td>
+<td>$1/(4\pi)\approx0.0796$</td>
+<td><code>[0,1]</code>; shortest-arc interpolation</td>
+</tr>
+<tr>
+<td>U3 phase limit</td>
+<td>$\pi/2$</td>
+<td><code>[0,pi/2]</code>; may only be tightened</td>
+</tr>
+<tr>
+<td>Capacity trigger</td>
+<td>$10^{-9}$</td>
+<td>Operational binary64 threshold on $\lvert\bar x_i\rvert$</td>
+</tr>
+<tr>
+<td>Resonance detection threshold</td>
+<td>$\approx0.198$</td>
+<td>Separate operational detection sensitivity</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Identity contract</strong>:</p>
+<ul>
+<li><strong>Scalar change is allowed</strong>: accepted RA replaces the target scalar by the
+  neighbour blend; preservation does not mean “EPI without alteration.”</li>
+<li><strong>Sign identity</strong>: a strict negative-to-positive or positive-to-negative
+  proposal is rejected. Exact zero is neutral: arriving at or departing from
+  zero does not invert a pre-existing nonzero sign.</li>
+<li><strong>Kind identity</strong>: an established nonempty <code>epi_kind</code> must remain exactly the
+  same. <code>None</code> and the empty string mean absent kind and may be initialized by
+  the existing neighbour/fallback convention.</li>
+<li><strong>Independent gates</strong>: sign compatibility cannot compensate for a kind
+  violation, or conversely. A failure is atomic for nodal state, glyph history,
+  and RA telemetry.</li>
+</ul>
+<p><strong>Runtime-to-theorem boundary</strong>:</p>
+<ul>
+<li>EN and RA are the first two catalog bridges. They reuse one neutral
+  unweighted-neighbour EPI kernel even when pure-EPI diffusion uses a
+  conductance-weighted mean.</li>
+<li><code>certify_resonance_epi_realization()</code> separates four layers: the ideal-real
+  convex EPI blend, the affine matrix assembled from represented binary64
+  coefficients, the actual two-stage binary64 proposal, and the accepted
+  identity-gated runtime snapshot. Only a represented map whose exact
+  consensus identity and declared scalar/clipping domain pass enters the affine
+  jump theorem.</li>
+<li>A successful local frequency boost generally changes the post-RA metric
+  $h_i=d_i/\nu_{f,i}$. The fixed post-RA pure-EPI flow can still be certified;
+  arbitrary switching between pre/post generators is withheld unless their
+  represented metrics are exactly proportional. A displayed recovery time is
+  only an estimate; the Boolean fixed-post-flow recovery verdict comes from the
+  exact hybrid composer.</li>
+<li>If accepted RA changes target EPI by $\delta$, retaining the prior pure-EPI
+  pressure creates the exact defect $\delta L_{rw}e_i$. Pressure must be
+  refreshed before subsequent evolution is interpreted as that isolated
+  channel. This does not identify or certify stored multichannel $\Delta NFR$.</li>
+<li>Two-stage rounding, structural clipping, U3/identity gates, and the phase and
+  frequency channels prevent a global binary64 runtime-affinity claim.</li>
+</ul>
+<p><strong>Global $C(t)$ telemetry</strong>: Optional before/after measurements report the
+realized network coherence response; propagation alone does not fix its sign.</p>
+<p><strong>Grammar</strong>: Propagation (U3); requires phase verification.</p>
+<p><strong>Contract</strong>:
+- Pre: Scalar or uniform-real coherent EPI; active edge; at least one
+  U3-compatible neighbour; factor, phase-limit, identity, and finite-state gates
+  pass.
+- Post: Scalar EPI may move within its preserved sign/kind identity class;
+  $\nu_f$ is nondecreasing and is amplified when the compatible neighbour field
+  crosses the operational trigger; any $C(t)$ change is measured rather than
+  assumed.</p>
+<hr />
+<h2 id="9-transformers">9. Transformers<a class="headerlink" href="#9-transformers" title="Permanent link">&para;</a></h2>
+<p>Transformers execute structural bifurcations — qualitative state changes that
+require recent destabilizing context and, for ZHIR, a prior coherent base.
+Grammar rule U4b uses the configured three-operation recency window; this is
+finite-word bookkeeping, not a measured energy threshold or universal
+relaxation time.</p>
+<h3 id="91-mutation-zhir">9.1 Mutation (ZHIR)<a class="headerlink" href="#91-mutation-zhir" title="Permanent link">&para;</a></h3>
+<p><strong>Physics</strong>: Controlled phase transformation. The nodal equation supplies the
+instantaneous prediction</p>
+<p>$$
+(\partial_t\mathrm{EPI})_{\mathrm{pred}}
+= \nu_f\,\Delta\mathrm{NFR}.
+$$</p>
+<p>This prediction describes the current capacity-pressure product. Its strict
+comparison with $\xi$ is a predictive diagnostic; it is not evidence that a
+growth rate has been observed and does not admit ZHIR by itself.</p>
+<p><strong>Observed temporal evidence</strong>: the non-disableable runtime trigger instead
+uses the last two finite scalar EPI samples to form the signed secant</p>
+<p>$$
+\widehat{\partial_t\mathrm{EPI}}<em k="k">{\mathrm{obs}}
+=\frac{\mathrm{EPI}</em>}-\mathrm{EPI<em k-1="k-1">{k-1}}{t_k-t</em>.
+$$}</p>
+<p>Timestamped <code>epi_time_history</code> is physical-time evidence. It requires finite
+samples, a finite strictly positive interval, and a final sample that represents
+the current EPI endpoint (exactly under the runtime default; the pure
+certificate can declare a finite nonnegative absolute endpoint tolerance).
+When this channel is supplied it is authoritative: invalid or stale physical
+evidence does not fall back to an untimestamped history.</p>
+<p>For compatibility, <code>epi_history</code> and then <code>_epi_history</code> can provide legacy
+evidence. Their two samples are separated by one <strong>operator step</strong>, so the
+calculation reduces to <code>EPI[k] - EPI[k-1]</code>. Such evidence is explicitly marked
+<code>physical_time_resolved=False</code> and carries no physical-time or current-endpoint
+claim.</p>
+<p>The observed comparison is signed and strict:
+$\widehat{\partial_t\mathrm{EPI}}_{\mathrm{obs}}&gt;\xi$. Equality, contraction,
+sub-threshold growth, missing evidence, invalid samples, a non-increasing
+physical timestamp, or a stale physical endpoint reject direct execution
+before its phase mutation. The gate also requires finite active capacity
+$\nu_f&gt;0$; an explicitly configured <code>ZHIR_MIN_VF</code> may tighten that condition.
+The default <code>ZHIR_THRESHOLD_XI = 0.1</code> is an operational calibration, not a
+structural constant; a configured replacement must be finite and nonnegative.</p>
+<p>The pure <code>MutationTriggerCertificate</code> and the SDK <code>nodal_state()</code> read-out keep
+the predicted and observed rates and crossings separate. In particular,
+<code>near_bifurcation</code> is a legacy SDK alias of the <strong>predicted</strong> crossing, while
+<code>mutation_threshold_satisfied</code> reports only the observed strict threshold.
+Unavailable or invalid evidence leaves <code>observed_crossed=None</code> instead of
+inventing a negative observation. <code>rate_gap = observed - predicted</code> is reported
+only for valid physical-time evidence, where those rates share a time basis;
+it remains unavailable for a legacy operator-step difference.
+Neither interface evaluates the prior-IL/recent-destabilizer requirements and
+neither certifies U4b execution readiness.</p>
+<p>When a dynamic selector proposes ZHIR without valid crossing evidence or active
+capacity, it substitutes IL before ordinary grammar enforcement and records the
+requested and applied glyphs with the reason in <code>mutation_abstentions</code>.
+The SDK whole-word runner applies a stronger atomic boundary: before executing
+the first operator of a word containing ZHIR, it checks the temporal gate for
+every target node. It also rejects timestamped evidence when an earlier
+EPI-channel operator in that word would make the endpoint stale before ZHIR;
+legacy unit-operator-step evidence retains its compatibility interpretation.
+This preflight does not replace grammar validation or U4b. The fluent SDK's
+<code>apply_evidence_gated_mutation()</code> adds an explicitly experimental policy on top:
+when evidence is absent, stale, non-crossing or attached to inactive capacity,
+it executes a declared complete word without ZHIR and records the per-node
+evidence and abstention reason. It never constructs history; malformed evidence
+still raises, and direct sequence execution remains strict.</p>
+<p><strong>Phase transformation</strong>:</p>
+<p>$$
+\theta'=\operatorname{wrap}_{[0,2\pi)}!\left(
+\theta+s\,\operatorname{sign}(\Delta\text{NFR})\right)
+$$</p>
+<p>where the default calibrated magnitude is
+$s=(1/\pi)(\pi/4)=1/4$ radians unless an explicit fixed shift is supplied.
+The runtime preconditions and U4b history determine whether the mutation is
+admissible; $|\Delta\text{NFR}|$ does not scale this phase step.</p>
+<p>The phase calculation and its branch-specific <code>_zhir_*</code> telemetry payload use
+one RNG-free immutable kernel. At the all-target boundary, the complete frozen
+proposal also binds the temporal threshold evidence, structural acceleration
+and U4 context to one stage snapshot. The stage commits phase and acceleration
+before merging histories, provenance, metrics and bifurcation events in
+requested target order. Its primary structural result is target-order invariant
+before the opaque pressure refresh; the ordered auxiliary streams and
+relabeling equivariance remain outside that result.</p>
+<p><strong>Bifurcation monitoring</strong>: <code>compute_d2epi_dt2</code> estimates structural
+acceleration from three EPI-history samples. Timestamped histories use adjacent
+secant slopes over their physical intervals; legacy histories use the unit-step
+second difference. The result can flag bifurcation potential when it exceeds
+$\tau$. This acceleration diagnostic is distinct from both the instantaneous
+nodal prediction and the two-sample observed ZHIR gate.</p>
+<p><code>ZHIR_BIFURCATION_MODE="detection"</code> is the only supported mode. The legacy
+<code>"variant_creation"</code> value is rejected before any write. ZHIR therefore remains
+a phase-only transformation with bifurcation detection and telemetry; topology
+or sub-EPI creation belongs to THOL and must be expressed through that operator.</p>
+<p><strong>Key parameters</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Runtime role / status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Signed observed-growth threshold $\xi$</td>
+<td><code>ZHIR_THRESHOLD_XI = 0.1</code></td>
+<td>Strict operator-admission calibration; operational, not structural</td>
+</tr>
+<tr>
+<td>Direct activity condition</td>
+<td>$\nu_f&gt;0$</td>
+<td>Zero capacity cannot execute the phase transformation</td>
+</tr>
+<tr>
+<td>Optional direct minimum</td>
+<td>absent (<code>ZHIR_MIN_VF = 0</code>)</td>
+<td>Tightens the activity condition only when configured explicitly</td>
+</tr>
+<tr>
+<td>Branch-selection threshold</td>
+<td><code>ZHIR_BIFURCATION_VF_THRESHOLD = 0.5</code></td>
+<td>Selects whether the bifurcation router proposes ZHIR; it is not a ZHIR operator precondition</td>
+</tr>
+<tr>
+<td>Default phase shift</td>
+<td>$1/4$ rad</td>
+<td>Calibrated magnitude; $\Delta\text{NFR}$ supplies direction only</td>
+</tr>
+<tr>
+<td>Sampled $\lvert\Delta E\rvert$</td>
+<td>$\leq 0.056$ per node in the referenced protocol</td>
+<td>Finite observation, not an operator contract</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Grammar</strong>: Transformer (U4b); Bifurcation Trigger (U4a).</p>
+<p><strong>Contract</strong>:
+- Pre: active finite $\nu_f&gt;0$ (and <code>ZHIR_MIN_VF</code>, only when explicitly
+  configured); valid two-sample temporal evidence satisfying the signed strict
+  inequality $\widehat{\partial_t\mathrm{EPI}}_{\mathrm{obs}}&gt;\xi$; prior IL
+  for the stable base; and a recent destabilizer inside the configured U4b
+  window. Temporal evidence is either fresh timestamped physical evidence or
+  legacy unit-operator-step evidence under the compatibility contract. The
+  normal grammar route or the strict precondition route enforces the two U4b
+  context requirements.
+- Post: phase $\theta$ shifted; the structural identity <code>epi_kind</code> preserved;
+  bifurcation potential flagged if $\partial^2\text{EPI}/\partial t^2&gt;\tau$.
+  After successful dispatch, <code>source_glyph</code> records <code>ZHIR</code> as provenance. That
+  provenance field does not define or overwrite <code>epi_kind</code>.</p>
+<hr />
+<h2 id="10-closure-and-regime-operators">10. Closure and Regime Operators<a class="headerlink" href="#10-closure-and-regime-operators" title="Permanent link">&para;</a></h2>
+<h3 id="101-silence-sha">10.1 Silence (SHA)<a class="headerlink" href="#101-silence-sha" title="Permanent link">&para;</a></h3>
+<p><strong>Physics</strong>: Freezes structural evolution by suppressing $\nu_f$. With $\nu_f \to 0$, the nodal equation yields $\partial\text{EPI}/\partial t \approx 0$ regardless of $\Delta\text{NFR}$.</p>
+<p><strong>Transformation</strong>:</p>
+<p>$$
+\nu_f'=f_{\text{SHA}}\nu_f,\qquad
+f_{\text{SHA}}=1-1/(4\pi)\approx0.9204
+$$</p>
+<p>EPI is preserved via latency snapshot.</p>
+<p><strong>Key constants</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Derivation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$\nu_f$ suppression factor</td>
+<td>$1-1/(4\pi)\approx0.9204$</td>
+<td>Operational <code>SHA_VF_FACTOR</code></td>
+</tr>
+<tr>
+<td>Sampled $\lvert\Delta E\rvert$</td>
+<td>$\leq 0.187$ in the referenced protocol</td>
+<td>Finite observation, not an operator contract</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Properties</strong>:
+- <strong>Latency state</strong>: Activates a latent flag with timestamped EPI snapshot.
+- <strong>EPI preservation</strong>: Drift tolerance of 1% for established nodes, $0.330$ for initial nodes.
+- <strong>Reactivation protocol</strong>: AL or NAV recovery verifies silence duration and EPI drift, then clears latency attributes.
+- <strong>All-target time basis</strong>: One accepted SHA stage gives every target the same
+  latency-start timestamp while preserving a target-specific EPI snapshot.</p>
+<p><strong>Grammar</strong>: Closure (U1b).</p>
+<p><strong>Contract</strong>:
+- Pre: Existing EPI; $\Delta\text{NFR}$ not at critical levels.
+- Post: $\nu_f \to 0$; EPI remains invariant; latent flag set with snapshot.</p>
+<h3 id="102-contraction-nul">10.2 Contraction (NUL)<a class="headerlink" href="#102-contraction-nul" title="Permanent link">&para;</a></h3>
+<p><strong>Physics</strong>: Densifies and consolidates structural form by reducing dimensionality. Compresses $\nu_f$ while increasing local $\Delta\text{NFR}$ density.</p>
+<p><strong>Transformation</strong>:</p>
+<p>$$
+\nu_f'=f_{\text{NUL}}\nu_f,\qquad
+f_{\text{NUL}}=1-1/(4\pi)\approx0.9204
+$$</p>
+<p>Local $\Delta\text{NFR}$ density increases due to compression:</p>
+<p>$$
+\Delta\text{NFR}'=\frac{1}{f_{\text{NUL}}}\Delta\text{NFR}
+\approx1.0865\,\Delta\text{NFR}
+$$</p>
+<p><strong>Key constants</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Derivation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scale factor</td>
+<td>$1-1/(4\pi)\approx0.9204$</td>
+<td>Same operational $\nu_f$ step as SHA</td>
+</tr>
+<tr>
+<td>Densification factor</td>
+<td>$1/f_{\text{NUL}}\approx1.0865$</td>
+<td>Reciprocal configured capacity factor</td>
+</tr>
+</tbody>
+</table>
+<p>The immutable scale proposal binds the requested capacity factor, its exact
+binary64 reciprocal, the pre/post pressure and any EPI-boundary adaptation
+before commit. Each densification audit event carries its target identifier.
+Contraction metrics use their captured pre-operation pressure, or the latest
+matching target event for compatibility, and report signed pressure change
+separately from magnitude increase. Unchanged zero pressure is therefore not
+misreported as densification.</p>
+<p><strong>Grammar</strong>: Simplifier (no active grammar role; supports VAL reversals).</p>
+<p><strong>Contract</strong>:
+- Pre: Non-trivial EPI (not $\approx 0$).
+- Post: Dimensionality reduced; pressure density increased. Avoid NUL$\to$NUL chaining.</p>
+<hr />
+<h2 id="11-fragments-and-complete-words">11. Fragments and Complete Words<a class="headerlink" href="#11-fragments-and-complete-words" title="Permanent link">&para;</a></h2>
+<p>Operators compose left-to-right. A named fragment is reusable syntax; a
+complete word is a concrete sequence evaluated against its execution context.
+Canonical U6 additionally needs before/after $\Phi_s$ snapshots and therefore
+cannot be certified from operator labels alone.</p>
+<h3 id="111-named-workflow-fragments">11.1 Named workflow fragments<a class="headerlink" href="#111-named-workflow-fragments" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Fragment</th>
+<th>Sequence</th>
+<th>Structural intent</th>
+<th>Missing standalone context</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bootstrap</strong></td>
+<td>[AL, UM, IL]</td>
+<td>Create → Couple → Stabilize</td>
+<td>U1b closure; U3 phase values</td>
+</tr>
+<tr>
+<td><strong>Stabilize</strong></td>
+<td>[IL, SHA]</td>
+<td>Stabilize → Close</td>
+<td>U1a generator when starting from null</td>
+</tr>
+<tr>
+<td><strong>Explore</strong></td>
+<td>[OZ, ZHIR, IL]</td>
+<td>Destabilize → Transform → Stabilize</td>
+<td>U1a/U1b glue and prior IL for ZHIR</td>
+</tr>
+<tr>
+<td><strong>Propagate</strong></td>
+<td>[RA, UM]</td>
+<td>Resonate → Couple</td>
+<td>U1a/U1b glue; U3 phase values</td>
+</tr>
+</tbody>
+</table>
+<p>These fragments are not asserted to be standalone valid words. For example,
+<code>[AL, IL, OZ, ZHIR, IL, SHA]</code> supplies the generator, prior stable base,
+recent destabilizer, handler/stabilizer and closure needed by the Explore body.</p>
+<h3 id="112-complete-word-examples">11.2 Complete-word examples<a class="headerlink" href="#112-complete-word-examples" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Sequence</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bifurcated base</td>
+<td>[AL, EN, IL, OZ, ZHIR, IL, SHA]</td>
+<td>Exploration with mutation and stabilization</td>
+</tr>
+<tr>
+<td>Bifurcated collapse</td>
+<td>[AL, OZ, NUL, IL, SHA]</td>
+<td>Stress testing with contraction recovery</td>
+</tr>
+<tr>
+<td>Theory system</td>
+<td>[AL, NAV, UM, RA, IL, SHA]</td>
+<td>Cognitive consolidation via coupling and resonance</td>
+</tr>
+<tr>
+<td>Full deployment</td>
+<td>[AL, UM, RA, IL, OZ, ZHIR, IL, SHA]</td>
+<td>Integration pipeline with the prior IL required by ZHIR</td>
+</tr>
+<tr>
+<td>Minimal stabilizer</td>
+<td>[AL, IL, SHA]</td>
+<td>Shortest valid bootstrap-stabilize-close</td>
+</tr>
+<tr>
+<td>Contained crisis</td>
+<td>[AL, EN, IL, OZ, SHA]</td>
+<td>Crisis containment through intervention</td>
+</tr>
+<tr>
+<td>Phase lock</td>
+<td>[AL, EN, IL, OZ, ZHIR, SHA]</td>
+<td>Synchronization through mutation</td>
+</tr>
+<tr>
+<td>Resonance peak hold</td>
+<td>[AL, EN, IL, RA, SHA]</td>
+<td>Peak detection and maintenance</td>
+</tr>
+</tbody>
+</table>
+<h3 id="113-validation-boundary">11.3 Validation boundary<a class="headerlink" href="#113-validation-boundary" title="Permanent link">&para;</a></h3>
+<p>The sequence validator checks U1 initiation/closure, U2 debt coverage, U3
+operator awareness, U4 context, and declared U5 Recursivity depth. Actual U3
+phase compatibility is checked by operator preconditions. Canonical U6 is a
+separate snapshot observation. Thus a sequence-level pass is not full U1--U6
+trajectory certification and does not prove convergence.</p>
+<hr />
+<h2 id="12-operator-roles-and-energy-diagnostics">12. Operator roles and energy diagnostics<a class="headerlink" href="#12-operator-roles-and-energy-diagnostics" title="Permanent link">&para;</a></h2>
+<p>The structural energy diagnostic
+$E = \frac{1}{2}\sum_i [\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 +
+J_\phi^2 + J_{\Delta\text{NFR}}^2]$ is nonnegative and can serve as a
+Lyapunov candidate for a specified dynamics. It contains no explicit EPI or
+$\nu_f$ term, although an operator can still change $E$ indirectly by updating
+phase, pressure, topology or coupled state. The grammar U2 role therefore does
+not determine the sign of $\Delta E$.</p>
+<h3 id="121-grammar-u2-roles">12.1 Grammar U2 roles<a class="headerlink" href="#121-grammar-u2-roles" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Registry role</th>
+<th>Operators</th>
+<th>Structural intent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Stabiliser</strong></td>
+<td>IL, THOL</td>
+<td>Supply negative feedback or reorganize a perturbed state</td>
+</tr>
+<tr>
+<td><strong>Destabiliser</strong></td>
+<td>OZ, ZHIR, VAL</td>
+<td>Introduce pressure, phase or capacity perturbations that incur U2 debt</td>
+</tr>
+<tr>
+<td><strong>Neither U2 class</strong></td>
+<td>AL, EN, RA, REMESH, UM, SHA, NUL, NAV</td>
+<td>Their other grammar and operator contracts still apply</td>
+</tr>
+</tbody>
+</table>
+<p>These sets are derived from the declared nodal-channel predicates in
+<code>config.physics_derivation</code>. They are policy classifications, not measured
+energy inequalities.</p>
+<h3 id="122-nominal-operator-parameters">12.2 Nominal operator parameters<a class="headerlink" href="#122-nominal-operator-parameters" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>U2 role</th>
+<th>Nominal parameter</th>
+<th>What it does not prove</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IL</td>
+<td>Stabiliser</td>
+<td>pressure factor $f=\pi/(\pi+1)\approx0.7585$</td>
+<td>A universal $\Delta E\leq0$ theorem</td>
+</tr>
+<tr>
+<td>THOL</td>
+<td>Stabiliser</td>
+<td>pressure-reorganization gain $a=1/(4\pi)\approx0.0796$</td>
+<td>A universal contraction rate</td>
+</tr>
+<tr>
+<td>OZ</td>
+<td>Destabiliser</td>
+<td>pressure factor $f=(\pi+1)/\pi\approx1.3183$</td>
+<td>A state-independent energy multiplier</td>
+</tr>
+<tr>
+<td>ZHIR</td>
+<td>Destabiliser</td>
+<td>default signed phase step $=1/4$ rad</td>
+<td>A curvature or energy growth rate</td>
+</tr>
+<tr>
+<td>VAL</td>
+<td>Destabiliser</td>
+<td>$\nu_f$ scale $1+1/(4\pi)\approx1.0796$</td>
+<td>An instantaneous energy sign</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Dual-lever note</strong>: the U2 role is distinct from the dual-lever channel
+(§17.1). VAL engages the capacity lever yet is a U2 destabiliser; NAV engages
+the pressure lever but is outside the U2 destabiliser set because its declared
+trajectory is controlled. Actual energy change must be measured on the
+executed state transition.</p>
+<h3 id="123-grammar-u2-stability-boundary">12.3 Grammar U2 stability boundary<a class="headerlink" href="#123-grammar-u2-stability-boundary" title="Permanent link">&para;</a></h3>
+<p>U2 requires destabilizers to be compensated by stabilizers, but it does not
+prove for every compliant sequence that</p>
+<p>$$
+\sum_{\text{ops}} \Delta E_{\text{op}} \leq 0
+$$</p>
+<p>The operator registry supplies local role and nominal parameter metadata rather than a common
+Lyapunov proof for all realizations. Such a proof additionally needs a specified
+state functional, pressure law, timing and gain bounds. The fixed symmetric pure
+EPI channel is one class where this has now been established, including
+heterogeneous positive capacities. A declared affine EPI reset can also be
+bounded in the same metric exactly when it preserves the consensus subspace;
+the resulting rational quotient-gain bound, with a weighted-Frobenius fallback,
+composes with elapsed diffusion time.
+This generic theorem does not certify any catalog operator until its runtime
+action is derived as that affine map on a declared domain.</p>
+<p><strong>Exact restricted result</strong>: see
+<a href="../TNFR_DIFFUSION_STABILITY_THEOREM/">TNFR_DIFFUSION_STABILITY_THEOREM.md</a>.</p>
+<hr />
+<h2 id="13-postcondition-contracts">13. Postcondition Contracts<a class="headerlink" href="#13-postcondition-contracts" title="Permanent link">&para;</a></h2>
+<p>Every operator has a postcondition contract anchored to the <strong>direct effect on node state</strong> (the nodal dynamics $\partial\text{EPI}/\partial t = \nu_f\cdot\Delta\text{NFR}$, anchored to TNFR.pdf §2.2.1). The canonical contract layer <code>src/tnfr/operators/operator_contracts.py</code> is the <strong>single source of truth</strong> — it records each operator's <code>primary_channel</code> (one nodal-equation channel: $\text{EPI}$ / $\nu_f$ / $\theta$ / $\Delta\text{NFR}$), <code>scale</code> (NODE for twelve operators, NETWORK for the U5 operator REMESH), and <code>postcondition</code>. The proactive audit (<code>audit_operator_contracts</code>), the reactive integrity monitor (<code>POSTCONDITIONS</code>, <code>src/tnfr/physics/integrity.py</code>), and the introspection metadata all derive from this spec. The monitor supports three modes: OFF (production), OBSERVE (log violations), ENFORCE (raise exceptions).</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Operator</th>
+<th>Glyph</th>
+<th>Channel</th>
+<th>Postcondition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Emission</td>
+<td>AL</td>
+<td>EPI</td>
+<td>EPI not decreased; $\nu_f$, phase and $\Delta\text{NFR}$ unchanged</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Reception</td>
+<td>EN</td>
+<td>EPI</td>
+<td>Immediate operator-local $C(t)$, $\Delta\mathrm{NFR}$ and $d\mathrm{EPI}$ unchanged</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Coherence</td>
+<td>IL</td>
+<td>$\Delta\text{NFR}$</td>
+<td>$C(t)$ non-decreasing; $\lvert\Delta\text{NFR}\rvert$ reduced</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Dissonance</td>
+<td>OZ</td>
+<td>$\Delta\text{NFR}$</td>
+<td>$\lvert\Delta\text{NFR}\rvert$ not decreased</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Coupling</td>
+<td>UM</td>
+<td>$\theta$</td>
+<td>Phase compatibility $\lvert\phi_i - \phi_j\rvert \le \Delta\phi_{\max}$</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Resonance</td>
+<td>RA</td>
+<td>EPI</td>
+<td>EPI structural identity (sign/kind) preserved</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Silence</td>
+<td>SHA</td>
+<td>$\nu_f$</td>
+<td>EPI preserved over time; $\nu_f$ frozen</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Expansion</td>
+<td>VAL</td>
+<td>$\nu_f$</td>
+<td>$\nu_f$ not decreased (capacity added)</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Contraction</td>
+<td>NUL</td>
+<td>$\nu_f$</td>
+<td>$\nu_f$ not increased (capacity removed)</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Self-Organization</td>
+<td>THOL</td>
+<td>$\Delta\text{NFR}$</td>
+<td>Global form preserved; sub-EPIs created (if bifurcation)</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Mutation</td>
+<td>ZHIR</td>
+<td>$\theta$</td>
+<td>Phase $\theta$ changed when $\Delta\text{EPI}/\Delta t &gt; \xi$</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Transition</td>
+<td>NAV</td>
+<td>$\Delta\text{NFR}$</td>
+<td>Controlled trajectory; no coherence collapse</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Recursivity</td>
+<td>REMESH</td>
+<td>EPI (network)</td>
+<td>Nested structure maintained; parent identity preserved</td>
+</tr>
+</tbody>
+</table>
+<p>The contract catalog is complete as a specification but is not instantaneously
+identifiable from its categorical fields. The exact certificate
+<code>contract_identifiability_certificate()</code> shows that channel, direction, scale
+and context leave Silence and Contraction in the same class. Their distinct
+semantics require a temporal or quantitative postcondition observation. This
+negative inverse result neither removes an operator nor proves completeness of
+the catalog over every admissible TNFR transformation.</p>
+<hr />
+<h2 id="14-operator-constants-reference">14. Operator Constants Reference<a class="headerlink" href="#14-operator-constants-reference" title="Permanent link">&para;</a></h2>
+<p>Operator gain magnitudes are <strong>free operational parameters</strong>: each operator's
+contract fixes its primary channel and qualitative direction or intent, not its
+numeric magnitude. The values below are operational calibrations. Only <strong>$\pi$</strong>
+is a genuine structural phase scale. The authoritative current values live in
+<a href="../../src/tnfr/constants/canonical.py"><code>src/tnfr/constants/canonical.py</code></a> and the
+contracts in <a href="../../src/tnfr/operators/operator_contracts.py"><code>operators/operator_contracts.py</code></a>.</p>
+<h3 id="141-the-structural-scale">14.1 The structural scale<a class="headerlink" href="#141-the-structural-scale" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Name</th>
+<th>Value</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$\pi$</td>
+<td>Pi</td>
+<td>$3.141592653589793$</td>
+<td>the one genuine structural scale: bounds the phase sector ($\lvert\nabla\phi\rvert \le \pi$, $\lvert K_\phi\rvert \le \pi$)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="142-operator-gain-magnitudes-operational">14.2 Operator gain magnitudes (operational)<a class="headerlink" href="#142-operator-gain-magnitudes-operational" title="Permanent link">&para;</a></h3>
+<p>Representative operational parameters (the contract fixes the channel and
+qualitative direction or intent, not every magnitude):</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Used by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EN / THOL collective-coherence fraction</td>
+<td>$1/(\pi + 1) \approx 0.241$</td>
+<td>EN mixing, UM phase push, THOL/VAL threshold (π-derived)</td>
+</tr>
+<tr>
+<td>SHA / NUL frequency factor</td>
+<td>$1-1/(4\pi)\approx0.9204$</td>
+<td>SHA suppression and NUL compression</td>
+</tr>
+<tr>
+<td>NUL densification factor</td>
+<td>$1/(1-1/(4\pi))\approx1.0865$</td>
+<td>Reciprocal configured capacity factor</td>
+</tr>
+<tr>
+<td>VAL scale factor</td>
+<td>$1+1/(4\pi)\approx1.0796$</td>
+<td>VAL capacity expansion</td>
+</tr>
+<tr>
+<td>AL emission boost</td>
+<td>configured positive gain</td>
+<td>AL creation; direct-handler fallback is <code>COUPLING_GENTLE</code></td>
+</tr>
+<tr>
+<td>THOL fractal scale</td>
+<td>$0.3$</td>
+<td>Sub-EPI scaling</td>
+</tr>
+</tbody>
+</table>
+<p>The complete, authoritative set lives in <code>src/tnfr/constants/canonical.py</code>; among them the only genuine structural scale is the phase scale $\pi$ (the $1/(\pi+1)$ entry above is the one π-derived value).</p>
+<h3 id="143-constant-operator-grammar-traceability">14.3 Constant-Operator-Grammar Traceability<a class="headerlink" href="#143-constant-operator-grammar-traceability" title="Permanent link">&para;</a></h3>
+<p>The contract records each operator's <strong>primary channel and qualitative
+direction or intent</strong>. The gains above are operational parameters; the channel
+and grammar mapping is:</p>
+<pre><code>OZ   (ΔNFR ↑, amplification)   →  U2 (destabilizer)
+IL   (ΔNFR ↓, reduction)       →  U2 (stabilizer), U4a (handler)
+EN   (EPI, mixing)             →  integrator
+VAL  (νf ↑, expansion)         →  U2 (destabilizer)
+SHA  (νf → 0, suppression)     →  U1b (closure)
+ZHIR (θ, mutation)             →  U4b (transformer)
+THOL (sub-EPI, self-org)       →  U2 (stabilizer), U4b (transformer)
+AL   (EPI from vacuum)         →  U1a (generator)
+</code></pre>
+<p><strong>Source</strong>: <code>src/tnfr/constants/canonical.py</code> and
+<code>src/tnfr/operators/operator_contracts.py</code> (the contract source of truth:
+channel, direction, scale and postcondition).</p>
+<hr />
+<h2 id="15-implementation-reference">15. Implementation Reference<a class="headerlink" href="#15-implementation-reference" title="Permanent link">&para;</a></h2>
+<h3 id="151-source-modules">15.1 Source Modules<a class="headerlink" href="#151-source-modules" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/tnfr/operators/definitions.py</code></td>
+<td>Facade: imports all 13 operator classes</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/definitions_base.py</code></td>
+<td><code>Operator</code> abstract base class with <code>__call__</code> workflow</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/emission.py</code></td>
+<td>AL implementation</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/al_sha_stage_proposals.py</code></td>
+<td>Immutable AL/SHA structural and lifecycle proposals</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/reception.py</code></td>
+<td>EN implementation</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/_neighbor_epi_kernel.py</code></td>
+<td>Shared unweighted EN/RA scalar-mean and blend kernel</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/coherence.py</code></td>
+<td>IL implementation</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/dissonance.py</code></td>
+<td>OZ implementation</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/coupling.py</code></td>
+<td>UM implementation</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/resonance.py</code></td>
+<td>RA implementation</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/_resonance_identity.py</code></td>
+<td>Shared RA factor, U3 phase-limit, sign/kind identity, and circular-mean gates</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/silence.py</code></td>
+<td>SHA implementation</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/expansion.py</code></td>
+<td>VAL implementation</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/contraction.py</code></td>
+<td>NUL implementation</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/_scale_operator_kernel.py</code></td>
+<td>Shared immutable VAL/NUL capacity, pressure and EPI-boundary proposal</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/self_organization.py</code></td>
+<td>THOL implementation</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/mutation.py</code></td>
+<td>ZHIR implementation</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/_mutation_stage_kernel.py</code></td>
+<td>Pure immutable ZHIR phase proposal</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/transition.py</code></td>
+<td>NAV implementation</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/jitter.py</code></td>
+<td>Reproducible jitter proposal, progress validation and atomic commit</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/recursivity.py</code></td>
+<td>REMESH implementation</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/network_stage.py</code></td>
+<td>Shared transactional Jacobi and Gauss-Seidel stage executors</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/event_timing.py</code></td>
+<td>Exact finite flow/jump schedules and clock boundaries</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/event_runtime.py</code></td>
+<td>Observed flow/glyph binding and represented EPI-map composition</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/event_remesh_runtime.py</code></td>
+<td>Atomic event-schedule/delayed-REMESH cycle with separate evidence</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/event_remesh_sequence.py</code></td>
+<td>Exact continuity across ordered supplied event/REMESH cycle observations</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/event_remesh_causal_runtime.py</code> / <code>src/tnfr/operators/event_remesh_causal_runtime.pyi</code></td>
+<td>One graph-owned finite causal cycle sequence and exact public interface</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/event_refinement.py</code></td>
+<td>Offline and executor-linked event-local ZHIR observations</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/event_remesh_refinement.py</code></td>
+<td>Strict finite coarse/intermediate/fine event/REMESH observations</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/event_remesh_reference.py</code> / <code>src/tnfr/physics/event_remesh_reference.pyi</code></td>
+<td>Effective-P2 finite reference-family certificate and exact public interface</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/reversible_eigenmode_reference.py</code> / <code>src/tnfr/physics/reversible_eigenmode_reference.pyi</code></td>
+<td>Pure exact-rational reversible single-eigenmode Euler theorem and public interface</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/remesh_history_stability.py</code></td>
+<td>Exact uniform finite companion-history stability certificate</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/remesh_schedule_policy_stability.py</code> / <code>src/tnfr/physics/remesh_schedule_policy_stability.pyi</code></td>
+<td>Conditional exact common-<code>q</code> REMESH/schedule spatial-disagreement theorem</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/remesh_schedule_relative_defect_stability.py</code> / <code>src/tnfr/physics/remesh_schedule_relative_defect_stability.pyi</code></td>
+<td>Conditional exact robust policy theorem with <code>q_eff=q*(1+eta)</code></td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/binary64_remesh_relative_defect.py</code> / <code>src/tnfr/physics/binary64_remesh_relative_defect.pyi</code></td>
+<td>Pairwise REMESH defect boundary and <code>alpha=1</code>, <code>eta=0</code> hard-clip class</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/binary64_p2_reception_stability.py</code> / <code>src/tnfr/physics/binary64_p2_reception_stability.pyi</code></td>
+<td>Global <code>q=0</code> P2 half-Reception EPI-kernel composition</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/runtime_p2_reception_stage.py</code> / <code>src/tnfr/physics/runtime_p2_reception_stage.pyi</code></td>
+<td>One executed two-phase P2 EN EPI stage bound to the global <code>q=0</code> kernel</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/runtime_p2_reception_remesh_sequence.py</code> / <code>src/tnfr/physics/runtime_p2_reception_remesh_sequence.pyi</code></td>
+<td>One completed causal P2 EN/REMESH sequence with observed active-suffix extinction</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/runtime_p2_reception_remesh_policy.py</code> / <code>src/tnfr/physics/runtime_p2_reception_remesh_policy.pyi</code></td>
+<td>Per-invocation P2 preflight, causal execution, finite post-certification and outer rollback</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/runtime_remesh_history_stability.py</code></td>
+<td>One-transition runtime REMESH/companion bridge with signed residuals</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/remesh_schedule_stability.py</code></td>
+<td>Exact REMESH-head/schedule-head augmented-energy balance</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/runtime_remesh_schedule_stability.py</code></td>
+<td>Adjacent-cycle runtime/history energy telescope</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/runtime_remesh_schedule_block_margin.py</code> / <code>src/tnfr/physics/runtime_remesh_schedule_block_margin.pyi</code></td>
+<td>Exact normalized margin for one finite causal boundary block</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/runtime_remesh_schedule_relative_defect.py</code> / <code>src/tnfr/physics/runtime_remesh_schedule_relative_defect.pyi</code></td>
+<td>Finite causal verification of signed defects and the robust energy envelope</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/nodal_equation.py</code></td>
+<td>Nodal equation validation</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/canonical_patterns.py</code></td>
+<td>Canonical sequence definitions</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/introspection.py</code></td>
+<td><code>OperatorMeta</code> metadata registry</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/operator_contracts.py</code></td>
+<td><strong>Canonical contract layer</strong> (single source of truth: channel × scale × postcondition)</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/stage_contracts.py</code></td>
+<td>All-target schedule, footprint, merge, rollback and invariance contracts</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/grammar_canon.py</code></td>
+<td>Canonical grammar spec (U1–U6 role table, structural typology, glyphic macros)</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/grammar.py</code></td>
+<td>Grammar validation (public API facade)</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/grammar_dynamics.py</code></td>
+<td>Incremental grammar-aware dynamics</td>
+</tr>
+<tr>
+<td><code>src/tnfr/operators/grammar_application.py</code></td>
+<td>Pre-validated operator application</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/integrity.py</code></td>
+<td>Sampled postcondition audit and runtime monitor</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/lyapunov.py</code></td>
+<td>Configured operator-role energy diagnostics</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/reception_realization.py</code></td>
+<td>Read-only EN runtime-to-affine-flow certificate</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/resonance_realization.py</code></td>
+<td>Read-only RA four-layer realization, identity, post-metric, and pressure audit</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/network_stage_stability.py</code></td>
+<td>Executor-bound all-target EN/RA represented-map certificates</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/pointwise_stage_stability.py</code></td>
+<td>Executor-bound pointwise represented-map certificates</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/runtime_flow_stability.py</code></td>
+<td>Detached observed-flow certificates and proof sealing</td>
+</tr>
+<tr>
+<td><code>src/tnfr/physics/_exact_metric.py</code></td>
+<td>Shared exact positive-metric normalization and proportionality</td>
+</tr>
+<tr>
+<td><code>src/tnfr/constants/canonical.py</code></td>
+<td>All derived constants</td>
+</tr>
+</tbody>
+</table>
+<h3 id="152-base-operator-workflow">15.2 Base Operator Workflow<a class="headerlink" href="#152-base-operator-workflow" title="Permanent link">&para;</a></h3>
+<p>The <code>Operator.__call__(G, node, **kw)</code> method implements the canonical execution pipeline:</p>
+<ol>
+<li><strong>Precondition validation</strong>: Operator-specific checks via <code>_validate_preconditions()</code>.</li>
+<li><strong>State capture</strong>: Records $(\text{EPI}, \nu_f, \Delta\text{NFR}, \theta)$ before application.</li>
+<li><strong>Integrity snapshot</strong> (pre): <code>_integrity_monitor.before_operator()</code>.</li>
+<li><strong>Grammar-aware application</strong>: <code>apply_glyph_with_grammar()</code> enforces the
+   incremental operator-history checks available at execution time. Canonical
+   U6 requires a separate before/after field observation.</li>
+<li><strong>Integrity evaluation</strong> (post): <code>_integrity_monitor.after_operator()</code>
+   evaluates the configured postcondition when monitoring is enabled.</li>
+<li><strong>Nodal equation validation</strong> (optional): Checks $|\partial\text{EPI}/\partial t_{\text{measured}} - \nu_f \cdot \Delta\text{NFR}| \leq \epsilon$.</li>
+<li><strong>Metrics collection</strong>: Operator-specific telemetry via <code>_collect_metrics()</code>.</li>
+</ol>
+<h3 id="153-executable-demonstrations">15.3 Executable Demonstrations<a class="headerlink" href="#153-executable-demonstrations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Operators demonstrated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../examples/01_foundations/04_operator_sequences.py">04_operator_sequences.py</a></td>
+<td>All 13 operators, canonical compositions</td>
+</tr>
+<tr>
+<td><a href="../../examples/01_foundations/10_simplified_sdk_showcase.py">10_simplified_sdk_showcase.py</a></td>
+<td>SDK-level operator usage</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/29_lyapunov_stability_demo.py">29_lyapunov_stability_demo.py</a></td>
+<td>Configured per-operator energy-bound diagnostics and their scope</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/36_grammar_violation_detector.py">36_grammar_violation_detector.py</a></td>
+<td>Grammar enforcement across sequences</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/163_reception_runtime_bridge.py">163_reception_runtime_bridge.py</a></td>
+<td>EN ideal-real, represented, runtime-snapshot, and pressure-refresh boundary</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/164_resonance_runtime_bridge.py">164_resonance_runtime_bridge.py</a></td>
+<td>RA U3 filter, identity gate, four realization layers, post-flow certificate, and switching abstention</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/167_reversible_eigenmode_reference.py">167_reversible_eigenmode_reference.py</a></td>
+<td>No glyph execution: pure exact-real references for both nonuniform modes of nonregular <code>P3</code></td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/169_event_remesh_causal_runtime.py">169_event_remesh_causal_runtime.py</a></td>
+<td>One finite same-invocation event/REMESH cycle sequence with causal receipts, outer graph atomicity, and an explicit stability boundary</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/171_remesh_schedule_policy_stability.py">171_remesh_schedule_policy_stability.py</a></td>
+<td>Conditional exact common-<code>q</code> REMESH/schedule theorem, including strict pure-delay disagreement decay and the zero-margin <code>q=1</code> boundary</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/172_runtime_remesh_relative_defect.py">172_runtime_remesh_relative_defect.py</a></td>
+<td>Robust <code>q_eff=q*(1+eta)</code> envelope verified on exact-zero and positive-binary64-defect finite causal blocks</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/173_binary64_remesh_relative_defect.py">173_binary64_remesh_relative_defect.py</a></td>
+<td>Exact pairwise REMESH obstruction and the bounded <code>alpha=1</code>, <code>eta=0</code> REMESH-only class</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/174_binary64_p2_reception_remesh_stability.py">174_binary64_p2_reception_remesh_stability.py</a></td>
+<td>Global <code>q=0</code> half-Reception EPI kernel and finite-horizon disagreement extinction in the restricted repeated model</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/175_runtime_p2_reception_stage.py">175_runtime_p2_reception_stage.py</a></td>
+<td>One grammar-admitted graph-owned P2 EN EPI stage bound to the global <code>q=0</code> kernel, with REMESH and future repetition withheld</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py">176_runtime_p2_reception_remesh_sequence.py</a></td>
+<td>One completed same-invocation P2 EN/REMESH sequence with an active suffix of length <code>tau_global+1</code> and finite observed spatial-disagreement extinction</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/177_runtime_p2_reception_remesh_policy.py">177_runtime_p2_reception_remesh_policy.py</a></td>
+<td>Two successive P2 policy invocations, each independently preflighted, executed and finite-certified inside its own outer transaction</td>
+</tr>
+</tbody>
+</table>
+<h3 id="154-sdk-entry-points">15.4 SDK Entry Points<a class="headerlink" href="#154-sdk-entry-points" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">from tnfr.sdk import TNFR
+
+net = TNFR.create(20).ring().evolve(5)
+
+# Grammar-aware evolution (incremental operator-history checks)
+net.evolve_grammar_aware(steps=10)
+
+# Sampled contract audit; inspect evaluated coverage and individual outcomes
+report = net.integrity_check()
+
+# One-line self-optimization (auto operator selection)
+from tnfr.sdk.fluent import TNFRNetwork
+TNFRNetwork(G).focus(node).auto_optimize().execute()
+</code></pre>
+<hr />
+<h2 id="16-summary">16. Summary<a class="headerlink" href="#16-summary" title="Permanent link">&para;</a></h2>
+<p>The canonical registry contains 13 operators with executable contracts and the
+operator roles used by U1--U5. U6 consumes before/after structural-potential
+telemetry rather than adding another operator role. The registry is complete as
+the engine's registered specification. Generative completeness and
+irreducibility over every admissible TNFR transformation have not been proved.</p>
+<p><strong>Key results</strong>:</p>
+<ol>
+<li><strong>Registry coverage</strong>: All 13 declared transformations have implementations,
+   contracts and grammar metadata.</li>
+<li><strong>Identification boundary</strong>: Contract categories alone merge Silence and
+   Contraction; quantitative one-step signatures separate all 13 only on the
+   declared deterministic probes.</li>
+<li><strong>Grammar-role coverage</strong>: The operator set supplies the roles used by
+   U1--U5; U6 is evaluated from $\Phi_s$ snapshots.</li>
+<li><strong>Constants</strong>: Operator gain magnitudes in <code>canonical.py</code> are operational parameters (only $\pi$ is a genuine structural scale); the engine-configuration tier is calibrated, not derived.</li>
+<li><strong>Stability boundary</strong>: Exact Lyapunov decrease is proved for restricted
+   pure-EPI diffusion classes; U2 compliance alone is not a global Lyapunov
+   theorem for arbitrary operator sequences.</li>
+<li><strong>Contract instrumentation</strong>: The integrity subsystem can sample all 13
+   registered contracts and can observe or enforce evaluated runtime
+   postconditions. Coverage and outcomes must be reported separately.</li>
+<li><strong>Named fragments</strong>: Bootstrap, Stabilize, Explore and Propagate encode
+   reusable workflow bodies that need grammar context to become complete words.</li>
+<li><strong>Four-channel structure</strong>: Every contract has one primary channel among
+   EPI, $\nu_f$, phase, and $\Delta\text{NFR}$; only capacity and pressure are
+   the explicit multiplicative levers of the nodal rate.</li>
+<li><strong>Operator-tetrad coupling</strong>: Finite experiments measure different tetrad
+   responses across operators. They do not prove tetrad completeness.</li>
+<li><strong>Scoped $\Phi_s$ linearity</strong>: At fixed topology, structural potential is a
+    linear aggregation of the $\Delta\text{NFR}$ source. The reported
+    correlation coefficient belongs to one finite sweep.</li>
+</ol>
+<hr />
+<h2 id="17-experimental-operator-tetrad-synergies">17. Experimental Operator-Tetrad Synergies<a class="headerlink" href="#17-experimental-operator-tetrad-synergies" title="Permanent link">&para;</a></h2>
+<p>Computational experiments (Examples 37–39, seed 42, $n=20$, Erdos-Renyi
+$p=0.25$) report how executed operator requests change selected structural
+fields. The response tables are finite-protocol measurements; they do not
+derive universal causal fingerprints from the nodal equation.</p>
+<h3 id="171-centralized-operator-channel-classification">17.1 Centralized Operator-Channel Classification<a class="headerlink" href="#171-centralized-operator-channel-classification" title="Permanent link">&para;</a></h3>
+<p>The contract source of truth partitions operators by the primary state channel
+they write or control:</p>
+<table>
+<thead>
+<tr>
+<th>Primary channel</th>
+<th>Operators</th>
+<th>Mechanism</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EPI (form)</td>
+<td>AL, EN, RA, REMESH</td>
+<td>Write, integrate, propagate, or echo form</td>
+</tr>
+<tr>
+<td>$\nu_f$ (capacity)</td>
+<td>SHA, VAL, NUL</td>
+<td>Freeze, raise, or reduce reorganization capacity</td>
+</tr>
+<tr>
+<td>$\theta$ (phase)</td>
+<td>UM, ZHIR</td>
+<td>Synchronize or transform phase</td>
+</tr>
+<tr>
+<td>$\Delta\mathrm{NFR}$ (pressure)</td>
+<td>IL, OZ, THOL, NAV</td>
+<td>Stabilize, perturb, organize, or shift structural pressure</td>
+</tr>
+</tbody>
+</table>
+<p>The nodal rate contains the capacity and pressure levers explicitly. EPI and
+phase operators affect the future rate through state and coupling updates. U2
+and U4 roles are independently derived from contract predicates; they must not
+be inferred solely from the primary channel.</p>
+<p><strong>Example</strong>: NAV (Transition) produces the largest single $\Delta\text{NFR}$ change ($d = -0.444$), consistent with its role as a regime-shift operator.</p>
+<h3 id="172-operator-tetrad-fingerprint-matrix">17.2 Operator-Tetrad Fingerprint Matrix<a class="headerlink" href="#172-operator-tetrad-fingerprint-matrix" title="Permanent link">&para;</a></h3>
+<p>One finite protocol measured percentage changes after single requested operator
+applications on a random 20-node network. These rows are sampled response
+profiles, not unique or universal operator fingerprints:</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>$\Phi_s$ (%)</th>
+<th>$\lvert\nabla\varphi\rvert$ (%)</th>
+<th>$K_\varphi$ (%)</th>
+<th>$\xi_C$ (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IL (Coherence)</td>
+<td>+7.8</td>
+<td>$-0.5$</td>
+<td>0.0</td>
+<td>$-2.1$</td>
+</tr>
+<tr>
+<td>OZ (Dissonance)</td>
+<td>+7.8</td>
+<td>$-0.5$</td>
+<td>0.0</td>
+<td>$-2.1$</td>
+</tr>
+<tr>
+<td>UM (Coupling)</td>
+<td>$-73.7$</td>
+<td>+2.5</td>
+<td>$-8.1$</td>
+<td>+31.4</td>
+</tr>
+<tr>
+<td>NAV (Transition)</td>
+<td>$-331.9$</td>
+<td>+45.1</td>
+<td>0.0</td>
+<td>+187.4</td>
+</tr>
+<tr>
+<td>SHA (Silence)</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key findings</strong>:
+1. <strong>UM (Coupling) has the richest tetrad coupling</strong>: it modifies all four fields simultaneously, consistent with its role as a phase-synchronization operator (U3).
+2. <strong>NAV (Transition) dominates $\Phi_s$</strong>: its $-332\%$ structural potential change is the largest single-operator perturbation, matching its physics as a regime-shift operator.
+3. <strong>SHA (Silence) is tetrad-neutral</strong>: $\nu_f \to 0$ freezes evolution without affecting field state, confirming its closure role (U1b).
+4. <strong>IL and OZ produce identical tetrad signatures</strong>: this is analyzed in §17.3.</p>
+<h3 id="173-il-oz-tetrad-symmetry">17.3 IL-OZ Tetrad Symmetry<a class="headerlink" href="#173-il-oz-tetrad-symmetry" title="Permanent link">&para;</a></h3>
+<p><strong>Observation</strong>: Coherence (IL) and Dissonance (OZ) produce identical energy functional changes ($dE = -0.011$) and identical tetrad field perturbations when applied to the same initial state.</p>
+<p><strong>Interpretation</strong>: Both operate exclusively via the $\Delta\text{NFR}$ lever with the same magnitude $|d(\Delta\text{NFR})| = 0.0096$, but with different physical semantics:
+- <strong>IL</strong> reduces $|\Delta\text{NFR}|$ via negative feedback (stabilizer contract).
+- <strong>OZ</strong> increases $|\Delta\text{NFR}|$ via positive feedback (destabilizer contract).</p>
+<p>The identical sampled response follows from this initial state and the absolute-
+value summaries used by the protocol. Repeated IL and OZ requests can separate,
+but U2 role labels alone do not determine convergence or divergence.</p>
+<h3 id="174-structural-potential-linear-response">17.4 Structural Potential Linear Response<a class="headerlink" href="#174-structural-potential-linear-response" title="Permanent link">&para;</a></h3>
+<p><strong>Finite sweep</strong>: $\Phi_s$ is linear in the source at fixed topology. The six
+sampled $\xi_C$ values are strongly nonlinear and state-dependent; no linear
+$\xi_C$ law is claimed.</p>
+<table>
+<thead>
+<tr>
+<th>$\Delta\text{NFR}_{\text{init}}$</th>
+<th>$d(\Phi_s)$</th>
+<th>$d(\xi_C)$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.01</td>
+<td>$-0.001$</td>
+<td>$-0.16$</td>
+</tr>
+<tr>
+<td>0.05</td>
+<td>$-0.007$</td>
+<td>$-0.85$</td>
+</tr>
+<tr>
+<td>0.10</td>
+<td>$-0.014$</td>
+<td>$-1.91$</td>
+</tr>
+<tr>
+<td>0.30</td>
+<td>$-0.042$</td>
+<td>$-9.83$</td>
+</tr>
+<tr>
+<td>0.50</td>
+<td>$-0.071$</td>
+<td>$-35.1$</td>
+</tr>
+<tr>
+<td>0.80</td>
+<td>$-0.113$</td>
+<td>$-1464$</td>
+</tr>
+</tbody>
+</table>
+<p>$\Phi_s$ response is linear in this sweep, as expected from its source-aggregation
+definition. The reported $\xi_C$ nonlinearity above the sampled
+$\Delta\text{NFR}$ range is protocol-specific finite telemetry; it does not
+establish a correlation-length divergence or critical transition.</p>
+<h3 id="175-diagnostic-dependency-chain">17.5 Diagnostic dependency chain<a class="headerlink" href="#175-diagnostic-dependency-chain" title="Permanent link">&para;</a></h3>
+<p>The implementation has a one-way read-out dependency:</p>
+<p>$$
+\text{Operator} \to \text{updated nodal/graph state} \to
+\text{tetrad fields} \to (E,Q)
+$$</p>
+<p>The fields are deterministic diagnostics of a fully specified state, not
+independent variables and not a complete observer. The numerical deltas reported
+by example 37 belong to one graph, node, seed and realized operator history;
+fallback substitutions are recorded explicitly.</p>
+<h3 id="176-grammar-energy-landscape">17.6 Grammar-Energy Landscape<a class="headerlink" href="#176-grammar-energy-landscape" title="Permanent link">&para;</a></h3>
+<p>The example evaluates energy along several finite sequences. Its observed signs
+are properties of that protocol. U2 constrains operator-word roles but does not
+bound this quadratic energy for every pressure law or realization.</p>
+<p><strong>Finite diagnostic</strong> (seed 42): the nominal cumulative multiplier for one
+Bootstrap+Explore+Stabilize sequence is $\lambda = 1.288$, while the observed
+net change is $dE=-9.59$. This shows only that this nominal multiplier does not
+predict the sign of that sampled transition. It supplies no stronger guarantee
+from grammar compliance.</p>
+<h3 id="177-executable-demonstrations">17.7 Executable Demonstrations<a class="headerlink" href="#177-executable-demonstrations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Experiment</th>
+<th>Key metric</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>examples/02_physics_regimes/37_operator_tetrad_synergy.py</code></td>
+<td>Sampled response matrix, energy observations, policy checks and balance telemetry</td>
+<td>Per-request realized operator and tetrad delta</td>
+</tr>
+<tr>
+<td><code>examples/02_physics_regimes/38_grammar_energy_landscape.py</code></td>
+<td>Energy trajectory and nominal multiplier comparison</td>
+<td>Observed $E(t)$ for the declared sequence</td>
+</tr>
+<tr>
+<td><code>examples/02_physics_regimes/39_nodal_equation_decomposition.py</code></td>
+<td>Lever classification, causal chain, waveform trajectory, response functions</td>
+<td>$\nu_f$ vs $\Delta\text{NFR}$ per operator</td>
+</tr>
+</tbody>
+</table>
+<p>All experiments use seed 42 for reproducibility (Invariant #6).</p>
+<hr />
+<h2 id="cross-references">Cross-References<a class="headerlink" href="#cross-references" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Nodal equation derivation: <a href="../FUNDAMENTAL_THEORY/">FUNDAMENTAL_THEORY.md</a> §2</li>
+<li>Grammar rules U1–U6: <a href="../UNIFIED_GRAMMAR_RULES/">UNIFIED_GRAMMAR_RULES.md</a></li>
+<li>Energy diagnostics and scoped stability results: <a href="../STRUCTURAL_STABILITY_AND_DYNAMICS/">STRUCTURAL_STABILITY_AND_DYNAMICS.md</a> §1</li>
+<li>Conservation laws: <a href="../STRUCTURAL_CONSERVATION_THEOREM/">STRUCTURAL_CONSERVATION_THEOREM.md</a></li>
+<li>Variational formulation: <a href="../TNFR_VARIATIONAL_PRINCIPLE/">TNFR_VARIATIONAL_PRINCIPLE.md</a></li>
+<li>Structural field tetrad: <a href="../FUNDAMENTAL_THEORY/">FUNDAMENTAL_THEORY.md</a> §3</li>
+<li>Canonical constants: <code>src/tnfr/constants/canonical.py</code></li>
+<li>Operator-tetrad synergy experiment: <code>examples/02_physics_regimes/37_operator_tetrad_synergy.py</code></li>
+<li>Grammar-energy landscape experiment: <code>examples/02_physics_regimes/38_grammar_energy_landscape.py</code></li>
+<li>Nodal equation decomposition experiment: <code>examples/02_physics_regimes/39_nodal_equation_decomposition.py</code></li>
+<li>Glossary: <a href="../GLOSSARY/">GLOSSARY.md</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

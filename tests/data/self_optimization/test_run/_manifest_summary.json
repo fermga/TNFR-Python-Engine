@@ -1,0 +1,17 @@
+{
+  "modulus": 21,
+  "partition_count": 2,
+  "telemetry": {
+    "phi_s": {
+      "mean": 0.135,
+      "max": 0.15,
+      "min": 0.12
+    },
+    "phase_gradient": {
+      "mean": 0.085,
+      "max": 0.09,
+      "min": 0.08
+    }
+  },
+  "candidate_factors": [3, 7]
+}

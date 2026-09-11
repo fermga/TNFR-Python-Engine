@@ -1,0 +1,1491 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>TNFR–Navier–Stokes — Research Notes - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfrnavierstokes-research-notes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              TNFR–Navier–Stokes — Research Notes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-honest-two-face-answer-physics-first-no-forced-analogy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The honest two-face answer (physics-first, no forced analogy)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-field-dictionary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Field dictionary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-blow-up-frontier-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The blow-up frontier (measured)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cross-program-unification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cross-program unification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-the-moment-hierarchy-the-synergy-the-old-paradigm-blocked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. The λ-moment hierarchy — the synergy the old paradigm blocked
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-static-pressure-coherence-on-the-emergent-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Static pressure coherence on the emergent geometry
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-honest-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Honest scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-code-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Code map
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfrnavierstokes-research-notes">TNFR–Navier–Stokes — Research Notes<a class="headerlink" href="#tnfrnavierstokes-research-notes" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> research program on the Clay Millennium Problem (existence and
+smoothness of 3D incompressible Navier–Stokes). Closes <strong>nothing</strong>; both Clay
+directions remain <strong>open</strong>. This note is the canonical, self-contained record of
+the program.</p>
+<hr />
+<h2 id="1-the-reading">1. The reading<a class="headerlink" href="#1-the-reading" title="Permanent link">&para;</a></h2>
+<p>TNFR reads a system through its emergent geometry: the <strong>pulse</strong> <code>ω_k = √λ_k</code>, the
+two faces (diffusive over-damped vs conservative wave) with the
+<code>verify_overdamped_projection</code> certificate, and the empirical confrontation of the
+canonical magnitudes with real oscillatory data. That empirical arm establishes
+that <strong>oscillatory dynamics live on the conservative (wave) face</strong>, which poses
+the honest question this program answers: <em>which face is 3D Navier–Stokes on?</em></p>
+<h2 id="2-the-honest-two-face-answer-physics-first-no-forced-analogy">2. The honest two-face answer (physics-first, no forced analogy)<a class="headerlink" href="#2-the-honest-two-face-answer-physics-first-no-forced-analogy" title="Permanent link">&para;</a></h2>
+<p>Incompressible NS vorticity obeys</p>
+<p>$$\frac{\partial \omega}{\partial t} = (\omega\cdot\nabla)u \;+\; \nu\,\nabla^2\omega .$$</p>
+<p>This is <strong>first order in time</strong>. Therefore:</p>
+<ul>
+<li>Its <strong>linear</strong> part is the nodal equation for the phase-curvature field
+  <code>K_φ</code> (the vorticity): <code>∂K_φ/∂t = ν_f·ΔNFR</code> with <code>ν_f ↔ ν</code> and
+  <code>ΔNFR = −L_rw·K_φ</code>. The viscous term <strong>is</strong> the canonical graph diffusion (the
+  IL coherence stabiliser). This sits on the <strong>diffusive (over-damped) face</strong>:
+  mapping viscosity to the damped-wave damping <code>γ = 1/ν</code> (the canonical
+  <code>ν_f = 1/γ</code> identity), every physical viscosity gives <code>γ² ≫ 4λ_max</code>, so
+  <code>verify_diffusive_face</code> (the engine's <code>verify_overdamped_projection</code>) is <strong>VALID</strong>
+  and recovers <code>ν_f = ν</code>. Unlike EEG — whose <em>linear</em> neural dynamics are
+  under-damped/oscillatory — <strong>linear NS carries no oscillatory content</strong>.</li>
+<li>Its <strong>conservative / inertial</strong> character — the energy-conserving Euler cascade
+  where any blow-up must live — is entirely in the <strong>nonlinear</strong> vortex-stretching
+  source <code>(ω·∇)u</code> (the VAL destabiliser).</li>
+</ul>
+<p><strong>Consequence (the sharp statement).</strong> NS blow-up is <strong>not</strong> a linear-wave
+resonance; it is a purely <strong>nonlinear <code>K_φ</code> cascade</strong>: does the stretching source
+pump enstrophy into ever-higher structural modes faster than viscous diffusion
+removes it, as <code>ν → 0</code> (<code>Re → ∞</code>)?</p>
+<h2 id="3-field-dictionary">3. Field dictionary<a class="headerlink" href="#3-field-dictionary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Navier–Stokes</th>
+<th>TNFR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>velocity <code>u_a</code></td>
+<td>per-component phase field <code>φ^(a)</code></td>
+</tr>
+<tr>
+<td>vorticity <code>ω = ∇×u</code></td>
+<td><code>K_φ</code> per component</td>
+</tr>
+<tr>
+<td>pressure <code>p</code></td>
+<td><code>Φ_s</code> (Leray/incompressibility multiplier)</td>
+</tr>
+<tr>
+<td>viscosity <code>ν</code></td>
+<td><code>ν_f</code> (diffusive-face structural frequency)</td>
+</tr>
+<tr>
+<td>enstrophy <code>‖ω‖²</code></td>
+<td><code>Σ K_φ²</code> (conserved-pressure energy)</td>
+</tr>
+<tr>
+<td>stretching <code>(ω·∇)u</code></td>
+<td>VAL nonlinear destabiliser (the conservative source)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-the-blow-up-frontier-measured">4. The blow-up frontier (measured)<a class="headerlink" href="#4-the-blow-up-frontier-measured" title="Permanent link">&para;</a></h2>
+<p><code>conservative_face.measure_cascade_frontier</code> evolves the faithful pseudo-spectral
+Taylor–Green vortex at several viscosities to a matched <strong>structural time</strong>
+<code>τ_str = ν·t</code> and records the peak enstrophy debt <code>Ω_peak/Ω₀</code>, the peak stretching
+production and the high-mode enstrophy fraction versus <code>Re = 2π/ν</code>.</p>
+<ul>
+<li><strong>Fixed Re:</strong> every run's enstrophy peaks and decays — the diffusive face
+  regularises, the debt is bounded (known finite-Re regularity, re-expressed).</li>
+<li><strong>Sweep:</strong> the peak debt <strong>grows with Re</strong>. Whether it stays finite as
+  <code>Re → ∞</code> (regularity) or diverges (blow-up) is exactly Clay, now phrased as
+  <em>"is the nonlinear <code>K_φ</code> cascade uniformly bounded in Re?"</em>.</li>
+</ul>
+<p>This is the honest analogue of the Riemann coherence-budget measurement: a
+per-instance bound that is finite at every finite parameter, with the <strong>uniform
+bound over the limiting parameter</strong> left open.</p>
+<h2 id="5-cross-program-unification">5. Cross-program unification<a class="headerlink" href="#5-cross-program-unification" title="Permanent link">&para;</a></h2>
+<p>All three active programs now read on the same two-face machinery:</p>
+<ul>
+<li><strong>Riemann</strong> — the conservative <strong>pulse</strong> <code>ω_k = √λ_k</code>; RH content = the
+  coherence budget of <code>S(T)</code>, bounded at the RMS level, sup open.</li>
+<li><strong>EEG (empirical arm)</strong> — real brain rhythms sit on the <strong>conservative
+  (under-damped) face</strong>; the local phase tetrad carries clinical state.</li>
+<li><strong>Navier–Stokes</strong> — linear part on the <strong>diffusive (over-damped) face</strong>; the
+  conservative content is the <strong>nonlinear</strong> cascade, bounded at fixed Re, the
+  <code>Re → ∞</code> bound open.</li>
+</ul>
+<p>The face a system sits on is not assumed — it is <strong>measured</strong> by the engine's
+<code>verify_overdamped_projection</code> certificate.</p>
+<h2 id="6-the-moment-hierarchy-the-synergy-the-old-paradigm-blocked">6. The λ-moment hierarchy — the synergy the old paradigm blocked<a class="headerlink" href="#6-the-moment-hierarchy-the-synergy-the-old-paradigm-blocked" title="Permanent link">&para;</a></h2>
+<p>The old diffusive-face program saw only the <strong>scalar</strong> enstrophy budget. The
+emergent modal basis (L_rw modes <code>λ_k</code>) unlocks the whole <strong>λ-moment hierarchy</strong>
+<code>M_p = Σ λ_k^p E(λ_k)</code> (<code>cascade_moment_hierarchy</code>):</p>
+<ul>
+<li><code>M_0</code> = energy — the <strong>conservative-face budget</strong>, bounded by Leray
+  (<code>M_0(t) ≤ M_0(0)</code>);</li>
+<li><code>M_1</code> = enstrophy — the classical blow-up quantity;</li>
+<li><code>M_2</code> = palinstrophy — weights the small-scale (high-<code>λ</code>) tail more.</li>
+</ul>
+<p><strong>Measured</strong> (Taylor-Green at peak enstrophy, resolved points <code>k_max·η &gt; 1</code>,
+Re 157→628, ×4): <code>M_0</code> <strong>decreases</strong> (×0.62 — the conservative budget is bounded),
+while <code>M_1</code> grows (×1.71) and <code>M_2</code> grows much faster (×11.3); the moment
+<strong>ratios climb</strong> with Re (<code>M_1/M_0</code>: 3.0→8.3; <code>M_2/M_1</code>: 3.0→19.8). <strong>The wall
+climbs the λ-moment hierarchy.</strong> In this basis Clay is exactly: <em>does the ladder
+<code>M_p</code> (<code>p ≥ 1</code>) stay uniformly bounded as <code>ν → 0</code> while <code>M_0</code> stays bounded?</em> — the
+canonical modal form of the classical <code>H^s</code> / Foias–Temam regularity ladder.
+Driver: <code>benchmarks/ns_moment_hierarchy_cascade.py</code>.</p>
+<p><strong>Closing the rung (measured).</strong> The enstrophy rung is <code>dM_1/dt = P − 2ν M_2</code>
+(<code>moment_ladder_closure</code>), with the exact modal Cauchy–Schwarz coupling
+<code>M_1² ≤ M_0·M_2</code> (interpolation saturation <code>s = M_1²/(M_0 M_2) ∈ (0,1]</code>). Measured
+at peak (resolved Re 314→628): the rung is <strong>self-consistent</strong> — <code>P/(2ν M_2) ≈ 1</code>
+at the peak (<code>1.00</code>, <code>1.00</code>, <code>0.98</code>), confirming <code>dM_1/dt = 0</code> there; the
+interpolation saturation <code>s</code> <strong>decreases</strong> with Re (<code>0.57 → 0.42 → 0.38</code>) — the
+spectrum <strong>spreads</strong> across scales rather than concentrating (a
+regularity-favourable signal; <code>s ≤ 1</code> is exact); and in the growth phase
+<code>P/(2ν M_2) &lt; 1</code> (<code>0.70 → 0.59 → 0.45</code>) — the dissipation dominates, so the ladder
+<strong>closes at every accessible resolved Re</strong>. The wall is thus relocated to the
+sharp question: <em>does the growth-phase closure ratio stay <code>&lt; 1</code> as <code>Re → ∞</code>?</em> —
+undecidable from resolution-limited laminar/transitional data (<code>n ≥ 48–64</code> needed
+at high Re). Closing the rung uniformly in Re is exactly Clay.</p>
+<p><strong>A scoped cross-program comparison.</strong> The two programs admit a useful
+moment-ladder analogy:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>low moment (bounded)</th>
+<th>high moment (the open wall)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Riemann</strong></td>
+<td>RMS of <code>S(T)</code> — Selberg <code>√(log log T)</code></td>
+<td>sup of <code>S(T)</code> (the extremes)</td>
+</tr>
+<tr>
+<td><strong>NS</strong></td>
+<td>energy <code>M_0</code> — Leray</td>
+<td>enstrophy <code>M_1</code>, palinstrophy <code>M_2</code>, …</td>
+</tr>
+</tbody>
+</table>
+<p>Each program asks for control of a high-moment tail, but the state spaces,
+operators and limiting parameters (<code>T</code> and <code>Re</code>) differ. The comparison does
+not identify the two open problems or make one bound imply the other. The
+finite measurements localize their respective unresolved limits; they close
+neither.</p>
+<h2 id="7-static-pressure-coherence-on-the-emergent-geometry">7. Static pressure coherence on the emergent geometry<a class="headerlink" href="#7-static-pressure-coherence-on-the-emergent-geometry" title="Permanent link">&para;</a></h2>
+<p><code>flow_coherence</code> constructs a domain-specific pressure on vorticity magnitude,
+<code>ΔNFR = −L_rw·|ω|</code>, and evaluates the shared scalar map as</p>
+<pre><code>C_static = structural_coherence(mean|ΔNFR|, 0)
+         = 1 / (1 + mean|ΔNFR|).
+</code></pre>
+<p>The second argument is an explicit static assumption: this observer does not
+materialize an EPI-rate channel for the Navier--Stokes trajectory. Consequently
+<code>C_static</code> is not the engine's dynamic total <code>C(t)</code>. Reusing the numeric map and
+zero-pressure predicate does not identify graph, arithmetic, chemical and fluid
+state spaces, and it proves no common attractor. The compatibility key
+<code>at_equilibrium</code> means only that the snapshot's mean pressure magnitude lies
+within the selected <code>ΔNFR</code> tolerance while <code>dEPI</code> is held at zero.</p>
+<p><strong>Measured finite-resolution trend.</strong> Applied independently to successive raw
+vorticity snapshots, the score approaches one at the end of each sampled run
+(final <code>C_static = 0.995 → 0.9985</code> over Re 157→1257), while the minimum score
+decreases with Re (<code>0.94 → 0.90 → 0.84 → 0.72</code>). These numbers record flattening
+and excursion of the constructed pressure field. They do not self-certify the
+full flow, establish convergence, or transfer the uniform-field attractor of
+fixed-graph pure-EPI diffusion to nonlinear Navier--Stokes dynamics.</p>
+<p>A falsifiable finite-resolution question is whether the observed minimum
+<code>C_static</code> remains above the selected telemetry floor <code>1/(π+1)</code> as resolution
+and Re increase. That threshold application is a diagnostic policy; it is not
+equivalent to the regularity criterion. The Clay problem still requires a
+uniform-in-Re nonlinear estimate. U2 remains a grammar policy, the structural
+energy is only a Lyapunov candidate outside proved model-specific cases, U5 is
+a hierarchy contract, and the REMESH analysis supplies no runtime infinity
+limit.</p>
+<h2 id="8-honest-scope">8. Honest scope<a class="headerlink" href="#8-honest-scope" title="Permanent link">&para;</a></h2>
+<p>This program does <strong>not</strong> claim a proof or a counterexample. The linear diffusive
+face is regular by construction; the open question is the <strong>nonlinear</strong> cascade
+bound as <code>Re → ∞</code>. No uniform-in-Re bound is produced. <strong>Clay stays open.</strong> The
+Reynolds/Kolmogorov resolution caveat of the old program persists: high-Re points
+need <code>n ≥ 48–64</code>; the measured trend over the accessible resolved range cannot fix
+the asymptotic scaling.</p>
+<h2 id="9-code-map">9. Code map<a class="headerlink" href="#9-code-map" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>src/tnfr/navier_stokes/operator.py</code> — faithful pseudo-spectral 3D NS
+  integrator (<code>TNFRNavierStokes</code>) + <code>build_torus_graph_3d</code> +
+  <code>taylor_green_initial_condition_3d</code>.</li>
+<li><code>src/tnfr/navier_stokes/conservative_face.py</code> — <code>verify_diffusive_face</code>,
+  <code>face_of_flow</code>, <code>vorticity_modal_spectrum</code>, <code>cascade_moment_hierarchy</code>,
+  <code>moment_ladder_closure</code>, <code>flow_coherence</code> (static pressure-only read-out),
+  <code>measure_cascade_frontier</code>, <code>CascadeFrontierCertificate</code>.</li>
+<li><code>examples/06_navier_stokes/158_navier_stokes_two_face_refounded.py</code> — demo.</li>
+<li><code>examples/10_applications/159_empirical_confrontation_pipeline.py</code> — the
+  data-confrontation pipeline (map a signal to scoped read-outs + face).</li>
+<li><code>benchmarks/ns_moment_hierarchy_cascade.py</code> — the λ-moment hierarchy vs Re.</li>
+<li>Tests: <code>tests/mathematics/test_navier_stokes_refounded.py</code>.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

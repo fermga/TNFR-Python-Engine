@@ -1,0 +1,218 @@
+"""Postcondition validators for ZHIR (Mutation) operator.
+
+Implements verification of mutation postconditions including phase transformation,
+identity preservation, and bifurcation handling.
+
+These postconditions ensure that ZHIR fulfills its contract and maintains TNFR
+structural invariants.
+"""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ...types import NodeId, TNFRGraph
+
+from ...alias import get_attr
+from ...constants.aliases import ALIAS_EPI_KIND, ALIAS_THETA
+from ...utils import angle_diff
+from . import OperatorContractViolation
+
+__all__ = [
+    "verify_phase_transformed",
+    "verify_identity_preserved",
+    "verify_bifurcation_handled",
+]
+
+
+def verify_phase_transformed(G: TNFRGraph, node: NodeId, theta_before: float) -> None:
+    """Verify that phase was actually transformed by ZHIR.
+
+    ZHIR's primary contract is phase transformation (θ → θ'). This verifies
+    that the phase actually changed, fulfilling the operator's purpose.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to verify
+    theta_before : float
+        Phase value before ZHIR application
+
+    Raises
+    ------
+    OperatorContractViolation
+        If phase was not transformed (theta unchanged)
+
+    Notes
+    -----
+    A small tolerance (1e-6) is used to account for floating-point precision.
+    If theta changes by less than this tolerance, it's considered unchanged.
+
+    This check ensures that ZHIR actually performs its structural transformation
+    rather than being a no-op.
+
+    Examples
+    --------
+    >>> from tnfr.structural import create_nfr
+    >>> from tnfr.operators import Mutation
+    >>> G, node = create_nfr("test", epi=0.5, vf=1.0, theta=0.0)
+    >>> theta_before = G.nodes[node]["theta"]
+    >>> Mutation()(G, node)
+    >>> verify_phase_transformed(G, node, theta_before)  # Should pass
+    """
+    theta_after = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
+
+    # Check if phase actually changed (with small tolerance for floating-point)
+    phase_difference = abs(angle_diff(theta_after, theta_before))
+    if phase_difference < 1e-6:
+        raise OperatorContractViolation(
+            "Mutation",
+            f"Phase was not transformed (θ before={theta_before:.6f}, "
+            f"θ after={theta_after:.6f}, diff={phase_difference:.9f}). "
+            f"ZHIR must transform phase to fulfill its contract.",
+        )
+
+
+def verify_identity_preserved(
+    G: TNFRGraph, node: NodeId, epi_kind_before: str | None
+) -> None:
+    """Verify that structural identity (epi_kind) was preserved through mutation.
+
+    ZHIR transforms phase/regime while preserving structural identity. A cell
+    remains a cell, a concept remains a concept - only the operational mode changes.
+    This is a fundamental TNFR invariant: transformations preserve coherence.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to verify
+    epi_kind_before : str or None
+        Identity (epi_kind) before ZHIR application
+
+    Raises
+    ------
+    OperatorContractViolation
+        If identity changed during mutation
+
+    Notes
+    -----
+    If epi_kind_before is None (identity not tracked), this check is skipped.
+    Operator provenance belongs to ``source_glyph``/``last_glyph`` and never
+    weakens this identity check. A glyph-code value is therefore treated like
+    any other structural kind and must equal its pre-mutation value.
+
+    Identity preservation is distinct from EPI preservation, although ZHIR's
+    current phase-only contract requires both. This check isolates the identity
+    condition: ``epi_kind`` must remain constant through the transformation.
+
+    Examples
+    --------
+    >>> from tnfr.structural import create_nfr
+    >>> from tnfr.operators import Mutation
+    >>> G, node = create_nfr("test", epi=0.5, vf=1.0)
+    >>> G.nodes[node]["epi_kind"] = "stem_cell"
+    >>> epi_kind_before = G.nodes[node]["epi_kind"]
+    >>> Mutation()(G, node)
+    >>> # After mutation, epi_kind must still be "stem_cell".
+    >>> verify_identity_preserved(G, node, epi_kind_before)
+    """
+    # Skip check if identity was not tracked
+    if epi_kind_before is None:
+        return
+
+    epi_kind_after = get_attr(
+        G.nodes[node],
+        ALIAS_EPI_KIND,
+        None,
+        strict=True,
+        conv=lambda value: None if value is None else str(value),
+    )
+
+    if epi_kind_after != epi_kind_before:
+        raise OperatorContractViolation(
+            "Mutation",
+            f"Structural identity changed during mutation: "
+            f"{epi_kind_before} → {epi_kind_after}. "
+            f"ZHIR must preserve epi_kind while transforming phase.",
+        )
+
+
+def verify_bifurcation_handled(G: TNFRGraph, node: NodeId) -> None:
+    """Verify that bifurcation was handled if triggered during mutation.
+
+    When ZHIR detects bifurcation potential (∂²EPI/∂t² > τ), it records the
+    proposal-bound detection event. Structural variant creation belongs to
+    THOL because it changes node support and hierarchy.
+
+    This ensures that bifurcation events are properly tracked and controlled,
+    preventing uncontrolled structural fragmentation.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to verify
+
+    Raises
+    ------
+    OperatorContractViolation
+        If bifurcation was triggered but not handled according to configured mode
+
+    Notes
+    -----
+    ``detection`` is the only supported ZHIR mode. The legacy
+    ``variant_creation`` setting is rejected before execution; callers that
+    need nested structure must compose ZHIR with THOL.
+
+    Grammar rule U4a requires bifurcation handlers (THOL or IL) after ZHIR
+    when bifurcation is detected.
+
+    Examples
+    --------
+    >>> from tnfr.structural import create_nfr
+    >>> from tnfr.operators import Mutation
+    >>> G, node = create_nfr("test", epi=0.5, vf=1.0)
+    >>> G.graph["ZHIR_BIFURCATION_MODE"] = "detection"
+    >>> Mutation()(G, node)
+    >>> # If bifurcation detected, flag should be set
+    >>> verify_bifurcation_handled(G, node)  # Should pass
+    """
+    # Check if bifurcation was detected
+    bifurcation_potential = G.nodes[node].get("_zhir_bifurcation_potential", False)
+
+    if not bifurcation_potential:
+        # No bifurcation detected, nothing to verify
+        return
+
+    # Bifurcation was detected - verify it was handled
+    mode = G.graph.get("ZHIR_BIFURCATION_MODE", "detection")
+
+    if mode != "detection":
+        raise OperatorContractViolation(
+            "Mutation",
+            f"Unsupported ZHIR_BIFURCATION_MODE={mode!r}; use THOL for "
+            "variant or sub-EPI creation.",
+        )
+
+    from ...glyph_history import current_operator_step
+
+    events = G.graph.get("zhir_bifurcation_events", [])
+    step = current_operator_step(G.nodes[node])
+    node_has_event = isinstance(events, list) and any(
+        isinstance(event, dict)
+        and event.get("node") == node
+        and event.get("timestamp") == step
+        for event in events
+    )
+    if not node_has_event:
+        raise OperatorContractViolation(
+            "Mutation",
+            "Bifurcation potential was detected without a proposal-bound "
+            "ZHIR event for the current operator step.",
+        )

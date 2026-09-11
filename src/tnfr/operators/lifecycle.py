@@ -1,0 +1,321 @@
+"""Node lifecycle management for TNFR canonical theory.
+
+According to TNFR theory (El pulso que nos atraviesa, p.44), nodes follow
+a canonical lifecycle:
+
+1. Activation - Node emerges through sufficient reorganization
+2. Stabilization - Finds coherent phase and form
+3. Propagation - Reorganizes its network environment
+4. Mutation - Transforms through dissonance
+5. Collapse - Loses phase/frequency and dissolves
+
+This module provides lifecycle state tracking and transition validation.
+"""
+
+from __future__ import annotations
+
+import math
+from enum import Enum
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from ..types import NodeId, TNFRGraph
+
+from ..constants.aliases import (
+    ALIAS_DEPI,
+    ALIAS_DNFR,
+    ALIAS_EPI,
+    ALIAS_THETA,
+    ALIAS_VF,
+)
+from ..metrics.common import structural_coherence
+from ..metrics.trig import neighbor_phase_mean
+from ..utils import angle_diff
+
+__all__ = [
+    "LifecycleState",
+    "CollapseReason",
+    "get_lifecycle_state",
+    "check_collapse_conditions",
+    "should_collapse",
+]
+
+# Default thresholds for lifecycle state determination
+DEFAULT_MIN_PHASE_COUPLING = 0.1  # Minimum phase coupling before decoupling collapse
+
+
+class LifecycleState(Enum):
+    """Canonical TNFR node lifecycle states.
+
+    These states correspond to the fundamental phases of node existence
+    in the Resonant Fractal Nature paradigm.
+    """
+
+    DORMANT = "dormant"
+    """Node exists but has minimal structural frequency (νf < activation_threshold)."""
+
+    ACTIVATION = "activation"
+    """Node is emerging with increasing νf and ΔNFR."""
+
+    STABILIZATION = "stabilization"
+    """Node is finding coherent form (high C(t), decreasing |ΔNFR|)."""
+
+    PROPAGATION = "propagation"
+    """Node is reorganizing its environment (high phase coupling)."""
+
+    MUTATION = "mutation"
+    """Node is undergoing phase transformation (high |ΔNFR|, phase shifts)."""
+
+    COLLAPSING = "collapsing"
+    """Node is losing coherence and approaching dissolution."""
+
+    COLLAPSED = "collapsed"
+    """Node has dissolved (νf → 0 or extreme dissonance)."""
+
+
+class CollapseReason(Enum):
+    """Canonical reasons for node collapse in TNFR.
+
+    These correspond to the fundamental ways structural coherence can fail.
+    """
+
+    FREQUENCY_FAILURE = "frequency_failure"
+    """Structural frequency dropped below collapse threshold (νf → 0)."""
+
+    EXTREME_DISSONANCE = "extreme_dissonance"
+    """ΔNFR magnitude exceeded bifurcation threshold."""
+
+    NETWORK_DECOUPLING = "network_decoupling"
+    """Phase coherence with network dropped below coupling threshold."""
+
+    EPI_DISSOLUTION = "epi_dissolution"
+    """Primary Information Structure lost coherence (EPI → 0)."""
+
+
+from .metrics_core import get_node_attr as _get_node_attr
+
+
+def _neighbor_phase_coupling(G: TNFRGraph, node: NodeId, theta: float) -> float:
+    """Return shortest-arc alignment with the circular neighbour mean."""
+
+    if not list(G.neighbors(node)):
+        return 0.0
+    mean_neighbor_phase = float(neighbor_phase_mean(G, node))
+    phase_diff = abs(angle_diff(theta, mean_neighbor_phase))
+    return 1.0 - phase_diff / math.pi
+
+
+def get_lifecycle_state(
+    G: TNFRGraph,
+    node: NodeId,
+    *,
+    config: dict[str, Any] | None = None,
+) -> LifecycleState:
+    """Determine current lifecycle state of a node.
+
+    Analyzes node's structural parameters (νf, ΔNFR, EPI, θ) to determine
+    its position in the canonical TNFR lifecycle.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to analyze
+    config : dict, optional
+        Configuration overrides for thresholds:
+        - activation_threshold: Min νf for activation (default: 0.1)
+        - collapse_threshold: Min νf to avoid collapse (default: 0.01)
+        - bifurcation_threshold: Max |ΔNFR| before bifurcation (default: 10.0)
+        - stabilization_dnfr: Max |ΔNFR| for stabilization (default: 1.0)
+        - stabilization_coherence: Min coherence for stabilization (default: 0.8)
+        - propagation_coupling: Min phase coupling for propagation (default: 0.7)
+        - mutation_dnfr: Min |ΔNFR| for mutation state (default ≈ 5.083)
+
+    Returns
+    -------
+    LifecycleState
+        Current lifecycle state
+
+    Notes
+    -----
+    Collapse conditions are checked first. Among active states, the state
+    with the strongest indicators is returned (e.g., high |ΔNFR| → mutation
+    takes precedence over stabilization).
+
+    Examples
+    --------
+    >>> from tnfr.structural import create_nfr
+    >>> G, node = create_nfr("test", epi=0.5, vf=1.0)
+    >>> G.nodes[node]["ΔNFR"] = 0.5
+    >>> state = get_lifecycle_state(G, node)
+    >>> state.value
+    'activation'
+    """
+    if config is None:
+        config = {}
+
+    # Get thresholds from config or graph or defaults
+    def _get_threshold(key: str, default: float) -> float:
+        return float(config.get(key, G.graph.get(key.upper(), default)))
+
+    activation_threshold = _get_threshold("activation_threshold", 0.1)
+    collapse_threshold = _get_threshold("collapse_threshold", 0.01)
+    bifurcation_threshold = _get_threshold("bifurcation_threshold", 10.0)
+    stabilization_dnfr = _get_threshold("stabilization_dnfr", 1.0)
+    stabilization_coherence = _get_threshold("stabilization_coherence", 0.8)
+    propagation_coupling = _get_threshold("propagation_coupling", 0.7)
+    mutation_dnfr = _get_threshold("mutation_dnfr", 5.0)  # high-dissonance ΔNFR (½ collapse)
+
+    # Get node structural parameters
+    vf = _get_node_attr(G, node, ALIAS_VF)
+    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+    epi = _get_node_attr(G, node, ALIAS_EPI)
+    depi = _get_node_attr(G, node, ALIAS_DEPI)
+    theta = _get_node_attr(G, node, ALIAS_THETA)
+
+    # Check for collapse conditions first
+    if vf < collapse_threshold:
+        return LifecycleState.COLLAPSING
+
+    if abs(dnfr) > bifurcation_threshold:
+        return LifecycleState.COLLAPSING
+
+    # Compute phase coupling (simplified - could use full network coupling)
+    neighbors = list(G.neighbors(node))
+    if neighbors:
+        phase_coupling = _neighbor_phase_coupling(G, node, theta)
+    else:
+        phase_coupling = 0.0
+
+    # Check for decoupling collapse
+    if neighbors and phase_coupling < DEFAULT_MIN_PHASE_COUPLING:
+        return LifecycleState.COLLAPSING
+
+    # Check active states (priority: mutation > propagation > stabilization > activation)
+
+    # Mutation: High dissonance with sufficient frequency
+    if abs(dnfr) > mutation_dnfr and vf > activation_threshold:
+        return LifecycleState.MUTATION
+
+    # Propagation: Strong network coupling
+    if phase_coupling > propagation_coupling and vf > activation_threshold:
+        return LifecycleState.PROPAGATION
+
+    # Stabilization: high node coherence and low dissonance. This is the
+    # radius-zero constitutive read-out, not a proxy based on EPI magnitude.
+    coherence = structural_coherence(dnfr, depi)
+    if abs(dnfr) < stabilization_dnfr and coherence > stabilization_coherence:
+        return LifecycleState.STABILIZATION
+
+    # Activation: Above activation threshold but not yet stabilized
+    if vf >= activation_threshold:
+        return LifecycleState.ACTIVATION
+
+    # Dormant: Below activation threshold but above collapse
+    return LifecycleState.DORMANT
+
+
+def check_collapse_conditions(
+    G: TNFRGraph,
+    node: NodeId,
+    *,
+    config: dict[str, Any] | None = None,
+) -> tuple[bool, CollapseReason | None]:
+    """Check if node meets any collapse conditions.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to check
+    config : dict, optional
+        Configuration overrides for collapse thresholds
+
+    Returns
+    -------
+    should_collapse : bool
+        True if node should collapse
+    reason : CollapseReason | None
+        Reason for collapse, or None if not collapsing
+
+    Notes
+    -----
+    Multiple collapse conditions may be met simultaneously. This function
+    returns the first detected condition in priority order:
+    1. Frequency failure (most fundamental)
+    2. Extreme dissonance (structural instability)
+    3. Network decoupling (loss of resonance)
+    4. EPI dissolution (form loss)
+    """
+    if config is None:
+        config = {}
+
+    def _get_threshold(key: str, default: float) -> float:
+        return float(config.get(key, G.graph.get(key.upper(), default)))
+
+    collapse_threshold = _get_threshold("collapse_threshold", 0.01)
+    bifurcation_threshold = _get_threshold("bifurcation_threshold", 10.0)
+    min_coupling = _get_threshold("min_phase_coupling", 0.1)
+    min_epi = _get_threshold("min_epi", 0.01)
+
+    # Get node parameters
+    vf = _get_node_attr(G, node, ALIAS_VF)
+    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+    epi = _get_node_attr(G, node, ALIAS_EPI)
+    depi = _get_node_attr(G, node, ALIAS_DEPI)
+    theta = _get_node_attr(G, node, ALIAS_THETA)
+
+    # Check frequency failure (most fundamental)
+    if vf < collapse_threshold:
+        return (True, CollapseReason.FREQUENCY_FAILURE)
+
+    # Check extreme dissonance
+    if abs(dnfr) > bifurcation_threshold:
+        return (True, CollapseReason.EXTREME_DISSONANCE)
+
+    # Check network decoupling
+    neighbors = list(G.neighbors(node))
+    if neighbors:
+        phase_coupling = _neighbor_phase_coupling(G, node, theta)
+
+        if phase_coupling < min_coupling:
+            return (True, CollapseReason.NETWORK_DECOUPLING)
+
+    # Check EPI dissolution
+    if epi < min_epi:
+        return (True, CollapseReason.EPI_DISSOLUTION)
+
+    return (False, None)
+
+
+def should_collapse(
+    G: TNFRGraph,
+    node: NodeId,
+    *,
+    config: dict[str, Any] | None = None,
+) -> bool:
+    """Check if node should collapse (simplified interface).
+
+    Parameters
+    ----------
+    G : TNFRGraph
+        Graph containing the node
+    node : NodeId
+        Node to check
+    config : dict, optional
+        Configuration overrides
+
+    Returns
+    -------
+    bool
+        True if node meets collapse conditions
+
+    See Also
+    --------
+    check_collapse_conditions : Full collapse check with reason
+    get_lifecycle_state : Complete lifecycle state determination
+    """
+    should_collapse_flag, _ = check_collapse_conditions(G, node, config=config)
+    return should_collapse_flag

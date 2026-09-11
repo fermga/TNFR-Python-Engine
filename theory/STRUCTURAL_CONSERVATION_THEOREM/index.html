@@ -1,0 +1,3868 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/STRUCTURAL_CONSERVATION_THEOREM/">
+      
+      
+        <link rel="prev" href="../MINIMAL_STRUCTURAL_DEGREES/">
+      
+      
+        <link rel="next" href="../CORE_RESEARCH_PROGRAM/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Structural conservation - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-structural-conservation-diagnostics" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Structural conservation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#noether-like-balance-candidates-and-restricted-exact-laws" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Noether-Like Balance Candidates and Restricted Exact Laws
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-scope-and-motivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Scope and Motivation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Scope and Motivation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#main-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main Result
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-governing-dynamics-recap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Governing Dynamics Recap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Governing Dynamics Recap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-nodal-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Nodal Equation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-phase-dynamics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Phase Dynamics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-grammar-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Grammar Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-structural-charge-and-current-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Structural Charge and Current Definitions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Structural Charge and Current Definitions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-structural-charge-density" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Structural Charge Density
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-structural-current-vector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Structural Current Vector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-why-this-pairing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Why This Pairing?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-derivation-of-the-continuity-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Construction of the Balance Equation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Construction of the Balance Equation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-time-derivative-of-structural-potential" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Time Derivative of Structural Potential
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-time-derivative-of-phase-curvature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Time Derivative of Phase Curvature
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-discrete-divergence-of-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Discrete Divergence of Current
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-the-balance-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 The Balance Equation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-measured-conservation-residual-and-conditional-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Measured conservation residual and conditional bounds
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-two-sector-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Two-Sector Decomposition
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Two-Sector Decomposition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-potential-sector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Potential Sector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-geometric-sector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Geometric Sector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-cross-sector-coupling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Cross-Sector Coupling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-noether-correspondence-grammar-conservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Grammar/Balance Correspondences
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Grammar/Balance Correspondences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-correspondence-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The Correspondence Table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-diagnostic-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Diagnostic hierarchy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-comparing-independent-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Comparing independent evidence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-ward-identities-for-operator-sequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Ward-Like Diagnostics for Operator Sequences
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Ward-Like Diagnostics for Operator Sequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-operator-specific-measurements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Operator-specific measurements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-sequence-ward-residual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Sequence Ward residual
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-lyapunov-stability-from-the-energy-functional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Lyapunov Candidate and Restricted Stability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Lyapunov Candidate and Restricted Stability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-energy-functional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Energy Functional
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-lyapunov-candidate-for-observed-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Lyapunov candidate for observed evolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-energy-dissipation-rate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Energy Dissipation Rate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-per-operator-nominal-multiplier-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Per-operator nominal multiplier model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-independent-spectral-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 Independent spectral context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#86-relaxation-rate-identity-and-the-partial-lyapunov-reduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6 Relaxation-rate identity and the partial Lyapunov reduction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#87-the-two-conservationlyapunov-structures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.7 The two conservation/Lyapunov structures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-discrete-formulation-on-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Discrete Formulation on Graphs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Discrete Formulation on Graphs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-graph-laplacian-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Graph Laplacian Connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-spectral-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Spectral Decomposition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-residual-resolution-by-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 Residual resolution by scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-numerical-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Numerical Evaluation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Numerical Evaluation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Protocol
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-historical-targets-and-reproducible-outcome" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Historical targets and reproducible outcome
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-interpretation-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Interpretation policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-finite-size-fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4 Finite-size fit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-physical-interpretation-and-analogies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Physical Interpretation and Analogies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Applications
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#121-balance-alerts-and-independent-grammar-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.1 Balance alerts and independent grammar validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#122-self-optimization-via-conservation-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.2 Self-Optimization via Conservation Monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#123-network-health-telemetry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.3 Network Health Telemetry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#124-diagnostic-associations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.4 Diagnostic associations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#125-operator-tetrad-fingerprinting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.5 Operator-Tetrad Fingerprinting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-implementation-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Implementation Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="13. Implementation Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#131-core-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.1 Core Module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#132-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.2 Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#133-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.3 Benchmark
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#134-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.4 Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-summary-of-main-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Summary of Main Results
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation &amp; Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation &amp; Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sdk-entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SDK Entry Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executable-demonstrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executable Demonstrations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-source-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Source Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#noether-like-balance-candidates-and-restricted-exact-laws" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Noether-Like Balance Candidates and Restricted Exact Laws
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-scope-and-motivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Scope and Motivation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Scope and Motivation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#main-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main Result
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-governing-dynamics-recap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Governing Dynamics Recap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Governing Dynamics Recap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-nodal-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Nodal Equation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-phase-dynamics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Phase Dynamics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-grammar-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Grammar Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-structural-charge-and-current-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Structural Charge and Current Definitions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Structural Charge and Current Definitions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-structural-charge-density" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Structural Charge Density
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-structural-current-vector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Structural Current Vector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-why-this-pairing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Why This Pairing?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-derivation-of-the-continuity-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Construction of the Balance Equation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Construction of the Balance Equation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-time-derivative-of-structural-potential" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Time Derivative of Structural Potential
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-time-derivative-of-phase-curvature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Time Derivative of Phase Curvature
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-discrete-divergence-of-current" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Discrete Divergence of Current
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-the-balance-equation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 The Balance Equation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-measured-conservation-residual-and-conditional-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Measured conservation residual and conditional bounds
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-two-sector-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Two-Sector Decomposition
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Two-Sector Decomposition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-potential-sector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Potential Sector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-geometric-sector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Geometric Sector
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-cross-sector-coupling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Cross-Sector Coupling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-noether-correspondence-grammar-conservation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Grammar/Balance Correspondences
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Grammar/Balance Correspondences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-correspondence-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The Correspondence Table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-diagnostic-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Diagnostic hierarchy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-comparing-independent-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Comparing independent evidence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-ward-identities-for-operator-sequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Ward-Like Diagnostics for Operator Sequences
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Ward-Like Diagnostics for Operator Sequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Definition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-operator-specific-measurements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Operator-specific measurements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-sequence-ward-residual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Sequence Ward residual
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-lyapunov-stability-from-the-energy-functional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Lyapunov Candidate and Restricted Stability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Lyapunov Candidate and Restricted Stability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-energy-functional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Energy Functional
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-lyapunov-candidate-for-observed-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Lyapunov candidate for observed evolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-energy-dissipation-rate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Energy Dissipation Rate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-per-operator-nominal-multiplier-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Per-operator nominal multiplier model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-independent-spectral-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 Independent spectral context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#86-relaxation-rate-identity-and-the-partial-lyapunov-reduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6 Relaxation-rate identity and the partial Lyapunov reduction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#87-the-two-conservationlyapunov-structures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.7 The two conservation/Lyapunov structures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-discrete-formulation-on-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Discrete Formulation on Graphs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Discrete Formulation on Graphs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-graph-laplacian-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Graph Laplacian Connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-spectral-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Spectral Decomposition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-residual-resolution-by-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 Residual resolution by scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-numerical-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Numerical Evaluation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Numerical Evaluation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Protocol
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-historical-targets-and-reproducible-outcome" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Historical targets and reproducible outcome
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-interpretation-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Interpretation policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#104-finite-size-fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.4 Finite-size fit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-physical-interpretation-and-analogies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Physical Interpretation and Analogies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Applications
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#121-balance-alerts-and-independent-grammar-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.1 Balance alerts and independent grammar validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#122-self-optimization-via-conservation-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.2 Self-Optimization via Conservation Monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#123-network-health-telemetry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.3 Network Health Telemetry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#124-diagnostic-associations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.4 Diagnostic associations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#125-operator-tetrad-fingerprinting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.5 Operator-Tetrad Fingerprinting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-implementation-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Implementation Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="13. Implementation Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#131-core-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.1 Core Module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#132-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.2 Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#133-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.3 Benchmark
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#134-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13.4 Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-summary-of-main-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Summary of Main Results
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation &amp; Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation &amp; Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sdk-entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SDK Entry Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executable-demonstrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executable Demonstrations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-source-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Source Modules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-structural-conservation-diagnostics">TNFR Structural Conservation Diagnostics<a class="headerlink" href="#tnfr-structural-conservation-diagnostics" title="Permanent link">&para;</a></h1>
+<h2 id="noether-like-balance-candidates-and-restricted-exact-laws">Noether-Like Balance Candidates and Restricted Exact Laws<a class="headerlink" href="#noether-like-balance-candidates-and-restricted-exact-laws" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: CANONICAL DIAGNOSTIC REFERENCE — algebraic balance plus measured residuals
+<strong>Date</strong>: September 2026
+<strong>Version</strong>: 0.0.3.5
+<strong>Prerequisite</strong>: <a href="../../AGENTS/">AGENTS.md</a> §Foundational Physics, <a href="../UNIFIED_GRAMMAR_RULES/">UNIFIED_GRAMMAR_RULES.md</a> §U2, §U6</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#1-scope-and-motivation">Scope and Motivation</a></li>
+<li><a href="#2-governing-dynamics-recap">Governing Dynamics Recap</a></li>
+<li><a href="#3-structural-charge-and-current-definitions">Structural Charge and Current Definitions</a></li>
+<li><a href="#4-derivation-of-the-continuity-equation">Construction of the Balance Equation</a></li>
+<li><a href="#5-two-sector-decomposition">Two-Sector Decomposition</a></li>
+<li><a href="#6-noether-correspondence-grammar-conservation">Grammar/Balance Correspondences</a></li>
+<li><a href="#7-ward-identities-for-operator-sequences">Ward-Like Diagnostics for Operator Sequences</a></li>
+<li><a href="#8-lyapunov-stability-from-the-energy-functional">Lyapunov Candidate and Restricted Stability</a></li>
+<li><a href="#9-discrete-formulation-on-graphs">Discrete Formulation on Graphs</a></li>
+<li><a href="#10-numerical-evaluation">Numerical Evaluation</a></li>
+<li><a href="#11-physical-interpretation-and-analogies">Physical Interpretation and Analogies</a></li>
+<li><a href="#12-applications">Applications</a></li>
+<li><a href="#13-implementation-reference">Implementation Reference</a></li>
+<li><a href="#14-summary-of-main-results">Summary of Main Results</a></li>
+</ol>
+<hr />
+<h2 id="1-scope-and-motivation">1. Scope and Motivation<a class="headerlink" href="#1-scope-and-motivation" title="Permanent link">&para;</a></h2>
+<p>Noether's theorem relates continuous symmetries of a specified action to
+conserved currents under its mathematical hypotheses. TNFR operates on
+<em>discrete</em> graphs with <em>discrete</em> operator sequences constrained by grammar
+rules U1–U6. The question is therefore:</p>
+<blockquote>
+<p><strong>Do the grammar constraints play the role of continuous symmetries and
+generate conservation laws?</strong></p>
+</blockquote>
+<p>The implemented answer is deliberately narrower. The balance below defines a
+measurable source term, while grammar validation supplies separate constraints
+on operator histories. A valid history does not by itself prove a vanishing
+source, conservation of the tetrad charge, or monotonicity of the structural
+energy candidate.</p>
+<h3 id="main-result">Main Result<a class="headerlink" href="#main-result" title="Permanent link">&para;</a></h3>
+<p><strong>Structural balance identity</strong>: for two snapshots of a declared trajectory,
+define</p>
+<p>$$\frac{\partial \rho}{\partial t} + \nabla \cdot \mathbf{J} = \mathcal{S}_{\text{grammar}}$$</p>
+<p>where $\rho = \Phi_s + K_\phi$ is the <strong>structural charge density</strong>,
+$\mathbf{J} = (J_\phi, J_{\Delta\text{NFR}})$ is the <strong>structural current</strong>,
+and measure $\mathcal{S}$ as the residual. The equation is exact by this
+definition of $\mathcal{S}$; its smallness must be demonstrated on the actual
+trajectory. The legacy name $\mathcal{S}_{\text{grammar}}$ records the intended
+diagnostic use and is not an implication from U1–U6.</p>
+<hr />
+<h2 id="2-governing-dynamics-recap">2. Governing Dynamics Recap<a class="headerlink" href="#2-governing-dynamics-recap" title="Permanent link">&para;</a></h2>
+<h3 id="21-nodal-equation">2.1 Nodal Equation<a class="headerlink" href="#21-nodal-equation" title="Permanent link">&para;</a></h3>
+<p>Every node $i$ in a TNFR network evolves according to:</p>
+<p>$$\frac{\partial \text{EPI}<em f_i="f,i">i}{\partial t} = \nu</em>$$} \cdot \Delta\text{NFR}_i(t) \quad \text{(NE)</p>
+<p>where:
+- $\text{EPI}<em f_i="f,i">i$ is the Primary Information Structure at node $i$
+- $\nu</em>^+$ is the structural frequency (Hz_str)
+- $\Delta\text{NFR}_i(t)$ is the nodal reorganization pressure} \in \mathbb{R</p>
+<h3 id="22-phase-dynamics">2.2 Phase Dynamics<a class="headerlink" href="#22-phase-dynamics" title="Permanent link">&para;</a></h3>
+<p>The nodal equation specifies the EPI channel; it does not by itself supply a
+universal differential equation for phase. Canonical phase-changing operators
+define their own updates and UM/RA require the U3 compatibility check. An
+auxiliary Kuramoto comparison may separately posit</p>
+<p>$$\frac{\partial \phi_i}{\partial t}
+= \nu_{f,i}\,h_i(\phi,\Delta\mathrm{NFR}),$$</p>
+<p>often with sine coupling. Results derived from that auxiliary phase law retain
+its assumptions and do not automatically apply to every operator trajectory.</p>
+<h3 id="23-grammar-constraints">2.3 Grammar Constraints<a class="headerlink" href="#23-grammar-constraints" title="Permanent link">&para;</a></h3>
+<p>The evolution is restricted to operator sequences satisfying U1–U6:</p>
+<ul>
+<li><strong>U2</strong> (stabilization/debt policy): destabilizers require stabilizers within
+  the configured finite-history policy</li>
+<li><strong>U3</strong> (Coupling): $|\phi_i - \phi_j| \leq \Delta\phi_{\max}$ for interactions</li>
+<li><strong>U6</strong> (Confinement): monitor $\Delta\Phi_s &lt; \pi/2 \approx 1.571$ relative
+  to a declared reference</li>
+</ul>
+<p>These are execution and telemetry contracts. They do not define a proved
+smooth manifold or a general convergence theorem for arbitrary pressure laws.</p>
+<hr />
+<h2 id="3-structural-charge-and-current-definitions">3. Structural Charge and Current Definitions<a class="headerlink" href="#3-structural-charge-and-current-definitions" title="Permanent link">&para;</a></h2>
+<h3 id="31-structural-charge-density">3.1 Structural Charge Density<a class="headerlink" href="#31-structural-charge-density" title="Permanent link">&para;</a></h3>
+<p>$$\rho(i, t) = \Phi_s(i, t) + K_\phi(i, t)$$</p>
+<p>where:</p>
+<p><strong>Structural Potential</strong> (global, ΔNFR-driven):
+$$\Phi_s(i) = \sum_{j \neq i} \frac{\Delta\text{NFR}_j}{d(i,j)^\alpha}, \quad \alpha = 2$$</p>
+<p><strong>Phase Curvature</strong> (local, phase-driven):
+$$K_\phi(i) = \text{wrap}!\left(\phi_i - \text{circmean}_{j \in \mathcal{N}(i)} \phi_j\right)$$</p>
+<p>The diagnostic $\rho$ combines the <em>global potential landscape</em> with the
+<em>local geometric curvature</em>. This selection is useful because:</p>
+<ol>
+<li>$\Phi_s$ aggregates the reorganization pressure field (information about
+   the entire network projected onto node $i$)</li>
+<li>$K_\phi$ captures the local geometric mismatch (how much node $i$ deviates
+   from its neighborhood's mean phase)</li>
+<li>Their sum gives one scalar structural-stress readout at node $i$</li>
+</ol>
+<p>These observations define a charge <strong>candidate</strong>. They do not establish that
+its graph sum is conserved under the nodal equation or canonical operators.</p>
+<h3 id="32-structural-current-vector">3.2 Structural Current Vector<a class="headerlink" href="#32-structural-current-vector" title="Permanent link">&para;</a></h3>
+<p>$$\mathbf{J}(i, t) = \big(J_\phi(i, t),\; J_{\Delta\text{NFR}}(i, t)\big)$$</p>
+<p>where:</p>
+<p><strong>Phase Current</strong> (transport of phase coherence):
+$$J_\phi(i) = \frac{1}{|\mathcal{N}(i)|} \sum_{j \in \mathcal{N}(i)} \sin(\phi_j - \phi_i)$$</p>
+<p><strong>Reorganization Flux</strong> (transport of structural pressure):
+$$J_{\Delta\text{NFR}}(i) = \frac{1}{|\mathcal{N}(i)|} \sum_{j \in \mathcal{N}(i)} \big(\Delta\text{NFR}_j - \Delta\text{NFR}_i\big)$$</p>
+<p>The selected current readout contains two types of structural information:</p>
+<ul>
+<li>$J_\phi$ is a signed local phase-mismatch average</li>
+<li>$J_{\Delta\text{NFR}}$ is a signed local pressure-difference average</li>
+</ul>
+<p>Calling these quantities currents does not establish a transport equation;
+the measured balance residual tests that proposed interpretation on a declared
+trajectory.</p>
+<h3 id="33-why-this-pairing">3.3 Why This Pairing?<a class="headerlink" href="#33-why-this-pairing" title="Permanent link">&para;</a></h3>
+<p>The charge–current pairing $(\rho, \mathbf{J})$ is the selected two-sector
+diagnostic construction:</p>
+<table>
+<thead>
+<tr>
+<th>Sector</th>
+<th>Charge Component</th>
+<th>Current Component</th>
+<th>Driving Physics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Potential</strong></td>
+<td>$\Phi_s$</td>
+<td>$J_{\Delta\text{NFR}}$</td>
+<td>ΔNFR distribution &amp; redistribution</td>
+</tr>
+<tr>
+<td><strong>Geometric</strong></td>
+<td>$K_\phi$</td>
+<td>$J_\phi$</td>
+<td>Phase dynamics &amp; curvature transport</td>
+</tr>
+</tbody>
+</table>
+<p>The complex geometric field $\Psi = K_\phi + iJ_\phi$ packages the geometric
+pair algebraically. Finite correlations between its components depend on the
+graph ensemble and trajectory; they neither derive this definition nor prove
+that the two residual sectors are dynamically conjugate.</p>
+<hr />
+<h2 id="4-derivation-of-the-continuity-equation">4. Construction of the Balance Equation<a class="headerlink" href="#4-derivation-of-the-continuity-equation" title="Permanent link">&para;</a></h2>
+<h3 id="41-time-derivative-of-structural-potential">4.1 Time Derivative of Structural Potential<a class="headerlink" href="#41-time-derivative-of-structural-potential" title="Permanent link">&para;</a></h3>
+<p>$$\frac{\partial \Phi_s(i)}{\partial t} = \sum_{j \neq i} \frac{1}{d(i,j)^\alpha} \frac{\partial \Delta\text{NFR}_j}{\partial t}$$</p>
+<p>The nodal equation determines the EPI rate from the supplied pressure; it does
+not determine $\partial_t\Delta\text{NFR}_j$. If a specific operator trajectory
+or pressure model supplies a pressure derivative satisfying</p>
+<p>$$\sum_{j \neq i} \frac{|\partial \Delta\text{NFR}_j / \partial t|}{d(i,j)^\alpha} &lt; \infty,$$</p>
+<p>then the fixed-kernel potential derivative is bounded. U2 sequence validity alone
+does not supply this analytic hypothesis; topology changes add a kernel-change
+term and must be handled separately.</p>
+<h3 id="42-time-derivative-of-phase-curvature">4.2 Time Derivative of Phase Curvature<a class="headerlink" href="#42-time-derivative-of-phase-curvature" title="Permanent link">&para;</a></h3>
+<p>Away from a wrap discontinuity and where the neighborhood circular resultant
+is nonzero, differentiating the circular mean gives the local form</p>
+<p>$$\frac{\partial K_\phi(i)}{\partial t}
+= \frac{\partial \phi_i}{\partial t}
+- \sum_{j \in \mathcal{N}(i)} w_j(\phi)
+  \frac{\partial \phi_j}{\partial t},$$</p>
+<p>with state-dependent circular-mean derivative weights $w_j(\phi)$. This is not
+a global identity at branch cuts or undefined circular means. U3 checks the
+wrapped phase difference before a coupling/resonance action. A phase-velocity
+bound requires an additional, specified phase-evolution law; it does not follow
+from U3 alone.</p>
+<p>For a bounded Kuramoto comparison model one may derive a model-specific
+$C_{\text{phase}}$; that auxiliary result is not a universal grammar bound.</p>
+<h3 id="43-discrete-divergence-of-current">4.3 Discrete Divergence of Current<a class="headerlink" href="#43-discrete-divergence-of-current" title="Permanent link">&para;</a></h3>
+<p>The graph divergence at node $i$:</p>
+<p>$$(\nabla \cdot \mathbf{J})(i) = \frac{1}{|\mathcal{N}(i)|} \sum_{j \in \mathcal{N}(i)} \Big[\big(J_\phi(j) - J_\phi(i)\big) + \big(J_{\Delta\text{NFR}}(j) - J_{\Delta\text{NFR}}(i)\big)\Big]$$</p>
+<h3 id="44-the-balance-equation">4.4 The Balance Equation<a class="headerlink" href="#44-the-balance-equation" title="Permanent link">&para;</a></h3>
+<p>Combining §4.1–4.3, the rate of change of charge is:</p>
+<p>$$\frac{\Delta \rho(i)}{\Delta t} = \frac{\Delta \Phi_s(i)}{\Delta t} + \frac{\Delta K_\phi(i)}{\Delta t}$$</p>
+<p>The <strong>structural source term</strong> is:</p>
+<p>$$\mathcal{S}(i) = \frac{\Delta \rho(i)}{\Delta t} + (\nabla \cdot \mathbf{J})(i)$$</p>
+<h3 id="45-measured-conservation-residual-and-conditional-bounds">4.5 Measured conservation residual and conditional bounds<a class="headerlink" href="#45-measured-conservation-residual-and-conditional-bounds" title="Permanent link">&para;</a></h3>
+<p>For a finite graph and two recorded snapshots, the implementation computes
+$\mathcal S$ directly. A decay estimate such as</p>
+<p>$$|\mathcal{S}|<em _text_net="\text{net">{\ell^2} \;\leq\; \frac{C</em>$$}}}{\sqrt{N}</p>
+<p>is a <strong>hypothesis requiring a specified graph sequence and uniform analytical
+bounds</strong>. It is not established by U1–U6, by one finite-size fit, or by the
+identity defining $\mathcal S$. No continuum-limit theorem is claimed.</p>
+<p><em>Historical heuristic and numerical scope.</em></p>
+<p>The following steps document the heuristic that motivated the diagnostics.
+They do not establish the displayed asymptotic bound. The residual must be
+reported with the actual topology, pressure law, discretization, and finite
+trajectory; topology changes and infinite-horizon behavior require separate
+analysis.</p>
+<p><strong>Step 1. Operational multipliers do not prove a trajectory bound.</strong></p>
+<p>The implementation assigns nominal pressure-role multipliers to IL, OZ and
+other operators. For example, the configured OZ–IL product can exceed one.
+U2 requires stabilizer coverage and limits uncompensated debt; it does not
+prove absolute integrability of $\nu_f\Delta\mathrm{NFR}$ for every pressure
+law or every valid word.</p>
+<p>If a particular model independently establishes</p>
+<p>$$M_{\mathrm{rate}}=
+\sup_t\sum_j|\partial_t\Delta\mathrm{NFR}_j|&lt;\infty,$$</p>
+<p>then a fixed potential kernel $B_G$ gives the conditional estimate</p>
+<p>$$|\partial_t\Phi_s|<em>\infty
+\leq|B_G|</em>\infty M_{\mathrm{rate}}.$$</p>
+<p>U6 monitors potential drift; it does not invert a signed aggregation into a
+bound on absolute pressure. A topology change additionally contributes the
+kernel-change term documented by <code>structural_potential_change_terms</code>.</p>
+<p><strong>Step 2. Phase-rate bounds require a phase model.</strong></p>
+<p>U3 checks the wrapped phase difference before Coupling or Resonance. It does
+not by itself bound $\dot\phi$. For an explicitly selected Kuramoto law with
+bounded capacity, $|\sin(\phi_j-\phi_i)|\leq1$ supplies a model-specific
+phase-rate estimate. Such an estimate is not a theorem about every canonical
+operator trajectory.</p>
+<p><strong>Step 3. The residual is observed, not cancelled by definition.</strong></p>
+<p>$\Phi_s$ uses a non-local inverse-distance kernel, whereas
+$J_{\Delta\mathrm{NFR}}$ and $J_\phi$ use local neighbour differences. Their
+finite-difference balance need not vanish. The implementation therefore
+records potential and geometric residuals separately instead of asserting an
+exact continuum correspondence.</p>
+<p><strong>Step 4. Linearization and scaling are conditional.</strong></p>
+<p>The approximation $\sin(\Delta\phi)\approx\Delta\phi$ requires a measured
+small-branch margin. Likewise, diameter or density scaling depends on a
+specified graph family. U3 and U6 alone imply neither condition.</p>
+<p><strong>Step 5. Finite-size evidence remains measured.</strong></p>
+<p>The historical program proposed</p>
+<p>$$q(N)\sim1-\frac{C}{\sqrt N}$$</p>
+<p>and reported $C\approx2.1$ for an earlier finite sample. The current seeded
+protocol in example 34 does not reproduce the required coefficient direction.
+Neither result is a continuum-limit theorem or a graph-uniform bound.</p>
+<p><strong>Step 6. Residuals are alerts, not validators.</strong></p>
+<p>Large potential or geometric residuals can accompany U2, U3 or U6 risks, but
+they may also arise from discretization, topology changes or an external
+pressure law. The actual operator history must be validated independently.
+<code>compute_grammar_conservation_bounds</code> therefore exposes compatibility alert
+levels, not admitted analytical bounds on every valid trajectory.</p>
+<hr />
+<h2 id="5-two-sector-decomposition">5. Two-Sector Decomposition<a class="headerlink" href="#5-two-sector-decomposition" title="Permanent link">&para;</a></h2>
+<p>The full measured balance decomposes into two residual channels:</p>
+<h3 id="51-potential-sector">5.1 Potential Sector<a class="headerlink" href="#51-potential-sector" title="Permanent link">&para;</a></h3>
+<p>$$\frac{\partial \Phi_s}{\partial t} + \nabla \cdot J_{\Delta\text{NFR}} = \mathcal{S}_{\text{pot}}$$</p>
+<ul>
+<li><strong>Physics</strong>: Global ΔNFR landscape evolves via operator-driven redistribution</li>
+<li><strong>Grammar context</strong>: U2 tracks stabilizer debt; U6 supplies a potential-drift
+  alert. Neither bounds $\mathcal{S}_{\text{pot}}$ by itself.</li>
+<li><strong>Monitoring</strong>: Evaluate the declared-reference U6 statistic
+  $\operatorname{mean}_i|\Delta\Phi_s(i)| &lt; \pi/2$</li>
+</ul>
+<h3 id="52-geometric-sector">5.2 Geometric Sector<a class="headerlink" href="#52-geometric-sector" title="Permanent link">&para;</a></h3>
+<p>$$\frac{\partial K_\phi}{\partial t} + \nabla \cdot J_\phi = \mathcal{S}_{\text{geo}}$$</p>
+<ul>
+<li><strong>Physics</strong>: Local phase curvature evolves via synchronization dynamics</li>
+<li><strong>Grammar context</strong>: U3 gates coupling and U4 checks bifurcation context;
+  neither proves a bound on curvature transport by itself.</li>
+<li><strong>Monitoring</strong>: compare per-node $|K_\phi|$ with the selected
+  $0.9\pi\approx2.827$ safety margin; the exact wrap bound is $\pi$</li>
+</ul>
+<h3 id="53-cross-sector-coupling">5.3 Cross-Sector Coupling<a class="headerlink" href="#53-cross-sector-coupling" title="Permanent link">&para;</a></h3>
+<p>The diagnostic reports their finite <strong>cross-sector correlation</strong> as</p>
+<p>$$\kappa = \text{corr}!\left(\mathcal{S}<em _text_geo="\text{geo">{\text{pot}}, \mathcal{S}</em>\right)$$}</p>
+<p>The recorded example-17 fixture gives a value in the range
+$\kappa \approx 0.6$–$0.7$. This single-protocol association neither proves
+that the sectors are dynamically dependent nor measures a causal coupling.
+It also does not prove the algebraic complex-field construction
+$\Psi = K_\phi + i J_\phi$, which is defined independently.</p>
+<hr />
+<h2 id="6-noether-correspondence-grammar-conservation">6. Grammar/Balance Correspondences<a class="headerlink" href="#6-noether-correspondence-grammar-conservation" title="Permanent link">&para;</a></h2>
+<h3 id="61-the-correspondence-table">6.1 The Correspondence Table<a class="headerlink" href="#61-the-correspondence-table" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>Note</strong>: Every row below is an interpretive/diagnostic correspondence. The
+harmonic substrate has genuine continuous symmetries and Noether charges;
+the discrete grammar rules alone do not generate these conservation laws.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Grammar Rule</th>
+<th>Enforced contract</th>
+<th>Associated diagnostic analogy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>U1</strong></td>
+<td>generator/closure history</td>
+<td>source/closure balance</td>
+</tr>
+<tr>
+<td><strong>U2</strong></td>
+<td>stabilizer coverage and bounded debt</td>
+<td>energy/coherence trend</td>
+</tr>
+<tr>
+<td><strong>U3</strong></td>
+<td>wrapped phase compatibility</td>
+<td>phase-current admissibility</td>
+</tr>
+<tr>
+<td><strong>U4</strong></td>
+<td>bifurcation context and recency</td>
+<td>curvature-transition context</td>
+</tr>
+<tr>
+<td><strong>U5</strong></td>
+<td>nested identity and per-level stabilization</td>
+<td>hierarchical charge readout</td>
+</tr>
+<tr>
+<td><strong>U6</strong></td>
+<td>potential drift telemetry</td>
+<td>confinement alert</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-diagnostic-hierarchy">6.2 Diagnostic hierarchy<a class="headerlink" href="#62-diagnostic-hierarchy" title="Permanent link">&para;</a></h3>
+<p>The reported quantities form an evidence hierarchy:</p>
+<ol>
+<li><strong>Exact model identities:</strong> for example, substrate charges along the exact
+  harmonic flow or the degree-weighted EPI total in its fixed symmetric
+  diffusion regime.</li>
+<li><strong>Finite-trajectory measurements:</strong> charge drift and continuity residuals
+  computed from recorded snapshots.</li>
+<li><strong>Statistical summaries:</strong> residual distributions over declared operators,
+  graph families and seeds.</li>
+</ol>
+<h3 id="63-comparing-independent-evidence">6.3 Comparing independent evidence<a class="headerlink" href="#63-comparing-independent-evidence" title="Permanent link">&para;</a></h3>
+<p>When a grammar validator separately reports a rule failure, the balance data
+can be inspected for association:</p>
+<ul>
+<li><strong>U2 violation</strong> (uncompensated destabilizer): inspect pressure, C(t), and
+  energy trends; unbounded growth is not inferred from the label alone.</li>
+<li><strong>U3 violation</strong> (coupling without a phase check): the action is inadmissible;
+  any current residual is supporting telemetry only.</li>
+<li><strong>U6 alert</strong> (potential drift exceeds $\pi/2$): report the kernel, reference,
+  norm, and finite observation window.</li>
+</ul>
+<p>This provides a heuristic <em>diagnostic tool</em>. It does not replace the canonical
+grammar validator or uniquely infer which rule was broken.</p>
+<hr />
+<h2 id="7-ward-identities-for-operator-sequences">7. Ward-Like Diagnostics for Operator Sequences<a class="headerlink" href="#7-ward-identities-for-operator-sequences" title="Permanent link">&para;</a></h2>
+<h3 id="71-definition">7.1 Definition<a class="headerlink" href="#71-definition" title="Permanent link">&para;</a></h3>
+<p>The implementation retains <strong>WardIdentity</strong> as the historical name for a
+per-step, network-averaged charge/energy diagnostic. It does not compute a
+field-theoretic expectation-value identity. For a TNFR operator
+$\mathcal{O}_k$ observed over an interval $\Delta t_k$, its mean residual is</p>
+<p>$$\overline{\mathcal S}_k = \frac{1}{N}\sum_i\left[
+\frac{\rho_i^{k+1}-\rho_i^k}{\Delta t_k}
++\frac{(\nabla\cdot\mathbf J)_i^k+(\nabla\cdot\mathbf J)_i^{k+1}}{2}
+\right].$$</p>
+<p>The same record stores the distinct total changes
+$\Delta Q_k=Q_{k+1}-Q_k$ and $\Delta E_k=E_{k+1}-E_k$. It does not identify
+the total charge change with the mean residual.</p>
+<h3 id="72-operator-specific-measurements">7.2 Operator-specific measurements<a class="headerlink" href="#72-operator-specific-measurements" title="Permanent link">&para;</a></h3>
+<p>The contract source fixes each operator's primary channel and U2 role; it does
+not fix a universal sign for $\Delta\rho$ or $\Delta E$:</p>
+<table>
+<thead>
+<tr>
+<th>Operators</th>
+<th>Primary channel</th>
+<th>U2 role</th>
+<th>$\Delta\rho$, $\Delta E$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AL, EN, RA, REMESH</td>
+<td>EPI form</td>
+<td>neutral</td>
+<td>measured per trajectory</td>
+</tr>
+<tr>
+<td>SHA, NUL</td>
+<td>capacity (NUL also pressure)</td>
+<td>neutral</td>
+<td>measured per trajectory</td>
+</tr>
+<tr>
+<td>VAL</td>
+<td>capacity</td>
+<td>destabilizer</td>
+<td>measured per trajectory</td>
+</tr>
+<tr>
+<td>UM</td>
+<td>phase</td>
+<td>neutral</td>
+<td>measured per trajectory; U3-gated</td>
+</tr>
+<tr>
+<td>ZHIR</td>
+<td>phase</td>
+<td>destabilizer</td>
+<td>measured per trajectory; U4 context</td>
+</tr>
+<tr>
+<td>IL, THOL</td>
+<td>pressure</td>
+<td>stabilizer</td>
+<td>measured per trajectory</td>
+</tr>
+<tr>
+<td>OZ</td>
+<td>pressure</td>
+<td>destabilizer</td>
+<td>measured per trajectory</td>
+</tr>
+<tr>
+<td>NAV</td>
+<td>pressure</td>
+<td>neutral</td>
+<td>measured per trajectory</td>
+</tr>
+</tbody>
+</table>
+<h3 id="73-sequence-ward-residual">7.3 Sequence Ward residual<a class="headerlink" href="#73-sequence-ward-residual" title="Permanent link">&para;</a></h3>
+<p>For a recorded sequence $\sigma = [\mathcal{O}_1, \ldots, \mathcal{O}_N]$,
+the compatibility diagnostic defines the aggregate residual score</p>
+<p>$$\mathcal{S}<em k="1">{\mathrm{agg}}=\sum</em>_k.$$}^{N} \overline{\mathcal{S}</p>
+<p>This unweighted sum is not a time integral when interval lengths differ, so it
+should be compared only within a declared sampling protocol. Whether it is
+small is measured. U1 closure and U2 debt balance do not prove cancellation
+of the independently defined tetrad residual.</p>
+<p><strong>Experimental note (observational readout chain)</strong>: The operator-specific
+measurements in §7.2 can be organized as
+Operator → (ν_f, ΔNFR) → dEPI/dt → Tetrad → (ℰ, Q). Each operator
+produced a tetrad fingerprint in the stated fixtures (see <a href="../STRUCTURAL_OPERATORS/">STRUCTURAL_OPERATORS.md
+§17.2</a> and <a href="../../examples/02_physics_regimes/37_operator_tetrad_synergy.py">example 37</a>).
+Those finite fingerprints do not identify this diagram as a causal model.
+Equal or similar energy changes for operators with different contracts also
+show why perturbation magnitude cannot assign a universal sign or operator.</p>
+<hr />
+<h2 id="8-lyapunov-stability-from-the-energy-functional">8. Lyapunov Candidate and Restricted Stability<a class="headerlink" href="#8-lyapunov-stability-from-the-energy-functional" title="Permanent link">&para;</a></h2>
+<h3 id="81-energy-functional">8.1 Energy Functional<a class="headerlink" href="#81-energy-functional" title="Permanent link">&para;</a></h3>
+<p>Define the <strong>structural energy candidate</strong> from five included readouts:</p>
+<p>$$E[G] = \frac{1}{2} \sum_{i \in V} \left[\Phi_s(i)^2 + |\nabla\phi|(i)^2 + K_\phi(i)^2 + J_\phi(i)^2 + J_{\Delta\text{NFR}}(i)^2\right]$$</p>
+<p>This is the half-sum of the quadratic <strong>energy-density diagnostic</strong>
+$\mathcal{E}$. All five listed fields contribute by definition. Including
+$|\nabla\phi|^2$ records phase-gradient stress; its inclusion does not create a
+Noether theorem for the graph dynamics.</p>
+<p>$E \geq 0$ always (sum of squares).</p>
+<h3 id="82-lyapunov-candidate-for-observed-evolution">8.2 Lyapunov candidate for observed evolution<a class="headerlink" href="#82-lyapunov-candidate-for-observed-evolution" title="Permanent link">&para;</a></h3>
+<p>For a trajectory whose measured energy is non-increasing,</p>
+<p>$$\frac{dE}{dt} \leq 0$$</p>
+<p>The following is a motivation, not a proof:</p>
+<ol>
+<li>Coherence (IL) has a pressure-reducing contract, but cancellation in
+  $\Phi_s$ means this does not fix the sign of every energy term.</li>
+<li>Self-organization (THOL) preserves global form while producing sub-EPIs;
+  its tetrad-energy change remains trajectory-dependent.</li>
+<li>U2 requires stabilizer coverage for destabilizer debt; it does not quantify
+  absorption of tetrad energy.</li>
+<li>The net energy change must therefore be computed from actual snapshots.</li>
+</ol>
+<p>Therefore $E$ is a <strong>candidate Lyapunov function</strong>. Grammar validity alone does
+not fix the sign of its finite-step change. A complete formal proof of
+asymptotic stability would require analytic bounds on the nonlinear operator
+interactions; §8.4 records only an operational multiplier model.</p>
+<p><strong>Refinement (Grammar-Energy Landscape)</strong>: The nominal multiplier indicator
+($\Pi &lt; 1$) is neither a necessary nor a general sufficient theorem for energy
+descent.
+Experimental evidence (<a href="../../examples/02_physics_regimes/38_grammar_energy_landscape.py">example 38</a>)
+shows sequences with $\Pi \approx 1.288$ (non-contractive) that still achieve
+net energy descent ($\Delta E = -9.59$). The nominal model is conservative in
+that fixture;
+the measured sequence descended more steeply than the nominal product
+suggested, because operators interacted nonlinearly on that graph state.</p>
+<h3 id="83-energy-dissipation-rate">8.3 Energy Dissipation Rate<a class="headerlink" href="#83-energy-dissipation-rate" title="Permanent link">&para;</a></h3>
+<p>The dissipation rate $\dot{E}$ has physical meaning:</p>
+<p>$$\mathcal{D}[G] = \max!\left(0,-\frac{dE}{dt}\right) \geq 0$$</p>
+<p>where $\mathcal{D}$ is a nonnegative <strong>dissipation readout</strong> for steps with
+$dE/dt\leq0$. This measures the observed change; it does not prove attraction.</p>
+<ul>
+<li>High $\mathcal{D}$: large candidate-energy decrease on the sampled interval</li>
+<li>Low $\mathcal{D}$: small or zero candidate-energy decrease on that interval</li>
+<li>Energy increase: inspect the trajectory and grammar independently</li>
+</ul>
+<p>The size of $\mathcal D$ alone does not determine convergence speed or the
+limiting state.</p>
+<h3 id="84-per-operator-nominal-multiplier-model">8.4 Per-operator nominal multiplier model<a class="headerlink" href="#84-per-operator-nominal-multiplier-model" title="Permanent link">&para;</a></h3>
+<p>The compatibility API assigns each operator a nominal multiplier from its U2
+role and configured factor. These values are not proved bounds on the tetrad
+energy for every state.</p>
+<p>The canonical U2 partition is derived from
+<code>config.physics_derivation</code>: stabilizers <code>{IL, THOL}</code>, destabilizers
+<code>{OZ, ZHIR, VAL}</code>, and all other operators neutral for debt accounting. The
+compatibility class <code>OperatorLyapunovBound</code> maps this partition to nominal
+multipliers; despite its historical name, it is not a proof of a bound on the
+tetrad energy. Operator names, channels and postconditions remain owned by
+<code>operator_contracts.py</code> and must not be duplicated here.</p>
+<p><strong>Nominal sequence product (not a U2 consequence)</strong></p>
+<p>For any supplied sequence ${O_1, O_2, \ldots, O_n}$, the compatibility
+model defines a nominal multiplier per operator:</p>
+<p>$$m_i = \begin{cases}
+1 - \rho_i &amp; \text{stabiliser} \
+1 + \kappa_i &amp; \text{destabiliser} \
+1 &amp; \text{neutral}
+\end{cases}$$</p>
+<p>The cumulative product $\Pi = \prod_{i=1}^{n} m_i$ satisfies:</p>
+<ul>
+<li>$\Pi &lt; 1$ → contractive in this nominal multiplier model</li>
+<li>$\Pi \geq 1$ → non-contractive in this nominal multiplier model</li>
+</ul>
+<p>Neither result establishes or refutes grammar validity; U2 is checked by the
+grammar/debt owner and actual energy change is read from the trajectory.</p>
+<p><em>Example</em>: OZ followed by 4×IL:
+$(1 + 3.0) \times (1 - 0.438)^4 = 4.0 \times 0.0997 \approx 0.40 &lt; 1$ ✓</p>
+<h3 id="85-independent-spectral-context">8.5 Independent spectral context<a class="headerlink" href="#85-independent-spectral-context" title="Permanent link">&para;</a></h3>
+<p>For fixed connected symmetric nonnegative weights and homogeneous capacity,
+the isolated EPI channel uses
+$L_{\mathrm{rw}}=I-D^{-1}W$. Its nonzero decay rates are
+$\nu_f\lambda_k(L_{\mathrm{sym}})$, where
+$L_{\mathrm{sym}}=I-D^{-1/2}WD^{-1/2}$ has the same spectrum. The smallest
+positive normalized eigenvalue therefore controls the slowest nonuniform EPI
+mode in this restricted model.</p>
+<p><code>analyze_spectral_gap</code> reports two different gaps and keeps their roles
+separate:</p>
+<table>
+<thead>
+<tr>
+<th>Returned quantity</th>
+<th>Definition</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fiedler_value</code> / <code>spectral_gap</code></td>
+<td>second combinatorial eigenvalue of $D-W$</td>
+<td>topology diagnostic</td>
+</tr>
+<tr>
+<td><code>diffusion_gap</code></td>
+<td>second normalized eigenvalue of $L_{\mathrm{sym}}$</td>
+<td>unit-capacity pure-EPI decay</td>
+</tr>
+<tr>
+<td><code>relaxation_time</code></td>
+<td>$1/\texttt{diffusion_gap}$</td>
+<td>restricted continuous-time scale</td>
+</tr>
+<tr>
+<td><code>mixing_time_bound</code></td>
+<td>$\log N/\texttt{diffusion_gap}$</td>
+<td>library comparison estimate</td>
+</tr>
+<tr>
+<td><code>cheeger_lower</code></td>
+<td>$\texttt{diffusion_gap}/2$</td>
+<td>normalized Cheeger lower estimate</td>
+</tr>
+</tbody>
+</table>
+<p>The operator policy multiplier acts per history position, whereas the
+diffusion gap acts per continuous-time unit. The implementation leaves their
+combined rate undefined because no canonical map between those clocks has
+been established.</p>
+<p><strong>Implementation</strong>: <code>src/tnfr/physics/lyapunov.py</code> — nominal per-operator
+multipliers, spectral gap analysis, and sequence policy diagnostics.
+<strong>Validation</strong>: the Lyapunov test suite in
+<code>tests/core_physics/test_lyapunov_operators.py</code>.</p>
+<h3 id="86-relaxation-rate-identity-and-the-partial-lyapunov-reduction">8.6 Relaxation-rate identity and the partial Lyapunov reduction<a class="headerlink" href="#86-relaxation-rate-identity-and-the-partial-lyapunov-reduction" title="Permanent link">&para;</a></h3>
+<p>The structural H-theorem of the EPI diffusion channel — the Dirichlet energy
+$F = \tfrac14\sum_{ij} W_{ij}(\mathrm{EPI}<em _mathrm_rw="\mathrm{rw">i - \mathrm{EPI}_j)^2$
+is non-increasing
+under $\partial_t\mathrm{EPI} = -\nu_f L</em>$, a }}\mathrm{EPI<em>proven</em>
+fact (Lyapunov functional of the heat semigroup; see
+<code>examples/08_emergent_geometry/135_arrow_of_time_h_theorem.py</code>) — decays at the
+<strong>canonical rate</strong></p>
+<p>$$F(t) = F(0)e^{-2\nu_f\lambda_k t}$$</p>
+<p>for an isolated normalized eigenmode $k$. The slowest nonuniform asymptotic
+exponent uses $\lambda_2=\texttt{diffusion_gap}$ when that mode has nonzero
+amplitude. This is not an exact single exponential for an arbitrary mixture of
+modes. The isolated-mode exponent was
+verified to machine precision ($|{\rm err}| \sim 10^{-15}$
+across regular and irregular graphs; the combinatorial $\lambda_2(L=D-A)$ gives
+the <em>wrong</em> rate, off by the degree factor $1/d$ on regular graphs and more on
+irregular ones). This is the $\lambda_2$ that §8.5 uses for the <strong>diffusion</strong>
+relaxation rate. It does not establish the decay rate of the full tetrad energy
+or of arbitrary operator trajectories.</p>
+<p><strong>Partial reduction of the open $dE/dt\le 0$ proof.</strong> The exact fixed-graph
+Dirichlet balance controls the separate EPI-diffusion energy. It does not by
+itself control the phase-gradient term $|\nabla\phi|^2$ or the remaining tetrad
+terms in
+$E = \tfrac12\sum(\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\mathrm{NFR}}^2)$.
+Those terms require model-specific evolution identities and bounds on their
+operator-dependent sources. U2 supplies neither automatically. The exact EPI
+sector therefore isolates one proved component without solving the open
+monotonicity and asymptotic-stability questions for $E$.</p>
+<p>A separate Parry/Markov model is explored in
+<code>examples/08_emergent_geometry/150_emergent_grammatical_pattern_parry.py</code>.
+Its relaxation must not be identified with the graph-diffusion clock without
+an explicit model bridge.</p>
+<h3 id="87-the-two-conservationlyapunov-structures">8.7 The two conservation/Lyapunov structures<a class="headerlink" href="#87-the-two-conservationlyapunov-structures" title="Permanent link">&para;</a></h3>
+<p>TNFR exposes one restricted exact diffusion conservation law and a distinct
+tetrad conservation diagnostic:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>EPI channel (diffusion)</th>
+<th>Tetrad / grammar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Field</strong></td>
+<td>the scalar form EPI</td>
+<td>the tetrad $(\Phi_s, \lvert\nabla\phi\rvert, K_\phi, \dots)$</td>
+</tr>
+<tr>
+<td><strong>Quantity</strong></td>
+<td>$\sum_i d_i\,\mathrm{EPI}<em f_i="f,i">i$ for common capacity; $\sum_i(d_i/\nu</em>_i$ for fixed positive heterogeneous capacity})\,\mathrm{EPI</td>
+<td>Noether-like charge $Q=\sum_i(\Phi_s+K_\phi)$</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>conserved on a fixed connected symmetric pure-diffusion graph under the respective capacity assumptions</td>
+<td>drift measured on the supplied trajectory; not implied by U1–U6</td>
+</tr>
+<tr>
+<td><strong>Lyapunov functional</strong></td>
+<td>Dirichlet energy $F=\tfrac14\sum_{ij}W_{ij}(\mathrm{EPI}_i-\mathrm{EPI}_j)^2$</td>
+<td>candidate $E=\tfrac12\sum(\Phi_s^2+\lvert\nabla\phi\rvert^2+K_\phi^2+J_\phi^2+J_{\Delta\mathrm{NFR}}^2)$</td>
+</tr>
+<tr>
+<td><strong>Equilibrium</strong></td>
+<td>uniform EPI on each connected component</td>
+<td>no general attractor theorem</td>
+</tr>
+<tr>
+<td><strong>Implementation</strong></td>
+<td><code>structural_diffusion.degree_weighted_total</code>, <code>stationary_distribution</code></td>
+<td><code>conservation.compute_noether_charge</code>, <code>compute_energy_functional</code></td>
+</tr>
+</tbody>
+</table>
+<p>The two are <strong>independent</strong>: the weighted totals act on EPI, while $Q$ is a
+tetrad diagnostic. The exact fixed-graph diffusion theorem does not imply
+conservation or one-clock relaxation of the full tetrad trajectory.</p>
+<hr />
+<h2 id="9-discrete-formulation-on-graphs">9. Discrete Formulation on Graphs<a class="headerlink" href="#9-discrete-formulation-on-graphs" title="Permanent link">&para;</a></h2>
+<h3 id="91-graph-laplacian-connection">9.1 Graph Laplacian Connection<a class="headerlink" href="#91-graph-laplacian-connection" title="Permanent link">&para;</a></h3>
+<p>For one scalar current component, the implemented graph divergence uses an
+unweighted neighbor-minus-center average. It therefore has the sign of the
+negative random-walk Laplacian of the unweighted topology:</p>
+<p>$$(\nabla\cdot J)(i)=\frac{1}{d_i}\sum_{j\sim i}[J(j)-J(i)]
+=-(L_{\mathrm{rw}}J)_i.$$</p>
+<p>The implemented two-sector divergence sums this construction for $J_\phi$ and
+$J_{\Delta\mathrm{NFR}}$. This algebraic use of the graph operator does not
+make the residual follow the pure-EPI diffusion semigroup of §8.5.</p>
+<p>It nevertheless permits a spectral decomposition of the measured residual.</p>
+<h3 id="92-spectral-decomposition">9.2 Spectral Decomposition<a class="headerlink" href="#92-spectral-decomposition" title="Permanent link">&para;</a></h3>
+<p>For a fixed snapshot, <code>compute_spectral_conservation</code> projects the charge and
+already-computed divergence into the orthonormal $L_{\mathrm{sym}}$ basis
+returned by the shared diffusion helper:</p>
+<p>$$\rho=\sum_k\hat\rho_k\psi_k,\qquad
+\operatorname{div}J=\sum_k\widehat{\operatorname{div}J}_k\psi_k.$$</p>
+<p>Its canonical <code>modal_divergence_magnitude</code> value is the static activity
+readout</p>
+<p>$$a_k=\left|\widehat{\operatorname{div}J}_k\right|.$$</p>
+<p>The divergence has already been computed in node space, so another factor of
+$\lambda_k$ would apply an unintended second graph derivative. Because one
+snapshot contains no $d\hat\rho_k/dt$, $a_k$ is not a modal continuity
+residual. <code>low_divergence_activity_modes</code> is a descriptive median split; the
+legacy aliases <code>conservation_by_mode</code> and <code>dominant_conservation_modes</code> expose
+the same readouts and must not be read as a conservation theorem or U5 result.
+On a weighted graph, this basis may differ from the unweighted operator used
+to construct the stored divergence; the projection remains a basis expansion,
+not a diagonalization of that divergence rule.</p>
+<h3 id="93-residual-resolution-by-scale">9.3 Residual resolution by scale<a class="headerlink" href="#93-residual-resolution-by-scale" title="Permanent link">&para;</a></h3>
+<p>The eigenvalue spectrum supplies a basis in which to report spatial variation:</p>
+<ul>
+<li><strong>Low-eigenvalue modes</strong>: spatially smooth components on the graph</li>
+<li><strong>Intermediate modes</strong>: mesoscale variation relative to that graph</li>
+<li><strong>High-eigenvalue modes</strong>: rapidly alternating graph components</li>
+</ul>
+<p>These labels are relative to the supplied topology. A temporal projection is
+still required to form a modal continuity residual, and the decomposition does
+not certify U5.</p>
+<hr />
+<h2 id="10-numerical-evaluation">10. Numerical Evaluation<a class="headerlink" href="#10-numerical-evaluation" title="Permanent link">&para;</a></h2>
+<h3 id="101-protocol">10.1 Protocol<a class="headerlink" href="#101-protocol" title="Permanent link">&para;</a></h3>
+<p>Examples 17 and 34 run a seeded auxiliary phase/pressure smoothing rule on
+several finite graph fixtures. They record two-snapshot trapezoidal residuals,
+charge drift, candidate energy and sector correlations. The auxiliary rule is
+not a canonical operator word, so these runs do not test an implication from
+grammar compliance.</p>
+<p>The trapezoidal endpoint average has second-order quadrature accuracy for a
+smooth divergence signal. The complete balance residual need not converge at
+that order unless the sampled fields and underlying trajectory satisfy the
+additional regularity and model assumptions.</p>
+<h3 id="102-historical-targets-and-reproducible-outcome">10.2 Historical targets and reproducible outcome<a class="headerlink" href="#102-historical-targets-and-reproducible-outcome" title="Permanent link">&para;</a></h3>
+<p>The original protocol advertised fixed targets: relative charge drift below
+0.03%, mean quality in $[0.60,0.65]$, sector ratio in $[1.0,1.2]$, a negative
+$1/\sqrt N$ fit coefficient, and non-increasing candidate energy at every
+sample. Example 34 now evaluates each target and prints <code>PASS</code> or <code>FAIL</code>; it
+retains failures as negative evidence instead of treating them as warnings.</p>
+<h3 id="103-interpretation-policy">10.3 Interpretation policy<a class="headerlink" href="#103-interpretation-policy" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Report the actual topology, seed, time step and auxiliary update rule.</li>
+<li>Treat quality $q=1/(1+\mathrm{RMS})$ as a normalized residual score, not a
+  direct coherence, grammar or convergence metric.</li>
+<li>Treat cross-sector correlation as a finite association.</li>
+<li>Treat sampled energy descent as evidence only for the recorded intervals.</li>
+</ul>
+<h3 id="104-finite-size-fit">10.4 Finite-size fit<a class="headerlink" href="#104-finite-size-fit" title="Permanent link">&para;</a></h3>
+<p>The historical ansatz asks whether a supplied finite family follows</p>
+<p>$$q(N) \sim 1 - \frac{C}{\sqrt{N}}$$</p>
+<p>The implementation reports an unconstrained finite fit and checks its
+direction. Its intercept and coefficient describe only the supplied graph
+family and auxiliary rule. No continuum-limit convergence or exact
+conservation theorem follows from that finite sample.</p>
+<hr />
+<h2 id="11-physical-interpretation-and-analogies">11. Physical Interpretation and Analogies<a class="headerlink" href="#11-physical-interpretation-and-analogies" title="Permanent link">&para;</a></h2>
+<p>The notation resembles continuity, field-energy and dissipation constructions
+from established models. The comparison is limited to algebraic form:</p>
+<table>
+<thead>
+<tr>
+<th>TNFR diagnostic</th>
+<th>Familiar comparison</th>
+<th>Boundary of the comparison</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$\rho=\Phi_s+K_\phi$</td>
+<td>a density variable</td>
+<td>not electric charge or mass density</td>
+</tr>
+<tr>
+<td>$\mathbf J=(J_\phi,J_{\Delta\mathrm{NFR}})$</td>
+<td>a flux variable</td>
+<td>no transport law follows from its name</td>
+</tr>
+<tr>
+<td>$\partial_t\rho+\nabla\cdot\mathbf J=\mathcal S$</td>
+<td>a sourced continuity equation</td>
+<td>$\mathcal S$ is the measured residual by definition</td>
+</tr>
+<tr>
+<td>quadratic $E$</td>
+<td>a non-negative field energy</td>
+<td>only a Lyapunov candidate for TNFR trajectories</td>
+</tr>
+<tr>
+<td>$\mathcal D=\max(0,-dE/dt)$</td>
+<td>a dissipation-rate readout</td>
+<td>not entropy production or a second-law result</td>
+</tr>
+</tbody>
+</table>
+<p>Grammar rules have no demonstrated identification with gauge symmetry,
+incompressibility or thermodynamic irreversibility. The auxiliary harmonic
+substrate has its own explicitly specified continuous symmetries and conserved
+charges; those belong to that model alone.</p>
+<hr />
+<h2 id="12-applications">12. Applications<a class="headerlink" href="#12-applications" title="Permanent link">&para;</a></h2>
+<h3 id="121-balance-alerts-and-independent-grammar-validation">12.1 Balance alerts and independent grammar validation<a class="headerlink" href="#121-balance-alerts-and-independent-grammar-validation" title="Permanent link">&para;</a></h3>
+<p>Conservation residuals serve as a <strong>real-time anomaly indicator</strong> alongside
+the canonical grammar validator:</p>
+<pre><code class="language-python">from tnfr.operators import apply_glyph
+from tnfr.operators.grammar import validate_sequence_incremental
+from tnfr.physics.conservation import (
+    ConservationTracker,
+    detect_grammar_violations_from_conservation,
+)
+
+# G, node and planned_sequence are supplied by the experiment.
+grammar_steps = validate_sequence_incremental(G, node, planned_sequence)
+if not all(step.allowed for step in grammar_steps):
+    raise ValueError(&quot;inadmissible operator history&quot;)
+
+tracker = ConservationTracker(G)
+tracker.record(t=0.0)
+for glyph in planned_sequence:
+    apply_glyph(G, node, glyph)
+tracker.record(t=1.0)
+
+balance = tracker.latest_balance
+alerts = detect_grammar_violations_from_conservation(balance)
+if alerts[&quot;alerts_detected&quot;]:
+    inspect(alerts[&quot;alert_types&quot;])
+</code></pre>
+<p>The historical helper name and <code>violations_*</code> keys remain for compatibility;
+those fields are always false/empty because the helper does not assess grammar.</p>
+<h3 id="122-self-optimization-via-conservation-monitoring">12.2 Self-Optimization via Conservation Monitoring<a class="headerlink" href="#122-self-optimization-via-conservation-monitoring" title="Permanent link">&para;</a></h3>
+<p>The <code>ConservationTracker</code> can inform the self-optimizing engine:</p>
+<ol>
+<li><strong>Monitor</strong> finite balance quality during optimization.</li>
+<li><strong>Flag</strong> intervals for review when residuals rise.</li>
+<li><strong>Diagnose</strong> the cause from topology, sources, discretization and actual
+   operator history.</li>
+<li><strong>Select</strong> any structural operator only after its own contract and grammar
+   context justify it.</li>
+</ol>
+<p>The SDK exposes the sampled mapping as <code>balance_feedback</code> while retaining
+<code>conservation_feedback</code> as an alias. Review prompts are available through
+<code>balance_alert_reviews</code>; they remain outside <code>recommended_strategies</code>, so a
+balance alert cannot become an executable optimization choice.
+<code>balance_sample_count = 0</code> suppresses balance, charge and candidate-energy
+reviews because no observed interval exists; operator-postcondition alerts
+remain independently reportable. The optimizer compares the mean absolute
+charge drift per sampled interval; cumulative drift remains available under
+<code>total_structural_charge_drift</code> and the legacy <code>charge_drift</code> key.</p>
+<h3 id="123-network-health-telemetry">12.3 Network Health Telemetry<a class="headerlink" href="#123-network-health-telemetry" title="Permanent link">&para;</a></h3>
+<p>Balance quality is a normalized finite-residual score. Selected operational
+bands may be used for dashboards, but they are not canonical coherence bands:</p>
+<ul>
+<li>$q &gt; 0.9$: small RMS residual under this normalization</li>
+<li>$0.5 &lt; q &lt; 0.9$: intermediate RMS residual</li>
+<li>$q &lt; 0.5$: RMS residual greater than one in the chosen units</li>
+</ul>
+<h3 id="124-diagnostic-associations">12.4 Diagnostic associations<a class="headerlink" href="#124-diagnostic-associations" title="Permanent link">&para;</a></h3>
+<p>The sector decomposition locates which measured channel dominates:</p>
+<ul>
+<li><strong>Potential sector dominant</strong>: inspect pressure changes and the potential
+  kernel.</li>
+<li><strong>Geometric sector dominant</strong>: inspect phase changes and curvature.</li>
+<li><strong>Both elevated</strong>: inspect both sources and any topology change.</li>
+</ul>
+<p>No sector pattern uniquely identifies a U-rule failure.</p>
+<h3 id="125-operator-tetrad-fingerprinting">12.5 Operator-Tetrad Fingerprinting<a class="headerlink" href="#125-operator-tetrad-fingerprinting" title="Permanent link">&para;</a></h3>
+<p>The <strong>operator-tetrad fingerprint matrix</strong>
+(<a href="../../examples/02_physics_regimes/37_operator_tetrad_synergy.py">example 37</a>)
+measures finite signatures across (Φ_s, |∇φ|, K_φ, ξ_C). Such fingerprints can
+assist runtime diagnosis, but they do not establish a Ward identity or uniquely
+identify an operator outside that finite model and state family.</p>
+<hr />
+<h2 id="13-implementation-reference">13. Implementation Reference<a class="headerlink" href="#13-implementation-reference" title="Permanent link">&para;</a></h2>
+<h3 id="131-core-module">13.1 Core Module<a class="headerlink" href="#131-core-module" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>src/tnfr/physics/conservation.py</code></p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ConservationSnapshot</code></td>
+<td>Frozen state capture at time $t$</td>
+</tr>
+<tr>
+<td><code>ConservationBalance</code></td>
+<td>Two-snapshot continuity verification</td>
+</tr>
+<tr>
+<td><code>ConservationTimeSeries</code></td>
+<td>Multi-step diagnostics</td>
+</tr>
+<tr>
+<td><code>ConservationTracker</code></td>
+<td>Live tracking across operator sequences</td>
+</tr>
+<tr>
+<td><code>compute_charge_density(G)</code></td>
+<td>$\rho(i) = \Phi_s(i) + K_\phi(i)$</td>
+</tr>
+<tr>
+<td><code>compute_current_divergence(G)</code></td>
+<td>$\nabla \cdot \mathbf{J}$</td>
+</tr>
+<tr>
+<td><code>compute_noether_charge(G)</code></td>
+<td>Historical name for charge candidate $Q = \sum_i \rho(i)$</td>
+</tr>
+<tr>
+<td><code>compute_energy_functional(G)</code></td>
+<td>Candidate $E = \frac{1}{2}\sum(\Phi_s^2 +</td>
+</tr>
+<tr>
+<td><code>verify_conservation_balance(...)</code></td>
+<td>Two-snapshot trapezoidal balance residual</td>
+</tr>
+<tr>
+<td><code>decompose_conservation_residual(...)</code></td>
+<td>Sector decomposition (Crank-Nicolson)</td>
+</tr>
+<tr>
+<td><code>analyze_sector_coupling(...)</code></td>
+<td>Cross-sector correlation</td>
+</tr>
+<tr>
+<td><code>compute_grammar_conservation_bounds(G)</code></td>
+<td>Legacy policy-scaled alert levels</td>
+</tr>
+<tr>
+<td><code>detect_grammar_violations_from_conservation(...)</code></td>
+<td>Legacy-named balance alerts; never a grammar verdict</td>
+</tr>
+<tr>
+<td><code>WardIdentity</code></td>
+<td>Per-step charge/energy diagnostic</td>
+</tr>
+<tr>
+<td><code>LyapunovResult</code></td>
+<td>Finite candidate-energy change</td>
+</tr>
+<tr>
+<td><code>SpectralConservation</code></td>
+<td>Static normalized-Laplacian decomposition</td>
+</tr>
+<tr>
+<td><code>compute_ward_identity(...)</code></td>
+<td>Legacy-named single-step charge/energy diagnostic</td>
+</tr>
+<tr>
+<td><code>verify_sequence_ward_identity(...)</code></td>
+<td>Finite-sequence aggregate and legacy threshold alert</td>
+</tr>
+<tr>
+<td><code>compute_lyapunov_derivative(...)</code></td>
+<td>Sampled candidate $dE/dt$ and descent readout $D[G]$</td>
+</tr>
+<tr>
+<td><code>compute_spectral_conservation(...)</code></td>
+<td>Static spectral activity proxy</td>
+</tr>
+<tr>
+<td><code>compute_conservation_scaling(...)</code></td>
+<td>Historical finite $q(N)$ ansatz fit</td>
+</tr>
+</tbody>
+</table>
+<p><strong>U2 Policy and Spectral Context Module</strong> (<code>src/tnfr/physics/lyapunov.py</code>;
+legacy names retained):</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EnergyClass</code></td>
+<td>Enum: STABILISER, DESTABILISER, NEUTRAL, MIXED</td>
+</tr>
+<tr>
+<td><code>OperatorLyapunovBound</code></td>
+<td>Legacy-named nominal U2-role multiplier</td>
+</tr>
+<tr>
+<td><code>OPERATOR_LYAPUNOV_BOUNDS</code></td>
+<td>Legacy alias for the 13 nominal U2 policy multipliers</td>
+</tr>
+<tr>
+<td><code>get_bound(name_or_glyph)</code></td>
+<td>Lookup by operator name or glyph</td>
+</tr>
+<tr>
+<td><code>compute_operator_energy_bound(...)</code></td>
+<td>Legacy wrapper returning a nominal change in an abstract policy score</td>
+</tr>
+<tr>
+<td><code>compute_sequence_energy_bound(...)</code></td>
+<td>Legacy wrapper returning the final abstract policy score after multiplier composition</td>
+</tr>
+<tr>
+<td><code>verify_operator_lyapunov(...)</code></td>
+<td>Observed energy change compared with the nominal policy model; not a Lyapunov certificate</td>
+</tr>
+<tr>
+<td><code>analyze_spectral_gap(G)</code></td>
+<td>Combinatorial λ₂ and normalized diffusion λ₂, with separate relaxation diagnostics</td>
+</tr>
+<tr>
+<td><code>analyze_operator_convergence(G, name)</code></td>
+<td>Legacy wrapper reporting policy and spectral context side by side; the combined rate is undefined (<code>nan</code>)</td>
+</tr>
+<tr>
+<td><code>prove_sequence_lyapunov(operators)</code></td>
+<td>Legacy-named nominal policy-product check; not a trajectory proof</td>
+</tr>
+</tbody>
+</table>
+<p>The compatibility names above preserve import paths, not their historical
+physical interpretation. Policy multipliers act per operator position, while
+the normalized diffusion gap acts per continuous-time unit; no effective rate
+is returned without a declared map between those clocks.</p>
+<h3 id="132-tests">13.2 Tests<a class="headerlink" href="#132-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>tests/core_physics/test_conservation_laws.py</code></li>
+<li><code>tests/core_physics/test_lyapunov_operators.py</code> — compatibility multipliers,
+  spectral gap and sequence diagnostics</li>
+</ul>
+<h3 id="133-benchmark">13.3 Benchmark<a class="headerlink" href="#133-benchmark" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>benchmarks/conservation_law_validation.py</code></p>
+<h3 id="134-example">13.4 Example<a class="headerlink" href="#134-example" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>examples/02_physics_regimes/17_conservation_law_demo.py</code></p>
+<hr />
+<h2 id="14-summary-of-main-results">14. Summary of Main Results<a class="headerlink" href="#14-summary-of-main-results" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Structural balance identity</strong>: $\partial\rho/\partial t + \nabla \cdot \mathbf{J} = \mathcal{S}$, where $\mathcal S$ is measured from the actual trajectory.</p>
+</li>
+<li>
+<p><strong>Noether-like correspondence</strong>: Grammar rules organize diagnostic analogies; only a specified continuous symmetry and model establish a Noether charge.</p>
+</li>
+<li>
+<p><strong>Two-sector diagnostic</strong>: the measured residual separates potential ($\Phi_s$, $J_{\Delta\text{NFR}}$) and geometric ($K_\phi$, $J_\phi$) channels; finite correlation does not prove dynamic conjugacy.</p>
+</li>
+<li>
+<p><strong>Per-step diagnostics</strong>: A labeled observed step has a measured charge and candidate-energy signature; the aggregate residual is reported rather than assumed to vanish.</p>
+</li>
+<li>
+<p><strong>Lyapunov candidate</strong>: $E = \frac{1}{2}\sum(\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\text{NFR}}^2)$ is nonnegative. Its observed change and the nominal per-operator multipliers are diagnostics; a complete monotonicity or asymptotic-stability proof remains open. The separate Dirichlet energy decreases exactly in its fixed symmetric diffusion regime.</p>
+</li>
+<li>
+<p><strong>Numerical evaluation</strong>: The current seeded protocol rejects the advertised charge-drift, sector-ratio and scaling-direction targets while its mean-quality band and sampled candidate-energy target pass. These finite outcomes do not establish an asymptotic law.</p>
+</li>
+<li>
+<p><strong>Diagnostic application</strong>: Conservation residuals flag patterns for review; canonical history validation decides grammar compliance.</p>
+</li>
+</ol>
+<hr />
+<h2 id="implementation-examples">Implementation &amp; Examples<a class="headerlink" href="#implementation-examples" title="Permanent link">&para;</a></h2>
+<h3 id="sdk-entry-points">SDK Entry Points<a class="headerlink" href="#sdk-entry-points" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">from tnfr.sdk import TNFR
+
+net = TNFR.create(20).ring().evolve(5)
+cons = net.conservation()            # ConservationReport
+print(cons.summary())                # baseline; call again after real evolution
+net.evolve(1)
+cons = net.conservation(dt=1.0)     # sampled balance + candidate-energy trend
+alerts = net.balance_alerts(dt=1.0) # residual alerts, no grammar verdict
+</code></pre>
+<h3 id="executable-demonstrations">Executable Demonstrations<a class="headerlink" href="#executable-demonstrations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Concept from this document</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../examples/02_physics_regimes/17_conservation_law_demo.py">17_conservation_law_demo.py</a></td>
+<td>Charge candidate, balance residuals, candidate-energy trend and static spectral proxy</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/34_conservation_protocol_suite.py">34_conservation_protocol_suite.py</a></td>
+<td>Finite reproduction of historical charge, quality, scaling and energy targets (§10)</td>
+</tr>
+<tr>
+<td><a href="../../examples/02_physics_regimes/36_grammar_violation_detector.py">36_grammar_violation_detector.py</a></td>
+<td>Limits of residual alerts and separate grammar validation (§12.1)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-source-modules">Key Source Modules<a class="headerlink" href="#key-source-modules" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>src/tnfr/physics/conservation.py</code> — structural-balance diagnostics and restricted helpers</li>
+<li><code>src/tnfr/physics/integrity.py</code> — operator postconditions plus finite monitor alerts</li>
+<li><code>src/tnfr/sdk/simple.py</code> — scoped <code>ConservationReport</code> and balance-alert API</li>
+<li><code>src/tnfr/dynamics/self_optimizing_engine.py</code> — review-only consumption of
+  balance and candidate-energy feedback</li>
+</ul>
+<hr />
+<ul>
+<li><strong>Status</strong>: CANONICAL DIAGNOSTIC REFERENCE</li>
+<li><strong>Derived from</strong>: field definitions and the measured balance identity; exact
+  diffusion results retain their stated hypotheses</li>
+<li><strong>Checked by</strong>: finite numerical experiments and the current test suite</li>
+<li><strong>Implementation</strong>: <code>src/tnfr/physics/conservation.py</code></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

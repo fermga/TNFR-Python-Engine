@@ -1,0 +1,1446 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Canonical documentation for the TNFR Python Engine">
+      
+      
+      
+        <link rel="canonical" href="https://fermga.github.io/TNFR-Python-Engine/theory/TNFR_DIRECTED_NONNORMAL_DYNAMICS/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>TNFR Directed and Non-Normal Dynamics (R9) - TNFR Python Engine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tnfr-directed-and-non-normal-dynamics-r9" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="TNFR Python Engine" class="md-header__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TNFR Python Engine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              TNFR Directed and Non-Normal Dynamics (R9)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="TNFR Python Engine" class="md-nav__button md-logo" aria-label="TNFR Python Engine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TNFR Python Engine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fermga/TNFR-Python-Engine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fermga/TNFR-Python-Engine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AGENTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/TORCH_BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Torch backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Technical documentation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Technical documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/API_CONTRACTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operator contracts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/SINGLE_FILE_MODULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single-file modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_FIELDS_TETRAD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/grammar/PHYSICS_VERIFICATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/STRUCTURAL_INTERFACE_THEORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory and research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Theory and research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UNIFIED_GRAMMAR_RULES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grammar scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DIAGNOSTIC_AND_GRAMMAR_SCOPE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnostic scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MINIMAL_STRUCTURAL_DEGREES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimal structural degrees
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_CONSERVATION_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural conservation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORE_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core dynamics program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_DIFFUSION_STABILITY_THEOREM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Heterogeneous diffusion stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TNFR_SCALE_GEOMETRY_AND_BRIDGE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scale, geometry and bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STRUCTURAL_RESEARCH_PROGRAM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Structural research program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+          
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../TESTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../WORKFLOWS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workflows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-declared-transport-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Declared transport model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-normality-spectrum-and-metric" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Normality, spectrum, and metric
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-exact-pressure-transient-criterion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Exact pressure-transient criterion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-u2-readings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. U2 readings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-u6-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. U6 scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-structural-time-and-heterogeneous-capacity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Structural time and heterogeneous capacity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-claim-ledger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Claim ledger
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tnfr-directed-and-non-normal-dynamics-r9">TNFR Directed and Non-Normal Dynamics (R9)<a class="headerlink" href="#tnfr-directed-and-non-normal-dynamics-r9" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> exact finite-dimensional results are available for the fixed linear
+pure-EPI channel; sampled gains and benchmark correlations remain finite-family
+evidence. The canonical directed U2 metric, nonlinear operator extension,
+changing-topology theory, and universal U6 trajectory bound remain open.</p>
+<p><strong>Modules:</strong>
+<a href="../../src/tnfr/physics/directed_diffusion.py">directed_diffusion.py</a>,
+<a href="../../src/tnfr/physics/transient_u2.py">transient_u2.py</a>,
+<a href="../../src/tnfr/physics/nonnormal_prediction.py">nonnormal_prediction.py</a>,
+<a href="../../src/tnfr/physics/heterogeneous_vf.py">heterogeneous_vf.py</a>, and
+<a href="../../src/tnfr/physics/structural_diffusion.py">structural_diffusion.py</a>.</p>
+<h2 id="1-declared-transport-model">1. Declared transport model<a class="headerlink" href="#1-declared-transport-model" title="Permanent link">&para;</a></h2>
+<p>For finite nonnegative outgoing conductance, the EPI-only pressure is</p>
+<p>$$p=\Delta\mathrm{NFR}<em _mathrm_rw="\mathrm{rw">{\mathrm{epi}}=-L</em>x,
+\qquad L_{\mathrm{rw}}=I-P,$$}</p>
+<p>where positive rows of $P$ are normalized by outgoing strength and a
+zero-strength row is absorbing. The fixed scalar-capacity evolution is</p>
+<p>$$\dot x=-\nu_f L_{\mathrm{rw}}x.$$</p>
+<p>This is one channel of the canonical pressure, on a fixed graph. It does not
+cover phase, frequency, topology, nonlinear operator gains, or graph mutation.
+Even for symmetric conductance, the raw random-walk matrix is generally only
+<em>similar</em> to a symmetric normalized Laplacian; Euclidean normality is a
+separate property.</p>
+<h2 id="2-normality-spectrum-and-metric">2. Normality, spectrum, and metric<a class="headerlink" href="#2-normality-spectrum-and-metric" title="Permanent link">&para;</a></h2>
+<p>A non-normal generator can have a nonpositive spectral abscissa while its
+Euclidean semigroup norm grows transiently. Consequently:</p>
+<ul>
+<li><code>eigh</code> is used only for symmetric/Hermitian representations;</li>
+<li>right eigenvectors are not converted into projectors as $QQ^*$;</li>
+<li>Schur/Riesz methods or direct semigroup and resolvent diagnostics are used;</li>
+<li>the Kreiss resolvent quantity is a lower bound on peak semigroup gain, not an
+  equality or an infinite-window measurement.</li>
+</ul>
+<p>Directed circulants are normal and form a benign special case. General
+directed graphs need not be normal.</p>
+<p>For a strongly connected row-stochastic $P$ with stationary distribution
+$\pi$, Jensen's inequality gives</p>
+<p>$$|Pf|<em 2_pi="2,\pi">{2,\pi}\leq|f|</em>,\qquad
+|f|_{2,\pi}^2=\sum_i\pi_i f_i^2.$$</p>
+<p>Because $e^{-tL}=e^{-t}\sum_{k\geq0}t^kP^k/k!$, the diffusion semigroup is a
+contraction in $L^2(\pi)$. This exact weighted result does not make the raw
+Euclidean norm canonical for U2. The APIs expose both metrics.</p>
+<h2 id="3-exact-pressure-transient-criterion">3. Exact pressure-transient criterion<a class="headerlink" href="#3-exact-pressure-transient-criterion" title="Permanent link">&para;</a></h2>
+<p>For fixed $L=L_{\mathrm{rw}}$,</p>
+<p>$$p=-Lx\quad\Longrightarrow\quad \dot p=-Lp.$$</p>
+<p>When the graph has one consensus mode, $\operatorname{range}(L)$ is the
+non-consensus pressure space ${p:\pi^Tp=0}$. Let $V$ be an orthonormal basis
+of that space and $L_{\mathrm{sub}}=V^TLV$. Every vector in this restricted
+space is a reachable pressure. In the declared Euclidean metric, the
+logarithmic norm</p>
+<p>$$\mu_2(-L_{\mathrm{sub}})=
+\lambda_{\max}!\left(\frac{-L_{\mathrm{sub}}-L_{\mathrm{sub}}^T}{2}\right)$$</p>
+<p>has an exact qualitative meaning:</p>
+<ul>
+<li>$\mu_2\leq0$ implies contraction for every time;</li>
+<li>$\mu_2&gt;0$ implies that some reachable pressure direction grows immediately.</li>
+</ul>
+<p>A negative spectral abscissa gives asymptotic decay and cannot exclude the
+second case. A fixed weighted counterexample in the test suite disproves the
+older conjecture that every random-walk digraph contracts in unweighted
+Euclidean pressure energy.</p>
+<p><code>nonnormal_prediction.py</code> applies this theorem to a predeclared deterministic
+family. Its peak gains, rank correlations, and calibration/holdout accuracies
+are measurements of that finite family. The sign theorem itself is an exact
+matrix result and uses no fitted threshold.</p>
+<h2 id="4-u2-readings">4. U2 readings<a class="headerlink" href="#4-u2-readings" title="Permanent link">&para;</a></h2>
+<p>The implementation distinguishes two finite-window quantities:</p>
+<p>$$\left|\int_0^T\dot x\,dt\right|
+=|x(T)-x(0)|,
+\qquad
+\int_0^T|\dot x|\,dt.$$</p>
+<p>The first allows cancellation; the second is total variation, and the triangle
+inequality gives <code>net &lt;= total</code>. Neither a sampled finite window nor a stable
+full-state spectrum alone proves an infinite-horizon U2 theorem. On the
+non-consensus subspace, a declared exponential envelope</p>
+<p>$$|e^{-sL}Q|\leq M e^{-\omega s}$$</p>
+<p>yields the sufficient bound</p>
+<p>$$J\leq \frac{M|LQ||x_0|}{\omega}.$$</p>
+<p>The bound is restricted to the fixed linear EPI channel and its stated norm.
+Choosing the canonical directed U2 metric and extending the result to the full
+four-channel dynamics remain open.</p>
+<h2 id="5-u6-scope">5. U6 scope<a class="headerlink" href="#5-u6-scope" title="Permanent link">&para;</a></h2>
+<p>Canonical U6 compares structural-potential fields from two declared graph
+states using the centralized $\pi/2$ drift policy. The sampled quantity</p>
+<p>$$\max_{s,i}|\Phi_s(s)_i|$$</p>
+<p>is an absolute magnitude, not a U6 drift. <code>TransientU2Certificate</code> therefore
+reports it as <code>peak_structural_potential_magnitude</code>, exposes its operator-norm
+bound, and sets <code>u6_drift_assessed=False</code>. The old
+<code>peak_structural_potential</code>, <code>structural_potential_bound</code>, and <code>u6_confined</code>
+names remain compatibility aliases with explicit legacy semantics.</p>
+<p><code>finite_schedule_readout</code> can evaluate mean potential drift from the initial
+state at declared segment endpoints. It still does not cover values between
+endpoints or an unobserved tail.</p>
+<h2 id="6-structural-time-and-heterogeneous-capacity">6. Structural time and heterogeneous capacity<a class="headerlink" href="#6-structural-time-and-heterogeneous-capacity" title="Permanent link">&para;</a></h2>
+<p>For a common scalar schedule $\nu_f(t)\geq0$ on a fixed graph,</p>
+<p>$$x(t)=e^{-s(t)L}x_0,\qquad s(t)=\int_0^t\nu_f(\tau)\,d\tau.$$</p>
+<p>This is an exact clock change because all generators are scalar multiples of
+one fixed $L$. Total variation expressed in structural time is invariant under
+that reparameterization, subject to the stated integral and decay hypotheses.</p>
+<p>For heterogeneous capacity $D_{\nu_f}(t)$, generators
+$D_{\nu_f}(t)L$ generally do not commute, so one scalar clock does not describe
+the trajectory. Several useful results survive:</p>
+<ol>
+<li>A frozen nonnegative generator $-D_{\nu_f}L$ is Metzler with zero row sums,
+   so its semigroup preserves the scalar convex hull.</li>
+<li>For fixed positive capacity on a strongly connected graph, the invariant
+   measure is proportional to $\pi_i/\nu_{f,i}$.</li>
+<li>On fixed symmetric conductance $B=D-W$, the Dirichlet energy
+   $E_D=x^TBx/2$ obeys
+   $$\dot E_D=-(Bx)^TM(t)(Bx)\leq0,
+   \qquad M_{ii}(t)=\nu_{f,i}(t)/d_i,$$
+   for finite nonnegative time-varying capacity. Uniformly positive mobility
+   plus a divergent mobility clock gives a sufficient consensus bound.</li>
+<li>For switching among symmetric fixed-node regimes, the exact common-metric
+   theorem applies only when their normalized diagonal metrics agree up to a
+   positive scalar. Without that condition the provided certificate reports
+   that the theorem is unavailable; it does not infer instability.</li>
+</ol>
+<p>These statements do not create a single conserved mean for arbitrary changing
+capacity ratios, and they do not cover changing node sets.</p>
+<h2 id="7-claim-ledger">7. Claim ledger<a class="headerlink" href="#7-claim-ledger" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Directed circulants are normal</td>
+<td>Exact algebraic property; numerically checked</td>
+</tr>
+<tr>
+<td>General non-normal stable generators may amplify in Euclidean norm</td>
+<td>Exact possibility; finite witnesses measured</td>
+</tr>
+<tr>
+<td>Diffusion contracts in stationary $L^2(\pi)$</td>
+<td>Derived by Jensen</td>
+</tr>
+<tr>
+<td>$p=-Lx$ implies $\dot p=-Lp$</td>
+<td>Exact for fixed linear pure-EPI flow</td>
+</tr>
+<tr>
+<td>Sign of $\mu_2(-L_{\mathrm{sub}})$ classifies possible Euclidean pressure gain</td>
+<td>Exact finite-dimensional theorem</td>
+</tr>
+<tr>
+<td>Spectral abscissa alone classifies transient pressure gain</td>
+<td>False; counterexamples retained</td>
+</tr>
+<tr>
+<td>Every random-walk digraph contracts in restricted Euclidean pressure energy</td>
+<td>False; weighted counterexample retained</td>
+</tr>
+<tr>
+<td>Scalar $\nu_f(t)$ is a clock change</td>
+<td>Exact on a fixed graph</td>
+</tr>
+<tr>
+<td>General heterogeneous $\nu_f(t)$ is one scalar clock</td>
+<td>False when generators do not commute</td>
+</tr>
+<tr>
+<td>Fixed-symmetric Dirichlet energy decreases under nonnegative heterogeneous capacity</td>
+<td>Exact instantaneous identity</td>
+</tr>
+<tr>
+<td>Absolute $</td>
+<td>\Phi_s</td>
+</tr>
+<tr>
+<td>Canonical directed U2 metric and full nonlinear bound</td>
+<td>Open</td>
+</tr>
+<tr>
+<td>Universal U6 interval/tail safety from finite samples</td>
+<td>Open</td>
+</tr>
+</tbody>
+</table>
+<p>No result here changes U1-U6 or resolves an external open mathematical problem.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
