@@ -627,6 +627,50 @@ atomicity, global executable gain, repetition or future theorem follows. See
 and the centralized derivation in
 [`REMESH_INFINITY_DERIVATION.md`](REMESH_INFINITY_DERIVATION.md#24-exact-finite-companion-history-stability).
 
+The outer `execute_event_remesh_cycle_sequence` wrapper supplies the missing
+finite execution provenance. It accepts ordered
+`EventRemeshCycleExecutionSpec` values, executes every cycle on one graph under
+one graph-owned transaction and seals a `CausalEventRemeshCycleReceipt` for
+each ordinal. The resulting `ExecutedEventRemeshCycleSequence` binds the exact
+specs, cycle results, offline cycle observation and runtime schedule/history
+telescope from that same invocation. This establishes causal order, common
+graph identity and atomic graph rollback for that finite block. The offline
+observers retain their negative provenance scope when called independently.
+The wrapper still proves no global schedule/REMESH gain, uniform positive
+normalized block margin over a declared forward-invariant class, intrablock
+prefix-amplification bound, solver accuracy/order, mesh convergence, repetition
+or future stability; emitted I/O, warnings, external resources and
+external-only aliases remain outside rollback.
+
+The next finite layer is
+[`observe_executed_event_remesh_block_margin`](../src/tnfr/physics/runtime_remesh_schedule_block_margin.py).
+It selects a nonempty contiguous block from the causal execution's exact
+runtime telescope and retains every selected boundary by identity. Summing
+their balances gives
+
+$$
+D_B=V_{\rm before}-V_{\rm after}=K_B+S_B,
+\qquad S_B\geq0.
+$$
+
+For $V_{\rm before}>0$, the block-specific normalized lower margin and endpoint
+bound are
+
+$$
+\kappa_B=\frac{K_B}{V_{\rm before}},
+\qquad
+\frac{V_{\rm after}}{V_{\rm before}}\leq1-\kappa_B.
+$$
+
+The normalized fields are undefined at zero initial energy. One exact fixture
+has $\kappa_B=139/256$; the lag-one `alpha=1` identity-schedule orbit has
+$\kappa_B=0$. A uniform positive absolute drop is impossible across equilibrium
+and amplitude-scaled copies because this quadratic energy and its drop scale to
+zero. A positive margin on one observed block proves no uniform class
+coercivity. Repeated stability would additionally require a uniform positive
+normalized block margin over a declared forward-invariant class and a finite
+intrablock prefix-amplification bound. Both remain open.
+
 This execution contract does not prove solver accuracy or invariance under an
 equivalent timestep refinement, assign an affine gain to every jump, establish
 full-multichannel or repeated stability, or convert the continuous duration or
@@ -1174,6 +1218,7 @@ and
 | `src/tnfr/operators/event_runtime.py` | Atomic observed flow/glyph binding and finite represented EPI-map composition |
 | `src/tnfr/operators/event_remesh_runtime.py` | Atomic schedule/delayed-REMESH cycle with separate evidence channels |
 | `src/tnfr/operators/event_remesh_sequence.py` | Exact continuity across ordered supplied cycle results |
+| `src/tnfr/operators/event_remesh_causal_runtime.py` / `src/tnfr/operators/event_remesh_causal_runtime.pyi` | One graph-owned finite causal cycle sequence and exact public interface |
 | `src/tnfr/physics/event_refinement.py` | Offline and executor-linked event-local ZHIR evidence |
 | `src/tnfr/physics/event_remesh_refinement.py` | Finite strict three-mesh event/REMESH observations |
 | `src/tnfr/physics/event_remesh_reference.py` / `src/tnfr/physics/event_remesh_reference.pyi` | Effective-P2 finite reference-family certificate and exact public interface |
@@ -1183,6 +1228,7 @@ and
 | `src/tnfr/physics/runtime_remesh_history_stability.py` | One-transition executed binary64 REMESH/companion bridge |
 | `src/tnfr/physics/remesh_schedule_stability.py` | Exact REMESH-head/schedule-head augmented-energy balance |
 | `src/tnfr/physics/runtime_remesh_schedule_stability.py` | Adjacent-cycle runtime/history energy telescope |
+| `src/tnfr/physics/runtime_remesh_schedule_block_margin.py` / `src/tnfr/physics/runtime_remesh_schedule_block_margin.pyi` | Exact normalized margin for a contiguous causally executed finite block |
 | `src/tnfr/operators/_delayed_remesh_kernel.py` | Immutable delayed REMESH proposals and one-step evidence |
 | `src/tnfr/physics/phase_quotient.py` | Fixed-branch pairwise quotient, restricted canonical phase lift and counterexample |
 | `src/tnfr/physics/coherence_geometry.py` | Local, fixed-network and fixed-capacity coherence strata |
@@ -1216,6 +1262,16 @@ The pure schedule-head telescope and gain-based lower bound are tested in
 [`test_remesh_schedule_stability.py`](../tests/physics/test_remesh_schedule_stability.py).
 The adjacent runtime schedule binding and finite history telescope are tested in
 [`test_runtime_remesh_schedule_stability.py`](../tests/physics/test_runtime_remesh_schedule_stability.py).
+The finite same-invocation causal wrapper, receipt bindings, graph rollback and
+public example are tested in
+[`test_event_remesh_causal_runtime.py`](../tests/operators/test_event_remesh_causal_runtime.py)
+and
+[`test_event_remesh_causal_runtime_example.py`](../tests/operators/test_event_remesh_causal_runtime_example.py).
+The exact finite-block identities, normalized diagnostics, public facade and
+`139/256` versus zero-margin examples are checked by
+[`test_runtime_remesh_schedule_block_margin.py`](../tests/physics/test_runtime_remesh_schedule_block_margin.py)
+and
+[`test_runtime_remesh_schedule_block_margin_example.py`](../tests/physics/test_runtime_remesh_schedule_block_margin_example.py).
 
 ### SDK Entry Points
 
@@ -1243,6 +1299,8 @@ catalog = net.audit_operators()               # dict; 13 controlled probes
 | [166_event_remesh_reference_family.py](../examples/02_physics_regimes/166_event_remesh_reference_family.py) | Effective-P2 `2/4/8`-segment finite Euler/REMESH reference family and explicit false scope |
 | [167_reversible_eigenmode_reference.py](../examples/02_physics_regimes/167_reversible_eigenmode_reference.py) | Both exact nonuniform modes of nonregular `P3`, with exact-real Euler refinement bounds and explicit runtime abstention |
 | [168_runtime_reversible_eigenmode_reference.py](../examples/02_physics_regimes/168_runtime_reversible_eigenmode_reference.py) | Finite `2/4/8`-segment executed nonregular-`P3` binding with nonzero `rho`, `eta`, `epsilon` and explicit false runtime-convergence scope |
+| [169_event_remesh_causal_runtime.py](../examples/02_physics_regimes/169_event_remesh_causal_runtime.py) | One finite same-invocation event/REMESH cycle sequence with causal receipts, graph-owned atomicity, and the lag-one `alpha=1` stability boundary |
+| [170_runtime_remesh_block_margin.py](../examples/02_physics_regimes/170_runtime_remesh_block_margin.py) | Exact `kappa=139/256` finite-block lower margin and the causal `alpha=1`, `kappa=0` boundary, with uniform-class and prefix claims withheld |
 
 ## Cross-References
 

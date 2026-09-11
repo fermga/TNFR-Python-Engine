@@ -1043,10 +1043,9 @@ def _sealed_event_remesh_cycle_result(
 
 
 def _require_graph(graph: Any) -> nx.Graph:
-    if not isinstance(
-        graph,
-        (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph),
-    ):
+    graph_bases = (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+    graph_mro = _runtime_class_mro(type(graph))
+    if not any(owner is base for owner in graph_mro for base in graph_bases):
         raise TypeError("graph must be a NetworkX graph")
     return graph
 

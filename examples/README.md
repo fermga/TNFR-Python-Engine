@@ -70,3 +70,20 @@ It reports nonzero pressure (`rho`), held-input (`eta`) and combined local
 is a finite offline comparison of individually executor-certified records; it
 does not certify runtime mesh convergence, solver accuracy/order, common causal
 provenance, glyph/REMESH behavior, repetition or future stability.
+
+`169_event_remesh_causal_runtime.py` executes two declared event/REMESH cycle
+specs on one graph in one outer transaction. Its receipts bind each ordinal,
+exact spec, schedule identity and cycle result to the same invocation, while
+the result retains the offline cycle observation and finite schedule/history
+telescope. The lag-one `alpha=1` witness alternates `(2,0) -> (0,2) -> (2,0)`,
+showing that causal provenance and atomicity alone do not prove a global gain,
+uniform normalized class margin, convergence or future stability.
+
+`170_runtime_remesh_block_margin.py` applies the exact block observer to two
+causally executed finite sequences. The contractive block has
+`kappa=139/256` and endpoint gain upper bound `117/256`; the lag-one
+`alpha=1` identity-schedule block has `kappa=0`. Both results are finite
+observations. They do not prove a uniform positive normalized margin over a
+declared forward-invariant class, an intrablock prefix-amplification bound,
+repetition or future stability. A positive absolute uniform drop is excluded
+by equilibrium and quadratic amplitude scaling.

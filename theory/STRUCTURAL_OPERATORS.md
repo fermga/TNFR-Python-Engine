@@ -274,6 +274,19 @@ empty-schedule execution alternates `(2,0) -> (0,2) -> (2,0)`. Each fixed-histor
 REMESH record has zero current-state coefficient, so its one-step factor cannot
 be multiplied across the changing history.
 
+`execute_event_remesh_cycle_sequence` adds one graph-mutating outer boundary
+without changing that observer. It executes ordered
+`EventRemeshCycleExecutionSpec` values on one graph in one transaction. Every
+sealed `CausalEventRemeshCycleReceipt` binds an execution ordinal, the exact
+spec and the resulting cycle, including identity of the declared and executed
+schedule. The sealed `ExecutedEventRemeshCycleSequence` retains the ordinary
+offline cycle observation and compatible runtime schedule/history telescope.
+Only the outer result proves same-invocation causal order, common graph identity
+and finite graph-owned atomicity. It supplies no global schedule/REMESH gain,
+uniform repeated margin, solver accuracy/order, mesh convergence, repetition or
+future stability. Emitted I/O, warnings, external resources and external-only
+aliases remain outside rollback.
+
 `observe_event_remesh_three_mesh_refinement` compares three already executed
 and sealed cycles with strictly nested coarse, intermediate and fine physical
 boundaries. A common schedule, ordered full support, initial nodal channels,
@@ -1462,6 +1475,7 @@ channel, direction, scale and postcondition).
 | `src/tnfr/operators/event_runtime.py` | Observed flow/glyph binding and represented EPI-map composition |
 | `src/tnfr/operators/event_remesh_runtime.py` | Atomic event-schedule/delayed-REMESH cycle with separate evidence |
 | `src/tnfr/operators/event_remesh_sequence.py` | Exact continuity across ordered supplied event/REMESH cycle observations |
+| `src/tnfr/operators/event_remesh_causal_runtime.py` / `src/tnfr/operators/event_remesh_causal_runtime.pyi` | One graph-owned finite causal cycle sequence and exact public interface |
 | `src/tnfr/physics/event_refinement.py` | Offline and executor-linked event-local ZHIR observations |
 | `src/tnfr/physics/event_remesh_refinement.py` | Strict finite coarse/intermediate/fine event/REMESH observations |
 | `src/tnfr/physics/event_remesh_reference.py` / `src/tnfr/physics/event_remesh_reference.pyi` | Effective-P2 finite reference-family certificate and exact public interface |
@@ -1515,6 +1529,7 @@ The `Operator.__call__(G, node, **kw)` method implements the canonical execution
 | [163_reception_runtime_bridge.py](../examples/02_physics_regimes/163_reception_runtime_bridge.py) | EN ideal-real, represented, runtime-snapshot, and pressure-refresh boundary |
 | [164_resonance_runtime_bridge.py](../examples/02_physics_regimes/164_resonance_runtime_bridge.py) | RA U3 filter, identity gate, four realization layers, post-flow certificate, and switching abstention |
 | [167_reversible_eigenmode_reference.py](../examples/02_physics_regimes/167_reversible_eigenmode_reference.py) | No glyph execution: pure exact-real references for both nonuniform modes of nonregular `P3` |
+| [169_event_remesh_causal_runtime.py](../examples/02_physics_regimes/169_event_remesh_causal_runtime.py) | One finite same-invocation event/REMESH cycle sequence with causal receipts, outer graph atomicity, and an explicit stability boundary |
 
 ### 15.4 SDK Entry Points
 

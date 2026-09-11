@@ -438,6 +438,55 @@ produce `(0, 2)` and then `(2, 0)`. Both one-step REMESH records have zero
 current-state coefficient, so multiplying those fixed-history factors would
 contradict the observed alternating history.
 
+[`execute_event_remesh_cycle_sequence`](../src/tnfr/operators/event_remesh_causal_runtime.py)
+is the graph-mutating finite causal wrapper. Each
+`EventRemeshCycleExecutionSpec` declares one cycle invocation. The executor
+runs the specs in order on one graph under one outer graph transaction and
+returns an `ExecutedEventRemeshCycleSequence`. Every sealed
+`CausalEventRemeshCycleReceipt` binds a zero-based execution ordinal, the exact
+spec object and the resulting `EventRemeshCycleResult`; in particular, the
+cycle's executed schedule is the schedule carried by that spec. The enclosing
+result retains both the ordinary `ObservedEventRemeshCycleSequence` and its
+`RuntimeRemeshScheduleSequenceObservation` rather than replacing either
+observer's contract.
+
+The new positive claim is restricted to same-invocation causal order, common
+graph identity and finite graph-owned atomicity. Failure anywhere in the
+declared block restores the outer graph transaction. This does not compose a
+global executable schedule/REMESH gain, certify solver accuracy/order or mesh
+convergence, or establish repeated or future stability. Emitted I/O, warnings,
+external resources and aliases reachable only outside the graph remain outside
+rollback. Caller-ordered results passed directly to either underlying observer
+still have no causal provenance.
+
+[`observe_executed_event_remesh_block_margin`](../src/tnfr/physics/runtime_remesh_schedule_block_margin.py)
+accepts only an intact `ExecutedEventRemeshCycleSequence`. Optional
+`start_boundary` and `boundary_count` select one nonempty contiguous block of
+its identity-bound runtime telescope. The sealed
+`RuntimeRemeshScheduleBlockMarginObservation` retains those exact boundary
+objects and verifies
+
+```text
+D_block = V_before - V_after = K_block + S_block,
+S_block >= 0.
+```
+
+Here `K_block` is the sum of the gain-based energy-drop lower bounds and
+`S_block` is the sum of represented-schedule slacks. For `V_before > 0`, the
+stored normalized diagnostics are
+`kappa = K_block / V_before`, the observed fraction `D_block / V_before`, and
+the endpoint gain upper bound `1 - kappa`. They are `None` at zero initial
+energy. `positive_normalized_block_margin_certified` means only that this
+recorded block has `K_block > 0`; it is not uniform class coercivity.
+
+No positive absolute lower bound can be uniform across equilibrium and
+amplitude-scaled copies because the quadratic energy and drop scale to zero.
+The remaining theorem target is a uniform positive normalized block margin on
+a declared forward-invariant class plus a finite intrablock prefix-amplification
+bound. Neither target, repeated/future stability, a runtime-global gain, solver
+accuracy/order, mesh convergence nor full TNFR stability is certified by this
+finite observer.
+
 [`observe_event_remesh_three_mesh_refinement`](../src/tnfr/physics/event_remesh_refinement.py)
 is a pure observer over three already committed `EventRemeshCycleResult`
 objects. Every positive interval must have physical partition evidence, and
@@ -718,6 +767,16 @@ re-exported from `tnfr.physics`.
 - [`test_event_remesh_cycle_sequence.py`](../tests/operators/test_event_remesh_cycle_sequence.py)
   verifies ordered recorded-state continuity, metric rays, proof seals and
   the alternating-history obstruction to gain multiplication.
+- [`test_event_remesh_causal_runtime.py`](../tests/operators/test_event_remesh_causal_runtime.py)
+  verifies same-invocation receipts, graph identity, outer graph rollback,
+  nested sequence bindings, seal integrity and explicit false stability scope;
+  [`test_event_remesh_causal_runtime_example.py`](../tests/operators/test_event_remesh_causal_runtime_example.py)
+  checks the public facade, stub and finite causal example.
+- [`test_runtime_remesh_schedule_block_margin.py`](../tests/physics/test_runtime_remesh_schedule_block_margin.py)
+  verifies exact contiguous-block telescoping, normalized diagnostics, zero
+  initial energy, source/boundary identity and fail-closed proof seals;
+  [`test_runtime_remesh_schedule_block_margin_example.py`](../tests/physics/test_runtime_remesh_schedule_block_margin_example.py)
+  checks the public facade, import order and the `139/256` versus `0` examples.
 - [`test_event_remesh_refinement.py`](../tests/physics/test_event_remesh_refinement.py)
   verifies strict three-mesh compatibility, checkpoint errors, executed ZHIR
   binding, common-generator modal abstention and fail-closed proof seals.

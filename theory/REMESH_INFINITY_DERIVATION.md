@@ -548,6 +548,81 @@ The separate pure
 exercises both exact nonuniform modes of nonregular `P3` without claiming a
 runtime or REMESH binding.
 
+### §2.9 Causal finite cycle-sequence execution
+
+The algebraic telescope in §2.7 becomes causally identified for one finite
+invocation through
+[`execute_event_remesh_cycle_sequence`](../src/tnfr/operators/event_remesh_causal_runtime.py).
+It accepts ordered `EventRemeshCycleExecutionSpec` values and executes every
+cycle on one graph inside one outer graph transaction. Each sealed
+`CausalEventRemeshCycleReceipt` retains its zero-based ordinal, exact submitted
+spec and `EventRemeshCycleResult`; the executed schedule is the schedule object
+carried by that spec. The sealed `ExecutedEventRemeshCycleSequence` then retains
+the receipts, the ordinary offline `ObservedEventRemeshCycleSequence` and the
+compatible `RuntimeRemeshScheduleSequenceObservation`.
+
+This outer wrapper proves same-invocation causal order, one graph identity and
+finite graph-owned atomicity. It does not alter the contracts of the nested
+offline observers when they are used separately. The finite additive energy
+identity is still not a global schedule-times-REMESH gain and has no uniform
+positive normalized block margin over a forward-invariant class or intrablock
+prefix-amplification bound. Solver accuracy/order, mesh convergence, repeated
+or future stability and rollback of emitted I/O, warnings, external resources
+or external-only aliases remain outside the result. In particular, the lag-one
+`alpha=1` alternating history remains a valid causal counterexample to
+inferring convergence from provenance alone.
+
+### §2.10 Exact normalized margin on one causal finite block
+
+Let $B=(j_0,\ldots,j_0+r-1)$ be a nonempty contiguous block of boundaries in
+one intact `ExecutedEventRemeshCycleSequence`. Every boundary already satisfies
+
+$$
+D_j=V_j-V_{j+1}=K_j+S_j,
+\qquad S_j\geq0,
+$$
+
+where $K_j$ is its gain-based lower bound and $S_j$ is its exact augmented
+schedule-gain slack. Exact intermediate-energy continuity gives
+
+$$
+D_B=V_{j_0}-V_{j_0+r}
+=K_B+S_B,
+\quad
+K_B=\sum_{j\in B}K_j,
+\quad
+S_B=\sum_{j\in B}S_j.
+$$
+
+When $V_{j_0}>0$, define the block-specific normalized lower margin
+
+$$
+\kappa_B=\frac{K_B}{V_{j_0}}.
+$$
+
+Then the observed endpoint obeys the exact bound
+
+$$
+\frac{V_{j_0+r}}{V_{j_0}}\leq1-\kappa_B.
+$$
+
+[`observe_executed_event_remesh_block_margin`](../src/tnfr/physics/runtime_remesh_schedule_block_margin.py)
+revalidates the causal source, runtime telescope and selected boundary objects
+by identity, and seals every term above. Its normalized fields are undefined
+when $V_{j_0}=0$. The executable
+[`170_runtime_remesh_block_margin.py`](../examples/02_physics_regimes/170_runtime_remesh_block_margin.py)
+has one finite block with $\kappa_B=139/256$ and endpoint gain upper bound
+$117/256$. Its separate lag-one `alpha=1` orbit has $\kappa_B=0$, so causal
+provenance alone supplies no positive margin.
+
+There cannot be a positive uniform *absolute* drop over a class containing
+equilibrium or amplitude-scaled copies approaching it: this disagreement
+energy and every term in the balance scale quadratically, while equilibrium
+has zero drop. A repeated result would instead need a declared forward-invariant
+class with one uniform $\kappa_*>0$ for every positive-energy block, together
+with a finite constant bounding energy amplification at each intrablock prefix.
+The finite observer proves neither condition.
+
 ---
 
 ## §3. The Literal $\tau_g\to\infty$ Question
@@ -945,6 +1020,21 @@ preserved ideal-history barycenter, signed runtime defects, recorded history
 advance, finite additive telescoping and the distinct $\alpha=0$, $\alpha=1$
 and $0<\alpha<1$ regimes.
 
+The graph-owned finite causal wrapper and public example are checked by
+[`test_event_remesh_causal_runtime.py`](../tests/operators/test_event_remesh_causal_runtime.py)
+and
+[`test_event_remesh_causal_runtime_example.py`](../tests/operators/test_event_remesh_causal_runtime_example.py).
+They verify receipt/spec/schedule identity, same-invocation graph provenance,
+outer rollback and the explicit negative repeated-stability scope.
+
+The finite causal block-margin observer and its public example are checked by
+[`test_runtime_remesh_schedule_block_margin.py`](../tests/physics/test_runtime_remesh_schedule_block_margin.py)
+and
+[`test_runtime_remesh_schedule_block_margin_example.py`](../tests/physics/test_runtime_remesh_schedule_block_margin_example.py).
+They verify exact contiguous telescoping, normalized fields, identity binding,
+zero-energy abstention, `kappa=139/256`, the `alpha=1` zero-margin boundary and
+the explicit false uniform-class scope.
+
 The effective-P2 family and its public example are checked by
 [`test_event_remesh_reference.py`](../tests/physics/test_event_remesh_reference.py)
 and
@@ -969,9 +1059,10 @@ The following problems remain open:
 
 1. Define a common state space and convergence mode for a nontrivial runtime
    $\tau_g\to\infty$ limit.
-2. Promote the finite adjacent-cycle telescope to repeated runtime stability
-   only if shared causal execution provenance and a uniform positive margin can
-   be established; otherwise retain counterexamples.
+2. Define a forward-invariant runtime class and prove or refute a uniform
+   positive normalized block margin plus a finite intrablock prefix-amplification
+   bound; retain the `alpha=1`, equilibrium, scaling, clipping and rounding
+   obstructions.
 3. Determine the extra hypotheses needed to compose the implemented general
    finite executor/eigenmode binding with REMESH beyond effective $P_2$; its
    pressure, held-input and full-matrix endpoint defects currently stop at the
@@ -991,7 +1082,11 @@ fixed finite companion recurrence has a nonincreasing augmented disagreement
 functional with sharply separated mixing and pure-delay regimes. One applied
 binary64 transition is decomposed into exact ideal, rounding and clipping
 terms, and compatible adjacent recorded cycles have an exact finite additive
-schedule/history telescope. One event-free effective-$P_2$ family additionally
+schedule/history telescope. One graph-owned outer executor now supplies that
+telescope with same-invocation causal provenance and finite atomicity. A sealed
+observer extracts exact normalized lower margins from its contiguous finite
+blocks; the implemented witnesses give `139/256` and zero without establishing
+uniform class coercivity. One event-free effective-$P_2$ family additionally
 has a rational continuous/Euler error enclosure, strict improvement across its
 two declared proper subdivisions, exact ideal REMESH scaling and an explicit
 runtime residual bound. A separate
@@ -999,6 +1094,8 @@ runtime residual bound. A separate
 binds finite executor-owned pressure-refreshed partitions and propagates
 represented defects through complete Euler matrices, but it contains no REMESH
 claim.
-Shared causal provenance, generic or binary64 asymptotic convergence, repeated
-runtime stability, the clipped binary64 runtime limit, full structural
-invariants and global operator completeness remain unresolved.**
+A uniform positive normalized block margin on a declared forward-invariant
+class, an intrablock prefix-amplification bound, generic or binary64 asymptotic
+convergence, repeated runtime stability, the clipped binary64 runtime limit,
+full structural invariants and global operator completeness remain
+unresolved.**

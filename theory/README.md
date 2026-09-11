@@ -82,9 +82,16 @@ problems. Supporting maps include
   bound. The general pure kernel proves conditional exact-real partition
   convergence. Its finite offline runtime adapter now binds individually
   executor-certified reversible exact-mode partitions, separates pressure and
-  held-input defects, and propagates them with the full Euler matrices.
-  Binary64/runtime mesh convergence, shared causal multi-cycle provenance,
-  repeated runtime stability and the runtime infinity limit remain open.
+  held-input defects, and propagates them with the full Euler matrices. A
+  separate graph-owned executor now gives one finite schedule/REMESH cycle
+  sequence same-invocation causal provenance and atomicity while retaining the
+  offline observers' narrower contracts. A sealed observer derives exact
+  normalized lower margins on its contiguous finite blocks; the public
+  witnesses give `kappa=139/256` and zero. Equilibrium and scaling obstruct a
+  uniform positive absolute drop. Binary64/runtime mesh convergence, a uniform
+  positive normalized block margin over a declared forward-invariant class,
+  intrablock prefix control, repeated runtime stability and the runtime infinity
+  limit remain open.
 - [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) records
   tested catalog extensions and their classification.
 - [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) links selected

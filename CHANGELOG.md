@@ -4,6 +4,41 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added — 2026-09-11 Causal event/REMESH execution
+
+- Added `runtime_remesh_schedule_block_margin.py`, its exact public stub,
+  focused tests and `170_runtime_remesh_block_margin.py`. The sealed observer
+  selects a nonempty contiguous boundary block from one intact causal
+  execution and verifies `D=K+S` with nonnegative schedule slack. At positive
+  initial energy it records the block-specific normalized lower margin
+  `kappa=K/V_before` and endpoint gain bound `1-kappa`. The public witnesses
+  give `kappa=139/256` and the lag-one `alpha=1` boundary `kappa=0`.
+  Equilibrium and amplitude scaling exclude a positive uniform absolute drop;
+  a uniform positive normalized block margin over a declared forward-invariant
+  class, intrablock prefix control, repetition and future stability remain
+  unproved.
+- Added `event_remesh_causal_runtime.py`, its exact public stub, focused tests
+  and `169_event_remesh_causal_runtime.py`. The outer executor runs ordered
+  `EventRemeshCycleExecutionSpec` values on one graph in one transaction and
+  seals ordinal/spec/result receipts, including exact schedule identity. Its
+  result retains the ordinary offline cycle observation and compatible runtime
+  schedule/history telescope, thereby certifying same-invocation causal order,
+  common graph identity and finite graph-owned atomicity. It does not compose
+  schedule and REMESH gains or prove a uniform positive normalized block
+  margin over a declared forward-invariant class, intrablock prefix control,
+  solver accuracy/order, mesh convergence, repetition or future stability.
+  Emitted I/O, warnings, external resources and external-only aliases remain
+  outside rollback.
+
+### Changed — 2026-09-11 Causal proof validation
+
+- Reused authoritative nested validation results within each single deep-proof
+  query, removing repeated telescope and boundary walks without caching trust
+  between calls.
+- Hardened event/REMESH graph admission to inspect the concrete runtime type
+  hierarchy without reading a caller-controlled virtual `__class__` attribute
+  before the transaction snapshot exists.
+
 ### Added — 2026-09-10 Executed refinement and transactional runtime boundary
 
 - Added `observe_executed_event_local_zhir_physical_prejump`. Starting from one

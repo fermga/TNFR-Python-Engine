@@ -386,7 +386,12 @@ def _derive_boundary_values(
 ) -> dict[str, Any]:
     if not source_already_validated and not _source_sequence_is_intact(source):
         raise TNFRValueError("cycle sequence is unsealed, tampered, or inconsistent")
-    if not source.exact_common_metric_cycle_sequence_certified:
+    source_common_metric_certified = (
+        all(passed for _name, passed in source.conditions)
+        if source_already_validated
+        else source.exact_common_metric_cycle_sequence_certified
+    )
+    if not source_common_metric_certified:
         raise TNFRValueError("cycle sequence lacks one exact common schedule metric")
     if source.remesh_configurations_equal is not True:
         raise TNFRValueError("adjacent cycles must use one REMESH configuration")
@@ -394,7 +399,12 @@ def _derive_boundary_values(
         raise TNFRValueError("boundary_index is outside the cycle sequence")
 
     source_boundary = source.boundaries[index]
-    if not source_boundary.exact_recorded_state_continuity_certified:
+    source_boundary_continuous = (
+        all(passed for _name, passed in source_boundary.conditions)
+        if source_already_validated
+        else source_boundary.exact_recorded_state_continuity_certified
+    )
+    if not source_boundary_continuous:
         raise TNFRValueError("source cycle boundary is not exactly continuous")
     common_metric = source.exact_common_normalized_metric_ray
     if common_metric is None:
@@ -784,20 +794,24 @@ def _derive_sequence_values(
         )
     else:
         boundaries = boundary_overrides
-        if (
-            type(boundaries) is not tuple
-            or len(boundaries) != len(source.boundaries)
-            or any(
-                type(boundary)
-                is not RuntimeRemeshScheduleBoundaryObservation
-                or boundary.source_sequence is not source
-                or boundary.boundary_index != index
-                or not _boundary_proof_fields_are_intact(
+        boundary_integrity = (
+            tuple(
+                type(boundary) is RuntimeRemeshScheduleBoundaryObservation
+                and boundary.source_sequence is source
+                and boundary.boundary_index == index
+                and _boundary_proof_fields_are_intact(
                     boundary,
                     source_already_validated=True,
                 )
                 for index, boundary in enumerate(boundaries)
             )
+            if type(boundaries) is tuple
+            else ()
+        )
+        if (
+            type(boundaries) is not tuple
+            or len(boundaries) != len(source.boundaries)
+            or not all(boundary_integrity)
         ):
             raise TNFRValueError(
                 "stored runtime REMESH/schedule boundaries are inconsistent"
@@ -838,10 +852,7 @@ def _derive_sequence_values(
         (
             "every_adjacent_boundary_intact",
             boundaries_were_built
-            or all(
-                boundary.boundary_observation_certified
-                for boundary in boundaries
-            ),
+            or all(boundary_integrity),
         ),
         (
             "exact_intermediate_augmented_energies_continuous",

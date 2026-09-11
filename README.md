@@ -462,6 +462,41 @@ still does not establish shared graph provenance, causal succession,
 cross-call atomicity, a global executable gain, repetition or future
 stability.
 
+[`execute_event_remesh_cycle_sequence(...)`](src/tnfr/operators/event_remesh_causal_runtime.py)
+executes a declared finite sequence of `EventRemeshCycleExecutionSpec` values
+on one graph inside one outer graph transaction. Each
+`CausalEventRemeshCycleReceipt` binds its ordinal, the exact submitted spec and
+the resulting cycle, including identity between the executed schedule and the
+spec schedule. The sealed `ExecutedEventRemeshCycleSequence` retains those
+receipts, the derived `ObservedEventRemeshCycleSequence`, and the compatible
+`RuntimeRemeshScheduleSequenceObservation`. This wrapper establishes
+same-invocation causal order, one graph identity and graph-owned atomicity for
+that finite execution. The two nested observers remain offline artifacts and
+retain their own negative provenance properties when used independently.
+
+Causal provenance does not turn the finite telescope into a global executable
+gain or a theorem for repetition. Schedule and REMESH gains remain separate;
+solver accuracy or order, mesh convergence, future-cycle stability and full
+TNFR stability remain unproved. Rollback covers the graph-owned transaction
+domain, not emitted I/O, warnings, external resources or external-only aliases.
+
+[`observe_executed_event_remesh_block_margin(...)`](src/tnfr/physics/runtime_remesh_schedule_block_margin.py)
+selects a nonempty contiguous boundary block from one intact causal execution.
+It revalidates the source and boundary identities and sums the exact relation
+`D = K + S`, where `D` is the observed augmented-energy drop, `K` is the
+gain-based lower bound and `S >= 0` is the represented-schedule slack. When
+`V_before > 0`, it reports the block-specific normalized lower margin
+`kappa = K / V_before` and the endpoint bound
+`V_after / V_before <= 1 - kappa`. Example 170 records `kappa = 139/256` for
+one finite block and `kappa = 0` at the lag-one `alpha=1` boundary.
+
+A uniform positive absolute drop is blocked by equilibrium and by amplitude
+scaling, under which the quadratic energy and its drop both approach zero.
+One positive finite `kappa` therefore does not prove uniform coercivity or
+repeated stability. The next open theorem requires a uniform positive
+normalized block margin over a declared forward-invariant class, together
+with a finite bound on every intrablock prefix amplification.
+
 [`observe_event_remesh_three_mesh_refinement(...)`](src/tnfr/physics/event_remesh_refinement.py)
 compares three already executed and individually sealed event/REMESH cycles on
 strictly nested coarse, intermediate and fine physical partitions. It requires

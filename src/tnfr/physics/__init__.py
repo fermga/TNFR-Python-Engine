@@ -85,6 +85,10 @@ runtime_remesh_schedule_stability : Adjacent-cycle runtime/history binding
     - Identifies the next represented schedule and recorded history append
     - Telescopes exact finite augmented-energy balances in one metric
     - Excludes shared execution provenance, global gain and repetition
+runtime_remesh_schedule_block_margin : Causal finite-block margin observation
+    - Normalizes a contiguous block lower bound by its initial energy
+    - Binds the block to one graph-owned causal finite execution
+    - Excludes uniform class coercivity, repetition and future stability
 
 See Also
 --------
@@ -511,6 +515,10 @@ from .runtime_remesh_schedule_stability import (
     RuntimeRemeshScheduleSequenceObservation,
     observe_runtime_remesh_schedule_sequence,
 )
+from .runtime_remesh_schedule_block_margin import (
+    RuntimeRemeshScheduleBlockMarginObservation,
+    observe_executed_event_remesh_block_margin,
+)
 from .network_stage_stability import (
     AllTargetNeighborStageCertificate,
     AllTargetNeighborStageStep,
@@ -833,6 +841,9 @@ __all__ = [
     "RuntimeRemeshScheduleBoundaryObservation",
     "RuntimeRemeshScheduleSequenceObservation",
     "observe_runtime_remesh_schedule_sequence",
+    # --- Causally executed finite REMESH/schedule block margin ---
+    "RuntimeRemeshScheduleBlockMarginObservation",
+    "observe_executed_event_remesh_block_margin",
     # --- Physical operator-event flow duration ---
     "ContinuousRelaxationDurationDiagnostic",
     "diagnose_continuous_relaxation_duration",
