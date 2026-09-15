@@ -7,17 +7,22 @@ frequency ``D_{ν_f}(t) = diag(ν_f_1(t), …, ν_f_n(t))`` the transport is
 
     ``ẋ = −D_{ν_f}(t) · L · x``,
 
-and the generators ``D_{ν_f}(t)·L`` at different times **do not commute**, so there
-is **no clock change**: ``e^{−s(t)L}x₀`` is not the solution.  This module measures
-that boundary and its associated stability questions, so the scalar theorem is
-not over-extended.
+and generators at different times need not commute. The scalar ansatz
+``e^{−s(t)L}x₀`` is therefore not a general solution. Fixed heterogeneous
+capacity, or a scalar multiple of one fixed profile, still admits its own
+fixed generator; that does not turn the generator into ``L``. This module
+measures the boundary and its associated stability questions.
 
 **Honest scope.**  The failure of the scalar-time ansatz is DERIVED (the
 commutator is non-zero) and MEASURED.  A *fixed* positive ``D_{ν_f}`` keeps
 ``−D_{ν_f}L`` stable (consensus preserved, spectral abscissa ``≤ 0``); the
-**uniform** stability of the time-varying / switched flow is only MEASURED on the
-tested schedules — a general bound is **OPEN** (`NT-P09` heterogeneous).  U2/U6 in
-[AGENTS.md](../../../AGENTS.md) are **not** modified.
+fixed symmetric graph has a conditional Dirichlet convergence bound when
+capacities are bounded above and away from zero, as implemented below and in
+``structural_diffusion.py``. Arbitrary schedules without these hypotheses do
+not inherit that conclusion; a finite accumulated mobility can retain
+nonuniform EPI. These results concern the pure EPI channel. A separate
+capacity-pressure channel changes its equilibria, as analyzed in
+``capacity_localization.py``. U2/U6 in [AGENTS.md](../../../AGENTS.md) are unchanged.
 """
 
 from __future__ import annotations

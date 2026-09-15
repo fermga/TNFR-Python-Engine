@@ -174,6 +174,18 @@ reports its rounding residual from the exact-real affine value.
 
 ### §1.2 Guards, shape and clipping
 
+**Observation transport.** Uniform scalar head mixing commutes with a fixed
+linear spatial projection in exact arithmetic. On unit-weight P5, the
+reflection quotient `((0,4),(1,3),(2,))` also intertwines pure-EPI diffusion,
+so the two declared operations share an exact three-node quotient. Its
+stationary-history energy and the discarded fine energy give a Pythagorean
+split using the same companion weights. This is compatible composition, not
+an identification of temporal echo with eliminated-state memory: genuine
+past samples of a decaying nodal mode make the echo larger than the current
+amplitude, while the forward nodal amplitude is smaller. The proof,
+minimal-state scope and production rounding/clipping controls are centralized
+in [Derived EPI memory, section 9](DERIVED_EPI_MEMORY.md).
+
 Both delays are strict positive integers. The outer EPI history must be replayable
 and support indexed access. If it contains fewer than max(tau_l, tau_g) + 1
 snapshots, the planner returns an immutable insufficient-history no-op and the

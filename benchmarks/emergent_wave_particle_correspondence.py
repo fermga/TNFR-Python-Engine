@@ -1,69 +1,45 @@
-"""Wave-particle correspondence: the wave's own mode index IS the particle's
-topological charge (the classical, ring-topology instance of the textbook
-"particle on a ring" quantization).
+"""Sampled ring phase modes: spectral and branch-aware winding diagnostics.
 
-THE QUESTION (theory creator): from the emergent structural cosmology (Sec.2.5),
-could wave-particle duality be understood structurally? The stage (Sec.7.1a, a
-discrete standing-mode spectrum, wave-like: omega_k=sqrt(lambda_k)) and the
-occupant (Sec.7.1b, a conserved integer topological winding W, particle-like)
-were derived SEPARATELY. This asks whether they are two readings of the SAME
-object.
+For a unit-weight n-cycle, the phase phasor z_i = exp(i*theta_i) with
+theta_i = 2*pi*k*i/n is an eigenvector of the symmetric normalized Laplacian:
+L_sym z = (1 - cos(2*pi*k/n)) z. The input index k is periodic modulo n.
+Away from the even-n Nyquist boundary, its shortest-arc winding is the signed
+sampled representative k_star in (-n/2, n/2), not an unrestricted W = k.
+The production winding certificate abstains at the wrap branch and reports
+U3 admissibility separately. Defined winding does not imply admissible coupling.
 
-THE IDENTITY (derived here): on a ring, the k-th stage eigenmode of L_sym, read
-as the COMPLEX order parameter Psi = e^(i*theta) (the same complex field used
-throughout Sec.7 for the winding), is an EXACT eigenvector of L_sym with the
-canonical eigenvalue lambda_k = 1 - cos(2 pi k / n) -- AND it carries topological
-winding EXACTLY k. So the wave's own mode index k (its spatial frequency, its
-dispersion omega_k = sqrt(lambda_k)) IS the particle's winding charge W = k: not
-a duality/trade-off, but a literal identity of the two labels, on the ring. This
-is the classical-field-theory content that underlies the textbook "particle on a
-ring" result in quantum mechanics (single-valuedness of e^(i*k*theta) around a
-loop forces k in Z, and k is simultaneously the wavefunction's spatial frequency
-and the particle's quantized angular momentum) -- TNFR's nodal operator contains
-the SAME topological fact.
+The phase phasor z is not the geometric field Psi = K_phi + i*J_phi. A uniform
+zero-phase ring has z = 1 and Psi = 0. This benchmark does not identify their
+trajectories or derive the auxiliary graph-wave law from the nodal equation.
+The ring and phases are declared fixtures, not dynamically emergent entities.
 
-THE COMPLEMENT (also derived here): a REAL phase ripple built from a few low-k
-stage modes (a generic "wave" excitation of the vacuum, e.g. cos(2 pi k i / n))
-stays at winding 0 for ANY amplitude tested (up to 20 rad, far past any small-
-perturbation regime) -- the winding charge is NOT reached by growing a narrow-
-band real wave; it requires the SPECIFIC complex k-th mode of THE IDENTITY above.
-So "wave" (a real ripple around the vacuum) and "particle" (a winding defect) are
-topologically distinct sectors of the SAME field, connected only through the
-complex order parameter's own mode structure.
+Measurements:
+  M1: original n=60 low-mode fixtures plus n=12 alias/branch/U3 controls;
+      floating-point eigenvector residual and production winding certificate.
+  M2: the five declared amplitudes of one seed-0 real-ripple fixture on n=60.
+      Its zero windings do not establish a theorem for arbitrary real ripples.
+  M3: a production geometric-field readout demonstrating z != Psi at zero phase.
 
-WHAT EMERGES (measured):
-  - M1: the k-th complex stage mode is an EXACT L_sym eigenvector (residual
-    ~1e-15) with the canonical eigenvalue, AND its topological winding is EXACTLY
-    k -- the wave's mode index and the particle's charge are the SAME integer.
-  - M2: real narrow-band ripples (a few low-k modes) stay at winding 0 for every
-    amplitude tested (0.5 to 20 rad) -- generic wave excitations of the vacuum
-    are topologically trivial; they do not "leak" into a charged sector.
-
-HONEST SCOPE: this is the standard topological fact behind single-valued maps to
-a circle (winding number, homotopy classes of S^1 -> S^1) applied to TNFR's own
-complex order parameter Psi = K_phi + i J_phi (Sec.5.3, Sec.7.1b) -- the same
-classical mathematics that underlies the quantum "particle on a ring" angular-
-momentum quantization, re-expressed on the canonical structural operator. It is a
-DERIVED structural correspondence between the already-derived stage (Sec.7.1a)
-and occupant (Sec.7.1b). It is NOT the full quantum-mechanical wave-particle
-duality: there is no probability amplitude, no Born rule, no single-particle
-interference statistics, and no de Broglie relation with a physical hbar -- the
-substrate is classical (Sec.9.2, OPEN). Closes no open problem.
+Scope: finite static classical phase diagnostics. Neither integer winding nor
+the spectral identity proves localized particles, a probability amplitude,
+detector statistics, physical angular momentum, or quantum wave-particle duality.
+The numerical residual tolerance below is a fixture check, not a physical input.
 
 Run:
     python benchmarks/emergent_wave_particle_correspondence.py
 
-Theoretical anchor: theory/EMERGENT_ONTOLOGY.md Sec.7.1 (stage / occupant),
-Sec.5.3 (the complex geometric field Psi), Sec.9.2 (the classical-substrate
-boundary); benchmarks/emergent_particle_catalog.py (winding_ring, winding_number).
-Status: RESEARCH (structural correspondence; stage=occupant identity on the ring).
+Owners: tnfr.physics.structural_diffusion, winding_certificates, and unified.
+Theoretical boundary: theory/EMERGENT_ONTOLOGY.md sections 7.1 and 9.2.
+Status: RESEARCH (finite spectral/winding controls; no dynamical bridge).
 """
 
 from __future__ import annotations
 
 import math
+from numbers import Integral
 import pathlib
 import sys
+from typing import Any
 
 import numpy as np
 
@@ -71,81 +47,144 @@ _SRC = pathlib.Path(__file__).resolve().parents[1] / "src"
 if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
-from tnfr.physics.emergent_particles import (  # noqa: E402
-    winding_number,
-    winding_ring,
-)
+from tnfr.physics.emergent_particles import winding_ring  # noqa: E402
 from tnfr.physics.structural_diffusion import (  # noqa: E402
     symmetric_normalized_laplacian,
 )
+from tnfr.physics.unified import compute_complex_geometric_field  # noqa: E402
+from tnfr.physics.winding_certificates import (  # noqa: E402
+    WindingCertificate,
+    certify_phase_winding,
+)
+
+
+def _ring_mode_observation(n: int, k: int) -> dict[str, Any]:
+    """Read one declared integer phase mode without evolving the graph."""
+    if isinstance(k, bool) or not isinstance(k, Integral):
+        raise TypeError("k must be an integer mode index")
+    # Validate support through the production fixture before reducing the index.
+    winding_ring(n, 0)
+    sampled_index = int(k) % n
+    graph = winding_ring(n, sampled_index)
+    nodes, laplacian = symmetric_normalized_laplacian(graph)
+    phase_phasor = np.exp(1j * np.array([graph.nodes[i]["theta"] for i in nodes]))
+    laplacian_phasor = np.asarray(laplacian) @ phase_phasor
+    predicted = 1.0 - math.cos(math.tau * sampled_index / n)
+    measured = float(
+        np.real(np.vdot(phase_phasor, laplacian_phasor)
+                / np.vdot(phase_phasor, phase_phasor))
+    )
+    residual = float(np.max(np.abs(laplacian_phasor - predicted * phase_phasor)))
+    representative = (
+        None if 2 * sampled_index == n
+        else sampled_index if 2 * sampled_index < n
+        else sampled_index - n
+    )
+    return {
+        "mode_index": int(k),
+        "sampled_representative": representative,
+        "phase_phasor": phase_phasor,
+        "eigenvalue_measured": measured,
+        "eigenvalue_predicted": predicted,
+        "eigenvector_residual": residual,
+        "certificate": certify_phase_winding(graph, range(n)),
+    }
+
+
+def _real_ripple_observations() -> tuple[tuple[float, WindingCertificate], ...]:
+    """Read only the declared seed-0, n=60, three-cosine amplitude fixture."""
+    n = 60
+    modes = (1, 2, 3)
+    coefficients = np.random.default_rng(0).uniform(-1, 1, size=len(modes))
+    indices = np.arange(n)
+    observations = []
+    for amplitude in (0.5, 2.0, 5.0, 10.0, 20.0):
+        phases = np.zeros(n)
+        for coefficient, mode in zip(coefficients, modes):
+            phases += amplitude * coefficient * np.cos(math.tau * mode * indices / n)
+        phases = np.mod(phases, math.tau)
+        graph = winding_ring(n, 0)
+        for node in range(n):
+            # Declared initial phase fixture; this is not an evolution step.
+            graph.nodes[node]["theta"] = float(phases[node])
+            graph.nodes[node]["phase"] = float(phases[node])
+        observations.append((amplitude, certify_phase_winding(graph, range(n))))
+    return tuple(observations)
+
+
+def _uniform_phase_field_control(n: int = 12) -> tuple[np.ndarray, np.ndarray]:
+    """Return distinct phase-phasor and geometric readouts of one zero-phase ring."""
+    graph = winding_ring(n, 0)
+    geometric_field = compute_complex_geometric_field(graph)
+    return (
+        np.exp(1j * np.array([graph.nodes[i]["theta"] for i in range(n)])),
+        np.array([geometric_field[i] for i in range(n)]),
+    )
 
 
 def main() -> None:
-    print("=" * 74)
-    print("WAVE-PARTICLE CORRESPONDENCE: the mode index IS the winding charge")
-    print("=" * 74)
+    print("=" * 82)
+    print("SAMPLED RING MODES: PHASE PHASOR, WINDING AND DISTINCT GEOMETRIC FIELD")
+    print("=" * 82)
 
-    n = 60
-    _, lsym = symmetric_normalized_laplacian(winding_ring(n, 0))
-    lsym = np.asarray(lsym)
-
-    # -- M1: the k-th complex stage mode IS an L_sym eigenvector, AND its ------
-    # -- winding is exactly k (wave-mode-index = particle-charge, exact) -------
-    print("\n[M1] the k-th complex stage mode: eigenvector + winding = k (exact).")
+    print("\n[M1] Static ring fixtures; k_star is the signed sampled representative.")
     print(
-        f"     {'k':>3} {'lambda_k (meas)':>16} {'1-cos(2pi k/n)':>16} "
-        f"{'residual':>10} {'winding':>8}"
+        f"     {'n':>3} {'k':>3} {'k_star':>9} {'lambda':>10} "
+        f"{'residual':>10} {'winding':>10} {'U3':>6} {'branch margin':>14}"
     )
-    for k in (1, 2, 3, 5, 10):
-        psi = np.exp(1j * 2 * math.pi * k * np.arange(n) / n)
-        l_psi = lsym @ psi
-        lam_meas = float(np.real(np.vdot(psi, l_psi) / np.vdot(psi, psi)))
-        residual = float(np.max(np.abs(l_psi - lam_meas * psi)))
-        lam_pred = 1.0 - math.cos(2 * math.pi * k / n)
-        w, raw = winding_number(winding_ring(n, k))
+    fixtures = [(60, k) for k in (1, 2, 3, 5, 10)]
+    fixtures += [(12, k) for k in (1, 5, 6, 7, 13)]
+    for n, k in fixtures:
+        observation = _ring_mode_observation(n, k)
+        certificate = observation["certificate"]
+        representative = observation["sampled_representative"]
+        winding = certificate.winding if certificate.is_defined else "undefined"
         print(
-            f"     {k:>3} {lam_meas:>16.6f} {lam_pred:>16.6f} "
-            f"{residual:>10.2e} {w:>8d}"
+            f"     {n:>3} {k:>3} {str(representative):>9} "
+            f"{observation['eigenvalue_measured']:>10.6f} "
+            f"{observation['eigenvector_residual']:>10.2e} {winding:>10} "
+            f"{str(certificate.u3_admissible):>6} "
+            f"{certificate.minimum_branch_margin:>14.6f}"
         )
-        assert residual < 1e-9, f"mode {k} is not an eigenvector"
-        assert abs(lam_meas - lam_pred) < 1e-9, f"eigenvalue mismatch at k={k}"
-        assert w == k and abs(raw - k) < 1e-9, f"winding != k at k={k}"
-    print("     -> PASS: the wave's OWN mode index (its dispersion omega_k=")
-    print("        sqrt(lambda_k)) IS the particle's topological charge W=k.")
+        assert observation["eigenvector_residual"] < 1e-9
+        assert abs(observation["eigenvalue_measured"]
+                   - observation["eigenvalue_predicted"]) < 1e-9
+        if representative is None:
+            assert not certificate.is_defined, "Nyquist winding must be undefined"
+        else:
+            assert certificate.is_defined
+            assert certificate.winding == representative
+            assert abs(certificate.raw_winding - representative) < 1e-9
+    print("     -> PASS: W=k_star where defined; alias and Nyquist controls included.")
+    print("        U3 is independent telemetry; a defined winding can fail its gate.")
 
-    # -- M2: real narrow-band ripples stay at winding 0 (topologically trivial)-
-    print("\n[M2] real narrow-band ripples (low-k modes): winding vs amplitude.")
-    rng = np.random.default_rng(0)
-    ks = (1, 2, 3)
-    coeffs = rng.uniform(-1, 1, size=len(ks))
-    idx = np.arange(n)
-    print(f"     {'amplitude':>10} {'winding':>8}")
-    for amp in (0.5, 2.0, 5.0, 10.0, 20.0):
-        theta = np.zeros(n)
-        for c, k in zip(coeffs, ks):
-            theta += amp * c * np.cos(2 * math.pi * k * idx / n)
-        theta = np.mod(theta, 2 * math.pi)
-        G = winding_ring(n, 0)
-        for i in range(n):
-            G.nodes[i]["theta"] = float(theta[i])
-            G.nodes[i]["phase"] = float(theta[i])
-        w, _ = winding_number(G)
-        print(f"     {amp:>10.1f} {w:>8d}")
-        assert w == 0, f"a narrow-band real ripple acquired charge at amp={amp}"
-    print("     -> PASS: a generic real 'wave' excitation of the vacuum stays")
-    print("        topologically trivial (W=0) at every amplitude tested.")
+    print("\n[M2] Finite real-ripple fixture: n=60, seed=0, modes=(1,2,3).")
+    print(f"     {'amplitude':>10} {'winding':>10} {'U3':>6} {'branch margin':>14}")
+    for amplitude, certificate in _real_ripple_observations():
+        winding = certificate.winding if certificate.is_defined else "undefined"
+        print(
+            f"     {amplitude:>10.1f} {winding:>10} "
+            f"{str(certificate.u3_admissible):>6} "
+            f"{certificate.minimum_branch_margin:>14.6f}"
+        )
+        assert certificate.is_defined and certificate.winding == 0
+    print(
+        "     -> PASS: these five initial fixtures have W=0; "
+        "no universal ripple claim."
+    )
 
-    print("\n" + "=" * 74)
-    print("THE CORRESPONDENCE:")
-    print("  wave (stage, Sec.7.1a): mode index k, dispersion omega_k=sqrt(lambda_k)")
-    print("  particle (occupant, Sec.7.1b): topological charge W")
-    print("  on the ring: W = k, EXACTLY -- the same integer labels both readings.")
-    print("  A real narrow-band ripple stays W=0: 'wave' and 'particle' are")
-    print("  distinct sectors of the same field, joined by the complex mode.")
-    print("HONEST: the classical topology of maps S^1->S^1 (the textbook 'particle")
-    print("  on a ring' angular-momentum quantization); no probability amplitude,")
-    print("  Born rule, interference statistics or physical hbar (Sec.9.2, OPEN).")
-    print("=" * 74)
+    print(
+        "\n[M3] Uniform zero-phase control using the production geometric-field reader."
+    )
+    phase_phasor, geometric_field = _uniform_phase_field_control()
+    assert np.array_equal(phase_phasor, np.ones(12, dtype=complex))
+    assert np.array_equal(geometric_field, np.zeros(12, dtype=complex))
+    print("     -> PASS: z=exp(i*theta)=1, while Psi=K_phi+i*J_phi=0 on every node.")
+    print("\nScope: static sampled phase modes; no emergent particle, detector model,")
+    print(
+        "       quantum duality, or nodal-to-auxiliary trajectory bridge established."
+    )
+    print("=" * 82)
 
 
 if __name__ == "__main__":

@@ -867,13 +867,27 @@ The instantaneous magnitude can rise or fall with the signed acceleration.
 THOL's U2 stabilizer role comes from organizing a bifurcation while preserving
 global form; it is not a universal one-step pressure contraction.
 
-**Bifurcation detection**:
+**Bifurcation detection and history**:
 
 $$
-\frac{\partial^2 \text{EPI}}{\partial t^2} = \text{EPI}(t) - 2\,\text{EPI}(t-1) + \text{EPI}(t-2) \tag{finite difference}
+\widehat A=\frac{2}{h_1+h_2}
+\left(\frac{x_2-x_1}{h_2}-\frac{x_1-x_0}{h_1}\right),
+\qquad h_j=t_j-t_{j-1}>0.
 $$
 
-When $|\partial^2\text{EPI}/\partial t^2| > \tau$ (bifurcation threshold), sub-EPIs are spawned.
+The shared `compute_d2epi_dt2` reads the latest three active samples. An
+available timestamped history is authoritative and must end at the current
+EPI. Legacy untimed histories retain the unit-step difference
+`x2-2*x1+x0`; fewer than three active samples mean unavailable acceleration,
+represented by zero. Cached curvature does not replace this history in
+graph-backed THOL. The estimate compares prior nodal rates; it does not add
+an independent acceleration equation.
+
+When $|\widehat A|>\tau$, the public operator proposes sub-EPIs subject to
+hierarchy-depth and domain checks. The node-protocol primitive implements
+only the pressure channel; graphless nodes supply their own acceleration.
+Both paths use the shared checked pressure proposal in
+[`_thol_pressure.py`](../src/tnfr/operators/_thol_pressure.py).
 
 **Sub-EPI creation**:
 
@@ -916,7 +930,15 @@ not supply the explicit U5 coefficient.
   (default: 5 levels). At the limit THOL still applies its signed pressure
   reorganization but records that no child was created.
 - **Channel-pure**: The parent and its neighbours keep their EPI coordinates;
-  any subsequent form propagation is an explicit RA stage.
+any subsequent form propagation is an explicit RA stage.
+
+The child has no transport edge until a later admissible coupling action.
+Default structural pressure reads actual neighbors, not hierarchy membership.
+Likewise, a refresh before integration overwrites THOL's direct pressure
+increment; holding that increment through a physical interval instead gives
+the additional exact reference change `h*nu_f*THOL_accel*A_hat`. See
+[THOL pressure and feedback](THOL_PRESSURE_FEEDBACK.md) for the execution-order
+budget, disconnected zero modes and finite implementation evidence.
 
 **Grammar**: Stabilizer (U2); Bifurcation Handler (U4a); Transformer (U4b).
 

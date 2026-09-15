@@ -39,6 +39,14 @@ That valid limit does not derive this module's Hamiltonian from the nodal
 pressure, nor establish DeltaNFR=-dV/dEPI for the tetrad potential. These
 geometric calculations do not settle an open arithmetic or fluid problem.
 
+On fixed mutual-singleton P2 support in an open phase branch, extracted fields
+satisfy J_phi=-sin(K_phi). The harmonic vector field is tangent to this curve
+only at K_phi=0. Hence no nonzero continuous harmonic geometric trajectory can
+be realized by any differentiable phase evolution on that support with these
+same read-outs. Isolated event endpoints and broader supports are separate
+questions. Section 3.7 of the variational note proves this obstruction and the
+different, nodal-equation-derived dissipative potential flow on restricted P2.
+
 References: theory/TNFR_VARIATIONAL_PRINCIPLE.md and
 theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md.
 """

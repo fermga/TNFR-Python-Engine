@@ -1,7 +1,7 @@
 # Emergent Ontology from the Nodal Equation
 
 **Status**: WORKING DRAFT — EXPLORATORY (not canonical)
-**Date**: 2026-09-06 (audited against the current implementation and research certificates)
+**Date**: 2026-09-14 (scoped implementation and research-certificate references)
 **Prerequisite**: [AGENTS.md](../AGENTS.md), [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md), [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md)
 
 ---
@@ -122,9 +122,10 @@ to physical frequency. Any physical comparison requires an explicit state map,
 units and empirical calibration. Shared equation form alone establishes no
 physical manifestation or priority relation.
 
-**The grammar is the engine's generative syntax.** Operators are the exclusive
-mechanism that changes EPI, and U1–U6 constrain accepted operator sequences and
-telemetry. This makes grammar upstream of operator-driven engine trajectories;
+**The grammar is the engine's generative syntax.** Canonical operators provide
+named transformations; declared solvers may also advance EPI through the shared
+nodal integrator with explicit pressure and provenance. U1–U6 constrain accepted
+operator sequences and telemetry. Grammar governs operator-driven trajectories;
 it does not make every auxiliary model below a theorem of grammar. U3 is an
 operator admissibility contract, U2 and U4 are calibrated sequence policies,
 and U6 is a read-only warning policy. Their mathematical promotions remain scoped:
@@ -195,14 +196,16 @@ tying them into one structure (the synergies a first pass can miss):
 
 Some emergents appear only at the **intersection** of others — capabilities no single layer shows:
 
-- **Fault-tolerant memory** (winding model × thermodynamics × information). A
-  declared cycle's integer winding `W` (§7.1b) is unchanged under continuous
-  deformations that retain the cycle, nonzero phase support and a positive wrap-branch
-  margin. In the selected noise protocol,
-  a stored `W=2` is **retained with probability ≈1 below a noise threshold** (`σ ≲ 0.3`) and lost
-  above it, even while the coupling continually restores the field: a noise-margined,
-  **error-corrected memory** (the classical analog of topological storage). → robust information
-  storage.
+- **Protected winding in a restricted canonical policy.** A declared cycle's
+  integer winding `W` (§7.1b) survives continuous deformations with defined
+  nodal phases, fixed cycle support and no wrap-branch crossing. The
+  [Coupling gap theorem](COUPLING_WINDING_PERSISTENCE.md) derives an invariant
+  interval and decreasing gap spread for the existing target-only, fixed-link
+  UM configuration. Finite production words test that result with explicit
+  phase-inert separators. This supplies conditional structural retention;
+  it does not establish noise-correction probabilities, thermodynamic memory
+  or localized particles. The former unanchored noise-threshold claim is not
+  evidence for these canonical dynamics.
 - **Candidate scale-free fluctuations** (thermodynamics × criticality). The auxiliary
   reaction-diffusion normal form in §6.2 has an analytic critical-slowing limit. The canonical
   finite-graph telemetry currently records only sampled susceptibility and `ξ_C`; it has not
@@ -211,7 +214,18 @@ Some emergents appear only at the **intersection** of others — capabilities no
 - **Scale-reduction diagnostics** (geometry × multi-scale grammar). Static
   Kron reduction preserves selected effective resistances, while observer-aware
   reduction diagnostics show that arbitrary transient closure generally needs
-  memory and nonlinear observers can be lost. A static reduction is not REMESH execution, U5
+  memory and nonlinear observers can be lost. For fixed reversible pure-EPI
+  diffusion, [derived memory](DERIVED_EPI_MEMORY.md) now gives an exact kernel
+  and initial hidden-state source from the nodal generator. A five-node path
+  needs that information for its selected two-block observation; a four-node
+  exact quotient does not. This establishes memory in a grouped observation
+  of a dissipative model, without a new physical law or an oscillation claim.
+  The five-node case now has a minimal three-coordinate linear realization
+  through its reflection quotient. This quotient also transports uniform
+  unclipped REMESH and splits visible from discarded history energy. It does
+  not make the echo a forward diffusion step, and invisible microscopic
+  disagreement can persist at quotient consensus; see section 9 of that note.
+  A static reduction is not REMESH execution, U5
   certification or renormalization-group covariance.
 - **A confinement mass gap** (conservative face × bounded structure). On a bounded structure the
   lowest wave mode has a *non-zero* frequency `ω_min = c√λ₂` — a **dispersion gap** that turns the
@@ -661,6 +675,15 @@ the ambient space or that engine operators preserve its symplectic form. Its glo
 rotations generate conserved model charges; they are distinct from the node-dependent pure-gauge
 coordinate rephasing of §7.2.
 
+The fixed-P2 graph image supplies an explicit obstruction: in an open phase
+branch `J_phi=-sin(K_phi)`, whereas harmonic evolution is tangent to that curve
+only at zero. This rules out nonzero continuous harmonic geometric evolution
+from any differentiable phase path on that same support with the same read-outs.
+In the restricted fixed-phase pure-EPI model, the potential/flux pair instead
+decays at the derived rate `nu_0+nu_1`. The proof and production regressions are
+centralized in [the variational note, section 3.7](TNFR_VARIATIONAL_PRINCIPLE.md#37-p2-read-out-realizability-obstruction-and-derived-flow).
+Neither statement is a theorem for every TNFR graph or an empirical identification.
+
 > **Honest boundary.** The fitted speed describes a threshold front and low-wave-number
 > group velocity on selected lattices. It is not a strict causal speed or a proof of Lorentz
 > invariance, special relativity or curved spacetime. The Stokes/Poincare structure is classical,
@@ -857,12 +880,76 @@ be identified independently.
   only zero, unit and multi-winding classes; it does not
   infer bosonic/fermionic statistics, matter/antimatter or a particle species.
   The sign reverses with cycle orientation. Preservation across evolution is
-  conditional on retaining the cycle and avoiding zeros and the wrap branch.
+  conditional on retaining the cycle, defined nodal phases and a path avoiding
+  the wrap branch. A numerical phase value of zero is valid; a zero of an
+  extracted complex field is a separate observation problem.
   Supporting energy and historical-Q means are explicitly whole-graph snapshot
   telemetry, including when the declared cycle is a proper subgraph.
   [Example 133](../examples/08_emergent_geometry/133_psi_topological_defects.py)
   separately shows that raw `arg(Ψ)` face winding is a static coordinate degree
   and changes under node-dependent U(1) rephasing.
+  The [canonical Coupling study](COUPLING_WINDING_PERSISTENCE.md) now provides
+  one protected phase regime and an actual Transition loss witness. In its
+  restricted Jacobi model, circulation becomes distributed uniformly while
+  its integer total is retained. Persistence of that label therefore does
+  not establish a localized entity or spontaneous formation.
+  The subsequent [capacity balance](CAPACITY_LOCALIZATION_BALANCE.md) provides
+  a distinct conditional EPI profile: on a unit cycle with a regular twist,
+  a fixed capacity contrast balances EPI diffusion at
+  `EPI=c-(w_vf/w_epi)*nu_f`. A local canonical SHA can prepare the capacity
+  contrast and physical nodal flow develops the EPI response. Its location
+  follows the selected preparation, and its persistence assumes that the
+  supporting capacity profile remains fixed. The subsequent
+  [joint support study](CYCLE_SUPPORT_DYNAMICS.md) derives the changes of
+  that balance under canonical phase/capacity updates. An exact UM/SHA
+  example retains EPI contrast by exhausting accumulated capacity, with
+  nonzero limiting pressure; this supplies no active restoring mechanism.
+  With capacity instead held uniformly positive, the
+  [delayed-memory study](CYCLE_MEMORY_RELAXATION.md) derives a strict
+  full-spectrum flow gain and reuses the existing augmented-history theorem.
+  On its fixed cycle, uniform unclipped REMESH can delay relaxation or raise
+  instantaneous contrast, but cannot sustain spatial disagreement under the
+  repeated positive partition. The finite admitted word uses UM, IL and
+  advisory Recursivity; the actual delayed map is executed separately.
+  Prepared history, runtime defects and spatially uniform temporal means
+  remain distinct from the exact relaxation result.
+  The subsequent [THOL feedback audit](THOL_PRESSURE_FEEDBACK.md) identifies
+  the actual pressure path: its increment can change EPI when held through
+  a nodal step, but is overwritten by an earlier default refresh. Created
+  children are isolated graph nodes; their disconnected zero modes do not
+  constitute a coupled restoring mechanism. Shared history-driven pressure
+  preparation now removes the former cached-acceleration discrepancy between
+  graph-backed primitive and public THOL.
+  The [causal birth-to-transport study](THOL_BIRTH_AND_TRANSPORT.md) now
+  produces physical threshold evidence by refreshed nodal evolution on a
+  declared bounded initial cycle. THOL creates an isolated child; an admitted
+  parent-target UM subsequently connects it through existing candidate and
+  compatibility rules. Matched no-link and stale-candidate controls preserve
+  the distinction between hierarchy and transport. Exact changed-conductance
+  and held-rate energy budgets account for the subsequent finite response.
+  Initial preparation and event selection remain declared inputs; this
+  result supplies an executed interaction, not spontaneous matter formation
+  or a demonstrated restoring cycle.
+  The [frozen-support follow-up](FORCED_SUPPORT_BALANCE.md) derives and
+  implements the corresponding relative profile and mean-drift condition.
+  The actual attached preparation has incompatible weighted forcing for
+  zero-pressure equilibrium. Its finite evolution reduces relative-profile
+  error while the mean drifts. A separately prepared compatible graph and a
+  clipping control separate these effects. The held nonlinear phase,
+  capacity and topology contributions come from existing TNFR channels;
+  no compensating force is introduced. Restoration under a changing
+  canonical policy is a further question.
+  The [child-target Coupling comparison](CHILD_COUPLING_FEEDBACK.md) now
+  continues from that retained state. An admitted UM changes capacity and
+  adds links; exact reset identities separate the new metric and reference
+  from unchanged event EPI. A fixed original-profile observable and an
+  independently executed no-extra-event control prevent a changed target
+  from being reported as recovery. Reduced mean drift can coexist with
+  larger error relative to the new profile at the event. Its later flow
+  approaches that new profile while worsening fixed-old-profile error
+  relative to the control. The measured response is a finite action
+  comparison, with a repeated restoring policy still open.
+  Dynamic self-maintenance and physical correspondence remain open.
 - **(c) The process — auxiliary defect interaction.** Attraction, translation,
   orbiting and annihilation claims in this repository belong to separately
   posited point-vortex or Coulomb-gas comparison equations (§7.3). They have not
@@ -910,23 +997,25 @@ circulations orbit, and the three-vortex model carries the familiar invariants
 comparison model; the repository has not derived them as a trajectory of the
 nodal equation or as a composition of the 13 canonical operators.
 
-### 7.4 Composite matter — atoms, bonds, and bands — **DERIVED (skeleton)**
+### 7.4 Imposed spectral wells — **AUXILIARY COMPARISON / NODAL DERIVATION OPEN**
 
-Localized **wells** in the structural operator (`H = L_sym − U·P_well`, a region that holds
-coherence more strongly) bind discrete states out of the continuum, reproducing the tight-binding
-hierarchy of bound matter (derived fresh, not assumed):
+The declared operator `H = L_sym − U·P_well` adds a chosen well region and
+strength to a graph Laplacian. Its localized eigenvectors, level splitting and
+multi-well spectra are properties of that auxiliary spectral problem. A finite
+graph has a discrete spectrum already; it does not supply a literal continuum.
+Neither `U·P_well` nor its spectral evolution has been derived here from the
+canonical nodal pressure or an executed operator policy. Calling a well an atom,
+a two-well splitting a chemical bond, or a spectral cluster a material band is
+therefore a comparison, not a physical identification or a stability proof.
 
-- **One well = an atom** — a discrete **bound state** splits off below the band (`E = −0.41` at
-  `U=1`) with a **localized orbital** (participation ratio `≈1.9` of 81 nodes).
-- **Two wells = a molecule** — the state splits into **bonding** (lower) and **antibonding**
-  (higher); the splitting **grows as the wells approach** (`0.0002 → 0.27` as `d: 10 → 2`), the
-  **covalent bond**, with the bonding level *below* the single-atom level — the molecule is
-  **bound (stable)**.
-- **Many wells = a band** — `N` wells give `N` levels broadening into a **band** (width saturating
-  `≈0.084`), the tight-binding origin of solid-state bands.
-
-Maps to observables: **atomic orbitals**, the **covalent bond** (molecular orbitals), and **band
-structure**.
+The nodal-derived localization study instead starts with the existing EPI and
+capacity pressure channels. Their conditional balance can support a nonuniform
+EPI profile on a fixed unit cycle, with no added well term; its selected
+capacity preparation and the failure of that balance under capacity-changing
+operators remain explicit. See
+[CAPACITY_LOCALIZATION_BALANCE.md](CAPACITY_LOCALIZATION_BALANCE.md).
+Self-maintenance, interactions between such profiles and correspondence with
+laboratory matter remain open.
 
 > **Honest boundary.** §7 combines exact finite-graph identities with explicitly
 > auxiliary classical models: discrete spectra and integer winding are graph
@@ -1018,6 +1107,14 @@ Exact winding, spectral and symmetry statements about
 those constructions remain useful mathematics. They do not establish that a
 physical particle is an NFR, that the constructions reproduce the Standard
 Model catalog, or that graph eigenvalues represent measured masses.
+
+The [sampled ring benchmark](../benchmarks/emergent_wave_particle_correspondence.py)
+uses the phase phasor `z_i=exp(i*theta_i)`, not the geometric field
+`Psi=K_phi+i*J_phi`: uniform phase gives `z=1` but `Psi=0`. Its mode/winding
+coincidence uses the signed sampled mode representative away from the even-ring
+Nyquist branch. Winding existence and U3 admission are separate checks. This
+finite classical construction supplies neither physical charge nor quantum
+measurement probabilities, and is not a graph-to-substrate evolution bridge.
 
 | Layer | Question | Status |
 |-------|----------|--------|

@@ -31,6 +31,15 @@ contracts are centralized in [API Contracts](../docs/API_CONTRACTS.md).
 | [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md) | Stability diagnostics and invariant monitoring |
 | [TNFR_DIFFUSION_STABILITY_THEOREM.md](TNFR_DIFFUSION_STABILITY_THEOREM.md) | Fixed/time-varying and exact-common-metric EPI diffusion, exact reversible single-eigenmode Euler theorem, finite executor binding with full-matrix defect propagation, directed transient criterion, and conditional affine hybrid bounds |
 | [TNFR_SCALE_GEOMETRY_AND_BRIDGE.md](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) | Pure-EPI quotient, coherence geometry, decoupled metriplectic bridge, and restricted S16 endpoint/path certificates |
+| [DERIVED_EPI_MEMORY.md](DERIVED_EPI_MEMORY.md) | Exact projected memory, P5 finite-history error bounds, minimal reflection quotient, REMESH transport/energy split and direct-echo substitution obstruction |
+| [COUPLING_WINDING_PERSISTENCE.md](COUPLING_WINDING_PERSISTENCE.md) | Restricted canonical Coupling gap diffusion, winding protection, loss under Transition, and finite runtime boundaries |
+| [CAPACITY_LOCALIZATION_BALANCE.md](CAPACITY_LOCALIZATION_BALANCE.md) | Shifted EPI/capacity diffusion, conditional nonuniform equilibria, operator release and finite-mobility retention controls |
+| [CYCLE_SUPPORT_DYNAMICS.md](CYCLE_SUPPORT_DYNAMICS.md) | Joint phase/capacity/EPI balance, operator reset and nodal-flow energy budgets, and retained contrast under a finite reorganization clock |
+| [CYCLE_MEMORY_RELAXATION.md](CYCLE_MEMORY_RELAXATION.md) | Positive-capacity cycle diffusion supplies an exact REMESH history contraction gain; finite admitted delayed-memory and memory-free controls |
+| [THOL_PRESSURE_FEEDBACK.md](THOL_PRESSURE_FEEDBACK.md) | Shared history-driven THOL pressure, refresh/integration budgets and the disconnected-child feedback boundary |
+| [THOL_BIRTH_AND_TRANSPORT.md](THOL_BIRTH_AND_TRANSPORT.md) | Causal THOL birth, admitted parent-child coupling, candidate controls and exact changed-conductance/Euler budgets |
+| [FORCED_SUPPORT_BALANCE.md](FORCED_SUPPORT_BALANCE.md) | Exact frozen-support compatibility, drifting relative profiles and nonlinear forcing/step-defect observations |
+| [CHILD_COUPLING_FEEDBACK.md](CHILD_COUPLING_FEEDBACK.md) | Child-target Coupling, exact changes of reference and a fixed original-profile comparison |
 | [PHYSICAL_REGIME_CORRESPONDENCES.md](PHYSICAL_REGIME_CORRESPONDENCES.md) | Scoped comparisons with diffusive, inertial and modal regimes |
 | [GAUGE_SYMMETRY_AND_UNIFICATION.md](GAUGE_SYMMETRY_AND_UNIFICATION.md) | Gauge and polarization models |
 | [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) | Derived field quantities |

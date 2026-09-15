@@ -1,0 +1,936 @@
+TNFR — CONSOLIDATED RESEARCH ROADMAP
+==================================
+Reviewed: 2026-09-15. Research checkpoint: B2.d.8 completed locally.
+Next executable research block: B2.d.9, after the integrity tasks in section 7.
+Scope: planning and evidence audit; no new physical experiment in this review.
+
+READING MAP
+-----------
+1. Objective, constraints and meaning of completion
+2. What exists and what is missing
+3. One ownership map for all open questions
+4. Shared tools, synergies and consolidation rules
+5. S1-S16 technical inventory
+6. E/H aliases and other repository programmes
+7. One execution queue, dependencies and decision gates
+8. B2.d.9 specification and recovery criteria
+9. Deferred Reception/REMESH checkpoint
+10. Evidence, validation and resumption record
+
+This file owns priorities and dependencies. It does not replace the theory,
+operator contracts, implementations, tests or retained experiment records.
+O1-O6 are strategic objectives; S1-S16 are stable technical question IDs;
+E1-E10 are aliases for shared work; H1-H10 are hypotheses, not extra projects.
+B identifiers name bounded deliveries. Their completion does not close an O
+objective or the full scope of an S line. Only section 7 orders future work.
+
+1. OBJECTIVE, CONSTRAINTS AND MEANING OF COMPLETION
+================================================
+
+Macro objective
+---------------
+Test whether explicit TNFR foundations and derived dynamics can account for
+the formation, persistence, interaction and dissolution of coherent patterns,
+and produce quantitative predictions for observable laboratory phenomena.
+The long-term question is whether a common TNFR description can explain
+multiple physical regimes without importing their laws as extra premises.
+Whether this is possible remains an open question, not a conclusion to defend.
+
+The next meaningful milestone is narrower: a reproducible differentiated
+pattern with a declared formation mechanism, a measured perturbation response
+and an explicit account of what maintains it. A later milestone is a justified
+measurement map and a laboratory comparison capable of rejecting the model.
+Neither a simulation nor a finite set of matches demonstrates that all reality
+necessarily emerges from TNFR or uniquely identifies its underlying ontology.
+
+Governing derivation chain
+-------------------------
+    TNFR foundations -> explicit constitutive/evolution rules -> derivation
+    -> structural observable/prediction -> reproducible experimental test.
+
+The nodal equation is dEPI/dt = nu_f * DeltaNFR. Its factorization alone does
+not determine the pressure law, phase evolution, capacity updates, topology
+or next operator. Choosing DeltaNFR = prescribed_rate/nu_f after observing a
+target trajectory encodes that trajectory; it does not derive its dynamics.
+
+Every candidate must distinguish:
+- Primitives: the stated TNFR structural state and canonical invariants.
+- Constitutive/operator choices: pressure realization, factors, phase rules,
+  support changes and grammar policies; identify unresolved derivations.
+- Preparation/input: initial graph/state, supplied schedule and boundary data.
+- Derived content: equations, coefficients, balances and predictions obtained
+  from those premises independently of the desired result.
+- Numerical settings: timestep, tolerances, arithmetic and resource limits.
+- Measurement: a justified observation map, units and instrument uncertainty.
+
+No independent physical law, noise model, probability rule, Hamiltonian,
+interaction field or fitted explanatory constant may repair a failed TNFR
+derivation. Existing engine defaults are implementation choices unless their
+claimed physical role is derived. Mathematical transformations are allowed
+when their equivalence and domain are established. Comparison models remain
+controls, not hidden ingredients of the TNFR explanation.
+
+Experimental boundary
+---------------------
+All calculations and experiments must be feasible on an ordinary workstation
+or at most a research laboratory on Earth's surface. Exclude astronomical,
+astrophysical and cosmological data, including ground-telescope observations;
+exclude satellite/space-mission data and required large accelerators,
+observatory-scale facilities or mandatory supercomputer access.
+Check origin, apparatus, acquisition, uncertainty, replication and resources
+before accepting a dataset. Unknown provenance means pending eligibility.
+No apparatus or dataset has yet been selected for the current O6 programme.
+Physical Hz, temperature, energy or length require a justified structural
+measurement map; Hz_str and engine time are not automatically physical units.
+
+Evidence status has three independent axes
+-----------------------------------------
+Mathematics: exact scoped result / conditional result / counterexample / open.
+Implementation: implemented and checked / finite observation / not implemented.
+Physical evidence: untested / supported in a stated test / rejected / inconclusive.
+A passing test checks an implementation claim; it is not empirical confirmation.
+A finite causal execution is not proof of future admission or infinite-time
+stability. Historical test totals must not be added as a completion percentage.
+
+2. WHAT EXISTS AND WHAT IS MISSING
+================================
+
+Current scientific position
+---------------------------
+All six O objectives remain open. We have a substantial set of exact restricted
+results and executable controls, including useful obstructions. We do not yet
+have a closed autonomous multichannel explanation of a self-restoring physical
+entity, emergent physical spacetime, quantum measurement or laboratory-validated
+ontological predictions. Those gaps have different dependencies and must not
+be compressed into a single claim that the paradigm is almost complete.
+
+Available evidence: keep derivations in these existing owners
+-----------------------------------------------------------
+B0: assumptions and evidence inventory. This is planning, not a physics result.
+
+B1 / O1.a: fixed-P2 nonzero harmonic read-out flow is obstructed; the actual
+nodal diffusion gives a different dissipative potential/flux closure.
+Owner: theory/TNFR_VARIATIONAL_PRINCIPLE.md, section 3.7.
+Implementation/control: src/tnfr/physics/symplectic_substrate.py;
+tests/physics/test_symplectic_graph_realizability.py.
+The auxiliary substrate does not become graph dynamics by sharing coordinates.
+
+B2.a / O4.a: exact elimination of unresolved fixed-generator EPI state yields
+a memory kernel AND an initial hidden-state source. P4 closure and P5 failure
+of a two-coordinate instantaneous closure are explicit controls.
+B2.b: exact source-retaining P5 finite-history trajectory error bounds.
+B2.c: the P5 reflection quotient closes in three coordinates; uniform unclipped
+REMESH respects that quotient and its energy split. Substituting a REMESH echo
+for the eliminated-state evolution is refuted in the declared example.
+Single theory owner: theory/DERIVED_EPI_MEMORY.md.
+Code owners: src/tnfr/physics/epi_memory.py,
+src/tnfr/physics/p5_memory_truncation.py, src/tnfr/physics/p5_reduction.py.
+General nonlinear, changing-support and complete-runtime closure remain open.
+
+B2.d.1: configured target-only Coupling protects a strict phase-gap interval
+on a fixed cycle; actual Transition can destroy winding. A protected extended
+twist is not a localized entity.
+Owner: theory/COUPLING_WINDING_PERSISTENCE.md.
+B2.d.2: a held capacity profile can support nonuniform EPI; ordinary diffusion,
+capacity release and freezing are different mechanisms.
+Owner: theory/CAPACITY_LOCALIZATION_BALANCE.md.
+B2.d.3: joint phase/capacity/EPI coordinates give exact reset and flow budgets;
+a finite reorganization clock can retain contrast while capacity vanishes.
+Owner: theory/CYCLE_SUPPORT_DYNAMICS.md.
+B2.d.4: restricted positive-capacity cycle diffusion and delayed memory relax
+spatial disagreement; passive memory alone does not maintain differentiation.
+Owner: theory/CYCLE_MEMORY_RELAXATION.md.
+
+B2.d.5: graph THOL now uses shared physical-history pressure preparation;
+the stale-history defect is repaired. Held pressure, refreshed pressure and
+disconnected child birth have separate consequences.
+Owner: theory/THOL_PRESSURE_FEEDBACK.md.
+B2.d.6: actual threshold-crossing nodal flow produces a THOL child, an admitted
+parent UM attaches it, and subsequent flow exchanges EPI on the enlarged graph.
+Birth hierarchy alone is not a transport edge. Controls separate attachment
+from candidate availability and functional-link configuration.
+Owner: theory/THOL_BIRTH_AND_TRANSPORT.md.
+
+B2.d.7: with fixed symmetric nonnegative conductance, connected positive-
+conductance support and positive weighted degrees, fixed positive capacity,
+fixed EPI-channel coefficient e>0 and held non-EPI forcing F, zero-pressure
+compatibility requires sum(d_i*F_i)=0.
+Otherwise the H-weighted mean drifts, H=diag(d_i/nu_i), while an exact relative
+profile exists. Captured kernel and endpoint defects remain separate.
+Owner: theory/FORCED_SUPPORT_BALANCE.md.
+B2.d.8: same-EPI events now have exact changing-reference/metric budgets and
+a fixed original-profile observable. The actual child UM reduces mean drift
+but worsens fixed-target retention in its bounded comparison.
+Owner: theory/CHILD_COUPLING_FEEDBACK.md.
+Shared code: src/tnfr/physics/support_transport.py,
+src/tnfr/physics/forced_support.py, src/tnfr/physics/forcing_realization.py.
+
+Latest measured boundary, B2.d.8
+--------------------------------
+Both branches continue the independently executed retained state at t=6.5;
+each then runs twelve refreshed Euler intervals of duration 0.25 to t=9.5.
+Child UM changes capacity and adds two links; event EPI and phases stay fixed
+in this fixture. The changed neighbor sets and unequal link weights produce
+opposing phase/capacity forcing contributions. Mean drift changes from about
+-1.80e-5 to -4.01e-6. The original-profile error begins at 0.0660359 and ends:
+    child UM:       0.141965;
+    no extra event: 0.021533.
+The UM branch's error toward its NEW profile decreases from 0.929467 to
+0.521971. A changed reference can therefore conceal worse original-pattern
+retention. This is a finite negative fixed-target retention comparison for
+that intervention, not a damage/repair experiment or a general impossibility
+theorem for canonical recovery.
+
+Still missing, in dependency order
+---------------------------------
+- A complete EPI-jump plus reference/metric event budget for the next study.
+- A defined damage/recovery comparison with all actual operator side effects.
+- A policy whose next action and full state remain admissible on a declared
+  invariant domain, or whose terminal outcome is specified and justified.
+- A derived explanation of the policy/phase/capacity/support selection rules;
+  hand-selected admissible words do not supply autonomous formation.
+- A sufficient state/observation contract for the proposed multiscale model.
+- A reproducible physical measurement/clock map and a discriminating eligible
+  laboratory protocol. Current simulations have not supplied these bridges.
+
+3. ONE OWNERSHIP MAP FOR ALL OPEN QUESTIONS
+=========================================
+
+O1 — What state and laws are actually specified?
+----------------------------------------------
+O1.a owns sufficient state, realizability and induced field evolution.
+Reuse S3/E1 observation and history work; B1 closes only the P2 subproblem.
+For an observation h and candidate state law F, first ask whether equal h
+and equal declared inputs imply equal observed future evolution. A proposed
+field flow must also preserve the realizable image of h. P4/P5 and the P2
+harmonic obstruction are shared positive/negative controls, not new projects.
+
+O1.b owns endogenous scheduling and policy viability (E2/S5). Admission of a
+supplied word is available; selection of that word is not thereby derived.
+Distinguish a designed fixed policy used as a control from a rule derived from
+TNFR. Test invariant admission/termination on declared full states and histories.
+
+S10 supplies the separate O1 question of operator completeness: define an
+admissible transformation space independently of the thirteen-operator catalog
+before asking generation or redundancy. Atomic stages are infrastructure,
+not a completeness proof.
+Exit gate: one specified candidate, an input/derived ledger, and a behavior
+excluded by its laws. Broader minimality and endogenous closure remain open.
+
+O2 — Which geometry, clocks and propagation emerge?
+-------------------------------------------------
+O2.a owns dimension selection; S4/S13/E3 own its directed-transport dependency.
+Reuse graph spectra, actual THOL/UM snapshots and established read-outs. Keep
+supplied topology, conductance, metric length, embedding and time distinct.
+Clique size, simplex dimension, growth dimension and heat-trace dimension
+are different measurements. A chosen lattice does not select its own dimension.
+Require an actual canonical topology trace before attributing growth to glyphs.
+Then seek a controlled scale interval/refinement and a mechanism that selects
+it across declared preparations, without target-dimension tuning.
+Propagation: separate a threshold-defined response front, exact support bounds,
+and probability factorization. None automatically derives physical relativity.
+Exit gate: a scoped label-invariant geometry/clock construction, its retained
+inputs and controlled limits. Physical time and autonomous geometry are open.
+
+O3 — Can differentiated structures maintain and restore themselves?
+------------------------------------------------------------------
+O3.a is the active owner of persistence and recovery (E4), with S2/E5 event
+accounting and S1/E6 defect budgets as shared prerequisites. Formation,
+transport, protected winding, active maintenance, recovery and two-pattern
+interaction each need their own evidence status.
+Protected winding plus a loss mechanism is delivered. Finite birth/attachment
+is delivered. Sustained localized self-restoration under a common autonomous
+law remains open. Consensus, vanishing amplitude, exhausted capacity or a
+shifted comparison profile do not establish that result.
+Exit gate for the next bounded delivery: correct event accounting, admitted
+matched continuations and a classified corrective response or obstruction.
+Exit gate for a stronger claim: positive-capacity persistence, an invariant
+policy/state domain and a declared physical observation map. Two-pattern
+interaction and repeated birth follow a justified single-pattern result.
+
+O4 — Which effective laws survive elimination and change of scale?
+---------------------------------------------------------------
+O4.a owns reduced dynamics and derived memory (S8/S9/E7), sharing state
+sufficiency with O1.a. B2.a-c are reusable completed restricted deliveries;
+do not reopen exact elimination, P5 truncation or its quotient as future work.
+New work needs a named extension: phase branches/resultants, nonlinearity,
+time-varying generator, changed support/history or a new justified error bound.
+
+O4.b owns a realizable coupling between derived sectors (S12), with gauge
+controls. Derive terms before testing Jacobi, degeneracy, covariance and
+balance. A decoupled product and pure gauge do not supply an interaction field.
+The fixed-P2 obstruction rules out simply promoting the harmonic substrate.
+
+O4.c owns irreversibility and universality (S6). Graph relaxation is available;
+physical entropy, ensembles, fluctuation laws and universal exponents are not.
+Signed EPI is not a probability distribution. Derive a statistical/observation
+construction before interpreting entropy or adding fluctuations. A finite-size
+static-ensemble diagnostic is not an executed critical transition.
+Exit gate: one effective law with a TNFR derivation, approximation domain,
+error/scale statement and sensitivity controls. Do not add a target law first.
+
+O5 — Is there a derived measurement and quantum-composition bridge?
+----------------------------------------------------------------
+O5.a owns the operational-state/detector assumptions audit. It consumes the
+O1.a observation contract and any O4 derived composition; it must not build a
+second competing complete-state project. Current phasors, graph modes,
+winding and classical polarization are controls, not quantum probabilities.
+Keep exp(i*theta), the geometric field K_phi+i*J_phi and a proposed detector
+amplitude distinct. Born/outcome rules, noncommuting measurement structure
+and entangled composition have not been derived.
+The classical local-response CHSH control retains its bound under its stated
+assumptions. Adding local memory does not by itself evade those assumptions.
+Exit gate: a TNFR-derived preparation/composition/detector contract, or a precise
+obstruction. No quantum-emergence or particle-mass fitting campaign precedes it.
+
+O6 — What can be tested and distinguished in a surface laboratory?
+---------------------------------------------------------------
+O6.a owns observation/clock identifiability (E8/S15) and empirical protocol
+(E9). Reuse signal and manifest interfaces; do not create another calibration
+or inverse-model framework before specifying what is observable.
+The existing fitted diffusion and signal-comparison routes are diagnostic
+baselines. Fitting c=nu_f*dt does not identify both factors or derive a physical
+clock; fitting a physical law is not allowed as the TNFR explanation.
+Protocol preparation can run beside the mathematical work. A smallest thermal,
+mechanical/electrical or acoustic setup is a candidate only; select none until
+measurement map, derived prediction, equipment, provenance and uncertainty
+are explicit. Laboratory laws may describe comparators, not become TNFR axioms.
+Exit gate before acquisition: eligible source, identifiable prediction,
+independent unit/instrument calibration, fixed held-out intervention, equally
+informed baseline and rejection rule. An equivalent model is a valid outcome;
+do not manufacture distinctiveness by weakening the comparator.
+
+4. SHARED TOOLS, SYNERGIES AND CONSOLIDATION RULES
+==============================================
+
+One implementation owner per mathematical or execution responsibility
+--------------------------------------------------------------------
+Paths below are existing owners, not instructions to introduce new layers.
+Search their callers and tests before adding a helper. Extend the owner when
+the new problem has the same contract; otherwise state the new domain clearly.
+Detailed legacy S API/test inventory: theory/CORE_RESEARCH_PROGRAM.md.
+
+Structural input semantics:
+  src/tnfr/physics/_conductance.py: read_conductance.
+  src/tnfr/physics/support_transport.py: observe_support_transport,
+  observe_support_transport_reset, observe_support_transport_euler.
+  Reuse in O2/O3/O4 and E3/E5/E6; do not reconstruct adjacency in each campaign.
+
+Profiles, fixed targets and event/flow error accounting:
+  src/tnfr/physics/forced_support.py: derive_forced_support_balance,
+  observe_forced_support_state, observe_forced_support_step,
+  observe_forced_support_reset, observe_forced_support_pattern.
+  B2.d.9 extends this responsibility; no parallel recovery-energy subsystem.
+  Same-EPI reset currently rejects EPI jumps; its domain must remain explicit.
+
+Actual non-EPI forcing and refreshed pressure:
+  src/tnfr/physics/forcing_realization.py: capture_non_epi_forcing.
+  src/tnfr/dynamics/dnfr.py owns the production pressure realization.
+  The capture is restricted to the audited default NumPy non-JIT branch with
+  at most 100 directed support entries; other backends need identification.
+  Reuse its represented kernel, support rules and separate stored residual.
+
+Physical evolution and causal execution:
+  src/tnfr/dynamics/canonical.py: integrate_canonical_nodal_equation.
+  src/tnfr/operators/event_runtime.py and
+  src/tnfr/operators/event_remesh_causal_runtime.py own actual execution.
+  src/tnfr/operators/operator_contracts.py, src/tnfr/operators/network_stage.py
+  and production stage kernels own writes and immutable stage observations.
+  Algebraic observers must not duplicate grammar or infer causal execution
+  from endpoint equality. Reuse live helpers to reach retained checkpoints.
+
+Reduction, hidden state and scale transport:
+  src/tnfr/physics/structural_morphism.py: certify_epi_coarse_graining.
+  src/tnfr/physics/operator_quotient.py: certify_operator_quotient.
+  src/tnfr/physics/epi_memory.py: observe_epi_memory.
+  src/tnfr/physics/p5_memory_truncation.py: bound_p5_memory_truncation.
+  src/tnfr/physics/p5_reduction.py owns the reflection quotient/REMESH bridge.
+  O1.a/O4.a/O5.a share one state-equivalence and closure ledger through these.
+
+Energy, delayed history and repeated-policy bounds:
+  src/tnfr/physics/structural_diffusion.py;
+  src/tnfr/physics/remesh_history_stability.py;
+  src/tnfr/physics/remesh_schedule_policy_stability.py;
+  src/tnfr/physics/remesh_schedule_relative_defect_stability.py;
+  src/tnfr/physics/binary64_remesh_relative_defect.py.
+  S1/S2/S5/S16 and E2/E6 consume the same scoped energy/defect pipeline.
+  src/tnfr/physics/runtime_p2_reception_remesh_policy.py owns the restricted
+  execute_p2_half_reception_remesh_policy_invocation runtime entry point.
+
+Observation, identity and inverse inference:
+  src/tnfr/physics/observability.py: observation_signature and
+  epi_diffusion_reconstruction_certificate.
+  src/tnfr/physics/temporal_identifiability.py: finite signature/noise controls.
+  src/tnfr/physics/winding_certificates.py: winding and actual-word observation.
+  src/tnfr/physics/topology_transitions.py: descriptive topology snapshots.
+  src/tnfr/physics/structural_state_distance.py: fixed-topology state distance.
+  Reuse in O1/O2/O3/O6. Define shared observable semantics before adding probes.
+
+Coherence, phase diagnostics and physical-history gates:
+  src/tnfr/metrics/common.py: structural_coherence.
+  src/tnfr/physics/fields.py owns the canonical tetrad read-outs.
+  src/tnfr/physics/mutation_trigger.py and
+  src/tnfr/physics/event_refinement.py own actual Mutation evidence.
+  src/tnfr/operators/_thol_pressure.py owns shared THOL pressure preparation.
+  Do not replace an observed terminal physical secant with a nodal product,
+  an older parent secant or a manually refreshed cache.
+
+Exact/numerical references and evidence:
+  src/tnfr/physics/_exact_linear_algebra.py and src/tnfr/_exact_time.py;
+  src/tnfr/physics/reversible_eigenmode_reference.py and
+  src/tnfr/physics/runtime_eigenmode_reference.py;
+  src/tnfr/research/core_manifests.py: CoreExperimentManifest and
+  current_git_source_provenance.
+  Reuse exact references, record approximation boundaries, and keep one
+  per-checkpoint provenance register rather than repeated digest tables.
+  src/tnfr/validation/signal_confrontation.py is the shared signal-comparison
+  interface; its existence does not close O6's physical measurement bridge.
+
+Concrete synergies to use next
+-----------------------------
+1. B2.d.9 event budgets serve O3 recovery, S2 energy, E5 changing geometry and
+   E6 numerical defects. Derive and test the identity once in its shared owner.
+2. The same actual THOL/UM snapshots can support O2 geometry and O3 formation
+   questions. Extract additional read-outs from retained data when sufficient;
+   create a new campaign only for an unobserved intervention or missing scope.
+3. O1 state sufficiency, O4 memory closure and O5 operational state share
+   equivalence tests and P4/P5 obstructions. Do not launch three reconstructions.
+4. S1/S2/S5/E2 are one proof chain: admitted state -> controlled transition
+   defects -> preserved domain -> repeated bound. A failed link is the next
+   task; a larger finite run does not repair a missing theorem.
+5. O6 identifiability consumes that same observation contract and S15 probes.
+   Resolve clock/product ambiguities before estimating physical parameters.
+6. E10 optimizes evidence only after profiling a real bottleneck. Reuse shared
+   immutable dependencies within one validation call, preserving tamper/stale
+   rejection. Hashes and cross-call cached trust are not replacement proofs.
+
+Differences that must survive centralization
+-------------------------------------------
+- Weighted EPI conductance, unique unweighted support, metric length and
+  hierarchy are distinct. Zero-weight edges can still affect support/phase.
+- EN incoming-neighbor semantics and directed pressure outgoing-neighbor
+  semantics need a channel contract, not an automatic transpose or merge.
+- Current-model error, fixed-original-profile error and whole-state distance
+  answer different questions. A weighted-mean reset is not EPI motion.
+- Spatial disagreement, temporal uniform modes, amplitude, localization,
+  winding and raw energy are not interchangeable persistence measures.
+- Eliminated-state memory, REMESH delay, grammar history, observed records
+  and reconstructible caches can share storage utilities, not physical claims.
+- Exact models, numerical accuracy, grammar admission, finite causal evidence
+  and future full-runtime stability remain separate proof obligations.
+- Auxiliary models and counterexamples are useful controls. Retire obsolete
+  explanatory claims; delete a tool only after its callers and control value
+  have been checked and any needed evidence has an authoritative replacement.
+
+5. S1-S16 TECHNICAL INVENTORY
+============================
+Every S line remains open at its broadest scope. The following records what
+can be reused and the actual remaining gap, not a second execution queue.
+
+S1 — Stability. Owner O3, with O1.b viability prerequisites.
+Have: fixed/variable-capacity reversible diffusion, common-metric switching,
+exact delayed-history policy bounds, restricted binary64 classes and finite
+causal P2 execution. Need: multichannel/changing-support and complete auxiliary
+state control, invariant admission and unobserved repeated-runtime results.
+Do not restart a general stability search independently of S2/E2/E5/E6.
+
+S2 — Lyapunov and energy balances. Owner O3.a event accounting.
+Have: Dirichlet, weighted disagreement, history Jensen and signed reset/defect
+budgets; finite block D=K+S with S>=0; forced-profile comparison.
+Need: actual EPI-jump terms now, then justified changing-state/history domains.
+A general nonlinear tetrad Lyapunov function is unproved. Chosen positive
+coefficients or a metric rescaling do not derive physical dissipation.
+
+S3 — Observability/minimality. Owner O1.a.
+Have: counterexample to tetrad-only future determination; conditional EPI
+reconstruction from full potential plus a zero-mode scalar, subject to rank
+and conditioning; P5 hidden-contrast/minimal-realization controls.
+Need: sufficient full state/history, broader ranks and robust reconstruction.
+Reuse src/tnfr/physics/observability.py and O4.a, not an E1 duplicate.
+
+S4 — Heterogeneous capacity spectrum. Owner O2; shared O3/O4 reference.
+Have: reversible gaps, exact rational single-mode Euler references and finite
+runtime binding with full-matrix propagation of generally off-mode defects.
+Need: broader directed/heterogeneous contraction, changing support and generic
+multimode accuracy. S13's restricted directed result already exists.
+
+S5 — Adaptive grammar and numerical refinement. Owner O1.b.
+Have: explicit pressure-refreshed partitions, authoritative Mutation evidence,
+conditional exact-real modal convergence and finite runtime comparisons.
+Need: derivation of adaptive U2/U4 from a preserved full-runtime class;
+generic solver accuracy/order, binary64 mesh convergence and refinement-family
+provenance remain separate gaps. They do not block every finite exact-budget study.
+
+S6 — Dynamic phase transitions and universality. Owner O4.c.
+Have: signed classification and static-ensemble finite-size diagnostics in
+src/tnfr/physics/phase_transition.py and src/tnfr/physics/phase_scaling.py.
+Need: transitions produced by declared dynamics, replication and scale limits.
+Node-count slopes are not physical critical exponents without a length map.
+Activate after a controlled dynamical family; no broad untargeted sweep.
+
+S7 — Nodal topology transitions. Owner O3; shares snapshots with O2.a.
+Have: descriptive transition observations and ambiguity handling in
+src/tnfr/physics/topology_transitions.py.
+Need: prospective precursors, matched controls and causal attribution.
+The radial/annular/multinodal label reads unit-source graph geometry; adjacent
+EPI/phase/coherence telemetry does not make it an instantaneous EPI classifier.
+
+S8 — Coarse-graining and closure. Owner O4.a.
+Have: exact reversible EPI quotient, restricted pairwise phase-pressure and
+lifted phasor results; K3,3 refutes global canonical phasor autonomy; B2.a-c
+add explicit memory/source and a closed refined P5 quotient.
+Need: branch crossings/null resultants, variable support/capacity and full
+finite-time multichannel closure. Phase pressure in EPI_dot is not theta_dot.
+
+S9 — Operator behavior under scale. Owner O4.a.
+Have: projection/lift intertwining and restricted diffusion/phase results;
+uniform unclipped REMESH commutes with the P5 reflection quotient.
+Need: nonlinear full-state operators, graph/nesting/history changes.
+For lossy R, use R*F=F_bar*R and F*P=P*F_bar. R*O*R_inverse is generally
+undefined; projected autonomy and lift invariance must be checked separately.
+
+S10 — Completeness/independence of thirteen operators. Owner O1.
+Have: contracts, atomic all-target stages and quotient diagnostics.
+Need: an independently defined admissible transformation class, then proofs
+or counterexamples for generation, redundancy and independence. Defining the
+class by the catalog's own grammar would make completeness circular.
+
+S11 — Geometry of coherence levels. Owner O2/O3 geometry dependency.
+Have: exact instantaneous L1 level geometry in
+src/tnfr/physics/coherence_geometry.py. Nonzero level boundaries have intrinsic
+dimensions 2N-1 (ambient chart) and N-1 (fixed-capacity slice); enclosing
+polytopes have dimensions 2N and N. Need: variable strata, dynamics and basins.
+Static level geometry does not supply an attractor or physical dimension.
+
+S12 — Dissipative/symplectic bridge. Owner O4.b, gated by O1.a.
+Have: an exact decoupled auxiliary product in src/tnfr/physics/metriplectic.py;
+B1 refutes nonzero continuous harmonic geometric read-out flow on fixed P2.
+Need: a different realizable coupling derived from TNFR before testing tensor
+identities. Do not add or fit cross tensors to rescue the obstructed mapping.
+
+S13 — Directed non-normal transients. Owner O2 directed-transport dependency.
+Have: a logarithmic-norm criterion for initial pressure growth in a restricted
+fixed directed, unit-capacity EPI model and finite family diagnostics in
+src/tnfr/physics/nonnormal_prediction.py.
+Need: heterogeneous/multichannel/operator extension and outside-family
+prediction. General superiority of pseudospectra over spectra remains open.
+
+S14 — Structural state geometry. Owner O1 observation contract; reused by O3/O4.
+Have: a metric on a declared fixed simple-graph class in
+src/tnfr/physics/structural_state_distance.py, invariant under the allowed
+relabeling and phase wrapping. Positive channel scales are caller-declared.
+Need: TNFR-derived relative scales/uniqueness and extension to changing
+topologies, multigraphs, nesting/history and dynamic relevance. Isomorphism
+enumeration may be factorial; do not assume this is a scalable generic tool.
+
+S15 — Inverse identification. Owner O6.a, gated by O1.a observability.
+Have: known-target node-level one-step signatures for thirteen operators and
+finite-prototype noise margins in src/tnfr/physics/temporal_identifiability.py.
+Need: unknown targets, aggregate-only measurements, unseen states, calibrated
+noise, mixed schedules and full words. Labels/provenance tokens must not leak
+into predictor features. A successful one-step probe does not close inversion.
+
+S16 — Integrated research/evidence. Supports the active O owner.
+Have: finite trajectory, physical-flow and Event/REMESH provenance, restricted
+policy bounds and transactional per-invocation P2 enforcement, plus B1/B2 links
+between realizability, memory, birth and profile accounting.
+Need: joint full-dynamics state, persistent structure, scale compatibility and
+future runtime conditions. Maintain one evidence/dependency ledger; S16 is
+integration responsibility, not an additional independent physical campaign.
+
+6. E/H ALIASES AND OTHER REPOSITORY PROGRAMMES
+===========================================
+
+E aliases: route work to an existing owner
+-----------------------------------------
+E1 -> O1.a / S3: sufficient state and finite Reception auxiliary projection.
+      Still open; activate for a concrete full-state or runtime-proof gap.
+E2 -> O1.b / S5, S1-S2: complete policy viability/invariant domain.
+      Per-call P2 enforcement exists; future admission is not established.
+E3 -> O2 / S4, S13: directed channel/edge convention and exact chain controls.
+      EN orientation is implemented; reconcile meanings before changing code.
+E4 -> O3.a / S1: differentiated persistence and recovery; B2.d.9 owns next work.
+E5 -> O3.a / S2: event/geometry budgets. Initial resets and first birth are
+      delivered; EPI-jump accounting comes next, changing N/history later.
+E6 -> O3.a / S1-S2: mixed absolute/relative defects and numerical floors.
+      Activate when a measured defect limits the claim; no added noise axiom.
+      Also retain uncertainty intervals for observed ZHIR secants against
+      the strict represented threshold: undecidable crossings require
+      diagnostic abstention without changing the production admission gate.
+E7 -> O4.a / S8-S9: reduced memory. B2.a-c deliver the initial linear/P5 work;
+      only a named extension warrants a new task.
+E8 -> O6.a / S15: identifiable nodal levers and clocks, using O1/O2 contracts.
+E9 -> O6.a: one eligible physical protocol; historical signal fits are controls.
+E10 -> S16 supporting the active owner: profile and reduce proven evidence cost.
+       Preserve validation/rejection semantics; optimization is conditional.
+
+H claims: status belongs to the same owners
+------------------------------------------
+H1 -> O1.a/S3: tetrad-only future determination is refuted in scope;
+      general minimal sufficient state remains open.
+H2 -> O3/S1-S2: restricted Lyapunov/history results exist; general result open.
+H3 -> O1.b/S5: spectral grammar adaptation remains conjectural. A REMESH-only
+      half-alpha invariant class exists; a sufficient full-runtime class is open.
+H4 -> O4.a/S8-S9: restricted closure proved; global phasor autonomy refuted;
+      derived memory is positive evidence for a different reduced description.
+H5 -> O1/S10: catalog completeness open pending independent admissible class.
+H6 -> O4.c/S6: universal reproducible critical exponents remain open.
+H7 -> O3/S7: prospective topology precursors conjectural; detection is available.
+H8 -> O2/S13: general pseudospectral predictive superiority remains open;
+      the local logarithmic-norm criterion does not prove that headline.
+H9 -> O4/S11-S12-S14: restricted metrics/balances exist; a unique natural
+      metric and general variational operator semantics remain open.
+H10 -> O6.a/S15: finite known-target probes measured; general word inversion open.
+
+Other indexed programmes: parked, not silently added to the active queue
+-----------------------------------------------------------------------
+The following have their own owners. They were indexed and scope-screened in
+this review, not independently proof-audited or experimentally replicated.
+Their existence does not solve the associated external mathematical problems.
+
+theory/STRUCTURAL_RESEARCH_PROGRAM.md: independent R1-R9 arithmetic/spectral
+catalog. R4 temporal REMESH, R5 broad classification, R7 completeness and R9
+directed metric retain open boundaries; R6 reports no demonstrated TNFR-specific
+excess. Reuse R1/R8 with S10, R3/R4 with S8-S9, R9 with S4/S13 only when an
+actual shared algebraic contract is established. Domain labels alone are not
+a shared physical derivation.
+
+theory/TNFR_RIEMANN_RESEARCH_NOTES.md: exploratory spectral program;
+  RH-strength conclusions remain open.
+theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md: scoped diagnostics;
+  nonlinear/limiting uniform bounds remain open.
+theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md: finite diagnostics;
+  independent non-Abelian derivability and a continuum gap remain open.
+theory/TNFR_P_VS_NP_RESEARCH_NOTES.md: diagnostic trapping study;
+  general complexity separation remains open.
+theory/TNFR_BSD_RESEARCH_NOTES.md: finite diagnostics;
+  GL(2) construction and the rank/order bridge remain open.
+theory/TNFR_HODGE_RESEARCH_NOTES.md: auxiliary simplicial baseline;
+  the tetrad-to-cochain bridge remains open.
+
+Use theory/README.md as their directory. Activate one only for an explicit
+dependency or a separately agreed objective, with the same derivation and
+surface/laboratory limits. They are not milestones on a quantum/matter claim.
+
+7. ONE EXECUTION QUEUE, DEPENDENCIES AND DECISION GATES
+====================================================
+
+Q0 — Integrity before stronger claims; bounded documentation/specification work
+-----------------------------------------------------------------------------
+Correct or quarantine the following known mismatches in their existing owners.
+This plan records the queue; it does not claim the underlying files are fixed.
+
+C1: solver/operator wording was corrected in B1. A separate remaining statement
+in theory/EMERGENT_ONTOLOGY.md section 1 describes physical magnitudes as
+manifestations and nu_f as prior to physical time, while the next paragraph
+correctly says no conversion or physical priority has been derived. Align the
+stronger wording with that explicit open boundary.
+C2: benchmarks/emergent_dimension_dynamics.py manually appends phase samples,
+builds a pi/6 threshold graph and uses custom 0.4 phasor averaging. It does not
+execute canonical AL/UM/RA despite its prose and the ontology section 3.2.
+Its _max_grade returns clique vertex count, not simplex dimension. Correct the
+measurement name/convention and classify the existing route as auxiliary.
+Do not manufacture a canonical trajectory merely by relabeling its output.
+C3/C4: the phasor/geometric-field distinction and sampled winding/Nyquist/U3
+controls were corrected and tested locally. Reuse those production controls.
+C5: ontology section 9.4 still calls locality/classicality already derived.
+Use the distinct threshold-front and Bell-factorization scopes of sections
+5.1/9.2. Its stronger forms/Koide priorities do not override the O3/O5 gates.
+C6: shared approximate matrix-exponential and cancellation-prone generator
+construction remain open at extreme scales. The memory observer rejects
+known bad cases, including time 1e16 and large-loop 1e20 controls; those guards
+do not repair shared routines or prove numerical accuracy. Exact P5 enclosures
+avoid this dependency. Activate a core numerical fix when extending the
+affected domain; do not block independent exact algebra or copy local patches.
+
+Q0 closes with corrected labels/claims and appropriate narrow checks, or an
+explicit documented exclusion. No broad simulation campaign is required.
+
+Q1 — B2.d.9a: complete event accounting; immediate mathematical dependency
+------------------------------------------------------------------------
+Extend the shared forced-profile accounting to an actual EPI jump accompanied
+by capacity, forcing and conductance changes. Keep the existing same-EPI
+observer and its rejection boundary. Prove the decomposition, test independently
+solvable positive/negative cases and verify cancellation/telescoping exactly.
+Reuse support_transport and fixed-pattern coordinates; do not introduce new
+physical energy terms or a competing observer implementation.
+Exit: exact identities and independent regression controls for the stated
+same-node scalar domain. Changing node count/history transport is a later task.
+
+Q2 — B2.d.9b: one bounded matched perturbation/response comparison
+----------------------------------------------------------------
+Use section 8. Three branches, one retained preparation, existing defaults,
+one fixed horizon and all actual writes. No seed/factor search for a favorable
+outcome. Exit with admission outcome, damage, corrective benefit, remaining
+gap and complete budgets; a negative response is a completed scoped delivery.
+
+Q3 — O1.b/O3.a: explain the mechanism or obstruction before extending a policy
+---------------------------------------------------------------------------
+Use the Q2 result to choose one missing derivation: policy dependence,
+admissible state domain, restoring mechanism or a specific obstruction.
+For a repeated-policy claim, require both admission for every state in the
+declared domain and preservation of that full domain by the transition.
+A per-call successful certificate does not predict success of another call.
+Do not extend a UM word or horizon until recovery appears. A new experiment
+needs a stated mechanism, discriminator or unresolved boundary first.
+
+Parallel preparation — O6.a, without equipment purchase or data collection
+-------------------------------------------------------------------------
+Prepare one smallest eligible protocol from an existing derived phenomenon.
+Specify measured quantity, structural map, independently given preparation,
+clock/units, derived coefficients, uncertainty, apparatus and compute ceiling.
+Predeclare intervention, comparator, information access and rejection rule.
+If the prediction is observationally equivalent to the baseline, document
+that result; identify any derived difference before claiming added physics.
+
+Conditional later work
+----------------------
+- O1.a/E1 Reception auxiliary state: when a complete-state proof requires it.
+- O4.a general memory/phase closure: when a concrete lossy observation blocks
+  the active model; reuse completed P5 work before considering new families.
+- E3/S13 directed contract: when directed support is actually required.
+- S6/S7 universality/precursors: after a controlled dynamic family and target.
+- O2.a geometry selection: after correcting C2 and retaining a canonical trace.
+- O4.b/O5.a: assumption/obstruction audits may proceed; coupled-field or detector
+  simulations require a TNFR-derived realizable model first.
+- E10: only a measured validation/simulation bottleneck justifies optimization.
+- Other repository programmes: only an explicit shared dependency or new scope.
+
+Dependency structure
+--------------------
+    O1 assumptions/state -> actual operator and flow contract
+                         -> Q1 event accounting -> Q2 response comparison
+                         -> Q3 mechanism and invariant-domain argument
+    O1 state <-> O4 reduction/memory <-> O5 operational-state questions
+    O2 clock/edge semantics + O1 observability -> O6 identifiable protocol
+    All executed work -> S16 common provenance and claim-scope record.
+
+No separate E, H, historical P0/P1 or Reception resume ladder remains active.
+
+8. B2.d.9 SPECIFICATION AND RECOVERY CRITERIA
+==========================================
+
+Checkpoint and comparison target
+--------------------------------
+Reach the actual B2.d.8 child-coupling endpoint at t=9.5 before terminal SHA
+through a live preparation helper. Preserve its histories and positive capacity;
+do not inject serialized EPI into a fresh graph or run the closure first.
+The current benchmark returns a record after closure; extracting a helper
+that returns the live pre-closure graph is part of the next implementation.
+
+Fix the target before the perturbation. For continuity, retain B2.d.8's original
+derived profile z0 and its original H0, with the declared H0-centering P0:
+    R0(x) = (P0*x-z0)^T H0 (P0*x-z0) / 2.
+It is not the stored EPI field from an earlier time. It ignores uniform EPI
+shifts and does not measure recovery of phase, capacity, support or history.
+Record those channels and each current-model profile error separately. Any
+additional target must be declared before execution, with its distinct purpose.
+
+Actual canonical perturbation and feedback
+------------------------------------------
+Default child VAL is a candidate persistent perturbation. With the current
+edge-aware setting it can change signed EPI and capacity, including clipping
+or boundary adaptations. IL can change phase through the neighbor-phasor
+kernel; its pressure contraction may disappear after canonical refresh while
+its phase write persists. UM may change capacity, phases, pressure and links.
+Measure actual effects; the primary operator channel is not its full write set.
+
+Audit both full-word validators, current target histories and all live U1/U2/U3
+conditions. Static VAL->IL->UM compatibility is not actual admission evidence.
+Never force a refused gate or silently disable EDGE_AWARE_ENABLED to obtain a
+capacity-only perturbation. A nondefault branch would be a different study.
+
+The full-event identity may first compare the EPI jump in old fixed coordinates
+and then the reference/metric reset at the post-jump EPI. Such detached
+intermediates are an algebraic decomposition, not an asserted internal write
+order or extra nodal evolution. Preserve that distinction in the API and tests.
+
+Three matched branches and fixed decision rule
+----------------------------------------------
+U: unperturbed continuation from the retained checkpoint.
+P: admitted VAL->IL prefix, refresh and continuation without additional UM.
+F: the identical admitted VAL->IL prefix, refresh and additional UM, followed
+   by the same elapsed physical flow and measurement boundaries.
+Verify matching P/F materialized pre-feedback states: relevant nodal channels,
+support, histories and random-state provenance. Equal operator labels alone
+do not establish equivalent preparations.
+Select horizon and numerical partition before running. Retain existing factors;
+make no post-result adjustment of target, damage definition or stopping time.
+Measure before separate final closures so freezing does not count as recovery.
+
+At matched time T define:
+    damage D(T)          = R_P(T) - R_U(T);
+    corrective benefit B(T) = R_P(T) - R_F(T);
+    remaining gap G(T)   = R_F(T) - R_U(T).
+The exact identity D=B+G separates damage from the action's correction.
+Establish damage in the predefined observable before calling this recovery.
+If no damage is present, report reorganization/response, not failed or successful
+repair. For D>0, B>0 means beneficial correction: 0<B<D is partial correction,
+B=D closes the gap in this observable, and B>D outperforms U. G records the
+remaining difference. Recovery does not require outperforming U.
+An optional fraction B/D is defined only for positive resolved damage; do not
+divide by zero or tune a near-zero tolerance after seeing the outcome.
+Floating-point endpoint values can be accounted for exactly as represented
+numbers; that does not remove numerical uncertainty relative to the model.
+
+Record event jumps, refreshed pressure, phase/capacity/support changes,
+original/current-profile errors, mean drift, full interval defects, clipping,
+admission and executor endpoint bindings. Capture canonical diagnostics where
+defined; a missing or out-of-domain observable must be explicit.
+Conclusions concern the specified observable and finite horizon. Full-state
+restoration, asymptotic attraction and an autonomous repeated policy require
+additional proofs. Broaden only after the result identifies a precise gap.
+
+9. DEFERRED RECEPTION/REMESH CHECKPOINT
+=====================================
+
+Already integrated in the baseline at 1abea806
+---------------------------------------------
+Reception uses an immutable pre-stage snapshot for EPI, kinds, optional sources
+and metrics. ReceptionStageObservation retains before/after kinds, the source
+record derived from the pre-stage snapshot and observed post-stage source
+presence/value. It does not retain arbitrary old stored source metadata.
+Directed EN reads predecessors;
+source detection follows incoming paths. The shared stabilization predicate
+uses abs(DeltaNFR)<0.1. Source absence, emptiness and opaque/untracked values
+remain distinct. Freshness checks and graph-owned rollback are implemented.
+Immediate EN preserves stored pressure/dEPI and operator-local coherence;
+the subsequent pressure refresh is a separate boundary.
+These are not still-open temporal-semantics or directed-capture repair tasks.
+
+Still unstarted: E1 finite auxiliary projection/cocycle
+------------------------------------------------------
+Use the existing sealed observations to retain categorical evidence and
+explicit additive increments at stage, cycle and sequence boundaries, with
+prefix sums and identity provenance. Equality of cumulative logs/counters is
+not a valid invariance criterion. Additive accounting alone does not prove
+state minimality, detector correctness, all-write coverage, auxiliary stability,
+live-state retention or future stability. Those flags must remain explicit.
+Activate this task only when an O1/S1/S16 full-state claim needs it.
+
+Restricted REMESH results to reuse without reopening their proofs
+---------------------------------------------------------------
+For the common-gain statements, retain fixed ordered support, metric and delay
+companion, consensus-preserving schedules and 0<=q<=1. These premises are part
+of the theorem; a changing full-runtime trajectory is not assumed to satisfy them.
+- A common exact disagreement gain q gives prefix gain <=1 and block gain
+  <=q over L=active_max_delay+1. q<1 yields repeated geometric spatial decay;
+  spatially uniform temporal means are outside that conclusion.
+- The signed relative-defect bound gives q_eff=q*(1+eta). Strict contraction
+  requires q_eff<1; equality supplies no positive contraction margin.
+- A general bounded binary64 box gives no useful relative budget for the
+  existing witness policy: one half-alpha tuple needs eta=2^210-1/4.
+- Alpha=1 hard clipping has a REMESH-only invariant interval class with eta=0.
+- The restricted P2 alpha=1/2 class with sufficient antisymmetric history and
+  symmetric hard interval [-B,B], B>=4*2^-1074, has sharp eta=135/124;
+  strict robust composition requires q<124/259. This is not a full-runtime class.
+- P2 half-Reception, mix=0.5, has numeric disagreement gain zero. Composition
+  with alpha=1 extinguishes active-history disagreement after tau_global+1.
+  Finite causal adapters and transactional per-call validation are implemented.
+- Default EN has a gain-four witness: the half-factor theorem cannot transfer
+  silently. Retain soft-clipping, subnormal, centering, support/metric-change
+  and zero-input admission counterexamples as active boundary controls.
+Authoritative synthesis: theory/REMESH_INFINITY_DERIVATION.md and
+theory/TNFR_DIFFUSION_STABILITY_THEOREM.md, with their source/test links.
+
+10. EVIDENCE, VALIDATION AND RESUMPTION RECORD
+===========================================
+
+Publication base and last executed research validation
+------------------------------------------------------
+The planning review used base commit
+1abea806856f9ce56db3a95464d82252f3b37df5 with local B1/B2 source, tests and theory.
+The subsequent publication preparation fetched origin and confirmed main at
+that same base. The integration commit containing this roadmap versions the
+B1/B2 work and this formerly local plan. Use Git for its publication revision;
+the base hash above is a historical evidence anchor, not the current HEAD.
+The unrelated manual/ directory and ignored outputs remain outside publication.
+
+Publication validation: 875 tests passed across 41 changed/research and contract
+regression files. Documentation integrity and internal references passed.
+Lint passed for all 19 changed source files; the full-source lint still reports
+75 findings in unchanged files. This is not a clean whole-repository lint claim.
+
+Last B2.d.8 validation: 155 distinct targeted tests, including 31 new checks;
+documentation integrity and 1,573 internal Markdown references passed.
+Those totals describe that campaign, not the whole repository or new tests
+executed during this planning review. Earlier counts remain historical only.
+Working interpreter: .venv313/Scripts/python.exe with Python 3.13.6. The prior
+checkpoint used NumPy 2.5.3, NetworkX 3.6.1 and pytest 9.1.1; optional SymPy
+was absent. The old .venv312 is broken and is not the execution entry point.
+
+Single historical provenance register for the B2.d.8 artifacts:
+  artifacts/research/b2d8_provenance_validation.json
+Validator (no trajectories executed):
+  artifacts/research/validate_b2d8_artifacts.py
+All nine campaign artifacts and sixteen manifests were admitted and matched
+their scoped dirty-source hashes; eight preceding nonmanifest payloads were
+unchanged after source refactoring. Keep those checks in the register, not
+duplicated per-line digest lists. The artifacts are local/ignored, not published
+evidence guaranteed to exist in a fresh clone. Their benchmark scripts regenerate
+them; read the current scope and verify provenance before reusing any output.
+Publication and later source changes do not relabel these existing manifests.
+An old dirty-source hash is historical evidence, not certification of a new
+commit or later implementation. Regenerate when a current-source result is needed.
+
+The nine campaign owners are:
+  benchmarks/derived_epi_memory.py
+  benchmarks/canonical_winding_persistence.py
+  benchmarks/capacity_localization.py
+  benchmarks/cycle_support_dynamics.py
+  benchmarks/cycle_memory_relaxation.py
+  benchmarks/thol_pressure_feedback.py
+  benchmarks/thol_birth_transport.py
+  benchmarks/forced_support_balance.py
+  benchmarks/child_coupling_feedback.py
+Run an existing campaign again only for changed relevant source/provenance,
+a new claimed domain, a failure or missing evidence. A new plan alone does not
+justify repeating every trajectory, test or exact enumeration.
+
+One compact work-item contract
+------------------------------
+Before execution record:
+1. Existing O owner and S/E/H aliases; one falsifiable question and claim ID.
+2. Available theorem/API/control reused and the precise gap being addressed.
+3. TNFR derivation; primitive/constitutive/preparation/numerical inputs separated.
+4. Ordered nodes, conductance/support meaning, EPI chart, phase/capacity,
+   history, operator defaults, grammar context, physical clock and source scope.
+5. Fixed target, intervention, controls, duration, seeds and numerical budget.
+6. Claim-relevant observables plus available canonical telemetry and limitations;
+   preserve the tetrad interface without inventing values outside its domain.
+7. Predicted effect, rejection/abstention rule and predeclared stop condition.
+8. Exact/conditional/numerical status, implementation evidence and empirical
+   status separately; what must remain unproved even if all checks pass.
+9. Result artifact, targeted verification, and the next dependency or closure.
+
+An engineering fix is complete when its declared contract and relevant checks
+pass. A mathematical claim closes when proved or refuted on its stated domain.
+A finite study closes with reproducible classified evidence, including a
+negative result. An O objective needs its scientific exit gate; it is never
+closed merely because several B packages or many unit tests were completed.
+
+Historical preservation and consolidation outcome
+-------------------------------------------------
+The full pre-review file is preserved locally at:
+  artifacts/research/plan_history/2026-09-15_b2d8_before_reorganization.txt
+Its SHA-256 is:
+  83225e9c5e8c77c88db2aba3f330e1385c037272a93605fec397fe320ad0a4ab
+That 3,642-line snapshot is archival, not an alternative execution plan.
+It retains old mathematical details, references, test counts and session logs.
+Current derivations remain in their existing theory/source owners.
+
+This synthesis removes obsolete pause/resume instructions, already-resolved
+EN repairs, repeated S/E work proposals and competing priority ladders. It
+corrects scope for topology labels, coherence dimensions, metric scales,
+lossy quotient formulas, phase-pressure closure and recovery versus controls.
+Useful negative and auxiliary controls are retained with their actual roles.
+No runtime tool is declared deleted or repaired merely by this planning change.
+
+RESUME HERE
+-----------
+Read section 7 only for execution order. Close the bounded Q0 integrity queue;
+then implement Q1's full-event identity and Q2's fixed three-branch comparison.
+Use section 4's shared owners and section 8's damage/recovery criteria.
+O6 protocol preparation may proceed independently; no dataset campaign yet.
+After Q2, explain the mechanism or obstruction before selecting further words.
+Keep the macro goal and all open boundaries in sections 1-3 intact.

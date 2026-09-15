@@ -75,6 +75,40 @@ reflection partition of a path has zero residual to machine precision. A path pa
 whose middle block mixes boundary and interior nodes is an executable
 counterexample.
 
+### Derived memory when closure fails
+
+For fixed reversible pure-EPI diffusion, the unresolved coordinate
+`z=(I-PR)x` can now be eliminated exactly. With `Q=I-PR`, the projected
+equation has instantaneous generator `RAP`, kernel
+`K(t)=RA exp(-QAQ t) QAP`, and initial hidden source
+`f(t)=-RA exp(-QAQ t) Qx_0`. The convolution enters with a positive sign.
+The weighted identity `H_bar K(0)=(QAP)^T H(QAP)` proves that its kernel
+vanishes exactly when the quotient closes for every state.
+
+The proof and independent P4/P5 controls are centralized in
+[Derived EPI memory](DERIVED_EPI_MEMORY.md).
+[`observe_epi_memory`](../src/tnfr/physics/epi_memory.py) reuses the same
+partition geometry and records finite numerical samples of the full equation
+and the two omission controls. Numerical generator/propagator checks reject
+loss of the necessary diffusion invariants; they are not accuracy enclosures.
+This is an offline observation, without a REMESH or complete-runtime claim.
+
+For the explicit P5 partition, the same note's section 8 derives uniform and
+causal error bounds for a shortened history window. Its separate rational
+reference preserves the initial hidden source, encloses the actual truncated
+solution and keeps evaluation width separate from model error. This restricted
+approximation has no fitted memory rate or asserted REMESH correspondence.
+
+The P5 reflection partition `((0,4),(1,3),(2,))` supplies a complementary exact
+closure on a genuine three-node quotient with conductances `2,2`. Observing
+only its endpoint mean and combined inner/center mean is precisely the second
+reduction that generates memory. Uniform unclipped REMESH commutes with this
+reflection projection and its lift; the fine stationary-history energy splits
+into quotient and discarded energies. These identities reuse the existing
+companion theorem in the quotient's metric. They do not identify a REMESH
+echo with a forward diffusion step, as an exact causal-history counterexample
+shows. See section 9 of [Derived EPI memory](DERIVED_EPI_MEMORY.md).
+
 ### Consequence for S9
 
 The pure-EPI diffusion channel is a fixed family under every exact quotient:
@@ -296,8 +330,14 @@ Boolean. This separation is exercised by
 
 The cross blocks are zero, so the result does not derive how a pulse changes
 EPI relaxation or how dissipation feeds back into the substrate. A coupled
-bridge must specify nonzero cross tensors while retaining the degeneracy laws;
-that is the remaining S12 problem.
+bridge requires a TNFR derivation and preservation of the realizable graph-field
+image, as well as its stated balance laws. Nonzero cross tensors alone are
+insufficient. Fixed mutual-singleton P2 already excludes nonzero continuous
+harmonic evolution of the same geometric read-outs; its fixed-phase pure-EPI
+potential/flux sector instead has a closed dissipative law with rate
+`nu_0+nu_1`. The exact proof and production regressions are centralized in
+[the variational note, section 3.7](TNFR_VARIATIONAL_PRINCIPLE.md#37-p2-read-out-realizability-obstruction-and-derived-flow).
+Broader TNFR-derived realizability and coupling remain open under S12.
 
 ## 4. Inverse identifiability
 

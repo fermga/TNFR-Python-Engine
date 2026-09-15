@@ -79,7 +79,11 @@ def test_epi_bounds_reject_before_al_state_or_history_commit(bounds):
         (
             "THOL",
             {"THOL_accel": 1e308},
-            {ALIAS_DNFR[0]: 2.0, ALIAS_D2EPI[0]: 2.0},
+            {
+                ALIAS_DNFR[0]: 2.0,
+                ALIAS_D2EPI[0]: 2.0,
+                "epi_history": [0.0, 1.0, 4.0],
+            },
             "THOL DeltaNFR contribution",
         ),
     ],

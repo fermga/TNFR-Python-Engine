@@ -11,7 +11,6 @@ import logging
 import math
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass, replace
-from numbers import Real
 from typing import Any, ClassVar
 
 from ..config.operator_names import SELF_ORGANIZATION
@@ -37,6 +36,7 @@ from ._argument_validation import (
 from .definitions_base import Operator
 from .network_stage import GraphTransactionSnapshot
 from ._thol_constants import THOL_CHILD_VF_DAMPING, THOL_SUB_EPI_SCALING
+from ._thol_pressure import propose_thol_pressure
 
 _OPERATOR = "Self-organization"
 
@@ -556,10 +556,7 @@ class SelfOrganization(Operator):
             label="THOL_accel",
             lower=math.nextafter(0.0, math.inf),
         )
-        contribution = _checked_product(
-            acceleration, d2_epi, "THOL DeltaNFR contribution"
-        )
-        dnfr_after = _checked_sum(dnfr, contribution, "THOL DeltaNFR proposal")
+        dnfr_after = propose_thol_pressure(dnfr, d2_epi, acceleration).dnfr_after
 
         existing = _existing_list(data, "sub_epis")
         existing_records = _validate_sub_epi_records(existing)

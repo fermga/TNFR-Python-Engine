@@ -1548,11 +1548,13 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
 
 
 def _op_THOL(node: NodeProtocol, gf: GlyphFactors) -> None:  # THOL — Self-organization
-    """Inject curvature from ``d2EPI`` into ΔNFR to trigger self-organization.
+    """Apply the signed acceleration pressure channel without creating children.
 
     The glyph keeps EPI, νf, and phase fixed while reorganizing ΔNFR by the
     signed second derivative of EPI. Positive and negative acceleration therefore
     move structural pressure in their respective directions.
+    Graph-backed nodes reconstruct acceleration from the shared active-history
+    reader. Graphless protocol nodes retain their supplied ``d2EPI`` value.
 
     Parameters
     ----------
@@ -1572,18 +1574,30 @@ def _op_THOL(node: NodeProtocol, gf: GlyphFactors) -> None:  # THOL — Self-org
     >>> node.dnfr
     0.2
     """
+    from ._thol_pressure import (
+        commit_graph_thol_pressure,
+        prepare_graph_thol_pressure,
+        propose_thol_pressure,
+    )
+
     a = get_factor(gf, "THOL_accel", COUPLING_GENTLE)
-    dnfr = _finite_operator_scalar(node.dnfr, "THOL DeltaNFR state")
-    d2_epi = _finite_operator_scalar(
-        getattr(node, "d2EPI", 0.0), "THOL d2EPI state"
-    )
-    contribution = _finite_operator_scalar(
-        a * d2_epi, "THOL DeltaNFR contribution"
-    )
-    proposal = _finite_operator_scalar(
-        dnfr + contribution, "THOL DeltaNFR proposal"
-    )
-    node.dnfr = proposal
+    NodeNX = get_nodenx()
+    if NodeNX is not None and isinstance(node, NodeNX):
+        proposal = prepare_graph_thol_pressure(node.G, node.n, a)
+        commit_graph_thol_pressure(node, proposal)
+    else:
+        from .preconditions import OperatorPreconditionError
+
+        # Graphless protocol objects retain their finite scalar coercions.
+        dnfr = _finite_operator_scalar(node.dnfr, "THOL DeltaNFR state")
+        d2_epi = _finite_operator_scalar(
+            getattr(node, "d2EPI", 0.0), "THOL d2EPI state"
+        )
+        try:
+            proposal = propose_thol_pressure(dnfr, d2_epi, a)
+        except OperatorPreconditionError as exc:
+            raise TNFRValueError(exc.reason) from exc
+        node.dnfr = proposal.dnfr_after
 
 
 def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
@@ -1870,6 +1884,12 @@ def _apply_glyph_obj_impl(
             )
     if _prepared_operator_state is None:
         op(node, gf)
+    elif g is Glyph.THOL:
+        from ._thol_pressure import TholPressureProposal, commit_graph_thol_pressure
+
+        if type(_prepared_operator_state) is not TholPressureProposal:
+            raise TypeError("prepared THOL pressure state has an invalid type")
+        commit_graph_thol_pressure(node, _prepared_operator_state)
     else:
         from ._reception_kernel import (
             ReceptionReadSnapshot,
@@ -1893,7 +1913,7 @@ def _apply_glyph_obj_impl(
     # The ordered history is authoritative; source_glyph is the serialized
     # single-value fallback and must never overwrite epi_kind.
     set_attr_str(storage, ALIAS_SOURCE_GLYPH, g.value)
-    if _prepared_operator_state is not None:
+    if _prepared_operator_state is not None and g is Glyph.EN:
         sources = _prepared_operator_state.reception_sources
         if sources is not None:
             storage["_reception_sources"] = list(sources)
@@ -1943,7 +1963,7 @@ def _apply_glyph_impl(
     require_replayable_history(G.nodes[n].get("glyph_history"))
     # Validate the operator's numerical contract before NodeNX construction,
     # because the adapter is cached in graph metadata.
-    resolve_runtime_operator_factors(
+    factors = resolve_runtime_operator_factors(
         G.graph.get("GLYPH_FACTORS"), glyph, G.graph
     )
     _validate_u3_graph_application(G, n, glyph)
@@ -1956,9 +1976,18 @@ def _apply_glyph_impl(
             n,
             track_sources=False,
         )
+    elif glyph is Glyph.THOL:
+        from ._thol_pressure import prepare_graph_thol_pressure
+
+        if _prepared_operator_state is not None:
+            raise TypeError("THOL pressure must be prepared from the current graph")
+        # Validate history and arithmetic before adapter caching or channel writes.
+        _prepared_operator_state = prepare_graph_thol_pressure(
+            G, n, factors["THOL_accel"]
+        )
     elif _prepared_operator_state is not None and glyph is not Glyph.EN:
         raise TypeError("prepared operator state is valid only for Reception")
-    if _prepared_operator_state is not None:
+    if _prepared_operator_state is not None and glyph is Glyph.EN:
         from ._reception_kernel import reception_read_snapshot_matches_graph
 
         if not reception_read_snapshot_matches_graph(

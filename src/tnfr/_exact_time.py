@@ -13,12 +13,13 @@ from __future__ import annotations
 
 from fractions import Fraction
 import math
-from numbers import Real
+from numbers import Rational, Real
 from typing import Any, Iterable
 
 __all__ = (
     "atanh_log_bounds",
     "exact_log_bounds",
+    "exact_or_represented_real",
     "exp_unit_bounds",
     "exp_upper_float",
     "finite_represented_real",
@@ -55,6 +56,21 @@ def finite_represented_real(value: Any, label: str) -> tuple[float, Fraction]:
     if represented == 0.0:
         represented = 0.0
     return represented, Fraction.from_float(represented)
+
+
+def exact_or_represented_real(value: Any, label: str) -> Fraction:
+    """Preserve rational model inputs; otherwise use the binary64 contract.
+
+    This opt-in model boundary differs from runtime time materialization:
+    exact rational inputs need not fit binary64. Normalize their components
+    to Python integers so NumPy integral payloads cannot overflow during
+    subsequent Fraction arithmetic.
+    """
+    if isinstance(value, bool):
+        raise TypeError(f"{label} must be a finite real scalar, not boolean")
+    if isinstance(value, Rational):
+        return Fraction(int(value.numerator), int(value.denominator))
+    return finite_represented_real(value, label)[1]
 
 
 def nonnegative_represented_time(

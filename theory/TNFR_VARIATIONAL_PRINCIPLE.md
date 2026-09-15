@@ -1,9 +1,9 @@
 # TNFR Variational Principle — Lagrangian Action Formulation
 
-**Status**: Exact restricted EPI Dirichlet balance and decoupled metriplectic product; full coupled tetrad/nodal bridge unresolved
+**Status**: Exact restricted EPI balances, decoupled product and fixed-P2 harmonic realizability obstruction; broader coupled tetrad/nodal bridge unresolved
 **Module**: `src/tnfr/physics/variational.py`
-**Tests**: `tests/physics/test_diffusion_energy_balance.py`, `tests/physics/test_variational.py`, `tests/physics/test_symplectic_substrate.py`, `tests/physics/test_metriplectic_product.py`
-**Date**: 2026-09-05
+**Tests**: `tests/physics/test_diffusion_energy_balance.py`, `tests/physics/test_variational.py`, `tests/physics/test_symplectic_substrate.py`, `tests/physics/test_metriplectic_product.py`, `tests/physics/test_symplectic_graph_realizability.py`
+**Date**: 2026-09-14
 
 ---
 
@@ -148,8 +148,91 @@ both degeneracies and both component vector fields.
 
 This is an exact direct product, not the missing coupled derivation. Since the
 cross blocks vanish, it supplies no pulse-relaxation feedback. A full bridge
-still requires nonzero cross tensors that preserve the same degeneracy laws.
+would require a TNFR-derived interaction and preservation of the realizable
+graph-field image, not just nonzero cross tensors with those degeneracy laws.
 See [TNFR_SCALE_GEOMETRY_AND_BRIDGE.md](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md).
+
+### 3.7 P2 Read-Out Realizability: Obstruction and Derived Flow
+
+An ambient harmonic solution need not be a trajectory of the graph fields
+used to initialize it. For a graph state `X`, actual vector field `F` and
+read-out `h`, a proposed smooth autonomous field flow `f` requires
+`Dh(X) F(X) = f(h(X))`. In particular, `f` must be tangent to the realizable
+image of `h`. An instantaneous coordinate pairing does not establish this.
+
+**Exact geometric obstruction.** On fixed mutual-singleton P2 support,
+choose an open wrap branch and set `k=wrap(theta_i-theta_j)` in `(-pi,pi)`.
+The production definitions of curvature and phase current give
+
+```text
+K_phi(i) = k,                 J_phi(i) = -sin(k),
+c(k,j) = j + sin(k) = 0.
+```
+
+The singleton phasor resultant has unit magnitude, so no ambiguous circular
+mean is used. The auxiliary harmonic velocity `(k_dot,j_dot)=(j,-k)` has
+constraint derivative
+
+```text
+c_dot = -k + cos(k)*j = -k - sin(k)*cos(k).
+k + sin(k)*cos(k) = integral_0^k 2*cos(u)^2 du.
+```
+
+The integral has the strict sign of `k`, hence tangency holds only at `k=0`.
+No nonzero continuous harmonic geometric trajectory can therefore be produced
+by **any differentiable phase evolution** with this fixed support and these
+same read-outs. Changing capacity or EPI does not change that constraint.
+A nonvanishing scalar rescaling of time cannot remove the obstruction.
+Synchronized phases may rotate together while the geometric read-out stays
+zero; the theorem does not freeze all possible phase evolution.
+
+This is an exact-real, fixed-support, open-branch result. It is not a claim
+about larger graphs, different derived observables, or branch-crossing events.
+It also does not exclude isolated endpoint coincidences: a harmonic half-turn
+maps `(k,-sin(k))` to `(-k,sin(k))`, again on the geometric image, although the
+intermediate harmonic path leaves that image. No graph event is certified by
+that isolated coincidence.
+
+**A field flow that does derive from the nodal equation.** Now restrict to
+unit conductance and unit metric length on P2, positive fixed capacities
+`nu_0,nu_1`, scalar EPI `x`, fixed phase, pure-EPI pressure refreshed from
+the current state, and no additional forcing. Write `d=x_1-x_0`. The nodal
+law and the same production field definitions give
+
+```text
+DeltaNFR = (d,-d),            d_dot = -(nu_0+nu_1)*d,
+Phi_s = (-d,d),               J_DeltaNFR = (-2*d,2*d) = 2*Phi_s,
+K_phi_dot = J_phi_dot = 0,
+Phi_s_dot = -(nu_0+nu_1)*Phi_s,
+J_DeltaNFR_dot = -(nu_0+nu_1)*J_DeltaNFR.
+```
+
+Thus the extracted potential/flux sector has a closed **dissipative** flow
+with rate determined by the nodal capacities, without a fitted coefficient
+or an imported interaction. The lost common EPI offset does not prevent this
+read-out closure. This does not establish complete state reconstruction.
+On the realized potential line `p=2q`, the auxiliary harmonic velocity instead
+has `(p-2q)_dot=-q-2p=-5q`, nonzero for `q!=0`. Consequently even synchronized
+phases do not rescue that harmonic comparison when EPI disagreement remains.
+The synchronized uniform-EPI state is a common zero-field fixed point.
+
+**Executable boundary.** The fixture `x=(0,1)`, `nu=(1,1)` and
+`theta=(0,pi/3)` gives `K_phi(0)=-pi/3`, `J_phi(0)=sqrt(3)/2` and geometric
+tangency defect `pi/3+sqrt(3)/4`. Tests use the production pressure callback,
+field extractors and shared nodal integrator for three explicitly refreshed
+Euler segments of length `1/8`, with no active clipping or added forcing.
+The exact ideal segment disagreement factor is `1-(nu_0+nu_1)*dt`; this finite
+check is not an asymptotic binary64 solver theorem. Additional fixtures check
+heterogeneous capacities, both signs of the geometric defect, the zero control
+and the half-turn boundary. Numerical tolerances verify represented readings;
+the nonzero-for-all-`k` claim follows from the analytic integral above.
+
+Regression owner:
+[test_symplectic_graph_realizability.py](../tests/physics/test_symplectic_graph_realizability.py).
+Field owners: [canonical.py](../src/tnfr/physics/canonical.py),
+[extended.py](../src/tnfr/physics/extended.py),
+[symplectic_substrate.py](../src/tnfr/physics/symplectic_substrate.py).
+No new physical primitive or general TNFR-to-Hamiltonian equivalence is assumed.
 
 ---
 

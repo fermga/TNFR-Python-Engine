@@ -272,6 +272,24 @@ from .reduction_certificates import (
     kron_reduction_certificate,
     observer_transport_certificate,
 )
+from .epi_memory import (
+    EpiMemoryObservation,
+    EpiMemorySample,
+    observe_epi_memory,
+)
+from .p5_memory_truncation import (
+    P5MemoryTruncationReference,
+    P5MemoryTruncationSample,
+    bound_p5_memory_truncation,
+)
+from .p5_reduction import (
+    P5ReducedState,
+    P5ReductionGeometry,
+    P5RemeshReduction,
+    reduce_p5_state,
+    p5_reduction_geometry,
+    observe_p5_remesh_reduction,
+)
 from .gauge import (
     N_REGIMES,
     REGIME_ACTIVITY_SHARE,
@@ -611,6 +629,42 @@ from .winding_certificates import (
     certify_phase_winding,
     observe_winding_word,
 )
+from .coupling_winding import CouplingGapStep, observe_coupling_gap_step
+from .capacity_localization import CycleCapacityBalance, observe_cycle_capacity_balance
+from .cycle_memory_relaxation import (
+    CycleMemoryRelaxationReference,
+    certify_cycle_memory_relaxation,
+)
+from .cycle_support_dynamics import (
+    CycleSupportBalance,
+    CycleSupportEuler,
+    CycleSupportReset,
+    observe_cycle_support_balance,
+    observe_cycle_support_euler,
+    observe_cycle_support_reset,
+)
+from .support_transport import (
+    SupportTransportEuler,
+    SupportTransportReset,
+    SupportTransportSnapshot,
+    observe_support_transport,
+    observe_support_transport_euler,
+    observe_support_transport_reset,
+)
+from .forced_support import (
+    ForcedSupportBalance,
+    ForcedSupportPattern,
+    ForcedSupportReset,
+    ForcedSupportResetEnergy,
+    ForcedSupportState,
+    ForcedSupportStep,
+    derive_forced_support_balance,
+    observe_forced_support_pattern,
+    observe_forced_support_reset,
+    observe_forced_support_state,
+    observe_forced_support_step,
+)
+from .forcing_realization import NonEpiForcingObservation, capture_non_epi_forcing
 from .symplectic_substrate import (
     CanonicalStructureCertificate,
     HermitianStructureCertificate,
@@ -736,12 +790,55 @@ __all__ = [
     "observer_transport_certificate",
     "kron_reduction_certificate",
     "composed_reduction_certificate",
+    "EpiMemoryObservation",
+    "EpiMemorySample",
+    "observe_epi_memory",
+    "P5MemoryTruncationReference",
+    "P5MemoryTruncationSample",
+    "bound_p5_memory_truncation",
+    "P5ReducedState",
+    "P5ReductionGeometry",
+    "P5RemeshReduction",
+    "reduce_p5_state",
+    "p5_reduction_geometry",
+    "observe_p5_remesh_reduction",
     # --- Branch-aware phase topology ---
     "WindingCertificate",
     "WindingStepObservation",
     "WindingWordObservation",
     "certify_phase_winding",
     "observe_winding_word",
+    "CouplingGapStep",
+    "observe_coupling_gap_step",
+    "CycleCapacityBalance",
+    "observe_cycle_capacity_balance",
+    "CycleMemoryRelaxationReference",
+    "certify_cycle_memory_relaxation",
+    "CycleSupportBalance",
+    "CycleSupportEuler",
+    "CycleSupportReset",
+    "observe_cycle_support_balance",
+    "observe_cycle_support_euler",
+    "observe_cycle_support_reset",
+    "SupportTransportSnapshot",
+    "SupportTransportReset",
+    "SupportTransportEuler",
+    "observe_support_transport",
+    "observe_support_transport_reset",
+    "observe_support_transport_euler",
+    "ForcedSupportBalance",
+    "ForcedSupportPattern",
+    "ForcedSupportReset",
+    "ForcedSupportResetEnergy",
+    "observe_forced_support_pattern",
+    "observe_forced_support_reset",
+    "ForcedSupportState",
+    "ForcedSupportStep",
+    "derive_forced_support_balance",
+    "observe_forced_support_state",
+    "observe_forced_support_step",
+    "NonEpiForcingObservation",
+    "capture_non_epi_forcing",
     # --- Force-like Interactions ---
     "InteractionResult",
     "em_like",

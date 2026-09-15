@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from numbers import Real
 from typing import Any, Iterable
 
+from ..constants import EPI_PRIMARY
 from ..constants.aliases import ALIAS_THETA
 from ..utils.numeric import angle_diff
 
@@ -76,6 +77,31 @@ def _has_oriented_edge(graph: Any, source: Any, target: Any) -> bool:
     if graph.is_directed():
         return bool(graph.has_edge(source, target))
     return bool(graph.has_edge(source, target))
+
+
+def _topology_state(graph: Any) -> tuple[Any, ...]:
+    """Read node and edge identities, independent of insertion order or data."""
+    directed = graph.is_directed()
+    multiple = graph.is_multigraph()
+    edges = graph.edges(keys=True) if multiple else graph.edges()
+    identities = frozenset(
+        (
+            (edge[0], edge[1]) if directed else frozenset(edge[:2]),
+            edge[2] if multiple else None,
+        )
+        for edge in edges
+    )
+    return directed, multiple, frozenset(graph.nodes()), identities
+
+
+def _runtime_phase_gate(graph: Any, operator_code: str = "") -> float:
+    """Use the shared hard graph limit and any current UM-only tightening."""
+    from ..operators._phase_gate import resolve_u3_phase_limits
+
+    _, effective_limit = resolve_u3_phase_limits(
+        graph.graph, operator_code=operator_code
+    )
+    return effective_limit
 
 
 def _finite_cycle_phase(graph: Any, node: Any) -> tuple[float | None, str | None]:
@@ -213,18 +239,38 @@ def observe_winding_word(
 ) -> WindingWordObservation:
     """Execute a validated word and record each structural change.
 
+    The shared instance and named-sequence validators run before execution,
+    matching the structural sequence runner's grammar and adjacency checks.
     Every operator receives its actual :class:`ValidatedSequenceStep`; live
     preconditions, including the hard U3 gate for Coupling and Resonance,
     remain authoritative.  A configured DeltaNFR hook is called exactly as in
-    the structural sequence runner.
+    the structural sequence runner. U1a admission uses the target's primary
+    EPI truth value, matching that runner. Cycle U3 margins use the current
+    configured hard graph gate, tightened by UM_MAX_PHASE_DIFF for a Coupling
+    step; cycle-wide admissibility remains separate from a local operator's
+    compatible-neighbor check. Topology changes compare node and keyed edge
+    identities, including direction, rather than only edge counts.
     """
+    from ..errors import TNFRValueError
     from ..operators.grammar_execution import ValidatedSequence
+    from ..validation import validate_sequence
 
     word = tuple(operators)
-    context = {"initial_epi_nonzero": True}
+    context = {
+        "initial_epi_nonzero": bool(graph.nodes[node].get(EPI_PRIMARY, 0.0))
+    }
     validated = ValidatedSequence(word, context=context)
+    outcome = validate_sequence(validated.names, context=context)
+    if not outcome.passed:
+        message = outcome.summary.get("message", "validation failed")
+        raise TNFRValueError(
+            f"Invalid sequence: {message}",
+            context={"sequence": validated.names, "outcome": outcome.summary},
+        )
     cycle = tuple(cycle_nodes)
-    initial = certify_phase_winding(graph, cycle)
+    initial = certify_phase_winding(
+        graph, cycle, phase_gate=_runtime_phase_gate(graph)
+    )
     if not initial.is_defined:
         raise ValueError(
             "winding word requires a defined initial cycle: " + initial.reason
@@ -239,6 +285,7 @@ def observe_winding_word(
             item: _required_phase(graph, item) for item in graph.nodes()
         }
         edges_before = graph.number_of_edges()
+        topology_before = _topology_state(graph)
         operator(graph, node, sequence_context=validated.step(index))
         if callable(compute):
             compute(graph)
@@ -255,11 +302,15 @@ def observe_winding_word(
         steps.append(
             WindingStepObservation(
                 operator=operator.glyph.value,
-                certificate=certify_phase_winding(graph, cycle),
+                certificate=certify_phase_winding(
+                    graph,
+                    cycle,
+                    phase_gate=_runtime_phase_gate(graph, operator.glyph.value),
+                ),
                 phase_changes=phase_changes,
                 edge_count_before=edges_before,
                 edge_count_after=edges_after,
-                topology_changed=edges_before != edges_after,
+                topology_changed=topology_before != _topology_state(graph),
             )
         )
     requested = tuple(operator.glyph.value for operator in word)
