@@ -59,11 +59,19 @@ contracts are centralized in [API Contracts](../docs/API_CONTRACTS.md).
 | [TNFR_ALGEBRAIC_NUMBER_FIELDS.md](TNFR_ALGEBRAIC_NUMBER_FIELDS.md) | Finite and algebraic-field extensions |
 | [TNFR_STRUCTURAL_OBSERVABILITY.md](TNFR_STRUCTURAL_OBSERVABILITY.md) | Observability diagnostics and selector scope |
 
-## Active research programs
+## Research programme owners
+
+Start with the [research portfolio](../TNFR_lineas_de_investigacion.txt) to
+distinguish primary axes, supporting mechanisms and deferred programmes.
+Only the [five-stage execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md)
+owns the active queue and stage status. The linked domain notes below retain
+their research scope; listing them does not activate concurrent campaigns.
 
 | Program | Document |
 | --- | --- |
 | Core dynamics S1-S16 | [CORE_RESEARCH_PROGRAM.md](CORE_RESEARCH_PROGRAM.md) |
+| Single active execution plan, P1-P5 | [research/FIVE_STAGE_EXECUTION_PLAN.md](research/FIVE_STAGE_EXECUTION_PLAN.md) |
+| Post-B75 nodal strategy and laboratory admission | [NODAL_RESEARCH_STRATEGY.md](NODAL_RESEARCH_STRATEGY.md) |
 | Riemann and spectral ladders | [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) |
 | Navier-Stokes | [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) |
 | Yang-Mills | [TNFR_YANG_MILLS_RESEARCH_NOTES.md](TNFR_YANG_MILLS_RESEARCH_NOTES.md) |

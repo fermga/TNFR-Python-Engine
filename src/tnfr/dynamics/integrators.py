@@ -61,6 +61,7 @@ from ..gamma import _get_gamma_spec, eval_gamma, eval_gamma_vectorized
 from ..mathematics.unified_numerical import np
 from ..types import NodeId, TNFRGraph
 from ..utils import resolve_chunk_size
+from ._euler_kernel import euler_update
 from .structural_clip import structural_clip, structural_clip_array
 
 __all__ = (
@@ -141,7 +142,7 @@ def _apply_increment_chunk(
             dEPI_dt = k4
         else:
             (k1,) = ks
-            epi = epi_i + dt_step * k1
+            epi = euler_update(epi_i, dt_step, k1)
             dEPI_dt = k1
         d2epi = (dEPI_dt - dEPI_prev) / dt_step if dt_nonzero else 0.0
         results.append((node, (float(epi), float(dEPI_dt), float(d2epi))))
@@ -293,7 +294,7 @@ def _apply_increments(
                 k1 = k_arr
             else:
                 k1 = k_arr[:, 0]
-            epi = epi_arr + dt_step * k1
+            epi = euler_update(epi_arr, dt_step, k1)
             dEPI_dt = k1
 
         if dt_step != 0:
@@ -628,7 +629,7 @@ def _integrate_vectorized_step(
         else:  # Euler
             gamma = eval_gamma_vectorized(G, theta, t_local, np)
             k1 = base + gamma
-            epi = epi + dt_step * k1
+            epi = euler_update(epi, dt_step, k1)
             dEPI = k1
 
         # d2EPI

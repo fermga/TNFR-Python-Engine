@@ -2201,6 +2201,7 @@ def _restore_runtime_value(
     memo[id(snapshot.value)] = value
     return value
 
+
 def _restore_mapping_order(
     mapping: MutableMapping[Any, Any],
     order: Sequence[Any],
@@ -3498,7 +3499,7 @@ class GraphTransactionSnapshot:
                     _restore_runtime_value(snapshot, runtime_memo),
                 )
                 for left, right, snapshot in self._edges
-        )
+            )
         restored_graph_mapping = _restore_runtime_value(
             self._graph_mapping,
             runtime_memo,
@@ -4924,7 +4925,9 @@ def _propose_pointwise(
             snapshot, node, factors, timestamp=timestamp
         )
     elif glyph is Glyph.IL:
-        from ._coherence_stage_kernel import propose_coherence_stage
+        from ._coherence_stage_kernel import (
+            DEFAULT_PHASE_LOCKING_COEFFICIENT, propose_coherence_stage,
+        )
         from .preconditions.coherence import coherence_precondition_warnings
 
         kwargs = dict(execution_kwargs or {})
@@ -4939,7 +4942,7 @@ def _propose_pointwise(
             factors["IL_dnfr_factor"],
             radius=kwargs.get("coherence_radius", 1),
             phase_locking_coefficient=kwargs.get(
-                "phase_locking_coefficient", 0.3
+                "phase_locking_coefficient", DEFAULT_PHASE_LOCKING_COEFFICIENT
             ),
             global_before=coherence_global_before,
             precondition_warnings=(

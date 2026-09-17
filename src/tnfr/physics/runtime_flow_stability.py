@@ -40,6 +40,7 @@ from typing import Any
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
+from ..dynamics._euler_kernel import euler_update
 from ..mathematics._neighbor_differences import edge_mean_differences
 from ..mathematics.unified_numerical import np
 from ..types import real_scalar_epi
@@ -730,10 +731,10 @@ def certify_observed_nodal_flow_interval(
                     np.asarray(left.delta_nfr, dtype=float),
                 )
                 base = np.add(base, np.zeros_like(base))
-                increment = np.multiply(duration_float, base)
-                replay_array = np.add(
+                replay_array = euler_update(
                     np.asarray(left.epi, dtype=float),
-                    increment,
+                    duration_float,
+                    base,
                 )
             if np.all(np.isfinite(replay_array)):
                 binary_replay = tuple(
@@ -804,13 +805,11 @@ def certify_observed_nodal_flow_interval(
                             held_base,
                             np.zeros_like(held_base),
                         )
-                        held_increment = np.multiply(
-                            binary_substep_duration,
-                            held_base,
-                        )
                         held_state = np.asarray(left.epi, dtype=float)
                         for _ in range(step_count):
-                            held_state = np.add(held_state, held_increment)
+                            held_state = euler_update(
+                                held_state, binary_substep_duration, held_base,
+                            )
                     if np.all(np.isfinite(held_state)):
                         held_pressure_replay = tuple(
                             float(value) for value in held_state

@@ -51,6 +51,7 @@ from .fused_dnfr import compute_fused_gradients_symmetric
 from ..mathematics._neighbor_differences import (
     _require_finite_pressure, edge_mean_differences, mean_neighbor_difference,
 )
+from ..mathematics._phase_midpoint import certified_two_neighbor_phase
 
 _MEAN_VECTOR_EPS = 1e-12
 _SPARSE_DENSITY_THRESHOLD = 0.25
@@ -238,13 +239,15 @@ def _dnfr_gradients_worker(
     w_topo: float,
     epi_gradient: Sequence[float] | None = None,
     vf_gradient: Sequence[float] | None = None,
+    phase_overrides: Mapping[int, float] | None = None,
 ) -> tuple[int, list[float]]:
     """Return partial ΔNFR gradients for the ``[start, end)`` range."""
 
     chunk: list[float] = []
     for idx in range(start, end):
         n = nodes[idx]
-        g_phase = -angle_diff(theta[idx], th_bar[idx]) / math.pi
+        g_phase = (phase_overrides[idx] if phase_overrides and idx in phase_overrides
+                   else -angle_diff(theta[idx], th_bar[idx]) / math.pi)
         g_epi = (epi_gradient[idx] if epi_gradient is not None else epi_bar[idx] - epi[idx]) if w_epi else 0.0
         g_vf = (vf_gradient[idx] if vf_gradient is not None else vf_bar[idx] - vf[idx]) if w_vf else 0.0
         if w_topo != 0.0 and deg_bar is not None and degs is not None:
@@ -1155,6 +1158,18 @@ def _apply_dnfr_gradients(
         )
 
     grad_timer = start_timer()
+    phase_overrides = {}
+    if w_phase != 0.0:
+        indices = data["idx"]
+        for index, node in enumerate(nodes):
+            neighbors = tuple(G.neighbors(node))
+            if len(neighbors) == 2:
+                certified = certified_two_neighbor_phase(
+                    float(theta[index]), float(theta[indices[neighbors[0]]]),
+                    float(theta[indices[neighbors[1]]]),
+                )
+                if certified is not None:
+                    phase_overrides[index] = certified.delta / math.pi
 
     if use_vector:
         grad_phase = _ensure_cached_array(cache, "grad_phase_np", theta_np.shape)
@@ -1167,6 +1182,8 @@ def _apply_dnfr_gradients(
 
         angle_diff_array(theta_np, th_bar, np=np, out=grad_phase)
         np.multiply(grad_phase, -1.0 / math.pi, out=grad_phase)
+        for index, value in phase_overrides.items():
+            grad_phase[index] = value
 
         if w_epi == 0.0:
             grad_epi.fill(0.0)
@@ -1236,6 +1253,7 @@ def _apply_dnfr_gradients(
                             w_topo,
                             epi_gradient,
                             vf_gradient,
+                            phase_overrides,
                         )
                     )
                 for future in futures:
@@ -1248,7 +1266,8 @@ def _apply_dnfr_gradients(
         else:
             dnfr_values = []
             for i, n in enumerate(nodes):
-                g_phase = -angle_diff(theta[i], th_bar[i]) / math.pi
+                g_phase = (phase_overrides[i] if i in phase_overrides
+                           else -angle_diff(theta[i], th_bar[i]) / math.pi)
                 g_epi = (epi_gradient[i] if epi_gradient is not None else epi_bar[i] - epi[i]) if w_epi else 0.0
                 g_vf = (vf_gradient[i] if vf_gradient is not None else vf_bar[i] - vf[i]) if w_vf else 0.0
                 if w_topo != 0.0 and deg_bar is not None and degs is not None:

@@ -5,6 +5,17 @@ Every line begins open and changes status only through a scoped derivation,
 counterexample or reproducible measurement. The nodal equation and existing
 operator contracts remain authoritative.
 
+The [post-B75 strategic review](NODAL_RESEARCH_STRATEGY.md) prioritizes
+measurement validity, held-out nodal predictions, sufficient reduced state
+and fixed-target restoration. C6 remains a separate bounded proof branch;
+its indefinite closure is not a prerequisite for a scoped laboratory test.
+The [portfolio](../TNFR_lineas_de_investigacion.txt) classifies the research
+axes; the [five-stage plan](research/FIVE_STAGE_EXECUTION_PLAN.md) alone owns
+active execution order and status. This document remains the technical S1-S16
+evidence inventory, not a parallel task queue. Existing empirical interfaces require
+abstention and calibration/evaluation repairs before their output can support
+the proposed physical claims; no new empirical result is asserted here.
+
 | Line | Question | Current status |
 | --- | --- | --- |
 | S1 | Stability for nontrivial dynamics | Fixed and bounded time-varying EPI diffusion derived; exact-common-metric switching plus declared affine EPI resets have a conservative hybrid gain budget. All thirteen runtime glyph stages use immutable all-target proposals. Event execution composes eligible represented affine gains for one observed finite trace. Ordered supplied event/REMESH cycle results expose sealed exact nodal/history boundaries. A separate exact finite companion theorem gives nonincreasing augmented disagreement for uniform, unclipped REMESH with fixed delays, support and metric; `0<alpha<1` mixes temporally, while `alpha=1` preserves possible cycles. One applied executor-sealed REMESH transition is identified against that companion with exact signed binary64 rounding/clipping defects. A stricter adjacent-cycle adapter binds the next represented schedule to the recorded next-history head and telescopes finite energy balances in one common metric. A graph-owned outer executor gives a compatible requested telescope same-invocation causal provenance and finite graph-owned atomicity; its explicit no-telescope branch retains the causal trace for words without a common affine schedule metric. A sealed observer measures exact normalized margins on contiguous finite blocks; one witness has `kappa=139/256`, while the causal `alpha=1` boundary has zero margin. Equilibrium and amplitude scaling rule out a uniform positive absolute drop. A conditional exact policy theorem closes the normalized spatial-disagreement margin `1-q` and prefix gain upper bound one for consensus-preserving common-`q` schedules. Its robust extension proves `q_eff=q*(1+eta)` under the signed bound `E_H(z)-E_H(y)<=eta*J`; a causal observer verifies this hypothesis, every represented gain and the full energy-vector envelope on one finite block. The broad bounded binary64 box is refuted by an exact `alpha=1/2` defect witness; the restricted antisymmetric P2 hard-clip class at `alpha=1/2` has sharp uniform `eta=135/124`, is REMESH-forward-invariant and composes strictly when `q<124/259`. The `alpha=1`, `eta=0` REMESH class and the P2 half-Reception `q=0` EPI kernel close one restricted repeated numeric composition. One executed graph-owned EN EPI stage is bound to the P2 kernel and its captured endpoint. A finite same-invocation adapter binds every selected EN and same-cycle `alpha=1` REMESH, verifies the active suffix of length `tau_global+1`, and records post-horizon spatial extinction. A reusable outer policy now preflights, executes and post-certifies every such finite invocation transactionally, including rollback of graph-owned state. A priori preservation under future unobserved complete-runtime execution, auxiliary Reception-state stability, extending the half-alpha result beyond antisymmetric P2 or to complete runtime, solver accuracy, full multichannel dynamics and changing parameters/support remain open |
@@ -188,6 +199,753 @@ defects. At the measured endpoint the UM branch has greater original-profile
 error than both its own initial value and the control, despite decreasing
 error toward its new profile. It does not establish a restoring policy under
 repeated events.
+
+The same [shared accounting](CHILD_COUPLING_FEEDBACK.md#7-exact-full-event-accounting-on-the-same-ordered-nodes)
+now covers actual EPI jumps on an unchanged ordered node set. It first
+evaluates the jump in the old profile/metric, then reuses the same-EPI reset
+at the post-jump field. Exact mean, variance and Dirichlet differences telescope;
+the public midpoint is a pressure-free algebraic pattern read-out, with no
+operator write-order or causal claim. Independent controls include zero new-
+profile error alongside increased fixed-original-profile error. The matched
+VAL/IL preparation and additional-UM response experiment is now implemented.
+At its fixed endpoint the nominal perturbation has slightly lower original-
+target error than the unperturbed continuation, so its measured positive UM
+benefit is a response result, not a damage/repair result. Exact event/flow
+accounting and independently matched preparations separate these claims.
+The held exact-model limiting original-target errors are all positive.
+The [shared target observer](CHILD_COUPLING_FEEDBACK.md#10-compatibility-channel-cancellation-and-the-old-metric)
+now proves the exact equivalence of zero projected target rate and zero
+relative-profile mismatch, and separates signed old-metric drift from source
+and stored-pressure effects. A P3 counterexample prevents promoting target
+compatibility alone to old-metric monotonicity. The retained U/P/F channel
+analysis identifies improved phase/EPI cancellation but positive outward
+target rates. On synchronized equal-conductance support, the exact default
+capacity forcing gives `z=-(w_vf/e)*P_H*nu`; target preservation requires a
+spatially uniform capacity increment at fixed channel ratio. One admitted
+P2 VAL/IL/UM/SHA control reduces rather than removes the resulting mismatch.
+The [joint P2 model](CHILD_COUPLING_FEEDBACK.md#13-joint-capacity-and-form-evolution-on-synchronized-p2)
+now has an exact capacity/lifted-EPI recurrence, a sufficient positive invariant
+box and a conditional disagreement/mean envelope. Sixteen supplied default
+UM/IL/refresh/flow blocks are compared with a matched held-capacity branch;
+actual IL separator neutrality after refresh and capacity/pressure/execution
+defects are retained. Direct UM repetition fails a canonical transition
+validator, and a nonzero binary64 capacity-gap fixed point prevents promoting
+exact-model restoration to represented execution. A separate conditional
+binary64 result on capacities `(v,1)`, `1<=v<=2`, now classifies fixed lattice
+indices 0..6 and proves descent to six from above within an analytic 512-update
+bound. Five single-event/flow controls bind production endpoints and show
+uniform stored EPI despite a nonzero exact frozen profile. The shared UM
+capacity blend and IEEE probe avoid separate numeric implementations.
+The [compatible-support result](CHILD_COUPLING_FEEDBACK.md#17-compatible-capacity-support-and-differentiated-prepared-regions)
+now characterizes exact simultaneous UM fixed capacities as componentwise
+constants on its U3-selected graph, with conserved component means and a strict
+Dirichlet drop off that set. The shared reader distinguishes that graph from
+pressure support and records blocked targets. Two linked prepared triangles
+with split phases preserve their capacity contrast in one actual default
+all-target UM and drive a nonuniform held EPI profile. An aligned control
+also creates eight links, so topology changes remain part of its comparison.
+Each executes one nodal interval with signed defects and a separate closure.
+The [local phase test](CHILD_COUPLING_FEEDBACK.md#18-antipodal-phase-response-under-simultaneous-um-and-il)
+now supplies that obstruction: in the two-coordinate antipodal chart, default
+simultaneous UM followed by IL has a Jacobian with an eigenvalue above one
+for every positive IL phase coefficient. Five finite controls retain the
+predicted bridge amplification, raw pressure contraction, changed refreshed
+pressure and subsequent nodal response. The zero control retains its small
+binary64 phase residue. Autonomous phase/region formation, action selection
+and invariant full-state admission remain open. A shared exact cosine-Gram
+and receiver-average response now drives both that obstruction and the
+[default C6 winding comparator](COUPLING_WINDING_PERSISTENCE.md#8-one-shared-local-response-for-circular-means).
+C6 has strict centered tangent contraction, neutral global rotation and a
+separate nonlinear exact phase box of radius at most `pi/24`, retaining
+edge/nonedge gate margins `pi/12`. The four nonzero finite controls reduce
+phase deformation; all five preserve winding while recording the actual
+nodal EPI response. The null retains its small numerical phase residue.
+The tangent bound is not transferred to the finite nonlinear box;
+nonlinear UM need not conserve the arithmetic phase-error mean. A separate
+[joint-domain argument](COUPLING_WINDING_PERSISTENCE.md#11-nonlinear-contraction-and-a-joint-phasecapacityepi-domain)
+now proves nonlinear oscillation factor `rho=1-2*t/15` there. With
+`z=e/pi`, uniform positive capacity, `0<=s=h*nu*w_epi<=1` and
+`B=h*nu*w_phase*rho/(1-rho)`, the reserves
+`min(EPI)-B*osc(z)>=ell` and `max(EPI)+B*osc(z)<=U` are preserved by the
+exact phase-first UM/IL plus refreshed held-Euler model. For fixed `0<s<1`,
+EPI tends to its initial mean while phase tends to a rotated winding. The
+boundary `s=1` permits an alternating EPI orbit. This is prepared phase
+organization, not sustained EPI localization. The
+[additive-defect extension](COUPLING_WINDING_PERSISTENCE.md#13-additive-defects-finite-reserves-and-the-neutral-epi-mean)
+now retains phase contraction excess, signed endpoint errors and their exact
+mean/reserve prefixes, including the formerly excluded null records. A
+separate conditional uniform bound uses the two-step C6 Euler overlap
+`k=min(s^2,4*s*(1-s))` and `V(x)=osc(x)+osc(T*x)`. Its numerical-error and
+signed cumulative-mean hypotheses are independent premises; finite observed
+extrema do not establish them. Uniformly small per-step errors alone cannot
+protect the neutral EPI mean from cumulative drift. The held quarter-flow
+arithmetic now has an a priori local error bound and exact rounding-cell
+observations in [binary64_nodal_flow.py](../src/tnfr/physics/binary64_nodal_flow.py).
+An explicit zero-sum held-pressure fixture has nonzero mean drift; the
+retained null instead has unchanged EPI under nonzero pressure. These are
+distinct numerical effects, neither a zero-pressure equilibrium nor a
+complete-state stability result. Backend phase/pressure accuracy, uniform
+signed mean control, complete represented runtime preservation, action
+selection and canonical formation remain open. The proof and backend scope
+are recorded in the same winding note, section 16. Its
+[opposite-pair continuation](COUPLING_WINDING_PERSISTENCE.md#17-opposite-pair-closure-and-a-restricted-mean-preserving-arithmetic-class)
+adds an exact finite nonlinear partial observable: centered opposite phase
+pairs evolve with `(1-t)*(1-3*alpha/2)`, and the corresponding EPI pairs form
+a closed triangular two-component nodal recurrence. This supplies an S2/S6
+reduction without reconstructing the full phase state or fixing common
+rotation. A separate paired binary64 pure-EPI C6 class preserves its interval
+and exact mean on one common lattice. Its pressure and rounding premises
+exclude the inherited full winding records: the retained IL/refresh can
+destroy opposite pressure pairing, and EPI endpoints can cross a binade
+boundary. The subsequent
+[phase realization correction](COUPLING_WINDING_PERSISTENCE.md#18-certified-two-neighbor-phase-realization)
+uses a certified true-circle midpoint for eligible two-neighbor IL and
+pressure evaluations, with one shared CPU kernel and explicit fallback.
+Exact C6 edge cancellation yields a local rounding bound. Repeating the
+same finite controls removes the observed k3 mean drift but retains k1's;
+joint-runtime preservation, summability and formation remain open.
+The [inverse pressure-cell result](COUPLING_WINDING_PERSISTENCE.md#19-pressure-boxes-and-the-two-binade-mean-bias-law)
+now characterizes maximal represented pressure boxes for complete held EPI
+traces. Exactly zero-sum and opposite-paired pressures inside those boxes
+retain the corrected k1 drift. A two-binade arithmetic law explains its sign
+and size at EPI `0.5`. Pressure cancellation alone therefore cannot close the
+mean argument; evolving addition cells and their accumulated signed errors
+must enter any joint invariant or explicitly different solver contract.
+The [explicit remainder reference](COUPLING_WINDING_PERSISTENCE.md#20-exact-nodal-area-with-a-carried-numerical-remainder)
+now retains exact represented nodal area and bounds the executor mean
+defect by the terminal remainder, independently of the finite step count.
+The reconstructed mean is conserved under balanced area; the displayed
+mean need not be. Supplied-pressure comparisons reuse the retained cases.
+Graph adoption still requires pressure-readout, operator/reset, history
+and certificate contracts, and pressure-realization error retains its own
+accumulated budget. The production integrator is unchanged.
+The [restricted carried runtime](COUPLING_WINDING_PERSISTENCE.md#21-live-pressure-and-an-explicit-carried-flowevent-contract)
+now binds actual visible-pressure refresh and admitted EPI-preserving
+UM/IL/SHA events to persistent carried state and whole-invocation rollback.
+Its exact EPI pressure-readout difference has zero arithmetic mean on
+regular graphs with common capacity. Matched finite C6 branches retain
+their separate generated sources and executor defects. Generated-pressure
+summability, domain preservation and general EPI/REMESH jump rules remain open.
+The [fixed-phase pressure obstruction](COUPLING_WINDING_PERSISTENCE.md#22-generated-pressure-can-exclude-a-fixed-phase-numerical-equilibrium)
+now excludes any zero-pressure EPI tuple in `[0.05,1]^6` for the retained
+null post-UM/IL phase slice under the shared binary64 CPU map. Exact inverse
+rounding cells miss the EPI-gradient lattice at every node. With fixed
+positive steps, carried EPI cannot converge on that slice. A separate
+exact cell horizon distinguishes loss of visible stasis from band exit.
+Neither result settles mean drift or future phase-changing words. The
+next joint bound must allow finite-resolution trapping or cancellation
+instead of assuming an unattainable fixed-phase numerical equilibrium.
+The [generated phase-cycle result](COUPLING_WINDING_PERSISTENCE.md#23-exact-closure-of-the-generated-umil-phase-component)
+now replays the unchanged null's default UM/IL phase projection to an exact
+period-one tail after 89 transitions. All edge/nonedge gates remain valid
+on that finite closed path. Its weighted phase source has mean
+`-1/(6*2^109)` and is not a bounded zero-mean forcing. An exact periodic
+source budget isolates the compensation required from refreshed EPI and
+channel arithmetic. That compensation and full-runtime trapping remain
+open; only the phase component has conditional repeated-map closure.
+The [local pressure-lattice continuation](COUPLING_WINDING_PERSISTENCE.md#24-local-pressure-lattice-product-trap-obstruction-and-finite-compensation)
+now binds both EPI reducers exactly across the `0.5` binade. Its sign
+thresholds exclude reconstructed-coordinate Cartesian traps under
+individual positive carried steps in `[3/8,5/8]`. One adjacent EPI state
+has exact generated mean compensation for a finite cell prefix; the first
+cell exit loses that balance. An exact separating functional excludes
+permanent residence, with any admissible carry, in the complete 13-state
+control class. Larger correlated traps, block-sampled return, full-state
+reachability and runtime admission remain open.
+The [carry-compatible itinerary criterion](COUPLING_WINDING_PERSISTENCE.md#25-exact-carry-compatible-itineraries-across-pressure-cell-boundaries)
+now intersects translated rounding cells with the exact encoding lattice,
+distinguishing feasible complete words from separately feasible edges.
+A repeated visible word closes its carried state only with zero vector
+nodal area. The balanced self-loop permits at most twelve transitions over
+all admissible initial carries. Two further derived boundaries from the
+retained first exit show actual pressure-mean sign reversals without a
+closed orbit. Candidate correlated return classes must now pass whole-word
+carry compatibility and coordinatewise balance before a live extension.
+The four observed states still have a strict node-1 pressure separator;
+any cycle containing them needs additional states reversing that nodal drift.
+The [pressure-sign continuation](COUPLING_WINDING_PERSISTENCE.md#26-pressure-sign-sectors-and-the-carried-curvature-budget)
+now reaches such a state after three more derived boundaries and nineteen
+steps: node 2 changes EPI, reversing node 1's pressure while its own
+displayed EPI stays fixed. Its accumulated area is still negative at that
+first hit. Uniform strict-sector drift bounds and an exact nodal/carry
+curvature budget delimit its finite continuation.
+The [positive-area budget](COUPLING_WINDING_PERSISTENCE.md#27-finite-positive-pressure-repayment-and-exact-return-obstructions)
+now shows that this positive episode lasts only two steps and leaves a
+negative accumulated node-1 area relative to the earlier B27 endpoint.
+A constant-source crossing would require four steps, after the actual
+pressure has already changed. An exact integer constraint also excludes
+a short zero-area return using only the two observed node-1 pressure levels
+at the fixed step and capacity. Additional canonically reachable levels or
+a correlated trapping class must now be assessed through all six area
+budgets and incoming-carry compatibility; neither boundedness nor a broader
+return is decided by that two-level constraint.
+The [third-level continuation](COUPLING_WINDING_PERSISTENCE.md#28-a-third-pressure-level-and-a-transverse-finite-class-drift)
+then reaches another node-1 pressure after four boundaries and eleven
+steps. Its earlier negative area is overshot, but the vector and mean
+areas remain nonzero. The generalized finite-level congruence retains
+the same scalar length restriction for these three levels. More decisively,
+constant positive node-4 pressure excludes permanent confinement to the
+three observed visible states for every admissible carry: their residence
+is at most 43 steps under the declared update conditions. The next gate
+is a compatible neighborhood transition that changes that drift, with
+all coordinate budgets retained; larger correlated trapping stays open.
+The [frozen-stencil audit](COUPLING_WINDING_PERSISTENCE.md#29-frozen-neighborhood-bounds-and-a-censored-node-4-sign-test)
+now binds that locality to an executable observer. The retained carry
+gives a conditional 21-step center deadline, while a neighbor changes at
+step 15 and weakens the pressure without changing its positive sign.
+The eight-boundary sign test is censored after eighteen steps. Reaching
+nonpositive pressure still requires eight more gradient-index units at
+the saved endpoint. A shared cycle-gradient owner now checks the full
+nodal area before applying the Laplacian, preserving the common-mode
+budget. Coupled neighborhood reachability and trapping remain unresolved;
+a further unstructured continuation is insufficient.
+
+B2.d.32-B2.d.36 now replace that proposed continuation with five completed
+structural steps, detailed in
+[section 30](COUPLING_WINDING_PERSISTENCE.md#30-a-coupled-profile-disagreement-tube-and-finite-numerical-band-horizon).
+The existing forced-support solver supplies the canonical centered profile
+`w_epi*L*z=A-mean(A)*1` for the fixed represented phase source and unit C6.
+The shared pressure and carried-step owners then verify the exact recurrence
+`y_next=(I-h*w_epi*L)*y+h*P*(w_epi*L*r+eta)`, with
+`P` the arithmetic-centering projection, `y=P*X-z`, `X=x+r`, and `eta`
+the generated EPI-product and assembly defects.
+All eighteen previously retained steps satisfy this identity; no additional
+trajectory is executed. An exact rational C6 eigenbasis gives the centered
+norm factor `q=573161353023261791/2^59` at the unchanged `h=1/16` and
+default EPI weight. The homogeneous squared-norm factor is `q^2`, distinct
+from the affine energy estimate used with persistent numerical defects.
+
+The declared `[3/8,5/8]` slab and represented coefficients independently
+bound rounding and carry feedback, giving the energy envelope a floor of about
+`6.6560e-31`. A separate induction combines that spatial envelope with an
+absolute mean-increment bound and certifies a sufficient conditional
+numerical-band horizon of `196713720348826219` steps; none of those future
+steps was executed. This concerns only the fixed-source, unit-capacity,
+carried numerical map. It does not certify live phase evolution, grammar
+admission, future runtime execution or asymptotic convergence. The retained
+eighteen-step signed mean change is `-131/(3*2^114)`: phase source
+`-3/2^113`, product/assembly rounding `-113/(3*2^114)`, and carry feedback
+zero. This first centered bound did not supply an indefinite signed mean
+budget or decide node 4's nonpositive-pressure cut.
+
+B2.d.37-B2.d.40 now close four further restricted questions. The
+[self-consistent bound](COUPLING_WINDING_PERSISTENCE.md#31-b37-closing-the-spatial-and-rounding-bounds-on-each-other)
+uses the profile and its own spatial envelope to bound the pressure gradient,
+then closes the resulting rounding inequality exactly. At the retained
+endpoint it reduces the energy floor to approximately
+`2.958228394578814e-31` and the per-node product/assembly error bound to
+`6.731922543446726e-32`. These are uniform conditional bounds, not maxima
+fitted to the observed prefix.
+
+The
+[static compensation certificate](COUPLING_WINDING_PERSISTENCE.md#32-b38-static-compensation-refutes-a-class-wide-linear-drift-argument)
+then supplies seven admissible carried states inside that envelope, all
+with the retained endpoint's exact reconstructed mean. Their freshly
+generated canonical pressure vectors have strictly positive rational
+coefficients with sum one and weighted vector sum zero. This refutes a
+universally strictly signed fixed linear drift over the enclosed class,
+including that exact-mean slice. The coefficients are algebraic witnesses,
+not a dynamical mixing rule. A reachable subset, compatible transition
+ordering and actual temporal compensation require separate evidence.
+
+The
+[finite passage theorem](COUPLING_WINDING_PERSISTENCE.md#33-b39-a-finite-first-passage-theorem-for-the-pressure-cut)
+combines the closed spatial envelope, a signed mean-pressure bound and
+the least strictly positive represented node-4 pressure. Positivity at
+every readout before `N=30255` would force its centered coordinate outside
+the envelope. The earlier band guarantee covers those transitions, so
+some readout with index at most `30254` must be nonpositive on this fixed
+numerical map. Readout zero is the B31 endpoint; this theorem does not
+claim its first actual hit or any future live operator admission.
+
+The
+[decisive carried continuation](COUPLING_WINDING_PERSISTENCE.md#34-b40-the-realized-first-passage-and-a-finite-mean-budget-reversal)
+reaches that first hit after 118 steps and 59 visible cell boundaries:
+readouts `0..117` are positive, while the endpoint has `m4=-22` and
+`p4=-187043320717485/2^105`. The same run repays the earlier B27 mean
+deficit by overshoot at step 59, from `-1/(3*2^114)` immediately before
+crossing to `1/2^113` after it. Its final mean area is `41/2^112`
+relative to B31 and `217/(3*2^114)` relative to B27. The local mean
+split is phase source `-59/(3*2^113)`, product/assembly rounding
+`305/(3*2^113)`, and zero carry feedback. All six net coordinate areas
+remain nonzero.
+
+The node-4 sign question and this finite mean-deficit crossing are resolved;
+neither supplies an exact vector return or an indefinite signed mean bound.
+B2.d.41 now proves a
+[complete-cell obstruction](COUPLING_WINDING_PERSISTENCE.md#35-b41-complete-carry-cells-cannot-provide-invariant-trapping):
+no nonempty finite family of displayed tuples within B37's gradient bounds
+can be invariant if every legal incoming carry is admitted at each tuple.
+Selecting greatest admissible carries at a maximum-visible-sum tuple keeps
+negative-pressure coordinates fixed and makes a positive coordinate increase
+or fail band admission. This supplies an outward hypothetical carry; it does
+not show that the retained B40 trajectory escapes, and energy-trimmed or
+jointly correlated carry subcells remain outside the obstruction.
+
+B2.d.42 separately verifies the
+[seven-cell transition graph](COUPLING_WINDING_PERSISTENCE.md#36-b42-every-carry-leaves-the-seven-static-compensation-cells)
+for B38's static compensation points. All 49 exact carry-feasibility tests
+leave only self-loops and the zero-based edge `5 -> 4`. Maximal cell
+residence and reverse-DAG induction prove that every legal incoming carry
+leaves this seven-cell family or fails band admission within 77 steps.
+This excludes a periodic carried orbit confined to those cells; it proves
+neither whole-band exit nor entry from the saved state. The static positive
+convex pressure balance remains valid but cannot serve as a closed temporal
+class. Both blocks reuse the fixed source without advancing saved B40.
+
+B2.d.43 now closes a separate
+[finite live preparation bridge](COUPLING_WINDING_PERSISTENCE.md#37-b43-a-finite-live-bridge-from-the-original-winding-preparation).
+The original null C6 preparation executes 89 UM/IL pairs, 356 canonical
+pressure-refreshed carried steps and a terminal SHA: 179 admitted events
+in one graph-owned invocation. Its final phase matches the fixed source
+used by B40. At time `22`, the actual tail-entry EPI offsets from `.5` in
+units `delta=2^-54` are `(-3,0,2,-1,6,-5)`; immediately before SHA at
+`22.25` they are `(-3,0,2,0,8,-5)`. No detached carry is imported or reset.
+All six accumulated nodal-balance residuals vanish, and the mean nodal
+area from this preparation is `3293/(3*2^114)`. Independent replay verifies
+every retained flow. Unit capacity applies to the measured flows; terminal
+SHA changes it to `0.9204225284540524`. This finite causal result authenticates
+its own tail state under the declared carried solver, not the historical
+detached B27-B40 state or a later invocation.
+
+The next gate is forward inclusion of joint carry/shape subcells with a
+bounded signed vector budget, or a proved recurrent-budget obstruction.
+The graph-owned branch must use B43's actual tail carry and derived
+closure; any study retaining detached B40 must identify that distinct branch.
+The fixed unit-capacity map remains a conditional model after terminal SHA.
+Searching a larger family of complete carry cells within the same gradient
+class cannot bypass B41. Another node-4 sign search or a fixed linear
+separator over the full certified class would also repeat resolved
+questions. Historical detached-state reachability, indefinite trapping,
+future complete-runtime admission and empirical correspondence remain open.
+
+B2.d.44 tests the first separable candidate at B43's actual pre-SHA state:
+the closed centered-energy tube intersected with an independent mean interval.
+The [local mean-cylinder obstruction](COUPLING_WINDING_PERSISTENCE.md#38-b44-a-bounded-mean-interval-does-not-close-the-centered-energy-tube)
+uses two canonical pressure templates with mean increments `-2^-114` and
+`3*2^-114`. Legal uniform carry translations preserve their centered energy
+and supply an outward witness at either boundary of every supported local
+interval containing the actual initial mean. These are hypothetical inputs,
+not escape observations on the retained trajectory.
+
+B2.d.45 [retains the necessary coordinate arithmetic class](COUPLING_WINDING_PERSISTENCE.md#39-b45-the-coordinate-arithmetic-class-does-not-rescue-local-mean-confinement).
+Its spacings `(1,1,2,4,8,4)*2^-113` come from exact canonical increment gcds.
+Flooring five carries onto their affine grids and balancing the sixth
+preserves the requested mean. An analytic energy bound makes both outward
+witnesses legal inside a slightly smaller derived mean window. Arithmetic
+class membership therefore does not rescue this local separable candidate.
+It still does not establish witness reachability or whole-band escape.
+The next inclusion candidate must couple mean boundaries to shape and carry,
+or explicitly address a wider domain beyond these local exclusions.
+The earlier target-only theorem remains a separate result.
+
+B2.d.46 derives [opposite-node relay strips and a signed local budget](COUPLING_WINDING_PERSISTENCE.md#40-b46-opposite-node-relay-strips-and-a-signed-local-budget)
+from B43's actual pre-SHA state. Four canonical pressure rows supply two
+exact modular rotations and a full-vector drift identity. Both relay
+coordinates remain in their joint strips while the other displayed values
+hold, but a corrected node-4 coordinate has strictly negative drift. Its
+analytic bound requires departure by step 10; a conditional shared-kernel
+continuation finds the first exit at step 7, with zero nodal balance residual
+and mean area `2^-114`. The next conditional endpoint is retained with all
+remainders. Node 4's new visible value changes the old relay pressures, so
+extension requires a verified boundary handoff and compatible corrected
+budgets. Neither this local inclusion nor its finite exit proves whole-band
+escape, an indefinite trapping region or future graph-owned admission.
+
+B2.d.47 [extends the surviving relay budget across that boundary](COUPLING_WINDING_PERSISTENCE.md#41-b47-a-local-relay-budget-survives-the-interacting-boundary).
+Exact C6 pressure locality leaves the node-0/node-1 corrected budget
+unchanged under arbitrary admitted node-3/node-4 values while displayed
+nodes `(1,2,5)` hold. The latter two switches have a nonzero represented
+interaction, which prevents promoting them to independent relays. A signed
+budget proves a 198-step deadline from B46's full carried endpoint; the
+first held-node change occurs at step 197, node 1. All nodal and corrected
+budgets close exactly, with the finite band premise certified separately.
+The next conditional endpoint retains its complete numerical lineage and
+carry. Its changed node 1 now affects the relay itself, requiring a new
+dependency-boundary proof before further composition. Indefinite trapping
+and future graph-owned admission remain open.
+
+B2.d.48 implements [exact correlated-set viability](COUPLING_WINDING_PERSISTENCE.md#42-b48-exact-correlated-set-viability-and-the-remaining-global-gap)
+for this fixed carried C6 map. Complete preimage intersections retain the
+actual carry, nearest-even ties and derived coordinate cosets. A finite
+fixed point containing the supplied origin proves indefinite conditional
+boundedness; exclusion and resource exhaustion have distinct outcomes.
+The profile-derived 64-cell candidate retains the actual B47 origin through
+three complete descents with 64, 416, and 4,285 boxes, then exhausts its work guard.
+It is inconclusive, without a new trajectory or global stability claim.
+Exact affine and nonlinear dual controls rule out two named quadratic
+shortcuts, not all quadratic or piecewise invariants. The required current
+result remains a closed correlated region or a compatible signed temporal
+escape budget for the unchanged B47 state.
+
+B2.d.49 adds [protected pair contrasts and relational past envelopes](COUPLING_WINDING_PERSISTENCE.md#43-b49-protected-pair-contrasts-and-relational-past-envelopes)
+inside the same viability owner and benchmark. Fifteen conditional pair
+barriers tighten the profile cube; one exact difference-bound zone per cell
+avoids explicit box fragmentation. The current 64-zone search completes
+259 image layers, reduces outgoing coordinate facets from 72 to 56 and
+retains B47, then reaches its computational guard. It remains inconclusive.
+Positive finite-state controls separately verify the invariant-core and
+actual-entry proof paths. Membership in an outer envelope does not prove
+temporal reachability, and a surviving outward state is not an observed
+escape. The next gate is a universally checked temporal/carry refinement
+of those states, or a different source-derived candidate.
+
+B2.d.50 adds [exact point predecessors](COUPLING_WINDING_PERSISTENCE.md#44-b50-exact-point-predecessors-and-the-temporal-correlation-gap)
+to the same owner. Complete predecessor frontiers preserve full carry and
+shared-kernel successor links, separating past feasibility, early transient
+visits and actual-origin paths. Nine of ten selected B49 outward points have
+exhausted R259 trees without the origin; verified clipped forward inclusion
+then excludes those points as the first cube-exit cause. This does not remove
+entire outward facets. A bounded one/two-cell temporal-label prototype reduces
+distinct outward facets to 48/46 but still supplies no invariant core.
+The next gate is universal temporal refinement over regions rather than
+further isolated point checks; actual C6 indefinite boundedness remains open.
+
+B2.d.51 implements [whole outgoing-region exclusion](COUPLING_WINDING_PERSISTENCE.md#45-b51-whole-outgoing-regions-excluded-by-their-complete-pasts)
+in the same owner and campaign. Complete per-cell predecessor hulls, exact
+RN cube facets and origin exclusion now rule out 24 whole first-exit slabs:
+all 16 node-1 upper and eight node-5 upper slabs. Their complete layers become
+empty; the established clipped R259 inclusion and conditional pair-strip
+preservation bind this to the actual B47 origin before any first exit.
+The other 32 slabs remain resource-undecided,
+covering node-0 lower, node-2 lower, node-3 upper and node-4 upper. Regional
+counts are not a probability or completion percentage. Removing the 24
+excluded slabs tightens 104 bounds across 22 cells, but the same bounded
+search excludes no further slab. The next target is a universal coupled
+pressure/carry proof retaining richer temporal relations for these classes.
+
+B2.d.52 adds an [exact nodal excursion certificate](COUPLING_WINDING_PERSISTENCE.md#46-b52-a-nodal-excursion-budget-excludes-the-node-2-lower-boundary).
+A derived linear coordinate increases throughout node 2's lower-cell
+visits, and every reentry lies strictly above all lower unsafe slabs.
+The initial visit clears its derived finite gate after 56 canonical carried
+steps. This excludes eight additional whole first-exit slabs for arbitrary
+later time under the same conditional map. The campaign reconstructs the
+24 prior exclusions and shares full RN geometry and target construction.
+Combined coverage is 32 of 56 slabs, with node-0 lower, node-3 upper and
+node-4 upper still open. Global C6 boundedness and live runtime promotion
+remain unproved; proof coordinates do not change the physical dynamics.
+
+B2.d.53 adds [cell-offset excursion certificates](COUPLING_WINDING_PERSISTENCE.md#47-b53-separate-cell-offset-budgets-exclude-four-further-regions)
+for four node-3 upper slabs. Origin-injected forward hulls first refine the
+domain after reverified B51/B52 exclusions. Each target then has its own
+strict drift, complete ingress separation and initial-potential check;
+all four initial gates are zero. The shared campaign verifies untrusted
+rational proposals and binds seven input artifacts. Coverage is 36 of 56,
+with 20 unresolved slabs: node-0 lower 8, node-3 upper 4, node-4 upper 8.
+Exact short return relations provide a further independently checked
+domain refinement, but no additional exclusion yet. Fixed-point clipping
+and resource-limited searches do not close indefinite C6 boundedness.
+
+B2.d.54 adds [whole-region backward return exclusions](COUPLING_WINDING_PERSISTENCE.md#48-b54-complete-return-guards-exclude-two-node-0-lower-regions).
+One shared owner derives the canonical direct/two-step guards, preserves
+all intermediate exits, and checks complete predecessor layers. Node-0
+lower masks 4 and 12 have empty return layer 7 and exclude the unchanged
+origin at every earlier layer. The eight-input campaign reconstructs B53
+and raises coverage to 38 of 56 slabs, with 18 unresolved. No additional
+trajectory steps are required. A two-return forward refinement tightens
+the domain further but proves no additional exclusion; global boundedness
+and live-runtime promotion remain open.
+
+B2.d.55 adds [exact unions of return predecessors](COUPLING_WINDING_PERSISTENCE.md#49-b55-exact-unions-exclude-another-complete-first-exit-region).
+Keeping separate regions within each represented cell excludes node-0
+lower mask 0 at return depth 4; a joined envelope had retained spurious
+pasts. The shared return owner now bounds intersection, subsumption and
+zone work while preserving complete original targets. The nine-input
+campaign reconstructs B54, adds no trajectory steps, and raises coverage
+to 39 of 56 slabs, with 17 unresolved. Signed-pair bounds and fixed carry-
+sign partitions produce no further exclusion in their bounded controls.
+Global boundedness of this C6 branch remains open.
+
+B2.d.56 separates [global counts from joint return chronology](COUPLING_WINDING_PERSISTENCE.md#50-b56-global-counts-lose-chronology-while-word-budgets-recover-it).
+Exact balanced generators and a positive zero-displacement circulation
+prove that incidence/displacement counts alone admit all remaining target
+cosets. They establish abstract label walks, without simultaneous RN guards.
+A shared exact word verifier instead composes those guards at one carried
+source and derives sharp consecutive-repetition budgets: one and two for
+two retained cycles. A prefix-memory product forbidding their first
+impossible repetitions has 43 vertices and 2,113 arcs, yet its exact count
+relaxation still admits every original coordinate coset. Coverage remains
+39/56; arbitrary interleavings and the seventeen whole-region exclusions
+remain open. The next refinement must combine temporal memory with joint
+carried-state constraints. The focused implementation suite passes 197 tests.
+
+B2.d.57 implements that joint-state refinement with
+[last-return memory](COUPLING_WINDING_PERSISTENCE.md#51-b57-joint-last-return-memory-excludes-a-further-whole-exit-slab).
+Canonical endpoint guards and complete descending worklist updates preserve
+every pre-first-exit origin history. Whole-target backward queries also
+retain terminal transient steps. Node 3 upper mask 30 now has an empty
+complete past at depth 136; the unchanged origin is absent throughout.
+Coverage rises to 40/56, with sixteen slabs pending.
+B2.d.58 [audits the propagated exclusions](COUPLING_WINDING_PERSISTENCE.md#52-b58-exact-redundancy-and-selective-safe-memory-partitions).
+All four scalar cuts preserve the complete residual query graph and every
+original target initialization; repeating that operator gives no refinement.
+An exact selective partition preserves the holes in four terminal-memory
+classes. Its matched-depth prototype tightens 25, 38, 66 and 75 memory
+projections at depths 2 through 5, without closing another whole slab under
+the tested limits.
+B2.d.59 [integrates the partition canonically](COUPLING_WINDING_PERSISTENCE.md#53-b59-canonical-fixed-safe-piece-memory-certificates).
+It independently reproves the exclusion before subtracting each exact
+unjoined preimage, preserves fixed safe seeds and shares whole-target query
+semantics with ordinary memory. All sixteen full targets remain unresolved
+under their separate 250,000-work budgets. Exact path analysis identifies
+nine depth-one predecessor pieces in six additional memories.
+B2.d.60 [implements optional exact predecessor cuts](COUPLING_WINDING_PERSISTENCE.md#54-b60-exact-predecessor-cuts-and-their-computational-cost),
+preserving the depth-zero default. Matched-sweep controls improve a few
+projected histories, but equal nominal work gives mutually incomparable
+covers. The independently replayed sixteen-target campaign excludes no
+additional slab within the same resource caps. At the nominal 500,000
+forward-work cap, B59's original-memory DBM hull projections are tighter in
+454 histories and equal in 811; B60 improves none. This does not compare
+complete nonconvex unions. No nodal parameter or trajectory is changed.
+B2.d.61 [verifies that bounded priority experiment](COUPLING_WINDING_PERSISTENCE.md#55-b61-priority-refinement-excludes-another-original-exit-label).
+Keeping every B60 seed, root and arc, its two-queue schedule charges
+classification and complete updates to the same 500,000-work budget.
+The full node-3 upper mask-28 target now has empty direct, terminal and
+origin observations. A separate exact origin-cover bridge transfers this
+result to the original label: coverage rises to 41/56, with fifteen open.
+This is a new exclusion, not a cheaper depth-zero initialization or a
+general efficiency result. Independent replay verifies all 32,112 visits;
+625 pending vertices remain, so no global fixed point is claimed.
+The optional policy was initially a separate experiment; B2.d.63 below
+integrates it in the production owner while preserving FIFO defaults.
+B59 remains a comparison baseline; forward refinement need not be rerun
+per target.
+B2.d.62 [audits canonical synergies and proof reuse](COUPLING_WINDING_PERSISTENCE.md#56-b62-canonical-synergies-and-proof-ownership).
+It derives a one-pass retained-cover inclusion check and distinguishes
+same-partition intersection from cross-partition hull projection. B61 and
+its same-index B60 intersection pass that check; the B59-hull intersection
+fails at thirteen vertices while retaining its two-parent coverage premise.
+All fifteen pending targets remain nonempty on five tested initializations,
+so coverage stays 41/56. No backward layer or trajectory is advanced.
+The shared-owner integration in B2.d.63 retains this evidence. The next
+mathematical tests concern exact mask28 predecessor cuts and local-pressure
+residence combined with ingress/return memory. Bare C6 symmetry, global
+counts and coarse component decomposition do not supply the missing
+chronological constraint.
+B2.d.63 [integrates priority discovery and retained-cover verification](COUPLING_WINDING_PERSISTENCE.md#57-b63-shared-priority-discovery-and-retained-cover-verification)
+in the same return owner. New public APIs reconstruct canonical source,
+exclusions, seeds, roots and arcs before accepting exact candidate arrays.
+The complete image gate and shared whole-target queries reject forged or
+partial coverage; advisory regions authorize scheduling only. Legacy FIFO
+classes and depth-zero behavior remain unchanged. The focused suite passes
+232 distinct tests, including 91 new cases. The full fifteen-input campaign
+reproduces the B61 priority result with explicit hint-validation and
+cover-check costs and queries all sixteen original pending labels. Coverage
+remains 41/56, with fifteen resource-limited queries. Independent arithmetic
+replays all sixteen queries and the complete cover checks; both historical
+FIFO controls retain their exact arrays, queues and counters. This is proof
+infrastructure for the unchanged nodal model, not a new physical mechanism
+or a global stability theorem.
+B2.d.64 [tests exact exclusion transfer and local chronology](COUPLING_WINDING_PERSISTENCE.md#58-b64-exact-exclusion-transfer-and-local-chronology).
+The mask28 exclusion yields ten nonredundant exact forbidden pieces in
+each weaker B59/B60 cover. They affect no retained B63 state and do not
+change the fifteen target initializations. Three matched-budget B59
+continuations give no componentwise improvement or new empty target.
+On B63, the node0 stencil instead selects an acyclic 35-history subgraph:
+two local image passes tighten three zones, and a 259-piece exact ingress
+federation preserves additional correlations lost by the converged hull.
+All five node0 targets still have nonempty observations. The next gate is
+their surviving exterior ingress/prehistory, beginning with the two
+mask8 feeders and their 34 incoming candidates, preserving complete
+terminal and nodal-step provenance. Coverage remains41/56 with15 pending; no
+production source or physical coefficient changes. Global C6 boundedness
+and full-runtime promotion remain open.
+
+B2.d.65 [evaluates the complete mask8 prehistory layer](COUPLING_WINDING_PERSISTENCE.md#59-b65-a-complete-mask-8-prehistory-layer):
+27 of34 candidates are empty and seven survive, with complete ingress,
+root, target-domain and intermediate-guard checks. The two suffix families
+share exactly two small positive node0 increments before the negative
+mask8 update, but keep distinct full guards and six-coordinate states.
+This neither proves reachability nor excludes another whole region.
+The next smaller complete family, evaluated in B66 below, has16 candidates
+at feeder45's three source histories; the other family has39. Scientific source, nodal
+parameters and the41/56 regional count remain unchanged.
+
+B2.d.66 [measures exact geometric gain and reuses local histories](COUPLING_WINDING_PERSISTENCE.md#60-b66-exact-geometric-gain-and-reuse-of-local-histories).
+The complete 16-candidate feeder45 layer leaves four nonempty pieces and
+eliminates parent6; the other two parents and the selected-family endpoint
+union strictly shrink. Reusing all 14 relevant B64 local source pieces
+leaves eight intersections plus two unchanged exterior pieces. That exact
+ten-piece endpoint union shrinks again although its DBM hull is unchanged.
+Thus the gain depends on preserving separate compatible histories, not on
+having fewer pieces. The 726 charged DBM operations exclude lineage/word
+audits and independent validation. Restoring the four unchanged feeder97
+pieces still gives a strict complete-observation endpoint-union reduction,
+verified by a separate 2,243-operation difference check. No source or trajectory changes;
+coverage remains 41/56, with 15 pending and both mask8 feeders still open.
+The next gate, completed in B67 below, is feeder97's complete 39-candidate
+family with exact-union comparison and the B66 feeder45 pieces retained.
+
+B2.d.67 [completes the second family with shared refinement](COUPLING_WINDING_PERSISTENCE.md#61-b67-the-second-mask8-family-and-a-shared-refinement-kernel).
+The 39 candidates leave seven; all 49 applicable B64 local-cover pieces
+leave eleven intersections plus two exterior pieces. Parent39 is excluded
+by the first layer and parent66 by the existing-cover reuse, both only in
+their target-conditioned histories. Preserving the ten feeder45 pieces gives
+23 endpoints whose exact union shrinks although its hull is unchanged.
+The producer charges 5,495 DBM operations; verification is separate.
+The common detached refinement helper reuses production geometry and keeps
+historical evidence immutable. Coverage remains 41/56, with 15 pending.
+
+Four exact endpoint-containment links reduce observation comparison to19
+pieces, while all23 history records are retained. Their existing local
+prefixes expose22 exterior sources. Only source41 is shared, by two
+disjoint alternatives with different nodal suffixes. The next gate tests
+those alternatives against all12 incoming arcs:24 branch pullbacks share12
+source guards, with all21 other histories preserved. This avoids expanding
+the full308-candidate frontier; no new predecessor was evaluated when
+normalizing the existing prefixes. Endpoint containment never permits
+substitution of a different source history during later refinement.
+
+B2.d.68 [tests the shared source and audits arithmetic relevance](COUPLING_WINDING_PERSISTENCE.md#62-b68-a-shared-source-control-and-the-boundary-of-local-progress).
+All24 branch/arc candidates leave six pieces while the other21 paths stay
+intact. One selected branch strictly shrinks; the other's complete incoming
+union reconstructs its old geometry, despite fewer surviving candidates.
+The complete27-piece endpoint union is strictly smaller with unchanged
+hull. The cache saves12 source-guard intersections; total producer work is
+1,976 DBM operations, with independent geometry replay and misuse controls.
+
+Re-deriving all64 pressure rows gives necessary coordinate moduli
+`(1,1,4,8,8,8)` relative to B47. All27 retained and all6 removed pieces have
+explicit coset witnesses rounding to mask8, checked independently. The
+existing residue adapter needs33 quotient closures. This verifies that
+the gain affects coset-admissible hypothetical states while also ruling
+out these cosets alone as a closure shortcut for any retained piece.
+Neither feasibility nor finite compatible suffixes imply origin reachability.
+
+Whole-label coverage has remained41/56 since B61. Local improvements give
+no proven termination rate for the search. The next gate therefore changes
+from automatic history expansion to an exact applicability audit of old
+separator obstructions on the retained history cover/current frontier,
+before another global certificate proposal. The first audit selects B56
+affine-frontier result0:64 supported inequalities and77 coefficients for
+the mask8 lower target at depth6. Old dual witnesses require
+new guard and history-label checks; their failure to transfer is not a
+positive theorem. Preserve all27 path obligations. The pre-exit clipped
+cover and an invariant of the un-clipped nodal map remain distinct, and
+exit from the chosen cube would not itself prove unboundedness.
+
+B2.d.69 [audits the old dual and refutes blanket positive entry](COUPLING_WINDING_PERSISTENCE.md#63-b69-direct-dual-transfer-fails-and-a-short-entry-policy-obstruction).
+The old64-term dual remains valid in its original77-coefficient problem,
+but only16 fixed constraints transfer directly:14 drift, two ingress and
+zero target witnesses. All64 fixed points fail the finer coordinate cosets.
+This direct-admission audit does not rule out other algebraic implications
+and does not prove that a separator exists.
+
+A new coset-admissible retained path `32 -> 16 -> 26 -> 48 -> 8` supplies
+five inequalities with exact zero-vector sum and strict mass one. Blanket
+positive entry, internal nondecrease and current-target nonpositivity are
+inconsistent on that path. Arbitrary consistent state-function values have
+the same contradiction under these requirements. This does not establish
+reachability from B47, transfer the old depth-six target dual, or refute an
+origin-conditioned global certificate. Both results have independent exact
+validators and malformed-input controls.
+
+The next gate specifies an origin-conditioned history-affine certificate
+over910 nonempty zones:6,370 proof coefficients,7,150 complete clipped arc
+obligations,27 target pieces and one actual root. Vertex260 is the nonzero
+first-return image `57 -> 58`, not B47's zero sentinel. Preserve the
+original-target/terminal bridge. Specification, exact verification cost
+and sparsity checks precede any candidate search; the naive formulation's
+301,434 dual multipliers are only a size warning, not a runtime forecast.
+The detailed owner is `artifacts/research/c6_b69_scope_and_next_gate.md`,
+with a reproducible inventory and `b69_final_validation.json` checkpoint.
+No production dynamics change, positive barrier or new whole-label
+exclusion follows. Coverage remains41/56, with15 pending.
+
+B2.d.70 implements the [complete origin-conditioned specification and exact checker](COUPLING_WINDING_PERSISTENCE.md#64-b70-executable-history-affine-obligations-and-exact-verification).
+All 7,178 obligations remain. Exact pooling stores 7,108 geometries; sequential
+facet removal reduces 301,434 weighted inequalities to 97,228 with identical
+closures. The checker binds the root, every translated drift and every target
+to the complete specification and verifies sparse rational conic bounds.
+Constant-zero and constant-one controls fail the root and target requirements,
+respectively. Accepted algebraic fixtures are separate from C6 evidence.
+An adapter reuses the existing exact transport extremum owner for rational
+coefficients, returning an attaining witness and a checked dual. B71 below
+prepares the bounded candidate search under the same recorded resource cap.
+No positive C6 barrier or new region exclusion follows: coverage is 41/56.
+
+B2.d.71 centralizes the [repository mechanism and verification-boundary audit](C6_RESEARCH_MECHANISM_AUDIT.md).
+Its 308-file inventory and 19 candidate duplicate groups do not constitute
+complete semantic verification. Exact controls expose interpreter/input
+gaps without demonstrating a false certificate in normal C6 replay, correct
+the Silence documentation and supersede the historical zero-root-mean
+premise. Rank-six controls exclude a shared-gradient exact invariant on all
+arcs; they leave the current history-affine barrier family open. The known
+908-history corridor offers only modest optional savings, whose rational
+sink completion need not preserve discovery norm/bit limits. Its repair plan
+requires explicit execution/input boundaries and one affine-obligation
+transform before candidate search; B72 implements it below. No LP ran or scientific source changed in
+this audit: 41/56 labels remain excluded and 15 remain pending.
+
+B2.d.72 implements the [shared verification boundary and bounded search](C6_RESEARCH_MECHANISM_AUDIT.md).
+The new `src/tnfr/research/history_affine.py` owner shares exact admission,
+affine forms, point rows, local extrema and final checks; matrix and Silence
+contracts are repaired without changing nodal evolution. Validation records
+451 tests, 11 independent mutation controls, all 7,177 historical forms/rows
+and 62 matching archived extrema. One real LP returns status 1 at its time
+limit (20.051 solver seconds, 23.305 total, 20,692 iterations), with no primal
+candidate, exact scan, oracle call or second proposal. This is inconclusive.
+B73 below completes the separately versioned, 20-second feasibility-only
+point LP: 6,370 free coefficients, zero objective and the same 7,178 point
+constraints including the root. Removing norm-objective auxiliaries preserves
+finite feasibility, without guaranteeing faster solving. All full exact
+acceptance requirements and the 256-bit/`2^20` coefficient caps remain.
+The checkpoint is [b72_final_validation.json](../artifacts/research/b72_final_validation.json);
+historical evidence is preserved, and coverage remains **41/56, with 15 pending**.
+
+B2.d.73 completes the [feasibility-only control and coordinate diagnostic](../artifacts/research/c6_b73_result_and_next_gate.md).
+The smaller 7,178-by-6,370 proposal retains every point condition and also
+times out without a primal candidate. No exact scan, oracle call or new cut
+follows. Independent preflight checks all point rows, including the root,
+and seven malformed controls; the 451 B72 tests and 62 extrema are reused,
+not rerun. Source and coverage remain unchanged: **41/56, with 15 pending**.
+The two-chart diagnostic selects first-evaluation recentering for its
+sparser point matrix, while its within-column magnitude ratio worsens.
+B74 below completes binary64 materialization/scaling and inverse original-coordinate
+caps before its separately versioned 20-second translated proposal.
+Finite zero-column omission must restore all coefficient slots
+before the full exact checker. No automatic budget growth follows.
+Evidence is sealed by
+[b73_final_validation.json](../artifacts/research/b73_final_validation.json).
+
+B2.d.74 completes the [scaled proposal and exact rejection](../artifacts/research/c6_b74_result_and_next_gate.md).
+Positive exact scaling of 22 rows preserves all 59,682 entries at solver
+loading; independent preflight and reconstruction controls pass. The single
+LP returns a candidate in 7.629 seconds, and all 7,177 guarded checks complete.
+Independent primal/dual verification confirms 5,949 failures: 5,922 drifts
+and all 27 targets. Solver success is not exact sampled feasibility either.
+Of the failed full conditions, 4,403 have nonnegative sampled anchors; 5,933
+retained negative witnesses also reject the exact lift before denominator
+limiting. These are candidate-specific geometric/numerical diagnostics,
+not trajectory reachability or affine-family impossibility. Source and
+coverage remain unchanged: **41/56, with 15 pending**.
+B75 below completes its bounded witness-refinement gate. All original
+coefficient slots, caps, root admission and full guarded checks remain.
+The evidence is sealed by [b74_final_validation.json](../artifacts/research/b74_final_validation.json).
+
+B2.d.75 completes the [verified witness refinement](../artifacts/research/c6_b75_result_and_next_gate.md).
+It adds 256 retained witnesses while preserving every initial row. Recomputing
+the proposal reactivates 134 columns: 7,434 rows, 4,050 active variables and
+62,379 entries pass independent preflight and loading checks. Its single LP
+times out after 20.023 solver seconds without a candidate; no exact scan or
+new region exclusion follows. Witness evaluations are unavailable, not passed
+or failed. The intermediate primal-status message does not prove infeasibility.
+Independent post-validation passes; source and coverage stay **41/56, 15 pending**.
+A no-optimization installed-source audit verifies that a future `highs-ipm`
+comparison can preserve the complete matrix and options except the solver
+selector. The next gate permits one 20-second attempt on that frozen model,
+after preflight and with unchanged exact acceptance, without further cuts or
+history. No performance or feasibility guarantee follows. Evidence is sealed by
+[b75_final_validation.json](../artifacts/research/b75_final_validation.json).
+
+This is a scoped numerical proof programme, not an established prerequisite
+for general TNFR understanding. Its transferable content includes signed
+nodal budgets, complete guarded induction and control of correlations lost
+by joining histories. Require measured geometric gain or a new useful
+mechanism before increasing depth. Broader work should reuse the existing
+mean/shape, diffusion and event-budget owners to distinguish spatial
+contraction from uniform drift; neither binary64 bookkeeping nor completion
+of C6 alone establishes general multichannel stability or physical emergence.
 
 Lines S1, S2 and S4 share one exact restricted result:
 [Heterogeneous EPI diffusion stability theorem](TNFR_DIFFUSION_STABILITY_THEOREM.md).

@@ -25,6 +25,7 @@ from typing import Any, Mapping
 
 from ..mathematics.unified_numerical import np
 from ..mathematics._neighbor_differences import _require_finite_pressure, edge_mean_differences
+from ..mathematics._phase_midpoint import certified_two_neighbor_phase
 from ..utils import get_logger
 
 logger = get_logger(__name__)
@@ -138,6 +139,26 @@ if _NUMBA_AVAILABLE:
         _compute_canonical_gradients_jit = _compute_canonical_gradients_jit_kernel
 else:
     _compute_canonical_gradients_jit = _compute_canonical_gradients_jit_kernel
+
+
+def _two_neighbor_phase_gradients(phase, source, target):
+    """Read eligible two-contribution rows without changing support semantics."""
+    counts = np.bincount(source, minlength=len(phase))
+    selected = np.flatnonzero(counts[source] == 2)
+    rows, gradients = [], []
+    if len(selected):
+        selected_source = source[selected]
+        if np.any(selected_source[1:] < selected_source[:-1]):
+            selected = selected[np.argsort(selected_source, kind="stable")]
+        for first, second in selected.reshape((-1, 2)):
+            row = int(source[first])
+            result = certified_two_neighbor_phase(
+                float(phase[row]), float(phase[target[first]]), float(phase[target[second]]),
+            )
+            if result is not None:
+                rows.append(row)
+                gradients.append(result.delta / math.pi)
+    return np.asarray(rows, dtype=np.intp), np.asarray(gradients, dtype=float), counts
 
 
 def compute_fused_gradients(
@@ -277,6 +298,10 @@ def compute_fused_gradients_symmetric(
         edge_mean_differences(vf, linear_src, linear_dst, coefficient=w_vf)
         if w_vf != 0.0 else np.zeros(n_nodes, dtype=float)
     )
+    phase_rows, phase_values, contribution_counts = (
+        _two_neighbor_phase_gradients(phase, linear_src, linear_dst)
+        if w_phase != 0.0 else (np.empty(0, dtype=np.intp), np.empty(0, dtype=float), None)
+    )
 
     # JIT Path
     if use_jit and _NUMBA_AVAILABLE and n_edges > 100:
@@ -295,6 +320,20 @@ def compute_fused_gradients_symmetric(
             accumulate_both_directions,
             delta_nfr,
         )
+        if len(phase_rows):
+            # Reassemble eligible rows without subtracting an already rounded
+            # phasor term or relying on the JIT fastmath evaluation order.
+            topology = 0.0
+            if w_topo != 0.0:
+                degree_sum = np.bincount(
+                    linear_src, weights=contribution_counts[linear_dst], minlength=n_nodes,
+                )
+                topology = w_topo * (
+                    degree_sum[phase_rows] / contribution_counts[phase_rows] - contribution_counts[phase_rows]
+                )
+            delta_nfr[phase_rows] = (
+                w_phase * phase_values + g_epi[phase_rows] + g_vf[phase_rows] + topology
+            )
         _require_finite_pressure(delta_nfr)
         return delta_nfr
 
@@ -340,6 +379,7 @@ def compute_fused_gradients_symmetric(
     phase_diff = (phase_mean - phase + np.pi) % (2 * np.pi) - np.pi
     g_phase = phase_diff / np.pi
     g_phase[~has_neighbors] = 0.0  # Isolated nodes have no gradient
+    g_phase[phase_rows] = phase_values
 
     # Topology: Canonical form is (mean_neighbor_degree - node_degree)
     if w_topo != 0.0:

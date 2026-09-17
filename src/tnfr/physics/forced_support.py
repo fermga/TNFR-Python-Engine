@@ -24,6 +24,8 @@ __all__ = [
     "observe_forced_support_step",
     "ForcedSupportPattern", "ForcedSupportResetEnergy", "ForcedSupportReset",
     "observe_forced_support_pattern", "observe_forced_support_reset",
+    "ForcedSupportJumpEnergy", "ForcedSupportEvent", "observe_forced_support_event",
+    "ForcedSupportTarget", "observe_forced_support_target",
 ]
 
 
@@ -357,4 +359,286 @@ def observe_forced_support_reset(
     return ForcedSupportReset(
         ref0, ref1, state0, state1, raw_reset, error_reset, mean_jump, dz, du,
         ref1.mean_drift - ref0.mean_drift, variance, dirichlet,
+    )
+
+
+@dataclass(frozen=True)
+class ForcedSupportJumpEnergy:
+    """Signed cross and quadratic terms for EPI change in fixed coordinates."""
+
+    cross_term: Fraction
+    quadratic_term: Fraction
+    energy_change: Fraction
+    identity_residual: Fraction
+
+
+def _jump_energy(cross, quadratic, change):
+    residual = change - cross - quadratic
+    if residual:
+        raise RuntimeError("exact fixed-coordinate EPI jump identity was lost")
+    return ForcedSupportJumpEnergy(cross, quadratic, change, residual)
+
+
+@dataclass(frozen=True)
+class ForcedSupportEvent:
+    """Actual endpoints with an algebraic, pressure-free midpoint readout.
+
+    The midpoint uses post-event EPI in the pre-event profile and metrics.
+    It is neither an observed intermediate state nor an operator write order.
+    All energy changes are signed accounting, without a causal proof seal.
+    """
+
+    before_reference: ForcedSupportBalance
+    after_reference: ForcedSupportBalance
+    before: ForcedSupportState
+    after: ForcedSupportState
+    midpoint_pattern: ForcedSupportPattern
+    epi_jump: Vector
+    centered_epi_jump: Vector
+    mean_epi_jump: Fraction
+    mean_reweighting: Fraction
+    mean_change: Fraction
+    mean_identity_residual: Fraction
+    profile_shift: Vector
+    reference_error_shift: Vector
+    error_identity_residual: Vector
+    variance_jump_budget: ForcedSupportJumpEnergy
+    dirichlet_jump_budget: ForcedSupportJumpEnergy
+    variance_reset_budget: ForcedSupportResetEnergy
+    dirichlet_reset_budget: ForcedSupportResetEnergy
+    variance_change: Fraction
+    dirichlet_change: Fraction
+    variance_identity_residual: Fraction
+    dirichlet_identity_residual: Fraction
+
+
+def observe_forced_support_event(
+    before_reference, after_reference, before, after,
+) -> ForcedSupportEvent:
+    """Account for an EPI jump and changing profile/metric on the same nodes.
+
+    Each actual snapshot is checked against its own rebuilt reference. Both
+    references may predate the event; their source EPI is not the event EPI.
+    Node count and order must agree, while positive capacities, conductance,
+    forcing and EPI coefficient may change within the held-model domain.
+
+    Let delta=x_1-x_0, a=mean_H0(delta), q=delta-a and u_0=P_0*x_0-z_0.
+    The old-coordinate H jump is u_0^T*H_0*q + q^T*H_0*q/2; its B analogue
+    uses the same shared conductance algebra. The unchanged same-EPI reset
+    then supplies the metric/profile budget at x_1. Their sum is the actual
+    endpoint energy difference, and mean_1-mean_0=a+mean_reweighting.
+
+    This EPI-first decomposition is algebraic, not physical write order or
+    extra nodal evolution. The internal reset midpoint retains old pressure
+    solely to reuse detached validation; its pressure is not observed and
+    is not exposed in this record. The public midpoint is a pattern readout.
+    No pressure refresh, admission, elapsed-time law or causal provenance is
+    inferred. A study's previously fixed recovery target remains a separate
+    observe_forced_support_pattern call; it need not be before_reference.
+    """
+    ref0, ref1 = _reference(before_reference), _reference(after_reference)
+    state0, state1 = _state(ref0, before), _state(ref1, after)
+    if state0.snapshot.nodes != state1.snapshot.nodes:
+        raise ValueError("an event requires identical node count and order")
+    delta = tuple(right - left for left, right in zip(
+        state0.snapshot.epi, state1.snapshot.epi,
+    ))
+    mean_delta = dot(ref0.metric_weights, delta) / sum(ref0.metric_weights)
+    centered_delta = tuple(value - mean_delta for value in delta)
+    midpoint = _pattern(ref0, state1.snapshot.epi)
+    reset = observe_forced_support_reset(
+        ref0, ref1, replace(state0.snapshot, epi=state1.snapshot.epi),
+        state1.snapshot,
+    )
+    error0 = state0.relative_error
+    variance_jump = _jump_energy(
+        dot(ref0.metric_weights, tuple(u * q for u, q in zip(
+            error0, centered_delta,
+        ))),
+        dot(ref0.metric_weights, tuple(q**2 for q in centered_delta)) / 2,
+        midpoint.error_variance - state0.error_variance,
+    )
+    dirichlet_jump = _jump_energy(
+        dot(_laplacian(state0.snapshot.conductance, error0), centered_delta),
+        _energy(state0.snapshot.conductance, centered_delta),
+        midpoint.error_dirichlet_energy - state0.error_dirichlet_energy,
+    )
+    mean_change = state1.mean - state0.mean
+    mean_residual = mean_change - mean_delta - reset.mean_reweighting
+    error_residual = tuple(
+        new - old - q - shift for new, old, q, shift in zip(
+            state1.relative_error, error0, centered_delta, reset.error_shift,
+        )
+    )
+    variance_change = state1.error_variance - state0.error_variance
+    dirichlet_change = (
+        state1.error_dirichlet_energy - state0.error_dirichlet_energy
+    )
+    variance_residual = (
+        variance_change - variance_jump.energy_change
+        - reset.variance_budget.energy_change
+    )
+    dirichlet_residual = (
+        dirichlet_change - dirichlet_jump.energy_change
+        - reset.dirichlet_budget.energy_change
+    )
+    if (mean_residual or any(error_residual) or variance_residual
+            or dirichlet_residual):
+        raise RuntimeError("exact full-event coordinate or energy identity was lost")
+    return ForcedSupportEvent(
+        ref0, ref1, state0, state1, midpoint, delta, centered_delta,
+        mean_delta, reset.mean_reweighting, mean_change, mean_residual,
+        reset.profile_shift, reset.error_shift, error_residual,
+        variance_jump, dirichlet_jump, reset.variance_budget,
+        reset.dirichlet_budget, variance_change, dirichlet_change,
+        variance_residual, dirichlet_residual,
+    )
+
+
+@dataclass(frozen=True)
+class ForcedSupportTarget:
+    """A held model's target compatibility and one signed old-metric balance.
+
+    Channel Gram entries are H0 inner products, including signed cross terms.
+    Compatibility concerns relative shape, not zero pressure or stored-state
+    stationarity. No current or future runtime admission is certified.
+    """
+
+    target_reference: ForcedSupportBalance
+    reference: ForcedSupportBalance
+    state: ForcedSupportState
+    pattern: ForcedSupportPattern
+    limiting_pattern: ForcedSupportPattern
+    target_rate: Vector
+    compatibility_residual: Vector
+    profile_identity_residual: Vector
+    target_compatible: bool
+    pressure_channels: tuple
+    projected_rate_channels: tuple
+    channel_gram: tuple
+    compatibility_energy: Fraction
+    channel_energy_identity_residual: Fraction
+    model_rate: Vector
+    homogeneous_energy_rate: Fraction
+    target_source_energy_rate: Fraction
+    model_energy_rate: Fraction
+    energy_rate_identity_residual: Fraction
+    stored_pressure_energy_rate_defect: Fraction
+    stored_nodal_energy_rate: Fraction
+    metric_proportionality: Fraction | None
+
+
+def observe_forced_support_target(
+    target_reference, reference, snapshot, *, forcing_components=None,
+) -> ForcedSupportTarget:
+    """Resolve r=P0*(nu*F-A*z0), its channels and the old-target energy rate.
+
+    Both references are rebuilt; the actual snapshot must match the current
+    model, and all ordered node IDs must agree. A=e*diag(nu)*D^-1*B. The exact
+    identity r=P0*A*(P0*z_current-z0) makes r=0 equivalent to target-profile
+    compatibility in this connected positive-capacity domain. It does not
+    require zero mean drift or imply nonincrease in an unrelated old metric.
+
+    Optional ordered (name, pressure-vector) components must sum exactly to
+    the current F; no normalization or inferred physical channel is added.
+    decompose_non_epi_forcing supplies the canonical captured phase/vf/topo
+    components. Their coefficients are detached data, not a new kernel run at
+    the target. A captured kernel defect at actual EPI cannot be transferred
+    to hypothetical target EPI. Stored-pressure defects below apply only at
+    the supplied actual snapshot, as an instantaneous nodal prediction.
+    """
+    target, ref = _reference(target_reference), _reference(reference)
+    if target.source.nodes != ref.source.nodes:
+        raise ValueError("target compatibility requires identical node order")
+    state = _state(ref, snapshot)
+    size = len(ref.source.nodes)
+    metric = target.metric_weights
+    mass = sum(metric)
+
+    def project(values):
+        mean = dot(metric, values) / mass
+        return tuple(value - mean for value in values)
+
+    def action(values):
+        return tuple(
+            ref.epi_weight * nu * value / degree
+            for nu, value, degree in zip(
+                ref.source.capacity, _laplacian(ref.source.conductance, values),
+                ref.strengths, strict=True,
+            )
+        )
+
+    if forcing_components is None:
+        components = (("forcing", ref.forcing),)
+    else:
+        if isinstance(forcing_components, (str, bytes, bytearray, Mapping, Set)):
+            raise TypeError("forcing components must be an ordered sequence")
+        components, names = [], set()
+        for name, values in forcing_components:
+            if not isinstance(name, str) or not name or name == "epi" or name in names:
+                raise ValueError("forcing component names must be unique and exclude epi")
+            vector = ordered_vector(values, f"forcing component {name}")
+            if len(vector) != size:
+                raise ValueError("forcing components must match the node order")
+            components.append((name, vector))
+            names.add(name)
+        components = tuple(components)
+        total = tuple(sum((vector[i] for _, vector in components), Fraction(0))
+                      for i in range(size))
+        if total != ref.forcing:
+            raise ValueError("forcing components must sum exactly to the current forcing")
+
+    epi_pressure = tuple(
+        -ref.epi_weight * value / degree
+        for value, degree in zip(
+            _laplacian(ref.source.conductance, target.relative_profile),
+            ref.strengths, strict=True,
+        )
+    )
+    pressure_channels = (("epi", epi_pressure),) + components
+    projected = tuple((name, project(tuple(
+        nu * value for nu, value in zip(ref.source.capacity, values, strict=True)
+    ))) for name, values in pressure_channels)
+    target_rate = tuple(nu * (epi + force) for nu, epi, force in zip(
+        ref.source.capacity, epi_pressure, ref.forcing, strict=True,
+    ))
+    residual = project(target_rate)
+    if any(sum((v[i] for _, v in projected), Fraction(0)) != residual[i]
+           for i in range(size)):
+        raise RuntimeError("target channel projection lost its identity")
+    limiting = _pattern(target, ref.relative_profile)
+    induced_residual = project(action(limiting.relative_error))
+    identity = tuple(r - induced for r, induced in zip(residual, induced_residual))
+    compatible = not any(residual)
+    if any(identity) or compatible != (not any(limiting.relative_error)):
+        raise RuntimeError("target compatibility lost its profile equivalence")
+    gram = tuple(tuple(dot(metric, tuple(a * b for a, b in zip(left, right)))
+                       for _, right in projected) for _, left in projected)
+    energy = dot(metric, tuple(value**2 for value in residual)) / 2
+    channel_identity = energy - sum((sum(row) for row in gram), Fraction(0)) / 2
+
+    pattern = _pattern(target, state.snapshot.epi)
+    u = pattern.relative_error
+    au = action(u)
+    homogeneous = -dot(metric, tuple(value * drift for value, drift in zip(u, au)))
+    target_source = dot(metric, tuple(value * force for value, force in zip(u, residual)))
+    model_rate = tuple(nu * p for nu, p in zip(
+        ref.source.capacity, state.modeled_pressure, strict=True,
+    ))
+    rate = dot(metric, tuple(value * drift for value, drift in zip(u, model_rate)))
+    rate_identity = rate - homogeneous - target_source
+    pressure_defect = dot(metric, tuple(value * nu * defect for value, nu, defect in zip(
+        u, ref.source.capacity, state.pressure_defect, strict=True,
+    )))
+    ratio = metric[0] / ref.metric_weights[0]
+    proportionality = ratio if all(
+        old == ratio * new for old, new in zip(metric, ref.metric_weights)
+    ) else None
+    if channel_identity or rate_identity:
+        raise RuntimeError("target energy accounting lost its exact identity")
+    return ForcedSupportTarget(
+        target, ref, state, pattern, limiting, target_rate, residual, identity,
+        compatible, pressure_channels, projected, gram, energy, channel_identity,
+        model_rate, homogeneous, target_source, rate, rate_identity,
+        pressure_defect, rate + pressure_defect, proportionality,
     )

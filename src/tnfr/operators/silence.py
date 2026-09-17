@@ -1,9 +1,9 @@
 """Silence (SHA) operator.
 
-Purpose: structural pause; preserve epi by lowering vf ~0.
-Physics: νf≈0 => dEPI/dt≈0 even if dnfr present.
-Grammar: closure (U1b); used after IL for long-term retention.
-Effects: epi invariant; vf suppressed; dnfr frozen; theta unchanged.
+Purpose: attenuate capacity and mark latency without changing epi.
+Physics: later nodal flow vanishes only when νf·ΔNFR=0.
+Grammar: closure (U1b); used after IL for structural latency.
+Effects at the event: epi, dnfr and theta unchanged; vf attenuated.
 Preconditions: existing epi; dnfr not critical; context allows inactivity.
 Typical: IL->SHA; SHA->IL->AL; OZ->SHA (containment); SHA->NAV.
 Avoid: SHA->AL direct; SHA->OZ; redundant SHA->SHA.
@@ -21,9 +21,10 @@ from .definitions_base import Operator
 
 
 class Silence(Operator):
-    """Lower vf; hold epi invariant; set latency tracking attributes.
+    """Lower vf; preserve epi during the event; set latency tracking attributes.
 
-    Invariants: epi preserved; vf suppressed; dnfr unchanged; theta stable.
+    Event invariants: epi, dnfr and theta unchanged; vf attenuated.
+    Latency tracking alone does not guarantee zero subsequent nodal flow.
     Typical: IL->SHA; SHA->IL->AL; OZ->SHA containment; SHA->NAV.
     Latency attrs: latent, latency_start_time, preserved_epi, silence_duration.
     """

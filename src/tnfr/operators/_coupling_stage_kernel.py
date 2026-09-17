@@ -39,6 +39,20 @@ from ._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
 _EPI_SIMILARITY_EPSILON = 1e-9
 
 
+def coupling_capacity_blend(
+    capacity: float, neighbors: tuple[float, ...], factor: float,
+) -> float:
+    """Evaluate the shared UM capacity arithmetic in its production order.
+
+    Callers provide validated finite nonnegative capacities, a nonempty
+    compatible-neighbor tuple and a factor in [0,1], and validate the result.
+    Keeping the mean, subtraction, product and sum separate is part of the
+    represented numeric contract; this is not a fused multiply-add.
+    """
+    neighbor_mean = math.fsum(neighbors) / len(neighbors)
+    return capacity + factor * (neighbor_mean - capacity)
+
+
 @dataclass(frozen=True, slots=True)
 class CouplingPhaseProposal:
     """One target's proposed phase write to one node."""
@@ -377,9 +391,8 @@ def propose_coupling_target(
             )
             for neighbor in selection.neighbors
         )
-        vf_mean = math.fsum(neighbor_vf) / len(neighbor_vf)
         vf_after = _nonnegative_real(
-            vf_before + vf_sync * (vf_mean - vf_before),
+            coupling_capacity_blend(vf_before, neighbor_vf, vf_sync),
             "structural-frequency proposal",
         )
     else:
@@ -703,6 +716,7 @@ __all__ = [
     "CouplingStageProposal",
     "CouplingTargetProposal",
     "compute_consensus_phase",
+    "coupling_capacity_blend",
     "propose_coupling_stage",
     "propose_coupling_target",
 ]

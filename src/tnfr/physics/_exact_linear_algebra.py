@@ -106,8 +106,9 @@ def exact_square_matrix_power(
 def exact_matrix_inverse(
     matrix: tuple[tuple[Fraction, ...], ...],
 ) -> tuple[tuple[Fraction, ...], ...]:
-    """Invert a nonsingular rational matrix by exact Gauss--Jordan steps."""
+    """Invert a nonempty nonsingular square Fraction matrix by Gauss--Jordan."""
 
+    matrix = _require_exact_square_matrix(matrix, name="matrix")
     dimension = len(matrix)
     augmented = [
         list(row)
@@ -152,8 +153,21 @@ def exact_symmetric_semidefinite(
     *,
     strict: bool = False,
 ) -> bool:
-    """Test rational positive (semi)definiteness by exact LDL elimination."""
+    """Test a nonempty symmetric Fraction matrix by exact LDL elimination.
 
+    Malformed or asymmetric inputs are rejected, not interpreted as an
+    indefinite matrix. ``strict`` must be an exact boolean.
+    """
+
+    if type(strict) is not bool:
+        raise ValueError("strict must be an exact boolean")
+    matrix = _require_exact_square_matrix(matrix, name="matrix")
+    if any(
+        matrix[row][column] != matrix[column][row]
+        for row in range(len(matrix))
+        for column in range(row + 1, len(matrix))
+    ):
+        raise ValueError("matrix must be exactly symmetric")
     work = [list(row) for row in matrix]
     dimension = len(work)
     for pivot_index in range(dimension):

@@ -289,6 +289,15 @@ global projected autonomy. Branch crossing, changing support and finite-time
 phase closure remain open. See
 [src/tnfr/physics/phase_quotient.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/phase_quotient.py).
 
+For two neighbors whose oriented displacements are certified inside the
+center's open half-π interval, the phasor direction is their exact midpoint.
+IL and CPU pressure paths share a rational-π kernel that separately certifies
+rounding of this displacement and the displayed mean; unresolved cases retain
+the phasor path. Pressure still divides the rounded displacement by represented
+π. Existing phase normalization/writes, other channels and Euler rounding remain
+separate, so this local accuracy result does not prove runtime mean conservation.
+See [src/tnfr/mathematics/_phase_midpoint.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/mathematics/_phase_midpoint.py).
+
 ---
 
 ## 3. The structural tetrad
@@ -463,7 +472,7 @@ transformation remains open under research line S10.
 | 4 | **Dissonance** (OZ) | Controlled instability; raises \|ΔNFR\| | Destabilizer (U2), bifurcation trigger (U4a), closure (U1b) | Must increase \|ΔNFR\| |
 | 5 | **Coupling** (UM) | Phase synchronization link `φᵢ → φⱼ` | Requires phase check (U3) | Valid only if `\|wrap(φᵢ − φⱼ)\| ≤ Δφ_max` |
 | 6 | **Resonance** (RA) | Coherent amplification / propagation | Requires phase check (U3) | Blends scalar EPI over U3-compatible neighbours while preserving sign/kind identity |
-| 7 | **Silence** (SHA) | Freezes evolution; `νf → 0`, EPI fixed | Closure (U1b) | Preserves EPI over time |
+| 7 | **Silence** (SHA) | Reduces νf; leaves EPI unchanged at the event | Closure (U1b) | Preserves EPI during SHA; zero subsequent nodal change requires `νf·ΔNFR = 0` |
 | 8 | **Expansion** (VAL) | Adds structural complexity; raises νf | Destabilizer (U2) | νf not decreased (capacity lever) |
 | 9 | **Contraction** (NUL) | Removes complexity; νf↓ and ΔNFR densifies | — | νf not increased (acts on both levers) |
 | 10 | **Self-organization** (THOL) | Autopoietic sub-EPI formation | Stabilizer (U2), handler (U4a), transformer (U4b) | Preserves global form while creating sub-EPIs |
@@ -584,6 +593,26 @@ presence and identity for the whole schedule and verifies them before any
 invocation, preventing an integrator from installing and running a replacement. Any
 violation or later failure rolls back the graph transaction. Physical and stage
 callback counts are recorded separately and must sum to the total.
+
+The separate opt-in `execute_nodal_remainder_event_schedule` retains numerical
+EPI as `X=Fraction(x)+r`, with visible `x=RN(X)`. Its shared carried kernel
+uses exact represented nodal areas `h*nu_f*DeltaNFR`; the visible prefix
+residual is `r_initial-r_final`. A graph-owned binding persists across calls
+and rejects stale chart, clock or support without resetting the remainder.
+Canonical pressure and timestamped histories read visible EPI. Each declared
+positive segment refreshes pressure and advances through the shared kernel;
+configured stage callbacks and terminal refreshes keep their separate roles.
+Only admitted EPI-preserving Coupling, Coherence and Silence events are
+supported, with actual chart/support checks and whole-invocation rollback.
+Both exact and visible EPI must remain inside the declared positive band
+and configured bounds. EPI-writing events, explicit REMESH, clipping,
+custom callbacks and broader solver configurations remain outside this path.
+The exact EPI readout shift is `w_epi*L_rw*r`; its nodal arithmetic mean
+vanishes on regular support with common capacity. Other channels and their
+realization retain a separate source budget. This finite sealed execution
+does not prove generated-pressure summability, solver convergence or future
+domain preservation. See
+[the carried flow/event contract](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/COUPLING_WINDING_PERSISTENCE.md#21-live-pressure-and-an-explicit-carried-flowevent-contract).
 
 For a fixed pure-EPI generator `A=diag(nu_f)L_rw`, the exact-real held-pressure
 Euler model has `g_H(mu)=1-T*mu` regardless of internal substeps whose exact
@@ -1229,7 +1258,7 @@ evidence (phase/νf logs, C(t)/Si curves, controlled bifurcations), compatibilit
 
 Cover, at minimum: coherence **monotonicity** (IL does not reduce C(t) outside dissonance
 tests), **bifurcation** (OZ triggers with handlers present), **propagation** (RA raises
-phase sync), **latency** (SHA keeps EPI invariant), **mutation threshold** (ZHIR changes θ
+phase sync), **latency** (SHA preserves EPI at the event boundary and attenuates νf), **mutation threshold** (ZHIR changes θ
 only when `ΔEPI/Δt > ξ`), **multi-scale** (nested EPIs keep identity), and
 **reproducibility** (same seed → same trajectory). See [TESTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/TESTING.md).
 

@@ -26,8 +26,10 @@ from ._argument_validation import (
     strict_bool,
 )
 from ._coherence_stage_kernel import (
+    DEFAULT_PHASE_LOCKING_COEFFICIENT,
     CoherencePhaseProposal,
     CoherenceStageProposal,
+    coherence_phase_proposal_event,
     coherence_reduction_event,
     coherence_tracking_event,
     propose_coherence_phase,
@@ -35,6 +37,7 @@ from ._coherence_stage_kernel import (
 )
 from .definitions_base import Operator
 from .factor_contracts import resolve_runtime_operator_factors
+
 
 class Coherence(Operator):
     """Stabilize alignment; compress delta NFR; boost coherence.
@@ -58,7 +61,7 @@ class Coherence(Operator):
             label="coherence_radius",
         )
         finite_real(
-            kw.get("phase_locking_coefficient", 0.3),
+            kw.get("phase_locking_coefficient", DEFAULT_PHASE_LOCKING_COEFFICIENT),
             operator=self.name,
             label="phase_locking_coefficient",
             lower=0.0,
@@ -203,7 +206,7 @@ class Coherence(Operator):
             factors["IL_dnfr_factor"],
             radius=kw.get("coherence_radius", 1),
             phase_locking_coefficient=kw.get(
-                "phase_locking_coefficient", 0.3
+                "phase_locking_coefficient", DEFAULT_PHASE_LOCKING_COEFFICIENT
             ),
         )
 
@@ -283,19 +286,9 @@ class Coherence(Operator):
         """Commit an already checked IL phase result and ordered telemetry."""
 
         set_attr(G.nodes[node], ALIAS_THETA, proposal.theta_after)
-        if not proposal.has_neighbors:
-            return
-        G.graph.setdefault("IL_phase_locking", []).append(
-            {
-                "node": node,
-                "theta_before": proposal.theta_before,
-                "theta_after": proposal.theta_after,
-                "theta_network": proposal.theta_network,
-                "delta_theta": proposal.delta_theta,
-                "alignment_achieved": abs(proposal.delta_theta)
-                * (1.0 - proposal.coefficient),
-            }
-        )
+        event = coherence_phase_proposal_event(node, proposal)
+        if event is not None:
+            G.graph.setdefault("IL_phase_locking", []).append(event)
 
 
 # The immutable stage bypasses the direct lifecycle only for this exact

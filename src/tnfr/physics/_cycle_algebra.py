@@ -29,6 +29,13 @@ def dot(left: Vector, right: Vector) -> Fraction:
     return sum((a * b for a, b in zip(left, right, strict=True)), Fraction(0))
 
 
+def c6_pair_sums(values: Vector) -> Vector:
+    """Return the three opposite-pair sums of six ordered cycle values."""
+    if len(values) != 6:
+        raise ValueError("C6 opposite pairs require exactly six coordinates")
+    return tuple(values[i] + values[i + 3] for i in range(3))
+
+
 def laplacian_matrix(count: int) -> Matrix:
     """Return L_rw=I-W/2 on the declared simple cycle."""
     if count < 3:

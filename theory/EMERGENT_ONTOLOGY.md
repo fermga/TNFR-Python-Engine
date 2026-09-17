@@ -101,14 +101,14 @@ operator or one obstruction; see **§2.4**.
 multichannel gradient `ΔNFR = w_phase·∂φ + w_epi·∂EPI + w_vf·∂νf + w_topo·∂topo`
 ([dnfr.py](../src/tnfr/dynamics/dnfr.py)). Later sections also introduce
 explicit auxiliary models and analogies that do not derive from this equation
-alone. The primitives are **POSITED** — the bedrock, in
-Hz_str, *prior to* any physical magnitude (a temperature, a frequency in Hz, an energy in joules
-are their manifestations at scale, not the reverse):
+alone. The structural primitives are **POSITED**. Their declared units and
+roles define the model; a correspondence with temperature, physical frequency,
+energy or physical time requires a separate derivation and measurement map:
 
 | Primitive | Symbol | Role |
 |-----------|--------|------|
 | Primary information structure | EPI | coherent form on a node |
-| Structural frequency | νf (Hz_str) | reorganization rate — *prior to physical time* |
+| Structural frequency | νf (Hz_str) | structural reorganization rate; physical-clock correspondence open |
 | Nodal gradient | ΔNFR | reorganization pressure |
 | Phase | φ (θ) | synchronization coordinate |
 | Coupling network | G (graph) | the relational substrate (connectivity only; its *geometry* is derived, §3) |
@@ -413,9 +413,14 @@ maximally-coupled cluster of `k+1` mutually-resonant NFRs is the 1-skeleton `K_{
 `k`-simplex; its Laplacian multiplicity `k` is the standard-irrep dim of `S_{k+1}` = the emergent
 cardinal readout (§0), while `k` is separately the simplex grade. These equal
 integers in that construction but remain different mathematical objects
-([emergent_simplex_dimension.py](../benchmarks/emergent_simplex_dimension.py)). The canonical AL + U3 dynamics
-can build the configured simplex sequence
-([emergent_dimension_dynamics.py](../benchmarks/emergent_dimension_dynamics.py)).
+([emergent_simplex_dimension.py](../benchmarks/emergent_simplex_dimension.py)).
+The separate [phase-threshold construction](../benchmarks/emergent_dimension_dynamics.py)
+explicitly appends phase samples, rebuilds a graph with selected threshold
+`pi/6` and applies an auxiliary phasor average with factor `0.4`. It executes
+no canonical AL/UM/RA and is an auxiliary comparison. Its largest clique has
+`m` vertices and simplex dimension `m-1`; these read-outs do not establish
+autonomous topology growth or selection of physical dimension. An actual
+canonical trace and a robust dimension-selection mechanism remain open.
 
 **Self-similar comparison.** A corner-glued simplex gasket has exact similarity
 dimension `d_H=log(m)/log(2)` and theoretical spectral dimension
@@ -1216,18 +1221,28 @@ unification, not a derived identity.
 
 ### 9.4 What would move the frontier to derivation
 
-- **§9.1 (values):** a *structural* principle that fixes the generation **ratios** — concretely, one
-  that selects the Koide `√2` / 45° (maximal equal-split) circle and the phase `δ`, which no natural
-  tetrahedron breaking reaches (§9.1). The **forms** are in hand; the **numbers** are not.
-- **§9.2:** genuine entanglement (Bell-violating correlations, `|S| > 2`) — measured to sit at the
-  classical bound (`|S| = 2.0000`, §9.2) while the substrate stays local (§5.1) and classical
-  (§5.3); moving this would mean abandoning one of those two already-derived properties.
+- **Persistent entities before parameter ratios:** the scoped formation,
+  retention and feedback controls in §7.1 do not establish an autonomously
+  self-restoring physical entity. A fixed-target perturbation response and
+  a common admissible dynamics precede any particle or generation-ratio claim.
+  The Koide construction in §9.1 remains an analogy, not a fitting objective
+  that supplies the missing dynamics or measurement map.
+- **§9.2 measurement and composition:** derive preparation, outcomes and
+  composition from TNFR before interpreting a quantum comparison. The existing
+  local-response control has the CHSH bound under its stated assumptions;
+  it does not classify every possible TNFR model. Threshold fronts in §5.1
+  provide no strict causal cone and are distinct from Bell factorization.
+  Classical auxiliary coordinates alone settle neither a general locality
+  theorem nor the possibility of a derived quantum measurement bridge.
 - **§7.2:** an independent edge connection with non-zero curvature and dynamics
   derived from the nodal equation. The implemented connection is pure gauge, and
   the separate point-vortex comparison does not provide a photon or a TNFR
   electromagnetic field.
-- **All:** a *predictive* test the standard framework does **not** make (the bar the empirical
-  record repeatedly set, and did not clear).
+- **Physical confrontation:** a derived observable and clock/unit map, an
+  eligible surface-laboratory protocol, and a fixed intervention compared with
+  an equally informed baseline. Report observational equivalence or failure
+  when present; a claimed distinctive prediction needs a derivation before
+  data collection, not a weakened comparator or fitted explanatory constant.
 
 ---
 

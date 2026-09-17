@@ -10,15 +10,17 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from fractions import Fraction
 
-from .._exact_time import finite_represented_real
+from .._exact_time import exact_or_represented_real, finite_represented_real
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_THETA
 from ..dynamics import dnfr, fused_dnfr
 from ..metrics.common import merge_and_normalize_weights
-from ._cycle_algebra import Vector
-from .support_transport import SupportTransportSnapshot, observe_support_transport
+from ._cycle_algebra import Vector, ordered_vector
+from .support_transport import SupportTransportSnapshot, _rebuild, observe_support_transport
 
-__all__ = ["NonEpiForcingObservation", "capture_non_epi_forcing"]
+__all__ = [
+    "NonEpiForcingObservation", "capture_non_epi_forcing", "decompose_non_epi_forcing",
+]
 
 _CHANNELS = ("phase", "epi", "vf", "topo")
 _MAX_SUPPORT_ENTRIES = 100
@@ -74,6 +76,45 @@ def _runtime_weights(graph):
             raise ValueError("DeltaNFR weights must be nonnegative")
         weights.append((channel, exact))
     return tuple(weights)
+
+
+def _forcing_components(snapshot, weights, phase_gradient):
+    return tuple((name, tuple(weights[name] * value for value in values))
+                 for name, values in (
+                     ("phase", phase_gradient), ("vf", snapshot.capacity_gradient),
+                     ("topo", snapshot.topology_gradient),
+                 ))
+
+
+def decompose_non_epi_forcing(observation) -> tuple:
+    """Validate and split a detached capture's F without another kernel call.
+
+    The phase gradient is a supplied represented coefficient. This arithmetic
+    check cannot authenticate its graph, phase-resultant branch or causal
+    provenance. Support-gradient caches are rebuilt. Kernel rounding and
+    stale stored pressure remain separate from these exact forcing channels.
+    """
+    if type(observation) is not NonEpiForcingObservation:
+        raise TypeError("forcing decomposition requires a NonEpiForcingObservation")
+    source = _rebuild(observation.snapshot)
+    pairs = tuple(observation.normalized_weights)
+    if tuple(name for name, _ in pairs) != _CHANNELS:
+        raise ValueError("forcing weights require the ordered phase/epi/vf/topo channels")
+    weights = {name: exact_or_represented_real(value, f"{name} weight")
+               for name, value in pairs}
+    if any(value < 0 for value in weights.values()):
+        raise ValueError("forcing weights must be nonnegative")
+    if weights["epi"] != exact_or_represented_real(observation.epi_weight, "epi_weight"):
+        raise ValueError("EPI coefficient differs from the captured weights")
+    phase = ordered_vector(observation.phase_gradient, "phase gradient")
+    if len(phase) != len(source.nodes):
+        raise ValueError("phase gradient must match the captured node order")
+    components = _forcing_components(source, weights, phase)
+    forcing = tuple(sum((values[i] for _, values in components), Fraction(0))
+                    for i in range(len(source.nodes)))
+    if forcing != ordered_vector(observation.forcing, "forcing"):
+        raise ValueError("captured forcing differs from its exact channel decomposition")
+    return components
 
 
 def capture_non_epi_forcing(G) -> NonEpiForcingObservation:
@@ -135,15 +176,9 @@ def capture_non_epi_forcing(G) -> NonEpiForcingObservation:
         ),
         "fresh kernel pressure",
     )
-    forcing = tuple(
-        exact_weights["phase"] * phase_i
-        + exact_weights["vf"] * capacity_i
-        + exact_weights["topo"] * topology_i
-        for phase_i, capacity_i, topology_i in zip(
-            phase_gradient, snapshot.capacity_gradient, snapshot.topology_gradient,
-            strict=True,
-        )
-    )
+    components = _forcing_components(snapshot, exact_weights, phase_gradient)
+    forcing = tuple(sum((values[i] for _, values in components), Fraction(0))
+                    for i in range(len(nodes)))
     epi_weight = exact_weights["epi"]
     kernel_defect = tuple(
         actual - epi_weight * epi_i - force_i

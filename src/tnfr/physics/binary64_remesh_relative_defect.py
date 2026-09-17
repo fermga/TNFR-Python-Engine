@@ -52,13 +52,15 @@ claims, not runtime execution or full TNFR stability claims.
 from __future__ import annotations
 
 import math
-import sys
 from collections.abc import Hashable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field, fields, replace
 from fractions import Fraction
 from numbers import Real
 from typing import Any, Literal
 
+from .._binary64 import (
+    uses_ieee_binary64_rounding as _runtime_uses_required_binary64_rounding_model,
+)
 from .._remesh_contract import (
     DelayedRemeshConfiguration,
     materialize_delayed_remesh_configuration,
@@ -256,25 +258,6 @@ def _enumerate_half_class_subnormal_core(
     _HALF_CLASS_CORE_CANDIDATE_COUNT,
     _HALF_CLASS_CORE_ADMISSIBLE_COUNT,
 ) = _enumerate_half_class_subnormal_core()
-
-
-def _runtime_uses_required_binary64_rounding_model() -> bool:
-    smallest = _MIN_BINARY64_SUBNORMAL
-    try:
-        return bool(
-            sys.float_info.radix == 2
-            and sys.float_info.mant_dig == 53
-            and sys.float_info.min_exp == -1021
-            and sys.float_info.max_exp == 1024
-            and sys.float_info.rounds == 1
-            and float.__getformat__("double").startswith("IEEE")
-            and smallest == float.fromhex("0x0.0000000000001p-1022")
-            and 0.5 * smallest == 0.0
-            and 0.5 * (3.0 * smallest) == 2.0 * smallest
-            and 0.5 * (-3.0 * smallest) == -2.0 * smallest
-        )
-    except BaseException:
-        return False
 
 
 def _proof_stamp(value: Any, expected_type: type[Any], version: str) -> tuple[Any, ...]:

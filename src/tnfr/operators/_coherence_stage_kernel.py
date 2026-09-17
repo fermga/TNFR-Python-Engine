@@ -14,10 +14,13 @@ from typing import Any
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
+from ..mathematics._phase_midpoint import certified_two_neighbor_phase
 from ..metrics.trig import neighbor_phase_mean_list
 from ..types import Glyph
 from ..utils import angle_diff
 from ._argument_validation import finite_node_real, finite_real, nonnegative_integer
+
+DEFAULT_PHASE_LOCKING_COEFFICIENT = 0.3
 
 
 @dataclass(frozen=True, slots=True)
@@ -30,6 +33,7 @@ class CoherencePhaseProposal:
     delta_theta: float
     coefficient: float
     has_neighbors: bool
+    method: str = "phasor"
 
 
 @dataclass(frozen=True, slots=True)
@@ -62,6 +66,7 @@ class CoherenceStageProposal:
     phase: CoherencePhaseProposal
     coherence_before: CoherenceReadout
     precondition_warnings: tuple[str, ...] = ()
+
 
 def capture_coherence_globals(graph: Any) -> CoherenceGlobalReadout:
     """Read canonical structural C(t) and auxiliary pressure dispersion."""
@@ -164,6 +169,7 @@ def propose_coherence_phase(
             delta_theta=0.0,
             coefficient=coefficient,
             has_neighbors=False,
+            method="no_neighbors",
         )
 
     phases = {
@@ -176,26 +182,27 @@ def propose_coherence_phase(
         )
         for neighbor in neighbors
     }
-    cosines = {neighbor: math.cos(phase) for neighbor, phase in phases.items()}
-    sines = {neighbor: math.sin(phase) for neighbor, phase in phases.items()}
+    certified = (
+        certified_two_neighbor_phase(theta_normalized, phases[neighbors[0]], phases[neighbors[1]])
+        if len(neighbors) == 2 else None
+    )
+    method = "phasor"
+    if certified is not None:
+        # The independently rounded mean does not reconstruct the certified delta.
+        theta_network, delta_theta = certified.mean, certified.delta
+        method = certified.method
+    else:
+        cosines = {neighbor: math.cos(phase) for neighbor, phase in phases.items()}
+        sines = {neighbor: math.sin(phase) for neighbor, phase in phases.items()}
+        theta_network = neighbor_phase_mean_list(
+            neighbors, cosines, sines, fallback=theta_normalized,
+        ) % math.tau
+        delta_theta = angle_diff(theta_network, theta_normalized)
     theta_network = finite_real(
-        neighbor_phase_mean_list(
-            neighbors,
-            cosines,
-            sines,
-            fallback=theta_normalized,
-        )
-        % math.tau,
-        operator="Coherence",
-        label="neighborhood phase mean",
-        lower=0.0,
-        upper=math.tau,
+        theta_network, operator="Coherence", label="neighborhood phase mean",
+        lower=0.0, upper=math.tau,
     )
-    delta_theta = finite_real(
-        angle_diff(theta_network, theta_normalized),
-        operator="Coherence",
-        label="phase-locking delta",
-    )
+    delta_theta = finite_real(delta_theta, operator="Coherence", label="phase-locking delta")
     theta_after = finite_real(
         (theta_normalized + coefficient * delta_theta) % math.tau,
         operator="Coherence",
@@ -210,6 +217,7 @@ def propose_coherence_phase(
         delta_theta=delta_theta,
         coefficient=coefficient,
         has_neighbors=True,
+        method=method,
     )
 
 
@@ -234,7 +242,7 @@ def propose_coherence_stage(
     factor: Any,
     *,
     radius: Any = 1,
-    phase_locking_coefficient: Any = 0.3,
+    phase_locking_coefficient: Any = DEFAULT_PHASE_LOCKING_COEFFICIENT,
     global_before: CoherenceGlobalReadout | None = None,
     precondition_warnings: tuple[str, ...] = (),
 ) -> CoherenceStageProposal:
@@ -269,15 +277,23 @@ def propose_coherence_stage(
 def coherence_phase_event(proposal: CoherenceStageProposal) -> dict[str, Any] | None:
     """Return ordered phase telemetry, or ``None`` for an isolate."""
 
-    phase = proposal.phase
+    return coherence_phase_proposal_event(proposal.node, proposal.phase)
+
+
+def coherence_phase_proposal_event(
+    node: Any, phase: CoherencePhaseProposal,
+) -> dict[str, Any] | None:
+    """Format one phase proposal identically for direct and staged IL."""
+
     if not phase.has_neighbors:
         return None
     return {
-        "node": proposal.node,
+        "node": node,
         "theta_before": phase.theta_before,
         "theta_after": phase.theta_after,
         "theta_network": phase.theta_network,
         "delta_theta": phase.delta_theta,
+        "method": phase.method,
         "alignment_achieved": abs(phase.delta_theta) * (1.0 - phase.coefficient),
     }
 
@@ -368,6 +384,7 @@ def coherence_tracking_event(
 
 
 __all__ = [
+    "DEFAULT_PHASE_LOCKING_COEFFICIENT",
     "CoherenceGlobalReadout",
     "CoherencePhaseProposal",
     "CoherenceReadout",
@@ -375,6 +392,7 @@ __all__ = [
     "capture_coherence_globals",
     "capture_coherence_readout",
     "coherence_phase_event",
+    "coherence_phase_proposal_event",
     "coherence_reduction_event",
     "coherence_tracking_event",
     "propose_coherence_phase",

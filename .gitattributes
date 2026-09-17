@@ -1,0 +1,2 @@
+# Preserve the archived roadmap's original mixed line endings and byte digest.
+theory/research/archive/ROADMAP_PRE_FIVE_STAGE_2026-09-17.txt -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

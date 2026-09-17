@@ -291,7 +291,9 @@ def test_runtime_evidence_preserves_historical_dataclass_contract_schema() -> No
             assert not declared[name].init
             assert payload[name] == expected
             assert f"{name}=" in rendered
-            with pytest.raises(ValueError, match="init=False"):
+            # Python versions differ in the exception class for this
+            # rejected dataclasses.replace call; the field stays immutable.
+            with pytest.raises((TypeError, ValueError), match="init=False"):
                 replace(value, **{name: expected})
 
     historical_result_init_fields = (
@@ -867,7 +869,7 @@ def test_custom_nodal_residual_is_required_for_physical_segments() -> None:
 @pytest.mark.parametrize("hostile_attribute", ("graph", "nodes"))
 def test_empty_schedule_avoids_virtual_graph_attribute_access(
     hostile_attribute: str,
-    ) -> None:
+) -> None:
     class HostileGraph(nx.Graph):
         armed = False
         hostile_attribute = ""
@@ -1644,6 +1646,7 @@ def test_nonlist_hybrid_event_sink_is_rejected_before_writes() -> None:
 
     assert _plain_state(graph) == before
 
+
 def test_runtime_schedule_executor_is_public() -> None:
     assert (
         operators.execute_operator_event_schedule
@@ -1686,6 +1689,7 @@ def test_execution_controls_are_strict_before_writes(
         )
 
     assert _plain_state(graph) == before
+
 
 def test_positive_preflow_supplies_fresh_timestamped_zhir_evidence() -> None:
     graph = _graph()

@@ -150,8 +150,47 @@ def _checkpoint_record(record):
     }
 
 
-def run_child_feedback_case(case):
-    """Execute one actual intervention/control from independently rebuilt history."""
+def _advance_forced_support_interval(
+    graph, original_reference, reference, current, frozen_capture, *, duration,
+):
+    """Run one shared held Euler interval with exact budgets and endpoint bindings."""
+    left = _state(graph)
+    original_before = _pattern(original_reference, current)
+    schedule = build_operator_event_schedule(
+        (), start_time=left["time"], flow_durations=(duration,),
+    )
+    execution = execute_operator_event_schedule(
+        graph, schedule, method="euler", include_flow_certificates=True,
+    )
+    evidence = execution.flow_interval_evidence[0]
+    raw_endpoint = _state(graph)
+    default_compute_delta_nfr(graph)
+    following = capture_non_epi_forcing(graph)
+    frozen = _same_frozen_inputs(frozen_capture, following)
+    if not all(frozen.values()):
+        raise RuntimeError("a postevent frozen input changed during flow")
+    step = observe_forced_support_step(
+        reference, current.snapshot, following.snapshot, dt=duration,
+    )
+    step_payload = asdict(step)
+    step_payload.pop("reference")
+    return following, {
+        "before": left, "raw_after_integrator": raw_endpoint,
+        "after_refresh": _state(graph), "duration": duration,
+        "executor_evidence": _executor_record(evidence, left, raw_endpoint),
+        "forcing_capture": asdict(following), "frozen_input_checks": frozen,
+        "original_pattern_before": asdict(original_before),
+        "original_pattern_after": asdict(_pattern(original_reference, following)),
+        "regime_step_budget": step_payload,
+    }
+
+
+def prepare_child_feedback_endpoint(case="child_coupling"):
+    """Return the actual t=9.5 endpoint before child or parent SHA.
+
+    Callers retain the executed histories and own the pending word closures.
+    The returned record is the original campaign without its terminal writes.
+    """
     if case not in CASES:
         raise ValueError(f"case must be one of {CASES}")
     graph, checkpoint = prepare_forced_support_endpoint()
@@ -231,49 +270,14 @@ def run_child_feedback_case(case):
     frozen_capture = current
     segments = []
     for _ in range(SEGMENT_COUNT):
-        left = _state(graph)
-        original_before = _pattern(old_reference, current)
-        schedule = build_operator_event_schedule(
-            (), start_time=left["time"], flow_durations=(STEP,),
+        current, segment = _advance_forced_support_interval(
+            graph, old_reference, reference, current, frozen_capture, duration=STEP,
         )
-        execution = execute_operator_event_schedule(
-            graph, schedule, method="euler", include_flow_certificates=True,
-        )
-        evidence = execution.flow_interval_evidence[0]
-        raw_endpoint = _state(graph)
-        default_compute_delta_nfr(graph)
-        following = capture_non_epi_forcing(graph)
-        frozen = _same_frozen_inputs(frozen_capture, following)
-        if not all(frozen.values()):
-            raise RuntimeError("a postevent frozen input changed during flow")
-        step = observe_forced_support_step(
-            reference, current.snapshot, following.snapshot, dt=STEP,
-        )
-        step_payload = asdict(step)
-        step_payload.pop("reference")
-        segments.append({
-            "before": left, "raw_after_integrator": raw_endpoint,
-            "after_refresh": _state(graph), "duration": STEP,
-            "executor_evidence": _executor_record(evidence, left, raw_endpoint),
-            "forcing_capture": asdict(following),
-            "frozen_input_checks": frozen,
-            "original_pattern_before": asdict(original_before),
-            "original_pattern_after": asdict(_pattern(old_reference, following)),
-            "regime_step_budget": step_payload,
-        })
-        current = following
+        segments.append(segment)
     final = _state(graph)
     final_pattern = _pattern(old_reference, current)
     final_regime = observe_forced_support_state(reference, current.snapshot)
-    closures = []
-    if case == "child_coupling":
-        closures.append({
-            "admission": _apply_live(graph, child, Silence()), "after": _state(graph),
-        })
-    closures.append({
-        "admission": _apply_live(graph, 0, Silence()), "after": _state(graph),
-    })
-    return {
+    return graph, {
         "case": case, "checkpoint": _checkpoint_record(checkpoint),
         "original_reference": asdict(old_reference),
         "postevent_reference": asdict(reference),
@@ -281,7 +285,6 @@ def run_child_feedback_case(case):
         "final_original_pattern": asdict(final_pattern),
         "final_regime_state": asdict(final_regime),
         "postevent_elapsed_time": final["time"] - after_event["time"],
-        "closures_after_measurement": closures,
         "scope": (
             "Finite actual child UM versus independent no-extra-event control "
             "from the retained t=6.5 checkpoint. Each node's declared word "
@@ -291,6 +294,22 @@ def run_child_feedback_case(case):
             "or physical recovery. No later perturbation/recovery is claimed"
         ),
     }
+
+
+def run_child_feedback_case(case):
+    """Execute the original campaign and its unchanged terminal closures."""
+    graph, record = prepare_child_feedback_endpoint(case)
+    closures = []
+    if case == "child_coupling":
+        closures.append({
+            "admission": _apply_live(graph, record["event"]["target"], Silence()),
+            "after": _state(graph),
+        })
+    closures.append({
+        "admission": _apply_live(graph, 0, Silence()), "after": _state(graph),
+    })
+    record["closures_after_measurement"] = closures
+    return record
 
 
 def main():

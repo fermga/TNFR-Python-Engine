@@ -1,7 +1,7 @@
 """Nonlinear phase forcing, numerical residuals and graph-read boundaries."""
 
 from copy import deepcopy
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, replace
 from fractions import Fraction
 import math
 
@@ -13,7 +13,7 @@ from tnfr.constants.aliases import ALIAS_DNFR
 from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.operators import apply_glyph
 from tnfr.physics import forcing_realization as realization
-from tnfr.physics.forcing_realization import capture_non_epi_forcing
+from tnfr.physics.forcing_realization import capture_non_epi_forcing, decompose_non_epi_forcing
 
 
 F = Fraction
@@ -63,6 +63,49 @@ def test_zero_weight_neighbor_contributes_nonlinear_phase_and_exact_support_forc
     without_zero_support = deepcopy(graph)
     without_zero_support.remove_edge(0, 3)
     assert capture_non_epi_forcing(without_zero_support).phase_gradient[0] == 0
+
+
+def test_detached_channel_decomposition_reuses_exact_products_without_kernel_calls(monkeypatch):
+    result = capture_non_epi_forcing(_graph())
+
+    def forbidden(**kwargs):
+        raise AssertionError("detached arithmetic cannot call a phase kernel")
+
+    monkeypatch.setattr(realization.fused_dnfr, "compute_fused_gradients_symmetric", forbidden)
+    channels = dict(decompose_non_epi_forcing(result))
+    assert tuple(channels) == ("phase", "vf", "topo")
+    assert channels["phase"] == tuple(value / 4 for value in result.phase_gradient)
+    assert channels["vf"] == (F(11, 12), F(-1, 4), F(-3, 4), F(-7, 4))
+    assert channels["topo"] == (F(-1, 2), F(1, 2), F(1, 2), F(1, 2))
+    assert tuple(sum(row) for row in zip(*channels.values())) == result.forcing
+
+
+def test_channel_decomposition_rebuilds_support_caches_and_excludes_pressure_defects():
+    result = capture_non_epi_forcing(_graph())
+    expected = decompose_non_epi_forcing(result)
+    forged = replace(result, snapshot=replace(
+        result.snapshot, capacity_gradient=(F(999),) * 4,
+        topology_gradient=(F(999),) * 4, stored_pressure=(F(99),) * 4,
+    ), kernel_pressure_defect=(F(99),) * 4, stored_pressure_residual=(F(99),) * 4)
+    assert decompose_non_epi_forcing(forged) == expected
+
+
+@pytest.mark.parametrize("field,value", (
+    ("forcing", (F(0),) * 4),
+    ("epi_weight", F(1, 2)),
+    ("phase_gradient", (F(0),)),
+    ("normalized_weights", (("phase", F(1)),)),
+    ("normalized_weights", tuple((key, F(-1, 4)) for key in ("phase", "epi", "vf", "topo"))),
+))
+def test_channel_decomposition_rejects_inconsistent_coefficients(field, value):
+    result = capture_non_epi_forcing(_graph())
+    with pytest.raises(ValueError):
+        decompose_non_epi_forcing(replace(result, **{field: value}))
+
+
+def test_channel_decomposition_requires_its_explicit_detached_type():
+    with pytest.raises(TypeError, match="NonEpiForcingObservation"):
+        decompose_non_epi_forcing({"forcing": (0, 0)})
 
 
 def test_fresh_full_kernel_matches_runtime_but_exact_channel_assembly_has_own_defect():

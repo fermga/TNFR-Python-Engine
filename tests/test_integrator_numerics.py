@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+from fractions import Fraction
 import math
 
 import networkx as nx
@@ -10,7 +11,7 @@ import numpy as np
 import pytest
 
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY, inject_defaults
-from tnfr.constants.aliases import ALIAS_THETA
+from tnfr.constants.aliases import ALIAS_D2EPI, ALIAS_DEPI, ALIAS_THETA
 from tnfr.alias import get_attr
 from tnfr.dynamics import integrators
 from tnfr.dynamics.symplectic import TNFRSymplecticIntegrator
@@ -151,7 +152,7 @@ def test_extended_euler_is_independent_of_node_insertion_order():
         graph.graph.update(use_extended_dynamics=True, DT_MIN=0.0)
         for node in graph:
             graph.nodes[node].update({EPI_PRIMARY: 0.4, VF_PRIMARY: 1.0,
-                DNFR_PRIMARY: 0.1 * (node + 1), "theta": 0.4 * node})
+                                     DNFR_PRIMARY: 0.1 * (node + 1), "theta": 0.4 * node})
         integrators.update_epi_via_nodal_equation(graph, dt=0.1)
         results.append(np.array([[graph.nodes[i][key] for key in
                                  [EPI_PRIMARY, "theta", DNFR_PRIMARY]] for i in range(3)]))
@@ -353,3 +354,64 @@ def test_timestep_real_scalar_validation_preserves_existing_bool_policy(value):
     step, count, _, _ = integrators.prepare_integration_params(graph, dt=value)
     assert step == float(value)
     assert count == 1
+
+
+@pytest.mark.parametrize("vectorized", [False, True])
+def test_held_zero_sum_pressure_does_not_imply_binary64_mean_conservation(monkeypatch, vectorized):
+    # A prescribed integrator-input fixture, not a canonically generated pressure field.
+    graph = nx.empty_graph(6)
+    inject_defaults(graph)
+    graph.graph.update(DT_MIN=1 / 16, GAMMA={"type": "none"}, CLIP_MODE="hard")
+    pressure = 2.0 ** -50
+    for node in graph:
+        graph.nodes[node].update({
+            EPI_PRIMARY: 0.5, VF_PRIMARY: 1.0,
+            DNFR_PRIMARY: pressure if node % 2 == 0 else -pressure,
+        })
+    if not vectorized:
+        monkeypatch.setattr(integrators, "np", None)
+    integrators.update_epi_via_nodal_equation(graph, dt=0.25, method="euler")
+    values = tuple(Fraction(graph.nodes[node][EPI_PRIMARY]) for node in graph)
+    assert values == (Fraction(1, 2), Fraction(1, 2) - Fraction(1, 2**52)) * 3
+    assert sum(values) / 6 - Fraction(1, 2) == -Fraction(1, 2**53)
+    assert sum(graph.nodes[node][DNFR_PRIMARY] for node in graph) == 0
+    assert graph.graph["_t"] == 0.25
+
+
+@pytest.mark.parametrize("vectorized", [False, True])
+@pytest.mark.parametrize("clip_mode", ["hard", "soft"])
+@pytest.mark.parametrize("pressure", [-2.0 ** -51, 2.0 ** -50])
+def test_held_rounding_stasis_preserves_epi_but_updates_rate_and_time(
+    monkeypatch, vectorized, clip_mode, pressure,
+):
+    graph = _graph()
+    graph.graph.update(DT_MIN=1 / 16, CLIP_MODE=clip_mode)
+    graph.nodes[0].update({EPI_PRIMARY: 0.5, DNFR_PRIMARY: pressure})
+    if not vectorized:
+        monkeypatch.setattr(integrators, "np", None)
+    integrators.update_epi_via_nodal_equation(graph, dt=0.25, method="euler")
+    assert graph.nodes[0][EPI_PRIMARY] == 0.5
+    assert get_attr(graph.nodes[0], ALIAS_DEPI) == pressure
+    assert get_attr(graph.nodes[0], ALIAS_D2EPI) == 0.0
+    assert graph.graph["_t"] == 0.25
+
+
+@pytest.mark.parametrize("vectorized", [False, True])
+@pytest.mark.parametrize("route", ["batch", "default"])
+def test_euler_preserves_separate_multiply_and_add(monkeypatch, vectorized, route):
+    graph = _graph()
+    step, rate = 1.0 + 2.0 ** -52, 1.0 - 2.0 ** -52
+    graph.nodes[0].update({EPI_PRIMARY: -1.0, DNFR_PRIMARY: rate})
+    if not vectorized:
+        monkeypatch.setattr(integrators, "np", None)
+    if route == "batch":
+        result = integrators._apply_increments(graph, step, {0: (rate,)}, method="euler")
+        actual, derivative = result[0][:2]
+    else:
+        integrators.update_epi_via_nodal_equation(graph, dt=step, method="euler")
+        actual = graph.nodes[0][EPI_PRIMARY]
+        derivative = get_attr(graph.nodes[0], ALIAS_DEPI)
+    # The exact product-plus-sum is representable; an FMA would retain it.
+    assert Fraction(-1) + Fraction(step) * Fraction(rate) == -Fraction(1, 2**104)
+    assert actual == 0.0
+    assert derivative == rate

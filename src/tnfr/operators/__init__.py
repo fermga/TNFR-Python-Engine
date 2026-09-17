@@ -115,6 +115,13 @@ from .event_runtime import (
     OperatorEventExecutionResult,
     execute_operator_event_schedule,
 )
+from .nodal_remainder_runtime import (
+    NodalRemainderRuntimeBinding,
+    ExecutedNodalRemainderFlow,
+    ExecutedNodalRemainderEvent,
+    NodalRemainderEventExecution,
+    execute_nodal_remainder_event_schedule,
+)
 from .event_timing import (
     OperatorEventRuntimeClockDiagnostic,
     OperatorEventSchedule,
@@ -233,6 +240,11 @@ __all__ = [
     "RepresentedEPIScheduleOperation",
     "OperatorEventExecutionResult",
     "execute_operator_event_schedule",
+    "NodalRemainderRuntimeBinding",
+    "ExecutedNodalRemainderFlow",
+    "ExecutedNodalRemainderEvent",
+    "NodalRemainderEventExecution",
+    "execute_nodal_remainder_event_schedule",
     "OperatorEventRuntimeClockDiagnostic",
     "OperatorEventSchedule",
     "PhysicalFlowPartition",
@@ -1319,24 +1331,19 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
 def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     """Reduce νf while preserving EPI, ΔNFR, and phase.
 
-    Silence decelerates a node by scaling νf (structural frequency) towards
-    stillness. EPI, ΔNFR, and phase remain unchanged, signalling a temporary
-    suspension of structural evolution.
-
-    **TNFR Canonical Behavior:**
-
-    According to the nodal equation ∂EPI/∂t = νf · ΔNFR(t), reducing νf → νf_min ≈ 0
-    causes structural evolution to freeze (∂EPI/∂t → 0) regardless of ΔNFR magnitude.
-    This implements **structural silence** - a state where the node's form (EPI) is
-    preserved intact despite external pressures, enabling memory consolidation and
-    protective latency.
+    Silence scales νf (structural frequency) while leaving EPI, ΔNFR, and
+    phase unchanged at the event. Subsequent numerical evolution uses the
+    attenuated capacity under the nodal equation ∂EPI/∂t = νf · ΔNFR(t).
+    A single SHA event does not guarantee zero capacity or future stationarity:
+    zero nodal flow requires νf · ΔNFR = 0 at the time of that flow.
 
     Parameters
     ----------
     node : NodeProtocol
         Node whose νf is being attenuated.
     gf : GlyphFactors
-        Provides ``SHA_vf_factor`` to scale νf (default = SHA_VF_FACTOR, 0.9).
+        Provides ``SHA_vf_factor`` to scale νf. The canonical default
+        ``SHA_VF_FACTOR = 1 - 1/(4π)`` is represented as ``0.9204225284540524``.
 
     Examples
     --------
@@ -1349,8 +1356,8 @@ def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     0.5
     """
     factor = get_factor(gf, "SHA_vf_factor", SHA_VF_FACTOR)  # canonical ν_f↓ gain
-    # Canonical SHA effect: reduce structural frequency toward zero
-    # This implements: νf → νf_min ≈ 0 ⇒ ∂EPI/∂t → 0 (structural preservation)
+    # SHA scales capacity; EPI, pressure and phase are unchanged at the event.
+    # Later nodal flow still depends on the product of capacity and pressure.
     vf = _finite_operator_scalar(node.vf, "SHA nu_f state")
     proposal = _finite_operator_scalar(factor * vf, "SHA nu_f proposal")
     node.vf = proposal
