@@ -4,6 +4,14 @@ from typing import Any, TypeAlias
 
 from ..node import NodeProtocol
 from ..types import Glyph
+from .grammar_evidence import (
+    StructuralGrammarEvidence as StructuralGrammarEvidence,
+    assess_structural_grammar_evidence as assess_structural_grammar_evidence,
+)
+from .grammar_observations import (
+    GrammarObservation as GrammarObservation,
+    observe_grammar as observe_grammar,
+)
 from .event_remesh_runtime import (
     EventRemeshCycleResult as EventRemeshCycleResult,
     RemeshHistoryTransitionObservation as RemeshHistoryTransitionObservation,

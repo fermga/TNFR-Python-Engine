@@ -355,13 +355,16 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     >>> from tnfr.structural import create_nfr
     >>> from tnfr.operators.preconditions import validate_coupling
     >>>
-    >>> # Valid node for coupling
-    >>> G, node = create_nfr("active", epi=0.15, vf=0.50)
-    >>> validate_coupling(G, node)  # Passes
-    >>>
-    >>> # Invalid: EPI too low
-    >>> G, node = create_nfr("inactive", epi=0.02, vf=0.50)
-    >>> validate_coupling(G, node)  # Raises OperatorPreconditionError
+    >>> # Active node with an actual phase-compatible neighbor
+    >>> import networkx as nx
+    >>> G = nx.path_graph(2)
+    >>> nx.set_node_attributes(G, 0.15, "EPI")
+    >>> nx.set_node_attributes(G, 0.50, "nu_f")
+    >>> nx.set_node_attributes(G, 0.0, "theta")
+    >>> validate_coupling(G, 0)
+
+    An isolated node fails this precondition even with adequate EPI/capacity;
+    a word-level UM token is not evidence of an available coupling relation.
 
     See Also
     --------

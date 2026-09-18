@@ -1,4 +1,4 @@
-# TNFR Number Theory: Arithmetic Emergence from Structural Dynamics
+# TNFR Number Theory: Arithmetic Constructions and Structural Read-outs
 
 **Status**: Canonical theoretical reference
 **Version**: 0.0.3.5
@@ -38,13 +38,16 @@
 
 ## 1. Introduction
 
-Number theory can be formulated within the TNFR framework when the nodal equation
+Arithmetic networks can be assigned TNFR-compatible coordinates and read-outs.
+Their relation to the nodal equation
 
 $$\frac{\partial\mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t)$$
 
-is applied to a network whose nodes are natural numbers and whose edges encode arithmetic relationships (divisibility, common factors). In this setting:
+requires a separately declared evolution: assigning arithmetic functions to
+nodes and edges alone supplies a static state, not a trajectory. In the
+construction studied here:
 
-- **Primes are zero-pressure fixed points**: $\Delta\mathrm{NFR}(p) = 0$ for all primes $p$.
+- **Primes are the arithmetic pressure zero set**: $\Delta\mathrm{NFR}(p) = 0$ for all primes $p$.
 - **Composites carry structural pressure**: $\Delta\mathrm{NFR}(n) > 0$ whenever $n$ is composite, with magnitude proportional to factorization complexity.
 - **Factorization as spectral decoding**: discovering the factors of a composite can be framed as resolving the coherent sub-modes of its structural pressure field.
 
@@ -58,7 +61,11 @@ This document formalizes these observations, expresses the arithmetic constants 
 | **Factorization** | Spectral factor discovery via Paley-Jacobi graphs | `factorization-lab/` |
 | **Riemann program** | Declared arithmetic traces and finite pulse comparisons; historical prime-path prototype superseded | `src/tnfr/riemann/` |
 
-All three layers share the same canonical constants, structural fields, and grammar constraints (U1-U6).
+These layers reuse selected arithmetic functions, graph diagnostics and
+configured coefficients. This reuse does not establish a shared autonomous
+evolution or U1-U6 compliance. Grammar claims require an actual declared
+operator sequence and its checks; static primality and spectral calculations
+do not supply such a history.
 
 ---
 
@@ -73,7 +80,10 @@ A TNFR arithmetic network $G = (V, E)$ is a directed graph where:
   - **Divisibility edges**: $(d, n)$ for each divisor $d \mid n$ with $d < n$.
   - **GCD coupling edges**: $(a, b)$ when $\gcd(a, b) > 1$, weighted by $\gcd(a, b) / \max(a, b)$.
 
-Each node $n$ is assigned the structural triad (EPI, $\nu_f$, $\Delta\mathrm{NFR}$) and a phase $\phi_n$ derived from its arithmetic properties.
+Each node $n$ is assigned the structural triad (EPI, $\nu_f$, $\phi$)
+from chosen arithmetic functions, together with a separate arithmetic pressure
+read-out $\Delta\mathrm{NFR}(n)$. These assignments do not derive a capacity
+law, phase law or event schedule.
 
 ### 2.2 Sieve-Based Computation
 
@@ -89,13 +99,18 @@ Each node receives a phase derived from its position in the arithmetic structure
 
 $$\phi_n = 2\pi \cdot \frac{n}{N} \pmod{2\pi}$$
 
-Phase compatibility ($|\phi_i - \phi_j| \leq \Delta\phi_{\max}$) governs coupling operations (U3), ensuring that arithmetic relationships respect the resonant coupling constraint.
+Coupling operations must separately check the wrapped U3 condition
+$|\operatorname{wrap}(\phi_i-\phi_j)|\leq\Delta\phi_{\max}$. The arithmetic
+graph construction and phase assignment alone do not guarantee that every
+arithmetic edge satisfies that condition.
 
 ---
 
 ## 3. The Arithmetic Structural Triad
 
-The structural triad specializes the general TNFR triad (EPI, $\nu_f$, $\Delta\mathrm{NFR}$) to arithmetic:
+The assigned triad is (EPI, $\nu_f$, $\phi$), with phase defined in §2.3.
+The form and capacity assignments below are followed by the separate pressure
+and coherence read-outs. For a fixed integer label these are static functions.
 
 ### 3.1 Form: EPI(n)
 
@@ -108,7 +123,9 @@ where:
 - $\beta = 1$ — divisor complexity weight (canonical unit, §5)
 - $\gamma_{\mathrm{epi}} = 1$ — abundance deviation weight (canonical unit, §5)
 
-**Physical interpretation**: EPI(n) is the structural form of the number, analogous to the configuration of an oscillator. Primes have the simplest forms; highly composite numbers have the richest.
+**Model interpretation**: EPI(n) is a chosen scalar arithmetic-complexity
+coordinate. Calling it form does not derive an oscillator or a physical state
+space from the nodal equation.
 
 ### 3.2 Frequency: $\nu_f(n)$
 
@@ -121,7 +138,9 @@ where:
 - $\delta = 1$ — divisor density modulation (canonical unit, §5)
 - $\varepsilon = 1$ — factorization complexity modulation (canonical unit, §5)
 
-**Physical interpretation**: $\nu_f$ is the capacity lever in the nodal equation. Numbers with rich divisor structures have slightly higher reorganization capacity, but this is irrelevant for primes because the pressure lever vanishes.
+**Model interpretation**: This positive arithmetic function supplies a candidate
+capacity if an evolution is declared. Its definition alone specifies neither
+an observed reorganization rate nor a phase angular velocity.
 
 ### 3.3 Pressure: $\Delta\mathrm{NFR}(n)$
 
@@ -131,7 +150,10 @@ $$\boxed{\Delta\mathrm{NFR}(n) = \zeta \cdot (\Omega(n) - 1) + \eta \cdot (\tau(
 
 where $\Omega(n)$ is the prime factor count with multiplicity, $\tau(n)$ the divisor count, and $\sigma(n)$ the divisor sum. The coefficients are canonically $\zeta = \eta = \theta = 1$ (unit weights; see §5).
 
-**Physical interpretation**: $\Delta\mathrm{NFR}(n)$ is the pressure lever — how much reorganization the arithmetic structure of $n$ demands. It quantifies the structural distance from primality.
+**Model interpretation**: This nonnegative arithmetic pressure vanishes exactly
+at primes under the stated positive coefficients. It is a selected measure of
+compositeness, not a derived metric distance or a signed restoring response to
+an EPI perturbation.
 
 ### 3.4 Local Coherence
 
@@ -161,11 +183,19 @@ $$n \text{ is prime} \iff \Delta\mathrm{NFR}(n) = 0$$
 
 Since all three terms vanish iff $n$ is prime, and all are non-negative, the equivalence holds. $\square$
 
-**Structural interpretation**: The theorem states that primes are the unique **zero-pressure fixed points** of the arithmetic structural manifold. Under the nodal equation, $\partial\mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR} = 0$ at primes, regardless of $\nu_f$. Primes are structurally inert — they require no reorganization.
+**Structural interpretation**: The theorem identifies the pressure zero set
+with the prime labels. If this arithmetic pressure is held fixed in the
+unforced scalar nodal equation, it gives zero EPI rate at a prime for any finite
+capacity. It does not establish a fixed point of phase, capacity, support or
+the full operator dynamics. At a fixed composite label the static EPI(n)
+assignment has zero time derivative, whereas the assigned positive capacity
+and pressure have a positive product. An evolved EPI coordinate therefore
+cannot remain identical to that static arithmetic formula; §8 states the
+separate held-pressure model explicitly.
 
 ### 4.2 Coefficient Independence
 
-The primality criterion $\Delta\mathrm{NFR}(n) = 0$ is **independent of the coefficient values** $(\zeta, \eta, \theta)$, provided all three are positive. Each component vanishes individually for primes. The coefficients affect only the relative weighting of pressure components for composites — the landscape of the structural manifold, not its fixed points.
+The primality criterion $\Delta\mathrm{NFR}(n) = 0$ is **independent of the coefficient values** $(\zeta, \eta, \theta)$, provided all three are positive. Each component vanishes individually for primes. The coefficients affect composite pressure magnitudes, not the arithmetic zero set.
 
 ### 4.3 Computational Properties
 
@@ -348,10 +378,10 @@ network.
 
 ### 7.6 The Arithmetic NFR and its Emergent Geometry
 
-The arithmetic network is itself a **Fractal-Resonant Node** (NFR; TNFR.pdf
-§1.4.1) — a region of structural coherence coupled by divisibility/GCD.
-`ArithmeticTNFRNetwork.nfr()` surfaces the joint read-out of its three emergent
-facets:
+The constructed arithmetic network supports a joint **Fractal-Resonant Node**
+(NFR; TNFR.pdf §1.4.1) read-out through `ArithmeticTNFRNetwork.nfr()`.
+Its following diagnostic facets do not prove spontaneous generation,
+self-similarity or persistent identity under an autonomous evolution:
 
 - **Resonant.** By the §4.1 primality theorem the pressure-equilibrium set
   $\{n : \Delta\mathrm{NFR}(n) = 0\}$ is *exactly* the primes.
@@ -362,8 +392,8 @@ facets:
   descriptive average
   $\operatorname{mean}_i[1/(1+|\Delta\mathrm{NFR}_i|)]$; the two generally
   differ because the coherence kernel is nonlinear. The arithmetic pressure is
-  independent of EPI, so this identifies fixed points, not restoring attractors
-  or basins of attraction. An empty arithmetic domain reports these aggregates
+  independent of EPI, so this identifies the arithmetic zero set, not full-state
+  fixed points, restoring attractors or basins. An empty domain reports these aggregates
   as unavailable rather than assigning it zero coherence.
 - **Geometric.** The nodal topology (radial / annular / multinodal), read by
   `classify_nodal_topology` from the structural-potential geometry, is
@@ -399,11 +429,13 @@ the secondary size grading.
 
 ### 8.1 The Nodal Equation in Arithmetic
 
-Applying the nodal equation to the arithmetic network:
+For a separately declared evolution initialized from the arithmetic assignment,
+write its evolving EPI coordinate as $x_n(t)$:
 
-$$\frac{\partial\mathrm{EPI}(n)}{\partial t} = \nu_f(n) \cdot \Delta\mathrm{NFR}(n)$$
+$$\dot x_n(t) = \nu_f(n)\,\Delta\mathrm{NFR}(n),\qquad x_n(0)=\mathrm{EPI}(n).$$
 
-This decomposes structural evolution into two independent levers:
+Holding those arithmetic capacity and pressure values fixed is an additional
+model assumption. The channel terminology then distinguishes:
 
 - **Capacity lever** ($\nu_f$): How fast the number *can* reorganize. Depends on divisor structure and factorization complexity. Its primary operators are SHA, VAL and NUL.
 - **Pressure lever** ($\Delta\mathrm{NFR}$): How much reorganization is *demanded*. Zero for primes, positive for composites. Its primary operators are IL, OZ, THOL and NAV.
@@ -412,16 +444,16 @@ This decomposes structural evolution into two independent levers:
 
 ### 8.2 Fixed Point Analysis
 
-For primes: $\Delta\mathrm{NFR}(p) = 0 \Rightarrow \partial\mathrm{EPI}/\partial t = 0$ regardless of $\nu_f(p)$.
+For primes: $\Delta\mathrm{NFR}(p) = 0 \Rightarrow \dot x_p = 0$ for any finite $\nu_f(p)$ in this unforced model.
 
-This is a **pressure-equilibrium fixed point**: perturbations to $\nu_f$ alone
-do not change the zero derivative. It is not a stability or attraction theorem;
-the prime's structural form is stationary because pressure vanishes, not
-because capacity vanishes.
+This is stationarity of the unforced EPI coordinate under the held-pressure
+model: perturbations to $\nu_f$ alone do not change its zero derivative. It is
+not a full-state fixed-point, stability or attraction theorem.
 
-For composites: $\Delta\mathrm{NFR}(n) > 0 \Rightarrow \partial\mathrm{EPI}/\partial t > 0$.
+For composites with the assigned positive capacity:
+$\Delta\mathrm{NFR}(n) > 0 \Rightarrow \dot x_n > 0$.
 
-The composite's assigned scalar EPI increases under this fixed positive
+The evolved scalar $x_n(t)$ increases under this fixed positive
 pressure. Its sign does not prove simplification, attraction toward a prime,
 or stability. If capacity and arithmetic pressure remain fixed and positive,
 the nodal law gives linear drift rather than relaxation (§13.3).
@@ -431,7 +463,9 @@ the nodal law gives linear drift rather than relaxation (§13.3).
 Operator-tetrad synergy experiments (examples 37-39) confirmed:
 
 1. $\Phi_s$ responds **linearly** to $\Delta\mathrm{NFR}$ perturbations with $|r| = 1.000$ (perfect correlation), confirming the pressure lever's direct coupling to the structural potential field.
-2. The **complete causal chain** is: Operator $\to$ ($\nu_f$, $\Delta\mathrm{NFR}$) $\to$ $\partial\mathrm{EPI}/\partial t$ $\to$ Tetrad $\to$ ($\mathcal{E}$, $\mathcal{Q}$).
+2. Declared operator changes can affect capacity, pressure and the resulting
+   EPI rate. Phase and support also enter the tetrad directly; these dependencies
+   do not establish a closed causal chain through EPI rate alone.
 3. Finite operator trajectories expose measured changes in the tetrad energy
   candidate. Grammar validity and the nominal multiplier $\Pi$ do not by
   themselves prove $dE/dt \leq 0$.
@@ -900,9 +934,10 @@ $$\Omega(17) = 1, \quad \tau(17) = 2, \quad \sigma(17) = 18$$
 
 $$\Delta\mathrm{NFR}(17) = 1 \times (1-1) + 1 \times (2-2) + 1 \times \left(\frac{18}{17} - \frac{18}{17}\right) = 0$$
 
-Structural triad: $\mathrm{EPI}(17) \approx 2.75$, $\nu_f(17) \approx 1.47$, $C_{\text{local}} = 1.0$.
+Assigned coordinates and read-out: $\mathrm{EPI}(17) \approx 2.75$, $\nu_f(17) \approx 1.47$, $C_{\text{local}} = 1.0$.
 
-**Interpretation**: Zero pressure, perfect coherence, structural fixed point.
+**Interpretation**: Zero arithmetic pressure and unit pressure-only coherence;
+the held-pressure unforced scalar model has zero EPI rate at this label.
 
 ### 11.2 Semiprime: $n = 15 = 3 \times 5$
 

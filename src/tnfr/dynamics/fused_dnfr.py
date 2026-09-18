@@ -249,8 +249,8 @@ def compute_fused_gradients_symmetric(
         Component weights (w_phase, w_epi, w_vf, w_topo)
     accumulate_both_directions : bool, optional
         If True (default), each edge (u, v) contributes to both u and v.
-        If False, each edge (u, v) only contributes to v (dst).
-        set to False if edge_src/edge_dst already contain both (u,v) and (v,u).
+        If False, each edge (u, v) contributes neighbor v to row u (src).
+        Set to False if edge_src/edge_dst already contain both (u,v) and (v,u).
     use_jit : bool, default=True
         Whether to use JIT compilation if available
 

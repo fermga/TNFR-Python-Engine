@@ -1,9 +1,9 @@
 """Compatibility matrices and validation for operator sequences in TNFR.
 
-Physics Basis:
-- Adjacent operators must have resonant phase compatibility
-- Incompatible sequences lead to destructive interference
-- See UNIFIED_GRAMMAR_RULES.md for complete derivations
+The pair table is an additional operator-language policy. Token adjacency
+contains no nodal phase data and cannot establish physical interference or
+replace the live U3 gate. See UNIFIED_GRAMMAR_RULES.md for the separate
+word, state and trajectory responsibilities.
 """
 
 from __future__ import annotations
@@ -43,8 +43,8 @@ __all__ = [
 class CompatibilityLevel(Enum):
     """Graduated compatibility levels for structural operator transitions.
 
-    Reflects the theoretical richness of TNFR by distinguishing between
-    optimal, acceptable, contextual, and incompatible transitions.
+    Classifies preferred, accepted, cautionary and excluded token pairs.
+    These policy labels contain no live-state or trajectory measurements.
 
     Attributes
     ----------
@@ -59,8 +59,8 @@ class CompatibilityLevel(Enum):
         Example: EMISSION → DISSONANCE (initiation → tension)
         Generates warnings to alert users of potential incoherence.
     AVOID : str
-        Incompatible transition that violates structural coherence.
-        Example: SILENCE → DISSONANCE (pause → tension is contradictory)
+        Transition excluded by the retained adjacency policy.
+        Example: SILENCE → DISSONANCE (separate from the live pressure law)
         Raises SequenceSyntaxError when encountered.
     """
 

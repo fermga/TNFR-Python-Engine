@@ -52,7 +52,6 @@ emitter in subsequent Phase 3 steps.
 
 from __future__ import annotations
 
-import json
 import time
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
@@ -60,6 +59,7 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping, MutableMapping
 
 from ..mathematics.unified_numerical import np
+from ..utils.io import json_dumps
 
 try:  # Physics field computations (canonical tetrad + extended suite)
     from ..physics.fields import compute_extended_canonical_suite  # returns dict
@@ -96,6 +96,20 @@ except Exception:  # pragma: no cover
     compute_coherence = None  # type: ignore
 
 __all__ = ["TelemetryEmitter", "TelemetryEvent"]
+
+
+def _numpy_json_default(value: Any) -> Any:
+    """Adapt native numerical values for the shared JSON encoder only.
+
+    General runtime objects remain unsupported: telemetry must not silently
+    replace evidence with object attributes or repr strings.
+    """
+    if np is not None:
+        if isinstance(value, np.ndarray):
+            return value.tolist()
+        if isinstance(value, np.generic):
+            return value.item()
+    raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
 
 
 @dataclass(frozen=True, slots=True)
@@ -136,17 +150,19 @@ class TelemetryEmitter:
     flush_interval : int, default=1
         Number of events to batch before auto-flush. 1 = flush each event.
     include_extended : bool, default=True
-        If True, compute extended canonical suite when available for
-        efficiency; otherwise compute tetrad fields individually.
+        If True, also compute extended and unified suites when available;
+        otherwise collect the independent tetrad without those suites.
     safe : bool, default=True
-        If True, wraps metric computations in try/except returning partial
-        results on failure (never raises during record).
+        If True, retain available metrics when individual computations fail.
+        ``field_errors`` records unavailable field type/message; no zero is
+        fabricated. Serialization and file errors still propagate.
     human_mirror : bool, default=False
         If True, writes a sibling *.log file with concise summaries.
 
     Notes
     -----
-    The emitter never mutates graph state; it only reads node attributes.
+    The emitter does not evolve nodal state. Metric owners may refresh
+    graph-owned cache and bookkeeping entries while collecting read-outs.
     """
 
     def __init__(
@@ -214,6 +230,11 @@ class TelemetryEmitter:
 
         metrics: MutableMapping[str, Any] = {}
 
+        def _unavailable(field: str, error: Exception) -> None:
+            metrics.setdefault("field_errors", {})[field] = {
+                "type": type(error).__name__, "message": str(error),
+            }
+
         def _compute() -> None:
             # Core structural metrics
             if compute_coherence is not None:
@@ -229,98 +250,94 @@ class TelemetryEmitter:
                     if not self.safe:
                         raise
 
-            # Canonical field tetrad (plus extended suite if available)
-            if self.include_extended and compute_extended_canonical_suite is not None:
+            if self.include_extended:
+                # Unified field telemetry (Nov 28, 2025 - comprehensive audit integration)
                 try:
-                    suite = compute_extended_canonical_suite(G)
-                    if isinstance(suite, Mapping):
-                        for k, v in suite.items():
-                            metrics[k] = v
-                except Exception:
+                    from ..physics.fields import compute_unified_telemetry
+
+                    unified_data = compute_unified_telemetry(G)
+
+                    # Extract key unified metrics for top-level telemetry
+                    if "complex_field" in unified_data:
+                        cf = unified_data["complex_field"]
+                        if "correlation" in cf:
+                            metrics["k_phi_j_phi_correlation"] = float(cf["correlation"])
+                        if (
+                            "psi_magnitude" in cf
+                            and len(cf["psi_magnitude"]) > 0
+                            and np is not None
+                        ):
+                            metrics["psi_magnitude_mean"] = float(
+                                np.mean(cf["psi_magnitude"])
+                            )
+
+                    if "emergent_fields" in unified_data and np is not None:
+                        ef = unified_data["emergent_fields"]
+                        for field_name in [
+                            "chirality",
+                            "symmetry_breaking",
+                            "coherence_coupling",
+                        ]:
+                            if field_name in ef and len(ef[field_name]) > 0:
+                                metrics[f"{field_name}_mean"] = float(
+                                    np.mean(ef[field_name])
+                                )
+                                metrics[f"{field_name}_std"] = float(np.std(ef[field_name]))
+
+                    if "tensor_invariants" in unified_data:
+                        ti = unified_data["tensor_invariants"]
+                        if "conservation_quality" in ti:
+                            metrics["conservation_quality"] = float(
+                                ti["conservation_quality"]
+                            )
+                        if (
+                            "energy_density" in ti
+                            and len(ti["energy_density"]) > 0
+                            and np is not None
+                        ):
+                            metrics["energy_density_total"] = float(
+                                np.sum(ti["energy_density"])
+                            )
+
+                    # Store complete unified data for detailed analysis
+                    metrics["unified_fields"] = unified_data
+                    # The successful composite already computed these
+                    # observations. Reuse them rather than requesting again.
+                    extended = unified_data.get("extended_canonical")
+                    if isinstance(extended, Mapping):
+                        metrics.update(extended)
+
+                except Exception as error:
+                    # Graceful degradation if unified fields not available
                     if not self.safe:
                         raise
+                    _unavailable("unified_fields", error)
+                    # A failed composite can still leave its independent
+                    # extended observations available in safe mode.
+                    if compute_extended_canonical_suite is not None:
+                        try:
+                            extended = compute_extended_canonical_suite(G)
+                            if isinstance(extended, Mapping):
+                                metrics.update(extended)
+                        except Exception as extended_error:
+                            _unavailable("extended_fields", extended_error)
 
-            # Unified field telemetry (Nov 28, 2025 - comprehensive audit integration)
-            try:
-                from ..physics.fields import compute_unified_telemetry
-
-                unified_data = compute_unified_telemetry(G)
-
-                # Extract key unified metrics for top-level telemetry
-                if "complex_field" in unified_data:
-                    cf = unified_data["complex_field"]
-                    if "correlation" in cf:
-                        metrics["k_phi_j_phi_correlation"] = float(cf["correlation"])
-                    if (
-                        "psi_magnitude" in cf
-                        and len(cf["psi_magnitude"]) > 0
-                        and np is not None
-                    ):
-                        metrics["psi_magnitude_mean"] = float(
-                            np.mean(cf["psi_magnitude"])
-                        )
-
-                if "emergent_fields" in unified_data and np is not None:
-                    ef = unified_data["emergent_fields"]
-                    for field_name in [
-                        "chirality",
-                        "symmetry_breaking",
-                        "coherence_coupling",
-                    ]:
-                        if field_name in ef and len(ef[field_name]) > 0:
-                            metrics[f"{field_name}_mean"] = float(
-                                np.mean(ef[field_name])
-                            )
-                            metrics[f"{field_name}_std"] = float(np.std(ef[field_name]))
-
-                if "tensor_invariants" in unified_data:
-                    ti = unified_data["tensor_invariants"]
-                    if "conservation_quality" in ti:
-                        metrics["conservation_quality"] = float(
-                            ti["conservation_quality"]
-                        )
-                    if (
-                        "energy_density" in ti
-                        and len(ti["energy_density"]) > 0
-                        and np is not None
-                    ):
-                        metrics["energy_density_total"] = float(
-                            np.sum(ti["energy_density"])
-                        )
-
-                # Store complete unified data for detailed analysis
-                metrics["unified_fields"] = unified_data
-
-            except (ImportError, Exception):
-                # Graceful degradation if unified fields not available
-                if not self.safe:
-                    raise
-            else:
-                # Tetrad individually
-                if compute_structural_potential is not None:
+            # These observations are independent. A failure of the unified
+            # suite (for example undefined curvature) cannot hide valid Phi,
+            # gradient or correlation evidence.
+            for field, compute in (
+                ("phi_s", compute_structural_potential),
+                ("phase_grad", compute_phase_gradient),
+                ("phase_curv", compute_phase_curvature),
+                ("xi_c", estimate_coherence_length),
+            ):
+                if compute is not None:
                     try:
-                        metrics["phi_s"] = compute_structural_potential(G)
-                    except Exception:
+                        metrics[field] = compute(G)
+                    except Exception as error:
                         if not self.safe:
                             raise
-                if compute_phase_gradient is not None:
-                    try:
-                        metrics["phase_grad"] = compute_phase_gradient(G)
-                    except Exception:
-                        if not self.safe:
-                            raise
-                if compute_phase_curvature is not None:
-                    try:
-                        metrics["phase_curv"] = compute_phase_curvature(G)
-                    except Exception:
-                        if not self.safe:
-                            raise
-                if estimate_coherence_length is not None:
-                    try:
-                        metrics["xi_c"] = estimate_coherence_length(G)
-                    except Exception:
-                        if not self.safe:
-                            raise
+                        _unavailable(field, error)
 
         if self.safe:
             try:
@@ -349,24 +366,29 @@ class TelemetryEmitter:
         """Flush buffered telemetry events to disk."""
         if not self._buffer:
             return
+        # Serialize the whole batch before opening the output. Unsupported
+        # objects raise in safe and strict modes without partial JSON writes;
+        # the buffer remains available for caller correction and retry.
+        encoded = [json_dumps(asdict(event), ensure_ascii=False, default=_numpy_json_default)
+                   + "\n" for event in self._buffer]
+        mirror_lines = []
+        if self._human_path is not None:
+            for event in self._buffer:
+                coh = event.metrics.get("coherence_total")
+                si = event.metrics.get("sense_index")
+                coh_text = "unavailable" if coh is None else f"{coh:.3f}"
+                si_text = "unavailable" if si is None else f"{si:.3f}"
+                phi = event.metrics.get("phi_s") or event.metrics.get("structural_potential")
+                mirror_lines.append(
+                    f"[{event.step}] op={event.operator} C={coh_text} "
+                    f"Si={si_text} Φ_s={phi} t={event.t_iso}\n"
+                )
         # JSON Lines write
         with self.path.open("a", encoding="utf-8") as fh:
-            for ev in self._buffer:
-                fh.write(json.dumps(asdict(ev), ensure_ascii=False) + "\n")
+            fh.writelines(encoded)
         if self._human_path is not None:
             with self._human_path.open("a", encoding="utf-8") as hf:
-                for ev in self._buffer:
-                    coh = ev.metrics.get("coherence_total")
-                    si = ev.metrics.get("sense_index")
-                    phi = ev.metrics.get("phi_s") or ev.metrics.get(
-                        "structural_potential"
-                    )
-                    hf.write(
-                        (
-                            f"[{ev.step}] op={ev.operator} C={coh:.3f} "
-                            f"Si={si:.3f} Φ_s={phi} t={ev.t_iso}\n"
-                        )
-                    )
+                hf.writelines(mirror_lines)
         self._buffer.clear()
 
     # ------------------------------------------------------------------

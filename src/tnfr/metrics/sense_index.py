@@ -1,11 +1,11 @@
 r"""Sense Index computation for TNFR networks.
 
-The **Sense Index** (:math:`\text{Si}`) quantifies a node's capacity for stable
-structural reorganization. It blends three structural signals: frequency :math:`\nu_f`
+The **Sense Index** (:math:`\text{Si}`) is a configurable structural diagnostic.
+It blends three structural signals: frequency :math:`\nu_f`
 (reorganization rate), phase coupling :math:`\theta` (network synchrony), and
 reorganization pressure :math:`\Delta\text{NFR}`.
 
-Mathematical Foundation
+Diagnostic definition
 -----------------------
 
 The Sense Index is defined as a weighted combination:
@@ -28,7 +28,7 @@ The Sense Index is defined as a weighted combination:
 2. **Phase dispersion** :math:`\text{disp}_\theta`:
 
    .. math::
-       \text{disp}_\theta = \frac{|\theta - \bar{\theta}|}{\pi}
+       \text{disp}_\theta = \frac{|\operatorname{wrap}(\theta - \bar{\theta})|}{\pi}
 
    where :math:`\bar{\theta}` is the circular mean of neighbor phases:
 
@@ -48,29 +48,33 @@ The Sense Index is defined as a weighted combination:
 
 **Structural weights**:
 
-- :math:`\alpha`: Frequency weight (default ≈ 0.737) - emphasizes reorganization capacity
-- :math:`\beta`: Phase weight (default ≈ 0.155) - emphasizes network synchrony
-- :math:`\gamma`: ΔNFR weight (default ≈ 0.114) - emphasizes pressure damping
-- Constraint: weights are normalized so :math:`\alpha + \beta + \gamma = 1`
+- :math:`\alpha`: Relative-capacity weight
+- :math:`\beta`: Phase-alignment weight
+- :math:`\gamma`: Relative-pressure weight
+- ``get_Si_weights`` normalizes the graph's ``SI_WEIGHTS`` configuration.
+  Defaults belong to ``tnfr.constants``; the real-valued normalization has
+  :math:`\alpha + \beta + \gamma = 1`, subject to floating-point rounding.
 
 **Final clamping**: :math:`\text{Si}_{\text{final}} = \max(0, \min(1, \text{Si}))`
 
-Physical Interpretation
+Interpretation and scope
 ------------------------
 
-**High Si (> 0.7)**:
-- Node reorganizes efficiently (:math:`\nu_f` high)
-- Stays synchronized with network (:math:`\text{disp}_\theta` low)
-- Experiences manageable pressure (:math:`|\Delta\text{NFR}|` low)
-- **Implication**: Stable, well-integrated node
+A larger value favors the configured mixture of relative capacity, alignment
+and small relative pressure. It does not prove stability, predict bifurcation,
+or uniquely determine nodal evolution. Absolute pressure sign and capacity
+scale are lost. Graph-wide normalization can change a local Si when an
+uncoupled component changes. Both backends refresh normalization maxima from
+the current stored capacity and pressure aliases; they do not recompute the
+pressure law or derive a new capacity.
 
-**Low Si (< 0.3)**:
-- Slow reorganization OR high phase dispersion OR high pressure
-- **Implication**: Risk of structural instability or network decoupling
-
-**Moderate Si (0.3-0.7)**:
-- Trade-offs between frequency, synchrony, and pressure
-- **Implication**: Balanced state, monitor for bifurcation
+Computing Si does not evolve EPI, capacity, phase or support. The engine can
+consume it in configured adaptation, selection and coupling policies. Those
+consumers are additional dynamical assumptions, not consequences of defining
+this observable or writing its coefficients in terms of pi. A derived
+observable may enter a separately justified law, but its diagnostic formula
+alone supplies no such derivation. See ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md``
+section 7 for the mathematical distinction and explicit counterexamples.
 
 Implementation Map
 ------------------
@@ -95,11 +99,9 @@ Implementation Map
 Theoretical References
 ----------------------
 
-See the following for complete derivation:
-
-- **Mathematical Foundations**: `docs/source/theory/mathematical_foundations.md`
-- **Worked Example**: `docs/source/examples/worked_examples.md` Example 1 (full walkthrough)
-- **Style Guide**: `docs/source/style_guide.md` for notation conventions
+- **Diagnostic and control scope**: ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md``
+- **Nodal channel compatibility**: ``theory/FORCED_SUPPORT_BALANCE.md``
+- **Configured defaults**: ``tnfr.constants``
 
 Examples
 --------
@@ -139,14 +141,14 @@ frequency caps its index despite calmer :math:`\Delta\text{NFR}`.
 ...     phase_dispersion=0.0,  # Already computed
 ...     inplace=False
 ... )
->>> 0.8 < Si < 0.9  # High stability
+>>> 0.8 < Si < 0.9  # Index under the specified diagnostic weights
 True
 
 **In-place update**:
 
 >>> G = nx.Graph()
 >>> G.add_node("a", nu_f=0.8, delta_nfr=0.2, phase=0.0)
->>> compute_Si(G, inplace=True)  # Writes to G.nodes[n]['Si']
+>>> _ = compute_Si(G, inplace=True)  # Writes to G.nodes[n]['Si']
 >>> "Si" in G.nodes["a"]
 True
 
@@ -391,10 +393,11 @@ def _normalise_si_sensitivity_mapping(
     --------
     >>> _normalise_si_sensitivity_mapping({"dSi_dvf_norm": 1.0}, warn=False)
     {'dSi_dvf_norm': 1.0}
-    >>> _normalise_si_sensitivity_mapping({"unknown": 1.0}, warn=False)
-    Traceback (most recent call last):
-        ...
-    TNFRValueError: Si sensitivity mappings accept only {dSi_ddnfr_norm, dSi_dphase_disp, dSi_dvf_norm}; unexpected key(s): unknown
+    >>> try:
+    ...     _normalise_si_sensitivity_mapping({"unknown": 1.0}, warn=False)
+    ... except TNFRValueError:
+    ...     print("Unsupported sensitivity key rejected")
+    Unsupported sensitivity key rejected
     """
 
     normalised = dict(mapping)
@@ -481,8 +484,9 @@ def get_Si_weights(G: GraphLike) -> tuple[float, float, float]:
     --------
     >>> import networkx as nx
     >>> G = nx.Graph()
-    >>> tuple(round(w, 3) for w in get_Si_weights(G))  # canonical normalized defaults
-    (0.733, 0.154, 0.113)
+    >>> G.graph["SI_WEIGHTS"] = {"alpha": 2.0, "beta": 1.0, "gamma": 1.0}
+    >>> get_Si_weights(G)
+    (0.5, 0.25, 0.25)
     """
 
     return _cache_weights(G)
@@ -620,7 +624,7 @@ def _compute_si_python_chunk(
 
     Examples
     --------
-    >>> _compute_si_python_chunk(
+    >>> result = _compute_si_python_chunk(
     ...     [("n0", ("n1",), 0.0, 0.5, 0.1)],
     ...     cos_th={"n1": 1.0},
     ...     sin_th={"n1": 0.0},
@@ -630,6 +634,7 @@ def _compute_si_python_chunk(
     ...     vfmax=1.0,
     ...     dnfrmax=1.0,
     ... )
+    >>> {node: round(value, 2) for node, value in result.items()}
     {'n0': 0.73}
     """
 

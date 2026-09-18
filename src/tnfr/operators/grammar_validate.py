@@ -46,7 +46,8 @@ def validate_grammar(
     Returns
     -------
     bool
-        True if sequence satisfies all canonical constraints
+        True if the available canonical word constraints pass; no live phase
+        gate, operator postcondition or U6 trajectory observation is certified
 
     Notes
     -----
@@ -68,12 +69,10 @@ def validate_grammar(
 
     Notes
     -----
-    This validator is 100% physics-based. All constraints emerge from:
-    - Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
-    - TNFR invariants (AGENTS.md §3)
-    - Formal operator contracts (AGENTS.md §4)
-
-    See UNIFIED_GRAMMAR_RULES.md for complete derivations.
+    The nodal equation motivates the supported operator contracts and policies.
+    Their mathematical limits are in DIAGNOSTIC_AND_GRAMMAR_SCOPE.md.
+    Optional telemetry below uses a supplied demonstration graph, not an
+    execution of this word or evidence of its physical response.
     """
     validator = GrammarValidator()
     is_valid, _ = validator.validate(sequence, epi_initial)

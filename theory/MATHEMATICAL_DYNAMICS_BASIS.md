@@ -1,74 +1,54 @@
-# The Structural-Field Tetrad as the Canonical Diagnostic Basis
+# Mathematical dynamics: state, evolution and diagnostic basis
 
-**Status**: Canonical diagnostic read-out; stronger minimal-completeness claims
-remain open
-**Foundation**: the nodal equation ∂EPI/∂t = νf·ΔNFR(t)
-**Prerequisites**: [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md), [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4
+This page routes foundational questions to their shared mathematical owners.
+The nodal equation `dEPI/dt=nu_f*DeltaNFR` is the starting premise; neither a
+diagnostic basis nor a storage representation completes the missing laws.
 
----
+## 1. State and directed evolution
 
-## 1. Statement
+| Question | Definition and derivation owner |
+| --- | --- |
+| What is EPI, and what type of object is its pressure? | [Fundamental theory, sections 2.4-2.6](FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation) |
+| Which parameter is a coordinate, observation or configured coefficient? | [All-parameter foundations](NODAL_PARAMETER_FOUNDATIONS.md) |
+| What changes with units, form chart and graph symmetry? | [Covariance and conditional diffusion](NODAL_PARAMETER_FOUNDATIONS.md#3-joint-changes-of-form-and-time-units) |
+| How do phase and capacity changes affect pressure and EPI acceleration? | [Joint response and source compatibility](NODAL_PARAMETER_FOUNDATIONS.md#10-joint-pressure-response-and-the-capacity-product-rule) |
+| Which phase, capacity and topology laws are actually supplied? | [Constitutive audit](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#14-constitutive-closure-audit-from-the-nodal-law) |
+| When does a reduced observation have its own closed evolution? | [Derived EPI memory](DERIVED_EPI_MEMORY.md), with continuous closure and event-intertwining conditions in the foundation owners |
+| When can a joint potential generate the stated channels? | [Variational scope](TNFR_VARIATIONAL_PRINCIPLE.md) |
 
-The state of a TNFR graph is diagnosed through four structural fields — the
-**structural-field tetrad**. They cover aggregation, local first and second
-phase differences, and non-local correlation. This order-based organization is
-derived. Independence, sufficiency for a declared diagnostic target, and
-complete arbitrary-state reconstruction require additional hypotheses; see
-[MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md).
+Representation, constitutive closure, numerical execution and physical
+correspondence are separate obligations. An invertible change of coordinates
+can preserve a supplied law without deriving it. A lossy observation requires
+projectability before it can replace the full state.
 
-| Field | Symbol | Tower order | Genuine structural scale |
-|-------|--------|-------------|--------------------------|
-| Structural potential | Φ_s | 0th — global aggregation | Graph- and pressure-dependent; π/4 and π/2 are selected warning policies |
-| Phase gradient | \|∇φ\| | 1st — local derivative | π (phase-wrap bound) |
-| Phase curvature | K_φ | 2nd — local curvature | π (exact wrapped bound); L_rw agreement is a scoped linearization |
-| Coherence length | ξ_C | non-local — correlation | State-dependent correlation fit; `1/√λ₂` is a graph-spectral comparison/fallback under stated hypotheses |
+## 2. Circular geometry and diagnostic scope
 
-The one exact phase-sector scale is **π**: both phase derivatives use wrapped
-angles, so |∇φ| ≤ π and |K_φ| ≤ π. The π/4 potential magnitude and π/2 drift
-values are selected policies rather than consequences of phase wrapping.
-For a connected undirected graph, `1/√λ₂` supplies a graph-spectral length scale
-and the implementation uses it as a fallback when the state-dependent fit is not
-usable. It is not an identity for every fitted correlation field. Other parameters
-must be labelled as derived under explicit hypotheses or operational.
+The complex exponential has period **2*pi**, and principal wrapped angular
+separations have magnitude at most **pi** in the radian chart. This bounds the
+mean absolute phase mismatch and defined circular curvature. Curvature is a
+wrapped displacement from a phasor direction, not an arithmetic mean of angles.
+Its direction requires a nonzero resultant; numerical representation and
+undefined-resultant reporting must not be confused with a new physical law.
 
----
+The potential uses a chosen source-distance kernel. Coherence length uses an
+uncentered static product fit, with a distinct dimensionless spectral fallback.
+Their units, estimation conditions and policies differ from the exact angular
+bound. Neither phase wrapping nor the nodal product alone fixes these kernels,
+warning cuts or normalization coefficients.
 
-## 2. The one structural scale: π
+The four channels remain the canonical diagnostic interface. Grouping them by
+aggregation, local difference and correlation does not prove independence,
+minimality or complete state reconstruction. See
+[Minimal Structural Degrees](MINIMAL_STRUCTURAL_DEGREES.md).
 
-Within TNFR only **π** carries a genuine structural role — it is the phase-wrap
-bound of the phase sector. Both |∇φ| and K_φ are means of wrapped angles, so each
-is ≤ π; π is the period of e^{ix} (angular closure), and that geometric closure is
-exactly what bounds the two phase derivatives.
+## 3. One implementation and one research queue
 
-φ, γ, e are not additional exact scales of the tetrad fields. The
-coherence-length estimate is spectral; the Φ_s thresholds are operational
-warning policies.
+Use the [structural-field guide](../docs/STRUCTURAL_FIELDS_TETRAD.md) for current
+API definitions, numerical domains and provenance, and the
+[field implementation](../src/tnfr/physics/fields.py) for shared read-outs.
+This index does not repeat their thresholds or maintain another status table.
 
----
-
-## 3. The field scales
-
-- **π — genuine (geometric, exact).** |∇φ| ≤ π and |K_φ| ≤ π for any
-  configuration; |K_φ| < 0.9·π ≈ 2.827 is an operational warning margin. π is the
-  one constant that scales the whole phase sector.
-- **ξ_C — fitted with a spectral comparison.** The primary value is inferred from
-  the observed correlation decay. On connected undirected graphs, `1/√λ₂` is a
-  graph-spectral comparison and fallback when a positive fit is unavailable.
-- **Φ_s — graph- and pressure-dependent.** The per-node π/4 and drift π/2
-  values are selected warning policies. A general bound must include the graph
-  kernel and a pressure bound.
-- **|∇φ| onset — measured.** The synchronization onset is ≈0.29 and
-  σ-dependent. The separate π/16 ≈0.196 value is a selected early-warning
-  policy, not an onset estimate or a derived bound.
-
-The field computations themselves (`compute_structural_potential`,
-`compute_phase_gradient`, `compute_phase_curvature`, `estimate_coherence_length`)
-read these scales directly from the graph and the nodal equation.
-
----
-
-## 4. References
-
-- Tetrad scope and minimality boundary: [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md)
-- Field definitions and scales: [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4, [STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md)
-- Implementation: `src/tnfr/physics/fields.py`, `src/tnfr/physics/canonical.py`, `src/tnfr/constants/canonical.py`
+The [nodal execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md) alone owns
+the active research sequence. Mathematical controls constrain admissible
+completions; empirical correspondence still requires independent measurements
+and reserved predictions under the supporting protocol.

@@ -10,13 +10,13 @@ be cited as first-principles TNFR results.
 
 This module is the home for every value that is purely an engine-tuning
 parameter (cache sizes, speedup estimates, confidence thresholds, scoring
-weights, performance/memory baselines). The genuine TNFR structural constants
-— the π phase-wrap bounds, the spectral-gap ξ_C, the coherence band, the
-operator gains, and the tetrad / phase / frequency scales — live in
-``tnfr.constants.canonical`` and are the single source of structural truth.
+weights, performance/memory baselines). ``tnfr.constants.canonical`` centralizes
+both exact mathematical quantities and configured dynamical/diagnostic defaults.
+Its phase-wrap bound is exact, its spectral reference has stated hypotheses,
+and its coherence bands, operator gains and capacity ceilings remain policies.
 
 Separation rationale (audit 2026): keeping these knobs out of ``canonical.py``
-makes that file a pure statement of TNFR physics. A few values here equal π
+separates performance tuning from model configuration. A few values here equal π
 incidentally (decorative "importance" weights); π is imported from canonical
 for those, but that does NOT make them structural — they remain free tunables.
 
@@ -39,7 +39,7 @@ ACTIVE_EMISSION_THRESHOLD = 0.5
 # ============================================================================
 # CYCLE DETECTION (operational balance rails — operators/cycle_detection.py)
 # ============================================================================
-# NOTE: the structural balance target CYCLE_OPTIMAL_BALANCE_CANONICAL = 1/(π+1)
+# NOTE: the selected balance target CYCLE_OPTIMAL_BALANCE_CANONICAL = 1/(π+1)
 # stays in canonical.py; only these tuning rails live here.
 CYCLE_BALANCE_RANGE_LOW_CANONICAL = -0.1  # operational tuning (not TNFR physics)
 CYCLE_BALANCE_RANGE_HIGH_CANONICAL = 0.49  # operational tuning (not TNFR physics)

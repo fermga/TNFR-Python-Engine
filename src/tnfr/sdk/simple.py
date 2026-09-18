@@ -2614,7 +2614,9 @@ class TNFR:
         operator's public name, internal glyph, nodal-equation channel
         (EPI/nu_f/theta/dNFR), scale (NODE/NETWORK), grammar role(s),
         canonical purpose and postcondition, and TNFR.pdf anchor -- the
-        canonical structure for understanding the operator algebra.
+        canonical structure for understanding the operator algebra. Complete
+        canonical roles and compositional grammar bases are metadata, not
+        verified hypotheses or permission to execute an operator.
 
         Parameters
         ----------
@@ -2633,31 +2635,8 @@ class TNFR:
         >>> TNFR.operators("emission")["channel"]  # doctest: +SKIP
         'EPI'
         """
-        from ..operators.grammar_types import (
-            CLOSURES,
-            COUPLING_RESONANCE,
-            DESTABILIZERS,
-            GENERATORS,
-            STABILIZERS,
-            TRANSFORMERS,
-        )
+        from ..operators.grammar_canon import operator_role_metadata
         from ..operators.operator_contracts import contract_for, iter_contracts
-
-        def _roles(n: str) -> list[str]:
-            roles: list[str] = []
-            if n in GENERATORS:
-                roles.append("generator")
-            if n in CLOSURES:
-                roles.append("closure")
-            if n in STABILIZERS:
-                roles.append("stabilizer")
-            if n in DESTABILIZERS:
-                roles.append("destabilizer")
-            if n in TRANSFORMERS:
-                roles.append("transformer")
-            if n in COUPLING_RESONANCE:
-                roles.append("coupling/resonance")
-            return roles
 
         def _to_dict(c: Any) -> dict[str, Any]:
             return {
@@ -2665,7 +2644,7 @@ class TNFR:
                 "glyph": c.glyph,
                 "channel": c.primary_channel.value,
                 "scale": c.scale.value,
-                "roles": _roles(c.name),
+                **operator_role_metadata(c.name),
                 "purpose": c.purpose,
                 "postcondition": c.postcondition,
                 "pdf_reference": c.pdf_reference,
@@ -2680,9 +2659,10 @@ class TNFR:
         """Validate an operator sequence and explain its canonical grammar.
 
         A teaching/diagnostic aid: reports each operator's grammar role and
-        whether the whole sequence satisfies the unified grammar (U1-U6) --
-        why a structural "word" is or is not canonical. Accepts operator
-        names or glyph codes.
+        whether the word satisfies the implemented sequence policies. No live
+        graph, operator endpoint or trajectory is assessed: U3 state admission,
+        U6 telemetry and dynamical conclusions remain unassessed. Accepts
+        operator names or glyph codes.
 
         Parameters
         ----------
@@ -2698,37 +2678,23 @@ class TNFR:
             ``ends_with_closure``, U2 flags ``has_destabilizer`` /
             ``has_stabilizer``, and a human-readable ``message``.
         """
+        from ..operators.grammar_canon import (
+            GRAMMAR_RULES, grammar_basis, operator_role_metadata,
+        )
         from ..operators.grammar_types import (
             CLOSURES,
-            COUPLING_RESONANCE,
             DESTABILIZERS,
             GENERATORS,
             STABILIZERS,
-            TRANSFORMERS,
         )
         from ..operators.operator_contracts import contract_for
         from ..validation import validate_sequence
 
-        def _roles(n: str) -> list[str]:
-            roles: list[str] = []
-            if n in GENERATORS:
-                roles.append("generator")
-            if n in CLOSURES:
-                roles.append("closure")
-            if n in STABILIZERS:
-                roles.append("stabilizer")
-            if n in DESTABILIZERS:
-                roles.append("destabilizer")
-            if n in TRANSFORMERS:
-                roles.append("transformer")
-            if n in COUPLING_RESONANCE:
-                roles.append("coupling/resonance")
-            return roles
-
         contracts = [contract_for(op) for op in operators]
         names = [c.name for c in contracts]
         roles = [
-            {"name": c.english_name, "glyph": c.glyph, "roles": _roles(c.name)}
+            {"name": c.english_name, "glyph": c.glyph,
+             **operator_role_metadata(c.name)}
             for c in contracts
         ]
         try:
@@ -2742,6 +2708,19 @@ class TNFR:
             message = str(exc)
         return {
             "valid": valid,
+            "validation_scope": "word_policy",
+            "state_checks_assessed": False,
+            "trajectory_checks_assessed": False,
+            "execution_admission_assessed": False,
+            "missing_evidence": [
+                "live_operator_preconditions", "operator_endpoint_receipts",
+                "aligned_potential_reference", "trajectory_hypotheses",
+                "full_tetrad_trajectory", "full_state_closure",
+            ],
+            "grammar_basis": {
+                item.rule_id: [basis.as_dict() for basis in grammar_basis(item.rule_id)]
+                for item in GRAMMAR_RULES
+            },
             "operators": [c.english_name for c in contracts],
             "roles": roles,
             "starts_with_generator": bool(names) and names[0] in GENERATORS,

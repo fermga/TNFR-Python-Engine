@@ -173,7 +173,7 @@ def validate_structural_potential_confinement(
     Returns
     -------
     valid : bool
-        True if Δ Φ_s < threshold (safe regime)
+        True if the supplied mean absolute drift is below the policy threshold
     drift : float
         Measured Δ Φ_s = mean(|Φ_s_after[i] - Φ_s_before[i]|)
     message : str
@@ -212,7 +212,7 @@ def validate_structural_potential_confinement(
 
     References
     ----------
-    - UNIFIED_GRAMMAR_RULES.md § U6: Complete physics derivation
+    - UNIFIED_GRAMMAR_RULES.md § U6: Policy and mathematical scope
     - docs/STRUCTURAL_FIELDS_TETRAD.md: Validation evidence
     - AGENTS.md § Structural Fields: Canonical status
     - src/tnfr/physics/fields.py: compute_structural_potential()
@@ -269,7 +269,8 @@ def validate_structural_potential_confinement(
     if valid:
         msg = (
             f"U6: PASS - Δ Φ_s = {delta_phi_s:.3f} < {threshold_value:.3f} (confined). "
-            f"System remains in safe regime."
+            f"The supplied snapshots pass the finite drift policy; "
+            f"trajectory confinement was not evaluated."
         )
         return True, delta_phi_s, msg
     else:

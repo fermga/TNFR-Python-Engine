@@ -361,98 +361,26 @@ def compute_phase_gradient_and_curvature_vectorized(
     degrees: np.ndarray,
     dtype: type = np.float64,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Vectorized computation of |∇φ| and K_φ.
+    """Return gradient/curvature arrays using the shared represented read-out.
 
-    |∇φ|_i = mean(|wrap(θ_i - θ_j)|)
-    K_φ_i = wrap(θ_i - circular_mean(θ_neighbors))
-
-    Parameters
-    ----------
-    theta_arr : np.ndarray
-        Array of phase values.
-    edge_src : np.ndarray
-        Indices of neighbor nodes (j).
-    edge_dst : np.ndarray
-        Indices of center nodes (i).
-    degrees : np.ndarray
-        Degree of each node.
-
-    Returns
-    -------
-    tuple[np.ndarray, np.ndarray]
-        (gradient_arr, curvature_arr)
+    Sources are unique neighbor indices and destinations are center indices;
+    counts must match those incidences (loops once, directed successors).
+    NumPy binary64 trigonometric components are summed exactly regardless of
+    accumulator ``dtype``. The angle is approximate. An exact represented
+    joint-zero nonempty neighborhood raises ``UndefinedPhaseCurvatureError``.
     """
-    n = len(theta_arr)
+    from ..config import get_precision_mode
+    from .phase_curvature import _observe_phase_arrays, _require_defined_curvature
 
-    # --- Gradient Calculation ---
-    # θ_i - θ_j
-    diffs = theta_arr[edge_dst] - theta_arr[edge_src]
-
-    # Wrap to [-π, π]
-    wrapped_diffs = (diffs + np.pi) % (2 * np.pi) - np.pi
-
-    # Abs diffs
-    abs_diffs = np.abs(wrapped_diffs)
-
-    # Sum over neighbors
-    grad_sums = np.zeros(n, dtype=dtype)
-    np.add.at(grad_sums, edge_dst, abs_diffs)
-
-    # Mean
-    with np.errstate(divide="ignore", invalid="ignore"):
-        grad_arr = grad_sums / degrees
-    grad_arr[degrees == 0] = 0.0
-
-    # --- Curvature Calculation ---
-    # Circular mean of neighbors
-    # sum(cos(θ_j)), sum(sin(θ_j))
-    cos_vals = np.cos(theta_arr[edge_src])
-    sin_vals = np.sin(theta_arr[edge_src])
-
-    cos_sums = np.zeros(n, dtype=dtype)
-    sin_sums = np.zeros(n, dtype=dtype)
-
-    np.add.at(cos_sums, edge_dst, cos_vals)
-    np.add.at(sin_sums, edge_dst, sin_vals)
-
-    # Mean vector (C, S)
-    # We don't strictly need to divide by N for atan2, but let's do it for correctness of "mean vector length" check
-    with np.errstate(divide="ignore", invalid="ignore"):
-        mean_cos = cos_sums / degrees
-        mean_sin = sin_sums / degrees
-
-    mean_cos[degrees == 0] = 0.0
-    mean_sin[degrees == 0] = 0.0
-
-    # Circular mean phase
-    mean_phases = np.arctan2(mean_sin, mean_cos)
-
-    # Handle case where mean vector length is near zero (undefined mean phase)
-    # In that case, fallback to arithmetic mean (as per original code)
-    # Or just 0? Original code: "if mean_vec_length < 1e-9: mean_phase = float(np.mean(neigh_phases))"
-    # Vectorized fallback is tricky.
-    # Let's compute arithmetic mean as fallback.
-
-    mean_vec_len = np.hypot(mean_cos, mean_sin)
-    unstable_mask = mean_vec_len < 1e-9
-
-    if np.any(unstable_mask):
-        # Compute arithmetic mean for unstable nodes
-        # We need sum(θ_j)
-        theta_sums = np.zeros(n, dtype=dtype)
-        np.add.at(theta_sums, edge_dst, theta_arr[edge_src])
-        with np.errstate(divide="ignore", invalid="ignore"):
-            arith_means = theta_sums / degrees
-        mean_phases[unstable_mask] = arith_means[unstable_mask]
-
-    # Curvature = wrap(θ_i - mean_phase)
-    curv_diffs = theta_arr - mean_phases
-    curv_arr = (curv_diffs + np.pi) % (2 * np.pi) - np.pi
-
-    # Fix isolated nodes
-    curv_arr[degrees == 0] = 0.0
-
-    return grad_arr, curv_arr
+    observation = _observe_phase_arrays(
+        theta_arr, edge_src, edge_dst, degrees,
+        dtype=dtype, precision_mode=get_precision_mode(),
+    )
+    _require_defined_curvature(observation)
+    return (
+        np.asarray([row.gradient for row in observation.rows], dtype=dtype),
+        np.asarray([row.curvature for row in observation.rows], dtype=dtype),
+    )
 
 
 def compute_coherence_length_vectorized(
@@ -462,130 +390,22 @@ def compute_coherence_length_vectorized(
     dtype: type = np.float64,
     distance_matrix: np.ndarray | None = None,
 ) -> float:
-    """Vectorized estimation of coherence length ξ_C.
+    """Fit uncentered static products using the shared structural distances.
 
-    Computes spatial autocorrelation of local coherence C_i = 1/(1+|ΔNFR_i|).
-    Fits C(r) ~ exp(-r/ξ_C).
+    Uses per-edge length, else weight, else unit length, with parallel minimum
+    and outgoing distances on directed graphs. This shares pair selection and
+    fitting with the streamed canonical path. The result has the chosen path
+    length units; it is not a connected covariance or spectral-gap identity.
+
+    A supplied matrix must have the declared node order, zero diagonal,
+    nonnegative entries (positive infinity for missing pairs), and symmetry
+    for an undirected graph. Invalid matrices raise; they are caller-declared
+    distances, not a certificate that shortest paths were computed correctly.
     """
-    n = len(nodes)
-    if n < 3:
-        return float("nan")
+    from ..config import get_precision_mode
+    from ._coherence_fit import coherence_sources, fit_coherence_length
 
-    # 1. Compute local coherence array via the canonical kernel (numpy-broadcast)
-    # C_i = structural_coherence(ΔNFR_i) = 1 / (1 + |ΔNFR_i|)
-    from ..metrics.common import structural_coherence
-
-    dnfr_arr = np.array([abs(delta_nfr.get(node, 0.0)) for node in nodes], dtype=dtype)
-    coherence_arr = structural_coherence(dnfr_arr)
-
-    # 2. Compute Distance Matrix
-    # For N < 1000, full matrix is fine (1M entries = 8MB)
-    # For larger N, we should probably fallback to sampling or sparse methods
-    # But here we assume we are in the vectorized path which implies reasonable N
-    try:
-        if distance_matrix is not None:
-            D = distance_matrix
-        else:
-            # Returns matrix of distances
-            D = nx.floyd_warshall_numpy(G, nodelist=nodes)
-    except Exception:
-        return float("nan")
-
-    # 3. Compute Correlation Matrix C_i * C_j
-    # Outer product
-    Corr_matrix = np.outer(coherence_arr, coherence_arr)
-
-    # 4. Flatten and Filter
-    # We only care about upper triangle (symmetric) and non-zero distances
-    # Mask for upper triangle, k=1 excludes diagonal
-    mask = np.triu(np.ones((n, n), dtype=bool), k=1)
-
-    valid_dists = D[mask]
-    valid_corrs = Corr_matrix[mask]
-
-    # Filter out infinity (disconnected), NaN, and negative sentinels
-    # (e.g. -1 used by some callers to mark "no path"). Negative or non-finite
-    # distances would crash np.bincount after the int cast below.
-    finite_mask = np.isfinite(valid_dists) & (valid_dists >= 0)
-    valid_dists = valid_dists[finite_mask]
-    valid_corrs = valid_corrs[finite_mask]
-
-    if len(valid_dists) < 10:
-        return float("nan")
-
-    # 5. Group by distance
-    # Since graph is unweighted, distances are integers.
-    # We can use bincount for fast grouping if we cast to int.
-    # Check if distances are effectively integers
-    is_integer_dist = np.all(np.mod(valid_dists, 1) == 0)
-
-    if is_integer_dist:
-        d_ints = valid_dists.astype(np.intp)
-
-        # Defensive guard: reject overflow from oversized float distances or
-        # any residual negative entries that slipped past the finite/>=0 mask
-        # (e.g. caller-supplied distance matrices with custom sentinels).
-        if d_ints.size == 0 or np.any(d_ints < 0):
-            return float("nan")
-
-        # Sum of correlations per distance
-        corr_sums = np.bincount(d_ints, weights=valid_corrs)
-        # Count of pairs per distance
-        counts = np.bincount(d_ints)
-
-        # Avoid division by zero
-        with np.errstate(divide="ignore", invalid="ignore"):
-            mean_corrs = corr_sums / counts
-
-        # Extract valid bins (count >= 2 for statistical relevance)
-        valid_bins = counts >= 2
-        # Also skip distance 0 (shouldn't be there due to triu(k=1) but just in case)
-        valid_bins[0] = False
-
-        distances_fit = np.where(valid_bins)[0]
-        corrs_fit = mean_corrs[valid_bins]
-
-    else:
-        # Fallback for weighted graphs: sort and unique
-        # This is slower but general
-        unique_dists, inverse_indices = np.unique(valid_dists, return_inverse=True)
-
-        corr_sums = np.zeros_like(unique_dists, dtype=dtype)
-        np.add.at(corr_sums, inverse_indices, valid_corrs)
-
-        counts = np.zeros_like(unique_dists, dtype=int)
-        np.add.at(counts, inverse_indices, 1)
-
-        mean_corrs = corr_sums / counts
-
-        valid_bins = counts >= 2
-        distances_fit = unique_dists[valid_bins]
-        corrs_fit = mean_corrs[valid_bins]
-
-    if len(distances_fit) < 3:
-        return float("nan")
-
-    # 6. Fit exponential decay
-    # ln(C(r)) = -1/ξ_C * r + b
-
-    # Filter positive correlations for log
-    pos_mask = corrs_fit > 1e-9
-    if np.sum(pos_mask) < 3:
-        return float("nan")
-
-    x = distances_fit[pos_mask]
-    y = np.log(corrs_fit[pos_mask])
-
-    try:
-        # Linear regression
-        # slope = (NΣxy - ΣxΣy) / (NΣx² - (Σx)²)
-        # or just use polyfit
-        slope, _ = np.polyfit(x, y, 1)
-
-        if slope >= 0:
-            return float("nan")
-
-        xi_c = -1.0 / slope
-        return float(xi_c)
-    except Exception:
-        return float("nan")
+    return fit_coherence_length(
+        G, nodes, delta_nfr, sources=coherence_sources(nodes, get_precision_mode()),
+        dtype=dtype, materialize=len(nodes) < 1000, distance_matrix=distance_matrix,
+    )

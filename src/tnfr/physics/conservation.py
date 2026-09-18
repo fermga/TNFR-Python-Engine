@@ -12,6 +12,14 @@ small.  Likewise, the non-negative quadratic structural energy exposed here is
 a Lyapunov *candidate*: monotonicity requires trajectory evidence or a
 model-specific proof.
 
+These sums use the engine's normalized numeric field convention. With raw
+units, pressure has EPI units, the inverse-square potential also carries
+inverse distance squared, and phase discrepancies are angles. They cannot be
+added without declared reference scales. The neighbor-difference divergence
+also supplies no time-rate factor: ``dt`` and the current normalization must
+share a declared time convention before this diagnostic can represent a
+physical continuity equation. The implementation does not derive those scales.
+
 The exact conservation result owned elsewhere is the degree-weighted EPI total
 for fixed symmetric pure diffusion under its stated capacity assumptions.  It
 must not be conflated with the tetrad charge reported by this module.
@@ -275,6 +283,10 @@ def compute_current_divergence(G: Any) -> dict[Any, float]:
     graph, conventionally an inward rather than outward flux. The public name
     is retained for compatibility; all balance routines use this same sign.
 
+    This is a normalized graph diagnostic, with no metric-length divisor or
+    transport-rate factor. Summing its phase and pressure components assumes
+    declared field reference scales, not equality of their raw physical units.
+
     Parameters
     ----------
     G : TNFRGraph
@@ -379,6 +391,10 @@ def verify_conservation_balance(
     error, changing topology or node support, source terms, or a failure of the
     assumed balance. Their cause requires separate investigation.
 
+    All inputs use a common declared normalization and time convention. The
+    routine does not convert the raw units of potential, curvature, currents
+    or ``dt``; a small numeric residual alone does not validate those units.
+
     Parameters
     ----------
     before : ConservationSnapshot
@@ -386,7 +402,7 @@ def verify_conservation_balance(
     after : ConservationSnapshot
         State after operator application.
     dt : float
-        Effective time step between snapshots (default 1.0).
+        Step in the declared diagnostic time coordinate (default 1.0).
 
     Returns
     -------

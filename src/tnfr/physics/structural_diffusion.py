@@ -2880,19 +2880,23 @@ def nodal_domain_count(mode: Any) -> int:
 
 
 def compute_emergent_pulse(G: Any, n_modes: int = 8) -> dict[str, Any]:
-    r"""The emergent pulse: the rhythm the substrate plays [CANONICAL].
+    r"""Read the auxiliary graph-wave spectrum without time integration.
 
-    The conservative face of the nodal dynamics is a *sustained vibration*:
-    every structural mode oscillates at the standing-wave frequency
-    :math:`\omega_k = \sqrt{\lambda_k}` (the discrete modes of
-    :func:`verify_undamped_limit` / :func:`structural_eigenmodes`).  The rhythm
-    is the interference of those resonances -- beats at the differences
-    :math:`\omega_j - \omega_k` -- and the equilibria (the ``dNFR = 0``
-    coherence states) are the beats the vibration passes through.  This unifies
-    the scattered conservative machinery (the spectrum, the standing-wave
-    frequencies, the self-similar decimation) into one *pulse* read-out,
-    computed closed-form from the structural spectrum (no time integration) --
-    the conservative twin of the dissipative coherence read-out.
+    The separately specified graph-wave model assigns standing-wave
+    frequencies :math:`\omega_k = \sqrt{\lambda_k}` to structural modes
+    (:func:`verify_undamped_limit` / :func:`structural_eigenmodes`). Their
+    positive differences give possible beat frequencies in that model's time
+    convention. The first-order nodal equation alone does not derive this
+    second-order wave, its physical time scale, or an observed vibration.
+    Neither zero pressure nor spectral multiplicity proves a beat event or
+    fractal structure.
+
+    The legacy ``vibration_energy`` key stores half the spectral trace. An
+    actual wave state's energy also depends on its modal amplitudes and
+    velocities: in normalized orthonormal modal coordinates it is
+    :math:`\frac12\sum_k(\dot q_k^2+\lambda_k q_k^2)`. The returned statistic
+    equals that energy for the selected initialization ``q_k=1, qdot_k=0``;
+    this function does not extract or assert that initialization from ``G``.
 
     Parameters
     ----------
@@ -2906,10 +2910,9 @@ def compute_emergent_pulse(G: Any, n_modes: int = 8) -> dict[str, Any]:
         ``resonant_spectrum`` (leading :math:`\omega_k = \sqrt{\lambda_k}`),
         ``fundamental`` (the slowest non-uniform resonance), ``dominant_beat``
         (the slowest beat = smallest positive :math:`\omega_j - \omega_k`),
-        ``spectral_multiplicity`` (the largest eigenvalue multiplicity = the
-        self-similar / fractal signature), ``vibration_energy``
-        (:math:`\tfrac12\sum\lambda_k`, the conserved structural-pressure
-        energy of the vibration), ``n_modes``.
+        ``spectral_multiplicity`` (largest multiplicity after the implemented
+        eigenvalue rounding), ``vibration_energy`` (legacy key for
+        :math:`\tfrac12\sum\lambda_k`, not measured state energy), ``n_modes``.
     """
     _reject_boolean_numeric(n_modes, "n_modes")
     eigvals = _cached_eigenvalues(G)
@@ -2930,22 +2933,19 @@ def compute_emergent_pulse(G: Any, n_modes: int = 8) -> dict[str, Any]:
 
 
 def compute_nodal_pulse(G: Any) -> dict[str, Any]:
-    r"""The per-NFR pulse and its resonance [CANONICAL].
+    r"""Read per-NFR capacity and phase synchrony without time integration.
 
-    The collective rhythm (:func:`compute_emergent_pulse`) is what the NFR
-    *bricks* produce: every NFR is itself a phase oscillator -- the
-    single-node reduction of the nodal equation
+    The nodal equation
     :math:`\partial\mathrm{EPI}_i/\partial t=\nu_{f,i}\,\Delta\mathrm{NFR}_i`
-    -- pulsing at its own structural frequency :math:`\nu_{f,i}` with phase
-    :math:`\varphi_i`.  *Resonance* couples those pulses: the local
-    phase-synchrony (:func:`~tnfr.metrics.coherence.local_phase_sync`)
-    measures how phase-locked each NFR is with its neighbours, the global
-    Kuramoto order ``R`` (:func:`~tnfr.gamma.kuramoto_R_psi`) the collective
-    locking, and the U3 gate :data:`~tnfr.constants.canonical.DELTA_PHI_MAX`
-    sets admissibility.  The collective pulse emerges as these per-NFR pulses
-    resonate (``R -> 1``).  This is the *local* face of the rhythm -- the
-    pulsing NFRs that generate the network rhythm -- read from canonical
-    per-node quantities (no time integration).
+    does not by itself derive an oscillator or identify phase speed with
+    structural capacity. This read-out summarizes the stored capacities and
+    phases; it does not observe a period or prove a phase-evolution law.
+    Local phase synchrony measures neighbor alignment, global Kuramoto order
+    ``R`` measures collective alignment, and the U3 phase bound reports
+    admissibility. These are distinct from the auxiliary graph-wave spectrum
+    returned by :func:`compute_emergent_pulse`. A high ``R`` does not identify
+    an engine trajectory with that wave model. See
+    ``theory/FORCED_SUPPORT_BALANCE.md`` section 23.
 
     Parameters
     ----------
@@ -2954,12 +2954,13 @@ def compute_nodal_pulse(G: Any) -> dict[str, Any]:
     Returns
     -------
     dict
-        ``mean_frequency`` / ``frequency_spread`` (the per-NFR pulse rates
+        ``mean_frequency`` / ``frequency_spread`` (structural capacities
         nu_f: mean and std in Hz_str), ``phase_coherence`` (the collective
-        Kuramoto ``R`` in ``[0, 1]`` -- how locked the pulses are),
+        Kuramoto ``R`` in ``[0, 1]`` -- alignment of the current phases),
         ``mean_local_resonance`` (mean per-NFR local phase synchrony in
         ``[0, 1]``), ``resonance_gate`` (the U3 admissibility bound
-        Delta phi_max), ``n_pulsing`` (NFRs with nu_f > 0), ``n_nodes``.
+        Delta phi_max), ``n_pulsing`` (legacy name for NFRs with nu_f > 0,
+        not an observed oscillation count), ``n_nodes``.
     """
     from ..constants.canonical import DELTA_PHI_MAX
 

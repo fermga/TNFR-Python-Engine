@@ -1,9 +1,9 @@
 # TNFR Glossary
 
 **Purpose**: Operational quick reference for the Resonant Fractal Nature Theory (TNFR)
-**Status**: Canonical reference, aligned with the current engine and TNFR.pdf
+**Status**: Operational reference; mathematical scope follows the current foundation audit
 **Version**: 0.0.3.5 (June 2026)
-**Authority**: [AGENTS.md](../AGENTS.md) is the single source of truth; this glossary mirrors it API-first
+**Authority**: Mathematical premises and executable contracts, indexed by [AGENTS.md](../AGENTS.md); historical source discrepancies are documented in the foundation audit
 
 **Scope**: API-focused definitions for developers implementing TNFR networks — the
 nodal equation, the structural triad and the **fractal-resonant node (NFR)**, the
@@ -21,12 +21,14 @@ and [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md).
 network* (TNFR.pdf §1.4.1), the fundamental entity of TNFR. The structural triad
 (EPI, νf, φ) **defines** it; it is read out as a whole by `Network.nfr()`.
 **Properties:** **multiscalar** (an NFR can nest other NFRs — operational fractality),
-**autopoietic** (emerges by local reorganization, no external support), **relational**
+**autopoietic** (autonomous formation/maintenance is the research requirement;
+an invoked creation operator alone does not prove it), **relational**
 (exists only by coupling) and **temporal** (persists while it reorganizes its coherence).
 **Nodal topology:** **radial** (one central nucleus), **annular** (passive center,
 peripheral ring) or **multinodal** (several centers), classified from the
 structural-potential geometry by `classify_nodal_topology(G)`.
-**Equilibrium:** `ΔNFR = 0` is a fixed-point condition, not an NFR.  For the
+**Equilibrium:** `ΔNFR = 0` gives zero instantaneous unforced EPI rate; it does
+not establish a full phase/capacity/support fixed point or persistence. For the
 restricted pure-EPI model on a fixed connected symmetric graph with positive
 capacity, diffusion converges to a uniform field and `C → 1`. Other pressure
 realizations do not inherit that restoring-attractor result. Scale-relative: a
@@ -40,8 +42,10 @@ single node is a micro-NFR and a coherent region is a macro-NFR.
 **Code:** `G.nodes[n]['EPI']`, `ALIAS_EPI`
 **Symbol:** \(\text{EPI}\) or \(E\)
 **What:** Coherent structural form of a node
-**Space:** \(B_{\text{EPI}}\) (Banach space)
-**Rules:** Modified only via structural operators, never directly
+**Space:** A declared structural state space; Banach-valued and scalar-chart
+realizations have distinct scope, not a uniquely derived dimension.
+**Rules:** Named transformations use structural operators; declared continuous
+steps use the shared nodal integrator with explicit pressure.
 **Scalar representation:** Raw real EPI and the uniform-real `BEPIElement`
 embedding represent the same signed graph coordinate. `real_scalar_epi(value)`
 returns that coordinate or `None`; `scalarize_epi(value)` preserves it and uses
@@ -58,7 +62,8 @@ richer elements rather than silently discarding their component structure.
 **Code:** `G.nodes[n]['vf']`, `ALIAS_VF`
 **Symbol:** \(\nu_f\)
 **Units:** Hz_str (structural hertz)
-**Range:** \(\mathbb{R}^+\) (positive reals; node collapse when \(\nu_f \to 0\))
+**Range:** Nonnegative reals; zero suppresses continuous EPI flow and does not
+by itself erase the stored form.
 **What:** Rate of structural reorganization
 **API:** `adapt_vf_after_structural_stability()`; the historical
 `adapt_vf_by_coherence()` name remains a compatibility alias; operators
@@ -83,7 +88,11 @@ of \(\operatorname{diag}(\nu_i)L_\text{rw}\), rather than
 \(\nu_f\lambda_k\). In both cases, pressure equilibrium is constant on
 each connected component; it is one uniform field only when the graph is
 connected. Isolates have zero Laplacian rows.
-**Sign:** positive = expansion, negative = contraction.
+**Sign:** Direction of change in the signed scalar chart; this alone does not
+identify the named Expansion or Contraction operator or a change in topology.
+**Units and type:** Pressure is a tangent response, with the units of EPI when
+capacity has inverse-time units. Historical velocity/distance definitions are
+audited in [the foundations](FUNDAMENTAL_THEORY.md#25-dimensional-consistency-and-structural-activity).
 **Compute:** `default_compute_delta_nfr` hook, automatic in `step()`.
 **Math:** [FUNDAMENTAL_THEORY.md §2.1](FUNDAMENTAL_THEORY.md), [AGENTS.md §2 (Transport content)](../AGENTS.md), [src/tnfr/physics/structural_diffusion.py](../src/tnfr/physics/structural_diffusion.py)
 
@@ -101,21 +110,22 @@ connected. Isolates have zero Laplacian rows.
 
 **Code:** `compute_coherence(G)` → float ∈ [0,1]; per-node kernel `structural_coherence(dnfr, depi)`
 **Symbol:** \(C(t)\)
-**Formula:** \(C(t) = 1/(1 + \overline{|\Delta\text{NFR}|} + \overline{|d\text{EPI}|})\) (canonical; derived from the nodal equation — equilibrium \(\Delta\text{NFR}\to 0 \wedge d\text{EPI}\to 0 \Rightarrow C\to 1\))
-**Range:** \([0, 1]\) where 1 = perfect coherence, 0 = total fragmentation
-**What:** Global stability measure (recorded in `history['C_steps']`). **Dual status:** beyond a telemetry read-out, its per-node kernel `structural_coherence` (= \(1/(1+|\Delta\text{NFR}|+|d\text{EPI}|)\)) is the constitutive coherence map for graph dynamics and is reused by the arithmetic triad. The assumption-explicit shell model reuses only the scalar zero-pressure predicate; this does not identify the domains' state spaces or dynamics. An NFR *is* a region of structural coherence, so \(C\) measures the coherence that **defines** NFR-hood. `compute_coherence` delegates to this kernel.
-**Thresholds:** strong \(C > \pi/(\pi+1) \approx 0.7585\); fragmentation risk \(C < 1/(\pi+1) \approx 0.2415\) (the coherence band; π the sole structural scale).
+**Formula:** \(C(t) = 1/(1 + \overline{|\Delta\text{NFR}|} + \overline{|d\text{EPI}|})\), the chosen reciprocal diagnostic in declared pressure/rate scales. The nodal equation does not uniquely derive this map.
+**Range:** \([0, 1]\); zero arguments give one, and increasing magnitudes approach zero. These values alone do not prove persistence or fragmentation.
+**What:** Network read-out recorded in `history['C_steps']`. `compute_coherence` applies the shared `structural_coherence` kernel to mean magnitudes, not to the mean of local coherence values. It reads stored arguments without proving a fresh simultaneous nodal rate. Other domain models can reuse the map or zero-pressure predicate without identifying their state spaces or dynamics. An NFR's coupling, persistence and autonomous formation require separate evidence.
+**Thresholds:** the selected labels strong \(C > \pi/(\pi+1) \approx 0.7585\) and fragmentation risk \(C < 1/(\pi+1) \approx 0.2415\) are policies, not derived dynamical transitions. See [the telemetry scope](NODAL_PARAMETER_FOUNDATIONS.md#6-telemetry-time-and-energy-are-not-interchangeable).
 **Code:** [src/tnfr/metrics/common.py](../src/tnfr/metrics/common.py) (`compute_coherence`, `structural_coherence`)
 **Math:** [FUNDAMENTAL_THEORY.md §5.1](FUNDAMENTAL_THEORY.md), [AGENTS.md §7](../AGENTS.md)
 
 ### Structural Equilibrium (ΔNFR = 0)
 
 **Code:** `is_structural_equilibrium(dnfr, depi=0, *, eps_dnfr, eps_depi)` → bool
-**What:** The shared numeric **fixed-point predicate**: \(|\Delta\text{NFR}| \le\)
+**What:** The shared **pressure/rate tolerance test**: \(|\Delta\text{NFR}| \le\)
 `eps_dnfr` and \(|d\text{EPI}| \le\) `eps_depi` (default
 `EPS_DNFR_STABLE = 1e-3`). Graph, arithmetic and chemical models may reuse this
-predicate for their own pressure fields; this does not make their dynamics,
-basins or attractors identical. The tolerance is declared per domain (1e-12
+predicate for their own pressure fields; it does not test phase, capacity,
+support evolution or the equality of stored rate to current `nu_f*DeltaNFR`.
+Positive tolerances do not certify an exact fixed point. The tolerance is declared per domain (1e-12
 for exact integer arithmetic).
 **Code:** [src/tnfr/metrics/common.py](../src/tnfr/metrics/common.py) (`is_structural_equilibrium`)
 **Theory:** [AGENTS.md §2, §7](../AGENTS.md)
@@ -140,8 +150,8 @@ of \(C(t)\); with the default unit diagonal it is identically one.
 **Code:** `G.nodes[n]['Si']`, `ALIAS_SI`, `compute_Si_node()`
 **Symbol:** \(\text{Si}\) (global) or \(S_i\) (node i)
 **Formula:** \(\text{Si} = \alpha \cdot \nu_{f,\text{norm}} + \beta \cdot (1 - \text{disp}_\theta) + \gamma \cdot (1 - |\Delta\text{NFR}|_{\text{norm}})\)
-**Range:** \([0, 1^+]\) typically, higher = more stable reorganization
-**What:** Reorganization-capacity predictor. Unlike `C(t)`, Si is a **heuristic composite** (weighted νf, phase sync, \(|\Delta\text{NFR}|\)) — predictive/diagnostic, **not** constitutive of NFR-hood. `Si > 0.8` excellent; `Si < 0.4` bifurcation-prone.
+**Range:** \([0, 1^+]\) typically under the configured normalization; higher means a larger diagnostic score, not a proved stability margin.
+**What:** Si is a **heuristic composite** (weighted νf, phase sync, \(|\Delta\text{NFR}|\)), not constitutive of NFR-hood. Any score bands or use in adaptation are declared policies; prediction of stability or bifurcation requires separate validation.
 **Weights:** operational defaults \(\alpha \approx 0.737\), \(\beta \approx 0.155\), \(\gamma_w \approx 0.114\) (`SI_WEIGHTS` in `config/defaults_core.py`; free parameters, sum \(\approx 1\))
 **Math:** [Mathematical Foundations - Metrics](MATHEMATICAL_DYNAMICS_BASIS.md)
 
@@ -149,13 +159,13 @@ of \(C(t)\); with the default unit diagonal it is identically one.
 
 **Code:** `compute_phase_gradient(G)` → Dict[NodeId, float]
 **Symbol:** \(|\nabla\phi|(i)\)
-**Formula:** \(|\nabla\phi|(i) = \text{mean}_{j \in N(i)} |\theta_i - \theta_j|\) (circular mean)
+**Formula:** \(|\nabla\phi|(i) = \text{mean}_{j \in N(i)} |\operatorname{wrap}(\theta_j - \theta_i)|\) (mean wrapped separation)
 **What:** Local phase desynchronization / stress proxy field
 **Status:** **CANONICAL** (Nov 2025)
 **Physics:** Locates phase stress that the global scalar C(t) does not spatially resolve
 **Threshold:** Kinematic bound |∇φ| ≤ π (phase wrap — same as K_φ); π/16 ≈ 0.196 is the selected early-warning policy, not a derived bound (measured sync-onset ≈ 0.29, σ-dependent)
 **API:** `tnfr.physics.fields.compute_phase_gradient()`
-**Usage:** Stress detection, local instability prediction
+**Usage:** Local phase-separation monitoring; instability prediction requires trajectory evidence
 **Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md)
 
 ### Phase Curvature (K_φ) - CANONICAL
@@ -163,28 +173,24 @@ of \(C(t)\); with the default unit diagonal it is identically one.
 **Code:** `compute_phase_curvature(G)` → Dict[NodeId, float]
 **Symbol:** \(K_\phi(i)\)
 **Formula:** \(K_\phi = \text{wrap\_angle}(\phi_i - \text{circular\_mean}(\text{neighbors}))\)
-**What:** Phase torsion and geometric confinement field
+**What:** Wrapped deviation from the circular neighbor direction
 **Status:** **CANONICAL** (Nov 2025)
-**Physics:** Flags mutation-prone loci via geometric constraints
-**Threshold:** Classical bound |K_φ| < 2.8274 (90% of π theoretical maximum)
+**Physics:** Local circular curvature diagnostic; it does not by itself prove mutation or confinement
+**Domain and threshold:** |K_φ| ≤ π where the neighbor direction is defined; 0.9π ≈ 2.8274 is a selected warning margin. Exact cancellation of the represented nonempty-neighborhood resultant is unavailable, not zero. `observe_phase_curvature` retains partial evidence; the numeric API raises. Isolates use an explicit zero convention.
 **API:** `tnfr.physics.fields.compute_phase_curvature()`
-**Usage:** Geometric confinement monitoring, bifurcation prediction
+**Usage:** Curvature monitoring with explicit direction availability
 **Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md)
 
 ### Coherence Length (ξ_C) - CANONICAL
 
 **Code:** `estimate_coherence_length(G)` → float
 **Symbol:** \(\xi_C\)
-**Formula:** Spatial correlation function \(C(r) = A \exp(-r/\xi_C)\)
-**What:** Spatial correlation scale of local coherence
+**Formula:** Distance-binned static products \(\operatorname{mean}_{d(i,j)=r} c_i c_j \approx A\exp(-r/\xi_C)\), with \(c_i=1/(1+|\Delta\mathrm{NFR}_i|)\)
+**What:** Uncentered pressure-derived coherence-product fit; the separate spectral fallback is not the same observable
 **Status:** **CANONICAL** (Nov 2025)
-**Physics:** Critical phenomena and finite-size scaling analysis
-**Thresholds:**
-- Critical: ξ_C > 1.0 × diameter (finite-size scaling dominates)
-- Watch: ξ_C > π ≈ 3.14 × mean_distance (RG scaling)
-- Stable: ξ_C < mean_distance (bulk behavior)
+**Scope:** A fit or fallback value alone does not establish criticality, stability or a phase transition. Compare graph size and distance only with the reported estimator method and units. Fit acceptance, sampling and unavailable domains are centralized in the field guide below.
 **API:** `tnfr.physics.fields.estimate_coherence_length()`
-**Usage:** Critical point detection, correlation analysis
+**Usage:** Correlation-profile analysis with estimator provenance
 **Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md)
 
 ---
@@ -224,11 +230,11 @@ fragmentation or grammar failure.
 - \(\nu_f\): Structural frequency (reorganization rate) in Hz_str
 - \(\Delta\text{NFR}(t)\): Reorganization gradient (driving pressure)
 
-**Interpretation:**
-- Structure changes **only when** both \(\nu_f > 0\) (capacity) and \(\Delta\text{NFR} \neq 0\) (pressure) exist
-- Rate of change is **proportional** to both frequency and gradient
-- When \(\nu_f \to 0\), evolution freezes (node collapse)
-- When \(\Delta\text{NFR} = 0\), structure reaches equilibrium
+**Interpretation of the unforced continuous EPI channel:**
+- Its instantaneous rate is nonzero when both capacity and pressure are nonzero.
+- At \(\nu_f=0\), its rate vanishes without erasing form or proving a node has collapsed.
+- At \(\Delta\text{NFR}=0\), its rate vanishes, but other channels may subsequently create pressure.
+- Approaching zero capacity alone does not prove convergence; accumulated `nu_f*DeltaNFR` controls the change. Additive forcing and operator jumps are separate declared paths.
 
 **Implementation:** See `src/tnfr/dynamics/` for numerical integration
 **Theory:** [Nodal equation](FUNDAMENTAL_THEORY.md) §2
@@ -253,8 +259,8 @@ scope explicitly.
 | Structural rank | — | number of distinct relaxation frequencies | `structural_frequency_rank(G)` |
 | Homogeneous invariant | Σ d_i·EPI_i | conserved for fixed common positive capacity | `degree_weighted_total(G)` |
 | Heterogeneous invariant | Σ (d_i/ν_i)·EPI_i | conserved for fixed positive node capacities; not returned by `degree_weighted_total` | theorem-level read-out |
-| Pulse resonance | ω_k = √λ_k | the conservative-face standing-wave frequencies — the rhythm the substrate plays (collective) | `compute_emergent_pulse(G)` / `net.rhythm()` |
-| Per-NFR pulse | (νf_i, φ_i) | each NFR a phase oscillator; resonance (`local_phase_sync`, Kuramoto `R`) couples them into the collective rhythm | `compute_nodal_pulse(G)` / `net.resonance()` |
+| Pulse resonance | ω_k = √λ_k | Auxiliary graph-wave modal frequencies; the legacy `vibration_energy` key is half the spectral trace, not measured state energy | `compute_emergent_pulse(G)` / `net.rhythm()` |
+| Per-NFR pulse | (νf_i, φ_i) | Stored capacity/phase and synchronization read-out; an oscillator law relating capacity to phase speed requires separate premises | `compute_nodal_pulse(G)` / `net.resonance()` |
 | Relaxation window | min{n : qⁿ < 1/(π+1)} | scalar-surrogate calibration of the **U4b / repeat-avoidance policy** = 3 operator positions; not a graph-modal solver-step bound | `derive_bifurcation_window_from_physics()` |
 | Debt capacity | ⌊1/(1−q)⌋ | scalar-surrogate calibration used by the selected U2 debt policy (=2); not a graph-modal capacity theorem | `derive_u2_debt_capacity_from_physics()` |
 
@@ -288,7 +294,7 @@ The quantities that govern TNFR dynamics, with their canonical status.
 | Parameter | Symbol | Default / value | Role | Status |
 | --- | --- | --- | --- | --- |
 | Structural frequency | νf | ℝ⁺ (Hz_str) | reorganization capacity = diffusivity/**mobility**; νf→0 inactivates | state |
-| Reorganization pressure | ΔNFR | ℝ | drive (4 channels); ΔNFR=0 = equilibrium | state |
+| Reorganization pressure | ΔNFR | ℝ | drive (4 channels); zero pressure gives instantaneous unforced EPI balance | state |
 | Phase | φ, θ | [0, 2π) | synchronization | state |
 | Phase-coupling tolerance | Δφ_max | π/2 ≈ 1.5708 rad (90°) | U3 admissible coupling \|φᵢ−φⱼ\| ≤ Δφ_max | canonical policy |
 | Mutation threshold | ξ | `ZHIR_THRESHOLD_XI = 0.1` | Non-disableable ZHIR admission gate: a valid observed signed secant, timestamped in physical time or interpreted as a legacy unit-operator-step difference, must satisfy `observed dEPI/dt > ξ` | operational calibration |
@@ -297,8 +303,10 @@ The quantities that govern TNFR dynamics, with their canonical status.
 | Phase scale | π | exact | the **one genuine structural constant**: bounds \|∇φ\| and \|K_φ\| | genuine |
 | Non-structural parameters | — | free / derived | operator gains, clamps, dt, coupling rates — derived from the dynamics or free operational parameters | operational |
 
-**Only π is a genuine structural constant** (the phase-wrap bound). φ, γ, e are **not**
-structural scales and no longer appear in the engine. Other values are derived under
+**π is the exact phase-wrap bound in the radian chart.** It is not a
+dimensional rate or a derivation of every π-based parameter. Golden-ratio,
+Euler-Mascheroni and exponential constants are not adopted as fundamental
+nodal scales. Other values are derived under
 stated hypotheses (for example, the `1/√λ₂` spectral comparison for ξ_C), selected canonical policies (for
 example, the π/2 ΔΦ_s warning threshold), or free operational parameters (for
 example, the π/16 ≈ 0.196 |∇φ| early-warning policy).
@@ -307,7 +315,10 @@ example, the π/16 ≈ 0.196 |∇φ| early-warning policy).
 
 ## Structural Operators
 
-The 13 canonical operators are the **only way** to modify nodes in TNFR. They're not arbitrary functions—they're **resonant transformations** with rigorous physics.
+The 13 canonical operators are the semantic interface for named transformations.
+Declared numerical solvers separately evolve EPI through the shared nodal
+integrator with explicit pressure and provenance. Operator completeness and
+autonomous event selection remain open; contracts do not derive every gain.
 
 For complete specifications with physics derivations, contracts, and usage examples, see **[AGENTS.md § The 13 Canonical Operators](../AGENTS.md#5-the-13-canonical-operators)**.
 
@@ -412,12 +423,12 @@ From [AGENTS.md](../AGENTS.md) - Optimized from 10 to 6 invariants based on math
 
 | Symbol | Mathematical | Code Attribute | Units | Range | Type |
 |--------|--------------|----------------|-------|-------|------|
-| \(\text{EPI}\) | Primary Information Structure | `'EPI'` | dimensionless | \(B_{\text{EPI}}\) | Coherent form |
-| \(\nu_f\) | Structural frequency | `'vf'` | Hz_str | \(\mathbb{R}^+\) | Reorganization rate |
-| \(\Delta\text{NFR}\) | Reorganization operator | `'dnfr'` | dimensionless | \(\mathbb{R}\) | Evolution gradient |
+| \(\text{EPI}\) | Primary Information Structure | `'EPI'` | declared form unit X | declared chart of \(B_{\text{EPI}}\) | Coherent form |
+| \(\nu_f\) | Structural frequency | `'vf'` | Hz_str | \(\mathbb{R}_{\ge 0}\) | Reorganization capacity |
+| \(\Delta\text{NFR}\) | Reorganization pressure | `'dnfr'` | X when capacity has inverse-time units | \(\mathbb{R}\) in the scalar chart | Tangent response |
 | \(\theta\), \(\phi\) | Phase angle | `'theta'` | radians | \([0, 2\pi)\) | Network synchrony |
-| \(C(t)\) | Total coherence | `compute_coherence()` | dimensionless | \([0, 1]\) | Global stability |
-| \(\text{Si}\) | Sense Index | `'Si'` | dimensionless | \([0, 1^+]\) | Reorganization stability |
+| \(C(t)\) | Total coherence | `compute_coherence()` | dimensionless in declared input scales | \([0, 1]\) | Reciprocal pressure/rate diagnostic |
+| \(\text{Si}\) | Sense Index | `'Si'` | dimensionless in configured scales | \([0, 1^+]\) | Heuristic composite |
 
 ### Common API Patterns
 
@@ -440,7 +451,7 @@ run_sequence(G, node_id, [Emission(), Coherence(), Resonance()])
 from tnfr.dynamics import step
 step(G, use_Si=True, apply_glyphs=True)
 
-# Canonical fixed point (per-node kernel + equilibrium predicate)
+# Pressure-only diagnostic (rate defaults to zero; no full-state fixed-point proof)
 from tnfr.metrics.common import structural_coherence, is_structural_equilibrium
 C_node = structural_coherence(G.nodes[node_id]['dnfr'])
 at_equilibrium = is_structural_equilibrium(G.nodes[node_id]['dnfr'])
@@ -471,8 +482,9 @@ Expose in telemetry:
 ## Domain Neutrality & the Two-Layer Ontology
 
 TNFR is **domain-neutral**: the structural operators apply to graph-coupled networks
-without a built-in application domain. The nodal equation gives the fixed-point
-condition `ΔNFR = 0` when capacity is positive. Domain models can share the
+without a built-in application domain. For positive capacity, `ΔNFR = 0`
+is equivalent to zero instantaneous unforced EPI rate, not full-state equilibrium.
+Domain models can share the
 numeric kernel `structural_coherence` and predicate `is_structural_equilibrium`
 while using different state spaces, pressures and dynamics. Around that condition the read-outs span a
 **spectrum of emergence**, contrasted as two layers:
@@ -645,8 +657,9 @@ from the tetrad remains open.
 
 ### The one structural scale
 
-Only **π** is a genuine structural scale: it bounds the wrapped phase sector.
-The coherence-length estimate is spectral. Φ_s safety values and the 0.9π
+**π** is the exact wrap bound in the radian phase chart.
+Coherence length uses a static product fit or a separately identified spectral
+fallback. Φ_s safety values and the 0.9π
 curvature margin are selected policies; other parameters must be labelled as
 derived under stated hypotheses or operational.
 
@@ -654,7 +667,7 @@ derived under stated hypotheses or operational.
 
 1. **Φ_s** (0th order): selected warnings ΔΦ_s < π/2 and |Φ_s| < π/4
 2. **|∇φ|** (1st order): bound |∇φ| ≤ π (phase wrap); π/16 ≈ 0.196 is the selected early-warning policy
-3. **K_φ** (2nd order): exact wrapped bound π; 0.9π is a warning margin; agreement with L_rw·φ requires small phase spread and matching conventions
+3. **K_φ** (2nd order): exact wrapped bound π where defined; 0.9π is a warning margin; agreement with L_rw·φ requires small phase spread and matching conventions
 4. **ξ_C** (correlation): state-dependent fit; `1/√λ₂` is its connected-graph spectral comparison/fallback (not base e)
 
 **Documentation:** [Structural-field tetrad](FUNDAMENTAL_THEORY.md)
@@ -1022,8 +1035,9 @@ Lyapunov theorem.
 
 ## Regime Correspondences
 
-**Theory:** The single nodal dynamics produces two empirically-anchored regimes. The
-external labels "classical"/"quantum-like" are comparisons only, not TNFR primitives.
+**Scope:** The declared first-order transport and auxiliary graph-wave models
+support restricted comparisons. They are not two empirically established
+physical regimes derived from the bare nodal product.
 
 ### Smooth-Trajectory / Overdamped-Drift Regime (High Coherence)
 **Condition:** C(t) → 1, |∇φ| → 0
@@ -1033,11 +1047,14 @@ pressure). The inertial (second-order) regime lives in the conservative symplect
 substrate, not here.
 **API:** `tnfr.physics.structural_diffusion`, `tnfr.physics.classical_mechanics`
 
-### Discrete-Mode Regime (High Dissonance)
-**Condition:** |∇φ| ~ π, near phase singularities
-**Emergent:** on a bounded graph the diffusion operator has a discrete spectrum of
-orthonormal standing-wave eigenmodes (vibrating-string / Chladni analogue), with
-nodal-domain ordering (Courant); uncertainty (Fourier ΔEPI·Δνf ≥ K), superposition.
+### Discrete-Mode Comparison
+**Condition:** a finite graph and a specified linear operator; high dissonance
+is not required.
+**Result:** symmetric normalized diffusion admits an orthonormal eigenbasis;
+the auxiliary graph wave has frequencies $\sqrt{\lambda_k}$. This does not
+identify capacity with Fourier frequency, derive a universal EPI-capacity
+uncertainty constant, or establish particle emergence. Directed and nonlinear
+dynamics need separate analysis.
 **API:** `tnfr.physics.structural_diffusion`, `tnfr.physics.quantum_mechanics`
 
 ---
@@ -1066,8 +1083,13 @@ Quick reference for canonical threshold values from `src/tnfr/constants/canonica
 | PHASE_GRADIENT_THRESHOLD | π/16 ≈ 0.196 | Selected early-warning policy (not derived; bound is π) | \|∇φ\| stability |
 | K_PHI_CANONICAL_THRESHOLD | 0.9×π ≈ 2.8274 | Selected 90% margin inside the exact wrap-angle bound π | K_φ fault zone detection |
 | U6 drift monitor | π/2 ≈ 1.571 | Selected policy | ΔΦ_s drift warning |
-| MIN_BUSINESS_COHERENCE | ≈ 0.75 | Operational (free parameter) | Business-health cut (the canonical strong-coherence gate is the emergent π/(π+1) ≈ 0.7585) |
-| THOL_MIN_COLLECTIVE_COHERENCE | 1/(π+1) ≈ 0.2415 | Geometric series bound | Fragmentation risk threshold |
+| MIN_BUSINESS_COHERENCE | ≈ 0.75 | Operational (free parameter) | Business-health cut; the separate configured coherence gate is π/(π+1) ≈ 0.7585 |
+| THOL_MIN_COLLECTIVE_COHERENCE | 1/(π+1) ≈ 0.2415 | Deprecated compatibility alias | Not read by THOL and not a U5 coherence guarantee |
+
+The [parameter foundations](NODAL_PARAMETER_FOUNDATIONS.md) distinguish units,
+exact identities, conditional consequences and configured policies across
+all these families. The module name `canonical` does not turn a default into
+a mathematical derivation.
 
 ---
 
@@ -1078,7 +1100,7 @@ When adding new functionality:
 1. **Verify theoretical foundation**: Align with [AGENTS.md](../AGENTS.md) physics
 2. **Preserve canonical invariants**: Follow optimized 6-invariant set
 3. **Use established terminology**: Reference this glossary for consistency
-4. **Map to canonical operators**: All functions must correspond to 13 canonical operators
+4. **Use shared evolution interfaces**: Named transformations use canonical operators; declared solvers use the nodal integrator; read-only diagnostics need neither to mutate state
 5. **Validate grammar compliance**: Ensure U1-U6 satisfaction
 6. **Maintain English-only policy**: All documentation in English for canonical terminology
 7. **Write comprehensive tests**: Cover invariants and operator contracts

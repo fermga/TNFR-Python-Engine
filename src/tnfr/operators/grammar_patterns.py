@@ -6,26 +6,12 @@ Terminology (TNFR semantics):
 - "node" == resonant locus (structural coherence site); kept for NetworkX compatibility
 - Future semantic aliasing ("locus") must preserve public API stability
 
-CRITICAL TECHNICAL NOTE (Diagnostic Pattern Exemption - Nov 2025):
--------------------------------------------------------------------
-The sequence [dissonance, mutation] is used in bifurcation detection tests
-as a probe pattern to deliberately trigger threshold crossing. This pattern
-intentionally violates:
-- U2 (stabilizer requirement after destabilizers)
-- U4b (transformer context requirement)
-
-This is NOT a grammar failure but a diagnostic tool. The exemption logic in
-_check_end_rule() and stabilizer checks explicitly allows [OZ, ZHIR] patterns
-for bifurcation probes without requiring stabilizers.
-
-**Rationale**: Bifurcation detection requires controlled destabilization to
-test threshold behavior (∂²EPI/∂t² > τ). Adding stabilizers would defeat the
-purpose by preventing the bifurcation we're trying to detect.
-
-**Safety**: These sequences are only used in controlled test environments
-where fragmentation is the expected outcome being validated.
-
-See: _check_end_rule() terminal dissonance logic, tests/unit/operators/test_*.py
+The exact [dissonance, mutation] probe has a retained explicit diagnostic
+waiver when existing form is declared. Its metadata records that canonical
+word validation was waived. This grants no live operator preconditions,
+threshold crossing, stability or fragmentation conclusion. Ordinary words
+reuse the core's causal debt and transformer-history checks; adjacency and
+THOL-terminal restrictions are additional compatibility policies.
 """
 
 from __future__ import annotations
@@ -33,14 +19,12 @@ from __future__ import annotations
 from typing import Any, Mapping, Sequence
 
 from ..config.operator_names import (
-    BIFURCATION_WINDOW,
     CANONICAL_OPERATOR_NAMES,
     COHERENCE,
     DESTABILIZERS,
     INTERMEDIATE_OPERATORS,
     SELF_ORGANIZATION,
     SELF_ORGANIZATION_CLOSURES,
-    TRANSFORMERS,
     VALID_END_OPERATORS,
     VALID_START_OPERATORS,
 )
@@ -198,23 +182,25 @@ def _check_adjacent_compatibility(
         if level == CompatibilityLevel.AVOID:
             if prev == "silence":
                 if cur == "silence":
-                    msg = f"redundant consecutive silence operations: {prev} → {cur} (duplicate effect, no structural purpose)"
+                    msg = (
+                        f"consecutive silence operations excluded by the retained "
+                        f"adjacency policy: {prev} → {cur}"
+                    )
                 elif cur == "dissonance":
                     msg = (
-                        "silence → dissonance contradicts structural theory: "
-                        "νf≈0 (paused) cannot generate ΔNFR tension. "
-                        "Alternatives: SHA→AL→OZ or SHA→NAV→OZ"
+                        "silence → dissonance is excluded by the retained "
+                        "adjacency policy; low capacity alone does not "
+                        "prevent a pressure change"
                     )
                 else:
                     msg = f"invalid after silence: {prev} → {cur}"
             elif cur == "mutation":
-                # Special case: mutation requires dissonance (R4)
                 msg = (
-                    f"mutation requires prior dissonance (R4). "
-                    f"Transition {prev} → {cur} incompatible"
+                    f"Transition {prev} → {cur} is excluded by the retained "
+                    f"adjacency policy; U4b history is checked separately"
                 )
             else:
-                msg = f"operator transition {prev} → {cur} contradicts canonical flow"
+                msg = f"operator transition {prev} → {cur} fails the adjacency policy"
             return False, i, msg
         prev = cur
     return True, None, None
@@ -237,38 +223,6 @@ def _is_canonical_therapeutic_pattern(tokens: list[str]) -> bool:
         return True
 
     return False
-
-
-def _check_transformer_windows(
-    tokens: list[str],
-) -> tuple[bool, int | None, str | None]:
-    # U4b transformers (ZHIR, THOL) = canonical TRANSFORMERS set (single source
-    # config.operator_names.TRANSFORMERS, derived in physics_derivation).
-    for i, tok in enumerate(tokens):
-        if tok not in TRANSFORMERS:
-            continue
-
-        found = False
-        # U4b: any destabilizer (DESTABILIZERS = {OZ, ZHIR, VAL}) within the
-        # single structural-relaxation window. The window is topology-
-        # independent (mean L_rw eigenvalue = trace/N = 1), so there is no
-        # graduated reach -- every destabilizer shares BIFURCATION_WINDOW.
-        for j in range(i - 1, -1, -1):
-            if i - j > BIFURCATION_WINDOW:
-                break  # past the relaxation window
-            if tokens[j] in DESTABILIZERS:
-                found = True
-                break
-
-        if not found:
-            msg = (
-                f"{tok} requires a recent destabilizer "
-                f"(OZ/ZHIR/VAL) within the structural-relaxation "
-                f"window = {BIFURCATION_WINDOW} ops"
-            )
-            return False, i, msg
-
-    return True, None, None
 
 
 def _build_result(
@@ -311,19 +265,38 @@ def _build_result(
 
 
 def validate_sequence(
-    names: Any, *, context: Mapping[str, Any] | None = None, **kwargs: Any
+    names: Any, *, context: Mapping[str, Any] | None = None,
+    compatibility_profile: str | None = None, **kwargs: Any
 ) -> SequenceValidationResult:
-    """Validate an operator sequence (TNFR grammar).
+    """Validate canonical word rules plus the retained pair/THOL policies.
 
     Optional context keys:
     - initial_epi_nonzero: bool -> if True, permits non-generator start
       because EPI birth already occurred outside this sequence.
+    - diagnostic: bool -> the exact two-token OZ/ZHIR probe may waive word
+      requirements; this never supplies runtime preconditions or admission.
+
+    Ordinary words delegate debt, transformer history and depth-default rules
+    to the shared canonical validator. The legacy adjacency/THOL restrictions
+    are additional language policies, not consequences of U1-U6 alone.
+    ``compatibility_profile='core'`` omits only those extra restrictions;
+    it retains canonical word contracts, including calibrated U2/U4 policies.
+    The default ``legacy`` profile preserves prior behavior. If the argument
+    is omitted, context may declare ``compatibility_profile`` so an existing
+    word/event executor can carry the same explicit choice through validation.
+    Neither profile certifies live preconditions or autonomous dynamics.
 
     Any other unexpected keyword raises TypeError (legacy guard).
     """
     if kwargs:
         bad = ", ".join(sorted(kwargs.keys()))
         raise TypeError(f"unexpected keyword argument(s): {bad}")
+    if compatibility_profile is None:
+        compatibility_profile = (context or {}).get("compatibility_profile", "legacy")
+    if type(compatibility_profile) is not str:
+        raise TypeError("compatibility_profile must be 'legacy' or 'core'")
+    if compatibility_profile not in {"legacy", "core"}:
+        raise ValueError("compatibility_profile must be 'legacy' or 'core'")
 
     # type checks and canonicalization
     if not isinstance(names, (list, tuple)):
@@ -336,6 +309,7 @@ def validate_sequence(
         idx = non_str[0]
         err = SequenceSyntaxError(idx, names[idx], "tokens must be str")
         meta = _compute_metadata([str(t) for t in names])
+        meta["compatibility_profile"] = compatibility_profile
         return _build_result(
             names=names,  # type: ignore[arg-type]
             canonical=canon_list,
@@ -347,6 +321,7 @@ def validate_sequence(
 
     tokens = [t for t in canon_list]
     meta = _compute_metadata(tokens)
+    meta["compatibility_profile"] = compatibility_profile
 
     if not tokens:
         return _build_result(
@@ -379,6 +354,7 @@ def validate_sequence(
             passed=False,
             message=msg or "invalid start",
             metadata=meta,
+            error=SequenceSyntaxError(0, tokens[0], msg or "invalid start"),
         )
     ok, msg = _check_end_rule(tokens, context=context)
     if not ok:
@@ -388,8 +364,11 @@ def validate_sequence(
             passed=False,
             message=msg or "invalid end",
             metadata=meta,
+            error=SequenceSyntaxError(len(tokens) - 1, tokens[-1], msg or "invalid end"),
         )
-    ok, msg = _check_thol_closure(tokens)
+    ok, msg = (
+        _check_thol_closure(tokens) if compatibility_profile == "legacy" else (True, None)
+    )
     if not ok:
         return _build_result(
             names=names,  # type: ignore[arg-type]
@@ -397,6 +376,7 @@ def validate_sequence(
             passed=False,
             message=msg or "thol requires closure",
             metadata=meta,
+            error=SequenceSyntaxError(len(tokens) - 1, tokens[-1], msg or "thol closure"),
         )
 
     # U2: Destabilizers require stabilizers (IL or THOL). The destabilizer set
@@ -418,7 +398,10 @@ def validate_sequence(
             )
 
     # Adjacent compatibility
-    ok, idx, msg = _check_adjacent_compatibility(tokens)
+    ok, idx, msg = (
+        _check_adjacent_compatibility(tokens)
+        if compatibility_profile == "legacy" else (True, None, None)
+    )
     if not ok:
         err = SequenceSyntaxError(
             idx or 1,
@@ -434,22 +417,26 @@ def validate_sequence(
             error=err,
         )
 
-    # Transformer windows (ZHIR/THOL)
-    ok, idx, msg = _check_transformer_windows(tokens)
-    if not ok:
-        err = SequenceSyntaxError(
-            idx or 0,
-            tokens[idx or 0],
-            msg or "bifurcation rule",
+    diagnostic_probe = bool(context and context.get("diagnostic", False)) and (
+        tokens == ["dissonance", "mutation"]
+    )
+    meta["diagnostic_probe"] = diagnostic_probe
+    meta["canonical_word_checked"] = not diagnostic_probe
+    if not diagnostic_probe:
+        from .grammar_memoization import validate_sequence_optimized
+
+        initialized = bool(context and context.get("initial_epi_nonzero", False))
+        ok, messages = validate_sequence_optimized(
+            tokens, epi_initial=1.0 if initialized else 0.0,
         )
-        return _build_result(
-            names=names,  # type: ignore[arg-type]
-            canonical=tokens,
-            passed=False,
-            message=msg or "bifurcation rule",
-            metadata=meta,
-            error=err,
-        )
+        if not ok:
+            return _build_result(
+                names=names,
+                canonical=tokens,
+                passed=False,
+                message="; ".join(messages),
+                metadata=meta,
+            )
 
     # All good
     return _build_result(
@@ -461,81 +448,20 @@ def validate_sequence(
     )
 
 
-def parse_sequence(names: Sequence[str]) -> SequenceValidationResult:
-    """Parse and validate sequence; raise on structural errors."""
-    # type and canonical checks
-    if not isinstance(names, (list, tuple)):
-        names = list(names)  # type: ignore[assignment]
-    canon, non_str = _canonicalize_tokens(names)
-    if non_str:
-        idx = non_str[0]
-        raise SequenceSyntaxError(idx, names[idx], "tokens must be str")
-
-    tokens = [t for t in canon]
-
-    # Empty
-    if not tokens:
-        raise SequenceSyntaxError(0, "", "empty sequence")
-
-    # Unknown tokens
-    for i, t in enumerate(tokens):
-        if t not in CANONICAL_OPERATOR_NAMES:
-            raise SequenceSyntaxError(i, t, f"unknown tokens: {t}")
-
-    # Start/End
-    ok, msg = _check_start_rule(tokens)
-    if not ok:
-        raise SequenceSyntaxError(0, tokens[0], msg or "invalid start")
-    ok, msg = _check_end_rule(tokens)
-    if not ok:
-        raise SequenceSyntaxError(
-            len(tokens) - 1,
-            tokens[-1],
-            msg or "invalid end",
-        )
-    ok, msg = _check_thol_closure(tokens)
-    if not ok:
-        raise SequenceSyntaxError(
-            len(tokens) - 1,
-            tokens[-1],
-            msg or "thol closure",
-        )
-
-    # Stabilizer presence
-    if not any(t in {COHERENCE, SELF_ORGANIZATION} for t in tokens):
-        raise SequenceSyntaxError(
-            0,
-            tokens[0],
-            "missing stabilizer (coherence or self_organization)",
-        )
-
-    # Adjacent compatibility
-    ok, idx, msg = _check_adjacent_compatibility(tokens)
-    if not ok:
-        raise SequenceSyntaxError(
-            idx or 1,
-            tokens[idx or 1],
-            msg or "incompatible",
-        )
-
-    # Transformer windows
-    ok, idx, msg = _check_transformer_windows(tokens)
-    if not ok:
-        raise SequenceSyntaxError(
-            idx or 0,
-            tokens[idx or 0],
-            msg or "bifurcation rule",
-        )
-
-    # Successful parse result with metadata
-    meta = _compute_metadata(tokens)
-    return _build_result(
-        names=names,
-        canonical=tokens,
-        passed=True,
-        message="ok",
-        metadata=meta,
+def parse_sequence(
+    names: Sequence[str], *, context: Mapping[str, Any] | None = None,
+    compatibility_profile: str | None = None,
+) -> SequenceValidationResult:
+    """Use the same word checks as validate_sequence, raising on rejection."""
+    result = validate_sequence(
+        names, context=context, compatibility_profile=compatibility_profile,
     )
+    if result.passed:
+        return result
+    if result.error is not None:
+        raise result.error
+    tokens = result.canonical_tokens
+    raise SequenceSyntaxError(0, tokens[0] if tokens else "", result.message)
 
 
 class SequenceValidationResultWithHealth:

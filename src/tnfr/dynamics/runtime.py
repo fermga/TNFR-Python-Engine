@@ -1015,8 +1015,10 @@ def step(
         ``DT`` attribute stored in ``G.graph`` which keeps ΔNFR integration
         aligned with the nodal equation.
     use_Si : bool, default True
-        When ``True`` the Sense Index (Si) is recomputed to modulate ΔNFR and
-        νf adaptation heuristics.
+        Recompute the Sense Index before the configured selector and capacity
+        policy consume it. This refresh does not add a nodal pressure channel.
+        ``False`` skips recomputation; consumers can still read stored Si, so
+        this flag does not disable diagnostic-dependent control.
     apply_glyphs : bool, default True
         Enables canonical glyph selection so that phase and coherence glyphs
         continue to modulate ΔNFR.
@@ -1106,8 +1108,9 @@ def run(
     dt : float | None, optional
         Time increment for each step. ``None`` uses the graph's default ``DT``.
     use_Si : bool, default True
-        Recompute the Sense Index during each iteration to keep ΔNFR feedback
-        loops tied to νf adjustments.
+        Recompute the Sense Index before each iteration's configured control
+        policies. ``False`` skips refresh, not consumers of stored Si; see
+        :func:`step`.
     apply_glyphs : bool, default True
         Enables glyph selection and application per step.
     n_jobs : Mapping[str, Any] | None, optional

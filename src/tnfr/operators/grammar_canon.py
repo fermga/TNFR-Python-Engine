@@ -9,7 +9,7 @@ Instead it *materialises*, in one place, the canonical knowledge that was
 previously scattered across modules and prose:
 
 1. ``OPERATOR_ROLES`` — the per-operator grammatical role table (the 13 operators
-   × their U1-U6 roles), derived directly from the nodal-equation predicates in
+   × their U1-U6 roles), materialized from the contract-role predicates in
    :mod:`physics_derivation`. One query point instead of eight separate sets.
 
 2. ``GRAMMAR_RULES`` — the U1-U6 rule registry as data (id, name, physics basis,
@@ -45,13 +45,15 @@ triggers bifurcation OZ→[ZHIR|NUL].
 Theory↔engine note (NUL as closure)
 -----------------------------------
 TNFR.pdf lists ``NUL`` (contraction, "retorno al estado potencial") among the
-required closures. The engine, deriving closures from the nodal equation, does
-NOT treat NUL as a closure: contraction reduces dim(EPI) (removes degrees of
-freedom) but does not force ∂EPI/∂t → 0 the way SILENCE (SHA) does. The engine's
-``CLOSURES`` = {SHA, NAV, REMESH, OZ} is the physics-grounded set (see
+required closures. The engine's supported endpoint policy does NOT include
+NUL. Its ``CLOSURES`` = {SHA, NAV, REMESH, OZ} is a contract-role set (see
 ``physics_derivation.achieves_operational_closure`` /
 ``can_stabilize_reorganization``). This module documents the PDF nuance without
-overriding the physics derivation.
+overriding the supported policy. A single SHA attenuates capacity without
+generally setting it to zero; bounded pressure and repeated rate suppression
+are additional premises for asymptotic inactivity. NAV, REMESH and OZ closure
+labels likewise do not certify a stationary endpoint. The nodal equation alone
+does not uniquely choose between the historical and implemented closure sets.
 
 The role table is derived rather than hand-maintained: it is built by querying
 the shared classification predicates, and a self-check
@@ -64,6 +66,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+from types import MappingProxyType
 
 from ..config.operator_names import (
     COHERENCE,
@@ -112,6 +115,11 @@ __all__ = [
     "operator_grammar",
     "GrammarRule",
     "GRAMMAR_RULES",
+    "GrammarBasisKind",
+    "GrammarBasis",
+    "GRAMMAR_BASES",
+    "grammar_basis",
+    "operator_role_metadata",
     "rule",
     "GRAMMAR_COMPLIANCE_INVARIANT",
     "related_invariants",
@@ -344,6 +352,254 @@ def rule(rule_id: str) -> GrammarRule:
     raise KeyError(f"Unknown grammar rule id: {rule_id!r}")
 
 
+class GrammarBasisKind(str, Enum):
+    """Kinds of structural justification, separate from evidence status."""
+
+    IDENTITY = "identity"
+    CONDITIONAL_THEOREM = "conditional_theorem"
+    CONTRACT = "contract"
+    POLICY = "policy"
+
+
+@dataclass(frozen=True)
+class GrammarBasis:
+    """One declarative basis; neither its label nor owner verifies premises.
+
+    A rule can combine several bases. ``configured_choices`` names policies
+    or formulas, not a measurement of the configuration of a particular graph.
+    Hypotheses require separate domain-specific evidence before application.
+    """
+
+    kind: GrammarBasisKind
+    statement: str
+    hypotheses: tuple[str, ...]
+    configured_choices: tuple[tuple[str, str], ...]
+    owner: str
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "kind", GrammarBasisKind(self.kind))
+        if isinstance(self.hypotheses, (str, bytes)):
+            raise TypeError("hypotheses must be a sequence of text")
+        hypotheses = tuple(self.hypotheses)
+        raw_choices = tuple(self.configured_choices)
+        if any(isinstance(pair, (str, bytes)) for pair in raw_choices):
+            raise TypeError("configured choices must be name/value pairs")
+        choices = tuple(tuple(pair) for pair in raw_choices)
+        if any(len(pair) != 2 for pair in choices):
+            raise ValueError("configured choices must be name/value pairs")
+        text = (self.statement, self.owner, *hypotheses,
+                *(item for pair in choices for item in pair))
+        if any(type(item) is not str or not item.strip() for item in text):
+            raise ValueError("basis metadata must contain nonempty text")
+        if len({pair[0] for pair in choices}) != len(choices):
+            raise ValueError("configured choice names must be unique")
+        object.__setattr__(self, "hypotheses", hypotheses)
+        object.__setattr__(self, "configured_choices", choices)
+
+    def as_dict(self) -> dict:
+        """Return detached metadata without asserting checked hypotheses."""
+        return {
+            "kind": self.kind.value,
+            "statement": self.statement,
+            "hypotheses": list(self.hypotheses),
+            "configured_choices": dict(self.configured_choices),
+            "owner": self.owner,
+            "scope": "declarative_basis_not_execution_evidence",
+        }
+
+
+# The historical GrammarRule schema stays unchanged. These compositional
+# descriptions do not alter role membership, validators, gains or admission.
+_TETRAD_OBSERVATION_BASIS = GrammarBasis(
+    GrammarBasisKind.CONTRACT,
+    "The full tetrad combines pressure aggregation Phi_s, wrapped phase gradient/curvature, "
+    "and nonlocal coherence length xi_C; these readouts do not certify full-state closure.",
+    ("declared graph and state snapshot", "field-specific conventions and time coverage",
+     "separate state-closure evidence for dynamical prediction"), (),
+    "tnfr.metrics.observations.observe_graph_tetrad",
+)
+
+GRAMMAR_BASES = MappingProxyType({
+    "U1a": (
+        GrammarBasis(
+            GrammarBasisKind.IDENTITY,
+            "The nodal rate is nu_f * DeltaNFR, including at EPI = 0.",
+            ("defined finite nodal channels", "differentiable flow interval"), (),
+            "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#1-existence-boundedness-and-convergence",
+        ),
+        GrammarBasis(
+            GrammarBasisKind.CONTRACT,
+            "Generation or activation is an operator effect with live preconditions.",
+            ("admitted operator input", "actual operator realization"), (),
+            "tnfr.operators.operator_contracts.contract_for",
+        ),
+        GrammarBasis(
+            GrammarBasisKind.POLICY,
+            "A word starting from null form requires a registered generator.",
+            ("declared initial EPI", "standalone word context"),
+            (("generators", "GENERATORS"),),
+            "tnfr.operators.grammar_core.GrammarValidator.validate_initiation",
+        ),
+    ),
+    "U1b": (
+        GrammarBasis(
+            GrammarBasisKind.IDENTITY,
+            "Instantaneous stationarity requires nu_f * DeltaNFR = 0.",
+            ("defined nodal channels", "differentiable flow interval"), (),
+            "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#1-existence-boundedness-and-convergence",
+        ),
+        GrammarBasis(
+            GrammarBasisKind.CONDITIONAL_THEOREM,
+            "Repeated nu_k = alpha**k * nu_0 with bounded pressure has rate tending to zero.",
+            ("fixed 0 <= alpha < 1", "bounded pressure", "no intervening capacity writes"), (),
+            "tnfr.config.physics_derivation.can_stabilize_reorganization",
+        ),
+        GrammarBasis(
+            GrammarBasisKind.POLICY,
+            "A registered closure ends a word without certifying a stationary endpoint.",
+            ("standalone word context",), (("closures", "CLOSURES"),),
+            "tnfr.config.physics_derivation.derive_end_operators_from_physics",
+        ),
+    ),
+    "U2": (
+        GrammarBasis(
+            GrammarBasisKind.IDENTITY,
+            "Hybrid EPI change is the nodal flow integral plus the sum of EPI jumps.",
+            ("absolutely continuous flow segments", "locally finite recorded jumps"), (),
+            "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#9-u2-and-u4-in-the-actual-flowjump-model",
+        ),
+        GrammarBasis(
+            GrammarBasisKind.CONDITIONAL_THEOREM,
+            "Absolute integrability of the rate and absolute summability of jumps imply a finite EPI limit.",
+            ("defined scalar hybrid trajectory on the full time tail",
+             "absolutely integrable nodal rate", "absolutely summable EPI jumps"), (),
+            "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#9-u2-and-u4-in-the-actual-flowjump-model",
+        ),
+        GrammarBasis(
+            GrammarBasisKind.POLICY,
+            "Registered destabilizer debt and stabilizer coverage constrain words.",
+            ("accepted history and carried debt",),
+            (("debt_capacity", "U2_DEBT_CAPACITY"),
+             ("calibration", "floor(1/(nu_f*dt*rho)); rho=1 surrogate")),
+            "tnfr.operators.grammar_debt.advance_debt",
+        ),
+    ),
+    "U3": (
+        _TETRAD_OBSERVATION_BASIS,
+        GrammarBasis(
+            GrammarBasisKind.IDENTITY,
+            "The squared two-phasor magnitude is a*a + b*b + 2*a*b*cos(delta).",
+            ("nonnegative phasor amplitudes", "circular separation delta"), (),
+            "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#10-u3-exact-geometric-content-and-a-strict-gate-counterexample",
+        ),
+        GrammarBasis(
+            GrammarBasisKind.CONTRACT,
+            "Concrete UM/RA requires a compatible existing neighbor; merged UM relations are rechecked.",
+            ("finite live phases", "actual graph support", "admitted phase limits",
+             "merged stage proposals for a stage-level claim"), (),
+            "tnfr.operators._phase_gate.resolve_u3_phase_neighbors",
+        ),
+        GrammarBasis(
+            GrammarBasisKind.POLICY,
+            "The hard phase limit is selected in [0, pi/2]; UM can tighten it.",
+            ("finite graph configuration",),
+            (("hard_limit", "DELTA_PHI_MAX"), ("optional_tightening", "UM_MAX_PHASE_DIFF")),
+            "tnfr.operators._phase_gate.resolve_u3_phase_limits",
+        ),
+    ),
+    "U4a": (
+        GrammarBasis(
+            GrammarBasisKind.IDENTITY,
+            "On a smooth flow segment EPI'' = nu_f' * DeltaNFR + nu_f * DeltaNFR'.",
+            ("differentiable capacity and pressure", "twice differentiable EPI",
+             "no jump at the differentiation point"), (),
+            "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#9-u2-and-u4-in-the-actual-flowjump-model",
+        ),
+        GrammarBasis(
+            GrammarBasisKind.CONTRACT,
+            "Threshold and birth evidence must come from the realized operator-specific observation.",
+            ("valid timestamped nodal history", "operator-specific threshold and proposal"), (),
+            "tnfr.operators.self_organization_selection.observe_self_organization_eligibility",
+        ),
+        GrammarBasis(
+            GrammarBasisKind.POLICY,
+            "Registered triggers require handler coverage, not a claimed measured threshold crossing.",
+            ("word or incremental execution context",),
+            (("triggers", "BIFURCATION_TRIGGERS"), ("handlers", "BIFURCATION_HANDLERS")),
+            "tnfr.config.physics_derivation.derive_bifurcation_handlers_from_physics",
+        ),
+    ),
+    "U4b": (
+        GrammarBasis(
+            GrammarBasisKind.CONDITIONAL_THEOREM,
+            "For 0 <= q < 1 there exists n with q**n below any fixed positive band.",
+            ("scalar relaxation surrogate", "0 <= q = 1-nu_f*dt*rho < 1",
+             "specified band strictly between zero and one"),
+            (("rho", "1"), ("band", "1/(pi+1)"),
+             ("implementation_scope", "one-step fallback and 64-step cap do not certify the inequality")),
+            "tnfr.config.physics_derivation.derive_bifurcation_window_from_physics",
+        ),
+        GrammarBasis(
+            GrammarBasisKind.POLICY,
+            "Transformers require recent destabilization; Mutation also requires prior Coherence.",
+            ("accepted history", "retained prior-Coherence fact"),
+            (("recency_window", "BIFURCATION_WINDOW"),),
+            "tnfr.operators.grammar_dynamics._check_u4b",
+        ),
+    ),
+    "U5": (
+        GrammarBasis(
+            GrammarBasisKind.IDENTITY,
+            "A differentiable parent representation obeys the chain rule on compatible flows.",
+            ("specified differentiable parent map", "compatible differentiable child/parent dynamics"), (),
+            "theory/UNIFIED_GRAMMAR_RULES.md#6-u5--multi-scale-coherence",
+        ),
+        GrammarBasis(
+            GrammarBasisKind.CONDITIONAL_THEOREM,
+            "A fixed affine model projects autonomously under R when RA = Abar R; the source projects as Rb.",
+            ("fixed model x'=-Ax+b", "fixed linear observation R", "verified RA=Abar R"), (),
+            "tnfr.physics.epi_memory.observe_forced_support_closure",
+        ),
+        GrammarBasis(
+            GrammarBasisKind.POLICY,
+            "Declared deep recursion requires nearby scale stabilizer coverage.",
+            ("declared recursion depth", "accepted word context"),
+            (("scale_stabilizers", "STABILIZERS"), ("recency_window", "BIFURCATION_WINDOW")),
+            "tnfr.operators.grammar_core.GrammarValidator.validate_multiscale_coherence",
+        ),
+    ),
+    "U6": (
+        _TETRAD_OBSERVATION_BASIS,
+        GrammarBasis(
+            GrammarBasisKind.IDENTITY,
+            "For aligned snapshots DeltaPhi = B_after DeltaPressure + (B_after-B_before) Pressure_before.",
+            ("aligned node order", "declared distance kernels", "finite pressure snapshots"), (),
+            "tnfr.operators.grammar_u6.structural_potential_change_terms",
+        ),
+        GrammarBasis(
+            GrammarBasisKind.CONDITIONAL_THEOREM,
+            "The fixed linear field satisfies norm_inf(Phi) <= norm_inf(B) * norm_inf(pressure).",
+            ("fixed finite distance kernel", "bounded pressure"), (),
+            "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#4-structural-potential-and-topology-dependent-bounds",
+        ),
+        GrammarBasis(
+            GrammarBasisKind.POLICY,
+            "Mean absolute nodewise potential drift must be strictly below the selected threshold.",
+            ("complete aligned reference and observed snapshots", "declared canonical field provenance"),
+            (("threshold", "U6_STRUCTURAL_POTENTIAL_LIMIT"),
+             ("aggregation", "mean_absolute_nodewise_drift"),
+             ("time_coverage", "two_snapshot_finite_observation")),
+            "tnfr.operators.grammar_u6.validate_structural_potential_confinement",
+        ),
+    ),
+})
+
+
+def grammar_basis(rule_id: str) -> tuple[GrammarBasis, ...]:
+    """Return immutable basis metadata, without evaluating any hypothesis."""
+    return GRAMMAR_BASES[rule_id]
+
+
 #: Canonical invariant index for "Grammar Compliance" (AGENTS.md §Canonical
 #: Invariants, the 6-invariant model). Every grammar-rule violation relates to
 #: this invariant by definition, in addition to the rule's primary physics
@@ -397,6 +653,34 @@ def u_rules_for_operator(op: str) -> tuple[str, ...]:
     if grammar is None:
         return ()
     return tuple(sorted({ROLE_TO_URULE[r] for r in grammar.roles}))
+
+
+def operator_role_metadata(op: str) -> dict:
+    """Serialize canonical roles and bases with the legacy SDK role view.
+
+    The legacy ``roles`` list preserves its spelling and order. Complete roles
+    are exposed separately; neither list constitutes execution evidence.
+    """
+    name = _OPERATOR_BY_GLYPH.get(op, op)
+    grammar = operator_grammar(name)
+    legacy = (
+        (GrammarRole.GENERATOR, "generator"),
+        (GrammarRole.CLOSURE, "closure"),
+        (GrammarRole.STABILIZER, "stabilizer"),
+        (GrammarRole.DESTABILIZER, "destabilizer"),
+        (GrammarRole.TRANSFORMER, "transformer"),
+        (GrammarRole.COUPLING, "coupling/resonance"),
+    )
+    rule_ids = u_rules_for_operator(name)
+    return {
+        "roles": [label for role, label in legacy if grammar.has(role)],
+        "canonical_roles": [role.value for role in GrammarRole if grammar.has(role)],
+        "u_rules": list(rule_ids),
+        "grammar_basis": {
+            rule_id: [basis.as_dict() for basis in grammar_basis(rule_id)]
+            for rule_id in rule_ids
+        },
+    }
 
 
 #: The TNFR.pdf §2.3.3 "Esquema formal de sintaxis" positions (theory anchor).

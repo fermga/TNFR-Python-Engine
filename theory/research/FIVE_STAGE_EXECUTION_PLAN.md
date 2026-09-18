@@ -16,8 +16,70 @@ The retained EN/AL accounting and phase-conditioning audit are complete in
 scope. The integrated regional review reuses existing witnesses showing
 that admission alone does not select a unique operator. Exact regional
 balances now separate internal dynamics from boundary and canonical-source
-support. Next: define temporal region identity and audit what maintains
-its supporting conditions on the retained full-state evidence.**
+support. The temporal regional audit is complete: its nine finite budgets
+close while relative EPI forms and means change. Child contrast grows through
+the parent boundary, with partial IL attenuation. Phase changes the source
+after integration. The phase-to-source gate is complete: two archived phase
+outputs change fresh canonical pressure and reverse one regional model-rate
+sign at the same endpoint. The exact represented-phasor reducer is implemented
+and validated, with explicit unavailable direction at cancellation. Its
+versioned opt-in global-coordination integration is complete, including
+graph-owned restoration on refusal. Its pinned source comparison is complete:
+exact enumeration outputs agree, and no regional rate changes sign. The
+retained paired regional response is also complete: all eight pairs reduce
+raw error, but only four improve contrast-normalized error; child-cohort
+spatial error grows while its mean offset decreases. That distortion is now
+accounted for: Reception supplies 84.9442% of the interval's error increase,
+followed by 15.0558% from integration; the held-pressure lag attenuates part
+of it. The retained map converts child-parent mean contrast into child
+shape. The localized form-damage/restoration test is now complete: error
+energy falls 62.07099%, control variance grows 6.04307-fold, and all finite
+configured-response gates pass. Autonomous maintenance remains open.
+The conditional regional response criterion is now derived and checked on
+both retained perturbations under exactly matched coefficients. Isolated
+child-shape images attenuate in both; mean/parent input overwhelms the margin
+only in the earlier case. A nonzero nullspace image excludes an unrestricted
+region-only gain. Environmental-input geometry is now classified exactly:
+parent inputs alone span all seven child-shape directions for both maps;
+there is no protected nonzero centered linear read-out under unrestricted
+inputs. The exact symmetry audit is complete: the support and nodal generator
+have eight symmetries, whereas the sequential Reception and held-pressure
+maps preserve only the identity. The local Reception row family respects all
+eight; its ordered composition does not. The captured source and state are
+also asymmetric. The same-snapshot comparison is now complete: J and J-hA
+respect all eight symmetries and remove the regional-mean-to-shape leak.
+Six centered directions would be protected under orbit-invariant inputs,
+but neither actual paired environment satisfies that condition. Unrestricted
+input rank remains seven. The symmetry detour is closed. The relaxed-source
+fixed-point classification is complete for the specified phase/capacity
+policies and their common-semicircle, positive-capacity, zero-topology-channel
+domain. Si is telemetry; the implemented policy consumes it to select capacity
+updates. The resulting obstruction is conditional on that policy, not a TNFR
+no-go theorem. The proposed policy-response experiment is secondary and parked.
+The telemetry-free source-tangency identity is now derived: on fixed support,
+phase and capacity source changes must cancel to maintain zero pressure.
+It is a compatibility condition, not a selected evolution law. The
+capacity-to-phase gate is now closed: the original definitions and two
+same-initial-state analytic completions establish that free phase advance
+does not follow from the nodal EPI equation. Accumulated capacity is a
+derived trajectory coordinate, not an oscillator phase. Fixed-source geometry
+is now classified in scope: nonnegative irreducible response permits only
+common rotation, while an exact cube family has relative-phase freedom at
+a reducible/signed boundary. Its nontrivial deformation violates the all-edge
+pi/2 gate. The grammar derivation audit is complete in scope: signed
+initialization, public word validation and U3/U6 reports are corrected.
+The strict-U3 nonzero-source rank implication is refuted by an exact
+double-star, but its extra tangent is obstructed at second order. Even an
+exact U5 quotient need not increase average coherence. The structural grammar
+refactor now separates rule provenance, optional language preferences,
+no-replacement execution and typed finite EPI evidence. The first G3 closure
+audit adds capacity-law independence under dissipation, conductance-scale
+freedom, exact geometry work and necessary variational reciprocal coupling.
+The primary task now returns to physical/mathematical foundations within G3:
+EPI form versus its representation, directed pressure, dimensions and time.
+The original source's incompatible definitions are explicit; existing code is
+a candidate realization rather than an axiom selecting the missing laws.
+Finite strict-U3 geometry is a supporting gate inside this same task.**
 P1-P5 are the supporting measurement
 bridge: P1 is implemented; P2 has continuous bounds and one completed Volts
 exploration, but no admitted physical model. Automatic public-data searching
@@ -90,7 +152,7 @@ campaigns, parameter searches or analogies as independent projects.
 | Existing objective | Delivery / status | Required evidence |
 | --- | --- | --- |
 | O1.b / O3.a, with S5/S16 | Finite distributed birth/support/pressure path complete; autonomous initiation open | Derived causal trigger, complete declared eligibility state, no hidden unique-parent tie-break; preparation and public-birth/UM dispatch remain supplied policies |
-| O3.a with S1/S2/S6/S7/S16 | Retained EN/AL accounting and phase-conditioning audit complete; autonomous maintenance remains open | Exact finite reset budgets close; the tested relative phase pattern depends on reduction order near the tiny resultant. Neither finite attenuation nor a configured schedule establishes maintenance |
+| O3.a with S1/S2/S6/S7/S10/S16 | Grammar audit and structural-evidence refactor implemented; scoped source geometry derived; autonomous closure remains open | Next: joint nodal, geometry and full-tetrad closure review. Finite strict-U3 geometry is a subordinate proof question. Admission, selection and maintenance remain distinct; controller response stays parked |
 | O1.a/O4.a with S3/S8/S9, supporting O3.a | Exact minimal dimension sixteen derived in all four models; use the complete state | Eight extra coordinates are already available. Approximation-error analysis is optional and parked until a concrete reduction requirement exists |
 | O2/O4.b/O5 | Geometry, interactions, composition and physical identification; open | Canonical mechanisms and quantitative observables; auxiliary wave, gauge or particle constructions remain comparisons until their bridge is derived |
 | O6.a | Measurement bridge P1-P5; supporting and presently parked at P2 admission | Frozen independently justified observation map, clock, uncertainty and reserved tests |
@@ -306,7 +368,7 @@ variance decrease comes from its parent boundary. All exact identities close
 and 313 targeted tests pass. This supports the scoped accounting, not a
 regional maintenance or autonomy claim.
 
-**Next bounded delivery: temporal regional identity and source maintenance.**
+**Completed bounded delivery: temporal regional identity and source accounting.**
 Return to O1/O3/S16 with the full sixteen-coordinate state. Use the
 [NFR formation map](../EMERGENT_ONTOLOGY.md#11-nfr-formation-definition-birth-and-collective-dynamics)
 to keep coordinate birth, formation of a coherent region and autonomous
@@ -343,6 +405,1049 @@ conditional child equilibrium into an observed future target. If numerical
 phase ambiguity defeats the identity claim, report that boundary instead
 of adding an epsilon alignment rule. Any later prospective perturbation
 requires its own protocol, frozen before execution.
+
+**Interruption checkpoint (2026-09-18).** Base commit `477983e5` is merged
+and pushed to `origin/main`; its integration validation passed 1,619 tests
+with one platform-dependent symlink skip. The local `manual/` directory is
+unrelated and must remain untouched. Start from this section after a restart;
+do not regenerate previous trajectories or overwrite historical artifacts.
+The temporal-region delivery is complete in finite accounting scope.
+It uses the already retained **control** native step
+from `t=1.5` to `t=1.75`, the earliest recorded native interval with a changed
+canonical source. Reuse its actual eight ancestry pairs and full child cohort.
+Input: `artifacts/research/thol_native_runtime_response_2026_09_18.json`,
+SHA-256 `71252d116d8933d15a797707ed9f44ed865406422da6db492b48f6989d739c95`.
+The source is local and ignored; fail clearly if unavailable, without running
+its producer as an automatic fallback. Metadata inspection is complete:
+`branches[0].native_trace` has generation at ordinal 3, sixteen IL calls
+at 40-55, integration at 57, phase coordination at 58 and adaptation at 59.
+Only `integrator_entry` has a captured forcing payload; generation has no
+such capture. Binding that model back requires matching state and channel
+inputs. Preserve the phase-normalization bracket between integration and
+coordination. Historical IL rows do not contain `resolved_IL_retention`.
+Do not manufacture it or confuse observed pressure writes with roundoff.
+
+Saved implementation: `observe_regional_support_euler` centralizes the finite
+identity in `src/tnfr/physics/support_transport.py`. The bounded reader is
+`benchmarks/thol_regional_identity_audit.py`; derivation and findings are in
+[forced-support balance, sections 9-10](../FORCED_SUPPORT_BALANCE.md#9-finite-regional-observation-with-a-held-nodal-rate).
+The 24 new observer tests and 34 reader tests pass. A combined run with
+reused regional/support/forcing tests passes **156 tests**; all four changed
+Python files pass flake8. The official offline output is
+`artifacts/research/thol_regional_identity_audit_2026_09_18.json`, SHA-256
+`57cc9774c0645779d6e54df5fff2e0f1f33fe4bc7390bce5c90c04a869ab3745`.
+Its working-source digest is
+`sha256:f1e3ad6b0a8e6b30b12019469ea0f654b3432fd397b314b91173fdf815a2e775`.
+Local validation: `artifacts/research/regional_identity_validation_2026_09_18.json`.
+The delivery is saved locally after base `477983e5`; it has not been committed
+or pushed. Use `.venv313/Scripts/python.exe -X utf8`; never invoke the native
+producer as a fallback. Save each later completed boundary before continuing.
+
+**Frozen observation contract for this interval.** Region membership follows
+the recorded ancestry, never a newly optimized partition. The identity
+readout retains ordered regional EPI, its full-degree/capacity-weighted mean
+and centered form, every regional phase and capacity, complete boundary
+support, physical history and scheduling metadata. A common regional EPI
+translation is allowed only in the explicitly labeled relative-form
+comparison; the mean change is still reported. Phase rotations are not
+silently factored out: retain the represented phase vector and report its
+change, with the known phase-conditioning limitation. Fixed membership alone
+is lineage continuity, not proof of a persistent coherent entity. Exact
+relative-form invariance is a separate strict predicate, not a definition
+that forbids an NFR from reorganizing. No scalar identity score, tolerance,
+replacement target, new source or interval extension is selected from the
+result. Report finite EPI accounting, source evolution and unmet autonomy
+obligations separately.
+
+**Recorded outcome.** All nine finite weighted-total and variance budgets
+close exactly. Membership, support and capacity persist; all nine centered
+EPI forms and means change. Child variance grows by approximately
+`0.0012677546577278922`, driven by positive parent-boundary work and partly
+attenuated by IL. This contrast is neither the canonical coherence score
+nor an autonomous-identity test. The phase source changes after integration
+(maximum component change approximately `0.0317983299409307`); capacity and
+topology sources do not. The observed increment is explained, while the
+mechanism maintaining future supporting conditions remains open. Missing
+generation capture and resolved IL retention remain explicit qualifications.
+No new native call, trajectory, fitted target or source law was introduced.
+
+**Completed bounded delivery: relevance of the retained phase ambiguity to the source.**
+Before claiming maintenance from a longer response, determine whether the
+already observed phase-enumeration difference changes the actual canonical
+drive and these same regional budgets. The phase obstruction itself is
+already established; do not rerun coordination to rediscover it.
+
+1. Bind the existing phase-audit, original native and completed regional
+   identity artifacts to their recorded hashes. The phase artifact is
+   `artifacts/research/thol_retained_phase_audit_2026_09_18.json`, SHA-256
+   `b9e957bbfbc21ac68c3dfa31c818a9d46db3dbae08da3879b6d33c7991f7371a`.
+   Select only the archived NumPy baseline and the
+   archived canonical-enumeration alternative at the same first control
+   coordination boundary. Transport both vectors back to original node
+   identity. Verify that the baseline exactly matches the original `t=1.75`
+   phase endpoint; stop on a missing or inconsistent record.
+2. Freeze that endpoint's EPI, capacity, full conductance, normalized channel
+   weights and original node/neighbor ordering. Evaluate only detached
+   canonical pressure/forcing on those two phase vectors, through
+   `capture_non_epi_forcing`. The baseline must reproduce the archived
+   fresh-kernel capture exactly. Do not overwrite the historical stored
+   pressure or present this calculation as its actual next refresh.
+3. Reuse the regional observer for all nine already declared regions. Compare
+   phase-source components and model weighted-total/variance rates, keeping
+   represented pressure-kernel discrepancies separate. At fixed state and
+   metric, check `Delta Mdot_R=sum_R d_i*Delta F_phase_i` and
+   `Delta Vdot_R=sum_R d_i*z_i*Delta F_phase_i`; internal and boundary terms
+   must remain unchanged. The archived transported-label output supplies an
+   exact equal-input control without another kernel call. Retain zero as
+   well as nonzero differences; no fitted tolerance or selected favorable
+   region. The regular-chart derivative in `phase_response.py` is not a
+   finite branch-crossing certificate for this comparison.
+
+**Budget and decision:** two archived phase alternatives on one fixed
+sixteen-node endpoint, nine regional observations each; no native execution,
+new phase coordination, trajectory extension, scalar-backend sweep or new
+physical parameter. This is a detached sensitivity calculation, not an
+observed alternative future or universal error bound. A nonzero canonical
+drive difference makes source reproducibility an explicit gate before a
+maintenance claim; zero differences restrict the known ambiguity's relevance
+only for these retained readouts. A failed baseline capture match is an
+admission failure to diagnose, not permission to regenerate the archive.
+Do not retrofit an epsilon alignment rule or begin another campaign from
+either outcome. Broader source closure and the underived activation/schedule
+relation remain separate obligations after this gate.
+
+**Recorded outcome and resumption checkpoint (2026-09-18).** The gate is
+complete; source invariance under the two archived phase outputs is
+`rejected_in_scope`. The full baseline capture matches exactly. The maximum
+phase-source difference is approximately `0.04914323880773078`; the largest
+change in kernel arithmetic discrepancy is approximately `2.61012e-17`.
+Pair 3's model variance rate changes from approximately `+0.000771577106453`
+to `-0.005590300494763`. The child-cohort rate increases but stays positive.
+All nine exact regional difference identities close; historical stored
+nodal rates are unchanged. This is a detached comparison, not an alternative
+observed future, a stability verdict or a maintenance result. Full findings:
+[forced-support balance, section 11](../FORCED_SUPPORT_BALANCE.md#11-phase-source-relevance-at-a-fixed-regional-state).
+
+The consumer is `benchmarks/thol_phase_source_relevance.py`. Its 43 portable
+tests and reused forcing/regional/identity/phase tests pass **151 cases**;
+both new Python files pass flake8. A standard-library independent recount
+passes 175 exact checks without another kernel call. The official study
+uses exactly two forcing captures and zero native/coordination calls.
+Output: `artifacts/research/thol_phase_source_relevance_2026_09_18.json`,
+SHA-256 `62c4fb07068980acebc75b264f63d715e3a0d28bef6fcc5628441937c01ffb86`.
+Working-source digest:
+`sha256:f3f8609af8ff7033a98c9f0ac449ca4a1343ffece1aa73620340ab98e31e918c`.
+Local validation: `artifacts/research/phase_source_relevance_validation_2026_09_18.json`.
+The earlier identity delivery and this follow-up remain local changes after
+published base `477983e5`; neither has been committed or pushed. Historical
+producers and artifacts are unchanged. Resume with the next contract below,
+preserving the unrelated `manual/` directory and all prior local work.
+
+**Completed bounded delivery: exact represented-phasor reduction.** The source
+gate identifies a concrete numerical prerequisite for the generative route.
+Address its reduction mechanism before collecting more maintenance evidence.
+This delivery supplies one shared arithmetic contract, not a new force or
+an automatic claim that the entire phase algorithm has been repaired.
+
+1. Reuse `mathematics/_exact_weighted.py` to sum fixed finite represented
+   cosine/sine components exactly. Retain the exact pair and an explicit
+   joint-zero predicate. Define nonempty-input and invalid-value handling;
+   distinguish absent input from cancellation. Do not introduce an epsilon
+   or change the supplied trigonometric values, gains or phase law.
+2. For a nonzero exact pair, specify one deterministic materialization for
+   the existing angle readout. Scale the pair together if needed so rounding
+   cannot turn both components into zero or overflow; retain the exact scale
+   and rounded pair separately. Prove permutation invariance for these fixed
+   components by exact integer addition. Do not describe ordinary Kahan or
+   `fsum` accumulation alone as that proof.
+3. Test cancellation, near cancellation, axes, signed zeros, subnormal and
+   normal inputs, node/neighbor permutations and the declared materialization.
+   Use the existing exact dyadic reduction owner rather than adding another
+   summation implementation. No native trajectory, gain adjustment, phase
+   sweep or new experimental preparation belongs to this contract.
+4. Keep two questions separate: exact zero of the represented component sum,
+   and zero/nonzero of `sum exp(i*represented_theta)` over exact real
+   trigonometric values. Reuse the existing rational resultant enclosures
+   when later claiming the latter; a finite deterministic `atan2` output
+   does not certify transcendental angle accuracy, global gauge invariance
+   or conditioning of the phase law.
+
+**Acceptance and next boundary:** one reusable read-only owner with an exact
+permutation argument, independent arithmetic tests and explicit unavailable
+direction at exact joint zero. Returning an arbitrary direction there would
+add an unsupported choice. Inventory the existing global/local callers and
+their degenerate behavior for a subsequent versioned integration; do not
+silently replace that behavior in this first contract. A passing reducer
+then permits a bounded production integration with its own stage and
+regression checks. Source closure, autonomous activation and sustained
+regional identity remain the scientific objectives beyond this repair.
+
+**Completed reducer and resumption checkpoint (2026-09-18).** The shared
+owner is `src/tnfr/mathematics/phasor_resultant.py`:
+`reduce_phasor_components` returns a frozen `RepresentedPhasorResultant`.
+It reuses the exact weighted-sum owner, retains exact sums, common scale,
+rounded pair and exact rounding defects, and returns `angle=None` at exact
+joint zero. Empty input rejects separately. The shared binary64 rounding
+precondition is checked before consuming input. The permutation statement
+concerns derived output, not the recorded input ordering, transcendental
+angles or complete engine execution. Proof and caller inventory:
+[forced-support balance, section 12](../FORCED_SUPPORT_BALANCE.md#12-exact-reduction-of-represented-phase-components).
+
+Independent tests in `tests/test_phasor_resultant.py` pass 52 cases. A combined
+run with midpoint, unified numerical, circular-semantics and stable-pressure
+regressions passes **225 tests**; both new Python files pass flake8. The 98
+existing phase/numerical tests also passed before implementation. Local
+validation: `artifacts/research/phasor_resultant_validation_2026_09_18.json`.
+No production caller, historical capture or trajectory is changed. These
+changes and the two preceding deliveries remain local after published base
+`477983e5`, without a new commit or push. Preserve their source and artifacts
+and the unrelated `manual/` directory. Resume with the integration below.
+
+**Completed bounded delivery: versioned global-coordination integration.** Use
+the new reducer in one explicitly selected numerical path of
+`coordinate_global_local_phase`. The selection identifies an implementation
+version, not a new physical force, gain or fitted model coefficient. Retain
+the legacy default during this first integration and label the selected path
+in its evidence. Do not silently promote it to all phase consumers.
+
+1. Reuse the existing phase/trigonometric input owner and reduce the same
+   materialized global components exactly. Keep local proposals, effective
+   global/local gains, adaptive-gain policy, support and normalization rules
+   unchanged. Component materialization and local reductions retain their
+   separate numerical limitations.
+2. Specify the empty-graph and inactive-global-term cases separately. If an
+   active global term requires an exact-zero represented resultant, raise an
+   explicit domain error: no invented direction, alignment epsilon, implicit
+   zero force or imported dynamics. Prevent state, history, gain or cache
+   changes on refusal. Current coordination mutates history before computing
+   the resultant; preflight before mutation or reuse the existing graph-owned
+   transaction rather than building another rollback mechanism.
+3. Test the opt-in path on ordinary and cancellation-sensitive finite inputs,
+   including the retained node-enumeration pattern as a controlled fixture.
+   Prove the scope by binding identical component values and unchanged local
+   inputs/gains. Check exact-zero refusal, graph-owned state restoration and
+   preservation of default-path behavior. Numerical angle reproducibility
+   does not assert true-transcendental accuracy or whole-coordinator
+   permutation invariance while local reductions remain unchanged.
+
+**Budget and acceptance:** one global-coordination path and its focused
+regressions; no native research window, support/preparation search, public-data
+campaign or altered operator schedule. Existing field/pressure outputs are
+not overwritten. Retain the version, primitive phase inputs, fixed/effective
+gains, reducer evidence and complete pre/post or failure state for the bounded
+fixture. Acceptance requires the new contract and refusal semantics to hold,
+not an improved maintenance score. Subsequent source recapture or live
+research continuation needs its own frozen comparison after this integration.
+The macro objective remains generation and sustained identity through TNFR
+structure/dynamics; reproducible numeric implementation supplies evidence
+for that question, not an independent physical-emergence conclusion.
+
+**Result.** The selected API is `global_reduction="exact_components_v1"`;
+the default remains `"legacy"` and returns `None`. One shared coordinator
+preserves the local phase and adaptive-gain algorithms, with their defaults
+centralized in one table. The exact path captures `GraphTransactionSnapshot`
+before gain/job conversion, history or cache writes. It returns a frozen
+`GlobalPhaseCoordinationEvidence`; undefined active direction raises
+`UndefinedGlobalPhaseError`. Empty graph and inactive global term are
+separate successful cases. Nonfinite inputs/proposals and failed job-count
+conversion reject in the opt-in path. Failure through the final evidence
+construction restores graph-owned state under the existing transaction's
+alias/ownership scope. External side effects and arbitrary node-ID
+immutability are not promised. See the
+[caller contract](../FORCED_SUPPORT_BALANCE.md#versioned-global-coordination-integration).
+
+The new `tests/test_exact_phase_coordination.py` supplies 24 independent
+integration cases. Together with legacy coordination, exact phasor,
+circular-semantics and graph-transaction tests, **175 tests pass**. The
+seven NumPy deprecation warnings come from existing transaction array
+restoration tests; they are not failed assertions. Source, tracked type stub
+and new tests pass flake8. The controlled 16-node fixture retains the actual
+primitive phase vector but uses synthetic ring topology and fixed gains;
+three node enumerations have identical aligned proposals under unchanged
+local input order. This finite fixture does not replay the retained native
+execution or prove arbitrary whole-coordinator permutation invariance.
+
+**Saved integration checkpoint (2026-09-18).** The implementation and
+targeted validation are complete. Local validation is retained in
+`artifacts/research/exact_phase_coordination_validation_2026_09_18.json`;
+the bounded fixture retains evidence and before/after/failure projections
+in `artifacts/research/exact_phase_coordination_fixture_2026_09_18.json`.
+The 72-case baseline passed before implementation. No native research window
+or historical producer was rerun, and no pressure was recaptured for this
+delivery. This work and the previous local deliveries are not yet committed
+or pushed. Preserve their files, immutable historical inputs and `manual/`.
+
+**Completed bounded delivery: versioned phase-to-regional-source comparison.**
+Return to the retained control boundary at `t=1.75`, ordinal 58. Determine
+which regional source statements change when the new global implementation
+is explicitly selected. This is a detached one-stage comparison, not a
+trajectory extension or a maintenance test.
+
+1. Reuse the retained-state admission, source reader and regional observers;
+   do not build a second pressure or balance implementation. Pin the archived
+   primitive pre-coordination phases, EPI, capacities, support, weights and
+   per-node neighbor order. Bind the two archived effective gains explicitly,
+   so adaptation does not become a second changed variable.
+2. Execute at most three detached coordinator calls: legacy reference,
+   `exact_components_v1` in source node order, and that same version under
+   one frozen alternate node enumeration with unchanged local neighbor order.
+   Require the legacy reference to reproduce the archived phase output;
+   otherwise stop the comparison at its admission obstruction. Retain
+   components, exact sums, proposals, normalized outputs and graph state.
+   Compare the aligned local targets/gains and global reducer separately;
+   any remaining output difference is recorded, not silently attributed to
+   the global sum or removed by fitting.
+3. Admit at most two fresh canonical forcing captures on the same fixed
+   endpoint EPI/capacity/support/order: reference phase and exact-version
+   phase. Reuse the phase-source audit to separate component changes from
+   kernel materialization defects and stored-pressure residuals. Compare
+   the same eight ancestry pairs plus the child cohort with the full-graph
+   `H=d/nu_f` regional observer. Keep model mean/variance rates separate
+   from historical stored rates, and account for the differences exactly.
+
+**Acceptance and limit:** retain a reproducible finite comparison even if
+no regional rate improves. Exact reduction removes one numerical ordering
+mechanism; it does not by itself improve transcendental conditioning or
+derive a global target for an ideally symmetric preparation. Do not overwrite
+archived outputs, change the native default, add source terms, search
+preparations or extend the native window. Classify residual local/gain/angle
+obstructions before deciding whether a separately frozen regional
+maintenance experiment is admissible. The macro objective remains sustained
+regional identity from nodal dynamics; this comparison supplies a cleaner
+source baseline for that question. Keep this a bounded gate: after its
+classification, prioritize regional recovery versus loss of form using
+existing paired evidence. Do not open a general numeric-policy audit or
+new trajectory campaign without a concrete unresolved requirement.
+
+**Result.** The single run used exactly three coordinator calls and two
+forcing captures. Exact-version reversed enumeration gives identical aligned
+proposals and phases. Against legacy, the largest relative-pattern residual
+is `4.440892098500626e-16`; fresh pressure differs by at most exactly `2^-53`.
+Five nodes change and no regional model-rate sign changes. The nine exact
+source-difference balances close; stored rates remain unchanged. The source
+gate is complete in this scope, with 53 targeted tests and a separate
+149-check exact recount. The result owner is
+[section 13](../FORCED_SUPPORT_BALANCE.md#13-versioned-phase-correction-at-the-retained-regional-state).
+
+**Completed primary follow-through: retained regional recovery versus loss of
+form (2026-09-18).** Reuse the already archived paired control/child-Emission
+window after completing the source comparison above. This finite question
+does not require a new native experiment or a numerical-policy change.
+Before reading outcomes, fix all six endpoints `t=1.75,2,2.25,2.5,2.75,3`,
+the eight actual ancestry pairs and the actual-child cohort. Bind the two
+historical artifacts and their complete adjacent records through the existing
+retained-reset reader. Their legacy coordinator provenance stays explicit.
+
+For each region use the restriction of the original full-graph
+`H=diag(d/nu_f)`, after checking unchanged support/capacity in both branches.
+At every endpoint record the weighted mean of the paired EPI difference,
+its centered energy `E_delta`, the control's centered vector and variance
+`V_control`, and that vector's drift from the first endpoint. Retain
+`E_delta/V_control` only when `V_control>0`; zero initial error and zero
+control contrast are separate cases. Use exact represented rational values,
+existing paired-distance kernels and all regions without outcome selection.
+
+Acceptance is an explicit finite classification: decreasing perturbation
+error, loss or retention of control contrast, and change of control form
+must be reported separately. Neither a falling ratio caused by growing
+control contrast nor shared-forcing diffusion alone proves active restoration.
+Preserve the supplied IL/EN/AL policy and distinct AL histories; EPI return
+does not establish full engine-state return. No source captures, phase calls,
+new native steps, threshold search or physical-emergence conclusion belong
+to this follow-through. Its result should determine the next missing
+maintenance mechanism, rather than opening another numerical cleanup loop.
+
+**Result.** All 54 regional endpoint observations are complete without new
+runtime or pressure calls. All eight ancestry pairs reduce centered paired
+error by about 71.22%-78.70%, but only the four odd pairs improve error relative
+to the control's remaining contrast. The child cohort's centered error grows
+from about `1.69713e-9` to `7.07096e-7`; its control contrast also grows and its
+mean offset falls. All control centered vectors change. This rejects a
+uniform regional-recovery reading of the whole-network score. It establishes
+neither autonomous maintenance nor instability. See
+[section 14](../FORCED_SUPPORT_BALANCE.md#14-regional-recovery-versus-loss-of-form-in-the-retained-paired-window).
+Validation: 49 targeted tests and an independent 559-check exact recount.
+
+**Saved research checkpoint (2026-09-18).** Both deliveries are complete;
+their 102 targeted tests include 25 new cases. The local record is
+`artifacts/research/regional_response_followthrough_validation_2026_09_18.json`.
+The retained source comparison and regional-response artifacts have separate
+input/source bindings. Historical inputs, native defaults and engine code
+are unchanged in this follow-through. Changes remain local and uncommitted.
+Preserve previous deliveries and the unrelated `manual/` directory.
+
+**Completed bounded delivery: retained child-cohort distortion.** Reuse
+the existing reset reader and exact regional/paired observers on the single
+`t=2.25 -> 2.5` matched interval, containing Reception and integration. The
+child-cohort error increases from about `1.16202e-8` to `4.89437e-7` there.
+Before any calculation, fix this cohort, interval and the two archived
+branches. Keep all EPI coordinates and the same full-graph metric.
+
+Separate the exact paired-error changes across the recorded Reception
+writes, the step consuming pre-generated stored pressure, and the endpoint.
+Reuse the available per-node receipts to localize any within-cohort
+differences. A phase update after integration must not be assigned as the
+cause of an earlier EPI change. Retain the parent-boundary and source terms
+where the archived generation capture supports them; do not reconstruct
+missing pressure retrospectively. Require the finite contributions to sum
+to the observed child-error increment, including their cross/quadratic terms.
+
+The decision is whether the observed distortion is explained by the declared
+mixing/order and boundary input, the held-pressure integration, or an explicitly
+unresolved source contribution. This is a mechanism explanation for the
+main regional-identity question, not another numeric-policy audit. Use only
+retained records: no new trajectory, phase/pressure capture, parameter search,
+favorable-region selection or claim of active restoration without feedback
+evidence. Stop at the accounted mechanism and use that result to specify
+the missing maintenance test.
+
+**Frozen same-map synergy.** From the admitted common map `T=S-hA`, split
+its actual input difference into the parent weighted mean on all nodes, the
+child-parent mean contrast on the child indicator, and the separately
+centered child and parent residuals. Apply that same retained map to these
+four vectors, restrict/center each result on the children, and retain the
+existing runtime residual vectors. Verify vector reconstruction and the
+full Gram energy, including all cross terms. Keep `C_B T 1` explicitly;
+represented coefficients need not preserve constants exactly. Separately
+report `C_B S 1_B` and `-h C_B A 1_B` to test whether cohort mean contrast
+can become within-cohort distortion. This is one algebraic decomposition
+of the recorded map, not four interventions or evidence that order alone
+caused the outcome. It complements the earlier closure obstruction without
+identifying different partitions or reversing their transfer direction.
+
+**Result.** The sixteen local writes, integration and endpoint budgets close
+exactly. Reception accounts for 84.9442% of the error increase and integration
+for 15.0558%; the postintegration EPI change is zero. Parent-boundary work
+raises error while held-pressure lag partially attenuates it. The same-map
+decomposition identifies child-parent mean contrast feeding child spatial
+error through Reception, with essential positive cross terms. No order-only
+causal claim or autonomous-maintenance claim follows. See the single
+[result owner](../FORCED_SUPPORT_BALANCE.md#15-child-cohort-distortion-and-regional-mean-to-shape-transfer).
+
+**Saved checkpoint (2026-09-18).** The new producer reads the authenticated
+reset/recovery reports once and makes no kernel or runtime calls. Its source
+manifest and output are retained; 27 new portable cases and 40 existing
+regional/reset cases pass, with 277 independent exact checks. The existing
+reset suite's optional final test unexpectedly reran its read-only historical
+producer once. Record this test-only deviation from the intended no-rerun
+budget; it generated no new trajectory or capture and rewrote no artifact.
+Do not repeat it for the next delivery. The checkpoint is
+`artifacts/research/child_distortion_validation_2026_09_18.json`.
+All changes remain local and uncommitted; preserve earlier work and `manual/`.
+
+**Completed bounded delivery: one regional form-damage/restoration test.** Return to
+O3.a's maintenance question using the full existing nodal state and actual
+lineage. Before new execution, declare one canonical perturbation, region,
+matched control, horizon, clock and operator policy through the existing
+experiment/evidence owners. Check that the perturbation actually damages
+regional form relative to that control; a mean displacement alone and an
+immediate improvement of a target score do not satisfy that gate. Keep any
+supplied preparation mark or dispatch policy explicit.
+
+Retain the mean contrast, centered error, control variance/form drift,
+parent boundary and canonical source/held-pressure budgets now available.
+Require both decreasing damaged-form error and retained nonuniform control
+form; report contrast-normalized error alongside raw error. Determine which
+existing state-dependent mechanism supplies a restoring contribution and
+which terms only transport environmental input or follow supplied timing.
+No externally prescribed target attraction or pressure reconstructed from
+the response may be added. The result can support a finite configured
+restoration mechanism; autonomous maintenance still needs its endogenous
+selection and source closure.
+
+Reuse the existing stage receipts, exact observers and full sixteen EPI
+coordinates. Stop after one predeclared decision: supported in finite scope,
+rejected, or inconclusive with a named missing gate. Do not tune a perturbation,
+select another region after seeing results, extend the horizon to find return,
+restart phase arithmetic or reopen the parked compression-error study.
+
+**Frozen protocol, before new execution.** Replay only the existing control
+preparation to `t=1.5`, and admit its complete report against the authenticated
+full-state control artifact. This single causal prefix is supplied preparation,
+not another independent sample. Fork two graph-owned states with preserved
+node/neighbor order, histories, configuration and execution markers; explicitly
+exclude only shared-owner rebuildable caches and reject unsupported resources.
+Both branch projections must agree before the intervention.
+
+The region is all eight actual children. The perturbation is one default
+public Emission stage on `lineage.children[0]`, selected by its retained birth
+receipt as an explicit preparation mark. Apply strict read-only and native
+admission. No alternate child/operator or tuned factor is allowed on refusal.
+Require a localized nonzero EPI jump `J` with centered regional damage
+`E0=(H_j/2)*(1-H_j/H_B)*J^2>0` against the pre-event control shape. Preserve
+phase, capacity, support, stored pressure and the actual AL history receipt.
+
+Use the unchanged native default policy (`use_Si=True`, `apply_glyphs=True`,
+legacy global coordination), six `dt=1/4` calls per branch, ending at `t=3`.
+The maximum new continuation budget is twelve calls; stop on refusal without
+replacement. Reuse generation and integrator-entry captures in the native
+trace (at most 24) plus the Emission helper's two captures. No additional
+endpoint pressure capture is required. Retain complete compact step records,
+initial/terminal tetrad and all seven boundary regional readouts.
+
+The fixed full metric requires unchanged nodes, symmetric conductance and
+positive capacities; a violated domain gate makes this scoped readout
+inconclusive. Require positive control variance at all observed boundaries,
+`E_end<E0`, and `E_end/V_control,end<E0/V_control,0`. Additionally require
+`V_control,end>=V_control,0` as a declared conservative sufficient policy
+against contrast loss, not a theorem that maintained patterns cannot breathe.
+Report the control's entire centered-vector drift. A pass means finite
+configured recovery toward this evolving control; it does not mean exact
+original-form or full-state return.
+
+For the mechanism, retain paired per-glyph EPI jumps, exact regional Euler
+and endpoint budgets, and explicit source components. Separate the captured
+generation defects, actual pressure-operator writes, held-EPI lag and any
+source change before integration. No common forcing is assumed merely
+because initial phases agree. Negative work supplied by the parent boundary
+is not automatically endogenous regional feedback. Resolve it, at the same
+integration-entry state, into `-e sum_cut w_ij z_i^2` and
+`e sum_cut w_ij z_i (delta_j-m_B)`: ordinary self-relaxation toward boundary
+input and the incoming parent field. These sum to the existing boundary
+work and introduce no new law. Retain per-glyph pressure-write contributions
+and any unassigned remainder at that same reference state. Close this single
+test with its classified result and missing autonomy obligation.
+
+**Technical execution exception (2026-09-18).** The first invocation reached
+final report assembly, after `run_branches`, but the compact record pool
+rejected a non-native JSON scalar in the live preparation report. No final
+artifact or scientific outcome was retained or read. The failure is recorded
+in `artifacts/research/regional_restoration_serialization_failure_2026_09_18.json`.
+Canonicalize and pack the admitted preparation/fork before any new branch
+execution, then repeat the identical scientific protocol once. This is a
+storage-recovery deviation from the intended single-run resource budget,
+not an independent replication or permission to retry a scientific refusal.
+Account for two preparation replays and at most 24 continuation calls / 52
+post-preparation capture calls across the failed and retained invocations;
+exact first-invocation counts were lost. Do not change the mark, coefficients,
+horizon, decision gates or native policy based on this storage failure.
+
+The second invocation returned the completed study but failed constructing
+the output manifest: it received timestep text `"1/4"` instead of a positive
+numeric value. Its failure record is
+`artifacts/research/regional_restoration_manifest_failure_2026_09_18.json`.
+No final artifact or scientific outcome was read. Before a final unchanged
+technical replay, validate the complete manifest and mocked successful CLI,
+use timestep `0.25`, and durably checkpoint the completed study before any
+later output/provenance processing. Total resource bounds are now three
+preparation replays and at most 36 continuation calls / 78 post-preparation
+capture calls; exact counts for both lost invocations are unavailable.
+This records an implementation failure, not additional scientific evidence.
+
+**Retained result.** All twelve continuation calls complete. The marked
+localized AL causes positive centered damage. Error falls 62.07099% over
+`t=1.5 -> 3`, while the control variance grows 6.04307-fold; normalized error
+falls 93.72355%. The control form changes, and the paired mean offset persists.
+Both branches use IL/IL/IL/EN/IL/AL. Reception and nodal integration supply the
+finite error reduction; common non-EPI source differences vanish, and boundary
+self-relaxation remains distinguishable from incoming parent work. This is
+supported finite configured recovery, not autonomous maintenance. The single
+[result owner](../FORCED_SUPPORT_BALANCE.md#16-localized-regional-form-damage-and-finite-configured-restoration)
+contains the exact scope and quantitative ledger.
+
+**Saved checkpoint (2026-09-18).** The retained output and `.completed.json`
+copy have identical hashes. There are 109 distinct passing targeted cases,
+including 58 new tests, and 289 independent exact checks. Final validation
+and the two technical-failure records are bound in
+`artifacts/research/regional_restoration_validation_2026_09_18.json`.
+Use the retained traces for follow-through; do not replay the study again.
+Preserve all previous local work and the unrelated `manual/` directory.
+
+**Completed bounded delivery: one conditional regional response criterion.** The
+same canonical Reception implementation reduces error in the localized
+experiment and increases it in the previous cohort perturbation. Reuse the
+existing admitted reset/nodal maps, full H metric and boundary partition to
+characterize the sign of regional form-error change. First verify matching
+coefficients and realization conditions before identifying maps from different
+records. Derive an exact quadratic-form or equivalent input/work condition;
+keep cohort means, child-centered differences and parent inputs visible.
+The two retained interventions are witnesses, not a fitted training set.
+
+No new trajectory, parameter sweep, region selection or global selector
+rewrite is needed for this analytical delivery. State whether the resulting
+condition concerns a declared affine map, its recorded binary64 realization,
+or actual policy-selected trajectories. Non-EPI source cancellation and
+unchanged support/capacity are hypotheses to check, not global TNFR laws.
+Stop at one reproducible condition/obstruction and its verification on the
+retained witnesses. This generalizes the maintenance mechanism beyond one
+successful example while leaving endogenous initiation, scheduling and
+source closure as explicit obligations for autonomous NFR maintenance.
+
+**Retained result (2026-09-18).** Exact admission matches `S`, `A`, offset,
+full H metric, support/capacity and ordered EN configuration across all four
+retained records. Each pair's source cancels. The single
+[result owner](../FORCED_SUPPORT_BALANCE.md#17-conditional-regional-response-and-environmental-input)
+derives a signed shape/input condition, its sufficient input-ball bound,
+and a nullspace obstruction to an unrestricted regional gain. The earlier
+and localized perturbations have isolated child-shape image ratios about
+0.51460 and 0.52760. Only the former receives input that overwhelms the
+available attenuation. Neither classification depends on the tiny retained
+realization corrections. These images are mathematical components, not
+additional interventions or an all-direction contraction theorem.
+
+Validation: 82 new portable tests, 84 reused passing tests and 239 independent
+exact checks. The output-format integration test includes the complete
+dataclass evidence and a real manifest. One first offline report attempt
+failed serializing a dataclass; the corrected attempt only rereads retained
+data and runs arithmetic. Both attempts used zero trajectories, kernels or
+forcing captures. Resume from
+`artifacts/research/regional_response_criterion_validation_2026_09_18.json`.
+
+**Completed bounded delivery: environmental-input geometry and protected read-outs.**
+Reuse the newly retained nullspace images `G=CTN`, with
+`N=(1_B, e_j for j outside B)`. Derive its exact rank and the H-orthogonal
+annihilator inside the seven-dimensional child-shape space. This determines
+whether any nonzero regional shape combination is unaffected by every
+regional-mean/parent input at this declared step. Full rank means none;
+lower rank supplies explicit combinations to inspect. Reuse existing exact
+linear algebra and the same full metric. Compare the already admitted
+Reception and held-pressure maps only to attribute a difference in that
+geometry; do not introduce new coefficients or select another region.
+
+This is a one-step geometric sensitivity question, distinct from the earlier
+eight-family-mean closure and sixteen-coordinate minimal-state calculation.
+It is not a proof of invariance under repetition. A protected combination
+would still require nontrivial self-dynamics, an admitted source/history
+domain and native policy compatibility before supporting a maintained NFR.
+Stop at an exact image/kernel classification with explicit witnesses and
+scope. No new trajectory, parameter search, global selector rewrite or
+physical-particle assignment is needed. The broader hypothesis remains
+emergent geometry supporting persistent interacting coherence patterns;
+generation of that geometry and autonomous maintenance remain open.
+
+**Retained result (2026-09-18).** Both environmental-input maps have rank
+seven in the seven-dimensional child-shape space. Independent parent-only
+minors prove full rank without the tiny represented global-constant leakage.
+The H-orthogonal protected projector is exactly zero. The
+[single result owner](../FORCED_SUPPORT_BALANCE.md#18-environmental-input-geometry-and-protected-read-outs)
+contains the proof and scope. This classifies arbitrary independent inputs;
+it does not establish their native reachability or contradict the previously
+observed conditional recovery. No historical producer, admission replay,
+trajectory, scalar kernel or forcing capture is executed. The reusable owner
+shares its domain/centering with the previous response criterion and reuses
+the existing exact rank/inverse primitives. Validation includes 76 new
+portable tests, 82 reused passing tests and 100 independent exact checks. Resume from
+`artifacts/research/regional_input_geometry_validation_2026_09_18.json`.
+
+**Completed bounded delivery: symmetry of the actual declared dynamics.** A geometric
+symmetry can constrain response only if the relevant dynamics respects it.
+Use the original retained weighted support and fixed child set to enumerate
+the complete support automorphisms with the existing symmetry owner, subject
+to its explicit operational cap. Identify the subgroup preserving the full
+metric and capacities; do not infer it from an unweighted drawing. Check
+exactly which permutations commute with `A`, `S` and `T=S-hA`, preserving
+the distinction between the sequential reset and simultaneous stage semantics.
+Report affine-source invariance separately from the common-source paired map.
+Keep symmetry of the coefficients distinct from symmetry of the particular
+EPI/phase state or the complete runtime history.
+
+If no useful common symmetry survives, retain that obstruction; do not fit
+a subgroup or discard inputs to obtain protection. If one survives, derive
+its fixed input space and state the extra hypotheses needed for actual
+inputs to remain there. Reuse the current input-map classification for the
+consequence, rather than reopening family observability or a trajectory
+sweep. Stop at one complete symmetry/commutation classification with exact
+witnesses and declared scope. No coefficient adjustment, selector rewrite,
+new region or physical-particle assignment is required for this classification.
+
+**Retained result (2026-09-18).** The complete weighted support group has eight
+elements, all preserving the child set, H and capacity. Every element commutes
+with A; only the identity commutes with S or T. Each retained local Reception
+row family is covariant under all eight permutations, while its recorded
+sequential product is not. The common group therefore restricts no inputs:
+the environmental basis still has dimension nine and image rank seven.
+The captured source b and generation EPI/phase each preserve only the
+identity; cancellation between paired branches does not imply individual
+affine-map symmetry. The [single result owner](../FORCED_SUPPORT_BALANCE.md#19-support-symmetry-versus-the-admitted-nodal-and-reset-maps)
+records the exact witnesses and scope. Validation includes 113 new portable
+tests, 140 reused passing tests and 487 independent exact checks.
+No historical producer, native trajectory,
+operator kernel or pressure capture ran. Resume from
+`artifacts/research/regional_map_symmetry_validation_2026_09_18.json`.
+
+**Completed bounded delivery: same-snapshot comparison to existing Reception.**
+Determine whether the identified order dependence is absent under the
+already implemented [two-phase network stage](../../src/tnfr/operators/network_stage.py),
+using its [shared Reception proposal](../../src/tnfr/operators/_reception_kernel.py)
+and [stage contract](../../src/tnfr/operators/stage_contracts.py). Assemble the
+declared simultaneous EPI map from the same retained local rows, without
+changing support, region, H, capacity, coefficients or the held-pressure
+interval. First verify the frozen-coefficient premises against the existing
+kernel; a chronological row cannot be treated as a snapshot row if its
+coefficients depend on an earlier write. Compare exact map commutation and
+the resulting fixed-input image through the owners already implemented.
+
+Then check whether the retained records supply the complete state, inputs
+and grammar evidence required by that stage. If they do, allow at most one
+detached stage comparison for each of the four saved generation states;
+retain realization defects and all auxiliary writes. If they do not, record
+the missing premise and stop at the declared-map result. Do not manufacture
+history or label a reconstructed fixture as an executed historical event.
+No native multi-step continuation or historical replay is authorized by this
+comparison. The recorded source and initial state remain asymmetric: do not
+average them into a preferred symmetry or use paired cancellation to hide them.
+
+**Acceptance:** one exact sequential/snapshot comparison and its explicit
+runtime-admission boundary, stating whether a symmetry-restricted input class
+is justified only conditionally. A symmetry-preserving matrix alone is not
+autonomous pattern formation, recovery or preserved full-state dynamics.
+Stop after this comparison; do not rewrite default scheduling, search words
+or expand a polyhedral campaign. Its purpose is to separate geometric nodal
+response from supplied execution order before studying persistent identity.
+
+**Retained result (2026-09-18).** The shared coefficient builder validates all
+64 saved rows. The simultaneous declared J and U=J-hA preserve all eight
+support symmetries. Their fixed environmental space has three coordinates
+and a rank-one centered image, leaving six conditional protected read-outs;
+both unrestricted images retain rank seven. The mean-contrast image is zero.
+Both actual paired environmental differences fail the symmetry condition,
+so this protection is not established for either retained experiment. The
+criterion lacks a complete restorable runtime/grammar state; the prescribed
+stop gate applies and no live stage is reconstructed. The
+[single result owner](../FORCED_SUPPORT_BALANCE.md#20-same-snapshot-reception-and-the-limit-of-geometric-protection)
+records the distinction. Fourteen new portable tests pass, together with
+149 distinct reused tests and 274 independent exact checks. Local checkpoint:
+`artifacts/research/snapshot_reception_comparison_validation_2026_09_18.json`.
+
+**Disposition:** close this geometric-input and update-order investigation.
+No further rank/symmetry audit, graph-template sweep or historical runtime
+restoration is queued. The conditional recovery result remains valid; the
+next mechanism need not have exact graph symmetry. Runtime confirmation,
+when needed by a concrete new mechanism, should capture a fresh causal stage
+boundary in that experiment rather than reconstruct unavailable old state.
+
+**Completed bounded delivery: source closure under the channels' own updates.**
+Determine whether ordinary relaxation of phase and capacity can sustain the
+non-EPI source supporting a differentiated stationary EPI form. Use the
+existing [phase coordination](../../src/tnfr/dynamics/coordination.py),
+[gated capacity adaptation](../../src/tnfr/dynamics/adaptation.py),
+[pressure decomposition](../../src/tnfr/physics/forcing_realization.py) and
+[forced-support balance](../FORCED_SUPPORT_BALANCE.md). Keep configured gains,
+gates and scheduling labeled as supplied choices, not consequences derived
+uniquely from the EPI nodal equation. The earlier admission-versus-selection
+obstruction is complete and must not be rerun.
+
+The bounded calculation is one exact fixed-point classification on connected
+fixed support: attractive phase relaxation in a common open-semicircle chart,
+active positive capacity adaptation without clipping, positive EPI coefficient
+and the retained zero topology-channel coefficient. Check the actual update
+formulas and derive or refute the proposed maximum-principle chain: phase
+fixed point implies phase consensus; capacity fixed point implies constant
+capacity; both non-EPI sources then vanish, so zero-pressure EPI is uniform.
+Do not present this candidate chain as already established for the complete
+runtime, binary64 arithmetic, inactive gates or rotating/out-of-chart states.
+
+**Acceptance and stop:** one scoped proof or counterexample and a channel
+dependency table identifying what can sustain nonuniform pressure. This is
+a short analytic mechanism check, not a new trajectory, benchmark campaign
+or broad audit. If the relaxed branch only supports uniform EPI, close that
+branch and identify the existing nonstationary phase/history or canonical
+event-feedback mechanism needed next. Exact symmetry is optional; the target
+is endogenous maintenance of differentiated coherence. Do not keep refining
+the same equilibrium proof or reopen environmental-rank calculations.
+
+**Retained result (2026-09-18).** The proposed exact-real maximum-principle
+chain is proved for common fixed physical fields, with connected positive
+conductance and a no-jump lifted phase update. The stronger fresh-Si argument
+only requires capacity maxima to reach the existing finite gate delay; all
+nodes need not start eligible. The theorem does not prove convergence or
+classify arbitrary composite cycles. Existing phase/capacity swap examples
+and winding separate those claims. The [single result owner](../FORCED_SUPPORT_BALANCE.md#21-closing-the-relaxed-phase-capacity-source)
+contains the proof, dependency table, and exact topology-compatibility boundary.
+No engine law, parameter or trajectory changed; 108 existing owner tests pass.
+The checkpoint is
+`artifacts/research/source_closure_validation_2026_09_18.json`.
+
+**Completed entry calculation: structural source tangency.**
+The [single theorem owner](../FORCED_SUPPORT_BALANCE.md#22-source-tangency-without-a-telemetry-controller)
+derives the pressure-rate condition directly from the nodal channels, reusing
+the exact circular-mean derivative and support gradients. It separates
+instantaneous compatibility, all-time zero-pressure invariance and stability.
+Its finite-event counterpart shows that a capacity-only update preserves
+zero pressure precisely when its increment is uniform on connected support
+with a nonzero capacity-pressure coefficient. Heterogeneous initial capacity
+is not thereby forbidden. No new causal law or trajectory was introduced.
+The [diagnostic scope owner](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#7-derived-observables-and-dynamical-closure)
+also distinguishes derived observables from derived feedback: Si may describe
+structure, but its present thresholds/weights do not establish endogenous
+activation. Computing it and consuming it are different operations.
+
+**Completed capacity-to-phase gate.**
+The [single result owner](../FORCED_SUPPORT_BALANCE.md#23-capacity-exposure-does-not-determine-a-phase-clock)
+checks the original TNFR definitions and proves independence, including a
+relative-phase witness with different EPI futures from the same initial triad.
+The free-advance/U3 proposal and ordinary runtime's relaxation-only map are
+distinct configured models. Neither a global 2*pi correction nor a new phase
+law is justified. Accumulated capacity s_i=integral(nu_i dt) gives
+dx_i/ds_i=p_i where capacity is positive, but does not derive a circular phase.
+The original structural-clock results are reused without another trajectory.
+
+**Completed held-source geometric gate.**
+The [single result owner](../FORCED_SUPPORT_BALANCE.md#24-rigidity-and-flexibility-of-a-held-phase-source)
+proves regular local rigidity and finite-path rigidity when the mean response
+is nonnegative and irreducible. The existing derivative and exact-rank owners
+now support `observe_phase_source_geometry`; signed responses are assessed
+by rank without confusing the operator-stage Jacobian with Dg.
+An exact antipodal-pair family on the cube preserves g=0 with changing
+relative phases. Its pointwise tangent dimension is four at quadrature and
+two at a regular oblique point; the finite family has two displayed parameters,
+not an inferred four-dimensional level set. Its nontrivial relative motion
+fails an all-edge pi/2 gate. Strict edge separation below pi/2 plus g=0 on
+connected support instead guarantees the proved rigidity. This is geometry,
+not autonomous generation or a selected phase speed. Validation: 17 new
+portable tests and 63 existing owner tests pass.
+
+**Completed grammar audit and strict-U3 rank gate.**
+The [central scope audit](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#8-grammar-derivation-premises-language-and-trajectories)
+classifies every rule, adds the actual hybrid flow/jump obligation, and
+corrects discrepancies across signed initiation, string/core validation and
+U3/U6 reporting. Canonical sets, thresholds and dynamics are retained.
+Its exact six-node double-star has all edge gaps pi/3 and nonzero phase
+source, but rank(R-I)=4 rather than five. The requested rank implication is
+therefore rejected. The same witness has only common rotation in its local
+finite fixed-source set: the extra tangent is obstructed at second order.
+Six portable controls cover this geometry and the independent U5 result that
+an exactly closed quotient need not increase mean coherence. Neither result
+creates or evolves an autonomous NFR.
+
+**Primary foundation work: structure, dynamics and coherence grammar.**
+This is an O3.a dependency of generative TNFR research, not a separate
+parallel programme. The user has prioritized revisiting the derivations,
+removing unsupported implications and exposing arbitrary implementation
+choices. Its mathematical owner is the
+[joint-system scope note](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#13-structural-grammar-refactor-and-the-full-nodal-system).
+
+| Gate | State | Acceptance requirement |
+|------|-------|------------------------|
+| G1: Audit U1-U6 premises and implementation | Complete in scope | Rule matrix, exact U3/U5 counterexamples, corrected initiation/validation/reporting and explicit limitations. |
+| G2: Separate contracts, policies and derived evidence | Implemented | Immutable basis records; shared SDK roles; explicit core/legacy word profile; strict rejection without priority substitution; typed finite execution gain evidence; no Boolean promotion into proof. |
+| G3: Reassess closure of the joint nodal system | Foundations, representation and conditional joint-response gates complete in scope; finite joint compatibility next | Reuse the unit/dependency ledger, covariance, diffusion and reciprocal constraints. Joint response now separates pressure-source compensation from capacity-induced acceleration. Next characterize finite source-level compatibility and positivity without choosing the missing phase/capacity laws. |
+| G4: Derive state-dependent structural conditions | Pending G3 | Use actual pressure, geometric response, source work, history and all four tetrad fields. Establish conditions for the declared model without operator counts or diagnostic thresholds masquerading as physical laws. |
+| G5: Test autonomous coherent-pattern consequences | Pending justified closure | Reproducible generation/persistence/interaction or a scoped rejection, with no retrospectively tuned input, imposed selector or hidden sustaining source. Keep mathematical, runtime and physical-evidence claims separate. |
+
+**Validation checkpoint (2026-09-18).** The combined targeted grammar,
+operator/event, SDK and physics suite passes 870 tests, with no failures or
+skips. Focused lint and local documentation checks pass; 87 historical
+artifact hashes remain unchanged and the two agent guides are byte-identical.
+This is not a full-repository test run or a new emergence experiment. The local
+checkpoint `artifacts/research/grammar_structural_refactor_validation_2026_09_18.json`
+records source provenance, test output, claim limits and the following resume
+task; portable tests and the mathematical scope note remain the reusable owners.
+
+**Completed first G3 study.** The
+[constitutive audit](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#14-constitutive-closure-audit-from-the-nodal-law)
+maps actual phase/capacity/support owners to their supplied policies. Two
+same-initial-state capacity completions dissipate yet differ; changing a
+common positive conductance scale leaves the normalized nodal transport
+unchanged. The shared derivative observer separates geometry work from form
+change. The variational bridge yields a compatible potential family and
+mandatory reciprocal terms under its stated mobility assumptions, not a
+selected autonomous law. Extended-system and BEPI documentation errors and
+the legacy EPI storage/entropy diagnostic are corrected. Historical numerical
+records remain unchanged; no new trajectory campaign has been started.
+
+**G3 foundation checkpoint (2026-09-18).** The combined targeted foundations,
+transport, phase, variational, EPI representation, reduction and integrator
+suite passes 586 tests without skips. The local source-bound record is
+`artifacts/research/nodal_foundations_constitutive_validation_2026_09_18.json`.
+It preserves the prior grammar checkpoint and original PDF, separates
+analytic countermodels from runtime evidence, and records the next task below.
+
+**All-parameter foundation follow-through.** The
+[shared audit](../NODAL_PARAMETER_FOUNDATIONS.md) extends the EPI review to
+capacity, pressure mixing, phase, clocks, conductance/metric geometry, all
+four fields, diagnostics, currents/energy, memory and operators. It derives
+the conditional local diffusive generator and form/time coefficient covariance.
+Reciprocal weights need additional premises; normalized default coefficients
+are not automatically unit-covariant. Shared metric and correlation kernels
+repair verified numerical inconsistencies. Source comments and canonical
+reference documents now distinguish chosen gains from derived identities.
+The optional Gamma model and event/history clocks retain explicit scope.
+No new trajectory campaign, fitted completion or physical claim follows.
+The subsequent timestamped-capacity correction replaces configured-`DT`
+differences with actual-time interval secants and nonuniform second differences.
+It records missing/duplicate/jump states explicitly, rejects backward time and
+does not use untimestamped legacy fields as derivative evidence. These sampled
+read-outs still do not establish a smooth constitutive law or resolve events
+between observations. The regular/zero-resultant phase boundary and metric-fit
+versus spectral provenance remain explicit.
+
+**All-parameter validation checkpoint (2026-09-18).** The combined targeted
+foundation, field/estimator, metric, integrator, adaptation and downstream
+coherence suite passes 417 tests without failures or skips. Eight warnings
+only report unavailable optional JAX/Torch backends. This is not a complete
+repository suite or a new emergence experiment. The source-bound record is
+`artifacts/research/nodal_parameter_foundations_validation_2026_09_18.json`,
+with the prior 586-test and 870-test checkpoints retained. Eight source files
+changed only documentation/comments and retain their executable AST. Intentional
+API tightening rejects malformed metric inputs and invalid distance matrices;
+missing-value conventions and configured physical gains are retained.
+
+**Completed representation gate.** The signed polar observation
+`z=x*exp(i*theta)` fails the continuous fiber condition for the current
+multichannel pressure. A bounded strict-U3 P2 pair has identical observation
+but different `d|z|^2/dt`, independently of every real phase velocity. At
+zero form, discarding phase also changes a neighbor's response. Five exact
+and represented-owner controls include the pure-EPI sign control, an outward
+nonnegative-domain boundary and the regular faithful cylinder embedding.
+The [derivation](../NODAL_PARAMETER_FOUNDATIONS.md#9-signed-epi-and-phase-an-explicit-representation-test)
+distinguishes exact circle algebra from floating-point trig. It rejects this
+particular packaging; it does not require a new physical degree of freedom
+or refute every complex formulation.
+
+**Joint-state/read-out checkpoint (2026-09-18).** The timestamped-capacity
+owner replaces three derivative implementations; the shared curvature observer
+removes the arithmetic-angle fallback and separates exact represented sums
+from approximate angles. Undefined curvature is explicit, independent gradient
+remains available, and detached phase maps prevent caller mutation of cached
+evidence. These are diagnostic corrections, not new phase/capacity laws.
+The combined targeted suite passes 655 tests without failures or skips;
+eight warnings concern missing optional JAX/Torch packages. The source-bound
+record is `artifacts/research/joint_state_readouts_validation_2026_09_18.json`.
+The prior 417-, 586- and 870-test records and historical research outputs are
+preserved. The mathematical-dynamics page now routes to shared owners instead
+of repeating inconsistent definitions. Emission's lineage timestamp is
+documented as provenance, not a derived physical arrow of time.
+
+**Compatibility:** capacity derivative aliases and history `B` can now be
+`None` with explicit availability; callers must not coerce this to measured
+zero. Numeric curvature/full telemetry reject undefined represented directions.
+The immutable observation API retains partial phase evidence, and numeric
+phase maps no longer promise cache object identity. Downstream policies that
+consume diagnostics must respect these domains; unchanged pressure/operator
+kernels alone do not promise unchanged diagnostic-driven decisions.
+
+**Completed joint directed-response gate.** The
+[shared foundation identity](../NODAL_PARAMETER_FOUNDATIONS.md#10-joint-pressure-response-and-the-capacity-product-rule)
+and `derive_joint_nodal_response` reuse the phase and transport owners,
+separating weighted EPI, unweighted capacity and circular-mean response.
+The product rule retains `nu_dot*p` in EPI acceleration. Common capacity
+motion can therefore be invisible to pressure response while changing form
+acceleration. On connected undirected support the source-degree compatibility
+condition exactly decides whether a supplied phase-source rate can be
+cancelled by capacity. A strict-U3 star supplies an obstruction; a bounded
+finite P2 family supplies exact joint zero-pressure compatibility. Neither
+selects its own velocities or proves stability. The existing two-completion
+control now reuses the shared owner instead of duplicating the calculation.
+
+The owner takes detached declared pressure and phase-reference data. It
+checks support alignment and rebuilds caches but does not authenticate a live
+Gram, wrap branch or refreshed pressure. Its first domain excludes empty
+neighborhoods. The full tetrad dependency map retains its nonsmooth absolute
+values, resultant domains and separate correlation-fit/fallback provenance.
+
+**Joint-response validation checkpoint (2026-09-18).** The combined targeted
+phase, transport, forcing, regional-balance, constitutive and representation
+suite passes 370 tests in 18 modules, including 38 new joint-response controls,
+with no failures, skips or warnings. Focused lint and documentation links pass.
+Two misleading pressure-kernel descriptions are corrected; their executable
+ASTs are unchanged. The local source-bound record is
+`artifacts/research/joint_nodal_response_validation_2026_09_18.json`.
+The preceding 655-, 417-, 586- and 870-test records and 87 historical outputs
+are preserved. This is a conditional mathematical/implementation gate, not a
+whole-repository suite, new trajectory campaign or autonomous-emergence result.
+
+**Final pre-research consistency audit (2026-09-18).** Authoritative phase and
+pressure values now pass the shared finite-real boundary before field-cache
+access. Public field maps are detached, so caller edits cannot corrupt later
+observations. Safe emission retains independent available fields, reports
+unavailable tetrad/composite values, reuses successful extended results and
+serializes NumPy outputs. JSON and optional mirror formatting finish before
+file append; this is not a two-file filesystem transaction. Requested primitive
+observer channels retain their existing validation contract. The glossary,
+tetrad guide and agent references now separate diagnostic policies, represented
+field domains and instantaneous zero pressure from joint equilibrium.
+
+The final targeted suite passes 831 tests across 27 modules, with no failures
+or skips; eight warnings report absent optional JAX/PyTorch backends. The first
+integration run exposed an observer exception-order regression, now repaired
+with additional boolean and invalid-node-order controls. Focused lint, document
+links and the exact agent mirror pass. The source-bound local checkpoint is
+`artifacts/research/foundations_pre_research_audit_2026_09_18.json`; all five
+preceding validation records, 87 historical outputs and the original PDF are
+preserved. This closes this bounded audit, not a proof of the complete paradigm.
+No new physical coefficient, constitutive law or trajectory campaign was added.
+The next research gate remains the finite joint compatibility task below.
+
+All four tetrad channels are mandatory in the dependency/claim map: Phi_s,
+phase gradient, phase curvature and xi_C. Their current values do not supply
+a proved complete state; their dynamics must follow from the same justified
+flow/jump law. A fixed-support EPI certificate must not silently certify phase,
+capacity, geometry, correlation range or an unobserved future. Reuse exact
+quotient/memory results to test macro closure and the existing event evidence
+to assess implemented consequences; do not build another certificate engine.
+
+**Next executable task (G3, finite joint source compatibility):** integrate
+the phase/capacity tangent condition into the finite level equations on
+fixed connected undirected support. For a declared held canonical source,
+derive the necessary and sufficient support-weighted compatibility condition
+for a phase configuration to admit capacity values. Reuse the exact Poisson
+linear algebra and source-level owners to determine capacities modulo their uniform
+coordinate, with explicit positivity/band requirements and strict U3/regular
+phase domains. Distinguish a finite compatible family from a tangent that
+leaves the level set at higher order.
+
+Validate reciprocity/connectivity of unique support explicitly: symmetric
+effective conductance can coexist with asymmetric zero-weight support arcs.
+The capacity equation uses the support Laplacian and support degrees; the
+existing forced EPI profile uses weighted conductance and its own gauge.
+Reuse their algebraic primitives rather than substituting one model's
+operator, invariant measure or certificate for the other.
+
+**Acceptance and stop:** one finite solvability characterization, one
+compatible control and one obstruction using existing P2/star geometry,
+including what remains free and must be determined by a future constitutive
+law. The former phase-only fixed-source question is a restricted case of
+this same gate, not a second queue. Reuse the double-star second-order
+obstruction and existing zero-source rigidity without reopening them.
+Account for all four tetrad fields through the same primitive state. Do not
+set phase speed equal to capacity, choose an energy minimizer, or feed a
+diagnostic score back to manufacture persistence. No trajectory/topology
+sweep, fitted source, external model, controller or C6 restart follows.
+Independent derivation remains primary; historical formulas are not axioms.
+Autonomous law selection, stability and laboratory correspondence remain
+separate obligations.
+
+**Parked secondary task: one restoring-source response under the declared policy.**
+The following is retained as an engineering test specification, not the next
+primary emergence experiment. It has not been executed.
+The repository supplies state-dependent selection and phase/capacity updates,
+but it does not derive their complete activation law uniquely from the nodal
+equation. Treat the existing configured policy as an explicit model premise,
+not as the completed ontological closure. Do not add a controller, target,
+fitted gain or prescribed response word to bypass this gap. Derived passive
+memory cannot supply the missing sustaining drive; no memory survey is queued.
+
+Freeze one fresh connected preparation and one localized canonical disturbance
+before evaluation. Reuse existing constructors, full causal state/history,
+pressure decomposition and regional response accounting. The existing selector
+thresholds must determine any proposed branch crossing analytically; do not
+search disturbance sizes after scoring. Keep all pressure coefficients and
+native policy parameters unchanged. Run only a matched undisturbed/disturbed
+pair for at most VF_ADAPT_TAU+1 configured steps. Do not reconstruct old missing
+runtime state or launch a topology, seed or parameter sweep.
+
+The question is whether the disturbance changes a live state-dependent decision
+and generates a non-EPI source difference with a restoring contribution to the
+declared full-triad comparison. Separate EPI form, phase pattern, capacity,
+support and history; uniform EPI alone does not mean all structure has vanished.
+Record actual admission, policy reason, source-generation boundary and signed
+response work. A lag-only action, identical sources, an untriggered gate or a
+non-restoring response ends the test with that scoped outcome. A source change
+alone is not successful recovery. Any finite positive result establishes only
+functional feedback under the declared TNFR policy; spontaneous initiation,
+indefinite maintenance and derivation of the policy remain separate obligations.
+
+The user's Platonic-solid suggestion is recorded as a candidate comparison
+within this route. The [strategy's reuse review](../NODAL_RESEARCH_STRATEGY.md)
+identifies existing polyhedral constructors and spectral/symmetry tools.
+Do not rerun their legacy campaigns or treat their supplied graph templates
+as spontaneous emergence. A later comparison must separate graph symmetry,
+actual-map symmetry, environmental restrictions, finite recovery and native
+formation. All-state geometric protection and symmetry-preserving spectral
+multiplicity are different questions. The primary hypothesis remains
+emergent geometry supporting persistent interacting coherence patterns;
+it is not confirmed by a regular drawing or an observed form/function analogy.
 
 ### Supporting measurement bridge
 
@@ -923,8 +2028,9 @@ admitted observation model, frozen held-out prediction result, reduced-state
 memory result, maintenance/recovery/regime results, and a single evidence
 table separating exact mathematics, implementation validation and physical
 support. List rejected and unresolved claims alongside positive results.
-The next action is the **nodal-configuration-to-transformation delivery in
-section 2**; the native window and its retained-mechanism audit are complete.
+The active action and its exact resumption checkpoint are the **current
+bounded delivery in section 2**; completed native and retained-record studies
+must not be restarted merely because their historical summaries appear above.
 P2.3 remains the next action only within the parked measurement bridge:
 resolve source/model, clock, uncertainty and independent-run evidence before
 a physical P3 prediction. Neither the structural review nor P1 tests fulfill

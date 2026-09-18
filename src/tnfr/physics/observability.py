@@ -275,11 +275,13 @@ def observation_signature(
     from ..constants.aliases import ALIAS_DNFR, ALIAS_VF
 
     nodes = tuple(graph.nodes()) if node_order is None else tuple(node_order)
-    tetrad = tuple(
-        float(value) for value in tetrad_observation_vector(
-            graph, representation=tetrad_representation, node_order=nodes
+    if set(nodes) != set(graph.nodes()) or len(nodes) != len(graph):
+        raise ValueError(
+            "node_order must contain every graph node exactly once"
         )
-    )
+    # Validate explicitly requested primitive channels before the composite
+    # tetrad. This preserves this observer's scalar ValueError contract and
+    # rejects invalid input before field computation or cache bookkeeping.
     capacity = (
         tuple(
             finite_real_scalar(
@@ -311,6 +313,11 @@ def observation_signature(
             for node in nodes
         )
         if include_pressure else None
+    )
+    tetrad = tuple(
+        float(value) for value in tetrad_observation_vector(
+            graph, representation=tetrad_representation, node_order=nodes
+        )
     )
     history = (
         tuple(

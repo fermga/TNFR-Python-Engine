@@ -122,15 +122,16 @@ from .._compat import TypeAlias
 from ..alias import collect_attr, collect_theta_attr, get_attr, set_attr
 from ..constants import get_param
 from ..constants.aliases import (
-    ALIAS_D2VF,
     ALIAS_DEPI,
     ALIAS_DNFR,
     ALIAS_DSI,
-    ALIAS_DVF,
     ALIAS_EPI,
     ALIAS_SI,
     ALIAS_VF,
 )
+# Retain the module's historical constant re-exports after moving their writes.
+from ..constants.aliases import ALIAS_D2VF as ALIAS_D2VF  # noqa: F401
+from ..constants.aliases import ALIAS_DVF as ALIAS_DVF  # noqa: F401
 from ..errors import TNFRValueError
 from ..glyph_history import append_metric, ensure_history
 from ..mathematics.unified_numerical import np
@@ -162,7 +163,20 @@ from ..utils import (
     normalize_weights,
     resolve_chunk_size,
 )
-from .common import compute_coherence, min_max_range
+from .common import (
+    _dispersion_coherence,
+    _finite_scalar,
+    _stored_metric_values,
+    compute_coherence,
+    is_structural_equilibrium,
+    min_max_range,
+)
+from .capacity_rates import (
+    CapacityRateObservation,
+    aggregate_capacity_rates,
+    commit_capacity_rate_observations,
+    plan_capacity_rate_observations,
+)
 from .trig_cache import compute_theta_trig, get_trig_cache
 
 logger = get_logger(__name__)
@@ -229,27 +243,6 @@ VectorizedComponents: TypeAlias = tuple[
     FloatMatrix, FloatMatrix, FloatMatrix, FloatMatrix
 ]
 ScalarOrArray: TypeAlias = float | FloatArray
-StabilityChunkArgs = tuple[
-    Sequence[float],
-    Sequence[float],
-    Sequence[float],
-    Sequence[float | None],
-    Sequence[float],
-    Sequence[float | None],
-    Sequence[float | None],
-    float,
-    float,
-    float,
-]
-StabilityChunkResult = tuple[
-    int,
-    int,
-    float,
-    float,
-    list[float],
-    list[float],
-    list[float],
-]
 
 MetricValue: TypeAlias = CoherenceMetric
 MetricProvider = Callable[[], MetricValue]
@@ -1470,67 +1463,6 @@ def _update_sigma(G: TNFRGraph, hist: HistoryState) -> None:
     )
 
 
-def _stability_chunk_worker(args: StabilityChunkArgs) -> StabilityChunkResult:
-    """Compute stability aggregates for a chunk of nodes."""
-
-    (
-        dnfr_vals,
-        depi_vals,
-        si_curr_vals,
-        si_prev_vals,
-        vf_curr_vals,
-        vf_prev_vals,
-        dvf_prev_vals,
-        dt,
-        eps_dnfr,
-        eps_depi,
-    ) = args
-
-    inv_dt = (1.0 / dt) if dt else 0.0
-    stable = 0
-    delta_sum = 0.0
-    B_sum = 0.0
-    delta_vals: list[float] = []
-    dvf_dt_vals: list[float] = []
-    B_vals: list[float] = []
-
-    for idx in range(len(si_curr_vals)):
-        curr_si = float(si_curr_vals[idx])
-        prev_si_raw = si_prev_vals[idx]
-        prev_si = float(prev_si_raw) if prev_si_raw is not None else curr_si
-        delta = curr_si - prev_si
-        delta_vals.append(delta)
-        delta_sum += delta
-
-        curr_vf = float(vf_curr_vals[idx])
-        prev_vf_raw = vf_prev_vals[idx]
-        prev_vf = float(prev_vf_raw) if prev_vf_raw is not None else curr_vf
-        dvf_dt = (curr_vf - prev_vf) * inv_dt if dt else 0.0
-        prev_dvf_raw = dvf_prev_vals[idx]
-        prev_dvf = float(prev_dvf_raw) if prev_dvf_raw is not None else dvf_dt
-        B = (dvf_dt - prev_dvf) * inv_dt if dt else 0.0
-        dvf_dt_vals.append(dvf_dt)
-        B_vals.append(B)
-        B_sum += B
-
-        if (
-            abs(float(dnfr_vals[idx])) <= eps_dnfr
-            and abs(float(depi_vals[idx])) <= eps_depi
-        ):
-            stable += 1
-
-    chunk_len = len(si_curr_vals)
-    return (
-        stable,
-        chunk_len,
-        delta_sum,
-        B_sum,
-        delta_vals,
-        dvf_dt_vals,
-        B_vals,
-    )
-
-
 def _track_stability(
     G: TNFRGraph,
     hist: MutableMapping[str, Any],
@@ -1539,236 +1471,64 @@ def _track_stability(
     eps_depi: float,
     *,
     n_jobs: int | None = None,
+    _capacity_observations: Mapping[Any, CapacityRateObservation] | None = None,
 ) -> None:
-    """Track per-node stability and derivative metrics."""
+    """Track stored-state diagnostics and timestamped capacity secants.
 
-    nodes: tuple[NodeId, ...] = tuple(G.nodes)
-    total_nodes = len(nodes)
-    if not total_nodes:
-        hist.setdefault("stable_frac", []).append(0.0)
-        hist.setdefault("delta_Si", []).append(0.0)
-        hist.setdefault("B", []).append(0.0)
-        return
+    ``dt`` and ``n_jobs`` remain accepted for compatibility; capacity rates use
+    actual retained ``G.graph['_t']`` observations and one shared reduction.
+    Missing timestamps/capacities and insufficient samples produce explicit
+    unavailable values, never a fabricated zero derivative. ``delta_Si`` stays
+    a per-observation increment, independent of a time denominator.
 
-    dnfr_vals = collect_attr(G, nodes, ALIAS_DNFR, 0.0)
-    depi_vals = collect_attr(G, nodes, ALIAS_DEPI, 0.0)
-    si_curr_vals = collect_attr(G, nodes, ALIAS_SI, 0.0)
-    vf_curr_vals = collect_attr(G, nodes, ALIAS_VF, 0.0)
-
-    prev_si_data = [G.nodes[n].get("_prev_Si") for n in nodes]
-    prev_vf_data = [G.nodes[n].get("_prev_vf") for n in nodes]
-    prev_dvf_data = [G.nodes[n].get("_prev_dvf") for n in nodes]
-
-    inv_dt = (1.0 / dt) if dt else 0.0
-
-    if np is not None:
-        dnfr_arr = dnfr_vals
-        depi_arr = depi_vals
-        si_curr_arr = si_curr_vals
-        vf_curr_arr = vf_curr_vals
-
-        si_prev_arr = np.asarray(
-            [
-                (
-                    float(prev_si_data[idx])
-                    if prev_si_data[idx] is not None
-                    else float(si_curr_arr[idx])
-                )
-                for idx in range(total_nodes)
-            ],
-            dtype=float,
+    The private prepared batch is used only by the metrics callback after its
+    preflight. Its caller must hold graph, node and time state fixed until this
+    commit; it is not a sealed execution certificate.
+    """
+    del dt, n_jobs
+    nodes = tuple(G.nodes)
+    count = len(nodes)
+    pressures = tuple(
+        _finite_scalar(value, name="dnfr")
+        for value in _stored_metric_values(G, nodes, ALIAS_DNFR)
+    )
+    rates = tuple(
+        _finite_scalar(value, name="depi")
+        for value in _stored_metric_values(G, nodes, ALIAS_DEPI)
+    )
+    senses = tuple(
+        _finite_scalar(value, name="Si")
+        for value in _stored_metric_values(G, nodes, ALIAS_SI)
+    )
+    deltas = []
+    for node, current in zip(nodes, senses):
+        previous = G.nodes[node].get("_prev_Si")
+        previous = current if previous is None else _finite_scalar(previous, name="previous Si")
+        deltas.append(_finite_scalar(current - previous, name="delta Si"))
+    stable = sum(
+        is_structural_equilibrium(
+            pressure, rate, eps_dnfr=eps_dnfr, eps_depi=eps_depi
         )
-        vf_prev_arr = np.asarray(
-            [
-                (
-                    float(prev_vf_data[idx])
-                    if prev_vf_data[idx] is not None
-                    else float(vf_curr_arr[idx])
-                )
-                for idx in range(total_nodes)
-            ],
-            dtype=float,
-        )
+        for pressure, rate in zip(pressures, rates)
+    )
+    observations = (
+        plan_capacity_rate_observations(G)
+        if _capacity_observations is None else _capacity_observations
+    )
+    mean_second, coverage = aggregate_capacity_rates(observations)
+    stable_fraction = stable / count if count else 0.0
+    delta_mean = math.fsum(deltas) / count if count else 0.0
 
-        if dt:
-            dvf_dt_arr = (vf_curr_arr - vf_prev_arr) * inv_dt
-        else:
-            dvf_dt_arr = np.zeros_like(vf_curr_arr, dtype=float)
-
-        dvf_prev_arr = np.asarray(
-            [
-                (
-                    float(prev_dvf_data[idx])
-                    if prev_dvf_data[idx] is not None
-                    else float(dvf_dt_arr[idx])
-                )
-                for idx in range(total_nodes)
-            ],
-            dtype=float,
-        )
-
-        if dt:
-            B_arr = (dvf_dt_arr - dvf_prev_arr) * inv_dt
-        else:
-            B_arr = np.zeros_like(dvf_dt_arr, dtype=float)
-
-        stable_mask = (np.abs(dnfr_arr) <= eps_dnfr) & (np.abs(depi_arr) <= eps_depi)
-        stable_frac = float(stable_mask.mean()) if total_nodes else 0.0
-
-        delta_si_arr = si_curr_arr - si_prev_arr
-        delta_si_mean = float(delta_si_arr.mean()) if total_nodes else 0.0
-        B_mean = float(B_arr.mean()) if total_nodes else 0.0
-
-        hist.setdefault("stable_frac", []).append(stable_frac)
-        hist.setdefault("delta_Si", []).append(delta_si_mean)
-        hist.setdefault("B", []).append(B_mean)
-
-        for idx, node in enumerate(nodes):
-            nd = G.nodes[node]
-            curr_si = float(si_curr_arr[idx])
-            delta_val = float(delta_si_arr[idx])
-            nd["_prev_Si"] = curr_si
-            set_attr(nd, ALIAS_DSI, delta_val)
-
-            curr_vf = float(vf_curr_arr[idx])
-            nd["_prev_vf"] = curr_vf
-
-            dvf_dt_val = float(dvf_dt_arr[idx])
-            nd["_prev_dvf"] = dvf_dt_val
-            set_attr(nd, ALIAS_DVF, dvf_dt_val)
-            set_attr(nd, ALIAS_D2VF, float(B_arr[idx]))
-
-        return
-
-    # NumPy not available: optionally parallel fallback or sequential computation.
-    dnfr_list = list(dnfr_vals)
-    depi_list = list(depi_vals)
-    si_curr_list = list(si_curr_vals)
-    vf_curr_list = list(vf_curr_vals)
-
-    if n_jobs and n_jobs > 1:
-        approx_chunk = math.ceil(total_nodes / n_jobs) if n_jobs else None
-        chunk_size = resolve_chunk_size(
-            approx_chunk,
-            total_nodes,
-            minimum=1,
-        )
-        chunk_results: list[
-            tuple[
-                int,
-                tuple[int, int, float, float, list[float], list[float], list[float]],
-            ]
-        ] = []
-        with ProcessPoolExecutor(max_workers=n_jobs) as executor:
-            futures: list[tuple[int, Any]] = []
-            for start in range(0, total_nodes, chunk_size):
-                end = min(start + chunk_size, total_nodes)
-                chunk_args = (
-                    dnfr_list[start:end],
-                    depi_list[start:end],
-                    si_curr_list[start:end],
-                    prev_si_data[start:end],
-                    vf_curr_list[start:end],
-                    prev_vf_data[start:end],
-                    prev_dvf_data[start:end],
-                    dt,
-                    eps_dnfr,
-                    eps_depi,
-                )
-                futures.append(
-                    (start, executor.submit(_stability_chunk_worker, chunk_args))
-                )
-
-            for start, fut in futures:
-                chunk_results.append((start, fut.result()))
-
-        chunk_results.sort(key=lambda item: item[0])
-
-        stable_total = 0
-        delta_sum = 0.0
-        B_sum = 0.0
-        delta_vals_all: list[float] = []
-        dvf_dt_all: list[float] = []
-        B_vals_all: list[float] = []
-
-        for _, result in chunk_results:
-            (
-                stable_count,
-                chunk_len,
-                chunk_delta_sum,
-                chunk_B_sum,
-                delta_vals,
-                dvf_vals,
-                B_vals,
-            ) = result
-            stable_total += stable_count
-            delta_sum += chunk_delta_sum
-            B_sum += chunk_B_sum
-            delta_vals_all.extend(delta_vals)
-            dvf_dt_all.extend(dvf_vals)
-            B_vals_all.extend(B_vals)
-
-        total = len(delta_vals_all)
-        stable_frac = stable_total / total if total else 0.0
-        delta_si_mean = delta_sum / total if total else 0.0
-        B_mean = B_sum / total if total else 0.0
-
-    else:
-        stable_total = 0
-        delta_sum = 0.0
-        B_sum = 0.0
-        delta_vals_all = []
-        dvf_dt_all = []
-        B_vals_all = []
-
-        for idx in range(total_nodes):
-            curr_si = float(si_curr_list[idx])
-            prev_si_raw = prev_si_data[idx]
-            prev_si = float(prev_si_raw) if prev_si_raw is not None else curr_si
-            delta = curr_si - prev_si
-            delta_vals_all.append(delta)
-            delta_sum += delta
-
-            curr_vf = float(vf_curr_list[idx])
-            prev_vf_raw = prev_vf_data[idx]
-            prev_vf = float(prev_vf_raw) if prev_vf_raw is not None else curr_vf
-            dvf_dt_val = (curr_vf - prev_vf) * inv_dt if dt else 0.0
-            prev_dvf_raw = prev_dvf_data[idx]
-            prev_dvf = float(prev_dvf_raw) if prev_dvf_raw is not None else dvf_dt_val
-            B_val = (dvf_dt_val - prev_dvf) * inv_dt if dt else 0.0
-            dvf_dt_all.append(dvf_dt_val)
-            B_vals_all.append(B_val)
-            B_sum += B_val
-
-            if (
-                abs(float(dnfr_list[idx])) <= eps_dnfr
-                and abs(float(depi_list[idx])) <= eps_depi
-            ):
-                stable_total += 1
-
-        total = len(delta_vals_all)
-        stable_frac = stable_total / total if total else 0.0
-        delta_si_mean = delta_sum / total if total else 0.0
-        B_mean = B_sum / total if total else 0.0
-
-    hist.setdefault("stable_frac", []).append(stable_frac)
-    hist.setdefault("delta_Si", []).append(delta_si_mean)
-    hist.setdefault("B", []).append(B_mean)
-
-    for idx, node in enumerate(nodes):
-        nd = G.nodes[node]
-        curr_si = float(si_curr_list[idx])
-        delta_val = float(delta_vals_all[idx])
-        nd["_prev_Si"] = curr_si
-        set_attr(nd, ALIAS_DSI, delta_val)
-
-        curr_vf = float(vf_curr_list[idx])
-        nd["_prev_vf"] = curr_vf
-
-        dvf_dt_val = float(dvf_dt_all[idx])
-        nd["_prev_dvf"] = dvf_dt_val
-        set_attr(nd, ALIAS_DVF, dvf_dt_val)
-        set_attr(nd, ALIAS_D2VF, float(B_vals_all[idx]))
+    # All channel reads, retained samples, chronology and reductions are
+    # validated before the first graph-owned diagnostic or history write.
+    commit_capacity_rate_observations(G, observations)
+    for node, current, delta in zip(nodes, senses, deltas):
+        G.nodes[node]["_prev_Si"] = current
+        set_attr(G.nodes[node], ALIAS_DSI, delta)
+    hist.setdefault("stable_frac", []).append(stable_fraction)
+    hist.setdefault("delta_Si", []).append(delta_mean)
+    hist.setdefault("B", []).append(mean_second)
+    hist.setdefault("capacity_rate_coverage", []).append(coverage)
 
 
 def _si_chunk_stats(
@@ -1911,6 +1671,12 @@ def compute_global_coherence(G: TNFRGraph) -> float:
         - 1.0 = perfect coherence (no reorganization pressure variance)
         - 0.0 = maximum incoherence (extreme ΔNFR dispersion)
 
+    Raises
+    ------
+    TypeError, ValueError
+        If a provided pressure is not a finite real scalar. Missing pressure
+        aliases retain their zero default.
+
     Notes
     -----
     **Mathematical Foundation:**
@@ -1957,36 +1723,9 @@ def compute_global_coherence(G: TNFRGraph) -> float:
     >>> 0.0 <= C_global <= 1.0
     True
     """
-    # Collect all ΔNFR values
-    dnfr_values = [
-        cast(float, get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes()
-    ]
-
-    if not dnfr_values or all(v == 0 for v in dnfr_values):
-        return 1.0  # Perfect coherence when no reorganization pressure
-
-    if np is not None:
-        dnfr_array = np.array(dnfr_values)
-        sigma_dnfr = float(np.std(dnfr_array))
-        # Normalize by the magnitude scale max|ΔNFR| so the metric is
-        # invariant to the global sign of structural pressure.
-        dnfr_max = float(np.max(np.abs(dnfr_array)))
-    else:
-        # Pure Python fallback
-        mean_dnfr = sum(dnfr_values) / len(dnfr_values)
-        variance = sum((v - mean_dnfr) ** 2 for v in dnfr_values) / len(dnfr_values)
-        sigma_dnfr = variance**0.5
-        dnfr_max = max(abs(v) for v in dnfr_values)
-
-    if dnfr_max == 0:
-        return 1.0
-
-    C_disp = 1.0 - (sigma_dnfr / dnfr_max)
-
-    # Clamp to [0, 1] to handle numerical edge cases
-    if np is not None:
-        return float(np.clip(C_disp, 0.0, 1.0))
-    return max(0.0, min(1.0, C_disp))
+    return _dispersion_coherence(
+        _stored_metric_values(G, G.nodes(), ALIAS_DNFR)
+    )
 
 
 def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
@@ -2017,6 +1756,12 @@ def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
         Local coherence value in [0, 1] where:
         - 1.0 = perfect local coherence
         - 0.0 = maximum local incoherence
+
+    Raises
+    ------
+    TypeError, ValueError
+        If a selected neighborhood pressure is not a finite real scalar.
+        Missing pressure aliases retain their zero default.
 
     Notes
     -----
@@ -2066,32 +1811,6 @@ def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
             nx.single_source_shortest_path_length(G, node, cutoff=radius).keys()
         )
 
-    # Collect ΔNFR for neighborhood
-    dnfr_values = [
-        cast(float, get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in neighbors
-    ]
-
-    if not dnfr_values or all(v == 0 for v in dnfr_values):
-        return 1.0
-
-    if np is not None:
-        dnfr_array = np.array(dnfr_values)
-        sigma_dnfr = float(np.std(dnfr_array))
-        # Normalize by max|ΔNFR| (sign-invariant magnitude scale).
-        dnfr_max = float(np.max(np.abs(dnfr_array)))
-    else:
-        # Pure Python fallback
-        mean_dnfr = sum(dnfr_values) / len(dnfr_values)
-        variance = sum((v - mean_dnfr) ** 2 for v in dnfr_values) / len(dnfr_values)
-        sigma_dnfr = variance**0.5
-        dnfr_max = max(abs(v) for v in dnfr_values)
-
-    if dnfr_max == 0:
-        return 1.0
-
-    C_local = 1.0 - (sigma_dnfr / dnfr_max)
-
-    # Clamp to [0, 1]
-    if np is not None:
-        return float(np.clip(C_local, 0.0, 1.0))
-    return max(0.0, min(1.0, C_local))
+    return _dispersion_coherence(
+        _stored_metric_values(G, neighbors, ALIAS_DNFR)
+    )

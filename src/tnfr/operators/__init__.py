@@ -179,6 +179,7 @@ GlyphOperation = Callable[["NodeProtocol", GlyphFactors], None]
 
 from .grammar import apply_glyph_with_grammar  # noqa: E402
 from .grammar_observations import GrammarObservation, observe_grammar
+from .grammar_evidence import StructuralGrammarEvidence, assess_structural_grammar_evidence
 from .grammar_u6 import (
     StructuralPotentialConfinementObservation,
     observe_structural_potential_confinement,
@@ -266,6 +267,8 @@ __all__ = [
     "apply_glyph_with_grammar",
     "GrammarObservation",
     "observe_grammar",
+    "StructuralGrammarEvidence",
+    "assess_structural_grammar_evidence",
     "StructuralPotentialConfinementObservation",
     "observe_structural_potential_confinement",
     "apply_network_remesh",

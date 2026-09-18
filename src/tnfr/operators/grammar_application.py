@@ -198,9 +198,12 @@ def enforce_canonical_grammar(
 
     Delegates to :func:`grammar_dynamics.enforce_grammar_on_glyph` for
     proactive validation.  If *cand* would violate a grammar rule, it is
-    replaced with a safe alternative during standalone selection. An explicit
-    validated sequence context instead raises before a blocked step; it can
-    supply a future U4a handler without bypassing other live grammar checks.
+    replaced with a grammar-admitted alternative during standalone selection
+    under the default ``GRAMMAR_REJECTION_MODE="fallback"``. The explicit
+    graph setting ``"raise"`` rejects the request without selecting an
+    alternative. A validated sequence context always raises before a blocked
+    step; it can supply a future U4a handler without bypassing other live checks.
+    This mode selects a rejection policy, not a derived autonomous grammar.
 
     Parameters
     ----------

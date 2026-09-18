@@ -34,6 +34,11 @@ operator applications. Composite field suites read each required base field
 once, detach its map and reuse that local collection; later graph evolution
 does not rewrite the returned maps.
 
+Public potential, phase, current and pressure-flux dictionaries are detached
+from internal cache entries. Editing a returned map does not alter a later
+direct read or another composite suite. Cache reuse remains internal; public
+dictionary identity is not an API guarantee.
+
 The words "capture" and "snapshot" describe the returned data, not an atomic
 transaction with concurrent writers. If multiple threads share a graph, its
 owner must serialize both evolution and the complete readout with the same
@@ -50,6 +55,15 @@ Public imports are available from
 [canonical.py](../src/tnfr/physics/canonical.py). Initialize the canonical
 phase and ΔNFR attributes; the shared alias resolver supports the engine's
 alternate names.
+
+The first present alias is authoritative. Field readers validate its raw
+phase/pressure value as a finite binary64 real before consulting their caches;
+booleans, numeric strings and nonfinite values are not silently coerced into
+valid data. A nonzero source that cannot survive binary64 representation also
+raises. Missing channels retain the existing zero convention, and a valid
+primary alias is not overridden by a malformed secondary one. These are
+source-admission rules, not a guarantee that every derived sum is representable.
+Independent phase readouts do not require a valid pressure channel.
 
 ### 2.1 Structural potential Φ_s
 
@@ -102,11 +116,52 @@ complete reconstruction of the phase field.
 
     K_φ(i) = wrap(φ_i − Arg(Σ_(j in N(i)) exp(i φ_j))).
 
-The circular neighbor mean respects phase periodicity. For nondegenerate
-neighbor resultants this is the wrapped deviation from their mean angle;
-the implementation retains its defined fallback for ambiguous means.
-The exact bound is **|K_φ| ≤ π**. The warning threshold **0.9π ≈ 2.82743**
-is an operational margin.
+For a defined circular neighbor direction this is its wrapped deviation.
+The shared read-out materializes binary64 trigonometric components and sums
+those components exactly. A nonzero represented resultant uses its numerical
+direction without the old `1e-9` arithmetic-angle fallback. The exact wrapped
+bound on defined values is **|K_φ| ≤ π**; the warning **0.9π ≈ 2.82743** is an
+operational margin, not a conditioning certificate.
+
+`observe_phase_curvature(G)`, exported through `tnfr.physics.fields`, returns
+detached `PhaseCurvatureObservation` evidence with per-node neighbors,
+gradient, optional curvature, status and represented resultant. At exact joint
+zero of the materialized components, curvature is `None` with status
+`undefined_represented_resultant`. Numeric `compute_phase_curvature` and
+full-field telemetry instead raise `UndefinedPhaseCurvatureError`; they do
+not silently report zero or a valid safety decision. `compute_phase_gradient`
+still works on that domain. Isolates explicitly use
+`isolated_zero_convention`, distinct from cancellation of a nonempty neighborhood.
+
+Exact reduction does not certify exact sine/cosine values or a uniform angle
+error. A zero represented sum can differ from the exact-real trigonometric
+sum at those input angles. The evidence records requested precision separately
+from the binary64 component and approximate-angle semantics. No supplied
+precision label turns ill-conditioned data into a certified direction.
+Malformed authoritative phase aliases fail before a cached result is reused;
+missing phase retains its established zero default. This is a diagnostic
+correction, with no replacement of the pressure or phase-evolution kernels.
+The immutable observation may be reused from cache. All public numeric field
+maps are detached; full structural telemetry returns a fresh container and
+copies every nested field map, so caller edits cannot overwrite cached evidence.
+
+`TelemetryEmitter(safe=True)` collects the tetrad fields independently even
+when a requested composite suite fails. It retains the available fields,
+omits an unavailable value, and records
+`metrics["field_errors"][field]={"type": ..., "message": ...}`. Undefined
+curvature therefore does not hide valid potential, gradient or correlation
+readouts. Strict mode propagates the error. `include_extended=False` skips
+the composite suites and collects only the core metrics and individual tetrad.
+Successful unified collection reuses its extended block instead of calculating
+that suite twice. If it fails, safe mode can still collect the extended fields
+independently.
+JSON emission supports NumPy arrays/scalars through the shared JSON writer;
+unsupported objects still raise, and serialization completes before opening
+the output file. Safe field collection does not silently discard export errors.
+The optional human mirror displays unavailable core metrics explicitly and is
+formatted before either output file is opened. This prevents formatting errors
+from leaving an appended JSON batch queued for retry; it is not an atomic
+transaction across the two files or a guarantee against filesystem failures.
 
 For small phase spread on a consistent branch, and matching neighbor-weight
 conventions, the circular mean approaches the arithmetic mean and K_φ
@@ -127,21 +182,51 @@ then fits distance-binned products to an exponential profile:
 
     mean_(d(i,j)=r) c_i c_j ≈ A exp(−r/ξ_C).
 
-This pressure-only local quantity is the canonical coherence kernel evaluated
-with dEPI = 0. It is a correlation readout; the full global coherence
-C(t) also includes mean|dEPI|.
+This is the canonical coherence kernel evaluated with dEPI = 0 and an
+**uncentered static product fit**, not connected covariance or the full runtime
+coherence. The scalar and vector paths share
+[_coherence_fit.py](../src/tnfr/physics/_coherence_fit.py): shortest-path distances
+use explicit edge `length`, else compatibility `weight`, else one; parallel
+lengths combine by minimum. Undirected pairs are counted once and directed
+pairs follow outgoing reachable paths. Distinct-node zero distances are
+omitted, so zero-length edges describe a pseudometric rather than a separating
+undirected metric. Directed distances can be asymmetric.
 
-When the fit cannot supply a usable positive decay length, the implementation
-uses a graph-spectral fallback 1/√λ_gap. The fallback currently selects the
-smallest positive eigenvalue returned by structural_eigenmodes; on a connected
-undirected graph this is λ₂. On disconnected graphs it does not measure
-correlation across components, and with no positive modes the result may be
-NaN. A fitted length and a spectral fallback are distinct measurements.
+The declared fit policy requires ten positive-distance pairs, two pairs per
+exact represented distance bin, and three bins with mean product above `1e-9`.
+Only a finite negative log-linear slope giving a finite positive length is
+accepted; this is not a goodness-of-fit test. Below 1000 nodes every pair is
+used. Larger graphs use the same deterministic insertion-order source sample
+in both backends. Node/source order is part of the fit cache key; the outer
+telemetry cache also binds neighbor order and the numerical path. Pressure,
+both edge channels and precision mode participate in cache invalidation.
 
-A large estimate, a flat correlation profile, or a failed fit does not alone
-prove a critical transition. Report the graph regime and fitting/fallback
-method when interpreting the value. The current public function accepts G
-only; it does not accept a coherence_key argument.
+Negative or nonfinite effective edge lengths and overflowing reachable path
+distances now raise `ValueError`; invalid geometry is not a failed fit and
+does not trigger spectral fallback. The vector helper's optional distance
+matrix must satisfy its shape, numeric-domain, diagonal and undirected-symmetry
+contract. Such a matrix remains caller-declared data, not authenticated shortest
+paths. Positive infinity marks omitted pairs, while NaN and negative sentinels
+are rejected intentionally.
+
+When valid inputs supply no usable fit, the separate fallback is
+`1/sqrt(lambda_positive)` from the normalized graph-Laplacian eigenvalues.
+The implementation selects the smallest eigenvalue above `1e-9`, a numerical
+mode-selection policy. On an admitted connected symmetric graph with a
+resolved positive gap this corresponds to λ₂. Disconnected graphs do not
+thereby acquire cross-component correlation, directed graphs cannot use this
+symmetric fallback, and unavailable estimates remain NaN. A fitted ξ_C has
+the declared path-length units; the normalized-generator fallback is
+dimensionless and does not scale with an independent explicit length.
+
+Use `estimate_coherence_length_with_provenance(G)` to retain the method,
+distance/units, source selection, fit policy and graph regime.
+`estimate_coherence_length(G)` retains its scalar return for compatibility;
+neither function accepts a `coherence_key` argument. A large estimate, flat
+profile or failed fit alone proves no critical transition. The weighted-star
+controls in [the distance-contract tests](../tests/physics/test_coherence_distance_contract.py)
+check a known exponential product and its distance scaling without a trajectory
+or a physical correlation claim.
 
 ## 3. Contracts, units, and edge cases
 
@@ -151,6 +236,8 @@ only; it does not accept a coherence_key argument.
 - Sequence and scale obligations remain those of U1–U5.
 - Isolated vertices return zero local gradient and curvature. Only reachable
   positive-distance sources contribute to potential.
+- A nonempty neighborhood with exact represented phasor cancellation has
+  unavailable curvature; it does not satisfy a curvature safety check by default.
 - Initialize required attributes explicitly for reproducible studies instead
   of relying on missing-value fallbacks.
 
@@ -166,7 +253,8 @@ both edge channels when their physical meanings differ.
 |-------------|---------|
 | compute_structural_potential(G, alpha=2.0, ...) | Exact potential by default; optional landmark approximation |
 | compute_phase_gradient(G) | Per-node wrapped mismatch magnitude |
-| compute_phase_curvature(G) | Per-node circular curvature |
+| compute_phase_curvature(G) | Per-node circular curvature; raises on undefined represented direction |
+| observe_phase_curvature(G) | Immutable per-node resultant evidence, availability and independent gradient |
 | estimate_coherence_length(G) | Scalar correlation estimate with spectral fallback |
 | compute_k_phi_multiscale_variance(G, scales) | Research utility for scale-dependent curvature variance |
 | fit_k_phi_asymptotic_alpha(var_by_scale) | Fit a variance-decay exponent |

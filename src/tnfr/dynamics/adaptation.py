@@ -274,6 +274,10 @@ def adapt_vf_after_structural_stability(
     After VF_ADAPT_TAU consecutive qualifying evaluations, its frequency moves
     by VF_ADAPT_MU toward the immutable-snapshot mean of its neighbors.
 
+    Si is a derived diagnostic. Using it to select capacity updates is an
+    operational policy, not an evolution law derived from the nodal EPI
+    equation. This routine consumes stored Si; it does not refresh it.
+
     This routine does not read dEPI/dt and therefore does not compute or gate on
     canonical total coherence C(t). All parameters and node scalars are
     validated before mutation. Stable counters and frequency updates commit as

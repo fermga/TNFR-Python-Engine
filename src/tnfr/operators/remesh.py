@@ -9,6 +9,10 @@ From the nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
 
 REMESH implements: **EPI(t) ↔ EPI(t-τ)** (operational fractality)
 
+The runtime delay selects integer positions in retained history. It denotes a
+fixed physical duration only under an explicit uniform sampling convention;
+variable cycle durations and the declared simulation clock remain separate.
+
 REMESH enables patterns to echo across temporal and spatial scales. Identity and
 coherence are contracts to monitor on the executed transition; the operator name
 alone does not certify either quantity.
@@ -51,10 +55,10 @@ roles and are not, by themselves, complete grammar-valid words:
    - Dynamics: VAL raises capacity; REMESH then mixes delayed form
    - Sequence: VAL → REMESH (raise capacity → mix delayed form)
 
-3. **SHA (Silence)**: νf → 0 → latent memory
-   - Relationship: Latent-network stabilization (structural memory)
-   - Dynamics: SHA freezes pattern (∂EPI/∂t → 0), REMESH propagates frozen state
-   - Sequence: SHA → REMESH (freeze → propagate frozen memory)
+3. **SHA (Silence)**: Reduced capacity and identity capture
+   - Relationship: Candidate latent-memory support
+   - Dynamics: SHA preserves EPI at its event; later rate depends on νf · ΔNFR
+   - Sequence: SHA → REMESH (reduce capacity → propagate captured form)
    - **Critical**: NO functional redundancy - uses existing Silence operator
 
 4. **NUL (Contraction)**: Reduces νf and densifies ΔNFR
@@ -175,7 +179,7 @@ This implementation maintains a single, centralized flow:
 
 1. **SHA Integration**: Uses existing Silence operator from definitions.py
    - NO reimplementation of SHA functionality
-   - StructuralIdentity only CAPTURES frozen states, doesn't freeze
+   - StructuralIdentity captures a state; it does not prove later freezing
    - Workflow: Silence() → capture_from_node(is_sha_frozen=True) → validate
 
 2. **Coherence Calculation**: Canonical C(t) for REMESH validation
@@ -317,15 +321,15 @@ class StructuralIdentity:
     preserved as it echoes across scales. This implements TNFR's requirement
     that patterns maintain identity through reorganization.
 
-    **REMESH ↔ SHA Relationship**: According to TNFR theory, SHA (Silence)
-    stabilizes latent network memory by reducing νf → 0, which freezes EPI
-    via the nodal equation: ∂EPI/∂t = νf · ΔNFR → 0. When REMESH propagates
-    patterns across scales, SHA-frozen nodes act as "structural anchors" that
-    maintain identity during reorganization.
+    **REMESH ↔ SHA Relationship**: SHA (Silence) reduces capacity while
+    preserving EPI at the event. Later unforced EPI evolution obeys
+    ∂EPI/∂t = νf · ΔNFR; exact freezing requires that product to vanish.
+    Captured low-capacity states can supply candidate structural anchors for
+    REMESH, but their maintenance must be checked on the subsequent evolution.
 
     **Usage Pattern**:
-    1. Apply SHA to freeze node: νf → 0, preserves EPI
-    2. Capture identity from frozen state (this class)
+    1. Apply SHA to reduce capacity while preserving EPI at the event
+    2. Capture identity from the resulting state (this class)
     3. Apply REMESH to propagate pattern across scales
     4. Validate identity preservation post-reorganization
 
@@ -338,7 +342,7 @@ class StructuralIdentity:
     phase_pattern : float | None
         Characteristic phase pattern in [0, 2π], if applicable
     frozen_by_sha : bool
-        Whether this identity was captured from SHA-frozen state (νf ≈ 0)
+        Low-capacity SHA capture flag; not a future invariance certificate
     lineage : list[str]
         History of transformations preserving this identity
     tolerance : float
@@ -346,9 +350,14 @@ class StructuralIdentity:
 
     Notes
     -----
-    From TNFR physics (definitions.py::Silence): SHA reduces νf causing
-    ∂EPI/∂t → 0 regardless of ΔNFR. This creates "latent memory" - frozen
-    structural patterns that REMESH can propagate coherently across scales.
+    The limit νf → 0 suppresses the unforced EPI rate only when
+    νf · ΔNFR → 0; bounded pressure is sufficient. For example,
+    νf = 1/(1+t) and ΔNFR = 1+t instead give unit EPI rate for t >= 0.
+    Even a vanishing rate alone does not prove finite accumulated change or
+    identity preservation. At exact zero capacity and finite pressure the
+    unforced continuous EPI rate is zero; separate sources and event writes
+    require their own checks. This class stores identity evidence, not a
+    dynamical memory-maintenance theorem.
 
     **Do NOT reimplement SHA** - use existing Silence operator from
     tnfr.operators.definitions. This class only captures and validates
@@ -386,8 +395,9 @@ class StructuralIdentity:
 
         Notes
         -----
-        If frozen_by_sha=True, vf check is relaxed since SHA-frozen patterns
-        have νf ≈ 0 (frozen state) while maintaining identity via EPI.
+        If frozen_by_sha=True, the vf check admits low capacity in addition
+        to the captured range. EPI matching remains a separate snapshot check;
+        neither predicate proves continued dynamical freezing.
         """
         tol = tolerance if tolerance is not None else self.tolerance
 
@@ -1683,7 +1693,7 @@ def _require_same_epi_time_histories(
 
 
 def _snapshot_runtime_clock(G: CommunityGraph) -> tuple[bool, type[Any], Any]:
-    """Freeze the physical-time coordinate used for the REMESH jump."""
+    """Freeze the declared simulation-time coordinate for the REMESH jump."""
 
     graph_mapping = _networkx_runtime_layout(G).graph_mapping
     present, value = _raw_string_entry(graph_mapping, "_t")

@@ -22,7 +22,9 @@ Canonical status specifies the required read-outs and their implementations.
 It does not prove that four lossy summaries reconstruct the graph state or its
 dynamics; minimal complete observability remains open. In particular, ξ_C is
 nonlinear in the sampled field and can use a spectral-gap fallback on supported
-symmetric graphs. Its provenance must be retained when interpretations differ.
+symmetric graphs. The static product fit uses declared structural path-length
+units; the normalized-generator spectral fallback is dimensionless. Its
+provenance must be retained when interpretations differ.
 
 EXTENDED CANONICAL FIELDS (Promoted Nov 12, 2025)
 -------------------------------------------------
@@ -47,10 +49,9 @@ Physics Foundation
 From the nodal equation:
     ∂EPI/∂t = νf · ΔNFR(t)
 
-ΔNFR represents structural pressure driving reorganization. Aggregating
-ΔNFR across the network with distance weighting creates the structural
-potential field Φ_s, analogous to gravitational potential from mass
-distribution.
+ΔNFR represents structural pressure driving reorganization. The defined
+distance-weighted aggregation of ΔNFR produces Φ_s. This read-out does not
+derive a physical interaction or an evolution law for the graph metric.
 
 References
 ----------
@@ -90,6 +91,10 @@ _ISING_2D_EXPONENT_TOLERANCE = 0.15
 # Canonical diagnostic tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
 from .canonical import (
     CoherenceLengthEstimate,
+    PhaseCurvatureNodeObservation,
+    PhaseCurvatureObservation,
+    UndefinedPhaseCurvatureError,
+    observe_phase_curvature,
     compute_phase_curvature,
     compute_phase_gradient,
     compute_structural_potential,
@@ -136,10 +141,14 @@ except ImportError:
     OptimizationObjective = None
 
 __all__ = [
-    # Canonical Structural Triad
+    # Canonical diagnostic tetrad
     "compute_structural_potential",
     "compute_phase_gradient",
     "compute_phase_curvature",
+    "observe_phase_curvature",
+    "PhaseCurvatureObservation",
+    "PhaseCurvatureNodeObservation",
+    "UndefinedPhaseCurvatureError",
     "estimate_coherence_length",
     "estimate_coherence_length_with_provenance",
     "CoherenceLengthEstimate",

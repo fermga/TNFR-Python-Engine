@@ -5,9 +5,10 @@ from __future__ import annotations
 from copy import deepcopy
 
 import networkx as nx
+import pytest
 
 from tnfr.operators.grammar_observations import observe_grammar
-from tnfr.operators import Coupling, Silence
+from tnfr.operators import Coupling, Resonance, Silence
 from tnfr.types import serialize_bepi
 
 
@@ -20,8 +21,10 @@ def test_observe_grammar_does_not_mutate_history_and_separates_phase_request():
     assert report.history_length == 2
     assert report.prior_coherence is True
     assert report.phase_gate_requested is True
-    assert report.phase_preconditions_checked is True
-    assert report.phase_gate_allowed is True
+    assert report.incremental_allowed == (True,)
+    assert report.phase_preconditions_checked is False
+    assert report.phase_gate_allowed is None
+    assert report.as_dict()["phase_gate_allowed"] is None
     assert report.u2_debt == 0
 
 
@@ -32,6 +35,55 @@ def test_observe_grammar_reports_live_debt_without_reclassifying_u6():
     assert report.u2_debt == 2
     assert report.incremental_allowed == (True,)
     assert report.u6_checked is False
+    assert not report.phase_gate_requested
+    assert not report.phase_preconditions_checked
+    assert report.phase_gate_allowed is None
+
+
+@pytest.mark.parametrize("operator", [Coupling(), Resonance()])
+def test_phase_permission_is_independent_of_unpaid_grammar_debt(operator):
+    graph = nx.Graph()
+    graph.add_edge(0, 1)
+    graph.nodes[0].update(EPI=1.0, theta=0.0, glyph_history=["VAL"] * 3)
+    graph.nodes[1].update(EPI=1.0, theta=0.25)
+    before = deepcopy((graph.graph, dict(graph.nodes(data=True))))
+
+    report = observe_grammar(graph, 0, [operator])
+
+    assert report.u2_debt == 3
+    assert report.incremental_allowed == (False,)
+    assert report.phase_preconditions_checked is True
+    assert report.phase_gate_allowed is True
+    assert (graph.graph, dict(graph.nodes(data=True))) == before
+
+
+def test_unrelated_later_rejection_does_not_reclassify_current_phase_gate():
+    graph = nx.Graph()
+    graph.add_edge(0, 1)
+    graph.nodes[0].update(EPI=1.0, theta=0.0, glyph_history=["AL", "IL"])
+    graph.nodes[1].update(EPI=1.0, theta=0.25)
+    report = observe_grammar(graph, 0, ["UM", "VAL", "VAL", "VAL"])
+
+    assert report.incremental_allowed == (True, True, True, False)
+    assert report.phase_preconditions_checked is True
+    assert report.phase_gate_allowed is True
+
+
+def test_phase_report_aggregates_requested_operator_specific_gates_only():
+    graph = nx.Graph()
+    graph.add_edge(0, 1)
+    graph.graph["UM_MAX_PHASE_DIFF"] = 0.125
+    graph.nodes[0].update(EPI=1.0, theta=0.0, glyph_history=["AL", "IL"])
+    graph.nodes[1].update(EPI=1.0, theta=0.25)
+    before = deepcopy((graph.graph, dict(graph.nodes(data=True))))
+
+    assert observe_grammar(graph, 0, [Resonance()]).phase_gate_allowed is True
+    assert observe_grammar(graph, 0, [Coupling()]).phase_gate_allowed is False
+    report = observe_grammar(graph, 0, [Resonance(), Coupling()])
+    assert report.incremental_allowed == (True, False)
+    assert report.phase_preconditions_checked is True
+    assert report.phase_gate_allowed is False
+    assert (graph.graph, dict(graph.nodes(data=True))) == before
 
 
 def test_observe_grammar_reports_u3_rejection_without_mutation():

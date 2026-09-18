@@ -18,6 +18,7 @@ from types import SimpleNamespace
 from typing import Any, NamedTuple
 
 from ..validation.compatibility import CompatibilityLevel
+from ..types import require_finite_real_scalar_epi
 from .grammar_types import glyph_function_name
 
 
@@ -27,7 +28,7 @@ class SequenceSignature(NamedTuple):
 
     glyph_names: tuple[str, ...]
     compatibility_level: str
-    epi_zero_start: bool  # Initiation required, matching the canonical EPI > 0 rule.
+    epi_zero_start: bool  # Initiation required only at the zero scalar coordinate.
 
     def __str__(self) -> str:
         sep = ",".join(self.glyph_names)
@@ -71,7 +72,7 @@ def create_sequence_signature(
         compatibility_level=(
             compatibility_level.name if compatibility_level is not None else "canonical"
         ),
-        epi_zero_start=not (epi_initial > 0.0),
+        epi_zero_start=require_finite_real_scalar_epi(epi_initial, "initial EPI") == 0.0,
     )
 
 

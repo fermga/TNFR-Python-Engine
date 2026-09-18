@@ -1,8 +1,8 @@
 """TNFR Canonical Grammar (single source of truth).
 
-OPTIMIZED IMPLEMENTATION: Unified grammar validation with intelligent caching
-to eliminate redundant validation across TNFR modules. All grammar rules
-derive from nodal equation ∂EPI/∂t = νf · ΔNFR(t) theoretical foundations.
+Unified grammar validation with caching shared across TNFR modules.
+The nodal equation motivates the rules; operator contracts and calibrated
+policies supply premises not determined by that equation alone.
 
 PERFORMANCE OPTIMIZATIONS:
 - Cached validation results with cache invalidation
@@ -15,19 +15,20 @@ Terminology (TNFR semantics):
     compatibility with graph libraries. Unrelated to Node.js runtime.
 - Future aliasing ("locus") must preserve public API stability.
 
-All rules derive from the nodal equation ∂EPI/∂t = νf · ΔNFR(t), canonical
-invariants, and formal contracts. No organizational conventions.
+Word admission, live operator preconditions and trajectory guarantees are
+different checks. U1-U5 encode the supported operator language; U6 reads
+potential drift. Neither layer selects a unique autonomous evolution law.
 
 Canonical Constraints (U1-U6)
 ------------------------------
 U1: STRUCTURAL INITIATION & CLOSURE
     U1a: Start with generators when needed
     U1b: End with closure operators
-    Basis: ∂EPI/∂t undefined at EPI=0, sequences need coherent endpoints
+    Basis: initialization/endpoint contracts; νf·ΔNFR is defined at EPI=0
 
-U2: CONVERGENCE & BOUNDEDNESS
+U2: STABILIZATION COVERAGE & DEBT
     If destabilizers, then include stabilizers
-    Basis: ∫νf·ΔNFR dt must converge (integral convergence theorem)
+    Basis: calibrated causal debt; convergence needs separate trajectory bounds
 
 U3: RESONANT COUPLING
     If coupling/resonance, then verify phase compatibility
@@ -36,12 +37,12 @@ U3: RESONANT COUPLING
 U4: BIFURCATION DYNAMICS
     U4a: If bifurcation triggers, then include handlers
     U4b: If transformers, then recent destabilizer (+ prior IL for ZHIR)
-    Basis: Contract OZ + bifurcation theory
+    Basis: trigger/handler and history contracts, not a bifurcation theorem
 
 U5: MULTI-SCALE COHERENCE
     If deep REMESH (depth > 1), require scale stabilizers (IL/THOL).
-    Basis: Hierarchical nodal equation + coherence conservation
-    (C_parent ≥ α·ΣC_child).
+    Basis: nesting contracts; quantitative coherence and reduced dynamics
+    require an explicit hierarchy and closure hypotheses
 
 U6: STRUCTURAL POTENTIAL DRIFT POLICY
     Observe mean_i |Δ Φ_s(i)| < π/2 between declared reference and observed fields
@@ -49,11 +50,12 @@ U6: STRUCTURAL POTENTIAL DRIFT POLICY
     Scope: finite read-only alert; it is not a graph-independent bound or a
     certificate of future confinement/fragmentation
 
-For complete derivations and physics basis, see UNIFIED_GRAMMAR_RULES.md
+For requirements and mathematical limits, see UNIFIED_GRAMMAR_RULES.md and
+DIAGNOSTIC_AND_GRAMMAR_SCOPE.md.
 
 References
 ----------
-- UNIFIED_GRAMMAR_RULES.md: Complete physics derivations and mappings
+- UNIFIED_GRAMMAR_RULES.md: Canonical policies, hypotheses and mappings
 - AGENTS.md: Canonical invariants and formal contracts
 - TNFR.pdf: Nodal equation and bifurcation theory
 """

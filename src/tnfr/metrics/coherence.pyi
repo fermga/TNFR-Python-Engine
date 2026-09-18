@@ -76,21 +76,7 @@ PhaseSyncWeights: TypeAlias = (
 SimilarityComponents = tuple[float, float, float, float]
 VectorizedComponents: TypeAlias
 ScalarOrArray: TypeAlias
-StabilityChunkArgs = tuple[
-    Sequence[float],
-    Sequence[float],
-    Sequence[float],
-    Sequence[float | None],
-    Sequence[float],
-    Sequence[float | None],
-    Sequence[float | None],
-    float,
-    float,
-    float,
-]
-StabilityChunkResult = tuple[
-    int, int, float, float, list[float], list[float], list[float]
-]
+
 MetricValue: TypeAlias
 MetricProvider = Callable[[], MetricValue]
 MetricRecord: TypeAlias

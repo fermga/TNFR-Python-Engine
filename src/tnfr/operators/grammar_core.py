@@ -32,6 +32,7 @@ from .grammar_telemetry import (
     warn_phase_gradient_telemetry,
 )
 from ..config.operator_names import BIFURCATION_WINDOW, U2_DEBT_CAPACITY
+from ..types import require_finite_real_scalar_epi
 from .grammar_debt import advance_debt
 from .grammar_types import (
     BIFURCATION_HANDLERS,
@@ -58,7 +59,8 @@ class GrammarValidator:
     - Canonical invariants (AGENTS.md §3)
     - Formal contracts (AGENTS.md §4)
 
-    No organizational conventions are enforced.
+    Calibrated word policies do not replace live operator gates or trajectory
+    theorems. Their derivation limits are documented in the grammar scope note.
 
     Parameters
     ----------
@@ -111,9 +113,10 @@ class GrammarValidator:
         tuple[bool, str]
             (is_valid, message)
         """
-        if epi_initial > 0.0:
+        epi = require_finite_real_scalar_epi(epi_initial, "initial EPI")
+        if epi != 0.0:
             # Already initialized, no generator required
-            return True, "U1a: EPI>0, initiation not required"
+            return True, "U1a: EPI!=0, initiation not required"
 
         if not sequence:
             return False, "U1a violated: Empty sequence with EPI=0"

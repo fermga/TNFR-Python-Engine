@@ -1,18 +1,20 @@
-"""Canonical ΔNFR integrators driving TNFR runtime evolution.
+"""Shared nodal integrators and explicitly configured additive forcing.
 
-This module implements numerical integration of the canonical TNFR nodal equation:
+The unforced nodal law is ``dEPI/dt = vf * dnfr``. The optional Gamma registry
+implements the broader configured equation:
 
     ∂EPI/∂t = νf · ΔNFR(t) + Γi(R)
 
 The extended equation includes:
   - Base term: νf · ΔNFR(t) - canonical structural evolution
-  - Network term: Γi(R) - optional Kuramoto coupling
+  - Additive term: Γi - optional Kuramoto-based or harmonic forcing
 
-Integration respects TNFR invariants:
-  - Structural units (Hz_str for νf)
-  - Operator closure (valid ΔNFR semantics)
-  - Phase coherence (network synchronization)
-  - Reproducibility (deterministic with seeds)
+Gamma is an additional rate source, not a derivation from the nodal product.
+At positive capacity it can be written as an effective pressure ``dnfr+Gamma/vf``;
+this representation is singular at zero capacity. Nonzero Gamma can therefore
+move EPI at ``vf=0``. Unforced certificates and Silence claims require Gamma
+to vanish, or separate evidence for the extended model. No units or phase
+synchronization theorem follows merely from calling this integrator.
 
 The base term is ``vf * dnfr`` with stored frequency and pressure held fixed
 during each call. For the built-in time-only forcing at fixed phases, ``rk4``

@@ -86,19 +86,19 @@ class CoreDefaults:
     unused to static analysis tools such as Vulture.
     """
 
-    DT: float = DT_CANONICAL  # = 0.5 (stable explicit step)
+    DT: float = DT_CANONICAL  # = 0.5 (configured explicit step, not a stability bound)
     INTEGRATOR_METHOD: str = "euler"
     DT_MIN: float = DT_MIN_CANONICAL  # = 1/16 ≈ 0.0625 (minimal temporal resolution)
     EPI_MIN: float = EPI_MIN_CANONICAL  # = -1.0 (unit form bound)
     EPI_MAX: float = EPI_MAX_CANONICAL  # = 1.0 (unit form bound)
-    VF_MIN: float = VF_MIN_CANONICAL  # 0.0 (canonical death state)
-    VF_MAX: float = VF_MAX_CANONICAL  # = 2π ≈ 6.283 (νf max, one phase cycle)
+    VF_MIN: float = VF_MIN_CANONICAL  # 0.0 (inactive unforced EPI channel)
+    VF_MAX: float = VF_MAX_CANONICAL  # = 2π ≈ 6.283 (configured capacity ceiling)
     THETA_WRAP: bool = True
     CLIP_MODE: str = "hard"
     CLIP_SOFT_K: float = PI  # π ≈ 3.14159 (geometric steepness for smooth transitions)
     DNFR_WEIGHTS: dict[str, float] = field(
         default_factory=lambda: {
-            # Coherence-band hierarchy (π-derived, exact-normalising): phase ≻ EPI ≻ νf.
+            # Configured hierarchy, normalized in real arithmetic: phase ≻ EPI ≻ νf.
             "phase": CHANNEL_WEIGHT_PRIMARY,  # π/(π+1) ≈ 0.7585 (dominant desync channel)
             "epi": CHANNEL_WEIGHT_SECONDARY,  # π/(π+1)² ≈ 0.1832 (diffusion channel)
             "vf": CHANNEL_WEIGHT_TERTIARY,  # 1/(π+1)² ≈ 0.0583 (capacity-gradient channel)

@@ -23,7 +23,7 @@ the interpretation of grammar calibration and field thresholds here.
 
 ### 2.1 Nodal Equation
 
-Every node in a TNFR network evolves according to the first-order differential equation
+On a continuous segment in a declared structural chart, nodal evolution satisfies
 
 $$
 \frac{\partial \mathrm{EPI}}{\partial t} = \nu_f(t) \, \Delta \mathrm{NFR}(t) \tag{1}
@@ -39,15 +39,15 @@ where:
 
 ### 2.2 Structural Triad
 
-Each node is characterized by three irreducible attributes:
+The engine's structural triad distinguishes three attributes:
 
-1. **Form (EPI)**: coherent structural configuration in a Banach space $\mathcal{B}_{\mathrm{EPI}}$; modified exclusively through canonical operators.
-2. **Frequency ($\nu_f$)**: reorganization rate in $\mathbb{R}^+$; $\nu_f \to 0$ corresponds to inactivation.
-3. **Phase ($\phi$ or $\theta$)**: synchronization parameter in $[0, 2\pi)$; coupling requires $|\phi_i - \phi_j| \leq \Delta\phi_{\max}$.
+1. **Form (EPI)**: coherent structural configuration in a declared state space. A Banach-space formulation and the engine's signed scalar chart are representations whose scope must be stated; the nodal equation alone does not choose their dimension. Named operators use their jump contracts; declared solvers use the shared nodal integrator.
+2. **Frequency ($\nu_f$)**: nonnegative reorganization capacity; $\nu_f=0$ suppresses continuous EPI flow, without necessarily erasing stored form.
+3. **Phase ($\phi$ or $\theta$)**: circular synchronization coordinate; coupling uses $|\mathrm{wrap}(\phi_i-\phi_j)|\leq\Delta\phi_{\max}$. The EPI equation alone supplies no phase clock.
 
 ### 2.3 Integrated Form and Stability Criterion
 
-Integrating Eq. (1) over $[t_0, t_f]$:
+On one fixed vector chart without jumps, integrating Eq. (1) over $[t_0,t_f]$ gives:
 
 $$
 \mathrm{EPI}(t_f) = \mathrm{EPI}(t_0) + \int_{t_0}^{t_f} \nu_f(\tau) \, \Delta\mathrm{NFR}(\tau) \, d\tau \tag{2}
@@ -67,7 +67,158 @@ it motivates control of accumulated change but does not independently prove
 an infinite-horizon estimate. Its numerical calibration and the three-operation
 U4b window use a mean-rate surrogate, not every graph mode's decay time.
 
+For locally finite operator events, add their actual EPI jumps to (2).
+Changing node support or structural chart requires an explicit identification
+map. The integral is a Banach-valued integral when EPI is Banach-valued;
+neither subtraction nor integration is defined by a bare set of forms alone.
+
+### 2.4 Physical concepts, mathematical types and implementation
+
+The research starting point is coherent form and its reorganization through
+the nodal law. A historical formula or a Python type is evidence of a proposed
+formalization, not an additional axiom that makes that formalization necessary.
+The [joint closure review](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#14-constitutive-closure-audit-from-the-nodal-law)
+uses the following distinctions before selecting any new dynamics.
+
+| Quantity | Minimum mathematical meaning | What remains to be established |
+|----------|------------------------------|--------------------------------|
+| EPI, denoted x | A structural configuration with specified equivalence of forms and a chart or vector-space realization. | Which independent coordinates retain the intended structure and its dynamics; what observations identify them. |
+| DeltaNFR, denoted p | A directed structural response in the tangent space of x, or its vector-chart representative. | A constitutive map from the joint nodal/network state to that response. A scalar distance alone gives no direction. |
+| Capacity nu | A nonnegative multiplier converting structural response into a rate relative to the declared time. | Its independent state dependence, evolution and physical calibration. It is not automatically angular frequency. |
+| Time t | A common ordered evolution parameter with explicit units and event conventions. | Its relation to laboratory time or a derived internal clock. A simulation step index is not such a derivation. |
+| Phase theta | A point on the circle with an explicitly defined relation to structural configuration. | Whether it is independent, a derived coordinate or a history observable; and its evolution in that realization. |
+| Support, conductance W and metric length | Distinct structural data specifying interaction, normalized transport and distance. | Which data emerge from form and which are separate state; admissible changes and their law. |
+
+A scalar value `EPI=0` is not absence of the graph node. Its capacity, phase
+and incident support still exist in the current engine and can affect other
+nodes. Consequently a representation that discards phase at zero EPI needs
+a projectability proof. Calling zero form a "vacuum" or invoking Emission
+does not derive creation of the substrate or of its phase/capacity law.
+
+If x lies in a differentiable manifold M, the type-correct statement is
+`x_dot=nu*p`, with `p in T_x M`. In a Banach vector chart this tangent space
+can be identified with the ambient Banach space. A metric space supplies
+distances, but not by itself the tangent vector appearing in this equation.
+If p denotes an operator instead of its evaluated vector, its argument and
+action must be specified, for example `p=P(z)`, where z retains the relevant
+joint state and history. Neither interpretation determines P uniquely.
+
+The current graph engine supports a signed real scalar EPI coordinate and
+its exact uniform-real `BEPIElement` embedding. The richer implementation
+stores finite complex continuous-field samples and a finite coefficient
+array; it is not an exact representation of every element of
+`C^0([0,1]) direct-sum ell^2`. The supplied grid need not be [0,1], and no
+interpolation or infinite tail is inferred. Its maximum-component scalar read-out loses
+information outside the uniform-real embedding. Its historical `direct_sum`
+method adds aligned components; it does not enlarge the state-space dimension.
+Its regularity functional is not the canonical coherence or a Banach norm.
+See [epi.py](../src/tnfr/mathematics/epi.py),
+[spaces.py](../src/tnfr/mathematics/spaces.py) and
+[the shared chart boundary](../src/tnfr/types.py).
+
+Consequently neither the existence of BEPI storage nor the use of floats
+proves the physically necessary EPI type. Temporal spectral entropy of a
+scalar series likewise proves neither a vector-valued state nor equivalence
+to a complete spatial/modal representation. Adequacy requires a specified
+observation/reduction map and closed dynamics or explicit missing-state
+memory. The existing [quotient and memory derivations](DERIVED_EPI_MEMORY.md)
+provide that test; storage labels alone do not.
+
+A faithful chart of a full structural state and a closed scalar observable
+are different claims. For an observation h and a specified full law z'=F(z),
+autonomous observable evolution requires `Dh(z)F(z)` to agree for all states
+with the same h(z); events additionally require `h(J(z))=J_bar(h(z))`.
+An injective chart is sufficient to retain state but is not necessary for
+such a closed observable. Capacity, phase, support and history remain inputs
+unless their projected evolution also closes. These conditions test a proposed
+representation; they do not supply the missing full law by assuming it.
+
+### 2.5 Dimensional consistency and structural activity
+
+Write `[x]=X`, `[t]=T`, `[nu]=T^-1`. The nodal product then requires `[p]=X`.
+For normalized dimensionless x, p is dimensionless and x_dot has units T^-1.
+This does not identify x with energy, probability or the diagnostic C(t).
+
+The preserved [original source](TNFR.pdf), printed/physical pages 212-219,
+contains incompatible alternatives that must not be silently combined:
+
+- Pages 212 and 216 define DeltaNFR as a time derivative of internal structure.
+  Page 213 instead uses a mean metric displacement between consecutive forms.
+  The latter is nonnegative and cannot alone be a signed/tangent pressure:
+  positive capacity would then prohibit decreasing scalar EPI, contrary to
+  the explicit P2 diffusion control.
+- Page 218 assigns both `[nu]=T^-1` and `[DeltaNFR]=X/T`. Their product is
+  X/T^2, not X/T. The stated substitution `lambda=DeltaNFR/nu` leaves
+  `nu^2*lambda` with the same wrong time dimension. It renames the expression
+  without repairing the balance. An explicit normalization or a different
+  constitutive convention is necessary; the source supplies no unique one.
+- Pages 212-213 define capacity by counts of reorganizations per interval.
+  For literal locally finite discrete events, the interval count divided by
+  interval length tends to zero away from events as the interval shrinks to
+  the observation time, and may be singular at an event.
+  A smooth nonzero capacity requires a declared averaged intensity, continuum
+  limit or independent continuous definition; the count formula alone is
+  insufficient. Potentially possible events and realized events also differ.
+
+The engine's directed pressure convention is dimensionally usable in its
+normalized chart; it does not resolve the source's interpretation by fiat.
+Adding phase, EPI, capacity and topology gradients requires compatible units
+or explicitly normalized component scales. If capacities retain units T^-1,
+the coefficient multiplying a capacity difference must supply the missing
+X*T scale. Normalizing four numeric weights to sum to one does not establish
+that physical normalization. This remains a constitutive/metrology obligation.
+
+One useful consequence does follow without a new force. On a continuous
+interval with positive capacity, define each node's accumulated activity
+
+```text
+s_i(t) = integral nu_i(tau) d tau,     dx_i/ds_i = p_i.
+```
+
+Thus pressure is change of structural form per unit accumulated activity in
+this representation, not a second time derivative or an unsigned distance.
+This is a reparameterization of a supplied trajectory, not a definition of
+the unknown capacity law. Zero capacity makes the local clock singular;
+heterogeneous nodes generally do not share one removable clock. See the
+[existing derivation](FORCED_SUPPORT_BALANCE.md#23-capacity-exposure-does-not-determine-a-phase-clock).
+The [Hz bridge](../src/tnfr/units.py) is an explicit conversion convention;
+its default value does not independently calibrate laboratory time.
+
+### 2.6 A structural coordinate must transform its pressure
+
+For a nodewise differentiable invertible chart `y=f(x)` with the same time and capacity,
+the chain rule requires `p_y=Df(x)*p_x`. Keeping only the written form
+`y_dot=nu*p_y` does not justify reusing an unchanged coordinate formula for p.
+For a chart mixing several nodes with unequal positive capacities, the
+network formula instead is `p_y=D_nu^-1 Df D_nu p_x` if those same capacities
+are retained. The simpler pushforward requires commutation with D_nu.
+
+On unit P2 with x=(1,2), capacity one and pure EPI diffusion, p=(1,-1).
+The positive-chart transformation y=x^2 requires p_y=(2,-4), whereas
+recomputing the same Laplacian formula at y=(1,4) gives (3,-3). More generally,
+preserving the pure scalar neighbor-difference formula on every pair requires
+`f(b)-f(a)=f'(a)*(b-a)`, hence a common affine f. This conditional result
+does not make the chosen affine chart physically unique. In the full pressure
+`p=-e L_W x+F`, an affine rescaling y=a*x+b also needs F_y=a*F; unchanged
+phase/capacity source coefficients do not automatically satisfy that.
+
+The [portable foundation controls](../tests/physics/test_nodal_foundation_scope.py)
+exercise the actual pressure owner, signed scalar embedding and lossy rich-EPI
+projection. They do not select a new state space or evolve a new model.
+
 ---
+
+### 2.7 All-channel parameter foundations
+
+The [parameter foundation audit](NODAL_PARAMETER_FOUNDATIONS.md) extends these
+types to capacity, phase, time, pressure coefficients, support, conductance,
+distance, all four tetrad fields, diagnostics, energy, history and operators.
+It owns the joint form/time covariance law and the conditional derivation of
+a local diffusive generator. That derivation requires explicit locality,
+linearity, shift, equilibrium and maximum-principle premises; reciprocity
+and graph symmetry supply further restrictions rather than following from
+the nodal product alone. Numeric defaults and telemetry remain distinct from
+autonomous constitutive laws.
 
 ## 3. Structural Field Tetrad
 
@@ -81,7 +232,10 @@ $$
 \Phi_s(i) = \sum_{j \neq i} \frac{\Delta\mathrm{NFR}_j}{d(i,j)^2} \tag{4}
 $$
 
-Measures how surrounding structural pressure accumulates at node $i$ via an inverse-square law. Serves as the global stability monitor for U6 (structural confinement).
+Aggregates surrounding pressure using the selected inverse-square kernel.
+Explicit edge `length` defines distance; absent length, `weight` is the
+compatibility fallback. U6 monitors its change under a declared policy; the
+aggregation alone does not prove stability.
 
 ### 3.2 Phase Gradient ($|\nabla\phi|$)
 
@@ -97,20 +251,29 @@ $$
 K_\phi(i) = \mathrm{wrap\_angle}\big(\theta_i - \mathrm{circular\_mean}(\theta_{\mathcal{N}(i)})\big) \tag{6}
 $$
 
-Captures geometric torsion in the phase field, with $|K_\phi| \leq \pi$ by construction. Identifies loci susceptible to bifurcation or mutation operators.
+Measures circular phase curvature, with $|K_\phi| \leq \pi$ by construction.
+The displayed circular mean requires a nonzero resultant. The shared read-out
+now distinguishes nonzero represented direction from exact represented
+cancellation, with explicit unavailable evidence or a numeric API error; it
+does not invent an arithmetic phase direction. Exact sums of retained phasor
+components do not certify exact trigonometry. Curvature alone does not certify
+a bifurcation. See the [API domain](../docs/STRUCTURAL_FIELDS_TETRAD.md#23-circular-phase-curvature-k_φ).
 
 ### 3.4 Coherence Length ($\xi_C$)
 
-Estimated from the empirical correlation function:
+Estimated from uncentered products of static pressure-only coherence
+$c_i=1/(1+|\Delta\mathrm{NFR}_i|)$, grouped by structural path distance:
 
 $$
-C(r) = A \exp(-r / \xi_C) \tag{7}
+q(r)=\operatorname{mean}_{d(i,j)=r}(c_i c_j)\approx A \exp(-r / \xi_C) \tag{7}
 $$
 
-Characterizes a fitted spatial correlation scale. If fitting is unsuitable,
-the implementation uses a spectral fallback; a connected undirected graph has
-reference scale $1/\sqrt{\lambda_2}$. A large fitted length is a diagnostic
-signal requiring protocol-specific interpretation, not a proof of criticality.
+Both backends now share the distance/pair/fit definition. This is not connected
+covariance and has no goodness-of-fit acceptance test. If unsuitable, fitting
+yields to a spectral fallback: $1/\sqrt{\lambda_2}$ on a connected undirected
+normalized Laplacian is a dimensionless mode scale, whereas a successful fit
+has path-distance units. A large length is not a proof of criticality. See
+[estimator scope](NODAL_PARAMETER_FOUNDATIONS.md#52-one-coherence-fit-definition-across-implementations).
 
 ### 3.5 Complex Geometric Field ($\Psi$)
 
@@ -126,14 +289,15 @@ or establish completeness of the field representation.
 
 ### 3.6 Emergent Invariants
 
-From the tetrad, the following tensor invariants emerge:
+The following algebraic read-outs combine the fields. Their conventional names
+do not prove conservation, quantization or physical dimensional compatibility:
 
 | Invariant | Definition | Physical role |
 |-----------|-----------|--------------|
-| Energy density $\mathcal{E}$ | $\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\mathrm{NFR}}^2$ | Total structural energy |
-| Topological charge $\mathcal{Q}$ | $|\nabla\phi| \cdot J_\phi - K_\phi \cdot J_{\Delta\mathrm{NFR}}$ | Topological sector label |
+| Energy density $\mathcal{E}$ | $\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\mathrm{NFR}}^2$ | Nonnegative diagnostic functional; decay needs evidence |
+| Topological charge $\mathcal{Q}$ | $|\nabla\phi| \cdot J_\phi - K_\phi \cdot J_{\Delta\mathrm{NFR}}$ | Bilinear diagnostic; no general integer or conserved-charge theorem |
 | Chirality $\chi$ | $|\nabla\phi| \cdot K_\phi - J_\phi \cdot J_{\Delta\mathrm{NFR}}$ | Handedness detection |
-| Symmetry breaking $\mathcal{S}$ | $(|\nabla\phi|^2 - K_\phi^2) + (J_\phi^2 - J_{\Delta\mathrm{NFR}}^2)$ | Phase transition signal |
+| Symmetry breaking $\mathcal{S}$ | $(|\nabla\phi|^2 - K_\phi^2) + (J_\phi^2 - J_{\Delta\mathrm{NFR}}^2)$ | Channel contrast; transition interpretation needs a protocol |
 | Coherence coupling $\mathcal{C}$ | $\Phi_s \cdot |\Psi|$ | Multi-scale connector |
 
 ---
@@ -175,7 +339,7 @@ The tetrad groups four selected diagnostic channels by their construction:
           \   |   /
            \  |  /
             \|/
-          ξ_C (non-local — spectral gap)
+          ξ_C (non-local — product fit / spectral fallback)
 ```
 
 ### 4.3 Derivation Outline
@@ -196,7 +360,7 @@ The tetrad groups four selected diagnostic channels by their construction:
    amplitude sensitive; only the separate normalized dispersion statistic is
    invariant under positive pressure scaling when its denominator is nonzero.
 
-3. **$K_\phi$ (2nd order)**: Phase curvature must remain below $\pi$ (the theoretical maximum from wrap_angle bounds). The operational threshold uses a 90% safety margin: $0.9\pi \approx 2.8274$.
+3. **$K_\phi$ (2nd order)**: Where defined, wrapped phase curvature has magnitude at most $\pi$. A zero represented resultant is reported as unavailable, not as zero curvature. The operational threshold is the selected margin $0.9\pi \approx 2.8274$.
 
 4. **$\xi_C$ (correlation)**: Exponential decay is a fitting assumption.
    The fallback selects the smallest positive graph eigenvalue; on a connected
@@ -222,17 +386,20 @@ Grammar obligations and field readouts have distinct enforcement paths:
 
 ### 5.1 Total Coherence $C(t)$
 
-Global network stability indicator in $[0, 1]$.
-
-- $C(t) > \pi/(\pi+1) \approx 0.7585$: strong coherence.
-- $C(t) < 1/(\pi + 1) \approx 0.2415$: fragmentation risk.
+The shared numeric kernel is $C(p,r)=1/(1+|p|+|r|)$; the network read-out
+applies it to mean pressure and rate magnitudes. It differs from mean local
+coherence and assumes declared input scales. Stored inputs need not describe
+a fresh simultaneous nodal rate. The selected cuts $\pi/(\pi+1)$ and
+$1/(\pi+1)$ label diagnostic bands; neither cut is a stability theorem.
 
 ### 5.2 Sense Index $Si$
 
-Capacity for stable reorganization in $[0, 1+]$.
-
-- $Si > 0.8$: excellent stability.
-- $Si < 0.4$: bifurcation risk.
+Configured, clipped combination of relative capacity, phase dispersion and
+relative pressure. Both numerical backends normalize against live maxima.
+The score is telemetry; thresholds and its use in a selector or adaptation
+loop are additional policies. It is not an independent nodal primitive or
+proof of future stability. See the
+[telemetry and time audit](NODAL_PARAMETER_FOUNDATIONS.md#6-telemetry-time-and-energy-are-not-interchangeable).
 
 ---
 

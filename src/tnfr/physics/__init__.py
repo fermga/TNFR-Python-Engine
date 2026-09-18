@@ -21,11 +21,13 @@ The four read-only fields below form the canonical diagnostic interface:
    - A measured synchronization onset near 0.29 is protocol/σ-dependent
 
 3) Phase Curvature (K_φ)
-   - K_φ(i) = φ_i − mean_circular_{j∈N(i)} φ_j (Laplacian-like curvature)
-   - Exact wrapped-angle bound π; 0.9π is a selected warning margin
+   - K_φ(i) = wrap(φ_i − mean_circular_{j∈N(i)} φ_j)
+   - Bound π where defined; zero represented resultants are explicit failures
+   - 0.9π is a selected warning margin, not a derived transition
 
 4) Coherence Length (ξ_C)
-   - From spatial decay of local coherence correlations C(r) ~ exp(−r/ξ_C)
+   - Fits uncentered products of static pressure coherence over metric distance
+   - Spectral fallback has separate provenance; neither is a phase correlation
    - Finite-network diagnostic; divergence requires a finite-size limit
 
 Physics Foundation

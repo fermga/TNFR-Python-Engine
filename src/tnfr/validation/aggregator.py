@@ -70,6 +70,7 @@ from ..operators.grammar_error_factory import (
     ExtendedGrammarError,
     collect_grammar_errors,
 )
+from ..operators.grammar_u6 import validate_structural_potential_confinement
 from ..performance.guardrails import PerformanceRegistry
 from ..physics.fields import (
     compute_phase_curvature,
@@ -175,7 +176,9 @@ def run_structural_validation(
         Watch condition when ξ_C > mean_node_distance * multiplier.
     baseline_structural_potential : dict | None
         Optional prior Φ_s snapshot to compute drift; if omitted
-        ΔΦ_s not computed.
+        ΔΦ_s is not computed. Supplied snapshots must cover exactly the current
+        graph nodes and contain finite values. An invalid comparison is reported
+        as unavailable, with no drift value or passing threshold flag.
     perf_registry : PerformanceRegistry | None
         Optional registry for timing measurements (opt-in overhead).
 
@@ -217,14 +220,24 @@ def run_structural_validation(
 
     # Drift (optional baseline)
     delta_phi_s = None
+    u6_status = "not_requested"
+    u6_reason = None
+    u6_valid = None
     if baseline_structural_potential is not None:
-        # Mean absolute difference
-        diffs = []
-        for n, val in phi_s_map.items():
-            prev = baseline_structural_potential.get(n)
-            if prev is not None:
-                diffs.append(abs(val - prev))
-        delta_phi_s = _mean(diffs) if diffs else 0.0
+        try:
+            u6_valid, delta_phi_s, _ = validate_structural_potential_confinement(
+                G,
+                baseline_structural_potential,
+                phi_s_map,
+                threshold=max_delta_phi_s,
+                strict=False,
+            )
+        except (TypeError, ValueError, OverflowError) as exc:
+            u6_status = "unavailable"
+            u6_reason = str(exc)
+            notes.append(f"U6 drift unavailable: {u6_reason}")
+        else:
+            u6_status = "evaluated"
 
     # System geometry approximation (unweighted)
     if nx is not None:
@@ -261,7 +274,7 @@ def run_structural_validation(
     thresholds_exceeded: dict[str, bool] = {}
 
     if delta_phi_s is not None:
-        exceeded = delta_phi_s >= max_delta_phi_s
+        exceeded = not u6_valid
         thresholds_exceeded["delta_phi_s"] = exceeded
         if exceeded:
             notes.append(
@@ -327,6 +340,8 @@ def run_structural_validation(
         ):
             risk_level = "critical"
         elif (
+            u6_status == "unavailable"
+            or
             thresholds_exceeded.get("phase_gradient_max")
             or thresholds_exceeded.get("k_phi_flag")
             or thresholds_exceeded.get("xi_c_watch")
@@ -345,6 +360,8 @@ def run_structural_validation(
         "max_phase_gradient": max_grad,
         "max_k_phi": max_k_phi,
         "delta_phi_s": delta_phi_s,
+        "u6_status": u6_status,
+        "u6_reason": u6_reason,
         "system_diameter": system_diameter,
         "mean_node_distance": mean_node_distance,
     }

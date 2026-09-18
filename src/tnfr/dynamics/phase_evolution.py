@@ -1,8 +1,17 @@
-"""Shared snapshot-based phase proposal for internal dynamics engines.
+"""Shared snapshot-based, configured phase model for internal engines.
 
-The proposal advances each oscillator by its live structural frequency and
-adds only neighbor interactions admitted by the canonical U3 phase gate. It
-never mutates the graph.
+This model identifies supplied structural capacity with a free angular rate:
+``theta_next = theta + dt*frequency + dt*coupling`` modulo ``2*pi``.
+The neighbor sine term uses only U3-admitted neighbors. This identification
+and the coupling strength are constitutive premises, not deductions from
+``dEPI/dt = nu_f*DeltaNFR``. The arithmetic uses radians per supplied time unit;
+it does not infer cycles per second or apply the optional physical Hz bridge.
+
+The nodal optimizer and FFT engine share this model. Ordinary runtime phase
+coordination instead uses its separately configured relaxation map. Neither
+law may be substituted for the other based only on the nodal EPI identity.
+See ``theory/FORCED_SUPPORT_BALANCE.md`` section 23. This helper returns a
+proposal without mutating the graph.
 """
 
 from __future__ import annotations

@@ -23,6 +23,8 @@ __all__ = [
     "observe_support_transport", "observe_support_transport_reset",
     "observe_support_transport_euler",
     "RegionalSupportBalance", "observe_regional_support_balance",
+    "RegionalSupportEuler", "observe_regional_support_euler",
+    "SupportTransportDerivative", "observe_support_transport_derivative",
 ]
 
 
@@ -57,6 +59,15 @@ def _energy(conductance, values):
         (weight * (values[i] - values[j])**2 for i, j, weight in conductance),
         Fraction(0),
     ) / 4
+
+
+def _support_gradient(support, values):
+    """Unweighted unique-neighbor differences on validated ordered support."""
+    return tuple(
+        sum((values[j] - values[i] for j in row), Fraction(0)) / len(row)
+        if row else Fraction(0)
+        for i, row in enumerate(support)
+    )
 
 
 def _from_data(nodes, conductance, support_neighbors, epi, capacity, pressure):
@@ -101,17 +112,10 @@ def _from_data(nodes, conductance, support_neighbors, epi, capacity, pressure):
                          for value, d in zip(bx, strengths))
     degree = tuple(len(row) for row in support)
 
-    def support_gradient(values):
-        return tuple(
-            sum((values[j] - values[i] for j in row), Fraction(0)) / len(row)
-            if row else Fraction(0)
-            for i, row in enumerate(support)
-        )
-
     rate = tuple(v * pressure_i for v, pressure_i in zip(nu, p))
     return SupportTransportSnapshot(
         nodes, edges, support, x, nu, p, epi_gradient,
-        support_gradient(nu), support_gradient(degree), bx, rate,
+        _support_gradient(support, nu), _support_gradient(support, degree), bx, rate,
         _energy(edges, x), dot(bx, rate),
     )
 
@@ -158,6 +162,81 @@ def _rebuild(value):
     # Detached public fields are data, not provenance. Recompute all caches.
     return _from_data(value.nodes, value.conductance, value.support_neighbors,
                       value.epi, value.capacity, value.stored_pressure)
+
+
+@dataclass(frozen=True)
+class SupportTransportDerivative:
+    """Conditional smooth transport/energy derivative, not a chosen edge law.
+
+    Edge rates align with ``source.conductance``, including both directions.
+    ``epi_gradient_rate`` differentiates only the weighted EPI channel.
+    ``energy_rate`` includes work from changing conductance; it is not solely
+    EPI dissipation and says nothing about the tetrad energy or future flow.
+    """
+
+    source: SupportTransportSnapshot
+    conductance_rates: Vector
+    flow_gradient_rate: Vector
+    geometry_gradient_rate: Vector
+    epi_gradient_rate: Vector
+    nodal_work: Fraction
+    conductance_work: Fraction
+    energy_rate: Fraction
+
+
+def observe_support_transport_derivative(
+    snapshot, *, conductance_rates,
+) -> SupportTransportDerivative:
+    """Differentiate the declared weighted channel and Dirichlet energy.
+
+    Assume differentiable exact-real x and symmetric positive conductances
+    on the fixed active edge set. The supplied finite rates are coefficients,
+    not a derivation of W' or evidence of execution. A zero-weight edge stays
+    zero here; edge births/removals require the existing reset observer.
+    Loops contribute to row strength but not Dirichlet energy; empty rows
+    retain zero EPI-channel derivative. Support phase/capacity channels,
+    metric lengths, jumps and binary64 derivatives are outside this scope.
+
+    For d_i=sum_j W_ij, g_i=sum_j W_ij(x_j-x_i)/d_i and x'=nu*p,
+    g_i' is the sum of the same weighted gradient of x' and
+    [sum_j W_ij'(x_j-x_i)-d_i'*g_i]/d_i. The energy identity is
+    E_D'=(Bx)^T x' + (1/4)sum_ij W_ij'(x_i-x_j)^2.
+    There is no explicit nu' term because E_D depends on x and W, not nu.
+    Stored pressure is used as declared; freshness is not asserted and no
+    pressure is inferred retrospectively from measured EPI motion.
+    """
+    source = _rebuild(snapshot)
+    rates = ordered_vector(conductance_rates, "conductance_rates")
+    if len(rates) != len(source.conductance):
+        raise ValueError("conductance_rates must align with every conductance entry")
+    rate_map = {(i, j): rate for (i, j, _), rate in
+                zip(source.conductance, rates, strict=True)}
+    if any(rate_map.get((j, i)) != rate for (i, j), rate in rate_map.items()):
+        raise ValueError("conductance_rates must preserve symmetry")
+    size = len(source.nodes)
+    strengths = [Fraction(0) for _ in range(size)]
+    strength_rates = [Fraction(0) for _ in range(size)]
+    signed_edges = tuple((i, j, rate) for (i, j, _), rate in
+                         zip(source.conductance, rates, strict=True))
+    for (i, _, weight), rate in zip(source.conductance, rates, strict=True):
+        strengths[i] += weight
+        strength_rates[i] += rate
+    flow_laplacian = _laplacian(source.conductance, source.rate)
+    geometry_laplacian = _laplacian(signed_edges, source.epi)
+    flow = tuple(-value / d if d else Fraction(0)
+                 for value, d in zip(flow_laplacian, strengths, strict=True))
+    geometry = tuple(
+        (-value - dd * g) / d if d else Fraction(0)
+        for value, dd, g, d in zip(
+            geometry_laplacian, strength_rates, source.epi_gradient, strengths, strict=True,
+        )
+    )
+    geometric_work = _energy(signed_edges, source.epi)
+    return SupportTransportDerivative(
+        source, rates, flow, geometry,
+        tuple(a + b for a, b in zip(flow, geometry, strict=True)),
+        source.energy_rate, geometric_work, source.energy_rate + geometric_work,
+    )
 
 
 @dataclass(frozen=True)
@@ -310,6 +389,110 @@ def observe_regional_support_balance(snapshot, region, *, epi_weight, forcing):
         model_variance_residual, variance_residual,
         "Fixed full-graph coefficients and region; instantaneous exact represented-state "
         "balance only. No causal execution, finite-time persistence or autonomous region is certified.",
+    )
+
+
+@dataclass(frozen=True)
+class RegionalSupportEuler:
+    """Exact finite endpoint accounting in a fixed regional metric.
+
+    ``balance`` supplies the initial internal, boundary, forcing and
+    stored-pressure terms. ``expected_epi`` and ``state_defect`` retain the
+    full node order. The mass fields mean H-weighted EPI total only.
+    Neither a stored-pressure discrepancy nor an endpoint defect is assumed
+    to be a numerical error; either may reflect intentional operator action.
+    """
+
+    before: SupportTransportSnapshot
+    after: SupportTransportSnapshot
+    balance: RegionalSupportBalance
+    dt: Fraction
+    expected_epi: Vector
+    state_defect: Vector
+    regional_rate_mean: Fraction
+    expected_mean: Fraction
+    defect_mean: Fraction
+    after_weighted_total: Fraction
+    after_mean: Fraction
+    after_variance: Fraction
+    mass_drift_term: Fraction
+    mass_defect_term: Fraction
+    mass_change: Fraction
+    mass_identity_residual: Fraction
+    variance_drift_term: Fraction
+    variance_quadratic_term: Fraction
+    variance_defect_linear_term: Fraction
+    variance_defect_quadratic_term: Fraction
+    variance_change: Fraction
+    variance_identity_residual: Fraction
+    scope: str
+
+
+def observe_regional_support_euler(before, after, region, *, dt, epi_weight, forcing):
+    r"""Decompose a finite regional endpoint change around held Euler input.
+
+    Rebuild both snapshots and require the same complete ordered node space,
+    conductance, support and capacity. The instantaneous regional owner
+    supplies positive full strengths and H=d/nu, the fixed region S, and the
+    explicit forcing decomposition. No pressure or forcing is inferred.
+
+    For r=nu*p_before, y=x+h*r and delta=x_after-y, let P center a regional
+    vector in H. Then the exact endpoint identities are
+
+    Delta M = h*Mdot_stored + sum_S H_i*delta_i,
+    Delta V = h*Vdot_stored + h^2*||P*r||_H^2/2
+              + <P*y,P*delta>_H + ||P*delta||_H^2/2.
+
+    The first-order terms retain the initial internal dissipation, boundary,
+    forcing and stored-pressure discrepancy through ``balance``. They are
+    not integrated fluxes from an observed trajectory. Changed metric or
+    membership needs separate reset budgets. An endpoint defect can contain
+    rounding, clipping, deliberate operator writes or different evolution;
+    this identity does not establish a solver, causal history or persistence.
+    Nonnegative dt, including zero, is allowed without a stability claim.
+    """
+    balance = observe_regional_support_balance(before, region, epi_weight=epi_weight, forcing=forcing)
+    before, after = balance.source, _rebuild(after)
+    if any(getattr(before, field) != getattr(after, field)
+           for field in ("nodes", "conductance", "support_neighbors", "capacity")):
+        raise ValueError("regional Euler budget requires fixed full node order, conductance, support and capacity")
+    h = exact_or_represented_real(dt, "dt")
+    if h < 0:
+        raise ValueError("dt must be nonnegative")
+    indices, weights = balance.region_indices, balance.metric_weights
+
+    def total(values):
+        return sum((weights[i]*values[i] for i in indices), Fraction(0))
+
+    def mean(values):
+        return total(values)/balance.regional_weight
+
+    expected = tuple(x+h*r for x, r in zip(before.epi, before.rate, strict=True))
+    defect = tuple(x-y for x, y in zip(after.epi, expected, strict=True))
+    rate_mean, expected_mean, defect_mean = mean(before.rate), mean(expected), mean(defect)
+    after_total, after_mean = total(after.epi), mean(after.epi)
+    after_variance = sum((weights[i]*(after.epi[i]-after_mean)**2 for i in indices), Fraction(0))/2
+    mass_drift = h*balance.stored_mass_rate
+    mass_defect = total(defect)
+    mass_change = after_total-balance.weighted_total
+    mass_residual = mass_change-mass_drift-mass_defect
+    variance_drift = h*balance.stored_variance_rate
+    variance_quadratic = h**2*sum((weights[i]*(before.rate[i]-rate_mean)**2
+                                  for i in indices), Fraction(0))/2
+    defect_linear = sum((weights[i]*(expected[i]-expected_mean)*(defect[i]-defect_mean)
+                         for i in indices), Fraction(0))
+    defect_quadratic = sum((weights[i]*(defect[i]-defect_mean)**2 for i in indices), Fraction(0))/2
+    variance_change = after_variance-balance.variance
+    variance_residual = variance_change-variance_drift-variance_quadratic-defect_linear-defect_quadratic
+    if mass_residual or variance_residual:
+        raise RuntimeError("exact regional Euler total or variance identity failed")
+    return RegionalSupportEuler(
+        before, after, balance, h, expected, defect, rate_mean, expected_mean,
+        defect_mean, after_total, after_mean, after_variance, mass_drift,
+        mass_defect, mass_change, mass_residual, variance_drift, variance_quadratic,
+        defect_linear, defect_quadratic, variance_change, variance_residual,
+        "Fixed full support, capacity and region; exact endpoint accounting around a held stored-pressure "
+        "Euler reference only. No causal execution, numerical accuracy, stability or regional persistence is certified.",
     )
 
 

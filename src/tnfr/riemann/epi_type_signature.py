@@ -1,45 +1,19 @@
-"""EPI-Type Signature — Diagnostic for the T-EPI Conjecture (§13triginta-quarta).
+"""Historical EPI-Type Signature: storage and temporal-spectrum observations.
 
-This module implements a purely diagnostic quantity, the **EPI-Type
-Signature** :math:`\\mathcal{S}_{\\mathrm{EPI}}`, that quantifies on
-canonical TNFR network evolutions the irreducible vectorial /
-BEPIElement-valued content of EPI(t) trajectories.
+The storage axis checks the shared exact uniform-real EPI chart. Uniform
+``ensure_bepi(scalar)`` embeddings remain scalar; nonuniform or complex
+elements lie outside that chart. This is a statement about inspected storage,
+not the minimum dimension needed by a model or a physical system.
 
-Methodological scope (mandatory honesty)
-----------------------------------------
-This module is a *diagnostic only*.  It does **not** construct, promote,
-or modify any canonical operator.  It does **not** advance G4 = RH.
-It does **not** by itself decide the T-EPI Conjecture (which requires
-the foundational analysis of §13triginta-quarta.3–.5 about the
-Banach-space promotion via the BEPIElement formalisation).
+The spectral axis describes the binned magnitude spectrum of a scalar temporal
+read-out. An ordinary scalar signal can contain arbitrarily many frequencies;
+its entropy is not evidence of vector-valued EPI or a type-necessity theorem.
+For richer storage the established maximum-component read-out is lossy.
 
-The diagnostic probes two orthogonal axes:
-
-1. **Storage axis** — what fraction of nodes carry actual non-trivial
-   :class:`~tnfr.mathematics.epi.BEPIElement` storage (non-trivial
-   ``f_continuous`` variance or non-trivial ``a_discrete`` magnitude)
-   after a canonical operator sequence has run.
-2. **Spectral axis** — Shannon entropy of the binned EPI temporal
-   trajectory spectrum, averaged across nodes, normalised by
-   :math:`\\log B`.
-
-A high :math:`\\mathcal{S}_{\\mathrm{EPI}}` is a *necessary-condition*
-check: it says only that the canonical EPI trajectories on a given
-TNFR graph carry irreducible multi-modal structure that a single-mode
-scalar reading cannot represent without loss.  It does **not** prove
-that the canonical type of EPI is a non-trivial BEPIElement.
-
-A low :math:`\\mathcal{S}_{\\mathrm{EPI}}` plus a zero storage fraction
-is the empirically expected outcome, structurally confirming the
-catalog's scalar-reading discipline.
-
-References
-----------
-- ``theory/TNFR_RIEMANN_RESEARCH_NOTES.md`` §13triginta-quarta
-- ``src/tnfr/mathematics/epi.py`` (BEPIElement definition)
-- ``src/tnfr/mathematics/spaces.py`` (BanachSpaceEPI)
-- ``src/tnfr/alias.py::_bepi_to_float`` (scalar projection)
-- ``src/tnfr/operators/nodal_equation.py`` (literal scalar contract)
+Public callable and result-field names are retained for compatibility. The
+historical ``SCALAR_ADEQUATE`` and ``BEPI_VALUED_NECESSARY`` verdicts are retired;
+the thresholds no longer classify storage. Historical results in the research
+notes are not recomputed by this correction. No RH claim or new operator follows.
 """
 
 from __future__ import annotations
@@ -49,6 +23,8 @@ from dataclasses import dataclass, field
 from typing import Any, Iterable
 
 import numpy as np
+
+from ..types import ensure_bepi, real_scalar_epi
 
 __all__ = [
     "EpiTypeSignatureCertificate",
@@ -71,8 +47,8 @@ def _shannon_entropy(probabilities: np.ndarray) -> float:
 def _binned_psd_distribution(trajectory: np.ndarray, n_bins: int) -> np.ndarray:
     """Normalised binned magnitude-spectrum distribution of a 1-D trajectory.
 
-    Uses the real-FFT magnitude (DC component included) and bins the
-    resulting energy distribution onto ``n_bins`` uniform bins.
+    Uses the real-FFT magnitude after mean removal and bins the
+    resulting magnitude distribution onto ``n_bins`` uniform bins.
     Trajectories with zero variance return a degenerate distribution
     (all mass in the first bin).
     """
@@ -93,7 +69,7 @@ def _binned_psd_distribution(trajectory: np.ndarray, n_bins: int) -> np.ndarray:
         p = np.zeros(n_bins, dtype=float)
         p[0] = 1.0
         return p
-    # Histogram of spectral energy across uniform frequency bins.
+    # Histogram of spectral magnitude across uniform frequency bins.
     freqs = np.arange(spectrum.size, dtype=float)
     counts, _ = np.histogram(
         freqs,
@@ -112,35 +88,24 @@ def _binned_psd_distribution(trajectory: np.ndarray, n_bins: int) -> np.ndarray:
 def _bepi_storage_fraction(
     storage_values: Iterable[Any], *, atol: float = 1e-12
 ) -> tuple[float, int, int]:
-    """Fraction of storage entries that are non-trivially BEPI-valued.
+    """Fraction outside the shared exact uniform-real scalar chart.
 
-    A storage value counts as *non-trivially BEPI* iff:
-
-    - it is a :class:`~tnfr.mathematics.epi.BEPIElement` instance (or
-      duck-compatible: has ``f_continuous`` and ``a_discrete``
-      array attributes), AND
-    - the standard deviation of ``f_continuous`` exceeds ``atol``, OR
-    - the maximum magnitude of ``a_discrete`` exceeds ``atol``.
-
-    Plain ``float``/``int`` storage and constant-mode BEPIElement
-    instances (trivial embedding of scalars) count as scalar-form.
+    ``atol`` is retained for call compatibility but does not relax exact chart
+    membership. Valid serialized BEPI values use the same shared decoder as
+    live elements. Unsupported or nonfinite storage raises rather than being
+    silently counted as scalar. This does not test minimal state dimension.
     """
     n_total = 0
     n_nontrivial = 0
     for value in storage_values:
         n_total += 1
-        f_cont = getattr(value, "f_continuous", None)
-        a_disc = getattr(value, "a_discrete", None)
-        if f_cont is None or a_disc is None:
-            continue
-        try:
-            f_arr = np.asarray(f_cont)
-            a_arr = np.asarray(a_disc)
-        except Exception:
-            continue
-        f_std = float(np.std(np.abs(f_arr))) if f_arr.size > 0 else 0.0
-        a_max = float(np.max(np.abs(a_arr))) if a_arr.size > 0 else 0.0
-        if f_std > atol or a_max > atol:
+        if isinstance(value, (bool, np.bool_)):
+            raise ValueError("EPI storage must not be boolean")
+        element = ensure_bepi(value)
+        if not all(np.all(np.isfinite(component)) for component in
+                   (element.f_continuous, element.a_discrete)):
+            raise ValueError("EPI storage components must be finite")
+        if real_scalar_epi(element) is None:
             n_nontrivial += 1
     if n_total == 0:
         return 0.0, 0, 0
@@ -173,14 +138,14 @@ def _evolve_and_collect(G: Any, n_steps: int) -> np.ndarray:
     np.ndarray
         Matrix of shape ``(n_nodes, n_steps + 1)`` with the EPI value
         of every node at every collected step (including the initial
-        state).  Values are taken through the canonical scalar reading
-        ``_bepi_to_float`` so storage form is irrelevant for the
-        spectral axis.
+        state). ``scalarize_epi`` preserves signed uniform-real embeddings;
+        richer BEPI elements use the established lossy magnitude projection.
     """
-    from ..alias import _bepi_to_float, get_attr
+    from ..alias import get_attr
     from ..constants import inject_defaults
     from ..constants.aliases import ALIAS_EPI
     from ..dynamics import step
+    from ..types import scalarize_epi
 
     # Inject canonical defaults (VF_ADAPT_MU, VF_ADAPT_TAU, etc.) so the
     # canonical step() function has its required graph parameters.
@@ -188,42 +153,41 @@ def _evolve_and_collect(G: Any, n_steps: int) -> np.ndarray:
 
     nodes = list(G.nodes())
     snapshots: list[list[float]] = [
-        [_bepi_to_float(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in nodes]
+        [get_attr(G.nodes[n], ALIAS_EPI, 0.0, conv=scalarize_epi, strict=True)
+         for n in nodes]
     ]
     # step() falls back to default_compute_delta_nfr if no hook is set.
     for _ in range(int(n_steps)):
         step(G)
         snapshots.append(
-            [_bepi_to_float(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in nodes]
+            [get_attr(G.nodes[n], ALIAS_EPI, 0.0, conv=scalarize_epi, strict=True)
+             for n in nodes]
         )
     return np.asarray(snapshots, dtype=float).T
 
 
 @dataclass(frozen=True)
 class EpiTypeSignatureCertificate:
-    """Result of the EPI-Type Signature diagnostic on a canonical network.
+    """Historical result schema for two descriptive observations.
 
     Attributes
     ----------
     signature : float
-        :math:`\\mathcal{S}_{\\mathrm{EPI}} \\in [0, 1]`.  ``0`` means
-        scalar-adequate temporal trajectories (single-mode evolution);
-        ``1`` means maximum non-scalar (uniform-spectrum) content.
+        Mean temporal magnitude-spectrum entropy divided by ``log(n_bins)``.
+        Zero denotes a concentrated histogram, one a uniform histogram;
+        neither determines the dimension or type of the underlying EPI.
     storage_bepi_fraction : float
-        Fraction of node EPI storage entries that are non-trivially
-        BEPI-valued (non-constant ``f_continuous`` or non-zero
-        ``a_discrete``).  ``0.0`` is the empirically expected value
-        when no canonical operator constructs non-trivial BEPI elements.
+        Fraction of inspected entries outside the shared uniform-real chart.
+        The legacy field name does not count trivial scalar BEPI embeddings.
     storage_bepi_count : int
-        Absolute number of non-trivially BEPI-valued storage entries.
+        Number of inspected entries outside the uniform-real scalar chart.
     storage_total : int
         Total number of inspected storage entries.
     mean_spectral_entropy_nats : float
         Mean Shannon entropy of the binned EPI temporal trajectory
         spectrum across nodes, in nats.
     effective_modes : float
-        :math:`N_{\\mathrm{eff}} = \\exp(H)` — effective spectral mode
-        count.  Scalar-adequate iff :math:`N_{\\mathrm{eff}} \\approx 1`.
+        ``exp(H)``: effective occupied spectral-bin count, not state dimension.
     n_nodes : int
         Number of nodes in the diagnostic graph.
     n_steps : int
@@ -232,10 +196,8 @@ class EpiTypeSignatureCertificate:
     n_bins : int
         Number of histogram bins used for the spectral distribution.
     verdict : str
-        One of ``"SCALAR_ADEQUATE"`` (signature < ``scalar_threshold``
-        AND zero BEPI storage), ``"BEPI_VALUED_NECESSARY"``
-        (signature > ``bepi_threshold`` OR non-zero BEPI storage),
-        or ``"INDETERMINATE"``.
+        ``REAL_SCALAR_STORAGE``, ``NONSCALAR_BEPI_STORAGE_OBSERVED`` or
+        ``NO_STORAGE_OBSERVED``. Spectral entropy never selects this label.
     diagnostics : dict
         Auxiliary fields (per-node entropies, trajectory variance, etc.).
     """
@@ -254,16 +216,17 @@ class EpiTypeSignatureCertificate:
 
     def summary(self) -> str:
         lines = [
-            "EPI-Type Signature certificate (diagnostic only — §13triginta-quarta.6)",
-            f"  signature S_EPI         : {self.signature:.6f}   (0 = scalar, 1 = uniform)",
-            f"  storage BEPI fraction   : {self.storage_bepi_fraction:.4f}"
+            "EPI-Type Signature (descriptive storage and temporal spectrum)",
+            f"  signature S_EPI         : {self.signature:.6f}   (normalized entropy)",
+            f"  non-scalar storage      : {self.storage_bepi_fraction:.4f}"
             f"  ({self.storage_bepi_count}/{self.storage_total} nodes)",
             f"  mean spectral entropy   : {self.mean_spectral_entropy_nats:.4f} nats"
             f" over {self.n_bins} bins",
             f"  effective modes N_eff   : {self.effective_modes:.2f}",
             f"  graph: {self.n_nodes} nodes, {self.n_steps} evolution steps",
             f"  verdict                 : {self.verdict}",
-            "  scope: necessary-condition diagnostic; does NOT advance G4 = RH",
+            "  scope: inspected storage and projected temporal spectrum only;",
+            "         no type necessity, state-dimension or RH conclusion",
         ]
         return "\n".join(lines)
 
@@ -294,16 +257,10 @@ def compute_epi_type_signature(
         :math:`\\mathcal{S}_{\\mathrm{EPI}} \\in [0, 1]`.
     seed : int, default 13
         Deterministic seed for the initial EPI perturbation.
-    scalar_threshold : float, default 0.15
-        Below this signature value AND with zero BEPI storage, the
-        verdict is ``"SCALAR_ADEQUATE"``.
-    bepi_threshold : float, default 0.5
-        Above this signature value OR with non-zero BEPI storage, the
-        verdict is ``"BEPI_VALUED_NECESSARY"``.
-    storage_atol : float, default 1e-12
-        Absolute tolerance below which a BEPIElement is treated as a
-        trivial embedding of a scalar (constant ``f_continuous``,
-        zero ``a_discrete``).
+    scalar_threshold, bepi_threshold, storage_atol : float
+        Deprecated compatibility arguments, retained in diagnostics only.
+        They neither infer dimensional necessity nor relax exact scalar-chart
+        membership. No new spectral threshold replaces them.
 
     Returns
     -------
@@ -312,21 +269,10 @@ def compute_epi_type_signature(
 
     Notes
     -----
-    The diagnostic uses two orthogonal axes:
-
-    - **Spectral axis**: per-node binned spectral entropy of the EPI
-      temporal trajectory (mean across nodes), normalised by
-      :math:`\\log B`.  This probes how multi-modal canonical EPI
-      evolution actually is.
-    - **Storage axis**: a direct scan of the EPI storage form for
-      non-trivial BEPIElement content.  Under the canonical 13-operator
-      catalog, this fraction is expected to be ``0`` (no operator
-      constructs non-trivial ``f_continuous`` or ``a_discrete``),
-      empirically witnessing the catalog's scalar-reading discipline.
-
-    This is a *purely diagnostic* computation on canonical TNFR data.
-    It does not construct any new operator and does not modify the
-    13-operator catalog.
+    A scalar temporal signal may have a broad spectrum. Final storage and
+    temporal spectral entropy are separate observations: neither establishes
+    a minimal realization or validity of an unobserved dynamical model. The
+    current demo still executes its declared native steps; it adds no operator.
     """
     if int(n_nodes) < 3:
         raise ValueError("n_nodes must be >= 3 for a meaningful ring graph")
@@ -337,6 +283,8 @@ def compute_epi_type_signature(
 
     G = _build_canonical_demo_graph(int(n_nodes), int(seed))
     trajectories = _evolve_and_collect(G, int(n_steps))
+    if trajectories.ndim != 2 or not np.all(np.isfinite(trajectories)):
+        raise ValueError("temporal read-outs must form a finite two-dimensional array")
     actual_n_nodes, actual_traj_len = trajectories.shape
     actual_n_steps = max(actual_traj_len - 1, 0)
 
@@ -355,18 +303,22 @@ def compute_epi_type_signature(
     effective_modes = float(math.exp(mean_entropy))
 
     # Storage axis: scan raw EPI storage form across nodes.
-    storage_values = [G.nodes[n].get("EPI") for n in list(G.nodes())]
+    from ..alias import get_attr
+    from ..constants.aliases import ALIAS_EPI
+
+    storage_values = [get_attr(G.nodes[n], ALIAS_EPI, conv=lambda value: value,
+                               strict=True) for n in list(G.nodes())]
     bepi_fraction, bepi_count, bepi_total = _bepi_storage_fraction(
         storage_values, atol=float(storage_atol)
     )
 
-    # Verdict.
-    if bepi_fraction > 0.0 or signature > bepi_threshold:
-        verdict = "BEPI_VALUED_NECESSARY"
-    elif signature < scalar_threshold and bepi_fraction == 0.0:
-        verdict = "SCALAR_ADEQUATE"
+    # Only inspected storage determines this factual label.
+    if bepi_total == 0:
+        verdict = "NO_STORAGE_OBSERVED"
+    elif bepi_count:
+        verdict = "NONSCALAR_BEPI_STORAGE_OBSERVED"
     else:
-        verdict = "INDETERMINATE"
+        verdict = "REAL_SCALAR_STORAGE"
 
     diagnostics: dict[str, Any] = {
         "per_node_spectral_entropy_nats": per_node_entropy.tolist(),
@@ -378,10 +330,17 @@ def compute_epi_type_signature(
         "scalar_threshold": float(scalar_threshold),
         "bepi_threshold": float(bepi_threshold),
         "storage_atol": float(storage_atol),
+        "legacy_thresholds_used_for_verdict": False,
+        "storage_tolerance_used": False,
+        "storage_membership_owner": "tnfr.types.real_scalar_epi",
+        "spectral_projection": "signed uniform-real; otherwise maximum component magnitude",
+        "dimensional_necessity_assessed": False,
+        "minimal_realization_assessed": False,
         "seed": int(seed),
         "scope": (
-            "Necessary-condition diagnostic for T-EPI Conjecture "
-            "(§13triginta-quarta). Does NOT advance G4 = RH."
+            "Final storage and projected temporal-spectrum observations only. "
+            "Neither spectral entropy nor a storage label proves dimensional necessity. "
+            "Historical result fields are retained; no RH conclusion."
         ),
     }
 

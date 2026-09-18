@@ -1515,7 +1515,8 @@ def _linear_neighbor_gradients(
 ) -> tuple[Sequence[float], Sequence[float]]:
     """Compute linear differences using live weights and unique neighbors.
 
-    Phase, frequency and topology use arithmetic neighborhood means. Only
+    Frequency and topology use unweighted arithmetic neighborhood means;
+    the separate phase channel uses an unweighted circular mean. Only
     EPI implements the weighted diffusion ``D^-1 W EPI - EPI``; a zero
     weighted degree leaves that channel inactive, including at sink nodes.
     """

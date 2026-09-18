@@ -1,8 +1,8 @@
 # TNFR Variational Principle — Lagrangian Action Formulation
 
-**Status**: Exact restricted EPI balances, decoupled product and fixed-P2 harmonic realizability obstruction; broader coupled tetrad/nodal bridge unresolved
+**Status**: Exact restricted EPI balances, conditional forced-potential family and reciprocal closure constraints; decoupled product and fixed-P2 harmonic realizability obstruction; broader coupled tetrad/nodal bridge unresolved
 **Module**: `src/tnfr/physics/variational.py`
-**Tests**: `tests/physics/test_diffusion_energy_balance.py`, `tests/physics/test_variational.py`, `tests/physics/test_symplectic_substrate.py`, `tests/physics/test_metriplectic_product.py`, `tests/physics/test_symplectic_graph_realizability.py`
+**Tests**: `tests/physics/test_diffusion_energy_balance.py`, `tests/physics/test_variational.py`, `tests/physics/test_symplectic_substrate.py`, `tests/physics/test_metriplectic_product.py`, `tests/physics/test_symplectic_graph_realizability.py`, `tests/physics/test_constitutive_variational_scope.py`
 **Date**: 2026-09-14
 
 ---
@@ -453,6 +453,142 @@ At `J=0`, the level set and quotient are a point. The certificate reports
 `is_valid_reduction=False`, meaning the regular-level test is inapplicable.
 The legacy constant `reduced_symplectic_form_matrix(n_nodes)` remains a local
 non-orthonormal action-angle basis matrix; it does not certify a supplied state.
+
+## 13. Forced-Potential Family and Reciprocal Closure Constraints
+
+The full canonical pressure constrains a possible variational completion more
+strongly than the EPI-only energy does. These are exact conditional identities,
+not an added engine law. Fix a connected symmetric conductance `W`, positive
+strengths `d`, unweighted support `U`, and constant channel coefficients. Write
+`D=diag(d)`, `B=D-W`, `L_W=D^-1 B`, and `L_U` for the support random-walk
+Laplacian. On a regular phase chart with nonzero neighbor resultants,
+
+```text
+p = -e L_W x + F(theta,nu,U),
+F = w_phi g(theta) - v L_U nu - t L_U k,
+Dg = (R-I)/pi,
+```
+
+where `k` is support degree and `R` is the exact neighbor-mean derivative from
+[phase_response](../src/tnfr/physics/phase_response.py). Positive capacity gives
+the already established EPI mobility `M_x=diag(nu_i/d_i)`. Suppose a `C2`
+scalar potential supplies the EPI component specifically as
+`x'=-M_x gradient_x E`, with no cross-mobility contribution to that component.
+The nodal equation then requires
+
+```text
+gradient_x E = e Bx - DF,
+E(x,theta,nu,W) = (e/2) x^T Bx - x^T DF + Psi(theta,nu,W).
+```
+
+Integration in `x` proves both necessity and sufficiency on a connected EPI
+coordinate domain. The arbitrary `x`-independent function `Psi` is genuine
+remaining freedom; setting it to zero is an additional choice. The expression
+is not identified with the different field energy in section 2.
+
+### 13.1 Mixed derivatives require reciprocal coupling
+
+For this entire potential family, equality of mixed partial derivatives fixes
+the following dependence on EPI:
+
+```text
+gradient_theta E = -(w_phi/pi)(R-I)^T D x + gradient_theta Psi,
+gradient_nu E    = v L_U^T D x + gradient_nu Psi.
+```
+
+Thus a proposed joint gradient completion with positive definite block
+mobilities `M_theta(theta,nu,W)` and `M_nu(theta,nu,W)`, independent of `x`,
+would necessarily have these terms in `theta'=-M_theta gradient_theta E` and
+`nu'=-M_nu gradient_nu E`. An `x`-independent phase relaxation cannot satisfy
+that completion on an open full-state domain when `w_phi>0` and `R-I!=0`.
+An `x`-independent capacity relaxation likewise cannot satisfy it when `v>0`
+and `L_U!=0`. An `x`-independent `Psi` cannot cancel an `x`-linear term for all
+`x`. The obstruction does not cover degenerate mobilities, cross blocks,
+other metrics, constrained submanifolds or non-gradient dynamics. In
+particular it does not turn the engine's discrete phase/capacity policies
+into smooth laws or assume that their complete state dependence is absent.
+
+Even if a gradient completion is selected, the EPI equation determines neither
+`Psi` nor the two auxiliary mobilities and their time scale. For smoothly
+varying positive off-diagonal edge conductances on fixed support, it also forces
+
+```text
+partial E / partial W_ij = (e/2)(x_i-x_j)^2 - x_i F_i - x_j F_j
+                          + partial Psi / partial W_ij,
+```
+
+where each undirected edge `i<j` is one coordinate and `F` is independent of its
+weight on this fixed-support chart. This supplies a necessary energy
+derivative, not an edge evolution law. Edge birth/deletion changes `U` and
+the pressure realization; it is a separate hybrid closure obligation.
+
+### 13.2 Lower bounds require the actual source compatibility
+
+At held `theta,nu,W`, shifting `x` by `c*1` changes every compatible potential
+by `-c*d^T F`. Therefore no member of this family is bounded below over all
+real EPI fields if `d^T F!=0`. An arbitrary `Psi` cannot repair this tilt.
+Conversely, for `e>0` and connected conductance, `d^T F=0` yields a solution
+`e Bx_*=DF`, and completing the square gives
+
+```text
+E = (e/2)(x-x_*)^T B(x-x_*) - (e/2)x_*^T Bx_* + Psi.
+```
+
+This is bounded below in `x`, with the common-offset freedom retained. It
+reuses precisely the compatibility and profile in
+[forced_support](../src/tnfr/physics/forced_support.py); it supplies no new
+stationary phase or capacity maintenance law. A weighted three-node path
+with edge weights `(1,2)`, capacities `(1/2,1,3/2)`, phase consensus and
+channel weights `(e,v,t)=(1/2,1/4,1/4)` has
+`F=(3/8,-1/4,1/8)` and `d^T F=-1/8`. This is an exact canonical-source
+example of the unbounded tilt, despite symmetric conductance.
+
+### 13.3 Canonical phase pressure is not generally a fixed-metric gradient
+
+It is also necessary to check integrability before treating `g` itself as a
+phase gradient flow. On the unit star `K1,3`, index the center by zero and
+choose phases `(0,0,0,alpha)` with `0<alpha<pi/2`. Every edge satisfies strict
+U3, all resultants are nonzero and the wrap chart is regular. Put
+`c=cos(alpha)`. The shared circular-mean derivative gives
+
+```text
+R_01=R_02=(2+c)/(5+4c),  R_03=(1+2c)/(5+4c),
+R_j0=1 for j=1,2,3; all other entries are zero.
+```
+
+A constant positive diagonal metric `H` could represent `g` as
+`-H^-1 gradient V` only if `H(R-I)` were symmetric throughout the domain.
+At consensus this forces `H` proportional to `diag(3,1,1,1)`. At every
+nonzero arbitrarily small `alpha` its center/first-leaf antisymmetry is
+
+```text
+3 R_01 - R_10 = (1-c)/(5+4c) > 0.
+```
+
+Consequently no such constant diagonal metric works on any open neighborhood
+of consensus. For the exact planar cosine Gram with `c=3/5`, the center row
+is `(0,13/37,13/37,11/37)`, its squared resultant is `37/5`, and the metric
+antisymmetries are `2/37,2/37,-4/37`. This does not exclude state-dependent
+metrics, non-diagonal metrics, different phase laws or a variational
+completion of the joint pressure family above. Strict U3 and symmetric graph
+support alone do not establish the missing gradient identity.
+
+### 13.4 Relation to the full tetrad
+
+Neither this conditional potential nor its mixed derivatives close the four
+read-outs `Phi_s`, phase-gradient magnitude, `K_phi` and `xi_C`. Their
+evolution still requires actual phase/capacity/support laws and the derivative
+of their common graph observation map, with branch and estimator boundaries
+handled separately. The five-field energy in section 2 has no explicit
+`xi_C` term; its algebraic identity cannot establish a correlation-length
+evolution. The complete closure obligations remain in
+[DIAGNOSTIC_AND_GRAMMAR_SCOPE section 13](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#13-structural-grammar-refactor-and-the-full-nodal-system).
+
+Exact finite regression controls reuse the pressure decomposition,
+support-transport and phase-response owners in
+[test_constitutive_variational_scope.py](../tests/physics/test_constitutive_variational_scope.py).
+They check source signs, the required mixed coupling and the fixed-metric
+obstruction without trajectories, new feedback coefficients or fitted laws.
 
 ## Implementation & Examples
 

@@ -240,9 +240,10 @@ def test_epi_reconstruction_rejects_boolean_state_channels(channel, boolean):
 
 
 @pytest.mark.parametrize("channel", [ALIAS_DNFR[0], ALIAS_VF[0]])
-def test_observation_signature_rejects_boolean_physical_channels(channel):
+@pytest.mark.parametrize("boolean", [True, False, np.bool_(True), np.bool_(False)])
+def test_observation_signature_rejects_boolean_physical_channels(channel, boolean):
     graph = _state_with_uniform_capacity(1.0)
-    graph.nodes[1][channel] = True
+    graph.nodes[1][channel] = boolean
 
     with pytest.raises(ValueError, match="not boolean"):
         observation_signature(
@@ -250,6 +251,17 @@ def test_observation_signature_rejects_boolean_physical_channels(channel):
             tetrad_representation="global",
             include_capacity=True,
             include_pressure=True,
+        )
+
+
+@pytest.mark.parametrize("node_order", [(99, 1, 2, 3), (0, 1, 2), (0, 1, 2, 2)])
+def test_observation_signature_validates_node_order_before_channel_reads(node_order):
+    graph = _state_with_uniform_capacity(1.0)
+    graph.nodes[1][ALIAS_DNFR[0]] = True
+    with pytest.raises(ValueError, match="node_order must contain every graph node exactly once"):
+        observation_signature(
+            graph, tetrad_representation="global", include_capacity=True,
+            include_pressure=True, node_order=node_order,
         )
 
 

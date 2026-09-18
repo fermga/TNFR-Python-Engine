@@ -1,7 +1,7 @@
 """Central edge-channel semantics for TNFR graph read-outs.
 
 ``weight`` is the established transport conductance used by the EPI channel.
-Structural-potential path geometry can instead declare an independent
+Structural-potential and coherence-fit path geometry can declare an independent
 ``length``.  For compatibility, an edge without ``length`` still uses its
 ``weight`` as the legacy path length; an edge carrying neither attribute has
 unit conductance and unit length.

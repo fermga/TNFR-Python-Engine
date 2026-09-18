@@ -49,7 +49,8 @@ def _assert_historical_constant_metadata_fields(value, expected) -> None:
         assert f"{name}=" in representation
         assert getattr(value, name) == expected_value
         replacement = not expected_value if type(expected_value) is bool else "forged"
-        with pytest.raises(ValueError, match="init=False"):
+        # Python versions differ in the exception type for this same refusal.
+        with pytest.raises((TypeError, ValueError), match="init=False"):
             replace(value, **{name: replacement})
 
         original_raw = object.__getattribute__(value, name)

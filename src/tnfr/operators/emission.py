@@ -24,8 +24,8 @@ class Emission(Operator):
 
     Foundational activation of nodal resonance.
 
-    Activates structural symbol ``AL`` to initialise outward resonance around a
-    nascent node, initiating the first phase of structural reorganization.
+    Applies the registered ``AL`` transformation to an existing graph node.
+    A zero EPI coordinate does not erase that node's capacity, phase or support.
 
     TNFR Context
     ------------
@@ -38,21 +38,25 @@ class Emission(Operator):
     ΔNFR and phase are left untouched.
 
     **Key Elements:**
-        - **Coherent Emergence**: Node exists because it resonates;
-            AL starts resonance
+    - **Initialization**: A declared emission can activate existing latent form;
+      its invocation does not derive spontaneous creation of the nodal substrate
     - **Form Activation**: Raises EPI (Primary Information Structure)
     - **Structural Frequency**: the existing νf is preserved
     - **Network Coupling**: Prepares node for phase alignment
-    - **Nodal Equation**: Drives ∂EPI/∂t ≥ 0 directly on the EPI channel
+    - **Nodal Equation**: A named EPI jump is distinct from continuous
+      ``dEPI/dt = nu_f * DeltaNFR``; execution timing and residuals retain that
+      distinction
 
     **Structural Irreversibility (TNFR.pdf §2.2.1):**
-    AL is inherently irreversible - once activated, it leaves a persistent
-    structural trace that cannot be undone. Each emission marks "time
-    zero" for the node and
-    establishes genealogical traceability:
+    The implementation retains activation lineage under the historical
+    irreversibility contract. This metadata is not a proof of a physically
+    irreversible flow, entropy production or emergence of time. Its UTC
+    timestamp is provenance, separate from the runtime clock ``graph['_t']``.
+    Enclosing transactions may restore graph-owned metadata on failure.
+    Successful activation records:
 
     - **emission_timestamp**: ISO 8601 UTC timestamp of first activation
-    - **_emission_activated**: Immutable boolean flag
+    - **_emission_activated**: Activation flag retained by this operator
     - **_emission_origin**: Preserved original timestamp (never overwritten)
     - **_structural_lineage**: Genealogical record with:
       - ``origin``: First emission timestamp
@@ -65,9 +69,8 @@ class Emission(Operator):
 
     Use Cases
     ---------
-    **Biomedical**: HRV coherence training, neural activation, therapy start
-    **Cognitive**: Idea germination, learning initiation, creative spark
-    **Social**: Team activation, community emergence, ritual initiation
+    Declared initialization, controlled EPI perturbations and activation-lineage
+    tests. Application-domain correspondence requires separate evidence.
 
     Typical Sequences
     -----------------
@@ -102,7 +105,7 @@ class Emission(Operator):
     ...     node,
     ...     [Emission(), Reception(), Coherence(), Silence()]
     ... )
-    >>> # Verify irreversibility
+    >>> # Verify recorded activation provenance
     >>> assert G.nodes[node]["_emission_activated"] is True
     >>> assert "emission_timestamp" in G.nodes[node]
     >>> print(
@@ -124,9 +127,9 @@ class Emission(Operator):
     def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Apply AL with structural irreversibility tracking.
 
-        Marks temporal irreversibility after preflight and before glyph execution.
-        This ensures every emission leaves a persistent structural trace as
-        required by TNFR.pdf §2.2.1 (AL - Foundational emission).
+        Records activation lineage after preflight and before glyph execution.
+        The metadata implements the traceability aspect of TNFR.pdf §2.2.1;
+        it does not derive a physical arrow of time.
 
         Parameters
         ----------

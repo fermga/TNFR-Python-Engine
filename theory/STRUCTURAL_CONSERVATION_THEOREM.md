@@ -58,6 +58,19 @@ definition of $\mathcal{S}$; its smallness must be demonstrated on the actual
 trajectory. The legacy name $\mathcal{S}_{\text{grammar}}$ records the intended
 diagnostic use and is not an implication from U1–U6.
 
+**Normalization and units.** The displayed sums are normalized diagnostic
+definitions. If EPI and pressure carry units `X` and path distance carries
+units `L`, then `[Phi_s]=X/L^2`, whereas `K_phi` is an angle; the raw fields
+cannot be added as physical quantities without reference scales. Likewise
+`J_phi` is a dimensionless sine average and `[J_DeltaNFR]=X`. The implemented
+neighbor-difference divergence supplies no additional inverse-time factor.
+Even after field normalization, a physical continuity interpretation requires
+a declared time normalization or transport-rate conversion matching the
+charge derivative. The quadratic field energy also needs scales or metric
+coefficients before it has physical energy units. This module selects none
+of those conversions; a small numeric residual cannot establish them. See
+[nodal parameter foundations](NODAL_PARAMETER_FOUNDATIONS.md#6-telemetry-time-and-energy-are-not-interchangeable).
+
 ---
 
 ## 2. Governing Dynamics Recap
@@ -165,7 +178,9 @@ that the two residual sectors are dynamically conjugate.
 
 ---
 
-## 4. Construction of the Balance Equation {#4-derivation-of-the-continuity-equation}
+<a id="4-derivation-of-the-continuity-equation"></a>
+
+## 4. Construction of the Balance Equation
 
 ### 4.1 Time Derivative of Structural Potential
 
@@ -337,7 +352,9 @@ $\Psi = K_\phi + i J_\phi$, which is defined independently.
 
 ---
 
-## 6. Grammar/Balance Correspondences {#6-noether-correspondence-grammar-conservation}
+<a id="6-noether-correspondence-grammar-conservation"></a>
+
+## 6. Grammar/Balance Correspondences
 
 ### 6.1 The Correspondence Table
 
@@ -383,7 +400,9 @@ grammar validator or uniquely infer which rule was broken.
 
 ---
 
-## 7. Ward-Like Diagnostics for Operator Sequences {#7-ward-identities-for-operator-sequences}
+<a id="7-ward-identities-for-operator-sequences"></a>
+
+## 7. Ward-Like Diagnostics for Operator Sequences
 
 ### 7.1 Definition
 
@@ -440,7 +459,9 @@ show why perturbation magnitude cannot assign a universal sign or operator.
 
 ---
 
-## 8. Lyapunov Candidate and Restricted Stability {#8-lyapunov-stability-from-the-energy-functional}
+<a id="8-lyapunov-stability-from-the-energy-functional"></a>
+
+## 8. Lyapunov Candidate and Restricted Stability
 
 ### 8.1 Energy Functional
 
