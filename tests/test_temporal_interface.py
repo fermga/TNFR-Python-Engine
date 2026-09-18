@@ -13,7 +13,6 @@ TNFR thesis.
 from __future__ import annotations
 
 import importlib.util
-import io
 import math
 import sys
 import zipfile
@@ -306,3 +305,87 @@ def test_run_temporal_benchmark_grid_graceful_skip(monkeypatch):
     )
     assert report["status"] == "skipped"
     assert "reason" in report
+
+
+def test_prospective_emission_is_invariant_to_future_suffix_and_records_latency():
+    rng = np.random.default_rng(901)
+    signal = rng.normal(size=80)
+    changed = signal.copy()
+    changed[43:] = rng.normal(size=37) * 100
+    cfg = TemporalInterfaceConfig(window=16, step=8, k_neighbours=2)
+    kwargs = dict(config=cfg, mode="prospective", warmup_samples=8, latency_samples=3)
+    original = window_tetrad_series(signal, **kwargs)
+    altered = window_tetrad_series(changed, **kwargs)
+    prefix = window_tetrad_series(signal[:43], **kwargs)
+    assert original.available_at[0] == 26
+    np.testing.assert_array_equal(original.available_at, original.window_end + 3)
+    known = original.available_at < 43
+    for name in ("grad_phi", "k_phi", "xi_c", "phi_s", "variance", "lag1_autocorr"):
+        np.testing.assert_equal(getattr(original, name)[known], getattr(altered, name)[known])
+        np.testing.assert_equal(getattr(original, name)[known], getattr(prefix, name))
+
+
+def test_frozen_temporal_channels_evaluate_only_available_prefix():
+    from tnfr.validation.temporal_interface import (
+        calibrate_temporal_warning, evaluate_prospective_warning,
+    )
+    rng = np.random.default_rng(902)
+    cfg = TemporalInterfaceConfig(window=16, step=8, k_neighbours=2)
+    training = rng.normal(size=80) * np.linspace(0.5, 2.0, 80)
+    frozen = calibrate_temporal_warning(
+        training, calibration_run_id="calibration-1", config=cfg,
+        warmup_samples=4, latency_samples=2,
+    )
+    before = repr(frozen)
+    test = rng.normal(size=80)
+    first = evaluate_prospective_warning(
+        test, calibration=frozen, evaluation_run_id="reserved-1", transition_index=55,
+    )
+    test[55:] = np.nan
+    second = evaluate_prospective_warning(
+        test, calibration=frozen, evaluation_run_id="reserved-1", transition_index=55,
+    )
+    assert first == second
+    assert first.tnfr_channel == frozen.tnfr_channel
+    assert first.baseline_channel == frozen.baseline_channel
+    assert all(index < 55 for index in first.available_at)
+    assert repr(frozen) == before
+    with pytest.raises(ValueError, match="different run"):
+        evaluate_prospective_warning(training, calibration=frozen,
+                                     evaluation_run_id="calibration-1")
+    with pytest.raises(ValueError, match="repeats"):
+        evaluate_prospective_warning(training.copy(), calibration=frozen,
+                                     evaluation_run_id="different-label")
+    short = evaluate_prospective_warning(
+        [1.0], calibration=frozen, evaluation_run_id="too-short",
+    )
+    assert short.status == "unavailable"
+    assert short.tnfr_trend is None and short.baseline_trend is None
+
+
+def test_constant_calibration_has_no_favorable_channel_fallback():
+    from tnfr.validation.temporal_interface import calibrate_temporal_warning
+    with pytest.raises(ValueError, match="no resolved trend"):
+        calibrate_temporal_warning(
+            np.zeros(64), calibration_run_id="constant",
+            config=TemporalInterfaceConfig(window=16, step=8, k_neighbours=2),
+        )
+
+
+@pytest.mark.parametrize("kwargs", [
+    {"step": True}, {"window": 10.5}, {"embedding_dim": 8, "window": 8},
+])
+def test_temporal_configuration_rejects_invalid_window_domains(kwargs):
+    with pytest.raises((ValueError, TypeError)):
+        TemporalInterfaceConfig(**kwargs)
+
+
+def test_retrospective_scope_and_whole_record_availability_are_explicit():
+    signal = np.random.default_rng(904).normal(size=64)
+    cfg = TemporalInterfaceConfig(window=16, step=8, k_neighbours=2)
+    series = window_tetrad_series(signal, config=cfg)
+    assert series.mode == "retrospective"
+    assert np.all(series.available_at == 63)
+    report = evaluate_early_warning(signal, config=cfg)
+    assert report.metadata["channel_selection"] == "same_record_descriptive"
+    assert report.metadata["prospective_prediction"] is False

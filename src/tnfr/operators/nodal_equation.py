@@ -1,19 +1,20 @@
-"""Nodal equation validation for TNFR structural operators.
+"""Nodal rate diagnostics and history-derived acceleration observations.
 
-This module provides validation for the fundamental TNFR nodal equation:
+The nodal equation supplies the instantaneous prediction:
 
     ∂EPI/∂t = νf · ΔNFR(t)
 
-This equation governs how the Primary Information Structure (EPI) evolves
-over time based on the structural frequency (νf) and internal reorganization
-operator (ΔNFR). All structural operator applications must respect this
-canonical relationship to maintain TNFR theoretical fidelity.
+``validate_nodal_equation`` is an optional declared held-step comparison using
+post-state capacity and pressure. It does not authenticate an interval's inputs
+or apply as a mandatory flow check to every instantaneous operator event.
+History observations and cached integrator telemetry have separate semantics.
 """
 
 from __future__ import annotations
 
 import math
 from collections.abc import Mapping
+from dataclasses import dataclass
 from numbers import Real
 from typing import TYPE_CHECKING, Any
 
@@ -30,6 +31,8 @@ __all__ = [
     "validate_nodal_equation",
     "compute_expected_depi_dt",
     "compute_d2epi_dt2",
+    "StructuralAccelerationObservation",
+    "observe_structural_acceleration",
 ]
 
 # Default tolerance for nodal equation validation
@@ -38,11 +41,10 @@ DEFAULT_NODAL_EQUATION_CLIP_AWARE = True
 
 
 class NodalEquationViolation(Exception):
-    """Raised when operator application violates the nodal equation.
+    """Raised when the optional declared held-step comparison fails.
 
-    The nodal equation ∂EPI/∂t = νf · ΔNFR(t) is the fundamental equation
-    governing node evolution in TNFR. Violations indicate non-canonical
-    structural transformations.
+    The retained exception name does not classify arbitrary instantaneous
+    operator transformations or certify the pressure used during an interval.
     """
 
     def __init__(
@@ -295,19 +297,55 @@ def validate_nodal_equation(
     return is_valid
 
 
+@dataclass(frozen=True, slots=True)
+class StructuralAccelerationObservation:
+    """Detached three-sample finite difference, not causal execution evidence.
+
+    ``value`` is absent when fewer than three active samples are available.
+    ``samples`` contains only a successfully validated last-three window:
+    physical ``(time, EPI)`` pairs or legacy unit-step EPI scalars. A physical
+    window must end at the current EPI; legacy endpoint provenance remains
+    unspecified. This observation neither authenticates the history's producer
+    nor proves a derivative, bifurcation, or operator execution readiness.
+
+    The integrator's stored RHS-rate difference and Mutation's two-point
+    signed secant are separate observations with different contracts.
+    """
+
+    source: str | None
+    history_length: int
+    time_basis: str | None
+    available: bool
+    value: float | None
+    samples: tuple[float | tuple[float, float], ...]
+    current_endpoint_matches_state: bool | None
+    reason: str | None
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return detached JSON-compatible observation fields."""
+        return {
+            "source": self.source,
+            "history_length": self.history_length,
+            "time_basis": self.time_basis,
+            "available": self.available,
+            "value": self.value,
+            "samples": [
+                list(sample) if isinstance(sample, tuple) else sample
+                for sample in self.samples
+            ],
+            "current_endpoint_matches_state": self.current_endpoint_matches_state,
+            "reason": self.reason,
+        }
+
+
 def compute_d2epi_dt2(
     G: "TNFRGraph", node: "NodeId", *, store: bool = True
 ) -> float:
     """Compute ∂²EPI/∂t² (structural acceleration).
 
-    According to TNFR canonical theory (§2.3.3, R4), bifurcation occurs when
-    structural acceleration exceeds threshold τ:
-        |∂²EPI/∂t²| > τ → multiple reorganization paths viable
-
-    This function computes the second-order time derivative of EPI using
-    finite differences from the node's EPI history. The acceleration indicates
-    how rapidly the rate of structural change is itself changing, which is
-    the key indicator of bifurcation readiness.
+    Return the shared three-sample finite difference. Operator-specific gates
+    may compare its magnitude with their configured threshold; that comparison
+    alone proves neither a birth nor complete execution readiness.
 
     Parameters
     ----------
@@ -323,9 +361,9 @@ def compute_d2epi_dt2(
     Returns
     -------
     float
-        Structural acceleration ∂²EPI/∂t². Positive values indicate accelerating
-        growth, negative values indicate accelerating contraction. Magnitude
-        indicates bifurcation potential.
+        Signed finite-difference acceleration, or compatibility value 0.0
+        when history is unavailable. Use ``observe_structural_acceleration``
+        to distinguish an unavailable value from an observed zero.
 
     Notes
     -----
@@ -350,16 +388,19 @@ def compute_d2epi_dt2(
     legacy unit-operator-step interpretation.  At least three samples are
     required; otherwise the function returns 0.0 (acceleration unavailable).
 
-    By default the computed value is stored in the node's ``D2_EPI`` attribute
+    By default an available value is stored in the node's ``D2_EPI`` attribute
     (using ALIAS_D2EPI aliases) for telemetry and metrics collection.  Passing
-    ``store=False`` leaves the graph unchanged.
+    ``store=False`` leaves the graph unchanged. Unavailable history leaves
+    existing telemetry untouched even when ``store=True``; that cached value
+    is not evidence of a current history-derived acceleration.
 
     **Physical interpretation:**
 
-    - **d2epi ≈ 0**: Steady structural evolution (constant rate)
-    - **d2epi > τ**: Positive acceleration, expanding reorganization
-    - **d2epi < -τ**: Negative acceleration, collapsing reorganization
-    - **|d2epi| > τ**: Bifurcation active, multiple paths viable
+    A validated zero is a zero represented finite difference in this window,
+    not exact equality of real-valued secants or future stationarity. Rounding
+    can erase a subrepresentable difference. The sign describes the change of
+    the represented secants, rather than the sign of the EPI rate itself.
+    No source causality is inferred.
 
     Examples
     --------
@@ -390,13 +431,44 @@ def compute_d2epi_dt2(
     if not isinstance(store, bool):
         raise TNFRValueError("store must be a boolean.")
 
+    observation = observe_structural_acceleration(G, node)
+    if not observation.available:
+        return 0.0
+    if store:
+        set_attr(G.nodes[node], ALIAS_D2EPI, observation.value)
+    return float(observation.value)
+
+
+def observe_structural_acceleration(
+    G: "TNFRGraph", node: "NodeId",
+) -> StructuralAccelerationObservation:
+    """Read one active history without writing telemetry or changing the graph.
+
+    Physical history takes precedence even when short. Otherwise a nonempty
+    canonical legacy history precedes its private compatibility counterpart.
+    Missing or short history returns explicit unavailability; its samples are
+    not validated as a three-point window. Malformed complete windows, stale
+    physical endpoints and nonfinite derived intervals/rates raise
+    :class:`TNFRValueError`, without a fallback to another source.
+
+    Physical values use ``2*(s2-s1)/(dt1+dt2)``; legacy values use unit operator
+    steps. Only the selected final three samples are assessed. The detached
+    result is an observation of supplied data, not a sealed runtime record.
+    """
     node_data = G.nodes[node]
     source, history = _select_acceleration_history(node_data)
     if history is None:
-        return 0.0
+        return StructuralAccelerationObservation(
+            None, 0, None, False, None, (), None, "missing_history",
+        )
     length = _history_length_or_error(history, source)
+    physical = source == "epi_time_history"
+    time_basis = "physical_time" if physical else "legacy_unit_operator_step"
     if length < 3:
-        return 0.0
+        return StructuralAccelerationObservation(
+            source, length, time_basis, False, None, (), None,
+            "insufficient_history",
+        )
 
     try:
         samples = history[-3], history[-2], history[-1]
@@ -405,7 +477,7 @@ def compute_d2epi_dt2(
             f"{source} must be an indexed, replayable history."
         ) from exc
 
-    if source == "epi_time_history":
+    if physical:
         timed = tuple(
             _physical_acceleration_sample(value, source, index)
             for index, value in enumerate(samples, start=length - 3)
@@ -413,10 +485,15 @@ def compute_d2epi_dt2(
         (t0, epi0), (t1, epi1), (t2, epi2) = timed
         dt1 = t1 - t0
         dt2 = t2 - t1
+        if not math.isfinite(dt1) or not math.isfinite(dt2):
+            raise TNFRValueError("epi_time_history intervals must remain finite.")
         if dt1 <= 0.0 or dt2 <= 0.0:
             raise TNFRValueError(
                 "epi_time_history timestamps must increase strictly."
             )
+        span = dt1 + dt2
+        if not math.isfinite(span):
+            raise TNFRValueError("epi_time_history total span must remain finite.")
         current_raw = _first_present(node_data, ALIAS_EPI)
         if current_raw is _MISSING:
             raise TNFRValueError(
@@ -430,23 +507,25 @@ def compute_d2epi_dt2(
             )
         slope1 = (epi1 - epi0) / dt1
         slope2 = (epi2 - epi1) / dt2
-        d2epi = 2.0 * (slope2 - slope1) / (dt1 + dt2)
+        if not math.isfinite(slope1) or not math.isfinite(slope2):
+            raise TNFRValueError("epi_time_history secant rates must remain finite.")
+        d2epi = 2.0 * (slope2 - slope1) / span
+        observed_samples = timed
     else:
-        epi0, epi1, epi2 = (
+        observed_samples = tuple(
             _finite_history_scalar(value, source, index)
             for index, value in enumerate(samples, start=length - 3)
         )
+        epi0, epi1, epi2 = observed_samples
         d2epi = epi2 - 2.0 * epi1 + epi0
 
     if not math.isfinite(d2epi):
         raise TNFRValueError(f"{source} produces non-finite structural acceleration.")
 
-    # Store in node for telemetry (using set_attr to handle aliases) unless the
-    # caller explicitly requests a pure diagnostic read.
-    if store:
-        set_attr(G.nodes[node], ALIAS_D2EPI, d2epi)
-
-    return float(d2epi)
+    return StructuralAccelerationObservation(
+        source, length, time_basis, True, float(d2epi), observed_samples,
+        True if physical else None, None,
+    )
 
 
 _MISSING = object()

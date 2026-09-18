@@ -34,14 +34,14 @@ class Emission(Operator):
     to emit coherence toward its surrounding network. This is not passive
     information broadcast but active structural reorganization that boosts
     the node's EPI (the form) from its latent state. Per the canonical
-    contract the EPI channel is the direct effect; νf settles at its basal
-    ν₀⁺ and ΔNFR/phase are left untouched.
+    contract the EPI channel is the direct effect; the existing νf,
+    ΔNFR and phase are left untouched.
 
     **Key Elements:**
         - **Coherent Emergence**: Node exists because it resonates;
             AL starts resonance
     - **Form Activation**: Raises EPI (Primary Information Structure)
-    - **Structural Frequency**: νf settles at its basal ν₀⁺ (not driven by AL)
+    - **Structural Frequency**: the existing νf is preserved
     - **Network Coupling**: Prepares node for phase alignment
     - **Nodal Equation**: Drives ∂EPI/∂t ≥ 0 directly on the EPI channel
 
@@ -77,14 +77,14 @@ class Emission(Operator):
 
     Preconditions
     -------------
-    - EPI < 0.8 (activation threshold)
+    - EPI < the configured ``EPI_LATENT_MAX`` in strict precondition validation
     - Node in latent or low-activation state
     - Sufficient network coupling potential
 
     Structural Effects
     ------------------
     **EPI**: Increments (form activation) — the direct AL channel
-    **νf**: Untouched (settles at basal ν₀⁺)
+    **νf**: Untouched
     **ΔNFR**: Untouched (AL does not impose reorganization pressure)
     **θ**: Untouched
 
@@ -294,7 +294,7 @@ class Emission(Operator):
 
         Implements TNFR.pdf §2.2.1 precondition validation:
         1. EPI < latent threshold (node in nascent/latent state)
-        2. νf > basal threshold (sufficient structural frequency)
+        2. νf >= basal threshold (sufficient structural frequency)
         3. Network connectivity check (warning for isolated nodes)
 
         Raises

@@ -16,11 +16,12 @@ lag-1 autocorrelation; Scheffer et al. 2009, Dakos et al. 2012).
 
 Scope and honesty
 -----------------
-- The instantaneous phase here is **measured** from the signal via the analytic
-  (Hilbert) transform.  For a phase-native observable such as power-grid
-  frequency (frequency = dφ/dt), this is a genuine phase, not a label encoded
-  as a phase.  This is the qualitative difference from
-  :mod:`tnfr.validation.structural_interface`.
+- The analytic-signal phase is a declared signal descriptor. The Hilbert phase
+  of a frequency trace is not automatically the oscillator phase whose
+  derivative generated that frequency. A physical observation map is separate.
+- Default whole-record processing is retrospective. Prospective processing
+  transforms only the declared warmup/window/latency block available at each
+  emission time; it does not certify a future event or physical regime.
 - The classical EWS baselines (variance, lag-1 autocorrelation) are the
   established indicators of an approaching bifurcation.  They are included so
   the comparison is fair: any TNFR claim must beat or match them, not a strawman.
@@ -44,6 +45,7 @@ References
 from __future__ import annotations
 
 import math
+import hashlib
 from dataclasses import dataclass, field
 from typing import Any, Mapping, Sequence
 
@@ -78,6 +80,10 @@ __all__ = [
     "rolling_lag1_autocorrelation",
     "kendall_tau",
     "evaluate_early_warning",
+    "TemporalWarningCalibration",
+    "ProspectiveWarningComparison",
+    "calibrate_temporal_warning",
+    "evaluate_prospective_warning",
 ]
 
 
@@ -121,6 +127,9 @@ class TemporalInterfaceConfig:
     step: int = 30
 
     def __post_init__(self) -> None:
+        for name in ("embedding_dim", "embedding_tau", "k_neighbours", "window", "step"):
+            if type(getattr(self, name)) is not int:
+                raise TypeError(f"{name} must be an integer, not a boolean")
         if self.embedding_dim < 1:
             raise ValueError("embedding_dim must be >= 1")
         if self.embedding_tau < 1:
@@ -131,6 +140,8 @@ class TemporalInterfaceConfig:
             raise ValueError("window must be >= 8 samples")
         if self.step < 1:
             raise ValueError("step must be >= 1")
+        if (self.embedding_dim - 1) * self.embedding_tau >= self.window - 1:
+            raise ValueError("window must contain at least two embedding vectors")
 
 
 @dataclass(frozen=True)
@@ -148,8 +159,12 @@ class WindowTetradSeries:
     phi_s: "np.ndarray"
     variance: "np.ndarray"
     lag1_autocorr: "np.ndarray"
+    mode: str = "retrospective"
+    available_at: "np.ndarray | None" = None
+    warmup_samples: int = 0
+    latency_samples: int = 0
 
-    def as_dict(self) -> dict[str, list[float]]:
+    def as_dict(self) -> dict[str, Any]:
         return {
             "window_end": [int(v) for v in self.window_end],
             "grad_phi": [float(v) for v in self.grad_phi],
@@ -158,6 +173,13 @@ class WindowTetradSeries:
             "phi_s": [float(v) for v in self.phi_s],
             "variance": [float(v) for v in self.variance],
             "lag1_autocorr": [float(v) for v in self.lag1_autocorr],
+            "mode": self.mode,
+            "available_at": (
+                [int(v) for v in self.available_at]
+                if self.available_at is not None else None
+            ),
+            "warmup_samples": self.warmup_samples,
+            "latency_samples": self.latency_samples,
         }
 
 
@@ -339,24 +361,43 @@ def window_tetrad_series(
     signal: Sequence[float],
     *,
     config: TemporalInterfaceConfig | None = None,
+    mode: str = "retrospective",
+    warmup_samples: int = 0,
+    latency_samples: int = 0,
 ) -> WindowTetradSeries:
     """Compute the TNFR tetrad and matched EWS baselines over rolling windows.
 
     Returns aligned arrays for the tetrad channels (mean |∇φ|, mean |K_φ|, ξ_C,
     mean |Φ_s|) and the classical EWS baselines (variance, lag-1 autocorrelation)
-    so they can be compared on identical windows.
+    so they can be compared on identical windows. The default is descriptive
+    whole-record processing. In ``prospective`` mode each window uses only its
+    preceding warmup, itself and the declared latency samples. Its result may
+    be used only at ``available_at`` (inclusive), not at ``window_end`` when
+    latency is nonzero. Windows without the complete declared context are not
+    emitted. This is causal emission of telemetry, not a forecast certificate.
     """
     _require_numpy()
     cfg = config or TemporalInterfaceConfig()
     x = np.asarray(signal, dtype=float)
+    if x.ndim != 1 or not np.all(np.isfinite(x)):
+        raise ValueError("signal must be a finite one-dimensional series; preserve gaps separately")
+    if mode not in ("retrospective", "prospective"):
+        raise ValueError("mode must be retrospective or prospective")
+    for name, value in (("warmup_samples", warmup_samples), ("latency_samples", latency_samples)):
+        if type(value) is not int or value < 0:
+            raise ValueError(f"{name} must be a nonnegative integer")
+    if mode == "retrospective" and (warmup_samples or latency_samples):
+        raise ValueError("warmup and latency belong to prospective processing")
     n = x.size
     if n < cfg.window:
         raise ValueError("signal shorter than a single window")
 
-    phase = hilbert_instantaneous_phase(x)
-    pressure = local_structural_pressure(x)
+    if mode == "retrospective":
+        phase = hilbert_instantaneous_phase(x)
+        pressure = local_structural_pressure(x)
 
     ends: list[int] = []
+    availability: list[int] = []
     grad: list[float] = []
     kphi: list[float] = []
     xic: list[float] = []
@@ -364,12 +405,19 @@ def window_tetrad_series(
     var: list[float] = []
     ac1: list[float] = []
 
-    start = 0
-    while start + cfg.window <= n:
+    start = warmup_samples
+    while start + cfg.window + latency_samples <= n:
         stop = start + cfg.window
+        if mode == "prospective":
+            context = x[start - warmup_samples:stop + latency_samples]
+            phase = hilbert_instantaneous_phase(context)
+            pressure = local_structural_pressure(context)
+            seg_phase = phase[warmup_samples:warmup_samples + cfg.window]
+            seg_press = pressure[warmup_samples:warmup_samples + cfg.window]
+        else:
+            seg_phase = phase[start:stop]
+            seg_press = pressure[start:stop]
         seg = x[start:stop]
-        seg_phase = phase[start:stop]
-        seg_press = pressure[start:stop]
 
         G = build_temporal_proximity_graph(
             seg, phase=seg_phase, pressure=seg_press, config=cfg
@@ -384,6 +432,7 @@ def window_tetrad_series(
         ac1.append(_lag1_autocorr(seg))
 
         ends.append(stop - 1)
+        availability.append(stop + latency_samples - 1 if mode == "prospective" else n - 1)
         start += cfg.step
 
     return WindowTetradSeries(
@@ -394,6 +443,10 @@ def window_tetrad_series(
         phi_s=np.asarray(phis, dtype=float),
         variance=np.asarray(var, dtype=float),
         lag1_autocorr=np.asarray(ac1, dtype=float),
+        mode=mode,
+        available_at=np.asarray(availability, dtype=int),
+        warmup_samples=warmup_samples,
+        latency_samples=latency_samples,
     )
 
 
@@ -485,7 +538,11 @@ def evaluate_early_warning(
     transition_index: int | None = None,
     config: TemporalInterfaceConfig | None = None,
 ) -> EarlyWarningComparison:
-    """Compare TNFR tetrad trends with EWS baselines ahead of a transition.
+    """Retrospectively compare trends; selection is descriptive, not held-out.
+
+    Whole-record Hilbert/smoothing can use post-event samples. Use
+    ``evaluate_prospective_warning`` for separately calibrated channel choices
+    and features emitted using only their available context.
 
     Parameters
     ----------
@@ -569,6 +626,9 @@ def evaluate_early_warning(
         n_pre_transition_windows=n_pre,
         interpretation=interpretation,
         metadata={
+            "mode": "retrospective",
+            "channel_selection": "same_record_descriptive",
+            "prospective_prediction": False,
             "n_windows": int(ends.size),
             "transition_index": transition_index,
             "config": {
@@ -579,4 +639,154 @@ def evaluate_early_warning(
                 "step": cfg.step,
             },
         },
+    )
+
+
+@dataclass(frozen=True)
+class TemporalWarningCalibration:
+    """Channel choices learned once from one declared calibration run.
+
+    This freezes feature extraction and selection, not an event classifier or
+    a physical state map. Run identifiers and the content digest make accidental
+    reuse visible; independence of the acquisition runs remains a protocol duty.
+    """
+
+    config: TemporalInterfaceConfig
+    warmup_samples: int
+    latency_samples: int
+    tnfr_channel: str
+    baseline_channel: str
+    calibration_run_id: str
+    calibration_sha256: str
+    calibration_samples: int
+
+
+@dataclass(frozen=True)
+class ProspectiveWarningComparison:
+    """Evaluation of frozen channels with explicit unavailable outcomes."""
+
+    tnfr_channel: str
+    baseline_channel: str
+    tnfr_trend: float | None
+    baseline_trend: float | None
+    tnfr_valid_windows: int
+    baseline_valid_windows: int
+    available_at: tuple[int, ...]
+    status: str
+    reason: str
+    calibration_run_id: str
+    evaluation_run_id: str
+
+
+def _run_id(value: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("run identity must be a nonempty string")
+    return value
+
+
+def _signal_digest(signal: "np.ndarray") -> str:
+    return hashlib.sha256(np.asarray(signal, dtype="<f8").tobytes()).hexdigest()
+
+
+def _resolved_trend(values: "np.ndarray") -> tuple[float | None, int]:
+    count = int(np.count_nonzero(np.isfinite(values)))
+    trend = kendall_tau(values)
+    return (float(trend) if math.isfinite(trend) else None), count
+
+
+def calibrate_temporal_warning(
+    signal: Sequence[float],
+    *,
+    calibration_run_id: str,
+    config: TemporalInterfaceConfig | None = None,
+    warmup_samples: int = 0,
+    latency_samples: int = 0,
+) -> TemporalWarningCalibration:
+    """Select finite trend channels using calibration data alone.
+
+    Whole independent runs must be reserved for evaluation. Feature windows
+    have the same causal emission semantics as the eventual evaluator.
+    No calibration channel with an undefined trend is selected by fallback.
+    """
+    run_id = _run_id(calibration_run_id)
+    cfg = config or TemporalInterfaceConfig()
+    series = window_tetrad_series(
+        signal, config=cfg, mode="prospective", warmup_samples=warmup_samples,
+        latency_samples=latency_samples,
+    )
+
+    def select(channels: tuple[str, ...]) -> str:
+        choices = [(name, _resolved_trend(getattr(series, name))[0]) for name in channels]
+        finite = [(name, value) for name, value in choices if value is not None]
+        if not finite:
+            raise ValueError("calibration has no resolved trend in a required channel family")
+        return max(finite, key=lambda item: item[1])[0]
+
+    return TemporalWarningCalibration(
+        config=cfg, warmup_samples=warmup_samples, latency_samples=latency_samples,
+        tnfr_channel=select(_TNFR_CHANNELS), baseline_channel=select(_BASELINE_CHANNELS),
+        calibration_run_id=run_id, calibration_sha256=_signal_digest(np.asarray(signal)),
+        calibration_samples=len(signal),
+    )
+
+
+def evaluate_prospective_warning(
+    signal: Sequence[float],
+    *,
+    calibration: TemporalWarningCalibration,
+    evaluation_run_id: str,
+    transition_index: int | None = None,
+) -> ProspectiveWarningComparison:
+    """Evaluate frozen channels without fitting or same-record selection.
+
+    If supplied, ``transition_index`` is a declared evaluation cutoff: only
+    emissions strictly before it are scored. It is not a detected/predicted
+    event. The suffix after that cutoff is not transformed or validated.
+    Descriptive trend agreement is not an event-prediction certificate.
+    """
+    if not isinstance(calibration, TemporalWarningCalibration):
+        raise TypeError("calibration must be a TemporalWarningCalibration")
+    run_id = _run_id(evaluation_run_id)
+    if run_id == calibration.calibration_run_id:
+        raise ValueError("calibration and evaluation require different run identities")
+    if (calibration.tnfr_channel not in _TNFR_CHANNELS
+            or calibration.baseline_channel not in _BASELINE_CHANNELS):
+        raise ValueError("calibration contains unknown channels")
+    stop = len(signal)
+    if transition_index is not None:
+        if type(transition_index) is not int or not 0 <= transition_index <= stop:
+            raise ValueError("transition_index must be an integer inside the supplied record")
+        stop = transition_index
+    prefix = np.asarray(signal[:stop], dtype=float)
+    if prefix.ndim != 1 or not np.all(np.isfinite(prefix)):
+        raise ValueError("evaluation prefix must be finite and one-dimensional")
+    if _signal_digest(prefix) == calibration.calibration_sha256:
+        raise ValueError("evaluation content repeats the calibration record")
+    required = (calibration.warmup_samples + calibration.config.window
+                + calibration.latency_samples)
+    if len(prefix) < required:
+        series = None
+    else:
+        series = window_tetrad_series(
+            prefix, config=calibration.config, mode="prospective",
+            warmup_samples=calibration.warmup_samples,
+            latency_samples=calibration.latency_samples,
+        )
+    tnfr, n_tnfr = (None, 0) if series is None else _resolved_trend(
+        getattr(series, calibration.tnfr_channel)
+    )
+    baseline, n_baseline = (None, 0) if series is None else _resolved_trend(
+        getattr(series, calibration.baseline_channel)
+    )
+    resolved = tnfr is not None and baseline is not None
+    return ProspectiveWarningComparison(
+        tnfr_channel=calibration.tnfr_channel,
+        baseline_channel=calibration.baseline_channel,
+        tnfr_trend=tnfr, baseline_trend=baseline,
+        tnfr_valid_windows=n_tnfr, baseline_valid_windows=n_baseline,
+        available_at=() if series is None else tuple(int(x) for x in series.available_at),
+        status="descriptive_evaluation" if resolved else "unavailable",
+        reason=("Frozen-channel trends; no event or physical-regime certificate."
+                if resolved else "Insufficient finite windows or a degenerate selected trend."),
+        calibration_run_id=calibration.calibration_run_id, evaluation_run_id=run_id,
     )

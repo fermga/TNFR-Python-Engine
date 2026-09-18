@@ -1,53 +1,48 @@
-r"""TNFR-Riemann canonical foundation: the prime-NFR nodal pulse.
+r"""Finite arithmetic pulse comparisons in the TNFR-Riemann program.
 
-This module re-founds the TNFR-Riemann attack on the **canonical emergent
-nodal dynamics**, replacing the obsolete combinatorial-Laplacian Schrödinger
-operator ``H(σ) = L_k + V_σ`` (a non-canonical graph-Laplacian prototype).
+This declared arithmetic construction replaces the historical comparison
+surface ``H(σ) = L_k + V_σ``. It does not derive prime labels, frequencies,
+amplitudes or autonomous phase evolution from the scalar nodal equation.
 
-Canonical mapping (from the nodal equation ∂EPI/∂t = νf·ΔNFR)
-============================================================
-Each integer ``n`` is a fractal-resonant node (NFR) whose canonical structural
-frequency is
+Declared arithmetic inputs
+==========================
+The construction assigns to integer label ``n`` the frequency
 
 .. math::
 
     \nu_{f,n} = \log n
 
-(so ``νf`` is *additive* under multiplication, ``νf(pq)=νf(p)+νf(q)``, the
-emergent image of the Euler product). On the coherence axis ``Re(s) = 1/2`` the
-Riemann zeta function is the **superposition of the integer-NFR nodal pulses**
+(so ``νf(pq)=νf(p)+νf(q)`` by the logarithm identity), amplitude ``n**(-1/2)``
+and phase evolution ``exp(-i * log(n) * T)``. The evaluated finite sum is
 
 .. math::
 
-    \zeta(\tfrac12 + iT) \;=\; \sum_{n\ge 1} n^{-1/2}\, e^{-i\,\nu_{f,n}\,T},
+    P_N(T) = \sum_{n=1}^{N} n^{-1/2}\,e^{-i(\log n)T}.
 
-each term ``e^{-i νf_n T}`` being the nodal pulse of NFR ``n`` advancing at its
-own structural frequency ``νf_n`` (phase ``φ_n(T) = νf_n·T``). The non-trivial
-zeros are the heights ``T`` at which the integer-NFR pulses **totally
-destructively interfere** (``|ζ| → 0``) — a coherence collapse of the
-prime-pulse network.  RH is the statement that this collapse happens only on
-the **coherence axis** ``Re(s) = 1/2`` — the fixed point of the
-functional-equation reflection ``s ↔ 1-s`` (the ``ΔNFR = 0`` axis of a
-reflection-symmetric NFR).
+The ordinary infinite Dirichlet series defines ``zeta(s)`` for ``Re(s)>1``;
+outside that domain its analytic continuation must be distinguished from
+unregularized partial sums (https://dlmf.nist.gov/25.2). In particular, the
+displayed finite sum is not an identity for ``zeta(1/2+iT)`` or a certified
+convergent approximation as ``N`` grows. The default length is a numerical
+policy, not a Riemann-Siegel formula with a remainder bound.
 
-What is canonical here
-----------------------
-* The structural frequency ``νf_n = log n`` is the diagonal of the canonical
-  internal Hamiltonian (see :mod:`tnfr.riemann.prime_ladder_hamiltonian`, P14);
-  it is the *emergent* prime content, not a graph-Laplacian eigenvalue.
-* The emergent structural operator on the prime graph is the random-walk
-  Laplacian ``L_rw = I − D⁻¹W`` (the ΔNFR EPI channel; see
-  :mod:`tnfr.physics.structural_diffusion`), **never** the imposed combinatorial
-  ``D − A``.
-* ``mpmath.zeta`` / :data:`KNOWN_RIEMANN_ZEROS` are used only as the numerical
-  **oracle** against which the emergent pulse is verified.
+Implementation scope
+====================
+* P14 likewise assigns ``k*log(p)`` to explicitly supplied prime ladders;
+  reading the same diagonal back is not independent emergence of primes.
+* The optional graph helper uses the canonical EPI transport operator
+  ``L_rw = I − D⁻¹W`` through :mod:`tnfr.physics.structural_diffusion`.
+  This finite pulse evaluator does not execute that graph or a nodal integrator.
+* :data:`KNOWN_RIEMANN_ZEROS` supplies the finite comparison oracle, scan
+  endpoint and nearest-dip matches. This is not a blind zero-location test.
 
 Honest scope
 ------------
-Reproducing the zeros as pulse-interference dips is a *structural picture* of
-the classical Dirichlet/Riemann-Siegel behaviour; it does **not** prove RH
-(G4). The residual is the oscillatory ``S(T) = (1/π) arg ζ(1/2+iT)`` — the open
-arithmetic content (see the paused-program notes).
+Finite interference dips can be compared with known ordinates. They do not
+certify analytic zeros, physical coherent entities, a ``DeltaNFR=0`` axis, or
+RH (G4). The classical functional-equation reflection axis does not supply a
+TNFR pressure law or prove that an engine trajectory approaches it. Historical
+measurements remain scoped by ``theory/TNFR_RIEMANN_RESEARCH_NOTES.md``.
 """
 
 from __future__ import annotations
@@ -102,7 +97,7 @@ KNOWN_RIEMANN_ZEROS: tuple[float, ...] = (
 
 
 def first_primes(count: int) -> list[int]:
-    """Return the first ``count`` prime numbers (canonical prime-NFR labels).
+    """Return the first ``count`` primes as explicit arithmetic input labels.
 
     Deliberately minimalist trial division; not optimised for large ``count``.
     Moved here from the eliminated combinatorial ``operator`` module so the
@@ -127,29 +122,28 @@ def first_primes(count: int) -> list[int]:
 
 
 def prime_structural_frequencies(count: int) -> list[float]:
-    """Canonical structural frequencies ``νf = log p`` of the first ``count``
-    prime NFRs."""
+    """Assign ``νf = log p`` to the explicitly enumerated first ``count`` primes."""
     return [float(np.log(p)) for p in first_primes(count)]
 
 
 def _default_terms(t: float) -> int:
-    """Canonical truncation length for the nodal pulse at height ``t``.
+    """Historical finite-length policy for the pulse at height ``t``.
 
     A few times the Riemann-Siegel main-sum length ``√(t/2π)`` — enough integer
-    NFRs for the destructive-interference dips to resolve the low zeros while
-    staying short of the Dirichlet-partial-sum divergence.
+    terms for the reported low-height comparisons. This heuristic supplies
+    neither analytic continuation nor an approximation error bound.
     """
     rs = np.sqrt(max(t, 1.0) / (2.0 * np.pi))
     return int(max(10, round(3.0 * rs + 6.0)))
 
 
 def nodal_pulse(t: float, n_terms: int | None = None) -> complex:
-    r"""The integer-NFR nodal-pulse superposition at height ``t``.
+    r"""Evaluate the finite integer-label pulse at height ``t``.
 
     ``P(t) = Σ_{n=1}^{n_terms} n^{-1/2} e^{-i (log n) t}`` — the coherent
-    superposition of the first ``n_terms`` integer-NFR pulses on the coherence
-    axis ``Re(s) = 1/2`` (the truncated Dirichlet partial sum of
-    ``ζ(1/2 + it)``). ``|P|`` collapses where the pulses destructively interfere.
+    superposition with prescribed amplitudes and logarithmic frequencies.
+    This partial sum does not converge to ``ζ(1/2+it)`` without an appropriate
+    continuation or summation construction, which this function does not add.
     """
     if n_terms is None:
         n_terms = _default_terms(t)
@@ -158,7 +152,7 @@ def nodal_pulse(t: float, n_terms: int | None = None) -> complex:
 
 
 def nodal_pulse_magnitude(t: float, n_terms: int | None = None) -> float:
-    """``|P(t)|`` — the prime-pulse coherence amplitude; dips at the zeros."""
+    """Return ``|P(t)|``; local dips are not certificates of analytic zeros."""
     return float(abs(nodal_pulse(t, n_terms)))
 
 
@@ -170,13 +164,11 @@ def detect_zeros_by_interference(
     n_terms: int | None = None,
     threshold: float = 0.75,
 ) -> list[float]:
-    r"""Locate zeros as **destructive-interference dips** of the nodal pulse.
+    r"""Return sampled interference minima of the declared finite pulse.
 
     Scans ``|P(t)|`` on ``[t_min, t_max]`` and returns the heights of the local
-    minima that fall below ``threshold`` — the values of ``t`` where the
-    integer-NFR pulses cancel (``ζ → 0``). This is the emergent structural
-    read-out of the non-trivial zeros; for high-precision ordinates use the
-    ``mpmath`` oracle.
+    minima that fall below ``threshold``. The historical function name does
+    not imply that each minimum is a zeta zero or that every zero is found.
     """
     ts = np.linspace(t_min, t_max, resolution)
     mag = np.array([nodal_pulse_magnitude(float(t), n_terms) for t in ts])
@@ -188,10 +180,11 @@ def detect_zeros_by_interference(
 
 
 def build_prime_nfr_graph(count: int):
-    """Build the emergent prime-NFR path graph on the first ``count`` primes.
+    """Build a prescribed path graph on the first ``count`` enumerated primes.
 
-    Nodes carry the canonical triad seed (``EPI``, ``vf = log p``, ``theta``);
-    the emergent structural operator on this graph is the random-walk Laplacian
+    Nodes carry a chosen triad seed (``EPI``, ``vf = log p``, ``theta``), and
+    edge weights are assigned from logarithmic gaps. The structural EPI
+    transport operator on this graph is the random-walk Laplacian
     ``L_rw`` (:func:`tnfr.physics.structural_diffusion.structural_diffusion_operator`),
     never the imposed combinatorial ``D − A``.
     """
@@ -209,7 +202,7 @@ def build_prime_nfr_graph(count: int):
 
 @dataclass(frozen=True)
 class NodalPulseCertificate:
-    """Certificate that the emergent nodal pulse reproduces the Riemann zeros."""
+    """Finite nearest-dip comparison receipt, not an analytic-zero certificate."""
 
     n_zeros: int
     detected: tuple[float, ...]
@@ -230,11 +223,12 @@ class NodalPulseCertificate:
 def verify_nodal_pulse(
     n_zeros: int = 6, *, tol: float = 0.5, resolution: int = 8000
 ) -> NodalPulseCertificate:
-    r"""Verify the emergent nodal pulse reproduces the first ``n_zeros`` zeros.
+    r"""Compare finite pulse minima with the first ``n_zeros`` known ordinates.
 
     Detects the destructive-interference dips of ``|P(t)|`` up to just past the
     ``n_zeros``-th known ordinate and matches each reference ``γ_n`` to its
-    nearest dip. ``all_matched`` iff every matched error is within ``tol``.
+    nearest dip. ``all_matched`` iff every matched error is within ``tol``;
+    matches need not be distinct and extra dips are not penalized.
     """
     n_zeros = min(n_zeros, len(KNOWN_RIEMANN_ZEROS))
     reference = KNOWN_RIEMANN_ZEROS[:n_zeros]

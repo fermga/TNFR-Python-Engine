@@ -1,123 +1,126 @@
 # TNFR–Navier–Stokes — Research Notes
 
-**Status:** research program on the Clay Millennium Problem (existence and
-smoothness of 3D incompressible Navier–Stokes). Closes **nothing**; both Clay
-directions remain **open**. This note is the canonical, self-contained record of
-the program.
+**Status:** auxiliary finite-resolution Navier–Stokes diagnostics; no nodal
+derivation of the full fluid model and no Clay proof or counterexample.
+**Scope review:** 2026-09-18; documentation correction, no new numerical run.
+
+The [official Clay statement by Fefferman](https://www.claymath.org/wp-content/uploads/2022/06/navierstokes.pdf)
+poses global existence/smoothness or breakdown alternatives for three-dimensional
+incompressible flow at positive viscosity, with specified smooth data on
+`R³` or the periodic domain. Global smoothness for unrestricted admissible data
+at fixed positive viscosity remains open. A bound uniform as `ν→0` concerns a
+separate inviscid-limit question; it is not the Clay statement.
 
 ---
 
 ## 1. The reading
 
-TNFR reads a system through its emergent geometry: the **pulse** `ω_k = √λ_k`, the
-two faces (diffusive over-damped vs conservative wave) with the
-`verify_overdamped_projection` certificate, and the empirical confrontation of the
-canonical magnitudes with real oscillatory data. That empirical arm establishes
-that **oscillatory dynamics live on the conservative (wave) face**, which poses
-the honest question this program answers: *which face is 3D Navier–Stokes on?*
+The repository contains pure-EPI graph diffusion, an auxiliary graph-wave
+model and a separate pseudo-spectral fluid solver. Their diagnostics can be
+compared after declaring state, operator, units and time. An oscillatory signal
+does not alone identify conservative dynamics or a TNFR operator realization.
+`verify_overdamped_projection` checks a declared damped graph-wave model; it
+does not infer a physical fluid or neural equation from observations.
 
-## 2. The honest two-face answer (physics-first, no forced analogy)
+## 2. Linear diffusion and nonlinear fluid dynamics
 
-Incompressible NS vorticity obeys
+For smooth unforced incompressible flow, the vorticity equation is
 
-$$\frac{\partial \omega}{\partial t} = (\omega\cdot\nabla)u \;+\; \nu\,\nabla^2\omega .$$
+$$\frac{\partial \omega}{\partial t} + (u\cdot\nabla)\omega
+= (\omega\cdot\nabla)u + \nu\nabla^2\omega.$$
 
-This is **first order in time**. Therefore:
+The omitted-advection form applies to the material derivative, not to the
+displayed partial time derivative. Linearization around rest leaves diffusion;
+linearization around other flows can also retain transport and stretching.
 
-- Its **linear** part is the nodal equation for the phase-curvature field
-  `K_φ` (the vorticity): `∂K_φ/∂t = ν_f·ΔNFR` with `ν_f ↔ ν` and
-  `ΔNFR = −L_rw·K_φ`. The viscous term **is** the canonical graph diffusion (the
-  IL coherence stabiliser). This sits on the **diffusive (over-damped) face**:
-  mapping viscosity to the damped-wave damping `γ = 1/ν` (the canonical
-  `ν_f = 1/γ` identity), every physical viscosity gives `γ² ≫ 4λ_max`, so
-  `verify_diffusive_face` (the engine's `verify_overdamped_projection`) is **VALID**
-  and recovers `ν_f = ν`. Unlike EEG — whose *linear* neural dynamics are
-  under-damped/oscillatory — **linear NS carries no oscillatory content**.
-- Its **conservative / inertial** character — the energy-conserving Euler cascade
-  where any blow-up must live — is entirely in the **nonlinear** vortex-stretching
-  source `(ω·∇)u` (the VAL destabiliser).
+The canonical isolated EPI channel has `ẋ=−diag(νf)L_rw x` on a fixed graph.
+This supplies a comparison with diffusion, not an identity between its
+normalized graph Laplacian and the solver's continuum Fourier multiplier
+`|k|²`. A spatial scaling/consistency bridge and channel identification are
+required. In particular, fluid vorticity is not the canonical wrapped scalar
+phase curvature by definition, and IL/VAL labels do not implement the fluid
+terms.
 
-**Consequence (the sharp statement).** NS blow-up is **not** a linear-wave
-resonance; it is a purely **nonlinear `K_φ` cascade**: does the stretching source
-pump enstrophy into ever-higher structural modes faster than viscous diffusion
-removes it, as `ν → 0` (`Re → ∞`)?
+The helper `face_of_flow` selects `γ=1/ν` in an auxiliary graph-wave equation.
+Its overdamping condition depends on `γ²` relative to `4λ_max`; it does not
+hold for every positive viscosity. This selected comparison neither derives
+Navier–Stokes from the nodal equation nor certifies nonlinear regularity.
 
-## 3. Field dictionary
+## 3. Historical comparison dictionary
+
+These are proposed analogies, not established state maps or operator contracts.
 
 | Navier–Stokes | TNFR |
 |---|---|
-| velocity `u_a` | per-component phase field `φ^(a)` |
-| vorticity `ω = ∇×u` | `K_φ` per component |
-| pressure `p` | `Φ_s` (Leray/incompressibility multiplier) |
-| viscosity `ν` | `ν_f` (diffusive-face structural frequency) |
-| enstrophy `‖ω‖²` | `Σ K_φ²` (conserved-pressure energy) |
-| stretching `(ω·∇)u` | VAL nonlinear destabiliser (the conservative source) |
+| velocity `u_a` | A possible scalar chart; no phase-valued identification is derived |
+| vorticity `ω = ∇×u` | Derivative diagnostic; not the implemented nodewise `K_φ` |
+| incompressibility pressure `p` | No established equality with the tetrad potential `Φ_s` |
+| viscosity `ν` | Diffusion coefficient; mapping to `ν_f` needs spatial/time scales |
+| enstrophy `½‖ω‖²` | Quadratic derivative budget, not a generally conserved tetrad energy |
+| stretching `(ω·∇)u` | Nonlinear source in the supplied PDE, not an executed VAL operator |
 
-## 4. The blow-up frontier (measured)
+## 4. Finite cascade telemetry
 
-`conservative_face.measure_cascade_frontier` evolves the faithful pseudo-spectral
-Taylor–Green vortex at several viscosities to a matched **structural time**
+`conservative_face.measure_cascade_frontier` evolves the pseudo-spectral
+Taylor–Green initial condition at several viscosities to a selected scaled time
 `τ_str = ν·t` and records the peak enstrophy debt `Ω_peak/Ω₀`, the peak stretching
 production and the high-mode enstrophy fraction versus `Re = 2π/ν`.
 
-- **Fixed Re:** every run's enstrophy peaks and decays — the diffusive face
-  regularises, the debt is bounded (known finite-Re regularity, re-expressed).
-- **Sweep:** the peak debt **grows with Re**. Whether it stays finite as
-  `Re → ∞` (regularity) or diverges (blow-up) is exactly Clay, now phrased as
-  *"is the nonlinear `K_φ` cascade uniformly bounded in Re?"*.
+- **Reported finite runs:** enstrophy peaks and then decays over the sampled
+  trajectories. This does not prove continuum or infinite-time regularity,
+  even at those fixed positive viscosities.
+- **Reported sweep:** peak enstrophy grows with Re. Neither this finite trend
+  nor a divergent inviscid-limit trend establishes finite-time breakdown at a
+  fixed positive viscosity.
 
-This is the honest analogue of the Riemann coherence-budget measurement: a
-per-instance bound that is finite at every finite parameter, with the **uniform
-bound over the limiting parameter** left open.
+Matched `τ_str=νt` also changes the physical observation horizon as viscosity
+changes. Resolution, timestep and horizon are part of the comparison, not
+an independently established nodal time identification.
 
-## 5. Cross-program unification
+## 5. Reusable diagnostic pattern
 
-All three active programs now read on the same two-face machinery:
+Separating a total budget, its distribution across scales and the measured
+production/dissipation balance is useful for TNFR pattern-persistence studies.
+Those quantities must be rederived from the actual canonical evolution being
+tested. A shared spectral vocabulary does not identify fluid, arithmetic or
+neural state spaces or transfer a stability theorem between them.
 
-- **Riemann** — the conservative **pulse** `ω_k = √λ_k`; RH content = the
-  coherence budget of `S(T)`, bounded at the RMS level, sup open.
-- **EEG (empirical arm)** — real brain rhythms sit on the **conservative
-  (under-damped) face**; the local phase tetrad carries clinical state.
-- **Navier–Stokes** — linear part on the **diffusive (over-damped) face**; the
-  conservative content is the **nonlinear** cascade, bounded at fixed Re, the
-  `Re → ∞` bound open.
+## 6. Spectral moment hierarchy
 
-The face a system sits on is not assumed — it is **measured** by the engine's
-`verify_overdamped_projection` certificate.
+For the supplied Fourier fluid model, derivative-weighted energies form the
+hierarchy `M_p = Σ |k|^(2p) E_k` (`cascade_moment_hierarchy`). These Fourier
+weights are not the bounded eigenvalues of a normalized finite-graph `L_rw`:
 
-## 6. The λ-moment hierarchy — the synergy the old paradigm blocked
-
-The old diffusive-face program saw only the **scalar** enstrophy budget. The
-emergent modal basis (L_rw modes `λ_k`) unlocks the whole **λ-moment hierarchy**
-`M_p = Σ λ_k^p E(λ_k)` (`cascade_moment_hierarchy`):
-
-- `M_0` = energy — the **conservative-face budget**, bounded by Leray
-  (`M_0(t) ≤ M_0(0)`);
-- `M_1` = enstrophy — the classical blow-up quantity;
+- `M_0` = energy — nonincreasing for the unforced smooth continuum model;
+- `M_1` = enstrophy;
 - `M_2` = palinstrophy — weights the small-scale (high-`λ`) tail more.
 
-**Measured** (Taylor-Green at peak enstrophy, resolved points `k_max·η > 1`,
-Re 157→628, ×4): `M_0` **decreases** (×0.62 — the conservative budget is bounded),
+**Historically reported** (Taylor–Green at sampled peak enstrophy,
+Re 157→628, ×4): `M_0` **decreases** (×0.62),
 while `M_1` grows (×1.71) and `M_2` grows much faster (×11.3); the moment
-**ratios climb** with Re (`M_1/M_0`: 3.0→8.3; `M_2/M_1`: 3.0→19.8). **The wall
-climbs the λ-moment hierarchy.** In this basis Clay is exactly: *does the ladder
-`M_p` (`p ≥ 1`) stay uniformly bounded as `ν → 0` while `M_0` stays bounded?* — the
-canonical modal form of the classical `H^s` / Foias–Temam regularity ladder.
+**ratios climb** with Re (`M_1/M_0`: 3.0→8.3; `M_2/M_1`: 3.0→19.8). These
+are finite numerical read-outs, not an all-time bound on higher derivatives.
+The reported `k_max·η>1` flag is a heuristic: the implementation uses `n/2`,
+while nonlinear dealiasing uses a per-axis cutoff `floor(n/3)`. It is not a
+validated error bound or a proof that all relevant scales are resolved.
 Driver: `benchmarks/ns_moment_hierarchy_cascade.py`.
 
-**Closing the rung (measured).** The enstrophy rung is `dM_1/dt = P − 2ν M_2`
+**Balance diagnostic.** For smooth periodic unforced flow, the enstrophy
+balance is `dM_1/dt = P − 2ν M_2`
 (`moment_ladder_closure`), with the exact modal Cauchy–Schwarz coupling
-`M_1² ≤ M_0·M_2` (interpolation saturation `s = M_1²/(M_0 M_2) ∈ (0,1]`). Measured
-at peak (resolved Re 314→628): the rung is **self-consistent** — `P/(2ν M_2) ≈ 1`
-at the peak (`1.00`, `1.00`, `0.98`), confirming `dM_1/dt = 0` there; the
+`M_1² ≤ M_0·M_2` (interpolation saturation `s = M_1²/(M_0 M_2) ∈ [0,1]`
+when the denominator is positive). Historically reported
+at sampled peaks (Re 314→628), `P/(2ν M_2) ≈ 1`
+(`1.00`, `1.00`, `0.98`) is consistent with near balance of the two measured terms;
+it does not certify the numerical trajectory derivative. The
 interpolation saturation `s` **decreases** with Re (`0.57 → 0.42 → 0.38`) — the
-spectrum **spreads** across scales rather than concentrating (a
-regularity-favourable signal; `s ≤ 1` is exact); and in the growth phase
-`P/(2ν M_2) < 1` (`0.70 → 0.59 → 0.45`) — the dissipation dominates, so the ladder
-**closes at every accessible resolved Re**. The wall is thus relocated to the
-sharp question: *does the growth-phase closure ratio stay `< 1` as `Re → ∞`?* —
-undecidable from resolution-limited laminar/transitional data (`n ≥ 48–64` needed
-at high Re). Closing the rung uniformly in Re is exactly Clay.
+spectrum is less concentrated by this ratio. No regularity implication follows
+from that trend alone. Additional historical ratios (`0.70 → 0.59 → 0.45`)
+are below one. Under the displayed balance they indicate decreasing enstrophy,
+so the former label "growth phase" cannot substantiate growth or closure.
+Those records need timestamp/derivative reconciliation before further use.
+A sampled ratio below one is not a uniform differential estimate; even a
+uniform inviscid-limit estimate would require its own theorem and scope.
 
 **A scoped cross-program comparison.** The two programs admit a useful
 moment-ladder analogy:
@@ -127,11 +130,9 @@ moment-ladder analogy:
 | **Riemann** | RMS of `S(T)` — Selberg `√(log log T)` | sup of `S(T)` (the extremes) |
 | **NS** | energy `M_0` — Leray | enstrophy `M_1`, palinstrophy `M_2`, … |
 
-Each program asks for control of a high-moment tail, but the state spaces,
-operators and limiting parameters (`T` and `Re`) differ. The comparison does
+The state spaces, operators and quantified bounds differ. The comparison does
 not identify the two open problems or make one bound imply the other. The
-finite measurements localize their respective unresolved limits; they close
-neither.
+finite measurements close neither problem.
 
 ## 7. Static pressure coherence on the emergent geometry
 
@@ -151,7 +152,7 @@ state spaces, and it proves no common attractor. The compatibility key
 `at_equilibrium` means only that the snapshot's mean pressure magnitude lies
 within the selected `ΔNFR` tolerance while `dEPI` is held at zero.
 
-**Measured finite-resolution trend.** Applied independently to successive raw
+**Historically reported finite-resolution trend.** Applied to successive simulated
 vorticity snapshots, the score approaches one at the end of each sampled run
 (final `C_static = 0.995 → 0.9985` over Re 157→1257), while the minimum score
 decreases with Re (`0.94 → 0.90 → 0.84 → 0.72`). These numbers record flattening
@@ -162,24 +163,26 @@ fixed-graph pure-EPI diffusion to nonlinear Navier--Stokes dynamics.
 A falsifiable finite-resolution question is whether the observed minimum
 `C_static` remains above the selected telemetry floor `1/(π+1)` as resolution
 and Re increase. That threshold application is a diagnostic policy; it is not
-equivalent to the regularity criterion. The Clay problem still requires a
-uniform-in-Re nonlinear estimate. U2 remains a grammar policy, the structural
+equivalent to a regularity criterion. It supplies neither a fixed-viscosity
+global theorem nor an inviscid-limit bound. U2 remains a grammar policy, the structural
 energy is only a Lyapunov candidate outside proved model-specific cases, U5 is
 a hierarchy contract, and the REMESH analysis supplies no runtime infinity
 limit.
 
 ## 8. Honest scope
 
-This program does **not** claim a proof or a counterexample. The linear diffusive
-face is regular by construction; the open question is the **nonlinear** cascade
-bound as `Re → ∞`. No uniform-in-Re bound is produced. **Clay stays open.** The
-Reynolds/Kolmogorov resolution caveat of the old program persists: high-Re points
-need `n ≥ 48–64`; the measured trend over the accessible resolved range cannot fix
-the asymptotic scaling.
+This program supplies finite observations of an imported PDE solver and
+auxiliary comparisons. It does not derive fluid velocity, vorticity,
+incompressibility or vortex stretching from TNFR. The open fixed-viscosity
+global problem and the separate inviscid-limit question remain unresolved.
+Higher resolution alone would not supply an analytic proof or a verified
+continuum error bound. Existing compatibility names and older source docstrings
+must be read within these limits; this documentation correction changes no
+solver, test or historical telemetry.
 
 ## 9. Code map
 
-- `src/tnfr/navier_stokes/operator.py` — faithful pseudo-spectral 3D NS
+- `src/tnfr/navier_stokes/operator.py` — auxiliary pseudo-spectral 3D NS
   integrator (`TNFRNavierStokes`) + `build_torus_graph_3d` +
   `taylor_green_initial_condition_3d`.
 - `src/tnfr/navier_stokes/conservative_face.py` — `verify_diffusive_face`,

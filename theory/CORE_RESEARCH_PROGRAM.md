@@ -5,16 +5,20 @@ Every line begins open and changes status only through a scoped derivation,
 counterexample or reproducible measurement. The nodal equation and existing
 operator contracts remain authoritative.
 
-The [post-B75 strategic review](NODAL_RESEARCH_STRATEGY.md) prioritizes
-measurement validity, held-out nodal predictions, sufficient reduced state
-and fixed-target restoration. C6 remains a separate bounded proof branch;
-its indefinite closure is not a prerequisite for a scoped laboratory test.
+The [strategic review](NODAL_RESEARCH_STRATEGY.md) prioritizes generative
+coherence: formation, persistence and interaction of regions under declared
+nodal dynamics. Measurement validity and held-out prediction remain the
+supporting physical bridge. C6 remains a separate parked proof branch;
+its indefinite closure is not a prerequisite for a scoped regional study.
 The [portfolio](../TNFR_lineas_de_investigacion.txt) classifies the research
 axes; the [five-stage plan](research/FIVE_STAGE_EXECUTION_PLAN.md) alone owns
 active execution order and status. This document remains the technical S1-S16
-evidence inventory, not a parallel task queue. Existing empirical interfaces require
-abstention and calibration/evaluation repairs before their output can support
-the proposed physical claims; no new empirical result is asserted here.
+evidence inventory, not a parallel task queue. P1 has implemented abstention
+and calibration/evaluation separation; physical model admission remains open.
+No new empirical result is asserted here. The
+[regional reuse review](NODAL_RESEARCH_STRATEGY.md#region-formation-integrated-reuse-and-missing-mechanisms)
+connects these existing S-lines without reopening completed closure or
+selection tests.
 
 | Line | Question | Current status |
 | --- | --- | --- |

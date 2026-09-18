@@ -1,11 +1,11 @@
 # Memory derived by observing groups of EPI nodes
 
-**Status:** Exact fixed-generator elimination, P5 finite-history error bounds,
-and nested P5 orbit closure with an obstruction to direct REMESH substitution;
+**Status:** Exact fixed-generator elimination, captured-affine closure and minimal linear realizations,
+P5 finite-history error bounds, and nested P5 orbit closure with an obstruction to direct REMESH substitution;
 exact controls and finite numerical/runtime observations. General multichannel
 closure and broader memory-to-operator realizations remain open.
 **Research links:** B2/O4.a, S3, S8, S9 and S16.
-**Date:** 2026-09-14.
+**Updated:** 2026-09-18.
 **Implementation:** [epi_memory.py](../src/tnfr/physics/epi_memory.py), using the
 reversible partition geometry in
 [structural_morphism.py](../src/tnfr/physics/structural_morphism.py).
@@ -989,3 +989,394 @@ nodal coarse-graining, retained structural information and declared temporal
 echoes. It supplies no physical dataset, laboratory confirmation or new
 fundamental parameter, and it leaves broader derived memory-to-operator
 realizations open.
+
+## 10. Exact affine closure on a captured forced support
+
+The same projection criterion applies to the held canonical channels in
+[FORCED_SUPPORT_BALANCE.md](FORCED_SUPPORT_BALANCE.md). With that reference's
+independently captured forcing `F`, positive EPI coefficient `e`, positive
+capacities and connected symmetric conductance, write
+
+`x' = -A*x+b`, `A=e*diag(nu)*D^-1*B`, `b=diag(nu)*F`, `H=diag(d/nu)`.
+
+All coefficients are exact rationals on the declared materialized inputs;
+`H*A=e*B`. In particular, constructing `A` does not require writing a rounded
+`e*nu` into a new graph. The partition geometry `P,R,Q` is that of Section 2,
+with `Hbar=P^T*H*P`. No forcing is inferred from a measured derivative.
+
+### 10.1 Projected autonomy and affine lift invariance differ
+
+For `y=R*x` and `eta=Q*x`, direct projection gives
+
+$$
+\dot y=-RAPy-RA\eta+Rb,\qquad
+\dot\eta=-QAPy-QAQ\eta+Qb.
+$$
+
+Therefore an affine law for `y` valid for **every** microscopic EPI state is
+available precisely when `R*A*Q=0`. The projected law is then
+`y'=-R*A*P*y+R*b`. A known constant `R*b` is allowed, and `Q*b` need not vanish:
+hidden coordinates may be driven without feeding back into the observed ones.
+By reversibility, `R*A*Q=0` is equivalent to `Q*A*P=0`, as in Section 4.
+In contrast, invariance of the entire lifted affine state space additionally
+requires `Q*b=0`. These are separate claims.
+
+If column `j` of `R*A*Q` is nonzero, choose `v=Q*e_j`, where `e_j` is a
+coordinate basis vector. The two detached states `x` and `x+v` satisfy
+
+$$
+R(x+v)=Rx,\qquad
+R[-A(x+v)+b]-R[-Ax+b]=-RAQe_j\ne0.
+$$
+
+This gives an exact same-observation/different-rate obstruction. The witness
+belongs to the declared unrestricted scalar model; it is not a fabricated
+runtime history or a certificate of operator, clipping or chart admission.
+
+### 10.2 Derived memory and the current relative profile
+
+Let `C=Q*A*P` and retain the zero-lag kernel `K(0)=R*A*Q*A*P`. The existing
+Section 4 identity becomes
+
+$$
+\bar H K(0)=C^\top HC\succeq0.
+$$
+
+Positive `H` implies `K(0)=0` exactly when `C=0`. Thus a nonzero closure
+defect already establishes a nonzero derived memory kernel at zero lag,
+without a matrix exponential, fitted delay or extra constitutive term.
+It does not specify a finite-memory approximation or certify its error.
+
+For the current held reference, let `z` be its centered relative profile,
+`m_H(x)` its weighted mean, and `vbar` its mean drift. Its established balance
+`-A*z+b=vbar*1` implies
+
+`u=x-m_H(x)*1-z`, `u'=-A*u`.
+
+Section 3's homogeneous elimination can therefore be used on `u` while keeping
+the captured forcing visible in the change of coordinates. Applying a pure-EPI
+memory formula directly to forced raw `x` would omit a real source. An older
+reference used to score retention is not substituted for the current model's
+centering: after a profile-changing event, that older error has its own source.
+
+### 10.3 Observer changes at a structural event
+
+Across a same-EPI event that changes the metric, the family averages satisfy
+
+`y1-y0=(R1-R0)*x`.
+
+This is a change of observation weights, not EPI motion. Current-model centered
+observations additionally change by the mean and profile reset:
+
+`R1*u1-R0*u0=(R1-R0)*x-(m1-m0)*1-(R1*z1-R0*z0)`.
+
+These identities require the same ordered nodes and partition and the stated
+unchanged EPI. They do not certify an operator event or replace its retained
+execution evidence. The original `z0/H0` retention score remains a separate
+fixed observable throughout.
+
+The closure claim concerns this fixed affine EPI model. A closed macro NFR for
+phase, capacity, changing support and operator policy needs their corresponding
+closure results too. In particular, actual parent-child fibers have internal
+edges and can have unequal capacities; the sufficient phase-quotient hypotheses
+cannot be assumed merely because an EPI projection is defined.
+
+### 10.4 Implementation and evidence boundary
+
+`observe_forced_support_closure` in
+[`epi_memory.py`](../src/tnfr/physics/epi_memory.py) rebuilds the reference through
+the existing forced-support owner and materializes the shared reversible
+geometry over exact fractions. It verifies the projection, weighted adjoint,
+Gram, affine-rate and current-profile identities and returns a deterministic
+same-observation/different-rate witness when closure fails. Its proper
+partition domain matches the existing EPI geometry: at least two nonempty
+blocks, strictly fewer blocks than nodes, and each ordered node used once.
+
+The observer reuses the existing rational matrix product and profile arithmetic.
+It neither changes the previous numerical memory API nor makes its approximate
+exponential a certified propagator. The floating-point projection/lift checks
+retain the existing structural-morphism residual and tolerance policy; their
+flags remain distinct from exact zero tests. No new delay, force, operator or
+runtime certificate is introduced.
+
+[Exact controls](../tests/physics/test_forced_epi_closure.py) include both closed
+and nonclosed partitions, retained nonzero forcing, invalid domains and stale
+cached reference fields. An affine control with `R*A*Q=0` but `Q*b!=0` verifies
+that projected closure is not confused with lifted affine invariance. The
+actual generated-family application is owned by
+[THOL_BIRTH_AND_TRANSPORT.md](THOL_BIRTH_AND_TRANSPORT.md#14-state-sufficiency-of-actual-parent-child-families).
+
+## 11. Minimal linear state retaining a declared observation
+
+The failure of instantaneous closure does not specify how much additional
+information is needed. For the same fixed affine nodal model `x'=-A*x+b`
+and partition observation `y=R*x`, define the increasing row spaces
+
+$$
+\mathcal O_k=\operatorname{rowspan}(R,RA,\ldots,RA^k).
+$$
+
+Every coefficient comes from the retained nodal generator and observation;
+these are derived observations, not added physical channels. The forcing `b`
+is known and fixed. It affects the reduced affine source but not these spaces.
+
+### 11.1 Complete-level stabilization and minimality
+
+If `O_k=O_(k-1)`, right multiplication by `A` maps every generating row of
+`O_(k-1)` into `O_k`, so the stabilized space is invariant. No later power
+adds a direction. The check must process an entire level `R*A^k`; a dependent
+first row does not imply that the remaining rows are dependent. Finite
+dimension ensures stabilization, with rank at most the microscopic dimension.
+
+Choose independent rows of the stabilized space to form `C`, with rank `r`.
+Consider any competing all-state linear observation `s_tilde=L*x` that retains
+the output and admits closed affine dynamics. Its identities must satisfy
+`R=D_tilde*L` and `L*A=G_tilde*L`; its constant source is `L*b`.
+Consequently its row space contains `R` and all `R*A^k`. Thus
+`rank(L)>=r`. Constructing a closed observation of dimension `r` attains this
+bound. This extends the [P5 argument](#93-minimality-of-the-retained-linear-state)
+to the admitted held references without a single-seed or scalar-moment proxy.
+
+### 11.2 Exact affine realization
+
+Select `r` independent columns `J` of `C`. Let `I_J` embed the corresponding
+coordinate vectors into the microscopic state space and define
+
+$$
+T=I_J(C_J)^{-1},\qquad G=CAT,\qquad D=RT.
+$$
+
+Then `C*T=I`. Row-space invariance and output inclusion give the full identities
+`C*A=G*C` and `R=D*C`. Therefore
+
+$$
+s=Cx,\qquad \dot s=-Gs+Cb,\qquad y=Ds.
+$$
+
+This realization is exact for all scalar initial states in the held model.
+The known source needs no extra fitted coefficient or added constant state.
+If `r` equals the microscopic dimension, `C` is invertible: the realization
+is a change of coordinates, with no state compression. Otherwise, different
+microscopic states can share `s` while having identical output evolution.
+
+Rows selected from `R*A^k` can contain signed, nonlocal coefficients and
+different powers of the existing structural rate. They must not be read as
+ordinary new NFRs with an independently established phase/capacity triad.
+In particular, the pivot right inverse `T` is an algebraic section, not an
+automatically admissible graph state or an H-orthogonal nodal lift.
+
+### 11.3 Scope and implementation
+
+`observe_forced_support_realization` in
+[`epi_memory.py`](../src/tnfr/physics/epi_memory.py) first reuses the exact
+forced-support closure observer. It selects independent rows in deterministic
+power/row order, tests complete-level stabilization, selects pivot columns,
+and verifies the full realization identities. The shared
+[`exact_rank`](../src/tnfr/mathematics/krylov.py), rectangular matrix product
+and rational inverse supply the arithmetic. Numerical rank is not a fallback.
+
+The rank-call limit is an operational work guard, not a TNFR scale. Exhaustion
+must report incomplete computation and return no successful realization.
+Rank-call and matrix-product counts, processed levels and retained coefficient
+bit sizes describe the calculation; they do not bound every intermediate
+allocation or the cost inside rational elimination.
+
+Full rank excludes proper all-state linear compression preserving this exact
+`R` on this fixed model. It does not exclude approximate observations, restricted
+reachable-state descriptions, nonlinear reductions or a history representation.
+Nor does exact invertibility certify a well-conditioned numerical reconstruction.
+Changes of support, capacity or source need new model admission and separate
+event accounting. Autonomous maintenance and physical identification remain
+outside this theorem.
+
+### 11.4 Full-EPI Euler prediction in the sufficient coordinates
+
+When `C` has full microscopic rank, all EPI coordinates are available without
+an approximation. For declared durations `h_k`, the shared Euler arithmetic
+gives a detached forecast
+
+$$
+s_{k+1}=s_k+h_k(-Gs_k+Cb),\qquad
+x_{k+1}=Ts_{k+1}=(I-h_kA)x_k+h_kb.
+$$
+
+`predict_forced_support_realization_euler` rebuilds the held reference and
+realization, requires full rank, and checks the encoding, rates, outputs and
+fine-coordinate recurrence at every frame. It reuses
+[`euler_update`](../src/tnfr/dynamics/_euler_kernel.py) with rational operands;
+it neither writes a graph nor replaces the canonical runtime integrator.
+Known forcing remains explicit and no observed future endpoint is accepted
+as input. Durations are nonnegative, with zero giving an identity. A step
+outside the convex range still defines an exact Euler formula, with a false
+convex-step flag rather than a claim of stability. Bounded step materialization
+and the rank-call guard return no partial successful forecast on exhaustion.
+
+The forecast is exact for this declared discretization. It is not the exact
+continuous solution, a binary64 trajectory or a causal guarantee that a caller
+retained it before execution. A runtime comparison must separately establish
+chronology, model constancy and its actual numerical defects.
+
+For a matched held-model runtime segment, the existing
+[`observe_forced_support_step`](../src/tnfr/physics/forced_support.py) separates
+the stored-pressure defect `epsilon_k` from the endpoint integration defect
+`delta_k`. With `M_k=I-h_k*A`, the actual endpoint obeys
+
+$$
+x_{k+1}^{\rm run}=M_kx_k^{\rm run}+h_kb+r_k,\qquad
+r_k=h_k\operatorname{diag}(\nu)\epsilon_k+\delta_k.
+$$
+
+If the forecast starts at the same EPI, its discrepancy satisfies
+`e_0=0`, `e_(k+1)=M_k*e_k+r_k`. In the sufficient chart it is exactly `C*e_k`.
+This vector propagation is stronger information than an energy telescope;
+it does not erase a nonzero measured discrepancy or certify continuous-time
+solver accuracy. Graph-owned execution evidence supplies the runtime link.
+
+For two branches with the same held `A,b`, the source cancels in their
+difference `d=x_perturbed-x_control`:
+
+`d_(k+1)=M_k*d_k+r_k_perturbed-r_k_control`.
+
+The H-weighted mean offset is conserved in the ideal recurrence because
+`(H*1)^T*M_k=(H*1)^T`. The centered spatial difference can contract while this offset
+persists. The original fixed-target error, full EPI separation, mean offset
+and centered energy are therefore distinct observables. A return in EPI also
+would not erase an operator's history or lineage metadata. Such calculations
+concern all EPI coordinates of a held model, not autonomous closure of the
+full phase/capacity/support/operator dynamics.
+
+[Prediction tests](../tests/physics/test_forced_epi_prediction.py) use independent
+fine-coordinate rational updates, positive and zero steps, explicit forcing,
+incomplete observations and work-limit failures. The causal application is
+owned by [THOL full-state response](THOL_BIRTH_AND_TRANSPORT.md#16-full-epi-response-to-one-child-emission).
+
+### 11.5 A held-model forecast versus a composite runtime step
+
+A full runtime step may apply glyphs and change phase, capacity or support.
+The old held forecast then remains a counterfactual, not a prediction of the
+changed dynamics. Its discrepancy must not be classified entirely as
+numerical error.
+
+On one unchanged ordered node space, let `x0` be the pre-step EPI, `xg` the
+actual integrator input, `xi` its output and `xf` the final runtime state.
+The frozen model supplies `f0(x)=-A0*x+b0`, `M0=I-h*A0` and
+`xhat=x0+h*f0(x0)`. Write `j=xg-x0`, let `rg=diag(nu_g)*p_stored` be the
+stored nodal base at integrator entry, and define `delta=xi-xg-h*rg` and
+`a=xf-xi`. Gamma or extended dynamics can contribute beyond that base.
+Direct substitution gives the exact vector identity
+
+$$
+x_f-\widehat x=M_0j+h\{f_g(x_g)-f_0(x_g)\}
+ +h\{r_g-f_g(x_g)\}+\delta+a.
+$$
+
+Here `fg=diag(nu_g)*(e_g*grad_EPI+F_g)` is the current rate realization when
+the shared forcing observer admits its actual pre-integrator support, capacity
+and independently captured non-EPI channels. It needs no equilibrium/profile
+solve; a current relative profile can be unavailable while this rate is still
+defined. If `p_kernel` is the separately read fresh
+binary64 pressure and `p_model` its exact represented-coefficient model,
+the third term separates further into
+
+`h*diag(nu_g)*(p_stored-p_kernel)` and
+`h*diag(nu_g)*(p_kernel-p_model)`.
+
+The first difference includes intentional glyph pressure writes and stale
+stored pressure; it is not merely rounding. The term `delta` is an integration
+residual until the actual solver, held inputs, clipping, Gamma and extended
+dynamics justify a narrower interpretation. The post-integrator term includes
+any later EPI writes. Later phase/capacity changes can affect future evolution
+even when this step's post-integrator EPI term is zero.
+
+If the current affine model is inadmissible but the node space remains the
+same, the coarser identity
+`xf-xhat=j+h*(rg-f0(x0))+delta+a` still holds. If node identity or order changes,
+neither vector comparison is silently extended by padding or an invented
+projection. These are finite algebraic accounts of observed boundaries,
+not causal ablation experiments, future stability bounds or a proof that
+runtime policies follow from the bare nodal equation. Multiplication by the
+original `C` merely expresses the same identity in its retained coordinates.
+
+### 11.6 Conditional paired evolution under common Coherence
+
+For two branches on the same fixed support/capacity, suppose the actual
+pressure-generation boundary has the same EPI coefficient and non-EPI source,
+and each node subsequently receives exactly one IL with common retention
+`a`, followed by one Euler step of duration `h`. Between pressure generation
+and integration, no write changes EPI, capacity or support, and there is no
+intervening pressure refresh or pressure writer other than the declared IL.
+The existing IL pressure
+owner computes `p_after=RN(a*p_before)`; `a` is the configured operator factor,
+not a newly fitted coefficient or an actual capacity update.
+
+Let `p_before=-e*L*x+F+epsilon_p`, let `epsilon_IL` be the signed difference
+between stored post-IL pressure and exact `a*p_before`, and keep the actual
+integration remainder and post-integration EPI writes separate. Subtracting
+the two nodal updates gives
+
+$$
+d_+=(I-haA)d+h\operatorname{diag}(\nu)
+       (a\Delta\epsilon_p+\Delta\epsilon_{\rm IL})
+       +\Delta\delta_{\rm int}+\Delta j_{\rm post},
+\qquad A=e\operatorname{diag}(\nu)L.
+$$
+
+The common forcing cancels at its actual generation boundary. Phase changes
+after generation do not retroactively refresh the stored pressure. A new
+step needs new admission of its generated source, policy, support and
+capacity; common endpoint phases alone do not authenticate those intermediate
+conditions. Unseparated Gamma, clipping or extended dynamics remain in the
+integration remainder, not silently in a rounding term.
+
+For the [single native witness](THOL_BIRTH_AND_TRANSPORT.md#17-one-native-composite-runtime-response),
+IL also leaves phase unchanged and the common captured source can be bound
+at integrator entry. The represented retention is exactly
+`854047988748571/1125899906842624` (about `0.7585469929947761`). Independent
+arithmetic checks the paired formula with maximum absolute residual
+`3.531e-17`, fully separated into its observed components. This conditional
+finite identity does not prove future class invariance, a uniform numerical
+error bound or maintenance of either individual target profile.
+
+When these conditions hold over a finite sequence, the same identity can be
+composed step by step, re-admitting each generated source and consumed state.
+No common source need be constant in time for it to cancel between branches.
+That cancellation says nothing about preservation of an individual fixed
+profile: its compatibility residual `P_H*(b_k-A_k*z0)` can change even when
+the two branches share `b_k` exactly. The target-compatibility observer in
+[forced_support.py](../src/tnfr/physics/forced_support.py) owns that separate
+test. IL scales the entire stored pressure in this restricted route, including
+both the EPI transport contribution and the common source. It is not an
+additional EPI reset, nor does its presence alone prove faster relaxation.
+
+### 11.7 EPI resets with pre-generated pressure
+
+The same nodal accounting identifies a distinct conditional model when a
+glyph changes EPI but preserves pressure already generated at `x`.
+Suppose a declared ideal affine reset is `J(x)=S*x+c`, the ordered node space
+and capacity remain fixed, and the following Euler call consumes the original
+pressure for `f(x)=-A*x+b`. Before numerical and clipping defects,
+
+`x_next=S*x+c+h*(-A*x+b)`.
+
+This follows by adding the reset displacement and the nodal increment.
+It is not Euler with refreshed pressure at `J(x)`. The pre-generated result
+minus the refreshed result is exactly `h*A*(J(x)-x)`. For two branches with
+the same admitted `S,c,A,b`,
+
+`d_next=(S-h*A)*d`.
+
+For sequential Reception, `S` is the ordered product of the individual
+neighbor-blend rows, because later targets read earlier EPI writes. It is not
+the simultaneous immutable-snapshot stage matrix. For a common unclipped
+Emission boost, `S=I` and `c` cancels between branches, giving
+`d_next=(I-h*A)*d`. Neither expression is the pressure-scaled common-IL map.
+
+A runtime link still requires the actual per-node order, scalar chart, mix,
+neighbor readouts, clipping domain, unchanged pressure and integration
+boundaries. The observed reset defect and its propagation through later
+Reception rows, pressure-generation defect, integration remainder and later
+EPI writes remain separate. These formulas neither make the complete
+binary64 reset globally affine nor supply a global gain. The
+[retained five-step window](THOL_BIRTH_AND_TRANSPORT.md#18-five-additional-native-policy-steps)
+provides candidate records for this next admission task; its current common-IL
+observer correctly declines the EN and AL steps.

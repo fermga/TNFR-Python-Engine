@@ -31,19 +31,19 @@ contracts are centralized in [API Contracts](../docs/API_CONTRACTS.md).
 | [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md) | Stability diagnostics and invariant monitoring |
 | [TNFR_DIFFUSION_STABILITY_THEOREM.md](TNFR_DIFFUSION_STABILITY_THEOREM.md) | Fixed/time-varying and exact-common-metric EPI diffusion, exact reversible single-eigenmode Euler theorem, finite executor binding with full-matrix defect propagation, directed transient criterion, and conditional affine hybrid bounds |
 | [TNFR_SCALE_GEOMETRY_AND_BRIDGE.md](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) | Pure-EPI quotient, coherence geometry, decoupled metriplectic bridge, and restricted S16 endpoint/path certificates |
-| [DERIVED_EPI_MEMORY.md](DERIVED_EPI_MEMORY.md) | Exact projected memory, P5 finite-history error bounds, minimal reflection quotient, REMESH transport/energy split and direct-echo substitution obstruction |
+| [DERIVED_EPI_MEMORY.md](DERIVED_EPI_MEMORY.md) | Exact projected memory, affine closure, minimal linear realizations, full-EPI Euler prediction and conditional common-IL response; P5 finite-history bounds/minimal quotient and REMESH comparison |
 | [COUPLING_WINDING_PERSISTENCE.md](COUPLING_WINDING_PERSISTENCE.md) | Restricted canonical Coupling gap diffusion, winding protection, loss under Transition, and finite runtime boundaries |
 | [CAPACITY_LOCALIZATION_BALANCE.md](CAPACITY_LOCALIZATION_BALANCE.md) | Shifted EPI/capacity diffusion, conditional nonuniform equilibria, operator release and finite-mobility retention controls |
 | [CYCLE_SUPPORT_DYNAMICS.md](CYCLE_SUPPORT_DYNAMICS.md) | Joint phase/capacity/EPI balance, operator reset and nodal-flow energy budgets, and retained contrast under a finite reorganization clock |
 | [CYCLE_MEMORY_RELAXATION.md](CYCLE_MEMORY_RELAXATION.md) | Positive-capacity cycle diffusion supplies an exact REMESH history contraction gain; finite admitted delayed-memory and memory-free controls |
 | [THOL_PRESSURE_FEEDBACK.md](THOL_PRESSURE_FEEDBACK.md) | Shared history-driven THOL pressure, refresh/integration budgets and the disconnected-child feedback boundary |
-| [THOL_BIRTH_AND_TRANSPORT.md](THOL_BIRTH_AND_TRANSPORT.md) | Causal THOL birth, admitted parent-child coupling, candidate controls and exact changed-conductance/Euler budgets |
+| [THOL_BIRTH_AND_TRANSPORT.md](THOL_BIRTH_AND_TRANSPORT.md) | Causal birth and UM/transport, distributed feedback, frozen-profile response, exact sixteen-coordinate state, native mixed-policy response, retained EN/AL accounting and relative-phase ordering sensitivity |
 | [FORCED_SUPPORT_BALANCE.md](FORCED_SUPPORT_BALANCE.md) | Exact frozen-support compatibility, drifting relative profiles and nonlinear forcing/step-defect observations |
 | [CHILD_COUPLING_FEEDBACK.md](CHILD_COUPLING_FEEDBACK.md) | Child-target Coupling, exact changes of reference and a fixed original-profile comparison |
 | [PHYSICAL_REGIME_CORRESPONDENCES.md](PHYSICAL_REGIME_CORRESPONDENCES.md) | Scoped comparisons with diffusive, inertial and modal regimes |
 | [GAUGE_SYMMETRY_AND_UNIFICATION.md](GAUGE_SYMMETRY_AND_UNIFICATION.md) | Gauge and polarization models |
 | [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) | Derived field quantities |
-| [EMERGENT_ONTOLOGY.md](EMERGENT_ONTOLOGY.md) | Structural interpretations; analogies remain explicitly non-physical |
+| [EMERGENT_ONTOLOGY.md](EMERGENT_ONTOLOGY.md) | NFR formation reuse map (Section 1.1), scoped structural results and auxiliary comparisons; physical emergence remains open |
 
 ## Arithmetic structure
 
@@ -63,15 +63,16 @@ contracts are centralized in [API Contracts](../docs/API_CONTRACTS.md).
 
 Start with the [research portfolio](../TNFR_lineas_de_investigacion.txt) to
 distinguish primary axes, supporting mechanisms and deferred programmes.
-Only the [five-stage execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md)
+Only the [nodal execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md)
 owns the active queue and stage status. The linked domain notes below retain
 their research scope; listing them does not activate concurrent campaigns.
 
 | Program | Document |
 | --- | --- |
 | Core dynamics S1-S16 | [CORE_RESEARCH_PROGRAM.md](CORE_RESEARCH_PROGRAM.md) |
-| Single active execution plan, P1-P5 | [research/FIVE_STAGE_EXECUTION_PLAN.md](research/FIVE_STAGE_EXECUTION_PLAN.md) |
-| Post-B75 nodal strategy and laboratory admission | [NODAL_RESEARCH_STRATEGY.md](NODAL_RESEARCH_STRATEGY.md) |
+| Primary generative research and supporting P1-P5 measurement bridge | [research/FIVE_STAGE_EXECUTION_PLAN.md](research/FIVE_STAGE_EXECUTION_PLAN.md) |
+| P2 passive-transport measurement protocol and admission gaps | [research/PASSIVE_TRANSPORT_PROTOCOL.md](research/PASSIVE_TRANSPORT_PROTOCOL.md) |
+| Nodal strategy, regional mechanism reuse and laboratory admission | [NODAL_RESEARCH_STRATEGY.md](NODAL_RESEARCH_STRATEGY.md) |
 | Riemann and spectral ladders | [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) |
 | Navier-Stokes | [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) |
 | Yang-Mills | [TNFR_YANG_MILLS_RESEARCH_NOTES.md](TNFR_YANG_MILLS_RESEARCH_NOTES.md) |

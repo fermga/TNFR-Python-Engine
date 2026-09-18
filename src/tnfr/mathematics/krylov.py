@@ -1,11 +1,23 @@
 r"""Exact Krylov and Hankel rank utilities (R2 arithmetic-pulse support).
 
-For an operator ``L`` and a seed vector ``v`` the moment sequence
-``μ_m = vᵀ Lᵐ v`` obeys a linear recurrence whose order is the **Krylov
-dimension** ``dim span{v, Lv, L²v, …}`` — equivalently (Kronecker's theorem) the
-rank of the Hankel matrix ``H_{ij} = μ_{i+j}``.  These functions compute both
-**exactly** over ℚ using :class:`fractions.Fraction`, so a small theorem case has
-no floating-point ambiguity; the caller supplies rational ``L`` and ``v``.
+For rational ``L`` and seed ``v``, the reachable Krylov dimension is
+``dim span{v, Lv, L²v, …}``. The scalar moment sequence ``μ_m = vᵀ Lᵐ v``
+also depends on the output ``vᵀ``: its full Hankel rank counts the reachable
+part visible to that output and can be smaller. For example,
+``L = [[0, 0], [-1, 1]]`` and ``v = [1, 0]`` give Krylov dimension two but
+moments ``(1, 0, 0, ...)`` and Hankel rank one.
+
+Equality holds for a real symmetric operator with the same nonzero seed as
+input and output, or more generally when the output is observable on the
+reachable subspace. The pointed circulant arithmetic fixtures establish
+their own equality through nonzero Fourier participation in both input and
+output. A reversible operator needs its appropriate metric or a separately
+proved observability condition; these functions do not infer one.
+
+The functions compute ranks separately over ℚ using :class:`fractions.Fraction`.
+A user-shortened moment sequence can undercount the full Hankel rank. The
+caller supplies rational inputs; no physical-state or particle interpretation
+follows from these finite linear-algebra identities.
 """
 
 from __future__ import annotations

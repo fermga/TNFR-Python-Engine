@@ -6,8 +6,10 @@ an execution. Stored pressure may include phase, operator writes or stale
 values; it is never silently identified with pure EPI diffusion.
 """
 
+from collections.abc import Mapping, Set
 from dataclasses import dataclass
 from fractions import Fraction
+from itertools import islice
 
 from .._exact_time import exact_or_represented_real, finite_represented_real
 from ..alias import get_attr
@@ -20,6 +22,7 @@ __all__ = [
     "SupportTransportSnapshot", "SupportTransportReset", "SupportTransportEuler",
     "observe_support_transport", "observe_support_transport_reset",
     "observe_support_transport_euler",
+    "RegionalSupportBalance", "observe_regional_support_balance",
 ]
 
 
@@ -155,6 +158,159 @@ def _rebuild(value):
     # Detached public fields are data, not provenance. Recompute all caches.
     return _from_data(value.nodes, value.conductance, value.support_neighbors,
                       value.epi, value.capacity, value.stored_pressure)
+
+
+@dataclass(frozen=True)
+class RegionalSupportBalance:
+    """Instantaneous regional balance in one fixed full-graph model.
+
+    ``centered_epi`` follows ``region``; all other nodal vectors and edge
+    indices retain ``source.nodes`` order. ``internal_dissipation`` is
+    nonnegative and enters the variance rate with a minus sign. Signed cut
+    work, explicit forcing and stored-pressure defects remain separate.
+    ``mass_*`` fields refer only to the H-weighted EPI total, not physical
+    mass. Region and metric are fixed; their changes require separate budgets.
+    Public data fields authenticate neither their origin nor a trajectory.
+    """
+
+    source: SupportTransportSnapshot
+    region: tuple
+    environment: tuple
+    region_indices: tuple[int, ...]
+    epi_weight: Fraction
+    forcing: Vector
+    strengths: Vector
+    metric_weights: Vector
+    regional_weight: Fraction
+    weighted_total: Fraction
+    mean: Fraction
+    variance: Fraction
+    centered_epi: Vector
+    cut_edges: tuple
+    outward_cut_current: Fraction
+    model_pressure: Vector
+    stored_pressure_defect: Vector
+    mass_boundary_rate: Fraction
+    mass_forcing_rate: Fraction
+    mass_defect_rate: Fraction
+    model_mass_rate: Fraction
+    stored_mass_rate: Fraction
+    model_mass_identity_residual: Fraction
+    mass_identity_residual: Fraction
+    internal_dissipation: Fraction
+    variance_boundary_rate: Fraction
+    variance_forcing_rate: Fraction
+    variance_defect_rate: Fraction
+    model_variance_rate: Fraction
+    stored_variance_rate: Fraction
+    model_variance_identity_residual: Fraction
+    variance_identity_residual: Fraction
+    scope: str
+
+
+def observe_regional_support_balance(snapshot, region, *, epi_weight, forcing):
+    r"""Resolve a region's exact total and centered-variance rate.
+
+    For fixed symmetric conductance W, full row strengths d, positive nu
+    and e, let H_i=d_i/nu_i and xdot_i=nu_i*(-e*(B*x)_i/d_i+F_i).
+    With M_S=sum_S H_i*x_i, m_S=M_S/sum_S H_i and z_i=x_i-m_S,
+
+    Mdot_S = -e*sum_cut W_ij*(x_i-x_j) + sum_S d_i*F_i,
+
+    Edot_S = -e*sum_internal W_ij*(x_i-x_j)^2
+             -e*sum_cut W_ij*z_i*(x_i-x_j) + sum_S d_i*z_i*F_i,
+
+    where E_S=sum_S H_i*z_i^2/2, internal edges are counted once, and cut
+    edges point from S to its complement. Centering contributes no further
+    term because sum_S H_i*z_i=0. For stored nodal pressure, the additional
+    terms are sum_S d_i*epsilon_i and sum_S d_i*z_i*epsilon_i, respectively,
+    with epsilon=stored_pressure-model_pressure.
+
+    ``mass_*`` names denote the H-weighted EPI total, without a physical-mass
+    interpretation. The identities hold for fixed region and metric, so no
+    Hdot or membership-change term is included; changes need separate budgets.
+
+    ``region`` is an ordered, distinct, proper nonempty selection of node
+    IDs. All coefficients, outside nodes and weights remain from the full
+    snapshot; no induced-subgraph normalization is performed. Positive full
+    strengths and capacities are required, but global or regional connectivity
+    is not. Loops contribute to d and have zero flux. The snapshot is rebuilt
+    from primitive fields before reading its caches. This observer does not
+    evolve a graph, solve a profile, refresh pressure, fit F, or establish
+    regional formation, persistence, causal execution or future closure.
+    """
+    source = _rebuild(snapshot)
+    size = len(source.nodes)
+    if isinstance(region, (str, bytes, bytearray, Mapping, Set)):
+        raise TypeError("region must be an ordered selection of node IDs")
+    try:
+        selected = tuple(islice(iter(region), size))
+    except TypeError as exc:
+        raise TypeError("region must be an ordered selection of node IDs") from exc
+    if not selected or len(selected) >= size:
+        raise ValueError("region must be a proper nonempty subset of source nodes")
+    try:
+        if len(set(selected)) != len(selected):
+            raise ValueError("region nodes must be distinct")
+        lookup = {node: i for i, node in enumerate(source.nodes)}
+        indices = tuple(lookup[node] for node in selected)
+    except (KeyError, TypeError) as exc:
+        raise ValueError("region nodes must belong to the source node space") from exc
+    selected_indices = set(indices)
+    environment = tuple(node for i, node in enumerate(source.nodes) if i not in selected_indices)
+    e = exact_or_represented_real(epi_weight, "epi_weight")
+    f = ordered_vector(forcing, "forcing")
+    if len(f) != size:
+        raise ValueError("forcing must match the full source node order")
+    strengths = [Fraction(0) for _ in source.nodes]
+    for i, _, weight in source.conductance:
+        strengths[i] += weight
+    if e <= 0 or any(d <= 0 for d in strengths) or any(nu <= 0 for nu in source.capacity):
+        raise ValueError("regional metric requires positive full strengths, capacities and EPI weight")
+    d = tuple(strengths)
+    h = tuple(di/nu for di, nu in zip(d, source.capacity, strict=True))
+    regional_weight = sum((h[i] for i in indices), Fraction(0))
+    total = sum((h[i]*source.epi[i] for i in indices), Fraction(0))
+    mean = total/regional_weight
+    centered = tuple(source.epi[i]-mean for i in indices)
+    z = dict(zip(indices, centered, strict=True))
+    variance = sum((h[i]*z[i]**2 for i in indices), Fraction(0))/2
+    pressure = tuple(e*g+fi for g, fi in zip(source.epi_gradient, f, strict=True))
+    defect = tuple(p-q for p, q in zip(source.stored_pressure, pressure, strict=True))
+    cut = tuple((i, j, weight) for i, j, weight in source.conductance
+                if i in selected_indices and j not in selected_indices)
+    current = sum((weight*(source.epi[i]-source.epi[j]) for i, j, weight in cut), Fraction(0))
+    internal = e*sum((weight*(source.epi[i]-source.epi[j])**2
+                      for i, j, weight in source.conductance
+                      if i < j and i in selected_indices and j in selected_indices), Fraction(0))
+    mass_boundary = -e*current
+    mass_forcing = sum((d[i]*f[i] for i in indices), Fraction(0))
+    mass_defect = sum((d[i]*defect[i] for i in indices), Fraction(0))
+    variance_boundary = -e*sum((weight*z[i]*(source.epi[i]-source.epi[j])
+                               for i, j, weight in cut), Fraction(0))
+    variance_forcing = sum((d[i]*z[i]*f[i] for i in indices), Fraction(0))
+    variance_defect = sum((d[i]*z[i]*defect[i] for i in indices), Fraction(0))
+    model_rate = tuple(nu*p for nu, p in zip(source.capacity, pressure, strict=True))
+    model_mass = sum((h[i]*model_rate[i] for i in indices), Fraction(0))
+    stored_mass = sum((h[i]*source.rate[i] for i in indices), Fraction(0))
+    model_variance = sum((h[i]*z[i]*model_rate[i] for i in indices), Fraction(0))
+    stored_variance = sum((h[i]*z[i]*source.rate[i] for i in indices), Fraction(0))
+    model_mass_residual = model_mass-mass_boundary-mass_forcing
+    mass_residual = stored_mass-mass_boundary-mass_forcing-mass_defect
+    model_variance_residual = model_variance+internal-variance_boundary-variance_forcing
+    variance_residual = stored_variance+internal-variance_boundary-variance_forcing-variance_defect
+    if any((model_mass_residual, mass_residual, model_variance_residual, variance_residual)):
+        raise RuntimeError("exact regional total or variance identity failed")
+    return RegionalSupportBalance(
+        source, selected, environment, indices, e, f, d, h, regional_weight,
+        total, mean, variance, centered, cut, current, pressure, defect,
+        mass_boundary, mass_forcing, mass_defect, model_mass, stored_mass,
+        model_mass_residual, mass_residual, internal, variance_boundary,
+        variance_forcing, variance_defect, model_variance, stored_variance,
+        model_variance_residual, variance_residual,
+        "Fixed full-graph coefficients and region; instantaneous exact represented-state "
+        "balance only. No causal execution, finite-time persistence or autonomous region is certified.",
+    )
 
 
 @dataclass(frozen=True)

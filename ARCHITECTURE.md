@@ -20,6 +20,11 @@ strengthening their claims.
 | Canonical and operational constants | [`constants/`](src/tnfr/constants/) |
 | Nodal pressure computation | [`dnfr.py`](src/tnfr/dynamics/dnfr.py) |
 | Nodal integration | [`integrators.py`](src/tnfr/dynamics/integrators.py) |
+| Active acceleration history and detached evidence | [`nodal_equation.py`](src/tnfr/operators/nodal_equation.py), `observe_structural_acceleration` |
+| Optional THOL preconditions and threshold resolution | [`preconditions/self_organization.py`](src/tnfr/operators/preconditions/self_organization.py), [`_thol_config.py`](src/tnfr/operators/_thol_config.py) |
+| Public THOL birth proposals | [`self_organization.py`](src/tnfr/operators/self_organization.py) |
+| All-node THOL eligibility and explicit finite dispatch | [`self_organization_selection.py`](src/tnfr/operators/self_organization_selection.py) |
+| Simultaneous stage execution and graph transactions | [`network_stage.py`](src/tnfr/operators/network_stage.py) |
 | Structural fields | [`fields.py`](src/tnfr/physics/fields.py) |
 | Coherence and equilibrium kernel | [`common.py`](src/tnfr/metrics/common.py) |
 | Public high-level API | [`sdk/simple.py`](src/tnfr/sdk/simple.py) |
@@ -53,6 +58,40 @@ flowchart LR
 5. Operator execution passes through canonical grammar and operator
    preconditions. Coupling and Resonance enforce the U3 phase gate before state
    mutation.
+
+For THOL, grammar admission, the optional public precondition gate, acceleration
+threshold crossing and a viable birth proposal are distinct checks. The public
+operator and simultaneous THOL stage share proposal/commit logic; the ordinary
+glyph selector's primitive THOL route writes pressure without creating children.
+Legacy `validate_self_organization` now delegates to the shared read-only public
+gate and does not write execution telemetry. Gate activation remains a caller/
+configuration choice. Birth metadata does not create a transport edge; UM and
+its candidate inventory retain their separate owners. These boundaries also
+apply to research readiness observations, which must not implement competing
+gates or silently select an execution policy.
+
+`observe_self_organization_eligibility` reads all current nodes and retains
+independent history, grammar, configured preconditions and complete proposal
+results. It shares the stage's detached collision/hierarchy validation.
+`execute_eligible_self_organization_stage` is an explicit all-eligible-once
+policy: it recomputes eligibility inside one outer transaction, skips empty
+sets and reuses the built-in simultaneous public stage. It checks actual
+isolated births and preserved original node/edge support; it does not derive
+autonomous selection, certify every old attribute or connect the newborns.
+
+History observations expose source, availability, time basis and validated
+samples. THOL, SDK nodal reports and propagation diagnostics share this owner.
+The numeric `compute_d2epi_dt2` wrapper retains its compatibility zero for
+unavailable history; callers needing evidence must inspect the observation.
+Mutation's two-sample signed secant and the integrator's cached RHS-rate
+difference are distinct quantities. Neither a threshold crossing nor a
+historical propagation record proves that an operator caused a bifurcation.
+
+Approximate diffusion readouts reject nonrepresentable nonzero balance terms;
+exact support observers retain their rational domain. Forced-support event and
+reset observations share a private reset core after public inputs have been
+reconstructed and validated within the invocation. No cross-graph result cache
+or second transport law is introduced.
 
 ## Package boundaries
 

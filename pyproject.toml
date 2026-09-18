@@ -46,6 +46,9 @@ compute-torch = ["torch>=2.1,<3.0"]
 # Serialization formats
 serialization = ["pyyaml>=6.0,<7.0", "orjson>=3,<4"]
 
+# Pinned optional decoder for the public-data research benchmark (Python >=3.11).
+research-data = ["rdata==1.1.0; python_version >= '3.11'"]
+
 # Visualization
 viz-basic = ["matplotlib>=3.7,<4.0", "sympy>=1.12,<2.0"]
 

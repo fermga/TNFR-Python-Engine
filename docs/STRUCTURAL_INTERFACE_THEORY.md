@@ -248,6 +248,13 @@ Reports are written to `results/reports/` as JSON, Markdown, and HTML.
 
 ## API reference
 
+The P1 engineering boundary below is implemented; P2 physical admission remains
+`not_admitted` and the current programme's empirical outcome is `not_tested`.
+The historical numerical tables above were not rerun by these changes. The
+[five-stage plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md) owns stage
+status; the [passive transport protocol](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md)
+owns the proposed measurement conditions.
+
 ### Static spatial — `tnfr.validation.structural_interface`
 
 - `StructuralInterfaceProblem`, `StructuralInterfaceScore` — frozen dataclasses;
@@ -268,9 +275,22 @@ Reports are written to `results/reports/` as JSON, Markdown, and HTML.
 - `TemporalInterfaceConfig`, `WindowTetradSeries`, `EarlyWarningComparison`;
 - `hilbert_instantaneous_phase`, `delay_embedding`, `local_structural_pressure`,
   `build_temporal_proximity_graph`;
-- `window_tetrad_series(signal, *, config=None)`;
+- `window_tetrad_series(signal, *, config=None, mode="retrospective",
+  warmup_samples=0, latency_samples=0)`;
 - `rolling_variance`, `rolling_lag1_autocorrelation`, `kendall_tau`;
 - `evaluate_early_warning(signal, *, transition_index=None, config=None)`.
+
+The default path and `evaluate_early_warning` are retrospective descriptors.
+`mode="prospective"` processes each window from its available prefix and
+records inclusive `available_at` indices, including declared latency. A
+window-end timestamp alone does not establish availability.
+`calibrate_temporal_warning` freezes feature configuration and TNFR/baseline
+channel selection on a declared calibration run;
+`evaluate_prospective_warning` uses those choices without refitting and returns
+`descriptive_evaluation` or `unavailable`, with a reason and optional trends.
+`transition_index` is a supplied cutoff, not a detected or predicted event.
+Independent preparations and their provenance remain protocol obligations;
+prefix-only processing by itself establishes no event-prediction performance.
 
 ### Multi-channel — `tnfr.validation.multichannel_interface`
 
@@ -280,6 +300,87 @@ Reports are written to `results/reports/` as JSON, Markdown, and HTML.
   `amplitude_pressure`, `build_coupling_graph`;
 - `multichannel_window_series(signals, *, config=None)`;
 - `evaluate_synchrony_discrimination(signals, labels, *, config=None)`.
+
+The PLV graph and amplitude-pressure proxy are observational read-outs, not
+canonical wiring, a complete EPI/capacity state map or a U3 certificate.
+
+### Modal diagnostics — `tnfr.validation.signal_confrontation`
+
+- `confront_signal` returns `SignalConfrontation` with static graph read-outs
+  and a `modal_diagnostic`; its coherence assumes `dEPI=0` explicitly.
+- `diagnose_modal_roots` returns `ModalRootDiagnostic`: `resolved`, `unresolved`
+  or `failure`, with a reason. Real/complex root majority and fitted
+  growing/decaying/unit-boundary behavior are separate statistics.
+- Legacy `wave_fraction`/`emergent_wave_fraction` are complex-root energy
+  fractions or `None`; deprecated `diffusive_face_valid` is `bool | None` and
+  abstains on failure, unresolved fits or growing modes. Neither Boolean
+  value certifies a physical regime. Handle `None` explicitly; it must not
+  fall through to a wave label.
+- `SignalConfrontation.summary()` reports the diagnostic scope; `to_dict()`
+  preserves null abstentions and lists nonfinite read-outs for strict JSON.
+- `nodal_prediction_skill` remains a same-window descriptive fit with
+  `evaluation_scope="same_window_descriptive_fit"` and `capacity_domain`.
+  Its unconstrained coefficient is not clipped into physical admissibility;
+  its nonnegative training improvement is not held-out forecasting evidence.
+
+### Reserved nodal forecasts — `tnfr.validation.nodal_prediction`
+
+These APIs are also exported through `tnfr.validation`:
+
+- `NodalMeasurementRun`: detached observations, channel/time/unit identity
+  and declared `acquisition_id`; cropped or renamed records retain their
+  preparation identity.
+- `calibrate_nodal_prediction`: calibration-only common positive capacity
+  and baseline on independently specified support, offsets/scales and clock
+  bridge; returns immutable `FrozenNodalCalibration`.
+- `forecast_nodal_response`: consumes calibration, a disjoint declared
+  `evaluation_acquisition_id`, reserved run identity, initial measurement,
+  timestamps and fixed budgets. It advances EPI via the shared nodal integrator.
+- `write_nodal_forecast`: saves the issued prediction. Retain its
+  `content_hash` before reading reserved observations.
+- `score_nodal_forecast(..., expected_forecast_hash=issued_hash)`: checks
+  that retained digest, calibration and observation identities before scoring.
+  A passing numerical budget still has physical status
+  `not_admitted_by_this_score`.
+
+These are refreshed-Euler engineering forecasts, not automatic admission of
+a continuous physical model. Declared acquisition IDs and hashes do not prove
+independent laboratory preparation or trusted chronology. The
+[empirical record](EMPIRICAL_CONFRONTATION_EEG.md#frozen-calibration-and-reserved-forecasts)
+describes artifact admission, and
+[example 159](../examples/10_applications/159_empirical_confrontation_pipeline.py)
+demonstrates prediction-before-response order on a synthetic P2 fixture.
+
+### Continuous P2 uncertainty — `tnfr.validation.p2_transport`
+
+`P2MeasurementBounds` freezes independently supplied sensor and clock bounds.
+`calibrate_p2_transport` uses fixed first/last observations to enclose continuous
+common capacity on known two-node passive support; it does not reuse the P1
+Euler increment coefficient. `forecast_p2_transport` issues exact rational
+coordinate/mean/contrast enclosures without reserved response values.
+`write_p2_transport_forecast` saves those endpoints exactly, and
+`score_p2_transport` requires the retained forecast hash and disjoint acquisition
+identity. Its outcomes are `incompatible_with_declared_bounds` or
+`not_falsified_by_enclosures`; interval overlap does not prove one joint latent
+fit. Common-time sensor alignment and joint error bounds remain declared
+assumptions requiring evidence. The
+[P2 annex](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md#implemented-continuous-time-uncertainty-boundary)
+owns the derivation and physical admission conditions. The public package and
+typing exports include these APIs; example 159 demonstrates their synthetic
+continuous path separately from Euler.
+
+The separately named `bound_fixed_reference_capacity` and
+`bound_fixed_reference_transport` in
+[p2_transport_reference.py](../src/tnfr/physics/p2_transport_reference.py)
+cover capacities `(nu,0)` and a constant reference. Their contrast decay rate
+is `nu`, not `2*nu`; the arithmetic mean is not conserved. They share the
+rational log/exp kernels and do not fabricate a second measured channel.
+The [Volts benchmark](../benchmarks/volts_fixed_reference_exploration.py)
+uses that reference for a predeclared within-acquisition exploration only;
+it leaves the strict disjoint-acquisition scoring API unchanged. Its nominal
+arithmetic enclosures are not instrument error bounds. Data ingestion requires
+Python 3.11 or later and the pinned optional `research-data` extra. Physical
+mapping and results are owned by the same P2 annex.
 
 ## Limitations and non-goals
 

@@ -331,6 +331,11 @@ def observe_forced_support_reset(
     """
     ref0, ref1 = _reference(before_reference), _reference(after_reference)
     state0, state1 = _state(ref0, before), _state(ref1, after)
+    return _reset_from_validated(ref0, ref1, state0, state1)
+
+
+def _reset_from_validated(ref0, ref1, state0, state1) -> ForcedSupportReset:
+    """Account for a reset using references rebuilt in the current public call."""
     raw_reset = observe_support_transport_reset(state0.snapshot, state1.snapshot)
     u0, u1 = state0.relative_error, state1.relative_error
     du = tuple(right - left for left, right in zip(u0, u1))
@@ -446,9 +451,10 @@ def observe_forced_support_event(
     mean_delta = dot(ref0.metric_weights, delta) / sum(ref0.metric_weights)
     centered_delta = tuple(value - mean_delta for value in delta)
     midpoint = _pattern(ref0, state1.snapshot.epi)
-    reset = observe_forced_support_reset(
-        ref0, ref1, replace(state0.snapshot, epi=state1.snapshot.epi),
-        state1.snapshot,
+    reset = _reset_from_validated(
+        ref0, ref1,
+        _state(ref0, replace(state0.snapshot, epi=state1.snapshot.epi)),
+        state1,
     )
     error0 = state0.relative_error
     variance_jump = _jump_energy(

@@ -3,6 +3,7 @@ r"""Tests for research claims, manifests, certificates, and circularity."""
 from __future__ import annotations
 
 from types import SimpleNamespace
+import hashlib
 
 import pytest
 
@@ -316,7 +317,7 @@ def test_strict_numerical_admission_requires_error_context():
 
 def _sidecar(**overrides):
     values = dict(
-        manifest=_manifest(),
+        manifest=_manifest(artifacts=("results/example.json",)),
         artifact="results/example.json",
         model="fixed linear EPI channel",
         norm="euclidean",
@@ -335,13 +336,13 @@ def _sidecar(**overrides):
         assumptions=("fixed graph", "float64"),
         outcome="measured residual",
         source_imports=("tnfr.physics.structural_morphism",),
-        dirty_source_hash="sha256:example",
+        dirty_source_hash="sha256:" + "a" * 64,
         graph_context={"family": "path", "nodes": 4, "directed": False},
         state_context={"initial_triads": "fixture", "operator_word": []},
         numerical_context={"precision": "float64", "conditioning": 2.0},
         observation_context={"observable": "residual", "aggregation": "max"},
         cost_context={"construction_seconds": 0.0, "solve_seconds": 0.0},
-        artifact_hashes={"results/example.json": "sha256:example"},
+        artifact_hashes={"results/example.json": hashlib.sha256(b"{}\n").hexdigest()},
     )
     values.update(overrides)
     return EvidenceSidecar(**values)
@@ -355,25 +356,28 @@ def test_evidence_sidecar_requires_complete_context_and_serializes():
             condition_number=2.0,
         ),
     )
-    sidecar.validate_for_admission()
+    sidecar.validate_metadata()
     assert sidecar.to_dict()["provenance"]["uses_known_factors"] is False
 
 
 def test_evidence_sidecar_rejects_missing_provenance_answer():
     sidecar = _sidecar(provenance={"uses_known_factors": False})
     with pytest.raises(EvidenceAdmissionError):
-        sidecar.validate_for_admission()
+        sidecar.validate_metadata()
 
 
 def test_evidence_sidecar_validates_before_export(tmp_path):
     sidecar = _sidecar()
-    destination = sidecar.write_admitted(tmp_path / "sidecar.json")
+    artifact = tmp_path / "results/example.json"
+    artifact.parent.mkdir()
+    artifact.write_bytes(b"{}\n")
+    destination = sidecar.write_admitted(tmp_path / "sidecar.json", root_dir=tmp_path)
     assert destination.exists()
 
 
 def test_evidence_sidecar_rejects_missing_context_group():
     with pytest.raises(EvidenceAdmissionError):
-        _sidecar(cost_context={}).validate_for_admission()
+        _sidecar(cost_context={}).validate_metadata()
 
 
 # --- circularity --------------------------------------------------------------

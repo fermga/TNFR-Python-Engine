@@ -1,11 +1,9 @@
-"""Bifurcation dynamics and structural path selection for TNFR operators.
+"""Advisory bifurcation routing and an operational diagnostic score.
 
-This module provides utilities for detecting bifurcation readiness and
-determining viable structural reorganization paths after OZ-induced dissonance.
-
-According to TNFR canonical theory (§2.3.3, R4), when ∂²EPI/∂t² > τ,
-the system enters a bifurcation state enabling multiple reorganization
-trajectories. This module implements path selection based on nodal state.
+Routing reads a stored readiness flag and configured scalar cuts; it does not
+reconstruct current acceleration, validate grammar or execute an operator.
+The weighted score is separate from the public THOL acceleration threshold
+and is not an eligibility, stability or birth certificate.
 """
 
 from __future__ import annotations
@@ -16,7 +14,7 @@ if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
+from ..constants.aliases import ALIAS_EPI, ALIAS_VF
 from ..constants.canonical import (
     NUL_EPI_THRESHOLD_CANONICAL,
     ZHIR_VF_THRESHOLD_CANONICAL,
@@ -30,11 +28,12 @@ __all__ = [
 
 
 def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
-    """Return viable structural paths after OZ-induced bifurcation.
+    """Suggest glyphs using a stored readiness flag and configured cuts.
 
-    When OZ (Dissonance) creates bifurcation readiness (∂²EPI/∂t² > τ),
-    this function determines which operators can resolve the dissonance
-    based on current nodal state.
+    A true ``_bifurcation_ready`` flag enables this advisory policy. The
+    returned glyphs still require their own current public preconditions and
+    grammar admission. This function neither refreshes the flag nor proves
+    that any suggested glyph resolves the current pressure.
 
     Parameters
     ----------
@@ -46,41 +45,40 @@ def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
     Returns
     -------
     list[Glyph]
-        list of viable operator glyphs for structural reorganization.
-        Empty list if node is not in bifurcation state.
+        Suggested operator glyphs, without an admission guarantee.
+        Empty list when the stored readiness flag is false or absent.
 
     Notes
     -----
-    **Canonical bifurcation paths:**
+    **Configured branch suggestions:**
 
     - **ZHIR (Mutation)**: Proposed if νf exceeds the configured branch-selection cut
-    - **NUL (Contraction)**: Viable if EPI < 0.5 (safe collapse window)
-    - **IL (Coherence)**: Always viable (universal resolution path)
-    - **THOL (Self-organization)**: Viable if degree >= 2 (network support)
+    - **NUL (Contraction)**: Proposed below its configured EPI cut (default ≈ 0.536)
+    - **IL (Coherence)**: Always included in this suggestion list
+    - **THOL (Self-organization)**: Proposed above its degree cut (default >= 2)
 
     The node must have `_bifurcation_ready = True` flag, typically set by
-    OZ precondition validation when ∂²EPI/∂t² exceeds threshold τ.
+    OZ precondition validation. The flag can be stale relative to the current
+    EPI history; no THOL pressure, history, depth or hierarchy gate runs here.
 
     Examples
     --------
     >>> from tnfr.structural import create_nfr
-    >>> from tnfr.operators.definitions import Dissonance
     >>> from tnfr.dynamics.bifurcation import get_bifurcation_paths
     >>> G, node = create_nfr("test", epi=0.4, vf=1.0)
-    >>> # set up bifurcation conditions
-    >>> G.nodes[node]["epi_history"] = [0.2, 0.35, 0.55]
-    >>> Dissonance()(G, node, validate_preconditions=True)
+    >>> # Missing readiness evidence produces no routing suggestions.
     >>> paths = get_bifurcation_paths(G, node)
-    >>> # Returns viable operators: [ZHIR, NUL, IL, THOL] or subset
+    >>> paths
+    []
 
     See Also
     --------
     tnfr.operators.preconditions.validate_dissonance : Sets bifurcation_ready flag
     tnfr.operators.definitions.SelfOrganization : Spawns sub-EPIs on bifurcation
     """
-    # Check if bifurcation active
+    # The stored flag is an advisory input, not rederived eligibility.
     if not G.nodes[node].get("_bifurcation_ready", False):
-        return []  # No bifurcation active
+        return []  # No stored readiness declaration
 
     # Get node state for path evaluation
     epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
@@ -97,17 +95,17 @@ def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
     if vf > zhir_threshold:
         paths.append(Glyph.ZHIR)
 
-    # NUL (Contraction) viable if EPI low enough for safe collapse
+    # NUL branch-selection policy; this is not its public admission check.
     nul_threshold = float(
         G.graph.get("NUL_BIFURCATION_EPI_THRESHOLD", NUL_EPI_THRESHOLD_CANONICAL)
     )  # ≈ 0.536 (operational)
     if epi < nul_threshold:
         paths.append(Glyph.NUL)
 
-    # IL (Coherence) always viable as universal resolution path
+    # IL is always suggested; public execution still validates its own inputs.
     paths.append(Glyph.IL)
 
-    # THOL (Self-organization) viable if network connectivity supports it
+    # Degree alone suggests THOL; it does not establish public birth readiness.
     thol_min_degree = int(G.graph.get("THOL_BIFURCATION_MIN_DEGREE", 2))
     if degree >= thol_min_degree:
         paths.append(Glyph.THOL)
@@ -122,19 +120,17 @@ def compute_bifurcation_score(
     epi: float,
     tau: float = NUL_EPI_THRESHOLD_CANONICAL,  # ≈ 0.536 (operational)
 ) -> float:
-    """Compute quantitative bifurcation potential [0,1].
+    """Compute a configured weighted diagnostic in [0,1] for finite inputs.
 
-    Integrates multiple structural indicators to assess bifurcation readiness.
-    According to TNFR canonical theory (§2.3.3, R4), bifurcation occurs when
-    ∂²EPI/∂t² > τ (acceleration exceeds threshold). This function extends that
-    binary condition into a continuous score that accounts for multiple factors.
+    This combines four indicators using operational weights. It is not the
+    public THOL gate, a fresh readiness assessment, or an operator-selection
+    proof. In particular, 0.5 is not an acceleration-crossing threshold.
 
     Parameters
     ----------
     d2epi : float
-        Structural acceleration (∂²EPI/∂t²). Primary indicator of bifurcation.
-        When |d2epi| > τ, the system enters a bifurcation state enabling
-        multiple reorganization trajectories.
+        Structural acceleration (∂²EPI/∂t²). Its magnitude contributes one
+        saturated score term, independently of the public THOL gate.
     dnfr : float
         Internal reorganization operator (ΔNFR). Magnitude indicates instability
         level. Higher |ΔNFR| means stronger reorganization pressure.
@@ -145,17 +141,15 @@ def compute_bifurcation_score(
         Primary Information Structure. Provides structural substrate for
         bifurcation. Higher EPI indicates more material to reorganize.
     tau : float, default ≈ 0.536
-        Bifurcation acceleration threshold. When |d2epi| > tau, bifurcation
-        becomes active. Default ≈ 0.536 is an operational TNFR threshold
-        (audit 2026: not derived).
+        Acceleration normalization for this diagnostic. Default ≈ 0.536 is
+        an operational scale, distinct from public THOL configuration.
+        A nonpositive value suppresses the acceleration term.
 
     Returns
     -------
     float
-        Bifurcation score in range [0.0, 1.0]:
-        - 0.0 = no bifurcation potential (stable)
-        - 0.5 = bifurcation threshold (critical)
-        - 1.0 = maximal bifurcation readiness (multiple paths viable)
+        Weighted diagnostic in range [0.0, 1.0] for finite inputs. No value
+        establishes stability, operator admission or a realized birth.
 
     Notes
     -----
@@ -182,12 +176,15 @@ def compute_bifurcation_score(
         where weights are operational values (audit 2026: not derived)
 
     All factors are normalized to [0, 1] and clipped before combination.
+    With d2epi=0, dnfr=1, vf=2 and epi=0.9 the score is 0.54, while
+    |d2epi|=tau>0 with the other channels zero gives 0.46. Thus neither side
+    of 0.5 characterizes the acceleration gate.
 
     Examples
     --------
     >>> from tnfr.dynamics.bifurcation import compute_bifurcation_score
     >>>
-    >>> # Low bifurcation potential (stable state)
+    >>> # A low weighted diagnostic, without a stability conclusion
     >>> score = compute_bifurcation_score(
     ...     d2epi=0.1,  # Low acceleration
     ...     dnfr=0.05,  # Low instability
@@ -196,7 +193,7 @@ def compute_bifurcation_score(
     ... )
     >>> assert score < 0.3  # Low score
     >>>
-    >>> # High bifurcation potential (critical state)
+    >>> # A high weighted diagnostic, without an admission conclusion
     >>> score = compute_bifurcation_score(
     ...     d2epi=0.7,  # High acceleration (> tau)
     ...     dnfr=0.6,   # High instability
@@ -207,7 +204,7 @@ def compute_bifurcation_score(
 
     See Also
     --------
-    get_bifurcation_paths : Determine viable operators after bifurcation
+    get_bifurcation_paths : Suggest glyphs from stored readiness metadata
     tnfr.operators.metrics.dissonance_metrics : Uses score in OZ metrics
     """
     from ..mathematics.unified_numerical import np

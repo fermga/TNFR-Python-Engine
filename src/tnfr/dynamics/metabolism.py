@@ -1,10 +1,9 @@
-"""Structural metabolism implementation for TNFR.
+"""Declared structural-metabolism words for a caller-selected TNFR node.
 
-T'HOL (Self-Organization) as metabolic process: receiving external stimuli,
-reorganizing them autonomously into internal structure, and stabilizing results.
-
-This module implements metabolic cycles that use T'HOL as the engine of
-structural transformation and adaptation.
+These helpers compose public operators into complete grammar-validated words.
+They read existing neighboring state, use configured threshold policies and
+retain each operator's live checks. They neither select eligible targets nor
+derive autonomous routing, future stability or guaranteed sub-EPI creation.
 """
 
 from __future__ import annotations
@@ -53,18 +52,9 @@ def _node_scalar_epi(G: TNFRGraph, node: NodeId) -> float:
 def _configured_tau(G: TNFRGraph, requested: float | None) -> float:
     """Resolve THOL's threshold with the canonical configuration precedence."""
 
-    from ..config.defaults_core import CORE_DEFAULTS
-    from ..operators._argument_validation import finite_real
+    from ..operators._thol_config import resolve_thol_bifurcation_threshold
 
-    value: Any = requested
-    if value is None:
-        value = G.graph.get("BIFURCATION_THRESHOLD_TAU")
-    if value is None:
-        value = G.graph.get(
-            "THOL_BIFURCATION_THRESHOLD",
-            CORE_DEFAULTS["THOL_BIFURCATION_THRESHOLD"],
-        )
-    return finite_real(value, operator=_OPERATOR, label="tau", lower=0.0)
+    return resolve_thol_bifurcation_threshold(G.graph, requested, operator=_OPERATOR)
 
 
 def _effective_tau(base_tau: float, metabolic_rate: Any) -> float:
@@ -160,17 +150,17 @@ def _execute_atomic_word(
 
 
 class StructuralMetabolism:
-    """Implements T'HOL-based structural metabolism cycles.
+    """Execute prescribed T'HOL-based words on an explicitly selected node.
 
-    T'HOL is not just self-organization - it's **structural metabolism**:
-    the capacity to digest external experience and reorganize it into
-    internal structure without external instruction.
+    The caller chooses the node, method, stress or threshold inputs. The
+    resulting word is a configured execution policy; canonical operators
+    determine its admitted effects from the current graph and history.
 
     **Metabolic Characteristics:**
 
-    - **Reception (EN)**: Ingests external stimulus
-    - **Reorganization (THOL)**: Autonomously transforms stimulus to structure
-    - **Stabilization (IL)**: Consolidates new structural configuration
+    - **Reception (EN)**: Reads incoming form from current neighbors
+    - **Reorganization (THOL)**: Applies pressure action and any admitted birth
+    - **Stabilization (IL)**: Applies the public coherence operation
 
     Each public method executes one complete validated word. The metabolic core
     is ``EN? -> OZ -> THOL -> IL`` and NAV supplies a non-freezing closure.
@@ -197,9 +187,9 @@ class StructuralMetabolism:
     >>> from tnfr.dynamics.metabolism import StructuralMetabolism
     >>> G, node = create_nfr("cell", epi=0.5, vf=1.0)
     >>> metabolism = StructuralMetabolism(G, node)
-    >>> # Digest external stimulus
-    >>> metabolism.digest(0.3)  # doctest: +SKIP
-    >>> # Result: stimulus integrated and reorganized structurally
+    >>> # Request the declared word with an explicit acceleration threshold.
+    >>> metabolism.digest(tau=0.3)  # doctest: +SKIP
+    >>> # The argument is a threshold, not a measured stimulus value.
     """
 
     def __init__(self, graph: TNFRGraph, node: NodeId) -> None:
@@ -217,14 +207,14 @@ class StructuralMetabolism:
         self.metabolic_rate = 1.0
 
     def digest(self, tau: float | None = None) -> None:
-        """Metabolize external stimulus through complete metabolic cycle.
+        """Execute a complete metabolic word using existing neighbor state.
 
-        Implements the canonical metabolic word: EN → OZ → THOL → IL → NAV.
+        Requests the declared word: EN → OZ → THOL → IL → NAV.
         AL is prepended only when the initial scalar EPI is zero.
 
         1. Reception (EN): receives external stimulus from neighbors.
         2. Dissonance (OZ): opens explicit perturbation context.
-        3. Self-organization (THOL): transforms pressure into structure.
+        3. Self-organization (THOL): applies pressure and admitted sub-EPI effects.
         4. Coherence (IL): absorbs destabilizer debt.
         5. Transition (NAV): closes the word without suppressing capacity.
 
@@ -238,7 +228,9 @@ class StructuralMetabolism:
         -----
         The metabolic rate only rescales the THOL admission threshold. It
         does not rescale the gains or effects of the other operators. Lower
-        effective tau increases bifurcation sensitivity.
+        effective tau increases configured bifurcation sensitivity. This
+        policy neither derives tau from the nodal equation nor guarantees a
+        birth; THOL retains its history, hierarchy and numerical checks.
         """
         threshold = _effective_tau(
             _configured_tau(self.G, tau), self.metabolic_rate
@@ -264,8 +256,9 @@ class StructuralMetabolism:
 
         Notes
         -----
-        This implements adaptive structural metabolism where sensitivity to
-        reorganization scales with the declared environmental pressure.
+        The caller-supplied stress sets the declared policy
+        ``tau / (1 + stress_level) / metabolic_rate``. It is not an inferred
+        pressure measurement or a derived law for selecting a response.
         """
         from ..operators._argument_validation import finite_real
 
@@ -290,7 +283,7 @@ class StructuralMetabolism:
         )
 
     def cascading_reorganization(self, depth: int = 3) -> None:
-        """Execute recursive T'HOL cascade.
+        """Repeat the declared T'HOL word on the same selected parent.
 
         Applies repeated OZ → THOL → IL levels with progressively decreasing
         bifurcation thresholds. A level creates a sub-EPI only when its
@@ -310,8 +303,9 @@ class StructuralMetabolism:
         Each level uses tau = base_tau * (level_decay ^ level), creating progressively
         more sensitive bifurcation at deeper levels.
 
-        **Warning**: Deep cascades (depth > 5) may create highly complex
-        nested structures. Monitor structural complexity metrics.
+        ``depth`` counts requested repetitions, not realized hierarchy depth.
+        The decay factor is configured policy, and no nested child traversal
+        or refreshed physical-flow evidence is supplied by this helper.
         """
         from ..operators._argument_validation import finite_real, nonnegative_integer
 

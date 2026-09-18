@@ -15,7 +15,6 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ...types import NodeId, TNFRGraph
-    import logging
 
 from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ...constants.canonical import VAL_MIN_EPI
@@ -285,6 +284,7 @@ def validate_phase_gate_u3(
     operator_code = (
         "UM" if str(operator).casefold() in {"um", "coupling"} else "RA"
     )
+
     def phase(candidate: "NodeId") -> object:
         return get_attr(
             G.nodes[candidate],
@@ -718,197 +718,16 @@ def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
 
 
 def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
-    """THOL - Enhanced validation: connectivity, metabolic context, acceleration.
+    """Check the shared optional THOL prerequisites without execution writes.
 
-    Self-organization requires:
-    1. Sufficient EPI for bifurcation
-    2. Positive reorganization pressure (ΔNFR > 0)
-    3. Structural reorganization capacity (νf > 0)
-    4. Network connectivity for metabolism (degree ≥ 1)
-    5. EPI history for acceleration computation (≥3 points)
-    6. **NEW**: Bifurcation threshold check (∂²EPI/∂t² vs τ) with telemetry
-
-    Also detects and records the destabilizer that enabled this
-    self-organization for telemetry and structural tracing purposes.
-
-    **Bifurcation Threshold Validation (∂²EPI/∂t² > τ):**
-
-    According to TNFR.pdf §2.2.10, THOL bifurcation occurs only when structural
-    acceleration exceeds threshold τ. This function now explicitly validates this
-    condition and sets telemetry flags:
-
-    - If ∂²EPI/∂t² > τ: Bifurcation will occur (normal THOL behavior)
-    - If ∂²EPI/∂t² ≤ τ: THOL executes but no sub-EPIs generated (warning logged)
-
-    The validation is NON-BLOCKING (warning only) because THOL can meaningfully
-    execute without bifurcation - it still applies coherence and metabolic effects.
-
-    Parameters
-    ----------
-    G : TNFRGraph
-        Graph containing the node
-    node : NodeId
-        Node to validate
-
-    Raises
-    ------
-    OperatorPreconditionError
-        If any structural requirement is not met
-
-    Notes
-    -----
-    This function implements R4 Extended telemetry by analyzing the glyph_history
-    to determine which destabilizer enabled the self-organization.
-
-    Configuration Parameters
-    ------------------------
-    THOL_MIN_EPI : float, default 0.2
-        Minimum EPI for bifurcation
-    THOL_MIN_VF : float, default 0.1
-        Minimum structural frequency for reorganization
-    THOL_MIN_DEGREE : int, default 1
-        Minimum network connectivity
-    THOL_MIN_HISTORY_LENGTH : int, default 3
-        Minimum EPI history for acceleration computation
-    THOL_ALLOW_ISOLATED : bool, default False
-        Allow isolated nodes for internal-only bifurcation
-    THOL_METABOLIC_ENABLED : bool, default True
-        Require metabolic network context
-    BIFURCATION_THRESHOLD_TAU : float, default 0.1
-        Bifurcation threshold for ∂²EPI/∂t² (see THOL_BIFURCATION_THRESHOLD)
-    THOL_BIFURCATION_THRESHOLD : float, default 0.1
-        Alias for BIFURCATION_THRESHOLD_TAU (operator-specific config)
+    This compatibility validator no longer records mutation context or a
+    predicted no-birth flag. Such telemetry belongs to a successful public
+    operator commit. Passing this gate does not establish grammar admission,
+    acceleration threshold crossing, or complete hierarchy-birth readiness.
     """
-    import logging
+    from .self_organization import validate_self_organization_strict
 
-    logger = logging.getLogger(__name__)
-
-    epi = _get_node_attr(G, node, ALIAS_EPI)
-    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
-    vf = _get_node_attr(G, node, ALIAS_VF)
-
-    # 1. EPI sufficiency
-    min_epi = float(G.graph.get("THOL_MIN_EPI", 0.2))
-    if epi < min_epi:
-        raise OperatorPreconditionError(
-            "Self-organization",
-            f"EPI too low for bifurcation (EPI={epi:.3f} < {min_epi:.3f})",
-        )
-
-    # 2. Reorganization pressure
-    if dnfr <= 0:
-        raise OperatorPreconditionError(
-            "Self-organization",
-            f"ΔNFR non-positive, no reorganization pressure (ΔNFR={dnfr:.3f})",
-        )
-
-    # 3. Structural frequency validation
-    min_vf = float(G.graph.get("THOL_MIN_VF", 0.1))
-    if vf < min_vf:
-        raise OperatorPreconditionError(
-            "Self-organization",
-            f"Structural frequency too low for reorganization (νf={vf:.3f} < {min_vf:.3f})",
-        )
-
-    # 4. Connectivity requirement (ELEVATED FROM WARNING)
-    min_degree = int(G.graph.get("THOL_MIN_DEGREE", 1))
-    node_degree = G.degree(node)
-
-    # Allow isolated THOL if explicitly enabled
-    allow_isolated = bool(G.graph.get("THOL_ALLOW_ISOLATED", False))
-
-    if node_degree < min_degree and not allow_isolated:
-        raise OperatorPreconditionError(
-            "Self-organization",
-            f"Node insufficiently connected for network metabolism "
-            f"(degree={node_degree} < {min_degree}). "
-            f"set THOL_ALLOW_ISOLATED=True to enable internal-only bifurcation.",
-        )
-
-    # 5. EPI history validation (for d²EPI/dt² computation).  Use the same
-    # source selector as the public acceleration diagnostic: timestamped
-    # physical evidence is authoritative, followed by the canonical and
-    # private unit-step compatibility histories.
-    from ...errors import TNFRValueError
-    from ..nodal_equation import (
-        _select_acceleration_history,
-        compute_d2epi_dt2,
-    )
-
-    try:
-        history_source, active_history = _select_acceleration_history(
-            G.nodes[node]
-        )
-        history_length = 0 if active_history is None else len(active_history)
-    except (OverflowError, TypeError, TNFRValueError) as exc:
-        raise OperatorPreconditionError(
-            "Self-organization",
-            "Active EPI history must be a sized, indexed history",
-        ) from exc
-    min_history_length = int(G.graph.get("THOL_MIN_HISTORY_LENGTH", 3))
-
-    if history_length < min_history_length:
-        raise OperatorPreconditionError(
-            "Self-organization",
-            f"Insufficient EPI history for acceleration computation "
-            f"({history_source}: have {history_length}, need ≥{min_history_length}). "
-            f"Apply operators to build history before THOL.",
-        )
-
-    try:
-        d2_epi = abs(compute_d2epi_dt2(G, node, store=False))
-    except TNFRValueError as exc:
-        raise OperatorPreconditionError(
-            "Self-organization",
-            f"Invalid {history_source} acceleration evidence: {exc}",
-        ) from exc
-
-    # 6. Metabolic context validation (if metabolism enabled)
-    if G.graph.get("THOL_METABOLIC_ENABLED", True):
-        # If network metabolism is expected, verify neighbors exist
-        if node_degree == 0:
-            raise OperatorPreconditionError(
-                "Self-organization",
-                "Metabolic mode enabled but node is isolated. "
-                "Disable THOL_METABOLIC_ENABLED or add network connections.",
-            )
-
-    # R4 Extended: Detect and record destabilizer type for telemetry
-    from .mutation import record_destabilizer_context
-
-    record_destabilizer_context(G, node, logger)
-
-    # Bifurcation threshold validation is non-blocking: THOL can still apply
-    # coherence and metabolic effects when the shared acceleration stays in
-    # the closed window.
-
-    # Get bifurcation threshold from graph configuration
-    # Try BIFURCATION_THRESHOLD_TAU first (canonical), then THOL_BIFURCATION_THRESHOLD
-    tau = G.graph.get("BIFURCATION_THRESHOLD_TAU")
-    if tau is None:
-        tau = float(G.graph.get("THOL_BIFURCATION_THRESHOLD", 0.1))
-    else:
-        tau = float(tau)
-
-    # Check if bifurcation threshold will be exceeded
-    if d2_epi <= tau:
-        # Log warning but allow execution - THOL can be meaningful without bifurcation
-        logger.warning(
-            f"Node {node}: THOL applied with ∂²EPI/∂t²={d2_epi:.3f} ≤ τ={tau:.3f}. "
-            f"No bifurcation will occur (empty THOL window expected). "
-            f"Sub-EPIs will not be generated. "
-            f"Consider stronger destabilizer (OZ, VAL) to increase acceleration."
-        )
-        # set telemetry flag for post-hoc analysis
-        G.nodes[node]["_thol_no_bifurcation_expected"] = True
-    else:
-        # Clear flag if previously set
-        G.nodes[node]["_thol_no_bifurcation_expected"] = False
-        logger.debug(
-            f"Node {node}: THOL bifurcation threshold exceeded "
-            f"(∂²EPI/∂t²={d2_epi:.3f} > τ={tau:.3f}). "
-            f"Sub-EPI generation expected."
-        )
+    validate_self_organization_strict(G, node)
 
 
 def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
@@ -921,6 +740,7 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     from .mutation import validate_mutation_strict
 
     validate_mutation_strict(G, node)
+
 
 def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
     """NAV - Comprehensive canonical preconditions for transition.

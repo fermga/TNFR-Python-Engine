@@ -1,24 +1,35 @@
 # TNFR–P vs NP Structural Synthesis Research Notes
 
-**Status**: Pre-registered research programme; PNP-1 diagnostic implemented; obstruction classified as Branch B (open)
+**Status**: Auxiliary finite MAX-CUT diagnostic implemented; TNFR dynamics bridge and complexity claims remain open
 **Date**: 2026-06-13
-**Scope**: TNFR-internal structural synthesis-vs-verification dynamics; **not** a proof or disproof of the Clay P vs NP problem
-**Primary anchors**: nodal equation `∂EPI/∂t = νf · ΔNFR(t)` as gradient flow `ΔNFR = −∂V/∂EPI`, canonical operators, grammar U1–U6, structural field tetrad `(Φ_s, |∇φ|, K_φ, ξ_C)`
+**Scope review**: 2026-09-18; documentation correction, no new numerical run
+**Scope**: Synthesis-versus-verification comparison; **not** a nodal derivation of the implemented optimizer or a proof about P versus NP
+**Primary anchors**: nodal equation `∂EPI/∂t = νf · ΔNFR(t)`, the restricted pure-EPI Dirichlet/mobility identity, and the separately implemented antiphase example
 
 ---
 
 ## 0. Terminology Discipline
 
-This programme is formulated in TNFR language only. TNFR does not introduce a
-separate "computation" ontology. The same nodal equation,
+The comparison concerns pattern synthesis and verification. The nodal equation is
 
 $$
-\frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t),
-\qquad \Delta\mathrm{NFR} = -\frac{\partial V}{\partial \mathrm{EPI}},
+\frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t).
 $$
 
-is a **gradient flow** on the structural potential `V` (established in
-`src/tnfr/physics/variational.py`). Coherence relaxation descends `V`.
+It does not imply that every canonical pressure is the negative gradient of
+the tetrad functional `V = ½Σ(Φ_s² + |∇φ|² + K_φ²)`.
+`src/tnfr/physics/variational.py` explicitly records a counterexample: on one
+pure-EPI edge at `[1,0]`, pressure is `[-1,1]`, while `−∇V=[-2,2]`.
+
+A restricted identity is available for a fixed symmetric nonnegative
+conductance `W`, fixed nonnegative capacities and the isolated EPI channel.
+With `D=diag(W1)`, `E_D=½xᵀ(D−W)x` and
+`M=diag(νf_i/d_i)` (zero at isolates),
+`ẋ=−M∇E_D` and `dE_D/dt=−∇E_DᵀM∇E_D≤0`.
+This Dirichlet functional is distinct from the tetrad potential; see
+`src/tnfr/physics/structural_diffusion.py` and
+`theory/TNFR_VARIATIONAL_PRINCIPLE.md`. It does not derive the antiphase
+optimizer used below or a general descent theorem for the operator catalog.
 
 References to P vs NP are treated as an **external comparison target**. The
 TNFR object is a nodal structural question: *is synthesising a globally
@@ -32,33 +43,32 @@ separation.
 
 ## 1. Existing Canonical Base in the Repository
 
-The programme starts from already-shipped TNFR machinery; it requires **no new
-canonical operator**.
+These owners provide comparison tools. The example's direct phase updates
+have not been identified with a canonical operator sequence.
 
 | Component | Existing source | Role |
 | --- | --- | --- |
-| Nodal equation as gradient flow | `src/tnfr/physics/variational.py` | `ΔNFR = −∂V/∂EPI`; relaxation descends `V` |
-| Structural potential | `src/tnfr/physics/variational.py` | `V = ½[Φ_s² + |∇φ|² + K_φ²]` |
-| Phase channel (Kuramoto coupling) | `src/tnfr/dynamics/dnfr.py`, `src/tnfr/physics/structural_diffusion.py` | circular neighbour coupling; sign sets align/antialign |
-| Dissonance operator OZ | `src/tnfr/operators/dissonance.py` | controlled instability; basin-escape move (PNP-2) |
-| Coherence C(t), Sense Index Si | `src/tnfr/metrics/` | polynomial-cost verification telemetry |
+| Restricted EPI gradient flow | `src/tnfr/physics/structural_diffusion.py` | Dirichlet energy and mobility under the stated fixed-graph assumptions |
+| Tetrad energy candidate | `src/tnfr/physics/variational.py` | Snapshot functional; no general pressure-gradient identity |
+| Canonical phase pressure | `src/tnfr/dynamics/dnfr.py` | Wrapped displacement from a neighbour-phasor mean; not the example's sine-sum update |
+| Dissonance operator OZ | `src/tnfr/operators/dissonance.py` | Existing pressure operator; not executed by PNP-1 |
+| Coherence and other diagnostics | `src/tnfr/metrics/` | Possible read-outs; costs and meaning require their own specified input |
 
 ---
 
-## 2. TNFR-Native Reformulation
+## 2. Synthesis-versus-verification comparison
 
-P vs NP, read through the nodal gradient flow, is the asymmetry between two
-structural tasks on a graph-coupled network:
+The finite example compares two tasks on a supplied graph:
 
-- **Verification.** Given a configuration, evaluate its coherence (e.g. the
-  cut value / frustration energy, or `C(t)`). Cost `O(|E|)` — polynomial. This
-  is the TNFR analogue of checking an NP witness.
-- **Synthesis.** Find a *globally* coherent configuration by nodal relaxation.
-  On a frustrated topology the potential `V` has many local optima =
-  **dissonance (OZ) basins**; gradient flow descends to the nearest basin.
+- **Verification.** Given a binary assignment and a requested cut threshold,
+  count crossing edges in `O(|E|)`. This checks a witness for that threshold;
+  it does not verify global optimality or equal the engine's coherence score.
+- **Synthesis.** Run the specified continuous antiphase relaxation and round
+  its endpoint to a binary assignment. Its finite success rate measures this
+  heuristic, not all algorithms or canonical TNFR histories.
 
 > **PNP-1**: On a family of frustrated instances of growing size, does bare
-> coherence relaxation (gradient flow) trap in local optima — hit rate of the
+> antiphase relaxation miss the optimum — hit rate of the
 > global optimum dropping, required restarts growing — while verification
 > stays `O(|E|)`?
 
@@ -67,11 +77,13 @@ structural tasks on a graph-coupled network:
 > collapse the trapping to polynomial-cost synthesis, or do the dissonance
 > basins remain exponentially many?
 
-PNP-2 is the TNFR-native P-vs-NP boundary and is **not** assumed.
+PNP-2 is an unimplemented comparison proposal, not a complexity-theoretic
+equivalence. Any canonical version first needs a faithful encoding, operator
+semantics, precision/resource accounting and explicit worst-case quantifiers.
 
 ---
 
-## 3. Encoding (MAX-CUT as TNFR antiphase coupling)
+## 3. Auxiliary encoding (MAX-CUT as antiphase coupling)
 
 Each node carries a phase `θ`. Every edge demands antiphase (a cut). The
 relaxation
@@ -80,18 +92,22 @@ $$
 \frac{d\theta_i}{dt} = \sum_{j \sim i} \sin(\theta_i - \theta_j)
 $$
 
-is the canonical TNFR phase channel with the **anti-aligning sign** — an
-all-edge dissonance (OZ) demand. The global minimum of the frustration energy
-`E = Σ_{(i,j)} cos(θ_i − θ_j)` over `θ ∈ {0, π}^n` is exactly the **MAX-CUT**
-of the graph (an NP-hard objective). Frustration arises on odd cycles, which
+is the negative gradient of the chosen energy
+`E = Σ_(i,j) cos(θ_i−θ_j)`. It is an auxiliary sine-coupled flow, not the
+implemented canonical phasor-mean pressure or an OZ execution.
+For `θ ∈ {0, π}^n`, the frustration energy satisfies
+`E = |edges| - 2*cut_size`; minimizing it is equivalent to **MAX-CUT**
+on the graph (an NP-hard objective). Frustration arises on odd cycles, which
 cannot satisfy all antiphase demands simultaneously — the structural origin of
-the local-optima (dissonance-basin) landscape.
+the frustrated optimization landscape. The binary identity does not identify
+minima of the continuous relaxation with optimal rounded cuts. Finite Euler
+steps also need a separate descent/convergence check.
 
 ---
 
 ## 4. PNP-1 Result (DONE)
 
-Measured on random 3-regular graphs (a standard frustrated family), 3 instances
+Historically reported on random 3-regular graphs, 3 instances
 per size, `R = 200` random initial conditions each; exact MAX-CUT by
 enumeration; relaxation 400 steps, `dt = 0.1`. Reproducible in
 `examples/09_millennium/109_p_vs_np_coherence_synthesis.py`.
@@ -107,14 +123,16 @@ enumeration; relaxation 400 steps, `dt = 0.1`. Reproducible in
 
 - Hit-rate trend slope `d(hit_rate)/dn = −0.0341` per node; **monotone
   decreasing** across all sizes.
-- "global reachable = yes" (best over all restarts reaches the exact MAX-CUT at
-  every size): the low hit rate is **genuine trapping in local optima**, not an
-  encoding failure.
+- "global reachable = yes" means at least one sampled rounded endpoint reaches
+  the independently enumerated optimum at every reported size. It is not a
+  canonical TNFR reachability certificate.
 
-**PNP-1 verdict**: coherence synthesis by bare gradient flow is trapped by
-dissonance basins, with trapping increasing in size, while verification stays
-`O(|E|)`. The synthesis-vs-verification asymmetry is the TNFR-native reflection
-of the P-vs-NP asymmetry.
+**PNP-1 verdict**: finite hit rates decrease for this heuristic and sample.
+The example does not check stationarity, basin membership or convergence;
+rounding and the fixed iteration budget can also affect failures. It therefore
+does not certify local-optimum trapping, exponential restart growth, or a
+complexity separation. The exact optimum used for scoring is obtained by
+exponential enumeration, not predicted by nodal dynamics.
 
 ---
 
@@ -123,22 +141,15 @@ of the P-vs-NP asymmetry.
 Using the same A/B trichotomy as the other TNFR Millennium programs:
 
 - **Branch A** (closure inside the existing catalog) — *not established*. PNP-1
-  only measures bare gradient flow, which is one descent strategy.
-- **Branch B** (open; current classification) — the trapping is real, but
-  whether the **full** canonical catalog (OZ/ZHIR/THOL/REMESH escape moves)
-  synthesizes in polynomial time, or whether the dissonance basins are
-  exponentially many, is **open** (PNP-2). The honest expectation — frustrated
-  landscapes have exponentially many local optima — reflects `P ≠ NP` but is
-  **unproven** here.
+  measures one auxiliary heuristic and has no proved catalog realization.
+- **Branch B** (open; current classification) — a canonical encoding and the
+  effect of the **full** catalog remain unimplemented. No basin-count theorem,
+  polynomial synthesis algorithm or worst-case lower bound is supplied.
 - **Branch B3** (no TNFR closure) — not decidable from PNP-1.
 
-This obstruction is structurally analogous to:
-- the **Riemann** residual `S(T)` (oscillatory half of the admissible rescaling, RH-equivalent);
-- the **Navier–Stokes** production residual (cascade at scale → 0, Clay-open);
-- the **Yang–Mills** continuum-limit gap (YMG-5, Clay-open).
-
-In each case TNFR reformulates the problem and **localises the obstruction**
-precisely, without closing it.
+Other repository programmes also separate finite diagnostics from open
+theorems. That methodological comparison does not identify their mathematical
+obstructions or make one programme's evidence establish another's claim.
 
 ---
 
@@ -146,7 +157,7 @@ precisely, without closing it.
 
 | PNP | Title | Status |
 | --- | --- | --- |
-| PNP-1 | Synthesis-vs-verification trapping on frustrated MAX-CUT | **DONE** (`examples/109`) |
+| PNP-1 | Finite antiphase MAX-CUT hit-rate diagnostic | **IMPLEMENTED** (`examples/109`); trapping and canonical bridge unproved |
 | PNP-2 | Full-catalog escape (OZ/ZHIR/THOL/REMESH): does trapping collapse to polynomial? | open |
 | PNP-3 | Basin-count scaling: are local optima exponentially many under U1–U6? | open |
 | PNP-4 | Encoding generality: SAT / graph-colouring beyond MAX-CUT | open |
@@ -158,12 +169,12 @@ PNP-5 is the Clay-strength statement and is not claimed.
 
 ## 7. What This Program Does and Does Not Do
 
-**Does**: provide a TNFR-native reformulation of P vs NP as coherence
-synthesis vs verification; supply a reproducible diagnostic (PNP-1) showing the
-trapping signature; classify the obstruction honestly (Branch B, open).
+**Does**: supply an auxiliary finite synthesis-versus-verification diagnostic
+with an independently enumerated scoring oracle, declared graph family and
+finite resource budget. Its evaluation pattern can inform later canonical
+pattern-formation experiments after deriving their dynamics.
 
 **Does not**: prove or disprove `P = NP`; claim that TNFR relaxation is an
-efficient general solver; assume the full operator catalog escapes the traps.
-The program follows the disciplined pattern of the Riemann, Navier–Stokes, and
-Yang–Mills programs: reformulate, measure, localise the obstruction, and remain
-honest about the open boundary.
+efficient general solver; establish trapping or exponentially many basins;
+derive the sine-sum flow from the canonical phase channel; or assume that
+canonical operators solve the encoded optimization problem.

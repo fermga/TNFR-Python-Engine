@@ -69,6 +69,35 @@ def test_disconnected_extreme_finite_fields_have_zero_flux_without_nan(zero_edge
         np.testing.assert_array_equal(compute_diffusion_energy(graph).gradient, [0.0, 0.0])
 
 
+@pytest.mark.parametrize("reader", [
+    structural_current, current_divergence, compute_diffusion_energy,
+])
+def test_underflowed_conductance_flux_does_not_report_false_equilibrium(reader):
+    graph = nx.path_graph(2)
+    small = 2.0**-600
+    graph[0][1]["weight"] = small
+    graph.nodes[0].update(EPI=small, nu_f=1.0)
+    graph.nodes[1].update(EPI=0.0, nu_f=1.0)
+    _, laplacian = structural_diffusion_operator(graph)
+    # Normalization cancels the weight, so the actual EPI rate is representable
+    # even though the constitutive flux w*x cannot be materialized as a float.
+    np.testing.assert_array_equal(-laplacian @ [small, 0.0], [-small, small])
+    with pytest.raises(ValueError, match="floating-point range"):
+        reader(graph)
+
+
+def test_exact_minimum_subnormal_flux_remains_capacity_and_pressure_independent():
+    graph = nx.path_graph(2)
+    small = 2.0**-537
+    graph[0][1]["weight"] = small
+    graph.nodes[0].update(EPI=small, nu_f=float("nan"))
+    graph.nodes[1].update(EPI=0.0, nu_f=float("nan"))
+    flux = 2.0**-1074
+    np.testing.assert_array_equal(structural_current(graph)[1],
+                                  [[0.0, flux], [-flux, 0.0]])
+    np.testing.assert_array_equal(current_divergence(graph)[1], [flux, -flux])
+
+
 def test_zero_weight_directed_arc_and_cancelled_parallel_conductance():
     graph = nx.MultiDiGraph()
     graph.add_nodes_from([0, 1, 2])

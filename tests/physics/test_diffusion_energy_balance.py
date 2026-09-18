@@ -125,8 +125,50 @@ def test_positive_mobility_underflow_cannot_falsely_certify_stationarity():
         compute_diffusion_energy(graph)
 
 
-@pytest.mark.parametrize("attribute,value", [("EPI", float("nan")), ("EPI", float("inf")),
-                                           ("nu_f", -1.0), ("nu_f", float("inf"))])
+@pytest.mark.parametrize("epi_power,capacity_power", [
+    (-600, 0),       # The positive edge energy underflows in its product.
+    (-537, 0),       # The product is exact; division by two loses the energy.
+    (-400, -400),    # Energy and EPI rate survive, but dissipation underflows.
+    (-300, -900),    # Energy survives, but the EPI rate itself underflows.
+])
+def test_nonzero_balance_terms_cannot_be_silently_rounded_to_zero(
+    epi_power, capacity_power,
+):
+    graph = nx.path_graph(2)
+    graph.nodes[0].update(EPI=2.0**epi_power, nu_f=2.0**capacity_power)
+    graph.nodes[1].update(EPI=0.0, nu_f=2.0**capacity_power)
+    before = copy.deepcopy(graph)
+    # For P2, E=x^2/2, x'=(-nu*x, nu*x), and E'=-2*nu*x^2.
+    # All exact quantities are nonzero; no pressure attribute is needed.
+    with pytest.raises(ValueError, match="floating-point range"):
+        compute_diffusion_energy(graph)
+    assert nx.utils.graphs_equal(graph, before)
+
+
+def test_exact_representable_subnormal_energy_is_not_rejected():
+    graph = nx.path_graph(2)
+    graph.nodes[0].update(EPI=2.0**-536, nu_f=1.0)
+    graph.nodes[1].update(EPI=0.0, nu_f=1.0)
+    balance = compute_diffusion_energy(graph)
+    assert balance.energy == 2.0**-1073
+    assert balance.energy_rate == -2.0**-1071
+    np.testing.assert_array_equal(balance.epi_rate, [-2.0**-536, 2.0**-536])
+
+
+def test_zero_capacity_allows_genuine_zero_dissipation_at_small_positive_energy():
+    graph = nx.path_graph(2)
+    graph.nodes[0].update(EPI=2.0**-400, nu_f=0.0)
+    graph.nodes[1].update(EPI=0.0, nu_f=0.0)
+    balance = compute_diffusion_energy(graph)
+    assert balance.energy == 2.0**-801
+    assert balance.energy_rate == 0.0
+    np.testing.assert_array_equal(balance.epi_rate, [0.0, 0.0])
+
+
+@pytest.mark.parametrize("attribute,value", [
+    ("EPI", float("nan")), ("EPI", float("inf")),
+    ("nu_f", -1.0), ("nu_f", float("inf")),
+])
 def test_invalid_nodal_state_is_rejected(attribute, value):
     graph = _graph()
     graph.nodes["a"][attribute] = value

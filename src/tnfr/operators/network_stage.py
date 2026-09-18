@@ -6479,6 +6479,38 @@ def execute_coupling_stage(
         raise
 
 
+def _merge_and_validate_self_organization_stage(
+    snapshot: Any, operator: Any, raw: tuple[Any, ...],
+) -> tuple[tuple[PointwiseStageProposal, ...], tuple[PointwiseStageProposal, ...]]:
+    """Share detached THOL collision allocation and whole-support validation.
+
+    Inputs are public proposals for one common stage-start snapshot. This
+    private planning boundary neither invokes monitors nor commits live state.
+    """
+    require_list_sink(
+        snapshot.graph, "recognized_coherence_patterns", operator=operator.name,
+    )
+    from .self_organization import _merge_stage_execution_proposals
+
+    merged = _merge_stage_execution_proposals(snapshot, raw)
+    proposals = tuple(
+        PointwiseStageProposal(node=node, glyph=Glyph.THOL, payload=payload)
+        for node, payload in merged
+    )
+    if tuple(proposal.node for proposal in proposals) != tuple(node for node, _ in raw):
+        raise RuntimeError("THOL stage proposal target order changed")
+    if any(proposal.glyph is not Glyph.THOL for proposal in proposals):
+        raise RuntimeError("THOL stage proposal glyph changed")
+    rank = {node: index for index, node in enumerate(snapshot.nodes)}
+    structural = tuple(sorted(proposals, key=lambda proposal: rank[proposal.node]))
+    validation_candidate = _detached_stage_graph(snapshot)
+    operator._validate_merged_stage_support(
+        validation_candidate,
+        tuple((proposal.node, proposal.payload) for proposal in structural),
+    )
+    return proposals, structural
+
+
 def execute_self_organization_stage(
     graph: Any,
     operator: Any,
@@ -6554,37 +6586,12 @@ def execute_self_organization_stage(
                 nodes_processed=len(targets_tuple),
             )
 
-        require_list_sink(
-            snapshot.graph,
-            "recognized_coherence_patterns",
-            operator=operator.name,
-        )
-        from .self_organization import _merge_stage_execution_proposals
-
         raw = tuple(
             (node, operator._prepare_execution(snapshot, node, execution_kwargs))
             for node in targets_tuple
         )
-        merged = _merge_stage_execution_proposals(snapshot, raw)
-        proposals = tuple(
-            PointwiseStageProposal(node=node, glyph=Glyph.THOL, payload=payload)
-            for node, payload in merged
-        )
-        if tuple(proposal.node for proposal in proposals) != targets_tuple:
-            raise RuntimeError("THOL stage proposal target order changed")
-        if any(proposal.glyph is not Glyph.THOL for proposal in proposals):
-            raise RuntimeError("THOL stage proposal glyph changed")
-
-        rank = {node: index for index, node in enumerate(snapshot.nodes)}
-        structural = tuple(
-            sorted(proposals, key=lambda proposal: rank[proposal.node])
-        )
-        validation_candidate = _detached_stage_graph(snapshot)
-        operator._validate_merged_stage_support(
-            validation_candidate,
-            tuple(
-                (proposal.node, proposal.payload) for proposal in structural
-            ),
+        proposals, structural = _merge_and_validate_self_organization_stage(
+            snapshot, operator, raw,
         )
 
         graph._last_operator_applied = operator.name

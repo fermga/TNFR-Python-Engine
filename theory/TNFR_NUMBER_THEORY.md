@@ -4,6 +4,17 @@
 **Version**: 0.0.3.5
 **Date**: March 2026
 
+> **Scope correction (2026-09-18).** Arithmetic functions, modular arithmetic,
+> graph constructors and assigned logarithmic frequencies are declared inputs.
+> Conditional spectral consequences can be derived from those inputs; this is
+> not a derivation of physical particles or of the arithmetic carrier itself
+> from the nodal equation. The historical Riemann family in §§10.1–10.4 is
+> superseded. General symmetry-complement and REMESH-infinity claims below are
+> restricted by the current
+> [Riemann program memo](TNFR_RIEMANN_RESEARCH_NOTES.md): no analytic location
+> of `S(T)`, universal operator equivariance or RH result has been established.
+> Historical numerical results are retained, not re-executed by this correction.
+
 ---
 
 ## Table of Contents
@@ -45,7 +56,7 @@ This document formalizes these observations, expresses the arithmetic constants 
 |-------|-------------|--------|
 | **Primality** | Deterministic prime detection via $\Delta\mathrm{NFR}=0$ | `primality-test/`, `src/tnfr/mathematics/number_theory.py` |
 | **Factorization** | Spectral factor discovery via Paley-Jacobi graphs | `factorization-lab/` |
-| **Riemann program** | Prime path spectral operators and critical parameter convergence | `src/tnfr/riemann/` |
+| **Riemann program** | Declared arithmetic traces and finite pulse comparisons; historical prime-path prototype superseded | `src/tnfr/riemann/` |
 
 All three layers share the same canonical constants, structural fields, and grammar constraints (U1-U6).
 
@@ -410,7 +421,10 @@ because capacity vanishes.
 
 For composites: $\Delta\mathrm{NFR}(n) > 0 \Rightarrow \partial\mathrm{EPI}/\partial t > 0$.
 
-The composite's structure is under active reorganization pressure. The rate depends on $\nu_f$, but the direction (toward simpler structure) is determined by the positive pressure.
+The composite's assigned scalar EPI increases under this fixed positive
+pressure. Its sign does not prove simplification, attraction toward a prime,
+or stability. If capacity and arithmetic pressure remain fixed and positive,
+the nodal law gives linear drift rather than relaxation (§13.3).
 
 ### 8.3 Experimental Confirmation
 
@@ -478,24 +492,48 @@ The factorization machinery (§9.1–9.4), the arithmetic primality criterion (�
 | Sector | Method | Input | Emergent? |
 |--------|--------|-------|-----------|
 | **A — Arithmetic** | $\Delta\mathrm{NFR}(n)=0$ (§4) | $\Omega, \tau, \sigma$ (the factorization) | **re-expression** (primes-IN; exact but circular as a derivation) |
-| **B — Spectral** | $g(n)=\lvert\lambda_2(\text{residue circulant}) - \tfrac{n-\sqrt n}{2}\rvert = 0$ | only $x^2 \bmod n$ | **genuinely emergent** (primes-OUT; non-circular) |
+| **B — Spectral** | $g(n)=\lvert\lambda_2(\text{residue circulant}) - \tfrac{n-\sqrt n}{2}\rvert = 0$ | prescribed modular arithmetic and residue graph | Spectral diagnostic without factorization input; scope and prime-power controls in §§9.6–9.7 |
 | **C — Representation** | irreducibility (Schur $\langle\chi,\chi\rangle=1$) | a finite group | **refuted** (the dim-4 mode of $K_5$ is irreducible yet $4=2\cdot 2$) |
 
 **The unification, stated honestly:**
 
-1. **Sector B is the genuine emergence.** The Paley gap $g(n)=0$ selects the primes $n\equiv 1\pmod 4$ from the **self-adjoint spectrum of the quadratic-residue graph alone** — it never computes $n\bmod k$. Primality is, in part, a *consequence* of self-adjoint structure, not a primitive. This is the non-circular core that the arithmetic sector A (which consumes $\Omega,\tau,\sigma$) cannot claim.
+1. **Sector B avoids factorization input.** The Paley comparison reads the
+   spectrum of a prescribed residue graph rather than supplying
+   $\Omega,\tau,\sigma$. Its prime and prime-power distinctions must retain
+   the stated operator and finite controls (§9.6). Modular arithmetic and
+   the graph construction are still inputs; neither their physical realization
+   nor a generic mechanism generating primes follows from this diagnostic.
 
 2. **The measured factor signal is spectral in these fixtures.** For a semiprime $n=p\cdot q$ the factor $p$ appears as an **exact Fourier/coset mode** of the emergent diffusion spectrum ($\eta^2_{\text{coset}}\to 1$, collapsing under a node-label shuffle — example 117 Q2). The residue graph is **regular/circulant**, so the random-walk operator and classical Laplacian share eigenvectors: this is CRT structure re-expressed. For the symmetric-seed per-node substrate fixture, the tested fields do not distinguish the cosets ($\eta^2\approx0$). Other non-invariant states or observers require separate tests.
 
-3. **Both walls coincide.** Sector B is **partial**: in the **real/self-adjoint** spectrum it detects only $n\equiv 1\pmod 4$ (misses $2$ and many $n\equiv 3\pmod 4$) — it reaches the support/scale, never the *phase* (§9.6 crosses precisely this restriction by going to the **directed** operator's complex spectrum, extending detection to all odd primes; the *continuous* arg-$\zeta$ phase still remains beyond reach). The residual is the same $e$–$\pi$ / $\mathrm{Fix}(G)^\perp$ obstruction as the paused TNFR-Riemann program ($S(T)=\tfrac1\pi\arg\zeta(\tfrac12+iT)=\ker(\mathcal R_\infty)$; §10, TNFR_RIEMANN_RESEARCH_NOTES §13septies). Multiplication is the Fundamental Theorem re-expressed via UM/REMESH ([94](../examples/07_number_theory/94_generative_number_construction.py), $\nu_f=\log p$ additive-in-log); addition (Goldbach) is **orthogonal** to this multiplicative coherence ([97](../examples/07_number_theory/97_goldbach_additive_multiplicative.py)) and would need a branch-B2 additive operator. The three number-theory questions (primality, factorization, the Riemann zeros) hit one obstruction, located precisely, not three.
+3. **The obstructions are not identified with one another.** Directed spectra
+   retain information discarded by the tested self-adjoint comparison. Their
+   Gauss-sum phases have not been identified with analytic
+   $S(T)=\pi^{-1}\arg\zeta(1/2+iT)$. The former equalities with a
+   REMESH-infinity kernel or a finite symmetry complement are withdrawn by
+   the Riemann memo's scope correction. Examples
+   [94](../examples/07_number_theory/94_generative_number_construction.py) and
+   [97](../examples/07_number_theory/97_goldbach_additive_multiplicative.py)
+   remain declared arithmetic constructions; they do not establish that all
+   factorization, additive or zeta questions share one missing operator.
 
-**Net:** the optic-shift converts the imposed arithmetic carrier (sector A) into a *partially emergent* one (sector B) and pins the residual at the phase / the $\not\equiv 1\pmod 4$ class. It SHARPENS the unification; it does not dissolve the wall. Genuine non-circular emergence exists in TNFR — but partial, spectral, and never in the per-node emergent substrate.
+**Net:** sector B supplies conditional spectral information without factoring
+the input first. The per-node blindness measured for particular symmetric
+seeds does not exclude information in other states or observers. No physical
+entity-generation mechanism or analytic zeta bridge has been derived here.
 
 ### 9.6 The Phase Sector — Sector B Extended to All Odd Primes (MEASURED)
 
 The "partial" limitation of sector B (only $n\equiv 1\pmod 4$, §9.5) is **not** a wall of TNFR — it is an artefact of restricting to the *real/self-adjoint* spectrum. Example [119_phase_sector_directed_residue.py](../examples/08_emergent_geometry/119_phase_sector_directed_residue.py) crosses it using the **same canonical emergent operator** on the **directed** residue graph.
 
-**The structural reason for the mod-4 split.** For $n\equiv 1\pmod 4$, $-1$ is a quadratic residue, so the residue graph is **symmetric**: the canonical operator $L_{rw}=I-D^{-1}W$ is self-adjoint and its spectrum is **real**. For $n\equiv 3\pmod 4$, $-1$ is **not** a residue, so the residue digraph is a **Paley tournament** (one directed edge per pair); the canonical operator is **non-self-adjoint** (a non-symmetric circulant, hence still *normal*) and its spectrum is **complex** — the arithmetic content lives in the **phase** (the imaginary part), which the real spectrum discards.
+**The structural reason for the prime mod-4 split.** For an odd prime
+$p\equiv1\pmod4$, $-1$ is a quadratic residue and the regular residue graph
+is symmetric, with self-adjoint $L_{rw}$. For an odd prime
+$p\equiv3\pmod4$, the residue digraph is a Paley tournament: its circulant
+$L_{rw}$ is normal but not self-adjoint and has complex eigenvalues. These
+prime-specific statements do not follow from the congruence alone for
+arbitrary composite moduli. An eigenvalue's imaginary part is not itself the
+engine's nodal phase variable.
 
 **Scope.** This is `structural_diffusion_operator` applied directly to a
 `networkx.DiGraph`, verified against a hand-built matrix
@@ -511,7 +549,12 @@ complete emergent geometry. The arithmetic input is $x^2\bmod n$.
 
 3. **The phase encodes $\sqrt n$.** For $n\equiv 3\pmod 4$ primes the imaginary spectrum is the Paley-tournament eigenvalue structure $(-1\pm i\sqrt n)/2$ on the adjacency; the diffusion operator's $\max|\mathrm{Im}(\lambda)|=\sqrt n/(n-1)$ **exactly** (ratio $1.000$) — a Gauss-sum fact carried in the **phase**.
 
-**Honest scope.** A genuine, non-circular extension of Reading B to all odd primes (input only $x^2\bmod n$), removing the prime-power caveat — a real improvement over §9.5. But it remains **spectral** and bounded by the same $e$–$\pi$ / $\mathrm{Fix}(G)^\perp$ wall: it detects primality structurally, it does **not** factor, does **not** reach the continuous phase $S(T)=\tfrac1\pi\arg\zeta(\tfrac12+iT)$, and closes no open problem. The "3 distinct eigenvalues" rigidity is the doubly-regular-tournament signature (a known algebraic-graph fact), recovered as the canonical emergent operator's complex spectrum. The lesson: **the phase sector is reachable — the complex field $\Psi=K_\phi+i\,J_\phi$ is the right object** (AGENTS.md "Regime Correspondences") — but the *continuous* arg-$\zeta$ phase of the Riemann residual still lies beyond this discrete-spectrum reach.
+**Honest scope.** The finite comparisons improve the tested prime-power
+distinction without factorization input. The odd-prime rank is the classical
+Gauss-period result proved in §9.11; the finite converse tests are not a proof
+for every composite. These spectra have not been identified with the tetrad
+field $\Psi=K_\phi+iJ_\phi$, an analytic symmetry complement or the zeta
+argument. No factoring speedup, particle mechanism or open-problem result follows.
 
 ### 9.7 The Symmetry Wall — Why the Substrate Is Blind and the Spectrum Is Not (MEASURED)
 
@@ -667,21 +710,45 @@ in example [155_ontological_position_of_numbers.py](../examples/08_emergent_geom
 | 2 Operations | $+, \times$ | graph products ($\square\!\to\!\sum$ spectra, $\otimes\!\to\!\prod$ spectra) | ✅ |
 | 3 Primality | $\rho(n)=3$ | directed residue operator (§9.6) | ✅ (Sector B) |
 | 3′ Arithmetic | the factorization type ($\Omega, \tau$) | the multiplicative rank $\rho(n)$ | ✅ (this §) |
-| 4 The wall | prime **identities** / $\arg\zeta$ phase | $S(T)\in\mathrm{Fix}(S_n)^\perp$ | ❌ (open) |
+| 4 Missing bridge | prime identities and analytic $\arg\zeta$ | No established common symmetry-complement representation | Open, not an identified wall |
 
-**The multiplicative spectral rank (Layer 3′, realizes the §9.7 PROVED law).** The quadratic-residue spectral rank $\rho(n)$ (the §9.6/§9.7 count of distinct diffusion eigenvalues) extends from primes to all $n$ via the **proved** conductor-annotated product law of §9.7: $A(m)=\prod_{p^e\|m}(e+\lceil e/2\rceil+1)$ is multiplicative with prime-power factor $f(e)=e+\lceil e/2\rceil+1$ depending **only on the exponent** ($f=3,4,6,7,9,\dots$). The *unannotated* scalar rank realizes it at small exponents — $\rho(p)=3$ (cyclotomy $k=2$), $\rho(p^2)=4$, $\rho(p^3)=6$ — and is multiplicative there ($\rho(mn)=\rho(m)\rho(n)$, 0 exceptions over the demo range), **faithfully encoding the factorization type**: $\rho=3\leftrightarrow$ prime, $4\leftrightarrow p^2$, $6\leftrightarrow p^3$, $9\leftrightarrow pq$, $12\leftrightarrow p^2q$. The factorization and divisor channels of the $\Delta\mathrm{NFR}$ triad ($\Omega=\sum_i a_i$, $\tau=\prod_i(a_i+1)$) are therefore **read off the spectrum** — from $x^2\bmod n$, never trial division. The arithmetic that sector A *consumes* (§9.5) genuinely *emerges* here.
+**The annotated rank and sampled scalar coincidences.** On the declared
+**odd-modulus** domain, §9.7 proves the conductor-annotated product law
+$A(m)=\prod_{p^e\|m}(e+\lceil e/2\rceil+1)$, with local factors
+$3,4,6,7,9,\ldots$. It is distinct from the unannotated scalar spectral rank
+$\rho$. The historical small examples reported $\rho(p)=3$,
+$\rho(p^2)=4$, $\rho(p^3)=6$, $\rho(pq)=9$, $\rho(p^2q)=12$, and no
+multiplicativity exceptions over that demo range. These are useful finite
+type distinctions, not a globally invertible code for $\Omega$ or $\tau$.
+The formula implementation `quadratic_residue_annotated_rank` itself factors
+its argument; the separate graph-spectrum route constructs modular residues
+without supplying those factors. The two provenance paths must not be
+conflated when claiming a factorization-free diagnostic.
 
-**The wall, located on the ladder.** $\rho$ fixes the **type**, never the prime **identities** ($\rho(15)=\rho(35)=9$); it is not globally injective on types ($\rho=36$ is shared by $p^3q^3$ and $p^2qr$ — a type collision) and the unannotated scalar rank **aliases** at high prime powers (the §9.7 / example 154 scalar CRT wall: $3^7\!\cdot5^2\!\cdot41^2$ gives scalar $191$ vs product $192$). Recovering the identities is the same $e$–$\pi$ / $\mathrm{Fix}(S_n)^\perp$ residue (the continuous $\arg\zeta$ phase, §10) as every other sector. **Net:** the emergent ontology positions a number completely **up to** the prime-identity / phase wall — cardinal, operations, primality and factorization type all derive from structure; only the identities and the continuous phase remain. This is the precise sense in which "the arithmetic emerges from the canonical TNFR structure and dynamics."
+**Diagnostic limits.** The reported small examples distinguish certain types,
+not a complete factorization: $\rho(15)=\rho(35)=9$, and $\rho=36$ is shared
+by $p^3q^3$ and $p^2qr$. Thus scalar rank does not determine even the type
+globally. The unannotated rank also aliases at high prime powers: §9.7 /
+example 154 reports scalar $191$ versus annotated product $192$ for
+$3^7\!\cdot5^2\!\cdot41^2$. The table is an organizing comparison, not a
+complete ontology theorem. The underlying integer/modular carrier, selected
+graph products and observation rules are supplied. No common obstruction
+identifies these information losses with analytic $\arg\zeta$, and no
+physical particles have been generated or identified by these diagnostics.
 
 ### 9.13 The Arithmetic Pulse — the Cyclotomy Law as the Prime's Chord (MEASURED)
 
-The *pulse* read-out (the **conservative** face of the nodal dynamics,
-[EMERGENT_ONTOLOGY.md §5.5](EMERGENT_ONTOLOGY.md)) reads the resonant spectrum
+The *pulse* read-out of the **auxiliary conservative graph-wave model**
+([EMERGENT_ONTOLOGY.md §5.5](EMERGENT_ONTOLOGY.md)) reads the resonant spectrum
 $\omega_k=\sqrt{\lambda_k}$ of the canonical $L_{rw}$. Applied to the arithmetic
 NFR — the residue Cayley network $\mathrm{Cay}(\mathbb{Z}/n,R_k)$ — its **tone
 structure is exactly the PROVED cyclotomy law** of §9.11.
 [benchmarks/emergent_arithmetic_pulse.py](../benchmarks/emergent_arithmetic_pulse.py)
-measures it.
+measures it. Its second-order conservative evolution is not derived from the
+first-order pure-EPI diffusion law. The latter has factors
+$e^{-\nu_f\lambda_k t}$; the separately declared wave uses frequencies
+$\sqrt{\lambda_k}$ on its admitted nonnegative self-adjoint domain. Complex
+directed spectra do not automatically provide real conservative frequencies.
 
 **The pulse tone-count is the cyclotomy law.** The number of *distinct* resonant
 tones of the residue-NFR pulse is `structural_frequency_rank` (the distinct
@@ -699,17 +766,16 @@ $(\omega_-,\omega_+)$, each with multiplicity $(p-1)/2$ — the pulse's own
 `spectral_multiplicity` field reads $(p-1)/2$ exactly. A prime vibrates in the
 simplest chord the arithmetic NFR allows, at any size; **composites split the
 chord into more tones, multiplicatively** ($15\to9=3\times3$, $45\to12=4\times3$),
-so the tone-count encodes the **factorization type** — the multiplicative spectral
-rank of the §9.12 ladder, now read as the chord size.
+so the tone-count distinguishes the listed **factorization types**. The
+collisions and annotated/unannotated distinction in §9.12 still apply; this
+is not a complete factorization-type decoder.
 
-**The pulse splits across the symmetry wall.** The two scales of the pulse land on
-the two sides of the §9.7/§9.10 $\mathrm{Fix}(G)\oplus\mathrm{Fix}(G)^\perp$ split:
-the **per-NFR** pulse is **blind** (the residue graph is vertex-transitive, so the
-per-node substrate is in $\mathrm{Fix}(G)$), while the **collective** pulse — the
-spectrum — carries the cyclotomy ($\mathrm{Fix}(G)^\perp$). The real/phase split of
-§9.6 is inherited: the *real* conservative pulse reads the cyclotomy on the
-symmetric NFR ($p\equiv1\pmod4$); the *complex* directed pulse extends it to all
-odd primes.
+**Observation depends on the seed and readout.** For the symmetric-seed
+fixtures, vertex-transitivity makes equivariant per-node readouts constant
+over the orbit. Other states may excite nonuniform sectors. The collective
+spectral rank carries cyclotomic information but is a scalar invariant, not
+a vector in $\mathrm{Fix}(G)^\perp$. The directed complex-spectrum extension
+in §9.6 remains a different diagnostic from the real conservative wave.
 
 **Honest scope.** The tone-count *is* `structural_frequency_rank` (already the
 documented cyclotomy diagnostic), and $s_k(p)=\gcd(k,p-1)+1$ is the PROVED
@@ -718,8 +784,9 @@ reading — those distinct eigenvalues are the distinct resonant **tones** of th
 arithmetic vibration, so a prime is a maximally-degenerate chord and the
 factorization type is the chord size. It detects primality / factorization
 **type** structurally; it does **not** factor, does **not** reach the prime
-**identities** or the continuous $\arg\zeta$ phase (the same $\mathrm{Fix}(S_n)^\perp$
-wall, §10), and closes no open problem.
+**identities** or the continuous $\arg\zeta$ phase. No common
+$\mathrm{Fix}(S_n)^\perp$ representation has been established (§10), and no
+open problem is closed.
 
 ---
 
@@ -727,7 +794,9 @@ wall, §10), and closes no open problem.
 
 ### 10.1 The Discrete TNFR-Riemann Operator
 
-The TNFR-Riemann program constructs a family of operators on prime path graphs:
+**Historical, superseded construction.** Sections 10.1–10.4 retain the
+eliminated prime-path prototype for traceability. They are not the current
+program or evidence for an emergent critical line. The former family was
 
 $$H^{(k)}_{\mathrm{TNFR}}(\sigma) = L_k + V_\sigma$$
 
@@ -739,26 +808,32 @@ $$V_\sigma(i) = (\sigma - \tfrac{1}{2}) \log(p_i)$$
 
 ### 10.2 Critical Parameter Convergence
 
-The **critical parameter** $\sigma_c^{(k)}$ is the value of $\sigma$ at which the smallest eigenvalue of $H^{(k)}_{\mathrm{TNFR}}(\sigma)$ changes sign (spectral phase transition).
-
-**Main numerical result**:
+The historical report described the lowest-eigenvalue sign change as
 
 $$\sigma_c^{(k)} = \frac{1}{2} + O\!\left(\frac{1}{\log k}\right) \quad \text{as } k \to \infty$$
 
-This convergence is:
-- **Numerically verified** across multiple topologies and parameter ranges
-- **Analytically bounded** using the Prime Number Theorem and telescoping identities
-- **Universal** — independent of graph construction details
+For the displayed construction with a symmetric positive-semidefinite graph
+Laplacian $L_k\mathbf1=0$ and $p_i\ge2$, the sign change is already **exactly
+at the inserted value $1/2$ for every finite size**. At $\sigma=1/2$ the
+potential vanishes. Above it, adding the positive diagonal makes $H$ positive
+definite. Below it, the Rayleigh quotient of $\mathbf1$ is negative. This
+requires no prime-distribution theorem and works for any positive diagonal
+in place of $\log p_i$. The old asymptotic wording therefore supplies no
+independent critical-line evidence or generative phase-transition result.
 
 ### 10.3 Connection to the Riemann Hypothesis
 
-At $\sigma = 1/2$, the potential $V_{1/2}$ vanishes and $H^{(k)}_{\mathrm{TNFR}}$ reduces to the pure graph Laplacian. The spectral transition at $\sigma_c \to 1/2$ provides **structural coherence evidence** for the critical line of the Riemann zeta function $\zeta(s)$.
-
-**Status**: The bridge from the discrete TNFR operator result to the classical Riemann Hypothesis remains an **open conjecture** (Conjecture 10.1 in the Riemann Research Notes). The framework constitutes a research program, not a closed proof.
+At $\sigma=1/2$ this potential vanishes by definition; the transition does
+not constrain zeros of analytic $\zeta$. The current
+[Riemann program memo](TNFR_RIEMANN_RESEARCH_NOTES.md) supersedes this
+prototype and its former bridge interpretation. G4 = RH remains open.
 
 ### 10.4 Tetrad Fields on the Prime Path
 
-From eigenpairs $(\lambda_j, \phi_j)$ of $H^{(k)}_{\mathrm{TNFR}}$:
+The historical prototype used the following eigenvector-variation diagnostics
+from $(\lambda_j,\phi_j)$. Here $\phi_j$ is an eigenvector, not an independently
+defined circular nodal phase; these expressions are not the canonical wrapped
+tetrad kernels:
 
 **Phase gradient** (discrete):
 $$|\nabla\phi|^{(j)} = \frac{1}{k-1}\sum_{i=1}^{k-1}|\phi_j(p_{i+1}) - \phi_j(p_i)|$$
@@ -769,16 +844,28 @@ $$K_\phi^{(j)} = \frac{1}{k-2}\sum_{i=2}^{k-1}|\phi_j(p_{i+1}) - 2\phi_j(p_i) + 
 **Coherence length** (from correlation decay):
 $$C_j(r) \approx A_j \cdot e^{-r/\xi_C^{(j)}}$$
 
-These tetrad fields on the prime path link the arithmetic distribution of primes to the structural field theory.
+These retained formulas record the old comparison only. They do not provide
+a state map, an operator correspondence or a physical particle prediction.
 
 ### 10.5 Refactoring the Riemann Attack — From the Self-Adjoint Prime-Ladder to the Non-Self-Adjoint Phase Operator (MEASURED)
 
-The TNFR-Riemann program is paused at the **Tetrad-Hilbert-Pólya (T-HP)** conjecture on the **self-adjoint** prime-ladder operator P14 (`src/tnfr/riemann/prime_ladder_hamiltonian.py`). That route is walled by the **Euler-Orthogonality Lemma** (TNFR_RIEMANN_RESEARCH_NOTES §13vicies-novies.11): on the prime-ladder graph every canonical operator **commutes with the $S_n$ prime-relabelling**, so the spectrum lives in $\mathrm{Fix}(S_n)$ and is structurally blind to the Riemann residue $S(T)=\tfrac1\pi\arg\zeta(\tfrac12+iT)\in\mathrm{Fix}(S_n)^\perp$.
+The prime-ladder P14 construction explicitly assigns prime labels and
+$\nu_{f,(p,k)}=k\log p$. Its diagonal spectrum is an encoding of those
+inputs. Selected finite symmetry tests establish the conditional implication
+$[L,P]=0\Rightarrow[f(L),P]=0$. They do not establish that every canonical
+operator commutes with prime relabeling, that a scalar spectrum is a vector
+in a fixed sector, or that analytic $S(T)$ lies in its orthogonal complement.
+The current Riemann memo explicitly withdraws those historical promotions.
 
 The number-theory reframe (§9.6, §9.8) supplies a **structurally different object** for the same residue: the **directed quadratic-residue diffusion operator** $L_{rw}=I-D^{-1}W$ on the Paley tournament ($n\equiv 3\pmod 4$). It is
 
-- **non-self-adjoint** (a non-symmetric circulant — hence *normal*; its complex spectrum is the $\mathbb{Z}/n$ character / Gauss-sum eigenbasis) → its spectrum is **complex**, carrying the arithmetic in the **phase** (imaginary part) — structurally aligned with the fact that the Riemann zeros are **imaginary parts** $\{\gamma_n\}$, whereas the self-adjoint Hilbert-Pólya framing seeks a **real** spectrum; and
-- symmetric only under the **affine group of $\mathbb{Z}/n$**, **not** the $S_n$ prime-relabelling — so it is **not subject to the Euler-Orthogonality Lemma**, and it already reaches **all odd primes** (§9.6), past the self-adjoint mod-4 restriction.
+- **non-self-adjoint but normal**, since it is circulant; its complex
+  eigenvalues contain classical Gauss-sum information;
+- associated with a separately specified modular graph and symmetry action.
+  A symmetry restriction proved for P14 cannot simply be transferred to it.
+
+Complex eigenvalues alone do not identify zeta ordinates, nodal phase
+evolution or a physical oscillatory entity.
 
 So the natural question is whether the attack should pivot from "build a *self-adjoint* operator with spectrum $\{\gamma_n\}$" to "read the residue off the *non-self-adjoint* phase operator".
 
@@ -788,7 +875,20 @@ So the natural question is whether the attack should pivot from "build a *self-a
 - **F-ALIGN** — $\mathrm{Pearson}\big(\max|\mathrm{Im}|(p_n),\,\gamma_n\big)=\mathbf{-0.9068}$: the residue phase content **decreases** like $1/\sqrt p$ while the zeros $\gamma_n$ **increase** — opposite trends.
 - **Verdict:** `GAUSS_CONFIRMED_RIEMANN_REFUTED`.
 
-**Honest net.** The non-self-adjoint phase operator **does** evade the Euler-Orthogonality wall and reaches arithmetic in the phase — a genuine structural advance and a more natural arena than the self-adjoint prime-ladder — but its phase content is $\sqrt p$ **Gauss sums**, not $\{\gamma_n\}$. This is the §9.5 "**both walls coincide**" statement made operator-explicit: the residue-phase $\to$ $\zeta$-zeros bridge is the **same** $e$–$\pi$ / $\mathrm{Fix}(S_n)^\perp$ residue. The reframe **relocates and sharpens** the obstruction — from "find a self-adjoint $F$ with $\mathrm{spec}=\{\gamma_n\}$" to "connect the non-self-adjoint Gauss-sum phase ($\sqrt p$) to the $\zeta$-zero phase ($S(T)$)" — but **does not dissolve it**. The program stays paused at T-HP; **G4 = RH remains OPEN**; this closes no open problem.
+**Honest net.** The retained result rejects the tested direct alignment of
+Gauss-sum imaginary parts with zeta ordinates. It does not locate a universal
+symmetry obstruction, exclude other representations or prove a physical
+phase mechanism. G4 = RH remains open.
+
+The current finite pulse helper instead evaluates
+$P_N(T)=\sum_{n=1}^N n^{-1/2}e^{-iT\log n}$ with prescribed amplitudes,
+logarithmic frequencies and truncation. This is not an identity for analytic
+$\zeta(1/2+iT)$: the ordinary infinite Dirichlet representation applies to
+$\mathrm{Re}(s)>1$, with analytic continuation elsewhere
+([DLMF §25.2](https://dlmf.nist.gov/25.2)). The functional-equation reflection
+axis ([DLMF §25.4](https://dlmf.nist.gov/25.4)) is not a derived
+$\Delta\mathrm{NFR}=0$ locus. Finite nearest-dip matches are comparisons
+against known ordinates, not autonomous nodal generation or RH certificates.
 
 ---
 
@@ -906,7 +1006,9 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 
 ### 13.2 Theoretical
 
-- **Conjecture 10.1 (TNFR-Riemann bridge)**: Does the spectral determinant of $H^{(k)}_{\mathrm{TNFR}}$ analytically continue to $\zeta(s)$?
+- **TNFR-Riemann bridge**: Can a declared nodal construction support an
+  independently proved analytic correspondence? The historical $H^{(k)}$
+  family is superseded (§10); no G4/RH bridge is established by its sign change.
 - **Pressure distribution**: What is the exact probability distribution of $\Delta\mathrm{NFR}(n)$ for "random" composites?
 - **Goldbach connection**: Can the additive decomposition of even numbers be formulated as a phase-matching problem ($|\phi_p + \phi_q - \phi_{2n}| \leq \Delta\phi_{\max}$)?
 - **Arithmetic coherence length**: How does $\xi_C$ in the arithmetic network relate to the distribution of prime gaps?

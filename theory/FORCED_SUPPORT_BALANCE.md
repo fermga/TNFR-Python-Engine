@@ -2,6 +2,8 @@
 
 **Status:** Exact fixed-support balance and finite Euler error identities.
 Runtime observations retain pressure and endpoint defects separately.
+Section 7 adds exact instantaneous regional balances on the full support;
+they do not assume that a selected region is already an autonomous NFR.
 **Research links:** B2.d.7/O3.a, S3, S8, S9 and S16.
 
 ## 1. The reference comes from the existing nodal channels
@@ -377,3 +379,163 @@ The [child-target Coupling follow-up](CHILD_COUPLING_FEEDBACK.md) adds exact
 same-EPI reset budgets when capacity, conductance or forcing changes. It keeps
 the original derived profile as a separate fixed comparison and continues
 from the retained attached endpoint before its terminal Silence action.
+
+## 7. A region and its environment on the same nodal support
+
+The full-network balance does not by itself identify which mechanism supports
+a particular region. For a fixed proper nonempty node set `R`, retain the
+**full-graph** conductance, strengths `d_i`, positive capacities and `e>0`
+from section 1. Connectivity is unnecessary for the identities below, but
+every full strength must be positive. Removing the environment and
+renormalizing an induced graph changes the model and is not this observation.
+
+Let `h_i=d_i/nu_i`, `Z_R=sum_R h_i`,
+
+$$
+M_R=\sum_{i\in R}h_i x_i,\qquad m_R=M_R/Z_R,\qquad
+z_i=x_i-m_R,\qquad V_R=\frac12\sum_{i\in R}h_i z_i^2.
+$$
+
+`M_R` is a weighted EPI total, with no identification as physical mass.
+`V_R` measures internal EPI contrast about the region's own weighted mean;
+neither quantity alone defines coherence, identity or biological activity.
+For an edge oriented from the region to its complement, define the outward
+EPI current `J_ij=W_ij*(x_i-x_j)`. Direct substitution of the nodal equation
+and cancellation of opposite internal currents give
+
+$$
+\dot M_R=-e\sum_{i\in R,j\notin R}J_{ij}
+              +\sum_{i\in R}d_iF_i.
+$$
+
+The complementary region receives the opposite cut current. Since
+`sum_R h_i*z_i=0`, differentiating the regional mean contributes zero to
+the fixed-metric variance derivative. Pairing internal edges yields
+
+$$
+\dot V_R=
+-e\sum_{\{i,j\}\subset R}W_{ij}(x_i-x_j)^2
+-e\sum_{i\in R,j\notin R}W_{ij}z_i(x_i-x_j)
++\sum_{i\in R}d_i z_iF_i.
+$$
+
+The first sum counts each internal undirected edge once. It is nonpositive.
+The boundary and non-EPI source terms are signed: either can supply or remove
+regional contrast. Loops contribute to `d_i` but carry zero EPI current.
+Zero-weight support edges contribute no EPI current; their influence on the
+other canonical channels remains in the independently captured `F`.
+
+For stored pressure `p`, retain
+`epsilon_i=p_i-(-e*(Bx)_i/d_i+F_i)`. The stored-rate balances add
+`sum_R d_i*epsilon_i` and `sum_R d_i*z_i*epsilon_i`, respectively.
+When a forcing observation is available, split this discrepancy into its
+fresh-kernel arithmetic defect and stored-minus-fresh pressure residual.
+Do not redefine `F` from the observed derivative to remove either term.
+Linearity also separates the phase, capacity and topology contributions.
+
+These identities use one fixed region and metric. If support or capacity
+varies continuously, differentiation includes metric-variation terms; birth,
+membership changes and discrete events require their own endpoint budgets.
+An instantaneous equality is not a finite-time restoration or invariance
+theorem. Even exactly balanced source and loss at one instant do not prove
+that the conditions supplying that balance persist.
+
+The single executable owner is
+[`observe_regional_support_balance`](../src/tnfr/physics/support_transport.py).
+It rebuilds snapshot caches, preserves the full source node order and accepts
+an explicit ordered region plus an independently supplied source vector.
+The observer checks four exact identities: model and stored-pressure rates
+for both weighted total and variance. It does not evolve the graph or choose
+its region. Public detached records carry no causal execution seal.
+
+The independent
+[`regional tests`](../tests/physics/test_regional_support_balance.py) include
+a three-node path with `x=(0,1,5)`, unit edges, capacities `(1,2,1)`, `e=1`,
+`F=0` and `R={0,1}`. Here `h_R=(1,1)`, `m_R=1/2`, internal dissipation is `1`,
+boundary work is `2` and `dot V_R=1`: internal diffusion can coexist with
+growing regional contrast. Complementary total fluxes cancel. This control
+demonstrates why whole-network smoothing cannot replace a regional budget.
+
+### Conditional child response is not an autonomous child region
+
+For a selected child set `B` with no internal edges or self-loops, fixed
+external EPI and the same held canonical source give, for each child,
+
+$$
+\dot x_i=-e\nu_i(x_i-x_i^*),\qquad
+x_i^*=\frac{\sum_{j\notin B}W_{ij}x_j}{d_i}+\frac{F_i}{e}.
+$$
+
+The conditional relaxation rate is `e*nu_i`. This is the diagonal block of
+the existing nodal generator, without an added restoring force. If the
+environment changes, this conditional profile changes too and is not a
+fixed future target. Dependence on the environment is consistent with a
+relational NFR; the open question is how the coupled system generates and
+maintains the relevant region and its supporting boundary conditions.
+
+## 8. Retained THOL regional audit
+
+[`thol_regional_balance_audit.py`](../benchmarks/thol_regional_balance_audit.py)
+applies section 7 to **one** authenticated sixteen-node snapshot at `t=0.5`,
+immediately after the original all-parent UM attachment and pressure refresh.
+Before computation it fixes eight actual parent-child pairs, in retained
+birth order, plus the complete actual-child cohort. It validates their birth
+receipts, hierarchy, parent pointers, source state, forcing decomposition and
+original model digest. There is no partition search, graph reconstruction,
+new native call or trajectory. Nine regional observations are not nine
+independent experiments or nine certified NFRs.
+
+The full graph has 24 undirected positive-conductance edges. Each ancestry
+pair has one internal edge and four cut edges. The child cohort has sixteen
+cut edges and no internal edges. The normalized EPI coefficient is retained
+as approximately `0.18315345241335917`; it is not refitted. The following
+decimals summarize exact rational rates in the declared structural time.
+Grouping by parity is only a presentation of the eight preselected pairs.
+
+| Region | Negative internal term | Boundary term | Non-EPI source term | Model variance rate |
+| --- | ---: | ---: | ---: | ---: |
+| Pairs 0, 2, 4, 6 | `-0.336177322` | `-0.377518225` | `-0.007512998` | `-0.721208545` |
+| Pairs 1, 3, 5, 7 | `-0.008502957` | `+0.015068434` | `-0.000818827` | `+0.005746650` |
+| All actual children | `0` | `-0.005023392` | `0` | `-0.005023392` |
+
+Four pairs instantaneously reduce their internal contrast and four increase
+it. Thus a whole-network attenuation score would conceal different regional
+responses. For the child cohort, the modeled variance decrease comes entirely
+from the parent boundary. Its weighted-total influx is approximately
+`1.3525044630156273`, with an additional `0.039791667697099464` from the
+capacity channel; phase and topology contribute exactly zero to this
+cohort's weighted-total rate. The capacity source has zero centered-variance
+contribution in this particular cohort. Zero aggregate contribution does not
+imply that a channel is absent from the complete network dynamics.
+
+The child cohort's fresh-kernel variance defect is approximately
+`8.351053868395752e-19`, and its stored-minus-fresh residual is exactly zero.
+All nine observations close all four exact model/stored identities. The
+conditional child rates are approximately `0.1739957797926912`; held-parent
+profiles alternate approximately `1.0665389696346133` and
+`0.6469908610321591`. Actual parents also evolve, so those conditional values
+are neither observed equilibria nor a new frozen target for later scoring.
+The audit identifies a boundary-supported response, not autonomous regional
+maintenance or its absence.
+
+Reproduction uses the original retained artifact without replaying it:
+
+```powershell
+.venv313\Scripts\python.exe -X utf8 benchmarks/thol_regional_balance_audit.py
+```
+
+Input: `artifacts/research/thol_native_runtime_response_2026_09_18.json`,
+SHA-256 `71252d116d8933d15a797707ed9f44ed865406422da6db492b48f6989d739c95`.
+Output: `artifacts/research/thol_regional_balance_audit_2026_09_18.json`,
+SHA-256 `a1cbda157979dfc85e49aed747ab68d1758ab543ab70588ea0060f33536f1a84`.
+The output records its working-source scope and digest
+`sha256:21d3bb97569d2ca6dbce5c206df2732397a038135990fc91baf70c4106f51921`.
+Ignored local artifacts are not promised in a fresh clone; the tracked
+derivation, source, portable tests and input binding retain the result's scope.
+
+The regional owner has 33 new tests and the
+[`retained audit`](../tests/physics/test_thol_regional_balance_audit.py) has 19.
+A combined 313-test validation covers those tests, the reused full-support,
+forcing/target owners, grammar/contract/sequence witnesses and selector
+symmetry. It passes with zero failures. No full-repository, laboratory,
+infinite-time or autonomous-emergence verification is claimed.

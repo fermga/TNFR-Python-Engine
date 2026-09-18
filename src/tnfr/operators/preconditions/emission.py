@@ -5,7 +5,7 @@ structural operator according to TNFR.pdf §2.2.1. AL requires specific structur
 conditions to maintain TNFR operational fidelity:
 
 1. **Latent state**: EPI must be below activation threshold (node not already active)
-2. **Basal frequency**: νf must exceed minimum threshold (sufficient reorganization capacity)
+2. **Basal frequency**: νf must meet the minimum threshold (sufficient reorganization capacity)
 3. **Coupling availability**: Network connectivity for phase alignment (warning for isolated nodes)
 
 These validations protect structural integrity by ensuring AL is only applied to
@@ -31,7 +31,7 @@ def validate_emission_strict(G: TNFRGraph, node: Any) -> None:
     According to TNFR.pdf §2.2.1, Emission (AL - Emisión fundacional) requires:
 
     1. **Latent state**: EPI < threshold (node must be in latent or low-activation state)
-    2. **Basal frequency**: νf > threshold (sufficient structural frequency for activation)
+    2. **Basal frequency**: νf >= threshold (sufficient structural frequency for activation)
     3. **Coupling availability**: Network connectivity (warning if isolated)
 
     Parameters
@@ -65,11 +65,9 @@ def validate_emission_strict(G: TNFRGraph, node: Any) -> None:
     >>> G, node = create_nfr("test", epi=0.25, vf=0.95)
     >>> validate_emission_strict(G, node)  # OK - latent state with sufficient frequency
 
-    >>> G2, node2 = create_nfr("active", epi=0.85, vf=1.0)
-    >>> validate_emission_strict(G2, node2)  # doctest: +SKIP
-    Traceback (most recent call last):
-        ...
-    ValueError: AL precondition failed: EPI=0.850 >= 0.8. AL requires latent state. Consider IL (Coherence) instead.
+    A node at or above the configured ``EPI_LATENT_MAX`` raises
+    :class:`TNFRValueError`. Threshold values come from the graph or shared
+    defaults rather than a separate numeric constant in this documentation.
 
     See Also
     --------
@@ -107,7 +105,7 @@ def validate_emission_strict(G: TNFRGraph, node: Any) -> None:
             suggestion="Consider IL (Coherence) to stabilize active nodes instead.",
         )
 
-    # Precondition 2: νf must exceed basal threshold (sufficient frequency for emission)
+    # Precondition 2: νf must meet the basal threshold (sufficient frequency for emission)
     # Below basal frequency, node lacks capacity to sustain structural activation
     if vf < vf_threshold:
         raise TNFRValueError(

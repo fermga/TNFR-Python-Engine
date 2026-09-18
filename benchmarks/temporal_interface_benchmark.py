@@ -43,12 +43,17 @@ Usage (PowerShell)::
 from __future__ import annotations
 
 import argparse
+import csv
+import hashlib
 import io
 import json
 import math
+import re
 import sys
 import zipfile
-from dataclasses import asdict
+import warnings
+from dataclasses import asdict, dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 from urllib.request import Request, urlopen
@@ -76,6 +81,10 @@ TRANSNETBW_FREQUENCY_URL_TEMPLATE = (
 
 DEFAULT_MAX_BYTES = 80_000_000  # bounded download guard (~80 MB)
 DEFAULT_MAX_POINTS = 6_000  # subsample target to keep ξ_C tractable
+DEFAULT_MAX_EXPANDED_BYTES = 128_000_000
+DEFAULT_MAX_MEMBER_BYTES = 64_000_000
+DEFAULT_MAX_MEMBERS = 64
+DEFAULT_MAX_ROWS = 1_000_000
 NOMINAL_FREQUENCY_HZ = 50.0
 
 
@@ -97,10 +106,16 @@ def download_grid_frequency_month(
     the cumulative size exceeds ``max_bytes`` so a mistaken URL cannot pull a
     multi-gigabyte archive.
     """
+    _positive_limit(max_bytes, "max_bytes")
+    if isinstance(timeout, bool) or not math.isfinite(timeout) or timeout <= 0:
+        raise ValueError("timeout must be finite and positive")
     yyyymm = f"{year:04d}{month:02d}"
     url = TRANSNETBW_FREQUENCY_URL_TEMPLATE.format(yyyymm=yyyymm)
     path = cache_path or _ROOT / "results" / "data" / f"{yyyymm}_Frequenz.zip"
     if path.exists():
+        if not path.is_file() or path.stat().st_size > max_bytes:
+            print("  [skip] cached archive exceeds the compressed-byte limit", file=sys.stderr)
+            return None
         return path
     path.parent.mkdir(parents=True, exist_ok=True)
     try:
@@ -127,49 +142,166 @@ def download_grid_frequency_month(
     return path
 
 
-def _parse_frequency_csv(text: str) -> np.ndarray:
-    """Parse a TransnetBW frequency CSV into a float array (NaN for gaps).
+def _positive_limit(value: int, name: str) -> int:
+    if type(value) is not int or value <= 0:
+        raise ValueError(f"{name} must be a positive integer")
+    return value
 
-    Robust to ``;``/``,``/tab delimiters and to decimal commas.  The frequency
-    is taken as the last numeric field of each row; unparseable rows (headers,
-    blanks, NaN markers) are dropped.
+
+@dataclass(frozen=True)
+class GridFrequencyRecord:
+    """Bounded raw rows plus an analysis selection; no gap is compressed away.
+
+    Timestamps, values and masks retain *every* parsed data row. The stride
+    changes only ``selected_indices``. Naive ISO timestamps have no verified
+    timezone; relative seconds are descriptive and never admit Hz_str.
+    ``None`` values/times explicitly preserve unavailable observations.
     """
-    values: list[float] = []
-    for raw in text.splitlines():
+
+    timestamps: tuple[str, ...]
+    elapsed_seconds: tuple[float | None, ...]
+    values_hz: tuple[float | None, ...]
+    missing: tuple[bool, ...]
+    source_line_numbers: tuple[int, ...]
+    selected_indices: tuple[int, ...]
+    stride: int
+    time_status: str
+    archive_sha256: str
+    member_sha256: str
+    member_name: str
+
+
+def _parse_frequency_rows(text: str, *, max_rows: int):
+    _positive_limit(max_rows, "max_rows")
+    timestamps, values, lines = [], [], []
+    for line_number, raw in enumerate(text.splitlines(), start=1):
         line = raw.strip()
         if not line:
             continue
-        if ";" in line:
-            delimiter = ";"
-        elif "\t" in line:
-            delimiter = "\t"
-        else:
-            delimiter = ","
-        fields = [f.strip() for f in line.split(delimiter) if f.strip()]
+        delimiter = ";" if ";" in line else ("\t" if "\t" in line else ",")
+        fields = [f.strip() for f in next(csv.reader([line], delimiter=delimiter))]
         if len(fields) < 2:
-            continue
-        token = fields[-1]
-        # German decimal comma reconstruction for comma-delimited rows that
-        # split a value like "50,012" into ["50", "012"].
-        if (
-            delimiter == ","
-            and len(fields) >= 3
-            and fields[-2].isdigit()
-            and token.isdigit()
+            raise ValueError(f"row {line_number} has no timestamp/value separation")
+        if not timestamps and fields[0].lower().lstrip("\ufeff") in (
+            "timestamp", "time", "datetime", "zeitstempel", "datum"
         ):
-            token = f"{fields[-2]}.{token}"
-        else:
-            token = token.replace(",", ".")
+            continue
+        if len(values) >= max_rows:
+            raise ValueError("CSV row limit exceeded")
+        token = fields[-1].replace(",", ".")
+        if (delimiter == "," and len(fields) == 3
+                and fields[-2].isdigit() and fields[-1].isdigit()):
+            token = f"{fields[-2]}.{fields[-1]}"
+        elif len(fields) != 2:
+            raise ValueError("ambiguous CSV columns; supply one timestamp and one frequency")
         try:
-            freq = float(token)
+            value = float(token)
         except ValueError:
-            continue
-        # Plausibility band: discard obvious non-frequency tokens.
-        if not math.isfinite(freq) or freq < 40.0 or freq > 60.0:
-            values.append(float("nan"))
-            continue
-        values.append(freq)
-    return np.asarray(values, dtype=float)
+            value = float("nan")
+        values.append(value if math.isfinite(value) and 40 <= value <= 60 else None)
+        timestamps.append(fields[0])
+        lines.append(line_number)
+    return tuple(timestamps), tuple(values), tuple(lines)
+
+
+def _relative_times(timestamps: tuple[str, ...]):
+    parsed = []
+    for value in timestamps:
+        try:
+            parsed.append(datetime.fromisoformat(value))
+        except ValueError:
+            parsed.append(None)
+    if not parsed:
+        return (), "unavailable"
+    if any(value is None for value in parsed):
+        return tuple(None for _ in parsed), "unavailable_timestamp"
+    try:
+        elapsed = tuple((value - parsed[0]).total_seconds() for value in parsed)
+    except TypeError:
+        return tuple(None for _ in parsed), "mixed_timezone_unavailable"
+    if any(right <= left for left, right in zip(elapsed, elapsed[1:])):
+        return elapsed, "nonmonotone_timestamp"
+    status = "relative_seconds_timezone_unverified" if parsed[0].tzinfo is None else "relative_seconds"
+    return elapsed, status
+
+
+def _parse_frequency_csv(text: str) -> np.ndarray:
+    """Legacy descriptive values view; malformed/missing values remain NaN."""
+    _, values, _ = _parse_frequency_rows(text, max_rows=DEFAULT_MAX_ROWS)
+    return np.asarray([float("nan") if x is None else x for x in values])
+
+
+def load_grid_frequency_record(
+    zip_path: Path,
+    *,
+    max_points: int = DEFAULT_MAX_POINTS,
+    max_bytes: int = DEFAULT_MAX_BYTES,
+    max_expanded_bytes: int = DEFAULT_MAX_EXPANDED_BYTES,
+    max_member_bytes: int = DEFAULT_MAX_MEMBER_BYTES,
+    max_members: int = DEFAULT_MAX_MEMBERS,
+    max_rows: int = DEFAULT_MAX_ROWS,
+    member_name: str | None = None,
+    expected_archive_sha256: str | None = None,
+) -> GridFrequencyRecord:
+    """Read one bounded CSV without losing row times, gaps or their alignment.
+
+    Admission errors raise ``ValueError``; no acquisition occurs here. Bounds
+    apply to cached archives too, all ZIP entries and their declared expanded
+    sizes. The selected member is also read with an actual byte ceiling.
+    A supplied archive digest binds the bounded bytes before ZIP parsing.
+    Multiple CSV members require an explicit member name.
+    """
+    for name, value in (("max_points", max_points), ("max_bytes", max_bytes),
+                        ("max_expanded_bytes", max_expanded_bytes),
+                        ("max_member_bytes", max_member_bytes),
+                        ("max_members", max_members), ("max_rows", max_rows)):
+        _positive_limit(value, name)
+    expected_digest = None
+    if expected_archive_sha256 is not None:
+        if (type(expected_archive_sha256) is not str
+                or re.fullmatch(r"(?:sha256:)?[0-9a-fA-F]{64}", expected_archive_sha256) is None):
+            raise ValueError("expected_archive_sha256 must be a SHA-256 digest")
+        expected_digest = expected_archive_sha256.removeprefix("sha256:").lower()
+    with Path(zip_path).open("rb") as handle:
+        raw_archive = handle.read(max_bytes + 1)
+    if len(raw_archive) > max_bytes:
+        raise ValueError("archive exceeds compressed-byte limit")
+    archive_digest = hashlib.sha256(raw_archive).hexdigest()
+    if expected_digest is not None and archive_digest != expected_digest:
+        raise ValueError("archive SHA-256 mismatch")
+    with zipfile.ZipFile(io.BytesIO(raw_archive)) as archive:
+        entries = archive.infolist()
+        if len(entries) > max_members:
+            raise ValueError("archive exceeds member-count limit")
+        if sum(item.file_size for item in entries) > max_expanded_bytes:
+            raise ValueError("archive exceeds expanded-byte limit")
+        if any(item.file_size > max_member_bytes for item in entries):
+            raise ValueError("archive member exceeds expanded-byte limit")
+        if len({item.filename for item in entries}) != len(entries):
+            raise ValueError("duplicate archive member names are ambiguous")
+        candidates = [item for item in entries if not item.is_dir()
+                      and item.filename.lower().endswith(".csv")]
+        if member_name is not None:
+            candidates = [item for item in candidates if item.filename == member_name]
+        if not candidates:
+            raise ValueError("archive contains no selected CSV member")
+        if len(candidates) != 1:
+            raise ValueError("multiple CSV members require explicit member_name")
+        selected = candidates[0]
+        with archive.open(selected) as handle:
+            raw = handle.read(max_member_bytes + 1)
+        if len(raw) > max_member_bytes or len(raw) != selected.file_size:
+            raise ValueError("expanded member failed its byte bound")
+    timestamps, values, lines = _parse_frequency_rows(raw.decode("utf-8-sig"), max_rows=max_rows)
+    elapsed, time_status = _relative_times(timestamps)
+    stride = max(1, math.ceil(len(values) / max_points))
+    return GridFrequencyRecord(
+        timestamps=timestamps, elapsed_seconds=elapsed, values_hz=values,
+        missing=tuple(value is None for value in values), source_line_numbers=lines,
+        selected_indices=tuple(range(0, len(values), stride)), stride=stride,
+        time_status=time_status, archive_sha256=archive_digest,
+        member_sha256=hashlib.sha256(raw).hexdigest(), member_name=selected.filename,
+    )
 
 
 def load_grid_frequency_series(
@@ -177,34 +309,24 @@ def load_grid_frequency_series(
     *,
     max_points: int = DEFAULT_MAX_POINTS,
 ) -> np.ndarray | None:
-    """Load and subsample a grid-frequency series from a downloaded zip.
+    """Legacy descriptive values view; use the record API for physical time.
 
-    Returns a 1-D float array with NaN gaps removed, subsampled by a uniform
-    stride to at most ``max_points`` samples, or ``None`` if parsing yields too
-    little usable data.
+    Gaps are retained as NaN; this view cannot support derivative/rate claims.
+    Returns ``None`` on unavailable input or fewer than 512 raw data rows.
     """
+    warnings.warn("values-only grid loading is descriptive; use load_grid_frequency_record "
+                  "to retain time and gap provenance", DeprecationWarning, stacklevel=2)
     try:
-        with zipfile.ZipFile(zip_path) as archive:
-            names = [n for n in archive.namelist() if n.lower().endswith(".csv")]
-            if not names:
-                names = archive.namelist()
-            if not names:
-                return None
-            raw = archive.read(names[0])
+        record = load_grid_frequency_record(zip_path, max_points=max_points)
     except Exception as exc:  # noqa: BLE001 - corrupt/partial archive
         print(f"  [skip] could not read zip: {exc}", file=sys.stderr)
         return None
 
-    text = raw.decode("utf-8", errors="ignore")
-    series = _parse_frequency_csv(text)
-    series = series[np.isfinite(series)]
-    if series.size < 512:
-        print(f"  [skip] parsed only {series.size} usable samples", file=sys.stderr)
+    if len(record.values_hz) < 512:
+        print(f"  [skip] parsed only {len(record.values_hz)} data rows", file=sys.stderr)
         return None
-    if series.size > max_points:
-        stride = int(math.ceil(series.size / max_points))
-        series = series[::stride]
-    return series
+    return np.asarray([float("nan") if record.values_hz[i] is None else record.values_hz[i]
+                       for i in record.selected_indices], dtype=float)
 
 
 # ---------------------------------------------------------------------------
@@ -270,10 +392,12 @@ def run_temporal_benchmark(
     report: dict[str, Any] = {
         "source": source,
         "config": asdict(config),
+        "processing_mode": "retrospective_descriptive",
+        "prospective_prediction": False,
         "honest_scope": (
-            "Phase-native structural telemetry on real measured phase. "
-            "Single-series CSD favours classical indicators; the TNFR tetrad's "
-            "differential value is in multi-channel phase-coupled networks."
+            "Retrospective signal descriptors with same-record channel selection. "
+            "Hilbert phase is not a calibrated physical oscillator phase; "
+            "these results do not certify prediction or nodal dynamics."
         ),
     }
 
@@ -288,11 +412,20 @@ def run_temporal_benchmark(
                 "offline via --source synthetic."
             )
             return report
-        series = load_grid_frequency_series(zip_path, max_points=max_points)
-        if series is None:
-            report["status"] = "skipped"
-            report["reason"] = "Downloaded archive could not be parsed."
+        try:
+            record = load_grid_frequency_record(zip_path, max_points=max_points, max_bytes=max_bytes)
+        except (OSError, ValueError, zipfile.BadZipFile) as exc:
+            report["status"] = "unavailable"
+            report["reason"] = f"Archive admission failed: {exc}"
             return report
+        report["ingestion"] = asdict(record)
+        if any(record.missing) or record.time_status not in (
+            "relative_seconds", "relative_seconds_timezone_unverified"
+        ):
+            report["status"] = "unavailable"
+            report["reason"] = "Missing values or unavailable/nonmonotone timestamps; no gap compaction."
+            return report
+        series = np.asarray([record.values_hz[i] for i in record.selected_indices], dtype=float)
         report["data"] = {
             "samples": int(series.size),
             "mean_hz": float(np.mean(series)),

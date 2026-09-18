@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import logging
 import math
-from collections.abc import Iterator, Mapping
+from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from typing import Any, ClassVar
 
@@ -17,13 +17,12 @@ from ..config.operator_names import SELF_ORGANIZATION
 from ..constants.aliases import (
     ALIAS_D2EPI,
     ALIAS_DNFR,
-    ALIAS_EPI,
     ALIAS_THETA,
     ALIAS_VF,
 )
 from ..constants.canonical import COUPLING_GENTLE, COUPLING_MODERATE
 from ..glyph_history import next_operator_step
-from ..types import Glyph, TNFRGraph, real_scalar_epi
+from ..types import Glyph, TNFRGraph
 from ._argument_validation import (
     finite_node_real,
     finite_real,
@@ -37,6 +36,16 @@ from .definitions_base import Operator
 from .network_stage import GraphTransactionSnapshot
 from ._thol_constants import THOL_CHILD_VF_DAMPING, THOL_SUB_EPI_SCALING
 from ._thol_pressure import propose_thol_pressure
+from ._thol_config import resolve_thol_bifurcation_threshold
+from .preconditions import self_organization as _thol_preconditions
+from .preconditions.self_organization import (
+    _finite_node_epi,
+    validate_self_organization_strict,
+)
+
+# Preserve the earlier private reader paths without duplicating their kernels.
+_active_acceleration_history_length = _thol_preconditions._active_acceleration_history_length
+_finite_epi_value = _thol_preconditions._finite_epi_value
 
 _OPERATOR = "Self-organization"
 
@@ -75,12 +84,8 @@ def _checked_product(left: float, right: float, label: str) -> float:
 
 
 def _configured_tau(graph_data: Mapping[str, Any], kwargs: Mapping[str, Any]) -> float:
-    raw = kwargs.get("tau")
-    if raw is None:
-        raw = graph_data.get("BIFURCATION_THRESHOLD_TAU")
-    if raw is None:
-        raw = graph_data.get("THOL_BIFURCATION_THRESHOLD", 0.1)
-    return finite_real(raw, operator=_OPERATOR, label="tau", lower=0.0)
+    """Compatibility entry point for the shared THOL threshold resolver."""
+    return resolve_thol_bifurcation_threshold(graph_data, kwargs.get("tau"))
 
 
 def _configured_epi_bounds(graph_data: Mapping[str, Any]) -> tuple[float, float]:
@@ -102,63 +107,6 @@ def _existing_list(mapping: Mapping[str, Any], key: str) -> list[Any]:
     if not isinstance(value, list):
         reject_operator_argument(_OPERATOR, f"{key} must be a list")
     return value
-
-
-def _finite_epi_value(
-    value: Any,
-    *,
-    label: str,
-    lower: float | None = None,
-    upper: float | None = None,
-) -> float:
-    """Validate a real scalar or canonical BEPI representation."""
-
-    if isinstance(value, bool):
-        reject_operator_argument(_OPERATOR, f"{label} must be a real EPI value")
-    try:
-        result = real_scalar_epi(value)
-    except (OverflowError, TypeError, ValueError):
-        reject_operator_argument(
-            _OPERATOR, f"{label} must be a scalar or uniform-real BEPI value"
-        )
-    if result is None:
-        reject_operator_argument(
-            _OPERATOR, f"{label} must have an exact signed scalar embedding"
-        )
-    return finite_real(
-        result,
-        operator=_OPERATOR,
-        label=label,
-        lower=lower,
-        upper=upper,
-    )
-
-
-def _finite_node_epi(
-    node_data: Mapping[str, Any], *, label: str, default: Any = 0.0
-) -> float:
-    raw = default
-    for key in ALIAS_EPI:
-        if key in node_data:
-            raw = node_data[key]
-            break
-    return _finite_epi_value(raw, label=label)
-
-
-def _active_acceleration_history_length(node_data: Mapping[str, Any]) -> int:
-    """Read only the size selected by the shared acceleration implementation."""
-
-    from .nodal_equation import _select_acceleration_history
-
-    source, history = _select_acceleration_history(node_data)
-    if history is None:
-        return 0
-    if isinstance(history, (str, bytes, bytearray, Mapping, Iterator)):
-        reject_operator_argument(_OPERATOR, f"{source} must be an indexed history")
-    try:
-        return len(history)
-    except (OverflowError, TypeError):
-        reject_operator_argument(_OPERATOR, f"{source} must be a sized history")
 
 
 def _validate_signal_record(signals: Any, *, label: str) -> None:
@@ -337,106 +285,8 @@ class SelfOrganization(Operator):
     def _validate_preconditions(
         self, G: TNFRGraph, node: Any, **kw: Any
     ) -> None:
-        """Apply the legacy THOL gate as a strictly read-only check."""
-
-        data = G.nodes[node]
-        epi = _finite_node_epi(data, label="EPI")
-        dnfr = finite_node_real(
-            data, ALIAS_DNFR, 0.0, operator=_OPERATOR, label="DeltaNFR"
-        )
-        vf = finite_node_real(
-            data,
-            ALIAS_VF,
-            0.0,
-            operator=_OPERATOR,
-            label="nu_f",
-            lower=0.0,
-        )
-        min_epi = finite_real(
-            G.graph.get("THOL_MIN_EPI", 0.2),
-            operator=_OPERATOR,
-            label="THOL_MIN_EPI",
-            lower=0.0,
-        )
-        min_vf = finite_real(
-            G.graph.get("THOL_MIN_VF", 0.1),
-            operator=_OPERATOR,
-            label="THOL_MIN_VF",
-            lower=0.0,
-        )
-        if epi < min_epi:
-            reject_operator_argument(
-                _OPERATOR, f"EPI too low for bifurcation ({epi!r} < {min_epi!r})"
-            )
-        if dnfr <= 0.0:
-            reject_operator_argument(
-                _OPERATOR, "DeltaNFR must be positive for self-organization"
-            )
-        if vf < min_vf:
-            reject_operator_argument(
-                _OPERATOR,
-                f"nu_f too low for reorganization ({vf!r} < {min_vf!r})",
-            )
-
-        min_degree = nonnegative_integer(
-            G.graph.get("THOL_MIN_DEGREE", 1),
-            operator=_OPERATOR,
-            label="THOL_MIN_DEGREE",
-        )
-        allow_isolated = strict_bool(
-            G.graph.get("THOL_ALLOW_ISOLATED", False),
-            operator=_OPERATOR,
-            label="THOL_ALLOW_ISOLATED",
-        )
-        degree = G.degree(node)
-        if degree < min_degree and not allow_isolated:
-            reject_operator_argument(
-                _OPERATOR,
-                f"node degree {degree} is below THOL_MIN_DEGREE {min_degree}",
-            )
-
-        d2_epi = self._compute_epi_acceleration(G, node)
-        min_history = nonnegative_integer(
-            G.graph.get("THOL_MIN_HISTORY_LENGTH", 3),
-            operator=_OPERATOR,
-            label="THOL_MIN_HISTORY_LENGTH",
-        )
-        if min_history < 3:
-            reject_operator_argument(
-                _OPERATOR, "THOL_MIN_HISTORY_LENGTH must be at least 3"
-            )
-        history_length = _active_acceleration_history_length(data)
-        if history_length < min_history:
-            reject_operator_argument(
-                _OPERATOR,
-                f"active EPI history has {history_length} samples; "
-                f"{min_history} required",
-            )
-
-        metabolic = strict_bool(
-            G.graph.get("THOL_METABOLIC_ENABLED", True),
-            operator=_OPERATOR,
-            label="THOL_METABOLIC_ENABLED",
-        )
-        if metabolic and degree == 0:
-            reject_operator_argument(
-                _OPERATOR, "metabolic THOL requires at least one neighbour"
-            )
-
-        tau = _configured_tau(G.graph, kw)
-        logger = logging.getLogger(__name__)
-        if abs(d2_epi) <= tau:
-            logger.warning(
-                "Node %r: THOL acceleration magnitude %.6g does not exceed tau %.6g; "
-                "no sub-EPI will be generated.",
-                node,
-                abs(d2_epi),
-                tau,
-            )
-
-        from .preconditions.mutation import record_destabilizer_context
-
-        record_destabilizer_context(G, node, logger, record=False)
+        """Delegate to the shared read-only optional THOL gate."""
+        validate_self_organization_strict(G, node, tau=kw.get("tau"))
 
     def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Validate, apply and observe THOL as one graph transaction."""

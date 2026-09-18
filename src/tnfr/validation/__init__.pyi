@@ -18,12 +18,42 @@ from ..operators.grammar import (
     record_grammar_violation,
     validate_sequence,
 )
-from ..types import Glyph, TNFRGraph
 from .compatibility import CANON_COMPAT as CANON_COMPAT
 from .compatibility import CANON_FALLBACK as CANON_FALLBACK
 from .graph import GRAPH_VALIDATORS, run_validators
+from .nodal_prediction import (
+    FrozenNodalCalibration,
+    NodalCalibrationError,
+    NodalForecast,
+    NodalForecastScore,
+    NodalMeasurementRun,
+    calibrate_nodal_prediction,
+    forecast_nodal_response,
+    score_nodal_forecast,
+    write_nodal_forecast,
+)
 from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr
+from .p2_transport import (
+    P2MeasurementBounds,
+    P2IntervalCalibration,
+    P2IntervalForecast,
+    P2IntervalComparison,
+    calibrate_p2_transport,
+    forecast_p2_transport,
+    score_p2_transport,
+    write_p2_transport_forecast,
+)
 from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon
+from .signal_confrontation import (
+    ModalRootDiagnostic,
+    NodalPredictionSkill,
+    SignalConfrontation,
+    confront_signal,
+    diagnose_modal_roots,
+    emergent_wave_fraction,
+    estimate_quality_factor,
+    nodal_prediction_skill,
+)
 from .soft_filters import (
     acceleration_norm,
     check_repeats,
@@ -31,9 +61,16 @@ from .soft_filters import (
     soft_grammar_filters,
 )
 from .spectral import NFRValidator
+from .temporal_interface import (
+    ProspectiveWarningComparison,
+    TemporalWarningCalibration,
+    calibrate_temporal_warning,
+    evaluate_prospective_warning,
+)
 from .window import validate_window
 
 SubjectT = TypeVar("SubjectT")
+
 
 class ValidationOutcome(Generic[SubjectT]):
     subject: SubjectT
@@ -41,11 +78,13 @@ class ValidationOutcome(Generic[SubjectT]):
     summary: Mapping[str, Any]
     artifacts: Mapping[str, Any] | None
 
+
 class Validator(Protocol[SubjectT]):
     def validate(
         self, subject: SubjectT, /, **kwargs: Any
     ) -> ValidationOutcome[SubjectT]: ...
     def report(self, outcome: ValidationOutcome[SubjectT]) -> str: ...
+
 
 __all__ = (
     "validate_sequence",
@@ -80,4 +119,33 @@ __all__ = (
     "maybe_force",
     "soft_grammar_filters",
     "NFRValidator",
+    "P2MeasurementBounds",
+    "P2IntervalCalibration",
+    "P2IntervalForecast",
+    "P2IntervalComparison",
+    "calibrate_p2_transport",
+    "forecast_p2_transport",
+    "score_p2_transport",
+    "write_p2_transport_forecast",
+    "FrozenNodalCalibration",
+    "NodalCalibrationError",
+    "NodalForecast",
+    "NodalForecastScore",
+    "NodalMeasurementRun",
+    "calibrate_nodal_prediction",
+    "forecast_nodal_response",
+    "score_nodal_forecast",
+    "write_nodal_forecast",
+    "ModalRootDiagnostic",
+    "NodalPredictionSkill",
+    "SignalConfrontation",
+    "confront_signal",
+    "diagnose_modal_roots",
+    "emergent_wave_fraction",
+    "estimate_quality_factor",
+    "nodal_prediction_skill",
+    "ProspectiveWarningComparison",
+    "TemporalWarningCalibration",
+    "calibrate_temporal_warning",
+    "evaluate_prospective_warning",
 )

@@ -54,10 +54,11 @@ class TestTetradSnapshot:
         snap = TetradSnapshot()
         assert "empty" in snap.summary()
 
-    def test_empty_snapshot_is_safe(self):
+    def test_empty_snapshot_has_no_complete_safety_readout(self):
         snap = TetradSnapshot()
         safety = snap.is_safe()
-        assert safety["overall"] is True
+        assert safety["xi_c_safe"] is False
+        assert safety["overall"] is False
 
     def test_tetrad_from_network(self, small_ring: Network):
         snap = small_ring.tetrad()

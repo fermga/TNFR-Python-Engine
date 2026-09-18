@@ -1,11 +1,15 @@
 # Nodal research strategy: closure, emergence and laboratory tests
 
-Review date: 2026-09-17. Scope: source, theory, retained research evidence,
+Review dates: 2026-09-17 to 2026-09-18. Scope: source, theory, retained research evidence,
 empirical interfaces and selected primary experimental sources. This is a
 strategic audit, not an exhaustive software verification or a new stability
-theorem. The scientific source remains the B75 snapshot
+theorem. The original review used the historical B75 snapshot
 `sha256:f84290315bc1cee1e01f6c71ee1d086a7b56a68d5673fa02c260e04963ea5b92`.
-Historical tests and certificates were inspected, not rerun. The
+Historical tests and certificates were inspected, not rerun for that review.
+The subsequent P1 implementation repairs the engineering defects identified
+below and has its own contract tests and source checkpoint. Current delivery
+status belongs to the plan; old source line numbers describe the audit snapshot.
+The
 [research portfolio](../TNFR_lineas_de_investigacion.txt) owns the main/supporting/
 deferred classification; the [five-stage plan](research/FIVE_STAGE_EXECUTION_PLAN.md)
 alone owns execution order and stage status. This review owns the scientific
@@ -19,12 +23,14 @@ executable contracts, reproducible finite trajectories and counterexamples.
 It does not yet supply a closed autonomous multichannel theory or a verified
 laboratory correspondence for its complete dynamics. These are separate gaps.
 
-The next major deliverable should be **one independently calibrated,
-falsifiable nodal prediction**, coupled to a small study of sufficient state
-and emergent memory. C6 indefinite boundedness remains a legitimate proof
-question, but is no longer a prerequisite for this work. Completing its
-binary64 first-exit proof would not determine the measurement map, explain
-autonomous operator selection or establish physical emergence.
+The principal research objective is now **generative structural emergence**:
+derive formation, persistence, interaction and observable properties from
+TNFR coherence dynamics. The user explicitly selected this priority over
+further immediate measurement fitting. The P1-P5 measurement bridge remains
+the supporting route for physical tests; it is not the whole programme or
+a prerequisite for internal mathematical mechanism studies. C6 indefinite
+boundedness remains open and parked. Its binary64 first-exit proof would not
+by itself explain autonomous selection or physical emergence.
 
 | Area | Established or implemented content | Boundary |
 | --- | --- | --- |
@@ -45,17 +51,17 @@ theorem owners or new O/S research identifiers.
 
 ### Why this order, and what "optimal" can mean here
 
-The plan is justified by reuse, identifiable predictions, finite cost and
-ability to detect a failed hypothesis. It is not a proven global optimum:
-candidate apparatus, costs and scientific utility have not been exhaustively
-specified or compared. Selection remains conditional on P2 admission.
+The revised order prioritizes the requested generative hypothesis and reuses
+existing derivations and negative controls. It is not a proven global optimum.
+Physical experiments still require P2 admission; internal structural studies
+can proceed with explicitly stated mathematical premises.
 
 | Alternative next focus | Useful contribution | Reason for its present position |
 | --- | --- | --- |
 | Extend the C6 search | A restricted binary64 first-exit proof | Does not establish measurement semantics; existing unresolved proof search is not a prerequisite for prediction |
-| Start multichannel autonomous maintenance | Directly addresses persistence | Adds channel, policy and observation obligations before the simpler measurement bridge is established |
+| Resolve canonical generation/selection and maintenance | Directly addresses the primary hypothesis | First identify a closed mechanism or scoped obstruction using existing birth, feedback and symmetry tools; avoid unsupported autonomy claims |
 | Fit the available oscillator/EEG signals | Descriptive patterns and possible candidate rejection | Availability does not resolve hidden state, clock or same-record fitting; no signal is admitted merely because it fits |
-| Calibrated restricted transport, then observation/recovery extensions | Reuses exact dynamics, observability, memory and fixed-target accounting | Smallest currently identified route to a falsifiable measurement bridge; success establishes only that restricted correspondence |
+| Calibrated restricted transport, then observation/recovery extensions | Reuses exact dynamics, observability, memory and fixed-target accounting | Supporting physical-test route; current missing data admission does not block primary mathematical work |
 
 Early read-only observability and apparatus checks may run alongside the
 diagnostic repair. The single delivery queue is a resource/traceability
@@ -97,6 +103,69 @@ External laws, fitted damping, noise or potentials remain comparison models
 unless their TNFR derivation is supplied. Measurement uncertainty is an
 observation property, not an extra force silently added to the dynamics.
 
+### Measurement correspondence versus generative emergence
+
+The target is not to rename measured voltage, temperature or other recorded
+coordinates as EPI. A deeper structural account is a research hypothesis;
+neither the nodal factorization nor a successful measurement fit establishes
+that TNFR is physically prior to the observed system. "Underlying" here means
+a proposed explanatory state, not a demonstrated earlier physical time.
+The motivating hypothesis is stronger than interpreting each already known
+physical particle as a graph node: observable entities and their properties
+would arise as persistent, interacting coherence patterns of an underlying
+nodal dynamics. This is an open physical hypothesis, not an established
+consequence of the repository. Mathematical projection memory is a useful
+example of derived behavior, but does not by itself establish this stronger
+claim about physical constituents.
+
+Such a claim must identify a canonically generated family of patterns, its
+formation and persistence conditions, its interaction law and the observation
+rule producing measurable properties. A stable graph pattern alone is not a
+physical particle identification. Physical particle or quantum claims also
+require their corresponding quantitative measurement predictions; classical
+wave polarization or a discrete graph spectrum cannot silently supply them.
+If physical time is itself claimed to emerge, the present structural evolution
+parameter and its relation to measured time must be accounted for, not treated
+as an already derived physical clock. Graph, partition and operator-policy
+selection likewise remain explicit premises wherever they are imposed.
+
+Keep the following three claims separate:
+
+| Claim | What would establish it within a declared scope | Present boundary |
+| --- | --- | --- |
+| Measurement correspondence | A fixed observation map, admitted clock/state and independent prediction | P2/P3 target; Volts was a within-acquisition exploration with unverified mapping |
+| Generative mathematical reduction | Derive an observed law or effect from a specified finer nodal dynamics and observation rule, without fitting a new effective force or memory law | Exact restricted projection/memory results exist; their graph, capacities and partition are hypotheses |
+| Physical emergence from that mechanism | The same admitted fine model predicts observable responses across reserved preparations or observation scales, including a contrast that can reject the proposed reduction | Not established; even success would not prove unique or universal physical fundamentality |
+
+A measurement has the form `y=H(z)` in a proposed model: `z` is the declared
+TNFR state and `H` the observation rule. A direct scalar chart such as nominal
+voltage-to-EPI is a measurement hypothesis, not a derivation of voltage from
+an unobserved substrate. A generative reduction instead derives the evolution
+of `H(z)` from an independently specified nodal dynamics. The observation rule
+must represent what an instrument or aggregation actually reads; it must not
+be an arbitrary function adjusted separately to encode each response. Hidden
+initial conditions must be known, bounded or observable from allowed data.
+
+The existing [five-node memory witness](DERIVED_EPI_MEMORY.md#6-exact-nonzero-memory-witness-p5)
+is a concrete reuse target. On its fixed unit path and declared partition,
+states `(0,1,1,1,0)` and `(0,0,3,0,0)` have the same two macro coordinates
+`(0,1)` but different initial macro rates, `(1,-1/3)` and `(0,0)`.
+The shared nodal generator derives both the hidden-state source and the
+subsequent memory kernel; no new delay parameter is fitted. These are existing
+exact-model results, not new experiments or observations of physical emergence.
+They also do not derive the physical selection of that graph or partition.
+
+For experiment selection, prefer an admitted source that can test parameter
+transfer between preparations, a predicted modal-rate ratio, or an existing
+projection/closure contrast. One exponential continuation can exercise the
+measurement bridge but cannot by itself discriminate microscopic structure.
+Different models with identical observable predictions remain indistinguishable
+by that experiment. Do not demand a unique TNFR signature from the pure-EPI
+sector, which is graph diffusion under the stated hypotheses, or interpret
+baseline accuracy alone as proof of an underlying ontology. The sole execution
+plan prioritizes the generative mechanism and retains P2 as supporting work;
+this does not bypass P3 before a physical P4 study.
+
 ### Two immediate identifiability constraints
 
 **Capacity versus pressure.** Rate observations alone constrain their product.
@@ -126,6 +195,506 @@ nonuniform pure-EPI modal rates obey `r_k/r_l=lambda_k/lambda_l` for positive
 eigenvalues. A common time-scale calibration cancels from the ratio. This is
 a restricted, dimensionless prediction to test after admitting the sensor
 map, not a unique prediction distinguishing TNFR from ordinary diffusion.
+
+### Cross-domain reuse for the generative hypothesis
+
+This source review reuses the older ontology, Riemann and Millennium work as
+mechanism libraries, not as established solutions or one unified physical
+theory. A result counts as generative only relative to its explicit inputs:
+an operator built using primes, a chosen winding ring, a supplied potential
+well or an imported differential equation must not be reported as generating
+that same structure without those premises. Exact properties of such models
+can still supply valuable tools and counterexamples.
+
+| Source family / existing owners | Reusable structural content | Input or missing bridge that prevents promotion |
+| --- | --- | --- |
+| Riemann and [arithmetic pulse](../src/tnfr/mathematics/arithmetic_pulse.py), [Krylov/Hankel tools](../src/tnfr/mathematics/krylov.py) | Finite observable recurrences and exact ranks can test how many nodal degrees a readout distinguishes | Arithmetic graph/seed construction is supplied. General Hankel output rank need not equal reachable Krylov dimension without observability; finite prime-frequency sums are not an unregularized zeta series on the critical line |
+| [Pointed symmetry](../src/tnfr/physics/pointed_symmetry.py), [operator](../src/tnfr/physics/operator_equivariance.py) and [word](../src/tnfr/physics/word_equivariance.py) audits | Separate label-invariant structural behavior from a chosen node, seed or observer; useful for parent selection and pattern identity | Existing comparisons of old-node channels do not compare newborn nodes, changed edges or hierarchy; graph automorphisms alone do not establish symmetry of phase, preparation and grammar history |
+| [Navier-Stokes notes](TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) and [variational bridge](TNFR_VARIATIONAL_PRINCIPLE.md) | Energy/transport budgets and restricted diffusion provide controls for persistence and growth claims | The simulated fluid PDE is supplied, not derived from TNFR. Fixed-viscosity 3D regularity is not established by finite runs; an inviscid-limit uniformity question is a separate obligation |
+| [P versus NP notes](TNFR_P_VS_NP_RESEARCH_NOTES.md), [variational audit](../src/tnfr/physics/variational.py) | Finite trapping and descent obstructions help test whether a purported restoring scalar actually decreases | General nodal pressure is not minus the tetrad-potential gradient. Only the stated Dirichlet/mobility model has that proven gradient structure; trap diagnostics do not prove complexity separation |
+| [Yang-Mills notes](TNFR_YANG_MILLS_RESEARCH_NOTES.md), [gauge readout](../src/tnfr/physics/gauge.py) | Gauge covariance and obstruction checks distinguish independent relational degrees of freedom from a coordinate change | The implemented phase-difference connection is pure gauge; finite structural spectral gaps do not construct non-Abelian physical gauge dynamics or a continuum mass gap |
+| [Hodge notes](TNFR_HODGE_RESEARCH_NOTES.md) | Exact chain/cochain identities and harmonic sectors are possible controls for global structure versus local gradients | The simplicial complex and cochains are supplied; the TNFR tetrad-to-cochain evolution bridge and the algebraic-cycle claim remain unproved |
+| [BSD notes](TNFR_BSD_RESEARCH_NOTES.md) | Arithmetic/rank diagnostics illustrate how observable degeneracy depends on the supplied construction | Arithmetic inputs and GL(2), rank/order and analytic bridges must remain explicit; no physical pattern, particle identity or BSD theorem follows from a numerical analogy |
+| [Scoped ontology](EMERGENT_ONTOLOGY.md), [winding persistence](COUPLING_WINDING_PERSISTENCE.md), [derived memory](DERIVED_EPI_MEMORY.md) | Conditional discrete winding, protected phase evolution, coarse memory and sufficient-state results are already nodal mechanisms or exact graph facts | Winding spreads under the protected update; it is not localized matter. Selected graph spectra, U(2) polarization, external wells and vortex models do not supply physical particles, measurement probabilities or autonomous interactions |
+| [THOL birth](THOL_BIRTH_AND_TRANSPORT.md), [support balance](FORCED_SUPPORT_BALANCE.md), [feedback](CHILD_COUPLING_FEEDBACK.md) | The strongest executed generative chain: nodal history, actual threshold, child, edge and subsequent pressure/transport | Event/target selection remains supplied; held capacity/phase support, mean drift, freezing and a changed target cannot be relabeled active self-restoration |
+
+Two concrete synergies now have a bounded executable audit. First, transfer
+the pointed-symmetry question from arithmetic
+observation to **who selects the parent of a structural birth**. For a declared
+state action and equivariant deterministic selector `s(gX)=g*s(X)`, every
+stabilizer of `X` must fix the selected node. An orbit without a fixed candidate
+therefore forbids an unmarked unique selection. This elementary implication
+is not a theorem that the existing C8 runtime state has that stabilizer:
+its winding phases and pointed IL/OZ history must be included in the state.
+The exact finite-action implementation and a new bounded test including
+newborn correspondence are centralized in
+[the birth result](THOL_BIRTH_AND_TRANSPORT.md#8-selection-actual-dispatch-and-the-unique-parent-obstruction).
+They keep declared model symmetry separate from marked runtime relabeling.
+
+Second, connect **selection to the operation actually executed**. The default
+[selector](../src/tnfr/dynamics/selectors.py) does not choose THOL. Its parametric
+variant can choose that glyph, but primitive pressure dispatch is distinct
+from the public hierarchy-creation operation used by the birth study. A stored
+THOL pressure increment can also be erased by a subsequent default refresh.
+The completed audit traces these links: both real built-in policies select
+IL on the above-threshold prepared C8 source; separate explicit interventions
+distinguish primitive pressure from public birth and held from refreshed
+pressure consumption. Trigger sufficiency fails in that scope. The symmetry
+argument permits investigating candidate sets rather than an unmarked single
+parent, but it neither derives their activation law nor justifies simultaneous
+public births. The execution plan owns that continuation. No heuristic score
+or corrected software dispatch should be promoted to a derived physical law.
+
+The cross-domain review found stale scope claims in the old number-theory,
+P-versus-NP and fluid notes. Corrections preserve historical constructions
+while distinguishing inserted critical-line shifts, conditional equivariance,
+restricted gradient flow and the actual open regularity problem. Their old
+wording is not evidence for the primary hypothesis. The precise next task,
+completion condition and parked branches live only in the execution plan.
+
+### Module reuse for set-valued generation
+
+The focused follow-up inventories the package layout (586 Python files at this
+checkpoint) and traces the interacting owners below, their callers and tests.
+It is a cross-module audit of the current generative dependency chain, not a
+claim that every repository file or research theorem was reverified. The older
+domain review above remains useful; no arithmetic/Millennium campaign is
+restarted to answer a structural admission question.
+
+| Responsibility | Reuse owner | Required boundary |
+| --- | --- | --- |
+| Physical/legacy acceleration evidence | [nodal_equation.py](../src/tnfr/operators/nodal_equation.py), `observe_structural_acceleration` | One detached observation carries source, time basis, last-three samples and availability. Physical history has priority and must match the current EPI endpoint. The numeric compatibility wrapper still returns zero for insufficient history; use executor receipts for causal provenance. |
+| Grammar admission | [grammar_dynamics.py](../src/tnfr/operators/grammar_dynamics.py), `validate_candidate` | Admission is not operator selection, optional precondition satisfaction, or a viable birth. A validated future handler supplies no past history. |
+| Optional THOL gate | [preconditions/self_organization.py](../src/tnfr/operators/preconditions/self_organization.py) | One read-only gate for public and legacy callers. Respect whether the configured public gate is enabled; do not impose positive pressure on a configuration where that gate is disabled. |
+| Threshold configuration | [_thol_config.py](../src/tnfr/operators/_thol_config.py) | Explicit tau, generic alias, THOL alias, core default. A configured threshold is not a derived constant. OZ/ZHIR and advisory scores retain their separate meanings. |
+| Actual birth viability | [self_organization.py](../src/tnfr/operators/self_organization.py), `_prepare_execution` | Reuse its proposal, depth, hierarchy, metabolic and metric validation. `abs(acceleration)>tau` alone does not establish a materializable child. |
+| Joint birth, conflicts and rollback | [network_stage.py](../src/tnfr/operators/network_stage.py), `execute_self_organization_stage` and `GraphTransactionSnapshot` | Public births already use a common detached snapshot, merged child IDs and whole-support validation. Check the returned schedule: subclass/grammar fallback is sequential. |
+| Operator routing and actual connection | [word_execution.py](../src/tnfr/operators/word_execution.py), [_coupling_stage_kernel.py](../src/tnfr/operators/_coupling_stage_kernel.py), [sampling.py](../src/tnfr/dynamics/sampling.py) | Reuse dispatch and UM; explicitly refresh the candidate sample after birth. Newborns are not automatically later operator targets. |
+| Parent symmetry and whole eligible sets | [selector_symmetry.py](../src/tnfr/physics/selector_symmetry.py), [symmetry_sectors.py](../src/tnfr/physics/symmetry_sectors.py) | Exact supplied-group obstruction differs from a numerical invariant-sector projection. Declare phase, history, marks, support and algorithmic ordering. |
+| EPI transport, connection budgets and targets | [support_transport.py](../src/tnfr/physics/support_transport.py), [forced_support.py](../src/tnfr/physics/forced_support.py) | Birth changes dimension; an edge reset compares the same postbirth nodes. Keep the original target and separate relative shape from mean drift. |
+| Reduction and hidden state | [epi_memory.py](../src/tnfr/physics/epi_memory.py), [observability.py](../src/tnfr/physics/observability.py), [phase_quotient.py](../src/tnfr/physics/phase_quotient.py) | Fixed-model memory/quotient results detect missing information; they do not establish closure of the nonlinear changing-support birth process. |
+| Prescribed metabolic controls | [dynamics/metabolism.py](../src/tnfr/dynamics/metabolism.py), [operators/metabolism.py](../src/tnfr/operators/metabolism.py), [bifurcation.py](../src/tnfr/dynamics/bifurcation.py) | Word construction, stress sensitivity, amplitude maps and route scores are supplied policies/diagnostics, not derived autonomous selection. |
+| Provenance and evidence scope | [core_manifests.py](../src/tnfr/research/core_manifests.py), [event_runtime.py](../src/tnfr/operators/event_runtime.py), [stage_contracts.py](../src/tnfr/operators/stage_contracts.py) | A detached observation is not an executor seal; finite stage provenance is not indefinite stability or physical identification. |
+
+The audit identifies concrete consolidation boundaries. The duplicate legacy
+THOL validator used permissive casts and wrote context/bifurcation metadata
+during validation, while the public gate was strict and read-only. Both now
+delegate to the public gate's shared implementation. Telemetry belongs to
+successful execution; compatibility callers no longer mutate graph state as a
+side effect of a readiness check. Public gate activation remains configurable.
+The public operator and metabolic wrapper also share threshold resolution,
+including finite-value validation and exact precedence. Existing mathematical
+and runtime owners are retained rather than replaced by a second birth engine.
+
+The advisory bifurcation score also had an incorrect threshold label. Its
+configured combination can give `0.54` with zero acceleration, or `0.46` at
+or beyond its acceleration scale with the other contributions zero. Thus
+`score>=0.5` is not the public THOL birth condition. The
+[advisory counterexamples](../tests/operators/test_bifurcation_advisory_scope.py)
+also show that a suggested THOL can fail its public gate. Documentation now
+describes that helper and metabolic words as configured diagnostics/policies;
+their algorithms and coefficients have not been tuned to obtain births.
+
+The old symmetry projector averaged whatever automorphisms were returned,
+including a cap-truncated collection. This is not generally a projector: for
+`R^3=I`, `Q=(I+R)/2` has `Q^2-Q=(R^2-I)/4`, which is nonzero. The shared orbit
+partition now constructs the invariant-sector projector by orbit averaging.
+Explicit supplied permutations are generators of the represented subgroup;
+they need not enumerate a closed group. Automatic enumeration must finish
+within its cap or reject; it no longer silently promotes a partial list to
+`Aut(G)`. Requested edge weights use exact matching, and unsupported parallel-
+edge enumeration fails explicitly. An explicitly supplied action still does
+not authenticate those permutations as graph or complete-state symmetries.
+The exact selector theorem separately keeps its closed-group validation.
+
+For a complete declared state `X`, a covariant eligible set obeys
+`E(gX)=gE(X)`. If `gX=X`, then `E(X)=gE(X)`, so it must be a union of
+stabilizer orbits. This reuses the exact selection obstruction without
+inventing a unique representative. The empty set is valid and must be
+handled before the nonempty-candidate theorem helper. Nodal labels are
+colors: node IDs stored inside labels are not automatically transported.
+Encode parent/child links and birth order as directed relations, or use an
+explicit typed bijection like the retained newborn test. Neither a covariant
+set nor removal of a naming artifact derives the decision to execute it.
+
+The [birth energy boundary](THOL_BIRTH_AND_TRANSPORT.md#3-birth-creates-a-node-coupling-must-supply-an-actual-edge)
+is another useful reuse result: isolated birth extends the Dirichlet form by
+a zero block and leaves its energy unchanged. This is diagnostic blindness,
+not free physical creation. The child's zero degree also excludes the
+positive-metric connected-profile theorem before attachment. The existing
+same-support reset then accounts for the actual UM edge. No additional
+energy functional is required; proof and executable control stay with the
+birth result owner.
+
+Three orchestration details constrain reuse. First, THOL already resolves
+cross-parent child-ID collisions in snapshot node rank, while telemetry keeps
+requested target order. Its structural target-order result is not a theorem
+of complete insertion-order or relabeling invariance. Second, network words
+and event invocations freeze their original targets; sampled candidates and
+target sets must be distinguished after growth. Fixed-support flow evidence
+cannot silently include a changing-node jump. Complete the birth stage and
+start a fresh declared flow invocation on its resulting support. Third, an
+empty stage can still refresh pressure and write stage metadata. A relation
+observer must not dispatch it accidentally while claiming a read-only check.
+The eligibility adapter's outer transaction now covers input materialization,
+fresh observation and the reused stage commit; empty dispatch skips the stage.
+
+These findings led to the implemented
+[eligible-set/dispatch contract](THOL_BIRTH_AND_TRANSPORT.md#9-set-valued-eligibility-and-explicit-finite-dispatch).
+It preserves separate fields for history availability, grammar admission,
+optional gates, threshold crossing and viable public proposal. The existing
+simultaneous birth stage and shared merge validation perform the action;
+coupling remains separate. The completed
+[preparation/policy comparison](THOL_BIRTH_AND_TRANSPORT.md#10-preparation-dependence-and-distributed-explicit-birth)
+finds 0/1/8 eligible parents for no/single/all-node real prefixes. A common
+prefix and explicit simultaneous dispatch create eight isolated children;
+both built-in policies still choose IL. Supplied preparation and policy are
+therefore separate explanatory premises. The finite rotation control retains
+phase, histories and neighbor order; it is not a complete symmetry theorem.
+The [distributed continuation](THOL_BIRTH_AND_TRANSPORT.md#11-distributed-generated-support-and-pressure-feedback)
+now closes the finite birth/support/refreshed-pressure path: actual UM adds
+16 edges and all eight children evolve; two controls retain isolated,
+unchanged children. Exact energy accounting and the independent forcing
+capture reveal both transport and a negative capacity-channel weighted source.
+Child growth and collective drift coexist. This does not establish maintenance.
+The connected generated support meets the existing forced-support reference
+domain. The [fixed-target continuation](THOL_BIRTH_AND_TRANSPORT.md#12-fixed-original-model-profile-under-a-later-um-stage)
+now reuses its captured channels and event/target observers. A later all-node
+UM adds eight edges and changes the compatible relative profile while both
+finite branches approach the frozen original target. The UM branch approaches
+less; signed same-state rate accounting separates generator change from target
+forcing and numerical realization. Its changed model is incompatible with the
+old profile, so short error decrease cannot establish its restoration.
+The original derived profile is not the actual born shape, and original-metric
+mean change is not the changed model's drift coefficient. Disconnected controls
+do not enter this theorem by silently dropping children. The completed
+[lineage comparison](THOL_BIRTH_AND_TRANSPORT.md#13-lineage-scoped-coordination-on-the-generated-support)
+uses actual ancestry without selecting labels by outcome. Parent-only UM adds
+no edges; child-only UM forms the eight-edge child ring. Neither held model
+preserves the original profile, despite finite error reduction. Its target-local
+proposals match those in the retained all-node control; their joint effects
+are not additive channel ablations. This closes the declared dispatch-scale
+comparison and motivates examining the state needed to describe each family,
+rather than searching more target subsets. No second score,
+snapshot system, pressure law or stability ledger is needed. The execution
+plan alone owns the next task and its acceptance conditions.
+
+The resulting support also makes the older quotient/memory tools relevant to
+the generative objective. Actual THOL ancestry supplies candidate parent-child
+families, but a hierarchy label does not prove that each family evolves as one
+closed macro node. On a fixed captured affine model `x'=-A*x+b`, the shared
+reversible projection gives `y'= -R*A*P*y-R*A*Q*x+R*b`, with `Q=I-P*R`.
+All-state affine closure requires `R*A*Q=0`; reversibility equates this with
+the lift condition `Q*A*P=0`. This is the existing
+[projection/memory criterion](DERIVED_EPI_MEMORY.md#4-kernel-positivity-and-the-exact-closure-criterion),
+with the independently captured constant source retained, not a new force.
+The completed [family analysis](THOL_BIRTH_AND_TRANSPORT.md#14-state-sufficiency-of-actual-parent-child-families)
+finds that hidden-state term nonzero in all four retained held models, with
+exact same-observation/different-rate witnesses. Ancestry alone is insufficient
+for the chosen observation; this does not reject the fine TNFR model.
+
+For a memory calculation in homogeneous coordinates, use each current held
+model's `u=x-m_H(x)*1-z` and its exact `A=e*diag(nu)*L_rw`. Applying the
+pure-EPI observer directly to the forced raw EPI would erase a real source.
+The frozen original `z0/H0` used to evaluate retention remains separate from
+these coordinates used for elimination. A support/capacity event can change
+the projection itself: `(R1-R0)*x` is an observation-coordinate change even
+when EPI has not moved. Exact rational closure checks, numerical residuals and
+actual runtime observations must keep their existing distinct scopes.
+
+The completed minimal-state study reuses the
+[P5 minimality argument](DERIVED_EPI_MEMORY.md#93-minimality-of-the-retained-linear-state),
+the rectangular rational matrix product and
+[exact rank](../src/tnfr/mathematics/krylov.py) to derive the smallest invariant
+row space containing these actual family observations. Its observation
+`s=C*x` retains `R=D*C` and obeys `s'=-G*s+C*b` with `C*A=G*C`.
+The captured source remains explicit. Extra coordinates can be signed global
+contrasts, not newly established macro nodes. All four retained models have
+exact ranks `8,15,16,16`: eight extra linear coordinates are necessary and
+sufficient, so there is no proper all-state linear compression preserving
+these means. Results and evidence belong to
+[THOL Section 15](THOL_BIRTH_AND_TRANSPORT.md#15-minimal-sufficient-linear-state-for-the-retained-family-observations).
+The available sixteen-coordinate realization already supports a full EPI
+response study. Quantifying the cost of discarding its internal coordinates
+is optional, so that approximation question is parked while the primary
+route tests actual canonical mechanisms. The executor evolves native
+EPI; the invertible `C` chart preserves its information and prediction.
+Exact full rank does not establish autonomous persistence, nor does it create
+a need to approximate before testing a mechanism.
+
+The completed [full-state Emission response](THOL_BIRTH_AND_TRANSPORT.md#16-full-epi-response-to-one-child-emission)
+uses these coordinates without loss. Its fixed finite prediction accounts
+for runtime numerical defects; paired spatial difference energy decreases
+while a mean offset persists. AL improves the original-target score at the
+event, so this is not evidence of recovery from target damage. This resolves
+a held-model response question and makes the distinction from endogenous
+maintenance sharper. The existing composite runtime can test which mechanisms
+actually respond without inventing a new pressure law; its policies and their
+phase/capacity/history effects must remain explicit.
+
+The completed [native step](THOL_BIRTH_AND_TRANSPORT.md#17-one-native-composite-runtime-response)
+now locates actual all-node IL pressure feedback and later phase evolution;
+capacity adaptation is inactive under its unchanged gate. The two branches
+retain common phase/forcing, permitting a conditional paired nodal recurrence,
+while the original individual relative profile becomes incompatible with the
+new source. This separates incremental attenuation from preservation of a
+fixed shape. No moving target may be fitted afterward and labeled recovered
+identity.
+
+The completed [five-step window](THOL_BIRTH_AND_TRANSPORT.md#18-five-additional-native-policy-steps)
+retains shared coefficients but encounters the actual mixed policy
+`IL/IL/EN/IL/AL`. The common-IL map remains valid on three steps; EN and AL
+write EPI using the existing sequential runtime while integration consumes
+pressure generated before those writes. Their lag-counter forcing is a
+configured scheduling mechanism, not an emergent transition. Paired spatial
+energy falls 75.74646%, the EN step changes the mean offset, and the original
+target remains incompatible. Capacity adaptation never qualifies.
+
+There is also a separate [phase-direction conditioning boundary](THOL_BIRTH_AND_TRANSPORT.md#global-phase-direction-near-the-symmetric-input):
+the ideal regular twist has no global phasor direction, whereas the exact
+represented angles have a rigorously enclosed tiny nonzero resultant. The
+argument map is sensitive there. An absolute direction difference alone
+cannot reject structural persistence because a common rotation may preserve
+relative phase; comparisons must retain node/phase alignment and invariant
+readouts. The completed
+[retained-mechanism audit](THOL_BIRTH_AND_TRANSPORT.md#19-retained-reset-accounting-and-phase-conditioning)
+closes the EN/AL accounting with the actual sequential resets and
+pre-generated pressure. Pure relabeling with transported enumeration preserves
+the phase output exactly. A change of node enumeration at the same named
+input changes its relative phase pattern, not only its absolute orientation.
+This rules out numerical robustness for that comparison; it neither rejects
+all phase mechanisms nor supplies an alternative canonical force.
+
+This supporting block is closed. The main remaining distinction is between
+a canonical operator's **action** and the structural law selecting its
+**activation, targets and order**. Individual contracts constrain permitted
+transformations; they do not by themselves determine the full event history.
+The nodal equation fixes the EPI rate once capacity and pressure are supplied,
+but does not uniquely fix every pressure realization, capacity/phase law or
+selector. The registry's completeness is also a separate open S10 question.
+Calling these obligations open does not discard the canonical operators.
+An operator describes a transformation of NFRs or their relations, not a
+separate entity acting on them. The implemented AL requires existing basal
+capacity on an existing node, and THOL requires a parent. Their execution
+does not derive the initial nodal substrate. A new graph vertex is also not
+by itself evidence that a new coherence region forms and persists. Selection
+must be studied within this configuration-to-transformation mechanism, without
+attributing intentional agency to nodes or searching for a preferred word.
+
+Configured lag counters can form part of an autonomous augmented-state
+program. What remains unproved is that this particular scheduling rule follows
+from nodal structure. The next principal question concerns that derivation,
+using the already available acceleration, grammar, eligibility and symmetry
+results. Existing fixed-capacity diffusion and forced-support results already
+separate passive relaxation from a supported differentiated profile; the P2
+capacity-feedback theorem already supplies one restricted feedback control.
+Repeating them or extending the same native horizon would not answer the
+selection question. The plan owns the sole bounded task and its stop rule.
+
+### Shared observations before further generation research
+
+The additional cross-module review follows history through THOL, the SDK,
+propagation diagnostics and the nodal integrator, and compares approximate
+diffusion readouts with the existing exact support budgets. It does not rerun
+every theorem or certify the repository as free of defects. The useful
+unifications preserve the following distinctions rather than assigning one
+meaning to every value named acceleration or energy.
+
+| Quantity | Shared owner and integration | Scope retained by eligibility observation |
+| --- | --- | --- |
+| Three-sample EPI acceleration | `observe_structural_acceleration`, consumed by THOL, SDK and propagation diagnostics | Missing/short history is unavailable, not observed zero. Physical and unit-operator-step time bases remain explicit; nonfinite derived spans/rates reject. |
+| Two-sample signed EPI rate | [mutation_trigger.py](../src/tnfr/physics/mutation_trigger.py) | A valid Mutation secant can coexist with unavailable acceleration. Do not reuse its availability flag for a three-sample question. |
+| Cached integrator acceleration | [integrators.py](../src/tnfr/dynamics/integrators.py) | This is a difference of represented RHS rates, potentially before EPI clipping. It is not automatically the finite difference of the realized history. |
+| Propagation association | [propagation.py](../src/tnfr/dynamics/propagation.py), `detect_bifurcation_cascade` | Require a positive record naming the requested source and available acceleration. Records lack timing and a before/after acceleration comparison; the output cannot identify the cause of a crossing. |
+| Network SDK summaries | [simple.py](../src/tnfr/sdk/simple.py) with existing sense, circular-mean and scalar-EPI readers | Aggregate the entire network without writing live sense telemetry; respect circular phase and signed scalar representation. An undefined direction or invalid tetrad field is not a safe measured value. |
+| Approximate diffusion and exact support budgets | [structural_diffusion.py](../src/tnfr/physics/structural_diffusion.py), [support_transport.py](../src/tnfr/physics/support_transport.py) | Do not promote underflow to equilibrium. Approximate readouts reject nonrepresentable nonzero terms; detached rational budgets retain their separate exact domain. |
+| Changed-support profile/reset accounting | [forced_support.py](../src/tnfr/physics/forced_support.py) | Public inputs are reconstructed and checked once per call. A private reset core reuses those validated profiles inside the same event observation, avoiding two repeated exact Poisson solves. |
+
+The numeric failure has a direct nodal witness. For a two-node edge with
+`w=2^-600`, `EPI=(2^-600,0)` and `nu=(1,1)`, the random-walk diffusion rate is
+the representable pair `(-2^-600,+2^-600)`. Multiplying conductance by the
+EPI difference first can underflow, returning a false zero gradient and rate.
+Even with `w=1`, the same EPI has nonzero exact Dirichlet energy `2^-1201`
+and derivative `-2^-1199`, below the binary64 range. Refusing that approximate
+balance prevents a false equilibrium claim; it does not change the nodal law
+or substitute an unreported exact solver. Likewise, finite sample timestamps
+can have a nonfinite total span: accepting that span previously allowed a
+nonzero acceleration to appear as zero.
+
+These repairs supply one shared evidence observation to the implemented
+eligible-set relation without inventing another history estimator. SDK reports
+retain the old numeric acceleration field for compatibility and expose the
+independent observation. A supplied history remains supplied evidence, not a
+causal runtime seal. The propagation source check removes a reproduced false
+attribution; the retained compatibility metadata explicitly disclaims causation.
+
+The exact forced-support optimization is confined to one invocation. It does
+not cache results across mutable graphs or trust fields of a supplied public
+record. It keeps changing dimension, isolated newborns, mean drift and target
+replacement under their existing separate contracts. This is the reusable
+bridge from birth/coupling to a later transport budget; it is not an automatic
+generation or restoration mechanism.
+
+The legacy optional `validate_nodal_equation` helper remains a post-state,
+held-step comparison, not a general operator canonicity certificate. In
+particular, its standalone argument handling and numerical clipping convention
+still need a separate compatibility review before it can be reused as an
+admission boundary. Eligibility uses the public proposal/grammar boundaries
+above instead. Neither the shared observations nor
+the SDK safety flags replace them.
+
+### Region formation: integrated reuse and missing mechanisms
+
+This follow-up source/theory/test review addresses **formation and persistence
+of an NFR as a coherent region**, rather than creation of a graph vertex alone.
+The [ontology map](EMERGENT_ONTOLOGY.md#11-nfr-formation-definition-birth-and-collective-dynamics)
+retains that distinction. The review found one missing mathematical bridge
+worth implementing: a regional budget which retains the environment. Existing
+selection witnesses already settle the narrower permission-versus-choice
+question; another selector sweep would repeat that evidence.
+
+The highest-value reuse is the following connected chain. The rows are
+dependencies within O1/O3/O4/S16, not independent new research programmes.
+
+| Connection and existing owners | What can be reused now | Required scope or missing bridge |
+| --- | --- | --- |
+| Region and environment: [support transport](../src/tnfr/physics/support_transport.py), [forcing capture](../src/tnfr/physics/forcing_realization.py), [forced targets](../src/tnfr/physics/forced_support.py) | Exact internal dissipation, signed boundary exchange, independent phase/capacity/topology sources and pressure defects | New regional observer preserves full-graph strengths. Fixed-region instantaneous balance does not prove sustained regional identity |
+| Temporal identity and sufficient state: [observability](../src/tnfr/physics/observability.py), [structural distance](../src/tnfr/physics/structural_state_distance.py), retained lineage and native receipts | Separate mean, relative form, phase, capacity, support and history; compare actual descendant sets under transported labels | The sixteen-coordinate result closes a held EPI model, not the full runtime. Structural distance has a fixed topology/domain and declared channel scales; it supplies neither birth correspondence nor history identity |
+| Environmental memory and scale: [EPI memory](../src/tnfr/physics/epi_memory.py), [quotient/reduction certificates](../src/tnfr/physics/reduction_certificates.py), [spectral projectors](../src/tnfr/physics/spectral_projectors.py) | Eliminating the environment derives a hidden-source and memory term. Exact quotient tests can reject autonomous macro evolution. Projectors avoid choosing a privileged vector within a degenerate normal eigenspace | Static Kron resistance preservation is not dynamic closure; its stiffness is not the heterogeneous nodal generator. Use the reversible H metric before transferring orthogonal spectral results. The eight-family closure failure is already known |
+| Sources and restoration: [capacity localization](../src/tnfr/physics/capacity_localization.py), [capacity feedback](../src/tnfr/physics/capacity_feedback.py), [phase response](../src/tnfr/physics/phase_response.py), [hybrid gains](../src/tnfr/physics/hybrid_operator_stability.py) | Distinguish a held contrast-supported profile from dynamics maintaining that contrast. Check source compatibility, phase sensitivity and mean drift separately from disagreement decay | Restricted P2/C6 theorems do not transfer to the sixteen-node multichannel system. The original profile is incompatible after native phase evolution; zero instantaneous error slope is not compatibility |
+| Birth and activation: [acceleration](THOL_BIRTH_AND_TRANSPORT.md), [eligibility](../src/tnfr/operators/self_organization_selection.py), [grammar](../src/tnfr/operators/grammar_dynamics.py), [selector symmetry](../src/tnfr/physics/selector_symmetry.py) | Reuse the actual history, allowed target relation, complete proposals and atomic dispatch. Existing witnesses distinguish an allowed action from a uniquely derived one | Stable diffusion can cross the configured acceleration trigger. Neither that crossing nor a successful supplied dispatch derives autonomous initiation or a phase transition |
+| Persistence controls: [REMESH history](../src/tnfr/physics/remesh_history_stability.py), [schedule envelopes](../src/tnfr/physics/remesh_schedule_policy_stability.py), existing zero-capacity and fixed-support controls | Test whether an apparent survivor is a delayed copy, frozen state, maintained source, drifting consensus or restoring coupled pattern | Alpha-one delay can cycle; spatial contraction does not control the mean; conditional schedule gains do not derive the schedule |
+
+The new regional derivation and implementation live in
+[forced-support balance, section 7](FORCED_SUPPORT_BALANCE.md#7-a-region-and-its-environment-on-the-same-nodal-support).
+It resolves three terms in a region's centered EPI-variance rate: internal
+dissipation, boundary work and independently captured non-EPI forcing. Stored
+pressure defects remain separate. The complementary weighted-total boundary
+currents cancel exactly, while regional variance need not decrease. Thus a
+region can be maintained by its relations without being a closed subsystem.
+This is a direct consequence of the existing nodal model, with no fitted
+force, new clock or new operator.
+
+The children in the first attached THOL snapshot provide an additional
+conditional calculation: with no child-child edges, their held-environment
+response block is diagonal. Its equilibrium is the actual weighted parent
+input plus `F_i/e`, with rate `e*nu_i`. This does not require a new solver or
+discarding the eight hidden coordinates. It identifies what the environment
+would have to maintain; moving parents or phase/capacity invalidate a frozen
+target. Boundary dependence is compatible with the relational NFR definition.
+
+#### What the existing activation evidence already decides
+
+The nodal derivative is defined at zero EPI. On a two-node pure-EPI support,
+`x=(0,1)` and positive capacity give positive first-node evolution without an
+AL event. Existing state/support are premises; this is not creation of the
+substrate. [Physics derivation](../src/tnfr/config/physics_derivation.py)
+already separates nodal activation from initialization/grammar contracts.
+
+The [grammar tests](../tests/operators/test_grammar_dynamics.py) admit IL, RA
+and SHA in one context. Admission therefore does not select a unique next
+operator. The fallback priority is a separate implemented policy. Likewise,
+[contract signature tests](../tests/operators/test_operator_contracts.py)
+retain a Silence/Contraction ambiguity for four instantaneous features.
+These witnesses refute uniqueness from those specified inputs; they do not
+prove that every possible extension using nodal history is impossible.
+
+[Validated-sequence tests](../tests/operators/test_validated_sequence_execution.py)
+already distinguish prior IL, recent destabilization, phase admissibility and
+future handler obligations. Such obligations restrict a requested word;
+they do not derive every target, timing and reduction order. The finite-action
+symmetry owner supplies another restriction: a deterministic equivariant
+selection must be fixed by the state stabilizer. Multiple fixed candidates
+still leave a choice. Existing stage reductions remain declared policy.
+
+The unresolved constitutive premise is therefore explicit: a state/history
+relation determining when an admitted transformation actually occurs, on
+which targets and with what schedule, or a proof that the remaining choices
+give the same relevant outcome. A caller-supplied choice can define an
+autonomous augmented algorithm when its counters are included; that does not
+derive its choice law from the nodal equation. No priority reassignment or
+threshold fit closes this gap. Reuse these obstructions and continue with a
+scoped regional mechanism rather than treating selection as an endless
+search for one preferred word.
+
+#### Legacy claims excluded from the present evidence chain
+
+Two concrete implementation/documentation contradictions were found during
+the review. Their legacy helpers remain outside the regional balance; these
+findings are not claims that the helpers were repaired in this delivery.
+
+- [Operator algebra](../src/tnfr/operators/algebra.py) describes SHA as
+  idempotent/freezing. Its `validate_idempotence` compares different words
+  containing one SHA each, not `SHA(SHA(X))` against `SHA(X)`. The actual
+  default unclipped capacity update multiplies by
+  `r=0.9204225284540524`; positive capacity gives `r^2*nu != r*nu`.
+  Its NUL dimension-reduction wording and the similar
+  [grammar-canon wording](../src/tnfr/operators/grammar_canon.py) also do not
+  describe the current capacity/pressure kernel and its optional edge-aware
+  EPI write. Use current contracts and kernels, not those algebraic labels,
+  when classifying freezing or restoration.
+- [Word equivariance](../src/tnfr/physics/word_equivariance.py) labels an
+  ordered node loop an equivariant sweep. On two nodes, sequential EN with
+  mix `1/2` has EPI matrix `S=[[1/2,1/2],[1/4,3/4]]`. Node swapping gives
+  `P*S*P=[[3/4,1/4],[1/2,1/2]]`, different from `S`. Uniform-input invariance
+  is weaker than equivariance of the complete map. Transport the target
+  order too, or establish commutation/simultaneity. The abstract composition
+  result remains conditional on genuinely equivariant factor maps.
+
+Several older modules have useful readouts but different premises:
+
+- [Pattern constructors](../src/tnfr/physics/patterns.py) initialize waves,
+  vortices and bumps. [NFR location](../benchmarks/emergent_nfr_where.py),
+  [geometry](../benchmarks/emergent_nfr_geometry.py) and the
+  [resonant tower](../benchmarks/emergent_resonant_pattern_tower.py)
+  inspect supplied spectral or geometric constructions. A standing-wave
+  zero, selected spectrum or constructed winding is not a demonstrated
+  trajectory forming a persistent NFR. `Network.nfr()` is a whole-network
+  diagnostic, not a derived regional segmentation law.
+- [Cell](../src/tnfr/physics/cell.py), [life](../src/tnfr/physics/life.py),
+  [interaction words](../src/tnfr/physics/interactions.py),
+  [centralization](../src/tnfr/dynamics/emergent_centralization.py) and the
+  [integration engine](../src/tnfr/dynamics/emergent_integration_engine.py)
+  contain supplied boundaries, models, words or computational heuristics.
+  Their names do not establish derived self-maintenance or interactions.
+  U5 assessments likewise use a declared parent/child partition and scale;
+  they cannot select a physical boundary from an arbitrary graph.
+- [Arithmetic pulse](../src/tnfr/riemann/nodal_pulse.py) explicitly supplies
+  logarithmic frequencies and a time-dependent phase law. Reuse its exact
+  observability/Krylov techniques, not those arithmetic inputs as a hidden
+  pressure source. Millennium notes remain scoped tool libraries: signed
+  energy budgets and finite algebra are reusable; imported fluid laws,
+  pure-gauge constructions and supplied complexes do not fill the missing
+  generative law.
+
+The EPI cut current also differs from the inward neighbor-mean field current
+in [conservation diagnostics](../src/tnfr/physics/conservation.py), whose
+density is `Phi_s+K_phi`. Mixing their orientation, normalization or density
+would give the wrong regional balance. Keep one owner for each quantity.
+
+#### Meaning of progress toward a persistent region
+
+A useful regional claim must identify its nodes/lineage and the allowed
+equivalence of its form before scoring a response. Uniform mean drift,
+common phase rotation, changed capacity and changed membership cannot be
+silently discarded. Tetrad equality is insufficient: equal diagnostics can
+hide distinct rates. The runtime state must retain physical history,
+configuration and lag/adaptation counters as well as glyph history.
+
+The available tools can then ask whether a declared relational pattern
+survives or returns under its actual source and boundary dynamics. Internal
+variance decrease is only one term; source compatibility and the state
+maintaining that source are separate obligations. A loss of compatibility
+with a frozen profile may indicate an evolving pattern, but it does not
+authorize selecting a better target after observing the outcome. Likewise,
+the retained near-zero phase-resultant sensitivity must stay visible in any
+claim whose identity depends on that relative phase pattern.
+
+The review therefore favors the existing full-state regional mechanism over
+a new reduction, longer blind continuation, independent C6 campaign or
+search for particle analogies. The sole
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md) owns the next bounded
+identity/source test and its acceptance conditions.
 
 ## 3. Synergies worth testing next
 
@@ -159,6 +728,16 @@ closure, finite-history error and invalid direct-echo substitution. A useful
 next experiment is to observe only part of a controlled network and predict
 the resulting memory from the admitted full model. Choosing a partition does
 not itself derive how a physical macro-node forms or selects its boundary.
+
+For the generated families, an optional future compression study could use
+the existing weighted Gram identity and reversible contraction to bound
+`||R*u(t)-v(t)||_Hbar^2 <= t^2*trace(K0)*||u0||_H^2`, where each current held
+reference supplies `u=x-m_H(x)*1-z`, `u'=-A*u`, and the approximation is
+`v'=-R*A*P*v`, `v(0)=R*u0`. Reconstructing raw EPI observations retains the
+derived profile and mean drift. This is a continuous held-model upper bound,
+not measured accuracy or a runtime Euler error certificate. It remains
+parked until a concrete computational or observational constraint requires
+discarding coordinates; it is not a gate for the primary mechanism study.
 
 ### Emergence as active restoration
 
@@ -197,8 +776,9 @@ critical exponent to force a desired transition.
 
 The detailed source audit is retained in
 `artifacts/research/strategic_empirical_readiness_audit.md`.
-These findings concern the current interfaces, not the truth of every
-externally reported measurement.
+These findings concern the pre-P1 interfaces, not the truth of every
+externally reported measurement. They are retained as the rationale for the
+implemented repair, not as a claim that the repaired failure paths still exist.
 
 | Finding | Evidence | Required response before physical use |
 | --- | --- | --- |
@@ -223,8 +803,11 @@ descriptive diagnostic. Separate-run prediction and admissibility checks
 are required for falsification.
 
 The [empirical record](../docs/EMPIRICAL_CONFRONTATION_EEG.md) is qualified
-accordingly. This strategic delivery does not repair the runtime APIs;
-those fixes are the first implementation gate. External classification
+accordingly. The subsequent P1 delivery implements explicit modal abstention,
+frozen nodal calibration/forecast/scoring, prospective-prefix descriptors,
+timestamp-preserving ingestion and strict file-backed evidence admission.
+See the [implementation contract](research/FIVE_STAGE_EXECUTION_PLAN.md#implemented-contract-and-migration).
+Legacy training fits and observed PLV graphs remain descriptive. External classification
 baselines and statistical error measures are evaluation tools, not TNFR
 forces or constitutive laws.
 
@@ -232,8 +815,9 @@ forces or constitutive laws.
 
 The subsequent source/test review found additional constraints below.
 They are incorporated in the sole execution plan, not a second queue.
-These are source-level findings; no empirical trajectory or runtime
-reproduction was executed for this review.
+These are pre-implementation source-level findings; no empirical trajectory or
+runtime reproduction was executed for that review. The first three rows now
+have tested engineering repairs; the model-specific physical conditions remain.
 
 | Finding and existing evidence | Consequence for reuse |
 | --- | --- |
@@ -354,16 +938,16 @@ evaluation outcome. Finite agreement establishes only the tested bridge.
 
 ## 6. Execution and portfolio ownership
 
-The [five-stage execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md)
-replaces this review's earlier six-delivery proposal. It follows the user's
-five requested outcomes, evaluating a reserved prediction before extending
-the partial-observation and recovery studies. It contains the only active
+The [nodal execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md)
+now prioritizes generative coherence research and preserves the five requested
+measurement outcomes as its supporting bridge. Physical partial-observation
+and recovery studies still follow an admitted prediction. It contains the only active
 status board, numbered tasks, dependencies, finite budgets and acceptance
 conditions. Consult it for the next executable action; do not reconstruct
 another queue from the prospective questions in this review.
 
-The [portfolio](../TNFR_lineas_de_investigacion.txt) separates three primary
-axes, their supporting mechanisms and deferred domain programmes. C6 is
+The [portfolio](../TNFR_lineas_de_investigacion.txt) separates the primary
+generative axis, supporting theory/measurement and deferred domain campaigns. C6 is
 preserved at B75 as supporting work, with no campaign running by default.
 The exact previous roadmap is kept in the
 [historical archive](research/archive/README.md). Mathematical derivations
@@ -371,10 +955,10 @@ remain in their existing owners rather than being copied into planning files.
 
 The macro target is a common nodal description that predicts formation,
 persistence, reorganization and loss of patterns across independently tested
-conditions. The near-term success criterion is deliberately smaller: a
-reproducible prediction of an unexamined observation, with a known reason it
-could fail. Neither C6 completion nor one successful apparatus proves that
-all physical reality emerges from TNFR.
+conditions. The next scoped criterion is a closed generation mechanism or
+an explicit obstruction for one declared family, with physical predictions
+requiring their own admitted bridge. Neither C6 completion, a finite generated
+pattern nor one successful apparatus proves universal physical emergence.
 
 ## 7. Review evidence and reproducibility boundary
 
@@ -390,5 +974,33 @@ source/tests and revised documentation without further acquisition.
 Neither executed a new C6 optimizer, exact guard scan,
 physical time-series fit, laboratory run or runtime dynamics change.
 The new planning priority does not rewrite historical B75 evidence or its
-source/document hashes. Future empirical API changes will require targeted
-contract tests and a fresh source-bound checkpoint.
+source/document hashes. The later P1 delivery includes targeted contract and
+integration tests with a fresh checkpoint at
+`artifacts/research/p1_validation_2026_09_17_final.json`. Its synthetic forecast and
+evidence round trip establish software behavior, not physical correspondence.
+The [P2 annex](research/PASSIVE_TRANSPORT_PROTOCOL.md) records the additional
+metadata-only terrestrial search and proposed passive two-node experiment.
+Neither inspected candidate is admitted; actual state/clock calibration and
+uncertainty evidence are still missing. No physical time series was evaluated.
+
+The subsequent observation/transport integration audit passed 601 targeted
+tests across history/THOL, propagation, birth/transport integration, exact
+support accounting and SDK diagnostics. Changed Python files pass flake8;
+179 local documentation links/anchors pass the focused check. Its scoped
+working-source digest and per-run file lists are retained locally in
+`artifacts/research/observation_transport_audit_validation_2026_09_18.json`.
+This is software regression and finite mathematical-control evidence, not a
+new physical experiment, autonomous-generation result or whole-repository
+verification. The preceding audit artifacts retain their original hashes.
+
+The later regional reuse review adds one detached shared observer and one
+offline retained-state audit, documented in
+[forced-support balance, sections 7-8](FORCED_SUPPORT_BALANCE.md#7-a-region-and-its-environment-on-the-same-nodal-support).
+Its 33 observer tests and 19 benchmark tests are included in a 313-test
+targeted validation with the reused support/forcing/target and
+grammar/contract/symmetry owners. Changed Python files pass flake8. The
+local checkpoint is
+`artifacts/research/regional_reuse_validation_2026_09_18.json`.
+This delivery adds no engine evolution path, new trajectory, fitted
+parameter or physical dataset. Its one-snapshot regional rates do not
+certify temporal identity, active maintenance or physical emergence.

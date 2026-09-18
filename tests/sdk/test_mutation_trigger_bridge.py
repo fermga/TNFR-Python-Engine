@@ -61,6 +61,11 @@ def test_nodal_state_keeps_prediction_and_observation_distinct_and_is_read_only(
     # can certify velocity while acceleration remains unavailable (legacy API
     # represents unavailable acceleration as 0.0).
     assert report.d2epi_dt2 == pytest.approx(0.0)
+    assert report.acceleration_available is False
+    assert report.observed_d2epi_dt2 is None
+    assert report.acceleration_observation.source == "epi_time_history"
+    assert report.acceleration_observation.history_length == 2
+    assert report.acceleration_observation.reason == "insufficient_history"
     assert report.evidence_available is True
     assert report.evidence_valid is True
     assert report.source == "epi_time_history"
@@ -101,6 +106,12 @@ def test_missing_history_is_not_reported_as_a_negative_observation():
     assert report.reason == "missing_history"
     assert report.rate_gap is None
     assert report.mutation_threshold_satisfied is False
+
+    acceleration = report.to_dict()["acceleration_observation"]
+    assert acceleration["reason"] == "missing_history"
+    assert acceleration["available"] is False
+    assert report.observed_d2epi_dt2 is None
+    assert "unavailable" in report.summary()
 
 
 def test_legacy_history_retains_unit_step_evidence_scope():
@@ -214,6 +225,36 @@ def test_old_report_construction_keeps_near_bifurcation_as_prediction_alias():
     assert serialized["predicted_crossed"] is True
     assert serialized["observed_crossed"] is None
     assert serialized["mutation_threshold_satisfied"] is False
+    assert serialized["acceleration_observation"] is None
+    assert serialized["acceleration_available"] is False
+    assert serialized["observed_d2epi_dt2"] is None
+
+
+def test_measured_zero_acceleration_is_not_missing_evidence():
+    network = _network(
+        epi=1.0, epi_time_history=[(0.0, 0.25), (1.0, 0.5), (3.0, 1.0)],
+    )
+    before = deepcopy(dict(network.G.nodes["n"]))
+    report = network.nodal_state("n", bifurcation_threshold=0.1)
+    assert report.acceleration_available is True
+    assert report.observed_d2epi_dt2 == 0.0
+    assert report.d2epi_dt2 == 0.0
+    assert report.mutation_threshold_satisfied is True
+    assert report.acceleration_observation.time_basis == "physical_time"
+    assert report.acceleration_observation.current_endpoint_matches_state is True
+    assert "unavailable" not in report.summary()
+    assert dict(network.G.nodes["n"]) == before
+
+
+def test_unequal_step_acceleration_and_legacy_sources_stay_distinct():
+    physical = _network(
+        epi=3.25, epi_time_history=[(0.0, 0.25), (1.0, 0.75), (3.0, 3.25)],
+    ).nodal_state("n")
+    legacy = _network(epi_history=[0.25, 0.75, 3.25]).nodal_state("n")
+    assert physical.observed_d2epi_dt2 == pytest.approx(0.5)
+    assert legacy.observed_d2epi_dt2 == pytest.approx(2.0)
+    assert legacy.acceleration_observation.time_basis == "legacy_unit_operator_step"
+    assert legacy.acceleration_observation.current_endpoint_matches_state is None
 
 
 def test_explicit_prediction_is_canonical_for_the_legacy_alias():

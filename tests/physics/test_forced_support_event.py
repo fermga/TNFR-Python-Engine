@@ -262,6 +262,30 @@ def test_public_caches_are_rebuilt_and_inputs_stay_unchanged():
     assert before.epi_gradient == (F(999), F(999))
 
 
+@pytest.mark.parametrize("observer", [observe_forced_support_event, observe_forced_support_reset])
+def test_each_public_observation_rebuilds_each_reference_exactly_once(monkeypatch, observer):
+    from tnfr.physics import forced_support
+
+    old, new = _reference(), _reference(capacity=(1, 1), weight=2)
+    before, after = old.source, replace(new.source, epi=old.source.epi)
+    expected = observer(old, new, before, after)
+    forged_old = replace(old, relative_profile=(F(999), F(999)))
+    forged_new = replace(new, metric_weights=(F(999), F(999)))
+    inverse = forced_support.exact_matrix_inverse
+    calls = []
+
+    def counted_inverse(matrix):
+        calls.append(matrix)
+        return inverse(matrix)
+
+    monkeypatch.setattr(forced_support, "exact_matrix_inverse", counted_inverse)
+    # Reusing a public dataclass must not bypass reconstruction; repeating the
+    # public call must not introduce a persistent cache of its derived fields.
+    for invocation in (1, 2):
+        assert observer(forged_old, forged_new, before, after) == expected
+        assert len(calls) == 2 * invocation
+
+
 def test_different_valid_reference_node_orders_are_rejected_before_comparison():
     old = _reference()
     new = derive_forced_support_balance(

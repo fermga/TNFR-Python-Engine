@@ -18,7 +18,7 @@ from ..constants import (
     normalise_state_token,
 )
 from ..glyph_history import append_metric
-from ..mathematics.unified_numerical import np
+from ..mathematics.unified_numerical import compute_phase_difference, np
 from ..metrics.common import ensure_neighbors_map
 from ..metrics.trig import neighbor_phase_mean_list
 from ..metrics.trig_cache import get_trig_cache
@@ -322,9 +322,11 @@ def coordinate_global_local_phase(
             for idx, n in enumerate(nodes)
         ]
         neighbor_arr = cast(FloatArray, np.fromiter(neighbor_means, dtype=float))
-        theta_updates = (
-            theta_arr + kG * (thG - theta_arr) + kL * (neighbor_arr - theta_arr)
-        )
+        # Match the scalar angle_diff owner, including its signed antipodal
+        # ties. The modulo-based angle_diff_array has a different +pi tie.
+        global_difference = compute_phase_difference(thG, theta_arr)
+        local_difference = compute_phase_difference(neighbor_arr, theta_arr)
+        theta_updates = theta_arr + kG * global_difference + kL * local_difference
         for idx, node in enumerate(nodes):
             set_theta(G, node, float(theta_updates[int(idx)]))
         return

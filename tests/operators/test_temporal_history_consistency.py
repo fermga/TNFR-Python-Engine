@@ -19,6 +19,7 @@ from tnfr.operators.preconditions import (
     validate_self_organization,
 )
 from tnfr.operators.preconditions.mutation import diagnose_mutation_readiness
+from tnfr.operators.nodal_equation import compute_d2epi_dt2
 
 
 def _graph(*, epi: float = 1.0) -> nx.Graph:
@@ -50,15 +51,24 @@ def _graph(*, epi: float = 1.0) -> nx.Graph:
     return graph
 
 
+def _state(graph: nx.Graph):
+    return deepcopy((
+        graph.graph, tuple((node, dict(data)) for node, data in graph.nodes(data=True)),
+        tuple(graph.edges(data=True)),
+    ))
+
+
 def test_legacy_thol_validator_uses_authoritative_physical_acceleration() -> None:
     graph = _graph()
     graph.nodes[0]["epi_time_history"] = [(0.0, 0.0), (1.0, 0.1), (3.0, 1.0)]
     graph.nodes[0]["epi_history"] = [1.0, 1.0, 1.0]
     graph.nodes[0]["_epi_history"] = [0.0, 10.0, 0.0]
+    before = _state(graph)
 
     validate_self_organization(graph, 0)
 
-    assert graph.nodes[0]["_thol_no_bifurcation_expected"] is False
+    assert _state(graph) == before
+    assert abs(compute_d2epi_dt2(graph, 0, store=False)) > 0.1
     assert ALIAS_D2EPI[0] not in graph.nodes[0]
 
 
@@ -66,10 +76,12 @@ def test_legacy_thol_validator_preserves_public_before_private_precedence() -> N
     graph = _graph()
     graph.nodes[0]["epi_history"] = [0.0, 0.1, 1.0]
     graph.nodes[0]["_epi_history"] = [1.0, 1.0, 1.0]
+    before = _state(graph)
 
     validate_self_organization(graph, 0)
 
-    assert graph.nodes[0]["_thol_no_bifurcation_expected"] is False
+    assert _state(graph) == before
+    assert abs(compute_d2epi_dt2(graph, 0, store=False)) > 0.1
 
 
 def test_mutation_readiness_uses_physical_evidence_without_writes() -> None:

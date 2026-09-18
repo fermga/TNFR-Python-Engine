@@ -1,27 +1,30 @@
 r"""Pointed symmetry: the declared break Aut(G) → Γ_v (R1, selector stage).
 
-The per-operator and word audits show the canonical operators are *equivariant as
-maps*.  Symmetry breaking enters through the **selector**: choosing an origin
-``v`` to act at.  A pointed action ``O@v`` on a symmetric seed cannot be
-Aut(G)-equivariant unless ``v`` is a global fixed point — it can only respect the
+Choosing an origin ``v`` declares the pointed graph ``(G, v)`` and its
 **stabilizer**
 
     Γ_v = { g ∈ Aut(G) : g(v) = v } ≤ Aut(G).
 
-This is the residual symmetry of the pointed graph ``(G, v)``.  Three facts make
-the break *declared, not spontaneous*:
+These graph statements use complete simple-graph automorphism enumeration;
+exceeding the enumeration cap raises instead of using a truncated group.
+Optional edge weights are matched exactly. They do not identify the symmetry
+of phase, capacity, causal histories, runtime policy or newborn hierarchy.
 
 * **Orbit–stabilizer** (DERIVED, MEASURED): ``|Aut(G)| = |Γ_v| · |orbit(v)|``.
 * **Residual sectors** (DERIVED): ``Fix(Aut(G)) ⊆ Fix(Γ_v)`` and
   ``dim Fix(Γ_v) = #orbits(Γ_v) ≥ #orbits(Aut(G))`` — the origin refines the
   Reynolds decomposition, it never coarsens it.
-* **Break localization** (MEASURED): a pointed operator maps ``Fix(Aut(G))`` into
-  ``Fix(Γ_v)`` but out of ``Fix(Aut(G))`` — the break is exactly the coset space
-  ``Aut(G)/Γ_v = orbit(v)``.
+* **Conditional operator action**: if the family satisfies
+  ``O@{g(v)} = g (O@v) g⁻¹`` on a declared state space, acting on a symmetric
+  state preserves its ``Γ_v`` symmetry. It need not leave ``Fix(Aut(G))``;
+  an identity action is a counterexample. Leaving it is a separate observation.
 
-Different origins in one orbit are **conjugate**: ``Γ_{g(v)} = g Γ_v g⁻¹`` and
-``O@{g(v)} = g (O@v) g⁻¹``, so no origin is privileged — the basis of the R2
-pointed residue networks ``(G_{p,k}, 0)``.
+Different origins in one graph orbit have conjugate stabilizers:
+``Γ_{g(v)} = g Γ_v g⁻¹``. The orbit is identified with the coset set
+``Aut(G)/Γ_v``; it is not generally a quotient group. The per-operator and
+word audits measure selected channels on retained vertices, not universal
+operator covariance. In particular, this module does not compare birth,
+changed support or hierarchy, and does not derive an autonomous selector.
 """
 
 from __future__ import annotations

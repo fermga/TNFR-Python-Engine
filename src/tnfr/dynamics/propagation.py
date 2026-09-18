@@ -29,8 +29,8 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
-from ..alias import get_attr
-from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
+from ..alias import get_attr, set_attr
+from ..constants.aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
 from ..constants.canonical import DELTA_PHI_MAX
 from ..constants.operational import EMERGENT_FREQ_BALANCE_CANONICAL
 from ..errors import TNFRValueError
@@ -514,10 +514,12 @@ def detect_bifurcation_cascade(
     source_node: NodeId,
     threshold: float = EMERGENT_FREQ_BALANCE_CANONICAL,
 ) -> list[NodeId]:
-    """Detect if OZ triggers bifurcation cascade in network.
+    """Report acceleration crossings with recorded OZ input from one source.
 
-    When source node undergoes bifurcation (∂²EPI/∂t² > τ), check if
-    propagated dissonance pushes neighbors over their own thresholds.
+    This advisory diagnostic joins a historical propagation record to a
+    current three-sample acceleration observation. The propagation records
+    have no clock or before/after acceleration; the join therefore establishes
+    neither temporal proximity nor a causal bifurcation cascade.
 
     Parameters
     ----------
@@ -526,21 +528,25 @@ def detect_bifurcation_cascade(
     source_node : NodeId
         Node where OZ was applied
     threshold : float
-        Bifurcation threshold τ (default 0.5)
+        Finite nonnegative acceleration threshold in the selected history basis.
 
     Returns
     -------
     list[NodeId]
-        Nodes that entered bifurcation state due to cascade
+        Neighbors with matching source records and observed threshold crossings.
 
     Notes
     -----
-    A node is considered in bifurcation cascade if:
-    - It received propagated dissonance from source
-    - Its ∂²EPI/∂t² now exceeds threshold τ
+    A candidate must have a positive propagation record naming ``source_node``
+    and an available acceleration whose magnitude strictly exceeds the threshold.
+    Missing history is not a measured zero and cannot establish a crossing.
+    All observations are validated before telemetry is written. This function
+    does not establish grammar admission or an executable THOL birth proposal.
 
-    The function marks cascade nodes with `_bifurcation_cascade` metadata
-    for telemetry and further analysis.
+    The historical ``_bifurcation_cascade`` and ``_bifurcation_ready`` keys are
+    retained for compatibility. ``triggered_by`` is a legacy source label, not
+    a causal claim; ``causal_attribution`` is explicitly false. Stored markers
+    are snapshots, not continuously refreshed admission evidence.
 
     Examples
     --------
@@ -561,35 +567,51 @@ def detect_bifurcation_cascade(
 
     See Also
     --------
-    tnfr.operators.nodal_equation.compute_d2epi_dt2 : Compute structural acceleration
+    tnfr.operators.nodal_equation.observe_structural_acceleration : History evidence
     tnfr.dynamics.bifurcation.get_bifurcation_paths : Identify viable paths
     """
-    from ..operators.nodal_equation import compute_d2epi_dt2
+    from ..operators.nodal_equation import observe_structural_acceleration
 
-    cascade_nodes = []
+    threshold = _finite_nonnegative(threshold, "Cascade acceleration threshold")
+    observations = []
 
     # Get neighbors affected by propagation
     neighbors = list(G.neighbors(source_node))
 
     for neighbor in neighbors:
-        # Check if neighbor has propagation record (was affected)
-        if "_oz_propagation" not in G.nodes[neighbor]:
+        data = G.nodes[neighbor]
+        events = data.get(_PROPAGATION_EVENTS_KEY, [])
+        if not isinstance(events, list):
+            raise TNFRValueError(f"{_PROPAGATION_EVENTS_KEY} must be a list")
+        matching = [
+            event for event in events
+            if isinstance(event, Mapping) and event.get("from_node", _MISSING) == source_node
+        ]
+        magnitudes = [
+            _finite_nonnegative(event.get("magnitude"), "Recorded OZ magnitude")
+            for event in matching
+        ]
+        if not any(value > 0.0 for value in magnitudes):
             continue
+        observation = observe_structural_acceleration(G, neighbor)
+        if observation.available:
+            observations.append((neighbor, observation))
 
-        # Check if neighbor now in bifurcation state
-        d2epi_neighbor = compute_d2epi_dt2(G, neighbor)
-
+    cascade_nodes = []
+    for neighbor, observation in observations:
+        d2epi_neighbor = observation.value
+        set_attr(G.nodes[neighbor], ALIAS_D2EPI, d2epi_neighbor)
         if abs(d2epi_neighbor) > threshold:
             cascade_nodes.append(neighbor)
-
-            # Mark for telemetry
             G.nodes[neighbor]["_bifurcation_cascade"] = {
                 "triggered_by": source_node,
+                "causal_attribution": False,
+                "evidence_scope": "recorded_source_and_current_acceleration",
+                "history_source": observation.source,
+                "time_basis": observation.time_basis,
                 "d2epi": d2epi_neighbor,
                 "threshold": threshold,
             }
-
-            # set bifurcation_ready flag for path detection
             G.nodes[neighbor]["_bifurcation_ready"] = True
 
     return cascade_nodes

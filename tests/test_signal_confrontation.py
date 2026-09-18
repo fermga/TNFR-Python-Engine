@@ -75,28 +75,27 @@ def test_estimate_coherence_length_robust_on_uniform_field():
 def _relaxational_signal(
     n_channels: int = 12, n_samples: int = 1024, seed: int = 1
 ):
-    # Brownian drift: power decays monotonically from low frequency, with no
-    # resonant peak -> over-damped / relaxational (Q small).
+    # A random-walk diagnostic control; it is not stable diffusion evidence.
     rng = np.random.default_rng(seed)
     return np.cumsum(
         rng.normal(0.0, 1.0, size=(n_channels, n_samples)), axis=1
     )
 
 
-def test_quality_factor_discriminates_wave_from_relaxation():
+def test_quality_factor_distinguishes_spectral_peak_shapes():
     from tnfr.validation import estimate_quality_factor
 
     q_osc = estimate_quality_factor(_coherent_signal())
     q_relax = estimate_quality_factor(_relaxational_signal())
-    assert q_osc > 0.5      # a clean oscillation is under-damped
-    assert q_osc > q_relax  # sharper than a relaxational drift
+    assert q_osc > 0.5
+    assert q_osc > q_relax  # sharper spectrum than this random-walk control
 
 
 def _travelling_wave(
     n_channels: int = 12, n_samples: int = 1024, seed: int = 0
 ):
     # spatially-structured oscillation (a phase ramp across channels): the
-    # emergent modes carry the oscillation -> WAVE face.  (A rank-1 uniform
+    # graph modes carry the oscillation. (A rank-1 uniform
     # sinusoid would put all oscillatory energy in the trivial mode.)
     rng = np.random.default_rng(seed)
     t = np.arange(n_samples) / 64.0
@@ -106,20 +105,20 @@ def _travelling_wave(
     ])
 
 
-def test_confront_signal_emergent_wave_face():
-    # A spatially-structured oscillation reads as the conservative WAVE face
-    # via the EMERGENT modal dynamics (not the raw input spectrum).
+def test_confront_signal_complex_modal_roots():
     rep = confront_signal(_travelling_wave())
     assert rep.wave_fraction > 0.5
     assert rep.diffusive_face_valid is False
+    assert rep.modal_diagnostic.root_classification == "complex_dominated"
+    assert "not a regime certificate" in rep.summary()
 
 
-def test_confront_signal_emergent_diffusive_face():
-    # A relaxational (Brownian) field reads as the over-damped DIFFUSIVE face
-    # -- the discrimination the input-spectrum Q could not certify.
+def test_real_root_majority_does_not_certify_random_walk_relaxation():
     rep = confront_signal(_relaxational_signal())
     assert rep.wave_fraction <= 0.5
-    assert rep.diffusive_face_valid is True
+    assert rep.modal_diagnostic.root_classification == "real_dominated"
+    assert rep.modal_diagnostic.growing_modes > 0
+    assert rep.diffusive_face_valid is None
 
 
 def test_emergent_wave_fraction_discriminates():
@@ -146,8 +145,7 @@ def _ring_diffusion(n: int = 16, T: int = 2000, c0: float = 0.3, seed: int = 0):
 
 
 def test_nodal_prediction_skill_on_diffusion():
-    # A genuine graph-diffusion field: the nodal one-step predictor explains
-    # increment variance beyond persistence AND beats per-channel AR-1.
+    # Synthetic diffusion plus added noise: a same-window descriptive fit.
     from tnfr.validation import nodal_prediction_skill
 
     rep = nodal_prediction_skill(_ring_diffusion())
@@ -155,6 +153,8 @@ def test_nodal_prediction_skill_on_diffusion():
     assert rep.nodal_skill > 0.05
     assert rep.nodal_skill > rep.ar1_skill
     assert "NodalPredictionSkill" in rep.summary()
+    assert rep.evaluation_scope == "same_window_descriptive_fit"
+    assert "not held-out forecasting" in rep.summary()
 
 
 def test_nodal_prediction_skill_null_on_independent():

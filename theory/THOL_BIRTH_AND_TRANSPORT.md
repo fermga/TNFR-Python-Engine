@@ -1,7 +1,9 @@
 # Causal THOL birth and an admitted transport connection
 
-**Status:** Exact finite acceleration and edge-reset identities with bounded
-canonical runtime controls. Persistent self-restoring localization remains open.
+**Status:** Exact finite acceleration, edge-reset and declared-action selection
+obstructions, with bounded canonical runtime controls. The selection/dispatch
+audit is complete in its stated scope; autonomous generation and persistent
+self-restoring localization remain open.
 **Research links:** B2.d.6/O3.a, S3, S8, S9, S10 and S16.
 
 ## 1. Deriving a birth trigger from actual nodal evolution
@@ -100,6 +102,23 @@ metadata. The node does not enter its parent's neighbor-pressure walk
 through the metadata alone. Its initial pressure is zero, capacity is
 the existing `0.95` multiple of the parent capacity, and phase is inherited.
 Its EPI is the bounded output of the existing metabolic amplitude map.
+
+This isolated birth also has an exact transport-energy boundary. Old EPI and
+conductance remain fixed, so for the Dirichlet matrix `B=D-W`,
+
+$$
+B^+=\operatorname{diag}(B,0),\qquad x^+=(x,x_h),\qquad
+E_D(x^+)=\tfrac12(x^+)^T B^+x^+=E_D(x).
+$$
+
+The edge-based energy cannot see the isolated child's form. This is not a
+zero physical cost of creation. Although its capacity is positive, its
+reversible weight `d_h/nu_h` is zero until attachment; the connected,
+positive-metric forced-profile theorem cannot be applied at this intermediate
+state. The [isolated-birth energy test](../tests/physics/test_thol_birth_transport_energy_scope.py)
+checks the zero-block identity and rejects use of the same-support reset
+observer across the dimensional jump. After birth, that existing observer
+can account for UM on two snapshots of the same enlarged node set.
 
 An actual graph-backed Coupling operation can subsequently consider the
 child as a functional-link candidate. The candidate inventory must
@@ -424,3 +443,1507 @@ the captured state, support and numerical defect rather than inferring
 new dynamics. Persistent restoration requires additional evidence after
 the finite birth/attachment sequence and must distinguish the mean-drift
 obstruction in Section 6 from a zero-pressure localized equilibrium.
+
+## 8. Selection, actual dispatch and the unique-parent obstruction
+
+The bounded [selection audit](../benchmarks/selection_birth_closure.py) reuses
+`prepare_birth_selection_source` from the existing birth benchmark. Every
+branch executes a fresh IL/OZ and two-segment physical preparation; no history
+is invented, removed or copied from a postbirth graph. Its target zero is an
+explicit mark. Observed states are declared projections, not seals of the
+complete runtime state.
+
+The ordinary runtime refreshes pressure and computes Si before asking its
+actual built-in selector. Both `DefaultGlyphSelector` and
+`ParametricGlyphSelector` propose IL at all eight nodes in this preparation;
+the recorded commits are also IL, with eight nodes remaining. Si is
+`0.9417004454081352`, above the unchanged selector `si_hi=0.5`, even though
+the parent's three-sample acceleration is above the public birth threshold.
+The selector's cached acceleration (`0.10063556139279795`) and the public
+operator's three-point result (`0.10063556139279584`) are recorded separately.
+Neither value is overwritten to obtain a desired decision.
+
+Thus the birth trigger is not sufficient for birth under either tested
+built-in policy. This is a counterexample to sufficiency for this preparation,
+not a proof that no other state can select THOL. The heuristic selector
+thresholds, weights, hysteresis and grammar remain configured constitutive
+choices; this audit does not derive them uniquely from the nodal equation.
+
+Separate explicitly requested THOL controls show the dispatch distinction:
+
+| Parent intervention | Nodes after dispatch | Pressure used by held Euler | Pressure used after canonical refresh |
+| --- | --- | --- | --- |
+| None | 8 | `-0.22671636673672074` | `-0.22671636673672074` |
+| Primitive `apply_glyph(..., "THOL")` | 8 | `-0.21870804321347506` | `-0.22671636673672074` |
+| Public `SelfOrganization()` | 9, with one isolated child | `-0.21870804321347506` | `-0.22671636673672074` |
+
+These controls start at the same recorded source. Both THOL routes update
+parent pressure; only the public route creates a child. With duration `1/4`,
+the held-pressure parent endpoint is `1.8142476224736617`; a refresh restores
+the control endpoint `1.8122455415928502`. The public child has zero pressure
+and unchanged EPI in both isolated cases. Exact held-input predictions and
+binary64 residuals are retained. The three existing transport controls then
+verify that a public UM connection and a sample containing the child are
+needed for its observed positive transport response. That positive word
+remains an explicit intervention, not an output of the tested selectors.
+
+An independent exact obstruction clarifies what selecting one parent requires.
+For a deterministic equivariant selection `s(gX)=g s(X)`, let `H_X` be the
+subgroup preserving the declared state and relations. For every `g in H_X`,
+
+$$s(X)=s(gX)=g s(X).$$
+
+Therefore the selected candidate must be fixed by **every** element of `H_X`.
+If the invariant candidate set has no such point, a deterministic equivariant
+single choice is impossible on that state orbit. An orbit or candidate set
+can still be selected; this argument does not forbid distributed activation,
+equivariant random distributions, or selection after an explicitly declared
+asymmetry. Their execution laws would require their own derivations.
+
+[`derive_selector_symmetry`](../src/tnfr/physics/selector_symmetry.py) checks a
+supplied finite permutation group, exact nodal labels and optional exact
+directed relation matrix, then computes the joint stabilizer, candidate
+orbits and fixed candidates. Candidate membership must itself be invariant;
+an asymmetric restriction must first be declared as state information.
+Incomplete supplied groups, nonexact labels and exhausted validation budgets
+fail without a partial result. A smaller supplied group can prove an
+obstruction, but absence of an obstruction cannot exclude missing symmetries.
+
+For the detached uniform C8 example with empty histories, uniform triad and
+all dihedral actions, the eight candidates form one orbit and none is fixed.
+Adding a parent mark at zero leaves fixed vertices zero and four. This removes
+that obstruction without deriving a unique selector. These examples are not
+the wound, IL/OZ-marked runtime source. Topology symmetry alone would omit
+phase, history, target, sample order and policy information.
+
+The [extended relabeling test](../tests/physics/test_thol_birth_relabeling.py)
+compares two independent marked preparations under one explicit label map,
+extending it to newborns by parent and birth ordinal. It checks raw/refreshed
+birth and coupling, all node attributes except declared wall-clock telemetry,
+edge attributes, neighbor order, hierarchy, causal histories and the value
+projection of authenticated preparation receipts. The later SHA timestamp is
+checked for format rather than equality. This finite test retains insertion
+order and the unlimited-candidate policy; it does not establish all-state
+covariance. Its closure follows UM directly, without the two later transport
+intervals of Section 7. The old four-channel comparisons alone could not test
+this newborn correspondence.
+
+Reproduce the audit with `python benchmarks/selection_birth_closure.py`.
+Its source-bound local report is
+`artifacts/research/selection_birth_closure_2026_09_18.json`; the versioned
+[integration tests](../tests/physics/test_selection_birth_closure.py) and
+[exact action tests](../tests/physics/test_selector_symmetry.py) preserve the
+contracts. The report records two actual selector branches, six explicit
+dispatch/refresh controls, three transport controls and two detached exact
+examples. It is a completed mechanism audit with scoped obstructions and
+positive marked controls. Autonomous generation, active maintenance and
+physical identification remain open. The sole task queue remains the
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md).
+
+## 9. Set-valued eligibility and explicit finite dispatch
+
+[`observe_self_organization_eligibility`](../src/tnfr/operators/self_organization_selection.py)
+implements the all-current-node relation implied by the preceding audit. For
+the complete declared graph state `X`, its eligible set is
+
+`E(X) = {v : A_v and G_v and P_v and B_v}`,
+
+where `A_v` is an available three-sample acceleration strictly above the
+resolved threshold in magnitude, `G_v` is incremental THOL grammar admission,
+`P_v` is the public application's configured precondition check, and `B_v`
+is a valid complete public proposal containing an actual child. The last
+condition includes depth, hierarchy, amplitude, metric-input and structural
+checks; an executable pressure-only THOL is not a birth candidate. The result
+preserves the independent checks and errors instead of reducing them to one
+score. Grammar admission alone does not check a complete future word.
+
+Physical history precedence, endpoint matching and unavailable acceleration
+come from the shared observation owner. Public application preconditions and
+`SelfOrganization._prepare_execution` retain their existing implementations.
+In particular, the optional gate is active only when both its graph switch
+and the request switch are enabled. The execution `window` controls history
+retention; it does not replace the runtime grammar's own recent-context window.
+Neither invalid nor short histories are replaced with desired samples.
+
+The relation returns all candidates in snapshot rank, with set-valued
+membership. It does not choose a single representative. On the eligible
+subset, observation and execution reuse one private merge/validation owner
+in [network_stage.py](../src/tnfr/operators/network_stage.py): child-name
+collisions are allocated in snapshot rank and the merged hierarchy/support
+is checked on a detached graph. Empty eligibility is vacuously jointly viable
+but causes no stage execution. Joint planning does not invoke monitors and
+cannot guarantee later execution checks will succeed.
+
+The separate `execute_eligible_self_organization_stage` function implements
+the explicit policy **all eligible parents once**. It captures graph-owned
+state before materializing its restricted options mapping, freezes option
+values once, restores input side effects, and recomputes the relation. It
+does not accept a caller-supplied observation as authorization. One built-in
+two-phase public THOL stage performs the actual commit; fallback schedules
+are rejected. Successful dispatch checks exactly one new isolated child per
+eligible parent and unchanged original node/edge support, including directed
+and parallel-edge identities. This is not a check of every old attribute.
+Failures restore graph-owned state, including late monitor failures. External
+I/O and resources outside that ownership are not covered. Empty dispatch
+skips even the stage's schedule metadata writes.
+
+```python
+from tnfr.operators import (
+    observe_self_organization_eligibility,
+    execute_eligible_self_organization_stage,
+)
+
+observation = observe_self_organization_eligibility(graph)
+# Explicitly chosen policy; the function rechecks the current graph itself.
+dispatch = execute_eligible_self_organization_stage(graph)
+```
+
+The bounded [C8 study](../benchmarks/thol_eligibility_dispatch.py) reuses the
+unchanged causal IL/OZ preparation and its actual physical samples from
+Section 8. It makes no post-dispatch pressure refresh, UM connection or flow.
+
+| Evidence | Configured public policy | Explicit counterfactual enabling the optional gate |
+| --- | --- | --- |
+| Nodes with observed magnitude above `tau=0.1` | All eight | All eight |
+| Complete proposals containing a child | All eight | All eight, independently of gate admission |
+| Incremental THOL grammar admits | Node `0` only | Node `0` only |
+| Application preconditions admit | All eight; optional gate disabled | Odd nodes only; node `0` has negative pressure |
+| Eligible set | `{0}` | Empty |
+| Actual dispatch | One child `0_sub_0`, degree zero; 9 nodes | No stage, no child; 8 nodes |
+
+The marked parent's stored pressure is `-0.22671636673672074`, so forcing
+positive-pressure preconditions would change the tested public policy.
+The counterfactual declares that change explicitly. It does not lower a
+threshold, invent history, choose a replacement parent or dispatch IL instead.
+Both observations preserve the captured structural state and all nodal data.
+The live positive dispatch obtains its own fresh relation inside its transaction.
+
+These results establish a finite eligibility/dispatch contract, **not an
+endogenous generation law**. Node zero already carries the preparation's
+IL/OZ history. Executing the eligible set remains a supplied policy, and
+isolated creation does not establish active transport or persistence.
+The [adapter tests](../tests/operators/test_self_organization_selection.py)
+also check finite relabelings with transported histories/marks, simultaneous
+multiple parents, name collisions, stale observations, late failures and
+input side effects. Their supplied-state fixtures are distinct from the causal
+C8 experiment; neither group proves all-state numerical covariance.
+
+Reproduce the source-bound report with
+`python benchmarks/thol_eligibility_dispatch.py`; its default local output is
+`artifacts/research/thol_eligibility_dispatch.json`. The
+[study tests](../tests/physics/test_thol_eligibility_dispatch.py) retain the
+eight-proposals/one-admission distinction and the empty-policy control.
+The unresolved origin of preparation asymmetry and dispatch choice is now
+explicit; the next bounded discriminator remains in the sole execution plan.
+
+The retained run is
+`artifacts/research/thol_eligibility_dispatch_2026_09_18.json`, with SHA-256
+`f16d65ec2ed3e84cc540ecf2acbee2184896ac97ee6e9b92783a0c2dd726ffa5`.
+Its manifest identifies the dirty source scope and records both finite branches.
+The delivery passed 200 targeted operator/API/integration tests; validation
+metadata is retained in `artifacts/research/thol_eligibility_validation_2026_09_18.json`.
+These ignored local artifacts are reproducible outputs, not dependencies of
+the versioned implementation or proofs of future execution.
+
+## 10. Preparation dependence and distributed explicit birth
+
+The [bounded preparation study](../benchmarks/thol_preparation_policy.py)
+compares three actual prefixes on the same initial C8: none, IL/OZ on one
+parent, and IL on all eight nodes followed by OZ on all eight nodes. Each
+all-node operator uses the existing simultaneous public stage, with live
+incremental admission. No history is assigned. The shared
+[`prepare_birth_selection_source`](../benchmarks/thol_birth_transport.py)
+retains the initial checkerboard, capacity, phase, support, factors, birth
+threshold and refreshed physical partition `(0.25, 0.25)`. Each continuation
+executes its preparation independently; source projections must match before
+the policy comparison proceeds.
+
+| Real preparation | Above-threshold complete birth proposals | Grammar-admitted / eligible parents | Explicit all-eligible births | Default / Parametric runtime births |
+| --- | --- | --- | --- | --- |
+| No IL/OZ prefix | 8 | None | 0 | 0 / 0 |
+| Single-parent IL/OZ | 8 | Prepared parent only | 1 | 0 / 0 |
+| Common all-node IL/OZ | 8 | All eight | 8 | 0 / 0 |
+
+The public optional precondition gate remains disabled, as configured in the
+retained preparation. The observed reference-parent acceleration remains
+`0.10063556139279584`, above the unchanged `tau=0.1`. Every case has three
+executor-recorded physical samples. In this fixture the post-preparation EPI,
+capacity, pressure and acceleration vectors agree across the three prefixes.
+IL nevertheless changes a phase representation from `0` to represented
+`2*pi`; node data and grammar histories also differ. A real prefix is therefore
+a joint physical/history intervention, not a general guarantee of phase
+neutrality or a synthetic change to grammar marks alone.
+
+The all-node case commits eight public births in one two-phase stage. Each
+parent receives one isolated child; the graph grows from 8 to 16 nodes with
+its original edges intact. This removes the need to nominate a unique parent
+for this preparation and dispatch policy. It does not derive the common
+prefix, the initial nonuniform state, or the decision to dispatch. Both actual
+built-in selectors still propose and commit IL on every original node, in
+all three preparations. Eligibility is consequently distinct from execution
+under either built-in policy; no Si value, threshold or factor was tuned to
+obtain a birth.
+
+Each case is repeated under `i -> (i+3) mod 8`, transporting the initialized
+triad, mark and insertion/neighbor order before execution histories. Initial
+pressure construction has already populated rebuildable caches; rotation
+uses detached cache ownership and recomputes that initial pressure. Both
+graph-copy operations can rebuild undirected adjacency order, so the helper
+explicitly preserves the original neighbor order. The finite checks find
+exact binary64 equality of the declared source/eligibility projections,
+explicit dispatch states, runtime proposals, pre-integrator states and
+whole-step endpoints after inverse transport. Newborn names are compared
+by parent lineage. This is one transported-label control, not phase-gauge
+invariance, arbitrary insertion-order invariance or a complete-state theorem.
+
+The source and immediate dispatch boundary are at `t=0.5`. Ordinary runtime
+also advances one Euler step and updates phase/capacity, ending at `t=0.75`;
+its endpoint is not compared as though it had the same horizon as immediate
+public birth. The policy record now includes those phase/capacity settings
+and the actual prefix/target set, reusing the existing selector instrumentation.
+The accompanying backend check found and repaired a separate phase update
+discrepancy: the NumPy path used unwrapped target differences where the scalar
+path used circular differences. Both now use the existing circular-difference
+owners. This restores the same phase convention without changing the selected
+forces or introducing a new dynamical term.
+
+The delivery is complete with preparation dependence and explicit distributed
+birth **supported in this finite scope**. The claim that threshold crossing
+or eligibility suffices for these built-in policies to generate children is
+**rejected in this scope**. Autonomous initiation, distributed newborn transport/feedback,
+active maintenance, perturbation recovery and physical identification remain
+separate open obligations. The [sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md)
+places the next bounded test at the newborn-support/pressure feedback boundary.
+
+Reproduce with `python benchmarks/thol_preparation_policy.py`. The default
+source-bound local artifact is
+`artifacts/research/thol_preparation_policy_2026_09_18.json`; the
+[preparation/policy tests](../tests/physics/test_thol_preparation_policy.py)
+preserve source replay, real prefixes, all-node dispatch, selector controls
+and transported finite projections. Earlier artifacts retain their original
+source identities and are not recertified by the phase repair.
+
+The retained report has SHA-256
+`57fc31c4dc368d2245af00f060db2828acbadd01e8e6182b40616a03bbd145b5`.
+Its scoped dirty-source identity is
+`sha256:a17a8669065aeb0869e627dcc023bd3ce29e2334d1383e28bdd8781ed3bcc398`.
+The delivery passes 135 distinct preparation, transport, selector and circular
+phase tests. Validation metadata, including the exact commands and checked
+documentation links, is retained in
+`artifacts/research/thol_preparation_policy_validation_2026_09_18.json`.
+
+## 11. Distributed generated support and pressure feedback
+
+The distributed continuation starts from Section 10's actual common IL/OZ
+preparation and all-eligible public birth stage. Its eight parents remain the
+UM targets; the eight new children enter the refreshed candidate inventory.
+An isolated child cannot itself be an initial UM target because the existing
+neighbor phase gate precedes functional-link proposals. The pure production
+proposal and the actual simultaneous public stage are recorded separately;
+no edge or preferred child is assigned by the experiment.
+
+The unchanged default policy produces 16 new edges. Every child is linked
+to its own parent. Each child of an even parent also links to the two adjacent
+odd parents; these children have degree three, while children of odd parents
+have degree one. The original parents consequently have degrees three and
+five, respectively. The resulting 16-node graph has 24 edges. Distributed
+attachment is therefore not eight independent copies of the single-parent
+control: the same compatibility kernel admits cross-parent links.
+
+Disabling functional links or retaining the pre-birth candidate sample gives
+no new edges. Both controls still execute UM's phase, capacity and direct
+pressure path on the original parents. The isolated children's freshly
+computed default pressure is zero in every channel. An explicit new
+fixed-support physical partition follows structural execution, with boundaries
+at `0.5`, `0.75` and `1.0`. The pre-birth eight-node execution certificate is
+not reused to claim evolution on the new sixteen-node support.
+
+### Energy accounting and the capacity source
+
+The isolated birth extends the old Dirichlet form by eight zero blocks, while
+preserving the original EPI coordinates and conductance. Its energy is
+unchanged. The separate same-node-support reset from after birth to after UM
+uses Section 5's exact sum over **all** new conductances. It is not a
+conservation claim or a valuation of the new nodes. Each subsequent Euler
+budget keeps the held initial pressure, refreshed endpoint pressure and
+binary64 state defect distinct.
+
+The observed support also exposes a useful exact channel identity. Let every
+original parent have capacity one, every child have the same represented
+capacity `c=Fraction(float(0.95))`, and `delta=1-c`. Each parent has two old
+unit-weight neighbors, `m_i` new child neighbors and total new conductance
+`s_i`. The children have only parent neighbors. UM's first capacity blend
+uses the old parent neighborhood, so these capacities are unchanged in this
+stage. The shared unweighted support convention gives
+
+`g_vf(parent_i) = -delta*m_i/(2+m_i)` and `g_vf(child) = delta`.
+
+For strengths `d_i` and the represented capacity-channel coefficient `w_vf`,
+the weighted source is exactly
+
+$$
+\sum_i d_i F_{\nu,i}
+=2w_{\nu}\delta\sum_{i\in\mathrm{parents}}
+\frac{s_i-m_i}{2+m_i}.
+$$
+
+Every admitted new conductance is below one in this finite witness; `w_vf>0`,
+`c<1` and at least one new edge make this capacity-channel sum strictly
+negative. It follows from weighted EPI
+transport and unweighted capacity neighborhoods; no extra force is introduced.
+It is not the full pressure sum: the canonical phase channel and pressure
+assembly error must retain their separate measured contributions. The
+topology coefficient is zero in the retained configuration.
+
+On the connected positive-capacity support, `H_i=d_i/nu_i`. In a declared
+fixed-coefficient reference, the weighted mean rate is
+`sum(d_i*F_i)/sum(H_i)` because the symmetric EPI diffusion contribution
+cancels. This identity identifies possible collective drift; finite transport
+does not imply a zero-pressure equilibrium or recovery of a fixed pattern.
+The existing non-EPI forcing capture derives its channels from phase, capacity
+and support, independently of stored pressure or a measured EPI derivative.
+The existing forced-support balance and fixed-target observers remain the
+owners for subsequent persistence and recovery questions.
+
+### Retained finite outcome and next boundary
+
+The [distributed study](../benchmarks/thol_distributed_transport.py) gives the
+following results over the two post-UM Euler segments. Parent parity refers
+to the original C8 labels; all eight children are retained in every control.
+
+| Observation | Refreshed candidates, links enabled | Links disabled | Pre-birth sample retained |
+| --- | --- | --- | --- |
+| New UM edges | 16 | 0 | 0 |
+| Child degree, even / odd parent | 3 / 1 | 0 / 0 | 0 / 0 |
+| Child EPI change, even / odd parent | `+0.0574718321 / +0.0209938443` | `0 / 0` | `0 / 0` |
+| Parent EPI change, even / odd parent | `-0.1166867145 / +0.0350430770` | `-0.1081676977 / +0.1081676977` | Same as disabled links |
+| UM conductance-energy reset | `+3.9581016870` | `0` | `0` |
+| Subsequent two-step Dirichlet-energy change | `-2.2444930823` | `-1.9551208711` | Same as disabled links |
+
+Every reset and segment accounting residual is exactly zero as a rational
+identity on the represented data. Actual Euler state defects are retained;
+the largest coordinate defect is about `1.04e-16`. Executor-owned binary64
+held-input replays are identified. Exact-affine identification, pure EPI
+diffusion and a global disagreement contraction are not certified by these
+multichannel observations. The enclosing preparation/birth/UM/flow chain is
+not one transaction; the new physical invocation has its own graph-owned
+transaction and finite causal evidence.
+
+The connected case's exact capacity-weighted source is approximately
+`-0.0032498335468833964`. Its contribution to the instantaneous H-weighted
+mean rate is `-7.382632026173776e-5`; the phase, topology and EPI weighted
+source sums are exactly zero in this captured witness. Kernel assembly adds
+about `5.676e-18` to that rate, and the refreshed stored-pressure residual
+is zero. The captured non-EPI coefficients are unchanged at the end of the
+two-step partition. These results exhibit collective drift alongside local
+child growth; they do not establish an equilibrium. The full disconnected
+controls explicitly have no positive-H reference, since their isolated
+children have zero degree. They are not reduced to their old component to
+force admission to the connected theorem.
+
+This closes the **finite distributed birth -> support -> refreshed-pressure
+response** test. The explicit preparation, birth policy and UM target policy
+remain premises. Persistent nonuniform identity, fixed-target recovery and
+autonomous operation remain open. Section 12 freezes a reference before an
+additional admitted event, keeping shape recovery distinct from mean drift;
+the sole task queue remains the [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md).
+
+Reproduce with `python benchmarks/thol_distributed_transport.py`. The retained
+source-bound output is `artifacts/research/thol_distributed_transport_2026_09_18.json`,
+SHA-256 `51a8ce4db20c6aa1291fae36beefb83bb4819e8b15b94ac2871532774baa9880`,
+with source identity
+`sha256:e3247f76dd1b94347ac0a6e84dd272915ca0944cf5806418cc8142580233e3b7`.
+The [integration tests](../tests/physics/test_thol_distributed_transport.py)
+independently check actual topology, full retained support, causal boundaries,
+Euler/energy accounting and channel-source identities. These local artifacts
+are reproducible outputs, not a physical measurement or a future guarantee.
+
+The delivery passes 125 distinct focused tests: 30 distributed integration
+and accounting cases, plus 95 shared support, forcing, coupling-stage and
+physical-partition cases. Validation metadata is retained in
+`artifacts/research/thol_distributed_transport_validation_2026_09_18.json`.
+
+## 12. Fixed original model profile under a later UM stage
+
+The [fixed-target study](../benchmarks/thol_distributed_target.py) continues the
+same connected sixteen-node case. It reuses the
+[relative-profile derivation](FORCED_SUPPORT_BALANCE.md#2-compatibility-mean-drift-and-the-unique-relative-profile)
+and [original-target compatibility calculus](CHILD_COUPLING_FEEDBACK.md#9-frozen-model-compatibility-with-the-original-target).
+It adds no pressure law, recovery score or replacement profile solver.
+
+At the first refreshed post-UM boundary, `t=0.5`, the independently captured
+phase/capacity/topology channels determine one exact held-model reference.
+Its centered relative profile `z0`, metric `H0` and predicted collective drift
+are fixed and content-addressed **before** the baseline flow. The profile is
+the relative equilibrium of that declared model. It is not the EPI pattern
+actually created by THOL; the initial difference is explicitly measured.
+
+Each branch independently replays the preparation, birth, first UM and common
+physical partition to `t=1.0`. The frozen references, complete retained prefix
+records and declared baseline projections must agree before branching. One
+branch continues without another operator. The other executes one actual
+simultaneous UM stage on all sixteen current nodes, with refreshed candidates,
+live admission and unchanged factors. Both then execute just one further
+`(0.25, 0.25)` physical partition, ending at `t=1.5`.
+
+The original score is always
+
+`R0(x) = 1/2 * ||P0*x-z0||^2_H0`,
+
+where `P0` removes the original H-weighted mean. New references describe the
+post-event held model and its event/flow accounting, but do not replace `z0`
+or `H0`. In particular, UM's zero EPI jump leaves the immediate original
+score and original mean unchanged even when capacity, support and the current
+model's coordinates change. A change in a current-model error at that event
+is not measured recovery of the original shape.
+
+The existing target observer evaluates the current model's residual at `z0`:
+
+`r = P0 * (diag(nu_current)*F_current - A_current*z0)`.
+
+Nonzero `r` excludes compatibility with the old relative profile in that
+unchanged exact model. It can coexist with a decreasing finite `R0`, because
+the evolving state can initially approach an incompatible old target. Zero
+`r` does not require zero collective drift and does not certify future
+runtime persistence. The signed old-metric rate split, channel cross terms,
+pressure realization and Euler defects retain their separate meanings.
+
+### Finite comparison and immediate rate decomposition
+
+The same initial error is `R0(0.5)=7.9301241975`. The baseline flow reduces
+it to `R0(1.0)=6.2231811440` in both independently executed branches. The
+second UM adds eight actual edges, bringing the support to 32 edges. It is
+admitted without changing the configured factors or reconstructing history.
+
+| Observation | No second event | All-node second UM |
+| --- | --- | --- |
+| Immediate original-target error at `t=1.0` | `6.2231811440` | `6.2231811440` |
+| Original-target error at `t=1.5` | `4.8924378794` | `5.0044383605` |
+| Current held model compatible with `z0` | Yes | No |
+| Exact compatibility energy, displayed approximately | `0` | `5.6844308511e-7` |
+| Current relative profile's error in the original metric | `0` | `1.5067976770e-5` |
+| Current model's uniform drift coefficient | `-7.3826320262e-5` | `-4.7603761320e-5` |
+| Total original-metric mean change, `0.5` to `1.5` | `-7.3826320262e-5` | `-0.0064284882` |
+
+The current-profile error is an algebraic mismatch between two derived
+relative equilibria. It is the limiting error only under the corresponding
+exact held-model convergence assumptions; it is not a forecast certified for
+the future binary64 runtime. The original-metric mean uses `H0`, whereas the
+changed model's drift coefficient uses its own `H1`. The event observer retains
+the mean reweighting, and each physical step separates its current-model drift,
+pressure realization and Euler defects. These two mean quantities must not
+be equated after the event.
+
+The unchanged state at the event also allows an exact signed comparison of
+the old-target energy rates. The stored nodal rate changes from approximately
+`-2.9140469721` to `-2.6594895413`, a change of `+0.2545574308`: it remains
+negative but is less negative immediately after UM. The shared target observer
+splits this change as follows:
+
+| Signed contribution to the rate change | Value |
+| --- | --- |
+| Homogeneous generator term in the original metric | `+0.2540293456` |
+| Original-target source term | `+0.0005280852` |
+| Stored-pressure realization defect term | `+1.5201530622e-16` |
+
+Their sum equals the total exactly as rational arithmetic on the represented
+inputs. The change in the homogeneous term dominates this **instantaneous**
+comparison. It does not assign the finite endpoint difference to a separately
+executed channel intervention. The compatibility-energy allocation is also
+signed: the EPI and capacity contributions are about `-2.0009575391e-6` and
+`+2.5694006242e-6`, respectively, with exact zero phase/topology contributions.
+Cross terms are retained; these are algebraic contributions, not ablations.
+
+This completes the finite test. The later all-node UM fails original-profile
+compatibility despite reducing the short-horizon error. The no-event branch's
+compatibility and error decrease do not establish autonomous maintenance.
+The useful next discriminator is the scale of the actual UM dispatch, using
+the original-parent and generated-child cohorts supplied by retained THOL
+ancestry. Its execution and acceptance conditions belong only to the plan.
+
+### Reproduction and validation
+
+Run `python benchmarks/thol_distributed_target.py`. The source-bound output is
+`artifacts/research/thol_distributed_target_2026_09_18.json`, SHA-256
+`09757606385536245ae35b2224d0d1932e8f33b465f37ab22209ef7dd6689574`, with source
+identity `sha256:848d7de8343b5d35703e9bc0a64c429199848c7e42a0294074bb15cedef733f9`.
+The original reference has SHA-256
+`0adabc2cc60bf03d898b84af1d2b88774d1b7b77de02dc67685fc220c24af27b` in both
+independent branches. The earlier Section 11 artifact keeps its historical
+source identity; the preparation/flow helper is now shared by both studies.
+
+The [new integration tests](../tests/physics/test_thol_distributed_target.py)
+independently check the Poisson/gauge references, fixed original metric,
+matched causal sources, actual event, exact reset and eight step budgets,
+signed channel/rate identities and complete JSON serialization. Serialization
+reuses the existing literal projection, preserving deque contents and retention
+limits. Fourteen new cases, 30 prior distributed cases after the shared-helper
+refactor, and 83 shared forced-support/event/target cases pass: **127 distinct
+focused tests**. Validation metadata is retained in
+`artifacts/research/thol_distributed_target_validation_2026_09_18.json`.
+
+No long campaign, threshold search, independent physical observation or new
+pressure law is part of this result. The declared preparation and dispatch
+policies remain supplied inputs. Live admission/read-out failure aborts the
+bounded study without a tuned retry.
+
+## 13. Lineage-scoped coordination on the generated support
+
+The [lineage study](../benchmarks/thol_lineage_coordination.py) asks whether the second UM response depends on
+coordinating the original nodes, their generated children, or both together.
+The two cohorts come from the actual THOL birth pairs and retained parentage;
+they are disjoint and exhaust the sixteen-node support. Cohort choice is a
+declared intervention, not an autonomously selected law.
+
+Each new branch reuses the causal preparation, reference freeze at `t=0.5`
+and baseline flow to `t=1.0` from Section 12. The original `z0/H0` remain
+fixed. The retained no-event and all-node controls are historical evidence
+with their original producer identity; they are usable only after exact
+agreement of the new branch's complete retained baseline and observation
+inputs. The two additional interventions target either every original parent
+or every actual child once, with unchanged factors, fresh candidate sampling,
+live admission and one subsequent `(0.25, 0.25)` refreshed physical partition.
+
+Target membership and write scope are different. UM capacity updates belong
+to selected targets, but bidirectional phase proposals can write neighboring
+nodes outside that set. Simultaneous execution merges overlapping proposals
+from one immutable snapshot. An all-node stage is therefore not assumed to
+equal a sequential or additive composition of the two cohort stages. Raw
+phase writes and wrapped circular changes must also remain distinct at the
+represented `0/2*pi` boundary.
+
+This comparison contributes to the primary generation/persistence question:
+it tests the effect of coordination scope after genuine node birth and support
+formation. Creating a child ring, retaining a derived relative profile,
+restoring a damaged pattern and maintaining it autonomously are separate
+claims. Interaction laws and independently tested physical identification
+remain later obligations in the single execution plan.
+
+### Matched outcome and the child ring
+
+Both new branches pass the actual admission gates and reach `t=1.5`. Their
+complete retained baselines and original references match both historical
+controls. Every selected target's local proposal also matches its corresponding
+proposal in the all-node control, before the simultaneous merge. The unchanged
+pre-event original error is `6.2231811440` in all four cases.
+
+| Observation | No event, retained | Parents only | Children only | All nodes, retained |
+| --- | --- | --- | --- | --- |
+| New edges | `0` | `0` | `8` | `8` |
+| Original-target error at `t=1.5` | `4.8924378794` | `4.8939252624` | `5.0030976710` | `5.0044383605` |
+| Current held model compatible with original profile | Yes | No | No | No |
+| Compatibility energy | `0` | `2.0900858401e-7` | `1.7504227884e-7` | `5.6844308511e-7` |
+| Current-profile mismatch in original metric | `0` | `2.4075802416e-6` | `5.7409527832e-6` | `1.5067976770e-5` |
+| Current model's uniform drift coefficient | `-7.3826320262e-5` | `-7.1234944722e-5` | `-4.9530683966e-5` | `-4.7603761320e-5` |
+
+The child-only stage creates the same eight child-child edges as the all-node
+stage, each with represented weight `0.871053763203346`. Those edges form a
+connected degree-two ring on the eight children. Parent-only targets cannot
+propose an edge with two child endpoints because a candidate edge must have
+a selected source. They create no new edge in this execution. This identifies
+a structural consequence of the declared target set, rather than selecting
+the target set by its eventual score.
+
+Parent-only UM decreases the capacities of even/odd original parents by about
+`0.0013262912 / 0.0023873241`, respectively, while child capacities stay fixed.
+Child-only UM increases every child capacity by about `0.0039788736`, while
+parent capacities stay fixed. Phase proposals reach all eight untargeted nodes
+in each branch; there are twelve multiply proposed phase recipients in the
+parent branch and four in the child branch. In both executions, the only raw
+phase differences are the parent-zero/child-zero writes from `0` to represented
+`2*pi`. Their wrapped differences are about `-2.4493e-16`, not a large circular
+phase displacement. The exact raw writes remain retained rather than erased.
+
+EPI and its original-target score do not jump at either UM event. The original
+mean likewise stays fixed immediately, while a current-metric mean can change
+by reweighting. The total original-metric mean changes from `t=0.5` to `1.5`
+are about `-6.6998959883e-5` for parents and `-0.0064446596` for children;
+neither is silently substituted for the current-model drift coefficient.
+
+At the same pre/post-event EPI, the change in the original-target nodal energy
+rate separates exactly into the following signed terms:
+
+| Rate change | Parents only | Children only |
+| --- | --- | --- |
+| Homogeneous generator term | `+0.0033640238` | `+0.2506653218` |
+| Original-target source term | `+0.0001999095` | `+0.0006907930` |
+| Stored-pressure realization defect | `+3.8818e-17` | `+1.1512e-16` |
+| Total | `+0.0035639333` | `+0.2513561149` |
+
+All sums are exact rational identities on represented values; the table rounds
+their display. Both rates remain negative but become less negative at that
+event. This is instantaneous accounting, not a channel-isolated causal
+explanation of the finite endpoint differences. Profile mismatches are
+conditional held-model limiting discrepancies, not pointwise error floors or
+guarantees about future clipped execution.
+
+The declared cohort comparison is complete. Neither additional cohort preserves
+compatibility with the original profile; neither supplies recovery or autonomous
+maintenance. No-event has the smallest finite endpoint error in this comparison.
+That does not turn inaction into an autonomous generation law, nor does the
+rejection cover all possible schedules or target sets. Further subset search
+would not by itself resolve the macro question. Section 14 instead tests the
+sufficient observed state of actual parent-child families using the existing
+quotient and derived-memory identities.
+
+### Evidence and reproduction
+
+The output `artifacts/research/thol_lineage_coordination_2026_09_18.json` has
+SHA-256 `8b7d6e3e217d57566788350955aa8afbba747add07a49b341167c0626b0b848a` and
+source identity `sha256:30b40b98e87b1ad9026e5932338965e640562b7a55b886141246c0ad23a8adaa`.
+It retains the Section 12 control file's exact SHA-256, producer manifest and
+source scope. Only the two new cohort trajectories execute; historical control
+outcomes are not assigned the new producer's identity.
+
+Run `python benchmarks/thol_lineage_coordination.py` when the pinned Section 12
+artifact is available. In a fresh checkout without local artifacts, generate
+complete new controls and explicitly declare their new byte identity:
+
+```powershell
+python benchmarks/thol_distributed_target.py --output artifacts/research/target_controls_reproduced.json
+$controlDigest = (Get-FileHash -Algorithm SHA256 -LiteralPath artifacts/research/target_controls_reproduced.json).Hash.ToLowerInvariant()
+python benchmarks/thol_lineage_coordination.py --controls artifacts/research/target_controls_reproduced.json --expected-control-sha256 $controlDigest
+```
+
+Those regenerated controls have their own producer identity; they do not
+replace the historical file. The CLI refuses to overwrite its control input.
+Digest admission alone is insufficient: full retained baseline and observer
+comparison still applies. Per-node grammar, hard U3 and enabled optional-gate
+refusals are recorded without another event or continuation. Joint-stage
+refusals and unexpected implementation/accounting failures abort the study;
+they are not converted into ordinary rejected branches.
+
+The [integration tests](../tests/physics/test_thol_lineage_coordination.py)
+generate portable real control fixtures rather than requiring ignored historical
+artifacts. They check ancestry and refusal boundaries, complete source matching,
+actual stage effects and independent exact profile/event/step accounting. The
+historical artifact has a separate read-only rational recount and retains its
+original identity. Validation covers 35 new lineage cases, 14 prior fixed-target
+cases after the shared refactor, and 81 shared coupling/event/target cases:
+**130 distinct focused tests pass**. Validation metadata is recorded in
+`artifacts/research/thol_lineage_coordination_validation_2026_09_18.json`.
+
+## 14. State sufficiency of actual parent-child families
+
+The completed analytical comparison uses the four retained held references: the
+original no-event model and the parent-only, child-only and all-node post-UM
+models. No runtime trajectory, partition search or parameter fit is added.
+One family consists of each actual parent and its actual THOL child, as
+recorded by birth receipts and retained parentage. These eight disjoint pairs
+are a declared observation partition, not an assumed set of autonomous objects.
+
+The shared [exact affine closure criterion](DERIVED_EPI_MEMORY.md#10-exact-affine-closure-on-a-captured-forced-support)
+retains the canonical forcing and asks whether the H-weighted family means
+determine their own derivatives for every microscopic EPI state. A negative
+answer means the chosen aggregate omits dynamically relevant information;
+it does not reject the complete nodal dynamics or establish a physical memory
+law by analogy. Current-model coordinates used for this calculation remain
+separate from the frozen original profile used to score retention in Sections
+12-13.
+
+### Exact obstruction and memory
+
+All four models have nonzero `R*A*Q` and `Q*A*P`, so none closes on the eight
+family means for all real scalar EPI states. Each exact observation retains a
+deterministic witness `delta=Q*e_0`: the states `x` and `x+delta` have identical
+`R*x`, but different projected derivatives. These detached rational states
+need not satisfy a live graph's chart, clipping or grammar constraints. The
+result rejects all-state affine closure of this observation; it is not a
+pair of newly executed trajectories.
+
+The source of the obstruction is already visible in the original support.
+Parent 1 has neighbors in other families, whereas its child connects only to
+that parent. Applying `A` to the indicator of family 0 gives approximately
+`-0.0726326622` at parent 1 and exactly zero at its child. Thus a lifted family
+field does not remain block-constant. Reversibility converts this failure into
+the nonzero projected hidden-state term.
+
+For every model the exact Gram identity
+`Hbar*K(0)=(Q*A*P)^T*H*(Q*A*P)` also holds, with `K(0) != 0`.
+The table displays rounded values from the exact rational matrices.
+Here `RAQ_inf` is the maximum absolute row sum, and `K0_max` is the largest
+absolute entry, not a matrix norm. The separate binary64 cross-check uses
+the existing spectral 2-norm residual diagnostics and does not decide exact closure.
+
+| Held model | Eight-mean affine closure | `RAQ_inf` | `K0_max` | Maximum absolute same-EPI change in family observation |
+| --- | --- | ---: | ---: | ---: |
+| Original | Rejected | `0.0508396000` | `0.00312297573` | `0` |
+| Parent-only UM | Rejected | `0.0506375593` | `0.00310284723` | `0.000433054959` |
+| Child-only UM | Rejected | `0.0206040003` | `0.000256228121` | `0.171042708165` |
+| All-node UM | Rejected | `0.0205261381` | `0.000251303493` | `0.170629235097` |
+
+These numbers are not an improvement ranking: the model, metric and observer
+change between rows. The exact nonzero decision is the closure result. The
+zero-lag identity identifies a derived-memory coupling; no history kernel is
+fitted, truncated or evaluated with a matrix exponential in this study.
+
+### Source, centering and observer resets
+
+Every model retains its captured `b=diag(nu)*F`. Known constant forcing is
+compatible with a closed affine projection when `R*A*Q=0`; `Q*b=0` is the
+additional condition for invariance of the lifted affine subspace, not an
+extra requirement for projected autonomy. The implementation checks this
+distinction with a positive test control.
+
+The homogeneous error coordinates use each model's own relative profile and
+weighted mean: `u=x-m_H(x)*1-z`, giving `u'=-A*u`. The original frozen `z0/H0`
+score from Sections 12-13 remains a separate read-out. At the retained UM
+boundary the fine EPI is identical across models, while their family means
+change by exactly `(R1-R0)*x`. The corresponding current-H global mean resets
+are `+9.5688660174e-5`, `-0.108022140967` and `-0.107841721248` for parent,
+child and all-node UM. These are changes of weighting at fixed EPI, not elapsed
+drift or a nodal EPI jump. The centered reset also subtracts the change of
+global mean and the projected relative-profile shift; all residuals are zero.
+
+Section 15 determines the minimal sufficient linear observation that retains
+these means, using existing invariant row-space and P5 minimality tools.
+Extra coordinates may be internal or nonlocal contrasts. They do not alone
+establish autonomous entities, full macro-triad dynamics, recovery or physical
+correspondence. The sole execution plan owns the next gate.
+
+### Implementation, evidence and reproduction
+
+The shared [exact observer](../src/tnfr/physics/epi_memory.py)
+`observe_forced_support_closure` rebuilds the forced-support reference and
+checks projection, reversibility, memory Gram and current-rate identities.
+The [detached study](../benchmarks/thol_family_closure.py) authenticates both
+historical input files, producer identities, actual ancestry, complete common
+state and captured forcing. It does not construct a new graph or run a solver.
+Its manifest therefore has no new seed or timestep.
+
+With both pinned historical artifacts available:
+
+```powershell
+python benchmarks/thol_family_closure.py --output artifacts/research/thol_family_closure_2026_09_18.json
+```
+
+For a fresh checkout, regenerate the Section 12 controls and Section 13 lineage
+comparison first, using explicit new output paths and the controls' new digest.
+Then pass both new paths with `--controls` and `--lineage`, and declare their
+byte identities with `--expected-control-sha256` and `--expected-lineage-sha256`.
+The study retains those producers rather than claiming they are the historical
+ones. It rejects an output path equal to either input. No ignored artifact is
+required by the portable integration-test fixtures.
+
+The completed report `artifacts/research/thol_family_closure_2026_09_18.json`
+has SHA-256 `13642d936260e849ac5e588f32a6ea6716b74d733ab8232e4376f5f48d621ae1`
+and source identity
+`sha256:c3b5cea441d735fa28b06cd943e0b4677fbbe769926aa85a1c789085169e2263`.
+It preserves both input hashes and producer manifests from Sections 12-13.
+Independent rational reconstruction verifies the generator, projection, Gram
+identity, profiles, four witnesses and four observer resets without importing
+the producing calculations. Review corrected a numerical-output label:
+the shared diagnostic measures the matrix spectral 2-norm, not the infinity
+norm. This changed labels and added a regression, not the exact decision.
+
+The [exact-observer tests](../tests/physics/test_forced_epi_closure.py) and
+[study tests](../tests/physics/test_thol_family_closure.py) cover independent
+matrix reconstruction, positive closure and affine-source controls, hidden
+witnesses, stale/malformed input, ancestry, model-state admission, observer
+reset and CLI behavior. Existing memory/morphism regressions remain included.
+Validation covers **147 distinct focused tests**: 33 exact-observer cases,
+28 study cases and 86 existing memory/morphism cases. The initial combined
+run passed 146; after the norm-label correction, all 28 study cases passed.
+Validation metadata is retained at
+`artifacts/research/thol_family_closure_validation_2026_09_18.json`.
+
+## 15. Minimal sufficient linear state for the retained family observations
+
+The [minimal-state construction](DERIVED_EPI_MEMORY.md#11-minimal-linear-state-retaining-a-declared-observation)
+resolves how much extra information Section 14's eight family means need.
+It keeps the same actual ancestry partition, four held models and captured
+forcing. Each model supplies an exact `A`, `b` and `R`; no new graph, trajectory,
+partition, target or fitted coefficient is introduced.
+
+### Rank and sufficient state
+
+All four models give the same sequence of exact row-space ranks:
+
+| Included observations | Original | Parent-only UM | Child-only UM | All-node UM |
+| --- | ---: | ---: | ---: | ---: |
+| `R` | 8 | 8 | 8 | 8 |
+| `R, R*A` | 15 | 15 | 15 | 15 |
+| `R, R*A, R*A^2` | 16 | 16 | 16 | 16 |
+| Through `R*A^3` | 16 | 16 | 16 | 16 |
+
+The complete third-power level adds no rank. Deterministic row selection
+retains all eight rows of `R`, rows 0 through 6 of `R*A`, and row 0 of
+`R*A^2`. These sixteen rows form `C`; every microscopic column is a pivot.
+The realized state `s=C*x` satisfies `s'=-G*s+C*b` and recovers the family
+observation through `R*x=D*s`. Exact identities `C*T=I`, `C*A=G*C` and
+`R=D*C` are checked on full matrices. Here `T=C^(-1)` because the rank equals
+the microscopic dimension, and `D` selects the first eight coordinates.
+
+Thus **eight additional linear coordinates are necessary and sufficient**
+for every model in the stated all-state domain. This is an exact change of
+coordinates, not a reduction of the sixteen-dimensional EPI state. The
+extra rows are algebraic observations of EPI derived from its generator;
+they are not independent forces or eight newly discovered physical objects.
+For example, `R*A*x` is related to the projected nodal derivative by
+`R*A*x=R*b-y'`; this identity does not claim that such derivatives have been
+measured independently.
+
+The minimality proof covers every linear observation retaining these family
+means and closing for every scalar initial state of the held affine model.
+It does not rule out an approximation with a quantified error, a reduction
+on a justified restricted state class, or a description retaining history.
+It also gives no robustness guarantee for reconstruction from noisy data.
+
+### What this resolves for the generative route
+
+Birth and ancestry do not alone justify replacing each family by a single
+autonomous scalar. The exact state requirement is now known for all four
+retained models, so repeating an exact compression search on those same
+observations would add nothing. The derived-memory representation remains
+available as an alternative way of retaining the missing information.
+The formation, persistence/recovery and interaction questions still concern
+the actual TNFR dynamics. Physical correspondence requires its separate
+independent observation and prediction protocol.
+
+### Implementation, evidence and reproduction
+
+The shared [realization observer](../src/tnfr/physics/epi_memory.py)
+`observe_forced_support_realization` reuses the prior closure geometry,
+rectangular exact products, rational rank and inverse. Every model needs
+49 rank calls and nine matrix products in the realization stage. Maximum
+materialized coefficient bit sizes are respectively 582, 635, 828 and 884;
+these counters exclude reference/closure reconstruction and internal
+elimination costs. The operational rank-call limit is 4096 per model, and
+exhaustion returns no partial certificate or approximate substitute.
+
+The [detached study](../benchmarks/thol_family_realization.py) authenticates
+the Section 14 report and both of its input files, replays its entire scientific
+payload, and compares every retained model, witness and observer reset. Input
+file locations may move; byte identities and historical producer metadata
+remain fixed. The new manifest marks the realization as `derived`, with no
+new seed or timestep.
+
+With the three pinned historical input files available:
+
+```powershell
+python benchmarks/thol_family_realization.py --output artifacts/research/thol_family_realization_2026_09_18.json
+```
+
+A fresh checkout can regenerate Sections 12-14 first. Supply their explicit
+paths with `--controls`, `--lineage`, and `--family`, together with the three
+corresponding `--expected-*-sha256` values. Regenerated inputs retain their own
+producer identities. Output cannot overwrite any input, and admission or
+resource failure does not produce a successful partial report.
+
+The completed report `artifacts/research/thol_family_realization_2026_09_18.json`
+has SHA-256 `cf83a848f753c55c307bded156fda635441d735924ea178a777042af6e2e5daa`
+and source identity
+`sha256:b65a48f9bc51c3b977ee91b7b9a8b593501af93195159f3c4fa012be0b25c407`.
+Independent Fraction arithmetic reconstructs every generator and observation
+from retained conductances/capacities, repeats row selection and rank, and
+checks all four realizations and projected rates without importing production
+calculations.
+
+The [owner tests](../tests/physics/test_forced_epi_realization.py) include
+an exactly closed quotient, the existing minimal P5 reduction, full-rank
+controls, tiny rational symmetry breaking, complete-level stopping, affine
+forcing and work-limit failure. The
+[study tests](../tests/physics/test_thol_family_realization.py) use portable
+fixtures and check complete replay, rejected tampering, relocated inputs,
+CLI behavior and unchanged historical metadata. The final combined run passes
+**210 tests**, including 63 new cases and the prior closure, family,
+memory and morphism regressions. A separate baseline run also passes the
+55 existing P5 reduction cases. Validation metadata is retained at
+`artifacts/research/thol_family_realization_validation_2026_09_18.json`.
+
+## 16. Full-EPI response to one child Emission
+
+The exact additional coordinates from Section 15 are already available.
+Retaining them permits a mechanism test without first quantifying the error
+of omitting them. The optional eight-mean approximation study is parked.
+Here "full state" means all sixteen EPI coordinates of the held affine model;
+phase, capacity, support, operator policy and lineage remain separately
+recorded parts of the engine state.
+
+### Declared intervention and reserved prediction
+
+The protocol selects two independently prepared branches of the existing
+distributed THOL/first-UM source. Both use the same refreshed `(.25,.25)`
+baseline to the common physical boundary `t=1`. One branch has no event;
+the other requests one default public simultaneous Emission on the eight
+actual born children. No response score selects the operator, cohort,
+factor or horizon. The source's original `z0/H0` reference stays fixed.
+
+Emission is used because its canonical direct structural write is EPI; it
+preserves capacity, phase and stored pressure. Live grammar and preconditions
+still decide admission, and its actual clipped jump and lineage metadata
+must be retained. The shared strict precondition reads `EPI_LATENT_MAX` and
+`VF_BASAL_THRESHOLD` from configuration; their current defaults are both
+`0.5`. The actual children at the retained boundary have EPI about `0.43-0.44`
+and capacity `0.95`. No gate is weakened to obtain a perturbation. A refusal
+or absence of fixed-target damage remains a valid result.
+
+The native pointwise receipt's stronger full-network affine certification is
+not required for this child-only intervention. That flag also requires every
+graph node to be targeted and zero exact affine realization defect. The study
+retains its actual value and failed conditions, verifies the receipt seal and
+proposal/gate replay, binds every before/after EPI by node, and independently
+checks the represented affine jump plus its signed rounding residual. It does
+not promote a partial finite stage to a global jump-gain certificate.
+
+After the event, a read-only kernel capture verifies that phase, capacity, support,
+EPI coefficient and independently captured forcing agree with the
+original model. The
+[full-EPI forecast](DERIVED_EPI_MEMORY.md#114-full-epi-euler-prediction-in-the-sufficient-coordinates)
+then fixes the next two `.25` steps from the actual post-event initial state,
+before that branch's runtime continuation advances to `t=1.5`.
+Every predicted EPI coordinate follows the same derived `C/T/G/Cb` realization;
+the reference, source and coefficients are not fitted to the endpoint.
+
+This forecasts the declared Euler discretization. Actual pressure realization,
+rounding and clipping remain separate measured defects, propagated through
+the complete Euler matrices. The graph itself is evolved only through the
+existing pressure-refreshed executor. Its first boundary refresh replaces the
+stored pre-event pressure; the forecast does not mistake that stale value for
+the new model pressure. Each physical partition receives its
+fresh entry snapshot; a frozen reference's earlier EPI is not its entry state.
+
+### Response observables and claim boundary
+
+Let `d=x_AL-x_control` on the common held support and let
+`m_d=sum(h_i*d_i)/sum(h_i)`, with `H=diag(h_i)` from the original model.
+The full separation, mean offset, and centered spatial energy
+`E_d=1/2*sum(h_i*(d_i-m_d)^2)` answer different questions. In ideal arithmetic
+the common forcing cancels, `d_next=(I-h*A)*d`, and `m_d` is conserved.
+The spatial difference can decrease while a uniform offset persists.
+Runtime defects and their propagated effects are reported separately.
+
+The same energy can be expressed through the complete chart using the
+inherited metric `T^T*H*T`. An unweighted Euclidean norm of `C*x` would mix
+coordinate scales and is not substituted for the nodal energy. Each branch
+also keeps its original-target error, positive capacity and actual nodal
+activity. If AL immediately reduces target error, the event has not damaged
+that target and its continuation cannot be called recovery from such damage.
+
+Finite attenuation of an actual perturbation is a test of the held nodal
+response. It does not erase the Emission history, prove absolute-state return,
+derive autonomous maintenance under changing support/phase/capacity, or
+establish physical particles. These distinctions keep the experiment connected
+to the macro objective without promoting a limited result beyond its evidence.
+
+### Measured finite response
+
+Both independent preparations agree in every retained common-source field.
+Strict and native admission accept AL on all eight children. Their represented
+EPI increments are approximately `0.0795774715459476`; no clipping acts and
+every unselected EPI stays unchanged. The native full-network affine flag is
+false for its two stated reasons: partial target coverage and a nonzero exact
+affine rounding residual. The finite event evidence above remains valid.
+
+| Observable | Immediately after event, `t=1` | Endpoint, `t=1.5` |
+| --- | ---: | ---: |
+| Paired centered H energy | 0.030645699389185228 | 0.02348125740481349 |
+| Paired full H energy | 0.045497084867582895 | 0.03833264288321107 |
+| Paired H-weighted mean offset | 0.02597607536317475 | 0.025976075363174672 |
+| Original-target error, control | 6.22318114397756 | 4.892437879433556 |
+| Original-target error, AL branch | 5.747522706029956 | 4.503852112409268 |
+
+The centered difference energy decreases by **23.3783%**, while full EPI
+separation persists. The measured mean-offset change is about
+`-7.70e-17`; the ideal held-model recurrence preserves this mean exactly.
+All sixteen nodes retain positive capacity and nonzero refreshed nodal rate
+at each reported activity boundary. This is active finite response under
+held coefficients, not freezing.
+
+The maximum absolute EPI discrepancy over both forecast frames is
+`1.414e-16` for the control and `6.227e-17` for the AL branch. Independently
+propagated pressure-realization and integrator defects account for every
+coordinate exactly. These observations are not a uniform floating-point
+error bound or a continuous-time solver accuracy estimate.
+
+AL immediately changes the fixed-target error by `-0.47565843794760393`.
+It improves this particular score rather than damaging it, so neither its
+further reduction nor its lower final value establishes recovery from a
+damaged pattern. The target and outcome rule were fixed before this result.
+The finite response/forecast delivery is complete and supported in its stated
+scope; autonomous maintenance and physical correspondence remain untested.
+
+### Evidence and reproduction
+
+The [paired study](../benchmarks/thol_full_state_response.py) reuses the actual
+distributed birth/transport preparation, public stage executor, exact
+forced-support/event observers and full-state prediction owner. It does not
+implement a second graph integrator. AL's complex lifecycle metadata now uses
+the existing exact [metadata projection](../benchmarks/thol_preparation_policy.py),
+extended with separately retained binary64 real and imaginary components.
+Configured AL thresholds replace stale hardcoded examples in the operator
+docstrings; operator behavior is unchanged.
+
+```powershell
+python benchmarks/thol_full_state_response.py --output artifacts/research/thol_full_state_response_2026_09_18.json
+```
+
+The completed report has SHA-256
+`5d95176d28ac633351337d90f3bac0c0fc7edd3e24cf68cc04a5df7de125987e`
+and source identity
+`sha256:bfd61a88c903ef3b2f4f72a087bb6bf21ddacf100cbdde4501c4e507c09c7052`.
+The [prediction tests](../tests/physics/test_forced_epi_prediction.py) and
+[causal study tests](../tests/physics/test_thol_full_state_response.py) verify
+the rational recurrence, prediction-before-continuation order, complete
+paired preparation, partial-stage evidence, actual defects and refusal path.
+The final validation passes **53 new tests** and **210 existing regressions**
+(263 distinct cases). A separate standard-library Fraction audit reconstructs
+the model from raw conductance, capacity and forcing, checks all forecast
+frames and actual defect recurrences, and recomputes paired/target metrics:
+**281 exact checks pass**. The detached audit does not authenticate serialized
+runtime seals or independently prove execution chronology; the instrumented
+runtime tests supply the chronology check.
+Validation metadata and the independent audit are retained in
+`artifacts/research/thol_full_state_response_validation_2026_09_18.json` and
+`artifacts/research/thol_full_state_response_independent_check_2026_09_18.json`.
+
+## 17. One native composite runtime response
+
+### Predeclared protocol and interpretation
+
+Section 16 establishes a finite response with phase, capacity and support
+held. The next bounded test retains both actual causal preparations and runs
+exactly one existing native runtime step from each endpoint at `t=1.5`, with
+`dt=.25`, `use_Si=True` and `apply_glyphs=True`. Both prior scientific branch
+payloads must replay before either continuation. Defaults, selector, histories and
+stable counters remain as produced; there is no threshold, operator, cohort
+or horizon search. The original target `z0/H0` is never replaced to improve
+the score.
+
+Emission records a fresh UTC activation label in addition to the graph's
+structural clock. Historical replay therefore preserves and compares old/new
+UTC labels at explicitly identified child lifecycle paths, checks their
+internal alias/origin consistency, and requires exact equality elsewhere.
+Physical `_t`, timestamped EPI history, activation counts and all nodal state
+remain part of exact replay admission. No wall-clock label is rewritten on
+the graph, and no generic timestamp field is silently dropped. Agreement
+modulo those declared labels is not byte equality of the complete report.
+
+Before each step, the existing full-EPI predictor freezes one held-model
+Euler counterfactual. Read-only trace wrappers then observe the actual native
+schedule: callbacks, sampling/history boundaries, pressure and Si preparation,
+selector decisions and actual glyph application, integration, clamps, phase
+coordination, capacity adaptation, optional math engine, REMESH history and
+decision, validators and final callbacks. Instrumentation delegates each
+operation once to its existing owner and restores the wrapped call sites.
+It is not a new integrator, selector or transaction around the entire step.
+
+The prepared Si is evaluated before glyphs. Capacity adaptation later reads
+that retained Si and the then-stored pressure; it does not perform a fresh
+endpoint coherence test. Its configured thresholds and counters are part of
+the declared policy, not new constants derived by this experiment.
+
+The [exact counterfactual ledger](DERIVED_EPI_MEMORY.md#115-a-held-model-forecast-versus-a-composite-runtime-step)
+separates pre-integrator EPI writes, changed current-model rates, stored versus
+fresh pressure, pressure realization, integration residual and later EPI
+writes. Report the old-target score only while its original node space remains
+available. A changed phase, capacity or support is a model boundary even if
+the same EPI coordinates still permit a score; changed node identity/order
+makes the old vector comparison unavailable. A valid refusal, inactive
+mechanism, worsening or changed domain is retained, not tuned away.
+
+This tests one execution of the existing composite state-dependent policy.
+It can locate active feedback and its immediate consequences. It cannot
+isolate one mechanism causally, establish autonomous generation or indefinite
+maintenance, or establish recovery from damage that the AL event did not
+cause. Physical correspondence remains a separate open obligation.
+
+### Measured response and actual active mechanisms
+
+Both native steps complete at `t=1.75`. Each freshly computes Si, makes sixteen
+outer selector decisions and commits Coherence (IL) once at every node. The
+resolver's nested internal calls are retained separately; they are not extra
+decisions or operator executions. Actual IL changes stored pressure only in
+this witness. There is no EPI jump before integration or afterward, and the
+clamp interval between integration and phase coordination has zero EPI change.
+
+| Observable | Control: before -> after | Child Emission: before -> after |
+| --- | ---: | ---: |
+| Original `z0/H0` error | 4.892437879433556 -> 4.470889149742858 | 4.503852112409268 -> 4.111168480693482 |
+| Stored-state total coherence `C(t)` | 0.8360164407909924 -> 0.8736409592473426 | 0.8439378325321703 -> 0.8800051393409857 |
+| Capacity and support | Preserved | Preserved |
+| Phase and captured non-EPI forcing | Changed | Changed |
+
+Paired centered H energy decreases from `0.02348125740481349` to
+`0.021254184497818077`, a further **9.48447%** over this one step. The mean
+offset remains approximately `0.02597607536`; no full EPI return occurs.
+Coherence above reads the actual stored pressure and derivative. It is not
+a claim that fresh kernel pressure after phase motion equals the stored one.
+
+At integrator entry, the exact current model still agrees with the original
+model. IL's intentional stored-pressure contraction supplies the dominant
+departure from the frozen Euler counterfactual: maximum absolute nodal
+impulses about `0.011256` and `0.011011`. Fresh-kernel realization terms are
+below `7.0e-18`, and the generic integration remainders are below `8.4e-17`.
+The exact full-vector ledger closes for each branch. Calling the roughly
+`0.011` displacement a floating-point error would therefore misidentify the
+mechanism. Subsequent global phase coordination changes phase by up to
+`0.1672005576644261` radians and changes the forcing for future evolution.
+
+Si was absent at entry and is populated by the native preparation, with
+ranges approximately `[0.9312,0.9836]` and `[0.9346,0.9811]`. Capacity adaptation
+nevertheless remains inactive: every absolute stored pressure exceeds its
+actual `0.001` stability threshold (minimum `0.03598` and `0.02640`), so every
+stable counter is zero afterward. Its configured count requirement is five
+consecutive qualifying evaluations. No counter or gate was adjusted. The
+math-engine and REMESH stages introduce no structural change here, and the
+callback registry is empty. Their trace records preserve those negative
+observations rather than claiming they were never considered.
+
+This locates actual state-dependent negative feedback and phase evolution in
+the generated structure, while identifying dormant capacity feedback. It is
+still one finite invocation of a supplied policy. The prior AL event improved
+the target score, so this continuation does not establish damage recovery.
+
+The endpoint phase arrays and independently captured forcing are exactly
+equal across the two branches. Their common source cancels in a paired rate
+comparison. This does not preserve the original individual relative profile:
+the exact endpoint residual `P_H0*(diag(nu)*F_end-A0*z0)` has maximum absolute
+component `0.03145148206669386`, with the same nonzero vector in both branches.
+Its uncentered uniform rate is approximately `0.00027302155397510133`.
+Thus decreasing finite old-target error and compatibility of that target are
+different facts here as well. A persistent evolving pattern need not be a
+fixed EPI profile; any alternative notion of identity still needs an explicit
+derived observation and prospective test, not a retrospectively moved target.
+
+### Shared implementation, evidence and reproduction
+
+The [native study](../benchmarks/thol_native_runtime_response.py) uses
+`replay_response_branch` from the preceding study to obtain the real live
+endpoint. The old mapping-only API remains unchanged. The same shared
+predictor, forcing readout, fixed-target pattern observer and exact metadata
+projection are reused. Structural tetrad telemetry is evaluated on detached
+copies and checked not to alter the live trace.
+
+```powershell
+python benchmarks/thol_native_runtime_response.py --output artifacts/research/thol_native_runtime_response_2026_09_18.json
+```
+
+The default input is the pinned Section 16 artifact. To use a relocated or
+regenerated prior report, pass `--prior-input` and `--expected-prior-sha256`;
+historical producer metadata is retained. Output cannot overwrite that input.
+The final native report has SHA-256
+`71252d116d8933d15a797707ed9f44ed865406422da6db492b48f6989d739c95`
+and source identity
+`sha256:724ec096bb2a361ee49fa12b5a6f06665d469a34a21826e8e6320a69e959fc96`.
+
+[Native study tests](../tests/physics/test_thol_native_runtime_response.py)
+cover the exact discrepancy ledger, actual chronology, source and capture
+binding, narrow UTC exception, node-space boundaries, refused partial calls,
+same-time paired admission and serialization. **35 new tests and 22 prior
+response tests pass**; a separate **56-test baseline** passes for native
+pressure refresh, stability-gated adaptation and phase coordination. The
+113 distinct cases do not constitute an exhaustive engine audit.
+An independent standard-library audit passes **25,410 exact/structural
+checks**, reconstructing raw-state ledgers, replay admission, paired energies
+and endpoint target compatibility without importing production calculations.
+It also verifies the
+[conditional common-IL paired map](DERIVED_EPI_MEMORY.md#116-conditional-paired-evolution-under-common-coherence)
+with maximum absolute paired residual `3.531e-17`. This is finite evidence
+for the recorded common-policy witness, not a repeated-runtime theorem.
+The independent report and overall validation are retained at
+`artifacts/research/thol_native_runtime_response_independent_check_2026_09_18.json`
+and `artifacts/research/thol_native_runtime_response_validation_2026_09_18.json`.
+
+### Global phase direction near the symmetric input
+
+A read-only follow-up identifies a conditioning boundary in this retained
+trajectory. In the ideal duplicated regular twist `phi_k=k*pi/4`, opposite
+unit phasors cancel exactly, so the global resultant is zero and has no
+direction. The stored binary64 angles are distinct exact real inputs; their
+transcendental resultant is not assumed zero. Canonical phase normalization
+also occurs between the entry record and actual coordination input.
+
+For each exact represented angle `x`, rational Taylor polynomials through
+degrees 80 for cosine and 81 for sine enclose their real values with errors
+at most `abs(x)^82/82!` and `abs(x)^83/83!`, respectively. The next odd/even
+coefficient vanishes, and every real sine/cosine derivative has magnitude at
+most one. Summing these intervals gives a rectangle excluding zero at both
+recorded boundaries. At actual coordination input its midpoint has mean
+approximately `(-4.15476e-17, -9.38127e-17)`, norm `1.02601e-16`, and direction
+`-1.98771` radians. Re-evaluating the NumPy trigonometric/reduction path on
+those same angles gives direction `-2.03444`; the scalar compensated readout
+gives `-2.01397`. Norms and angles here are approximate midpoint/readout
+displays; the retained rational rectangles are the exact enclosures.
+
+For nonzero resultant `z`, the differential of `arg(z)` has norm `1/abs(z)`.
+Consequently the observed small resultant is strongly sensitive to input,
+trigonometric and reduction changes. This does not invalidate the recorded
+native calls or their common-source paired identity. It does prevent treating
+the common phase trajectory as demonstrated robust symmetry breaking.
+The engine was not changed and no threshold, alternate direction or new
+trajectory was introduced by this audit. Its read-only helper and evidence
+are retained at `artifacts/research/analyze_thol_phase_resultant.py` and
+`artifacts/research/thol_phase_resultant_audit_2026_09_18.json`. Numerical
+phase-direction robustness must be addressed before promoting the individual
+phase evolution to a structurally persistent mechanism.
+
+## 18. Five additional native policy steps
+
+### Fixed protocol and shared implementation
+
+The predeclared window extends both authenticated Section 17 endpoints from
+`t=1.75` by exactly five additional `.25` native calls, with unchanged
+configuration, selector, capacities and retained history. Its length was
+chosen from the observed `VF_ADAPT_TAU=5` before the results, without assuming
+that the stability gate would qualify. A refused call would stop that branch
+with its actual partial state; no retry, retuning or horizon extension is
+permitted. Both prior scientific replays are admitted before either new
+window begins, retaining only the enumerated actual-child UTC-origin
+exception and preserving the original input bytes.
+
+The [window runner](../benchmarks/thol_native_policy_window.py) reuses the
+existing native trace owner. An opt-in observation captures the generated
+pressure immediately after native preparation, separately from pressure
+consumed by the integrator; the previous runner's default trace schema and
+behavior are unchanged.
+The live continuation entry checks its complete projected endpoint record,
+including configuration and counters. Opaque resources retain explicit
+unavailable markers, rather than a claim of complete internal serialization.
+The shared forcing, target-compatibility, pattern and tetrad observers remain
+the calculation owners. All original-target comparisons retain `z0/H0`.
+
+Repeated JSON trees are stored once in a SHA-256-addressed record pool.
+Expansion validates content digests and returns detached values; each produced
+step is checked against its complete uncompressed record. This preserves
+inactive stages, refused calls and exact scalar literals. The report contains
+9,511 pooled records and occupies 13,209,097 bytes, including the replayed
+native steps and all ten new calls.
+
+### Actual response and policy gates
+
+Both branches complete all five calls through `t=3.0`. The same glyph is
+applied to all sixteen nodes at each step, in the existing sequential runtime
+order. The observed sequence is `IL, IL, EN, IL, AL`.
+
+| Endpoint time | Actual glyph | Paired centered H0 energy | Original-target error, control | Original-target error, prior child AL |
+| --- | --- | --- | --- | --- |
+| 1.75 (entry) | Previous IL | 0.02125418450 | 4.470889150 | 4.111168481 |
+| 2.00 | IL | 0.01924351210 | 4.077236952 | 3.743658257 |
+| 2.25 | IL | 0.01742768716 | 3.712979695 | 3.403352021 |
+| 2.50 | EN | 0.00643978687 | 1.563335194 | 1.421563646 |
+| 2.75 | IL | 0.00585202028 | 1.424752976 | 1.293568728 |
+| 3.00 | AL | 0.00515489141 | 1.265146793 | 1.147332908 |
+
+Paired centered energy falls **75.74646%** over this window. Its weighted
+mean offset is approximately `0.02597607536` before EN and `0.02701964019`
+after EN; it remains nonzero. Neither full EPI equality nor equality modulo
+a uniform offset is attained. Both original-target errors decrease at every
+recorded endpoint, while the original profile remains incompatible throughout.
+Its common endpoint compatibility residual has maximum absolute value
+`0.07990084718` at `t=3.0`. Improvement in the fixed score is therefore not
+preservation of that relative equilibrium.
+
+The changes of glyph have a concrete policy source. In
+[the native selector](../src/tnfr/dynamics/selectors.py), lag counters increment
+before decisions: `since_EN>EN_MAX_LAG=3` forces EN at `t=2.5`, and
+`since_AL>AL_MAX_LAG=5` forces AL at `t=3.0`. Those steps have no outer selector
+requests; the three IL steps have sixteen each. These are configured
+history-driven actions, not evidence of a newly derived phase transition or
+autonomous initiation. No new node or edge is created in the window.
+
+Capacity adaptation never qualifies: every actual stored-pressure magnitude
+at its gate exceeds `.001`, although Si is high. The closest observed
+magnitude is approximately `0.00116717` in the prior-AL branch at `t=2.75`.
+All stability counters remain zero, no capacity update becomes eligible, and
+support/capacity stay fixed. Si and pressure still come from different stages
+as documented in Section 17. Stored-state coherence is not monotone: it falls
+at the EN and final AL calls, with endpoint values approximately `0.899716`
+and `0.904565`. This diagnostic uses the retained pressure/rate, not a pressure
+refresh after the later phase motion.
+
+The [conditional IL identity](DERIVED_EPI_MEMORY.md#116-conditional-paired-evolution-under-common-coherence)
+is admitted at `t=2.0, 2.25, 2.75`, with generated source, actual retention
+multiplication, consumed pressure and EPI-write boundaries checked separately.
+Its maximum combined paired residual is below `1.78e-16` in those three
+records, with exact zero accounting residual. The checker explicitly abstains
+at EN and AL: both write EPI while leaving the generated pressure unchanged.
+Their sequential reset and held-pressure integration need their own existing
+operator contracts; substituting a common-IL map would be false.
+Generation and endpoint phase/forcing arrays agree exactly across branches
+at all five steps, as do the captured support, capacities and EPI coefficient.
+AL adds the same represented `0.07957747154594763` to each EPI in both branches;
+EN has different sequential per-node jumps. No post-reset pressure refresh
+occurs in either step. The accounting in Section 19 therefore preserves the
+pre-reset drive, rather than inserting a freshly evaluated drive at the reset EPI.
+
+The result establishes a finite response under the actual configured policy.
+It does not close indefinite maintenance, generative initiation, a phase
+transition or empirical emergence. The near-singular initial phase-direction
+conditioning in Section 17 also remains relevant to any robustness claim.
+
+### Reproduction and retained evidence
+
+```powershell
+python benchmarks/thol_native_policy_window.py --output artifacts/research/thol_native_policy_window_2026_09_18.json
+```
+
+Both input artifacts are pinned by digest; relocation/regeneration requires
+the explicit CLI input and expected-digest arguments. Output cannot overwrite
+either historical input. The window artifact has SHA-256
+`37907325606a10551c65302fcbc18ef0fc23e0f46868cc222b3bc524b0faeedb`, with source
+identity `sha256:084a85f74d66f5f6a89a3646c1930e304725fb60b95c1f82b17d42544cba310e`.
+
+The independent standard-library audit authenticates all 9,511 pooled records
+and passes 1,628,987 exact/structural checks, mostly complete replay and codec
+field comparisons. It independently reconstructs target compatibility,
+paired energies, admitted IL ledgers, forced lag decisions and stability
+counters. This is finite retained-evidence validation, not an exhaustive
+runtime audit. Its report is
+`artifacts/research/thol_native_policy_window_independent_check_2026_09_18.json`.
+
+[Portable window tests](../tests/physics/test_thol_native_policy_window.py)
+cover the exact horizon, adjoining live records, mixed-policy admission,
+old-target domains, narrow UTC exception, ancestry, refusal, frozen-history
+protection and lossless serialization. The validation summary is retained at
+`artifacts/research/thol_native_policy_window_validation_2026_09_18.json`.
+Validation covers **43 new tests, 35 previous native-response tests and a
+56-test runtime baseline**, totaling 134 distinct cases. Two initial failures
+were synthetic test-fixture mistakes; their four affected guard/refusal
+controls pass after correction, without changing or rerunning the measured
+trajectory. These cases do not constitute an exhaustive engine audit.
+
+## 19. Retained reset accounting and phase conditioning
+
+This closes the supporting interpretation block using the authenticated
+Sections 17-18 records. No native step, longer trajectory, alternate forcing,
+threshold change or engine modification is introduced. The existing canonical
+operators remain the transformations under study; their selection and timing
+are separate from their action contracts.
+
+### Sequential EN/AL and the pressure actually consumed
+
+The [offline reset audit](../benchmarks/thol_retained_reset_audit.py) binds
+the historical artifacts and original target, checks complete retained
+boundary continuity, and reads the generated pressure before the glyphs.
+It evaluates each recorded scalar EN/AL kernel on its actual detached input,
+including neighbor order, configured factors and clipping. A later EN sees
+the preceding node's EPI write. These are sequential calls, not a simultaneous
+snapshot stage.
+
+Let the generated drive be `-A*x+b`, and let `S*x+c` denote the composed
+affine reset built from the shared represented coefficients. Every local
+kernel-evaluation and clipping defect is retained and propagated through the
+later reset rows. Binary64 row coefficients are rationalized as represented;
+the audit does not assume that the resulting `S` is exactly stochastic. The
+subsequent nodal integration still consumes the pre-reset pressure:
+
+```text
+x_after = (S - h*A)*x_before + c + h*b
+          + propagated_reset_defect + pressure_term
+          + integration_remainder + postintegration_change.
+```
+
+The integration remainder is observed, not assumed to consist only of
+rounding. Source capture comes from the independent channel readout;
+pressure is never reconstructed from the observed endpoint to fit a model.
+All four branch vector identities and the two paired identities close with
+exact zero rational accounting residual. For the two branches, common
+`S,c,A,b` give the paired map `S-h*A`; common AL has `S=I`. This implements
+the already derived
+[pre-generated-pressure identity](DERIVED_EPI_MEMORY.md#117-epi-resets-with-pre-generated-pressure)
+on these records, without claiming a general runtime theorem.
+
+| Retained step | Paired centered H0 energy before reset | After reset | Native endpoint |
+| --- | --- | --- | --- |
+| EN, endpoint t=2.5 | 0.0174276871647 | 0.00783124789728 | 0.00643978686669 |
+| AL, endpoint t=3.0 | 0.00585202027919 | 0.00585202027919 | 0.00515489141424 |
+
+EN itself increases the paired mean offset by approximately
+`0.00104356482712`: the branches have unequal mean reset jumps,
+`-0.00927390658874` and `-0.00823034176162`. Their final mean offset is
+approximately `0.02701964019`. The all-node AL jump is identical and uniform
+in both branches, so its immediate paired mean and centered-energy changes
+are exactly zero. The later energy reduction belongs to the consumed drive
+and its measured defects, not to a differential AL reset. Maximum propagated
+EN reset defects are below `1.75e-16`; AL defects are approximately
+`4.16334e-17` in each branch. All 64 local clipping defects are exactly zero.
+Retaining the kernel-evaluation defects is what permits exact
+accounting; small defects alone would not prove the identities.
+
+Thus EN explains the large local attenuation and the mean-offset change;
+common AL does not erase the remaining branch difference. The configured
+lag counters explain why these actions occurred. They do not derive that
+schedule from coherence dynamics or establish maintenance of the original
+incompatible profile.
+
+### One held-gain phase calculation and its ordering control
+
+The [phase audit](../benchmarks/thol_retained_phase_audit.py) makes the earlier
+rational resultant enclosure reusable and selects the first retained native
+coordination boundary. It reconstructs only the fields needed by detached
+coordination and diagnostics. Effective gains are held at the captured
+values `kG=0.05929429797231117`, `kL=0.1496560821254262`. The baseline NumPy
+calculation must reproduce the archived phase endpoint exactly. This binds
+the calculation, not a replay of adaptive history or a complete native step.
+
+The predetermined rotation is `k -> k+1` on the eight parents and their
+actual children. All comparisons map phases and per-node diagnostics back
+to the original labels. Two distinct ordering controls are retained:
+
+- Transporting both labels and node/neighbor enumeration gives exact
+  node-aligned phase equality. A label change alone does not fail this test.
+- Rebuilding the same relabeled mathematical input in the original canonical
+  node enumeration, with transported neighbor order, changes the global
+  reduction order. Its anchor phase shift is approximately `0.02749166`
+  radians, but the maximum residual between anchor-relative patterns is
+  `0.372557061819` radians. This is not merely a common phase rotation.
+
+The global direction changes from approximately `-2.03444` to `-pi/2`.
+At original parent 2 and its child, the wrapped global displacement changes
+branch; the relative residual is approximately `-2*pi*kG`. Shared readouts
+also change: maximum aligned gradient and curvature differences are
+`0.149022824728` and `0.203531276820`, respectively. Structural potential
+is unchanged; the coherence-length difference is about `4.44e-16`.
+
+The scalar arithmetic comparison instead has a common shift of approximately
+`0.00121371` radians and a maximum relative residual of `4.44e-16`.
+Gradient/curvature differences are at rounding scale. This comparison
+switches the coordination/trigonometric arithmetic only; it is not a
+NumPy-free whole-engine trajectory or an exact gauge-invariance theorem.
+
+Exact Taylor bounds certify a nonzero resultant for the represented input,
+with midpoint norm approximately `1.026e-16`. The ideal regular twist has
+exactly zero resultant. These are different mathematical inputs. The tested
+ordering sensitivity rejects robustness of this particular numerical phase
+pattern; it does not establish that every phase preparation or canonical
+operator is unstable. No arbitrary zero-resultant epsilon or replacement
+phase force is introduced.
+
+### Evidence and return to the generative question
+
+```powershell
+python benchmarks/thol_retained_reset_audit.py
+python benchmarks/thol_retained_phase_audit.py
+```
+
+The outputs are local research artifacts under `artifacts/research/`:
+
+| Report | SHA-256 |
+| --- | --- |
+| `thol_retained_reset_audit_2026_09_18.json` | `6257b5ce03a8620afe7c982f68cf2913c4b6759610a99ef047f2c878818310ec` |
+| `thol_retained_phase_audit_2026_09_18.json` | `b9e957bbfbc21ac68c3dfa31c818a9d46db3dbae08da3879b6d33c7991f7371a` |
+
+The reset and phase source identities are respectively
+`sha256:3df78190f7088ca9b36ae40655b9f2081068004d15711b8dd6037f08cdd60c8f`
+and `sha256:0954e6149032793e9137db562b6df74e97572568dfefae55dcf0d1e2e89c1355`.
+Historical input bytes remain unchanged. Portable
+[reset controls](../tests/physics/test_thol_retained_reset_audit.py) and
+[phase controls](../tests/physics/test_thol_retained_phase_audit.py) retain
+admission, arithmetic and label/order boundaries without running a native
+trajectory. The local validation summary is
+`artifacts/research/thol_retained_mechanism_validation_2026_09_18.json`.
+Validation passes 33 new tests and 41 Reception/Emission/phase regression
+tests, totaling 74 distinct cases. An initial reset-test fixture encoded
+exact component values incorrectly; the corrected final 16-test reset suite
+passes, including its independent retained-record arithmetic check. No
+measured trajectory was rerun to fix those synthetic fixtures. These artifacts
+and tests do not constitute a whole-repository or empirical validation.
+
+This supporting block is complete. The principal unresolved chain is how an
+existing nodal configuration requires a transformation that generates and
+sustains a new coherence region. Canonical action contracts are retained;
+activation, targets and ordering still need their structural justification.
+The [single execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#2-one-status-board-and-dependency-chain)
+owns that bounded derivation or underdetermination test. No longer native
+window follows automatically from the present result.

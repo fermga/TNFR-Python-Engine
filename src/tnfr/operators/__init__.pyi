@@ -67,6 +67,13 @@ from .word_execution import (
     preflight_network_mutation_sequence as preflight_network_mutation_sequence,
     run_network_sequence as run_network_sequence,
 )
+from .self_organization_selection import (
+    EligibleSelfOrganizationDispatch as EligibleSelfOrganizationDispatch,
+    SelfOrganizationCandidate as SelfOrganizationCandidate,
+    SelfOrganizationEligibility as SelfOrganizationEligibility,
+    execute_eligible_self_organization_stage as execute_eligible_self_organization_stage,
+    observe_self_organization_eligibility as observe_self_organization_eligibility,
+)
 
 ObservedRepresentedEPIScheduleComposition: TypeAlias = _ObservedComposition
 

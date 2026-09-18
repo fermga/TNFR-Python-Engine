@@ -1,8 +1,80 @@
 TNFR - RESEARCH PORTFOLIO AND RESUMPTION INDEX
 ============================================
-Updated: 2026-09-17. Planning checkpoint: repository-reuse review completed.
-Planning is complete; implementation of this programme has not started.
-Next executable task: P1.1 in theory/research/FIVE_STAGE_EXECUTION_PLAN.md.
+Updated: 2026-09-18. Primary research: generative TNFR coherence and emergent
+observable entities (O1/O3/O4/O5), as explicitly prioritized by the user.
+Selection/dispatch audit complete in scope; autonomous generation remains open.
+Module reuse audit complete; shared THOL gates/configuration and symmetry
+projection repaired. Reuse findings: theory/NODAL_RESEARCH_STRATEGY.md.
+Follow-up integration audit: shared acceleration evidence, source attribution,
+SDK summaries and numerical diffusion boundaries repaired; exact event/reset
+profiles reused within each validated invocation. This is engineering support,
+not closure of autonomous generation or physical emergence.
+Set-valued eligibility and explicit finite dispatch are implemented and tested:
+eight C8 birth proposals, only parent zero grammar-admitted, one isolated child;
+the declared enabled-gate counterfactual has empty eligibility and no action.
+Preparation/policy controls are complete: no/single/all-node real prefixes give
+0/1/8 eligible parents and explicit births; both built-in selectors still choose
+IL with no births. A finite transported rotation preserves the measured state.
+The common prefix removes a unique-parent choice but remains a supplied input.
+The NumPy/scalar circular-phase update discrepancy found during this check is
+repaired through the shared phase-difference owner. Autonomous initiation remains open.
+Distributed support/pressure feedback is complete in finite scope: actual UM
+adds 16 edges, all eight children evolve and parent trajectories change.
+Disabled-link and stale-sample controls retain isolated, unchanged children.
+Exact support/Euler budgets close; the capacity channel produces a negative
+weighted source and collective drift. Finite response is not maintenance.
+The fixed-target response study is complete: a later all-node UM leaves EPI
+unchanged immediately but changes the compatible relative model profile.
+Both finite continuations reduce the original error, with a smaller reduction
+after UM. The original target stays frozen; this does not establish recovery.
+The lineage comparison is complete: parent-only UM adds no edges; child-only
+UM forms the eight-edge child ring. Both finite responses reduce the fixed
+error, but neither preserves compatibility with the original model profile.
+The family-mean test is complete: exact closure fails in all four retained
+models, with explicit hidden-state witnesses and nonzero derived memory.
+Minimal-state analysis is also complete: exact ranks 8,15,16,16 in all four
+models require eight extra coordinates. The resulting sixteen-coordinate
+affine realization preserves the captured source and all family outputs.
+The full sixteen-coordinate EPI response study is now complete: one default
+child Emission and a matched unperturbed continuation preserve the original
+model/target. Centered difference energy decreases 23.3783%, while the mean
+offset persists. Frozen forecasts account for measured numerical defects.
+AL immediately improves the target score, so no damage recovery is claimed.
+Approximation-error analysis is optional and parked; the extra coordinates
+already exist and need not be discarded. One native composite step is also
+complete: all-node IL and phase evolution act, capacity adaptation stays
+inactive, and paired centered energy decreases another 9.48447%. The two
+endpoint phase/forcing arrays agree, but the original target is no longer a
+compatible relative profile. The conditional common-IL paired map is derived
+and checked for this witness. The five-step native window is now complete
+through t=3.0: both branches execute IL/IL/EN/IL/AL, paired centered energy
+falls 75.74646%, and capacity adaptation remains inactive. EN changes the
+mean offset; EN and AL are forced by configured lag counters. The original
+profile remains incompatible. The retained EN/AL audit is complete: exact
+sequential reset budgets preserve the pre-generated pressure and explain the
+paired mean/shape changes. A detached phase audit reproduces the archived
+output but finds relative-pattern sensitivity to node enumeration near the
+tiny nonzero resultant. No new native trajectory or engine change is involved.
+The integrated regional review reuses existing witnesses: grammar admission
+does not uniquely select activation, targets or order. The required additional
+state/history relation remains underived; this scoped diagnosis needs no new
+selector search. Exact full-graph regional balances are now centralized in
+support_transport.py: internal dissipation, boundary work, canonical sources
+and pressure defects remain separate. The retained study uses one snapshot,
+its eight actual ancestry pairs and the complete child cohort; a selected
+subset is not automatically an emerged NFR. No new trajectory is generated.
+All exact regional balances close; four ancestry pairs lose EPI contrast
+and four gain it at the retained instant. The child cohort has no internal
+edges; its variance decrease comes from its parent boundary. Validation: 313 targeted
+tests pass, including 52 new regional observer/audit tests.
+Next: define temporal regional identity and account for what maintains the
+source/boundary conditions using the existing finite records. Mean, phase,
+capacity, history and supplied scheduling must remain visible. Configured
+timing is not automatically a derived selection law. The bounded task lives only in
+  theory/research/FIVE_STAGE_EXECUTION_PLAN.md.
+P1-P5 remain the supporting physical measurement bridge. P1 is implemented;
+P2 bounds and one Volts exploration are complete, physical admission missing.
+Automatic public-data searching is parked; only a computer is available.
 C6 remains preserved at B75: 41 of 56 first-exit labels excluded, 15 pending.
 
 1. DOCUMENT OWNERSHIP: ONE PLACE FOR EACH RESPONSIBILITY
@@ -11,9 +83,17 @@ This file owns the portfolio: main axes, supporting mechanisms, deferred
 programmes and resumption entry. It does not duplicate execution checklists.
 
 - Active order, stage status, tasks, budgets and acceptance gates:
-  theory/research/FIVE_STAGE_EXECUTION_PLAN.md (including the owner/reuse map)
+  theory/research/FIVE_STAGE_EXECUTION_PLAN.md (generative priority + P1-P5 bridge)
 - Scientific rationale, audit findings and experimental candidates:
   theory/NODAL_RESEARCH_STRATEGY.md
+- NFR formation: definition, child birth, coherent-region formation and
+  autonomous macro-state boundaries; existing result/module reuse map:
+  theory/EMERGENT_ONTOLOGY.md section 1.1 (no separate task queue)
+- Exact regional full-graph balances and conditional child response:
+  theory/FORCED_SUPPORT_BALANCE.md section 7; broader reuse and legacy
+  exclusions remain in theory/NODAL_RESEARCH_STRATEGY.md
+- P2 measurement specification, source inventory and missing admission evidence:
+  theory/research/PASSIVE_TRANSPORT_PROTOCOL.md (annex, not another task queue)
 - Technical S1-S16 implementation/evidence inventory:
   theory/CORE_RESEARCH_PROGRAM.md
 - Canonical synthesis and implementation contracts:
@@ -35,9 +115,27 @@ maintain a second execution queue in the strategy, CORE or domain notes.
 ======================================
 Test whether explicitly derived TNFR dynamics can predict formation,
 persistence, interaction, recovery and loss of coherent patterns in
-independently specified observations. The near-term milestone is one
-reproducible held-out prediction and a sufficient account of the observed
-state; it is not a claim that all physical reality emerges from TNFR.
+independently specified observations. The next structural milestone is a
+closed canonical generation mechanism or an exact obstruction in a declared
+family; independent physical prediction remains a required subsequent bridge.
+Neither milestone would show that all physical reality emerges from TNFR.
+
+Motivating hypothesis: observable entities, including physical particles,
+would arise as persistent and interacting TNFR coherence patterns rather
+than being assigned in advance to fundamental graph nodes. This is the
+open research objective, not a demonstrated physical result. Structural
+priority is not an assertion of an earlier physical time. The current P1-P5
+programme supplies necessary scoped tests; completing it would not by itself
+derive physical particles or establish the full hypothesis.
+
+The macro objective exceeds relabeling measurements as EPI or capacity:
+derive observable behavior from specified nodal mechanisms and test its
+transfer across preparations or scales. Measurement correspondence,
+mathematical emergence under projection and physical emergence are separate
+claims. Their shared criterion and existing memory witness are centralized
+in theory/NODAL_RESEARCH_STRATEGY.md, section "Measurement correspondence
+versus generative emergence". P2/P3 establish the bridge; P4/P5 test admitted
+reductions and mechanisms. Physical priority or universality remains unproved.
 
 All explanatory mechanisms must follow from the nodal equation and admitted
 structural/operator laws. Its factorization alone does not determine pressure,
@@ -53,56 +151,102 @@ Mathematical theorem, implementation test, finite simulation and physical
 support are separate evidence. A negative result can complete a study without
 fulfilling its positive objective. Inconclusive mandatory gates stay open.
 
-3. PRIMARY AXES: ONE PROGRAMME, THREE SCIENTIFIC CONTRIBUTIONS
-===========================================================
-These axes use existing O identifiers. They are not three simultaneous
-campaigns: the single P1-P5 sequence activates them when their dependencies
-are met. All six macro objectives O1-O6 remain open at their broadest scope.
+3. RESEARCH HIERARCHY: PRIMARY HYPOTHESIS AND SUPPORTING AXES
+============================================================
+Use the existing O/S identifiers; this reprioritization creates no new domain
+programme or duplicate task queue. All O1-O6 objectives remain broadly open.
 
-A. Observation and independently testable prediction - O6.a with O1.a
+A. Generative coherence and persistent structures - PRIMARY
+----------------------------------------------------------
+Owners: O1.b/O3.a, with S1/S2/S5/S6/S7/S10/S16.
+Question: can specified canonical nodal dynamics generate differentiated,
+interacting and persistent patterns without inserting the desired pattern,
+its target or its restoring mechanism as an unexplained input?
+Current evidence: nodal-history-triggered THOL birth, actual UM attachment,
+pressure/transport budgets, winding protection and conditional supported
+profiles. These are distinct scoped results, not one autonomous entity.
+Gaps: state-derived selection and actual public/primitive dispatch differ;
+prepared capacity or phase support is not self-maintenance; a drifting or
+newly chosen profile is not recovery of the original structure.
+The completed selection audit traces causal history, actual proposals,
+dispatch, birth, coupling and consumed pressure. Both tested built-in policies
+choose IL despite the birth threshold being crossed. Explicit public birth
+and coupling work; their event/target choice remains supplied. Exact declared
+state-action obstructions and a finite marked newborn relabeling test delimit
+selection claims. Results are owned by theory/THOL_BIRTH_AND_TRANSPORT.md.
+The all-node eligibility observer and explicit all-eligible dispatcher now reuse
+the public proposals and simultaneous stage without a unique-parent tie-break.
+The retained marked C8 has eligible set {0}; no prefix gives the empty set,
+and a real common IL/OZ prefix admits all eight parents. Explicit simultaneous
+dispatch creates eight isolated children in that common-preparation case.
+Both unchanged runtime selectors still choose IL. The finite comparison is
+complete; it does not derive the preparation or dispatch policy. The completed
+distributed continuation adds 16 actual UM edges and establishes refreshed
+nodal feedback in a finite two-step test; its controls keep children inactive.
+The capacity-source identity exposes collective drift alongside child growth.
+The fixed-target comparison now separates finite approach from model-profile
+compatibility: the second all-node UM fails compatibility with the original
+profile despite decreasing its finite error. Actual parent/child cohort
+dispatches likewise fail that compatibility test; child dispatch creates the
+new child ring. These finite comparisons do not establish self-maintenance.
+The exact analysis rejects one closed EPI mean per actual parent-child family
+in all four retained held models. Same means can have different derivatives;
+the memory-at-zero Gram identity and observer resets are checked exactly.
+Exact minimal-state analysis now requires sixteen coordinates in each model:
+eight family means plus eight extra observations derived from the generator.
+There is no proper all-state linear compression for these fixed observations.
+The full-state causal Emission study separates spatial attenuation from a
+persistent mean displacement and checks its frozen prediction. The event
+improves the original target immediately; autonomous recovery is still open.
+The native one-step gate is complete: IL pressure feedback and phase evolution
+act; adaptation's pressure gate fails. Exact accounting separates intended
+operator action from numerical residues. Common forcing still cancels between
+branches, although the original individual target loses compatibility.
+The completed five-step policy window admits that map on three IL steps and
+correctly abstains on scheduled EN/AL. All adaptation counters stay zero;
+paired centered energy falls, but its mean offset changes at EN. The next
+mechanism audit reuses these retained resets and investigates the numerical
+conditioning of global phase direction before more elapsed-time experiments.
+Approximation-error analysis remains an optional parked supporting question.
+No physical identity or universal emergence is established by these finite witnesses.
+The supporting module audit confirms that simultaneous public births,
+hierarchy merging, rollback and UM already have shared implementations.
+It consolidates THOL validation/configuration and corrects incomplete-group
+symmetry projection. The observer now consumes these owners; no second birth
+engine or new operational score was introduced. Results and scope are centralized
+in theory/THOL_BIRTH_AND_TRANSPORT.md, Sections 9-18.
+
+B. Derived observables, geometry and composition - SUPPORTING THEORY
 ------------------------------------------------------------------
-Contribution: connect measured quantities, clock and support to an admitted
-nodal model and predict an unseen response without post-hoc refitting.
-Current position: signal/manifest interfaces and synthetic controls exist;
-modal failure handling, same-window fitting, temporal look-ahead and evidence
-admission checks require correction. Existing observability/signature owners
-supply an early measurement gate; they are not a physical calibration. External
-EEG/thermal summaries are reported observations, not replayed full-nodal
-validation in this checkout. No dynamic laboratory dataset is admitted.
-Next delivery: P1 repairs the instrument; P2 admits one measurement contract;
-P3 evaluates a frozen prediction. Technical inputs: S3, S14, S15, S16.
-Status: first execution priority; P1 is planned, not implemented.
+Owners: O1.a/O2/O4/O5, with S3/S8/S9/S11/S12/S14.
+Contribution: derive what a larger-scale observer can read and predict from
+the same underlying nodal mechanism. Reuse exact quotient/memory results,
+minimal observable realizations and symmetry sectors. A partition or seed
+selected by an analyst must remain visible as a premise.
+Internal mathematical work does not require a physical dataset. Physical
+claims require an observation/clock/uncertainty bridge. Classical auxiliary
+wave, gauge and spectral-well models do not supply quantum measurements,
+physical particle identities or universal physical constants by analogy.
 
-B. Sufficient state and derived memory - O1.a/O4.a
-------------------------------------------------
-Contribution: determine which nodal information must be observed or retained
-to predict at another scale, and derive apparent memory from hidden state.
-Current position: exact restricted EPI elimination, hidden-initial-state
-source, P5 history bounds and a reflection quotient are available. General
-nonlinear/changing-support closure remains open. Configured REMESH delay is
-not automatically the same as eliminated-state memory.
-Next delivery: P4 tests one newly admitted observation question using these
-results; it does not reprove or relabel the four-/five-node path (P4/P5)
-theorems. These graph names are distinct from the plan's stage identifiers.
-Technical inputs: S3, S8, S9. Status: planned after P3's classified result;
-physical extension requires an admitted and supported measurement branch.
-Minimum state sufficiency for the first prediction is checked already in
-P2; P4 contributes a new reduction/observation study rather than repeating it.
+C. Independent measurement and prediction - SUPPORTING EMPIRICAL BRIDGE
+-----------------------------------------------------------------------
+Owners: O6.a/O1.a, S3/S14/S15/S16; existing stages P1-P5.
+P1 diagnostics, frozen prediction/evaluation and byte-checked evidence are
+implemented. P2 has equal-capacity and fixed-reference continuous bounds.
+The one predeclared Volts continuation improves persistence but loses to the
+affine control. No physical model is admitted; uncertainty and independent
+preparations remain missing. This exploration is closed, not a refitting task.
+P2 source admission is parked while axis A is primary. P3 and the physical
+P4/P5 variants retain their measurement dependencies. Existing internal
+memory and feedback mathematics may be reused by A/B without claiming that
+these physical stages have been completed.
 
-C. Active patterns, recovery and regime changes - O3.a/O4.c
----------------------------------------------------------
-Contribution: explain what maintains a differentiated pattern, distinguish
-recovery from freezing or motion, and test derived changes of behaviour.
-Current position: forced profiles, joint mean/shape/event accounting, local
-phase response, winding and finite birth/attachment results exist. Autonomous
-self-restoration, general repeated-runtime stability and thermodynamic
-criticality remain open. Threshold labels alone establish none of these.
-Next delivery: P5.1 compares matched recovery branches against the fixed
-original target; P5.2 studies a predeclared finite regime mechanism.
-Technical inputs: S1, S2, S6, S7, S16. Status: planned after state/prediction
-admission; no independent phase-transition or THOL campaign is activated.
-New explanatory channels require versioned admission and fresh prediction
-evidence. A passive diffusion result does not validate active restoration.
+Riemann and the other Millennium programmes are source libraries for A/B:
+extract valid recurrence, symmetry, conservation and obstruction tools while
+keeping inserted arithmetic, supplied dynamics and physical analogies apart.
+Their shared reuse assessment is in theory/NODAL_RESEARCH_STRATEGY.md under
+"Cross-domain reuse for the generative hypothesis". Original notes retain
+proofs and historical evidence; they are not separate active campaigns.
 
 4. SUPPORTING MECHANISMS: REUSE, DO NOT REOPEN BY DEFAULT
 =======================================================
@@ -128,7 +272,7 @@ Support is technical contribution, not another active project.
   supply P4/P5 comparisons only when their hypotheses match. Owner:
   theory/REMESH_INFINITY_DERIVATION.md. Full future-runtime closure is open.
 - THOL birth/attachment: causal finite structural growth and pressure-use
-  controls; support P5 if its mechanism needs a child. Owners:
+  controls; directly support the primary generation-closure study. Owners:
   theory/THOL_PRESSURE_FEEDBACK.md, theory/THOL_BIRTH_AND_TRANSPORT.md.
   Birth, attachment and autonomous maintenance have different evidence.
 - Observability, tetrad, geometry and non-normal transients (S3/S11/S13/S14):
@@ -150,22 +294,22 @@ owners; ARCHITECTURE.md and CORE_RESEARCH_PROGRAM.md locate their APIs.
 The detailed status remains in theory/CORE_RESEARCH_PROGRAM.md. All lines
 remain open at their broadest scope; restricted completed results are reused.
 
-S1  Nontrivial stability: primary C; restricted diffusion/history results.
-S2  Lyapunov functionals: primary C; restricted energy and event budgets.
-S3  Observability/minimality: primary A/B; insufficient tetrad-only prediction.
+S1  Nontrivial stability: primary A; restricted diffusion/history results.
+S2  Lyapunov functionals: primary A; restricted energy and event budgets.
+S3  Observability/minimality: supporting B/C; insufficient tetrad-only prediction.
 S4  Heterogeneous-capacity spectra: transport support for A/B/C.
-S5  Adaptive grammar: deferred O1.b; autonomy is a further derivation.
-S6  Coherence transitions: primary C/O4.c; finite diagnostics available.
-S7  Nodal-topology transitions: primary C; detection precedes prediction.
-S8  Coarse-graining/closure: primary B; scoped quotient and memory results.
-S9  Operator renormalization: primary B; restricted intertwining/closure.
+S5  Adaptive grammar: active O1.b closure audit; autonomous selection unproved.
+S6  Coherence transitions: primary A/O4.c; finite diagnostics available.
+S7  Nodal-topology transitions: primary A; detection precedes prediction.
+S8  Coarse-graining/closure: supporting B; scoped quotient and memory results.
+S9  Operator renormalization: supporting B; restricted intertwining/closure.
 S10 Operator completeness: deferred O1; admissible transformation class open.
 S11 Coherence geometry: O2/O3 support; instantaneous read-outs available.
 S12 Dissipative-symplectic bridge: deferred O4.b; broader realizability open.
 S13 Non-normal transients: O2 support; restricted pressure-growth criterion.
 S14 Information geometry: O1 observation support; changing-state scope open.
-S15 Inverse telemetry: primary A; finite signatures, general inversion open.
-S16 Integrated persistence: primary C and programme integration; finite
+S15 Inverse telemetry: supporting C; finite signatures, general inversion open.
+S16 Integrated persistence: primary A and programme integration; finite
     causal evidence does not establish general persistent structures.
 
 E1-E10 and H1-H10 remain historical aliases/hypotheses in the archived
@@ -174,13 +318,15 @@ roadmap. They do not create extra queues or independent experiments.
 6. DEFERRED OBJECTIVES AND SECONDARY DOMAIN PROGRAMMES
 ======================================================
 Deferred does not mean disproved or abandoned. Reopen only for a named
-P1-P5 dependency or an explicit change of priority, with a bounded question.
+primary-route dependency or an explicit change of priority, with a bounded question.
 
-- O1.b endogenous policy and S10 operator completeness: needed for a stronger
-  autonomous-maintenance/generation claim; a supplied policy remains a control.
+- General S10 operator completeness remains open and deferred. O1.b is now
+  active only through the bounded birth/support/pressure mechanism study; this
+  does not activate an unrestricted grammar search or prove autonomy.
 - O2 autonomous geometry, dimension and physical clocks: scoped graph
   geometry exists; physical emergence remains open. Only the clock/geometry
-  premises required for an active measurement are brought into P2.
+  premises required by a selected structural claim are active; physical clocks
+  still require P2 admission before a measurement claim.
 - O4.b realizable sector coupling: auxiliary constructions and restricted
   bridges exist; no general derivation of the full nodal law from the
   auxiliary Hamiltonian. See theory/TNFR_VARIATIONAL_PRINCIPLE.md.
@@ -203,9 +349,9 @@ Secondary domain programmes retain their own scoped notes:
 - Yang-Mills: finite diagnostics; independent non-Abelian construction and
   continuum gap open. Owner: theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md.
 - P versus NP: finite trapping diagnostic, not complexity separation.
-  Owner: theory/TNFR_P_VS_NP_RESEARCH_NOTES.md. Its older universal descending-
-  gradient wording requires scope review before reuse; current canon proves
-  such identities only in restricted models.
+  Owner: theory/TNFR_P_VS_NP_RESEARCH_NOTES.md. Current canon derives a
+  Dirichlet-gradient identity only in the restricted diffusion model;
+  general potential descent is not an established complexity theorem.
 - BSD: finite arithmetic diagnostic; GL(2) and rank/order bridges open.
   Owner: theory/TNFR_BSD_RESEARCH_NOTES.md.
 - Hodge: auxiliary simplicial baseline; TNFR tetrad/cochain bridge open.
@@ -214,7 +360,8 @@ Secondary domain programmes retain their own scoped notes:
   proof of operator completeness. Owner:
   theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md.
 
-None of these programmes is scheduled alongside the five-stage execution.
+Domain mechanisms can support the primary route without restarting their
+old campaigns. The sole execution plan controls any actual delivery.
 None currently establishes a classical open-problem solution through TNFR.
 
 7. CURRENT EVIDENCE AND RESUMPTION
@@ -223,27 +370,95 @@ The B75 scientific snapshot remains:
   sha256:f84290315bc1cee1e01f6c71ee1d086a7b56a68d5673fa02c260e04963ea5b92
   Git ancestor: c3ee03da6a5795d03ed6efb88425e2378893d276 (dirty local source).
   Retained checkpoint: artifacts/research/b75_final_validation.json.
-Changes since that scientific checkpoint here are planning/documentation;
-historical source-bound evidence is not recertified by editing these files.
+The B75 snapshot is historical: current source additionally contains the P1
+implementation. Historical source-bound evidence is not recertified by these
+changes. Fresh P1 contract/integration validation is retained locally at
+artifacts/research/p1_validation_2026_09_17_final.json, with its own source identity.
+The versioned tests provide the portable reproduction path; the local ignored
+checkpoint is not a public evidence bundle.
+The subsequent continuous P2 integration has a separate local checkpoint:
+artifacts/research/p2_interval_validation_2026_09_17.json. It leaves P1's
+record intact and does not promote software fixtures to physical evidence.
 The reuse review reconciled the plan with existing diagnostics, evidence
 owners, observability, memory, recovery and transition tools. Their scoped
 results and negative controls are inputs, not tasks to repeat. The strategy
 records the selection rationale; global optimality has not been established.
 
-Candidate data: Zenodo 3521009 metadata and Structure.zip only. The inspected
+Candidate data: the earlier Zenodo 3521009 metadata and Structure.zip only. The inspected
 archive contains 20 connected 28-node, 42-edge graphs with equal labeled
 degree vectors. No signals were downloaded or admitted as TNFR evidence.
 Local provenance: artifacts/research/zenodo_3521009_admission/inspection.json.
 The dataset's physical clock, state map and uncertainty remain P2 gates.
+The new passive-transport annex records the follow-up metadata-only review,
+including a restricted switched-capacitor dataset. Neither is admitted as
+passive EPI transport. Those initial searches scored no signals. A proposed
+local two-sensor P2 setup specifies the nodal prediction, independent state/
+clock mapping, whole-preparation split and missing instrument error budgets.
+No apparatus acquisition or physical experiment has been performed.
+The second metadata search inspected electrical and thermal candidates;
+none supplied the isolated two-state, synchronized, calibrated observations.
+Its bounded source inventory is centralized in the same protocol annex.
+After the computer-only clarification, one pinned public Volts file (767 bytes)
+was first cached with verified Git-blob identity and SHA-256, without decoding.
+The byte-only inspection remains unchanged. Draft 4 then fixed the exploratory
+map, zero reference, 25/25 split and controls before decoding; its completed
+comparison favors the affine control over the nodal continuation. Results,
+the decoder-only repair and all immutable evidence identities are centralized
+in PASSIVE_TRANSPORT_PROTOCOL.md. Local bundle:
+artifacts/research/volts_exploration_2026_09_18/.
+Missing instrument/support evidence and independent preparations keep it
+exploratory. The fixed-reference model is implemented separately from the
+equal-capacity adapter. No reference or pressure law was refitted after scoring.
+Low-Energy-Meter is another metadata lead with
+unresolved licensing/conversion/calibration. No apparatus purchase is planned.
 
 The full preceding roadmap is archived with SHA-256:
   e4daa01310051fef3162dc1b2a16ba22d712dd51f22ecb87c3d49e3e7fb486a9
 Archive notes: theory/research/archive/README.md.
 No historical result or pending mathematical obligation was deleted.
 
-RESUME: read theory/research/FIVE_STAGE_EXECUTION_PLAN.md, consult its status
-board, and execute only the next admitted delivery. At this checkpoint that
-is P1.1: fix diagnostic failure/abstention semantics and audit its consumers.
-The user requested notification after planning; no implementation, new
-research experiment, additional data acquisition or C6 search ran in this
-documentation-consolidation or subsequent plan-reuse review.
+RESUME: read theory/research/FIVE_STAGE_EXECUTION_PLAN.md and its primary
+status board. Finite distributed birth/support/feedback and the fixed-target
+response and lineage coordination comparisons are complete in finite scope.
+Eight family means fail exact all-state affine closure in all four retained
+models. Their minimal sufficient linear state is now derived: exact ranks
+8,15,16,16 and eight extra coordinates in every case. The shared owner checks
+all affine realization identities and retains the captured source.
+The full-state AL response delivery is complete: matched branches at t=1
+continue to t=1.5 with predictions frozen before execution. Spatial attenuation
+and persistent mean offset are distinct; AL did not damage the original target.
+One native .25 step is also complete through t=1.75. All sixteen nodes receive
+IL; phases and forcing evolve, capacity/support stay fixed, and adaptation
+does not activate. Paired attenuation continues, but the original fixed target
+loses compatibility. Use the derived conditional common-IL map at actual
+pressure-generation boundaries; phase changes are not rounding errors.
+The five additional native .25 steps are complete through t=3.0. Actual
+IL/IL/EN/IL/AL calls reduce paired centered energy 75.74646%; original-target
+errors also fall, but compatibility remains false. EN changes the mean offset;
+EN/AL follow lag-counter forcing, while all adaptation counters remain zero.
+The exact compact trace is retained without dropping inactive stages.
+The retained EN/AL explanation is now complete: exact sequential reset and
+pre-generated-pressure ledgers close; EN changes the paired mean, whereas
+common AL leaves the immediate paired difference unchanged. The detached
+phase comparison reproduces the archived output but shows a relative-pattern
+change of about 0.372557 radians under changed node enumeration. Transported
+labels with transported enumeration give exact equality. No engine change
+or trajectory extension is made.
+The regional reuse review now closes the scoped activation diagnosis:
+existing admission/eligibility/symmetry witnesses do not uniquely determine
+an action; the missing state/history selection relation remains explicit.
+The shared regional observer and one retained-snapshot audit connect internal
+dissipation to boundary and canonical-source support. Actual child responses
+have a conditional held-parent profile, not a demonstrated autonomous target.
+Next: the plan's single bounded identity/source-maintenance delivery, using
+retained full-state records and the same declared regions. Initial substrate,
+autonomous initiation and future maintenance remain open. Legacy algebraic
+and sequential-equivariance claims are excluded from this evidence chain
+until their specific contradictions are resolved; see the strategy review.
+Do not restart the optional compression-error study without a concrete need
+to omit information. No new source law or fitted response parameter is added.
+This clarifies what structural identity must retain before active
+persistence/recovery, interaction and independent physical prediction.
+Do not resume public-data searches, Volts fits,
+Millennium sweeps or C6 automatically. P1-P5 remain the supporting physical
+bridge; their missing measurement evidence is preserved, not bypassed.

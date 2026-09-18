@@ -57,7 +57,7 @@ from ..constants.aliases import (
 from ..constants.canonical import HIGH_COHERENCE_THRESHOLD as COHERENCE_STRONG
 from ..constants.canonical import ZHIR_THRESHOLD_XI_CANONICAL
 from ..errors import TNFRValueError
-from ..mathematics.unified_numerical import np
+from ..mathematics.unified_numerical import compute_circular_mean, np
 from ..metrics.coherence import compute_coherence
 from ..metrics.common import (
     finite_mean_absolute,
@@ -65,13 +65,16 @@ from ..metrics.common import (
     structural_coherence,
 )
 from ..metrics.sense_index import compute_Si
-from ..operators.nodal_equation import compute_d2epi_dt2
+from ..operators.nodal_equation import (
+    StructuralAccelerationObservation,
+    observe_structural_acceleration,
+)
 from ..physics.mutation_trigger import (
     MutationTriggerCertificate,
     MutationTriggerInputError,
     certify_mutation_trigger,
 )
-from ..types import BEPIProtocol, scalarize_epi
+from ..types import BEPIProtocol, require_finite_real_scalar_epi
 
 # TNFR core imports
 from ..structural import create_nfr
@@ -109,7 +112,7 @@ def _certificate_epi_value(value: Any) -> Any:
         "grid",
     }.issubset(value)
     if isinstance(value, BEPIProtocol) or serialized_bepi:
-        return scalarize_epi(value)
+        return require_finite_real_scalar_epi(value)
     return value
 
 
@@ -154,7 +157,7 @@ def _certify_sdk_mutation_trigger(
         ) from exc
 
 
-from ..operators.word_execution import (
+from ..operators.word_execution import (  # noqa: F401
     preflight_network_mutation_sequence as _preflight_sdk_mutation_sequence,
     run_network_sequence as _run_network_sequence,
 )
@@ -319,10 +322,11 @@ class TetradSnapshot:
         )
 
     def is_safe(self) -> dict[str, bool]:
-        """Check canonical safety thresholds for all tetrad fields.
+        """Check the declared diagnostic cuts and finite correlation length.
 
         Returns dict with keys: phi_s_safe, grad_phi_safe, k_phi_safe,
-        xi_c_safe, and overall.
+        xi_c_safe, and overall. Unavailable correlation length fails this
+        advisory check; these booleans do not authorize operator execution.
         """
         from ..constants.canonical import (
             GRAD_PHI_CANONICAL_THRESHOLD,
@@ -331,27 +335,30 @@ class TetradSnapshot:
         )
 
         phi_s_safe = (
-            all(abs(v) < PHI_S_VON_KOCH_THRESHOLD for v in self.phi_s.values())
+            all(math.isfinite(v) and abs(v) < PHI_S_VON_KOCH_THRESHOLD
+                for v in self.phi_s.values())
             if self.phi_s
             else True
         )
         grad_safe = (
-            all(v < GRAD_PHI_CANONICAL_THRESHOLD for v in self.grad_phi.values())
+            all(math.isfinite(v) and 0.0 <= v < GRAD_PHI_CANONICAL_THRESHOLD
+                for v in self.grad_phi.values())
             if self.grad_phi
             else True
         )
         k_safe = (
-            all(abs(v) < K_PHI_CANONICAL_THRESHOLD for v in self.k_phi.values())
+            all(math.isfinite(v) and abs(v) < K_PHI_CANONICAL_THRESHOLD
+                for v in self.k_phi.values())
             if self.k_phi
             else True
         )
-        xi_safe = not np.isnan(self.xi_c) if np.isfinite(self.xi_c) else True
+        xi_safe = math.isfinite(self.xi_c) and self.xi_c >= 0.0
         return {
             "phi_s_safe": phi_s_safe,
             "grad_phi_safe": grad_safe,
             "k_phi_safe": k_safe,
             "xi_c_safe": xi_safe,
-            "overall": phi_s_safe and grad_safe and k_safe,
+            "overall": phi_s_safe and grad_safe and k_safe and xi_safe,
         }
 
 
@@ -563,7 +570,10 @@ class NodalStateReport:
     ``near_bifurcation`` name is a legacy alias of ``predicted_crossed``; it is
     not an observed Mutation gate.  ``mutation_threshold_satisfied`` mirrors
     only the observed strict threshold gate and does not assess U4b grammar or
-    operator execution readiness.
+    operator execution readiness. ``acceleration_observation`` separately
+    identifies three-sample acceleration evidence. The legacy ``d2epi_dt2``
+    remains zero when that evidence is unavailable; use
+    ``observed_d2epi_dt2`` to distinguish absence from a measured zero.
     """
 
     node: Any
@@ -590,6 +600,24 @@ class NodalStateReport:
     reason: str | None = None
     rate_gap: float | None = None
     mutation_threshold_satisfied: bool = False
+    acceleration_observation: StructuralAccelerationObservation | None = None
+
+    @property
+    def acceleration_available(self) -> bool:
+        """Whether three-sample acceleration evidence is available."""
+        return (
+            self.acceleration_observation is not None
+            and self.acceleration_observation.available
+        )
+
+    @property
+    def observed_d2epi_dt2(self) -> float | None:
+        """Observed acceleration, separate from the legacy numeric fallback."""
+        return (
+            self.acceleration_observation.value
+            if self.acceleration_available
+            else None
+        )
 
     def __post_init__(self) -> None:
         """Keep the legacy prediction alias coherent for direct construction."""
@@ -603,9 +631,14 @@ class NodalStateReport:
     def summary(self) -> str:
         state = "active" if self.active else "inactive"
         eq = "equilibrium" if self.equilibrium else "driven"
+        acceleration = (
+            f"{self.observed_d2epi_dt2:.4g}"
+            if self.acceleration_available
+            else "unavailable"
+        )
         return (
             f"node={self.node}, {state}, {eq}, "
-            f"∂EPI/∂t={self.expected_depi_dt:.4g}, ∂²EPI/∂t²={self.d2epi_dt2:.4g}"
+            f"∂EPI/∂t={self.expected_depi_dt:.4g}, ∂²EPI/∂t²={acceleration}"
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -618,6 +651,13 @@ class NodalStateReport:
             "phase": float(self.phase),
             "expected_depi_dt": float(self.expected_depi_dt),
             "d2epi_dt2": float(self.d2epi_dt2),
+            "acceleration_available": self.acceleration_available,
+            "observed_d2epi_dt2": self.observed_d2epi_dt2,
+            "acceleration_observation": (
+                self.acceleration_observation.to_dict()
+                if self.acceleration_observation is not None
+                else None
+            ),
             "degree": int(self.degree),
             "equilibrium": bool(self.equilibrium),
             "active": bool(self.active),
@@ -902,7 +942,7 @@ class Results:
     nodes: int
     edges: int
     density: float
-    avg_phase: float
+    avg_phase: float | None
     tetrad: TetradSnapshot | None = None
     conservation: ConservationReport | None = None
     unified_fields: dict[str, Any] | None = None
@@ -953,7 +993,7 @@ class Results:
             "nodes": self.nodes,
             "edges": self.edges,
             "density": float(self.density),
-            "avg_phase": float(self.avg_phase),
+            "avg_phase": None if self.avg_phase is None else float(self.avg_phase),
         }
         if self.tetrad is not None:
             d["tetrad"] = {
@@ -1351,12 +1391,18 @@ class Network:
             return float(result)
 
     def sense_index(self) -> float:
-        """Current sense index Si in [0,1+]."""
-        result = compute_Si(self.G)
-        try:
-            return float(np.asarray(result).flat[0])
-        except (IndexError, TypeError):
-            return float(result)
+        """Mean current nodal Si, evaluated without changing the live graph.
+
+        The metric owner may populate runtime caches even with ``inplace=False``;
+        a detached graph keeps both those writes and node telemetry private.
+        Empty networks report zero, matching the aggregate metric convention.
+        """
+        result = compute_Si(copy_graph_state(self.G), inplace=False)
+        values = (
+            list(result.values()) if isinstance(result, Mapping)
+            else list(np.asarray(result).reshape(-1))
+        )
+        return finite_mean_absolute(values, name="network Si") if values else 0.0
 
     def density(self) -> float:
         """Network density [0,1]."""
@@ -1365,16 +1411,31 @@ class Network:
             return 0.0
         return 2 * len(self.G.edges()) / (n * (n - 1))
 
-    def avg_phase(self) -> float:
-        """Average node phase [0, 2π]."""
+    def avg_phase(self) -> float | None:
+        """Circular mean in [0, 2π), or None for an undefined direction.
+
+        Empty and numerically vanishing resultants have no mean direction.
+        The shared circular-mean owner defines the degeneracy tolerance.
+        """
         if not self.G.nodes():
-            return 0.0
-        phases = [get_attr(self.G.nodes[n], ALIAS_THETA, 0.0) for n in self.G.nodes()]
-        result = np.mean(phases)
+            return None
+        phases = [
+            next((self.G.nodes[n][key] for key in ALIAS_THETA
+                  if key in self.G.nodes[n]), 0.0)
+            for n in self.G.nodes()
+        ]
         try:
-            return float(np.asarray(result).flat[0])
-        except (IndexError, TypeError):
-            return float(result)
+            result = compute_circular_mean(phases)
+        except TNFRValueError:
+            # Invalid phase values remain errors; only the shared owner's
+            # undefined finite-resultant case is represented as unavailable.
+            if all(math.isfinite(phase) for phase in phases):
+                return None
+            raise
+        period = 2.0 * math.pi
+        normalized = float(result) % period
+        # Binary64 modulo may round a tiny negative angle to the upper endpoint.
+        return 0.0 if normalized == period else normalized
 
     # === NODAL DYNAMICS ===
 
@@ -1393,7 +1454,9 @@ class Network:
         - ``expected_depi_dt = nu_f * DeltaNFR`` is the instantaneous model
           prediction;
         - ``observed_depi_dt`` is a tri-state two-sample observation;
-        - ``d2epi_dt2`` is read from EPI history by a pure finite difference.
+        - ``acceleration_observation`` identifies the source and availability
+          of the independent three-sample finite difference;
+        - ``d2epi_dt2`` retains its legacy zero fallback when unavailable.
 
         Mutation threshold evidence remains separate from U4b grammar and
         operator execution readiness.
@@ -1429,7 +1492,8 @@ class Network:
         epi = trigger.current_epi
         nu_f = trigger.nu_f
         delta_nfr = trigger.delta_nfr
-        d2epi_dt2 = float(compute_d2epi_dt2(self.G, node, store=False))
+        acceleration = observe_structural_acceleration(self.G, node)
+        d2epi_dt2 = acceleration.value if acceleration.available else 0.0
 
         return NodalStateReport(
             node=node,
@@ -1463,6 +1527,7 @@ class Network:
             reason=trigger.reason,
             rate_gap=trigger.rate_gap,
             mutation_threshold_satisfied=trigger.threshold_gate_satisfied,
+            acceleration_observation=acceleration,
         )
 
     def nodal_scan(
@@ -1887,7 +1952,8 @@ class Network:
         facets, each from canonical quantities:
 
         - RESONANT: measured proximity to the zero-pressure fixed-point set;
-          dynamic equilibrium additionally requires a recorded dEPI value
+          dynamic equilibrium additionally checks a recorded dEPI value or
+          the explicitly labeled nodal-equation prediction
           (:func:`~tnfr.metrics.common.is_structural_equilibrium`).
         - GEOMETRIC: the nodal topology radial / annular / multinodal
           (:func:`~tnfr.physics.fields.classify_nodal_topology`, read from the
@@ -1897,7 +1963,8 @@ class Network:
         Uniform attraction is proved only for the restricted fixed, connected
         pure-EPI diffusion model. Missing nodal telemetry is reported as
         unavailable rather than interpreted as zero. Most informative after
-        :meth:`evolve`.
+        :meth:`evolve`. EPI means require finite uniform-real scalar embeddings;
+        richer BEPI fields are rejected rather than reduced to magnitudes.
 
         Returns
         -------
@@ -1918,17 +1985,21 @@ class Network:
         topo = classify_nodal_topology(self.G)
         nodes = list(self.G.nodes())
         n = len(nodes)
-        missing = object()
 
         def complete_values(aliases: tuple[str, ...]) -> list[float] | None:
             values: list[float] = []
             for node in nodes:
-                raw = get_attr(self.G.nodes[node], aliases, missing)
-                if raw is missing or raw is None:
+                raw = _raw_alias_value(self.G.nodes[node], aliases)
+                if raw is None:
                     return None
                 try:
-                    value = float(raw)
+                    value = (
+                        require_finite_real_scalar_epi(raw, "nfr EPI")
+                        if aliases == ALIAS_EPI else float(raw)
+                    )
                 except (TypeError, ValueError, OverflowError):
+                    if aliases == ALIAS_EPI:
+                        raise
                     return None
                 if not math.isfinite(value):
                     return None

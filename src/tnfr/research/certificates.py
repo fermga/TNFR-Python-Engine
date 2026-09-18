@@ -11,8 +11,20 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import math
+from numbers import Real
 
 __all__ = ["NumericalCertificate", "certify_within_tolerance"]
+
+
+def _finite_real(value: Real, name: str) -> None:
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise ValueError(f"{name} must be a finite real number, not a boolean")
+    try:
+        finite = math.isfinite(value)
+    except (OverflowError, ValueError):
+        finite = False
+    if not finite:
+        raise ValueError(f"{name} must be finite")
 
 
 @dataclass(frozen=True)
@@ -40,22 +52,28 @@ class NumericalCertificate:
 
     def validate_for_admission(self) -> None:
         """Require numerical context before admitting a public result."""
-        if not self.quantity or not self.precision:
+        if not isinstance(self.quantity, str) or not self.quantity.strip():
             raise ValueError("quantity and precision are required")
-        if self.precision not in {"float32", "float64", "longdouble", "exact"}:
+        if (not isinstance(self.precision, str)
+                or self.precision not in {"float32", "float64", "longdouble", "exact"}):
             raise ValueError("precision must name a supported numerical model")
-        values = (self.value, self.tolerance)
-        if not all(math.isfinite(float(value)) for value in values):
-            raise ValueError("value and tolerance must be finite")
+        _finite_real(self.value, "value")
+        _finite_real(self.tolerance, "tolerance")
         if self.tolerance < 0.0:
             raise ValueError("tolerance must be nonnegative")
+        if type(self.passed) is not bool:
+            raise ValueError("passed must be a boolean")
+        if self.passed != (abs(self.value) < self.tolerance):
+            raise ValueError("passed is inconsistent with abs(value) < tolerance")
         if self.backward_error is None or self.condition_number is None:
             raise ValueError(
                 "backward_error and condition_number are required for admission"
             )
-        if not math.isfinite(self.backward_error) or self.backward_error < 0.0:
+        _finite_real(self.backward_error, "backward_error")
+        _finite_real(self.condition_number, "condition_number")
+        if self.backward_error < 0.0:
             raise ValueError("backward_error must be finite and nonnegative")
-        if not math.isfinite(self.condition_number) or self.condition_number < 0.0:
+        if self.condition_number < 0.0:
             raise ValueError("condition_number must be finite and nonnegative")
 
 
@@ -69,6 +87,8 @@ def certify_within_tolerance(
     precision: str = "float64",
 ) -> NumericalCertificate:
     """Certify ``|value| < tolerance`` with the supporting numerical context."""
+    _finite_real(value, "value")
+    _finite_real(tolerance, "tolerance")
     return NumericalCertificate(
         quantity=quantity,
         value=float(value),

@@ -200,6 +200,13 @@ from .word_execution import (  # noqa: E402
     preflight_network_mutation_sequence,
     run_network_sequence,
 )
+from .self_organization_selection import (
+    EligibleSelfOrganizationDispatch,
+    SelfOrganizationCandidate,
+    SelfOrganizationEligibility,
+    execute_eligible_self_organization_stage,
+    observe_self_organization_eligibility,
+)
 
 __all__ = [
     "JitterCache",
@@ -285,6 +292,11 @@ __all__ = [
     "analyze_sequence",
     "preflight_network_mutation_sequence",
     "run_network_sequence",
+    "EligibleSelfOrganizationDispatch",
+    "SelfOrganizationCandidate",
+    "SelfOrganizationEligibility",
+    "execute_eligible_self_organization_stage",
+    "observe_self_organization_eligibility",
 ]
 
 __all__.extend(_DEFINITION_EXPORTS.keys())

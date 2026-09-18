@@ -510,11 +510,11 @@ def _read_edge_flux(G: Any) -> tuple[ConductanceSnapshot, Any, Any]:
     if not np.all(np.isfinite(field)):
         raise ValueError("Structural transport requires finite scalar EPI")
     try:
-        with np.errstate(over="raise", invalid="raise"):
+        with np.errstate(over="raise", under="raise", invalid="raise"):
             difference = field[conductance.source] - field[conductance.target]
             flux = conductance.weight * difference
     except FloatingPointError as exc:
-        raise ValueError("Structural current exceeds finite floating-point range") from exc
+        raise ValueError("Structural current is outside finite floating-point range") from exc
     return conductance, difference, flux
 
 
@@ -1175,12 +1175,13 @@ def compute_diffusion_energy(G: Any) -> DiffusionEnergyBalance:
     diffusion adjacency convention; loops add strength but no energy.
     Asymmetric adjacency has no such symmetric Dirichlet identity and is
     rejected. No graph attributes, pressure callbacks or caches are changed.
-    Unrepresentable floating-point balances raise ValueError.
+    Overflow and inexact underflow in fluxes or balance terms raise ValueError;
+    a nonzero contribution must not silently become a zero-energy diagnostic.
     A row strength itself may exceed float range when the returned mobility,
     gradient, energy and rates remain representable in scaled coordinates.
     """
     try:
-        with np.errstate(over="raise", invalid="raise", divide="raise"):
+        with np.errstate(over="raise", under="raise", invalid="raise", divide="raise"):
             conductance, difference, flux = _read_edge_flux(G)
             nodes = conductance.nodes
             frequency = _nodal_frequencies(G, nodes)
@@ -1188,9 +1189,11 @@ def compute_diffusion_energy(G: Any) -> DiffusionEnergyBalance:
             gradient = conductance.divergence(flux)
             energy = float(0.25 * np.sum(flux * difference))
             epi_rate = -mobility * gradient
-            energy_rate = float(gradient @ epi_rate)
+            # Use elementwise products so NumPy checks underflow as well as
+            # overflow; a BLAS dot product may bypass these floating exceptions.
+            energy_rate = float(np.sum(gradient * epi_rate))
     except FloatingPointError as exc:
-        raise ValueError("Diffusion energy balance exceeds finite floating-point range") from exc
+        raise ValueError("Diffusion energy balance is outside finite floating-point range") from exc
     return DiffusionEnergyBalance(nodes, energy, gradient, mobility, epi_rate, energy_rate)
 
 
@@ -1445,6 +1448,7 @@ def verify_switching_diffusion_stability(
     # Normalizing before comparison can collapse two distinct binary64 ratios
     # to the same rounded vector.  Cross-products of exact float ratios test
     # proportionality of the represented positive metric vectors directly.
+
     def exactly_proportional(left: Any, right: Any) -> bool:
         left_ratio = tuple(Fraction.from_float(float(value)) for value in left)
         right_ratio = tuple(Fraction.from_float(float(value)) for value in right)

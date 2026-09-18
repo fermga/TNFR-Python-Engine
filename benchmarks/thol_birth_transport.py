@@ -45,7 +45,9 @@ from tnfr.operators.factor_contracts import (  # noqa: E402
 )
 from tnfr.operators.grammar_dynamics import validate_candidate  # noqa: E402
 from tnfr.operators.grammar_execution import ValidatedSequence  # noqa: E402
+from tnfr.operators.network_stage import TWO_PHASE_JACOBI  # noqa: E402
 from tnfr.operators.self_organization import _configured_tau  # noqa: E402
+from tnfr.operators.word_execution import execute_network_operator_stage  # noqa: E402
 from tnfr.physics.support_transport import (  # noqa: E402
     observe_support_transport, observe_support_transport_euler,
     observe_support_transport_reset,
@@ -55,6 +57,7 @@ from tnfr.research.core_manifests import (  # noqa: E402
     CoreExperimentManifest, current_git_source_provenance,
 )
 from tnfr.rng import base_seed  # noqa: E402
+from tnfr.sdk._state import copy_graph_state  # noqa: E402
 from tnfr.types import Glyph  # noqa: E402
 from tnfr.utils import angle_diff, ensure_node_offset_map  # noqa: E402
 from tnfr.validation import validate_sequence  # noqa: E402
@@ -63,6 +66,7 @@ INITIAL_EPI = (2.0, 0.5) * 4
 STEPS = (0.25, 0.25)
 WORD = ("coherence", "dissonance", "self_organization", "coupling", "silence")
 CASES = ("attached", "links_disabled", "stale_sample")
+PREPARATIONS = ("none", "single_parent", "all_nodes")
 
 
 def _support_readout(graph):
@@ -94,24 +98,65 @@ def _support_readout(graph):
     }
 
 
-def _admitted_apply(graph, operator):
-    admission = validate_candidate(graph, 0, operator.glyph.value)
+def _admitted_apply(graph, operator, *, node=0):
+    admission = validate_candidate(graph, node, operator.glyph.value)
     if not admission.allowed:
         raise RuntimeError(f"unexpected live refusal: {admission}")
-    operator(graph, 0, collect_metrics=True)
+    operator(graph, node, collect_metrics=True)
     return {
         "candidate": admission.candidate, "allowed": admission.allowed,
         "scope": "Incremental admission followed by actual public application",
     }
 
 
-def _prepare_birth(graph):
+def _prepare_birth_source(graph, *, preparation="single_parent", rotation=0):
+    """Execute the shared causal preparation, stopping before any THOL call."""
+    projection_order = tuple(graph)
+    targets = (
+        () if preparation == "none" else
+        projection_order if preparation == "all_nodes" else
+        projection_order[:1]
+    )
     initial = _state(graph)
     update_node_sample(graph, step=0)
     sample = tuple(graph.graph["_node_sample"])
-    admissions = [
-        _admitted_apply(graph, operator) for operator in (Coherence(), Dissonance())
-    ]
+    admissions = []
+    prefix = []
+    for operator in (Coherence(), Dissonance()) if targets else ():
+        if preparation == "single_parent":
+            admitted = _admitted_apply(graph, operator, node=targets[0])
+            admissions.append(admitted)
+            prefix.append({
+                "glyph": operator.glyph.value, "targets": targets,
+                "route": "direct_public", "admissions": (admitted,),
+                "stage_result": None,
+            })
+        else:
+            checked = tuple(
+                validate_candidate(graph, node, operator.glyph.value) for node in targets
+            )
+            if any(not admission.allowed for admission in checked):
+                raise RuntimeError(f"unexpected simultaneous prefix refusal: {checked}")
+            stage = execute_network_operator_stage(graph, operator, targets)
+            if (
+                stage.schedule != TWO_PHASE_JACOBI
+                or stage.nodes_processed != len(targets)
+                or stage.glyph != operator.glyph.value
+                or stage.operator != operator.name
+            ):
+                raise RuntimeError("preparation requires the complete simultaneous public stage")
+            admitted = tuple({
+                "node": node, "candidate": admission.candidate,
+                "allowed": admission.allowed,
+                "scope": "Incremental admission followed by simultaneous public application",
+            } for node, admission in zip(targets, checked, strict=True))
+            admissions.extend(admitted)
+            prefix.append({
+                "glyph": operator.glyph.value, "targets": targets,
+                "route": "simultaneous_public", "admissions": admitted,
+                "stage_result": asdict(stage),
+            })
+    after_prefix = _state(graph)
     schedule = build_operator_event_schedule(
         (), start_time=0.0, flow_durations=(sum(STEPS),),
     )
@@ -120,7 +165,7 @@ def _prepare_birth(graph):
         graph, schedule, method="euler", physical_flow_partitions=(partition,),
     )
     evidence = execution.physical_flow_partition_evidence[0]
-    observed = _acceleration(graph)
+    observed = _acceleration(graph, projection_order[0])
     before = _state(graph)
     threshold = _configured_tau(graph.graph, {})
     epi_weight = Fraction.from_float(graph.graph["_dnfr_weights"]["epi"])
@@ -130,14 +175,13 @@ def _prepare_birth(graph):
         Fraction(5, 4) + (1 if index % 2 == 0 else -1) * remaining_amplitude
         for index in range(8)
     )
-    admissions.append(_admitted_apply(graph, SelfOrganization()))
-    raw = _state(graph)
-    children = tuple(graph.nodes[0].get("sub_nodes", ()))
-    default_compute_delta_nfr(graph)
-    refreshed = _state(graph)
-    _, support = _support_readout(graph)
     return {
+        "preparation": preparation, "rotation": rotation,
+        "prep_targets": targets, "projection_node_order": projection_order,
+        "acceleration_reference_node": projection_order[0],
+        "actual_prefix": tuple(prefix),
         "initial": initial, "initial_candidate_sample": sample,
+        "after_prefix": after_prefix,
         "actual_admissions": admissions,
         "physical_steps": STEPS, "physical_acceleration": observed,
         "default_birth_threshold": threshold,
@@ -163,10 +207,7 @@ def _prepare_birth(graph):
                 "and binary64 arithmetic remain captured residuals"
             ),
         },
-        "before_birth": before, "raw_after_birth": raw,
-        "after_birth_refresh": refreshed, "after_birth_support": support,
-        "children": children,
-        "child_degrees_after_birth": tuple(graph.degree(node) for node in children),
+        "before_birth": before,
         "physical_boundaries": [{
             "time": boundary.time, "epi": boundary.after.epi,
             "pressure": boundary.after.delta_nfr,
@@ -179,11 +220,85 @@ def _prepare_birth(graph):
             item.clipping_applied for item in evidence.segment_flow_evidence
         ),
         "scope": (
+            ("Actual IL/OZ, then three executor-owned physical samples. "
+             if preparation == "single_parent" else
+             f"Declared {preparation} prefix, then three executor-owned physical samples. ")
+            +
+            "No THOL has executed. EPI chart and hard bounds are explicit preparation; "
+            "unit capacity, THOL factor and birth threshold are unchanged"
+        ),
+    }
+
+
+def _prepare_birth(graph):
+    record = _prepare_birth_source(graph)
+    record["actual_admissions"].append(_admitted_apply(graph, SelfOrganization()))
+    raw = _state(graph)
+    children = tuple(graph.nodes[0].get("sub_nodes", ()))
+    default_compute_delta_nfr(graph)
+    _, support = _support_readout(graph)
+    record.update(
+        raw_after_birth=raw, after_birth_refresh=_state(graph),
+        after_birth_support=support, children=children,
+        child_degrees_after_birth=tuple(graph.degree(node) for node in children),
+        scope=(
             "Actual IL/OZ, then three executor-owned physical samples and "
             "public THOL. EPI chart and hard bounds are explicit preparation; "
             "unit capacity, THOL factor and birth threshold are unchanged"
         ),
-    }
+    )
+    return record
+
+
+def _birth_graph(case):
+    if case not in CASES:
+        raise ValueError(f"case must be one of {CASES}")
+    graph = build_cycle(8, epi=INITIAL_EPI)
+    graph.graph.pop("UM_BIDIRECTIONAL")  # Restore the actual default True branch.
+    graph.graph["UM_FUNCTIONAL_LINKS"] = case != "links_disabled"
+    inject_defaults(graph)
+    return graph
+
+
+def prepare_birth_selection_source(*, preparation="single_parent", rotation=0):
+    """Return a declared C8 preparation before selection or public birth.
+
+    The default preserves the original parent-zero IL/OZ preparation. ``none``
+    skips that prefix; ``all_nodes`` executes each prefix operator as one
+    simultaneous stage. All modes retain the same physical flow partition.
+    Rotation transports initialized node data and iteration order before any
+    execution history is recorded. It is a relabeling, not a phase shift or
+    a change to the initialized checkerboard. The mark is an explicit input.
+    """
+    if type(preparation) is not str or preparation not in PREPARATIONS:
+        raise ValueError(f"preparation must be one of {PREPARATIONS}")
+    if type(rotation) is not int or not 0 <= rotation < 8:
+        raise ValueError("rotation must be a non-boolean integer in [0, 7]")
+    graph = _birth_graph("attached")
+    if rotation:
+        mapping = {node: (node + rotation) % 8 for node in graph}
+        neighbor_order = {
+            mapping[node]: tuple(mapping[neighbor] for neighbor in graph.neighbors(node))
+            for node in graph
+        }
+        # Initial pressure construction has populated rebuildable caches.
+        # Detach them before relabeling; no executed history exists yet.
+        initialized = copy_graph_state(graph)
+        graph = nx.relabel_nodes(initialized, mapping, copy=True)
+        # Graph copying rebuilds undirected adjacency in edge-list order.
+        # Restore each transported order without replacing edge-data objects:
+        # reductions and selection must see the same ordered neighborhoods.
+        for node, neighbors in neighbor_order.items():
+            adjacency = graph._adj[node]
+            ordered = tuple((neighbor, adjacency[neighbor]) for neighbor in neighbors)
+            adjacency.clear()
+            adjacency.update(ordered)
+        if "_dnfrmax_node" in graph.graph:
+            graph.graph["_dnfrmax_node"] = mapping[graph.graph["_dnfrmax_node"]]
+        default_compute_delta_nfr(graph)
+    return graph, _prepare_birth_source(
+        graph, preparation=preparation, rotation=rotation,
+    )
 
 
 def _couple_parent(graph, *, refresh_sample):
@@ -288,12 +403,7 @@ def prepare_birth_transport_support(case="attached"):
     The retained complete word is statically admitted. Only IL/OZ/THOL/UM
     has executed at this boundary; callers own subsequent flow and closure.
     """
-    if case not in CASES:
-        raise ValueError(f"case must be one of {CASES}")
-    graph = build_cycle(8, epi=INITIAL_EPI)
-    graph.graph.pop("UM_BIDIRECTIONAL")  # Restore the actual default True branch.
-    graph.graph["UM_FUNCTIONAL_LINKS"] = case != "links_disabled"
-    inject_defaults(graph)
+    graph = _birth_graph(case)
     context = {"initial_epi_nonzero": graph.nodes[0]["EPI"] > 0}
     operators = (Coherence(), Dissonance(), SelfOrganization(), Coupling(), Silence())
     ValidatedSequence(operators, context=context)
