@@ -161,194 +161,9 @@ Examples
 
 """
 
-from .binary64_nodal_flow import (
-    Binary64AdditionCell,
-    Binary64PairedC6Diffusion,
-    Binary64PressureTraceCell,
-    Binary64QuarterPressureBox,
-    Binary64QuarterSubstep,
-    Binary64UnitQuarterFlow,
-    derive_binary64_quarter_pressure_box,
-    observe_binary64_paired_c6_diffusion,
-    observe_binary64_unit_quarter_flow,
-)
-from .binary64_p2_reception_stability import (
-    P2HalfReceptionRemeshStabilityCertificate,
-    certify_p2_half_reception_remesh_stability,
-)
-from .binary64_pressure_equilibrium import (
-    Binary64C6PressureEquilibriumObstruction,
-    Binary64PressureEquilibriumRow,
-    derive_binary64_c6_pressure_equilibrium_obstruction,
-)
-from .binary64_remesh_relative_defect import (
-    Binary64RemeshPairRelativeDefectObservation,
-    UniformAlphaOneHardClipRemeshClassCertificate,
-    UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate,
-    certify_alpha_one_hard_clip_remesh_class,
-    certify_half_alpha_antisymmetric_hard_clip_remesh_class,
-    observe_binary64_remesh_pair_relative_defect,
-)
-from .c6_carried_affine_mean import (
-    C6CarriedAffineMeanBoundary,
-    C6CarriedAffineMeanEscape,
-    C6CarriedAffineMeanObstruction,
-    derive_c6_carried_affine_mean_obstruction,
-    observe_c6_carried_affine_mean_escape,
-)
-from .c6_carried_balance import (
-    C6CarriedPressureBalance,
-    C6CarriedPressurePoint,
-    derive_c6_carried_pressure_balance,
-    observe_c6_carried_pressure_point,
-)
-from .c6_carried_cell_escape import (
-    C6CarriedCompleteCellEscape,
-    C6CarriedCompleteCellObstruction,
-    derive_c6_carried_complete_cell_obstruction,
-    observe_c6_carried_complete_cell_escape,
-)
-from .c6_carried_cell_graph import C6CarriedCellGraph, derive_c6_carried_cell_graph
-from .c6_carried_closure import C6CarriedClosure, derive_c6_carried_closure
-from .c6_carried_excursion import (
-    C6CarriedExcursionExclusion,
-    C6CarriedExcursionIngress,
-    C6CarriedExcursionTransition,
-    C6CarriedLinearExtremum,
-    C6CarriedModeExcursionExclusion,
-    derive_c6_carried_excursion_exclusion,
-    derive_c6_carried_mode_excursion_exclusion,
-)
-from .c6_carried_mean_cylinder import (
-    C6CarriedMeanCylinderBoundary,
-    C6CarriedMeanCylinderEscape,
-    C6CarriedMeanCylinderObstruction,
-    derive_c6_carried_mean_cylinder_obstruction,
-    observe_c6_carried_mean_cylinder_escape,
-)
-from .c6_carried_passage import (
-    C6CarriedPositivePressurePassage,
-    derive_c6_carried_positive_pressure_passage,
-)
-from .c6_carried_profile import (
-    C6CarriedProfile,
-    C6CarriedProfileStep,
-    derive_c6_carried_profile,
-    observe_c6_carried_profile_step,
-)
-from .c6_carried_relay import (
-    C6CarriedLocalRelayBudget,
-    C6CarriedLocalRelayExit,
-    C6CarriedLocalRelayPoint,
-    C6CarriedRelay,
-    C6CarriedRelayAxis,
-    C6CarriedRelayExit,
-    C6CarriedRelayPoint,
-    derive_c6_carried_local_relay_budget,
-    derive_c6_carried_relay,
-    observe_c6_carried_local_relay_exit,
-    observe_c6_carried_relay_exit,
-)
-from .c6_carried_return import (
-    C6CarriedReturnCountRelaxation,
-    C6CarriedReturnCountWitness,
-    C6CarriedReturnCoverCheck,
-    C6CarriedReturnCoverSchedule,
-    C6CarriedReturnEnvelope,
-    C6CarriedReturnExcludedPiece,
-    C6CarriedReturnIteration,
-    C6CarriedReturnMemoryEnvelope,
-    C6CarriedReturnMemoryRegionExclusion,
-    C6CarriedReturnMemoryRegionExclusions,
-    C6CarriedReturnPredecessorLayer,
-    C6CarriedReturnPredecessorPartition,
-    C6CarriedReturnPredecessorPiece,
-    C6CarriedReturnRegionExclusion,
-    C6CarriedReturnRegionExclusions,
-    C6CarriedReturnSafeCover,
-    C6CarriedReturnSafeCoverRegionExclusions,
-    C6CarriedReturnSafePartition,
-    C6CarriedReturnSafePartitionRegionExclusions,
-    C6CarriedReturnSafeSubtraction,
-    C6CarriedReturnTransition,
-    C6CarriedReturnUnionExclusion,
-    C6CarriedReturnUnionExclusions,
-    C6CarriedReturnWordBudget,
-    derive_c6_carried_return_count_relaxation,
-    derive_c6_carried_return_envelope,
-    derive_c6_carried_return_memory_envelope,
-    derive_c6_carried_return_memory_region_exclusions,
-    derive_c6_carried_return_region_exclusions,
-    derive_c6_carried_return_safe_cover,
-    derive_c6_carried_return_safe_cover_region_exclusions,
-    derive_c6_carried_return_safe_partition,
-    derive_c6_carried_return_safe_partition_region_exclusions,
-    derive_c6_carried_return_union_exclusions,
-    derive_c6_carried_return_word_budget,
-)
-from .c6_carried_tube import (
-    C6CarriedBandHorizon,
-    C6CarriedContraction,
-    C6CarriedCutExclusion,
-    C6CarriedTube,
-    derive_c6_carried_band_horizon,
-    derive_c6_carried_contraction,
-    derive_c6_carried_tube,
-    observe_c6_carried_cut_exclusion,
-)
-from .c6_carried_viability import (
-    C6CarriedForwardEnvelope,
-    C6CarriedForwardIteration,
-    C6CarriedForwardZone,
-    C6CarriedPairBarrier,
-    C6CarriedPredecessorLayer,
-    C6CarriedPredecessors,
-    C6CarriedReachableEnvelope,
-    C6CarriedReachableIteration,
-    C6CarriedRegionExclusion,
-    C6CarriedRegionExclusions,
-    C6CarriedRegionIteration,
-    C6CarriedViability,
-    C6CarriedViabilityBox,
-    C6CarriedViabilityIteration,
-    derive_c6_carried_forward_envelope,
-    derive_c6_carried_predecessors,
-    derive_c6_carried_reachable_envelope,
-    derive_c6_carried_region_exclusions,
-    derive_c6_carried_viability,
-)
-from .c6_phase_orbit import (
-    C6CouplingCoherencePhaseOrbit,
-    C6CouplingCoherencePhaseStep,
-    derive_c6_coupling_coherence_phase_orbit,
-    observe_c6_coupling_coherence_phase_step,
-)
-from .c6_pressure_lattice import (
-    C6FrozenPressureStencil,
-    C6PressureLatticeObservation,
-    C6PressureLatticeReference,
-    C6PressureLatticeRow,
-    C6PressureSectorExit,
-    C6PressureSignSector,
-    derive_c6_pressure_lattice,
-    derive_c6_pressure_sign_sector,
-    observe_c6_frozen_pressure_stencil,
-    observe_c6_pressure_lattice,
-    observe_c6_pressure_sector_exit,
-)
-from .capacity_feedback import (
-    P2Binary64CouplingObservation,
-    P2Binary64CouplingReference,
-    P2CapacityFeedbackBound,
-    P2CapacityFeedbackCycle,
-    P2CapacityFeedbackReference,
-    bound_p2_capacity_feedback,
-    derive_p2_binary64_coupling_lattice,
-    derive_p2_capacity_feedback,
-    observe_p2_binary64_coupling_lattice,
-    observe_p2_capacity_feedback_cycle,
-)
-from .capacity_localization import CycleCapacityBalance, observe_cycle_capacity_balance
+# Import prerequisites before runtime certificates: reordering this facade can
+# re-enter partially initialized operators.network_stage during package startup.
+# isort: off
 from .cell import (
     CellTelemetry,
     MembraneFluxResult,
@@ -359,15 +174,6 @@ from .cell import (
     compute_membrane_integrity,
     compute_selectivity_index,
     detect_cell_formation,
-)
-from .coherence_geometry import (
-    CoherenceLevelSetCertificate,
-    CrossPolytopeStratification,
-    FixedCapacityCoherenceLevelSetCertificate,
-    NetworkCoherenceLevelSetCertificate,
-    coherence_level_set_geometry,
-    fixed_capacity_coherence_level_set_geometry,
-    network_coherence_level_set_geometry,
 )
 from .conservation import (
     ConservationBalance,
@@ -393,6 +199,15 @@ from .conservation import (
     verify_conservation_balance,
     verify_sequence_ward_identity,
 )
+from .coherence_geometry import (
+    CoherenceLevelSetCertificate,
+    CrossPolytopeStratification,
+    FixedCapacityCoherenceLevelSetCertificate,
+    NetworkCoherenceLevelSetCertificate,
+    coherence_level_set_geometry,
+    fixed_capacity_coherence_level_set_geometry,
+    network_coherence_level_set_geometry,
+)
 from .conservation_gauge_unification import (
     ActionEnergyConsistency,
     ConservationGaugeUnification,
@@ -406,63 +221,6 @@ from .conservation_gauge_unification import (
     run_conservation_gauge_unification,
     verify_action_energy_consistency,
     verify_symplectic_gauge_compatibility,
-)
-from .core_research_integration import (
-    CoreResearchIntegrationCertificate,
-    certify_core_research_integration,
-)
-from .core_research_trajectory import (
-    CoreResearchRefinementComparison,
-    CoreResearchRefinementSample,
-    CoreResearchTrajectoryCertificate,
-    CoreResearchTrajectoryIntervalCertificate,
-    certify_core_research_trajectory,
-    compare_core_research_trajectory_refinement,
-)
-from .coupling_support import (
-    AntipodalRegionPhaseBalance,
-    AntipodalRegionPhaseResponse,
-    CompatibleCapacityBalance,
-    CouplingSupportObservation,
-    derive_antipodal_region_phase_balance,
-    derive_compatible_capacity_balance,
-    observe_antipodal_region_phase_response,
-    observe_coupling_support,
-)
-from .coupling_winding import (
-    C6WindingDefect,
-    C6WindingDefectPrefix,
-    C6WindingJointDomain,
-    C6WindingJointStep,
-    C6WindingPairingObservation,
-    C6WindingPairingReference,
-    C6WindingPhaseObservation,
-    C6WindingPhaseReference,
-    C6WindingUniformDefectBound,
-    CouplingGapStep,
-    bound_c6_winding_defect_prefix,
-    bound_c6_winding_uniform_defects,
-    c6_centered_opposite_pairs,
-    derive_c6_winding_joint_domain,
-    derive_c6_winding_pairing,
-    derive_c6_winding_phase_response,
-    observe_c6_winding_defect,
-    observe_c6_winding_joint_domain,
-    observe_c6_winding_pairing,
-    observe_c6_winding_phase_response,
-    observe_coupling_gap_step,
-)
-from .cycle_memory_relaxation import (
-    CycleMemoryRelaxationReference,
-    certify_cycle_memory_relaxation,
-)
-from .cycle_support_dynamics import (
-    CycleSupportBalance,
-    CycleSupportEuler,
-    CycleSupportReset,
-    observe_cycle_support_balance,
-    observe_cycle_support_euler,
-    observe_cycle_support_reset,
 )
 from .dissipative_conservation import (
     DissipativeBalance,
@@ -480,32 +238,9 @@ from .dissipative_conservation import (
     steady_state_from_generator,
     verify_dissipative_balance,
 )
-from .emergent_particles import (
-    EmergentParticle,
-    WindingSector,
-    classify_particle,
-    classify_winding_sector,
-    winding_number,
-    winding_ring,
-)
-from .epi_memory import EpiMemoryObservation, EpiMemorySample, observe_epi_memory
 from .event_duration import (
     ContinuousRelaxationDurationDiagnostic,
     diagnose_continuous_relaxation_duration,
-)
-from .event_remesh_reference import (
-    P2EventRemeshMeshReferenceObservation,
-    P2EventRemeshReferenceFamilyObservation,
-    observe_p2_event_remesh_reference_family,
-)
-from .event_remesh_refinement import (
-    EventRemeshEPICheckpointObservation,
-    EventRemeshMeshObservation,
-    EventRemeshPersistentEPIError,
-    EventRemeshThreeMeshModalObservation,
-    EventRemeshThreeMeshRefinementObservation,
-    EventRemeshThreeMeshZHIRObservation,
-    observe_event_remesh_three_mesh_refinement,
 )
 from .fields import (
     CoherenceLengthEstimate,
@@ -519,28 +254,46 @@ from .fields import (
     fit_k_phi_asymptotic_alpha,
     k_phi_multiscale_safety,
 )
-from .forced_support import (
-    ForcedSupportBalance,
-    ForcedSupportEvent,
-    ForcedSupportJumpEnergy,
-    ForcedSupportPattern,
-    ForcedSupportReset,
-    ForcedSupportResetEnergy,
-    ForcedSupportState,
-    ForcedSupportStep,
-    ForcedSupportTarget,
-    derive_forced_support_balance,
-    observe_forced_support_event,
-    observe_forced_support_pattern,
-    observe_forced_support_reset,
-    observe_forced_support_state,
-    observe_forced_support_step,
-    observe_forced_support_target,
+from .observability import (
+    EpiDiffusionReconstructionCertificate,
+    LinearObservabilityCertificate,
+    LocalObserverCertificate,
+    ObservationSignature,
+    finite_difference_observer_certificate,
+    epi_diffusion_reconstruction_certificate,
+    linear_observability_certificate,
+    minimal_distinguishing_channels,
+    observation_signature,
+    observer_ablation_ranks,
+    tetrad_observation_channels,
+    tetrad_observation_vector,
+    transform_linear_observer,
 )
-from .forcing_realization import (
-    NonEpiForcingObservation,
-    capture_non_epi_forcing,
-    decompose_non_epi_forcing,
+from .reduction_certificates import (
+    ComposedReductionCertificate,
+    KronReductionCertificate,
+    ObserverTransportCertificate,
+    composed_reduction_certificate,
+    kron_reduction_certificate,
+    observer_transport_certificate,
+)
+from .epi_memory import (
+    EpiMemoryObservation,
+    EpiMemorySample,
+    observe_epi_memory,
+)
+from .p5_memory_truncation import (
+    P5MemoryTruncationReference,
+    P5MemoryTruncationSample,
+    bound_p5_memory_truncation,
+)
+from .p5_reduction import (
+    P5ReducedState,
+    P5ReductionGeometry,
+    P5RemeshReduction,
+    reduce_p5_state,
+    p5_reduction_geometry,
+    observe_p5_remesh_reduction,
 )
 from .gauge import (
     N_REGIMES,
@@ -573,12 +326,6 @@ from .gauge import (
     compute_yang_mills_equations,
     verify_bianchi_identity,
     verify_gauge_invariance,
-)
-from .hybrid_operator_stability import (
-    AffineEPIJumpGainCertificate,
-    HybridEPIStabilityCertificate,
-    certify_affine_epi_jump_gain,
-    compose_hybrid_epi_stability,
 )
 from .integrity import (
     IntegrityReport,
@@ -620,18 +367,21 @@ from .lyapunov import (
     analyze_operator_convergence,
     analyze_operator_policy_context,
     analyze_spectral_gap,
-    compare_operator_energy_to_policy,
     compute_operator_energy_bound,
     compute_operator_policy_delta,
     compute_sequence_energy_bound,
     compute_sequence_policy_score,
+    compare_operator_energy_to_policy,
     evaluate_sequence_policy,
     get_bound,
     get_policy_multiplier,
     prove_sequence_lyapunov,
     verify_operator_lyapunov,
 )
-from .metriplectic import MetriplecticProductCertificate, verify_metriplectic_product
+from .metriplectic import (
+    MetriplecticProductCertificate,
+    verify_metriplectic_product,
+)
 from .multiscale_coherence import (
     U5CoherenceAssessment,
     assess_u5_parent_child_coherence,
@@ -642,46 +392,6 @@ from .mutation_trigger import (
     MutationTriggerInputError,
     certify_mutation_trigger,
 )
-from .network_stage_stability import (
-    AllTargetNeighborStageCertificate,
-    AllTargetNeighborStageStep,
-    NeighborStageDiffusionBridgeCertificate,
-    certify_all_target_neighbor_stage,
-    certify_reception_all_target_stage,
-    certify_resonance_all_target_stage,
-    compose_neighbor_stage_diffusion_stability,
-)
-from .nodal_remainder import (
-    NodalRemainderCellExit,
-    NodalRemainderCellHorizon,
-    NodalRemainderItinerary,
-    NodalRemainderItineraryCell,
-    NodalRemainderPrefix,
-    NodalRemainderSequence,
-    derive_nodal_remainder_cell_horizon,
-    derive_nodal_remainder_itinerary,
-    observe_nodal_remainder_cell_exit,
-    observe_nodal_remainder_sequence,
-)
-from .nodal_remainder_pressure import (
-    FiniteLevelNodalReturn,
-    FiniteNodalPressureDrift,
-    NodalAreaCrossing,
-    NodalAreaCrossings,
-    NodalRemainderCycleGradient,
-    NodalRemainderPressureReadout,
-    PeriodicPhaseSourceBudget,
-    PeriodicPhaseSourceCompensation,
-    TwoLevelNodalReturn,
-    derive_finite_level_nodal_return,
-    derive_nodal_area_crossings,
-    derive_periodic_phase_source_budget,
-    derive_two_level_nodal_return,
-    observe_finite_nodal_pressure_drift,
-    observe_nodal_remainder_cycle_gradient,
-    observe_nodal_remainder_pressure_readout,
-    observe_periodic_phase_source_compensation,
-)
 from .nonnormal_prediction import (
     NonnormalPredictionCertificate,
     NonnormalPredictorRecord,
@@ -689,44 +399,13 @@ from .nonnormal_prediction import (
     deterministic_directed_family,
     measure_nonnormal_pressure_prediction,
 )
-from .observability import (
-    EpiDiffusionReconstructionCertificate,
-    LinearObservabilityCertificate,
-    LocalObserverCertificate,
-    ObservationSignature,
-    epi_diffusion_reconstruction_certificate,
-    finite_difference_observer_certificate,
-    linear_observability_certificate,
-    minimal_distinguishing_channels,
-    observation_signature,
-    observer_ablation_ranks,
-    tetrad_observation_channels,
-    tetrad_observation_vector,
-    transform_linear_observer,
-)
-from .operator_quotient import OperatorQuotientCertificate, certify_operator_quotient
-from .p5_memory_truncation import (
-    P5MemoryTruncationReference,
-    P5MemoryTruncationSample,
-    bound_p5_memory_truncation,
-)
-from .p5_reduction import (
-    P5ReducedState,
-    P5ReductionGeometry,
-    P5RemeshReduction,
-    observe_p5_remesh_reduction,
-    p5_reduction_geometry,
-    reduce_p5_state,
+from .operator_quotient import (
+    OperatorQuotientCertificate,
+    certify_operator_quotient,
 )
 from .phase_quotient import (
     PhaseNodalCoarseGrainingCertificate,
     certify_phase_nodal_coarse_graining,
-)
-from .phase_response import PhaseResponseReference, derive_phase_response
-from .phase_scaling import (
-    PhaseScalingDiagnostic,
-    SizePowerLawFit,
-    analyze_phase_finite_size_scaling,
 )
 from .phase_transition import (
     Z_SIGNIFICANCE,
@@ -741,88 +420,16 @@ from .phase_transition import (
     fit_critical_exponent,
     symmetry_zscore,
 )
-from .reception_realization import (
-    ReceptionEPIRealizationCertificate,
-    certify_reception_epi_realization,
-)
-from .reduction_certificates import (
-    ComposedReductionCertificate,
-    KronReductionCertificate,
-    ObserverTransportCertificate,
-    composed_reduction_certificate,
-    kron_reduction_certificate,
-    observer_transport_certificate,
-)
-from .remesh_history_stability import (
-    UniformRemeshHistoryStabilityCertificate,
-    UniformRemeshHistoryTransitionObservation,
-    certify_uniform_remesh_history_stability,
-    observe_uniform_remesh_history_transition,
-)
-from .remesh_schedule_policy_stability import (
-    UniformRemeshSchedulePolicyStabilityCertificate,
-    certify_uniform_remesh_schedule_policy_stability,
-)
-from .remesh_schedule_relative_defect_stability import (
-    UniformRemeshScheduleRelativeDefectStabilityCertificate,
-    certify_uniform_remesh_schedule_relative_defect_stability,
-)
-from .remesh_schedule_stability import (
-    RemeshScheduleHistoryStabilityObservation,
-    observe_remesh_schedule_history_transition,
-)
-from .resonance_realization import (
-    ResonanceEPIRealizationCertificate,
-    certify_resonance_epi_realization,
-)
-from .reversible_eigenmode_reference import (
-    ReversibleSingleEigenmodeEulerReferenceCertificate,
-    certify_reversible_single_eigenmode_euler_reference,
-)
-from .runtime_eigenmode_reference import (
-    ExecutedReversibleSingleEigenmodeEulerPartitionObservation,
-    ExecutedReversibleSingleEigenmodeEulerReferenceObservation,
-    observe_executed_reversible_single_eigenmode_euler_reference,
-)
-from .runtime_flow_stability import (
-    NodalFlowIntervalCertificate,
-    NodalFlowStateSnapshot,
-    capture_nodal_flow_state,
-    certify_observed_nodal_flow_interval,
-)
-from .runtime_p2_reception_remesh_policy import (
-    execute_p2_half_reception_remesh_policy_invocation,
-)
-from .runtime_p2_reception_remesh_sequence import (
-    ExecutedP2HalfReceptionRemeshSequenceCertificate,
-    certify_executed_p2_half_reception_remesh_sequence,
-)
-from .runtime_p2_reception_stage import (
-    ExecutedP2HalfReceptionStageCertificate,
-    certify_executed_p2_half_reception_stage,
-)
-from .runtime_remesh_history_stability import (
-    RuntimeRemeshHistoryBridgeObservation,
-    observe_runtime_remesh_history_bridge,
-)
-from .runtime_remesh_schedule_block_margin import (
-    RuntimeRemeshScheduleBlockMarginObservation,
-    observe_executed_event_remesh_block_margin,
-)
-from .runtime_remesh_schedule_relative_defect import (
-    RuntimeRemeshScheduleRelativeDefectBlockObservation,
-    observe_executed_event_remesh_relative_defect_block,
-)
-from .runtime_remesh_schedule_stability import (
-    RuntimeRemeshScheduleBoundaryObservation,
-    RuntimeRemeshScheduleSequenceObservation,
-    observe_runtime_remesh_schedule_sequence,
+from .phase_scaling import (
+    PhaseScalingDiagnostic,
+    SizePowerLawFit,
+    analyze_phase_finite_size_scaling,
 )
 from .spectral_conservation import (
     SpectralConservationBalance,
     SpectralLyapunovResult,
-    SpectralSectorDecomposition,
     SpectralStructuralEnergyResult,
+    SpectralSectorDecomposition,
     SpectralWardIdentity,
     classify_spectral_modes,
     compute_spectral_energy_conservation,
@@ -831,6 +438,33 @@ from .spectral_conservation import (
     compute_spectral_ward_identity,
     decompose_spectral_sectors,
     verify_spectral_conservation_balance,
+)
+from .structural_morphism import (
+    EpiCoarseGrainingCertificate,
+    certify_epi_coarse_graining,
+)
+from .structural_state_distance import (
+    StructuralChannelScales,
+    StructuralStateDistanceCertificate,
+    circular_phase_distance,
+    fixed_topology_structural_state_distance,
+)
+from .temporal_identifiability import (
+    NearestSignatureIdentification,
+    SignatureMatrixCertificate,
+    SignatureNoiseMarginCertificate,
+    TemporalOperatorIdentifiabilityCertificate,
+    certify_signature_noise_margin,
+    certify_temporal_signature_matrix,
+    identify_nearest_signature,
+    probe_canonical_operator_identifiability,
+)
+from .topology_transitions import (
+    NodalTopologySnapshot,
+    NodalTopologyStep,
+    NodalTopologyTransitionCertificate,
+    capture_nodal_topology_snapshot,
+    detect_nodal_topology_transitions,
 )
 from .structural_diffusion import (
     DiscreteModeCertificate,
@@ -859,27 +493,376 @@ from .structural_diffusion import (
     structural_current,
     structural_diffusion_operator,
     structural_diffusivity,
-    structural_eigenmodes,
     structural_eigenvalues,
+    structural_eigenmodes,
     structural_field,
-    verify_discrete_modes,
     verify_heterogeneous_diffusion_stability,
+    verify_switching_diffusion_stability,
+    verify_discrete_modes,
     verify_overdamped_regime,
     verify_structural_diffusion,
     verify_structural_flow,
     verify_structural_random_walk,
     verify_structural_stability,
-    verify_switching_diffusion_stability,
 )
-from .structural_morphism import (
-    EpiCoarseGrainingCertificate,
-    certify_epi_coarse_graining,
+from .core_research_integration import (
+    CoreResearchIntegrationCertificate,
+    certify_core_research_integration,
 )
-from .structural_state_distance import (
-    StructuralChannelScales,
-    StructuralStateDistanceCertificate,
-    circular_phase_distance,
-    fixed_topology_structural_state_distance,
+from .core_research_trajectory import (
+    CoreResearchRefinementComparison,
+    CoreResearchRefinementSample,
+    CoreResearchTrajectoryCertificate,
+    CoreResearchTrajectoryIntervalCertificate,
+    certify_core_research_trajectory,
+    compare_core_research_trajectory_refinement,
+)
+from .hybrid_operator_stability import (
+    AffineEPIJumpGainCertificate,
+    HybridEPIStabilityCertificate,
+    certify_affine_epi_jump_gain,
+    compose_hybrid_epi_stability,
+)
+from .runtime_flow_stability import (
+    NodalFlowIntervalCertificate,
+    NodalFlowStateSnapshot,
+    capture_nodal_flow_state,
+    certify_observed_nodal_flow_interval,
+)
+from .event_remesh_refinement import (
+    EventRemeshEPICheckpointObservation,
+    EventRemeshMeshObservation,
+    EventRemeshPersistentEPIError,
+    EventRemeshThreeMeshModalObservation,
+    EventRemeshThreeMeshRefinementObservation,
+    EventRemeshThreeMeshZHIRObservation,
+    observe_event_remesh_three_mesh_refinement,
+)
+from .reversible_eigenmode_reference import (
+    ReversibleSingleEigenmodeEulerReferenceCertificate,
+    certify_reversible_single_eigenmode_euler_reference,
+)
+from .runtime_eigenmode_reference import (
+    ExecutedReversibleSingleEigenmodeEulerPartitionObservation,
+    ExecutedReversibleSingleEigenmodeEulerReferenceObservation,
+    observe_executed_reversible_single_eigenmode_euler_reference,
+)
+from .event_remesh_reference import (
+    P2EventRemeshMeshReferenceObservation,
+    P2EventRemeshReferenceFamilyObservation,
+    observe_p2_event_remesh_reference_family,
+)
+from .remesh_history_stability import (
+    UniformRemeshHistoryStabilityCertificate,
+    UniformRemeshHistoryTransitionObservation,
+    certify_uniform_remesh_history_stability,
+    observe_uniform_remesh_history_transition,
+)
+from .remesh_schedule_policy_stability import (
+    UniformRemeshSchedulePolicyStabilityCertificate,
+    certify_uniform_remesh_schedule_policy_stability,
+)
+from .remesh_schedule_relative_defect_stability import (
+    UniformRemeshScheduleRelativeDefectStabilityCertificate,
+    certify_uniform_remesh_schedule_relative_defect_stability,
+)
+from .binary64_remesh_relative_defect import (
+    Binary64RemeshPairRelativeDefectObservation,
+    UniformAlphaOneHardClipRemeshClassCertificate,
+    UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate,
+    certify_alpha_one_hard_clip_remesh_class,
+    certify_half_alpha_antisymmetric_hard_clip_remesh_class,
+    observe_binary64_remesh_pair_relative_defect,
+)
+from .binary64_p2_reception_stability import (
+    P2HalfReceptionRemeshStabilityCertificate,
+    certify_p2_half_reception_remesh_stability,
+)
+from .runtime_p2_reception_stage import (
+    ExecutedP2HalfReceptionStageCertificate,
+    certify_executed_p2_half_reception_stage,
+)
+from .runtime_p2_reception_remesh_sequence import (
+    ExecutedP2HalfReceptionRemeshSequenceCertificate,
+    certify_executed_p2_half_reception_remesh_sequence,
+)
+from .runtime_p2_reception_remesh_policy import (
+    execute_p2_half_reception_remesh_policy_invocation,
+)
+from .runtime_remesh_history_stability import (
+    RuntimeRemeshHistoryBridgeObservation,
+    observe_runtime_remesh_history_bridge,
+)
+from .remesh_schedule_stability import (
+    RemeshScheduleHistoryStabilityObservation,
+    observe_remesh_schedule_history_transition,
+)
+from .runtime_remesh_schedule_stability import (
+    RuntimeRemeshScheduleBoundaryObservation,
+    RuntimeRemeshScheduleSequenceObservation,
+    observe_runtime_remesh_schedule_sequence,
+)
+from .runtime_remesh_schedule_block_margin import (
+    RuntimeRemeshScheduleBlockMarginObservation,
+    observe_executed_event_remesh_block_margin,
+)
+from .runtime_remesh_schedule_relative_defect import (
+    RuntimeRemeshScheduleRelativeDefectBlockObservation,
+    observe_executed_event_remesh_relative_defect_block,
+)
+from .network_stage_stability import (
+    AllTargetNeighborStageCertificate,
+    AllTargetNeighborStageStep,
+    NeighborStageDiffusionBridgeCertificate,
+    certify_all_target_neighbor_stage,
+    certify_reception_all_target_stage,
+    certify_resonance_all_target_stage,
+    compose_neighbor_stage_diffusion_stability,
+)
+from .reception_realization import (
+    ReceptionEPIRealizationCertificate,
+    certify_reception_epi_realization,
+)
+from .resonance_realization import (
+    ResonanceEPIRealizationCertificate,
+    certify_resonance_epi_realization,
+)
+from .winding_certificates import (
+    WindingCertificate,
+    WindingStepObservation,
+    WindingWordObservation,
+    certify_phase_winding,
+    observe_winding_word,
+)
+from .coupling_winding import (
+    C6WindingDefect,
+    C6WindingDefectPrefix,
+    C6WindingUniformDefectBound,
+    C6WindingPairingReference,
+    C6WindingPairingObservation,
+    C6WindingJointDomain,
+    C6WindingJointStep,
+    C6WindingPhaseObservation,
+    C6WindingPhaseReference,
+    CouplingGapStep,
+    derive_c6_winding_joint_domain,
+    observe_c6_winding_joint_domain,
+    observe_c6_winding_defect,
+    bound_c6_winding_defect_prefix,
+    bound_c6_winding_uniform_defects,
+    derive_c6_winding_phase_response,
+    observe_c6_winding_phase_response,
+    observe_coupling_gap_step,
+    c6_centered_opposite_pairs,
+    derive_c6_winding_pairing,
+    observe_c6_winding_pairing,
+)
+from .binary64_nodal_flow import (
+    Binary64AdditionCell,
+    Binary64QuarterSubstep,
+    Binary64UnitQuarterFlow,
+    observe_binary64_unit_quarter_flow,
+    Binary64PairedC6Diffusion,
+    observe_binary64_paired_c6_diffusion,
+    Binary64PressureTraceCell,
+    Binary64QuarterPressureBox,
+    derive_binary64_quarter_pressure_box,
+)
+from .nodal_remainder import (
+    NodalRemainderPrefix,
+    NodalRemainderSequence,
+    observe_nodal_remainder_sequence,
+    NodalRemainderCellHorizon,
+    derive_nodal_remainder_cell_horizon,
+    NodalRemainderCellExit,
+    observe_nodal_remainder_cell_exit,
+    NodalRemainderItineraryCell,
+    NodalRemainderItinerary,
+    derive_nodal_remainder_itinerary,
+)
+from .binary64_pressure_equilibrium import (
+    Binary64PressureEquilibriumRow,
+    Binary64C6PressureEquilibriumObstruction,
+    derive_binary64_c6_pressure_equilibrium_obstruction,
+)
+from .nodal_remainder_pressure import (
+    NodalRemainderPressureReadout,
+    observe_nodal_remainder_pressure_readout,
+    PeriodicPhaseSourceBudget,
+    PeriodicPhaseSourceCompensation,
+    derive_periodic_phase_source_budget,
+    observe_periodic_phase_source_compensation,
+    FiniteNodalPressureDrift,
+    observe_finite_nodal_pressure_drift,
+    NodalAreaCrossing,
+    NodalAreaCrossings,
+    derive_nodal_area_crossings,
+    TwoLevelNodalReturn,
+    derive_two_level_nodal_return,
+    FiniteLevelNodalReturn,
+    derive_finite_level_nodal_return,
+    NodalRemainderCycleGradient,
+    observe_nodal_remainder_cycle_gradient,
+)
+from .c6_pressure_lattice import (
+    C6PressureLatticeRow,
+    C6PressureLatticeReference,
+    C6PressureLatticeObservation,
+    derive_c6_pressure_lattice,
+    observe_c6_pressure_lattice,
+    C6PressureSignSector,
+    C6PressureSectorExit,
+    derive_c6_pressure_sign_sector,
+    observe_c6_pressure_sector_exit,
+    C6FrozenPressureStencil,
+    observe_c6_frozen_pressure_stencil,
+)
+from .c6_phase_orbit import (
+    C6CouplingCoherencePhaseStep,
+    C6CouplingCoherencePhaseOrbit,
+    observe_c6_coupling_coherence_phase_step,
+    derive_c6_coupling_coherence_phase_orbit,
+)
+from .c6_carried_profile import (
+    C6CarriedProfile,
+    derive_c6_carried_profile,
+    C6CarriedProfileStep,
+    observe_c6_carried_profile_step,
+)
+from .c6_carried_tube import (
+    C6CarriedContraction,
+    derive_c6_carried_contraction,
+    C6CarriedTube,
+    derive_c6_carried_tube,
+    C6CarriedBandHorizon,
+    derive_c6_carried_band_horizon,
+    C6CarriedCutExclusion,
+    observe_c6_carried_cut_exclusion,
+)
+from .c6_carried_closure import C6CarriedClosure, derive_c6_carried_closure
+from .c6_carried_balance import (
+    C6CarriedPressurePoint,
+    observe_c6_carried_pressure_point,
+    C6CarriedPressureBalance,
+    derive_c6_carried_pressure_balance,
+)
+from .c6_carried_passage import (
+    C6CarriedPositivePressurePassage,
+    derive_c6_carried_positive_pressure_passage,
+)
+from .c6_carried_cell_escape import (
+    C6CarriedCompleteCellObstruction,
+    derive_c6_carried_complete_cell_obstruction,
+    C6CarriedCompleteCellEscape,
+    observe_c6_carried_complete_cell_escape,
+)
+from .c6_carried_cell_graph import C6CarriedCellGraph, derive_c6_carried_cell_graph
+from .c6_carried_viability import (
+    C6CarriedViabilityBox,
+    C6CarriedViabilityIteration,
+    C6CarriedViability,
+    derive_c6_carried_viability,
+    C6CarriedForwardZone,
+    C6CarriedPairBarrier,
+    C6CarriedForwardIteration,
+    C6CarriedForwardEnvelope,
+    derive_c6_carried_forward_envelope,
+    C6CarriedPredecessorLayer,
+    C6CarriedPredecessors,
+    derive_c6_carried_predecessors,
+    C6CarriedRegionIteration,
+    C6CarriedRegionExclusion,
+    C6CarriedRegionExclusions,
+    derive_c6_carried_region_exclusions,
+    C6CarriedReachableIteration,
+    C6CarriedReachableEnvelope,
+    derive_c6_carried_reachable_envelope,
+)
+from .c6_carried_excursion import (
+    C6CarriedLinearExtremum,
+    C6CarriedExcursionIngress,
+    C6CarriedExcursionExclusion,
+    derive_c6_carried_excursion_exclusion,
+    C6CarriedExcursionTransition,
+    C6CarriedModeExcursionExclusion,
+    derive_c6_carried_mode_excursion_exclusion,
+)
+from .c6_carried_return import (
+    C6CarriedReturnTransition,
+    C6CarriedReturnIteration,
+    C6CarriedReturnEnvelope,
+    derive_c6_carried_return_envelope,
+    C6CarriedReturnRegionExclusion,
+    C6CarriedReturnRegionExclusions,
+    derive_c6_carried_return_region_exclusions,
+    C6CarriedReturnUnionExclusion,
+    C6CarriedReturnUnionExclusions,
+    derive_c6_carried_return_union_exclusions,
+    C6CarriedReturnCountWitness,
+    C6CarriedReturnCountRelaxation,
+    derive_c6_carried_return_count_relaxation,
+    C6CarriedReturnWordBudget,
+    derive_c6_carried_return_word_budget,
+    C6CarriedReturnMemoryEnvelope,
+    derive_c6_carried_return_memory_envelope,
+    C6CarriedReturnMemoryRegionExclusion,
+    C6CarriedReturnMemoryRegionExclusions,
+    derive_c6_carried_return_memory_region_exclusions,
+    C6CarriedReturnExcludedPiece,
+    C6CarriedReturnSafeSubtraction,
+    C6CarriedReturnSafePartition,
+    C6CarriedReturnSafePartitionRegionExclusions,
+    C6CarriedReturnPredecessorPiece,
+    C6CarriedReturnPredecessorLayer,
+    C6CarriedReturnPredecessorPartition,
+    derive_c6_carried_return_safe_partition,
+    derive_c6_carried_return_safe_partition_region_exclusions,
+    C6CarriedReturnCoverSchedule,
+    C6CarriedReturnCoverCheck,
+    C6CarriedReturnSafeCover,
+    C6CarriedReturnSafeCoverRegionExclusions,
+    derive_c6_carried_return_safe_cover,
+    derive_c6_carried_return_safe_cover_region_exclusions,
+)
+from .c6_carried_mean_cylinder import (
+    C6CarriedMeanCylinderObstruction,
+    derive_c6_carried_mean_cylinder_obstruction,
+    C6CarriedMeanCylinderBoundary,
+    C6CarriedMeanCylinderEscape,
+    observe_c6_carried_mean_cylinder_escape,
+)
+from .c6_carried_affine_mean import (
+    C6CarriedAffineMeanObstruction,
+    derive_c6_carried_affine_mean_obstruction,
+    C6CarriedAffineMeanBoundary,
+    C6CarriedAffineMeanEscape,
+    observe_c6_carried_affine_mean_escape,
+)
+from .c6_carried_relay import (
+    C6CarriedRelayAxis,
+    C6CarriedRelay,
+    derive_c6_carried_relay,
+    C6CarriedRelayPoint,
+    C6CarriedRelayExit,
+    observe_c6_carried_relay_exit,
+    C6CarriedLocalRelayBudget,
+    derive_c6_carried_local_relay_budget,
+    C6CarriedLocalRelayPoint,
+    C6CarriedLocalRelayExit,
+    observe_c6_carried_local_relay_exit,
+)
+from .capacity_localization import CycleCapacityBalance, observe_cycle_capacity_balance
+from .cycle_memory_relaxation import (
+    CycleMemoryRelaxationReference,
+    certify_cycle_memory_relaxation,
+)
+from .cycle_support_dynamics import (
+    CycleSupportBalance,
+    CycleSupportEuler,
+    CycleSupportReset,
+    observe_cycle_support_balance,
+    observe_cycle_support_euler,
+    observe_cycle_support_reset,
 )
 from .support_transport import (
     SupportTransportEuler,
@@ -889,6 +872,52 @@ from .support_transport import (
     observe_support_transport_euler,
     observe_support_transport_reset,
 )
+from .forced_support import (
+    ForcedSupportBalance,
+    ForcedSupportEvent,
+    ForcedSupportJumpEnergy,
+    ForcedSupportPattern,
+    ForcedSupportReset,
+    ForcedSupportResetEnergy,
+    ForcedSupportState,
+    ForcedSupportStep,
+    ForcedSupportTarget,
+    derive_forced_support_balance,
+    observe_forced_support_event,
+    observe_forced_support_pattern,
+    observe_forced_support_reset,
+    observe_forced_support_state,
+    observe_forced_support_step,
+    observe_forced_support_target,
+)
+from .forcing_realization import (
+    NonEpiForcingObservation,
+    capture_non_epi_forcing,
+    decompose_non_epi_forcing,
+)
+from .capacity_feedback import (
+    P2Binary64CouplingObservation,
+    P2Binary64CouplingReference,
+    P2CapacityFeedbackBound,
+    P2CapacityFeedbackCycle,
+    P2CapacityFeedbackReference,
+    bound_p2_capacity_feedback,
+    derive_p2_binary64_coupling_lattice,
+    derive_p2_capacity_feedback,
+    observe_p2_binary64_coupling_lattice,
+    observe_p2_capacity_feedback_cycle,
+)
+from .coupling_support import (
+    AntipodalRegionPhaseBalance,
+    AntipodalRegionPhaseResponse,
+    CompatibleCapacityBalance,
+    CouplingSupportObservation,
+    derive_antipodal_region_phase_balance,
+    derive_compatible_capacity_balance,
+    observe_antipodal_region_phase_response,
+    observe_coupling_support,
+)
+from .phase_response import PhaseResponseReference, derive_phase_response
 from .symplectic_substrate import (
     CanonicalStructureCertificate,
     HermitianStructureCertificate,
@@ -932,23 +961,6 @@ from .symplectic_substrate import (
     verify_substrate_geometry,
     verify_symplectic_reduction,
 )
-from .temporal_identifiability import (
-    NearestSignatureIdentification,
-    SignatureMatrixCertificate,
-    SignatureNoiseMarginCertificate,
-    TemporalOperatorIdentifiabilityCertificate,
-    certify_signature_noise_margin,
-    certify_temporal_signature_matrix,
-    identify_nearest_signature,
-    probe_canonical_operator_identifiability,
-)
-from .topology_transitions import (
-    NodalTopologySnapshot,
-    NodalTopologyStep,
-    NodalTopologyTransitionCertificate,
-    capture_nodal_topology_snapshot,
-    detect_nodal_topology_transitions,
-)
 from .unified import (
     compute_action_density,
     compute_chirality_field,
@@ -961,6 +973,14 @@ from .unified import (
     compute_symmetry_breaking_field,
     compute_topological_charge,
     compute_unified_field_suite,
+)
+from .emergent_particles import (
+    EmergentParticle,
+    WindingSector,
+    classify_particle,
+    classify_winding_sector,
+    winding_number,
+    winding_ring,
 )
 from .variational import (
     ConjugatePair,
@@ -989,13 +1009,8 @@ from .variational import (
     identify_conjugate_pairs,
     translate_sectors,
 )
-from .winding_certificates import (
-    WindingCertificate,
-    WindingStepObservation,
-    WindingWordObservation,
-    certify_phase_winding,
-    observe_winding_word,
-)
+
+# isort: on
 
 __all__ = [
     # --- Structural Field Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) ---
