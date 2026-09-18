@@ -9,6 +9,10 @@ From the nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
 
 REMESH implements: **EPI(t) ↔ EPI(t-τ)** (operational fractality)
 
+The runtime delay selects integer positions in retained history. It denotes a
+fixed physical duration only under an explicit uniform sampling convention;
+variable cycle durations and the declared simulation clock remain separate.
+
 REMESH enables patterns to echo across temporal and spatial scales. Identity and
 coherence are contracts to monitor on the executed transition; the operator name
 alone does not certify either quantity.
@@ -51,10 +55,10 @@ roles and are not, by themselves, complete grammar-valid words:
    - Dynamics: VAL raises capacity; REMESH then mixes delayed form
    - Sequence: VAL → REMESH (raise capacity → mix delayed form)
 
-3. **SHA (Silence)**: νf → 0 → latent memory
-   - Relationship: Latent-network stabilization (structural memory)
-   - Dynamics: SHA freezes pattern (∂EPI/∂t → 0), REMESH propagates frozen state
-   - Sequence: SHA → REMESH (freeze → propagate frozen memory)
+3. **SHA (Silence)**: Reduced capacity and identity capture
+   - Relationship: Candidate latent-memory support
+   - Dynamics: SHA preserves EPI at its event; later rate depends on νf · ΔNFR
+   - Sequence: SHA → REMESH (reduce capacity → propagate captured form)
    - **Critical**: NO functional redundancy - uses existing Silence operator
 
 4. **NUL (Contraction)**: Reduces νf and densifies ΔNFR
@@ -175,7 +179,7 @@ This implementation maintains a single, centralized flow:
 
 1. **SHA Integration**: Uses existing Silence operator from definitions.py
    - NO reimplementation of SHA functionality
-   - StructuralIdentity only CAPTURES frozen states, doesn't freeze
+   - StructuralIdentity captures a state; it does not prove later freezing
    - Workflow: Silence() → capture_from_node(is_sha_frozen=True) → validate
 
 2. **Coherence Calculation**: Canonical C(t) for REMESH validation
@@ -317,15 +321,15 @@ class StructuralIdentity:
     preserved as it echoes across scales. This implements TNFR's requirement
     that patterns maintain identity through reorganization.
 
-    **REMESH ↔ SHA Relationship**: According to TNFR theory, SHA (Silence)
-    stabilizes latent network memory by reducing νf → 0, which freezes EPI
-    via the nodal equation: ∂EPI/∂t = νf · ΔNFR → 0. When REMESH propagates
-    patterns across scales, SHA-frozen nodes act as "structural anchors" that
-    maintain identity during reorganization.
+    **REMESH ↔ SHA Relationship**: SHA (Silence) reduces capacity while
+    preserving EPI at the event. Later unforced EPI evolution obeys
+    ∂EPI/∂t = νf · ΔNFR; exact freezing requires that product to vanish.
+    Captured low-capacity states can supply candidate structural anchors for
+    REMESH, but their maintenance must be checked on the subsequent evolution.
 
     **Usage Pattern**:
-    1. Apply SHA to freeze node: νf → 0, preserves EPI
-    2. Capture identity from frozen state (this class)
+    1. Apply SHA to reduce capacity while preserving EPI at the event
+    2. Capture identity from the resulting state (this class)
     3. Apply REMESH to propagate pattern across scales
     4. Validate identity preservation post-reorganization
 
@@ -338,7 +342,7 @@ class StructuralIdentity:
     phase_pattern : float | None
         Characteristic phase pattern in [0, 2π], if applicable
     frozen_by_sha : bool
-        Whether this identity was captured from SHA-frozen state (νf ≈ 0)
+        Low-capacity SHA capture flag; not a future invariance certificate
     lineage : list[str]
         History of transformations preserving this identity
     tolerance : float
@@ -346,9 +350,14 @@ class StructuralIdentity:
 
     Notes
     -----
-    From TNFR physics (definitions.py::Silence): SHA reduces νf causing
-    ∂EPI/∂t → 0 regardless of ΔNFR. This creates "latent memory" - frozen
-    structural patterns that REMESH can propagate coherently across scales.
+    The limit νf → 0 suppresses the unforced EPI rate only when
+    νf · ΔNFR → 0; bounded pressure is sufficient. For example,
+    νf = 1/(1+t) and ΔNFR = 1+t instead give unit EPI rate for t >= 0.
+    Even a vanishing rate alone does not prove finite accumulated change or
+    identity preservation. At exact zero capacity and finite pressure the
+    unforced continuous EPI rate is zero; separate sources and event writes
+    require their own checks. This class stores identity evidence, not a
+    dynamical memory-maintenance theorem.
 
     **Do NOT reimplement SHA** - use existing Silence operator from
     tnfr.operators.definitions. This class only captures and validates
@@ -386,8 +395,9 @@ class StructuralIdentity:
 
         Notes
         -----
-        If frozen_by_sha=True, vf check is relaxed since SHA-frozen patterns
-        have νf ≈ 0 (frozen state) while maintaining identity via EPI.
+        If frozen_by_sha=True, the vf check admits low capacity in addition
+        to the captured range. EPI matching remains a separate snapshot check;
+        neither predicate proves continued dynamical freezing.
         """
         tol = tolerance if tolerance is not None else self.tolerance
 
@@ -1472,8 +1482,7 @@ def _contract_values_equal(left: Any, right: Any) -> bool:
 
     try:
         return bool(
-            structural_proof_signature(left)
-            == structural_proof_signature(right)
+            structural_proof_signature(left) == structural_proof_signature(right)
         )
     except (StructuralSignatureError, TypeError, ValueError):
         return False
@@ -1565,9 +1574,7 @@ def _require_same_graph_surface(
             or observed[2].signature != expected[2].signature
         )
     if changed:
-        raise TNFRValueError(
-            f"REMESH callback changed protected graph surface {key!r}"
-        )
+        raise TNFRValueError(f"REMESH callback changed protected graph surface {key!r}")
 
 
 def _snapshot_alias_channels(
@@ -1607,9 +1614,7 @@ def _snapshot_alias_channels(
             opaque_references=(G, *nodes),
         )
     except (StructuralSignatureError, TNFRValueError, TypeError, ValueError) as exc:
-        raise TNFRValueError(
-            "REMESH structural channels cannot be frozen"
-        ) from exc
+        raise TNFRValueError("REMESH structural channels cannot be frozen") from exc
 
 
 def _snapshot_edge_state(G: CommunityGraph) -> tuple[Any, ...]:
@@ -1683,7 +1688,7 @@ def _require_same_epi_time_histories(
 
 
 def _snapshot_runtime_clock(G: CommunityGraph) -> tuple[bool, type[Any], Any]:
-    """Freeze the physical-time coordinate used for the REMESH jump."""
+    """Freeze the declared simulation-time coordinate for the REMESH jump."""
 
     graph_mapping = _networkx_runtime_layout(G).graph_mapping
     present, value = _raw_string_entry(graph_mapping, "_t")
@@ -1752,9 +1757,7 @@ def _finite_remesh_mean(
             f"{label} exceeds the finite binary64 aggregate range"
         ) from exc
     if not math.isfinite(result):
-        raise TNFRValueError(
-            f"{label} exceeds the finite binary64 aggregate range"
-        )
+        raise TNFRValueError(f"{label} exceeds the finite binary64 aggregate range")
     return result
 
 
@@ -1850,9 +1853,7 @@ def _latest_remesh_history_scalar(
     try:
         value = float(raw)
     except (OverflowError, TypeError, ValueError) as exc:
-        raise TNFRValueError(
-            f"history {key!r} must contain finite scalars"
-        ) from exc
+        raise TNFRValueError(f"history {key!r} must contain finite scalars") from exc
     if not math.isfinite(value):
         raise TNFRValueError(f"history {key!r} must contain finite scalars")
     return value
@@ -1972,9 +1973,7 @@ def _log_remesh_event(
                 identity_sensitive=True,
             )
         except StructuralSignatureError as exc:
-            raise TNFRValueError(
-                "canonical REMESH telemetry cannot be frozen"
-            ) from exc
+            raise TNFRValueError("canonical REMESH telemetry cannot be frozen") from exc
 
     callbacks_present, _callbacks = _raw_string_entry(
         graph_mapping,
@@ -2007,9 +2006,7 @@ def _log_remesh_event(
         )
         callback_registry = callback_manager._ensure_callbacks(G)
         normalized_layout = _networkx_runtime_layout(G)
-        normalized_nodes = tuple(
-            node for node, _data in normalized_layout.node_data
-        )
+        normalized_nodes = tuple(node for node, _data in normalized_layout.node_data)
         normalized_state = (
             _filtered_graph_configuration_signature(
                 G,
@@ -2051,9 +2048,7 @@ def _log_remesh_event(
         for _event, registry in _runtime_mapping_items(callback_registry):
             for _name, spec in _runtime_mapping_items(registry):
                 if type(spec) is not CallbackSpec:
-                    raise TNFRValueError(
-                        "REMESH callback registry is not canonical"
-                    )
+                    raise TNFRValueError("REMESH callback registry is not canonical")
                 opaque_callbacks.append(tuple.__getitem__(spec, 1))
         transient_views: list[tuple[str, Any]] = []
         callback_references: list[Any] = []
@@ -2249,9 +2244,7 @@ def apply_network_remesh(
             G,
             retained_references=retained_configuration_references,
         )
-        runtime_controls = _materialize_remesh_runtime_controls(
-            layout.graph_mapping
-        )
+        runtime_controls = _materialize_remesh_runtime_controls(layout.graph_mapping)
         log_events = runtime_controls[1]
         history_maxlen = runtime_controls[3]
         configuration = _materialize_network_remesh_configuration(
@@ -2364,15 +2357,12 @@ def apply_network_remesh(
         )
 
         current_layout = _networkx_runtime_layout(G)
-        if (
-            len(current_layout.node_data) != len(plan.node_order)
-            or any(
-                observed is not expected
-                for (observed, _data), expected in zip(
-                    current_layout.node_data,
-                    plan.node_order,
-                    strict=True,
-                )
+        if len(current_layout.node_data) != len(plan.node_order) or any(
+            observed is not expected
+            for (observed, _data), expected in zip(
+                current_layout.node_data,
+                plan.node_order,
+                strict=True,
             )
         ):
             raise TNFRValueError(
@@ -2384,11 +2374,9 @@ def apply_network_remesh(
             strict=True,
         ):
             _alias, raw_epi = _raw_alias_entry(node_data, ALIAS_EPI, 0.0)
-            if (
-                type(raw_epi) is not float
-                or structural_proof_signature(raw_epi)
-                != structural_proof_signature(proposal.bounded_epi)
-            ):
+            if type(raw_epi) is not float or structural_proof_signature(
+                raw_epi
+            ) != structural_proof_signature(proposal.bounded_epi):
                 raise TNFRValueError(
                     "REMESH callback changed a committed EPI value",
                     context={"node": proposal.node},
@@ -2403,32 +2391,22 @@ def apply_network_remesh(
             or observed_meta is not meta
             or not _contract_values_equal(observed_meta, meta)
         ):
-            raise TNFRValueError(
-                "REMESH callback changed canonical event metadata"
-            )
+            raise TNFRValueError("REMESH callback changed canonical event metadata")
         alpha_present, observed_alpha_source = _raw_string_entry(
             current_layout.graph_mapping,
             "_REMESH_ALPHA_SRC",
             None,
         )
-        if (
-            not alpha_present
-            or structural_proof_signature(observed_alpha_source)
-            != structural_proof_signature(plan.alpha_source)
-        ):
-            raise TNFRValueError(
-                "REMESH callback changed the canonical alpha source"
-            )
+        if not alpha_present or structural_proof_signature(
+            observed_alpha_source
+        ) != structural_proof_signature(plan.alpha_source):
+            raise TNFRValueError("REMESH callback changed the canonical alpha source")
         if not _contract_values_equal(
             _snapshot_alias_channels(G, plan.node_order), protected_channels
         ):
-            raise TNFRValueError(
-                "REMESH callback changed capacity, pressure or phase"
-            )
+            raise TNFRValueError("REMESH callback changed capacity, pressure or phase")
         if not _contract_values_equal(_snapshot_edge_state(G), protected_edges):
-            raise TNFRValueError(
-                "REMESH callback changed edge support or attributes"
-            )
+            raise TNFRValueError("REMESH callback changed edge support or attributes")
         _require_same_graph_surface(G, "_epi_hist", protected_epi_history)
         _require_same_graph_surface(G, "hybrid_event_log", protected_event_log)
         _require_same_runtime_clock(G, protected_clock)
@@ -2441,9 +2419,7 @@ def apply_network_remesh(
         if observed_hook_present != pressure_hook_present or (
             observed_hook_present and observed_hook is not pressure_hook
         ):
-            raise TNFRValueError(
-                "REMESH callback changed the pressure-refresh hook"
-            )
+            raise TNFRValueError("REMESH callback changed the pressure-refresh hook")
         if not _remesh_configuration_input_signatures_are_identical(
             _remesh_configuration_input_signature(G),
             configuration_input_signature,

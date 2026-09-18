@@ -28,6 +28,10 @@ from ..types import (
 )
 from ..units import get_hz_bridge
 from ..utils import CallbackEvent, callback_manager, get_logger
+from .capacity_rates import (
+    commit_capacity_rate_observations,
+    plan_capacity_rate_observations,
+)
 from .coherence import (
     GLYPH_LOAD_STABILIZERS_KEY,
     _aggregate_si,
@@ -134,7 +138,13 @@ _register_metrics_preset(
     )
 )
 
-_METRICS_BASE_HISTORY_KEYS = ("C_steps", "stable_frac", "delta_Si", "B")
+_METRICS_BASE_HISTORY_KEYS = (
+    "C_steps",
+    "stable_frac",
+    "delta_Si",
+    "B",
+    "capacity_rate_coverage",
+)
 _METRICS_PHASE_HISTORY_KEYS = ("phase_sync", "kuramoto_R")
 _METRICS_SIGMA_HISTORY_KEYS = (
     GLYPH_LOAD_STABILIZERS_KEY,
@@ -218,6 +228,10 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
         return
 
     spec = _resolve_metrics_verbosity(cfg)
+    # Invalid capacity/time/sample chronology must fail before any history
+    # or per-node diagnostic write. The callback does not alter sampled state
+    # between this preflight and the private tracker commit below.
+    capacity_observations = plan_capacity_rate_observations(G)
     hist = ensure_history(G)
     if "glyph_load_estab" in hist:
         raise TNFRValueError(
@@ -245,12 +259,12 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
                 hist.setdefault(key, [])
         G.graph[metrics_sentinel_key] = history_id
 
+    # Configured operation-time diagnostics below retain DT. Capacity secants
+    # in _track_stability instead use explicitly recorded runtime timestamps.
     dt = float(get_param(G, "DT"))
     eps_dnfr = float(get_param(G, "EPS_DNFR_STABLE"))
     eps_depi = float(get_param(G, "EPS_DEPI_STABLE"))
     t = float(G.graph.get("_t", 0.0))
-
-    _update_coherence(G, hist)
 
     raw_jobs = cfg.get("n_jobs")
     metrics_jobs: int | None
@@ -269,7 +283,9 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
         eps_dnfr,
         eps_depi,
         n_jobs=metrics_jobs,
+        _capacity_observations=capacity_observations,
     )
+    _update_coherence(G, hist)
     if spec.enable_phase_sync or spec.enable_sigma:
         try:
             if spec.enable_phase_sync:
@@ -303,10 +319,17 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
 
 
 def register_metrics_callbacks(G: TNFRGraph) -> None:
-    """Attach canonical metrics callbacks according to graph configuration."""
+    """Attach metrics, retaining a capacity baseline only at explicit time.
+
+    A graph without ``_t`` provides no observed time origin. Its first later
+    timestamp initializes capacity sampling; configured DT never invents t0.
+    """
 
     cfg = cast(Mapping[str, Any], get_param(G, "METRICS"))
     spec = _resolve_metrics_verbosity(cfg)
+    if cfg.get("enabled", True) and "_t" in G.graph:
+        observations = plan_capacity_rate_observations(G)
+        commit_capacity_rate_observations(G, observations)
     callback_manager.register_callback(
         G,
         event=CallbackEvent.AFTER_STEP.value,

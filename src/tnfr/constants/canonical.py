@@ -49,9 +49,9 @@ mp.mp.dps = 35
 # FUNDAMENTAL TNFR CONSTANTS (Canonical - Never Change)
 # ============================================================================
 
-# Genuine structural scale: π (the phase-wrap bound shared by |∇φ| and K_φ).
-# φ, γ, e are NOT structural scales and are intentionally absent — only π is
-# the remaining values have mathematical or operational roles documented below.
+# Exact circular scale in radians: π, shared by the |∇φ| and |K_φ| bounds.
+# This angular bound supplies neither a time unit nor a unique dynamical gain.
+# The remaining values have mathematical or operational roles documented below.
 PI = float(mp.pi)  # Pi π ≈ 3.141592653589793
 LN_2 = float(
     mp.log(2)
@@ -69,7 +69,7 @@ HALF_INV_PI = 1.0 / (2.0 * PI)  # 1/(2π) ≈ 0.159 (semi-inverse circular)
 
 # ============================================================================
 # TNFR STRUCTURAL CONSTANTS (only the π phase-wrap bounds and the spectral-gap
-# ξ_C are genuine structural scales — see header)
+# reference for ξ_C is conditional and dimensionless — see header)
 # ============================================================================
 
 # Heuristic regime-classification / spectral-shift scale (audit 2026: NOT a
@@ -77,20 +77,19 @@ HALF_INV_PI = 1.0 / (2.0 * PI)  # 1/(2π) ≈ 0.159 (semi-inverse circular)
 # protocol-dependent). A small π-fraction, labeled tunable.
 CRITICAL_EXPONENT = PI / 16  # π/16 ≈ 0.196 (heuristic regime/shift scale, tunable)
 
-# Coherence band — the single structural quantity 1/(π+1) and its complement.
-# π is the sole structural scale; the fragmentation / high-coherence band is
-# [1/(π+1), π/(π+1)] ≈ [0.2415, 0.7585]. Constants representing "fragmentation
-# risk" or a "high-coherence gate" reference these two (single source of truth).
-FRAGMENTATION_THRESHOLD = 1.0 / (PI + 1.0)  # 1/(π+1) ≈ 0.2415 (fragmentation-risk level)
+# Selected coherence band, centralized as one value and its complement.
+# [1/(π+1), π/(π+1)] ≈ [0.2415, 0.7585] is a telemetry/admission policy;
+# neither phase wrapping nor the nodal product derives these cuts.
+FRAGMENTATION_THRESHOLD = 1.0 / (
+    PI + 1.0
+)  # 1/(π+1) ≈ 0.2415 (fragmentation-risk level)
 HIGH_COHERENCE_THRESHOLD = PI / (PI + 1.0)  # π/(π+1) ≈ 0.7585 (high-coherence gate)
 
-# Channel-mixing weights — the coherence-band HIERARCHY (no magic numbers: the
-# single π-derived quantity 1/(π+1) and its complement π/(π+1), applied
-# recursively). Order the structurally-active channels by primacy and give each
-# the high-coherence share π/(π+1) of what remains. The geometric series
-# normalises EXACTLY:  π/(π+1) + π/(π+1)² + 1/(π+1)² = (π+1)²/(π+1)² = 1.
-# Used by DNFR_WEIGHTS (phase ≻ EPI ≻ νf; topo inactive — graph fixed) and
-# SI_WEIGHTS (νf-coherence ≻ phase-sync ≻ |ΔNFR|). Replaces the frozen φ/γ decimals.
+# Configured channel hierarchy, reused by DNFR_WEIGHTS and SI_WEIGHTS.
+# The real-arithmetic identity π/(π+1) + π/(π+1)² + 1/(π+1)² = 1
+# normalizes these defaults; it selects neither their ordering nor physical
+# channel units. Renormalizing coefficients after a change of units generally
+# changes the nodal law. See theory/NODAL_PARAMETER_FOUNDATIONS.md.
 CHANNEL_WEIGHT_PRIMARY = HIGH_COHERENCE_THRESHOLD  # π/(π+1) ≈ 0.7585 (dominant channel)
 CHANNEL_WEIGHT_SECONDARY = (
     HIGH_COHERENCE_THRESHOLD * FRAGMENTATION_THRESHOLD
@@ -99,42 +98,42 @@ CHANNEL_WEIGHT_TERTIARY = (
     FRAGMENTATION_THRESHOLD * FRAGMENTATION_THRESHOLD
 )  # 1/(π+1)² ≈ 0.0583 (remainder)
 
-# Pressure-lever (ΔNFR) operator gains — the coherence-band step and its
-# reciprocal. IL (stabiliser) retains the high-coherence share π/(π+1); OZ
-# (destabiliser) amplifies by (π+1)/π, so a balanced IL∘OZ is EXACTLY isometric
-# (π/(π+1)·(π+1)/π = 1). π-derived; replaces the frozen φ/γ (IL=φ/(φ+γ),
-# OZ=φ/γ) and the bare 0.75 / 2.0 operational values.
-COHERENCE_RETENTION = HIGH_COHERENCE_THRESHOLD  # π/(π+1) ≈ 0.7585 (IL pressure retention)
-DISSONANCE_AMPLIFICATION = (PI + 1.0) / PI  # (π+1)/π ≈ 1.3183 (OZ pressure amplification)
+# Configured pressure gains, reciprocal in real arithmetic. The scalar product
+# equals one; actual IL/OZ operations also read and change other state, so this
+# algebra does not make their composition an isometry or inverse operation.
+COHERENCE_RETENTION = (
+    HIGH_COHERENCE_THRESHOLD  # π/(π+1) ≈ 0.7585 (IL pressure retention)
+)
+DISSONANCE_AMPLIFICATION = (
+    PI + 1.0
+) / PI  # (π+1)/π ≈ 1.3183 (OZ pressure amplification)
 
 # Secondary operator couplings — gentle π-fraction gains at three structural
 # scales. Each operator contract fixes its channel and sign; these secondary
-# magnitudes are π-fractions (NO magic decimals), on the same π-fraction ladder
+# magnitudes are selected π-fractions, on the same configured ladder
 # as the adaptation rates UP/DOWN (1/(4π), 1/(2π)) and the coupling floor 1/(8π).
 COUPLING_GENTLE = 1.0 / (4.0 * PI)  # 1/(4π) ≈ 0.0796 (gentle secondary gain)
 COUPLING_MODERATE = 1.0 / (2.0 * PI)  # 1/(2π) ≈ 0.159 (moderate secondary gain)
 COUPLING_FINE = 1.0 / (8.0 * PI)  # 1/(8π) ≈ 0.0398 (fine secondary gain)
 
-# Rectified-mean coherence level 2/π — the natural π-derived threshold between
-# the unit midpoint 0.5 and the high-coherence gate π/(π+1), used as the
-# mid-high coherence/force trigger (Kuramoto R lower bound, grammar force level).
+# Selected mid-high coherence/force trigger. Its expression 2/π is an exact
+# mathematical value, not a derived universal synchronization threshold.
 MID_COHERENCE_THRESHOLD = 2.0 / PI  # 2/π ≈ 0.6366 (mid-high coherence trigger)
 
 # Operator gain parameters. The scale operators (Silence, Expansion,
 # Contraction) act on the ν_f CAPACITY lever; the contracts fix the DIRECTION
-# (ν_f↓ for SHA/NUL, ν_f↑ for VAL). The MAGNITUDE is the gentle π-derived
-# adaptation step δ = 1/(4π) ≈ 0.0796 (the capacity lever evolves slowly, so the
-# step is small — unlike the PRESSURE lever IL/OZ, which take the coherence-band
-# ratio). δ = 1/(4π) is the same π-fraction as UP_CANONICAL below.
+# (ν_f↓ for SHA/NUL, ν_f↑ for VAL). The magnitude δ = 1/(4π) is a configured
+# per-invocation step, shared with UP_CANONICAL; no time-scale separation follows
+# from the nodal equation alone.
 _CAPACITY_STEP = 1.0 / (4.0 * PI)  # 1/(4π) ≈ 0.0796 (gentle ν_f adaptation step)
 SHA_VF_FACTOR = 1.0 - _CAPACITY_STEP  # 1 − 1/(4π) ≈ 0.9204 (gentle freeze step)
-NUL_SCALE_FACTOR = (
-    SHA_VF_FACTOR  # Contraction: same ν_f↓ step as Silence
-)
+NUL_SCALE_FACTOR = SHA_VF_FACTOR  # Contraction: same ν_f↓ step as Silence
 
 # VAL expansion thresholds
 VAL_MIN_EPI = 1.0 / (2.0 * PI)  # minimum structural base to expand (tunable)
-VAL_BIFURCATION_THRESHOLD = FRAGMENTATION_THRESHOLD  # 1/(π+1) ≈ 0.2415 (bifurcation detection)
+VAL_BIFURCATION_THRESHOLD = (
+    FRAGMENTATION_THRESHOLD  # 1/(π+1) ≈ 0.2415 (bifurcation detection)
+)
 VAL_MIN_COHERENCE = math.sin(
     PI / 3
 )  # sin(π/3) = √3/2 ≈ 0.8660 (60° harmonic coherence)
@@ -148,25 +147,24 @@ THOL_MIN_COLLECTIVE_COHERENCE = FRAGMENTATION_THRESHOLD
 # Coupling and mixing thresholds (operational)
 # Coupling forms when the composite compatibility (phase 50% + EPI 25% + Si 25%)
 # exceeds the HIGH-COHERENCE level π/(π+1), the complement of the fragmentation
-# threshold 1/(π+1). The coherence band [1/(π+1), π/(π+1)] is derived from the
-# single structural quantity 1/(π+1) (π is the sole structural scale).
+# threshold 1/(π+1). The composite score and its cut are configured policies.
 UM_COMPAT_THRESHOLD = HIGH_COHERENCE_THRESHOLD  # π/(π+1) ≈ 0.7585 (high-coherence gate)
 EN_MIX_FACTOR = FRAGMENTATION_THRESHOLD  # 1/(π+1) ≈ 0.2415 (reception mixing fraction)
-UM_THETA_PUSH = EN_MIX_FACTOR  # Same physics as EN mixing (coupling phase push)
+UM_THETA_PUSH = EN_MIX_FACTOR  # Shared default, not an EPI/phase physical identity
 
 # Expansion raises the ν_f capacity by the same gentle π-step δ = 1/(4π).
-# Contraction (NUL) concentrates ΔNFR by the GEOMETRIC volume ratio 1/λ, where
-# λ = the ν_f contraction factor: contracting volume by λ<1 densifies structural
-# pressure by 1/λ>1 (the NUL contract "ν_f↓ and ΔNFR densifies"). Densification
-# is thus DERIVED from the contraction factor, not a free magnitude.
+# Contraction configures reciprocal pressure scaling. Capacity is a rate,
+# not a geometric volume: identifying the two would require an additional
+# constitutive relation. The reciprocal preserves ν_f*ΔNFR only for ideal
+# simultaneous scalar rescalings without clipping or other operator effects.
 VAL_SCALE_FACTOR = 1.0 + _CAPACITY_STEP  # 1 + 1/(4π) ≈ 1.0796 (gentle expansion step)
 NUL_DENSIFICATION_FACTOR = (
-    1.0 / NUL_SCALE_FACTOR  # 1/λ ≈ 1.0865 (geometric volume-ratio densification)
+    1.0 / NUL_SCALE_FACTOR  # 1/λ ≈ 1.0865 (configured reciprocal densification)
 )
 
 # Binary/structural escape threshold = 2.0. This is the EPI dynamic range
 # (EPI_MAX − EPI_MIN = 1 − (−1) = 2, the maximum coherent-form span) — a plain
-# structural value, NOT a transcendental (de-obfuscated from exp(ln 2), audit 2026).
+# configured chart span, not a bound on every admissible EPI representation.
 STRUCTURAL_ESCAPE_THRESHOLD_THEORETICAL = 2.0  # EPI span (unit form range)
 
 
@@ -176,18 +174,19 @@ STRUCTURAL_ESCAPE_THRESHOLD_THEORETICAL = 2.0  # EPI span (unit form range)
 
 # Temporal constants. The integration timestep is a numerical PARAMETER (the
 # nodal equation fixes the dynamics, not the discretisation); kept stable via
-# νf·dt·λ_max < 2 for the EPI diffusion channel. Tunable.
-DT_CANONICAL = 1.0 / 2.0  # stable explicit step (tunable parameter)
+# νf·dt·λ_max < 2 for fixed homogeneous pure-EPI diffusion. A default step
+# alone does not certify stability of an arbitrary configured model.
+DT_CANONICAL = 1.0 / 2.0  # configured explicit step (tunable parameter)
 DT_MIN_CANONICAL = 1.0 / 16.0  # minimal adaptive-step floor (tunable)
 
-# EPI bounds: the coherent form magnitude is bounded by the unit form scale.
+# Selected scalar-chart clipping bounds; the nodal product does not derive them.
 EPI_MAX_CANONICAL = 1.0  # unit form-magnitude bound
 EPI_MIN_CANONICAL = -1.0  # unit form-magnitude bound (symmetric)
 
-# Frequency bounds. Maximum reorganisation rate = one full phase cycle per
-# unit time (2π); νf = 0 is the death state (no reorganisation).
-VF_MAX_CANONICAL = 2.0 * PI  # 2π: one phase cycle per unit time
-VF_MIN_CANONICAL = 0.0  # Zero remains canonical (death state)
+# Configured capacity bounds. A phase period is not a capacity upper bound.
+# νf=0 freezes the unforced EPI channel; existing form need not disappear.
+VF_MAX_CANONICAL = 2.0 * PI  # selected numeric ceiling in the configured time unit
+VF_MIN_CANONICAL = 0.0  # inactive unforced EPI channel
 
 # Coupling bounds: local coupling strength as π-fractions (tunable).
 KL_MIN_CANONICAL = 1.0 / (8.0 * PI)  # minimum local coupling (tunable)
@@ -198,7 +197,7 @@ UP_CANONICAL = 1.0 / (4.0 * PI)  # increment rate (tunable)
 DOWN_CANONICAL = 1.0 / (2.0 * PI)  # decrement rate (tunable)
 
 # Operator gain parameters (free magnitudes; contracts fix channel+sign).
-AL_BOOST_CANONICAL = 0.10  # emission EPI increment (tunable; energy-neutral)
+AL_BOOST_CANONICAL = 0.10  # emission EPI increment (tunable; no energy identity)
 VF_ADAPT_MU_CANONICAL = 0.10  # νf adaptation rate (tunable)
 
 # Bifurcation thresholds (tunable parameters; midpoint of the unit range).
@@ -211,7 +210,9 @@ NUL_EPI_THRESHOLD_CANONICAL = 0.5  # contraction safety EPI threshold (tunable)
 ZHIR_THRESHOLD_XI_CANONICAL = 0.1
 
 # Margin and selector constants (canonical selection boundaries)
-GLYPH_SELECTOR_MARGIN_CANONICAL = KL_MIN_CANONICAL  # = 1/(8π) (selection boundary precision)
+GLYPH_SELECTOR_MARGIN_CANONICAL = (
+    KL_MIN_CANONICAL  # = 1/(8π) (selection boundary precision)
+)
 
 # ============================================================================
 # TOPOLOGY AND SPECTRAL CONSTANTS (Phase 3 Canonicalization)
@@ -231,7 +232,7 @@ THERAPEUTIC_EXCELLENT_CANONICAL = math.sin(
 # PHASE 4: STRUCTURAL OPERATORS CONSTANTS (Canonical Operator Replacements)
 # ============================================================================
 
-# Cycle Detection Balance target (structural: 1/(π+1))
+# Cycle Detection Balance target (selected policy: 1/(π+1))
 CYCLE_OPTIMAL_BALANCE_CANONICAL = FRAGMENTATION_THRESHOLD  # 1/(π+1) ≈ 0.2415 (balance)
 # Cycle rails, pattern weights, and algebra tolerances (operational knobs) →
 # moved to tnfr.constants.operational (audit 2026).
@@ -257,7 +258,9 @@ DYNAMICS_ADELIC_DRIFT_CANONICAL = 0.1  # adelic drift (tunable)
 DYNAMICS_ADELIC_DT_STEP_CANONICAL = 1.0 / 16.0  # adelic timestep = DT_MIN (tunable)
 
 # Dynamics/Adaptation Constants (adaptive structural evolution)
-DYNAMICS_SI_HI_THRESHOLD_CANONICAL = HIGH_COHERENCE_THRESHOLD  # π/(π+1) high-coherence Si gate
+DYNAMICS_SI_HI_THRESHOLD_CANONICAL = (
+    HIGH_COHERENCE_THRESHOLD  # π/(π+1) high-coherence Si gate
+)
 
 # ============================================================================
 # PHASE 6: DYNAMICS MODULE CONSTANTS (Comprehensive Canonicalization)
@@ -274,11 +277,8 @@ INTEGRATORS_FLUX_FALLBACK_CANONICAL = 0.75  # neighbor flux fallback fraction (t
 INTEGRATORS_SIGMOID_OFFSET_CANONICAL = 0.5  # sigmoid coupling offset (unit midpoint)
 
 
-
 # REMESH Operator Constants (structural memory)
-REMESH_SIMILARITY_THRESHOLD_CANONICAL = (
-    UM_COMPAT_THRESHOLD  # π/(π+1) ≈ 0.7585 (structural similarity = high-coherence gate)
-)
+REMESH_SIMILARITY_THRESHOLD_CANONICAL = UM_COMPAT_THRESHOLD  # π/(π+1) ≈ 0.7585 (structural similarity = high-coherence gate)
 
 
 # Optimization-orchestrator, multi-modal-cache, and FFT-arithmetic knobs
@@ -288,15 +288,21 @@ REMESH_SIMILARITY_THRESHOLD_CANONICAL = (
 # These replace inline magic numbers in dynamics/feedback.py. The control
 # tolerances and rates are π-fractions on the coupling ladder (1/(2π), 1/(4π),
 # 1/(8π)); the target coherence is the high-coherence gate π/(π+1).
-FEEDBACK_COHERENCE_TOL_LOW = COUPLING_MODERATE  # 1/(2π) ≈ 0.159 (low coherence tolerance)
-FEEDBACK_COHERENCE_TOL_HIGH = COUPLING_GENTLE  # 1/(4π) ≈ 0.0796 (high coherence tolerance)
+FEEDBACK_COHERENCE_TOL_LOW = (
+    COUPLING_MODERATE  # 1/(2π) ≈ 0.159 (low coherence tolerance)
+)
+FEEDBACK_COHERENCE_TOL_HIGH = (
+    COUPLING_GENTLE  # 1/(4π) ≈ 0.0796 (high coherence tolerance)
+)
 FEEDBACK_DNFR_THRESHOLD = math.sqrt(
     FEEDBACK_COHERENCE_TOL_LOW * FEEDBACK_COHERENCE_TOL_HIGH
 )  # √(1/(2π)·1/(4π)) = 1/(2π√2) ≈ 0.1125
 FEEDBACK_EPI_THRESHOLD = 1.0 / 3.0  # 1/3 EPI threshold (tunable)
 FEEDBACK_TARGET_COHERENCE = UM_COMPAT_THRESHOLD  # π/(π+1) ≈ 0.7585 (target coherence)
 FEEDBACK_TAU_ADAPTIVE = COUPLING_MODERATE  # 1/(2π) ≈ 0.159 (adaptive-tau π-fraction)
-FEEDBACK_LEARNING_RATE = COUPLING_FINE  # 1/(8π) ≈ 0.0398 (feedback-loop gain, fine π-fraction)
+FEEDBACK_LEARNING_RATE = (
+    COUPLING_FINE  # 1/(8π) ≈ 0.0398 (feedback-loop gain, fine π-fraction)
+)
 
 # FFT, pattern-discovery, self-optimization, emergent-centralization, cache,
 # unified-cache, integration, nodal-optimizer, and structural-cache knobs
@@ -319,7 +325,9 @@ PHI_S_VON_KOCH_THRESHOLD: float = PI / 4  # π/4 ≈ 0.7854 (selected potential 
 # |∇φ|: Phase Gradient Field — HEURISTIC early-warning level (audit 2026:
 # NOT a derived bound; the kinematic bound is |∇φ| ≤ π (wrap), the SAME as K_φ;
 # the sync-onset is σ-dependent ≈ 0.29, not a fixed constant).
-GRAD_PHI_CANONICAL_THRESHOLD = PI / 16  # π/16 ≈ 0.196 (heuristic |∇φ| early-warning, tunable)
+GRAD_PHI_CANONICAL_THRESHOLD = (
+    PI / 16
+)  # π/16 ≈ 0.196 (heuristic |∇φ| early-warning, tunable)
 
 # |K_φ|: selected 90% warning margin within the exact π wrap maximum.
 K_PHI_CANONICAL_THRESHOLD = 0.9 * PI  # 0.9×π ≈ 2.8274
@@ -380,7 +388,9 @@ PHYSICS_CURVATURE_HOTSPOT_CANONICAL = (
 # 0.9·π warning level and the kinematic π wrap bound. The midpoint is exact
 # once those endpoints are chosen, but it is an operational policy rather than
 # a graph-independent physical derivation.
-AU_CURVATURE_PERMISSIVE_THRESHOLD = (K_PHI_CANONICAL_THRESHOLD + PI) / 2.0  # (0.9π+π)/2 = 0.95π ≈ 2.985 (permissive |K_φ|)
+AU_CURVATURE_PERMISSIVE_THRESHOLD = (
+    K_PHI_CANONICAL_THRESHOLD + PI
+) / 2.0  # (0.9π+π)/2 = 0.95π ≈ 2.985 (permissive |K_φ|)
 PHYSICS_HOTSPOT_FRACTION_CANONICAL = 0.1  # curvature-hotspot fraction warning (tunable)
 
 # Operator pattern-scoring and domain-suitability weights (operational) →

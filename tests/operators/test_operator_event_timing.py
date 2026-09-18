@@ -49,7 +49,8 @@ def _assert_historical_constant_metadata_fields(value, expected) -> None:
         assert f"{name}=" in representation
         assert getattr(value, name) == expected_value
         replacement = not expected_value if type(expected_value) is bool else "forged"
-        with pytest.raises(ValueError, match="init=False"):
+        # Python versions differ in the exception type for this same refusal.
+        with pytest.raises((TypeError, ValueError), match="init=False"):
             replace(value, **{name: replacement})
 
         original_raw = object.__getattribute__(value, name)
@@ -312,8 +313,7 @@ def test_zero_duration_intervals_and_an_empty_finite_word_are_supported() -> Non
     assert [event.event_time for event in coincident.events] == [-2.0, -2.0]
     assert [event.event_index for event in coincident.events] == [0, 1]
     assert all(
-        event.history_channel == "hybrid_event_log"
-        for event in coincident.events
+        event.history_channel == "hybrid_event_log" for event in coincident.events
     )
     assert all(not event.feeds_epi_time_history for event in coincident.events)
     assert coincident.end_time == -2.0
@@ -388,9 +388,7 @@ def test_exact_prefix_sum_unifies_total_duration_and_final_time() -> None:
     assert schedule.exact_total_flow_duration == 11 * exact_tenth
     assert schedule.exact_end_time == schedule.exact_total_flow_duration
     assert schedule.end_time == float(schedule.exact_end_time)
-    assert schedule.total_flow_duration == float(
-        schedule.exact_total_flow_duration
-    )
+    assert schedule.total_flow_duration == float(schedule.exact_total_flow_duration)
     assert schedule.intervals[-1].end_offset == 11 * exact_tenth
 
 
@@ -435,6 +433,7 @@ def test_schedule_rejects_type_coercing_replacements(
 
     with pytest.raises(TypeError, match=message):
         replace(schedule, **{field: replacement})
+
 
 def test_runtime_clock_diagnostic_accepts_representable_zhir_preflow() -> None:
     schedule = build_operator_event_schedule(

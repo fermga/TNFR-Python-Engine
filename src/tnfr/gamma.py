@@ -1,4 +1,9 @@
-"""Gamma registry."""
+"""Registry of optional additive EPI-rate sources.
+
+These configured Kuramoto-based and harmonic terms extend the unforced nodal
+law. Their units must match dEPI/dt; they need not vanish at zero capacity.
+Using them is a declared model choice, not evidence that they emerge from TNFR.
+"""
 
 from __future__ import annotations
 

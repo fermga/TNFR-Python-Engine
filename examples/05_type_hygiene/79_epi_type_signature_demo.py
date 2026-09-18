@@ -7,9 +7,10 @@ Scope (mandatory honesty)
 -------------------------
 This script is a *diagnostic only*.  It does **not** construct, promote,
 or modify any canonical operator.  It does **not** advance G4 = RH.
-It is a *necessary-condition* check on whether canonical EPI evolution
-on a TNFR graph carries irreducible BEPIElement-valued structure that
-a single-mode scalar reading cannot represent without loss.
+It reports final storage membership in the exact uniform-real scalar chart
+and descriptive temporal spectral entropy. A scalar signal can have a broad
+spectrum: neither result establishes EPI type or dimensional necessity.
+Historical verdicts in the research notes are not replayed by this correction.
 
 References
 ----------
@@ -42,11 +43,12 @@ def main() -> None:
     print()
     print("=" * 72)
     print("Interpretation (§13triginta-quarta.6–.7):")
-    print("  - SCALAR_ADEQUATE       : signature < 0.15 AND zero BEPI storage")
-    print("                            → scalar EPI suffices for canonical evolution")
-    print("  - INDETERMINATE         : in between")
-    print("  - BEPI_VALUED_NECESSARY : signature > 0.5 OR non-zero BEPI storage")
-    print("                            → scalar EPI loses canonical content")
+    print("  - REAL_SCALAR_STORAGE: all inspected entries belong to the scalar chart")
+    print("  - NONSCALAR_BEPI_STORAGE_OBSERVED: at least one entry lies outside it")
+    print("  - NO_STORAGE_OBSERVED: no entries were inspected")
+    print(
+        "  Temporal spectral entropy is descriptive and does not choose these labels."
+    )
     print()
     print("Verdicts at the two resolutions:")
     print(
@@ -58,7 +60,7 @@ def main() -> None:
         f" BEPI fraction = {cert2.storage_bepi_fraction:.4f})"
     )
     print()
-    print("Necessary-condition check, NOT proof of the T-EPI Conjecture.")
+    print("No dimensional-necessity or minimal-realization conclusion follows.")
     print("Honest scope: does NOT advance G4 = RH; does NOT promote any operator.")
     print("=" * 72)
 

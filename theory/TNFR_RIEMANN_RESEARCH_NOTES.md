@@ -24,6 +24,18 @@ This memo defines the minimum structure required to evaluate TNFR claims about t
 > Later historical arguments that depend on those stronger premises do not
 > inherit theorem status.
 
+> **EPI foundation correction (2026-09-18).** The historical T-EPI sections
+> below do not prove that scalar storage is physically forced, that BEPI is
+> necessary, or that temporal spectral entropy establishes spatial/modal
+> equivalence. Python type signatures establish implementation scope only.
+> The current storage diagnostic tests exact signed scalar-chart membership
+> separately from temporal entropy. Uniform-real BEPI is scalar storage;
+> nonuniform or complex BEPI needs its own dynamics. Source definitions,
+> dimensional inconsistencies and coordinate dependence are centralized in
+> [FUNDAMENTAL_THEORY sections 2.4-2.6](FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation).
+> Historical numerical records are preserved, but the stronger necessity and
+> equivalence interpretations are superseded.
+
 > **Read first:** the conceptual foundation is **the nodal-ontology re-mapping**
 > directly below (2026-06); it supersedes the pre-pulse / pre-single-constant
 > framing of P12–P49 (the certificates stand; only *what they measure* is re-read).
@@ -3624,7 +3636,7 @@ P48 promotes the §13nonies operator-level lift of the smooth half of T-HP from 
 
 ### §13vicies-octavo.1 Motivation
 
-P31 ([§13decies Branch B1 Retry](#13decies-branch-b1-retry-prime-ladder-oscillatory-correction-p31)) attacks the **oscillatory half** of T-HP at the ζ-track by reconstructing $S(T) = \pi^{-1} \arg \zeta(1/2 + iT)$ from the canonical prime-ladder spectrum $\{(k\log p, \log p)\}$ via the Riemann–von Mangoldt template, then applying a Newton step on the P28 smooth targets. P49 is the **L-track analogue** of P31, one primitive real Dirichlet character at a time, reconstructing
+P31 ([§13decies Branch B1 Retry](#13decies-branch-b1-retry--prime-ladder-oscillatory-correction-p31)) attacks the **oscillatory half** of T-HP at the ζ-track by reconstructing $S(T) = \pi^{-1} \arg \zeta(1/2 + iT)$ from the canonical prime-ladder spectrum $\{(k\log p, \log p)\}$ via the Riemann–von Mangoldt template, then applying a Newton step on the P28 smooth targets. P49 is the **L-track analogue** of P31, one primitive real Dirichlet character at a time, reconstructing
 $$S_\chi(T) = \frac{1}{\pi}\arg L\!\left(\tfrac{1}{2} + iT,\,\chi\right)$$
 from the canonical P34 χ-twisted prime-ladder spectrum $\{(k\log p,\,\chi(p)^k \log p)\}$ via the χ-twisted Riemann–von Mangoldt template
 $$\pi\, S_\chi^{\mathrm{TNFR}}(T;\,N,K) \;=\; -\!\!\!\!\sum_{(\mu,w)\in\Sigma_{N,K}^{(\chi)}}\!\!\!\frac{w}{\mu}\,\frac{\sin(T\mu)}{\exp(\mu/2)}$$

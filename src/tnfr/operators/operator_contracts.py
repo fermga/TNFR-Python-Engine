@@ -47,12 +47,13 @@ Channel partition (primary channel per operator)
 
 Scale partition (U5 operational fractality)
 -------------------------------------------
-A second, orthogonal axis: the **scale** at which the operator acts. Exactly one
-operator implements operational fractality (grammar rule U5) and therefore acts
-at NETWORK scale; the other twelve act at NODE scale:
+A second, orthogonal axis is the invocation/target **scale**. Recursivity is
+registered at NETWORK scale; the other twelve use NODE targets. This does not
+count all mutated nodes or monopolize operational fractality: THOL creates
+nested forms, and bidirectional UM can modify neighboring state.
 
-    NODE     : the twelve operators whose ``_op_*`` handler mutates one node's
-               state channel (they act on the *fiber* — the per-node substrate).
+    NODE     : the twelve operators with a node target; their contracts may
+               include neighbor effects or child creation.
     NETWORK  : Recursivity (REMESH) — the multi-scale echo. Its node-level call
                is advisory; its canonical effect is the network-scale temporal
                EPI recurrence ``EPI_new = (1-α)²·EPI(t) + α(1-α)·EPI(t-τ_l) +
@@ -64,7 +65,7 @@ at NETWORK scale; the other twelve act at NODE scale:
                runtime τ_g→∞ limit of ``apply_network_remesh``. REMESH is an EPI
                operator (it echoes the form across time/scale), distinguished
                from Emission/Reception/Resonance only by its NETWORK scale —
-               which *is* U5 fractality. This connects the contract layer to the
+               a U5 implementation, not the whole U5 requirement. This connects the contract layer to the
                base/fiber optic (examples 126-131): NODE operators act on the
                fiber, the NETWORK operator regenerates the base.
 
@@ -539,9 +540,7 @@ def contract_identifiability_certificate(
     groups = tuple(
         (signature, tuple(names)) for signature, names in sorted(grouped.items())
     )
-    unique = tuple(
-        names[0] for _, names in groups if len(names) == 1
-    )
+    unique = tuple(names[0] for _, names in groups if len(names) == 1)
     ambiguous = tuple(names for _, names in groups if len(names) > 1)
     return ContractIdentifiabilityCertificate(
         features=tuple(features),

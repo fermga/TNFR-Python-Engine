@@ -22,17 +22,18 @@ else:
     TNFRGraph = Any
     from .definitions import Operator
 
+from ..config.operator_names import BIFURCATION_WINDOW, U2_DEBT_CAPACITY
 from ..constants.canonical import (
     GRAD_PHI_CANONICAL_THRESHOLD,
     K_PHI_CANONICAL_THRESHOLD,
 )
+from ..types import require_finite_real_scalar_epi
+from .grammar_debt import advance_debt
 from .grammar_telemetry import (
     warn_coherence_length_telemetry,
     warn_phase_curvature_telemetry,
     warn_phase_gradient_telemetry,
 )
-from ..config.operator_names import BIFURCATION_WINDOW, U2_DEBT_CAPACITY
-from .grammar_debt import advance_debt
 from .grammar_types import (
     BIFURCATION_HANDLERS,
     BIFURCATION_TRIGGERS,
@@ -58,7 +59,8 @@ class GrammarValidator:
     - Canonical invariants (AGENTS.md §3)
     - Formal contracts (AGENTS.md §4)
 
-    No organizational conventions are enforced.
+    Calibrated word policies do not replace live operator gates or trajectory
+    theorems. Their derivation limits are documented in the grammar scope note.
 
     Parameters
     ----------
@@ -111,9 +113,10 @@ class GrammarValidator:
         tuple[bool, str]
             (is_valid, message)
         """
-        if epi_initial > 0.0:
+        epi = require_finite_real_scalar_epi(epi_initial, "initial EPI")
+        if epi != 0.0:
             # Already initialized, no generator required
-            return True, "U1a: EPI>0, initiation not required"
+            return True, "U1a: EPI!=0, initiation not required"
 
         if not sequence:
             return False, "U1a violated: Empty sequence with EPI=0"
@@ -211,9 +214,7 @@ class GrammarValidator:
                     f"exceeds capacity {U2_DEBT_CAPACITY} at position {index}. "
                     "A later stabilizer cannot repair an over-capacity prefix."
                 )
-        destabilizers_present = [
-            name for name in names if name in DESTABILIZERS
-        ]
+        destabilizers_present = [name for name in names if name in DESTABILIZERS]
 
         if not destabilizers_present:
             # No declared destabilizer means that U2 debt is not opened. Other
@@ -221,9 +222,7 @@ class GrammarValidator:
             return True, "U2: not applicable (no destabilizers present)"
 
         # Check for stabilizers
-        stabilizers_present = [
-            name for name in names if name in STABILIZERS
-        ]
+        stabilizers_present = [name for name in names if name in STABILIZERS]
 
         if not stabilizers_present:
             return (

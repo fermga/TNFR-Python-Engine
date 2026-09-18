@@ -27,7 +27,6 @@ from ..constants.aliases import (
     ALIAS_THETA,
     ALIAS_VF,
 )
-from ..constants.canonical import UM_COMPAT_THRESHOLD as _UM_COMPAT_CANONICAL
 from ..constants.canonical import (
     COHERENCE_RETENTION,
     COUPLING_FINE,
@@ -38,8 +37,9 @@ from ..constants.canonical import (
     INV_PI,
     NUL_SCALE_FACTOR,
     SHA_VF_FACTOR,
-    VAL_SCALE_FACTOR,
 )
+from ..constants.canonical import UM_COMPAT_THRESHOLD as _UM_COMPAT_CANONICAL
+from ..constants.canonical import VAL_SCALE_FACTOR
 from ..errors import TNFRValueError
 from ..rng import make_rng, resolve_graph_seed, validate_graph_seed
 from ..types import EPIValue, Glyph, NodeId, TNFRGraph
@@ -69,10 +69,53 @@ from ._resonance_identity import (
 )
 from ._scale_operator_kernel import (
     compute_nul_edge_aware_scale as _compute_nul_edge_aware_scale,
+)
+from ._scale_operator_kernel import (
     compute_val_edge_aware_scale as _compute_val_edge_aware_scale,
+)
+from ._scale_operator_kernel import (
     edge_aware_intervention_event,
     nul_densification_event,
     propose_scale_operator,
+)
+from .event_remesh_causal_runtime import (
+    CausalEventRemeshCycleReceipt,
+    EventRemeshCycleExecutionSpec,
+    ExecutedEventRemeshCycleSequence,
+    execute_event_remesh_cycle_sequence,
+)
+from .event_remesh_runtime import (
+    EventRemeshCycleResult,
+    RemeshHistoryTransitionObservation,
+    WeightedEPIObservation,
+    execute_event_remesh_cycle,
+)
+from .event_remesh_sequence import (
+    EventRemeshCycleBoundaryObservation,
+    ObservedEventRemeshCycleSequence,
+    compose_event_remesh_cycle_observations,
+)
+from .event_runtime import (
+    ExecutedGlyphStage,
+    ExecutedNodalFlowInterval,
+    ExecutedOperatorEvent,
+    ExecutedPressureRefreshedFlowPartition,
+    ObservedRepresentedEPIScheduleComposition,
+    OperatorEventExecutionResult,
+    PhysicalEulerModalObservation,
+    PressureRefreshBoundaryObservation,
+    RepresentedEPIScheduleOperation,
+    execute_operator_event_schedule,
+)
+from .event_timing import (
+    OperatorEventRuntimeClockDiagnostic,
+    OperatorEventSchedule,
+    PhysicalFlowPartition,
+    ScheduledOperatorEvent,
+    StructuralFlowInterval,
+    build_operator_event_schedule,
+    build_physical_flow_partition,
+    diagnose_operator_event_runtime_clock,
 )
 from .factor_contracts import (
     GLYPH_FACTOR_SPECS,
@@ -86,52 +129,6 @@ from .factor_contracts import (
     validate_glyph_factor,
     validate_glyph_factors,
 )
-from .event_remesh_runtime import (
-    EventRemeshCycleResult,
-    RemeshHistoryTransitionObservation,
-    WeightedEPIObservation,
-    execute_event_remesh_cycle,
-)
-from .event_remesh_sequence import (
-    EventRemeshCycleBoundaryObservation,
-    ObservedEventRemeshCycleSequence,
-    compose_event_remesh_cycle_observations,
-)
-from .event_remesh_causal_runtime import (
-    CausalEventRemeshCycleReceipt,
-    EventRemeshCycleExecutionSpec,
-    ExecutedEventRemeshCycleSequence,
-    execute_event_remesh_cycle_sequence,
-)
-from .event_runtime import (
-    ExecutedGlyphStage,
-    ExecutedNodalFlowInterval,
-    ExecutedOperatorEvent,
-    ExecutedPressureRefreshedFlowPartition,
-    ObservedRepresentedEPIScheduleComposition,
-    PhysicalEulerModalObservation,
-    PressureRefreshBoundaryObservation,
-    RepresentedEPIScheduleOperation,
-    OperatorEventExecutionResult,
-    execute_operator_event_schedule,
-)
-from .nodal_remainder_runtime import (
-    NodalRemainderRuntimeBinding,
-    ExecutedNodalRemainderFlow,
-    ExecutedNodalRemainderEvent,
-    NodalRemainderEventExecution,
-    execute_nodal_remainder_event_schedule,
-)
-from .event_timing import (
-    OperatorEventRuntimeClockDiagnostic,
-    OperatorEventSchedule,
-    PhysicalFlowPartition,
-    ScheduledOperatorEvent,
-    StructuralFlowInterval,
-    build_physical_flow_partition,
-    build_operator_event_schedule,
-    diagnose_operator_event_runtime_clock,
-)
 from .jitter import (
     _JITTER_PROGRESS_KEY,
     JitterCache,
@@ -139,6 +136,13 @@ from .jitter import (
     get_jitter_manager,
     random_jitter,
     reset_jitter_manager,
+)
+from .nodal_remainder_runtime import (
+    ExecutedNodalRemainderEvent,
+    ExecutedNodalRemainderFlow,
+    NodalRemainderEventExecution,
+    NodalRemainderRuntimeBinding,
+    execute_nodal_remainder_event_schedule,
 )
 from .registry import OPERATORS, discover_operators, get_operator_class
 from .remesh import (
@@ -178,6 +182,10 @@ GlyphFactors = dict[str, Any]
 GlyphOperation = Callable[["NodeProtocol", GlyphFactors], None]
 
 from .grammar import apply_glyph_with_grammar  # noqa: E402
+from .grammar_evidence import (
+    StructuralGrammarEvidence,
+    assess_structural_grammar_evidence,
+)
 from .grammar_observations import GrammarObservation, observe_grammar
 from .grammar_u6 import (
     StructuralPotentialConfinementObservation,
@@ -196,16 +204,16 @@ from .pattern_detection import (  # noqa: E402
     analyze_sequence,
     detect_pattern,
 )
-from .word_execution import (  # noqa: E402
-    preflight_network_mutation_sequence,
-    run_network_sequence,
-)
 from .self_organization_selection import (
     EligibleSelfOrganizationDispatch,
     SelfOrganizationCandidate,
     SelfOrganizationEligibility,
     execute_eligible_self_organization_stage,
     observe_self_organization_eligibility,
+)
+from .word_execution import (  # noqa: E402
+    preflight_network_mutation_sequence,
+    run_network_sequence,
 )
 
 __all__ = [
@@ -266,6 +274,8 @@ __all__ = [
     "apply_glyph_with_grammar",
     "GrammarObservation",
     "observe_grammar",
+    "StructuralGrammarEvidence",
+    "assess_structural_grammar_evidence",
     "StructuralPotentialConfinementObservation",
     "observe_structural_potential_confinement",
     "apply_network_remesh",
@@ -529,9 +539,7 @@ def get_neighbor_epi(node: NodeProtocol) -> tuple[list[NodeProtocol], EPIValue]:
     else:
         try:
             epi_bar = neighbor_epi_unweighted_mean(
-                _finite_real_epi(
-                    v.EPI, "neighbor EPI state", operator="Reception"
-                )
+                _finite_real_epi(v.EPI, "neighbor EPI state", operator="Reception")
                 for v in neigh
             )
         except StatisticsError:
@@ -755,9 +763,7 @@ def _op_IL(node: NodeProtocol, gf: GlyphFactors) -> None:  # IL — Coherence
     factor = get_factor(gf, "IL_dnfr_factor", COHERENCE_RETENTION)
     from ._coherence_stage_kernel import propose_coherence_pressure
 
-    dnfr = _finite_operator_scalar(
-        getattr(node, "dnfr", 0.0), "IL DeltaNFR state"
-    )
+    dnfr = _finite_operator_scalar(getattr(node, "dnfr", 0.0), "IL DeltaNFR state")
     _before, proposal = propose_coherence_pressure(dnfr, factor)
     node.dnfr = proposal
 
@@ -798,9 +804,7 @@ def _op_OZ(node: NodeProtocol, gf: GlyphFactors) -> None:  # OZ — Dissonance
             jitter = _finite_operator_scalar(
                 random_jitter(node, sigma), "OZ noise sample"
             )
-            proposal = _finite_operator_scalar(
-                dnfr + jitter, "OZ DeltaNFR proposal"
-            )
+            proposal = _finite_operator_scalar(dnfr + jitter, "OZ DeltaNFR proposal")
             node.dnfr = proposal
     else:
         factor = get_factor(gf, "OZ_dnfr_factor", DISSONANCE_AMPLIFICATION)
@@ -883,9 +887,7 @@ def _runtime_u3_neighbors(
     if NodeNX is None:
         raise ImportError("NodeNX is unavailable")
     runtime_neighbors = tuple(
-        neighbor
-        if hasattr(neighbor, "theta")
-        else NodeNX.from_graph(node.G, neighbor)
+        neighbor if hasattr(neighbor, "theta") else NodeNX.from_graph(node.G, neighbor)
         for neighbor in selection.neighbors
     )
     return selection, runtime_neighbors
@@ -929,9 +931,7 @@ def compute_consensus_phase(phases: list[float]) -> float:
     return _kernel_mean(phases)
 
 
-def _op_um_protocol_fallback(
-    node: NodeProtocol, gf: GlyphFactors
-) -> None:
+def _op_um_protocol_fallback(node: NodeProtocol, gf: GlyphFactors) -> None:
     """Preserve the phase-only behavior of graphless NodeProtocol objects."""
 
     theta_push = get_factor(gf, "UM_theta_push", EN_MIX_FACTOR)
@@ -946,8 +946,7 @@ def _op_um_protocol_fallback(
     target_phase = _finite_operator_scalar(
         (
             selection.target_phase
-            + theta_push
-            * angle_diff(consensus, selection.target_phase)
+            + theta_push * angle_diff(consensus, selection.target_phase)
         )
         % math.tau,
         "UM target phase proposal",
@@ -955,11 +954,7 @@ def _op_um_protocol_fallback(
     if bidirectional:
         neighbor_phases = tuple(
             _finite_operator_scalar(
-                (
-                    phase
-                    + theta_push * angle_diff(consensus, phase)
-                )
-                % math.tau,
+                (phase + theta_push * angle_diff(consensus, phase)) % math.tau,
                 "UM neighbor phase proposal",
             )
             for phase in selection.phases
@@ -968,9 +963,7 @@ def _op_um_protocol_fallback(
         neighbor_phases = ()
 
     node.theta = target_phase
-    for neighbor, phase in zip(
-        neighbors, neighbor_phases, strict=True
-    ):
+    for neighbor, phase in zip(neighbors, neighbor_phases, strict=True):
         neighbor.theta = phase
 
 
@@ -989,16 +982,11 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM - Coupling
         return
 
     from ._coupling_stage_kernel import propose_coupling_stage
-    from .network_stage import (
-        GraphTransactionSnapshot,
-        _commit_coupling_structure,
-    )
+    from .network_stage import GraphTransactionSnapshot, _commit_coupling_structure
 
     transaction = GraphTransactionSnapshot(node.G)
     try:
-        functional_links = bool(
-            node.graph.get("UM_FUNCTIONAL_LINKS", True)
-        )
+        functional_links = bool(node.graph.get("UM_FUNCTIONAL_LINKS", True))
         # Direct and staged public entry points both validate the graph seed
         # before dispatch, even when links are disabled. Keep that shared
         # argument contract here for standalone calls of this private helper.
@@ -1112,9 +1100,7 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
             f"Resonance factor gate rejected the proposed propagation: {exc}",
             context={"operator": "Resonance", "failed_condition": "factor_domain"},
         ) from exc
-    invalid_factors = validate_resonance_runtime_factors(
-        diff, vf_boost, phase_coupling
-    )
+    invalid_factors = validate_resonance_runtime_factors(diff, vf_boost, phase_coupling)
     if invalid_factors:
         raise TNFRValueError(
             "Resonance factor gate rejected the proposed propagation: "
@@ -1458,9 +1444,7 @@ def _set_epi_with_boundary_check(
     >>> float(node.EPI)
     1.0
     """
-    proposal = _validated_epi_assignment_value(
-        node, new_epi, apply_clip=apply_clip
-    )
+    proposal = _validated_epi_assignment_value(node, new_epi, apply_clip=apply_clip)
     node.EPI = proposal
 
 
@@ -1481,18 +1465,13 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
             dnfr_before=node.dnfr if glyph is Glyph.NUL else None,
             configured_densification_factor=(
                 gf.get("NUL_densification_factor")
-                if glyph is Glyph.NUL
-                and "NUL_densification_factor" in gf
+                if glyph is Glyph.NUL and "NUL_densification_factor" in gf
                 else None
             ),
             edge_aware_enabled=edge_aware_enabled,
             epi_before=node.EPI if edge_aware_enabled else None,
-            epi_min=node.graph.get(
-                "EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)
-            ),
-            epi_max=node.graph.get(
-                "EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)
-            ),
+            epi_min=node.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)),
+            epi_max=node.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)),
             epsilon=node.graph.get(
                 "EDGE_AWARE_EPSILON",
                 DEFAULTS.get("EDGE_AWARE_EPSILON", 1e-12),
@@ -1512,16 +1491,12 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
             )
         if proposal.write_epi:
             assert proposal.epi_after is not None
-            _set_epi_with_boundary_check(
-                node, proposal.epi_after, apply_clip=False
-            )
+            _set_epi_with_boundary_check(node, proposal.epi_after, apply_clip=False)
             if proposal.edge_aware_adapted:
                 assert proposal.epi_before is not None
                 assert proposal.effective_epi_scale is not None
                 node.graph.setdefault("edge_aware_interventions", []).append(
-                    edge_aware_intervention_event(
-                        proposal, getattr(node, "n", None)
-                    )
+                    edge_aware_intervention_event(proposal, getattr(node, "n", None))
                 )
 
     _op.__doc__ = """{} glyph proposes a target-local capacity scale.
@@ -1684,9 +1659,7 @@ def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
         proposal = propose_mutation_stage(
             node.theta,
             node.dnfr,
-            theta_shift_factor=get_factor(
-                gf, "ZHIR_theta_shift_factor", INV_PI
-            ),
+            theta_shift_factor=get_factor(gf, "ZHIR_theta_shift_factor", INV_PI),
         )
 
     node.theta = proposal.theta_after
@@ -1741,9 +1714,7 @@ def _op_NAV(node: NodeProtocol, gf: GlyphFactors) -> None:  # NAV — Transition
             jitter = _finite_operator_scalar(
                 random_jitter(node, j), "NAV jitter sample"
             )
-            proposal = _finite_operator_scalar(
-                base + jitter, "NAV DeltaNFR proposal"
-            )
+            proposal = _finite_operator_scalar(base + jitter, "NAV DeltaNFR proposal")
             if proposal == dnfr:
                 raise TNFRValueError(
                     "NAV must change DeltaNFR",
@@ -1752,9 +1723,7 @@ def _op_NAV(node: NodeProtocol, gf: GlyphFactors) -> None:  # NAV — Transition
             node.dnfr = proposal
     else:
         jitter = j * (1 if base >= 0 else -1)
-        proposal = _finite_operator_scalar(
-            base + jitter, "NAV DeltaNFR proposal"
-        )
+        proposal = _finite_operator_scalar(base + jitter, "NAV DeltaNFR proposal")
         if proposal == dnfr:
             raise TNFRValueError(
                 "NAV must change DeltaNFR",
@@ -1844,9 +1813,7 @@ def _validated_execution_window(subject: Any, window: int | None) -> int:
     return validate_window(window)
 
 
-def _validate_u3_graph_application(
-    G: TNFRGraph, node: NodeId, glyph: Glyph
-) -> None:
+def _validate_u3_graph_application(G: TNFRGraph, node: NodeId, glyph: Glyph) -> None:
     """Reject an inadmissible concrete UM/RA request before NodeNX caching."""
     if glyph not in (Glyph.UM, Glyph.RA):
         return
@@ -1915,12 +1882,11 @@ def _apply_glyph_obj_impl(
             apply_reception_read_snapshot,
         )
 
-        if g is not Glyph.EN or type(
-            _prepared_operator_state
-        ) is not ReceptionReadSnapshot:
-            raise TypeError(
-                "prepared operator state is valid only for Reception"
-            )
+        if (
+            g is not Glyph.EN
+            or type(_prepared_operator_state) is not ReceptionReadSnapshot
+        ):
+            raise TypeError("prepared operator state is valid only for Reception")
         apply_reception_read_snapshot(
             node,
             get_factor(gf, "EN_mix", EN_MIX_FACTOR),

@@ -14,6 +14,7 @@ import math
 from numbers import Real
 from typing import Any, Iterable
 
+from .._exact_time import finite_represented_real
 from ..mathematics.unified_numerical import kahan_sum_nd, np
 
 # Import TNFR aliases
@@ -67,9 +68,7 @@ def finite_real_series(
     try:
         raw = np.asarray(values, dtype=object)
     except (TypeError, ValueError) as exc:
-        raise ValueError(
-            f"{name} must be a numeric one-dimensional series"
-        ) from exc
+        raise ValueError(f"{name} must be a numeric one-dimensional series") from exc
     if raw.ndim != 1:
         raise ValueError(f"{name} must be a one-dimensional series")
     if nonempty and raw.size == 0:
@@ -112,20 +111,29 @@ def wrap_angle(angle: float) -> float:
 
 
 def get_phase(G: Any, node: Any) -> float:
-    """Retrieve phase value φ for *node* (radians in [0, 2π))."""
+    """Read the first present phase alias as a finite represented real.
+
+    A missing channel retains the zero convention. An invalid authoritative
+    alias raises instead of being coerced or replaced by a later alias.
+    """
     node_data = G.nodes[node]
     for alias in ALIAS_THETA:
         if alias in node_data:
-            return float(node_data[alias])
+            return finite_represented_real(node_data[alias], f"phase[{node!r}]")[0]
     return 0.0
 
 
 def get_dnfr(G: Any, node: Any) -> float:
-    """Retrieve ΔNFR value for *node*."""
+    """Read authoritative pressure under the finite binary64 scalar contract.
+
+    Missing pressure means zero. A present invalid alias is rejected before
+    coercion, including logical/textual values and nonzero underflow; it is
+    never replaced by a valid secondary alias.
+    """
     node_data = G.nodes[node]
     for alias in ALIAS_DNFR:
         if alias in node_data:
-            return float(node_data[alias])
+            return finite_represented_real(node_data[alias], f"pressure[{node!r}]")[0]
     return 0.0
 
 

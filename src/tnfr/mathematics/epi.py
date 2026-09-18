@@ -117,7 +117,12 @@ class _EPIValidators:
 
 @dataclass(frozen=True)
 class BEPIElement(_EPIValidators):
-    r"""Concrete :math:`C^0([0,1]) \oplus \ell^2` element with TNFR operations."""
+    r"""Finite sampled representation for :math:`C^0([0,1]) \oplus \ell^2`.
+
+    Stored arrays do not specify arbitrary infinite-dimensional elements.
+    A richer storage type alone supplies neither a nodal evolution law nor
+    evidence that scalar EPI is insufficient for a declared model.
+    """
 
     f_continuous: Sequence[complex] | np.ndarray
     a_discrete: Sequence[complex] | np.ndarray
@@ -164,7 +169,11 @@ class BEPIElement(_EPIValidators):
             )
 
     def direct_sum(self, other: BEPIElement) -> BEPIElement:
-        """Return the algebraic direct sum ``self ⊕ other``."""
+        """Add aligned component arrays without enlarging their dimension.
+
+        The historical method name is retained; this is vector addition
+        within the represented space, not construction of a larger space.
+        """
 
         self._assert_compatible(other)
         return BEPIElement(
@@ -211,7 +220,10 @@ class BEPIElement(_EPIValidators):
         *,
         spectral_transform: Callable[[np.ndarray], np.ndarray] | None = None,
     ) -> BEPIElement:
-        """Compose the element with linear transforms on both components."""
+        """Apply supplied shape-preserving transforms to both components.
+
+        Linearity of a supplied callable is not required or verified.
+        """
 
         new_f = self._apply_transform(transform, self.f_continuous)
         spectral_fn = spectral_transform or transform
@@ -273,10 +285,10 @@ class BEPIElement(_EPIValidators):
         return self._max_magnitude()
 
     def __getstate__(self) -> dict[str, tuple[complex, ...] | tuple[float, ...]]:
-        """Serialize BEPIElement to a JSON-compatible dict with real/imag pairs.
+        """Return pickle-style component state, including native complex values.
 
-        This method enables pickle, JSON, and YAML serialization while preserving
-        TNFR invariant #1 (Nodal Equation Integrity, EPI as coherent form) and #3 (Multi-Scale Fractality).
+        JSON real/imag encoding is provided by the helpers in ``tnfr.types``.
+        A storage round-trip does not certify dynamics or fractal identity.
         """
         # Convert numpy arrays to lists for serialization
         continuous = self.f_continuous.tolist()

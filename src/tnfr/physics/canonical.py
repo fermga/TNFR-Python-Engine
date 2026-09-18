@@ -12,14 +12,12 @@ All fields are read-only telemetry that never mutate EPI.
 
 PRECISION MODE INTEGRATION (Nov 2025):
 --------------------------------------
-Fields respect global precision_mode from tnfr.config:
-- "standard": float64, standard algorithms (default, production)
-- "high": float64 + refined quadrature, tighter tolerances
-- "research": longdouble where available, publication-grade numerics
-
-**Physics Invariant**: Precision changes affect ONLY numeric details,
-NEVER grammar (U1-U6), operator contracts, or coherence semantics.
-U6 decisions must be invariant across precision modes.
+Fields record global precision_mode from tnfr.config. Some accumulators use
+longdouble in research mode where available, but circular-curvature components
+always use explicitly materialized NumPy binary64 trigonometry. Exactness there
+concerns the component sums only; the angle and wrapped curvature remain
+approximations. Changing precision does not change a policy definition, but a
+finite decision near a threshold can change with numerical error.
 
 CACHE INVALIDATION (root cause corrected + fixed, May 2026):
 ------------------------------------------------------------
@@ -66,6 +64,14 @@ from ._edge_semantics import (
     has_nonpositive_edge_length,
     structural_path_weight,
 )
+from .phase_curvature import (
+    PhaseCurvatureNodeObservation,
+    PhaseCurvatureObservation,
+    UndefinedPhaseCurvatureError,
+    _materialize_phases,
+    _observe_neighborhoods,
+    _require_defined_curvature,
+)
 
 try:
     import networkx as nx
@@ -91,7 +97,6 @@ except ImportError:
 try:
     from .vectorized_ops import (
         compute_coherence_length_vectorized,
-        compute_phase_gradient_and_curvature_vectorized,
         compute_phi_s_exact_vectorized,
         compute_phi_s_landmarks_vectorized,
     )
@@ -200,9 +205,10 @@ def _get_precision_dtype() -> type:
 # Centralised helpers — single source of truth in _helpers.py
 from ._helpers import compensated_sum  # noqa: E402
 from ._helpers import get_dnfr as _get_dnfr  # noqa: E402
-from ._helpers import get_phase as _get_phase  # noqa: E402
-from ._helpers import neighborhood_arrays  # noqa: E402
-from ._helpers import wrap_angle as _wrap_angle  # noqa: E402
+from ._helpers import get_phase as _get_phase  # noqa: E402,F401 - compatibility import
+from ._helpers import (  # noqa: E402,F401 - compatibility import
+    wrap_angle as _wrap_angle,
+)
 
 _PHI_S_DISTANCE_CACHE: dict[tuple, dict[Any, dict[Any, float]]] = {}
 
@@ -218,10 +224,6 @@ def _graph_topology_hash(G: Any) -> int:
     return hash(_compute_dependency_hash(G, {"graph_topology"}))
 
 
-@cache_tnfr_computation(
-    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
-    dependencies={"graph_topology", "node_dnfr", "precision_mode"},
-)
 def compute_structural_potential(
     G: Any,
     alpha: float = 2.0,
@@ -281,11 +283,50 @@ def compute_structural_potential(
     -----
     This read-only computation does not modify the graph or consume random
     state. Exactness means exact graph distances with floating-point sums.
+    Authoritative pressure aliases must be finite represented real scalars;
+    validation precedes every cache lookup. Returned maps are detached from
+    the cache and may be modified by the caller.
     """
     if nx is None:
         raise RuntimeError("networkx required for structural potential computation")
-    nodes = list(G.nodes())
-    delta_nfr = {node: _get_dnfr(G, node) for node in nodes}
+    nodes = tuple(G.nodes())
+    pressure = tuple(_get_dnfr(G, node) for node in nodes)
+    return dict(
+        _structural_potential_cached(
+            G,
+            nodes,
+            pressure,
+            bool(_VECTORIZATION_AVAILABLE),
+            alpha,
+            landmark_ratio=landmark_ratio,
+            validate=validate,
+            error_epsilon=error_epsilon,
+            max_refinements=max_refinements,
+            sample_size=sample_size,
+        )
+    )
+
+
+@cache_tnfr_computation(
+    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    dependencies={"graph_topology", "node_dnfr", "precision_mode"},
+)
+def _structural_potential_cached(
+    G,
+    node_order,
+    pressure_values,
+    vectorized,
+    alpha,
+    *,
+    landmark_ratio,
+    validate,
+    error_epsilon,
+    max_refinements,
+    sample_size,
+):
+    """Cache the potential from already admitted ordered pressure values."""
+    nodes = list(node_order)
+    delta_nfr = dict(zip(nodes, pressure_values))
     if landmark_ratio is None or not nodes:
         return _compute_phi_s_exact(G, nodes, delta_nfr, alpha)
 
@@ -307,11 +348,13 @@ def compute_structural_potential(
         potential = _compute_phi_s_exact(G, nodes, delta_nfr, alpha)
         if validate:
             _require_finite_exact_potential(potential)
-            potential.update({
-                "__phi_s_landmark_ratio__": ratio,
-                "__phi_s_rmae__": 0.0,
-                "__phi_s_fallback_exact__": 1.0,
-            })
+            potential.update(
+                {
+                    "__phi_s_landmark_ratio__": ratio,
+                    "__phi_s_rmae__": 0.0,
+                    "__phi_s_fallback_exact__": 1.0,
+                }
+            )
         return potential
 
     potential = _compute_phi_s_landmarks(G, nodes, delta_nfr, alpha, ratio)
@@ -326,7 +369,9 @@ def compute_structural_potential(
         if not all(math.isfinite(candidate[node]) for node in nodes):
             return math.inf
         error = math.fsum(abs(candidate[node] - exact[node]) for node in nodes)
-        return error / denominator if denominator else (0.0 if error == 0.0 else math.inf)
+        return (
+            error / denominator if denominator else (0.0 if error == 0.0 else math.inf)
+        )
 
     rmae = relative_error(potential)
     for _ in range(max_refinements):
@@ -338,11 +383,13 @@ def compute_structural_potential(
     fallback_exact = rmae > error_epsilon
     if fallback_exact:
         potential, rmae = exact, 0.0
-    potential.update({
-        "__phi_s_landmark_ratio__": ratio,
-        "__phi_s_rmae__": rmae,
-        "__phi_s_fallback_exact__": float(fallback_exact),
-    })
+    potential.update(
+        {
+            "__phi_s_landmark_ratio__": ratio,
+            "__phi_s_rmae__": rmae,
+            "__phi_s_fallback_exact__": float(fallback_exact),
+        }
+    )
     return potential
 
 
@@ -377,8 +424,7 @@ def _compute_phi_s_optimized(
     pressure; research mode retains the configured extended scalar dtype.
     """
     has_lengths = any(
-        "length" in data or "weight" in data
-        for _, _, data in G.edges(data=True)
+        "length" in data or "weight" in data for _, _, data in G.edges(data=True)
     )
     mode = get_precision_mode()
     dtype = _get_precision_dtype() if mode == "research" else float
@@ -412,9 +458,7 @@ def _landmark_distance_maps(
     if outward is None:
         path_weight = structural_path_weight(G)
         outward = {
-            node: nx.single_source_dijkstra_path_length(
-                G, node, weight=path_weight
-            )
+            node: nx.single_source_dijkstra_path_length(G, node, weight=path_weight)
             for node in landmarks
         }
         _PHI_S_DISTANCE_CACHE[outward_key] = outward
@@ -448,8 +492,14 @@ def _compute_phi_s_landmarks(
     landmarks, outward, inward = _landmark_distance_maps(G, nodes, landmark_ratio)
     if _VECTORIZATION_AVAILABLE:
         return compute_phi_s_landmarks_vectorized(
-            G, nodes, delta_nfr, alpha, landmarks, outward,
-            dtype=_get_precision_dtype(), reverse_landmark_distances=inward,
+            G,
+            nodes,
+            delta_nfr,
+            alpha,
+            landmarks,
+            outward,
+            dtype=_get_precision_dtype(),
+            reverse_landmark_distances=inward,
         )
     potential: dict[Any, float] = {}
     for source in nodes:
@@ -468,244 +518,123 @@ def _compute_phi_s_landmarks(
     return potential
 
 
-@cache_tnfr_computation(
-    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
-    dependencies={"graph_topology", "node_phase", "precision_mode"},
-)
-def compute_phase_gradient(G: Any) -> dict[Any, float]:
-    r"""Compute magnitude of discrete phase gradient |∇φ| per locus [CANONICAL].
+def observe_phase_curvature(G: Any) -> PhaseCurvatureObservation:
+    """Observe circular curvature without inventing a direction at cancellation.
 
-    |∇φ|(i) = mean_{j∈N(i)} |wrap(φ_j − φ_i)|
-
-    **Dual interpretation** (both consistent):
-
-    1. **As potential energy component** (variational formulation):
-       V(i) = ½[Φ_s² + |∇φ|² + K_φ²].  Here |∇φ| is a configuration
-       degree of freedom — the system evolves to minimise V, rolling
-       downhill toward |∇φ| = 0 (synchronisation).
-
-    2. **As local disorder metric** (telemetry):
-       High |∇φ| indicates poor local phase synchronisation and correlates
-       with bifurcation risk.  The system naturally minimises |∇φ| through
-       coherence (IL) attraction.
-
-    These are not contradictory: the potential well's minimum *is* the
-    synchronized state (|∇φ| = 0), and high |∇φ| = high potential energy
-    = high stress.
-
-    Telemetry uses π/16 ≈ 0.196 as a selected early-warning policy. It is
-    neither the Kuramoto critical coupling nor an exact phase-gradient bound.
-    The measured synchronization onset is ≈0.29 and σ-dependent. The exact
-    kinematic bound is |∇φ| ≤ π because this field averages wrapped angles.
+    The immutable evidence retains ordered phases, neighbors, materialized
+    binary64 components and their exact rational sums. A nonempty represented
+    joint-zero resultant has ``curvature=None``; isolates use a separate zero
+    convention. Neither small nonzero sums nor represented cancellation prove
+    a corresponding exact-real trigonometric statement. See the result's scope.
     """
-    grad, _ = _compute_phase_gradient_and_curvature(G)
-    return grad
+    return _phase_readout_bundle(G)[0]
+
+
+def _phase_readout_bundle(G):
+    # Validate before entering the cache: raw invalid aliases must not be
+    # hidden by a dependency hash or by a previously computed valid result.
+    nodes = tuple(G.nodes())
+    neighbors = tuple(tuple(G.neighbors(node)) for node in nodes)
+    phases = _materialize_phases(
+        next(
+            (G.nodes[node][alias] for alias in ALIAS_THETA if alias in G.nodes[node]),
+            0.0,
+        )
+        for node in nodes
+    )
+    observation = _phase_readout_cached(
+        G, nodes, neighbors, phases, get_precision_mode()
+    )
+    # Numeric dictionaries are detached projections, never cached mutable
+    # evidence. A caller may edit its result without poisoning later readers.
+    return (
+        observation,
+        {row.node: row.gradient for row in observation.rows},
+        {row.node: row.curvature for row in observation.rows},
+    )
 
 
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
     dependencies={"graph_topology", "node_phase", "precision_mode"},
 )
+def _phase_readout_cached(G, nodes, neighbors, phases, precision_mode):
+    indices = {node: i for i, node in enumerate(nodes)}
+    return _observe_neighborhoods(
+        nodes,
+        tuple(tuple(indices[node] for node in row) for row in neighbors),
+        phases,
+        dtype=_get_precision_dtype(),
+        precision_mode=precision_mode,
+    )
+
+
+def compute_phase_gradient(G: Any) -> dict[Any, float]:
+    r"""Compute ``mean_j |wrap(phi_i - phi_j)|`` over unique neighbors.
+
+    The wrapped-angle bound is pi; a warning threshold is a separate policy.
+    This read-out remains available when a neighbor circular mean is undefined.
+    No monotonicity or evolution law follows from this diagnostic definition.
+    """
+    return _phase_readout_bundle(G)[1]
+
+
 def compute_phase_curvature(G: Any) -> dict[Any, float]:
-    """Compute discrete Laplacian curvature K_φ of the phase field [CANONICAL]."""
-    _, curvature = _compute_phase_gradient_and_curvature(G)
+    """Return wrapped deviation from the represented neighbor-phasor direction.
+
+    Raises ``UndefinedPhaseCurvatureError`` for an exact represented joint-zero
+    nonempty neighborhood. Use ``observe_phase_curvature`` to retain that
+    unavailable value with its evidence; it is not replaced by an angle mean.
+    Defined results retain the public node-to-float schema and pi bound.
+    """
+    observation, _, curvature = _phase_readout_bundle(G)
+    _require_defined_curvature(observation)
     return curvature
 
 
-@cache_tnfr_computation(
-    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
-    dependencies={"graph_topology", "node_phase", "precision_mode"},
-)
-def _compute_phase_gradient_and_curvature(
-    G: Any,
-) -> tuple[dict[Any, float], dict[Any, float]]:
-    """Compute |∇φ| and K_φ in a single neighborhood pass.
+def _compute_phase_gradient_and_curvature(G):
+    """Strict numeric adapter; the independent gradient does not call this."""
+    observation, gradient, curvature = _phase_readout_bundle(G)
+    _require_defined_curvature(observation)
+    return gradient, curvature
 
-    Precision-aware: uses dtype from get_precision_mode().
-    """
-    dtype = _get_precision_dtype()
 
-    nodes = list(G.nodes())
-    if not nodes:
-        return {}, {}
+def _estimate_coherence_length_autocorr(G: Any) -> float:
+    """Fit static uncentered coherence products using the shared distance contract."""
+    from ._coherence_fit import coherence_sources
 
-    # Vectorized path
-    if _VECTORIZATION_AVAILABLE:
-        try:
-            # Phase array
-            phases = np.array([_get_phase(G, node) for node in nodes], dtype=np.float64)
-            edge_src, edge_dst, degrees = neighborhood_arrays(G, nodes, dtype=dtype)
-
-            grad_arr, curv_arr = compute_phase_gradient_and_curvature_vectorized(
-                phases, edge_src, edge_dst, degrees, dtype=dtype
-            )
-
-            grad = {node: float(grad_arr[i]) for i, node in enumerate(nodes)}
-            curvature = {node: float(curv_arr[i]) for i, node in enumerate(nodes)}
-            return grad, curvature
-
-        except Exception:
-            # Fallback
-            pass
-
-    grad: dict[Any, float] = {}
-    curvature: dict[Any, float] = {}
-
-    phases = {node: _get_phase(G, node) for node in nodes}
-
-    for i in nodes:
-        neighbors = list(G.neighbors(i))
-        if not neighbors:
-            grad[i] = 0.0
-            curvature[i] = 0.0
-            continue
-
-        phi_i = dtype(phases[i])
-        neigh_phases = np.array([phases[j] for j in neighbors], dtype=dtype)
-
-        if neigh_phases.size == 0:
-            grad[i] = 0.0
-            curvature[i] = 0.0
-            continue
-
-        # Gradient: mean absolute wrapped difference
-        diffs = phi_i - neigh_phases
-        pi_typed = dtype(np.pi)
-        wrapped_diffs = (diffs + pi_typed) % (2 * pi_typed) - pi_typed
-        grad[i] = float(np.mean(np.abs(wrapped_diffs)))
-
-        # Curvature: deviation from circular mean of neighbor phases
-        cos_vals = np.cos(neigh_phases)
-        sin_vals = np.sin(neigh_phases)
-        mean_cos = dtype(np.mean(cos_vals))
-        mean_sin = dtype(np.mean(sin_vals))
-
-        mean_vec_length = math.hypot(mean_cos, mean_sin)
-        if mean_vec_length < 1e-9:
-            mean_phase = float(np.mean(neigh_phases))
-        else:
-            mean_phase = math.atan2(mean_sin, mean_cos)
-
-        curvature[i] = float(_wrap_angle(phi_i - mean_phase))
-
-    return grad, curvature
+    nodes = tuple(G.nodes())
+    sources = coherence_sources(nodes, get_precision_mode())
+    pressure = tuple(_get_dnfr(G, node) for node in nodes)
+    # The topology hash is order-independent, but a large-graph source sample
+    # is not. Bind both orders and the selected numerical path in this cache.
+    return _coherence_fit_cached(
+        G, nodes, sources, pressure, bool(_VECTORIZATION_AVAILABLE)
+    )
 
 
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
     dependencies={"graph_topology", "node_dnfr", "precision_mode"},
 )
-def _estimate_coherence_length_autocorr(G: Any) -> float:
-    """Coherence length ξ_C from the spatial-autocorrelation exp-decay fit.
+def _coherence_fit_cached(G, nodes, sources, pressure_values, vectorized):
+    from ._coherence_fit import fit_coherence_length
 
-    Precision-aware: uses dtype from get_precision_mode().  Returns ``nan`` when
-    the fit degenerates -- a uniform/coherent field (all per-node ``C ≈ 1`` ⇒
-    flat correlation ⇒ non-negative slope) or a graph too small for the fit;
-    the public :func:`estimate_coherence_length` then falls back to the emergent
-    spectral gap.
-    """
-    dtype = _get_precision_dtype()
-    mode = get_precision_mode()
-
-    # Adjust sampling based on precision mode
-    if mode == "research":
-        sample_threshold = 100  # More samples for research
-        min_samples = 30
-    elif mode == "high":
-        sample_threshold = 75
-        min_samples = 20
-    else:  # standard
-        sample_threshold = 50
-        min_samples = 20
-
-    nodes = list(G.nodes())
-    if len(nodes) < 3:
-        return float("nan")
-
-    # Vectorized path
-    if _VECTORIZATION_AVAILABLE:
-        try:
-            # Collect ΔNFR map
-            dnfr_map = {node: _get_dnfr(G, node) for node in nodes}
-
-            # Use vectorized implementation
-            # Note: This uses full distance matrix, so it's O(N^3) or O(N^2) depending on algo.
-            # For very large graphs, we might want to stick to the sampling approach below.
-            # Let's use a heuristic: if N < 1000, use vectorized.
-            if len(nodes) < 1000:
-                return compute_coherence_length_vectorized(
-                    G, nodes, dnfr_map, dtype=dtype
-                )
-        except Exception:
-            # Fallback to Python implementation
-            pass
-
-    # Compute the same static local coherence field as the vectorized path.
-    from ..metrics.common import structural_coherence
-
-    coherences = {}
-    for node in nodes:
-        dnfr = dtype(_get_dnfr(G, node))
-        coherences[node] = dtype(structural_coherence(dnfr, 0.0))
-
-    # Compute distance matrix (precision-aware sampling)
-    if len(nodes) <= sample_threshold:
-        distances = dict(nx.all_pairs_shortest_path_length(G))
-    else:
-        # Sample approach for large graphs
-        distances = {}
-        num_samples = max(min_samples, len(nodes) // 20)
-        sample_nodes = nodes[:: max(1, len(nodes) // num_samples)]
-        for node in sample_nodes:
-            distances[node] = dict(nx.single_source_shortest_path_length(G, node))
-
-    # Build distance-coherence correlation pairs
-    corr_pairs = []
-    for src in distances:
-        for dst, dist in distances[src].items():
-            if src != dst and dist > 0:
-                corr = coherences[src] * coherences[dst]
-                corr_pairs.append((dist, corr))
-
-    if len(corr_pairs) < 10:
-        return float("nan")
-
-    # Group by distance and compute mean correlation
-    distance_bins: dict[int, list[float]] = {}
-    for dist, corr in corr_pairs:
-        if dist not in distance_bins:
-            distance_bins[dist] = []
-        distance_bins[dist].append(corr)
-
-    dist_corr_pairs = [
-        (d, np.mean(corrs)) for d, corrs in distance_bins.items() if len(corrs) >= 2
-    ]
-
-    if len(dist_corr_pairs) < 3:
-        return float("nan")
-
-    # Fit exponential decay: C(r) ~ exp(-r/ξ_C)
-    dist_corr_pairs.sort()
-    distances_arr = np.array([d for d, _ in dist_corr_pairs])
-    corrs_arr = np.array([c for _, c in dist_corr_pairs])
-
-    # Avoid log of negative/zero values
-    positive_corrs = corrs_arr > 1e-9
-    if np.sum(positive_corrs) < 3:
-        return float("nan")
-
-    distances_fit = distances_arr[positive_corrs]
-    log_corrs_fit = np.log(corrs_arr[positive_corrs])
-
-    # Linear fit to log(C) vs r
-    try:
-        slope, _ = np.polyfit(distances_fit, log_corrs_fit, 1)
-        if slope >= 0:  # Should be negative for decay
-            return float("nan")
-        xi_c = -1.0 / slope
-        return float(xi_c) if xi_c > 0 else float("nan")
-    except np.linalg.LinAlgError:
-        return float("nan")
+    pressure = dict(zip(nodes, pressure_values))
+    if vectorized:
+        return compute_coherence_length_vectorized(
+            G,
+            list(nodes),
+            pressure,
+            dtype=_get_precision_dtype(),
+        )
+    return fit_coherence_length(
+        G,
+        nodes,
+        pressure,
+        sources=sources,
+        dtype=_get_precision_dtype(),
+    )
 
 
 def _spectral_gap_coherence_length(G: Any) -> float:
@@ -734,13 +663,18 @@ def _spectral_gap_coherence_length(G: Any) -> float:
 def estimate_coherence_length(G: Any) -> float:
     """Estimate state-dependent coherence length with a spectral fallback.
 
-    Primary: the exponential-decay fit ``C(r) ~ exp(-r/ξ_C)`` of the coherence
-    autocorrelation vs graph distance (:func:`_estimate_coherence_length_autocorr`).
+    Primary: the exponential-decay fit ``q(r) ~ a*exp(-r/ξ_C)``, where
+    ``q(r)=mean(C_i*C_j | d(i,j)=r)`` and ``C_i=1/(1+|ΔNFR_i|)``. This is an
+    uncentered static product with dEPI set to zero, not connected covariance.
+    Distances use explicit length, else weight, else unit length; parallel
+    edges use their minimum and directed graphs use outgoing paths.
     When that fit degenerates -- a uniformly coherent / near-equilibrium field
     (all per-node ``C ≈ 1`` ⇒ flat correlation ⇒ non-negative slope) or a graph
     too small -- fall back to the topology-only scale ``1/√λ₂`` on a valid
     connected graph. The returned provenance distinguishes the fit from this
-    fallback; the two are not asserted to be identical observables.
+    fallback; the fitted value has path-length units, while the fallback is a
+    dimensionless normalized-generator mode scale. They are not interchangeable
+    observables. Invalid edge lengths raise rather than selecting a fallback.
     """
     return estimate_coherence_length_with_provenance(G).value
 
@@ -749,29 +683,38 @@ def estimate_coherence_length_with_provenance(
     G: Any,
 ) -> CoherenceLengthEstimate:
     """Return ``ξ_C`` together with the fit/fallback method used."""
+    from ._coherence_fit import DISTANCE_DESCRIPTION, FIT_DESCRIPTION
+
     fit = _estimate_coherence_length_autocorr(G)
     if fit == fit and fit > 0.0:
         return CoherenceLengthEstimate(
-            float(fit), "autocorrelation_fit", True,
-            distance_weighting="graph shortest-path distance",
+            float(fit),
+            "autocorrelation_fit",
+            True,
+            distance_weighting=DISTANCE_DESCRIPTION
+            + "; fitted value in path-length units",
             sample_selection=_coherence_sample_selection(G),
-            fit_quality="negative slope; at least three positive distance bins",
+            fit_quality=FIT_DESCRIPTION,
             positive_mode_selection="not applicable",
             graph_regime=_coherence_graph_regime(G),
         )
     spectral = _spectral_gap_coherence_length(G)
     if spectral == spectral and spectral > 0.0:
         return CoherenceLengthEstimate(
-            float(spectral), "spectral_gap", False,
-            distance_weighting="not applicable",
+            float(spectral),
+            "spectral_gap",
+            False,
+            distance_weighting="not applicable; dimensionless normalized-generator mode scale",
             sample_selection="not applicable",
             fit_quality="autocorrelation fit unavailable",
             positive_mode_selection="smallest eigenvalue above 1e-9",
             graph_regime=_coherence_graph_regime(G),
         )
     return CoherenceLengthEstimate(
-        float("nan"), "unavailable", False,
-        distance_weighting="graph shortest-path distance",
+        float("nan"),
+        "unavailable",
+        False,
+        distance_weighting=DISTANCE_DESCRIPTION,
         sample_selection=_coherence_sample_selection(G),
         fit_quality="no admissible decay fit or positive symmetric mode",
         positive_mode_selection="smallest eigenvalue above 1e-9",
@@ -781,14 +724,11 @@ def estimate_coherence_length_with_provenance(
 
 def _coherence_sample_selection(G: Any) -> str:
     """Describe the active autocorrelation sampling policy."""
-    size = len(G)
-    if size < 1000 and _VECTORIZATION_AVAILABLE:
-        return "all unordered node pairs"
-    mode = get_precision_mode()
-    threshold = 100 if mode == "research" else 75 if mode == "high" else 50
-    return (
-        "all source nodes" if size <= threshold
-        else "deterministic evenly-spaced source-node sample"
+    from ._coherence_fit import coherence_sample_description, coherence_sources
+
+    nodes = tuple(G)
+    return coherence_sample_description(
+        G, nodes, coherence_sources(nodes, get_precision_mode())
     )
 
 
@@ -797,9 +737,7 @@ def _coherence_graph_regime(G: Any) -> str:
     directed = bool(G.is_directed())
     connected = False
     try:
-        connected = bool(
-            nx.is_weakly_connected(G) if directed else nx.is_connected(G)
-        )
+        connected = bool(nx.is_weakly_connected(G) if directed else nx.is_connected(G))
     except nx.NetworkXPointlessConcept:
         pass
     return (
@@ -810,7 +748,7 @@ def _coherence_graph_regime(G: Any) -> str:
 
 @dataclass(frozen=True)
 class CoherenceLengthEstimate:
-    """Coherence-length value with estimator provenance."""
+    """Fit length or distinct spectral scale, identified by method and units."""
 
     value: float
     method: str
@@ -826,6 +764,10 @@ __all__ = [
     "compute_structural_potential",
     "compute_phase_gradient",
     "compute_phase_curvature",
+    "observe_phase_curvature",
+    "PhaseCurvatureObservation",
+    "PhaseCurvatureNodeObservation",
+    "UndefinedPhaseCurvatureError",
     "estimate_coherence_length",
     "estimate_coherence_length_with_provenance",
     "CoherenceLengthEstimate",

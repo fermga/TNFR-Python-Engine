@@ -7,7 +7,7 @@ from types import MappingProxyType
 from typing import Any, Iterable, Mapping, Sequence
 
 from .._coherence_validation import validate_structural_coherence
-from ..alias import collect_attr, get_attr, multi_recompute_abs_max
+from ..alias import get_attr, multi_recompute_abs_max
 from ..constants import DEFAULTS
 from ..constants.aliases import ALIAS_D2EPI, ALIAS_DEPI, ALIAS_DNFR, ALIAS_VF
 from ..mathematics.unified_numerical import np
@@ -36,22 +36,20 @@ __all__ = (
     "_get_vf_dnfr_max",
 )
 
-# Canonical structural-equilibrium tolerances: the nodal-equation fixed point
-# dEPI/dt = vf*dNFR = 0. Sourced from the same DEFAULTS the per-node stability
-# tracker uses (tnfr.metrics.coherence._track_stability), so this module is the
-# single source of truth for the equilibrium criterion.
+# Default tolerances for the zero-pressure/zero-rate diagnostic, shared with
+# tnfr.metrics.coherence._track_stability. This is narrower than EPI stationarity:
+# zero capacity can give dEPI/dt = 0 even when pressure is nonzero.
 _EPS_DNFR_STABLE: float = float(DEFAULTS["EPS_DNFR_STABLE"])
 _EPS_DEPI_STABLE: float = float(DEFAULTS["EPS_DEPI_STABLE"])
 
 
 def _finite_scalar(value: float, *, name: str) -> float:
     """Normalize a finite real scalar while rejecting truth values."""
-    if isinstance(value, bool) or (
-        np is not None and isinstance(value, np.bool_)
-    ):
+    if isinstance(value, bool) or (np is not None and isinstance(value, np.bool_)):
         raise TypeError(f"{name} must be a finite real scalar, not bool")
-    if isinstance(value, (str, bytes)) or (
-        np is not None and not bool(np.isscalar(value))
+    if isinstance(value, (str, bytes, complex)) or (
+        np is not None
+        and (not bool(np.isscalar(value)) or bool(np.iscomplexobj(value)))
     ):
         raise TypeError(f"{name} must be a finite real scalar")
     try:
@@ -61,6 +59,20 @@ def _finite_scalar(value: float, *, name: str) -> float:
     if not math.isfinite(normalized):
         raise ValueError(f"{name} must be finite")
     return normalized
+
+
+def _stored_metric_values(
+    G: GraphLike, nodes: Iterable[Any], aliases: tuple[str, ...]
+) -> Iterable[Any]:
+    """Read authoritative aliases strictly, preserving missing-value zero.
+
+    Keep original scalar types for the consuming metric's domain validation.
+    A malformed first alias must not turn into a later value or default zero.
+    """
+    for node in nodes:
+        yield get_attr(
+            G.nodes[node], aliases, 0.0, strict=True, conv=lambda value: value
+        )
 
 
 def finite_mean_absolute(values: Iterable[float], *, name: str) -> float:
@@ -85,14 +97,33 @@ def finite_mean_absolute(values: Iterable[float], *, name: str) -> float:
     scale = max(magnitudes)
     if scale == 0.0:
         return 0.0
-    normalized_mean = math.fsum(value / scale for value in magnitudes) / len(
-        magnitudes
-    )
+    normalized_mean = math.fsum(value / scale for value in magnitudes) / len(magnitudes)
     result = scale * normalized_mean
     if not math.isfinite(result):
         raise ValueError(f"mean absolute {name} exceeds finite range")
     return result
 
+
+def _dispersion_coherence(values: Iterable[float]) -> float:
+    """Evaluate the auxiliary ``1 - std(p) / max(abs(p))`` read-out.
+
+    Normalize finite signed pressures before computing the population variance.
+    The normalized values are bounded by one, avoiding overflow and underflow
+    from squaring the original pressure scale. Network and neighborhood
+    wrappers share this arithmetic, independently of the available backend.
+    Empty and all-zero inputs retain the public value one.
+    """
+
+    pressures = tuple(_finite_scalar(value, name="dnfr") for value in values)
+    if not pressures:
+        return 1.0
+    scale = max(abs(value) for value in pressures)
+    if scale == 0.0:
+        return 1.0
+    normalized = tuple(value / scale for value in pressures)
+    mean = math.fsum(normalized) / len(normalized)
+    variance = math.fsum((value - mean) ** 2 for value in normalized) / len(normalized)
+    return clamp01(1.0 - math.sqrt(variance))
 
 
 def structural_coherence(dnfr: Any, depi: Any = 0.0) -> Any:
@@ -100,11 +131,16 @@ def structural_coherence(dnfr: Any, depi: Any = 0.0) -> Any:
 
     The single-node kernel used by the canonical network coherence
     :func:`compute_coherence`. It is the shared local coherence map used by
-    several TNFR domain models and is motivated by the nodal equation
-    :math:`\partial\mathrm{EPI}/\partial t = \nu_f\,\Delta\mathrm{NFR}`: at the
-    equilibrium fixed point (:math:`\Delta\mathrm{NFR}=0\Rightarrow d\mathrm{EPI}=0`)
-    it returns ``1`` and decays monotonically towards ``0`` under unbounded
-    reorganization pressure.
+    several TNFR domain models. It returns ``1`` when both arguments vanish
+    and decreases towards ``0`` as either magnitude grows without bound.
+    These properties motivate the chosen reciprocal map; the nodal equation
+    does not uniquely derive that map.
+
+    Both inputs are represented numerical coordinates in the engine's chosen
+    pressure and rate scales. Adding their magnitudes to ``1`` assumes those
+    scales; this is not a unit-independent dimensional identity. In particular,
+    changing the time coordinate while holding pressure fixed changes ``depi``
+    and generally changes this diagnostic.
 
     Domains differ in their state spaces, definitions of ``ΔNFR`` and available
     dynamics. Reusing this scalar map centralizes a convention; it does not
@@ -133,11 +169,11 @@ def structural_coherence(dnfr: Any, depi: Any = 0.0) -> Any:
                 raise ValueError(f"{name} must contain only finite values")
             arrays.append(normalized)
         try:
-            pressure, rate = np.broadcast_arrays(
-                np.abs(arrays[0]), np.abs(arrays[1])
-            )
+            pressure, rate = np.broadcast_arrays(np.abs(arrays[0]), np.abs(arrays[1]))
         except ValueError as exc:
-            raise ValueError("dnfr and depi arrays must be broadcast-compatible") from exc
+            raise ValueError(
+                "dnfr and depi arrays must be broadcast-compatible"
+            ) from exc
 
         with np.errstate(over="ignore", divide="ignore", invalid="ignore"):
             denominator = 1.0 + pressure + rate
@@ -173,13 +209,14 @@ def is_structural_equilibrium(
     eps_dnfr: float = _EPS_DNFR_STABLE,
     eps_depi: float = _EPS_DEPI_STABLE,
 ) -> bool:
-    r"""Canonical equilibrium fixed-point predicate of the nodal equation.
+    r"""Test the configured zero-pressure and zero-rate tolerance region.
 
-    Returns ``True`` iff the node sits at the structural-equilibrium fixed
-    point of :math:`\partial\mathrm{EPI}/\partial t = \nu_f\,\Delta\mathrm{NFR}`,
-    tested as ``|ΔNFR| <= eps_dnfr`` **and** ``|dEPI| <= eps_depi`` -- exactly
-    the per-node stability criterion used by the engine's coherence tracker
-    (:func:`tnfr.metrics.coherence._track_stability`).
+    Tests ``|ΔNFR| <= eps_dnfr`` **and** ``|dEPI| <= eps_depi`` -- the
+    per-node diagnostic used by the engine's coherence tracker
+    (:func:`tnfr.metrics.coherence._track_stability`). Positive tolerances do
+    not certify an exact fixed point. Zero capacity can freeze EPI under
+    nonzero pressure, outside this region; phase, capacity and graph evolution
+    are not tested. The arguments are read-outs, not a check of ``depi=nu_f*dnfr``.
 
     Graph, arithmetic and shell models can all apply this same numerical test
     to their own pressure fields. They then share a predicate and tolerance
@@ -201,10 +238,7 @@ def is_structural_equilibrium(
     depi_tolerance = _finite_scalar(eps_depi, name="eps_depi")
     if dnfr_tolerance < 0.0 or depi_tolerance < 0.0:
         raise ValueError("equilibrium tolerances must be non-negative")
-    return (
-        abs(dnfr_value) <= dnfr_tolerance
-        and abs(depi_value) <= depi_tolerance
-    )
+    return abs(dnfr_value) <= dnfr_tolerance and abs(depi_value) <= depi_tolerance
 
 
 def compute_coherence(
@@ -220,14 +254,23 @@ def compute_coherence(
     .. math::
         C(t) = \frac{1}{1 + \overline{|\Delta\mathrm{NFR}|} + \overline{|d\mathrm{EPI}|}}
 
-    where the bars denote network means. It is derived directly from the nodal
-    equation :math:`\partial\mathrm{EPI}/\partial t = \nu_f\,\Delta\mathrm{NFR}`:
-    structural equilibrium is :math:`\Delta\mathrm{NFR}\to 0` (no pressure) and
-    :math:`d\mathrm{EPI}\to 0` (no change), so :math:`C\to 1` at equilibrium and
-    :math:`C\to 0` under unbounded pressure/change. The map
-    :math:`[0,\infty)\to(0,1]` is monotone and, unlike the dispersion variant
-    :func:`coherence.compute_global_coherence`, is **not** scale-invariant: it
-    tracks the absolute magnitude of reorganization pressure.
+    where the bars denote network means of the stored pressure and rate
+    aliases. Missing aliases default to zero; malformed authoritative aliases
+    raise rather than fall through to later aliases or fabricate zero pressure.
+    This function does not refresh pressure or reconstruct ``dEPI`` from
+    capacity, so its inputs need not be contemporaneous samples of the nodal
+    equation.
+
+    The reciprocal diagnostic is a convention with chosen numerical pressure
+    and rate scales, not a unique consequence of the nodal equation. It is
+    **not** scale-invariant. For a nonempty graph, applying it to the mean
+    magnitudes is generally different from averaging nodal coherence: the
+    former is at most the latter, with equality exactly when the nodal sums
+    ``|ΔNFR| + |dEPI|`` are constant (in exact arithmetic). Nor is it coherence
+    of a projected parent state, where signed cancellation can occur.
+
+    An empty graph returns ``0`` by API convention, rather than the local
+    zero-input value ``1``.
     """
 
     count = G.number_of_nodes()
@@ -235,8 +278,8 @@ def compute_coherence(
         return (0.0, 0.0, 0.0) if return_means else 0.0
 
     nodes = G.nodes
-    dnfr_values = collect_attr(G, nodes, ALIAS_DNFR, 0.0)
-    depi_values = collect_attr(G, nodes, ALIAS_DEPI, 0.0)
+    dnfr_values = _stored_metric_values(G, nodes, ALIAS_DNFR)
+    depi_values = _stored_metric_values(G, nodes, ALIAS_DEPI)
 
     dnfr_mean = finite_mean_absolute(dnfr_values, name="dnfr")
     depi_mean = finite_mean_absolute(depi_values, name="depi")
@@ -284,7 +327,12 @@ def merge_and_normalize_weights(
 
 
 def compute_dnfr_accel_max(G: GraphLike) -> dict[str, float]:
-    """Compute absolute maxima of |ΔNFR| and |d²EPI/dt²|."""
+    """Read absolute maxima of stored pressure and EPI acceleration aliases.
+
+    No derivatives are recomputed. The default integrator records a difference
+    of consecutive nodal rates divided by its supplied time step; this is a
+    numerical read-out, not an independent second-order evolution law.
+    """
 
     return multi_recompute_abs_max(
         G, {"dnfr_max": ALIAS_DNFR, "accel_max": ALIAS_D2EPI}
@@ -320,18 +368,18 @@ def min_max_range(
 
 
 def _get_vf_dnfr_max(G: GraphLike) -> tuple[float, float]:
-    """Ensure and return absolute maxima for ``νf`` and ``ΔNFR``."""
+    """Refresh current absolute maxima and return nonzero Si divisors.
 
-    vfmax = G.graph.get("_vfmax")
-    dnfrmax = G.graph.get("_dnfrmax")
-    if vfmax is None or dnfrmax is None:
-        maxes = multi_recompute_abs_max(G, {"_vfmax": ALIAS_VF, "_dnfrmax": ALIAS_DNFR})
-        if vfmax is None:
-            vfmax = maxes["_vfmax"]
-        if dnfrmax is None:
-            dnfrmax = maxes["_dnfrmax"]
-        G.graph["_vfmax"] = vfmax
-        G.graph["_dnfrmax"] = dnfrmax
+    Direct node writes can bypass the alias setters' cache maintenance. The
+    Python Si path therefore refreshes these read-outs on every call, matching
+    the NumPy path. Cached zero remains zero; only its returned divisor is one.
+    """
+
+    maxes = multi_recompute_abs_max(G, {"_vfmax": ALIAS_VF, "_dnfrmax": ALIAS_DNFR})
+    vfmax = maxes.get("_vfmax", 0.0)
+    dnfrmax = maxes.get("_dnfrmax", 0.0)
+    G.graph["_vfmax"] = vfmax
+    G.graph["_dnfrmax"] = dnfrmax
     vfmax = 1.0 if vfmax == 0 else vfmax
     dnfrmax = 1.0 if dnfrmax == 0 else dnfrmax
     return float(vfmax), float(dnfrmax)

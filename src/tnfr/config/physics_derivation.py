@@ -22,12 +22,12 @@ form thresholds are additional operator contracts. The nodal derivative is
 well-defined at EPI=0 whenever νf and ΔNFR are finite; the generator requirement
 is not a consequence of a singular derivative at zero.
 
-Node Termination Conditions
-----------------------------
-A sequence terminates coherently when:
-1. ∂EPI/∂t → 0 (reorganization stabilizes)
-2. EPI remains stable (coherence sustained)
-3. No open transitions (operational closure)
+Endpoint Scope
+--------------
+Operational closure is membership in the supported endpoint-role set.
+It need not suppress the nodal rate or yield a stationary state. Even a rate
+tending to zero does not alone prove finite accumulated change; stability and
+convergence require separate trajectory assumptions.
 """
 
 from __future__ import annotations
@@ -99,7 +99,7 @@ def derive_bifurcation_window_from_physics(
         return 1  # compatibility floor, not a modal-stability certificate
     band = 1.0 / (math.pi + 1.0)  # the coherence-band fraction (π only)
     n = 1
-    while q ** n >= band and n < 64:
+    while q**n >= band and n < 64:
         n += 1
     return n
 

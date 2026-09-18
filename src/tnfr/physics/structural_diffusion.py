@@ -82,13 +82,13 @@ Hamiltonian), and physics.conservation (tetrad diagnostics).
 
 from __future__ import annotations
 
+import math
+import struct
+import sys
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from fractions import Fraction
 from functools import lru_cache
-import math
-import struct
-import sys
 from typing import Any
 
 from ..alias import get_attr
@@ -101,8 +101,8 @@ from ..utils._structural_signature import (
     structural_proof_signature,
 )
 from ._conductance import ConductanceSnapshot, read_conductance
+from ._exact_linear_algebra import exact_matrix_inverse as _exact_matrix_inverse
 from ._exact_linear_algebra import (
-    exact_matrix_inverse as _exact_matrix_inverse,
     exact_symmetric_semidefinite as _exact_symmetric_semidefinite,
 )
 from ._helpers import finite_real_scalar
@@ -302,9 +302,7 @@ def _fraction_sqrt_upper_float(value: Fraction) -> float:
     high_bits = 0x7FF0000000000000  # positive infinity
     while low_bits + 1 < high_bits:
         middle_bits = (low_bits + high_bits) // 2
-        candidate = struct.unpack(
-            ">d", middle_bits.to_bytes(8, byteorder="big")
-        )[0]
+        candidate = struct.unpack(">d", middle_bits.to_bytes(8, byteorder="big"))[0]
         if math.isinf(candidate) or Fraction.from_float(candidate) ** 2 >= value:
             high_bits = middle_bits
         else:
@@ -381,7 +379,7 @@ def structural_diffusion_operator(G: Any) -> tuple[list, Any]:
     probability, scale, _ = conductance.normalization()
     laplacian = conductance.dense(-probability)
     diagonal = np.diag_indices(len(conductance.nodes))
-    laplacian[diagonal] += (scale > 0.0)
+    laplacian[diagonal] += scale > 0.0
     return conductance.nodes, laplacian
 
 
@@ -451,9 +449,7 @@ def structural_field(G: Any, nodes: list | None = None) -> Any:
     if nodes is None:
         nodes = _ordered_nodes(G)
     raw = [
-        get_attr(
-            G.nodes[node], ALIAS_EPI, 0.0, conv=lambda value: value, strict=True
-        )
+        get_attr(G.nodes[node], ALIAS_EPI, 0.0, conv=lambda value: value, strict=True)
         for node in nodes
     ]
     return np.array([_finite_scalar_epi(value) for value in raw], dtype=float)
@@ -514,7 +510,9 @@ def _read_edge_flux(G: Any) -> tuple[ConductanceSnapshot, Any, Any]:
             difference = field[conductance.source] - field[conductance.target]
             flux = conductance.weight * difference
     except FloatingPointError as exc:
-        raise ValueError("Structural current is outside finite floating-point range") from exc
+        raise ValueError(
+            "Structural current is outside finite floating-point range"
+        ) from exc
     return conductance, difference, flux
 
 
@@ -578,9 +576,7 @@ class HeterogeneousDiffusionStabilityCertificate:
     exact_consensus_subspace_preservation: bool = False
     exact_uniform_fixed_point_preservation: bool = False
     exact_weighted_mean_preservation: bool = False
-    _proof_stamp: tuple[Any, ...] = field(
-        default=(), repr=False, compare=False
-    )
+    _proof_stamp: tuple[Any, ...] = field(default=(), repr=False, compare=False)
 
     def _proof_fields_are_intact(self) -> bool:
         """Detect ordinary construction, replacement, or payload mutation.
@@ -649,9 +645,7 @@ class SwitchingDiffusionStabilityCertificate:
     exact_common_uniform_fixed_point_preservation: bool = False
     exact_weighted_mean_preservation_by_regime: tuple[bool, ...] = ()
     exact_common_weighted_mean_preservation: bool = False
-    _proof_stamp: tuple[Any, ...] = field(
-        default=(), repr=False, compare=False
-    )
+    _proof_stamp: tuple[Any, ...] = field(default=(), repr=False, compare=False)
 
     @property
     def shares_common_metric(self) -> bool:
@@ -783,7 +777,8 @@ class EulerRelaxationWindowDiagnostic:
 
 
 def _connected_symmetric_transport(
-    G: Any, nodes: list | None = None,
+    G: Any,
+    nodes: list | None = None,
 ) -> tuple[ConductanceSnapshot, Any, Any]:
     """Return one validated positive, connected symmetric transport snapshot."""
     conductance = read_conductance(G, nodes, symmetric=True)
@@ -804,7 +799,9 @@ def _connected_symmetric_transport(
                 reached.add(target)
                 frontier.append(target)
     if len(reached) != len(conductance.nodes):
-        raise ValueError("Stability certification requires connected positive conductance")
+        raise ValueError(
+            "Stability certification requires connected positive conductance"
+        )
     return conductance, adjacency, strength
 
 
@@ -819,9 +816,7 @@ def _exact_projected_quadratic(
     # Column a is e_free[a] - (h_free[a]/h_pivot)e_pivot.  Choosing the
     # largest metric entry keeps every ratio at most one.  Expanding this
     # two-sparse basis avoids an O(n^4) generic matrix multiplication.
-    ratios = tuple(
-        metric_weights[index] / metric_weights[pivot] for index in free
-    )
+    ratios = tuple(metric_weights[index] / metric_weights[pivot] for index in free)
     return tuple(
         tuple(
             (
@@ -855,13 +850,9 @@ def _exact_inverse_norm_gap_lower_bound(
         return Fraction(0)
     inverse = _exact_matrix_inverse(dissipation)
     inverse_norm = max(
-        sum((abs(value) for value in row), Fraction(0))
-        for row in inverse
+        sum((abs(value) for value in row), Fraction(0)) for row in inverse
     )
-    metric_norm = max(
-        sum((abs(value) for value in row), Fraction(0))
-        for row in metric
-    )
+    metric_norm = max(sum((abs(value) for value in row), Fraction(0)) for row in metric)
     if inverse_norm <= 0 or metric_norm <= 0:
         return Fraction(0)
     lower = Fraction(1) / (inverse_norm * metric_norm)
@@ -908,9 +899,7 @@ def _exact_real_laplacian_gap_lower_bound(
     """
     dimension = len(laplacian)
     is_symmetric = all(
-        laplacian[i][j] == laplacian[j][i]
-        for i in range(dimension)
-        for j in range(i)
+        laplacian[i][j] == laplacian[j][i] for i in range(dimension) for j in range(i)
     )
     preserves_uniform_fixed_point = is_symmetric and all(
         sum(row, Fraction(0)) == 0 for row in laplacian
@@ -920,16 +909,11 @@ def _exact_real_laplacian_gap_lower_bound(
 
     unit_weights = (Fraction(1),) * dimension
     identity = tuple(
-        tuple(Fraction(i == j) for j in range(dimension))
-        for i in range(dimension)
+        tuple(Fraction(i == j) for j in range(dimension)) for i in range(dimension)
     )
-    restricted_laplacian = _exact_projected_quadratic(
-        laplacian, unit_weights
-    )
+    restricted_laplacian = _exact_projected_quadratic(laplacian, unit_weights)
     restricted_identity = _exact_projected_quadratic(identity, unit_weights)
-    gap = _exact_inverse_norm_gap_lower_bound(
-        restricted_laplacian, restricted_identity
-    )
+    gap = _exact_inverse_norm_gap_lower_bound(restricted_laplacian, restricted_identity)
     return gap, True
 
 
@@ -942,14 +926,17 @@ def _exact_real_dirichlet_energy(
         Fraction.from_float(float(value))
         for value in np.asarray(field_values, dtype=float)
     )
-    return sum(
-        (
-            exact_field[i] * laplacian[i][j] * exact_field[j]
-            for i in range(len(exact_field))
-            for j in range(len(exact_field))
-        ),
-        Fraction(0),
-    ) / 2
+    return (
+        sum(
+            (
+                exact_field[i] * laplacian[i][j] * exact_field[j]
+                for i in range(len(exact_field))
+                for j in range(len(exact_field))
+            ),
+            Fraction(0),
+        )
+        / 2
+    )
 
 
 @lru_cache(maxsize=128)
@@ -967,9 +954,7 @@ def _exact_flow_gap_from_rationals(
     preserves_consensus_subspace = all(
         value == mapped_consensus[0] for value in mapped_consensus[1:]
     )
-    preserves_uniform_fixed_points = all(
-        value == 0 for value in mapped_consensus
-    )
+    preserves_uniform_fixed_points = all(value == 0 for value in mapped_consensus)
     weighted_generator_row = tuple(
         sum(
             (metric[i] * generator[i][j] for i in range(len(metric))),
@@ -1002,20 +987,13 @@ def _exact_flow_gap_from_rationals(
         for i in range(len(metric))
     )
     metric_matrix = tuple(
-        tuple(
-            metric[i] if i == j else Fraction(0)
-            for j in range(len(metric))
-        )
+        tuple(metric[i] if i == j else Fraction(0) for j in range(len(metric)))
         for i in range(len(metric))
     )
-    restricted_dissipation = _exact_projected_quadratic(
-        symmetric_dissipation, metric
-    )
+    restricted_dissipation = _exact_projected_quadratic(symmetric_dissipation, metric)
     restricted_metric = _exact_projected_quadratic(metric_matrix, metric)
 
-    gap = _exact_inverse_norm_gap_lower_bound(
-        restricted_dissipation, restricted_metric
-    )
+    gap = _exact_inverse_norm_gap_lower_bound(restricted_dissipation, restricted_metric)
     return (
         gap,
         preserves_weighted_mean,
@@ -1050,12 +1028,9 @@ def _exact_flow_gap_lower_bound(
         for row in np.asarray(laplacian, dtype=float)
     )
     exact_mobility = tuple(
-        Fraction.from_float(float(value))
-        for value in np.asarray(mobility, dtype=float)
+        Fraction.from_float(float(value)) for value in np.asarray(mobility, dtype=float)
     )
-    return _exact_flow_gap_from_rationals(
-        exact_laplacian, exact_mobility, metric
-    )
+    return _exact_flow_gap_from_rationals(exact_laplacian, exact_mobility, metric)
 
 
 def _exact_represented_flow_derivative_is_zero(
@@ -1077,10 +1052,7 @@ def _exact_represented_flow_derivative_is_zero(
     return all(
         exact_mobility[i]
         * sum(
-            (
-                exact_laplacian[i][j] * exact_field[j]
-                for j in range(len(exact_field))
-            ),
+            (exact_laplacian[i][j] * exact_field[j] for j in range(len(exact_field))),
             Fraction(0),
         )
         == 0
@@ -1097,9 +1069,7 @@ def _float_flow_quotient_gap(
     """Estimate the actual flow quotient gap in the displayed metric."""
     dimension = len(metric_weights)
     pivot = int(np.argmax(metric_weights))
-    free = np.array(
-        [index for index in range(dimension) if index != pivot], dtype=int
-    )
+    free = np.array([index for index in range(dimension) if index != pivot], dtype=int)
     basis = np.zeros((dimension, dimension - 1), dtype=float)
     basis[pivot, :] = -metric_weights[free] / metric_weights[pivot]
     basis[free, np.arange(dimension - 1)] = 1.0
@@ -1108,8 +1078,7 @@ def _float_flow_quotient_gap(
     # these binary64 operations can change the diagnostic by one ulp.
     weighted_mobility = metric_weights * (frequency / strength)
     symmetric_dissipation = 0.5 * (
-        weighted_mobility[:, None] * laplacian
-        + laplacian * weighted_mobility[None, :]
+        weighted_mobility[:, None] * laplacian + laplacian * weighted_mobility[None, :]
     )
     restricted_dissipation = basis.T @ symmetric_dissipation @ basis
     restricted_metric = basis.T @ (metric_weights[:, None] * basis)
@@ -1144,10 +1113,7 @@ def _aligned_frequency_bound(values: Any, nodes: list, name: str) -> Any:
             unconverted = np.asarray(values, dtype=object)
         except (TypeError, ValueError) as exc:
             raise ValueError(f"{name} must be scalar or node-aligned") from exc
-        if any(
-            isinstance(value, (bool, np.bool_))
-            for value in unconverted.flat
-        ):
+        if any(isinstance(value, (bool, np.bool_)) for value in unconverted.flat):
             raise ValueError(f"{name} must contain numeric values, not booleans")
         try:
             result = np.asarray(values, dtype=float)
@@ -1193,12 +1159,18 @@ def compute_diffusion_energy(G: Any) -> DiffusionEnergyBalance:
             # overflow; a BLAS dot product may bypass these floating exceptions.
             energy_rate = float(np.sum(gradient * epi_rate))
     except FloatingPointError as exc:
-        raise ValueError("Diffusion energy balance is outside finite floating-point range") from exc
-    return DiffusionEnergyBalance(nodes, energy, gradient, mobility, epi_rate, energy_rate)
+        raise ValueError(
+            "Diffusion energy balance is outside finite floating-point range"
+        ) from exc
+    return DiffusionEnergyBalance(
+        nodes, energy, gradient, mobility, epi_rate, energy_rate
+    )
 
 
 def verify_heterogeneous_diffusion_stability(
-    G: Any, *, tolerance: float = 1e-10,
+    G: Any,
+    *,
+    tolerance: float = 1e-10,
 ) -> HeterogeneousDiffusionStabilityCertificate:
     r"""Certify exponential convergence of the frozen heterogeneous EPI channel.
 
@@ -1240,16 +1212,15 @@ def verify_heterogeneous_diffusion_stability(
     if not np.all(np.isfinite(field)):
         raise ValueError("Structural transport requires finite scalar EPI")
     if np.any(frequency <= 0.0):
-        raise ValueError("Stability certification requires positive structural frequency")
+        raise ValueError(
+            "Stability certification requires positive structural frequency"
+        )
 
     try:
         with np.errstate(over="raise", invalid="raise", divide="raise", under="ignore"):
             metric_weights = strength / frequency
-            if (not np.all(np.isfinite(metric_weights))
-                    or np.any(metric_weights <= 0.0)):
-                raise ValueError(
-                    "Stability metric weights must be finite and positive"
-                )
+            if not np.all(np.isfinite(metric_weights)) or np.any(metric_weights <= 0.0):
+                raise ValueError("Stability metric weights must be finite and positive")
             metric_total = float(np.sum(metric_weights))
             conserved_total = float(metric_weights @ field)
             equilibrium = conserved_total / metric_total
@@ -1272,19 +1243,17 @@ def verify_heterogeneous_diffusion_stability(
                 weighted_mobility[:, None] * laplacian
                 + laplacian * weighted_mobility[None, :]
             )
-            quadratic_derivative = -float(
-                centered @ symmetric_dissipation @ centered
-            )
-            balance_residual = abs(
-                lyapunov_derivative - quadratic_derivative
-            )
+            quadratic_derivative = -float(centered @ symmetric_dissipation @ centered)
+            balance_residual = abs(lyapunov_derivative - quadratic_derivative)
     except (
         FloatingPointError,
         OverflowError,
         np.linalg.LinAlgError,
         ValueError,
     ) as exc:
-        raise ValueError("Stability certificate exceeds finite floating-point range") from exc
+        raise ValueError(
+            "Stability certificate exceeds finite floating-point range"
+        ) from exc
 
     (
         exact_quotient_gap,
@@ -1346,7 +1315,9 @@ def verify_heterogeneous_diffusion_stability(
 
 
 def verify_switching_diffusion_stability(
-    graphs: Any, *, tolerance: float = 1e-10,
+    graphs: Any,
+    *,
+    tolerance: float = 1e-10,
 ) -> SwitchingDiffusionStabilityCertificate:
     r"""Certify pure-EPI convergence under arbitrary switching of topology.
 
@@ -1399,7 +1370,9 @@ def verify_switching_diffusion_stability(
         conductance, adjacency, strength = _connected_symmetric_transport(graph, nodes)
         frequency = _nodal_frequencies(graph, nodes)
         if np.any(frequency <= 0.0):
-            raise ValueError("switching stability requires positive structural frequency")
+            raise ValueError(
+                "switching stability requires positive structural frequency"
+            )
         try:
             with np.errstate(over="raise", invalid="raise", divide="raise"):
                 metric = strength / frequency
@@ -1409,8 +1382,9 @@ def verify_switching_diffusion_stability(
                     )
                 raw_metrics.append(metric.copy())
                 normalized_metric, _, _ = normalize_weights(metric)
-                if (not np.all(np.isfinite(normalized_metric))
-                        or np.any(normalized_metric <= 0.0)):
+                if not np.all(np.isfinite(normalized_metric)) or np.any(
+                    normalized_metric <= 0.0
+                ):
                     raise ValueError(
                         "switching metric normalization exceeds floating-point "
                         "dynamic range"
@@ -1419,9 +1393,7 @@ def verify_switching_diffusion_stability(
                 laplacian = np.diag(strength) - adjacency
                 mobility = frequency / strength
                 gaps.append(
-                    _float_flow_quotient_gap(
-                        laplacian, frequency, strength, metric
-                    )
+                    _float_flow_quotient_gap(laplacian, frequency, strength, metric)
                 )
                 (
                     exact_gap_bound,
@@ -1459,8 +1431,7 @@ def verify_switching_diffusion_stability(
 
     raw_reference = raw_metrics[0]
     exact_common = all(
-        exactly_proportional(metric, raw_reference)
-        for metric in raw_metrics[1:]
+        exactly_proportional(metric, raw_reference) for metric in raw_metrics[1:]
     )
     field = structural_field(regimes[0], nodes)
     if not np.all(np.isfinite(field)):
@@ -1477,9 +1448,7 @@ def verify_switching_diffusion_stability(
             value = float(0.5 * np.sum(reference * centered**2))
             uniform_rate = 2.0 * min(gaps)
             exact_uniform_gap_bound = min(exact_gap_bounds)
-            certified_uniform_rate = _fraction_lower_float(
-                2 * exact_uniform_gap_bound
-            )
+            certified_uniform_rate = _fraction_lower_float(2 * exact_uniform_gap_bound)
             derivative_upper_bound = -certified_uniform_rate * value
     except (FloatingPointError, OverflowError) as exc:
         raise ValueError(
@@ -1501,16 +1470,10 @@ def verify_switching_diffusion_stability(
         and all(exact_uniform_fixed_flags)
     )
     exact_theorem = bool(
-        exact_common
-        and certified_uniform_rate > 0.0
-        and all(exact_uniform_fixed_flags)
+        exact_common and certified_uniform_rate > 0.0 and all(exact_uniform_fixed_flags)
     )
-    exact_common_consensus = bool(
-        exact_common and all(exact_consensus_flags)
-    )
-    exact_common_uniform_fixed = bool(
-        exact_common and all(exact_uniform_fixed_flags)
-    )
+    exact_common_consensus = bool(exact_common and all(exact_consensus_flags))
+    exact_common_uniform_fixed = bool(exact_common and all(exact_uniform_fixed_flags))
     exact_common_mean = bool(exact_common and all(exact_mean_flags))
     node_tuple = tuple(nodes)
     frozen_reference = _readonly_float_array(raw_reference)
@@ -1555,16 +1518,12 @@ def verify_switching_diffusion_stability(
         exact_quotient_gap_lower_bounds=tuple(exact_gap_bounds),
         certified_exponential_rate_lower_bounds=certified_rates,
         certified_uniform_exponential_rate_lower_bound=certified_uniform_rate,
-        exact_consensus_subspace_preservation_by_regime=tuple(
-            exact_consensus_flags
-        ),
+        exact_consensus_subspace_preservation_by_regime=tuple(exact_consensus_flags),
         exact_common_consensus_subspace_preservation=exact_common_consensus,
         exact_uniform_fixed_point_preservation_by_regime=tuple(
             exact_uniform_fixed_flags
         ),
-        exact_common_uniform_fixed_point_preservation=(
-            exact_common_uniform_fixed
-        ),
+        exact_common_uniform_fixed_point_preservation=(exact_common_uniform_fixed),
         exact_weighted_mean_preservation_by_regime=tuple(exact_mean_flags),
         exact_common_weighted_mean_preservation=exact_common_mean,
         _proof_stamp=proof_stamp,
@@ -1630,18 +1589,14 @@ def derive_time_varying_diffusion_stability_bound(
             combinatorial_gap = float(max(eigenvalues[1], 0.0))
     except np.linalg.LinAlgError:
         combinatorial_gap = float("nan")
-    with np.errstate(
-        over="ignore", invalid="ignore", divide="ignore", under="ignore"
-    ):
+    with np.errstate(over="ignore", invalid="ignore", divide="ignore", under="ignore"):
         mobility_lower_estimates = lower / strength
         mobility_upper_estimates = upper / strength
         minimum_mobility = float(np.min(mobility_lower_estimates))
         maximum_mobility = float(np.max(mobility_upper_estimates))
         energy = float(0.5 * field @ laplacian @ field)
         spectral_decay_rate = float(
-            np.multiply(
-                np.multiply(2.0, minimum_mobility), combinatorial_gap
-            )
+            np.multiply(np.multiply(2.0, minimum_mobility), combinatorial_gap)
         )
         spectral_distance_estimate = (
             float(
@@ -1660,19 +1615,16 @@ def derive_time_varying_diffusion_stability_bound(
         tuple(Fraction.from_float(float(value)) for value in row)
         for row in np.asarray(adjacency, dtype=float)
     )
-    exact_strength = tuple(
-        sum(row, Fraction(0)) for row in exact_adjacency
-    )
+    exact_strength = tuple(sum(row, Fraction(0)) for row in exact_adjacency)
     exact_laplacian = tuple(
         tuple(
-            (exact_strength[i] if i == j else Fraction(0))
-            - exact_adjacency[i][j]
+            (exact_strength[i] if i == j else Fraction(0)) - exact_adjacency[i][j]
             for j in range(len(nodes))
         )
         for i in range(len(nodes))
     )
-    exact_gap, exact_real_uniform_fixed = (
-        _exact_real_laplacian_gap_lower_bound(exact_laplacian)
+    exact_gap, exact_real_uniform_fixed = _exact_real_laplacian_gap_lower_bound(
+        exact_laplacian
     )
 
     exact_materialized_laplacian = tuple(
@@ -1680,23 +1632,16 @@ def derive_time_varying_diffusion_stability_bound(
         for row in np.asarray(laplacian, dtype=float)
     )
     materialized_binary64_uniform_fixed = all(
-        sum(row, Fraction(0)) == 0
-        for row in exact_materialized_laplacian
+        sum(row, Fraction(0)) == 0 for row in exact_materialized_laplacian
     )
 
-    exact_lower_frequency = tuple(
-        Fraction.from_float(float(value)) for value in lower
-    )
-    exact_upper_frequency = tuple(
-        Fraction.from_float(float(value)) for value in upper
-    )
+    exact_lower_frequency = tuple(Fraction.from_float(float(value)) for value in lower)
+    exact_upper_frequency = tuple(Fraction.from_float(float(value)) for value in upper)
     exact_lower_mobility = tuple(
-        exact_lower_frequency[i] / exact_strength[i]
-        for i in range(len(nodes))
+        exact_lower_frequency[i] / exact_strength[i] for i in range(len(nodes))
     )
     exact_upper_mobility = tuple(
-        exact_upper_frequency[i] / exact_strength[i]
-        for i in range(len(nodes))
+        exact_upper_frequency[i] / exact_strength[i] for i in range(len(nodes))
     )
     exact_minimum_mobility = min(exact_lower_mobility)
     exact_maximum_mobility = max(exact_upper_mobility)
@@ -1707,17 +1652,11 @@ def derive_time_varying_diffusion_stability_bound(
         [_fraction_upper_float(value) for value in exact_upper_mobility]
     )
     certified_gap = _fraction_lower_float(exact_gap)
-    certified_minimum_mobility = _fraction_lower_float(
-        exact_minimum_mobility
-    )
-    certified_maximum_mobility = _fraction_upper_float(
-        exact_maximum_mobility
-    )
+    certified_minimum_mobility = _fraction_lower_float(exact_minimum_mobility)
+    certified_maximum_mobility = _fraction_upper_float(exact_maximum_mobility)
     exact_decay_rate = 2 * exact_minimum_mobility * exact_gap
     decay_rate = _fraction_lower_float(exact_decay_rate)
-    exact_energy = _exact_real_dirichlet_energy(
-        exact_laplacian, field
-    )
+    exact_energy = _exact_real_dirichlet_energy(exact_laplacian, field)
     exact_real_model_certified = bool(
         exact_real_uniform_fixed
         and exact_gap > 0
@@ -1725,9 +1664,7 @@ def derive_time_varying_diffusion_stability_bound(
         and exact_maximum_mobility > 0
         and exact_energy >= 0
     )
-    operational_rate_available = bool(
-        exact_real_model_certified and decay_rate > 0.0
-    )
+    operational_rate_available = bool(exact_real_model_certified and decay_rate > 0.0)
     if not operational_rate_available:
         decay_rate = 0.0
 
@@ -1739,19 +1676,13 @@ def derive_time_varying_diffusion_stability_bound(
         energy_upper_bound = float("inf")
 
     if operational_rate_available:
-        exact_derivative_magnitude = (
-            Fraction.from_float(decay_rate) * exact_energy
-        )
-        derivative_bound = -_fraction_lower_float(
-            exact_derivative_magnitude
-        )
+        exact_derivative_magnitude = Fraction.from_float(decay_rate) * exact_energy
+        derivative_bound = -_fraction_lower_float(exact_derivative_magnitude)
     else:
         derivative_bound = 0.0
 
     if exact_gap > 0 and exact_energy >= 0:
-        distance_bound = _fraction_sqrt_upper_float(
-            2 * exact_energy / exact_gap
-        )
+        distance_bound = _fraction_sqrt_upper_float(2 * exact_energy / exact_gap)
     else:
         distance_bound = float("inf")
 
@@ -1772,34 +1703,22 @@ def derive_time_varying_diffusion_stability_bound(
         exact_combinatorial_gap_lower_bound=exact_gap,
         certified_combinatorial_gap_lower_bound=certified_gap,
         exact_minimum_mobility_lower_bound=exact_minimum_mobility,
-        certified_minimum_mobility_lower_bound=(
-            certified_minimum_mobility
-        ),
+        certified_minimum_mobility_lower_bound=(certified_minimum_mobility),
         exact_maximum_mobility_upper_bound=exact_maximum_mobility,
-        certified_maximum_mobility_upper_bound=(
-            certified_maximum_mobility
-        ),
+        certified_maximum_mobility_upper_bound=(certified_maximum_mobility),
         exact_energy_decay_rate_lower_bound=exact_decay_rate,
         exact_dirichlet_energy=exact_energy,
         dirichlet_energy_lower_bound=energy_lower_bound,
         dirichlet_energy_upper_bound=energy_upper_bound,
-        mobility_lower_bounds=_readonly_float_array(
-            mobility_lower_estimates
-        ),
-        mobility_upper_bounds=_readonly_float_array(
-            mobility_upper_estimates
-        ),
+        mobility_lower_bounds=_readonly_float_array(mobility_lower_estimates),
+        mobility_upper_bounds=_readonly_float_array(mobility_upper_estimates),
         certified_mobility_lower_bounds=certified_mobility_lower,
         certified_mobility_upper_bounds=certified_mobility_upper,
-        exact_real_uniform_fixed_point_preservation=(
-            exact_real_uniform_fixed
-        ),
+        exact_real_uniform_fixed_point_preservation=(exact_real_uniform_fixed),
         materialized_binary64_uniform_fixed_point_preservation=(
             materialized_binary64_uniform_fixed
         ),
-        exact_real_continuous_time_model_certified=(
-            exact_real_model_certified
-        ),
+        exact_real_continuous_time_model_certified=(exact_real_model_certified),
         operational_binary64_rate_available=operational_rate_available,
         runtime_integration_certified=False,
         scope=(
@@ -1853,7 +1772,9 @@ def diagnose_euler_relaxation_window(
     _connected_symmetric_transport(G)
     frequency = _nodal_frequencies(G)
     if np.any(frequency <= 0.0):
-        raise ValueError("Euler modal diagnostic requires positive structural frequency")
+        raise ValueError(
+            "Euler modal diagnostic requires positive structural frequency"
+        )
     rates = relaxation_spectrum(G)
     fastest_rate = float(np.max(rates, initial=0.0))
     if not np.isfinite(fastest_rate) or fastest_rate <= 0.0:
@@ -1876,7 +1797,8 @@ def diagnose_euler_relaxation_window(
         else:
             steps = max(
                 1,
-                int(math.floor(math.log(target_fraction) / math.log(maximum_factor))) + 1,
+                int(math.floor(math.log(target_fraction) / math.log(maximum_factor)))
+                + 1,
             )
             while maximum_factor**steps >= target_fraction:
                 steps += 1
@@ -2175,7 +2097,9 @@ def verify_structural_diffusion(
     # with e are conserved. On an undirected positive-frequency graph this
     # includes the analytic weights d_i/νf_i, component by component.
     left_vectors, singular_values, _ = np.linalg.svd(generator, full_matrices=True)
-    rank_tolerance = n * np.finfo(float).eps * float(np.max(singular_values, initial=0.0))
+    rank_tolerance = (
+        n * np.finfo(float).eps * float(np.max(singular_values, initial=0.0))
+    )
     rank = int(np.count_nonzero(singular_values > rank_tolerance))
     invariants = left_vectors[:, rank:].T
 
@@ -2188,20 +2112,31 @@ def verify_structural_diffusion(
     for _ in range(steps):
         e = e - dt * (generator @ e)
         max_drift = max(max_drift, abs(float(deg @ e) - w0))
-        invariant_drift = max(invariant_drift, float(np.max(
-            np.abs(invariants @ e - initial_invariants), initial=0.0,
-        )))
+        invariant_drift = max(
+            invariant_drift,
+            float(
+                np.max(
+                    np.abs(invariants @ e - initial_invariants),
+                    initial=0.0,
+                )
+            ),
+        )
     conserved = max_drift < max(tolerance, 1e-9 * (abs(w0) + 1e-12))
     invariant_conserved = invariant_drift <= tolerance * max(
-        1.0, float(np.max(np.abs(initial_invariants), initial=0.0)),
+        1.0,
+        float(np.max(np.abs(initial_invariants), initial=0.0)),
     )
     final_std = float(np.std(e)) if n else 0.0
     initial_std = float(np.std(epi)) if n else 0.0
     relaxes = final_std < max(1e-3, 1e-2 * (initial_std + 1e-12))
     stationarity_residual = float(np.max(np.abs(generator @ e), initial=0.0))
-    stationary = stationarity_residual < max(1e-3, 1e-2 * float(
-        np.max(np.abs(generator @ epi), initial=0.0),
-    ))
+    stationary = stationarity_residual < max(
+        1e-3,
+        1e-2
+        * float(
+            np.max(np.abs(generator @ epi), initial=0.0),
+        ),
+    )
 
     return StructuralDiffusionCertificate(
         n_nodes=n,
@@ -2572,9 +2507,7 @@ def verify_overdamped_projection(
     # 4*lam2, reachable when a caller fits gamma from oscillatory data) yields
     # a complex root whose real part -gamma/2 is the envelope decay rate.
     if lam2 > 0.0:
-        s_gap = (
-            (-gamma + np.sqrt(gamma * gamma - 4.0 * lam2 + 0j)) / 2.0
-        ).real
+        s_gap = ((-gamma + np.sqrt(gamma * gamma - 4.0 * lam2 + 0j)) / 2.0).real
         slow_gap = float(-s_gap)
     else:
         slow_gap = 0.0
@@ -2771,8 +2704,15 @@ def _topology_signature(G: Any) -> tuple:
     reused across evolution steps and across read-outs.
     """
     conductance = read_conductance(G)
-    edges = tuple(sorted(zip(conductance.source.tolist(), conductance.target.tolist(),
-                             conductance.weight.tolist())))
+    edges = tuple(
+        sorted(
+            zip(
+                conductance.source.tolist(),
+                conductance.target.tolist(),
+                conductance.weight.tolist(),
+            )
+        )
+    )
     return (G.is_directed(), G.is_multigraph(), tuple(conductance.nodes), edges)
 
 
@@ -2880,19 +2820,23 @@ def nodal_domain_count(mode: Any) -> int:
 
 
 def compute_emergent_pulse(G: Any, n_modes: int = 8) -> dict[str, Any]:
-    r"""The emergent pulse: the rhythm the substrate plays [CANONICAL].
+    r"""Read the auxiliary graph-wave spectrum without time integration.
 
-    The conservative face of the nodal dynamics is a *sustained vibration*:
-    every structural mode oscillates at the standing-wave frequency
-    :math:`\omega_k = \sqrt{\lambda_k}` (the discrete modes of
-    :func:`verify_undamped_limit` / :func:`structural_eigenmodes`).  The rhythm
-    is the interference of those resonances -- beats at the differences
-    :math:`\omega_j - \omega_k` -- and the equilibria (the ``dNFR = 0``
-    coherence states) are the beats the vibration passes through.  This unifies
-    the scattered conservative machinery (the spectrum, the standing-wave
-    frequencies, the self-similar decimation) into one *pulse* read-out,
-    computed closed-form from the structural spectrum (no time integration) --
-    the conservative twin of the dissipative coherence read-out.
+    The separately specified graph-wave model assigns standing-wave
+    frequencies :math:`\omega_k = \sqrt{\lambda_k}` to structural modes
+    (:func:`verify_undamped_limit` / :func:`structural_eigenmodes`). Their
+    positive differences give possible beat frequencies in that model's time
+    convention. The first-order nodal equation alone does not derive this
+    second-order wave, its physical time scale, or an observed vibration.
+    Neither zero pressure nor spectral multiplicity proves a beat event or
+    fractal structure.
+
+    The legacy ``vibration_energy`` key stores half the spectral trace. An
+    actual wave state's energy also depends on its modal amplitudes and
+    velocities: in normalized orthonormal modal coordinates it is
+    :math:`\frac12\sum_k(\dot q_k^2+\lambda_k q_k^2)`. The returned statistic
+    equals that energy for the selected initialization ``q_k=1, qdot_k=0``;
+    this function does not extract or assert that initialization from ``G``.
 
     Parameters
     ----------
@@ -2906,10 +2850,9 @@ def compute_emergent_pulse(G: Any, n_modes: int = 8) -> dict[str, Any]:
         ``resonant_spectrum`` (leading :math:`\omega_k = \sqrt{\lambda_k}`),
         ``fundamental`` (the slowest non-uniform resonance), ``dominant_beat``
         (the slowest beat = smallest positive :math:`\omega_j - \omega_k`),
-        ``spectral_multiplicity`` (the largest eigenvalue multiplicity = the
-        self-similar / fractal signature), ``vibration_energy``
-        (:math:`\tfrac12\sum\lambda_k`, the conserved structural-pressure
-        energy of the vibration), ``n_modes``.
+        ``spectral_multiplicity`` (largest multiplicity after the implemented
+        eigenvalue rounding), ``vibration_energy`` (legacy key for
+        :math:`\tfrac12\sum\lambda_k`, not measured state energy), ``n_modes``.
     """
     _reject_boolean_numeric(n_modes, "n_modes")
     eigvals = _cached_eigenvalues(G)
@@ -2930,22 +2873,19 @@ def compute_emergent_pulse(G: Any, n_modes: int = 8) -> dict[str, Any]:
 
 
 def compute_nodal_pulse(G: Any) -> dict[str, Any]:
-    r"""The per-NFR pulse and its resonance [CANONICAL].
+    r"""Read per-NFR capacity and phase synchrony without time integration.
 
-    The collective rhythm (:func:`compute_emergent_pulse`) is what the NFR
-    *bricks* produce: every NFR is itself a phase oscillator -- the
-    single-node reduction of the nodal equation
+    The nodal equation
     :math:`\partial\mathrm{EPI}_i/\partial t=\nu_{f,i}\,\Delta\mathrm{NFR}_i`
-    -- pulsing at its own structural frequency :math:`\nu_{f,i}` with phase
-    :math:`\varphi_i`.  *Resonance* couples those pulses: the local
-    phase-synchrony (:func:`~tnfr.metrics.coherence.local_phase_sync`)
-    measures how phase-locked each NFR is with its neighbours, the global
-    Kuramoto order ``R`` (:func:`~tnfr.gamma.kuramoto_R_psi`) the collective
-    locking, and the U3 gate :data:`~tnfr.constants.canonical.DELTA_PHI_MAX`
-    sets admissibility.  The collective pulse emerges as these per-NFR pulses
-    resonate (``R -> 1``).  This is the *local* face of the rhythm -- the
-    pulsing NFRs that generate the network rhythm -- read from canonical
-    per-node quantities (no time integration).
+    does not by itself derive an oscillator or identify phase speed with
+    structural capacity. This read-out summarizes the stored capacities and
+    phases; it does not observe a period or prove a phase-evolution law.
+    Local phase synchrony measures neighbor alignment, global Kuramoto order
+    ``R`` measures collective alignment, and the U3 phase bound reports
+    admissibility. These are distinct from the auxiliary graph-wave spectrum
+    returned by :func:`compute_emergent_pulse`. A high ``R`` does not identify
+    an engine trajectory with that wave model. See
+    ``theory/FORCED_SUPPORT_BALANCE.md`` section 23.
 
     Parameters
     ----------
@@ -2954,12 +2894,13 @@ def compute_nodal_pulse(G: Any) -> dict[str, Any]:
     Returns
     -------
     dict
-        ``mean_frequency`` / ``frequency_spread`` (the per-NFR pulse rates
+        ``mean_frequency`` / ``frequency_spread`` (structural capacities
         nu_f: mean and std in Hz_str), ``phase_coherence`` (the collective
-        Kuramoto ``R`` in ``[0, 1]`` -- how locked the pulses are),
+        Kuramoto ``R`` in ``[0, 1]`` -- alignment of the current phases),
         ``mean_local_resonance`` (mean per-NFR local phase synchrony in
         ``[0, 1]``), ``resonance_gate`` (the U3 admissibility bound
-        Delta phi_max), ``n_pulsing`` (NFRs with nu_f > 0), ``n_nodes``.
+        Delta phi_max), ``n_pulsing`` (legacy name for NFRs with nu_f > 0,
+        not an observed oscillation count), ``n_nodes``.
     """
     from ..constants.canonical import DELTA_PHI_MAX
 
@@ -2989,10 +2930,7 @@ def compute_nodal_pulse(G: Any) -> dict[str, Any]:
         phase_coherence = 0.0
     # per-NFR resonance: mean local phase synchrony (one shared matrix build)
     try:
-        from ..metrics.coherence import (
-            coherence_matrix,
-            local_phase_sync_weighted,
-        )
+        from ..metrics.coherence import coherence_matrix, local_phase_sync_weighted
 
         order, W = coherence_matrix(G, _record_history=False)
         if order is None:
@@ -3001,9 +2939,7 @@ def compute_nodal_pulse(G: Any) -> dict[str, Any]:
             mean_local = float(
                 np.mean(
                     [
-                        local_phase_sync_weighted(
-                            G, k, nodes_order=order, W_row=W
-                        )
+                        local_phase_sync_weighted(G, k, nodes_order=order, W_row=W)
                         for k in order
                     ]
                 )
@@ -3326,8 +3262,14 @@ def verify_structural_stability(
     if not np.isfinite(tolerance) or tolerance <= 0.0:
         raise ValueError("tolerance must be finite and positive")
     frequency = _nodal_frequencies(G)
-    if len(frequency) < 2 or not np.all(frequency == frequency[0]) or frequency[0] <= 0.0:
-        raise ValueError("Fiedler stability requires at least two nodes and a common positive frequency")
+    if (
+        len(frequency) < 2
+        or not np.all(frequency == frequency[0])
+        or frequency[0] <= 0.0
+    ):
+        raise ValueError(
+            "Fiedler stability requires at least two nodes and a common positive frequency"
+        )
     eigvals = _cached_eigenvalues(G)
     n = len(eigvals)
     nu = float(frequency[0])
@@ -3452,9 +3394,10 @@ def _resistance_geometry(G: Any) -> tuple[list, Any, Any, list]:
     A volume too large for float is retained as a Fraction internally; its
     ratio with the conductance scale can still give a finite commute time.
     """
-    import networkx as nx
     import math
     from fractions import Fraction
+
+    import networkx as nx
 
     conductance = read_conductance(G, symmetric=True)
     nodes, adjacency = conductance.nodes, conductance.dense()
@@ -3469,8 +3412,10 @@ def _resistance_geometry(G: Any) -> tuple[list, Any, Any, list]:
         try:
             volume = math.fsum(positive_weights)
         except OverflowError:
-            volume = sum((Fraction.from_float(float(weight)) for weight in positive_weights),
-                         Fraction())
+            volume = sum(
+                (Fraction.from_float(float(weight)) for weight in positive_weights),
+                Fraction(),
+            )
         for index in indices:
             volumes[index] = volume
         weights = weights.copy()
@@ -3480,13 +3425,16 @@ def _resistance_geometry(G: Any) -> tuple[list, Any, Any, list]:
         with np.errstate(under="ignore"):
             weights /= scale
         if np.any(positive & (weights == 0.0)):
-            raise ValueError("Resistance conductance ratios are below floating-point range")
+            raise ValueError(
+                "Resistance conductance ratios are below floating-point range"
+            )
         scales[indices] = scale
         laplacian = np.diag(weights.sum(axis=1)) - weights
         inverse = np.linalg.pinv(laplacian, hermitian=True)
         diagonal = np.diag(inverse)
         resistance[block] = np.maximum(
-            diagonal[:, None] + diagonal[None, :] - 2.0 * inverse, 0.0,
+            diagonal[:, None] + diagonal[None, :] - 2.0 * inverse,
+            0.0,
         )
     np.fill_diagonal(resistance, 0.0)
     return nodes, resistance, scales, volumes
@@ -3506,8 +3454,10 @@ def _resistance_scale_ratios(numerators: Any, denominators: Any) -> list:
             if np.isfinite(ratio) and (ratio != 0.0 or numerator == 0.0):
                 result.append(ratio)
             else:
-                result.append(Fraction.from_float(float(numerator))
-                              / Fraction.from_float(float(denominator)))
+                result.append(
+                    Fraction.from_float(float(numerator))
+                    / Fraction.from_float(float(denominator))
+                )
     return result
 
 
@@ -3518,8 +3468,10 @@ def _commute_from_resistance(resistance: Any, volumes: Any) -> Any:
         with np.errstate(over="raise", invalid="raise", under="ignore"):
             factors = np.asarray(volumes, dtype=float)
             result = np.multiply(
-                factors[:, None], resistance,
-                out=np.full_like(resistance, np.inf), where=finite,
+                factors[:, None],
+                resistance,
+                out=np.full_like(resistance, np.inf),
+                where=finite,
             )
         if not np.all(np.isfinite(result[finite])):
             raise OverflowError
@@ -3528,13 +3480,21 @@ def _commute_from_resistance(resistance: Any, volumes: Any) -> Any:
 
         result = np.full_like(resistance, np.inf)
         for row, factor in enumerate(volumes):
-            exact_factor = factor if isinstance(factor, Fraction) else Fraction.from_float(float(factor))
+            exact_factor = (
+                factor
+                if isinstance(factor, Fraction)
+                else Fraction.from_float(float(factor))
+            )
             for column in np.flatnonzero(finite[row]):
-                exact = Fraction.from_float(float(resistance[row, column])) * exact_factor
+                exact = (
+                    Fraction.from_float(float(resistance[row, column])) * exact_factor
+                )
                 try:
                     result[row, column] = float(exact)
                 except OverflowError as exc:
-                    raise ValueError("Resistance read-out exceeds finite floating-point range") from exc
+                    raise ValueError(
+                        "Resistance read-out exceeds finite floating-point range"
+                    ) from exc
     if np.any(finite & (resistance > 0.0) & (result == 0.0)):
         raise ValueError("Resistance read-out is below floating-point range")
     return result
@@ -3570,7 +3530,8 @@ def effective_resistance(G: Any) -> tuple[list, Any]:
     """
     nodes, resistance, scales, _ = _resistance_geometry(G)
     return nodes, _commute_from_resistance(
-        resistance, _resistance_scale_ratios(np.ones(len(nodes)), scales),
+        resistance,
+        _resistance_scale_ratios(np.ones(len(nodes)), scales),
     )
 
 
@@ -3597,7 +3558,8 @@ def commute_time(G: Any) -> tuple[list, Any]:
     """
     nodes, resistance, scales, volumes = _resistance_geometry(G)
     return nodes, _commute_from_resistance(
-        resistance, _resistance_scale_ratios(volumes, scales),
+        resistance,
+        _resistance_scale_ratios(volumes, scales),
     )
 
 
@@ -3696,7 +3658,8 @@ def verify_structural_random_walk(
     nodes, scaled_resistance, scales, volumes = _resistance_geometry(G)
     n = len(nodes)
     r = _commute_from_resistance(
-        scaled_resistance, _resistance_scale_ratios(np.ones(n), scales),
+        scaled_resistance,
+        _resistance_scale_ratios(np.ones(n), scales),
     )
     _, lrw = structural_diffusion_operator(G)
     _, p = random_walk_matrix(G)
@@ -3711,11 +3674,15 @@ def verify_structural_random_walk(
 
     # stationary distribution π = degree, π·P = π
     _, pi = stationary_distribution(G)
-    stationary_ok = bool(
-        np.allclose(pi @ p, pi, atol=tolerance, rtol=0.0)
-        and np.all(pi >= 0.0)
-        and abs(float(pi.sum()) - 1.0) < tolerance
-    ) if n else True
+    stationary_ok = (
+        bool(
+            np.allclose(pi @ p, pi, atol=tolerance, rtol=0.0)
+            and np.all(pi >= 0.0)
+            and abs(float(pi.sum()) - 1.0) < tolerance
+        )
+        if n
+        else True
+    )
 
     # effective resistance is a metric
     symmetric = bool(np.allclose(r, r.T))
@@ -3734,9 +3701,14 @@ def verify_structural_random_walk(
 
     # The volume belongs to the pair's component, never to unreachable nodes.
     _, c = commute_time(G)
-    commute_ok = bool(np.allclose(
-        c, _commute_from_resistance(r, volumes), atol=tolerance, rtol=0.0,
-    ))
+    commute_ok = bool(
+        np.allclose(
+            c,
+            _commute_from_resistance(r, volumes),
+            atol=tolerance,
+            rtol=0.0,
+        )
+    )
 
     return RandomWalkCertificate(
         n_nodes=n,
@@ -3929,7 +3901,8 @@ def verify_structural_flow(
             indices = np.asarray(component, dtype=int)
             if component not in inverses:
                 inverses[component] = np.linalg.pinv(
-                    lap[np.ix_(indices, indices)], hermitian=True,
+                    lap[np.ix_(indices, indices)],
+                    hermitian=True,
                 )
             b = np.zeros(n)
             b[s], b[t] = 1.0, -1.0

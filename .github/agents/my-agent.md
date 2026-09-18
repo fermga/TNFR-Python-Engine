@@ -65,13 +65,26 @@ $$\frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t)$$
 
 | Symbol | Name | Meaning | Units |
 |--------|------|---------|-------|
-| **EPI** | Primary Information Structure | Coherent structural form (configuration) | — |
+| **EPI** | Primary Information Structure | Coherent structural form (configuration) | Declared form unit X |
 | **νf** | Structural frequency | Reorganization capacity / rate | Hz_str |
-| **ΔNFR** | Nodal gradient | Structural reorganization pressure | — |
+| **ΔNFR** | Nodal gradient | Structural reorganization pressure | X when νf has inverse-time units |
 
 Read it as **structural change rate = reorganization capacity × reorganization
-pressure**. Limiting states: `νf = 0` (node inactive, cannot reorganize);
-`ΔNFR = 0` (equilibrium, no driving force); both non-zero → active reorganization.
+pressure**. For this unforced EPI law, limiting states: `νf = 0` (inactive EPI channel);
+`ΔNFR = 0` (instantaneous zero EPI rate); both non-zero → active EPI reorganization.
+
+**Type and representation.** EPI denotes structural form, not the scalar
+coherence diagnostic. On a declared differentiable state space, pressure is a
+tangent response: with `[EPI]=X` and `[nu_f]=T^-1`, it has units X. A nodewise
+chart change `y=f(EPI)` requires the pressure pushforward `Df*DeltaNFR`; an
+unsigned distance or an extra time derivative cannot silently replace it.
+The engine's signed scalar chart is one supported realization, not a proof
+of the necessary dimension of structural form. Rich BEPI storage and temporal
+spectral entropy do not establish a complete alternative dynamics. Definitions,
+original-source dimensional conflicts and closure requirements are centralized in
+[FUNDAMENTAL_THEORY sections 2.4-2.6](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation).
+On positive-capacity continuous segments, `ds_i=nu_i dt` gives `dEPI_i/ds_i=p_i`;
+it reparameterizes a supplied evolution and supplies no missing capacity law.
 
 ### Structural triad
 
@@ -81,7 +94,8 @@ Every node carries three attributes:
   transformations use canonical operators, while declared solver steps use the
   shared nodal integrator with explicit pressure and provenance; supports
   nesting (operational fractality).
-- **Frequency (νf)** — reorganization rate in Hz_str (ℝ⁺); `νf → 0` deactivates.
+- **Frequency (νf)** — nonnegative reorganization capacity in Hz_str; `νf = 0`
+  suppresses the unforced EPI rate without erasing stored form.
 - **Phase (φ or θ)** — synchronization parameter in [0, 2π); coupling is admissible
   only when the circular separation
   `δ(φᵢ,φⱼ) = |wrap(φᵢ − φⱼ)| ≤ Δφ_max`.
@@ -94,6 +108,39 @@ or complex elements have no signed one-dimensional representative and are
 rejected by canonical glyphs that require a real scalar EPI coordinate,
 scalar-only diffusion and affine certificates.
 
+**Parameter foundations.** With `[EPI]=X`, `[t]=T`, `[νf]=T^-1`, directed
+pressure has units `X`. A phase coordinate does not by itself identify capacity
+with angular speed. For common form/time changes `y=a*x+b`, `tau=c*t`, the
+multichannel pressure covaries with `nu'=nu/c` and coefficients
+`(w_phase',w_epi',w_vf',w_topo')=(a*w_phase,w_epi,a*c*w_vf,a*w_topo)`;
+renormalizing these coefficients generally changes the law. Local linearity,
+uniform-shift invariance, uniform equilibrium and a maximum principle imply
+an EPI diffusive generator; reciprocity and row normalization are additional
+premises. Configured capacity ceilings, operator gains, coherence bands and
+clipping intervals are not uniquely derived physical constants. The optional
+additive `Gamma` integrator is a distinct forced model and can move EPI at
+zero capacity. Definitions, dependencies and full-tetrad scope are centralized
+in [theory/NODAL_PARAMETER_FOUNDATIONS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md).
+
+The candidate observation `z=EPI*exp(i*phase)` is not a faithful replacement
+for signed EPI and phase under the current multichannel pressure: an exact
+strict-U3 P2 pair has identical observation but different squared-modulus
+rates, independently of phase speed. At zero EPI, phase can still affect a
+neighbor. Retaining `(EPI,u)` with `|u|=1` faithfully encodes form and phase,
+but `u_dot=i*omega*u` leaves its angular law undetermined. A zero EPI coordinate
+therefore is not absence of the existing nodal substrate.
+
+At fixed support and channel coefficients, the conditional smooth response is
+`p_dot=-w_epi*L_W*(nu*p)+w_phase*(R-I)*(theta_dot/pi)-w_vf*L_U*nu_dot`,
+`EPI_ddot=nu_dot*p+nu*p_dot`. Here `R` differentiates the regular circular mean,
+`L_W` is weighted EPI transport and `L_U` is unique-support transport. A common
+capacity rate can leave pressure response unchanged while changing form
+acceleration. On connected undirected support, capacity can cancel phase-source
+motion exactly when its support-degree-weighted sum vanishes. These are
+conditional identities, not laws selecting phase/capacity motion or identifying
+the derivative of runtime arithmetic. The shared owner is
+[phase_response.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/phase_response.py).
+
 ### The fractal-resonant node (NFR)
 
 The node carrying the triad is a **Nodo Fractal Resonante (NFR)** — canonically, a
@@ -103,8 +150,10 @@ The node carrying the triad is a **Nodo Fractal Resonante (NFR)** — canonicall
 - **Multiscalar (fractal)** — an NFR can nest other NFRs (operational fractality; THOL
   sub-EPIs, REMESH, grammar U5). A single node is a micro-NFR; a coherent region is a
   macro-NFR.
-- **Autopoietic (self-generated)** — emerges by local reorganization, no external
-  support (Emission from vacuum; THOL).
+- **Autopoietic (self-generated)** — self-generated formation and maintenance
+  are the structural research requirement. AL and THOL implement declared
+  activation/creation maps; invoking them does not itself derive their
+  autonomous occurrence or prove independence from sustaining inputs.
 - **Relational** — exists only by coupling (U3). **Temporal** — persists while it
   reorganizes its coherence.
 
@@ -114,9 +163,11 @@ structural-potential geometry by [classify_nodal_topology](https://github.com/fe
 using its calibrated canonical inverse-square kernel (`alpha = 2`), and surfaced
 as a whole-NFR read-out by `Network.nfr()` ([src/tnfr/sdk/simple.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/sdk/simple.py)).
 
-The pressure equilibrium `ΔNFR = 0` is the **zero-pressure fixed-point set** —
-the state where reorganization pressure vanishes (`C = 1` when `dEPI = 0`).
-Stationarity alone is weaker: zero capacity freezes EPI even under nonzero pressure.
+The **zero-pressure set** `ΔNFR = 0` has zero instantaneous unforced EPI rate
+(`C = 1` when the recorded `dEPI` also vanishes). In the joint system, phase,
+capacity or support can still change and generate later pressure; an invariant
+equilibrium requires their laws as well. Instantaneous EPI stationarity alone
+is weaker: zero capacity suppresses its rate even under nonzero pressure.
 For the pure EPI channel on a fixed connected symmetric graph with positive capacity,
 equilibrium is a uniform field; disconnected components can have different constants.
 In that restricted model the uniform field is an attractor. This result does
@@ -309,25 +360,37 @@ its evolution. **π** is the exact phase-wrap scale bounding `|∇φ|` and `|K_�
 
 | Structural field | Symbol | Tower order | Role |
 |------------------|--------|-------------|------|
-| Structural potential | Φ_s | 0th (aggregation) | Global stability |
+| Structural potential | Φ_s | 0th (aggregation) | Nonlocal pressure aggregation |
 | Phase gradient | \|∇φ\| | 1st (local) | Local desynchronization stress |
-| Phase curvature | K_φ | 2nd (local) | Geometric torsion |
+| Phase curvature | K_φ | 2nd (local) | Local circular curvature |
 | Coherence length | ξ_C | non-local | Correlation range |
 
 ### Field scales
 
 Each field has a characteristic scale or configured interpretation:
 
-- **π — phase scale (geometric, exact).** Both phase derivatives are **wrapped
+- **π — phase scale (geometric, exact).** Both defined local phase read-outs are **wrapped
   angles**, so `|∇φ| ≤ π` *and* `|K_φ| ≤ π` for any configuration — π scales the
   whole **phase sector**. `|K_φ| < 0.9·π ≈ 2.827` is a selected safety margin
   inside that exact bound; the factor 0.9 is a policy choice.
+- **Circular-mean domain.** `observe_phase_curvature` records exact sums of
+  materialized binary64 phasors and approximate angle read-outs. A nonzero
+  represented resultant has no arbitrary magnitude cutoff. Exact represented
+  cancellation yields unavailable curvature; numeric curvature/full telemetry
+  raise `UndefinedPhaseCurvatureError`, while phase gradient remains available.
+  This is not proof of a true trigonometric singularity or a new phase law.
+  Field readers reject malformed authoritative phase/pressure before cache
+  access and return detached maps. Safe telemetry emission retains independent
+  available fields and explicit errors instead of inventing a numeric result.
 - **|∇φ| — phase-wrap bounded.** Its genuine bound is `|∇φ| ≤ π`. There is no fixed
   structural constant for the synchronization onset: the measured value is `≈ 0.29`
   and σ-dependent (a dynamical transition, not a derived threshold).
-- **ξ_C — correlation length.** The correlation fit is state-dependent; the
-  spectral scale `1/√λ₂` supplies a model comparison and fallback, not an identity
-  for every fitted field or graph.
+- **ξ_C — correlation length.** Both backends share an uncentered static
+  coherence-product fit using explicit edge `length`, fallback `weight`, then
+  unit lengths. Directed pairs retain their orientation. A successful fit has
+  path-distance units; the normalized-Laplacian fallback `1/√λ₂` is a separate
+  dimensionless spectral scale. Estimator provenance is required for comparison;
+  neither quantity alone proves criticality or a universal decay law.
 - **Φ_s — confinement policy.** `Δ Φ_s < π/2 ≈ 1.571` is the U6 drift policy;
   per-node `|Φ_s| < π/4 ≈ 0.785` is a separate magnitude policy. Both are selected
   π-scaled thresholds. Phase wrapping alone does not bound the source aggregation:
@@ -439,14 +502,22 @@ The nodal law and graph-wave diagnostics admit the following scoped comparisons
   frequencies are `√λ_k`. Nodal-domain upper bounds do not imply monotonic counts
   across every degenerate eigenbasis. Directed transport needs separate analysis.
 
-The graph-wave model has a **sustained vibration — the pulse**, read at two scales: the
-**collective** network rhythm (resonances `ω_k = √λ_k`, the fundamental, the dominant beat
-`ω_j − ω_k`, vibration energy; `compute_emergent_pulse`, SDK `net.rhythm()`) and the **per-NFR**
-pulse — every NFR a phase oscillator pulsing at its own `νf` with phase `φ`, coupled by
-**resonance** (`local_phase_sync` per NFR, the Kuramoto order `R`, gate `Δφ_max = π/2`;
-`compute_nodal_pulse`, SDK `net.resonance()`). These report modal rhythm and phase
-synchronization separately; a high Kuramoto order does not by itself establish
-an engine trajectory following the auxiliary conservative wave.
+The auxiliary graph-wave model supplies a **collective** modal rhythm
+(resonances `ω_k = √λ_k`, fundamental, dominant beat `ω_j − ω_k`, vibration
+statistic; `compute_emergent_pulse`, SDK `net.rhythm()`). Its legacy
+`vibration_energy` is half the spectral trace, not a measured wave-state energy
+without modal amplitudes and velocities. The separate **per-NFR**
+read-out summarizes structural capacity and phase synchronization
+(`local_phase_sync`, Kuramoto order `R`, U3 phase gate; `compute_nodal_pulse`,
+SDK `net.resonance()`). Positive `νf` is reorganization capacity, not by itself
+an observed oscillator. The nodal equation derives accumulated capacity
+`s_i=integral(nu_f_i dt)` and `dEPI_i/ds_i=DeltaNFR_i` where capacity is positive;
+it does not identify that coordinate with phase or imply `dphi/dt=nu_f`.
+The free angular advance used by the nodal optimizer/FFT engine and the
+ordinary runtime's phase-relaxation map are distinct declared constitutive
+models. Neither high phase order nor a frequency label establishes a nodal
+trajectory following the auxiliary wave. See
+[theory/FORCED_SUPPORT_BALANCE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/FORCED_SUPPORT_BALANCE.md#23-capacity-exposure-does-not-determine-a-phase-clock).
 
 See [src/tnfr/physics/structural_diffusion.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/structural_diffusion.py)
 and [examples/02_physics_regimes/](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md).
@@ -1120,9 +1191,32 @@ derivations [theory/UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Pyt
   potential with a reference state; it is a read-only check, not a sequence constraint
   or a graph-independent bound on source aggregation.
 
+**Derivation boundary.** Word admission, live state preconditions and trajectory
+guarantees are separate. Strict U3 on a connected double-star can leave a
+two-dimensional phase-source tangent kernel while its local finite level set
+permits only common rotation; second-order terms obstruct the extra tangent.
+Even an exact reversible quotient can have parent coherence below mean child
+coherence. Thus neither U3 geometry nor U5 nesting supplies autonomous dynamics
+or a stability theorem. The rule-by-rule hypotheses and exact witnesses are in
+[the grammar scope audit](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#8-grammar-derivation-premises-language-and-trajectories).
+
+**Policies and evidence.** `GRAMMAR_BASES` in `grammar_canon.py` records each
+rule's identities, conditional results, contracts and configured choices; these
+records describe premises rather than proving execution. The explicit word
+profile `core` omits legacy adjacency/THOL preferences while retaining canonical
+word policies and live checks. Graph setting `GRAMMAR_REJECTION_MODE="raise"`
+rejects blocked requests without priority substitution; validated words always
+reject a blocked step. Neither option derives operator selection. The typed
+[structural evidence adapter](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar_evidence.py)
+reads the existing exact represented-EPI composition bound from an intact finite
+executor result. It cannot certify full-channel/tetrad dynamics, a current live
+graph or future stability. Caller-declared contract/U6 flags remain declarations.
+Full-system closure requires independently justified phase, capacity and support
+relations; differentiating the EPI identity does not supply those missing laws.
+
 **Single source of truth.** The operator-classification sets (generators, closures,
 stabilizers `{IL, THOL}`, destabilizers `{OZ, ZHIR, VAL}`, transformers `{ZHIR, THOL}`)
-are **derived** from per-operator nodal-equation predicates in
+are **materialized** from shared per-operator contract-role predicates in
 [src/tnfr/config/physics_derivation.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/config/physics_derivation.py) and
 re-exported by [src/tnfr/operators/grammar_types.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar_types.py);
 every consumer imports from there. NAV is **not** a destabilizer (its trajectory is
@@ -1137,17 +1231,18 @@ in [src/tnfr/operators/grammar_dynamics.py](https://github.com/fermga/TNFR-Pytho
 - **C(t) — total coherence** `[0,1]`, the primary stability indicator:
   `C(t) = 1 / (1 + mean|ΔNFR| + mean|dEPI|)`, the canonical nodal read-out
   (equilibrium → `C → 1`). Strong coherence `C > π/(π+1) ≈ 0.7585`; fragmentation
-  risk `C < 1/(π+1) ≈ 0.2415`. The two cuts are the coherence band
-  `[1/(π+1), π/(π+1)]` — the single structural quantity `1/(π+1)` and its complement
-  (π the sole structural scale); using this π-band as the C(t) interpretation is a
-  telemetry convention. **Dual status**: beyond a
-  read-out, its per-node kernel `structural_coherence`
+  risk `C < 1/(π+1) ≈ 0.2415` are selected diagnostic labels. The complementary
+  cuts define the configured coherence band, not a derived transition or
+  stability boundary. The reciprocal map assumes declared pressure/rate scales;
+  the nodal law does not uniquely select it. Its per-node kernel `structural_coherence`
   ([src/tnfr/metrics/common.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/metrics/common.py)) is the single
-  *constitutive* coherence map — an NFR is canonically a region of structural
-  coherence (§2). At one instant, `1/C-1` is the local L1 diagnostic distance
+  coherence-map implementation. A value of C alone does not establish an NFR's
+  persistence, coupling or autonomous formation. At one instant, `1/C-1` is the
+  local L1 diagnostic distance
   `|ΔNFR|+|dEPI|` to `(0,0)`; this monotone transform does not imply temporal
-  monotonicity or a general attractor. Every domain (graph, arithmetic,
-  chemical) reads this one kernel, while only the restricted pure-EPI diffusion
+  monotonicity or a general attractor. Domain models may reuse this kernel or
+  its zero-pressure tolerance predicate without sharing one state space or law.
+  Only the restricted pure-EPI diffusion
   model in §2 has the stated uniform attractor. At fixed nonempty order `N`,
   `C_N=c` is exactly the boundary of a `2N`-dimensional cross-polytope with L1
   radius `N(1/c-1)`; imposing fixed positive capacity gives the weighted
@@ -1179,8 +1274,11 @@ tetrad), in Hz_str units. Computation: [src/tnfr/physics/fields.py](https://gith
 
 Six invariants define TNFR consistency; preserve all of them.
 
-1. **Nodal equation integrity** — EPI changes only via `∂EPI/∂t = νf·ΔNFR`; ΔNFR keeps
-   structural-pressure semantics; `νf → 0` inactivates. (Grammar U1, U2.)
+1. **Nodal equation integrity** — continuous EPI flow follows `∂EPI/∂t = νf·ΔNFR`;
+   canonical operator events use their declared hybrid jump contracts. Accumulated
+   change includes both the flow integral and the actual jumps. ΔNFR keeps
+   structural-pressure semantics; zero capacity suppresses continuous flow.
+   (Grammar U1, U2.)
 2. **Phase-coherent coupling** — circular separation
    `|wrap(φᵢ − φⱼ)| ≤ Δφ_max` is required before any coupling.
    (Grammar U3; `validate_resonant_coupling()`.)

@@ -23,9 +23,12 @@ from __future__ import annotations
 import math
 from typing import Any, Mapping
 
-from ..mathematics.unified_numerical import np
-from ..mathematics._neighbor_differences import _require_finite_pressure, edge_mean_differences
+from ..mathematics._neighbor_differences import (
+    _require_finite_pressure,
+    edge_mean_differences,
+)
 from ..mathematics._phase_midpoint import certified_two_neighbor_phase
+from ..mathematics.unified_numerical import np
 from ..utils import get_logger
 
 logger = get_logger(__name__)
@@ -153,7 +156,9 @@ def _two_neighbor_phase_gradients(phase, source, target):
         for first, second in selected.reshape((-1, 2)):
             row = int(source[first])
             result = certified_two_neighbor_phase(
-                float(phase[row]), float(phase[target[first]]), float(phase[target[second]]),
+                float(phase[row]),
+                float(phase[target[first]]),
+                float(phase[target[second]]),
             )
             if result is not None:
                 rows.append(row)
@@ -249,8 +254,8 @@ def compute_fused_gradients_symmetric(
         Component weights (w_phase, w_epi, w_vf, w_topo)
     accumulate_both_directions : bool, optional
         If True (default), each edge (u, v) contributes to both u and v.
-        If False, each edge (u, v) only contributes to v (dst).
-        set to False if edge_src/edge_dst already contain both (u,v) and (v,u).
+        If False, each edge (u, v) contributes neighbor v to row u (src).
+        Set to False if edge_src/edge_dst already contain both (u,v) and (v,u).
     use_jit : bool, default=True
         Whether to use JIT compilation if available
 
@@ -279,9 +284,7 @@ def compute_fused_gradients_symmetric(
     else:
         w_edge = np.asarray(edge_weight, dtype=float)
         if w_edge.shape[0] != n_edges:
-            raise ValueError(
-                "edge_weight length does not match edge_src/edge_dst"
-            )
+            raise ValueError("edge_weight length does not match edge_src/edge_dst")
 
     if accumulate_both_directions:
         linear_src = np.concatenate((edge_src, edge_dst))
@@ -291,16 +294,21 @@ def compute_fused_gradients_symmetric(
         linear_src, linear_dst, linear_weight = edge_src, edge_dst, w_edge
     # Disabled channels never evaluate nodal differences, including at extremes.
     g_epi = (
-        edge_mean_differences(epi, linear_src, linear_dst, linear_weight, coefficient=w_epi)
-        if w_epi != 0.0 else np.zeros(n_nodes, dtype=float)
+        edge_mean_differences(
+            epi, linear_src, linear_dst, linear_weight, coefficient=w_epi
+        )
+        if w_epi != 0.0
+        else np.zeros(n_nodes, dtype=float)
     )
     g_vf = (
         edge_mean_differences(vf, linear_src, linear_dst, coefficient=w_vf)
-        if w_vf != 0.0 else np.zeros(n_nodes, dtype=float)
+        if w_vf != 0.0
+        else np.zeros(n_nodes, dtype=float)
     )
     phase_rows, phase_values, contribution_counts = (
         _two_neighbor_phase_gradients(phase, linear_src, linear_dst)
-        if w_phase != 0.0 else (np.empty(0, dtype=np.intp), np.empty(0, dtype=float), None)
+        if w_phase != 0.0
+        else (np.empty(0, dtype=np.intp), np.empty(0, dtype=float), None)
     )
 
     # JIT Path
@@ -326,10 +334,13 @@ def compute_fused_gradients_symmetric(
             topology = 0.0
             if w_topo != 0.0:
                 degree_sum = np.bincount(
-                    linear_src, weights=contribution_counts[linear_dst], minlength=n_nodes,
+                    linear_src,
+                    weights=contribution_counts[linear_dst],
+                    minlength=n_nodes,
                 )
                 topology = w_topo * (
-                    degree_sum[phase_rows] / contribution_counts[phase_rows] - contribution_counts[phase_rows]
+                    degree_sum[phase_rows] / contribution_counts[phase_rows]
+                    - contribution_counts[phase_rows]
                 )
             delta_nfr[phase_rows] = (
                 w_phase * phase_values + g_epi[phase_rows] + g_vf[phase_rows] + topology

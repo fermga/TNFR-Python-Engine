@@ -22,7 +22,9 @@ Canonical status specifies the required read-outs and their implementations.
 It does not prove that four lossy summaries reconstruct the graph state or its
 dynamics; minimal complete observability remains open. In particular, ξ_C is
 nonlinear in the sampled field and can use a spectral-gap fallback on supported
-symmetric graphs. Its provenance must be retained when interpretations differ.
+symmetric graphs. The static product fit uses declared structural path-length
+units; the normalized-generator spectral fallback is dimensionless. Its
+provenance must be retained when interpretations differ.
 
 EXTENDED CANONICAL FIELDS (Promoted Nov 12, 2025)
 -------------------------------------------------
@@ -47,10 +49,9 @@ Physics Foundation
 From the nodal equation:
     ∂EPI/∂t = νf · ΔNFR(t)
 
-ΔNFR represents structural pressure driving reorganization. Aggregating
-ΔNFR across the network with distance weighting creates the structural
-potential field Φ_s, analogous to gravitational potential from mass
-distribution.
+ΔNFR represents structural pressure driving reorganization. The defined
+distance-weighted aggregation of ΔNFR produces Φ_s. This read-out does not
+derive a physical interaction or an evolution law for the graph metric.
 
 References
 ----------
@@ -90,11 +91,15 @@ _ISING_2D_EXPONENT_TOLERANCE = 0.15
 # Canonical diagnostic tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
 from .canonical import (
     CoherenceLengthEstimate,
+    PhaseCurvatureNodeObservation,
+    PhaseCurvatureObservation,
+    UndefinedPhaseCurvatureError,
     compute_phase_curvature,
     compute_phase_gradient,
     compute_structural_potential,
     estimate_coherence_length,
     estimate_coherence_length_with_provenance,
+    observe_phase_curvature,
 )
 
 # Backward-compatible alias (used by pattern_discovery and parallel modules)
@@ -136,10 +141,14 @@ except ImportError:
     OptimizationObjective = None
 
 __all__ = [
-    # Canonical Structural Triad
+    # Canonical diagnostic tetrad
     "compute_structural_potential",
     "compute_phase_gradient",
     "compute_phase_curvature",
+    "observe_phase_curvature",
+    "PhaseCurvatureObservation",
+    "PhaseCurvatureNodeObservation",
+    "UndefinedPhaseCurvatureError",
     "estimate_coherence_length",
     "estimate_coherence_length_with_provenance",
     "CoherenceLengthEstimate",
@@ -348,9 +357,7 @@ _CANONICAL_NODAL_TOPOLOGY_ALPHA = 2.0
 def _validate_nodal_topology_alpha(alpha: float) -> float:
     """Return the sole exponent covered by the calibrated topology labels."""
     if isinstance(alpha, bool) or not isinstance(alpha, Real):
-        raise ValueError(
-            "canonical nodal-topology classification requires alpha=2.0"
-        )
+        raise ValueError("canonical nodal-topology classification requires alpha=2.0")
     try:
         value = float(alpha)
     except (OverflowError, TypeError, ValueError) as exc:
@@ -358,9 +365,7 @@ def _validate_nodal_topology_alpha(alpha: float) -> float:
             "canonical nodal-topology classification requires alpha=2.0"
         ) from exc
     if not math.isfinite(value) or value != _CANONICAL_NODAL_TOPOLOGY_ALPHA:
-        raise ValueError(
-            "canonical nodal-topology classification requires alpha=2.0"
-        )
+        raise ValueError("canonical nodal-topology classification requires alpha=2.0")
     return value
 
 
@@ -417,9 +422,7 @@ def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
 
     # Evaluate the documented unit-source geometry with exactly the same
     # weighted, outgoing distance kernel as the dynamical potential.
-    centrality = _compute_phi_s_exact(
-        G, nodes, {node: 1.0 for node in nodes}, exponent
-    )
+    centrality = _compute_phi_s_exact(G, nodes, {node: 1.0 for node in nodes}, exponent)
     vals = np.asarray([centrality[i] for i in nodes], dtype=float)
     mean = float(vals.mean())
     vmax = float(vals.max())
@@ -1218,9 +1221,7 @@ def auto_optimize_field_computation(G: Any, **kwargs) -> dict[str, Any]:
     del kwargs
 
     try:
-        recommendations = recommend_field_optimization_strategy(
-            G, "unified_telemetry"
-        )
+        recommendations = recommend_field_optimization_strategy(G, "unified_telemetry")
         result = recommendations.get("unified_field_analysis")
         if not result:
             result = compute_unified_telemetry(G)
@@ -1249,6 +1250,7 @@ def auto_optimize_field_computation(G: Any, **kwargs) -> dict[str, Any]:
             "error": str(e),
             "total_time": time.perf_counter() - start_time,
         }
+
 
 # Import extended canonical fields (NEWLY PROMOTED Nov 12, 2025)
 # as fallback for development/testing environments

@@ -36,7 +36,11 @@ from tnfr.physics.canonical import (
     estimate_coherence_length,
 )
 from tnfr.physics.telemetry import compute_structural_telemetry
-from tnfr.utils.cache import _compute_dependency_hash, reset_global_cache
+from tnfr.utils.cache import (
+    _compute_dependency_hash,
+    get_global_cache,
+    reset_global_cache,
+)
 
 
 @pytest.fixture
@@ -50,7 +54,8 @@ def restore_precision_mode():
 
 @pytest.mark.parametrize("graph", [None, nx.path_graph(2)])
 def test_precision_dependency_hash_tracks_mode_without_changing_topology_key(
-    graph, restore_precision_mode,
+    graph,
+    restore_precision_mode,
 ):
     set_precision_mode("standard")
     standard = _compute_dependency_hash(graph, {"precision_mode"})
@@ -62,8 +67,12 @@ def test_precision_dependency_hash_tracks_mode_without_changing_topology_key(
 
 @pytest.mark.parametrize(
     "compute",
-    [compute_structural_potential, compute_phase_gradient,
-     compute_phase_curvature, compute_structural_telemetry],
+    [
+        compute_structural_potential,
+        compute_phase_gradient,
+        compute_phase_curvature,
+        compute_structural_telemetry,
+    ],
 )
 def test_precision_aware_field_cache_separates_modes(compute, restore_precision_mode):
     graph = nx.path_graph(3)
@@ -72,13 +81,20 @@ def test_precision_aware_field_cache_separates_modes(compute, restore_precision_
         set_attr(graph.nodes[node], ALIAS_THETA, 0.2 * node)
     set_precision_mode("standard")
     standard = compute(graph)
-    assert compute(graph) is standard
+    # Public dictionaries are detached. Cache hits, not public object identity,
+    # demonstrate reuse of the internal numerical result.
+    cache = get_global_cache()
+    before_hits = cache.hits
+    repeated = compute(graph)
+    assert repeated == standard
+    assert repeated is not standard
+    assert cache.hits > before_hits
     set_precision_mode("research")
     research = compute(graph)
     assert research is not standard
-    assert compute(graph) is research
+    assert compute(graph) == research
     set_precision_mode("standard")
-    assert compute(graph) is standard
+    assert compute(graph) == standard
 
 
 def _build(n: int = 80, seed: int = 7) -> nx.Graph:

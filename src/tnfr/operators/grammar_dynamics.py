@@ -6,14 +6,14 @@ dynamics, where operators are selected one at a time per node.
 
 Physics basis
 -------------
-Grammar rules derive from the nodal equation ∂EPI/∂t = νf · ΔNFR(t).
-Proactive enforcement prevents grammar violations *before* they corrupt graph
-state, rather than detecting them reactively after the damage is done.
+The nodal equation motivates operator contracts and calibrated grammar
+policies. This layer filters candidates against available state/history;
+it neither proves trajectory stability nor supplies an autonomous selection law.
 
 Incremental rule applicability
 ------------------------------
-- **U1a** (Initiation): Checked when EPI ≈ 0 and history is empty.
-- **U2**  (Convergence): Tracked via a cumulative destabilizer/stabilizer debt
+- **U1a** (Initiation): Checked when finite scalar EPI is zero and history is empty.
+- **U2**  (Debt): Tracked via a cumulative destabilizer/stabilizer debt
   counter, independent of bounded history retention.
 - **U3**  (Resonant Coupling): Phase compatibility required for UM/RA candidates.
 - **U4a** (Bifurcation triggers): OZ/ZHIR require handlers in recent context.
@@ -25,7 +25,7 @@ Incremental rule applicability
 References
 ----------
 - AGENTS.md §Unified Grammar (U1-U6)
-- UNIFIED_GRAMMAR_RULES.md — complete derivations
+- UNIFIED_GRAMMAR_RULES.md — policies, hypotheses and limits
 - grammar_core.py — batch validator (full sequences)
 """
 
@@ -34,10 +34,17 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Sequence
 
+from ..config.operator_names import BIFURCATION_WINDOW, U2_DEBT_CAPACITY
 from ..types import Glyph
 from .grammar_debt import (
-    PRIOR_COHERENCE_KEY, U2_DEBT_KEY, advance_debt, advance_prior_coherence,
-    debt_from_history, node_debt, node_has_prior_coherence, require_replayable_history,
+    PRIOR_COHERENCE_KEY,
+    U2_DEBT_KEY,
+    advance_debt,
+    advance_prior_coherence,
+    debt_from_history,
+    node_debt,
+    node_has_prior_coherence,
+    require_replayable_history,
 )
 from .grammar_types import (
     BIFURCATION_HANDLERS,
@@ -51,7 +58,6 @@ from .grammar_types import (
     TRANSFORMERS,
     glyph_function_name,
 )
-from ..config.operator_names import BIFURCATION_WINDOW, U2_DEBT_CAPACITY
 
 # ── glyph code ↔ canonical executable-identifier helpers ───────────────────
 
@@ -142,7 +148,7 @@ def _check_u1a(
     epi: float,
 ) -> GrammarViolation | None:
     """U1a: If EPI ≈ 0 and history is empty, first glyph must be a generator."""
-    if history or epi > 0.0:
+    if history or epi != 0.0:
         return None  # not applicable
     if candidate not in _GENERATOR_CODES:
         return GrammarViolation(
@@ -251,7 +257,7 @@ def _check_u4b(
         return None
     # Look for a destabilizer within the emergent relaxation window: the
     # structure stays plastic until the |ΔNFR| perturbation relaxes into the
-    # coherence band (BIFURCATION_WINDOW, derived from the pulse, = 3).
+    # scalar-surrogate band (BIFURCATION_WINDOW = 3, an operator-position policy).
     w = BIFURCATION_WINDOW
     recent = history[-w:] if len(history) >= w else history
     has_destab = any(g in _DESTABILIZER_CODES for g in recent)
@@ -301,14 +307,23 @@ def _check_violations(
         ]
     history = _recent_codes(G, node, window)
 
-    # Read EPI for U1a
-    try:
-        from ..alias import get_attr
-        from ..constants.aliases import ALIAS_EPI
+    from ..alias import get_attr
+    from ..constants.aliases import ALIAS_EPI
+    from ..types import require_finite_real_scalar_epi
 
-        epi = float(get_attr(G.nodes[node], ALIAS_EPI, 1.0))
-    except Exception:
-        epi = 1.0  # assume initialized
+    # An absent coordinate retains the provisional-selection compatibility
+    # default. Provided state must be finite and preserve its signed scalar
+    # embedding; conversion failure must not imply initialized form.
+    epi = require_finite_real_scalar_epi(
+        get_attr(
+            G.nodes[node],
+            ALIAS_EPI,
+            1.0,
+            strict=True,
+            conv=lambda value: value,
+        ),
+        f"node {node!r} EPI",
+    )
 
     violations: list[GrammarViolation] = []
     future_handler = False
@@ -381,7 +396,11 @@ def validate_candidate(
     """
     code = _to_code(candidate)
     allowed, violations = _check_violations(
-        G, node, code, window, sequence_context=sequence_context,
+        G,
+        node,
+        code,
+        window,
+        sequence_context=sequence_context,
     )
 
     alt: str | None = None
@@ -479,13 +498,17 @@ def enforce_grammar_on_glyph(
     window: int = _DEFAULT_WINDOW,
     sequence_context: Any = None,
 ) -> str:
-    """Validate *candidate*, using fallback only outside a validated word.
+    """Apply live grammar with an explicit rejection policy.
 
-    Single source of truth for incremental grammar enforcement (U1-U6).
-    ``enforce_canonical_grammar()`` delegates here; all application paths
-    converge through this function exactly once before executing the operator.
-    With ``sequence_context``, a blocked live step raises StructuralGrammarError
-    before execution so a validated word is never silently rewritten.
+    ``enforce_canonical_grammar()`` delegates here. The graph-owned setting
+    ``GRAMMAR_REJECTION_MODE`` accepts exactly ``"fallback"`` (the compatibility
+    default) or ``"raise"``. The latter rejects a blocked candidate without
+    calculating an alternative. A validated ``sequence_context`` always raises
+    on rejection, regardless of this setting, so its word is not rewritten.
+
+    Both modes apply the same incremental U1a/U2/U3/U4 checks. Strict rejection
+    neither derives those policies from the nodal equation nor supplies an
+    autonomous selection law. Other selector policies are separate.
 
     Parameters
     ----------
@@ -503,20 +526,31 @@ def enforce_grammar_on_glyph(
     str
         The validated (or replaced) glyph code.
     """
-    cr = validate_candidate(
-        G, node, candidate, window=window, sequence_context=sequence_context,
+    mode = G.graph.get("GRAMMAR_REJECTION_MODE", "fallback")
+    if type(mode) is not str:
+        raise TypeError("GRAMMAR_REJECTION_MODE must be 'fallback' or 'raise'")
+    if mode not in {"fallback", "raise"}:
+        raise ValueError("GRAMMAR_REJECTION_MODE must be 'fallback' or 'raise'")
+
+    code = _to_code(candidate)
+    allowed, violations = _check_violations(
+        G,
+        node,
+        code,
+        window,
+        sequence_context=sequence_context,
     )
-    if cr.allowed:
-        return cr.candidate
-    if sequence_context is not None:
+    if allowed:
+        return code
+    if mode == "raise" or sequence_context is not None:
         from .grammar_types import StructuralGrammarError
 
         raise StructuralGrammarError(
-            rule=cr.violations[0].rule,
-            candidate=cr.candidate,
-            message="; ".join(violation.message for violation in cr.violations),
+            rule=violations[0].rule,
+            candidate=code,
+            message="; ".join(violation.message for violation in violations),
         )
-    return cr.suggested_alternative or _FALLBACK_CODE
+    return suggest_alternative(G, node, code, window=window)
 
 
 def validate_sequence_incremental(
@@ -596,7 +630,9 @@ def validate_sequence_incremental(
         if cr.allowed:
             shadow.append(code)
             shadow_debt = advance_debt(shadow_debt, code)
-            shadow_prior_coherence = advance_prior_coherence(shadow_prior_coherence, code)
+            shadow_prior_coherence = advance_prior_coherence(
+                shadow_prior_coherence, code
+            )
 
     return results
 

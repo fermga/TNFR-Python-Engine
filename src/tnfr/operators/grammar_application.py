@@ -175,8 +175,12 @@ def on_applied_glyph(G, n, applied: Any) -> None:  # G: TNFRGraph, n: NodeId
         Applied glyph or operator name
     """
     from .grammar_debt import (
-        PRIOR_COHERENCE_KEY, U2_DEBT_KEY, advance_debt, advance_prior_coherence,
-        node_debt, node_has_prior_coherence,
+        PRIOR_COHERENCE_KEY,
+        U2_DEBT_KEY,
+        advance_debt,
+        advance_prior_coherence,
+        node_debt,
+        node_has_prior_coherence,
     )
 
     debt = node_debt(G.nodes[n])
@@ -198,9 +202,12 @@ def enforce_canonical_grammar(
 
     Delegates to :func:`grammar_dynamics.enforce_grammar_on_glyph` for
     proactive validation.  If *cand* would violate a grammar rule, it is
-    replaced with a safe alternative during standalone selection. An explicit
-    validated sequence context instead raises before a blocked step; it can
-    supply a future U4a handler without bypassing other live grammar checks.
+    replaced with a grammar-admitted alternative during standalone selection
+    under the default ``GRAMMAR_REJECTION_MODE="fallback"``. The explicit
+    graph setting ``"raise"`` rejects the request without selecting an
+    alternative. A validated sequence context always raises before a blocked
+    step; it can supply a future U4a handler without bypassing other live checks.
+    This mode selects a rejection policy, not a derived autonomous grammar.
 
     Parameters
     ----------

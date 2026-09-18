@@ -129,7 +129,12 @@ def record_grammar_violation(
 def validate_sequence(
     names: Iterable[str] | object = ..., **kwargs: object
 ) -> ValidationOutcome[tuple[str, ...]]: ...
-def parse_sequence(names: Iterable[str]) -> SequenceValidationResult: ...
+def parse_sequence(
+    names: Iterable[str],
+    *,
+    context: Mapping[str, Any] | None = ...,
+    compatibility_profile: str | None = ...,
+) -> SequenceValidationResult: ...
 def enforce_canonical_grammar(
     G: TNFRGraph, n: NodeId, cand: Glyph | str, ctx: GrammarContext | None = None
 ) -> Glyph | str: ...

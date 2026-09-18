@@ -10,8 +10,9 @@ must state whether a result is exact, conditional, empirical or open.
 | Document | Scope |
 | --- | --- |
 | [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) | Nodal equation, structural triad and framework overview |
+| [NODAL_PARAMETER_FOUNDATIONS.md](NODAL_PARAMETER_FOUNDATIONS.md) | Parameter families, units, covariance, conditional diffusion, joint response and phase/capacity compatibility |
 | [DIAGNOSTIC_AND_GRAMMAR_SCOPE.md](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) | Exact hypotheses, finite-graph witnesses and limits of current claims |
-| [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) | Mathematical representation of graph dynamics |
+| [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) | Navigation between state, closure, parameter and diagnostic owners; no duplicate derivation ledger |
 | [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) | Four diagnostic channels and the open minimal-state question |
 | [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) | Operator semantics and channel effects |
 | [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) | U1-U6 grammar and its operational derivations |

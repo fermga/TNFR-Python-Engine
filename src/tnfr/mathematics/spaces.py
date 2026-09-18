@@ -116,11 +116,13 @@ class HilbertSpace:
 
 
 class BanachSpaceEPI(_EPIValidators):
-    r"""Representation of :math:`C^0([0, 1],\mathbb{C}) \oplus \ell^2(\mathbb{N})`.
+    r"""Finite sampled model inspired by a continuous/discrete direct sum.
 
     Elements are represented by a pair ``(f, a)`` where ``f`` samples the
-    continuous field over a grid ``x_grid`` and ``a`` is the discrete spectral
-    tail.  :meth:`composite_epi_regularity` combines the supremum of ``f``, the
+    continuous field over a supplied uniform grid ``x_grid`` and ``a`` is a
+    finite coefficient array. No interpolation, infinite tail or particular
+    grid interval is inferred. :meth:`composite_epi_regularity` combines the
+    supremum of ``f``, the
     :math:`\ell^2` norm of ``a`` and a derivative-energy quotient.  It is an
     unbounded regularity functional: larger amplitude or a rougher continuous
     field can increase it.  It is neither the canonical TNFR structural
@@ -172,7 +174,11 @@ class BanachSpaceEPI(_EPIValidators):
         discrete_index: int = 0,
         x_grid: Sequence[float] | np.ndarray | None = None,
     ) -> BEPIElement:
-        """Generate a canonical basis element for the Banach space."""
+        """Return a paired unit entry in each of the two stored components.
+
+        Despite the historical name, these paired entries alone do not form
+        a basis of the full direct sum: both component sums are always equal.
+        """
 
         if continuous_size < 2:
             raise TNFRValueError(

@@ -95,9 +95,7 @@ def _stable_mean(
     scale = max(values[index] for index in neighbor_indices)
     if scale == 0.0:
         return 0.0
-    normalized_total = math.fsum(
-        values[index] / scale for index in neighbor_indices
-    )
+    normalized_total = math.fsum(values[index] / scale for index in neighbor_indices)
     mean = scale * (normalized_total / len(neighbor_indices))
     if not math.isfinite(mean):
         raise ValueError("neighbor frequency mean must remain finite")
@@ -273,6 +271,10 @@ def adapt_vf_after_structural_stability(
     than EPS_DNFR_STABLE and Si is at least the configured si_hi threshold.
     After VF_ADAPT_TAU consecutive qualifying evaluations, its frequency moves
     by VF_ADAPT_MU toward the immutable-snapshot mean of its neighbors.
+
+    Si is a derived diagnostic. Using it to select capacity updates is an
+    operational policy, not an evolution law derived from the nodal EPI
+    equation. This routine consumes stored Si; it does not refresh it.
 
     This routine does not read dEPI/dt and therefore does not compute or gate on
     canonical total coherence C(t). All parameters and node scalars are

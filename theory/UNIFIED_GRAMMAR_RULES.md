@@ -24,6 +24,10 @@ U1–U5 govern operator sequences and their context. U3 also requires actual
 phase verification by operator preconditions. U6 is a read-only potential
 monitor. Passing a word validator does not certify every operator
 precondition, an infinite-horizon convergence theorem, or a future U6 reading.
+The [rule-by-rule derivation audit](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#8-grammar-derivation-premises-language-and-trajectories)
+separates exact structural content, additional contracts and selected policies.
+Its strict-U3 and exactly closed U5 counterexamples delimit two implications
+that cannot be promoted from grammar acceptance.
 
 ## 1. Canonical operator roles
 
@@ -72,6 +76,9 @@ The context-aware sequence API supports an already initialized structure through
 the initial_epi_nonzero context flag. The structural execution entry point
 derives this context from the target graph/node. This contextual start
 allowance does not waive other sequence or operator requirements.
+Finite signed nonzero scalar EPI counts as existing form, including its
+uniform-real BEPI representation. Zero of either sign does not; malformed
+provided values must not be converted into initialization permission.
 
 ### U1b: Closure
 
@@ -91,7 +98,7 @@ production word.
 
 ## 3. U2 — Stabilization and boundedness policy
 
-Integrating the nodal equation gives the exact finite-interval identity
+On a continuous segment, integrating the nodal equation gives
 
     EPI(t) − EPI(t₀) = ∫[t₀,t] ν_f(s) ΔNFR(s) ds.
 
@@ -100,6 +107,10 @@ bounded partial integrals, convergence of the improper integral, and absolute
 integrability are different conditions. For example, EPI(t) = sin(t) is bounded
 but does not converge, and ΔNFR(t) = 1/(1+t) with ν_f = 1 tends to zero while
 its integral diverges.
+EPI-writing operator events are separate zero-duration jumps. A complete
+hybrid trajectory adds their actual increments to this integral; the
+[flow/jump and energy identities](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#9-u2-and-u4-in-the-actual-flowjump-model)
+state the required assumptions. An operator count cannot replace those terms.
 
 U2 controls declared destabilizing actions through the following policy:
 
@@ -136,6 +147,15 @@ canonical coupling gate. A sequence-level role check records this obligation;
 the graph-specific phase comparison belongs to operator preconditions. Operator
 execution must preserve this separation and must not replace a real phase
 check with acceptance of a word.
+For positive phasor amplitudes the pi/2 gate is equivalent to a nonnegative
+pairwise interference cross term. That compatibility criterion is a declared
+premise, not forced by the scalar EPI equation. U3 gates participating UM/RA
+relations; it does not filter the canonical pressure support. Strict U3 on
+every edge does not imply a full-rank phase-source derivative, and passing
+an instantaneous gate does not prove it remains satisfied under later motion.
+The [exact double-star witness](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#10-u3-exact-geometric-content-and-a-strict-gate-counterexample)
+has an extra tangent obstructed at second order, so it supplies no finite
+relative-motion mechanism.
 
 ## 5. U4 — Bifurcation dynamics
 
@@ -195,6 +215,10 @@ a specified hierarchy, coupling weights, normalization, and admissible α.
 
 The grammar's scale-stabilizer requirement operationalizes preservation of
 nested structure. It does not prove that target for every arbitrary hierarchy.
+A stronger [exact quotient counterexample](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#11-u5-exact-scale-dynamics-and-coherence-ordering-are-separate)
+shows that even autonomous scale closure can have parent coherence below the
+mean child coherence. Nesting, reduced-dynamics closure and a coherence
+inequality are separate properties.
 A word can satisfy U2 and U4b while missing U5: Emission, deep Recursivity,
 Silence contains no destabilizer or transformer, yet lacks a nearby scale
 stabilizer.
@@ -210,6 +234,12 @@ The field API defaults to exact evaluation. U6 compares before/after potential
 telemetry using U6_STRUCTURAL_POTENTIAL_LIMIT = **π/2**. The related per-node
 warning value PHI_S_VON_KOCH_THRESHOLD = **π/4** is distinct from the drift
 check. Monitor reports must specify their node aggregation and baseline.
+The implemented drift is exactly `mean_i |Phi_after(i)-Phi_reference(i)|`,
+not a maximum, signed mean, per-node bound or integral over time. Both
+snapshots must contain exactly the current graph nodes; unavailable baselines
+are reported as unavailable rather than a passing zero drift. A threshold
+also presupposes the declared distance convention, since rescaling all
+distances by a multiplies this potential by a^-2.
 
 These values are selected π-scaled safety policies, not universal upper bounds
 derived from angular wrapping. On K₄, zero phase and unit pressure give Φ_s = 3
@@ -251,17 +281,61 @@ every possible dynamical risk is expressible by six word constraints.
 |----------------|--------|
 | Operator roles and calibration | [physics_derivation.py](../src/tnfr/config/physics_derivation.py) |
 | Re-exported sets and window | [grammar_types.py](../src/tnfr/operators/grammar_types.py) |
-| Declarative grammar registry | [grammar_canon.py](../src/tnfr/operators/grammar_canon.py) |
+| Declarative grammar and basis registries | [grammar_canon.py](../src/tnfr/operators/grammar_canon.py) |
 | Operator-list validation | [grammar_core.py](../src/tnfr/operators/grammar_core.py) |
 | Context-aware name/glyph validation | [grammar_patterns.py](../src/tnfr/operators/grammar_patterns.py) |
 | Causal debt and prior Coherence | [grammar_debt.py](../src/tnfr/operators/grammar_debt.py) |
 | Dynamic selection and application | [grammar_dynamics.py](../src/tnfr/operators/grammar_dynamics.py), [grammar_application.py](../src/tnfr/operators/grammar_application.py) |
 | Validated execution boundary | [grammar_execution.py](../src/tnfr/operators/grammar_execution.py) |
+| Finite represented EPI execution evidence | [grammar_evidence.py](../src/tnfr/operators/grammar_evidence.py) |
+| Read-only grammar and evidence reporting | [grammar_observations.py](../src/tnfr/operators/grammar_observations.py) |
 | Field measurements | [fields.py](../src/tnfr/physics/fields.py) |
 
 The legacy C1/RC1 initiation rules map to U1, C2/RC2 to U2, RC3 to U3, and
 C3/RC4 to U4. U5 covers declared hierarchy and U6 covers potential telemetry.
 Historical proposed spacing rules do not override this registry.
+
+**Word admission.** `GrammarValidator` owns canonical operator-word checks;
+the cached validator delegates to it after static preflight. Public
+`validate_sequence` and `parse_sequence` share these checks. Their default
+`compatibility_profile="legacy"` also retains adjacency and extra THOL-terminal
+preferences. The explicit `"core"` profile omits only those preferences; it
+preserves U1–U5 word requirements, including the calibrated U2/U4 policies.
+For example, AL,VAL,THOL,NAV passes core validation but fails the legacy
+THOL-terminal preference. The same context key carries the profile through
+existing word/event executors. Optional semantic validation and antipattern
+diagnostics remain separate. The exact initialized diagnostic OZ/ZHIR probe
+is labeled as a waiver, not a canonical-word pass. String words carry default
+recursion depth only; actual operator metadata, histories and live
+preconditions still require execution-time checks.
+
+**Rejection policy.** Graph setting `GRAMMAR_REJECTION_MODE="raise"` rejects a
+blocked live request without calculating or executing a replacement. Its
+absent/default `"fallback"` mode retains the existing substitution policy.
+A validated word always rejects a blocked step, regardless of this setting.
+Both modes reuse the same incremental checks and executor; independent
+selector policies remain unchanged. Neither mode derives a next operator.
+
+**Basis and execution evidence.** Immutable `GRAMMAR_BASES` records describe
+each rule's identities, conditional theorems, contracts and policies, including
+hypotheses, configured choices and owners. Those descriptions do not verify
+hypotheses or grant execution permission. Separately,
+`assess_structural_grammar_evidence` accepts an intact typed executor result
+and reads its finite represented EPI composition in a common disagreement
+metric. Supported bounds certify represented-map nonincrease or contraction;
+missing evidence remains unavailable. This supplies no full-channel or tetrad
+trajectory theorem, prospective admission or repeated-schedule guarantee.
+The [structural grammar scope](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#13-structural-grammar-refactor-and-the-full-nodal-system)
+centralizes the mathematical boundaries and remaining derivation obligations.
+
+**Observation scope.** `observe_grammar` separates current-snapshot U3 outcomes
+from other incremental rejections; isolated provisional nodes are unassessed,
+while actual Coupling preconditions reject them. Its legacy `contract_satisfied`
+and `u6_checked` arguments are caller declarations, not verified evidence.
+Optional typed execution evidence concerns its own historical trace and does
+not authenticate the supplied current graph. A preview is not a simulated
+future phase trajectory. Registry equality tests establish consistent policies
+across consumers, not their physical necessity or completeness.
 
 ## 9. Verification and reporting
 

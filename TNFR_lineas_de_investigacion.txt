@@ -67,10 +67,166 @@ All exact regional balances close; four ancestry pairs lose EPI contrast
 and four gain it at the retained instant. The child cohort has no internal
 edges; its variance decrease comes from its parent boundary. Validation: 313 targeted
 tests pass, including 52 new regional observer/audit tests.
-Next: define temporal regional identity and account for what maintains the
-source/boundary conditions using the existing finite records. Mean, phase,
-capacity, history and supplied scheduling must remain visible. Configured
-timing is not automatically a derived selection law. The bounded task lives only in
+The temporal regional audit is now complete on retained t=1.5 to 1.75 records.
+All nine exact finite budgets close. Membership, support and capacity persist;
+the EPI means and relative forms change. Child contrast increases through the
+parent boundary, partly attenuated by IL; contrast alone is not coherence or
+instability. The later phase update changes the canonical source. Validation:
+156 targeted tests pass, including 58 new finite observer/reader tests.
+The phase-source gate is also complete: at a fixed endpoint, the two archived
+phase outputs change canonical fresh pressure by up to about 0.04914324 and
+reverse pair 3's model variance-rate sign. Historical stored nodal rates stay
+unchanged. Source invariance is rejected for this comparison; it is neither
+an observed alternative trajectory nor a stability/maintenance verdict.
+Validation: 151 targeted tests, including 43 new portable cases, and an
+independent exact recount. Exact represented-phasor reduction is now implemented
+using the existing dyadic owner: permutation-invariant derived sums, safe
+common scaling, retained rounding defects and no angle at exact cancellation.
+Validation: 225 targeted tests, including 52 new independent reducer cases.
+The opt-in global-coordination path is now integrated, with graph-owned
+restoration on failure and explicit refusal of unavailable active direction.
+Validation: 175 targeted tests, including 24 new integration cases. Local
+and pressure policies and the native runtime's legacy default remain separate.
+The bounded version/source comparison is complete: frozen exact-version
+enumerations agree, fresh pressure changes by at most 2^-53 versus legacy,
+and none of the nine regional rates changes sign. The paired regional
+follow-through reuses six archived endpoints: all eight ancestry pairs
+attenuate raw perturbation error, but only four improve contrast-normalized
+error; the child cohort gains spatial error while its mean offset relaxes.
+Validation: 102 targeted tests across both deliveries, including 25 new cases.
+The retained child-distortion mechanism is now accounted for: Reception
+supplies 84.9442% of the interval's error increase and integration 15.0558%;
+held-pressure lag partially attenuates it. The same map transfers child-parent
+mean contrast into child spatial error. Validation: 67 targeted tests and
+277 independent exact checks. The localized form-damage/restoration test is
+also complete: error energy falls 62.07099%, control variance grows 6.04307-fold,
+and all predeclared finite-response gates pass. Reception and nodal transport
+account for the improvement; supplied scheduling and changing control form
+exclude an autonomy claim. Validation: 109 targeted tests and 289 independent
+exact checks. The conditional regional-response criterion is now complete:
+exactly matched Reception/nodal maps attenuate the isolated child-shape image
+in both retained directions; only the earlier witness's mean/parent input
+overwhelms that margin. A nonzero nullspace image excludes an unrestricted
+region-only gain. The criterion retains realization defects and has 82 new
+portable tests, 84 reused passing tests and 239 independent exact checks.
+The input geometry is also classified: parent inputs alone span all seven
+child-shape directions for both admitted maps, with zero protected nonzero
+linear read-outs under unrestricted inputs. Conditional recovery remains
+valid; unrestricted input reachability and autonomous maintenance are not
+established. Validation: 76 new portable tests and 82 reused passing tests.
+The exact symmetry audit is complete: all eight weighted-support symmetries
+commute with A, but only the identity commutes with sequential Reception S
+and T=S-hA. The local Reception row family respects all eight; its ordered
+composition does not. Captured source/state symmetry is also identity-only.
+The common group supplies no input restriction. Validation: 113 new portable
+tests and 140 reused passing tests. The same-snapshot comparison is also
+complete: J and J-hA respect all eight symmetries; the regional-mean leak
+vanishes. Six centered read-outs are protected only under orbit-invariant
+environmental inputs, a premise absent in both retained experiments.
+Unrestricted input rank remains seven. Validation: 14 new portable tests
+and 149 distinct reused passing tests. The geometric detour is closed;
+the fixed points of the specified relaxation policies are also classified.
+Si is telemetry: an implemented adaptation policy uses it as a gate. The
+uniform-field conclusion depends on that policy and its other premises;
+it does not exclude persistent differentiated TNFR configurations in general.
+Existing phase and capacity owner tests pass (108 cases). The proposed
+policy-response experiment is secondary and parked. Primary emergence work
+requires an explicit structural evolution law with derived relations and
+additional hypotheses distinguished, without substituting telemetry control
+for a foundational nodal mechanism. No historical reconstruction is queued.
+The source-tangency identity is now derived without Si: on fixed support,
+phase-source and capacity-source changes must compensate to preserve zero
+pressure. Instantaneous tangency is not indefinite maintenance. The capacity
+to phase gate is now closed with an independence proof: phase speed is not
+fixed by the nodal EPI equation. The source text also distinguishes structural
+reorganization from periodic rhythm. Accumulated capacity supplies a derived
+trajectory coordinate, not a phase law. The held-source geometric gate is now
+closed in scope: nonnegative irreducible response gives rotation-only rigidity,
+but an exact cube family preserves g=0 with relative-phase deformation.
+That deformation exceeds an all-edge pi/2 gate; strict gate compliance plus
+zero source instead implies rigidity. The grammar derivation audit now closes
+the nonzero-source rank question with an exact strict-U3 double-star:
+an extra tangent exists but is obstructed at second order, so the local finite
+level set still has only common rotation. Even exact U5 scale closure does not
+guarantee parent coherence above the child average. Signed initiation,
+string/core validation and U3/U6 reports are repaired and centralized.
+The joint grammar refactor now separates immutable rule premises, explicit
+legacy/core word preferences, rejection without priority substitution and
+typed finite execution evidence. SDK role metadata and validation reuse their
+shared owners; caller flags cannot become verified trajectory evidence.
+The primary gate is G3 in the sole execution plan: reassess independent
+constitutive closure of EPI, capacity, phase, support and relevant history,
+including all four tetrad fields. Differentiating EPI exposes missing laws;
+it does not derive them. Finite strict-U3 source geometry is a bounded
+supporting question, not a separate programme. No phase speed, controller
+or new force is imposed. The exact results and
+portable controls belong to FORCED_SUPPORT_BALANCE.md, sections 22-24;
+diagnostic versus causal-law scope and the joint-system review belong to
+DIAGNOSTIC_AND_GRAMMAR_SCOPE.md, sections 7-14. The first G3 audit now proves
+capacity-law independence even under dissipation, conductance-scale freedom
+and conditional reciprocal constraints for a joint potential. A shared exact
+moving-conductance observer separates geometric work from EPI dissipation.
+Following the user's priority, G3 now starts with physical/mathematical bases:
+EPI as structural form versus its numerical chart, directed pressure, units,
+clock and state equivalence. FUNDAMENTAL_THEORY.md sections 2.4-2.6 own that
+review. Historical source formulas and code are candidate formalizations,
+not extra axioms forcing the result. Original dimensional conflicts are
+explicit, and the legacy EPI diagnostic no longer mistakes temporal entropy
+or nonzero scalar BEPI storage for necessary vector-valued form.
+The all-parameter follow-through is centralized in
+theory/NODAL_PARAMETER_FOUNDATIONS.md: capacity, pressure coefficients, phase,
+clock, support/conductance/distance, complete tetrad, coherence/Si, energy,
+memory and operators now have one dependency and units ledger. Conditional
+locality/symmetry and form/time covariance give constructive restrictions
+without selecting an autonomous law. Coherence-fit distance semantics and
+stale metric normalization are repaired with portable controls. These are
+foundational/implementation results, not evidence of particle emergence.
+The first joint representation test is also complete: signed
+z=EPI*exp(i*phase) loses dynamically relevant information under a sign/half-turn
+identification and at zero form. A bounded strict-U3 two-node witness changes
+the squared-modulus rate while preserving the observation, independently of
+phase speed. Retaining signed form and unit-circle phase is a faithful encoding,
+not a derived new law. The same foundation owner records the proof and five
+portable controls. The joint pressure-rate identity is now centralized in
+phase_response.py using the existing phase/transport/source owners. It retains
+the capacity product term in EPI acceleration, which pressure alone can miss.
+On connected undirected support, a support-degree-weighted condition exactly
+decides whether capacity rates can cancel a specified phase-source rate.
+A strict-U3 star violates that condition; a finite P2 family satisfies full
+zero-pressure compatibility while phase and capacity change together. Neither
+result supplies an autonomous law. The sole execution plan next tests finite
+joint source-level compatibility, including positivity and the remaining
+uniform-capacity freedom; phase-only level questions are a limiting case of
+that gate rather than a separate research queue.
+The final pre-research audit repairs field input validation and mutable cache
+exposure, and preserves available tetrad fields during safe partial emission.
+Reference documents now distinguish instantaneous zero pressure from joint
+equilibrium and selected coherence diagnostics from derived dynamical laws.
+The next gate explicitly checks undirected unique support; symmetric weighted
+conductance alone is insufficient. The weighted EPI Poisson solver cannot
+silently replace the different support-based capacity equation.
+Validation: 831 targeted tests in 27 modules pass; eight warnings concern
+absent optional JAX/PyTorch backends. The source-bound audit checkpoint is
+artifacts/research/foundations_pre_research_audit_2026_09_18.json.
+The complete checkpoint and next gate remain in FIVE_STAGE_EXECUTION_PLAN.md.
+Supporting implementation corrections now use actual retained time intervals
+for capacity secants and distinguish represented phase-resultant cancellation
+from a numeric zero curvature. Missing evidence is explicit, not a fabricated
+stable state. Mathematical-dynamics documentation is a shared-owner index,
+and zero form/Emission lineage no longer imply creation of the substrate or
+a derived physical arrow of time.
+Existing physical maps and
+controller parameters are retained; validation/reporting defects are repaired
+and the new execution-policy options are explicit. Derived observables are not prohibited in principle;
+their role in a fundamental law still needs an independent derivation.
+The proposed
+Platonic-solid connection is a candidate comparison within this same route;
+existing supplied polyhedral spectra do not prove spontaneous formation.
+Further trajectory sweeps and numerical-policy cleanup are parked.
+Determinism and true-transcendental accuracy remain distinct requirements.
+Mean, phase, capacity, history and supplied scheduling
+remain visible. Configured timing is not automatically a derived selection law.
+The bounded task lives only in
   theory/research/FIVE_STAGE_EXECUTION_PLAN.md.
 P1-P5 remain the supporting physical measurement bridge. P1 is implemented;
 P2 bounds and one Volts exploration are complete, physical admission missing.
@@ -204,9 +360,9 @@ operator action from numerical residues. Common forcing still cancels between
 branches, although the original individual target loses compatibility.
 The completed five-step policy window admits that map on three IL steps and
 correctly abstains on scheduled EN/AL. All adaptation counters stay zero;
-paired centered energy falls, but its mean offset changes at EN. The next
-mechanism audit reuses these retained resets and investigates the numerical
-conditioning of global phase direction before more elapsed-time experiments.
+paired centered energy falls, but its mean offset changes at EN. The retained
+reset and phase-conditioning audits are complete; their scoped follow-through
+and the current next task are centralized in the execution plan.
 Approximation-error analysis remains an optional parked supporting question.
 No physical identity or universal emergence is established by these finite witnesses.
 The supporting module audit confirms that simultaneous public births,
@@ -417,8 +573,20 @@ The full preceding roadmap is archived with SHA-256:
 Archive notes: theory/research/archive/README.md.
 No historical result or pending mathematical obligation was deleted.
 
-RESUME: read theory/research/FIVE_STAGE_EXECUTION_PLAN.md and its primary
-status board. Finite distributed birth/support/feedback and the fixed-target
+RESUME: read theory/research/FIVE_STAGE_EXECUTION_PLAN.md and its
+interruption checkpoint. Base 477983e5 is merged and pushed; temporal regional
+identity/source accounting is complete on the retained control interval
+t=1.5 to 1.75, with 156 targeted tests passing. The following phase-source
+gate is complete with 151 targeted tests passing: the archived ambiguity
+affects fresh pressure and one regional model-rate sign. The exact represented-
+phasor reducer is also complete, with 225 targeted tests passing; its opt-in
+global-coordination integration passes 175 targeted tests. These deliveries
+and the subsequent version/source comparison and regional-response study
+are saved locally and not yet
+committed or pushed. Do not regenerate
+the input artifact or alter the unrelated local manual/ directory.
+The plan alone owns the live next action, status board and validation checkpoint.
+Finite distributed birth/support/feedback and the fixed-target
 response and lineage coordination comparisons are complete in finite scope.
 Eight family means fail exact all-state affine closure in all four retained
 models. Their minimal sufficient linear state is now derived: exact ranks
@@ -442,16 +610,77 @@ pre-generated-pressure ledgers close; EN changes the paired mean, whereas
 common AL leaves the immediate paired difference unchanged. The detached
 phase comparison reproduces the archived output but shows a relative-pattern
 change of about 0.372557 radians under changed node enumeration. Transported
-labels with transported enumeration give exact equality. No engine change
-or trajectory extension is made.
+labels with transported enumeration give exact equality. That detached
+comparison changed no engine behavior and extended no trajectory.
 The regional reuse review now closes the scoped activation diagnosis:
 existing admission/eligibility/symmetry witnesses do not uniquely determine
 an action; the missing state/history selection relation remains explicit.
 The shared regional observer and one retained-snapshot audit connect internal
 dissipation to boundary and canonical-source support. Actual child responses
 have a conditional held-parent profile, not a demonstrated autonomous target.
-Next: the plan's single bounded identity/source-maintenance delivery, using
-retained full-state records and the same declared regions. Initial substrate,
+The finite identity/source audit distinguishes lineage continuity from changing
+relative form, and parent-boundary work from intentional IL writes and numeric
+defects. Its source evolution remains phase-dependent, with the earlier
+enumeration ambiguity unresolved. The completed detached phase-source gate
+establishes that this ambiguity affects the canonical drive. Its exact
+represented-phasor reduction contract is now implemented and validated.
+Its versioned global-coordination integration now preserves graph-owned
+state on failure and records the exact global calculation separately from
+existing local/gain policies. The native runtime still uses the legacy default.
+That comparison is now complete without a regional rate-sign change. The
+following six-endpoint paired regional study distinguishes raw attenuation
+from control flattening: four pairs improve relative fidelity, whereas the
+other four lose control contrast faster than their error decays. Child-cohort
+spatial error grows despite its decreasing mean offset. No uniform regional
+recovery follows from the whole-network score. The recorded Reception and
+integration ledger now accounts for this distortion, including the transfer
+from cohort mean contrast to child shape and all energy cross terms. The
+single result owner is theory/FORCED_SUPPORT_BALANCE.md, section 15.
+The localized test now establishes finite configured return toward an
+evolving nonflattening control after actual form damage. Its exact ledger
+separates Reception, ordinary boundary relaxation, parent input and pressure
+writes. The conditional response criterion now characterizes both signs
+under the same admitted maps, with an explicit mean/parent input condition
+and a nullspace obstruction. Section 17 owns this result. Section 18 now
+classifies the input map: parent-only rank seven excludes protected nonzero
+linear shape read-outs under unrestricted inputs. Section 19 now classifies
+actual map symmetries: eight for A, identity-only for sequential S/T and for
+the captured source/state. Section 20 closes the same-snapshot comparison:
+the map symmetries return, but the actual input restriction does not hold.
+Section 21 classifies equilibria only under the specified relaxation policies,
+including their telemetry-dependent capacity gate. Primary structural closure
+remains open; the policy-response test is retained as parked secondary work
+under the sole execution plan, without treating Si as a fundamental mechanism;
+further symmetry audits and numerical-policy cleanup remain parked.
+Section 22 now derives the regular fixed-support source-tangency relation
+and finite capacity-event counterpart without telemetry control. Section 23
+closes the capacity/phase-clock gate with an independence witness and the
+derived accumulated-capacity reparameterization. Section 24 establishes
+regular source rigidity and the exact cube-family flexibility/U3 boundary;
+17 new tests and 63 owner tests pass for that earlier gate. The subsequent
+grammar audit and refactor are centralized in DIAGNOSTIC_AND_GRAMMAR_SCOPE.md,
+sections 8-13;
+UNIFIED_GRAMMAR_RULES.md retains the executable requirements and API boundaries.
+Its strict-U3 rank implication is rejected by a double-star, whose extra
+tangent fails at second order. Exact scale closure does not imply coherence
+averaging. G1-G2 (audit and separation of contracts, policies and evidence)
+are implemented in scope. The active queue is G3: review joint constitutive
+closure with the complete tetrad, starting from consistent definitions of
+form, directed response and structural time. Its first conditional results
+are in DIAGNOSTIC_AND_GRAMMAR_SCOPE.md section 14 and
+TNFR_VARIATIONAL_PRINCIPLE.md section 13. The cross-channel scope and additional
+diffusion/covariance constraints belong to NODAL_PARAMETER_FOUNDATIONS.md.
+Reuse the channel, variational,
+quotient and memory owners without assuming their representation is physically
+unique. G4 derives conditions only for a justified model;
+G5 tests its autonomous coherent-pattern consequences. The detailed gates
+and acceptance criteria live only in the execution plan. Finite strict-U3
+geometry remains subordinate to that review. No evolution law or controller
+is selected by assumption, and no historical evidence is rewritten.
+Pointwise compatibility, finite paths, invariant evolution and recovery
+remain separate claims.
+No epsilon, new physical force or trajectory extension is inferred from the result.
+Initial substrate,
 autonomous initiation and future maintenance remain open. Legacy algebraic
 and sequential-equivariance claims are excluded from this evidence chain
 until their specific contradictions are resolved; see the strategy review.

@@ -208,9 +208,7 @@ def tetrad_observation_vector(
     """
     nodes = tuple(graph.nodes()) if node_order is None else tuple(node_order)
     if set(nodes) != set(graph.nodes()) or len(nodes) != len(graph):
-        raise ValueError(
-            "node_order must contain every graph node exactly once"
-        )
+        raise ValueError("node_order must contain every graph node exactly once")
     channels = tetrad_observation_channels(
         graph, representation=representation, node_order=nodes
     )
@@ -233,9 +231,7 @@ def tetrad_observation_channels(
 
     nodes = tuple(graph.nodes()) if node_order is None else tuple(node_order)
     if set(nodes) != set(graph.nodes()) or len(nodes) != len(graph):
-        raise ValueError(
-            "node_order must contain every graph node exactly once"
-        )
+        raise ValueError("node_order must contain every graph node exactly once")
     fields = {
         "structural_potential": compute_structural_potential(graph),
         "phase_gradient": compute_phase_gradient(graph),
@@ -275,11 +271,11 @@ def observation_signature(
     from ..constants.aliases import ALIAS_DNFR, ALIAS_VF
 
     nodes = tuple(graph.nodes()) if node_order is None else tuple(node_order)
-    tetrad = tuple(
-        float(value) for value in tetrad_observation_vector(
-            graph, representation=tetrad_representation, node_order=nodes
-        )
-    )
+    if set(nodes) != set(graph.nodes()) or len(nodes) != len(graph):
+        raise ValueError("node_order must contain every graph node exactly once")
+    # Validate explicitly requested primitive channels before the composite
+    # tetrad. This preserves this observer's scalar ValueError contract and
+    # rejects invalid input before field computation or cache bookkeeping.
     capacity = (
         tuple(
             finite_real_scalar(
@@ -294,7 +290,8 @@ def observation_signature(
             )
             for node in nodes
         )
-        if include_capacity else None
+        if include_capacity
+        else None
     )
     pressure = (
         tuple(
@@ -310,14 +307,19 @@ def observation_signature(
             )
             for node in nodes
         )
-        if include_pressure else None
+        if include_pressure
+        else None
+    )
+    tetrad = tuple(
+        float(value)
+        for value in tetrad_observation_vector(
+            graph, representation=tetrad_representation, node_order=nodes
+        )
     )
     history = (
-        tuple(
-            tuple(graph.nodes[node].get("glyph_history", ()))
-            for node in nodes
-        )
-        if include_history else None
+        tuple(tuple(graph.nodes[node].get("glyph_history", ())) for node in nodes)
+        if include_history
+        else None
     )
     return ObservationSignature(
         tetrad_representation, tetrad, capacity, pressure, history, nodes
@@ -428,8 +430,12 @@ def epi_diffusion_reconstruction_certificate(
     for source_index, source in enumerate(nodes):
         for target_index, target in enumerate(nodes):
             distance = distances[source].get(target)
-            if (source_index != target_index and distance is not None
-                    and np.isfinite(distance) and distance > 0.0):
+            if (
+                source_index != target_index
+                and distance is not None
+                and np.isfinite(distance)
+                and distance > 0.0
+            ):
                 try:
                     with np.errstate(over="raise", invalid="raise", divide="raise"):
                         inverse_distance = 1.0 / float(distance)
@@ -482,8 +488,7 @@ def epi_diffusion_reconstruction_certificate(
         raise ValueError(
             "Reconstruction metric weights exceed finite floating-point range"
         ) from exc
-    if (not np.all(np.isfinite(metric_weights))
-            or np.any(metric_weights <= 0.0)):
+    if not np.all(np.isfinite(metric_weights)) or np.any(metric_weights <= 0.0):
         raise ValueError("Reconstruction metric weights must be finite and positive")
     mean_observer, _, _ = normalize_weights(metric_weights)
     if not np.all(np.isfinite(mean_observer)) or np.any(mean_observer <= 0.0):
@@ -502,11 +507,10 @@ def epi_diffusion_reconstruction_certificate(
         raise ValueError("Augmented reconstruction observer SVD is non-finite")
     augmented_rank_tolerance = (
         float(tolerance * augmented_singular_values[0])
-        if augmented_singular_values.size else 0.0
+        if augmented_singular_values.size
+        else 0.0
     )
-    augmented_rank = int(
-        np.sum(augmented_singular_values > augmented_rank_tolerance)
-    )
+    augmented_rank = int(np.sum(augmented_singular_values > augmented_rank_tolerance))
 
     try:
         with np.errstate(over="raise", invalid="raise", divide="raise"):
@@ -521,9 +525,11 @@ def epi_diffusion_reconstruction_certificate(
         raise ValueError(
             "EPI reconstruction exceeds finite floating-point range"
         ) from exc
-    if (not np.all(np.isfinite(observation))
-            or not np.all(np.isfinite(reconstructed))
-            or not np.all(np.isfinite(reconstruction_error))):
+    if (
+        not np.all(np.isfinite(observation))
+        or not np.all(np.isfinite(reconstructed))
+        or not np.all(np.isfinite(reconstruction_error))
+    ):
         raise ValueError("EPI reconstruction exceeds finite floating-point range")
     residual = _finite_l2_norm(reconstruction_error, "EPI reconstruction residual")
     field_norm = _finite_l2_norm(field, "EPI field norm")
@@ -603,9 +609,7 @@ def finite_difference_observer_certificate(
                 "finite-difference Jacobian exceeds floating-point range"
             ) from exc
         if not np.all(np.isfinite(derivative)):
-            raise ValueError(
-                "finite-difference Jacobian exceeds floating-point range"
-            )
+            raise ValueError("finite-difference Jacobian exceeds floating-point range")
         jacobian[:, column] = derivative
     try:
         singular_values = np.linalg.svd(jacobian, compute_uv=False)
@@ -617,9 +621,7 @@ def finite_difference_observer_certificate(
         scale = singular_values[0] if singular_values.size else 0.0
         try:
             with np.errstate(over="raise", invalid="raise", divide="raise"):
-                tolerance = (
-                    max(jacobian.shape) * np.finfo(float).eps * scale / step
-                )
+                tolerance = max(jacobian.shape) * np.finfo(float).eps * scale / step
         except (FloatingPointError, OverflowError) as exc:
             raise ValueError(
                 "finite-difference rank tolerance exceeds floating-point range"

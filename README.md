@@ -75,8 +75,8 @@ The public structural-field tetrad is `(Phi_s, |grad phi|, K_phi, xi_C)`.
 | --- | --- | --- |
 | `Phi_s` | Global pressure aggregation | General magnitude depends on pressure and graph geometry; `pi/4` and `pi/2` are selected warning policies |
 | `grad phi` | Local phase stress | Mean absolute wrapped phase difference across neighboring nodes; exact bound `pi`, with `pi/16` as the selected warning threshold |
-| `K_phi` | Local wrapped phase curvature | Exact wrapped magnitude bound `pi`; `0.9*pi` is a warning margin |
-| `xi_C` | Non-local correlation range | Spectral estimate scales as `1/sqrt(lambda_2)` under its documented hypotheses |
+| `K_phi` | Local wrapped phase curvature | Where defined, wrapped magnitude is at most `pi`; undefined represented resultants are explicit, and `0.9*pi` is a warning margin |
+| `xi_C` | Non-local correlation range | Static coherence-product fit over metric distances, with a separately identified spectral fallback `1/sqrt(lambda_2)` under its hypotheses |
 
 `Phi_s` uses explicit edge `length` for path geometry when available; otherwise
 it retains `weight` as a compatibility fallback. EPI diffusion always reads
@@ -100,10 +100,44 @@ Operators modify four nodal channels:
 
 The authoritative contracts live in
 [`operator_contracts.py`](src/tnfr/operators/operator_contracts.py). Grammar
-classifications are derived in
+role classifications are declared centrally in
 [`physics_derivation.py`](src/tnfr/config/physics_derivation.py), materialized in
 [`grammar_canon.py`](src/tnfr/operators/grammar_canon.py), and exposed through
 [`grammar.py`](src/tnfr/operators/grammar.py).
+
+Grammar admission, configured selection and derived trajectory evidence are
+separate. The [rule basis registry](src/tnfr/operators/grammar_canon.py)
+exposes identities, conditional theorems, contracts and policies. An explicit
+`compatibility_profile="core"` omits legacy pair/THOL word preferences while
+retaining canonical word contracts; graph setting
+`GRAMMAR_REJECTION_MODE="raise"` prevents grammar fallback substitutions.
+Neither option derives autonomous selection or waives live operator checks.
+The [structural evidence adapter](src/tnfr/operators/grammar_evidence.py)
+reads exact represented-EPI gains from sealed finite executions; it does not
+certify full tetrad dynamics or future stability. The
+[joint nodal/grammar review](theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#13-structural-grammar-refactor-and-the-full-nodal-system)
+states the remaining derivation obligations.
+
+The [foundation review](theory/FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation)
+distinguishes structural form from its scalar representation, specifies the
+pressure's type and units, and audits the original definitions. Existing
+code and historical formulas are tested realizations, not assumptions that
+uniquely determine the missing phase, capacity or geometry laws.
+The [all-parameter audit](theory/NODAL_PARAMETER_FOUNDATIONS.md) connects these
+bases to phase, clocks, conductance, metric distance, the whole tetrad, memory
+and operators. It derives restricted diffusion and unit-covariance constraints,
+and separates exact identities from configurable coefficients and diagnostics.
+The signed complex observation `EPI*exp(i*phase)` loses information needed by
+the current pressure law; its scoped counterexample is documented there.
+Capacity-rate telemetry uses recorded sample times and explicit availability.
+Circular curvature likewise exposes represented-resultant evidence and rejects
+undefined numeric directions instead of inventing an arithmetic phase mean.
+Field readers validate authoritative numeric inputs before cache lookup and
+return detached maps. Safe telemetry emission preserves available fields
+when another field is undefined, with explicit error information.
+The [joint-response identity](theory/NODAL_PARAMETER_FOUNDATIONS.md#10-joint-pressure-response-and-the-capacity-product-rule)
+separates phase/capacity source compensation from the additional capacity
+contribution to EPI acceleration; compatible motion does not select its law.
 
 The operator registry is the canonical semantic interface for named
 transformations. Declared numerical solvers may advance EPI only through the

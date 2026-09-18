@@ -11,13 +11,14 @@ dynamics while maintaining read-only telemetry semantics.
 
 from __future__ import annotations
 
-import math
 from typing import Any
 
-from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR
 from ..mathematics.unified_numerical import np
+from ._helpers import get_dnfr as _get_dnfr
+from ._helpers import get_phase as _get_phase
 from ._helpers import neighborhood_arrays
+from ._helpers import wrap_angle as _wrap_angle
 
 try:
     import networkx as nx
@@ -26,21 +27,14 @@ except ImportError:
 
 # Import canonical fields for interdependence
 try:
-    from .canonical import _get_dnfr, _get_phase, _wrap_angle, compute_phase_gradient
+    from .canonical import compute_phase_gradient
     from .vectorized_ops import (
         compute_dnfr_flux_vectorized,
         compute_phase_current_vectorized,
     )
 except ImportError:
-    # Fallback definitions if canonical module not available
-    def _get_phase(G: Any, node: Any) -> float:
-        return G.nodes[node].get("phase", G.nodes[node].get("theta", 0.0))
-
-    def _get_dnfr(G: Any, node: Any) -> float:
-        return float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
-
-    def _wrap_angle(angle: float) -> float:
-        return (angle + math.pi) % (2 * math.pi) - math.pi
+    # Shared scalar readers remain authoritative in the loop fallback.
+    pass
 
 
 # Import TNFR cache system
@@ -55,10 +49,6 @@ except ImportError:
     ALIAS_THETA = ["phase", "theta"]
 
 
-@cache_tnfr_computation(
-    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
-    dependencies={"graph_topology", "node_phase"},
-)
 def compute_phase_current(G: Any) -> dict[Any, float]:
     """Compute phase current J_φ for each locus [CANONICAL - PROMOTED Nov 12, 2025].
 
@@ -100,16 +90,28 @@ def compute_phase_current(G: Any) -> dict[Any, float]:
     - Validation data: 48-sample multi-topology experiment
     - Physics: Geometric transport from phase field gradients
     """
+    nodes = tuple(G.nodes())
+    phases = tuple(_get_phase(G, node) for node in nodes)
+    neighbors = tuple(tuple(G.neighbors(node)) for node in nodes)
+    return dict(_phase_current_cached(G, nodes, neighbors, phases))
+
+
+@cache_tnfr_computation(
+    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    dependencies={"graph_topology", "node_phase"},
+)
+def _phase_current_cached(G, node_order, neighbor_order, phase_values):
+    """Cache current only after raw phase admission; public maps are detached."""
     current: dict[Any, float] = {}
 
-    nodes = list(G.nodes())
+    nodes = list(node_order)
     if not nodes:
         return {}
 
     # Check for vectorization support
     try:
         # Phase array
-        phases = np.array([_get_phase(G, node) for node in nodes], dtype=np.float64)
+        phases = np.array(phase_values, dtype=np.float64)
         edge_src, edge_dst, degrees = neighborhood_arrays(G, nodes)
 
         # Vectorized computation
@@ -123,7 +125,7 @@ def compute_phase_current(G: Any) -> dict[Any, float]:
         # Fallback to loop if vectorization fails (e.g. memory issue)
         pass
 
-    phases_dict = {node: _get_phase(G, node) for node in nodes}
+    phases_dict = dict(zip(nodes, phase_values))
 
     for i in nodes:
         neighbors = list(G.neighbors(i))
@@ -146,10 +148,6 @@ def compute_phase_current(G: Any) -> dict[Any, float]:
     return current
 
 
-@cache_tnfr_computation(
-    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
-    dependencies={"graph_topology", "node_dnfr"},
-)
 def compute_dnfr_flux(G: Any) -> dict[Any, float]:
     """Compute ΔNFR flux J_ΔNFR for each locus [CANONICAL - PROMOTED Nov 12, 2025].
 
@@ -191,16 +189,28 @@ def compute_dnfr_flux(G: Any) -> dict[Any, float]:
     - Validation data: 48-sample multi-topology experiment
     - Physics: Transport from ΔNFR gradients (potential-driven flow)
     """
+    nodes = tuple(G.nodes())
+    pressure = tuple(_get_dnfr(G, node) for node in nodes)
+    neighbors = tuple(tuple(G.neighbors(node)) for node in nodes)
+    return dict(_dnfr_flux_cached(G, nodes, neighbors, pressure))
+
+
+@cache_tnfr_computation(
+    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    dependencies={"graph_topology", "node_dnfr"},
+)
+def _dnfr_flux_cached(G, node_order, neighbor_order, pressure_values):
+    """Cache flux only after raw pressure admission; public maps are detached."""
     flux: dict[Any, float] = {}
 
-    nodes = list(G.nodes())
+    nodes = list(node_order)
     if not nodes:
         return {}
 
     # Check for vectorization support
     try:
         # ΔNFR array
-        dnfr_arr = np.array([_get_dnfr(G, node) for node in nodes], dtype=np.float64)
+        dnfr_arr = np.array(pressure_values, dtype=np.float64)
         edge_src, edge_dst, degrees = neighborhood_arrays(G, nodes)
 
         # Vectorized computation
@@ -211,7 +221,7 @@ def compute_dnfr_flux(G: Any) -> dict[Any, float]:
     except Exception:
         pass
 
-    dnfr_values = {node: _get_dnfr(G, node) for node in nodes}
+    dnfr_values = dict(zip(nodes, pressure_values))
 
     for i in nodes:
         neighbors = list(G.neighbors(i))

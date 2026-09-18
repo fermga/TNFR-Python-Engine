@@ -5,6 +5,10 @@ TNFR nodal equation as specified in the theory:
 
     ∂EPI/∂t = νf · ΔNFR(t)
 
+These functions evaluate the equation in the engine's signed real scalar EPI
+chart. A scalar product does not by itself define the full structural manifold
+or identify EPI with a measured physical quantity.
+
 Where:
   - EPI: Primary Information Structure (coherent form)
   - νf: Structural frequency in Hz_str (structural hertz)
@@ -13,15 +17,19 @@ Where:
 
 This implementation ensures theoretical fidelity to the TNFR paradigm by:
   1. Making the canonical equation explicit in code
-  2. Validating dimensional consistency (Hz_str units)
+  2. Checking finite inputs and nonnegative structural capacity
   3. Providing clear mapping between theory and implementation
   4. Maintaining reproducibility and traceability
 
 TNFR Invariants (from AGENTS.md):
-  - EPI as coherent form: changes only via structural operators
+  - EPI as coherent form: named operators and declared nodal solver steps
   - Structural units: νf expressed in Hz_str (structural hertz)
   - ΔNFR semantics: sign and magnitude modulate reorganization rate
-  - Operator closure: composition yields valid TNFR states
+  - Operator closure requires the separate operator and execution contracts
+
+The optional phase/pressure extension below is a configured completion of the
+EPI equation, not a derivation of the remaining nodal channel laws. Numeric
+validation does not establish units calibration or preservation of invariants.
 
 References:
   - TNFR.pdf: Canonical nodal equation specification
@@ -60,7 +68,7 @@ class NodalEquationResult(NamedTuple):
         derivative: ∂EPI/∂t computed from νf · ΔNFR(t)
         nu_f: Structural frequency (Hz_str) used in computation
         delta_nfr: Nodal gradient (ΔNFR) used in computation
-        validated: Whether units and bounds were validated
+        validated: Whether the selected finite-input and capacity-sign checks ran
     """
 
     derivative: float
@@ -89,7 +97,7 @@ def compute_canonical_nodal_derivative(
     Args:
         nu_f: Structural frequency in Hz_str (must be non-negative)
         delta_nfr: Nodal gradient (reorganization operator)
-        validate_units: If True, validates that inputs are in valid ranges
+        validate_units: If True, checks finite inputs and nonnegative capacity
         graph: Optional graph for context-aware validation
 
     Returns:
@@ -102,7 +110,8 @@ def compute_canonical_nodal_derivative(
         - This function is the canonical reference implementation
         - The result represents the instantaneous rate of EPI evolution
         - Units: [∂EPI/∂t] = Hz_str (structural reorganization rate)
-        - The product νf·ΔNFR must preserve TNFR operator closure
+        - Computing the product does not establish physical unit calibration,
+          operator closure, or the remaining channel evolution laws.
 
     Examples:
         >>> # Basic computation
@@ -206,8 +215,11 @@ def validate_nodal_gradient(
         TypeError: If delta_nfr cannot be converted to float
 
     Notes:
-        - ΔNFR can be positive (expansion) or negative (contraction)
-        - ΔNFR = 0 indicates equilibrium (no reorganization)
+        - With positive capacity, the sign selects the positive or negative
+          direction of the declared EPI chart; it does not identify the named
+          Expansion or Contraction operator.
+        - ΔNFR = 0 gives zero EPI rate, not necessarily stationary capacity,
+          phase, support or the full structural tetrad.
         - Do NOT reinterpret as classical "error gradient"
         - Semantics: operator over EPI, not optimization target
     """
@@ -232,26 +244,29 @@ def validate_nodal_gradient(
 
 # Extended TNFR dynamics with canonical flux fields
 class ExtendedNodalEquationResult(NamedTuple):
-    """Result of extended nodal equation system evaluation.
+    """Result of the optional configured EPI/phase/pressure system.
 
     Represents the coupled system:
     1. ∂EPI/∂t = νf · ΔNFR(t)           [Classical nodal equation]
     2. ∂θ/∂t = f(νf, ΔNFR, J_φ)        [Phase evolution with transport]
-    3. ∂ΔNFR/∂t = g(∇·J_ΔNFR)          [ΔNFR conservation dynamics]
+    3. ∂ΔNFR/∂t = g(∇·J_ΔNFR)          [Configured divergence response]
+
+    The phase and pressure equations add operational premises. They are not
+    consequences of the EPI equation and supply no capacity evolution law.
 
     Attributes:
         classical_derivative: ∂EPI/∂t (original TNFR nodal equation)
         phase_derivative: ∂θ/∂t (phase evolution with J_φ transport)
-        dnfr_derivative: ∂ΔNFR/∂t (reorganization conservation)
+        dnfr_derivative: ∂ΔNFR/∂t (configured divergence response)
         j_phi: Phase current J_φ used in computation
         j_dnfr_divergence: ∇·J_ΔNFR divergence used
         coupling_strength: Local network coupling coefficient
-        validated: Whether extended physics validation passed
+        validated: Whether the selected numeric input checks passed
     """
 
     classical_derivative: float  # ∂EPI/∂t = νf·ΔNFR
     phase_derivative: float  # ∂θ/∂t with J_φ transport
-    dnfr_derivative: float  # ∂ΔNFR/∂t from conservation
+    dnfr_derivative: float  # ∂ΔNFR/∂t from the configured divergence response
     j_phi: float  # Phase current J_φ
     j_dnfr_divergence: float  # Flux divergence ∇·J_ΔNFR
     coupling_strength: float  # Local coupling coefficient
@@ -269,10 +284,12 @@ def compute_extended_nodal_system(
     validate_units: bool = True,
     graph: GraphLike | None = None,
 ) -> ExtendedNodalEquationResult:
-    """Compute extended TNFR nodal equation system with flux fields.
+    """Evaluate an optional operational completion using supplied flux fields.
 
-    This implements the fundamental extension of TNFR dynamics to include
-    canonical flux fields J_φ (phase current) and J_ΔNFR (reorganization flux).
+    The canonical EPI product is retained. The added phase/pressure laws and
+    their coefficients are constitutive choices, not deductions from that
+    product or from the definitions of J_φ and J_ΔNFR. Structural capacity is
+    an input; this function does not determine its derivative.
 
     The extended system consists of three coupled equations:
 
@@ -286,41 +303,47 @@ def compute_extended_nodal_system(
        - γ: J_φ transport efficiency
        - κ: coupling_strength (network-dependent)
 
-    3. **ΔNFR conservation**: ∂ΔNFR/∂t = -∇·J_ΔNFR - λ·|∇·J_ΔNFR|·sign(∇·J_ΔNFR)
-       - Conservation term: -∇·J_ΔNFR (flow continuity)
-       - Decay term: natural relaxation to equilibrium
+    3. **Pressure response**: ∂ΔNFR/∂t = -∇·J_ΔNFR - λ·|∇·J_ΔNFR|·sign(∇·J_ΔNFR)
+       - This equals -(1+λ) times the supplied divergence.
+       - It is not a restoring term proportional to pressure and does not
+         ensure relaxation or bounded accumulated pressure.
+
+    The implemented coefficients are α=0.5, β=0.15, γ=0.135 and λ=0.135.
+    Compatibility with a graph-derived pressure realization requires its
+    separate chain-rule identity; the scalar inputs do not verify it.
 
     Args:
         nu_f: Structural frequency in Hz_str
         delta_nfr: Nodal gradient (reorganization operator)
-        theta: Phase value in [0, 2π] radians
+        theta: Phase value in radians, normalized to [0, 2π) when validated
         j_phi: Phase current (from compute_phase_current)
         j_dnfr_divergence: Divergence ∇·J_ΔNFR (from compute_dnfr_flux)
-        coupling_strength: Local network coupling [0, 1]
-        validate_units: If True, validates physics constraints
+        coupling_strength: Nonnegative local transport coefficient; values above one allowed
+        validate_units: If True, checks numeric input domains (not unit calibration)
         graph: Optional graph for context-aware validation
 
     Returns:
         ExtendedNodalEquationResult with all derivatives and metadata
 
     Raises:
-        TNFRValueError: If validation fails or physics constraints violated
+        TNFRValueError: If selected numeric input checks fail
 
     Notes:
-        - When J_φ = J_ΔNFR = 0, system reduces to classical TNFR
-        - Extended dynamics preserve all 10 canonical invariants
-        - Phase evolution includes directed transport via J_φ
-        - ΔNFR follows conservation law with natural decay
-        - Coupling strength modulates transport efficiency
+        - Zero supplied flux/divergence leaves the original EPI product and
+          zero pressure derivative, but the added phase response can remain.
+        - Numeric validation certifies neither operator admission nor
+          preservation of the canonical invariants or structural tetrad.
+        - The optional synchronous-Euler integrator applies this completion;
+          ordinary runtime phase coordination is a separate later substep.
 
     Examples:
-        >>> # Classical limit (no fluxes)
+        >>> # Zero flux removes transport, but not the chosen phase response.
         >>> result = compute_extended_nodal_system(1.0, 0.5, 0.0, 0.0, 0.0)
         >>> result.classical_derivative  # Should equal 1.0 * 0.5
         0.5
-        >>> result.phase_derivative     # Should be small with no J_φ
-        0.25
-        >>> result.dnfr_derivative      # Should be ~0 with no flux
+        >>> result.phase_derivative
+        0.575
+        >>> abs(result.dnfr_derivative)  # Signed zero carries no pressure change.
         0.0
 
         >>> # With phase transport
@@ -353,7 +376,7 @@ def compute_extended_nodal_system(
         nu_f, delta_nfr, theta, j_phi, coupling_strength
     )
 
-    # 3. ΔNFR conservation dynamics
+    # 3. Optional scaled-divergence pressure response
     dnfr_derivative = _compute_dnfr_conservation_derivative(j_dnfr_divergence)
 
     return ExtendedNodalEquationResult(
@@ -461,7 +484,7 @@ def _validate_coupling_strength(kappa: float) -> float:
 def _compute_phase_transport_derivative(
     nu_f: float, delta_nfr: float, theta: float, j_phi: float, coupling_strength: float
 ) -> float:
-    """Compute ∂θ/∂t with J_φ transport.
+    """Evaluate the separately prescribed phase-response law.
 
     Extended phase equation:
     ∂θ/∂t = α·νf·sin(π·ΔNFR) + β·ΔNFR + γ·J_φ·κ
@@ -470,6 +493,9 @@ def _compute_phase_transport_derivative(
     - Autoorganization: α·νf·sin(π·ΔNFR) [nonlinear νf-θ coupling]
     - Pressure response: β·ΔNFR [linear response to reorganization]
     - Transport: γ·J_φ·κ [directed flux with coupling efficiency]
+
+    The operational coefficients and this functional form are additional
+    premises. The supplied absolute phase is not consumed by this formula.
     """
     # Extended-equation coefficients (optional J_φ-transport path). The term
     # contracts fix each channel and sign; these set the magnitudes: alpha is the
@@ -492,23 +518,23 @@ def _compute_phase_transport_derivative(
 
 
 def _compute_dnfr_conservation_derivative(j_dnfr_divergence: float) -> float:
-    """Compute ∂ΔNFR/∂t from flux conservation.
+    """Evaluate the optional scaled-divergence pressure response.
 
     Conservation equation:
     ∂ΔNFR/∂t = -∇·J_ΔNFR - λ·|∇·J_ΔNFR|·sign(∇·J_ΔNFR)
 
-    Terms:
-    - Conservation: -∇·J_ΔNFR [flow continuity]
-    - Decay: λ·|∇·J| [natural relaxation, prevents accumulation]
+    For real divergence d, |d| sign(d)=d, so the implemented rate is
+    -(1+λ)d. Constant nonzero divergence produces a constant nonzero pressure
+    slope; no pressure-dependent restoring term or decay theorem is supplied.
+    A realized graph flow needs a separate consistency and balance check.
     """
-    # Operational decay factor for the ΔNFR conservation relaxation (gentle
-    # magnitude on the flux-divergence scale, not a coherence level).
+    # Operational multiplier on supplied divergence, not pressure damping.
     decay_rate = 0.135
 
-    # Conservation term: flux in increases ΔNFR, flux out decreases it
+    # Base signed divergence response; graph-level balance is a separate claim.
     conservation_term = -j_dnfr_divergence
 
-    # Decay term: prevents indefinite accumulation
+    # Historical variable name: this rescales divergence without restoring pressure.
     decay_term = (
         -decay_rate * abs(j_dnfr_divergence) * math.copysign(1.0, j_dnfr_divergence)
     )
@@ -585,7 +611,11 @@ def integrate_canonical_nodal_equation(
             context={"dt": dt},
             suggestion="Set a finite timestep (dt >= 0).",
         )
-    if isinstance(max_steps, bool) or not isinstance(max_steps, Integral) or max_steps <= 0:
+    if (
+        isinstance(max_steps, bool)
+        or not isinstance(max_steps, Integral)
+        or max_steps <= 0
+    ):
         raise TNFRValueError(
             f"Max steps must be a positive integer, got {max_steps}",
             context={"max_steps": max_steps},
@@ -593,11 +623,14 @@ def integrate_canonical_nodal_equation(
         )
 
     if not math.isfinite(tolerance_resolved) or tolerance_resolved < 0:
-        raise TNFRValueError("Convergence tolerance must be finite and nonnegative",
-                             context={"tolerance": tolerance})
+        raise TNFRValueError(
+            "Convergence tolerance must be finite and nonnegative",
+            context={"tolerance": tolerance},
+        )
     if method not in ("euler", "rk4"):
-        raise TNFRValueError("Integration method must be 'euler' or 'rk4'",
-                             context={"method": method})
+        raise TNFRValueError(
+            "Integration method must be 'euler' or 'rk4'", context={"method": method}
+        )
     max_steps_resolved = int(max_steps)
 
     # Define GPU and CPU integration functions

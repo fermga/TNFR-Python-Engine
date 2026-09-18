@@ -1,8 +1,4 @@
-"""Regression tests for compute_coherence_length_vectorized.
-
-Bug: NaN/Inf/negative sentinels in caller-supplied distance matrices were
-casted to negative ``intp`` values and crashed ``np.bincount``.
-"""
+"""Caller-declared distance matrices must satisfy the explicit distance domain."""
 
 from __future__ import annotations
 
@@ -29,9 +25,9 @@ def test_baseline_returns_finite_value():
     assert math.isfinite(xi_c) or math.isnan(xi_c)
 
 
-@pytest.mark.parametrize("sentinel", [-1.0, np.nan, np.inf, -np.inf])
+@pytest.mark.parametrize("sentinel", [-1.0, np.nan, -np.inf])
 def test_external_distance_matrix_with_invalid_entries(sentinel):
-    """Caller-supplied distance matrix containing NaN/Inf/-1 must not crash."""
+    """Invalid data raises a domain error, not an allocation or bincount failure."""
     G, nodes, dnfr = _ring(12)
     n = len(nodes)
     D = nx.floyd_warshall_numpy(G, nodelist=nodes).astype(np.float64)
@@ -42,18 +38,25 @@ def test_external_distance_matrix_with_invalid_entries(sentinel):
     D[2, 9] = sentinel
     D[9, 2] = sentinel
 
-    # Must not raise (previously triggered ValueError in np.bincount)
-    xi_c = compute_coherence_length_vectorized(G, nodes, dnfr, distance_matrix=D)
-    assert isinstance(xi_c, float)
-    # Either a finite positive ξ_C or NaN if fit cannot be done; never a crash
-    assert math.isnan(xi_c) or xi_c > 0
+    with pytest.raises(ValueError, match="nonnegative distances"):
+        compute_coherence_length_vectorized(G, nodes, dnfr, distance_matrix=D)
 
 
-def test_all_invalid_distances_returns_nan():
+def test_all_invalid_distances_are_not_a_failed_fit():
     G, nodes, dnfr = _ring(8)
     n = len(nodes)
     D = np.full((n, n), np.nan, dtype=np.float64)
     np.fill_diagonal(D, 0.0)
 
-    xi_c = compute_coherence_length_vectorized(G, nodes, dnfr, distance_matrix=D)
-    assert math.isnan(xi_c)
+    with pytest.raises(ValueError, match="nonnegative distances"):
+        compute_coherence_length_vectorized(G, nodes, dnfr, distance_matrix=D)
+
+
+def test_declared_unreachable_pairs_return_unavailable_fit():
+    G, nodes, dnfr = _ring(8)
+    distances = np.full((len(nodes), len(nodes)), np.inf)
+    np.fill_diagonal(distances, 0.0)
+    result = compute_coherence_length_vectorized(
+        G, nodes, dnfr, distance_matrix=distances
+    )
+    assert math.isnan(result)

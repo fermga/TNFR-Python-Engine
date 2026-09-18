@@ -47,13 +47,7 @@ import networkx as nx
 
 from ..alias import get_attr
 from ..constants import DEFAULTS
-from ..constants.aliases import (
-    ALIAS_DEPI,
-    ALIAS_DNFR,
-    ALIAS_EPI,
-    ALIAS_THETA,
-    ALIAS_VF,
-)
+from ..constants.aliases import ALIAS_DEPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..constants.canonical import HIGH_COHERENCE_THRESHOLD as COHERENCE_STRONG
 from ..constants.canonical import ZHIR_THRESHOLD_XI_CANONICAL
 from ..errors import TNFRValueError
@@ -74,12 +68,13 @@ from ..physics.mutation_trigger import (
     MutationTriggerInputError,
     certify_mutation_trigger,
 )
-from ..types import BEPIProtocol, require_finite_real_scalar_epi
 
 # TNFR core imports
 from ..structural import create_nfr
+from ..types import BEPIProtocol, require_finite_real_scalar_epi
 from ._state import copy_graph_state
-from ._topology import grid_edges, nonnegative_integer, probability as validate_probability
+from ._topology import grid_edges, nonnegative_integer
+from ._topology import probability as validate_probability
 from ._topology import ring_edges, small_world_edges
 
 # Canonical telemetry marks (AGENTS.md §7) -- heuristic cuts, not fitted:
@@ -159,8 +154,9 @@ def _certify_sdk_mutation_trigger(
 
 from ..operators.word_execution import (  # noqa: F401
     preflight_network_mutation_sequence as _preflight_sdk_mutation_sequence,
-    run_network_sequence as _run_network_sequence,
 )
+from ..operators.word_execution import run_network_sequence as _run_network_sequence
+
 # Private aliases are retained for downstream SDK compatibility; new code should
 # import the neutral public functions from tnfr.operators.
 
@@ -335,20 +331,26 @@ class TetradSnapshot:
         )
 
         phi_s_safe = (
-            all(math.isfinite(v) and abs(v) < PHI_S_VON_KOCH_THRESHOLD
-                for v in self.phi_s.values())
+            all(
+                math.isfinite(v) and abs(v) < PHI_S_VON_KOCH_THRESHOLD
+                for v in self.phi_s.values()
+            )
             if self.phi_s
             else True
         )
         grad_safe = (
-            all(math.isfinite(v) and 0.0 <= v < GRAD_PHI_CANONICAL_THRESHOLD
-                for v in self.grad_phi.values())
+            all(
+                math.isfinite(v) and 0.0 <= v < GRAD_PHI_CANONICAL_THRESHOLD
+                for v in self.grad_phi.values()
+            )
             if self.grad_phi
             else True
         )
         k_safe = (
-            all(math.isfinite(v) and abs(v) < K_PHI_CANONICAL_THRESHOLD
-                for v in self.k_phi.values())
+            all(
+                math.isfinite(v) and abs(v) < K_PHI_CANONICAL_THRESHOLD
+                for v in self.k_phi.values()
+            )
             if self.k_phi
             else True
         )
@@ -614,9 +616,7 @@ class NodalStateReport:
     def observed_d2epi_dt2(self) -> float | None:
         """Observed acceleration, separate from the legacy numeric fallback."""
         return (
-            self.acceleration_observation.value
-            if self.acceleration_available
-            else None
+            self.acceleration_observation.value if self.acceleration_available else None
         )
 
     def __post_init__(self) -> None:
@@ -663,9 +663,7 @@ class NodalStateReport:
             "active": bool(self.active),
             "near_bifurcation": bool(self.near_bifurcation),
             "observed_depi_dt": (
-                None
-                if self.observed_depi_dt is None
-                else float(self.observed_depi_dt)
+                None if self.observed_depi_dt is None else float(self.observed_depi_dt)
             ),
             "predicted_crossed": bool(self.predicted_crossed),
             "observed_crossed": self.observed_crossed,
@@ -677,9 +675,7 @@ class NodalStateReport:
             "current_endpoint_matches_state": self.current_endpoint_matches_state,
             "reason": self.reason,
             "rate_gap": None if self.rate_gap is None else float(self.rate_gap),
-            "mutation_threshold_satisfied": bool(
-                self.mutation_threshold_satisfied
-            ),
+            "mutation_threshold_satisfied": bool(self.mutation_threshold_satisfied),
         }
 
 
@@ -1118,9 +1114,14 @@ class Network:
             Random seed for reproducibility.
         """
         nodes = list(self.G)
-        self.G.add_edges_from(small_world_edges(
-            nodes, k, p, seed if seed is not None else self._seed,
-        ))
+        self.G.add_edges_from(
+            small_world_edges(
+                nodes,
+                k,
+                p,
+                seed if seed is not None else self._seed,
+            )
+        )
         return self
 
     def scale_free(self, m: int = 2, seed: int | None = None) -> Network:
@@ -1136,7 +1137,9 @@ class Network:
         nodes = list(self.G)
         m = nonnegative_integer(m, "m")
         ba = nx.barabasi_albert_graph(
-            len(nodes), m, seed=seed if seed is not None else self._seed,
+            len(nodes),
+            m,
+            seed=seed if seed is not None else self._seed,
         )
         self.G.add_edges_from((nodes[u], nodes[v]) for u, v in ba.edges())
         return self
@@ -1376,9 +1379,7 @@ class Network:
         """
         hist = self.G.graph.get("history", {})
         keys = ("kuramoto_R", "C_steps", "phase_sync", "Si_mean")
-        return {
-            k: [float(x) for x in hist.get(k, [])] for k in keys
-        }
+        return {k: [float(x) for x in hist.get(k, [])] for k in keys}
 
     # === METRICS ===
 
@@ -1399,7 +1400,8 @@ class Network:
         """
         result = compute_Si(copy_graph_state(self.G), inplace=False)
         values = (
-            list(result.values()) if isinstance(result, Mapping)
+            list(result.values())
+            if isinstance(result, Mapping)
             else list(np.asarray(result).reshape(-1))
         )
         return finite_mean_absolute(values, name="network Si") if values else 0.0
@@ -1420,8 +1422,10 @@ class Network:
         if not self.G.nodes():
             return None
         phases = [
-            next((self.G.nodes[n][key] for key in ALIAS_THETA
-                  if key in self.G.nodes[n]), 0.0)
+            next(
+                (self.G.nodes[n][key] for key in ALIAS_THETA if key in self.G.nodes[n]),
+                0.0,
+            )
             for n in self.G.nodes()
         ]
         try:
@@ -1500,9 +1504,7 @@ class Network:
             epi=epi,
             nu_f=nu_f,
             delta_nfr=delta_nfr,
-            coherence=structural_coherence(
-                delta_nfr, trigger.predicted_depi_dt
-            ),
+            coherence=structural_coherence(delta_nfr, trigger.predicted_depi_dt),
             phase=phase,
             expected_depi_dt=trigger.predicted_depi_dt,
             d2epi_dt2=d2epi_dt2,
@@ -1927,12 +1929,11 @@ class Network:
         eigenvalues, _ = structural_eigenmodes(self.G)
         geometry_gap = (
             float(eigenvalues[1])
-            if len(eigenvalues) > 1 and eigenvalues[1] > 1e-12 else 0.0
+            if len(eigenvalues) > 1 and eigenvalues[1] > 1e-12
+            else 0.0
         )
         xi_c = (
-            1.0 / float(np.sqrt(geometry_gap))
-            if geometry_gap > 1e-12
-            else float("inf")
+            1.0 / float(np.sqrt(geometry_gap)) if geometry_gap > 1e-12 else float("inf")
         )
         return {
             "diffusivity": float(structural_diffusivity(self.G)),
@@ -1995,7 +1996,8 @@ class Network:
                 try:
                     value = (
                         require_finite_real_scalar_epi(raw, "nfr EPI")
-                        if aliases == ALIAS_EPI else float(raw)
+                        if aliases == ALIAS_EPI
+                        else float(raw)
                     )
                 except (TypeError, ValueError, OverflowError):
                     if aliases == ALIAS_EPI:
@@ -2216,9 +2218,7 @@ class Network:
         delta_r = r_t[-1] - r_t[0]
         t_local = _first_interpolated_crossing(local_t, 0.9)
         t_global = _first_interpolated_crossing(r_t, 0.5)
-        local_leads = t_local is not None and (
-            t_global is None or t_local < t_global
-        )
+        local_leads = t_local is not None and (t_global is None or t_local < t_global)
         return {
             "phase_coherence": r_t,
             "coherence": c_t,
@@ -2422,9 +2422,7 @@ class Network:
                     "within_monitor_policy": report.within_monitor_policy,
                     "balance_quality": report.balance_quality,
                     "balance_alerts": list(report.balance_alerts),
-                    "candidate_energy_derivative": (
-                        report.candidate_energy_derivative
-                    ),
+                    "candidate_energy_derivative": (report.candidate_energy_derivative),
                     "candidate_energy_nonincreasing": (
                         report.candidate_energy_nonincreasing
                     ),
@@ -2614,7 +2612,9 @@ class TNFR:
         operator's public name, internal glyph, nodal-equation channel
         (EPI/nu_f/theta/dNFR), scale (NODE/NETWORK), grammar role(s),
         canonical purpose and postcondition, and TNFR.pdf anchor -- the
-        canonical structure for understanding the operator algebra.
+        canonical structure for understanding the operator algebra. Complete
+        canonical roles and compositional grammar bases are metadata, not
+        verified hypotheses or permission to execute an operator.
 
         Parameters
         ----------
@@ -2633,31 +2633,8 @@ class TNFR:
         >>> TNFR.operators("emission")["channel"]  # doctest: +SKIP
         'EPI'
         """
-        from ..operators.grammar_types import (
-            CLOSURES,
-            COUPLING_RESONANCE,
-            DESTABILIZERS,
-            GENERATORS,
-            STABILIZERS,
-            TRANSFORMERS,
-        )
+        from ..operators.grammar_canon import operator_role_metadata
         from ..operators.operator_contracts import contract_for, iter_contracts
-
-        def _roles(n: str) -> list[str]:
-            roles: list[str] = []
-            if n in GENERATORS:
-                roles.append("generator")
-            if n in CLOSURES:
-                roles.append("closure")
-            if n in STABILIZERS:
-                roles.append("stabilizer")
-            if n in DESTABILIZERS:
-                roles.append("destabilizer")
-            if n in TRANSFORMERS:
-                roles.append("transformer")
-            if n in COUPLING_RESONANCE:
-                roles.append("coupling/resonance")
-            return roles
 
         def _to_dict(c: Any) -> dict[str, Any]:
             return {
@@ -2665,7 +2642,7 @@ class TNFR:
                 "glyph": c.glyph,
                 "channel": c.primary_channel.value,
                 "scale": c.scale.value,
-                "roles": _roles(c.name),
+                **operator_role_metadata(c.name),
                 "purpose": c.purpose,
                 "postcondition": c.postcondition,
                 "pdf_reference": c.pdf_reference,
@@ -2680,9 +2657,10 @@ class TNFR:
         """Validate an operator sequence and explain its canonical grammar.
 
         A teaching/diagnostic aid: reports each operator's grammar role and
-        whether the whole sequence satisfies the unified grammar (U1-U6) --
-        why a structural "word" is or is not canonical. Accepts operator
-        names or glyph codes.
+        whether the word satisfies the implemented sequence policies. No live
+        graph, operator endpoint or trajectory is assessed: U3 state admission,
+        U6 telemetry and dynamical conclusions remain unassessed. Accepts
+        operator names or glyph codes.
 
         Parameters
         ----------
@@ -2698,37 +2676,24 @@ class TNFR:
             ``ends_with_closure``, U2 flags ``has_destabilizer`` /
             ``has_stabilizer``, and a human-readable ``message``.
         """
+        from ..operators.grammar_canon import (
+            GRAMMAR_RULES,
+            grammar_basis,
+            operator_role_metadata,
+        )
         from ..operators.grammar_types import (
             CLOSURES,
-            COUPLING_RESONANCE,
             DESTABILIZERS,
             GENERATORS,
             STABILIZERS,
-            TRANSFORMERS,
         )
         from ..operators.operator_contracts import contract_for
         from ..validation import validate_sequence
 
-        def _roles(n: str) -> list[str]:
-            roles: list[str] = []
-            if n in GENERATORS:
-                roles.append("generator")
-            if n in CLOSURES:
-                roles.append("closure")
-            if n in STABILIZERS:
-                roles.append("stabilizer")
-            if n in DESTABILIZERS:
-                roles.append("destabilizer")
-            if n in TRANSFORMERS:
-                roles.append("transformer")
-            if n in COUPLING_RESONANCE:
-                roles.append("coupling/resonance")
-            return roles
-
         contracts = [contract_for(op) for op in operators]
         names = [c.name for c in contracts]
         roles = [
-            {"name": c.english_name, "glyph": c.glyph, "roles": _roles(c.name)}
+            {"name": c.english_name, "glyph": c.glyph, **operator_role_metadata(c.name)}
             for c in contracts
         ]
         try:
@@ -2742,6 +2707,22 @@ class TNFR:
             message = str(exc)
         return {
             "valid": valid,
+            "validation_scope": "word_policy",
+            "state_checks_assessed": False,
+            "trajectory_checks_assessed": False,
+            "execution_admission_assessed": False,
+            "missing_evidence": [
+                "live_operator_preconditions",
+                "operator_endpoint_receipts",
+                "aligned_potential_reference",
+                "trajectory_hypotheses",
+                "full_tetrad_trajectory",
+                "full_state_closure",
+            ],
+            "grammar_basis": {
+                item.rule_id: [basis.as_dict() for basis in grammar_basis(item.rule_id)]
+                for item in GRAMMAR_RULES
+            },
             "operators": [c.english_name for c in contracts],
             "roles": roles,
             "starts_with_generator": bool(names) and names[0] in GENERATORS,

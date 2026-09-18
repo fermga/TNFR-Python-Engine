@@ -21,11 +21,13 @@ The four read-only fields below form the canonical diagnostic interface:
    - A measured synchronization onset near 0.29 is protocol/σ-dependent
 
 3) Phase Curvature (K_φ)
-   - K_φ(i) = φ_i − mean_circular_{j∈N(i)} φ_j (Laplacian-like curvature)
-   - Exact wrapped-angle bound π; 0.9π is a selected warning margin
+   - K_φ(i) = wrap(φ_i − mean_circular_{j∈N(i)} φ_j)
+   - Bound π where defined; zero represented resultants are explicit failures
+   - 0.9π is a selected warning margin, not a derived transition
 
 4) Coherence Length (ξ_C)
-   - From spatial decay of local coherence correlations C(r) ~ exp(−r/ξ_C)
+   - Fits uncentered products of static pressure coherence over metric distance
+   - Spectral fallback has separate provenance; neither is a phase correlation
    - Finite-network diagnostic; divergence requires a finite-size limit
 
 Physics Foundation
@@ -159,6 +161,9 @@ Examples
 
 """
 
+# Import prerequisites before runtime certificates: reordering this facade can
+# re-enter partially initialized operators.network_stage during package startup.
+# isort: off
 from .cell import (
     CellTelemetry,
     MembraneFluxResult,
@@ -630,128 +635,221 @@ from .winding_certificates import (
     observe_winding_word,
 )
 from .coupling_winding import (
-    C6WindingDefect, C6WindingDefectPrefix, C6WindingUniformDefectBound,
-    C6WindingPairingReference, C6WindingPairingObservation,
-    C6WindingJointDomain, C6WindingJointStep,
-    C6WindingPhaseObservation, C6WindingPhaseReference, CouplingGapStep,
-    derive_c6_winding_joint_domain, observe_c6_winding_joint_domain,
-    observe_c6_winding_defect, bound_c6_winding_defect_prefix,
+    C6WindingDefect,
+    C6WindingDefectPrefix,
+    C6WindingUniformDefectBound,
+    C6WindingPairingReference,
+    C6WindingPairingObservation,
+    C6WindingJointDomain,
+    C6WindingJointStep,
+    C6WindingPhaseObservation,
+    C6WindingPhaseReference,
+    CouplingGapStep,
+    derive_c6_winding_joint_domain,
+    observe_c6_winding_joint_domain,
+    observe_c6_winding_defect,
+    bound_c6_winding_defect_prefix,
     bound_c6_winding_uniform_defects,
-    derive_c6_winding_phase_response, observe_c6_winding_phase_response,
+    derive_c6_winding_phase_response,
+    observe_c6_winding_phase_response,
     observe_coupling_gap_step,
-    c6_centered_opposite_pairs, derive_c6_winding_pairing, observe_c6_winding_pairing,
+    c6_centered_opposite_pairs,
+    derive_c6_winding_pairing,
+    observe_c6_winding_pairing,
 )
 from .binary64_nodal_flow import (
-    Binary64AdditionCell, Binary64QuarterSubstep, Binary64UnitQuarterFlow,
+    Binary64AdditionCell,
+    Binary64QuarterSubstep,
+    Binary64UnitQuarterFlow,
     observe_binary64_unit_quarter_flow,
-    Binary64PairedC6Diffusion, observe_binary64_paired_c6_diffusion,
-    Binary64PressureTraceCell, Binary64QuarterPressureBox,
+    Binary64PairedC6Diffusion,
+    observe_binary64_paired_c6_diffusion,
+    Binary64PressureTraceCell,
+    Binary64QuarterPressureBox,
     derive_binary64_quarter_pressure_box,
 )
 from .nodal_remainder import (
-    NodalRemainderPrefix, NodalRemainderSequence, observe_nodal_remainder_sequence,
-    NodalRemainderCellHorizon, derive_nodal_remainder_cell_horizon,
-    NodalRemainderCellExit, observe_nodal_remainder_cell_exit,
-    NodalRemainderItineraryCell, NodalRemainderItinerary,
+    NodalRemainderPrefix,
+    NodalRemainderSequence,
+    observe_nodal_remainder_sequence,
+    NodalRemainderCellHorizon,
+    derive_nodal_remainder_cell_horizon,
+    NodalRemainderCellExit,
+    observe_nodal_remainder_cell_exit,
+    NodalRemainderItineraryCell,
+    NodalRemainderItinerary,
     derive_nodal_remainder_itinerary,
 )
 from .binary64_pressure_equilibrium import (
-    Binary64PressureEquilibriumRow, Binary64C6PressureEquilibriumObstruction,
+    Binary64PressureEquilibriumRow,
+    Binary64C6PressureEquilibriumObstruction,
     derive_binary64_c6_pressure_equilibrium_obstruction,
 )
 from .nodal_remainder_pressure import (
-    NodalRemainderPressureReadout, observe_nodal_remainder_pressure_readout,
-    PeriodicPhaseSourceBudget, PeriodicPhaseSourceCompensation,
-    derive_periodic_phase_source_budget, observe_periodic_phase_source_compensation,
-    FiniteNodalPressureDrift, observe_finite_nodal_pressure_drift,
-    NodalAreaCrossing, NodalAreaCrossings, derive_nodal_area_crossings,
-    TwoLevelNodalReturn, derive_two_level_nodal_return,
-    FiniteLevelNodalReturn, derive_finite_level_nodal_return,
-    NodalRemainderCycleGradient, observe_nodal_remainder_cycle_gradient,
+    NodalRemainderPressureReadout,
+    observe_nodal_remainder_pressure_readout,
+    PeriodicPhaseSourceBudget,
+    PeriodicPhaseSourceCompensation,
+    derive_periodic_phase_source_budget,
+    observe_periodic_phase_source_compensation,
+    FiniteNodalPressureDrift,
+    observe_finite_nodal_pressure_drift,
+    NodalAreaCrossing,
+    NodalAreaCrossings,
+    derive_nodal_area_crossings,
+    TwoLevelNodalReturn,
+    derive_two_level_nodal_return,
+    FiniteLevelNodalReturn,
+    derive_finite_level_nodal_return,
+    NodalRemainderCycleGradient,
+    observe_nodal_remainder_cycle_gradient,
 )
 from .c6_pressure_lattice import (
-    C6PressureLatticeRow, C6PressureLatticeReference, C6PressureLatticeObservation,
-    derive_c6_pressure_lattice, observe_c6_pressure_lattice,
-    C6PressureSignSector, C6PressureSectorExit,
-    derive_c6_pressure_sign_sector, observe_c6_pressure_sector_exit,
-    C6FrozenPressureStencil, observe_c6_frozen_pressure_stencil,
+    C6PressureLatticeRow,
+    C6PressureLatticeReference,
+    C6PressureLatticeObservation,
+    derive_c6_pressure_lattice,
+    observe_c6_pressure_lattice,
+    C6PressureSignSector,
+    C6PressureSectorExit,
+    derive_c6_pressure_sign_sector,
+    observe_c6_pressure_sector_exit,
+    C6FrozenPressureStencil,
+    observe_c6_frozen_pressure_stencil,
 )
 from .c6_phase_orbit import (
-    C6CouplingCoherencePhaseStep, C6CouplingCoherencePhaseOrbit,
-    observe_c6_coupling_coherence_phase_step, derive_c6_coupling_coherence_phase_orbit,
+    C6CouplingCoherencePhaseStep,
+    C6CouplingCoherencePhaseOrbit,
+    observe_c6_coupling_coherence_phase_step,
+    derive_c6_coupling_coherence_phase_orbit,
 )
 from .c6_carried_profile import (
-    C6CarriedProfile, derive_c6_carried_profile,
-    C6CarriedProfileStep, observe_c6_carried_profile_step,
+    C6CarriedProfile,
+    derive_c6_carried_profile,
+    C6CarriedProfileStep,
+    observe_c6_carried_profile_step,
 )
 from .c6_carried_tube import (
-    C6CarriedContraction, derive_c6_carried_contraction,
-    C6CarriedTube, derive_c6_carried_tube,
-    C6CarriedBandHorizon, derive_c6_carried_band_horizon,
-    C6CarriedCutExclusion, observe_c6_carried_cut_exclusion,
+    C6CarriedContraction,
+    derive_c6_carried_contraction,
+    C6CarriedTube,
+    derive_c6_carried_tube,
+    C6CarriedBandHorizon,
+    derive_c6_carried_band_horizon,
+    C6CarriedCutExclusion,
+    observe_c6_carried_cut_exclusion,
 )
 from .c6_carried_closure import C6CarriedClosure, derive_c6_carried_closure
 from .c6_carried_balance import (
-    C6CarriedPressurePoint, observe_c6_carried_pressure_point,
-    C6CarriedPressureBalance, derive_c6_carried_pressure_balance,
+    C6CarriedPressurePoint,
+    observe_c6_carried_pressure_point,
+    C6CarriedPressureBalance,
+    derive_c6_carried_pressure_balance,
 )
-from .c6_carried_passage import C6CarriedPositivePressurePassage, derive_c6_carried_positive_pressure_passage
+from .c6_carried_passage import (
+    C6CarriedPositivePressurePassage,
+    derive_c6_carried_positive_pressure_passage,
+)
 from .c6_carried_cell_escape import (
-    C6CarriedCompleteCellObstruction, derive_c6_carried_complete_cell_obstruction,
-    C6CarriedCompleteCellEscape, observe_c6_carried_complete_cell_escape,
+    C6CarriedCompleteCellObstruction,
+    derive_c6_carried_complete_cell_obstruction,
+    C6CarriedCompleteCellEscape,
+    observe_c6_carried_complete_cell_escape,
 )
 from .c6_carried_cell_graph import C6CarriedCellGraph, derive_c6_carried_cell_graph
 from .c6_carried_viability import (
-    C6CarriedViabilityBox, C6CarriedViabilityIteration, C6CarriedViability,
+    C6CarriedViabilityBox,
+    C6CarriedViabilityIteration,
+    C6CarriedViability,
     derive_c6_carried_viability,
-    C6CarriedForwardZone, C6CarriedPairBarrier, C6CarriedForwardIteration,
-    C6CarriedForwardEnvelope, derive_c6_carried_forward_envelope,
-    C6CarriedPredecessorLayer, C6CarriedPredecessors, derive_c6_carried_predecessors,
-    C6CarriedRegionIteration, C6CarriedRegionExclusion, C6CarriedRegionExclusions,
+    C6CarriedForwardZone,
+    C6CarriedPairBarrier,
+    C6CarriedForwardIteration,
+    C6CarriedForwardEnvelope,
+    derive_c6_carried_forward_envelope,
+    C6CarriedPredecessorLayer,
+    C6CarriedPredecessors,
+    derive_c6_carried_predecessors,
+    C6CarriedRegionIteration,
+    C6CarriedRegionExclusion,
+    C6CarriedRegionExclusions,
     derive_c6_carried_region_exclusions,
-    C6CarriedReachableIteration, C6CarriedReachableEnvelope,
+    C6CarriedReachableIteration,
+    C6CarriedReachableEnvelope,
     derive_c6_carried_reachable_envelope,
 )
 from .c6_carried_excursion import (
-    C6CarriedLinearExtremum, C6CarriedExcursionIngress, C6CarriedExcursionExclusion,
+    C6CarriedLinearExtremum,
+    C6CarriedExcursionIngress,
+    C6CarriedExcursionExclusion,
     derive_c6_carried_excursion_exclusion,
-    C6CarriedExcursionTransition, C6CarriedModeExcursionExclusion,
+    C6CarriedExcursionTransition,
+    C6CarriedModeExcursionExclusion,
     derive_c6_carried_mode_excursion_exclusion,
 )
 from .c6_carried_return import (
-    C6CarriedReturnTransition, C6CarriedReturnIteration, C6CarriedReturnEnvelope,
+    C6CarriedReturnTransition,
+    C6CarriedReturnIteration,
+    C6CarriedReturnEnvelope,
     derive_c6_carried_return_envelope,
-    C6CarriedReturnRegionExclusion, C6CarriedReturnRegionExclusions,
+    C6CarriedReturnRegionExclusion,
+    C6CarriedReturnRegionExclusions,
     derive_c6_carried_return_region_exclusions,
-    C6CarriedReturnUnionExclusion, C6CarriedReturnUnionExclusions,
+    C6CarriedReturnUnionExclusion,
+    C6CarriedReturnUnionExclusions,
     derive_c6_carried_return_union_exclusions,
-    C6CarriedReturnCountWitness, C6CarriedReturnCountRelaxation,
+    C6CarriedReturnCountWitness,
+    C6CarriedReturnCountRelaxation,
     derive_c6_carried_return_count_relaxation,
-    C6CarriedReturnWordBudget, derive_c6_carried_return_word_budget,
-    C6CarriedReturnMemoryEnvelope, derive_c6_carried_return_memory_envelope,
-    C6CarriedReturnMemoryRegionExclusion, C6CarriedReturnMemoryRegionExclusions,
+    C6CarriedReturnWordBudget,
+    derive_c6_carried_return_word_budget,
+    C6CarriedReturnMemoryEnvelope,
+    derive_c6_carried_return_memory_envelope,
+    C6CarriedReturnMemoryRegionExclusion,
+    C6CarriedReturnMemoryRegionExclusions,
     derive_c6_carried_return_memory_region_exclusions,
-    C6CarriedReturnExcludedPiece, C6CarriedReturnSafeSubtraction,
-    C6CarriedReturnSafePartition, C6CarriedReturnSafePartitionRegionExclusions,
-    C6CarriedReturnPredecessorPiece, C6CarriedReturnPredecessorLayer, C6CarriedReturnPredecessorPartition,
-    derive_c6_carried_return_safe_partition, derive_c6_carried_return_safe_partition_region_exclusions,
-    C6CarriedReturnCoverSchedule, C6CarriedReturnCoverCheck, C6CarriedReturnSafeCover,
+    C6CarriedReturnExcludedPiece,
+    C6CarriedReturnSafeSubtraction,
+    C6CarriedReturnSafePartition,
+    C6CarriedReturnSafePartitionRegionExclusions,
+    C6CarriedReturnPredecessorPiece,
+    C6CarriedReturnPredecessorLayer,
+    C6CarriedReturnPredecessorPartition,
+    derive_c6_carried_return_safe_partition,
+    derive_c6_carried_return_safe_partition_region_exclusions,
+    C6CarriedReturnCoverSchedule,
+    C6CarriedReturnCoverCheck,
+    C6CarriedReturnSafeCover,
     C6CarriedReturnSafeCoverRegionExclusions,
-    derive_c6_carried_return_safe_cover, derive_c6_carried_return_safe_cover_region_exclusions,
+    derive_c6_carried_return_safe_cover,
+    derive_c6_carried_return_safe_cover_region_exclusions,
 )
 from .c6_carried_mean_cylinder import (
-    C6CarriedMeanCylinderObstruction, derive_c6_carried_mean_cylinder_obstruction,
-    C6CarriedMeanCylinderBoundary, C6CarriedMeanCylinderEscape, observe_c6_carried_mean_cylinder_escape,
+    C6CarriedMeanCylinderObstruction,
+    derive_c6_carried_mean_cylinder_obstruction,
+    C6CarriedMeanCylinderBoundary,
+    C6CarriedMeanCylinderEscape,
+    observe_c6_carried_mean_cylinder_escape,
 )
 from .c6_carried_affine_mean import (
-    C6CarriedAffineMeanObstruction, derive_c6_carried_affine_mean_obstruction,
-    C6CarriedAffineMeanBoundary, C6CarriedAffineMeanEscape, observe_c6_carried_affine_mean_escape,
+    C6CarriedAffineMeanObstruction,
+    derive_c6_carried_affine_mean_obstruction,
+    C6CarriedAffineMeanBoundary,
+    C6CarriedAffineMeanEscape,
+    observe_c6_carried_affine_mean_escape,
 )
 from .c6_carried_relay import (
-    C6CarriedRelayAxis, C6CarriedRelay, derive_c6_carried_relay,
-    C6CarriedRelayPoint, C6CarriedRelayExit, observe_c6_carried_relay_exit,
-    C6CarriedLocalRelayBudget, derive_c6_carried_local_relay_budget,
-    C6CarriedLocalRelayPoint, C6CarriedLocalRelayExit, observe_c6_carried_local_relay_exit,
+    C6CarriedRelayAxis,
+    C6CarriedRelay,
+    derive_c6_carried_relay,
+    C6CarriedRelayPoint,
+    C6CarriedRelayExit,
+    observe_c6_carried_relay_exit,
+    C6CarriedLocalRelayBudget,
+    derive_c6_carried_local_relay_budget,
+    C6CarriedLocalRelayPoint,
+    C6CarriedLocalRelayExit,
+    observe_c6_carried_local_relay_exit,
 )
 from .capacity_localization import CycleCapacityBalance, observe_cycle_capacity_balance
 from .cycle_memory_relaxation import (
@@ -793,20 +891,31 @@ from .forced_support import (
     observe_forced_support_target,
 )
 from .forcing_realization import (
-    NonEpiForcingObservation, capture_non_epi_forcing, decompose_non_epi_forcing,
+    NonEpiForcingObservation,
+    capture_non_epi_forcing,
+    decompose_non_epi_forcing,
 )
 from .capacity_feedback import (
-    P2Binary64CouplingObservation, P2Binary64CouplingReference,
-    P2CapacityFeedbackBound, P2CapacityFeedbackCycle, P2CapacityFeedbackReference,
-    bound_p2_capacity_feedback, derive_p2_binary64_coupling_lattice,
-    derive_p2_capacity_feedback, observe_p2_binary64_coupling_lattice,
+    P2Binary64CouplingObservation,
+    P2Binary64CouplingReference,
+    P2CapacityFeedbackBound,
+    P2CapacityFeedbackCycle,
+    P2CapacityFeedbackReference,
+    bound_p2_capacity_feedback,
+    derive_p2_binary64_coupling_lattice,
+    derive_p2_capacity_feedback,
+    observe_p2_binary64_coupling_lattice,
     observe_p2_capacity_feedback_cycle,
 )
 from .coupling_support import (
-    AntipodalRegionPhaseBalance, AntipodalRegionPhaseResponse,
-    CompatibleCapacityBalance, CouplingSupportObservation,
-    derive_antipodal_region_phase_balance, derive_compatible_capacity_balance,
-    observe_antipodal_region_phase_response, observe_coupling_support,
+    AntipodalRegionPhaseBalance,
+    AntipodalRegionPhaseResponse,
+    CompatibleCapacityBalance,
+    CouplingSupportObservation,
+    derive_antipodal_region_phase_balance,
+    derive_compatible_capacity_balance,
+    observe_antipodal_region_phase_response,
+    observe_coupling_support,
 )
 from .phase_response import PhaseResponseReference, derive_phase_response
 from .symplectic_substrate import (
@@ -900,6 +1009,8 @@ from .variational import (
     identify_conjugate_pairs,
     translate_sectors,
 )
+
+# isort: on
 
 __all__ = [
     # --- Structural Field Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) ---
