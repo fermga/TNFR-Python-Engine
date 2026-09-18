@@ -15,8 +15,10 @@ from ._cycle_algebra import Matrix, Vector, dot, ordered_vector
 from ._exact_linear_algebra import exact_matrix_inverse, exact_square_matrix_product
 
 __all__ = [
-    "RegionalResponseCriterion", "observe_regional_response",
-    "RegionalInputGeometry", "observe_regional_input_geometry",
+    "RegionalResponseCriterion",
+    "observe_regional_response",
+    "RegionalInputGeometry",
+    "observe_regional_input_geometry",
 ]
 
 
@@ -77,22 +79,36 @@ def _regional_geometry(transition, metric_weights, region_indices):
     if isinstance(region_indices, (str, bytes, bytearray, Mapping, Set)):
         raise TypeError("region indices must be an ordered sequence")
     region = tuple(region_indices)
-    if (not region or len(region) >= size
-            or any(type(i) is not int or not 0 <= i < size for i in region)
-            or len(set(region)) != len(region)):
+    if (
+        not region
+        or len(region) >= size
+        or any(type(i) is not int or not 0 <= i < size for i in region)
+        or len(set(region)) != len(region)
+    ):
         raise ValueError("region must be a nonempty proper set of distinct indices")
     outside = tuple(i for i in range(size) if i not in region)
     mass = sum((metric[i] for i in region), F(0))
     # C is rectangular: restriction followed by regional weighted centering.
-    center = tuple(tuple(F(i == j)-(metric[j]/mass if j in region else F(0))
-                         for j in range(size)) for i in region)
+    center = tuple(
+        tuple(
+            F(i == j) - (metric[j] / mass if j in region else F(0)) for j in range(size)
+        )
+        for i in region
+    )
     basis = (("region_constant", tuple(F(i in region) for i in range(size))),)
-    basis += tuple((f"outside_{j}", tuple(F(i == j) for i in range(size))) for j in outside)
+    basis += tuple(
+        (f"outside_{j}", tuple(F(i == j) for i in range(size))) for j in outside
+    )
     return matrix, metric, region, outside, center, basis
 
 
 def observe_regional_response(
-    transition, metric_weights, region_indices, difference, *, residual=None,
+    transition,
+    metric_weights,
+    region_indices,
+    difference,
+    *,
+    residual=None,
 ):
     """Derive the response of ``delta_after = T delta_before + residual``.
 
@@ -107,10 +123,11 @@ def observe_regional_response(
     No pressure is reconstructed from an observed derivative.
     """
     matrix, metric, region, outside, center, basis = _regional_geometry(
-        transition, metric_weights, region_indices)
+        transition, metric_weights, region_indices
+    )
     size = len(metric)
     x = ordered_vector(difference, "difference")
-    r = (F(0),)*size if residual is None else ordered_vector(residual, "residual")
+    r = (F(0),) * size if residual is None else ordered_vector(residual, "residual")
     if len(x) != size or len(r) != size:
         raise ValueError("difference and residual must match the full metric")
 
@@ -118,49 +135,104 @@ def observe_regional_response(
         return tuple(dot(row, value) for row in m)
 
     def inner(a, b):
-        return sum((metric[i]*u*v for i, u, v in zip(region, a, b, strict=True)), F(0))
+        return sum(
+            (metric[i] * u * v for i, u, v in zip(region, a, b, strict=True)), F(0)
+        )
 
     def mean(indices):
-        return sum((metric[i]*x[i] for i in indices), F(0))/sum(metric[i] for i in indices)
+        return sum((metric[i] * x[i] for i in indices), F(0)) / sum(
+            metric[i] for i in indices
+        )
 
     mb, mp = mean(region), mean(outside)
-    z = tuple(x[i]-mb if i in region else F(0) for i in range(size))
+    z = tuple(x[i] - mb if i in region else F(0) for i in range(size))
     modes = (
-        ("global_mean", (mp,)*size),
-        ("mean_contrast", tuple(mb-mp if i in region else F(0) for i in range(size))),
-        ("parent_centered", tuple(x[i]-mp if i in outside else F(0) for i in range(size))),
+        ("global_mean", (mp,) * size),
+        ("mean_contrast", tuple(mb - mp if i in region else F(0) for i in range(size))),
+        (
+            "parent_centered",
+            tuple(x[i] - mp if i in outside else F(0) for i in range(size)),
+        ),
     )
     components = tuple((label, mv(center, mv(matrix, value))) for label, value in modes)
     components += (("runtime_residual", mv(center, r)),)
     before, ideal = mv(center, x), mv(center, mv(matrix, x))
     residual_centered = components[-1][1]
-    after = tuple(a+b for a, b in zip(ideal, residual_centered, strict=True))
+    after = tuple(a + b for a, b in zip(ideal, residual_centered, strict=True))
     self_image = mv(center, mv(matrix, z))
-    incoming = tuple(sum((value[k] for _, value in components), F(0)) for k in range(len(region)))
-    if tuple(a+b for a, b in zip(self_image, incoming, strict=True)) != after:
+    incoming = tuple(
+        sum((value[k] for _, value in components), F(0)) for k in range(len(region))
+    )
+    if tuple(a + b for a, b in zip(self_image, incoming, strict=True)) != after:
         raise RuntimeError("regional mean/shape/input identity failed")
-    energy_matrix = tuple(tuple(sum((metric[i]*row[j]*row[k]
-                                    for i, row in zip(region, center, strict=True)), F(0))
-                                for k in range(size)) for j in range(size))
+    energy_matrix = tuple(
+        tuple(
+            sum(
+                (
+                    metric[i] * row[j] * row[k]
+                    for i, row in zip(region, center, strict=True)
+                ),
+                F(0),
+            )
+            for k in range(size)
+        )
+        for j in range(size)
+    )
     transformed = exact_square_matrix_product(
-        tuple(zip(*matrix, strict=True)), exact_square_matrix_product(energy_matrix, matrix))
-    change = tuple(tuple(a-b for a, b in zip(row, old, strict=True))
-                   for row, old in zip(transformed, energy_matrix, strict=True))
-    zn, an, un = inner(before, before), inner(self_image, self_image), inner(incoming, incoming)
-    work, available = 2*inner(self_image, incoming)+un, zn-an
-    ideal_change = dot(x, mv(change, x))/2
-    linear, quadratic = inner(ideal, residual_centered), inner(residual_centered, residual_centered)/2
-    total = (inner(after, after)-zn)/2
-    if ideal_change+linear+quadratic != total or (work-available)/2 != total:
+        tuple(zip(*matrix, strict=True)),
+        exact_square_matrix_product(energy_matrix, matrix),
+    )
+    change = tuple(
+        tuple(a - b for a, b in zip(row, old, strict=True))
+        for row, old in zip(transformed, energy_matrix, strict=True)
+    )
+    zn, an, un = (
+        inner(before, before),
+        inner(self_image, self_image),
+        inner(incoming, incoming),
+    )
+    work, available = 2 * inner(self_image, incoming) + un, zn - an
+    ideal_change = dot(x, mv(change, x)) / 2
+    linear, quadratic = (
+        inner(ideal, residual_centered),
+        inner(residual_centered, residual_centered) / 2,
+    )
+    total = (inner(after, after) - zn) / 2
+    if ideal_change + linear + quadratic != total or (work - available) / 2 != total:
         raise RuntimeError("regional quadratic response identity failed")
     # {1_B, e_j: j outside B} spans ker(C); no coordinate search is involved.
     images = tuple((label, mv(center, mv(matrix, value))) for label, value in basis)
-    sufficient = zn >= an+un and (zn-an-un)**2 >= 4*an*un
+    sufficient = zn >= an + un and (zn - an - un) ** 2 >= 4 * an * un
     return RegionalResponseCriterion(
-        matrix, metric, region, x, r, center, energy_matrix, change, mb, mp,
-        before, ideal, after, self_image, incoming, components, zn, an, un,
-        work, available, ideal_change, linear, quadratic, total,
-        work <= available, work < available, sufficient, images,
+        matrix,
+        metric,
+        region,
+        x,
+        r,
+        center,
+        energy_matrix,
+        change,
+        mb,
+        mp,
+        before,
+        ideal,
+        after,
+        self_image,
+        incoming,
+        components,
+        zn,
+        an,
+        un,
+        work,
+        available,
+        ideal_change,
+        linear,
+        quadratic,
+        total,
+        work <= available,
+        work < available,
+        sufficient,
+        images,
         not any(any(value) for _, value in images),
     )
 
@@ -205,7 +277,8 @@ def observe_regional_input_geometry(transition, metric_weights, region_indices):
     inverse primitives supply witnesses without spectral tolerances or fitting.
     """
     matrix, metric, region, _outside, center, basis = _regional_geometry(
-        transition, metric_weights, region_indices)
+        transition, metric_weights, region_indices
+    )
     count = len(region)
     weights = tuple(metric[i] for i in region)
 
@@ -213,7 +286,7 @@ def observe_regional_input_geometry(transition, metric_weights, region_indices):
         return tuple(dot(row, value) for row in m)
 
     def inner(a, b):
-        return sum((h*x*y for h, x, y in zip(weights, a, b, strict=True)), F(0))
+        return sum((h * x * y for h, x, y in zip(weights, a, b, strict=True)), F(0))
 
     def independent(vectors):
         chosen, indices = [], []
@@ -231,38 +304,83 @@ def observe_regional_input_geometry(transition, metric_weights, region_indices):
     rank = len(selected)
     gram = tuple(tuple(inner(a, b) for b in image_basis) for a in image_basis)
     inverse = exact_matrix_inverse(gram) if rank else ()
-    coefficients_by_column = tuple(mv(inverse, tuple(inner(a, column) for a in image_basis))
-                                   for column in images)
-    coefficients = tuple(tuple(column[i] for column in coefficients_by_column) for i in range(rank))
+    coefficients_by_column = tuple(
+        mv(inverse, tuple(inner(a, column) for a in image_basis)) for column in images
+    )
+    coefficients = tuple(
+        tuple(column[i] for column in coefficients_by_column) for i in range(rank)
+    )
     for column, coords in zip(images, coefficients_by_column, strict=True):
-        rebuilt = tuple(sum((v[i]*a for v, a in zip(image_basis, coords, strict=True)), F(0))
-                        for i in range(count))
+        rebuilt = tuple(
+            sum((v[i] * a for v, a in zip(image_basis, coords, strict=True)), F(0))
+            for i in range(count)
+        )
         if rebuilt != column:
-            raise RuntimeError("independent image columns do not reconstruct the input map")
+            raise RuntimeError(
+                "independent image columns do not reconstruct the input map"
+            )
     # At rank zero all sums are empty, giving the exact zero projection.
-    projection = tuple(tuple(sum((image_basis[a][i]*inverse[a][b]*image_basis[b][j]*weights[j]
-                                  for a in range(rank) for b in range(rank)), F(0))
-                             for j in range(count)) for i in range(count))
+    projection = tuple(
+        tuple(
+            sum(
+                (
+                    image_basis[a][i] * inverse[a][b] * image_basis[b][j] * weights[j]
+                    for a in range(rank)
+                    for b in range(rank)
+                ),
+                F(0),
+            )
+            for j in range(count)
+        )
+        for i in range(count)
+    )
     mass = sum(weights, F(0))
-    local_center = tuple(tuple(F(i == j)-weights[j]/mass for j in range(count)) for i in range(count))
-    protected = tuple(tuple(c-p for c, p in zip(cr, pr, strict=True))
-                      for cr, pr in zip(local_center, projection, strict=True))
+    local_center = tuple(
+        tuple(F(i == j) - weights[j] / mass for j in range(count)) for i in range(count)
+    )
+    protected = tuple(
+        tuple(c - p for c, p in zip(cr, pr, strict=True))
+        for cr, pr in zip(local_center, projection, strict=True)
+    )
     _, protected_basis = independent(tuple(zip(*protected, strict=True)))
-    dimension = count-1-rank
+    dimension = count - 1 - rank
     if len(protected_basis) != dimension:
-        raise RuntimeError("image and protected dimensions do not exhaust centered shape")
-    readouts = tuple(tuple(h*x for h, x in zip(weights, value, strict=True)) for value in protected_basis)
+        raise RuntimeError(
+            "image and protected dimensions do not exhaust centered shape"
+        )
+    readouts = tuple(
+        tuple(h * x for h, x in zip(weights, value, strict=True))
+        for value in protected_basis
+    )
     for value, readout in zip(protected_basis, readouts, strict=True):
         if dot(weights, value) or any(dot(readout, column) for column in images):
-            raise RuntimeError("protected read-out fails its centered annihilator identity")
+            raise RuntimeError(
+                "protected read-out fails its centered annihilator identity"
+            )
     for p in (projection, protected):
         if exact_square_matrix_product(p, p) != p or any(
-                weights[i]*p[i][j] != weights[j]*p[j][i]
-                for i in range(count) for j in range(count)):
+            weights[i] * p[i][j] != weights[j] * p[j][i]
+            for i in range(count)
+            for j in range(count)
+        ):
             raise RuntimeError("regional projection is not H-orthogonal and idempotent")
     return RegionalInputGeometry(
-        matrix, metric, region, center, tuple(label for label, _ in basis),
-        tuple(value for _, value in basis), tuple(zip(*images, strict=True)),
-        count-1, rank, dimension, selected, image_basis, inverse, coefficients,
-        projection, protected, protected_basis, readouts,
+        matrix,
+        metric,
+        region,
+        center,
+        tuple(label for label, _ in basis),
+        tuple(value for _, value in basis),
+        tuple(zip(*images, strict=True)),
+        count - 1,
+        rank,
+        dimension,
+        selected,
+        image_basis,
+        inverse,
+        coefficients,
+        projection,
+        protected,
+        protected_basis,
+        readouts,
     )

@@ -11,12 +11,15 @@ import pytest
 from tnfr.physics.equivariance import observe_exact_map_symmetries
 from tnfr.physics.support_transport import _from_data
 
-
 NODES = ("left", "child-a", "child-b", "right")
 REGION = NODES[1:3]
 IDENTITY = tuple(tuple(F(i == j) for j in range(4)) for i in range(4))
-LAPLACIAN = ((1, -1, 0, 0), (F(-1, 2), 1, F(-1, 2), 0),
-             (0, F(-1, 2), 1, F(-1, 2)), (0, 0, -1, 1))
+LAPLACIAN = (
+    (1, -1, 0, 0),
+    (F(-1, 2), 1, F(-1, 2), 0),
+    (0, F(-1, 2), 1, F(-1, 2)),
+    (0, 0, -1, 1),
+)
 REFLECTION = (3, 2, 1, 0)
 
 
@@ -31,16 +34,26 @@ def _snapshot(*, capacity=(1, 1, 1, 1), zero_edge=False, last_weight=F(1)):
     if zero_edge:
         support[0].add(2)
         support[2].add(0)
-    return _from_data(NODES, conductance, tuple(tuple(sorted(s)) for s in support),
-                      (0,)*4, capacity, (0,)*4)
+    return _from_data(
+        NODES,
+        conductance,
+        tuple(tuple(sorted(s)) for s in support),
+        (0,) * 4,
+        capacity,
+        (0,) * 4,
+    )
 
 
 def _observe(snapshot=None, **kwargs):
-    options = {"metric_weights": (1, 2, 2, 1), "region": REGION,
-               "operators": {"A": LAPLACIAN}}
+    options = {
+        "metric_weights": (1, 2, 2, 1),
+        "region": REGION,
+        "operators": {"A": LAPLACIAN},
+    }
     options.update(kwargs)
-    return observe_exact_map_symmetries(_snapshot() if snapshot is None else snapshot,
-                                        **options)
+    return observe_exact_map_symmetries(
+        _snapshot() if snapshot is None else snapshot, **options
+    )
 
 
 def _member(result, permutation=REFLECTION):
@@ -48,8 +61,10 @@ def _member(result, permutation=REFLECTION):
 
 
 def _product(a, b):
-    return tuple(tuple(sum((a[i][k]*b[k][j] for k in range(4)), F(0))
-                       for j in range(4)) for i in range(4))
+    return tuple(
+        tuple(sum((a[i][k] * b[k][j] for k in range(4)), F(0)) for j in range(4))
+        for i in range(4)
+    )
 
 
 def _sequential_reception():
@@ -60,7 +75,7 @@ def _sequential_reception():
         local[i] = [F(0)] * 4
         local[i][i] = F(1, 2)
         for j in neighbors:
-            local[i][j] = F(1, 2*len(neighbors))
+            local[i][j] = F(1, 2 * len(neighbors))
         result = _product(local, result)
     return result
 
@@ -82,8 +97,9 @@ def test_complete_path_reflection_and_fixed_environmental_space():
 def test_sequential_reset_breaks_symmetry_preserved_by_nodal_generator():
     reset = _sequential_reception()
     dt = F(1, 4)
-    transition = tuple(tuple(reset[i][j]-dt*LAPLACIAN[i][j]
-                             for j in range(4)) for i in range(4))
+    transition = tuple(
+        tuple(reset[i][j] - dt * LAPLACIAN[i][j] for j in range(4)) for i in range(4)
+    )
     result = _observe(operators={"A": LAPLACIAN, "S": reset, "T": transition})
     assert len(dict(result.operator_group_indices)["A"]) == 2
     assert len(dict(result.operator_group_indices)["S"]) == 1
@@ -94,23 +110,35 @@ def test_sequential_reset_breaks_symmetry_preserved_by_nodal_generator():
     defects = dict(_member(result).operator_checks)
     assert defects["S"] == defects["T"]
     i, j, difference = defects["S"].witness
-    assert difference == reset[REFLECTION[i]][REFLECTION[j]]-reset[i][j] != 0
+    assert difference == reset[REFLECTION[i]][REFLECTION[j]] - reset[i][j] != 0
     assert defects["S"].max_abs_defect == max(
-        abs(reset[REFLECTION[i]][REFLECTION[j]]-reset[i][j])
-        for i in range(4) for j in range(4))
+        abs(reset[REFLECTION[i]][REFLECTION[j]] - reset[i][j])
+        for i in range(4)
+        for j in range(4)
+    )
 
 
-@pytest.mark.parametrize("capacity,metric,region,flags", [
-    ((1, 1, 1, 2), (1, 2, 2, 1), REGION, (True, True, False)),
-    ((1, 1, 1, 1), (1, 2, 3, 1), REGION, (True, False, True)),
-    ((1, 1, 1, 1), (1, 2, 2, 1), NODES[:2], (False, True, True)),
-])
-def test_region_metric_capacity_filters_are_separate_from_support(capacity, metric, region, flags):
-    result = _observe(_snapshot(capacity=capacity), metric_weights=metric, region=region)
+@pytest.mark.parametrize(
+    "capacity,metric,region,flags",
+    [
+        ((1, 1, 1, 2), (1, 2, 2, 1), REGION, (True, True, False)),
+        ((1, 1, 1, 1), (1, 2, 3, 1), REGION, (True, False, True)),
+        ((1, 1, 1, 1), (1, 2, 2, 1), NODES[:2], (False, True, True)),
+    ],
+)
+def test_region_metric_capacity_filters_are_separate_from_support(
+    capacity, metric, region, flags
+):
+    result = _observe(
+        _snapshot(capacity=capacity), metric_weights=metric, region=region
+    )
     assert result.support_group_order == 2
     reflection = _member(result)
-    assert (reflection.region_preserved, reflection.metric_preserved,
-            reflection.capacity_preserved) == flags
+    assert (
+        reflection.region_preserved,
+        reflection.metric_preserved,
+        reflection.capacity_preserved,
+    ) == flags
     assert dict(reflection.operator_checks)["A"].preserved
     assert len(result.admissible_indices) == len(result.common_group_indices) == 1
 
@@ -125,8 +153,8 @@ def test_zero_weight_support_edge_is_retained_in_automorphism_enumeration():
 
 def test_exact_tiny_edge_weight_difference_breaks_support_symmetry():
     tiny = F(1, 2**1100)
-    assert float(1+tiny) == 1.0
-    result = _observe(_snapshot(last_weight=1+tiny), operators={"I": IDENTITY})
+    assert float(1 + tiny) == 1.0
+    result = _observe(_snapshot(last_weight=1 + tiny), operators={"I": IDENTITY})
     assert result.support_group_order == 1
 
 
@@ -141,8 +169,14 @@ def test_exact_tiny_matrix_defect_is_not_rounded_to_zero():
 
 
 def test_affine_source_and_particular_state_do_not_restrict_paired_matrix_group():
-    result = _observe(fields={"c": (0, 0, 0, 0), "b": (1, 0, 0, 0),
-                              "EPI": (1, 2, 4, 8), "phase": (0, 1, 2, 3)})
+    result = _observe(
+        fields={
+            "c": (0, 0, 0, 0),
+            "b": (1, 0, 0, 0),
+            "EPI": (1, 2, 4, 8),
+            "phase": (0, 1, 2, 3),
+        }
+    )
     assert len(result.common_operator_group) == 2
     counts = {name: len(indices) for name, indices in result.field_group_indices}
     assert counts == {"c": 2, "b": 1, "EPI": 1, "phase": 1}
@@ -172,8 +206,14 @@ def test_invalid_enumeration_caps_are_rejected(cap):
 def test_nonsymmetric_zero_conductance_support_is_rejected():
     snap = _snapshot()
     one_way = ((1, 2), (0, 2), (1, 3), (2,))
-    snap = _from_data(snap.nodes, snap.conductance, one_way, snap.epi,
-                      snap.capacity, snap.stored_pressure)
+    snap = _from_data(
+        snap.nodes,
+        snap.conductance,
+        one_way,
+        snap.epi,
+        snap.capacity,
+        snap.stored_pressure,
+    )
     with pytest.raises(ValueError, match="undirected support"):
         _observe(snap)
 
@@ -214,8 +254,17 @@ def test_metric_requires_positive_complete_coordinates(metric):
         _observe(metric_weights=metric)
 
 
-@pytest.mark.parametrize("operators", [{}, [], {"": IDENTITY}, {1: IDENTITY},
-                                       {"A": ((1, 0), (0, 1))}, {"A": (IDENTITY[0],)*3}])
+@pytest.mark.parametrize(
+    "operators",
+    [
+        {},
+        [],
+        {"": IDENTITY},
+        {1: IDENTITY},
+        {"A": ((1, 0), (0, 1))},
+        {"A": (IDENTITY[0],) * 3},
+    ],
+)
 def test_operator_schema_and_dimensions_are_rejected(operators):
     with pytest.raises(ValueError):
         _observe(operators=operators)
@@ -229,8 +278,9 @@ def test_nonfinite_or_boolean_matrix_coefficients_are_rejected(value):
         _observe(operators={"A": operator})
 
 
-@pytest.mark.parametrize("fields", [[], {"": (0,)*4}, {"x": (0,)*3},
-                                    {"x": (0, float("nan"), 0, 0)}])
+@pytest.mark.parametrize(
+    "fields", [[], {"": (0,) * 4}, {"x": (0,) * 3}, {"x": (0, float("nan"), 0, 0)}]
+)
 def test_invalid_field_schema_is_rejected(fields):
     with pytest.raises((TypeError, ValueError)):
         _observe(fields=fields)

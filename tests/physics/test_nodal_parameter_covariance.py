@@ -15,7 +15,6 @@ from tnfr.physics.forcing_realization import (
 )
 from tnfr.physics.support_transport import _from_data, observe_support_transport
 
-
 _X = (Q(1, 4), Q(1), Q(3, 4))
 _NU = (Q(1, 2), Q(1), Q(3, 2))
 _WEIGHTS = {"phase": Q(1, 4), "epi": Q(1, 4), "vf": Q(1, 4), "topo": Q(1, 4)}
@@ -42,7 +41,9 @@ def _pressure(observation):
     return tuple(
         observation.epi_weight * gradient + forcing
         for gradient, forcing in zip(
-            observation.snapshot.epi_gradient, observation.forcing, strict=True,
+            observation.snapshot.epi_gradient,
+            observation.forcing,
+            strict=True,
         )
     )
 
@@ -50,7 +51,9 @@ def _pressure(observation):
 def _rate(observation):
     return tuple(
         nu * pressure
-        for nu, pressure in zip(observation.snapshot.capacity, _pressure(observation), strict=True)
+        for nu, pressure in zip(
+            observation.snapshot.capacity, _pressure(observation), strict=True
+        )
     )
 
 
@@ -65,31 +68,32 @@ def test_joint_form_and_time_change_requires_transformed_channel_coefficients():
         "topo": a * _WEIGHTS["topo"],
     }
     transformed = _capture(
-        epi=tuple(a*x+b for x in _X),
-        capacity=tuple(nu/c for nu in _NU),
+        epi=tuple(a * x + b for x in _X),
+        capacity=tuple(nu / c for nu in _NU),
         weights=weights,
     )
     assert dict(transformed.normalized_weights) == weights
     assert sum(weights.values()) == 2  # retained coefficients, no normalization
     assert transformed.phase_gradient == original.phase_gradient
     assert transformed.snapshot.topology_gradient == original.snapshot.topology_gradient
-    assert _pressure(transformed) == tuple(a*p for p in _pressure(original))
-    assert _rate(transformed) == tuple(a*r/c for r in _rate(original))
+    assert _pressure(transformed) == tuple(a * p for p in _pressure(original))
+    assert _rate(transformed) == tuple(a * r / c for r in _rate(original))
 
 
 def test_fixed_capacity_channel_coefficient_breaks_time_unit_covariance():
     original = _capture()
     c = Q(2)
-    incorrectly_fixed = _capture(capacity=tuple(nu/c for nu in _NU))
+    incorrectly_fixed = _capture(capacity=tuple(nu / c for nu in _NU))
     difference = tuple(
-        after-before for before, after in zip(_pressure(original), _pressure(incorrectly_fixed))
+        after - before
+        for before, after in zip(_pressure(original), _pressure(incorrectly_fixed))
     )
     assert difference == tuple(
-        _WEIGHTS["vf"] * (1/c-1) * gradient
+        _WEIGHTS["vf"] * (1 / c - 1) * gradient
         for gradient in original.snapshot.capacity_gradient
     )
     assert any(difference)
-    assert _rate(incorrectly_fixed) != tuple(r/c for r in _rate(original))
+    assert _rate(incorrectly_fixed) != tuple(r / c for r in _rate(original))
 
 
 def test_normalizing_transformed_weights_changes_the_required_pressure_scale():
@@ -97,27 +101,31 @@ def test_normalizing_transformed_weights_changes_the_required_pressure_scale():
     a, b, c = Q(7, 4), Q(1, 2), Q(2)
     weights = {"epi": Q(1, 4), "phase": Q(7, 16), "vf": Q(7, 8), "topo": Q(7, 16)}
     transformed = _capture(
-        epi=tuple(a*x+b for x in _X),
-        capacity=tuple(nu/c for nu in _NU),
+        epi=tuple(a * x + b for x in _X),
+        capacity=tuple(nu / c for nu in _NU),
         weights=weights,
         normalize=True,
     )
     normalization = sum(weights.values())
     assert normalization == 2
     assert dict(transformed.normalized_weights) == {
-        key: value/normalization for key, value in weights.items()
+        key: value / normalization for key, value in weights.items()
     }
-    assert _pressure(transformed) == tuple(a*p/normalization for p in _pressure(original))
-    assert _rate(transformed) == tuple(a*r/(c*normalization) for r in _rate(original))
-    assert _rate(transformed) != tuple(a*r/c for r in _rate(original))
+    assert _pressure(transformed) == tuple(
+        a * p / normalization for p in _pressure(original)
+    )
+    assert _rate(transformed) == tuple(
+        a * r / (c * normalization) for r in _rate(original)
+    )
+    assert _rate(transformed) != tuple(a * r / c for r in _rate(original))
 
 
 def test_pure_epi_clock_change_needs_no_capacity_source_compensation():
     weights = {"epi": 1, "phase": 0, "vf": 0, "topo": 0}
     original = _capture(weights=weights)
-    rescaled = _capture(capacity=tuple(nu/2 for nu in _NU), weights=weights)
+    rescaled = _capture(capacity=tuple(nu / 2 for nu in _NU), weights=weights)
     assert _pressure(rescaled) == _pressure(original)
-    assert _rate(rescaled) == tuple(r/2 for r in _rate(original))
+    assert _rate(rescaled) == tuple(r / 2 for r in _rate(original))
 
 
 def test_shared_epi_owner_has_the_local_linear_difference_representation():
@@ -126,8 +134,12 @@ def test_shared_epi_owner_has_the_local_linear_difference_representation():
     for column in range(3):
         basis = tuple(Q(index == column) for index in range(3))
         basis_source = _from_data(
-            source.nodes, source.conductance, source.support_neighbors,
-            basis, source.capacity, source.stored_pressure,
+            source.nodes,
+            source.conductance,
+            source.support_neighbors,
+            basis,
+            source.capacity,
+            source.stored_pressure,
         )
         columns.append(basis_source.epi_gradient)
     matrix = tuple(tuple(columns[j][i] for j in range(3)) for i in range(3))
@@ -135,7 +147,7 @@ def test_shared_epi_owner_has_the_local_linear_difference_representation():
     assert all(sum(row) == 0 for row in matrix)
     assert all(matrix[i][j] >= 0 for i in range(3) for j in range(3) if i != j)
     represented = tuple(
-        sum(matrix[i][j] * (source.epi[j]-source.epi[i]) for j in range(3) if j != i)
+        sum(matrix[i][j] * (source.epi[j] - source.epi[i]) for j in range(3) if j != i)
         for i in range(3)
     )
     assert represented == source.epi_gradient

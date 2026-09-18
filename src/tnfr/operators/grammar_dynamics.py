@@ -34,10 +34,17 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Sequence
 
+from ..config.operator_names import BIFURCATION_WINDOW, U2_DEBT_CAPACITY
 from ..types import Glyph
 from .grammar_debt import (
-    PRIOR_COHERENCE_KEY, U2_DEBT_KEY, advance_debt, advance_prior_coherence,
-    debt_from_history, node_debt, node_has_prior_coherence, require_replayable_history,
+    PRIOR_COHERENCE_KEY,
+    U2_DEBT_KEY,
+    advance_debt,
+    advance_prior_coherence,
+    debt_from_history,
+    node_debt,
+    node_has_prior_coherence,
+    require_replayable_history,
 )
 from .grammar_types import (
     BIFURCATION_HANDLERS,
@@ -51,7 +58,6 @@ from .grammar_types import (
     TRANSFORMERS,
     glyph_function_name,
 )
-from ..config.operator_names import BIFURCATION_WINDOW, U2_DEBT_CAPACITY
 
 # ── glyph code ↔ canonical executable-identifier helpers ───────────────────
 
@@ -310,7 +316,10 @@ def _check_violations(
     # embedding; conversion failure must not imply initialized form.
     epi = require_finite_real_scalar_epi(
         get_attr(
-            G.nodes[node], ALIAS_EPI, 1.0, strict=True,
+            G.nodes[node],
+            ALIAS_EPI,
+            1.0,
+            strict=True,
             conv=lambda value: value,
         ),
         f"node {node!r} EPI",
@@ -387,7 +396,11 @@ def validate_candidate(
     """
     code = _to_code(candidate)
     allowed, violations = _check_violations(
-        G, node, code, window, sequence_context=sequence_context,
+        G,
+        node,
+        code,
+        window,
+        sequence_context=sequence_context,
     )
 
     alt: str | None = None
@@ -521,7 +534,11 @@ def enforce_grammar_on_glyph(
 
     code = _to_code(candidate)
     allowed, violations = _check_violations(
-        G, node, code, window, sequence_context=sequence_context,
+        G,
+        node,
+        code,
+        window,
+        sequence_context=sequence_context,
     )
     if allowed:
         return code
@@ -613,7 +630,9 @@ def validate_sequence_incremental(
         if cr.allowed:
             shadow.append(code)
             shadow_debt = advance_debt(shadow_debt, code)
-            shadow_prior_coherence = advance_prior_coherence(shadow_prior_coherence, code)
+            shadow_prior_coherence = advance_prior_coherence(
+                shadow_prior_coherence, code
+            )
 
     return results
 

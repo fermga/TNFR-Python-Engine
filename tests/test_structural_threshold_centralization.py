@@ -31,15 +31,9 @@ from tnfr.validation.aggregator import run_structural_validation
 def test_public_threshold_views_alias_canonical_policies() -> None:
     config = TNFRConfig()
 
-    assert PHASE_GRADIENT_THRESHOLD == pytest.approx(
-        GRAD_PHI_CANONICAL_THRESHOLD
-    )
-    assert PHASE_CURVATURE_ABS_THRESHOLD == pytest.approx(
-        K_PHI_CANONICAL_THRESHOLD
-    )
-    assert PHI_S_CLASSICAL_THRESHOLD == pytest.approx(
-        PHI_S_VON_KOCH_THRESHOLD
-    )
+    assert PHASE_GRADIENT_THRESHOLD == pytest.approx(GRAD_PHI_CANONICAL_THRESHOLD)
+    assert PHASE_CURVATURE_ABS_THRESHOLD == pytest.approx(K_PHI_CANONICAL_THRESHOLD)
+    assert PHI_S_CLASSICAL_THRESHOLD == pytest.approx(PHI_S_VON_KOCH_THRESHOLD)
     assert STRUCTURAL_POTENTIAL_DELTA_THRESHOLD == pytest.approx(
         U6_STRUCTURAL_POTENTIAL_LIMIT
     )
@@ -49,9 +43,7 @@ def test_public_threshold_views_alias_canonical_policies() -> None:
     assert config.phase_gradient_threshold == pytest.approx(
         GRAD_PHI_CANONICAL_THRESHOLD
     )
-    assert config.phase_curvature_threshold == pytest.approx(
-        K_PHI_CANONICAL_THRESHOLD
-    )
+    assert config.phase_curvature_threshold == pytest.approx(K_PHI_CANONICAL_THRESHOLD)
     assert config.coherence_length_critical == pytest.approx(XI_C_CRITICAL_RATIO)
     assert NUMERICAL_CONSTANTS.STRUCTURAL_POTENTIAL_ESCAPE_THRESHOLD == pytest.approx(
         U6_STRUCTURAL_POTENTIAL_LIMIT
@@ -164,7 +156,8 @@ def test_u6_uses_complete_nodewise_mean_and_strict_shared_threshold(
     baseline = {0: 0.5, 1: -1.0}
     before = deepcopy(baseline)
     report = run_structural_validation(
-        _u6_graph(), baseline_structural_potential=baseline,
+        _u6_graph(),
+        baseline_structural_potential=baseline,
         max_delta_phi_s=threshold,
     )
     assert report.field_metrics["delta_phi_s"] == 0.75
@@ -177,7 +170,8 @@ def test_u6_uses_complete_nodewise_mean_and_strict_shared_threshold(
 @pytest.mark.parametrize("threshold", [0.0, -1.0, float("nan"), True])
 def test_u6_invalid_threshold_is_explicitly_unavailable(threshold):
     report = run_structural_validation(
-        _u6_graph(), baseline_structural_potential={0: 0.0, 1: 0.0},
+        _u6_graph(),
+        baseline_structural_potential={0: 0.0, 1: 0.0},
         max_delta_phi_s=threshold,
     )
     assert report.field_metrics["u6_status"] == "unavailable"

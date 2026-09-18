@@ -611,7 +611,11 @@ def integrate_canonical_nodal_equation(
             context={"dt": dt},
             suggestion="Set a finite timestep (dt >= 0).",
         )
-    if isinstance(max_steps, bool) or not isinstance(max_steps, Integral) or max_steps <= 0:
+    if (
+        isinstance(max_steps, bool)
+        or not isinstance(max_steps, Integral)
+        or max_steps <= 0
+    ):
         raise TNFRValueError(
             f"Max steps must be a positive integer, got {max_steps}",
             context={"max_steps": max_steps},
@@ -619,11 +623,14 @@ def integrate_canonical_nodal_equation(
         )
 
     if not math.isfinite(tolerance_resolved) or tolerance_resolved < 0:
-        raise TNFRValueError("Convergence tolerance must be finite and nonnegative",
-                             context={"tolerance": tolerance})
+        raise TNFRValueError(
+            "Convergence tolerance must be finite and nonnegative",
+            context={"tolerance": tolerance},
+        )
     if method not in ("euler", "rk4"):
-        raise TNFRValueError("Integration method must be 'euler' or 'rk4'",
-                             context={"method": method})
+        raise TNFRValueError(
+            "Integration method must be 'euler' or 'rk4'", context={"method": method}
+        )
     max_steps_resolved = int(max_steps)
 
     # Define GPU and CPU integration functions

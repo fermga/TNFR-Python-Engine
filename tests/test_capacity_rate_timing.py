@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
 import math
 import sys
+from copy import deepcopy
 
 import networkx as nx
 import pytest
@@ -74,8 +74,12 @@ def test_unrepresentable_secant_is_not_reported_as_zero_or_infinity() -> None:
 
 def test_second_difference_availability_does_not_require_float_secants() -> None:
     first = observe_capacity_rates(0.0, 0.0)
-    second = observe_capacity_rates(sys.float_info.max / 2.0, math.ulp(0.0), first.samples)
-    third = observe_capacity_rates(sys.float_info.max, 2 * math.ulp(0.0), second.samples)
+    second = observe_capacity_rates(
+        sys.float_info.max / 2.0, math.ulp(0.0), first.samples
+    )
+    third = observe_capacity_rates(
+        sys.float_info.max, 2 * math.ulp(0.0), second.samples
+    )
 
     assert second.rate is third.rate is None
     assert third.rate_status == "unrepresentable"
@@ -131,7 +135,9 @@ def test_tracker_uses_actual_times_and_reports_coverage(
 
     assert history["B"] == [None, None, 2.0]
     assert history["capacity_rate_coverage"][-1] == {
-        "node_count": 1, "first_available": 1, "second_available": 1,
+        "node_count": 1,
+        "first_available": 1,
+        "second_available": 1,
         "status": "complete",
     }
     assert history["stable_frac"] == [1.0, 1.0, 1.0]
@@ -159,8 +165,15 @@ def test_legacy_aliases_work_but_untimestamped_derivatives_are_not_evidence() ->
     graph = _graph()
     data = graph.nodes[0]
     del data["nu_f"]
-    data.update({ALIAS_VF[-1]: 1.0, "_prev_vf": -900.0, "_prev_dvf": 700.0,
-                 ALIAS_DVF[-1]: 11.0, ALIAS_D2VF[-1]: 12.0})
+    data.update(
+        {
+            ALIAS_VF[-1]: 1.0,
+            "_prev_vf": -900.0,
+            "_prev_dvf": 700.0,
+            ALIAS_DVF[-1]: 11.0,
+            ALIAS_D2VF[-1]: 12.0,
+        }
+    )
     history: dict = {}
     _track(graph, history)
 
@@ -266,7 +279,8 @@ def test_runtime_metrics_honor_step_time_overrides_with_known_initial_time() -> 
     graph = _graph()
     inject_defaults(graph)
     graph.graph.update(
-        DT=0.5, VF_MAX=32.0,
+        DT=0.5,
+        VF_MAX=32.0,
         METRICS={"enabled": True, "verbosity": "basic"},
     )
     register_metrics_callbacks(graph)

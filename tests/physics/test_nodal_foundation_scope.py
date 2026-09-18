@@ -22,7 +22,7 @@ def _pressure(field):
 def test_nonlinear_epi_relabeling_requires_a_pushforward_pressure():
     original = _pressure((1.0, 2.0))
     renamed = _pressure((1.0, 4.0))  # y=x^2, an invertible chart on x>0
-    pushed_velocity = tuple(2*x*v for x, v in zip(original.epi, original.rate))
+    pushed_velocity = tuple(2 * x * v for x, v in zip(original.epi, original.rate))
     assert original.rate == (1, -1)
     assert pushed_velocity == (2, -4)
     assert renamed.rate == (3, -3)
@@ -34,8 +34,8 @@ def test_nonlinear_epi_relabeling_requires_a_pushforward_pressure():
 @pytest.mark.parametrize("scale,offset", [(2.0, 3.0), (-2.0, 3.0), (0.5, -1.0)])
 def test_pure_epi_gradient_respects_common_affine_chart_changes(scale, offset):
     original = _pressure((1.0, 2.0))
-    renamed = _pressure(tuple(scale*x+offset for x in (1.0, 2.0)))
-    assert renamed.rate == tuple(scale*v for v in original.rate)
+    renamed = _pressure(tuple(scale * x + offset for x in (1.0, 2.0)))
+    assert renamed.rate == tuple(scale * v for v in original.rate)
 
 
 def test_equal_metric_change_magnitudes_do_not_identify_directed_pressure():
@@ -69,10 +69,14 @@ def test_historical_paired_basis_does_not_span_the_full_direct_sum():
     for continuous in range(2):
         for discrete in range(2):
             value = space.canonical_basis(
-                continuous_size=2, discrete_size=2,
-                continuous_index=continuous, discrete_index=discrete,
+                continuous_size=2,
+                discrete_size=2,
+                continuous_index=continuous,
+                discrete_index=discrete,
             )
-            columns.append(tuple(value.f_continuous.real) + tuple(value.a_discrete.real))
+            columns.append(
+                tuple(value.f_continuous.real) + tuple(value.a_discrete.real)
+            )
     # Every generated column lies in the proper hyperplane sum(f)=sum(a).
-    assert all(column[0]+column[1]-column[2]-column[3] == 0 for column in columns)
+    assert all(column[0] + column[1] - column[2] - column[3] == 0 for column in columns)
     assert all(column != (1, 0, 0, 0) for column in columns)

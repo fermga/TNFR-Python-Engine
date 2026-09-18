@@ -145,14 +145,20 @@ def compute_phi_s_landmarks_vectorized(
         else:
             reverse_landmark_distances = landmark_distances
 
-    outward = np.asarray([
-        [landmark_distances[landmark].get(node, np.inf) for node in nodes]
-        for landmark in landmarks
-    ], dtype=dtype)
-    inward = np.asarray([
-        [reverse_landmark_distances[landmark].get(node, np.inf) for node in nodes]
-        for landmark in landmarks
-    ], dtype=dtype)
+    outward = np.asarray(
+        [
+            [landmark_distances[landmark].get(node, np.inf) for node in nodes]
+            for landmark in landmarks
+        ],
+        dtype=dtype,
+    )
+    inward = np.asarray(
+        [
+            [reverse_landmark_distances[landmark].get(node, np.inf) for node in nodes]
+            for landmark in landmarks
+        ],
+        dtype=dtype,
+    )
     pressure = np.asarray([delta_nfr[node] for node in nodes], dtype=dtype)
     potential = np.zeros(num_nodes, dtype=dtype)
 
@@ -373,8 +379,12 @@ def compute_phase_gradient_and_curvature_vectorized(
     from .phase_curvature import _observe_phase_arrays, _require_defined_curvature
 
     observation = _observe_phase_arrays(
-        theta_arr, edge_src, edge_dst, degrees,
-        dtype=dtype, precision_mode=get_precision_mode(),
+        theta_arr,
+        edge_src,
+        edge_dst,
+        degrees,
+        dtype=dtype,
+        precision_mode=get_precision_mode(),
     )
     _require_defined_curvature(observation)
     return (
@@ -406,6 +416,11 @@ def compute_coherence_length_vectorized(
     from ._coherence_fit import coherence_sources, fit_coherence_length
 
     return fit_coherence_length(
-        G, nodes, delta_nfr, sources=coherence_sources(nodes, get_precision_mode()),
-        dtype=dtype, materialize=len(nodes) < 1000, distance_matrix=distance_matrix,
+        G,
+        nodes,
+        delta_nfr,
+        sources=coherence_sources(nodes, get_precision_mode()),
+        dtype=dtype,
+        materialize=len(nodes) < 1000,
+        distance_matrix=distance_matrix,
     )

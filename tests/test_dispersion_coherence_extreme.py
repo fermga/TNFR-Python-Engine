@@ -62,7 +62,9 @@ def test_uniform_and_empty_pressure_conventions_are_preserved(
 
 
 @pytest.mark.parametrize("use_numpy", [True, False])
-@pytest.mark.parametrize("value", [float("nan"), float("inf"), -float("inf"), True, "1"])
+@pytest.mark.parametrize(
+    "value", [float("nan"), float("inf"), -float("inf"), True, "1"]
+)
 def test_invalid_provided_pressures_are_rejected_by_both_wrappers(
     monkeypatch: pytest.MonkeyPatch, use_numpy: bool, value: object
 ) -> None:

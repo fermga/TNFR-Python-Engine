@@ -232,7 +232,8 @@ class TelemetryEmitter:
 
         def _unavailable(field: str, error: Exception) -> None:
             metrics.setdefault("field_errors", {})[field] = {
-                "type": type(error).__name__, "message": str(error),
+                "type": type(error).__name__,
+                "message": str(error),
             }
 
         def _compute() -> None:
@@ -261,7 +262,9 @@ class TelemetryEmitter:
                     if "complex_field" in unified_data:
                         cf = unified_data["complex_field"]
                         if "correlation" in cf:
-                            metrics["k_phi_j_phi_correlation"] = float(cf["correlation"])
+                            metrics["k_phi_j_phi_correlation"] = float(
+                                cf["correlation"]
+                            )
                         if (
                             "psi_magnitude" in cf
                             and len(cf["psi_magnitude"]) > 0
@@ -282,7 +285,9 @@ class TelemetryEmitter:
                                 metrics[f"{field_name}_mean"] = float(
                                     np.mean(ef[field_name])
                                 )
-                                metrics[f"{field_name}_std"] = float(np.std(ef[field_name]))
+                                metrics[f"{field_name}_std"] = float(
+                                    np.std(ef[field_name])
+                                )
 
                     if "tensor_invariants" in unified_data:
                         ti = unified_data["tensor_invariants"]
@@ -369,8 +374,11 @@ class TelemetryEmitter:
         # Serialize the whole batch before opening the output. Unsupported
         # objects raise in safe and strict modes without partial JSON writes;
         # the buffer remains available for caller correction and retry.
-        encoded = [json_dumps(asdict(event), ensure_ascii=False, default=_numpy_json_default)
-                   + "\n" for event in self._buffer]
+        encoded = [
+            json_dumps(asdict(event), ensure_ascii=False, default=_numpy_json_default)
+            + "\n"
+            for event in self._buffer
+        ]
         mirror_lines = []
         if self._human_path is not None:
             for event in self._buffer:
@@ -378,7 +386,9 @@ class TelemetryEmitter:
                 si = event.metrics.get("sense_index")
                 coh_text = "unavailable" if coh is None else f"{coh:.3f}"
                 si_text = "unavailable" if si is None else f"{si:.3f}"
-                phi = event.metrics.get("phi_s") or event.metrics.get("structural_potential")
+                phi = event.metrics.get("phi_s") or event.metrics.get(
+                    "structural_potential"
+                )
                 mirror_lines.append(
                     f"[{event.step}] op={event.operator} C={coh_text} "
                     f"Si={si_text} Φ_s={phi} t={event.t_iso}\n"

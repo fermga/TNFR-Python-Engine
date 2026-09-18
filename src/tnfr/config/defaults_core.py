@@ -16,8 +16,6 @@ from types import MappingProxyType
 from typing import Any, Mapping
 
 from ..compat.dataclass import dataclass
-from ..constants.operational import MIN_BUSINESS_COHERENCE_CANONICAL
-from .physics_derivation import derive_bifurcation_window_from_physics
 from ..constants.canonical import (
     CHANNEL_WEIGHT_PRIMARY,
     CHANNEL_WEIGHT_SECONDARY,
@@ -33,6 +31,7 @@ from ..constants.canonical import (
     EN_MIX_FACTOR,
     EPI_MAX_CANONICAL,
     EPI_MIN_CANONICAL,
+    FRAGMENTATION_THRESHOLD,
     GLYPH_SELECTOR_MARGIN_CANONICAL,
     GRAD_PHI_CANONICAL_THRESHOLD,
     HIGH_COHERENCE_THRESHOLD,
@@ -45,7 +44,6 @@ from ..constants.canonical import (
     NUL_SCALE_FACTOR,
     PI,
     SHA_VF_FACTOR,
-    FRAGMENTATION_THRESHOLD,
     U6_STRUCTURAL_POTENTIAL_LIMIT,
     UM_COMPAT_THRESHOLD,
     UM_THETA_PUSH,
@@ -59,6 +57,8 @@ from ..constants.canonical import (
     VF_MIN_CANONICAL,
     ZHIR_THRESHOLD_XI_CANONICAL,
 )
+from ..constants.operational import MIN_BUSINESS_COHERENCE_CANONICAL
+from .physics_derivation import derive_bifurcation_window_from_physics
 
 # U6 structural-potential drift policy.
 # Monitor mean_i |Δ Φ_s(i)| < π/2 between declared snapshots.
@@ -113,7 +113,9 @@ class CoreDefaults:
             "gamma": CHANNEL_WEIGHT_TERTIARY,  # 1/(π+1)² ≈ 0.0583 (|ΔNFR|)
         }
     )
-    PHASE_K_GLOBAL: float = 1.0 / (2.0 * PI * PI)  # 1/(2π²) ≈ 0.0507 (global phase coupling = local/π)
+    PHASE_K_GLOBAL: float = 1.0 / (
+        2.0 * PI * PI
+    )  # 1/(2π²) ≈ 0.0507 (global phase coupling = local/π)
     PHASE_K_LOCAL: float = COUPLING_MODERATE  # 1/(2π) ≈ 0.159 (local phase coupling)
     PHASE_ADAPT: dict[str, Any] = field(
         default_factory=lambda: {
@@ -122,7 +124,10 @@ class CoreDefaults:
             "R_lo": MID_COHERENCE_THRESHOLD,  # 2/π ≈ 0.6366 (mid-high coherence trigger)
             "disr_hi": 0.5,  # unit midpoint (dissonance upper bound)
             "disr_lo": round(1.0 / (PI + 1.0), 3),  # 1/(π+1) ≈ 0.241 (fragmentation)
-            "kG_min": 1.0 / (8.0 * PI * PI),  # 1/(8π²) ≈ 0.0127 (global-coupling floor = local floor/π)
+            "kG_min": 1.0
+            / (
+                8.0 * PI * PI
+            ),  # 1/(8π²) ≈ 0.0127 (global-coupling floor = local floor/π)
             "kG_max": COUPLING_MODERATE,  # 1/(2π) ≈ 0.159 (global-coupling ceiling)
             "kL_min": KL_MIN_CANONICAL,  # 1/(8π) ≈ 0.0398 (operational)
             "kL_max": KL_MAX_CANONICAL,  # = 1/(2π) ≈ 0.159 (coupling limit)
@@ -142,9 +147,7 @@ class CoreDefaults:
         GLYPH_SELECTOR_MARGIN_CANONICAL  # ≈ 0.0418 (boundary precision)
     )
     VF_ADAPT_TAU: int = 5
-    VF_ADAPT_MU: float = (
-        VF_ADAPT_MU_CANONICAL  # = 0.10 (adaptation)
-    )
+    VF_ADAPT_MU: float = VF_ADAPT_MU_CANONICAL  # = 0.10 (adaptation)
     HZ_STR_BRIDGE: float = 1.0
     GLYPH_FACTORS: dict[str, float] = field(
         default_factory=lambda: {
@@ -185,7 +188,9 @@ class CoreDefaults:
     RANDOM_SEED: int | None = 0
     JITTER_CACHE_SIZE: int = 256
     OZ_NOISE_MODE: bool = False
-    OZ_SIGMA: float = COUPLING_GENTLE  # 1/(4π) ≈ 0.0796 (OZ stochastic-mode noise width)
+    OZ_SIGMA: float = (
+        COUPLING_GENTLE  # 1/(4π) ≈ 0.0796 (OZ stochastic-mode noise width)
+    )
     GRAMMAR: dict[str, Any] = field(
         default_factory=lambda: {
             # repeat-avoidance window = the structural relaxation window: do not
@@ -246,9 +251,7 @@ class CoreDefaults:
     VAL_MIN_DNFR: float = (
         1e-6  # Minimum positive ΔNFR for coherent expansion (very low to minimize breaking changes)
     )
-    VAL_MIN_EPI: float = (
-        VAL_MIN_EPI  # = 1/(2π) ≈ 0.159 (minimum structural base)
-    )
+    VAL_MIN_EPI: float = VAL_MIN_EPI  # = 1/(2π) ≈ 0.159 (minimum structural base)
     VAL_CHECK_NETWORK_CAPACITY: bool = False  # Optional network capacity validation
     VAL_MAX_NETWORK_SIZE: int = (
         1000  # Maximum network size if capacity checking enabled
@@ -317,9 +320,7 @@ K_PHI_CURVATURE_THRESHOLD = (
 PHASE_GRADIENT_THRESHOLD = GRAD_PHI_CANONICAL_THRESHOLD  # heuristic early-warning ≈ 0.196 (π/16; audit 2026: not derived; |∇φ| bound is π)
 
 # Business Domain Thresholds (operational constants, not derived)
-MIN_BUSINESS_COHERENCE = (
-    MIN_BUSINESS_COHERENCE_CANONICAL  # = 0.75 (operational)
-)
+MIN_BUSINESS_COHERENCE = MIN_BUSINESS_COHERENCE_CANONICAL  # = 0.75 (operational)
 MIN_BUSINESS_SENSE_INDEX = round(
     0.700034, 3
 )  # ≈ 0.700 (CALIBRATED target; an empirical value, not derived)
@@ -335,9 +336,7 @@ ISING_3D_EXPONENT = 0.63  # 3D Ising universality class
 ISING_2D_EXPONENT = 1.0  # 2D Ising universality class
 
 # Coherence Length Constants
-CRITICAL_INFORMATION_DENSITY = (
-    1.400014
-)  # ≈ 1.400 (operational critical density)
+CRITICAL_INFORMATION_DENSITY = 1.400014  # ≈ 1.400 (operational critical density)
 MIN_DISTANCE_THRESHOLD = 0.01  # Numerical stability minimum distance
 
 # Field Optimization Constants

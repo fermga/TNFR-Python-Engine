@@ -102,8 +102,10 @@ def _bepi_storage_fraction(
         if isinstance(value, (bool, np.bool_)):
             raise ValueError("EPI storage must not be boolean")
         element = ensure_bepi(value)
-        if not all(np.all(np.isfinite(component)) for component in
-                   (element.f_continuous, element.a_discrete)):
+        if not all(
+            np.all(np.isfinite(component))
+            for component in (element.f_continuous, element.a_discrete)
+        ):
             raise ValueError("EPI storage components must be finite")
         if real_scalar_epi(element) is None:
             n_nontrivial += 1
@@ -153,15 +155,19 @@ def _evolve_and_collect(G: Any, n_steps: int) -> np.ndarray:
 
     nodes = list(G.nodes())
     snapshots: list[list[float]] = [
-        [get_attr(G.nodes[n], ALIAS_EPI, 0.0, conv=scalarize_epi, strict=True)
-         for n in nodes]
+        [
+            get_attr(G.nodes[n], ALIAS_EPI, 0.0, conv=scalarize_epi, strict=True)
+            for n in nodes
+        ]
     ]
     # step() falls back to default_compute_delta_nfr if no hook is set.
     for _ in range(int(n_steps)):
         step(G)
         snapshots.append(
-            [get_attr(G.nodes[n], ALIAS_EPI, 0.0, conv=scalarize_epi, strict=True)
-             for n in nodes]
+            [
+                get_attr(G.nodes[n], ALIAS_EPI, 0.0, conv=scalarize_epi, strict=True)
+                for n in nodes
+            ]
         )
     return np.asarray(snapshots, dtype=float).T
 
@@ -306,8 +312,10 @@ def compute_epi_type_signature(
     from ..alias import get_attr
     from ..constants.aliases import ALIAS_EPI
 
-    storage_values = [get_attr(G.nodes[n], ALIAS_EPI, conv=lambda value: value,
-                               strict=True) for n in list(G.nodes())]
+    storage_values = [
+        get_attr(G.nodes[n], ALIAS_EPI, conv=lambda value: value, strict=True)
+        for n in list(G.nodes())
+    ]
     bepi_fraction, bepi_count, bepi_total = _bepi_storage_fraction(
         storage_values, atol=float(storage_atol)
     )

@@ -130,9 +130,7 @@ class StructuralGrammarEvidence:
                 ("represented_composition_not_recorded",),
             )
         if not composition.represented_affine_composition_gain_certified:
-            return _Assessment(
-                False, None, None, None, composition.failed_conditions
-            )
+            return _Assessment(False, None, None, None, composition.failed_conditions)
         gain = composition.exact_energy_gain_upper_bound
         # The execution owner already checks this identity. Keep the adapter's
         # boundary explicit without introducing a second gain calculation.

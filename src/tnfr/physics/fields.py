@@ -94,12 +94,12 @@ from .canonical import (
     PhaseCurvatureNodeObservation,
     PhaseCurvatureObservation,
     UndefinedPhaseCurvatureError,
-    observe_phase_curvature,
     compute_phase_curvature,
     compute_phase_gradient,
     compute_structural_potential,
     estimate_coherence_length,
     estimate_coherence_length_with_provenance,
+    observe_phase_curvature,
 )
 
 # Backward-compatible alias (used by pattern_discovery and parallel modules)
@@ -357,9 +357,7 @@ _CANONICAL_NODAL_TOPOLOGY_ALPHA = 2.0
 def _validate_nodal_topology_alpha(alpha: float) -> float:
     """Return the sole exponent covered by the calibrated topology labels."""
     if isinstance(alpha, bool) or not isinstance(alpha, Real):
-        raise ValueError(
-            "canonical nodal-topology classification requires alpha=2.0"
-        )
+        raise ValueError("canonical nodal-topology classification requires alpha=2.0")
     try:
         value = float(alpha)
     except (OverflowError, TypeError, ValueError) as exc:
@@ -367,9 +365,7 @@ def _validate_nodal_topology_alpha(alpha: float) -> float:
             "canonical nodal-topology classification requires alpha=2.0"
         ) from exc
     if not math.isfinite(value) or value != _CANONICAL_NODAL_TOPOLOGY_ALPHA:
-        raise ValueError(
-            "canonical nodal-topology classification requires alpha=2.0"
-        )
+        raise ValueError("canonical nodal-topology classification requires alpha=2.0")
     return value
 
 
@@ -426,9 +422,7 @@ def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
 
     # Evaluate the documented unit-source geometry with exactly the same
     # weighted, outgoing distance kernel as the dynamical potential.
-    centrality = _compute_phi_s_exact(
-        G, nodes, {node: 1.0 for node in nodes}, exponent
-    )
+    centrality = _compute_phi_s_exact(G, nodes, {node: 1.0 for node in nodes}, exponent)
     vals = np.asarray([centrality[i] for i in nodes], dtype=float)
     mean = float(vals.mean())
     vmax = float(vals.max())
@@ -1227,9 +1221,7 @@ def auto_optimize_field_computation(G: Any, **kwargs) -> dict[str, Any]:
     del kwargs
 
     try:
-        recommendations = recommend_field_optimization_strategy(
-            G, "unified_telemetry"
-        )
+        recommendations = recommend_field_optimization_strategy(G, "unified_telemetry")
         result = recommendations.get("unified_field_analysis")
         if not result:
             result = compute_unified_telemetry(G)
@@ -1258,6 +1250,7 @@ def auto_optimize_field_computation(G: Any, **kwargs) -> dict[str, Any]:
             "error": str(e),
             "total_time": time.perf_counter() - start_time,
         }
+
 
 # Import extended canonical fields (NEWLY PROMOTED Nov 12, 2025)
 # as fallback for development/testing environments

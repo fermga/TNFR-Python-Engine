@@ -12,7 +12,6 @@ from tnfr.physics.forcing_realization import (
 from tnfr.physics.phase_response import derive_phase_response
 from tnfr.physics.support_transport import _from_data
 
-
 _EPI = (Q(1, 4), Q(1), Q(3, 4))
 _CAPACITY = (Q(1, 2), Q(1), Q(3, 2))
 
@@ -24,7 +23,10 @@ def _source(epi=_EPI, capacity=_CAPACITY, edge_weights=(1, 2)):
     for node, x, nu in zip(graph, epi, capacity, strict=True):
         graph.nodes[node].update(EPI=float(x), nu_f=float(nu), theta=0.0)
     graph.graph["DNFR_WEIGHTS"] = {
-        "phase": 0.0, "epi": 0.5, "vf": 0.25, "topo": 0.25,
+        "phase": 0.0,
+        "epi": 0.5,
+        "vf": 0.25,
+        "topo": 0.25,
     }
     observation = capture_non_epi_forcing(graph)
     reference = derive_forced_support_balance(
@@ -52,7 +54,10 @@ def _forced_potential(reference, snapshot):
     return reference.epi_weight * snapshot.dirichlet_energy - sum(
         d * x * forcing
         for d, x, forcing in zip(
-            reference.strengths, snapshot.epi, reference.forcing, strict=True,
+            reference.strengths,
+            snapshot.epi,
+            reference.forcing,
+            strict=True,
         )
     )
 
@@ -79,25 +84,34 @@ def test_forced_potential_realizes_the_weighted_multichannel_epi_equation():
     rate_from_gradient = tuple(
         -nu * derivative / d
         for nu, derivative, d in zip(
-            snapshot.capacity, gradient, reference.strengths, strict=True,
+            snapshot.capacity,
+            gradient,
+            reference.strengths,
+            strict=True,
         )
     )
     rate_from_pressure = tuple(
         nu * (reference.epi_weight * epi_gradient + forcing)
         for nu, epi_gradient, forcing in zip(
-            snapshot.capacity, snapshot.epi_gradient, reference.forcing, strict=True,
+            snapshot.capacity,
+            snapshot.epi_gradient,
+            reference.forcing,
+            strict=True,
         )
     )
     assert rate_from_gradient == rate_from_pressure
 
     direction = (1, -2, 3)
-    positive = _replace_epi(snapshot, tuple(x + h for x, h in zip(snapshot.epi, direction)))
-    negative = _replace_epi(snapshot, tuple(x - h for x, h in zip(snapshot.epi, direction)))
+    positive = _replace_epi(
+        snapshot, tuple(x + h for x, h in zip(snapshot.epi, direction))
+    )
+    negative = _replace_epi(
+        snapshot, tuple(x - h for x, h in zip(snapshot.epi, direction))
+    )
     # A centered finite difference is exact for this quadratic polynomial;
     # no numerical derivative, epsilon or trajectory is involved.
     difference = (
-        _forced_potential(reference, positive)
-        - _forced_potential(reference, negative)
+        _forced_potential(reference, positive) - _forced_potential(reference, negative)
     ) / 2
     assert difference == sum(g * h for g, h in zip(gradient, direction))
 
@@ -129,7 +143,8 @@ def test_incompatible_source_gives_exact_unbounded_common_offset_tilt():
     baseline = _forced_potential(reference, observation.snapshot)
     for offset in (-2, 1, 4):
         shifted = _replace_epi(
-            observation.snapshot, tuple(x + offset for x in observation.snapshot.epi),
+            observation.snapshot,
+            tuple(x + offset for x in observation.snapshot.epi),
         )
         assert shifted.dirichlet_energy == observation.snapshot.dirichlet_energy
         assert (
@@ -185,7 +200,8 @@ def test_strict_u3_star_refutes_constant_diagonal_phase_gradient_metric():
     assert all(
         metric[i] * consensus.mean_response[i][j]
         == metric[j] * consensus.mean_response[j][i]
-        for i in range(4) for j in range(4)
+        for i in range(4)
+        for j in range(4)
     )
     defects = tuple(
         metric[0] * changed.mean_response[0][j]

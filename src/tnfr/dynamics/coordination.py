@@ -19,9 +19,12 @@ from ..constants import (
     STATE_TRANSITION,
     normalise_state_token,
 )
-from ..glyph_history import append_metric
 from ..errors import TNFRValueError
-from ..mathematics.phasor_resultant import RepresentedPhasorResultant, reduce_phasor_components
+from ..glyph_history import append_metric
+from ..mathematics.phasor_resultant import (
+    RepresentedPhasorResultant,
+    reduce_phasor_components,
+)
 from ..mathematics.unified_numerical import compute_phase_difference, np
 from ..metrics.common import ensure_neighbors_map
 from ..metrics.trig import neighbor_phase_mean_list
@@ -32,9 +35,16 @@ from ..utils import angle_diff, resolve_chunk_size
 
 _DequeT = TypeVar("_DequeT")
 _ADAPTIVE_DEFAULTS = {
-    "R_hi": 0.90, "R_lo": 0.60, "disr_hi": 0.50, "disr_lo": 0.25,
-    "kG_min": 0.01, "kG_max": 0.20, "kL_min": 0.05, "kL_max": 0.25,
-    "up": 0.10, "down": 0.07,
+    "R_hi": 0.90,
+    "R_lo": 0.60,
+    "disr_hi": 0.50,
+    "disr_lo": 0.25,
+    "kG_min": 0.01,
+    "kG_max": 0.20,
+    "kL_min": 0.05,
+    "kL_max": 0.25,
+    "up": 0.10,
+    "down": 0.07,
 }
 
 ChunkArgs = tuple[
@@ -48,7 +58,11 @@ ChunkArgs = tuple[
     float,
 ]
 
-__all__ = ("coordinate_global_local_phase", "GlobalPhaseCoordinationEvidence", "UndefinedGlobalPhaseError")
+__all__ = (
+    "coordinate_global_local_phase",
+    "GlobalPhaseCoordinationEvidence",
+    "UndefinedGlobalPhaseError",
+)
 
 
 class UndefinedGlobalPhaseError(TNFRValueError):
@@ -98,7 +112,9 @@ def _ensure_hist_deque(
 
 
 def _read_adaptive_params(
-    g: Mapping[str, Any], *, exact: bool = False,
+    g: Mapping[str, Any],
+    *,
+    exact: bool = False,
 ) -> tuple[Mapping[str, Any], float, float]:
     """Obtain configuration and current values for phase adaptation."""
 
@@ -115,7 +131,10 @@ def _finite_gain(value: Any) -> float:
 
 def _finite_adaptive_config(cfg: Mapping[str, Any]) -> Mapping[str, Any]:
     """Validate only numeric parameters consumed by the existing active policy."""
-    return {key: _finite_gain(cfg.get(key, default)) for key, default in _ADAPTIVE_DEFAULTS.items()}
+    return {
+        key: _finite_gain(cfg.get(key, default))
+        for key, default in _ADAPTIVE_DEFAULTS.items()
+    }
 
 
 def _compute_state(G: TNFRGraph, cfg: Mapping[str, Any]) -> tuple[str, float, float]:
@@ -198,7 +217,9 @@ def _phase_adjust_chunk(args: ChunkArgs) -> list[tuple[NodeId, Phase, Phase]]:
         else:
             thL = th
         if thG is None and kG != 0.0:
-            raise UndefinedGlobalPhaseError("active global phase coupling requires a defined target")
+            raise UndefinedGlobalPhaseError(
+                "active global phase coupling requires a defined target"
+            )
         dG = 0.0 if thG is None else angle_diff(thG, th)
         dL = angle_diff(thL, th)
         updates.append((node, cast(Phase, th + kG * dG + kL * dL), cast(Phase, thL)))
@@ -292,24 +313,37 @@ def coordinate_global_local_phase(
     ΔNFR adjustments with phase telemetry snapshots.
     """
 
-    if type(global_reduction) is not str or global_reduction not in ("legacy", "exact_components_v1"):
-        raise TNFRValueError("global_reduction must be 'legacy' or 'exact_components_v1'")
+    if type(global_reduction) is not str or global_reduction not in (
+        "legacy",
+        "exact_components_v1",
+    ):
+        raise TNFRValueError(
+            "global_reduction must be 'legacy' or 'exact_components_v1'"
+        )
     if global_reduction == "legacy":
-        return _coordinate_global_local_phase(G, global_force, local_force, n_jobs=n_jobs, exact=False)
+        return _coordinate_global_local_phase(
+            G, global_force, local_force, n_jobs=n_jobs, exact=False
+        )
     # Network stages import dynamics: resolve the transaction owner lazily.
     from ..operators.network_stage import GraphTransactionSnapshot
 
     transaction = GraphTransactionSnapshot(G)
     try:
-        return _coordinate_global_local_phase(G, global_force, local_force, n_jobs=n_jobs, exact=True)
+        return _coordinate_global_local_phase(
+            G, global_force, local_force, n_jobs=n_jobs, exact=True
+        )
     except BaseException as failure:
         transaction.restore_after_failure(G, failure)
         raise
 
 
 def _coordinate_global_local_phase(
-    G: TNFRGraph, global_force: float | None, local_force: float | None,
-    *, n_jobs: int | None, exact: bool,
+    G: TNFRGraph,
+    global_force: float | None,
+    local_force: float | None,
+    *,
+    n_jobs: int | None,
+    exact: bool,
 ) -> GlobalPhaseCoordinationEvidence | None:
     """Shared adaptive/local algorithm for legacy and opt-in global reduction."""
     g = cast(dict[str, Any], G.graph)
@@ -380,27 +414,44 @@ def _coordinate_global_local_phase(
     num_nodes = len(nodes)
 
     def evidence(
-        path: str, *, phases: Sequence[float] = (),
+        path: str,
+        *,
+        phases: Sequence[float] = (),
         resultant: RepresentedPhasorResultant | None = None,
         neighbors: Mapping[NodeId, Sequence[NodeId]] | None = None,
-        target: float | None = None, local_targets: Sequence[float] = (),
+        target: float | None = None,
+        local_targets: Sequence[float] = (),
         proposals: Sequence[float] = (),
     ) -> GlobalPhaseCoordinationEvidence | None:
         if not exact:
             return None
-        realized = tuple(finite_represented_real(get_theta_attr(G.nodes[n]), "realized phase")[0] for n in nodes)
+        realized = tuple(
+            finite_represented_real(get_theta_attr(G.nodes[n]), "realized phase")[0]
+            for n in nodes
+        )
         return GlobalPhaseCoordinationEvidence(
-            version="exact_components_v1", status="applied" if nodes else "empty_graph",
-            nodes=tuple(nodes), neighbor_order=tuple((n, tuple((neighbors or {}).get(n, ()))) for n in nodes),
-            primitive_phases=tuple(phases), resultant=resultant,
-            requested_global_force=requested_global, requested_local_force=requested_local,
-            effective_global_force=kG, effective_local_force=kL, gain_mode=gain_mode,
-            global_target=target, global_term_active=bool(nodes) and kG != 0.0,
-            local_targets=tuple(local_targets), raw_proposals=tuple(proposals), realized_phases=realized,
+            version="exact_components_v1",
+            status="applied" if nodes else "empty_graph",
+            nodes=tuple(nodes),
+            neighbor_order=tuple(
+                (n, tuple((neighbors or {}).get(n, ()))) for n in nodes
+            ),
+            primitive_phases=tuple(phases),
+            resultant=resultant,
+            requested_global_force=requested_global,
+            requested_local_force=requested_local,
+            effective_global_force=kG,
+            effective_local_force=kL,
+            gain_mode=gain_mode,
+            global_target=target,
+            global_term_active=bool(nodes) and kG != 0.0,
+            local_targets=tuple(local_targets),
+            raw_proposals=tuple(proposals),
+            realized_phases=realized,
             execution_path=path,
             scope="Exact global reduction of consumed represented components only. Local targets, adaptive gains and "
-                  "phase normalization keep existing semantics. Public readout, not a sealed execution or full-runtime "
-                  "invariance certificate; graph-owned rollback excludes external side effects.",
+            "phase normalization keep existing semantics. Public readout, not a sealed execution or full-runtime "
+            "invariance certificate; graph-owned rollback excludes external side effects.",
         )
 
     if not num_nodes:
@@ -422,13 +473,25 @@ def _coordinate_global_local_phase(
     def _theta_value(node: NodeId) -> float:
         cached = theta_map.get(node)
         if cached is not None:
-            return finite_represented_real(cached, "primitive phase")[0] if exact else float(cached)
+            return (
+                finite_represented_real(cached, "primitive phase")[0]
+                if exact
+                else float(cached)
+            )
         attr_val = get_theta_attr(G.nodes[node], 0.0)
         value = attr_val if attr_val is not None else 0.0
-        return finite_represented_real(value, "primitive phase")[0] if exact else float(value)
+        return (
+            finite_represented_real(value, "primitive phase")[0]
+            if exact
+            else float(value)
+        )
 
     def component(value: Any) -> float:
-        return finite_represented_real(value, "materialized trig component")[0] if exact else float(value)
+        return (
+            finite_represented_real(value, "materialized trig component")[0]
+            if exact
+            else float(value)
+        )
 
     def write_phase(node: NodeId, value: float) -> None:
         if exact:
@@ -437,10 +500,12 @@ def _coordinate_global_local_phase(
 
     theta_vals = [_theta_value(n) for n in nodes]
     cos_vals = [
-        component(cos_map.get(n, math.cos(theta_vals[idx]))) for idx, n in enumerate(nodes)
+        component(cos_map.get(n, math.cos(theta_vals[idx])))
+        for idx, n in enumerate(nodes)
     ]
     sin_vals = [
-        component(sin_map.get(n, math.sin(theta_vals[idx]))) for idx, n in enumerate(nodes)
+        component(sin_map.get(n, math.sin(theta_vals[idx])))
+        for idx, n in enumerate(nodes)
     ]
     resultant = reduce_phasor_components(zip(cos_vals, sin_vals)) if exact else None
     thG: float | None = None
@@ -448,7 +513,10 @@ def _coordinate_global_local_phase(
         if resultant.joint_zero:
             raise UndefinedGlobalPhaseError(
                 "active global phase coupling has exactly zero represented resultant",
-                context={"global_reduction": "exact_components_v1", "effective_global_force": kG},
+                context={
+                    "global_reduction": "exact_components_v1",
+                    "effective_global_force": kG,
+                },
             )
         thG = resultant.angle
 
@@ -474,14 +542,24 @@ def _coordinate_global_local_phase(
         neighbor_arr = cast(FloatArray, np.fromiter(neighbor_means, dtype=float))
         # Match the scalar angle_diff owner, including its signed antipodal
         # ties. The modulo-based angle_diff_array has a different +pi tie.
-        global_difference = np.zeros_like(theta_arr) if thG is None else compute_phase_difference(thG, theta_arr)
+        global_difference = (
+            np.zeros_like(theta_arr)
+            if thG is None
+            else compute_phase_difference(thG, theta_arr)
+        )
         local_difference = compute_phase_difference(neighbor_arr, theta_arr)
         theta_updates = theta_arr + kG * global_difference + kL * local_difference
         for idx, node in enumerate(nodes):
             write_phase(node, float(theta_updates[int(idx)]))
-        return evidence("numpy", phases=theta_vals, resultant=resultant, neighbors=neighbors_map,
-                        target=thG, local_targets=neighbor_means,
-                        proposals=tuple(map(float, theta_updates)) if exact else ())
+        return evidence(
+            "numpy",
+            phases=theta_vals,
+            resultant=resultant,
+            neighbors=neighbors_map,
+            target=thG,
+            local_targets=neighbor_means,
+            proposals=tuple(map(float, theta_updates)) if exact else (),
+        )
 
     if not exact:
         mean_cos = math.fsum(cos_vals) / num_nodes
@@ -509,8 +587,15 @@ def _coordinate_global_local_phase(
             if exact:
                 targets.append(float(thL))
                 proposals.append(proposal)
-        return evidence("scalar_sequential", phases=theta_vals, resultant=resultant, neighbors=neighbors_map,
-                        target=thG, local_targets=targets, proposals=proposals)
+        return evidence(
+            "scalar_sequential",
+            phases=theta_vals,
+            resultant=resultant,
+            neighbors=neighbors_map,
+            target=thG,
+            local_targets=targets,
+            proposals=proposals,
+        )
 
     approx_chunk = math.ceil(len(nodes) / jobs) if jobs else None
     chunk_size = resolve_chunk_size(
@@ -547,6 +632,12 @@ def _coordinate_global_local_phase(
         write_phase(node, proposal)
         if exact:
             proposals.append(proposal)
-    return evidence("scalar_multiprocessing", phases=theta_vals, resultant=resultant, neighbors=neighbors_map,
-                    target=thG, local_targets=tuple(float(local_results[n]) for n in nodes) if exact else (),
-                    proposals=proposals)
+    return evidence(
+        "scalar_multiprocessing",
+        phases=theta_vals,
+        resultant=resultant,
+        neighbors=neighbors_map,
+        target=thG,
+        local_targets=tuple(float(local_results[n]) for n in nodes) if exact else (),
+        proposals=proposals,
+    )

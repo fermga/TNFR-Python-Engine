@@ -14,10 +14,14 @@ def _graph():
     return graph
 
 
-@pytest.mark.parametrize("word", [
-    ["emission", "coherence", "silence"], ["AL", "IL", "SHA"],
-    [Emission(), Coherence(), Silence()],
-])
+@pytest.mark.parametrize(
+    "word",
+    [
+        ["emission", "coherence", "silence"],
+        ["AL", "IL", "SHA"],
+        [Emission(), Coherence(), Silence()],
+    ],
+)
 def test_word_observation_shares_one_core_for_names_glyphs_and_instances(word):
     observation = observe_grammar(_graph(), 0, word)
     assert observation.sequence_valid
@@ -26,7 +30,11 @@ def test_word_observation_shares_one_core_for_names_glyphs_and_instances(word):
 
 def test_caller_flags_remain_declared_and_cannot_supply_structural_proof():
     report = observe_grammar(
-        _graph(), 0, ["IL", "SHA"], contract_satisfied=True, u6_checked=True,
+        _graph(),
+        0,
+        ["IL", "SHA"],
+        contract_satisfied=True,
+        u6_checked=True,
     ).as_dict()
     assert report["contract_satisfied"] is True
     assert report["u6_checked"] is True
@@ -40,6 +48,8 @@ def test_caller_flags_remain_declared_and_cannot_supply_structural_proof():
 def test_raw_dictionary_is_not_execution_evidence():
     with pytest.raises(TypeError):
         observe_grammar(
-            _graph(), 0, ["IL", "SHA"],
+            _graph(),
+            0,
+            ["IL", "SHA"],
             execution_evidence={"exact_energy_gain_upper_bound": 0},
         )

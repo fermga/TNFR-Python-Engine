@@ -12,12 +12,12 @@ if TYPE_CHECKING:
 from ..alias import get_attr
 from ..config.operator_names import BIFURCATION_WINDOW
 from ..constants.aliases import ALIAS_EPI
+from ._epi_domain import require_real_scalar_epi
 from .grammar_debt import node_debt, node_has_prior_coherence
 from .grammar_dynamics import validate_sequence_incremental
-from .grammar_types import DESTABILIZERS, glyph_function_name
 from .grammar_memoization import validate_sequence_optimized
+from .grammar_types import DESTABILIZERS, glyph_function_name
 from .operator_contracts import contract_for
-from ._epi_domain import require_real_scalar_epi
 
 __all__ = ["GrammarObservation", "observe_grammar"]
 
@@ -71,22 +71,26 @@ class GrammarObservation:
             "recent_destabilizer": self.recent_destabilizer,
             "recent_destabilizer_distance": self.recent_destabilizer_distance,
             "declared_contracts": list(self.declared_contracts),
-            "contract_postconditions_checked": (
-                self.contract_postconditions_checked
-            ),
+            "contract_postconditions_checked": (self.contract_postconditions_checked),
             "contract_satisfied": self.contract_satisfied,
             "trajectory_telemetry_present": self.trajectory_telemetry_present,
             "u6_checked": self.u6_checked,
             "scope": self.scope,
             "word_validation_scope": "canonical_word_policy",
             "contract_evidence_source": (
-                "caller_declaration" if self.contract_postconditions_checked else "unavailable"
+                "caller_declaration"
+                if self.contract_postconditions_checked
+                else "unavailable"
             ),
-            "u6_evidence_source": "caller_declaration" if self.u6_checked else "unavailable",
+            "u6_evidence_source": (
+                "caller_declaration" if self.u6_checked else "unavailable"
+            ),
             "verified_contract_postconditions": False,
             "verified_u6": False,
             "structural_evidence": (
-                self.structural_evidence.as_dict() if self.structural_evidence is not None else None
+                self.structural_evidence.as_dict()
+                if self.structural_evidence is not None
+                else None
             ),
         }
 
@@ -157,7 +161,8 @@ def observe_grammar(
             not any(violation.rule == "U3" for violation in item.violations)
             for item in phase_results
         )
-        if phase_checked else None
+        if phase_checked
+        else None
     )
     depths = [
         int(getattr(operator, "depth", 1))

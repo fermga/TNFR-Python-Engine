@@ -21,6 +21,12 @@ from typing import Any, cast
 from ..alias import get_attr, get_theta_attr, set_dnfr
 from ..constants import DEFAULTS, get_param
 from ..constants.aliases import ALIAS_EPI, ALIAS_VF
+from ..mathematics._neighbor_differences import (
+    _require_finite_pressure,
+    edge_mean_differences,
+    mean_neighbor_difference,
+)
+from ..mathematics._phase_midpoint import certified_two_neighbor_phase
 from ..mathematics.unified_numerical import np
 from ..metrics.common import merge_and_normalize_weights
 from ..metrics.trig import neighbor_phase_mean_list
@@ -48,10 +54,6 @@ from ..utils import (
     resolve_chunk_size,
 )
 from .fused_dnfr import compute_fused_gradients_symmetric
-from ..mathematics._neighbor_differences import (
-    _require_finite_pressure, edge_mean_differences, mean_neighbor_difference,
-)
-from ..mathematics._phase_midpoint import certified_two_neighbor_phase
 
 _MEAN_VECTOR_EPS = 1e-12
 _SPARSE_DENSITY_THRESHOLD = 0.25
@@ -246,10 +248,21 @@ def _dnfr_gradients_worker(
     chunk: list[float] = []
     for idx in range(start, end):
         n = nodes[idx]
-        g_phase = (phase_overrides[idx] if phase_overrides and idx in phase_overrides
-                   else -angle_diff(theta[idx], th_bar[idx]) / math.pi)
-        g_epi = (epi_gradient[idx] if epi_gradient is not None else epi_bar[idx] - epi[idx]) if w_epi else 0.0
-        g_vf = (vf_gradient[idx] if vf_gradient is not None else vf_bar[idx] - vf[idx]) if w_vf else 0.0
+        g_phase = (
+            phase_overrides[idx]
+            if phase_overrides and idx in phase_overrides
+            else -angle_diff(theta[idx], th_bar[idx]) / math.pi
+        )
+        g_epi = (
+            (epi_gradient[idx] if epi_gradient is not None else epi_bar[idx] - epi[idx])
+            if w_epi
+            else 0.0
+        )
+        g_vf = (
+            (vf_gradient[idx] if vf_gradient is not None else vf_bar[idx] - vf[idx])
+            if w_vf
+            else 0.0
+        )
         if w_topo != 0.0 and deg_bar is not None and degs is not None:
             if isinstance(degs, dict):
                 deg_i = float(degs.get(n, 0))
@@ -1165,7 +1178,8 @@ def _apply_dnfr_gradients(
             neighbors = tuple(G.neighbors(node))
             if len(neighbors) == 2:
                 certified = certified_two_neighbor_phase(
-                    float(theta[index]), float(theta[indices[neighbors[0]]]),
+                    float(theta[index]),
+                    float(theta[indices[neighbors[0]]]),
                     float(theta[indices[neighbors[1]]]),
                 )
                 if certified is not None:
@@ -1266,10 +1280,25 @@ def _apply_dnfr_gradients(
         else:
             dnfr_values = []
             for i, n in enumerate(nodes):
-                g_phase = (phase_overrides[i] if i in phase_overrides
-                           else -angle_diff(theta[i], th_bar[i]) / math.pi)
-                g_epi = (epi_gradient[i] if epi_gradient is not None else epi_bar[i] - epi[i]) if w_epi else 0.0
-                g_vf = (vf_gradient[i] if vf_gradient is not None else vf_bar[i] - vf[i]) if w_vf else 0.0
+                g_phase = (
+                    phase_overrides[i]
+                    if i in phase_overrides
+                    else -angle_diff(theta[i], th_bar[i]) / math.pi
+                )
+                g_epi = (
+                    (
+                        epi_gradient[i]
+                        if epi_gradient is not None
+                        else epi_bar[i] - epi[i]
+                    )
+                    if w_epi
+                    else 0.0
+                )
+                g_vf = (
+                    (vf_gradient[i] if vf_gradient is not None else vf_bar[i] - vf[i])
+                    if w_vf
+                    else 0.0
+                )
                 if w_topo != 0.0 and deg_bar is not None and degs is not None:
                     if isinstance(degs, dict):
                         deg_i = float(degs.get(n, 0))
@@ -1483,7 +1512,9 @@ def _compute_neighbor_means(
 
         if not data.get("stable_linear_gradients"):
             epi_denominator = np.asarray(epi_count, dtype=float)
-            np.divide(epi_sum, epi_denominator, out=epi_bar, where=epi_denominator > 0.0)
+            np.divide(
+                epi_sum, epi_denominator, out=epi_bar, where=epi_denominator > 0.0
+            )
             np.divide(vf_sum, count, out=vf_bar, where=mask)
         if w_topo != 0.0 and deg_bar is not None and deg_sum is not None:
             np.divide(deg_sum, count, out=deg_bar, where=mask)
@@ -1530,10 +1561,13 @@ def _linear_neighbor_gradients(
             source, target = _build_edge_index_arrays(G, nodes, indices)
         weights = (
             _build_edge_weight_array(G, nodes, source, target)
-            if data["w_epi"] != 0.0 else None
+            if data["w_epi"] != 0.0
+            else None
         )
         return (
-            edge_mean_differences(epi, source, target, weights, coefficient=data["w_epi"]),
+            edge_mean_differences(
+                epi, source, target, weights, coefficient=data["w_epi"]
+            ),
             edge_mean_differences(vf, source, target, coefficient=data["w_vf"]),
         )
     epi_gradient: list[float] = []
@@ -1545,23 +1579,31 @@ def _linear_neighbor_gradients(
             weights = []
             for neighbor in neighbors:
                 edge_data = G[node][neighbor]
-                weights.append(float(
-                    sum(attrs.get("weight", 1.0) for attrs in edge_data.values())
-                    if multigraph else edge_data.get("weight", 1.0)
-                ))
-            epi_gradient.append(mean_neighbor_difference(
-                float(epi[indices[node]]),
-                [float(epi[indices[n]]) for n in neighbors], weights,
-                coefficient=data["w_epi"],
-            ))
+                weights.append(
+                    float(
+                        sum(attrs.get("weight", 1.0) for attrs in edge_data.values())
+                        if multigraph
+                        else edge_data.get("weight", 1.0)
+                    )
+                )
+            epi_gradient.append(
+                mean_neighbor_difference(
+                    float(epi[indices[node]]),
+                    [float(epi[indices[n]]) for n in neighbors],
+                    weights,
+                    coefficient=data["w_epi"],
+                )
+            )
         else:
             epi_gradient.append(0.0)
         vf_gradient.append(
             mean_neighbor_difference(
-                float(vf[indices[node]]), [float(vf[indices[n]]) for n in neighbors],
+                float(vf[indices[node]]),
+                [float(vf[indices[n]]) for n in neighbors],
                 coefficient=data["w_vf"],
             )
-            if data["w_vf"] != 0.0 else 0.0
+            if data["w_vf"] != 0.0
+            else 0.0
         )
     return epi_gradient, vf_gradient
 
@@ -1774,10 +1816,15 @@ def _accumulate_neighbors_dense(
     n = len(nodes)
 
     state = _ensure_numpy_state_vectors(data)
-    linear_zero = np.zeros(n, dtype=float) if data.get("stable_linear_gradients") else None
-    vectors = [state["cos"], state["sin"],
-               linear_zero if linear_zero is not None else state["epi"],
-               linear_zero if linear_zero is not None else state["vf"]]
+    linear_zero = (
+        np.zeros(n, dtype=float) if data.get("stable_linear_gradients") else None
+    )
+    vectors = [
+        state["cos"],
+        state["sin"],
+        linear_zero if linear_zero is not None else state["epi"],
+        linear_zero if linear_zero is not None else state["vf"],
+    ]
 
     components = _ensure_cached_array(cache, "dense_components_np", (n, 4))
     accum = _ensure_cached_array(cache, "dense_accum_np", (n, 4))
@@ -2562,7 +2609,8 @@ def _compute_dnfr(
         # sums parallel edges and retains the exact unit-weight kernel path.
         edge_weight = (
             _build_edge_weight_array(G, nodes, edge_src, edge_dst)
-            if data["w_epi"] != 0.0 else None
+            if data["w_epi"] != 0.0
+            else None
         )
 
         # Note: accumulate_both_directions=False because _build_edge_index_arrays

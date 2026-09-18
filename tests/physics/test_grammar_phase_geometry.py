@@ -11,13 +11,15 @@ from tnfr.physics.phase_response import (
     observe_phase_source_geometry,
 )
 
-
 # Order: u, v, left leaves a,b, right leaves c,d. An entry (a,b) denotes
 # a + i*sqrt(3)*b; this permits exact root-of-unity arithmetic over rationals.
 _PHASORS = (
-    (Q(1), Q(0)), (Q(1, 2), Q(1, 2)),
-    (Q(1, 2), Q(-1, 2)), (Q(1, 2), Q(-1, 2)),
-    (Q(-1, 2), Q(1, 2)), (Q(-1, 2), Q(1, 2)),
+    (Q(1), Q(0)),
+    (Q(1, 2), Q(1, 2)),
+    (Q(1, 2), Q(-1, 2)),
+    (Q(1, 2), Q(-1, 2)),
+    (Q(-1, 2), Q(1, 2)),
+    (Q(-1, 2), Q(1, 2)),
 )
 _NEIGHBORS = ((1, 2, 3), (0, 4, 5), (0,), (0,), (1,), (1,))
 _PHASE_PI = (Q(0), Q(1, 3), Q(-1, 3), Q(-1, 3), Q(2, 3), Q(2, 3))
@@ -77,14 +79,22 @@ def test_double_star_has_strict_u3_edges_and_regular_nonzero_source():
 
     centered = tuple(_divide(s, z) for s, z in zip(resultants, _PHASORS))
     assert centered == (
-        (Q(3, 2), Q(-1, 2)), (Q(3, 2), Q(1, 2)),
-        (Q(1, 2), Q(1, 2)), (Q(1, 2), Q(1, 2)),
-        (Q(1, 2), Q(-1, 2)), (Q(1, 2), Q(-1, 2)),
+        (Q(3, 2), Q(-1, 2)),
+        (Q(3, 2), Q(1, 2)),
+        (Q(1, 2), Q(1, 2)),
+        (Q(1, 2), Q(1, 2)),
+        (Q(1, 2), Q(-1, 2)),
+        (Q(1, 2), Q(-1, 2)),
     )
     # Positive real parts fix the regular branch. Squared cosine plus sine
     # sign identifies source offsets (-pi/6,+pi/6,+pi/3,+pi/3,-pi/3,-pi/3).
     assert tuple(a * a / _norm_squared(z) for z in centered for a in (z[0],)) == (
-        Q(3, 4), Q(3, 4), Q(1, 4), Q(1, 4), Q(1, 4), Q(1, 4),
+        Q(3, 4),
+        Q(3, 4),
+        Q(1, 4),
+        Q(1, 4),
+        Q(1, 4),
+        Q(1, 4),
     )
     assert tuple(1 if b > 0 else -1 for _, b in centered) == (-1, 1, 1, 1, -1, -1)
 
@@ -94,8 +104,10 @@ def test_strict_u3_does_not_make_nonzero_source_derivative_rigid():
     assert reference.mean_response == (
         (0, 0, Q(1, 2), Q(1, 2), 0, 0),
         (0, 0, 0, 0, Q(1, 2), Q(1, 2)),
-        (1, 0, 0, 0, 0, 0), (1, 0, 0, 0, 0, 0),
-        (0, 1, 0, 0, 0, 0), (0, 1, 0, 0, 0, 0),
+        (1, 0, 0, 0, 0, 0),
+        (1, 0, 0, 0, 0, 0),
+        (0, 1, 0, 0, 0, 0),
+        (0, 1, 0, 0, 0, 0),
     )
     geometry = observe_phase_source_geometry(reference)
     assert geometry.rank == 4
@@ -122,9 +134,7 @@ def test_extra_tangent_changes_source_at_second_order():
         _divide(_PHASORS[0], resultants[1]),
     )
     assert center_ratios == ((Q(0), Q(1, 3)), (Q(0), Q(-1, 3)))
-    scaled_curvature = tuple(
-        3 * (_multiply(r, r)[1] - r[1]) for r in center_ratios
-    )
+    scaled_curvature = tuple(3 * (_multiply(r, r)[1] - r[1]) for r in center_ratios)
     assert scaled_curvature == (-1, 1)
     # Nonzero curvature rejects this tangent line as a constant-source path.
     # The analytic fixed-leaf constraint further gives sin(delta+pi/6)=1,

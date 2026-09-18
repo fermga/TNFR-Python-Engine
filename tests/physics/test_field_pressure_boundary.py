@@ -1,9 +1,9 @@
 """Strict pressure admission and detached public structural-field results."""
 
-from copy import deepcopy
-from fractions import Fraction
 import math
 import sys
+from copy import deepcopy
+from fractions import Fraction
 
 import networkx as nx
 import numpy as np
@@ -62,12 +62,21 @@ PUBLIC_MAPS = {
 
 @pytest.mark.parametrize("reader", PRESSURE_READERS)
 @pytest.mark.parametrize("warm", (False, True), ids=("cold", "warm"))
-@pytest.mark.parametrize("bad,error", (
-    (False, TypeError), (np.bool_(False), TypeError), ("0", TypeError),
-    (float("nan"), ValueError), (float("inf"), ValueError),
-    (None, TypeError), (0j, TypeError),
-))
-def test_malformed_authoritative_pressure_is_rejected_before_cached_reuse(reader, warm, bad, error):
+@pytest.mark.parametrize(
+    "bad,error",
+    (
+        (False, TypeError),
+        (np.bool_(False), TypeError),
+        ("0", TypeError),
+        (float("nan"), ValueError),
+        (float("inf"), ValueError),
+        (None, TypeError),
+        (0j, TypeError),
+    ),
+)
+def test_malformed_authoritative_pressure_is_rejected_before_cached_reuse(
+    reader, warm, bad, error
+):
     graph = _graph()
     if warm:
         reader(graph)

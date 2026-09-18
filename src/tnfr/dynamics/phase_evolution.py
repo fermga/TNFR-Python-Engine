@@ -48,10 +48,7 @@ def propose_u3_gated_phase_step(
     coupling_strength: float,
 ) -> np.ndarray:
     """Return one simultaneous free-advance plus U3-gated phase proposal."""
-    from ..operators._phase_gate import (
-        U3PhaseGateError,
-        resolve_u3_phase_neighbors,
-    )
+    from ..operators._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
 
     if tuple(graph.nodes()) != tuple(nodes):
         raise TNFRValueError("Phase proposal node order differs from the graph.")

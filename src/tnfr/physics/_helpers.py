@@ -68,9 +68,7 @@ def finite_real_series(
     try:
         raw = np.asarray(values, dtype=object)
     except (TypeError, ValueError) as exc:
-        raise ValueError(
-            f"{name} must be a numeric one-dimensional series"
-        ) from exc
+        raise ValueError(f"{name} must be a numeric one-dimensional series") from exc
     if raw.ndim != 1:
         raise ValueError(f"{name} must be a one-dimensional series")
     if nonempty and raw.size == 0:

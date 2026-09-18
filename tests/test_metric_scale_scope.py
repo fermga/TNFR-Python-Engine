@@ -81,9 +81,7 @@ def test_uniform_capacity_unit_change_preserves_relative_si(
 
 def test_coherence_scale_depends_on_time_coordinate_and_stored_rate() -> None:
     graph = nx.empty_graph(1)
-    graph.nodes[0].update(
-        {ALIAS_VF[0]: 2.0, ALIAS_DNFR[0]: 0.5, ALIAS_DEPI[0]: 1.0}
-    )
+    graph.nodes[0].update({ALIAS_VF[0]: 2.0, ALIAS_DNFR[0]: 0.5, ALIAS_DEPI[0]: 1.0})
     assert compute_coherence(graph) == pytest.approx(2.0 / 5.0)
 
     # The same nodal curve in t_new=2*t has nu_new=nu/2 and rate_new=rate/2.
@@ -116,8 +114,17 @@ def test_network_coherence_differs_from_nodal_mean_and_projected_parent() -> Non
 @pytest.mark.parametrize("aliases", [ALIAS_DNFR, ALIAS_DEPI])
 @pytest.mark.parametrize(
     "value",
-    [float("nan"), float("inf"), -float("inf"), True, "1", None,
-     complex(1.0, 0.0), np.complex64(1.0), np.complex128(1.0)],
+    [
+        float("nan"),
+        float("inf"),
+        -float("inf"),
+        True,
+        "1",
+        None,
+        complex(1.0, 0.0),
+        np.complex64(1.0),
+        np.complex128(1.0),
+    ],
 )
 def test_primary_coherence_rejects_invalid_authoritative_alias(
     aliases: tuple[str, ...], value: object

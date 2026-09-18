@@ -1,11 +1,11 @@
 """Portable saved-map fixtures; no historical admission or runtime execution."""
 
-from copy import deepcopy
-from dataclasses import asdict
-from fractions import Fraction as F
 import hashlib
 import json
 import sys
+from copy import deepcopy
+from dataclasses import asdict
+from fractions import Fraction as F
 
 import pytest
 
@@ -19,12 +19,20 @@ from tnfr.research.core_manifests import CoreExperimentManifest
 
 def _manifest(claim=study.INPUT_CLAIM):
     return CoreExperimentManifest(
-        claim_id=claim, git_sha="a"*40, source_dirty=False,
-        versions={"python": "fixture"}, graph_construction="Detached four-node symmetric support",
-        capacity_specification="Uniform positive fixture capacities", solver="Exact arithmetic fixture",
-        timestep=None, seed=None, result_status=ClaimStatus.DERIVED,
-        operator_sequence=("reception",), telemetry=("map symmetry",),
-        controls=("synthetic retained fixture",), artifacts=("fixture.json",),
+        claim_id=claim,
+        git_sha="a" * 40,
+        source_dirty=False,
+        versions={"python": "fixture"},
+        graph_construction="Detached four-node symmetric support",
+        capacity_specification="Uniform positive fixture capacities",
+        solver="Exact arithmetic fixture",
+        timestep=None,
+        seed=None,
+        result_status=ClaimStatus.DERIVED,
+        operator_sequence=("reception",),
+        telemetry=("map symmetry",),
+        controls=("synthetic retained fixture",),
+        artifacts=("fixture.json",),
     ).to_dict()
 
 
@@ -33,70 +41,137 @@ def _fixture(*, ordered=True):
     region, metric = (2, 3), (F(2), F(2), F(1), F(1))
     support = ((1, 2), (0, 3), (0,), (1,))
     edges = tuple((i, j, F(1)) for i, row in enumerate(support) for j in row)
-    capacities, pressure = (F(1),)*4, (F(0),)*4
+    capacities, pressure = (F(1),) * 4, (F(0),) * 4
     epi_weight, dt = F(1, 2), F(1, 4)
     identity = tuple(tuple(F(i == j) for j in range(4)) for i in range(4))
-    a = tuple(tuple(epi_weight*(F(i == j)-F(j in support[i], len(support[i])))
-                    for j in range(4)) for i in range(4))
+    a = tuple(
+        tuple(
+            epi_weight * (F(i == j) - F(j in support[i], len(support[i])))
+            for j in range(4)
+        )
+        for i in range(4)
+    )
     s = identity
     local_rows = []
     for i, neighbors in enumerate(support):
-        coefficients = tuple((F(i == j)/2+F(j in neighbors, 2*len(neighbors))) if ordered
-                             else F(i == j) for j in range(4))
+        coefficients = tuple(
+            (
+                (F(i == j) / 2 + F(j in neighbors, 2 * len(neighbors)))
+                if ordered
+                else F(i == j)
+            )
+            for j in range(4)
+        )
         local_rows.append({"node": nodes[i], "row": coefficients, "offset": F(0)})
     if ordered:
         for i, neighbors in enumerate(support):
-            changed = tuple(s[i][j]/2+sum((s[k][j] for k in neighbors), F(0))/(2*len(neighbors))
-                            for j in range(4))
-            s = s[:i]+(changed,)+s[i+1:]
-    t = tuple(tuple(x-dt*y for x, y in zip(sr, ar, strict=True))
-              for sr, ar in zip(s, a, strict=True))
+            changed = tuple(
+                s[i][j] / 2
+                + sum((s[k][j] for k in neighbors), F(0)) / (2 * len(neighbors))
+                for j in range(4)
+            )
+            s = s[:i] + (changed,) + s[i + 1 :]
+    t = tuple(
+        tuple(x - dt * y for x, y in zip(sr, ar, strict=True))
+        for sr, ar in zip(s, a, strict=True)
+    )
     c = pressure
-    common = {"A": a, "S": s, "T": t, "c": c, "metric_weights": metric,
-              "dt": dt, "paired_b_cancels": True, "cross_experiment_b_equal": False}
+    common = {
+        "A": a,
+        "S": s,
+        "T": t,
+        "c": c,
+        "metric_weights": metric,
+        "dt": dt,
+        "paired_b_cancels": True,
+        "cross_experiment_b_equal": False,
+    }
     original = _from_data(nodes, edges, support, (1, 2, 3, 4), capacities, pressure)
-    reference = {"source": asdict(original), "metric_weights": metric,
-                 "strengths": metric, "epi_weight": epi_weight}
+    reference = {
+        "source": asdict(original),
+        "metric_weights": metric,
+        "strengths": metric,
+        "epi_weight": epi_weight,
+    }
     pairs, summarized = {}, {}
     for number, name in enumerate(study.geometry.WITNESSES):
         pair = {}
-        source = tuple(F(i+number) for i in range(4))
-        control = tuple(F(i+1) for i in range(4))
+        source = tuple(F(i + number) for i in range(4))
+        control = tuple(F(i + 1) for i in range(4))
         difference = tuple(F((i == 2) if number else (i in region)) for i in range(4))
-        for side, x in (("control", control),
-                        ("perturbed", tuple(x+d for x, d in zip(control, difference, strict=True)))):
+        for side, x in (
+            ("control", control),
+            (
+                "perturbed",
+                tuple(x + d for x, d in zip(control, difference, strict=True)),
+            ),
+        ):
             snapshot = _from_data(nodes, edges, support, x, capacities, pressure)
             pair[side] = {
-                "snapshot": asdict(snapshot), "A": a, "S": s, "c": c, "b": source,
+                "snapshot": asdict(snapshot),
+                "A": a,
+                "S": s,
+                "c": c,
+                "b": source,
                 "rows": deepcopy(local_rows),
                 "vectors": {"x0": x},
-                "observation": {"snapshot": asdict(snapshot), "epi_weight": epi_weight,
-                                "forcing": source, "phase": tuple(F(i, 8) for i in range(4))},
+                "observation": {
+                    "snapshot": asdict(snapshot),
+                    "epi_weight": epi_weight,
+                    "forcing": source,
+                    "phase": tuple(F(i, 8) for i in range(4)),
+                },
             }
         pair["paired_source_difference"] = pressure
         pairs[name] = pair
-        stages = {label: asdict(observe_regional_response(matrix, metric, region, difference))
-                  for label, matrix in (("reception", s), ("held_pressure_interval", t))}
+        stages = {
+            label: asdict(observe_regional_response(matrix, metric, region, difference))
+            for label, matrix in (("reception", s), ("held_pressure_interval", t))
+        }
         summarized[name] = {"stages": stages, "source_difference": pressure}
-    return study._payload({
-        "manifest": _manifest(), "nodes": nodes, "children": children,
-        "region_indices": region, "common_coefficients": common,
-        "admission": {"original_reference": reference, "children": children,
-                      "common_coefficients": deepcopy(common), "witnesses": pairs},
-        "witnesses": summarized,
-    })
+    return study._payload(
+        {
+            "manifest": _manifest(),
+            "nodes": nodes,
+            "children": children,
+            "region_indices": region,
+            "common_coefficients": common,
+            "admission": {
+                "original_reference": reference,
+                "children": children,
+                "common_coefficients": deepcopy(common),
+                "witnesses": pairs,
+            },
+            "witnesses": summarized,
+        }
+    )
 
 
 def _write_fixture(tmp_path, retained=None):
     path = tmp_path / "criterion.json"
-    path.write_text(json.dumps(_fixture() if retained is None else retained), encoding="utf-8")
+    path.write_text(
+        json.dumps(_fixture() if retained is None else retained), encoding="utf-8"
+    )
     return path, hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _cli(monkeypatch, path, digest, output):
-    monkeypatch.setattr(sys, "argv", ["symmetry", "--input", str(path),
-                                      "--expected-sha256", digest, "--output", str(output)])
-    monkeypatch.setattr(study, "current_git_source_provenance", lambda *a: ("a"*40, False, None))
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "symmetry",
+            "--input",
+            str(path),
+            "--expected-sha256",
+            digest,
+            "--output",
+            str(output),
+        ],
+    )
+    monkeypatch.setattr(
+        study, "current_git_source_provenance", lambda *a: ("a" * 40, False, None)
+    )
 
 
 def test_ordered_map_can_break_support_symmetry_and_restrict_no_inputs():
@@ -105,7 +180,9 @@ def test_ordered_map_can_break_support_symmetry_and_restrict_no_inputs():
     groups = dict(symmetry.operator_group_indices)
     assert symmetry.support_group_order == len(symmetry.admissible_indices) == 2
     assert len(groups["A"]) == 2
-    assert len(groups["S"]) == len(groups["T"]) == len(symmetry.common_group_indices) == 1
+    assert (
+        len(groups["S"]) == len(groups["T"]) == len(symmetry.common_group_indices) == 1
+    )
     assert len(symmetry.fixed_input_basis) == 3
     for row in result["common_group_environment"].values():
         assert row["same_input_basis_as_unrestricted"]
@@ -115,7 +192,12 @@ def test_ordered_map_can_break_support_symmetry_and_restrict_no_inputs():
     assert len(fields["reception_offset_c"]) == 2
     assert len(fields["cohort_source_rate_b"]) == 1
     assert result["cross_experiment_source_equal"] is False
-    assert result["native_calls"] == result["kernel_calls"] == result["new_trajectories"] == 0
+    assert (
+        result["native_calls"]
+        == result["kernel_calls"]
+        == result["new_trajectories"]
+        == 0
+    )
     assert result["historical_admission_calls"] == 0
     assert not result["complete_runtime_equivariance_certified"]
     local = result["local_reception_family"]
@@ -145,9 +227,13 @@ def test_fixed_image_columns_are_recomputed_from_shared_centering_and_maps():
     matrices = dict(result["symmetry"].operators)
     for row in result["common_group_environment"].values():
         matrix = matrices[row["transition_key"]]
-        expected = tuple(tuple(dot(center, tuple(dot(mrow, value) for mrow in matrix))
-                               for value in row["fixed_input_basis"])
-                         for center in row["centering"])
+        expected = tuple(
+            tuple(
+                dot(center, tuple(dot(mrow, value) for mrow in matrix))
+                for value in row["fixed_input_basis"]
+            )
+            for center in row["centering"]
+        )
         assert row["fixed_input_map"] == expected
 
 
@@ -159,16 +245,33 @@ def test_every_captured_epi_phase_and_affine_offset_is_named_and_bound():
     for name in study.geometry.WITNESSES:
         for side in ("control", "perturbed"):
             raw = retained["admission"]["witnesses"][name][side]
-            assert fields[f"{name}_{side}_generation_epi"] == tuple(map(F, raw["snapshot"]["epi"]))
-            assert fields[f"{name}_{side}_generation_phase_coordinates"] == tuple(map(F, raw["observation"]["phase"]))
+            assert fields[f"{name}_{side}_generation_epi"] == tuple(
+                map(F, raw["snapshot"]["epi"])
+            )
+            assert fields[f"{name}_{side}_generation_phase_coordinates"] == tuple(
+                map(F, raw["observation"]["phase"])
+            )
         b = fields[f"{name}_source_rate_b"]
-        assert fields[f"{name}_held_affine_offset_c_plus_hb"] == tuple(v/4 for v in b)
+        assert fields[f"{name}_held_affine_offset_c_plus_hb"] == tuple(v / 4 for v in b)
 
 
 @pytest.mark.parametrize("name", study.geometry.WITNESSES)
 @pytest.mark.parametrize("side", ("control", "perturbed"))
-@pytest.mark.parametrize("change", ("A", "S", "c", "b", "forcing", "epi", "observation_snapshot", "epi_weight",
-                                    "local_coefficient", "local_offset"))
+@pytest.mark.parametrize(
+    "change",
+    (
+        "A",
+        "S",
+        "c",
+        "b",
+        "forcing",
+        "epi",
+        "observation_snapshot",
+        "epi_weight",
+        "local_coefficient",
+        "local_offset",
+    ),
+)
 def test_each_saved_side_must_match_common_domain_and_source(name, side, change):
     retained = _fixture()
     row = retained["admission"]["witnesses"][name][side]
@@ -193,8 +296,20 @@ def test_each_saved_side_must_match_common_domain_and_source(name, side, change)
         study.analyze_retained(retained)
 
 
-@pytest.mark.parametrize("change", ("metric", "nodal_A", "strengths", "paired_assertion", "cross_assertion",
-                                    "cross_boolean", "paired_difference", "summary_difference", "missing_witness"))
+@pytest.mark.parametrize(
+    "change",
+    (
+        "metric",
+        "nodal_A",
+        "strengths",
+        "paired_assertion",
+        "cross_assertion",
+        "cross_boolean",
+        "paired_difference",
+        "summary_difference",
+        "missing_witness",
+    ),
+)
 def test_original_nodal_bindings_and_pair_assertions_are_checked(change):
     retained = _fixture()
     common = retained["common_coefficients"]
@@ -205,7 +320,7 @@ def test_original_nodal_bindings_and_pair_assertions_are_checked(change):
         reference["metric_weights"][0] = "99"
     elif change == "nodal_A":
         common["A"][0][0] = "99"
-        common["T"][0][0] = str(F(common["S"][0][0])-F(99, 4))
+        common["T"][0][0] = str(F(common["S"][0][0]) - F(99, 4))
     elif change == "strengths":
         reference["strengths"][0] = "99"
     elif change == "paired_assertion":
@@ -215,7 +330,9 @@ def test_original_nodal_bindings_and_pair_assertions_are_checked(change):
     elif change == "cross_boolean":
         common["cross_experiment_b_equal"] = 0
     elif change == "paired_difference":
-        retained["admission"]["witnesses"]["cohort"]["paired_source_difference"][0] = "99"
+        retained["admission"]["witnesses"]["cohort"]["paired_source_difference"][
+            0
+        ] = "99"
     elif change == "summary_difference":
         retained["witnesses"]["cohort"]["source_difference"][0] = "99"
     else:
@@ -227,12 +344,16 @@ def test_original_nodal_bindings_and_pair_assertions_are_checked(change):
 
 def test_original_capture_fields_do_not_get_silently_truncated():
     retained = _fixture()
-    retained["admission"]["witnesses"]["cohort"]["control"]["observation"]["phase"].pop()
+    retained["admission"]["witnesses"]["cohort"]["control"]["observation"][
+        "phase"
+    ].pop()
     with pytest.raises(ValueError, match="match the full node space"):
         study.analyze_retained(retained)
 
 
-@pytest.mark.parametrize("change", ("order", "count", "row_dimension", "all_coefficients", "all_offsets"))
+@pytest.mark.parametrize(
+    "change", ("order", "count", "row_dimension", "all_coefficients", "all_offsets")
+)
 def test_local_rows_reconstruct_only_the_declared_order_and_offset(change):
     retained = _fixture()
     for witness in retained["admission"]["witnesses"].values():
@@ -257,7 +378,9 @@ def test_cap_exhaustion_does_not_return_a_partial_report():
         study.analyze_retained(_fixture(), cap=1)
 
 
-def test_real_manifest_and_cli_serialize_all_exact_owner_evidence(tmp_path, monkeypatch):
+def test_real_manifest_and_cli_serialize_all_exact_owner_evidence(
+    tmp_path, monkeypatch
+):
     path, digest = _write_fixture(tmp_path)
     output = tmp_path / "symmetry.json"
     _cli(monkeypatch, path, digest, output)
@@ -278,7 +401,10 @@ def test_real_manifest_and_cli_serialize_all_exact_owner_evidence(tmp_path, monk
     assert report["symmetry"]["support_group_order"] == 2
     assert report["symmetry"]["permutations"][1]["operator_checks"]
     assert report["symmetry"]["fields"]
-    assert report["common_group_environment"]["held_pressure_interval"]["fixed_input_rank"] == 1
+    assert (
+        report["common_group_environment"]["held_pressure_interval"]["fixed_input_rank"]
+        == 1
+    )
 
 
 @pytest.mark.parametrize("damage", ("digest", "claim", "manifest"))
@@ -290,7 +416,7 @@ def test_authentication_failure_precedes_analysis(tmp_path, monkeypatch, damage)
         retained["manifest"]["timestep"] = -1
     path, digest = _write_fixture(tmp_path, retained)
     if damage == "digest":
-        digest = "0"*64
+        digest = "0" * 64
     output = tmp_path / "symmetry.json"
     _cli(monkeypatch, path, digest, output)
 
@@ -329,7 +455,11 @@ def test_postanalysis_changes_prevent_output(tmp_path, monkeypatch, change):
         if change == "input":
             path.write_text("{}", encoding="utf-8")
         else:
-            monkeypatch.setattr(study, "current_git_source_provenance", lambda *a: ("b"*40, False, None))
+            monkeypatch.setattr(
+                study,
+                "current_git_source_provenance",
+                lambda *a: ("b" * 40, False, None),
+            )
         return result
 
     monkeypatch.setattr(study, "analyze_retained", analyze)

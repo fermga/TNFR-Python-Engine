@@ -139,7 +139,11 @@ _register_metrics_preset(
 )
 
 _METRICS_BASE_HISTORY_KEYS = (
-    "C_steps", "stable_frac", "delta_Si", "B", "capacity_rate_coverage",
+    "C_steps",
+    "stable_frac",
+    "delta_Si",
+    "B",
+    "capacity_rate_coverage",
 )
 _METRICS_PHASE_HISTORY_KEYS = ("phase_sync", "kuramoto_R")
 _METRICS_SIGMA_HISTORY_KEYS = (

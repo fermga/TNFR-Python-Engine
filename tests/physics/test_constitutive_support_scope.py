@@ -23,7 +23,6 @@ from tnfr.physics.support_transport import (
     observe_support_transport_derivative,
 )
 
-
 F = Fraction
 
 
@@ -36,10 +35,16 @@ def _graph(scale=1, *, explicit_lengths=False):
             attributes["length"] = float(weight)
         graph.add_edge("center", neighbor, **attributes)
     for node, epi, capacity, phase, pressure in zip(
-        graph, (1.0, -0.5, 0.25, 2.0), (1.0, 2.0, 0.5, 4.0),
-        (0.0, 0.25, -0.5, 0.75), (0.5, 1.0, -0.25, 0.125), strict=True,
+        graph,
+        (1.0, -0.5, 0.25, 2.0),
+        (1.0, 2.0, 0.5, 4.0),
+        (0.0, 0.25, -0.5, 0.75),
+        (0.5, 1.0, -0.25, 0.125),
+        strict=True,
     ):
-        graph.nodes[node].update(EPI=epi, nu_f=capacity, theta=phase, delta_nfr=pressure)
+        graph.nodes[node].update(
+            EPI=epi, nu_f=capacity, theta=phase, delta_nfr=pressure
+        )
     graph.graph.update(
         DNFR_WEIGHTS={name: 1.0 for name in ("phase", "epi", "vf", "topo")},
         compute_delta_nfr=default_compute_delta_nfr,
@@ -51,15 +56,21 @@ def _normalized_rows(entries, count):
     rows = [[F(0) for _ in range(count)] for _ in range(count)]
     for i, j, weight in entries:
         rows[i][j] = weight
-    return tuple(tuple(value / sum(row) if sum(row) else F(0) for value in row)
-                 for row in rows)
+    return tuple(
+        tuple(value / sum(row) if sum(row) else F(0) for value in row) for row in rows
+    )
 
 
 @pytest.mark.parametrize("scale", (F(1, 7), F(3, 2), F(17)))
 def test_exact_positive_scale_leaves_every_normalized_row_including_isolate(scale):
     # General rational coefficients, deliberately not a claim about float casts.
-    entries = ((0, 0, F(1, 3)), (0, 1, F(2, 7)), (1, 0, F(2, 7)),
-               (1, 2, F(5, 11)), (2, 1, F(5, 11)))
+    entries = (
+        (0, 0, F(1, 3)),
+        (0, 1, F(2, 7)),
+        (1, 0, F(2, 7)),
+        (1, 2, F(5, 11)),
+        (2, 1, F(5, 11)),
+    )
     scaled = tuple((i, j, scale * weight) for i, j, weight in entries)
     assert _normalized_rows(scaled, 4) == _normalized_rows(entries, 4)
     assert _normalized_rows(entries, 4)[3] == (0, 0, 0, 0)
@@ -68,8 +79,10 @@ def test_exact_positive_scale_leaves_every_normalized_row_including_isolate(scal
 @pytest.mark.parametrize("scale", (F(1, 2), F(2), F(8)))
 def test_fixed_support_full_pressure_is_invariant_in_finite_dyadic_fixture(scale):
     first, second = _graph(), _graph(scale)
-    saved = [(deepcopy(dict(g.nodes(data=True))), deepcopy(dict(g.edges)),
-              deepcopy(g.graph)) for g in (first, second)]
+    saved = [
+        (deepcopy(dict(g.nodes(data=True))), deepcopy(dict(g.edges)), deepcopy(g.graph))
+        for g in (first, second)
+    ]
     baseline, scaled = (capture_non_epi_forcing(g) for g in (first, second))
     assert scaled.snapshot.epi_gradient == baseline.snapshot.epi_gradient
     assert scaled.snapshot.capacity_gradient == baseline.snapshot.capacity_gradient
@@ -79,9 +92,15 @@ def test_fixed_support_full_pressure_is_invariant_in_finite_dyadic_fixture(scale
     assert scaled.normalized_weights == baseline.normalized_weights
     assert scaled.full_kernel_pressure == baseline.full_kernel_pressure
     assert scaled.kernel_pressure_defect == baseline.kernel_pressure_defect
-    assert scaled.snapshot.dirichlet_energy == scale * baseline.snapshot.dirichlet_energy
+    assert (
+        scaled.snapshot.dirichlet_energy == scale * baseline.snapshot.dirichlet_energy
+    )
     for graph, expected in zip((first, second), saved, strict=True):
-        assert (dict(graph.nodes(data=True)), dict(graph.edges), graph.graph) == expected
+        assert (
+            dict(graph.nodes(data=True)),
+            dict(graph.edges),
+            graph.graph,
+        ) == expected
 
 
 def test_same_initial_support_has_distinct_declared_tangents_and_energy_work():
@@ -89,10 +108,12 @@ def test_same_initial_support_has_distinct_declared_tangents_and_energy_work():
     # W_1(t)=W0 and W_2(t)=(1+3t)W0 agree at t=0. Both are positive
     # near zero. Their distinct supplied derivatives are not runtime laws.
     static = observe_support_transport_derivative(
-        source, conductance_rates=(F(0),) * len(source.conductance),
+        source,
+        conductance_rates=(F(0),) * len(source.conductance),
     )
     growing = observe_support_transport_derivative(
-        source, conductance_rates=tuple(3 * w for _, _, w in source.conductance),
+        source,
+        conductance_rates=tuple(3 * w for _, _, w in source.conductance),
     )
     assert static.source == growing.source == source
     assert static.conductance_rates != growing.conductance_rates
@@ -133,6 +154,9 @@ def test_zero_conductance_support_still_changes_non_epi_channels():
     without_support = capture_non_epi_forcing(absent)
     assert with_support.snapshot.conductance == without_support.snapshot.conductance
     assert with_support.snapshot.epi_gradient == without_support.snapshot.epi_gradient
-    assert with_support.snapshot.capacity_gradient != without_support.snapshot.capacity_gradient
+    assert (
+        with_support.snapshot.capacity_gradient
+        != without_support.snapshot.capacity_gradient
+    )
     assert with_support.phase_gradient != without_support.phase_gradient
     assert with_support.full_kernel_pressure != without_support.full_kernel_pressure

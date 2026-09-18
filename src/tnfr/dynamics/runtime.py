@@ -40,10 +40,10 @@ except ImportError:  # pragma: no cover - optional dependency missing
 try:  # pragma: no cover - optional math extras
     from ..mathematics.dynamics import MathematicalDynamicsEngine
     from ..mathematics.projection import BasicStateProjector
+    from ..mathematics.runtime import frequency_positive as runtime_frequency_positive
     from ..mathematics.runtime import (
         meets_spectral_expectation_threshold as runtime_spectral_threshold,
     )
-    from ..mathematics.runtime import frequency_positive as runtime_frequency_positive
     from ..mathematics.runtime import normalized as runtime_normalized
 except Exception:  # pragma: no cover - fallback when extras not available
     MathematicalDynamicsEngine = None  # type: ignore[assignment]
@@ -179,20 +179,14 @@ def _record_mutation_flow_boundary(G: TNFRGraph) -> None:
     layout = _networkx_runtime_layout(G)
     graph_items = _runtime_mapping_items(layout.graph_mapping)
     raw_time = next(
-        (
-            value
-            for key, value in graph_items
-            if type(key) is str and key == "_t"
-        ),
+        (value for key, value in graph_items if type(key) is str and key == "_t"),
         0.0,
     )
     sample_time = _finite_mutation_sample_scalar(
         raw_time,
         "graph runtime time",
     )
-    proposals: list[
-        tuple[MutableMapping[Any, Any], deque[tuple[float, float]]]
-    ] = []
+    proposals: list[tuple[MutableMapping[Any, Any], deque[tuple[float, float]]]] = []
     for node, node_data in layout.node_data:
         node_id = cast(NodeId, node)
         node_items = _runtime_mapping_items(node_data)
@@ -586,10 +580,7 @@ def _refresh_delta_nfr(
             binding_failure = bool(
                 traceback is not None
                 and traceback.tb_next is None
-                and (
-                    "n_jobs" in message
-                    or "takes no keyword arguments" in message
-                )
+                and ("n_jobs" in message or "takes no keyword arguments" in message)
             )
             if binding_failure:
                 compute_dnfr_cb(G)
@@ -847,9 +838,7 @@ def _advance_math_engine(
     metadata_provenance = cfg.get(
         "provenance", "tnfr.dynamics.runtime._advance_math_engine"
     )
-    cfg.update(
-        spectral_expectation_metadata(provenance=metadata_provenance)
-    )
+    cfg.update(spectral_expectation_metadata(provenance=metadata_provenance))
 
     if BasicStateProjector is None:  # pragma: no cover - guarded by import above
         raise RuntimeError(
@@ -972,9 +961,7 @@ def _advance_math_engine(
     )
     # Historical streams mirror the auxiliary spectral values only.
     hist.setdefault("math_engine_coherence", []).append(expectation["value"])
-    hist.setdefault("math_engine_coherence_passed", []).append(
-        expectation["passed"]
-    )
+    hist.setdefault("math_engine_coherence_passed", []).append(expectation["passed"])
 
     if frequency_summary is None:
         hist.setdefault("math_engine_frequency", []).append(None)

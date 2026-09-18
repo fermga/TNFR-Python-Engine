@@ -121,17 +121,12 @@ from typing import Any, MutableMapping, cast
 from .._compat import TypeAlias
 from ..alias import collect_attr, collect_theta_attr, get_attr, set_attr
 from ..constants import get_param
-from ..constants.aliases import (
-    ALIAS_DEPI,
-    ALIAS_DNFR,
-    ALIAS_DSI,
-    ALIAS_EPI,
-    ALIAS_SI,
-    ALIAS_VF,
-)
+
 # Retain the module's historical constant re-exports after moving their writes.
 from ..constants.aliases import ALIAS_D2VF as ALIAS_D2VF  # noqa: F401
+from ..constants.aliases import ALIAS_DEPI, ALIAS_DNFR, ALIAS_DSI
 from ..constants.aliases import ALIAS_DVF as ALIAS_DVF  # noqa: F401
+from ..constants.aliases import ALIAS_EPI, ALIAS_SI, ALIAS_VF
 from ..errors import TNFRValueError
 from ..glyph_history import append_metric, ensure_history
 from ..mathematics.unified_numerical import np
@@ -163,6 +158,12 @@ from ..utils import (
     normalize_weights,
     resolve_chunk_size,
 )
+from .capacity_rates import (
+    CapacityRateObservation,
+    aggregate_capacity_rates,
+    commit_capacity_rate_observations,
+    plan_capacity_rate_observations,
+)
 from .common import (
     _dispersion_coherence,
     _finite_scalar,
@@ -170,12 +171,6 @@ from .common import (
     compute_coherence,
     is_structural_equilibrium,
     min_max_range,
-)
-from .capacity_rates import (
-    CapacityRateObservation,
-    aggregate_capacity_rates,
-    commit_capacity_rate_observations,
-    plan_capacity_rate_observations,
 )
 from .trig_cache import compute_theta_trig, get_trig_cache
 
@@ -237,6 +232,7 @@ def _validated_affinity_weight(value: Any) -> float:
     if not math.isfinite(weight) or weight < 0.0:
         raise TNFRValueError("affinity weights must be finite and nonnegative")
     return weight
+
 
 SimilarityComponents = tuple[float, float, float, float]
 VectorizedComponents: TypeAlias = tuple[
@@ -1170,9 +1166,7 @@ def coherence_matrix(
     scope = str(cfg.get("scope", "neighbors")).lower()
     neighbors_only = scope != "all"
     self_diag = bool(cfg.get("self_on_diag", True))
-    mode = "dense" if _force_dense else str(
-        cfg.get("store_mode", "sparse")
-    ).lower()
+    mode = "dense" if _force_dense else str(cfg.get("store_mode", "sparse")).lower()
     thr = float(cfg.get("threshold", 0.0))
     if mode not in ("sparse", "dense"):
         mode = "sparse"
@@ -1503,17 +1497,20 @@ def _track_stability(
     deltas = []
     for node, current in zip(nodes, senses):
         previous = G.nodes[node].get("_prev_Si")
-        previous = current if previous is None else _finite_scalar(previous, name="previous Si")
+        previous = (
+            current
+            if previous is None
+            else _finite_scalar(previous, name="previous Si")
+        )
         deltas.append(_finite_scalar(current - previous, name="delta Si"))
     stable = sum(
-        is_structural_equilibrium(
-            pressure, rate, eps_dnfr=eps_dnfr, eps_depi=eps_depi
-        )
+        is_structural_equilibrium(pressure, rate, eps_dnfr=eps_dnfr, eps_depi=eps_depi)
         for pressure, rate in zip(pressures, rates)
     )
     observations = (
         plan_capacity_rate_observations(G)
-        if _capacity_observations is None else _capacity_observations
+        if _capacity_observations is None
+        else _capacity_observations
     )
     mean_second, coverage = aggregate_capacity_rates(observations)
     stable_fraction = stable / count if count else 0.0
@@ -1723,9 +1720,7 @@ def compute_global_coherence(G: TNFRGraph) -> float:
     >>> 0.0 <= C_global <= 1.0
     True
     """
-    return _dispersion_coherence(
-        _stored_metric_values(G, G.nodes(), ALIAS_DNFR)
-    )
+    return _dispersion_coherence(_stored_metric_values(G, G.nodes(), ALIAS_DNFR))
 
 
 def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
@@ -1811,6 +1806,4 @@ def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
             nx.single_source_shortest_path_length(G, node, cutoff=radius).keys()
         )
 
-    return _dispersion_coherence(
-        _stored_metric_values(G, neighbors, ALIAS_DNFR)
-    )
+    return _dispersion_coherence(_stored_metric_values(G, neighbors, ALIAS_DNFR))

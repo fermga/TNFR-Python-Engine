@@ -516,9 +516,7 @@ class ConservationTracker:
             self._series.mean_residuals.append(balance.mean_residual)
             self._series.rms_residuals.append(balance.rms_residual)
             self._series.conservation_quality.append(balance.conservation_quality)
-            self._series.grammar_violation_index.append(
-                balance.grammar_violation_index
-            )
+            self._series.grammar_violation_index.append(balance.grammar_violation_index)
             self._series.charge_drift.append(balance.charge_drift)
         else:
             # First snapshot — record initial charge only
@@ -863,8 +861,11 @@ def _energy_from_snapshot(snapshot: ConservationSnapshot) -> float:
     energy-density definition lives in one place rather than being inlined.
     """
     raw = _energy_density_from_fields(
-        snapshot.phi_s, snapshot.grad_phi, snapshot.k_phi,
-        snapshot.j_phi, snapshot.j_dnfr,
+        snapshot.phi_s,
+        snapshot.grad_phi,
+        snapshot.k_phi,
+        snapshot.j_phi,
+        snapshot.j_dnfr,
     )
     return 0.5 * sum(raw.values())
 

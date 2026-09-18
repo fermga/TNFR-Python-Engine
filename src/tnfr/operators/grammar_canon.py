@@ -387,8 +387,12 @@ class GrammarBasis:
         choices = tuple(tuple(pair) for pair in raw_choices)
         if any(len(pair) != 2 for pair in choices):
             raise ValueError("configured choices must be name/value pairs")
-        text = (self.statement, self.owner, *hypotheses,
-                *(item for pair in choices for item in pair))
+        text = (
+            self.statement,
+            self.owner,
+            *hypotheses,
+            *(item for pair in choices for item in pair),
+        )
         if any(type(item) is not str or not item.strip() for item in text):
             raise ValueError("basis metadata must contain nonempty text")
         if len({pair[0] for pair in choices}) != len(choices):
@@ -414,185 +418,262 @@ _TETRAD_OBSERVATION_BASIS = GrammarBasis(
     GrammarBasisKind.CONTRACT,
     "The full tetrad combines pressure aggregation Phi_s, wrapped phase gradient/curvature, "
     "and nonlocal coherence length xi_C; these readouts do not certify full-state closure.",
-    ("declared graph and state snapshot", "field-specific conventions and time coverage",
-     "separate state-closure evidence for dynamical prediction"), (),
+    (
+        "declared graph and state snapshot",
+        "field-specific conventions and time coverage",
+        "separate state-closure evidence for dynamical prediction",
+    ),
+    (),
     "tnfr.metrics.observations.observe_graph_tetrad",
 )
 
-GRAMMAR_BASES = MappingProxyType({
-    "U1a": (
-        GrammarBasis(
-            GrammarBasisKind.IDENTITY,
-            "The nodal rate is nu_f * DeltaNFR, including at EPI = 0.",
-            ("defined finite nodal channels", "differentiable flow interval"), (),
-            "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#1-existence-boundedness-and-convergence",
+GRAMMAR_BASES = MappingProxyType(
+    {
+        "U1a": (
+            GrammarBasis(
+                GrammarBasisKind.IDENTITY,
+                "The nodal rate is nu_f * DeltaNFR, including at EPI = 0.",
+                ("defined finite nodal channels", "differentiable flow interval"),
+                (),
+                "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#1-existence-boundedness-and-convergence",
+            ),
+            GrammarBasis(
+                GrammarBasisKind.CONTRACT,
+                "Generation or activation is an operator effect with live preconditions.",
+                ("admitted operator input", "actual operator realization"),
+                (),
+                "tnfr.operators.operator_contracts.contract_for",
+            ),
+            GrammarBasis(
+                GrammarBasisKind.POLICY,
+                "A word starting from null form requires a registered generator.",
+                ("declared initial EPI", "standalone word context"),
+                (("generators", "GENERATORS"),),
+                "tnfr.operators.grammar_core.GrammarValidator.validate_initiation",
+            ),
         ),
-        GrammarBasis(
-            GrammarBasisKind.CONTRACT,
-            "Generation or activation is an operator effect with live preconditions.",
-            ("admitted operator input", "actual operator realization"), (),
-            "tnfr.operators.operator_contracts.contract_for",
+        "U1b": (
+            GrammarBasis(
+                GrammarBasisKind.IDENTITY,
+                "Instantaneous stationarity requires nu_f * DeltaNFR = 0.",
+                ("defined nodal channels", "differentiable flow interval"),
+                (),
+                "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#1-existence-boundedness-and-convergence",
+            ),
+            GrammarBasis(
+                GrammarBasisKind.CONDITIONAL_THEOREM,
+                "Repeated nu_k = alpha**k * nu_0 with bounded pressure has rate tending to zero.",
+                (
+                    "fixed 0 <= alpha < 1",
+                    "bounded pressure",
+                    "no intervening capacity writes",
+                ),
+                (),
+                "tnfr.config.physics_derivation.can_stabilize_reorganization",
+            ),
+            GrammarBasis(
+                GrammarBasisKind.POLICY,
+                "A registered closure ends a word without certifying a stationary endpoint.",
+                ("standalone word context",),
+                (("closures", "CLOSURES"),),
+                "tnfr.config.physics_derivation.derive_end_operators_from_physics",
+            ),
         ),
-        GrammarBasis(
-            GrammarBasisKind.POLICY,
-            "A word starting from null form requires a registered generator.",
-            ("declared initial EPI", "standalone word context"),
-            (("generators", "GENERATORS"),),
-            "tnfr.operators.grammar_core.GrammarValidator.validate_initiation",
+        "U2": (
+            GrammarBasis(
+                GrammarBasisKind.IDENTITY,
+                "Hybrid EPI change is the nodal flow integral plus the sum of EPI jumps.",
+                (
+                    "absolutely continuous flow segments",
+                    "locally finite recorded jumps",
+                ),
+                (),
+                "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#9-u2-and-u4-in-the-actual-flowjump-model",
+            ),
+            GrammarBasis(
+                GrammarBasisKind.CONDITIONAL_THEOREM,
+                "Absolute integrability of the rate and absolute summability of jumps imply a finite EPI limit.",
+                (
+                    "defined scalar hybrid trajectory on the full time tail",
+                    "absolutely integrable nodal rate",
+                    "absolutely summable EPI jumps",
+                ),
+                (),
+                "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#9-u2-and-u4-in-the-actual-flowjump-model",
+            ),
+            GrammarBasis(
+                GrammarBasisKind.POLICY,
+                "Registered destabilizer debt and stabilizer coverage constrain words.",
+                ("accepted history and carried debt",),
+                (
+                    ("debt_capacity", "U2_DEBT_CAPACITY"),
+                    ("calibration", "floor(1/(nu_f*dt*rho)); rho=1 surrogate"),
+                ),
+                "tnfr.operators.grammar_debt.advance_debt",
+            ),
         ),
-    ),
-    "U1b": (
-        GrammarBasis(
-            GrammarBasisKind.IDENTITY,
-            "Instantaneous stationarity requires nu_f * DeltaNFR = 0.",
-            ("defined nodal channels", "differentiable flow interval"), (),
-            "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#1-existence-boundedness-and-convergence",
+        "U3": (
+            _TETRAD_OBSERVATION_BASIS,
+            GrammarBasis(
+                GrammarBasisKind.IDENTITY,
+                "The squared two-phasor magnitude is a*a + b*b + 2*a*b*cos(delta).",
+                ("nonnegative phasor amplitudes", "circular separation delta"),
+                (),
+                "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#10-u3-exact-geometric-content-and-a-strict-gate-counterexample",
+            ),
+            GrammarBasis(
+                GrammarBasisKind.CONTRACT,
+                "Concrete UM/RA requires a compatible existing neighbor; merged UM relations are rechecked.",
+                (
+                    "finite live phases",
+                    "actual graph support",
+                    "admitted phase limits",
+                    "merged stage proposals for a stage-level claim",
+                ),
+                (),
+                "tnfr.operators._phase_gate.resolve_u3_phase_neighbors",
+            ),
+            GrammarBasis(
+                GrammarBasisKind.POLICY,
+                "The hard phase limit is selected in [0, pi/2]; UM can tighten it.",
+                ("finite graph configuration",),
+                (
+                    ("hard_limit", "DELTA_PHI_MAX"),
+                    ("optional_tightening", "UM_MAX_PHASE_DIFF"),
+                ),
+                "tnfr.operators._phase_gate.resolve_u3_phase_limits",
+            ),
         ),
-        GrammarBasis(
-            GrammarBasisKind.CONDITIONAL_THEOREM,
-            "Repeated nu_k = alpha**k * nu_0 with bounded pressure has rate tending to zero.",
-            ("fixed 0 <= alpha < 1", "bounded pressure", "no intervening capacity writes"), (),
-            "tnfr.config.physics_derivation.can_stabilize_reorganization",
+        "U4a": (
+            GrammarBasis(
+                GrammarBasisKind.IDENTITY,
+                "On a smooth flow segment EPI'' = nu_f' * DeltaNFR + nu_f * DeltaNFR'.",
+                (
+                    "differentiable capacity and pressure",
+                    "twice differentiable EPI",
+                    "no jump at the differentiation point",
+                ),
+                (),
+                "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#9-u2-and-u4-in-the-actual-flowjump-model",
+            ),
+            GrammarBasis(
+                GrammarBasisKind.CONTRACT,
+                "Threshold and birth evidence must come from the realized operator-specific observation.",
+                (
+                    "valid timestamped nodal history",
+                    "operator-specific threshold and proposal",
+                ),
+                (),
+                "tnfr.operators.self_organization_selection.observe_self_organization_eligibility",
+            ),
+            GrammarBasis(
+                GrammarBasisKind.POLICY,
+                "Registered triggers require handler coverage, not a claimed measured threshold crossing.",
+                ("word or incremental execution context",),
+                (
+                    ("triggers", "BIFURCATION_TRIGGERS"),
+                    ("handlers", "BIFURCATION_HANDLERS"),
+                ),
+                "tnfr.config.physics_derivation.derive_bifurcation_handlers_from_physics",
+            ),
         ),
-        GrammarBasis(
-            GrammarBasisKind.POLICY,
-            "A registered closure ends a word without certifying a stationary endpoint.",
-            ("standalone word context",), (("closures", "CLOSURES"),),
-            "tnfr.config.physics_derivation.derive_end_operators_from_physics",
+        "U4b": (
+            GrammarBasis(
+                GrammarBasisKind.CONDITIONAL_THEOREM,
+                "For 0 <= q < 1 there exists n with q**n below any fixed positive band.",
+                (
+                    "scalar relaxation surrogate",
+                    "0 <= q = 1-nu_f*dt*rho < 1",
+                    "specified band strictly between zero and one",
+                ),
+                (
+                    ("rho", "1"),
+                    ("band", "1/(pi+1)"),
+                    (
+                        "implementation_scope",
+                        "one-step fallback and 64-step cap do not certify the inequality",
+                    ),
+                ),
+                "tnfr.config.physics_derivation.derive_bifurcation_window_from_physics",
+            ),
+            GrammarBasis(
+                GrammarBasisKind.POLICY,
+                "Transformers require recent destabilization; Mutation also requires prior Coherence.",
+                ("accepted history", "retained prior-Coherence fact"),
+                (("recency_window", "BIFURCATION_WINDOW"),),
+                "tnfr.operators.grammar_dynamics._check_u4b",
+            ),
         ),
-    ),
-    "U2": (
-        GrammarBasis(
-            GrammarBasisKind.IDENTITY,
-            "Hybrid EPI change is the nodal flow integral plus the sum of EPI jumps.",
-            ("absolutely continuous flow segments", "locally finite recorded jumps"), (),
-            "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#9-u2-and-u4-in-the-actual-flowjump-model",
+        "U5": (
+            GrammarBasis(
+                GrammarBasisKind.IDENTITY,
+                "A differentiable parent representation obeys the chain rule on compatible flows.",
+                (
+                    "specified differentiable parent map",
+                    "compatible differentiable child/parent dynamics",
+                ),
+                (),
+                "theory/UNIFIED_GRAMMAR_RULES.md#6-u5--multi-scale-coherence",
+            ),
+            GrammarBasis(
+                GrammarBasisKind.CONDITIONAL_THEOREM,
+                "A fixed affine model projects autonomously under R when RA = Abar R; the source projects as Rb.",
+                (
+                    "fixed model x'=-Ax+b",
+                    "fixed linear observation R",
+                    "verified RA=Abar R",
+                ),
+                (),
+                "tnfr.physics.epi_memory.observe_forced_support_closure",
+            ),
+            GrammarBasis(
+                GrammarBasisKind.POLICY,
+                "Declared deep recursion requires nearby scale stabilizer coverage.",
+                ("declared recursion depth", "accepted word context"),
+                (
+                    ("scale_stabilizers", "STABILIZERS"),
+                    ("recency_window", "BIFURCATION_WINDOW"),
+                ),
+                "tnfr.operators.grammar_core.GrammarValidator.validate_multiscale_coherence",
+            ),
         ),
-        GrammarBasis(
-            GrammarBasisKind.CONDITIONAL_THEOREM,
-            "Absolute integrability of the rate and absolute summability of jumps imply a finite EPI limit.",
-            ("defined scalar hybrid trajectory on the full time tail",
-             "absolutely integrable nodal rate", "absolutely summable EPI jumps"), (),
-            "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#9-u2-and-u4-in-the-actual-flowjump-model",
+        "U6": (
+            _TETRAD_OBSERVATION_BASIS,
+            GrammarBasis(
+                GrammarBasisKind.IDENTITY,
+                "For aligned snapshots DeltaPhi = B_after DeltaPressure + (B_after-B_before) Pressure_before.",
+                (
+                    "aligned node order",
+                    "declared distance kernels",
+                    "finite pressure snapshots",
+                ),
+                (),
+                "tnfr.operators.grammar_u6.structural_potential_change_terms",
+            ),
+            GrammarBasis(
+                GrammarBasisKind.CONDITIONAL_THEOREM,
+                "The fixed linear field satisfies norm_inf(Phi) <= norm_inf(B) * norm_inf(pressure).",
+                ("fixed finite distance kernel", "bounded pressure"),
+                (),
+                "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#4-structural-potential-and-topology-dependent-bounds",
+            ),
+            GrammarBasis(
+                GrammarBasisKind.POLICY,
+                "Mean absolute nodewise potential drift must be strictly below the selected threshold.",
+                (
+                    "complete aligned reference and observed snapshots",
+                    "declared canonical field provenance",
+                ),
+                (
+                    ("threshold", "U6_STRUCTURAL_POTENTIAL_LIMIT"),
+                    ("aggregation", "mean_absolute_nodewise_drift"),
+                    ("time_coverage", "two_snapshot_finite_observation"),
+                ),
+                "tnfr.operators.grammar_u6.validate_structural_potential_confinement",
+            ),
         ),
-        GrammarBasis(
-            GrammarBasisKind.POLICY,
-            "Registered destabilizer debt and stabilizer coverage constrain words.",
-            ("accepted history and carried debt",),
-            (("debt_capacity", "U2_DEBT_CAPACITY"),
-             ("calibration", "floor(1/(nu_f*dt*rho)); rho=1 surrogate")),
-            "tnfr.operators.grammar_debt.advance_debt",
-        ),
-    ),
-    "U3": (
-        _TETRAD_OBSERVATION_BASIS,
-        GrammarBasis(
-            GrammarBasisKind.IDENTITY,
-            "The squared two-phasor magnitude is a*a + b*b + 2*a*b*cos(delta).",
-            ("nonnegative phasor amplitudes", "circular separation delta"), (),
-            "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#10-u3-exact-geometric-content-and-a-strict-gate-counterexample",
-        ),
-        GrammarBasis(
-            GrammarBasisKind.CONTRACT,
-            "Concrete UM/RA requires a compatible existing neighbor; merged UM relations are rechecked.",
-            ("finite live phases", "actual graph support", "admitted phase limits",
-             "merged stage proposals for a stage-level claim"), (),
-            "tnfr.operators._phase_gate.resolve_u3_phase_neighbors",
-        ),
-        GrammarBasis(
-            GrammarBasisKind.POLICY,
-            "The hard phase limit is selected in [0, pi/2]; UM can tighten it.",
-            ("finite graph configuration",),
-            (("hard_limit", "DELTA_PHI_MAX"), ("optional_tightening", "UM_MAX_PHASE_DIFF")),
-            "tnfr.operators._phase_gate.resolve_u3_phase_limits",
-        ),
-    ),
-    "U4a": (
-        GrammarBasis(
-            GrammarBasisKind.IDENTITY,
-            "On a smooth flow segment EPI'' = nu_f' * DeltaNFR + nu_f * DeltaNFR'.",
-            ("differentiable capacity and pressure", "twice differentiable EPI",
-             "no jump at the differentiation point"), (),
-            "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#9-u2-and-u4-in-the-actual-flowjump-model",
-        ),
-        GrammarBasis(
-            GrammarBasisKind.CONTRACT,
-            "Threshold and birth evidence must come from the realized operator-specific observation.",
-            ("valid timestamped nodal history", "operator-specific threshold and proposal"), (),
-            "tnfr.operators.self_organization_selection.observe_self_organization_eligibility",
-        ),
-        GrammarBasis(
-            GrammarBasisKind.POLICY,
-            "Registered triggers require handler coverage, not a claimed measured threshold crossing.",
-            ("word or incremental execution context",),
-            (("triggers", "BIFURCATION_TRIGGERS"), ("handlers", "BIFURCATION_HANDLERS")),
-            "tnfr.config.physics_derivation.derive_bifurcation_handlers_from_physics",
-        ),
-    ),
-    "U4b": (
-        GrammarBasis(
-            GrammarBasisKind.CONDITIONAL_THEOREM,
-            "For 0 <= q < 1 there exists n with q**n below any fixed positive band.",
-            ("scalar relaxation surrogate", "0 <= q = 1-nu_f*dt*rho < 1",
-             "specified band strictly between zero and one"),
-            (("rho", "1"), ("band", "1/(pi+1)"),
-             ("implementation_scope", "one-step fallback and 64-step cap do not certify the inequality")),
-            "tnfr.config.physics_derivation.derive_bifurcation_window_from_physics",
-        ),
-        GrammarBasis(
-            GrammarBasisKind.POLICY,
-            "Transformers require recent destabilization; Mutation also requires prior Coherence.",
-            ("accepted history", "retained prior-Coherence fact"),
-            (("recency_window", "BIFURCATION_WINDOW"),),
-            "tnfr.operators.grammar_dynamics._check_u4b",
-        ),
-    ),
-    "U5": (
-        GrammarBasis(
-            GrammarBasisKind.IDENTITY,
-            "A differentiable parent representation obeys the chain rule on compatible flows.",
-            ("specified differentiable parent map", "compatible differentiable child/parent dynamics"), (),
-            "theory/UNIFIED_GRAMMAR_RULES.md#6-u5--multi-scale-coherence",
-        ),
-        GrammarBasis(
-            GrammarBasisKind.CONDITIONAL_THEOREM,
-            "A fixed affine model projects autonomously under R when RA = Abar R; the source projects as Rb.",
-            ("fixed model x'=-Ax+b", "fixed linear observation R", "verified RA=Abar R"), (),
-            "tnfr.physics.epi_memory.observe_forced_support_closure",
-        ),
-        GrammarBasis(
-            GrammarBasisKind.POLICY,
-            "Declared deep recursion requires nearby scale stabilizer coverage.",
-            ("declared recursion depth", "accepted word context"),
-            (("scale_stabilizers", "STABILIZERS"), ("recency_window", "BIFURCATION_WINDOW")),
-            "tnfr.operators.grammar_core.GrammarValidator.validate_multiscale_coherence",
-        ),
-    ),
-    "U6": (
-        _TETRAD_OBSERVATION_BASIS,
-        GrammarBasis(
-            GrammarBasisKind.IDENTITY,
-            "For aligned snapshots DeltaPhi = B_after DeltaPressure + (B_after-B_before) Pressure_before.",
-            ("aligned node order", "declared distance kernels", "finite pressure snapshots"), (),
-            "tnfr.operators.grammar_u6.structural_potential_change_terms",
-        ),
-        GrammarBasis(
-            GrammarBasisKind.CONDITIONAL_THEOREM,
-            "The fixed linear field satisfies norm_inf(Phi) <= norm_inf(B) * norm_inf(pressure).",
-            ("fixed finite distance kernel", "bounded pressure"), (),
-            "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#4-structural-potential-and-topology-dependent-bounds",
-        ),
-        GrammarBasis(
-            GrammarBasisKind.POLICY,
-            "Mean absolute nodewise potential drift must be strictly below the selected threshold.",
-            ("complete aligned reference and observed snapshots", "declared canonical field provenance"),
-            (("threshold", "U6_STRUCTURAL_POTENTIAL_LIMIT"),
-             ("aggregation", "mean_absolute_nodewise_drift"),
-             ("time_coverage", "two_snapshot_finite_observation")),
-            "tnfr.operators.grammar_u6.validate_structural_potential_confinement",
-        ),
-    ),
-})
+    }
+)
 
 
 def grammar_basis(rule_id: str) -> tuple[GrammarBasis, ...]:

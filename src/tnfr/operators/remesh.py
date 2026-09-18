@@ -1482,8 +1482,7 @@ def _contract_values_equal(left: Any, right: Any) -> bool:
 
     try:
         return bool(
-            structural_proof_signature(left)
-            == structural_proof_signature(right)
+            structural_proof_signature(left) == structural_proof_signature(right)
         )
     except (StructuralSignatureError, TypeError, ValueError):
         return False
@@ -1575,9 +1574,7 @@ def _require_same_graph_surface(
             or observed[2].signature != expected[2].signature
         )
     if changed:
-        raise TNFRValueError(
-            f"REMESH callback changed protected graph surface {key!r}"
-        )
+        raise TNFRValueError(f"REMESH callback changed protected graph surface {key!r}")
 
 
 def _snapshot_alias_channels(
@@ -1617,9 +1614,7 @@ def _snapshot_alias_channels(
             opaque_references=(G, *nodes),
         )
     except (StructuralSignatureError, TNFRValueError, TypeError, ValueError) as exc:
-        raise TNFRValueError(
-            "REMESH structural channels cannot be frozen"
-        ) from exc
+        raise TNFRValueError("REMESH structural channels cannot be frozen") from exc
 
 
 def _snapshot_edge_state(G: CommunityGraph) -> tuple[Any, ...]:
@@ -1762,9 +1757,7 @@ def _finite_remesh_mean(
             f"{label} exceeds the finite binary64 aggregate range"
         ) from exc
     if not math.isfinite(result):
-        raise TNFRValueError(
-            f"{label} exceeds the finite binary64 aggregate range"
-        )
+        raise TNFRValueError(f"{label} exceeds the finite binary64 aggregate range")
     return result
 
 
@@ -1860,9 +1853,7 @@ def _latest_remesh_history_scalar(
     try:
         value = float(raw)
     except (OverflowError, TypeError, ValueError) as exc:
-        raise TNFRValueError(
-            f"history {key!r} must contain finite scalars"
-        ) from exc
+        raise TNFRValueError(f"history {key!r} must contain finite scalars") from exc
     if not math.isfinite(value):
         raise TNFRValueError(f"history {key!r} must contain finite scalars")
     return value
@@ -1982,9 +1973,7 @@ def _log_remesh_event(
                 identity_sensitive=True,
             )
         except StructuralSignatureError as exc:
-            raise TNFRValueError(
-                "canonical REMESH telemetry cannot be frozen"
-            ) from exc
+            raise TNFRValueError("canonical REMESH telemetry cannot be frozen") from exc
 
     callbacks_present, _callbacks = _raw_string_entry(
         graph_mapping,
@@ -2017,9 +2006,7 @@ def _log_remesh_event(
         )
         callback_registry = callback_manager._ensure_callbacks(G)
         normalized_layout = _networkx_runtime_layout(G)
-        normalized_nodes = tuple(
-            node for node, _data in normalized_layout.node_data
-        )
+        normalized_nodes = tuple(node for node, _data in normalized_layout.node_data)
         normalized_state = (
             _filtered_graph_configuration_signature(
                 G,
@@ -2061,9 +2048,7 @@ def _log_remesh_event(
         for _event, registry in _runtime_mapping_items(callback_registry):
             for _name, spec in _runtime_mapping_items(registry):
                 if type(spec) is not CallbackSpec:
-                    raise TNFRValueError(
-                        "REMESH callback registry is not canonical"
-                    )
+                    raise TNFRValueError("REMESH callback registry is not canonical")
                 opaque_callbacks.append(tuple.__getitem__(spec, 1))
         transient_views: list[tuple[str, Any]] = []
         callback_references: list[Any] = []
@@ -2259,9 +2244,7 @@ def apply_network_remesh(
             G,
             retained_references=retained_configuration_references,
         )
-        runtime_controls = _materialize_remesh_runtime_controls(
-            layout.graph_mapping
-        )
+        runtime_controls = _materialize_remesh_runtime_controls(layout.graph_mapping)
         log_events = runtime_controls[1]
         history_maxlen = runtime_controls[3]
         configuration = _materialize_network_remesh_configuration(
@@ -2374,15 +2357,12 @@ def apply_network_remesh(
         )
 
         current_layout = _networkx_runtime_layout(G)
-        if (
-            len(current_layout.node_data) != len(plan.node_order)
-            or any(
-                observed is not expected
-                for (observed, _data), expected in zip(
-                    current_layout.node_data,
-                    plan.node_order,
-                    strict=True,
-                )
+        if len(current_layout.node_data) != len(plan.node_order) or any(
+            observed is not expected
+            for (observed, _data), expected in zip(
+                current_layout.node_data,
+                plan.node_order,
+                strict=True,
             )
         ):
             raise TNFRValueError(
@@ -2394,11 +2374,9 @@ def apply_network_remesh(
             strict=True,
         ):
             _alias, raw_epi = _raw_alias_entry(node_data, ALIAS_EPI, 0.0)
-            if (
-                type(raw_epi) is not float
-                or structural_proof_signature(raw_epi)
-                != structural_proof_signature(proposal.bounded_epi)
-            ):
+            if type(raw_epi) is not float or structural_proof_signature(
+                raw_epi
+            ) != structural_proof_signature(proposal.bounded_epi):
                 raise TNFRValueError(
                     "REMESH callback changed a committed EPI value",
                     context={"node": proposal.node},
@@ -2413,32 +2391,22 @@ def apply_network_remesh(
             or observed_meta is not meta
             or not _contract_values_equal(observed_meta, meta)
         ):
-            raise TNFRValueError(
-                "REMESH callback changed canonical event metadata"
-            )
+            raise TNFRValueError("REMESH callback changed canonical event metadata")
         alpha_present, observed_alpha_source = _raw_string_entry(
             current_layout.graph_mapping,
             "_REMESH_ALPHA_SRC",
             None,
         )
-        if (
-            not alpha_present
-            or structural_proof_signature(observed_alpha_source)
-            != structural_proof_signature(plan.alpha_source)
-        ):
-            raise TNFRValueError(
-                "REMESH callback changed the canonical alpha source"
-            )
+        if not alpha_present or structural_proof_signature(
+            observed_alpha_source
+        ) != structural_proof_signature(plan.alpha_source):
+            raise TNFRValueError("REMESH callback changed the canonical alpha source")
         if not _contract_values_equal(
             _snapshot_alias_channels(G, plan.node_order), protected_channels
         ):
-            raise TNFRValueError(
-                "REMESH callback changed capacity, pressure or phase"
-            )
+            raise TNFRValueError("REMESH callback changed capacity, pressure or phase")
         if not _contract_values_equal(_snapshot_edge_state(G), protected_edges):
-            raise TNFRValueError(
-                "REMESH callback changed edge support or attributes"
-            )
+            raise TNFRValueError("REMESH callback changed edge support or attributes")
         _require_same_graph_surface(G, "_epi_hist", protected_epi_history)
         _require_same_graph_surface(G, "hybrid_event_log", protected_event_log)
         _require_same_runtime_clock(G, protected_clock)
@@ -2451,9 +2419,7 @@ def apply_network_remesh(
         if observed_hook_present != pressure_hook_present or (
             observed_hook_present and observed_hook is not pressure_hook
         ):
-            raise TNFRValueError(
-                "REMESH callback changed the pressure-refresh hook"
-            )
+            raise TNFRValueError("REMESH callback changed the pressure-refresh hook")
         if not _remesh_configuration_input_signatures_are_identical(
             _remesh_configuration_input_signature(G),
             configuration_input_signature,

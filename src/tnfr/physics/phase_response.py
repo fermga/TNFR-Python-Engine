@@ -22,9 +22,12 @@ from .support_transport import (
 )
 
 __all__ = [
-    "PhaseResponseReference", "derive_phase_response",
-    "PhaseSourceGeometry", "observe_phase_source_geometry",
-    "JointNodalResponse", "derive_joint_nodal_response",
+    "PhaseResponseReference",
+    "derive_phase_response",
+    "PhaseSourceGeometry",
+    "observe_phase_source_geometry",
+    "JointNodalResponse",
+    "derive_joint_nodal_response",
 ]
 
 
@@ -38,8 +41,10 @@ def _ordered(values, label):
 
 
 def _unit_planar_gram(values):
-    gram = tuple(ordered_vector(row, "cosine Gram row")
-                 for row in _ordered(values, "cosine_gram"))
+    gram = tuple(
+        ordered_vector(row, "cosine Gram row")
+        for row in _ordered(values, "cosine_gram")
+    )
     n = len(gram)
     if not n or any(len(row) != n for row in gram):
         raise ValueError("cosine Gram must be a nonempty square matrix")
@@ -49,19 +54,25 @@ def _unit_planar_gram(values):
         raise ValueError("cosine Gram must be symmetric")
     # Unit first vector fixes one axis. The Schur complement must be a
     # positive semidefinite rank-at-most-one Gram on the remaining axis.
-    residual = tuple(tuple(gram[i][j] - gram[i][0] * gram[0][j]
-                           for j in range(n)) for i in range(n))
+    residual = tuple(
+        tuple(gram[i][j] - gram[i][0] * gram[0][j] for j in range(n)) for i in range(n)
+    )
     if any(residual[i][i] < 0 for i in range(n)):
         raise ValueError("cosine Gram must be positive semidefinite and planar")
     pivot = next((i for i in range(n) if residual[i][i] > 0), None)
     if pivot is None:
         valid = not any(value for row in residual for value in row)
     else:
-        valid = all(residual[i][j] * residual[pivot][pivot]
-                    == residual[i][pivot] * residual[pivot][j]
-                    for i in range(n) for j in range(n))
+        valid = all(
+            residual[i][j] * residual[pivot][pivot]
+            == residual[i][pivot] * residual[pivot][j]
+            for i in range(n)
+            for j in range(n)
+        )
     if not valid:
-        raise ValueError("cosine Gram must be positive semidefinite with rank at most two")
+        raise ValueError(
+            "cosine Gram must be positive semidefinite with rank at most two"
+        )
     return gram
 
 
@@ -70,9 +81,14 @@ def _index_rows(values, n, label):
     if len(rows) != n:
         raise ValueError(f"{label} rows must match the Gram dimension")
     for row in rows:
-        if (not row or any(type(i) is not int or not 0 <= i < n for i in row)
-                or len(set(row)) != len(row)):
-            raise ValueError(f"{label} requires nonempty rows of distinct valid indices")
+        if (
+            not row
+            or any(type(i) is not int or not 0 <= i < n for i in row)
+            or len(set(row)) != len(row)
+        ):
+            raise ValueError(
+                f"{label} requires nonempty rows of distinct valid indices"
+            )
     return rows
 
 
@@ -93,7 +109,11 @@ class PhaseResponseReference:
 
 
 def derive_phase_response(
-    *, cosine_gram, mean_neighbors, receiver_sources, phase_factor,
+    *,
+    cosine_gram,
+    mean_neighbors,
+    receiver_sources,
+    phase_factor,
 ) -> PhaseResponseReference:
     """Differentiate unweighted phasor means and average receiver proposals.
 
@@ -128,23 +148,47 @@ def derive_phase_response(
     factor = exact_or_represented_real(phase_factor, "phase_factor")
     if not 0 <= factor <= 1:
         raise ValueError("phase_factor must lie in [0,1]")
-    squared = tuple(sum((gram[j][k] for j in row for k in row), Fraction(0))
-                    for row in neighbors)
+    squared = tuple(
+        sum((gram[j][k] for j in row for k in row), Fraction(0)) for row in neighbors
+    )
     if any(value <= 0 for value in squared):
         raise ValueError("every declared phasor mean requires a nonzero resultant")
-    mean = tuple(tuple(sum((gram[j][k] for k in row), Fraction(0)) / squared[i]
-                       if j in row else Fraction(0) for j in range(n))
-                 for i, row in enumerate(neighbors))
-    received = tuple(tuple(sum((mean[s][j] for s in sources), Fraction(0)) / len(sources)
-                           for j in range(n)) for sources in receivers)
-    jacobian = tuple(tuple((1 - factor) * int(i == j) + factor * received[i][j]
-                           for j in range(n)) for i in range(n))
+    mean = tuple(
+        tuple(
+            (
+                sum((gram[j][k] for k in row), Fraction(0)) / squared[i]
+                if j in row
+                else Fraction(0)
+            )
+            for j in range(n)
+        )
+        for i, row in enumerate(neighbors)
+    )
+    received = tuple(
+        tuple(
+            sum((mean[s][j] for s in sources), Fraction(0)) / len(sources)
+            for j in range(n)
+        )
+        for sources in receivers
+    )
+    jacobian = tuple(
+        tuple((1 - factor) * int(i == j) + factor * received[i][j] for j in range(n))
+        for i in range(n)
+    )
     residuals = tuple(sum(row, Fraction(0)) - 1 for row in jacobian)
     if any(residuals) or any(sum(row, Fraction(0)) != 1 for row in mean):
         raise RuntimeError("exact phase derivative lost rotation covariance")
     return PhaseResponseReference(
-        gram, neighbors, receivers, factor, mean, squared, received, jacobian,
-        residuals, all(value >= 0 for row in jacobian for value in row),
+        gram,
+        neighbors,
+        receivers,
+        factor,
+        mean,
+        squared,
+        received,
+        jacobian,
+        residuals,
+        all(value >= 0 for row in jacobian for value in row),
     )
 
 
@@ -191,16 +235,23 @@ def observe_phase_source_geometry(reference) -> PhaseSourceGeometry:
         phase_factor=reference.phase_factor,
     )
     if rebuilt != reference:
-        raise ValueError("phase response reference differs from its rebuilt coefficients")
+        raise ValueError(
+            "phase response reference differs from its rebuilt coefficients"
+        )
     mean = rebuilt.mean_response
     size = len(mean)
-    jacobian = tuple(tuple(value - int(i == j) for j, value in enumerate(row))
-                     for i, row in enumerate(mean))
+    jacobian = tuple(
+        tuple(value - int(i == j) for j, value in enumerate(row))
+        for i, row in enumerate(mean)
+    )
     rank = exact_rank(jacobian)
     if rank >= size:
         raise RuntimeError("phase source derivative lost common-rotation invariance")
     return PhaseSourceGeometry(
-        rebuilt, jacobian, rank, size - rank,
+        rebuilt,
+        jacobian,
+        rank,
+        size - rank,
         all(value >= 0 for row in mean for value in row),
     )
 
@@ -244,8 +295,14 @@ class JointNodalResponse:
 
 
 def derive_joint_nodal_response(
-    snapshot, phase_reference, *, epi_weight, phase_weight, capacity_weight,
-    phase_rate_over_pi, capacity_rate,
+    snapshot,
+    phase_reference,
+    *,
+    epi_weight,
+    phase_weight,
+    capacity_weight,
+    phase_rate_over_pi,
+    capacity_rate,
 ) -> JointNodalResponse:
     """Differentiate the joint canonical pressure law on declared fixed support.
 
@@ -281,25 +338,35 @@ def derive_joint_nodal_response(
     geometry = observe_phase_source_geometry(phase_reference)
     reference = geometry.reference
     if len(reference.mean_neighbors) != size or any(
-        set(mean) != set(support) for mean, support in zip(
-            reference.mean_neighbors, source.support_neighbors, strict=True,
+        set(mean) != set(support)
+        for mean, support in zip(
+            reference.mean_neighbors,
+            source.support_neighbors,
+            strict=True,
         )
     ):
         raise ValueError("phase mean neighborhoods must match the snapshot support")
-    weights = tuple(exact_or_represented_real(value, name) for name, value in (
-        ("epi_weight", epi_weight), ("phase_weight", phase_weight),
-        ("capacity_weight", capacity_weight),
-    ))
+    weights = tuple(
+        exact_or_represented_real(value, name)
+        for name, value in (
+            ("epi_weight", epi_weight),
+            ("phase_weight", phase_weight),
+            ("capacity_weight", capacity_weight),
+        )
+    )
     if any(value < 0 for value in weights):
         raise ValueError("joint response weights must be nonnegative")
     epi_weight, phase_weight, capacity_weight = weights
     phase_rate = ordered_vector(phase_rate_over_pi, "phase_rate_over_pi")
     capacity_rate = ordered_vector(capacity_rate, "capacity_rate")
     if len(phase_rate) != size or len(capacity_rate) != size:
-        raise ValueError("joint response rate vectors must match the snapshot node order")
+        raise ValueError(
+            "joint response rate vectors must match the snapshot node order"
+        )
 
     transport = observe_support_transport_derivative(
-        source, conductance_rates=(Fraction(0),) * len(source.conductance),
+        source,
+        conductance_rates=(Fraction(0),) * len(source.conductance),
     )
     epi_response = tuple(epi_weight * value for value in transport.epi_gradient_rate)
     phase_response = tuple(
@@ -309,20 +376,52 @@ def derive_joint_nodal_response(
         capacity_weight * value
         for value in _support_gradient(source.support_neighbors, capacity_rate)
     )
-    pressure_rate = tuple(a + b + c for a, b, c in zip(
-        epi_response, phase_response, capacity_response, strict=True,
-    ))
-    capacity_acceleration = tuple(a * b for a, b in zip(
-        capacity_rate, source.stored_pressure, strict=True,
-    ))
-    pressure_acceleration = tuple(a * b for a, b in zip(
-        source.capacity, pressure_rate, strict=True,
-    ))
-    acceleration = tuple(a + b for a, b in zip(
-        capacity_acceleration, pressure_acceleration, strict=True,
-    ))
+    pressure_rate = tuple(
+        a + b + c
+        for a, b, c in zip(
+            epi_response,
+            phase_response,
+            capacity_response,
+            strict=True,
+        )
+    )
+    capacity_acceleration = tuple(
+        a * b
+        for a, b in zip(
+            capacity_rate,
+            source.stored_pressure,
+            strict=True,
+        )
+    )
+    pressure_acceleration = tuple(
+        a * b
+        for a, b in zip(
+            source.capacity,
+            pressure_rate,
+            strict=True,
+        )
+    )
+    acceleration = tuple(
+        a + b
+        for a, b in zip(
+            capacity_acceleration,
+            pressure_acceleration,
+            strict=True,
+        )
+    )
     return JointNodalResponse(
-        source, geometry, epi_weight, phase_weight, capacity_weight,
-        phase_rate, capacity_rate, epi_response, phase_response, capacity_response,
-        pressure_rate, capacity_acceleration, pressure_acceleration, acceleration,
+        source,
+        geometry,
+        epi_weight,
+        phase_weight,
+        capacity_weight,
+        phase_rate,
+        capacity_rate,
+        epi_response,
+        phase_response,
+        capacity_response,
+        pressure_rate,
+        capacity_acceleration,
+        pressure_acceleration,
+        acceleration,
     )

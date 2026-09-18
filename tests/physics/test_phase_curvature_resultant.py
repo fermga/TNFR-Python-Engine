@@ -1,9 +1,9 @@
 """Circular read-out admission and fixed-component arithmetic, without dynamics."""
 
+import math
 from copy import deepcopy
 from dataclasses import FrozenInstanceError
 from fractions import Fraction
-import math
 
 import networkx as nx
 import numpy as np
@@ -89,7 +89,10 @@ def test_actual_represented_cancellation_is_unavailable_but_gradient_remains_def
     assert row.resultant.joint_zero
     assert row.resultant.real_sum == row.resultant.imag_sum == 0
     assert row.resultant.angle is None and row.curvature is None
-    assert "represented_zero_does_not_certify_exact_real_trigonometric_zero" in observation.scope
+    assert (
+        "represented_zero_does_not_certify_exact_real_trigonometric_zero"
+        in observation.scope
+    )
     expected_gradient = sum(abs(_wrap(0.3 - p)) for p in (0, 0, math.pi, -math.pi)) / 4
     assert compute_phase_gradient(graph)["center"] == expected_gradient
     for compute in (compute_phase_curvature, compute_structural_telemetry):
@@ -132,21 +135,31 @@ def test_fixed_materialized_components_are_permutation_invariant(order):
 def test_well_conditioned_rotation_covariance_with_float_tolerance(rotation):
     phases, center = (0.2, 0.4, 0.8), 0.6
     graph = _star(phases, center=center)
-    rotated = _star(tuple(_wrap(p + rotation) for p in phases), center=_wrap(center + rotation))
+    rotated = _star(
+        tuple(_wrap(p + rotation) for p in phases), center=_wrap(center + rotation)
+    )
     assert _row(rotated).curvature == pytest.approx(_row(graph).curvature, abs=2e-15)
-    assert compute_phase_gradient(rotated) == pytest.approx(compute_phase_gradient(graph), abs=2e-15)
+    assert compute_phase_gradient(rotated) == pytest.approx(
+        compute_phase_gradient(graph), abs=2e-15
+    )
 
 
-@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
 @pytest.mark.parametrize("mode", ["standard", "research"])
-def test_graph_array_telemetry_share_materialization_and_domain(graph_type, mode, monkeypatch):
+def test_graph_array_telemetry_share_materialization_and_domain(
+    graph_type, mode, monkeypatch
+):
     set_precision_mode(mode)
     graph = graph_type()
     graph.add_nodes_from(["a", "b", "c", "isolated"])
     graph.add_edges_from([("a", "a"), ("a", "b"), ("a", "b"), ("b", "c")])
     for node, phase in zip(graph, (0.1, 2 * math.pi - 0.2, 0.8, 1.5)):
         set_attr(graph.nodes[node], ALIAS_THETA, phase)
-    before = deepcopy((dict(graph.nodes(data=True)), dict(graph.graph), list(graph.edges(data=True))))
+    before = deepcopy(
+        (dict(graph.nodes(data=True)), dict(graph.graph), list(graph.edges(data=True)))
+    )
     observation = observe_phase_curvature(graph)
     assert isinstance(observation, PhaseCurvatureObservation)
     assert observation.requested_precision_mode == mode
@@ -154,7 +167,10 @@ def test_graph_array_telemetry_share_materialization_and_domain(graph_type, mode
     dtype = canonical._get_precision_dtype()
     source, target, counts = neighborhood_arrays(graph, list(graph), dtype=dtype)
     gradient, curvature = compute_phase_gradient_and_curvature_vectorized(
-        np.asarray(observation.primitive_phases, dtype=np.longdouble), source, target, counts,
+        np.asarray(observation.primitive_phases, dtype=np.longdouble),
+        source,
+        target,
+        counts,
         dtype=dtype,
     )
     assert gradient.tolist() == [row.gradient for row in observation.rows]
@@ -181,9 +197,18 @@ def test_array_path_rejects_represented_cancellation():
         compute_phase_gradient_and_curvature_vectorized(phases, source, target, counts)
 
 
-@pytest.mark.parametrize("bad", [True, "0", 1j, float("nan"), float("inf"), Fraction(1, 2**2000)])
-@pytest.mark.parametrize("compute", [observe_phase_curvature, compute_phase_gradient,
-                                     compute_phase_curvature, compute_structural_telemetry])
+@pytest.mark.parametrize(
+    "bad", [True, "0", 1j, float("nan"), float("inf"), Fraction(1, 2**2000)]
+)
+@pytest.mark.parametrize(
+    "compute",
+    [
+        observe_phase_curvature,
+        compute_phase_gradient,
+        compute_phase_curvature,
+        compute_structural_telemetry,
+    ],
+)
 def test_invalid_authoritative_phase_cannot_reuse_valid_cached_result(bad, compute):
     graph = _star((0.1, 0.2))
     compute(graph)
@@ -210,11 +235,15 @@ def test_observation_cache_retains_actual_neighbor_order_and_precision():
     assert observe_phase_curvature(graph).requested_precision_mode == "research"
 
 
-@pytest.mark.parametrize("compute,key", [
-    (compute_phase_gradient, None), (compute_phase_curvature, None),
-    (compute_structural_telemetry, "curv_phi"),
-    (compute_structural_telemetry, "grad_phi"),
-])
+@pytest.mark.parametrize(
+    "compute,key",
+    [
+        (compute_phase_gradient, None),
+        (compute_phase_curvature, None),
+        (compute_structural_telemetry, "curv_phi"),
+        (compute_structural_telemetry, "grad_phi"),
+    ],
+)
 def test_caller_mutation_cannot_poison_cached_phase_readout(compute, key):
     graph = _star((0.1, 0.2))
     result = compute(graph)
@@ -226,19 +255,26 @@ def test_caller_mutation_cannot_poison_cached_phase_readout(compute, key):
     assert (fresh if key is None else fresh[key]) == original
 
 
-@pytest.mark.parametrize("source,target,counts", [
-    ([1, 1], [0, 0], [2, 0]),  # repeated neighbor is not a multigraph degree
-    ([1], [0], [2, 0]),        # denominator cannot disagree with incidence
-    ([2], [0], [1, 0]),
-    ([True], [0], [1, 0]),
-])
+@pytest.mark.parametrize(
+    "source,target,counts",
+    [
+        ([1, 1], [0, 0], [2, 0]),  # repeated neighbor is not a multigraph degree
+        ([1], [0], [2, 0]),  # denominator cannot disagree with incidence
+        ([2], [0], [1, 0]),
+        ([True], [0], [1, 0]),
+    ],
+)
 def test_array_adapter_validates_neighborhood_contract(source, target, counts):
     with pytest.raises(ValueError):
-        compute_phase_gradient_and_curvature_vectorized([0.0, 0.2], source, target, counts)
+        compute_phase_gradient_and_curvature_vectorized(
+            [0.0, 0.2], source, target, counts
+        )
 
 
 def test_nonrepresentable_phase_difference_is_explicitly_rejected():
-    graph = _star((-float.fromhex("0x1.fffffffffffffp+1023"),),
-                  center=float.fromhex("0x1.fffffffffffffp+1023"))
+    graph = _star(
+        (-float.fromhex("0x1.fffffffffffffp+1023"),),
+        center=float.fromhex("0x1.fffffffffffffp+1023"),
+    )
     with pytest.raises(ValueError, match="differences must be finite"):
         observe_phase_curvature(graph)

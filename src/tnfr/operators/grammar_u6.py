@@ -102,6 +102,7 @@ def structural_potential_change_terms(
         ) from exc
     return pressure_term, topology_term, total
 
+
 # ============================================================================
 # U6: Structural Potential Confinement (CANONICAL as of 2025-11-11)
 # ============================================================================

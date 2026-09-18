@@ -13,7 +13,9 @@ from tnfr.dynamics import integrators
 
 @pytest.mark.parametrize("vectorized", [False, True])
 @pytest.mark.parametrize("forced", [False, True])
-def test_zero_capacity_freezes_only_the_unforced_nodal_channel(monkeypatch, vectorized, forced):
+def test_zero_capacity_freezes_only_the_unforced_nodal_channel(
+    monkeypatch, vectorized, forced
+):
     if not vectorized:
         monkeypatch.setattr(integrators, "np", None)
     graph = nx.empty_graph(1)
@@ -22,7 +24,8 @@ def test_zero_capacity_freezes_only_the_unforced_nodal_channel(monkeypatch, vect
     graph.nodes[0].update({EPI_PRIMARY: 0.25, VF_PRIMARY: 0.0, DNFR_PRIMARY: 2.0})
     graph.graph["GAMMA"] = (
         {"type": "harmonic", "beta": 0.125, "omega": 0.0, "phi": math.pi / 2}
-        if forced else {"type": "none"}
+        if forced
+        else {"type": "none"}
     )
     integrators.update_epi_via_nodal_equation(graph, dt=0.5, method="euler")
     expected_rate = 0.125 if forced else 0.0

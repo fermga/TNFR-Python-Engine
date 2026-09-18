@@ -95,9 +95,7 @@ def _stable_mean(
     scale = max(values[index] for index in neighbor_indices)
     if scale == 0.0:
         return 0.0
-    normalized_total = math.fsum(
-        values[index] / scale for index in neighbor_indices
-    )
+    normalized_total = math.fsum(values[index] / scale for index in neighbor_indices)
     mean = scale * (normalized_total / len(neighbor_indices))
     if not math.isfinite(mean):
         raise ValueError("neighbor frequency mean must remain finite")

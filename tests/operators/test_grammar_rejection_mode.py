@@ -12,20 +12,25 @@ from tnfr.operators.grammar_debt import U2_DEBT_KEY
 from tnfr.operators.grammar_execution import ValidatedSequence
 from tnfr.operators.grammar_types import StructuralGrammarError
 from tnfr.operators.network_stage import OPERATOR_MAJOR_GAUSS_SEIDEL, TWO_PHASE_JACOBI
-from tnfr.operators.word_execution import execute_network_operator_stage, run_network_sequence
+from tnfr.operators.word_execution import (
+    execute_network_operator_stage,
+    run_network_sequence,
+)
 
 
 def _graph():
     graph = nx.path_graph(2)
     graph.graph["RANDOM_SEED"] = 19
     for node in graph:
-        graph.nodes[node].update({
-            ALIAS_EPI[0]: 0.5,
-            ALIAS_VF[0]: 1.0,
-            ALIAS_DNFR[0]: 0.2,
-            ALIAS_THETA[0]: 0.0,
-            "glyph_history": [],
-        })
+        graph.nodes[node].update(
+            {
+                ALIAS_EPI[0]: 0.5,
+                ALIAS_VF[0]: 1.0,
+                ALIAS_DNFR[0]: 0.2,
+                ALIAS_THETA[0]: 0.0,
+                "glyph_history": [],
+            }
+        )
     return graph
 
 
@@ -54,7 +59,9 @@ def test_default_and_explicit_compatibility_mode_retain_replacement(mode):
     assert list(graph.nodes[0]["glyph_history"]) == ["IL"]
 
 
-def test_standalone_strict_rejection_never_calculates_or_applies_a_replacement(monkeypatch):
+def test_standalone_strict_rejection_never_calculates_or_applies_a_replacement(
+    monkeypatch,
+):
     graph = _graph()
     graph.graph["GRAMMAR_REJECTION_MODE"] = "raise"
     before = _state(graph)
@@ -109,7 +116,10 @@ def test_filter_remains_an_ordered_admissible_set_without_selection(monkeypatch)
     before = _state(graph)
     monkeypatch.setattr(grammar_dynamics, "suggest_alternative", _forbid_alternative)
 
-    assert grammar_dynamics.filter_candidates(graph, 0, ["EN", "OZ", "IL"]) == ["EN", "IL"]
+    assert grammar_dynamics.filter_candidates(graph, 0, ["EN", "OZ", "IL"]) == [
+        "EN",
+        "IL",
+    ]
     assert _state(graph) == before
 
 
@@ -153,7 +163,9 @@ def test_admitted_strict_stage_keeps_two_phase_jacobi_semantics(monkeypatch):
 
     assert result.schedule == TWO_PHASE_JACOBI
     assert result.glyph == "OZ"
-    assert all(list(graph.nodes[node]["glyph_history"]) == ["IL", "OZ"] for node in graph)
+    assert all(
+        list(graph.nodes[node]["glyph_history"]) == ["IL", "OZ"] for node in graph
+    )
 
 
 def test_compatibility_stage_retains_operator_major_replacement():

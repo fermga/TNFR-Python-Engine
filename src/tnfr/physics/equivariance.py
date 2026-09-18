@@ -13,14 +13,14 @@ operator-by-operator equivariance audit (a later R1 stage) builds on.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from collections.abc import Mapping, Set
+from dataclasses import dataclass
 from fractions import Fraction as F
 
 import numpy as np
 
-from .spectral_projectors import derived_tolerance
 from ._cycle_algebra import Matrix, Vector, ordered_vector
+from .spectral_projectors import derived_tolerance
 from .structural_diffusion import structural_diffusion_operator
 from .support_transport import SupportTransportSnapshot, _from_data
 from .symmetry_sectors import (
@@ -35,7 +35,9 @@ __all__ = [
     "equivariance_residual",
     "sector_preservation_residual",
     "verify_diffusion_equivariance",
-    "ExactSymmetryDefect", "ExactPermutationSymmetry", "ExactMapSymmetry",
+    "ExactSymmetryDefect",
+    "ExactPermutationSymmetry",
+    "ExactMapSymmetry",
     "observe_exact_map_symmetries",
 ]
 
@@ -156,7 +158,13 @@ class ExactMapSymmetry:
 
 
 def observe_exact_map_symmetries(
-    snapshot, *, metric_weights, region, operators, fields=None, cap=2000,
+    snapshot,
+    *,
+    metric_weights,
+    region,
+    operators,
+    fields=None,
+    cap=2000,
 ):
     """Audit exact declared maps against all weighted-support automorphisms.
 
@@ -173,12 +181,21 @@ def observe_exact_map_symmetries(
         raise ValueError("cap must be a positive nonboolean integer")
     if not isinstance(snapshot, SupportTransportSnapshot):
         raise TypeError("a detached SupportTransportSnapshot is required")
-    checked = _from_data(snapshot.nodes, snapshot.conductance,
-                         snapshot.support_neighbors, snapshot.epi,
-                         snapshot.capacity, snapshot.stored_pressure)
+    checked = _from_data(
+        snapshot.nodes,
+        snapshot.conductance,
+        snapshot.support_neighbors,
+        snapshot.epi,
+        snapshot.capacity,
+        snapshot.stored_pressure,
+    )
     if checked != snapshot:
         raise ValueError("snapshot derived fields disagree with its data")
-    nodes, support, capacity = checked.nodes, checked.support_neighbors, checked.capacity
+    nodes, support, capacity = (
+        checked.nodes,
+        checked.support_neighbors,
+        checked.capacity,
+    )
     size = len(nodes)
     if size < 2 or any(value <= 0 for value in capacity):
         raise ValueError("positive capacity on at least two nodes is required")
@@ -190,9 +207,12 @@ def observe_exact_map_symmetries(
     if isinstance(region, (str, bytes, bytearray, Mapping, Set)):
         raise TypeError("region must be an ordered sequence of node labels")
     region_nodes = tuple(region)
-    if (not region_nodes or len(region_nodes) >= size
-            or len(set(region_nodes)) != len(region_nodes)
-            or any(node not in nodes for node in region_nodes)):
+    if (
+        not region_nodes
+        or len(region_nodes) >= size
+        or len(set(region_nodes)) != len(region_nodes)
+        or any(node not in nodes for node in region_nodes)
+    ):
         raise ValueError("region must be a nonempty proper set of distinct nodes")
     region_indices = tuple(nodes.index(node) for node in region_nodes)
     region_set = set(region_indices)
@@ -212,7 +232,9 @@ def observe_exact_map_symmetries(
         if len(matrix) != size or any(len(row) != size for row in matrix):
             raise ValueError("operator matrix dimensions must match the node order")
         matrices.append((name, matrix))
-    vectors = tuple((name, ordered_vector(value, name)) for name, value in fields.items())
+    vectors = tuple(
+        (name, ordered_vector(value, name)) for name, value in fields.items()
+    )
     if any(len(value) != size for _, value in vectors):
         raise ValueError("field dimensions must match the node order")
     conductance = {(i, j): w for i, j, w in checked.conductance}
@@ -223,7 +245,9 @@ def observe_exact_map_symmetries(
             if i <= j:
                 graph.add_edge(i, j, weight=conductance.get((i, j), F(0)))
     mappings = automorphism_permutations(graph, weight="weight", cap=cap)
-    permutations = tuple(sorted(tuple(mapping[i] for i in range(size)) for mapping in mappings))
+    permutations = tuple(
+        sorted(tuple(mapping[i] for i in range(size)) for mapping in mappings)
+    )
 
     def defect(entries):
         witness, maximum = None, F(0)
@@ -235,40 +259,99 @@ def observe_exact_map_symmetries(
 
     records = []
     for p in permutations:
-        matrix_checks = tuple((name, defect(
-            (((i, j), matrix[p[i]][p[j]]-matrix[i][j]) for i in range(size) for j in range(size))))
-            for name, matrix in matrices)
-        field_checks = tuple((name, defect((((i,), value[p[i]]-value[i]) for i in range(size))))
-                             for name, value in vectors)
-        records.append(ExactPermutationSymmetry(
-            p, {p[i] for i in region_indices} == region_set,
-            all(metric[p[i]] == metric[i] for i in range(size)),
-            all(capacity[p[i]] == capacity[i] for i in range(size)),
-            matrix_checks, field_checks,
-        ))
-    admitted = tuple(i for i, row in enumerate(records)
-                     if row.region_preserved and row.metric_preserved and row.capacity_preserved)
-    operator_groups = tuple((name, tuple(i for i in admitted if dict(records[i].operator_checks)[name].preserved))
-                            for name, _ in matrices)
-    field_groups = tuple((name, tuple(i for i in admitted if dict(records[i].field_checks)[name].preserved))
-                         for name, _ in vectors)
-    common_indices = tuple(i for i in admitted if all(item.preserved for _, item in records[i].operator_checks))
+        matrix_checks = tuple(
+            (
+                name,
+                defect(
+                    (
+                        ((i, j), matrix[p[i]][p[j]] - matrix[i][j])
+                        for i in range(size)
+                        for j in range(size)
+                    )
+                ),
+            )
+            for name, matrix in matrices
+        )
+        field_checks = tuple(
+            (name, defect((((i,), value[p[i]] - value[i]) for i in range(size))))
+            for name, value in vectors
+        )
+        records.append(
+            ExactPermutationSymmetry(
+                p,
+                {p[i] for i in region_indices} == region_set,
+                all(metric[p[i]] == metric[i] for i in range(size)),
+                all(capacity[p[i]] == capacity[i] for i in range(size)),
+                matrix_checks,
+                field_checks,
+            )
+        )
+    admitted = tuple(
+        i
+        for i, row in enumerate(records)
+        if row.region_preserved and row.metric_preserved and row.capacity_preserved
+    )
+    operator_groups = tuple(
+        (
+            name,
+            tuple(
+                i for i in admitted if dict(records[i].operator_checks)[name].preserved
+            ),
+        )
+        for name, _ in matrices
+    )
+    field_groups = tuple(
+        (
+            name,
+            tuple(i for i in admitted if dict(records[i].field_checks)[name].preserved),
+        )
+        for name, _ in vectors
+    )
+    common_indices = tuple(
+        i
+        for i in admitted
+        if all(item.preserved for _, item in records[i].operator_checks)
+    )
     common = tuple(permutations[i] for i in common_indices)
     if tuple(range(size)) not in common:
         raise RuntimeError("the complete common group lost its identity")
-    orbits = tuple(tuple(orbit) for orbit in automorphism_orbits(
-        graph, nodes=tuple(range(size)),
-        permutations=[dict(enumerate(p)) for p in common],
-    ))
-    outside_orbits = tuple(orbit for orbit in orbits if not region_set.intersection(orbit))
+    orbits = tuple(
+        tuple(orbit)
+        for orbit in automorphism_orbits(
+            graph,
+            nodes=tuple(range(size)),
+            permutations=[dict(enumerate(p)) for p in common],
+        )
+    )
+    outside_orbits = tuple(
+        orbit for orbit in orbits if not region_set.intersection(orbit)
+    )
     fixed_basis = (tuple(F(i in region_set) for i in range(size)),)
-    fixed_basis += tuple(tuple(F(i in orbit) for i in range(size)) for orbit in outside_orbits)
-    labels = ("region_constant",)+tuple(f"outside_orbit_{k}" for k in range(len(outside_orbits)))
+    fixed_basis += tuple(
+        tuple(F(i in orbit) for i in range(size)) for orbit in outside_orbits
+    )
+    labels = ("region_constant",) + tuple(
+        f"outside_orbit_{k}" for k in range(len(outside_orbits))
+    )
     for value in fixed_basis:
         if any(value[p[i]] != value[i] for p in common for i in range(size)):
             raise RuntimeError("fixed environmental basis is not group invariant")
     return ExactMapSymmetry(
-        nodes, region_indices, metric, capacity, tuple(matrices), vectors,
-        tuple(records), admitted, operator_groups, field_groups, common_indices,
-        common, orbits, labels, fixed_basis, len(permutations), cap,
+        nodes,
+        region_indices,
+        metric,
+        capacity,
+        tuple(matrices),
+        vectors,
+        tuple(records),
+        admitted,
+        operator_groups,
+        field_groups,
+        common_indices,
+        common,
+        orbits,
+        labels,
+        fixed_basis,
+        len(permutations),
+        cap,
     )

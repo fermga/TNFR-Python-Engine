@@ -130,7 +130,9 @@ def validate_sequence(
     names: Iterable[str] | object = ..., **kwargs: object
 ) -> ValidationOutcome[tuple[str, ...]]: ...
 def parse_sequence(
-    names: Iterable[str], *, context: Mapping[str, Any] | None = ...,
+    names: Iterable[str],
+    *,
+    context: Mapping[str, Any] | None = ...,
     compatibility_profile: str | None = ...,
 ) -> SequenceValidationResult: ...
 def enforce_canonical_grammar(

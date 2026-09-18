@@ -11,7 +11,6 @@ from tnfr.physics.forced_support import derive_forced_support_balance
 from tnfr.physics.structural_morphism import _build_reversible_partition_geometry
 from tnfr.physics.support_transport import observe_support_transport
 
-
 _BLOCKS = ((0, 1), (2, 3))
 
 
@@ -21,7 +20,9 @@ def _quotient(epi):
         graph.nodes[node].update(EPI=float(value), nu_f=1.0, theta=0.0)
     snapshot = observe_support_transport(graph)
     reference = derive_forced_support_balance(
-        snapshot, epi_weight=Q(1), forcing=(Q(0),) * 4,
+        snapshot,
+        epi_weight=Q(1),
+        forcing=(Q(0),) * 4,
     )
     closure = observe_forced_support_closure(reference, _BLOCKS)
     return graph, snapshot, closure
@@ -44,7 +45,8 @@ def test_k4_quotient_closes_exactly_with_derived_capacity_two_thirds():
     assert all(value == 0 for row in closure.instantaneous_kernel for value in row)
     assert closure.witness is None
     assert closure.macro_generator == (
-        (Q(2, 3), Q(-2, 3)), (Q(-2, 3), Q(2, 3)),
+        (Q(2, 3), Q(-2, 3)),
+        (Q(-2, 3), Q(2, 3)),
     )
 
     # The shared quotient owner aggregates four inter-block unit edges and

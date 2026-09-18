@@ -9,13 +9,30 @@ from tnfr.operators.grammar_patterns import parse_sequence, validate_sequence
 from tnfr.operators.grammar_types import SequenceSyntaxError
 
 
-@pytest.mark.parametrize("word,rule", [
-    (["emission", "dissonance", "mutation", "coherence", "silence"], "U4b"),
-    (["emission", "coherence", "expansion", "resonance", "expansion",
-      "resonance", "expansion", "coherence", "silence"], "U2"),
-])
+@pytest.mark.parametrize(
+    "word,rule",
+    [
+        (["emission", "dissonance", "mutation", "coherence", "silence"], "U4b"),
+        (
+            [
+                "emission",
+                "coherence",
+                "expansion",
+                "resonance",
+                "expansion",
+                "resonance",
+                "expansion",
+                "coherence",
+                "silence",
+            ],
+            "U2",
+        ),
+    ],
+)
 def test_strings_and_parser_reject_missing_history_or_excess_prefix_debt(word, rule):
-    valid, _ = GrammarValidator().validate([SimpleNamespace(name=name) for name in word])
+    valid, _ = GrammarValidator().validate(
+        [SimpleNamespace(name=name) for name in word]
+    )
     assert not valid
     result = validate_sequence(word)
     assert not result.passed
@@ -25,12 +42,22 @@ def test_strings_and_parser_reject_missing_history_or_excess_prefix_debt(word, r
         parse_sequence(word)
 
 
-@pytest.mark.parametrize("word", [
-    ["emission", "coherence", "dissonance", "mutation", "coherence", "silence"],
-    ["emission", "resonance", "silence"],
-    ["emission", "coherence", "expansion", "resonance", "expansion",
-     "coherence", "silence"],
-])
+@pytest.mark.parametrize(
+    "word",
+    [
+        ["emission", "coherence", "dissonance", "mutation", "coherence", "silence"],
+        ["emission", "resonance", "silence"],
+        [
+            "emission",
+            "coherence",
+            "expansion",
+            "resonance",
+            "expansion",
+            "coherence",
+            "silence",
+        ],
+    ],
+)
 def test_parser_and_validator_share_valid_words_without_unconditional_stabilizer(word):
     result = validate_sequence(word)
     assert result.passed, result.message
@@ -68,14 +95,17 @@ def test_additional_legacy_thol_policy_is_not_conflated_with_canonical_core():
     assert "self_organization requires terminal closure" in result.message
 
 
-@pytest.mark.parametrize("word,index,token", [
-    (["coherence", "silence"], 0, "coherence"),
-    (["emission", "coherence"], 1, "coherence"),
-    (["emission", "expansion", "self_organization", "transition"], 3, "transition"),
-    (["emission", "unknown", "silence"], 1, "unknown"),
-    (["emission", 3, "silence"], 1, 3),
-    (["emission", "coherence", "coherence", "silence"], 2, "coherence"),
-])
+@pytest.mark.parametrize(
+    "word,index,token",
+    [
+        (["coherence", "silence"], 0, "coherence"),
+        (["emission", "coherence"], 1, "coherence"),
+        (["emission", "expansion", "self_organization", "transition"], 3, "transition"),
+        (["emission", "unknown", "silence"], 1, "unknown"),
+        (["emission", 3, "silence"], 1, 3),
+        (["emission", "coherence", "coherence", "silence"], 2, "coherence"),
+    ],
+)
 def test_parser_preserves_local_error_position(word, index, token):
     result = validate_sequence(word)
     assert not result.passed

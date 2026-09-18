@@ -175,8 +175,12 @@ def on_applied_glyph(G, n, applied: Any) -> None:  # G: TNFRGraph, n: NodeId
         Applied glyph or operator name
     """
     from .grammar_debt import (
-        PRIOR_COHERENCE_KEY, U2_DEBT_KEY, advance_debt, advance_prior_coherence,
-        node_debt, node_has_prior_coherence,
+        PRIOR_COHERENCE_KEY,
+        U2_DEBT_KEY,
+        advance_debt,
+        advance_prior_coherence,
+        node_debt,
+        node_has_prior_coherence,
     )
 
     debt = node_debt(G.nodes[n])

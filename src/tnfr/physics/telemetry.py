@@ -14,8 +14,8 @@ from ..mathematics.unified_numerical import np
 from ._helpers import neighborhood_arrays
 from .canonical import (
     _get_dnfr,
-    _phase_readout_bundle,
     _get_precision_dtype,
+    _phase_readout_bundle,
     compute_structural_potential,
     estimate_coherence_length,
 )
@@ -59,12 +59,18 @@ def compute_structural_telemetry(G: Any) -> dict[str, Any]:
     _require_defined_curvature(observation)
     neighbors = tuple(tuple(G.neighbors(node)) for node in nodes)
     cached = _structural_telemetry_cached(
-        G, nodes, neighbors, pressure, bool(_VECTORIZATION_AVAILABLE),
+        G,
+        nodes,
+        neighbors,
+        pressure,
+        bool(_VECTORIZATION_AVAILABLE),
     )
     # Every public field map is detached, including the pressure/current maps
     # stored by the outer cache. Mutating one read-out must not change another.
-    detached = {key: dict(value) if isinstance(value, dict) else value
-                for key, value in cached.items()}
+    detached = {
+        key: dict(value) if isinstance(value, dict) else value
+        for key, value in cached.items()
+    }
     detached.update(grad_phi=gradient, curv_phi=curvature)
     return detached
 
@@ -74,7 +80,11 @@ def compute_structural_telemetry(G: Any) -> dict[str, Any]:
     dependencies={"graph_topology", "node_phase", "node_dnfr", "precision_mode"},
 )
 def _structural_telemetry_cached(
-    G, node_order, neighbor_order, pressure_values, coherence_vectorized,
+    G,
+    node_order,
+    neighbor_order,
+    pressure_values,
+    coherence_vectorized,
 ):
     """Cache the numerical paths and ordered inputs consumed by this read-out."""
     dtype = _get_precision_dtype()

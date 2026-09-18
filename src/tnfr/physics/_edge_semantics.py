@@ -54,17 +54,13 @@ def effective_edge_length(attributes: Mapping[str, Any]) -> float:
 
 def has_explicit_edge_lengths(graph: Any) -> bool:
     """Whether any edge declares the independent ``length`` channel."""
-    return any(
-        EDGE_LENGTH_ATTRIBUTE in data
-        for _, _, data in graph.edges(data=True)
-    )
+    return any(EDGE_LENGTH_ATTRIBUTE in data for _, _, data in graph.edges(data=True))
 
 
 def has_nonpositive_edge_length(graph: Any) -> bool:
     """Whether the graph contains a zero structural path length."""
     return any(
-        effective_edge_length(data) <= 0.0
-        for _, _, data in graph.edges(data=True)
+        effective_edge_length(data) <= 0.0 for _, _, data in graph.edges(data=True)
     )
 
 
@@ -80,8 +76,7 @@ def structural_path_weight(graph: Any) -> Callable[[Any, Any, Any], float]:
     def read(_source: Any, _target: Any, data: Any) -> float:
         if multiple:
             lengths = tuple(
-                effective_edge_length(attributes)
-                for attributes in data.values()
+                effective_edge_length(attributes) for attributes in data.values()
             )
             return min(lengths) if lengths else 1.0
         return effective_edge_length(data)

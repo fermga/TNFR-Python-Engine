@@ -30,7 +30,8 @@ def _cube(cosine=Q(0), sine=Q(1)):
     vectors = tuple(vector for vector in base for _ in range(2))
     neighbors = tuple(
         (2 * j + 1 - b, 2 * ((j - 1) % 4) + b, 2 * ((j + 1) % 4) + b)
-        for j in range(4) for b in range(2)
+        for j in range(4)
+        for b in range(2)
     )
     return vectors, neighbors
 
@@ -89,7 +90,9 @@ def test_signed_k4_is_rigid_even_when_the_merged_stage_is_identity():
     reference = _derive(vectors, neighbors, factor=Q(0))
     result = observe_phase_source_geometry(reference)
 
-    assert reference.jacobian == tuple(tuple(Q(i == j) for j in range(4)) for i in range(4))
+    assert reference.jacobian == tuple(
+        tuple(Q(i == j) for j in range(4)) for i in range(4)
+    )
     assert reference.is_nonnegative
     assert reference.mean_response[0] == (0, Q(7, 13), Q(7, 13), Q(-1, 13))
     assert reference.mean_response[3] == (Q(1, 3), Q(1, 3), Q(1, 3), 0)
@@ -134,10 +137,12 @@ def test_source_geometry_is_covariant_under_vertex_permutation():
     original = observe_phase_source_geometry(_derive(vectors, neighbors))
     permutation = (3, 0, 7, 4, 1, 6, 2, 5)
     inverse = {old: new for new, old in enumerate(permutation)}
-    permuted = observe_phase_source_geometry(_derive(
-        tuple(vectors[old] for old in permutation),
-        tuple(tuple(inverse[j] for j in neighbors[old]) for old in permutation),
-    ))
+    permuted = observe_phase_source_geometry(
+        _derive(
+            tuple(vectors[old] for old in permutation),
+            tuple(tuple(inverse[j] for j in neighbors[old]) for old in permutation),
+        )
+    )
 
     assert permuted.scaled_source_jacobian == tuple(
         tuple(original.scaled_source_jacobian[i][j] for j in permutation)
@@ -155,10 +160,17 @@ def test_source_geometry_requires_a_phase_response_reference(value):
         observe_phase_source_geometry(value)
 
 
-@pytest.mark.parametrize("field", (
-    "mean_response", "receiver_response", "jacobian",
-    "mean_resultant_squared", "row_sum_residuals", "is_nonnegative",
-))
+@pytest.mark.parametrize(
+    "field",
+    (
+        "mean_response",
+        "receiver_response",
+        "jacobian",
+        "mean_resultant_squared",
+        "row_sum_residuals",
+        "is_nonnegative",
+    ),
+)
 def test_cached_reference_coefficients_are_rederived_before_use(field):
     reference = _derive(((Q(1), Q(0)),) * 2, ((1,), (0,)))
     if field in ("mean_response", "receiver_response", "jacobian"):

@@ -7,10 +7,10 @@ backend, gauge, node state or complete runtime evolution.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Iterable, Mapping, Set
 from dataclasses import dataclass
 from fractions import Fraction
-import math
 from typing import Any
 
 from .._binary64 import uses_ieee_binary64_rounding
@@ -52,7 +52,9 @@ def _materialized_pair(value: Any, index: int) -> tuple[float, float]:
     try:
         iterator = iter(value)
     except TypeError as exc:
-        raise TypeError(f"components[{index}] must be an ordered pair of real scalars") from exc
+        raise TypeError(
+            f"components[{index}] must be an ordered pair of real scalars"
+        ) from exc
     # At most three reads suffice to reject malformed or unbounded inner pairs.
     missing = object()
     first, second, extra = (next(iterator, missing) for _ in range(3))
@@ -81,14 +83,20 @@ def reduce_phasor_components(components: Iterable[Any]) -> RepresentedPhasorResu
     establish symmetry/phase invariance for transcendental materialization.
     """
     if not uses_ieee_binary64_rounding():
-        raise ValueError("represented phasor reduction requires IEEE binary64 nearest-even rounding")
+        raise ValueError(
+            "represented phasor reduction requires IEEE binary64 nearest-even rounding"
+        )
     if isinstance(components, (str, bytes, bytearray, Mapping)):
         raise TypeError("components must be a finite iterable of real component pairs")
     try:
         iterator = iter(components)
     except TypeError as exc:
-        raise TypeError("components must be a finite iterable of real component pairs") from exc
-    pairs = tuple(_materialized_pair(value, index) for index, value in enumerate(iterator))
+        raise TypeError(
+            "components must be a finite iterable of real component pairs"
+        ) from exc
+    pairs = tuple(
+        _materialized_pair(value, index) for index, value in enumerate(iterator)
+    )
     if not pairs:
         raise ValueError("at least one phasor component pair is required")
     weights = (1.0,) * len(pairs)
@@ -96,11 +104,24 @@ def reduce_phasor_components(components: Iterable[Any]) -> RepresentedPhasorResu
     imag_sum = Fraction(*exact_weighted_sum_ratio(weights, (imag for _, imag in pairs)))
     if real_sum == 0 and imag_sum == 0:
         return RepresentedPhasorResultant(
-            pairs, len(pairs), real_sum, imag_sum, True, None, None, None, None, None)
+            pairs, len(pairs), real_sum, imag_sum, True, None, None, None, None, None
+        )
     scale = max(abs(real_sum), abs(imag_sum))
     exact = (real_sum / scale, imag_sum / scale)
     represented = (float(exact[0]), float(exact[1]))
-    defect = tuple(Fraction.from_float(value)-target for value, target in zip(represented, exact))
+    defect = tuple(
+        Fraction.from_float(value) - target for value, target in zip(represented, exact)
+    )
     angle = math.atan2(represented[1], represented[0])
     return RepresentedPhasorResultant(
-        pairs, len(pairs), real_sum, imag_sum, False, scale, exact, represented, defect, angle)
+        pairs,
+        len(pairs),
+        real_sum,
+        imag_sum,
+        False,
+        scale,
+        exact,
+        represented,
+        defect,
+        angle,
+    )

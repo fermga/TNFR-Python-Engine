@@ -262,9 +262,7 @@ def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
         G.nodes[node]["_bifurcation_ready"] = False
 
 
-def validate_phase_gate_u3(
-    G: "TNFRGraph", node: "NodeId", operator: str
-) -> None:
+def validate_phase_gate_u3(G: "TNFRGraph", node: "NodeId", operator: str) -> None:
     """U3 hard invariant: UM/RA require a phase-compatible neighbour.
 
     Canonical Invariant #2 / grammar U3: Coupling and Resonance are admissible
@@ -281,9 +279,7 @@ def validate_phase_gate_u3(
     from ...alias import get_attr
     from .._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
 
-    operator_code = (
-        "UM" if str(operator).casefold() in {"um", "coupling"} else "RA"
-    )
+    operator_code = "UM" if str(operator).casefold() in {"um", "coupling"} else "RA"
 
     def phase(candidate: "NodeId") -> object:
         return get_attr(
@@ -293,6 +289,7 @@ def validate_phase_gate_u3(
             strict=True,
             conv=lambda value: value,
         )
+
     try:
         resolve_u3_phase_neighbors(
             G.graph,
@@ -302,9 +299,7 @@ def validate_phase_gate_u3(
             operator_code=operator_code,
         )
     except U3PhaseGateError as exc:
-        raise OperatorPreconditionError(
-            operator, f"U3 phase gate: {exc}"
-        ) from exc
+        raise OperatorPreconditionError(operator, f"U3 phase gate: {exc}") from exc
 
 
 def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:

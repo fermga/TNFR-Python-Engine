@@ -1,14 +1,14 @@
 """Known exponential static-product profiles test the correlation distance contract."""
 
-from copy import deepcopy
 import math
+from copy import deepcopy
 
 import networkx as nx
 import numpy as np
 import pytest
 
-from tnfr.physics import canonical
 from tnfr.physics import _coherence_fit as coherence_fit
+from tnfr.physics import canonical
 from tnfr.physics.telemetry import compute_structural_telemetry
 from tnfr.physics.vectorized_ops import compute_coherence_length_vectorized
 from tnfr.utils.cache import reset_global_cache
@@ -21,7 +21,9 @@ def _clear_field_cache():
     reset_global_cache()
 
 
-def _exponential_star(*, leaves=80, directed=False, explicit=True, reverse=False, zero=False):
+def _exponential_star(
+    *, leaves=80, directed=False, explicit=True, reverse=False, zero=False
+):
     """C0=1, Ci=exp(-ri/2), so Ci*Cj=exp(-dij/2) on a star.
 
     Repeated radii give enough pairs in each distance bin. This is a static
@@ -33,9 +35,13 @@ def _exponential_star(*, leaves=80, directed=False, explicit=True, reverse=False
     graph.nodes["center"]["delta_nfr"] = 0.0
     for i, node in enumerate(nodes[1:]):
         radius = 0.0 if zero and i == 0 else 1.0 + i % 4
-        attributes = {"weight": 0.5 + i % 3, "length": radius} if explicit else {
-            "weight": radius,
-        }
+        attributes = (
+            {"weight": 0.5 + i % 3, "length": radius}
+            if explicit
+            else {
+                "weight": radius,
+            }
+        )
         graph.add_edge("center", node, **attributes)
         graph.nodes[node]["delta_nfr"] = math.expm1(radius / 2.0)
     return graph
@@ -48,7 +54,8 @@ def _vectorized(graph, **kwargs):
 
 @pytest.mark.parametrize("directed", (False, True))
 def test_known_weighted_exponential_above_old_sampling_threshold_has_backend_parity(
-    monkeypatch, directed,
+    monkeypatch,
+    directed,
 ):
     graph = _exponential_star(directed=directed)
     saved = deepcopy(dict(graph.nodes(data=True))), deepcopy(dict(graph.edges))
@@ -60,8 +67,10 @@ def test_known_weighted_exponential_above_old_sampling_threshold_has_backend_par
     assert streamed.method == "autocorrelation_fit"
     assert "uncentered" in streamed.fit_quality
     assert "path-length units" in streamed.distance_weighting
-    assert "ordered outgoing" in streamed.sample_selection if directed else (
-        streamed.sample_selection == "all unordered node pairs"
+    assert (
+        "ordered outgoing" in streamed.sample_selection
+        if directed
+        else (streamed.sample_selection == "all unordered node pairs")
     )
     assert (dict(graph.nodes(data=True)), dict(graph.edges)) == saved
 
@@ -74,7 +83,9 @@ def test_directed_outgoing_pairs_do_not_disappear_when_center_is_ordered_last():
 
 
 @pytest.mark.parametrize("explicit", (False, True))
-def test_rescaling_declared_distances_rescales_fit_length_and_invalidates_cache(explicit):
+def test_rescaling_declared_distances_rescales_fit_length_and_invalidates_cache(
+    explicit,
+):
     graph = _exponential_star(explicit=explicit)
     first = canonical.estimate_coherence_length_with_provenance(graph)
     key = "length" if explicit else "weight"
@@ -125,12 +136,16 @@ def test_large_graph_source_sampling_is_backend_independent_and_disclosed(monkey
     assert "source IDs included in fit cache key" in streamed.sample_selection
 
 
-def test_explicit_sample_materialization_allocates_only_selected_source_rows(monkeypatch):
+def test_explicit_sample_materialization_allocates_only_selected_source_rows(
+    monkeypatch,
+):
     graph = _exponential_star(leaves=1000)
     nodes = tuple(graph)
     sources = coherence_fit.coherence_sources(nodes, "standard")
     pressure = {node: graph.nodes[node]["delta_nfr"] for node in graph}
-    streamed = coherence_fit.fit_coherence_length(graph, nodes, pressure, sources=sources)
+    streamed = coherence_fit.fit_coherence_length(
+        graph, nodes, pressure, sources=sources
+    )
     allocated = []
     original_full = np.full
 
@@ -141,7 +156,11 @@ def test_explicit_sample_materialization_allocates_only_selected_source_rows(mon
 
     monkeypatch.setattr(coherence_fit.np, "full", bounded_full)
     materialized = coherence_fit.fit_coherence_length(
-        graph, nodes, pressure, sources=sources, materialize=True,
+        graph,
+        nodes,
+        pressure,
+        sources=sources,
+        materialize=True,
     )
     assert len(sources) < len(nodes)
     assert allocated == [(len(sources), len(nodes))]
@@ -157,12 +176,20 @@ def test_sampled_sources_still_index_declared_full_matrix_by_graph_order():
     matrix = nx.floyd_warshall_numpy(graph, nodelist=list(nodes), weight="length")
     for options in ({"materialize": True}, {"distance_matrix": matrix}):
         estimate = coherence_fit.fit_coherence_length(
-            graph, nodes, pressure, sources=sources, **options,
+            graph,
+            nodes,
+            pressure,
+            sources=sources,
+            **options,
         )
         assert estimate == pytest.approx(2.0, rel=2e-14)
     with pytest.raises(ValueError, match="square array"):
         coherence_fit.fit_coherence_length(
-            graph, nodes, pressure, sources=sources, distance_matrix=matrix[:2],
+            graph,
+            nodes,
+            pressure,
+            sources=sources,
+            distance_matrix=matrix[:2],
         )
 
 
@@ -203,7 +230,9 @@ def test_valid_declared_distance_matrix_is_not_mutated():
     graph = _exponential_star(leaves=12)
     distances = nx.floyd_warshall_numpy(graph, nodelist=list(graph), weight="length")
     saved = distances.copy()
-    assert _vectorized(graph, distance_matrix=distances) == pytest.approx(2.0, rel=2e-14)
+    assert _vectorized(graph, distance_matrix=distances) == pytest.approx(
+        2.0, rel=2e-14
+    )
     assert np.array_equal(distances, saved)
 
 
@@ -235,7 +264,9 @@ def test_outer_telemetry_cache_rebuilds_after_same_graph_node_reordering(monkeyp
     assert len(calls) == 2
 
 
-def test_outer_telemetry_cache_binds_neighbor_order_even_with_fixed_node_order(monkeypatch):
+def test_outer_telemetry_cache_binds_neighbor_order_even_with_fixed_node_order(
+    monkeypatch,
+):
     calls = _count_telemetry_coherence_calls(monkeypatch)
     graph = _exponential_star(leaves=12)
     first = compute_structural_telemetry(graph)

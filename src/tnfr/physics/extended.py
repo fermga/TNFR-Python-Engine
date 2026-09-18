@@ -17,7 +17,8 @@ from ..constants.aliases import ALIAS_DNFR
 from ..mathematics.unified_numerical import np
 from ._helpers import get_dnfr as _get_dnfr
 from ._helpers import get_phase as _get_phase
-from ._helpers import neighborhood_arrays, wrap_angle as _wrap_angle
+from ._helpers import neighborhood_arrays
+from ._helpers import wrap_angle as _wrap_angle
 
 try:
     import networkx as nx

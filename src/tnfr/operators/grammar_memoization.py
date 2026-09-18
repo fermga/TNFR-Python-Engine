@@ -17,8 +17,8 @@ from functools import lru_cache
 from types import SimpleNamespace
 from typing import Any, NamedTuple
 
-from ..validation.compatibility import CompatibilityLevel
 from ..types import require_finite_real_scalar_epi
+from ..validation.compatibility import CompatibilityLevel
 from .grammar_types import glyph_function_name
 
 
@@ -72,7 +72,8 @@ def create_sequence_signature(
         compatibility_level=(
             compatibility_level.name if compatibility_level is not None else "canonical"
         ),
-        epi_zero_start=require_finite_real_scalar_epi(epi_initial, "initial EPI") == 0.0,
+        epi_zero_start=require_finite_real_scalar_epi(epi_initial, "initial EPI")
+        == 0.0,
     )
 
 

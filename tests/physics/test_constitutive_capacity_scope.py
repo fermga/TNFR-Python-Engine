@@ -19,7 +19,10 @@ from tnfr.physics.fields import (
     estimate_coherence_length_with_provenance,
 )
 from tnfr.physics.forcing_realization import capture_non_epi_forcing
-from tnfr.physics.phase_response import derive_joint_nodal_response, derive_phase_response
+from tnfr.physics.phase_response import (
+    derive_joint_nodal_response,
+    derive_phase_response,
+)
 from tnfr.physics.structural_diffusion import (
     compute_diffusion_energy,
     structural_diffusion_operator,
@@ -30,8 +33,13 @@ def _initial_graph():
     graph = nx.path_graph(2)
     for node, epi in enumerate((0.625, 0.375)):
         graph.nodes[node].update(
-            EPI=epi, nu_f=1.0, theta=0.0, delta_nfr=0.0,
-            glyph_history=[], epi_history=[epi], stable_count=0,
+            EPI=epi,
+            nu_f=1.0,
+            theta=0.0,
+            delta_nfr=0.0,
+            glyph_history=[],
+            epi_history=[epi],
+            stable_count=0,
         )
     # Initialize stored pressure from its actual owner. No EPI step is taken.
     pressure = capture_non_epi_forcing(graph).full_kernel_pressure
@@ -70,7 +78,9 @@ def test_initial_complete_state_and_tetrad_do_not_contain_a_capacity_law():
     source = capture_non_epi_forcing(first)
     assert source.epi_weight > 0
     assert source.phase_gradient == source.forcing == (0, 0)
-    assert source.snapshot.capacity_gradient == source.snapshot.topology_gradient == (0, 0)
+    assert (
+        source.snapshot.capacity_gradient == source.snapshot.topology_gradient == (0, 0)
+    )
     assert source.kernel_pressure_defect == source.stored_pressure_residual == (0, 0)
     assert source.snapshot.stored_pressure == tuple(
         source.epi_weight * value for value in source.snapshot.epi_gradient
@@ -89,22 +99,33 @@ def test_same_initial_pressure_and_rate_allow_distinct_exact_accelerations():
     rate = source.snapshot.rate
     pressure = source.snapshot.stored_pressure
     assert rate == pressure  # Both initial capacities are one.
-    assert tuple(dot(row, source.snapshot.epi) for row in laplacian) == (Q(1, 4), Q(-1, 4))
+    assert tuple(dot(row, source.snapshot.epi) for row in laplacian) == (
+        Q(1, 4),
+        Q(-1, 4),
+    )
 
     # nu'_A=(0,0), nu'_B=(1,1). Both have zero capacity-source derivative.
     capacity_rates = ((Q(0), Q(0)), (Q(1), Q(1)))
-    assert all(tuple(dot(row, rate_nu) for row in laplacian) == (0, 0)
-               for rate_nu in capacity_rates)
+    assert all(
+        tuple(dot(row, rate_nu) for row in laplacian) == (0, 0)
+        for rate_nu in capacity_rates
+    )
     reference = derive_phase_response(
-        cosine_gram=((1, 1), (1, 1)), mean_neighbors=((1,), (0,)),
-        receiver_sources=((0,), (1,)), phase_factor=Q(0),
+        cosine_gram=((1, 1), (1, 1)),
+        mean_neighbors=((1,), (0,)),
+        receiver_sources=((0,), (1,)),
+        phase_factor=Q(0),
     )
     weights = dict(source.normalized_weights)
     responses = tuple(
         derive_joint_nodal_response(
-            source.snapshot, reference, epi_weight=weights["epi"],
-            phase_weight=weights["phase"], capacity_weight=weights["vf"],
-            phase_rate_over_pi=(0, 0), capacity_rate=rate_nu,
+            source.snapshot,
+            reference,
+            epi_weight=weights["epi"],
+            phase_weight=weights["phase"],
+            capacity_weight=weights["vf"],
+            phase_rate_over_pi=(0, 0),
+            capacity_rate=rate_nu,
         )
         for rate_nu in capacity_rates
     )
@@ -127,9 +148,9 @@ def test_two_analytic_completions_satisfy_the_same_nodal_law_exactly():
     def rational(value):
         return symbolic.Rational(value.numerator, value.denominator)
 
-    laplacian = symbolic.Matrix([
-        [rational(value) for value in row] for row in _laplacian(graph)
-    ])
+    laplacian = symbolic.Matrix(
+        [[rational(value) for value in row] for row in _laplacian(graph)]
+    )
     e = rational(source.epi_weight)
     t = symbolic.Symbol("t", positive=True)
     ones, mode = symbolic.ones(2, 1), symbolic.Matrix([1, -1])
@@ -140,11 +161,15 @@ def test_two_analytic_completions_satisfy_the_same_nodal_law_exactly():
         amplitude = symbolic.exp(-2 * e * clock)
         epi = c * ones + d * amplitude * mode
         pressure = -e * laplacian * epi
-        assert symbolic.simplify(epi.diff(t) - capacity * pressure) == symbolic.zeros(2, 1)
-        assert epi.subs(t, 0) == symbolic.Matrix([rational(v) for v in source.snapshot.epi])
-        assert pressure.subs(t, 0) == symbolic.Matrix([
-            rational(v) for v in source.snapshot.stored_pressure
-        ])
+        assert symbolic.simplify(epi.diff(t) - capacity * pressure) == symbolic.zeros(
+            2, 1
+        )
+        assert epi.subs(t, 0) == symbolic.Matrix(
+            [rational(v) for v in source.snapshot.epi]
+        )
+        assert pressure.subs(t, 0) == symbolic.Matrix(
+            [rational(v) for v in source.snapshot.stored_pressure]
+        )
         assert laplacian * (capacity * ones) == symbolic.zeros(2, 1)
         energy = rational(source.snapshot.dirichlet_energy) * amplitude**2
         assert symbolic.simplify(energy.diff(t) + 4 * e * capacity * energy) == 0
@@ -153,9 +178,10 @@ def test_two_analytic_completions_satisfy_the_same_nodal_law_exactly():
         energies.append(energy)
 
     assert fields[0].diff(t).subs(t, 0) == fields[1].diff(t).subs(t, 0)
-    assert symbolic.simplify(
-        (fields[1] - fields[0]).diff(t, 2).subs(t, 0)
-    ) == -2 * e * d * mode
+    assert (
+        symbolic.simplify((fields[1] - fields[0]).diff(t, 2).subs(t, 0))
+        == -2 * e * d * mode
+    )
     assert symbolic.simplify(energies[1] / energies[0]) == symbolic.exp(-2 * e * t**2)
     # On [0,1], capacities lie in [1,2], phases stay equal, and
     # 0 < amplitude <= 1 keeps both EPI coordinates between c-d and c+d.
@@ -175,7 +201,9 @@ def test_optional_zero_flux_does_not_remove_the_prescribed_phase_response():
 @pytest.mark.parametrize("divergence", [-1.0, 0.0, 1.0])
 def test_optional_pressure_response_has_no_pressure_restoring_term(divergence):
     rates = tuple(
-        compute_extended_nodal_system(1.0, pressure, 0.0, 0.0, divergence).dnfr_derivative
+        compute_extended_nodal_system(
+            1.0, pressure, 0.0, 0.0, divergence
+        ).dnfr_derivative
         for pressure in (-0.5, 0.0, 0.5)
     )
     assert rates == (-(1.0 + 0.135) * divergence,) * 3

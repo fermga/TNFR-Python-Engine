@@ -46,7 +46,9 @@ def main() -> None:
     print("  - REAL_SCALAR_STORAGE: all inspected entries belong to the scalar chart")
     print("  - NONSCALAR_BEPI_STORAGE_OBSERVED: at least one entry lies outside it")
     print("  - NO_STORAGE_OBSERVED: no entries were inspected")
-    print("  Temporal spectral entropy is descriptive and does not choose these labels.")
+    print(
+        "  Temporal spectral entropy is descriptive and does not choose these labels."
+    )
     print()
     print("Verdicts at the two resolutions:")
     print(

@@ -19,12 +19,18 @@ from ._cycle_algebra import Vector, dot, ordered_vector
 from .structural_diffusion import structural_field
 
 __all__ = [
-    "SupportTransportSnapshot", "SupportTransportReset", "SupportTransportEuler",
-    "observe_support_transport", "observe_support_transport_reset",
+    "SupportTransportSnapshot",
+    "SupportTransportReset",
+    "SupportTransportEuler",
+    "observe_support_transport",
+    "observe_support_transport_reset",
     "observe_support_transport_euler",
-    "RegionalSupportBalance", "observe_regional_support_balance",
-    "RegionalSupportEuler", "observe_regional_support_euler",
-    "SupportTransportDerivative", "observe_support_transport_derivative",
+    "RegionalSupportBalance",
+    "observe_regional_support_balance",
+    "RegionalSupportEuler",
+    "observe_regional_support_euler",
+    "SupportTransportDerivative",
+    "observe_support_transport_derivative",
 ]
 
 
@@ -55,17 +61,23 @@ def _laplacian(conductance, values):
 
 
 def _energy(conductance, values):
-    return sum(
-        (weight * (values[i] - values[j])**2 for i, j, weight in conductance),
-        Fraction(0),
-    ) / 4
+    return (
+        sum(
+            (weight * (values[i] - values[j]) ** 2 for i, j, weight in conductance),
+            Fraction(0),
+        )
+        / 4
+    )
 
 
 def _support_gradient(support, values):
     """Unweighted unique-neighbor differences on validated ordered support."""
     return tuple(
-        sum((values[j] - values[i] for j in row), Fraction(0)) / len(row)
-        if row else Fraction(0)
+        (
+            sum((values[j] - values[i] for j in row), Fraction(0)) / len(row)
+            if row
+            else Fraction(0)
+        )
         for i, row in enumerate(support)
     )
 
@@ -77,8 +89,11 @@ def _from_data(nodes, conductance, support_neighbors, epi, capacity, pressure):
         raise ValueError("node order must contain distinct nodes")
     x, nu, p = (
         ordered_vector(values, label)
-        for values, label in ((epi, "epi"), (capacity, "capacity"),
-                              (pressure, "stored_pressure"))
+        for values, label in (
+            (epi, "epi"),
+            (capacity, "capacity"),
+            (pressure, "stored_pressure"),
+        )
     )
     if any(len(values) != size for values in (x, nu, p)):
         raise ValueError("state vectors must match the node order")
@@ -94,8 +109,13 @@ def _from_data(nodes, conductance, support_neighbors, epi, capacity, pressure):
             raise ValueError("support must contain distinct valid neighbor indices")
     entries = {}
     for i, j, raw_weight in conductance:
-        if (type(i) is not int or type(j) is not int
-                or not 0 <= i < size or not 0 <= j < size or j not in support[i]):
+        if (
+            type(i) is not int
+            or type(j) is not int
+            or not 0 <= i < size
+            or not 0 <= j < size
+            or j not in support[i]
+        ):
             raise ValueError("conductance indices must belong to the support")
         weight = exact_or_represented_real(raw_weight, "conductance")
         if weight <= 0 or (i, j) in entries:
@@ -108,15 +128,26 @@ def _from_data(nodes, conductance, support_neighbors, epi, capacity, pressure):
     for i, _, weight in edges:
         strengths[i] += weight
     bx = _laplacian(edges, x)
-    epi_gradient = tuple(-value / d if d else Fraction(0)
-                         for value, d in zip(bx, strengths))
+    epi_gradient = tuple(
+        -value / d if d else Fraction(0) for value, d in zip(bx, strengths)
+    )
     degree = tuple(len(row) for row in support)
 
     rate = tuple(v * pressure_i for v, pressure_i in zip(nu, p))
     return SupportTransportSnapshot(
-        nodes, edges, support, x, nu, p, epi_gradient,
-        _support_gradient(support, nu), _support_gradient(support, degree), bx, rate,
-        _energy(edges, x), dot(bx, rate),
+        nodes,
+        edges,
+        support,
+        x,
+        nu,
+        p,
+        epi_gradient,
+        _support_gradient(support, nu),
+        _support_gradient(support, degree),
+        bx,
+        rate,
+        _energy(edges, x),
+        dot(bx, rate),
     )
 
 
@@ -135,7 +166,9 @@ def observe_support_transport(G) -> SupportTransportSnapshot:
     adjacency = read_conductance(G, symmetric=True)
     nodes = tuple(adjacency.nodes)
     index = {node: i for i, node in enumerate(nodes)}
-    support = tuple(tuple(sorted(index[j] for j in G.neighbors(node))) for node in nodes)
+    support = tuple(
+        tuple(sorted(index[j] for j in G.neighbors(node))) for node in nodes
+    )
 
     def state(alias):
         return tuple(
@@ -151,8 +184,12 @@ def observe_support_transport(G) -> SupportTransportSnapshot:
         for i, j, weight in zip(adjacency.source, adjacency.target, adjacency.weight)
     )
     return _from_data(
-        nodes, edges, support, tuple(structural_field(G, list(nodes))),
-        state(ALIAS_VF), state(ALIAS_DNFR),
+        nodes,
+        edges,
+        support,
+        tuple(structural_field(G, list(nodes))),
+        state(ALIAS_VF),
+        state(ALIAS_DNFR),
     )
 
 
@@ -160,8 +197,14 @@ def _rebuild(value):
     if type(value) is not SupportTransportSnapshot:
         raise TypeError("state must be a SupportTransportSnapshot")
     # Detached public fields are data, not provenance. Recompute all caches.
-    return _from_data(value.nodes, value.conductance, value.support_neighbors,
-                      value.epi, value.capacity, value.stored_pressure)
+    return _from_data(
+        value.nodes,
+        value.conductance,
+        value.support_neighbors,
+        value.epi,
+        value.capacity,
+        value.stored_pressure,
+    )
 
 
 @dataclass(frozen=True)
@@ -185,7 +228,9 @@ class SupportTransportDerivative:
 
 
 def observe_support_transport_derivative(
-    snapshot, *, conductance_rates,
+    snapshot,
+    *,
+    conductance_rates,
 ) -> SupportTransportDerivative:
     """Differentiate the declared weighted channel and Dirichlet energy.
 
@@ -209,33 +254,46 @@ def observe_support_transport_derivative(
     rates = ordered_vector(conductance_rates, "conductance_rates")
     if len(rates) != len(source.conductance):
         raise ValueError("conductance_rates must align with every conductance entry")
-    rate_map = {(i, j): rate for (i, j, _), rate in
-                zip(source.conductance, rates, strict=True)}
+    rate_map = {
+        (i, j): rate for (i, j, _), rate in zip(source.conductance, rates, strict=True)
+    }
     if any(rate_map.get((j, i)) != rate for (i, j), rate in rate_map.items()):
         raise ValueError("conductance_rates must preserve symmetry")
     size = len(source.nodes)
     strengths = [Fraction(0) for _ in range(size)]
     strength_rates = [Fraction(0) for _ in range(size)]
-    signed_edges = tuple((i, j, rate) for (i, j, _), rate in
-                         zip(source.conductance, rates, strict=True))
+    signed_edges = tuple(
+        (i, j, rate) for (i, j, _), rate in zip(source.conductance, rates, strict=True)
+    )
     for (i, _, weight), rate in zip(source.conductance, rates, strict=True):
         strengths[i] += weight
         strength_rates[i] += rate
     flow_laplacian = _laplacian(source.conductance, source.rate)
     geometry_laplacian = _laplacian(signed_edges, source.epi)
-    flow = tuple(-value / d if d else Fraction(0)
-                 for value, d in zip(flow_laplacian, strengths, strict=True))
+    flow = tuple(
+        -value / d if d else Fraction(0)
+        for value, d in zip(flow_laplacian, strengths, strict=True)
+    )
     geometry = tuple(
         (-value - dd * g) / d if d else Fraction(0)
         for value, dd, g, d in zip(
-            geometry_laplacian, strength_rates, source.epi_gradient, strengths, strict=True,
+            geometry_laplacian,
+            strength_rates,
+            source.epi_gradient,
+            strengths,
+            strict=True,
         )
     )
     geometric_work = _energy(signed_edges, source.epi)
     return SupportTransportDerivative(
-        source, rates, flow, geometry,
+        source,
+        rates,
+        flow,
+        geometry,
         tuple(a + b for a, b in zip(flow, geometry, strict=True)),
-        source.energy_rate, geometric_work, source.energy_rate + geometric_work,
+        source.energy_rate,
+        geometric_work,
+        source.energy_rate + geometric_work,
     )
 
 
@@ -336,7 +394,9 @@ def observe_regional_support_balance(snapshot, region, *, epi_weight, forcing):
     except (KeyError, TypeError) as exc:
         raise ValueError("region nodes must belong to the source node space") from exc
     selected_indices = set(indices)
-    environment = tuple(node for i, node in enumerate(source.nodes) if i not in selected_indices)
+    environment = tuple(
+        node for i, node in enumerate(source.nodes) if i not in selected_indices
+    )
     e = exact_or_represented_real(epi_weight, "epi_weight")
     f = ordered_vector(forcing, "forcing")
     if len(f) != size:
@@ -344,49 +404,103 @@ def observe_regional_support_balance(snapshot, region, *, epi_weight, forcing):
     strengths = [Fraction(0) for _ in source.nodes]
     for i, _, weight in source.conductance:
         strengths[i] += weight
-    if e <= 0 or any(d <= 0 for d in strengths) or any(nu <= 0 for nu in source.capacity):
-        raise ValueError("regional metric requires positive full strengths, capacities and EPI weight")
+    if (
+        e <= 0
+        or any(d <= 0 for d in strengths)
+        or any(nu <= 0 for nu in source.capacity)
+    ):
+        raise ValueError(
+            "regional metric requires positive full strengths, capacities and EPI weight"
+        )
     d = tuple(strengths)
-    h = tuple(di/nu for di, nu in zip(d, source.capacity, strict=True))
+    h = tuple(di / nu for di, nu in zip(d, source.capacity, strict=True))
     regional_weight = sum((h[i] for i in indices), Fraction(0))
-    total = sum((h[i]*source.epi[i] for i in indices), Fraction(0))
-    mean = total/regional_weight
-    centered = tuple(source.epi[i]-mean for i in indices)
+    total = sum((h[i] * source.epi[i] for i in indices), Fraction(0))
+    mean = total / regional_weight
+    centered = tuple(source.epi[i] - mean for i in indices)
     z = dict(zip(indices, centered, strict=True))
-    variance = sum((h[i]*z[i]**2 for i in indices), Fraction(0))/2
-    pressure = tuple(e*g+fi for g, fi in zip(source.epi_gradient, f, strict=True))
-    defect = tuple(p-q for p, q in zip(source.stored_pressure, pressure, strict=True))
-    cut = tuple((i, j, weight) for i, j, weight in source.conductance
-                if i in selected_indices and j not in selected_indices)
-    current = sum((weight*(source.epi[i]-source.epi[j]) for i, j, weight in cut), Fraction(0))
-    internal = e*sum((weight*(source.epi[i]-source.epi[j])**2
-                      for i, j, weight in source.conductance
-                      if i < j and i in selected_indices and j in selected_indices), Fraction(0))
-    mass_boundary = -e*current
-    mass_forcing = sum((d[i]*f[i] for i in indices), Fraction(0))
-    mass_defect = sum((d[i]*defect[i] for i in indices), Fraction(0))
-    variance_boundary = -e*sum((weight*z[i]*(source.epi[i]-source.epi[j])
-                               for i, j, weight in cut), Fraction(0))
-    variance_forcing = sum((d[i]*z[i]*f[i] for i in indices), Fraction(0))
-    variance_defect = sum((d[i]*z[i]*defect[i] for i in indices), Fraction(0))
-    model_rate = tuple(nu*p for nu, p in zip(source.capacity, pressure, strict=True))
-    model_mass = sum((h[i]*model_rate[i] for i in indices), Fraction(0))
-    stored_mass = sum((h[i]*source.rate[i] for i in indices), Fraction(0))
-    model_variance = sum((h[i]*z[i]*model_rate[i] for i in indices), Fraction(0))
-    stored_variance = sum((h[i]*z[i]*source.rate[i] for i in indices), Fraction(0))
-    model_mass_residual = model_mass-mass_boundary-mass_forcing
-    mass_residual = stored_mass-mass_boundary-mass_forcing-mass_defect
-    model_variance_residual = model_variance+internal-variance_boundary-variance_forcing
-    variance_residual = stored_variance+internal-variance_boundary-variance_forcing-variance_defect
-    if any((model_mass_residual, mass_residual, model_variance_residual, variance_residual)):
+    variance = sum((h[i] * z[i] ** 2 for i in indices), Fraction(0)) / 2
+    pressure = tuple(e * g + fi for g, fi in zip(source.epi_gradient, f, strict=True))
+    defect = tuple(p - q for p, q in zip(source.stored_pressure, pressure, strict=True))
+    cut = tuple(
+        (i, j, weight)
+        for i, j, weight in source.conductance
+        if i in selected_indices and j not in selected_indices
+    )
+    current = sum(
+        (weight * (source.epi[i] - source.epi[j]) for i, j, weight in cut), Fraction(0)
+    )
+    internal = e * sum(
+        (
+            weight * (source.epi[i] - source.epi[j]) ** 2
+            for i, j, weight in source.conductance
+            if i < j and i in selected_indices and j in selected_indices
+        ),
+        Fraction(0),
+    )
+    mass_boundary = -e * current
+    mass_forcing = sum((d[i] * f[i] for i in indices), Fraction(0))
+    mass_defect = sum((d[i] * defect[i] for i in indices), Fraction(0))
+    variance_boundary = -e * sum(
+        (weight * z[i] * (source.epi[i] - source.epi[j]) for i, j, weight in cut),
+        Fraction(0),
+    )
+    variance_forcing = sum((d[i] * z[i] * f[i] for i in indices), Fraction(0))
+    variance_defect = sum((d[i] * z[i] * defect[i] for i in indices), Fraction(0))
+    model_rate = tuple(nu * p for nu, p in zip(source.capacity, pressure, strict=True))
+    model_mass = sum((h[i] * model_rate[i] for i in indices), Fraction(0))
+    stored_mass = sum((h[i] * source.rate[i] for i in indices), Fraction(0))
+    model_variance = sum((h[i] * z[i] * model_rate[i] for i in indices), Fraction(0))
+    stored_variance = sum((h[i] * z[i] * source.rate[i] for i in indices), Fraction(0))
+    model_mass_residual = model_mass - mass_boundary - mass_forcing
+    mass_residual = stored_mass - mass_boundary - mass_forcing - mass_defect
+    model_variance_residual = (
+        model_variance + internal - variance_boundary - variance_forcing
+    )
+    variance_residual = (
+        stored_variance
+        + internal
+        - variance_boundary
+        - variance_forcing
+        - variance_defect
+    )
+    if any(
+        (model_mass_residual, mass_residual, model_variance_residual, variance_residual)
+    ):
         raise RuntimeError("exact regional total or variance identity failed")
     return RegionalSupportBalance(
-        source, selected, environment, indices, e, f, d, h, regional_weight,
-        total, mean, variance, centered, cut, current, pressure, defect,
-        mass_boundary, mass_forcing, mass_defect, model_mass, stored_mass,
-        model_mass_residual, mass_residual, internal, variance_boundary,
-        variance_forcing, variance_defect, model_variance, stored_variance,
-        model_variance_residual, variance_residual,
+        source,
+        selected,
+        environment,
+        indices,
+        e,
+        f,
+        d,
+        h,
+        regional_weight,
+        total,
+        mean,
+        variance,
+        centered,
+        cut,
+        current,
+        pressure,
+        defect,
+        mass_boundary,
+        mass_forcing,
+        mass_defect,
+        model_mass,
+        stored_mass,
+        model_mass_residual,
+        mass_residual,
+        internal,
+        variance_boundary,
+        variance_forcing,
+        variance_defect,
+        model_variance,
+        stored_variance,
+        model_variance_residual,
+        variance_residual,
         "Fixed full-graph coefficients and region; instantaneous exact represented-state "
         "balance only. No causal execution, finite-time persistence or autonomous region is certified.",
     )
@@ -451,46 +565,100 @@ def observe_regional_support_euler(before, after, region, *, dt, epi_weight, for
     this identity does not establish a solver, causal history or persistence.
     Nonnegative dt, including zero, is allowed without a stability claim.
     """
-    balance = observe_regional_support_balance(before, region, epi_weight=epi_weight, forcing=forcing)
+    balance = observe_regional_support_balance(
+        before, region, epi_weight=epi_weight, forcing=forcing
+    )
     before, after = balance.source, _rebuild(after)
-    if any(getattr(before, field) != getattr(after, field)
-           for field in ("nodes", "conductance", "support_neighbors", "capacity")):
-        raise ValueError("regional Euler budget requires fixed full node order, conductance, support and capacity")
+    if any(
+        getattr(before, field) != getattr(after, field)
+        for field in ("nodes", "conductance", "support_neighbors", "capacity")
+    ):
+        raise ValueError(
+            "regional Euler budget requires fixed full node order, conductance, support and capacity"
+        )
     h = exact_or_represented_real(dt, "dt")
     if h < 0:
         raise ValueError("dt must be nonnegative")
     indices, weights = balance.region_indices, balance.metric_weights
 
     def total(values):
-        return sum((weights[i]*values[i] for i in indices), Fraction(0))
+        return sum((weights[i] * values[i] for i in indices), Fraction(0))
 
     def mean(values):
-        return total(values)/balance.regional_weight
+        return total(values) / balance.regional_weight
 
-    expected = tuple(x+h*r for x, r in zip(before.epi, before.rate, strict=True))
-    defect = tuple(x-y for x, y in zip(after.epi, expected, strict=True))
-    rate_mean, expected_mean, defect_mean = mean(before.rate), mean(expected), mean(defect)
+    expected = tuple(x + h * r for x, r in zip(before.epi, before.rate, strict=True))
+    defect = tuple(x - y for x, y in zip(after.epi, expected, strict=True))
+    rate_mean, expected_mean, defect_mean = (
+        mean(before.rate),
+        mean(expected),
+        mean(defect),
+    )
     after_total, after_mean = total(after.epi), mean(after.epi)
-    after_variance = sum((weights[i]*(after.epi[i]-after_mean)**2 for i in indices), Fraction(0))/2
-    mass_drift = h*balance.stored_mass_rate
+    after_variance = (
+        sum(
+            (weights[i] * (after.epi[i] - after_mean) ** 2 for i in indices),
+            Fraction(0),
+        )
+        / 2
+    )
+    mass_drift = h * balance.stored_mass_rate
     mass_defect = total(defect)
-    mass_change = after_total-balance.weighted_total
-    mass_residual = mass_change-mass_drift-mass_defect
-    variance_drift = h*balance.stored_variance_rate
-    variance_quadratic = h**2*sum((weights[i]*(before.rate[i]-rate_mean)**2
-                                  for i in indices), Fraction(0))/2
-    defect_linear = sum((weights[i]*(expected[i]-expected_mean)*(defect[i]-defect_mean)
-                         for i in indices), Fraction(0))
-    defect_quadratic = sum((weights[i]*(defect[i]-defect_mean)**2 for i in indices), Fraction(0))/2
-    variance_change = after_variance-balance.variance
-    variance_residual = variance_change-variance_drift-variance_quadratic-defect_linear-defect_quadratic
+    mass_change = after_total - balance.weighted_total
+    mass_residual = mass_change - mass_drift - mass_defect
+    variance_drift = h * balance.stored_variance_rate
+    variance_quadratic = (
+        h**2
+        * sum(
+            (weights[i] * (before.rate[i] - rate_mean) ** 2 for i in indices),
+            Fraction(0),
+        )
+        / 2
+    )
+    defect_linear = sum(
+        (
+            weights[i] * (expected[i] - expected_mean) * (defect[i] - defect_mean)
+            for i in indices
+        ),
+        Fraction(0),
+    )
+    defect_quadratic = (
+        sum((weights[i] * (defect[i] - defect_mean) ** 2 for i in indices), Fraction(0))
+        / 2
+    )
+    variance_change = after_variance - balance.variance
+    variance_residual = (
+        variance_change
+        - variance_drift
+        - variance_quadratic
+        - defect_linear
+        - defect_quadratic
+    )
     if mass_residual or variance_residual:
         raise RuntimeError("exact regional Euler total or variance identity failed")
     return RegionalSupportEuler(
-        before, after, balance, h, expected, defect, rate_mean, expected_mean,
-        defect_mean, after_total, after_mean, after_variance, mass_drift,
-        mass_defect, mass_change, mass_residual, variance_drift, variance_quadratic,
-        defect_linear, defect_quadratic, variance_change, variance_residual,
+        before,
+        after,
+        balance,
+        h,
+        expected,
+        defect,
+        rate_mean,
+        expected_mean,
+        defect_mean,
+        after_total,
+        after_mean,
+        after_variance,
+        mass_drift,
+        mass_defect,
+        mass_change,
+        mass_residual,
+        variance_drift,
+        variance_quadratic,
+        defect_linear,
+        defect_quadratic,
+        variance_change,
+        variance_residual,
         "Fixed full support, capacity and region; exact endpoint accounting around a held stored-pressure "
         "Euler reference only. No causal execution, numerical accuracy, stability or regional persistence is certified.",
     )
@@ -521,10 +689,13 @@ def observe_support_transport_reset(before, after) -> SupportTransportReset:
     for i, j, weight in after.conductance:
         weights[i, j] = weights.get((i, j), Fraction(0)) + weight
     edge_change = _energy(
-        tuple((i, j, weight) for (i, j), weight in weights.items()), before.epi,
+        tuple((i, j, weight) for (i, j), weight in weights.items()),
+        before.epi,
     )
     change = after.dirichlet_energy - before.dirichlet_energy
-    return SupportTransportReset(before, after, change, edge_change, change - edge_change)
+    return SupportTransportReset(
+        before, after, change, edge_change, change - edge_change
+    )
 
 
 @dataclass(frozen=True)
@@ -552,9 +723,14 @@ def observe_support_transport_euler(before, after, dt) -> SupportTransportEuler:
     the algebra alone never certifies the caller's solver or refresh history.
     """
     before, after = _rebuild(before), _rebuild(after)
-    if (before.nodes != after.nodes or before.conductance != after.conductance
-            or before.capacity != after.capacity):
-        raise ValueError("Euler budget requires fixed node order, conductance and capacity")
+    if (
+        before.nodes != after.nodes
+        or before.conductance != after.conductance
+        or before.capacity != after.capacity
+    ):
+        raise ValueError(
+            "Euler budget requires fixed node order, conductance and capacity"
+        )
     h = exact_or_represented_real(dt, "dt")
     if h < 0:
         raise ValueError("dt must be nonnegative")
@@ -562,10 +738,19 @@ def observe_support_transport_euler(before, after, dt) -> SupportTransportEuler:
     defect = tuple(x - y for x, y in zip(after.epi, expected))
     drift = h * before.energy_rate
     quadratic = h**2 * _energy(before.conductance, before.rate)
-    defect_term = (dot(_laplacian(before.conductance, expected), defect)
-                   + _energy(before.conductance, defect))
+    defect_term = dot(_laplacian(before.conductance, expected), defect) + _energy(
+        before.conductance, defect
+    )
     change = after.dirichlet_energy - before.dirichlet_energy
     return SupportTransportEuler(
-        before, after, h, expected, defect, drift, quadratic, defect_term, change,
+        before,
+        after,
+        h,
+        expected,
+        defect,
+        drift,
+        quadratic,
+        defect_term,
+        change,
         change - drift - quadratic - defect_term,
     )

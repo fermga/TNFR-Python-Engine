@@ -29,20 +29,30 @@ def _embedding(value):
 
 def _graph(epi, history=()):
     graph = nx.Graph()
-    graph.add_node(0, **{
-        ALIAS_EPI[0]: epi,
-        ALIAS_VF[0]: 1.0,
-        ALIAS_DNFR[0]: 0.2,
-        ALIAS_THETA[0]: 0.0,
-        "glyph_history": list(history),
-    })
+    graph.add_node(
+        0,
+        **{
+            ALIAS_EPI[0]: epi,
+            ALIAS_VF[0]: 1.0,
+            ALIAS_DNFR[0]: 0.2,
+            ALIAS_THETA[0]: 0.0,
+            "glyph_history": list(history),
+        },
+    )
     return graph
 
 
-@pytest.mark.parametrize("epi", (
-    -0.5, 0.5, -5e-324, 5e-324,
-    _embedding(-0.5), serialize_bepi(_embedding(-0.5)),
-))
+@pytest.mark.parametrize(
+    "epi",
+    (
+        -0.5,
+        0.5,
+        -5e-324,
+        5e-324,
+        _embedding(-0.5),
+        serialize_bepi(_embedding(-0.5)),
+    ),
+)
 def test_nonzero_signed_form_has_the_same_initialization_status_in_all_paths(epi):
     sequence = [Coherence(), Silence()]
     assert GrammarValidator().validate(sequence, epi_initial=epi)[0]
@@ -51,7 +61,9 @@ def test_nonzero_signed_form_has_the_same_initialization_status_in_all_paths(epi
     assert validate_candidate(_graph(epi), 0, "IL").allowed
 
 
-@pytest.mark.parametrize("epi", (0.0, -0.0, _embedding(0.0), serialize_bepi(_embedding(0.0))))
+@pytest.mark.parametrize(
+    "epi", (0.0, -0.0, _embedding(0.0), serialize_bepi(_embedding(0.0)))
+)
 def test_zero_still_requires_a_generator_without_prior_history(epi):
     sequence = [Coherence(), Silence()]
     assert not GrammarValidator().validate(sequence, epi_initial=epi)[0]
@@ -67,10 +79,19 @@ def test_existing_history_remains_a_separate_initialization_witness():
     assert validate_candidate(_graph(0.0, history=("AL",)), 0, "IL").allowed
 
 
-@pytest.mark.parametrize("epi", (
-    float("nan"), float("inf"), float("-inf"), True, None, "0.5", 1.0j,
-    BEPIElement((0.0, 1.0), (0.0, 1.0), (0.0, 1.0)),
-))
+@pytest.mark.parametrize(
+    "epi",
+    (
+        float("nan"),
+        float("inf"),
+        float("-inf"),
+        True,
+        None,
+        "0.5",
+        1.0j,
+        BEPIElement((0.0, 1.0), (0.0, 1.0), (0.0, 1.0)),
+    ),
+)
 def test_invalid_provided_epi_cannot_become_initialization_permission(epi):
     sequence = [Emission(), Silence()]
     with pytest.raises(TNFRValueError, match="finite uniform-real EPI"):

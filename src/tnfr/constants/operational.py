@@ -97,8 +97,12 @@ OPT_ORCH_BEST_THRESHOLD_CANONICAL = 0.7  # operational tuning (not TNFR physics)
 # ============================================================================
 # MULTI-MODAL CACHE (dynamics/multi_modal_cache.py)
 # ============================================================================
-MULTIMODAL_CACHE_TARGET_FRACTION_CANONICAL = 0.74  # operational tuning (not TNFR physics)
-MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL = 1.16  # operational tuning (not TNFR physics)
+MULTIMODAL_CACHE_TARGET_FRACTION_CANONICAL = (
+    0.74  # operational tuning (not TNFR physics)
+)
+MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL = (
+    1.16  # operational tuning (not TNFR physics)
+)
 MULTIMODAL_CACHE_TETRAD_IMPORTANCE_CANONICAL = (
     PI  # π (incidental tetrad-computation importance weight)
 )
@@ -108,7 +112,9 @@ MULTIMODAL_CACHE_TARGET_CANONICAL = 0.74  # operational tuning (not TNFR physics
 # FFT ENGINES (dynamics/advanced_fft_arithmetic.py, fft_engine.py,
 # fft_cache_coordinator.py, cache_aware_fft_engine.py)
 # ============================================================================
-FFT_ARITHMETIC_IMPORTANCE_CANONICAL = PI  # π (incidental mathematical importance weight)
+FFT_ARITHMETIC_IMPORTANCE_CANONICAL = (
+    PI  # π (incidental mathematical importance weight)
+)
 FFT_LOW_CUTOFF_CANONICAL = 0.34  # operational tuning (not TNFR physics)
 FFT_HIGH_CUTOFF_CANONICAL = 0.6  # operational tuning (not TNFR physics)
 FFT_BANDWIDTH_CANONICAL = 0.1  # operational tuning (not TNFR physics)
@@ -126,14 +132,18 @@ PATTERNS_COMPRESSION_RATIO_CANONICAL = 1.16  # operational tuning (not TNFR phys
 PATTERNS_RSQUARED_THRESHOLD_CANONICAL = 0.44  # operational tuning (not TNFR physics)
 PATTERNS_SLOPE_THRESHOLD_CANONICAL = 0.34  # operational tuning (not TNFR physics)
 PATTERNS_HORIZON_LONG_CANONICAL = 0.93  # operational tuning (not TNFR physics)
-PATTERNS_COMPRESSION_OSCILLATORY_CANONICAL = 0.6  # operational tuning (not TNFR physics)
+PATTERNS_COMPRESSION_OSCILLATORY_CANONICAL = (
+    0.6  # operational tuning (not TNFR physics)
+)
 PATTERNS_ENTROPY_THRESHOLD_CANONICAL = 1.04  # operational tuning (not TNFR physics)
 PATTERNS_DIVERGENCE_THRESHOLD_CANONICAL = 0.34  # operational tuning (not TNFR physics)
 PATTERNS_HORIZON_MEDIUM_CANONICAL = PI  # π (incidental medium prediction horizon)
 PATTERNS_RSQUARED_HIGH_CANONICAL = 0.44  # operational tuning (not TNFR physics)
 PATTERNS_SLOPE_MINIMAL_CANONICAL = 0.1  # operational tuning (not TNFR physics)
 PATTERNS_HORIZON_SHORT_CANONICAL = 1.16  # operational tuning (not TNFR physics)
-PATTERNS_COMPRESSION_SIGNIFICANT_CANONICAL = 0.6  # operational tuning (not TNFR physics)
+PATTERNS_COMPRESSION_SIGNIFICANT_CANONICAL = (
+    0.6  # operational tuning (not TNFR physics)
+)
 PATTERNS_HORIZON_PREDICTIVE_CANONICAL = 1.16  # operational tuning (not TNFR physics)
 PATTERNS_CONFIDENCE_BROKEN_CANONICAL = 0.74  # operational tuning (not TNFR physics)
 
@@ -149,7 +159,9 @@ SELF_OPT_COUPLING_LOW_CANONICAL = 0.49  # operational tuning (not TNFR physics)
 SELF_OPT_ENERGY_HIGH_CANONICAL = 1.16  # operational tuning (not TNFR physics)
 SELF_OPT_DENSITY_SPARSE_CANONICAL = 0.16  # operational tuning (not TNFR physics)
 SELF_OPT_DENSITY_DENSE_CANONICAL = 0.74  # operational tuning (not TNFR physics)
-SELF_OPT_IMPROVEMENT_SIGNIFICANT_CANONICAL = 0.7  # operational tuning (not TNFR physics)
+SELF_OPT_IMPROVEMENT_SIGNIFICANT_CANONICAL = (
+    0.7  # operational tuning (not TNFR physics)
+)
 SELF_OPT_CACHE_LOW_FRACTION_CANONICAL = 0.34  # operational tuning (not TNFR physics)
 SELF_OPT_SPEEDUP_HIGH_CANONICAL = 1.16  # operational tuning (not TNFR physics)
 SELF_OPT_CACHE_EXPANSION_CANONICAL = 0.7  # operational tuning (not TNFR physics)
@@ -162,7 +174,9 @@ SELF_OPT_CACHE_CONTRACTION_CANONICAL = 0.74  # operational tuning (not TNFR phys
 # cache_aware_fft_engine.py, propagation.py, physics/signatures.py)
 # ============================================================================
 EMERGENT_CENTRALITY_THRESHOLD_CANONICAL = 0.74  # operational tuning (not TNFR physics)
-EMERGENT_COORDINATION_THRESHOLD_CANONICAL = 0.56  # operational tuning (not TNFR physics)
+EMERGENT_COORDINATION_THRESHOLD_CANONICAL = (
+    0.56  # operational tuning (not TNFR physics)
+)
 EMERGENT_STABILITY_THRESHOLD_CANONICAL = 0.59  # operational tuning (not TNFR physics)
 EMERGENT_COUPLING_STRENGTH_CANONICAL = 0.44  # operational tuning (not TNFR physics)
 EMERGENT_FREQ_BALANCE_CANONICAL = 0.46  # operational tuning (not TNFR physics)
@@ -203,13 +217,17 @@ UNIFIED_CACHE_MIN_COHERENCE_CANONICAL = 0.62  # operational tuning (not TNFR phy
 # evidence-neutral discovery thresholds)
 # ============================================================================
 INTEGRATION_CONFIDENCE_HIGH_CANONICAL = 0.75  # operational tuning (not TNFR physics)
-INTEGRATION_CENTRALITY_THRESHOLD_CANONICAL = 0.74  # operational tuning (not TNFR physics)
+INTEGRATION_CENTRALITY_THRESHOLD_CANONICAL = (
+    0.74  # operational tuning (not TNFR physics)
+)
 INTEGRATION_CONFIDENCE_MEDIUM_CANONICAL = 0.43  # operational tuning (not TNFR physics)
 INTEGRATION_CONFIDENCE_LOW_CANONICAL = 0.37  # operational tuning (not TNFR physics)
 INTEGRATION_CONFIDENCE_MINIMAL_CANONICAL = 0.34  # operational tuning (not TNFR physics)
 INTEGRATION_SYNC_THRESHOLD_CANONICAL = 0.74  # operational tuning (not TNFR physics)
 INTEGRATION_CONFIDENCE_SYNC_CANONICAL = 0.28  # operational tuning (not TNFR physics)
-INTEGRATION_CONFIDENCE_THRESHOLD_CANONICAL = 0.74  # operational tuning (not TNFR physics)
+INTEGRATION_CONFIDENCE_THRESHOLD_CANONICAL = (
+    0.74  # operational tuning (not TNFR physics)
+)
 
 # ============================================================================
 # NODAL OPTIMIZER (dynamics/nodal_optimizer.py + shared coupling default)
@@ -227,10 +245,18 @@ STRUCT_CACHE_EVICTION_CANONICAL = 0.74  # operational tuning (not TNFR physics)
 # OPERATOR PATTERN SCORING (operators/patterns.py — structural-complexity and
 # domain-suitability weights; references EMERGENT_FREQ_BALANCE above)
 # ============================================================================
-OPERATORS_PATTERN_UNIQUE_WEIGHT_CANONICAL = 0.49  # operational tuning (not TNFR physics)
-OPERATORS_PATTERN_TRANSITION_WEIGHT_CANONICAL = EMERGENT_FREQ_BALANCE_CANONICAL  # = 0.46 (operational transition weight)
-OPERATORS_PATTERN_DESTABILIZER_WEIGHT_CANONICAL = 0.16  # operational tuning (not TNFR physics)
-OPERATORS_PATTERN_STABILIZER_WEIGHT_CANONICAL = 0.07  # operational tuning (not TNFR physics)
+OPERATORS_PATTERN_UNIQUE_WEIGHT_CANONICAL = (
+    0.49  # operational tuning (not TNFR physics)
+)
+OPERATORS_PATTERN_TRANSITION_WEIGHT_CANONICAL = (
+    EMERGENT_FREQ_BALANCE_CANONICAL  # = 0.46 (operational transition weight)
+)
+OPERATORS_PATTERN_DESTABILIZER_WEIGHT_CANONICAL = (
+    0.16  # operational tuning (not TNFR physics)
+)
+OPERATORS_PATTERN_STABILIZER_WEIGHT_CANONICAL = (
+    0.07  # operational tuning (not TNFR physics)
+)
 OPERATORS_THERAPEUTIC_HIGH_CANONICAL = 0.49  # operational tuning (not TNFR physics)
 OPERATORS_EDUCATIONAL_HIGH_CANONICAL = 0.3  # operational tuning (not TNFR physics)
 OPERATORS_CREATIVE_BASE_CANONICAL = 0.6  # operational tuning (not TNFR physics)

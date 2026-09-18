@@ -7,12 +7,13 @@ from ..errors import TNFRValueError
 from ..mathematics.phasor_resultant import RepresentedPhasorResultant
 from ..types import NodeId, Phase, TNFRGraph
 
-__all__ = ["coordinate_global_local_phase", "GlobalPhaseCoordinationEvidence", "UndefinedGlobalPhaseError"]
+__all__ = [
+    "coordinate_global_local_phase",
+    "GlobalPhaseCoordinationEvidence",
+    "UndefinedGlobalPhaseError",
+]
 
-
-class UndefinedGlobalPhaseError(TNFRValueError):
-    ...
-
+class UndefinedGlobalPhaseError(TNFRValueError): ...
 
 @dataclass(frozen=True)
 class GlobalPhaseCoordinationEvidence:
@@ -35,7 +36,6 @@ class GlobalPhaseCoordinationEvidence:
     execution_path: str
     scope: str
 
-
 ChunkArgs = tuple[
     Sequence[NodeId],
     Mapping[NodeId, Phase],
@@ -46,7 +46,6 @@ ChunkArgs = tuple[
     float,
     float,
 ]
-
 
 def coordinate_global_local_phase(
     G: TNFRGraph,

@@ -99,7 +99,7 @@ def derive_bifurcation_window_from_physics(
         return 1  # compatibility floor, not a modal-stability certificate
     band = 1.0 / (math.pi + 1.0)  # the coherence-band fraction (π only)
     n = 1
-    while q ** n >= band and n < 64:
+    while q**n >= band and n < 64:
         n += 1
     return n
 

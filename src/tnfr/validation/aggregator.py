@@ -341,8 +341,7 @@ def run_structural_validation(
             risk_level = "critical"
         elif (
             u6_status == "unavailable"
-            or
-            thresholds_exceeded.get("phase_gradient_max")
+            or thresholds_exceeded.get("phase_gradient_max")
             or thresholds_exceeded.get("k_phi_flag")
             or thresholds_exceeded.get("xi_c_watch")
         ):

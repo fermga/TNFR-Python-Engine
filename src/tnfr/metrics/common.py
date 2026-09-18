@@ -45,9 +45,7 @@ _EPS_DEPI_STABLE: float = float(DEFAULTS["EPS_DEPI_STABLE"])
 
 def _finite_scalar(value: float, *, name: str) -> float:
     """Normalize a finite real scalar while rejecting truth values."""
-    if isinstance(value, bool) or (
-        np is not None and isinstance(value, np.bool_)
-    ):
+    if isinstance(value, bool) or (np is not None and isinstance(value, np.bool_)):
         raise TypeError(f"{name} must be a finite real scalar, not bool")
     if isinstance(value, (str, bytes, complex)) or (
         np is not None
@@ -99,9 +97,7 @@ def finite_mean_absolute(values: Iterable[float], *, name: str) -> float:
     scale = max(magnitudes)
     if scale == 0.0:
         return 0.0
-    normalized_mean = math.fsum(value / scale for value in magnitudes) / len(
-        magnitudes
-    )
+    normalized_mean = math.fsum(value / scale for value in magnitudes) / len(magnitudes)
     result = scale * normalized_mean
     if not math.isfinite(result):
         raise ValueError(f"mean absolute {name} exceeds finite range")
@@ -126,9 +122,7 @@ def _dispersion_coherence(values: Iterable[float]) -> float:
         return 1.0
     normalized = tuple(value / scale for value in pressures)
     mean = math.fsum(normalized) / len(normalized)
-    variance = math.fsum((value - mean) ** 2 for value in normalized) / len(
-        normalized
-    )
+    variance = math.fsum((value - mean) ** 2 for value in normalized) / len(normalized)
     return clamp01(1.0 - math.sqrt(variance))
 
 
@@ -175,11 +169,11 @@ def structural_coherence(dnfr: Any, depi: Any = 0.0) -> Any:
                 raise ValueError(f"{name} must contain only finite values")
             arrays.append(normalized)
         try:
-            pressure, rate = np.broadcast_arrays(
-                np.abs(arrays[0]), np.abs(arrays[1])
-            )
+            pressure, rate = np.broadcast_arrays(np.abs(arrays[0]), np.abs(arrays[1]))
         except ValueError as exc:
-            raise ValueError("dnfr and depi arrays must be broadcast-compatible") from exc
+            raise ValueError(
+                "dnfr and depi arrays must be broadcast-compatible"
+            ) from exc
 
         with np.errstate(over="ignore", divide="ignore", invalid="ignore"):
             denominator = 1.0 + pressure + rate
@@ -244,10 +238,7 @@ def is_structural_equilibrium(
     depi_tolerance = _finite_scalar(eps_depi, name="eps_depi")
     if dnfr_tolerance < 0.0 or depi_tolerance < 0.0:
         raise ValueError("equilibrium tolerances must be non-negative")
-    return (
-        abs(dnfr_value) <= dnfr_tolerance
-        and abs(depi_value) <= depi_tolerance
-    )
+    return abs(dnfr_value) <= dnfr_tolerance and abs(depi_value) <= depi_tolerance
 
 
 def compute_coherence(

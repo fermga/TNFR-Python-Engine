@@ -265,8 +265,11 @@ def _build_result(
 
 
 def validate_sequence(
-    names: Any, *, context: Mapping[str, Any] | None = None,
-    compatibility_profile: str | None = None, **kwargs: Any
+    names: Any,
+    *,
+    context: Mapping[str, Any] | None = None,
+    compatibility_profile: str | None = None,
+    **kwargs: Any,
 ) -> SequenceValidationResult:
     """Validate canonical word rules plus the retained pair/THOL policies.
 
@@ -364,10 +367,14 @@ def validate_sequence(
             passed=False,
             message=msg or "invalid end",
             metadata=meta,
-            error=SequenceSyntaxError(len(tokens) - 1, tokens[-1], msg or "invalid end"),
+            error=SequenceSyntaxError(
+                len(tokens) - 1, tokens[-1], msg or "invalid end"
+            ),
         )
     ok, msg = (
-        _check_thol_closure(tokens) if compatibility_profile == "legacy" else (True, None)
+        _check_thol_closure(tokens)
+        if compatibility_profile == "legacy"
+        else (True, None)
     )
     if not ok:
         return _build_result(
@@ -376,7 +383,9 @@ def validate_sequence(
             passed=False,
             message=msg or "thol requires closure",
             metadata=meta,
-            error=SequenceSyntaxError(len(tokens) - 1, tokens[-1], msg or "thol closure"),
+            error=SequenceSyntaxError(
+                len(tokens) - 1, tokens[-1], msg or "thol closure"
+            ),
         )
 
     # U2: Destabilizers require stabilizers (IL or THOL). The destabilizer set
@@ -400,7 +409,8 @@ def validate_sequence(
     # Adjacent compatibility
     ok, idx, msg = (
         _check_adjacent_compatibility(tokens)
-        if compatibility_profile == "legacy" else (True, None, None)
+        if compatibility_profile == "legacy"
+        else (True, None, None)
     )
     if not ok:
         err = SequenceSyntaxError(
@@ -427,7 +437,8 @@ def validate_sequence(
 
         initialized = bool(context and context.get("initial_epi_nonzero", False))
         ok, messages = validate_sequence_optimized(
-            tokens, epi_initial=1.0 if initialized else 0.0,
+            tokens,
+            epi_initial=1.0 if initialized else 0.0,
         )
         if not ok:
             return _build_result(
@@ -449,12 +460,16 @@ def validate_sequence(
 
 
 def parse_sequence(
-    names: Sequence[str], *, context: Mapping[str, Any] | None = None,
+    names: Sequence[str],
+    *,
+    context: Mapping[str, Any] | None = None,
     compatibility_profile: str | None = None,
 ) -> SequenceValidationResult:
     """Use the same word checks as validate_sequence, raising on rejection."""
     result = validate_sequence(
-        names, context=context, compatibility_profile=compatibility_profile,
+        names,
+        context=context,
+        compatibility_profile=compatibility_profile,
     )
     if result.passed:
         return result

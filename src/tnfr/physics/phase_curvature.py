@@ -11,8 +11,8 @@ Existing telemetry consumers can propagate its explicit domain failure.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
 from numbers import Integral
 from typing import Any
 
@@ -25,7 +25,8 @@ from ..mathematics.unified_numerical import np
 from ._helpers import wrap_angle
 
 __all__ = (
-    "PhaseCurvatureNodeObservation", "PhaseCurvatureObservation",
+    "PhaseCurvatureNodeObservation",
+    "PhaseCurvatureObservation",
     "UndefinedPhaseCurvatureError",
 )
 
@@ -100,9 +101,16 @@ def _observe_neighborhoods(nodes, neighbors, phases, *, dtype, precision_mode):
     neighbor_order = tuple(tuple(nodes[j] for j in indices) for indices in neighbors)
     for i, indices in enumerate(neighbors):
         if not indices:
-            rows.append(PhaseCurvatureNodeObservation(
-                nodes[i], (), 0.0, 0.0, "isolated_zero_convention", None,
-            ))
+            rows.append(
+                PhaseCurvatureNodeObservation(
+                    nodes[i],
+                    (),
+                    0.0,
+                    0.0,
+                    "isolated_zero_convention",
+                    None,
+                )
+            )
             continue
         # Preserve wrapped angular separation, independently of whether a
         # circular mean exists. A finite subtraction outside binary64's
@@ -123,15 +131,25 @@ def _observe_neighborhoods(nodes, neighbors, phases, *, dtype, precision_mode):
                 raise ValueError("phase curvature displacement must be finite")
             curvature = float(wrap_angle(displacement))
             status = "defined"
-        rows.append(PhaseCurvatureNodeObservation(
-            nodes[i], neighbor_order[i], gradient, curvature, status, resultant,
-        ))
+        rows.append(
+            PhaseCurvatureNodeObservation(
+                nodes[i],
+                neighbor_order[i],
+                gradient,
+                curvature,
+                status,
+                resultant,
+            )
+        )
     return PhaseCurvatureObservation(
         version="phase_curvature_exact_components_v1",
-        nodes=tuple(nodes), neighbor_order=neighbor_order,
-        primitive_phases=phases, components=components,
+        nodes=tuple(nodes),
+        neighbor_order=neighbor_order,
+        primitive_phases=phases,
+        components=components,
         requested_precision_mode=precision_mode,
-        gradient_accumulator_dtype=np.dtype(dtype).name, rows=tuple(rows),
+        gradient_accumulator_dtype=np.dtype(dtype).name,
+        rows=tuple(rows),
     )
 
 
@@ -141,7 +159,9 @@ def _require_defined_curvature(observation):
         raise UndefinedPhaseCurvatureError(undefined)
 
 
-def _observe_phase_arrays(theta_arr, edge_src, edge_dst, degrees, *, dtype, precision_mode):
+def _observe_phase_arrays(
+    theta_arr, edge_src, edge_dst, degrees, *, dtype, precision_mode
+):
     """Validate the public array adapter's unique-neighbor incidence contract."""
     if np.ndim(theta_arr) != 1 or np.ndim(degrees) != 1:
         raise ValueError("phases and neighbor counts must be one-dimensional")
@@ -153,8 +173,12 @@ def _observe_phase_arrays(theta_arr, edge_src, edge_dst, degrees, *, dtype, prec
     neighbors = [[] for _ in range(n)]
     seen = set()
     for source, target in zip(edge_src, edge_dst):
-        if any(isinstance(i, (bool, np.bool_)) or not isinstance(i, Integral)
-               or not 0 <= i < n for i in (source, target)):
+        if any(
+            isinstance(i, (bool, np.bool_))
+            or not isinstance(i, Integral)
+            or not 0 <= i < n
+            for i in (source, target)
+        ):
             raise ValueError("phase incidence indices must be in-range integers")
         pair = (int(target), int(source))
         if pair in seen:
@@ -166,6 +190,9 @@ def _observe_phase_arrays(theta_arr, edge_src, edge_dst, degrees, *, dtype, prec
         if count != len(neighbors[index]):
             raise ValueError("neighbor counts must match phase incidence")
     return _observe_neighborhoods(
-        tuple(range(n)), tuple(tuple(row) for row in neighbors), theta_arr,
-        dtype=dtype, precision_mode=precision_mode,
+        tuple(range(n)),
+        tuple(tuple(row) for row in neighbors),
+        theta_arr,
+        dtype=dtype,
+        precision_mode=precision_mode,
     )

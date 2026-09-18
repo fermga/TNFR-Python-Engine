@@ -209,21 +209,27 @@ def prepare_integration_params(
     if dt is None:
         dt = G.graph.get("DT", DEFAULTS.get("DT", 0.1))
     if not isinstance(dt, Real):
-        raise NetworkConfigError(parameter="dt", value=dt, reason="Time step must be numeric")
+        raise NetworkConfigError(
+            parameter="dt", value=dt, reason="Time step must be numeric"
+        )
     dt = float(dt)
     if not math.isfinite(dt) or dt < 0:
-        raise NetworkConfigError(parameter="dt", value=dt,
-                                 reason="Time step must be finite and non-negative")
+        raise NetworkConfigError(
+            parameter="dt", value=dt, reason="Time step must be finite and non-negative"
+        )
 
     t = float(G.graph.get("_t", 0.0) if t is None else t)
     if not math.isfinite(t):
-        raise NetworkConfigError(parameter="t", value=t, reason="Initial time must be finite")
+        raise NetworkConfigError(
+            parameter="t", value=t, reason="Initial time must be finite"
+        )
 
-    method_value = (
-        method
-        or G.graph.get("INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler"))
+    method_value = method or G.graph.get(
+        "INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler")
     )
-    method_value = method_value.lower() if isinstance(method_value, str) else method_value
+    method_value = (
+        method_value.lower() if isinstance(method_value, str) else method_value
+    )
     if method_value not in ("euler", "rk4"):
         raise NetworkConfigError(
             parameter="method",
@@ -233,14 +239,20 @@ def prepare_integration_params(
 
     dt_min = float(G.graph.get("DT_MIN", DEFAULTS.get("DT_MIN", 0.0)))
     if not math.isfinite(dt_min) or dt_min < 0:
-        raise NetworkConfigError(parameter="DT_MIN", value=dt_min,
-                                 reason="Minimum time step must be finite and non-negative")
+        raise NetworkConfigError(
+            parameter="DT_MIN",
+            value=dt_min,
+            reason="Minimum time step must be finite and non-negative",
+        )
     steps = 1
     if dt_min > 0 and dt > dt_min:
         ratio = dt / dt_min
         if not math.isfinite(ratio):
-            raise NetworkConfigError(parameter="DT_MIN", value=dt_min,
-                                     reason="Time-step subdivision ratio must be finite")
+            raise NetworkConfigError(
+                parameter="DT_MIN",
+                value=dt_min,
+                reason="Time-step subdivision ratio must be finite",
+            )
         steps = max(1, int(math.floor(ratio)))
     dt_step = dt / steps if steps else 0.0
 
@@ -737,13 +749,17 @@ class DefaultIntegrator(AbstractIntegrator):
                 )
 
                 epi_previous = float(get_attr(nd, ALIAS_EPI, 0.0))
-                epi_clipped = epi_previous if epi == epi_previous else structural_clip(
-                    epi,
-                    lo=epi_min,
-                    hi=epi_max,
-                    mode=clip_mode,
-                    k=clip_k,
-                    record_stats=False,
+                epi_clipped = (
+                    epi_previous
+                    if epi == epi_previous
+                    else structural_clip(
+                        epi,
+                        lo=epi_min,
+                        hi=epi_max,
+                        mode=clip_mode,
+                        k=clip_k,
+                        record_stats=False,
+                    )
                 )
 
                 set_attr(nd, ALIAS_EPI, epi_clipped)
@@ -868,13 +884,18 @@ def _update_extended_nodal_system(
     currently supports Euler only; unsupported methods are rejected explicitly.
     Clipping is a boundary policy, not a proof of numerical stability.
     """
-    from .canonical import compute_extended_nodal_system
     from ..physics.extended import compute_dnfr_flux, compute_phase_current
+    from .canonical import compute_extended_nodal_system
 
-    dt_step, steps, t_local, resolved_method = prepare_integration_params(G, dt, t, method)
+    dt_step, steps, t_local, resolved_method = prepare_integration_params(
+        G, dt, t, method
+    )
     if resolved_method != "euler":
-        raise NetworkConfigError(parameter="method", value=resolved_method,
-                                 reason="Extended nodal dynamics supports only 'euler'")
+        raise NetworkConfigError(
+            parameter="method",
+            value=resolved_method,
+            reason="Extended nodal dynamics supports only 'euler'",
+        )
     if dt_step == 0.0:
         return
 
@@ -896,7 +917,9 @@ def _update_extended_nodal_system(
             vf, dnfr, previous_derivative, epi = _node_state(nd)
             theta = float(get_attr(nd, ALIAS_THETA, 0.0))
             result = compute_extended_nodal_system(
-                nu_f=vf, delta_nfr=dnfr, theta=theta,
+                nu_f=vf,
+                delta_nfr=dnfr,
+                theta=theta,
                 j_phi=phase_current.get(node, 0.0),
                 j_dnfr_divergence=divergences.get(node, 0.0),
                 coupling_strength=_estimate_local_coupling_strength(G, node),
@@ -904,13 +927,16 @@ def _update_extended_nodal_system(
             )
             new_epi = epi + result.classical_derivative * dt_step
             if new_epi != epi:
-                new_epi = structural_clip(new_epi, lo=epi_min, hi=epi_max,
-                                          mode=clip_mode, k=clip_k)
+                new_epi = structural_clip(
+                    new_epi, lo=epi_min, hi=epi_max, mode=clip_mode, k=clip_k
+                )
             new_theta = (theta + result.phase_derivative * dt_step) % (2 * math.pi)
             new_dnfr = dnfr + result.dnfr_derivative * dt_step
             if new_dnfr != dnfr:
-                new_dnfr = max(-INTEGRATORS_DNFR_BOUNDS_CANONICAL,
-                               min(INTEGRATORS_DNFR_BOUNDS_CANONICAL, new_dnfr))
+                new_dnfr = max(
+                    -INTEGRATORS_DNFR_BOUNDS_CANONICAL,
+                    min(INTEGRATORS_DNFR_BOUNDS_CANONICAL, new_dnfr),
+                )
             updates[node] = (new_epi, new_theta, new_dnfr, result, previous_derivative)
 
         for node, (epi, theta, dnfr, result, previous_derivative) in updates.items():
@@ -919,7 +945,11 @@ def _update_extended_nodal_system(
             set_attr(nd, ALIAS_THETA, theta)
             set_attr(nd, ALIAS_DNFR, dnfr)
             set_attr(nd, ALIAS_DEPI, result.classical_derivative)
-            set_attr(nd, ALIAS_D2EPI, (result.classical_derivative - previous_derivative) / dt_step)
+            set_attr(
+                nd,
+                ALIAS_D2EPI,
+                (result.classical_derivative - previous_derivative) / dt_step,
+            )
             nd["dtheta_dt"] = result.phase_derivative
             nd["ddnfr_dt"] = result.dnfr_derivative
         t_local += dt_step
@@ -969,7 +999,9 @@ def compute_flux_divergence_vectorized(
     in this diagnostic. Nodes without outgoing neighbors have zero divergence.
     """
     if np is None:
-        return {node: _compute_flux_divergence_centralized(G, flux_dict, node) for node in G}
+        return {
+            node: _compute_flux_divergence_centralized(G, flux_dict, node) for node in G
+        }
     nodes = list(G)
     if not nodes:
         return {}

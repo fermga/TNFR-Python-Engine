@@ -67,9 +67,7 @@ def test_tetrad_alone_does_not_identify_uniform_capacity_rate():
     slow_velocity = _epi_velocity(slow)
     fast_velocity = _epi_velocity(fast)
     assert np.linalg.norm(slow_velocity) > 0.0
-    assert np.allclose(
-        fast_velocity, 2.0 * slow_velocity, atol=1e-12, rtol=1e-10
-    )
+    assert np.allclose(fast_velocity, 2.0 * slow_velocity, atol=1e-12, rtol=1e-10)
 
 
 def test_capacity_inclusive_observer_resolves_the_witness():
@@ -113,9 +111,9 @@ def test_capacity_inclusive_observer_resolves_the_witness():
             include_history=True,
         )
         assert capacity_slow != capacity_fast
-        assert minimal_distinguishing_channels(
-            capacity_slow, capacity_fast
-        ) == ("capacity",)
+        assert minimal_distinguishing_channels(capacity_slow, capacity_fast) == (
+            "capacity",
+        )
 
 
 def test_tetrad_field_ablations_retain_capacity_counterexample():
@@ -141,9 +139,7 @@ def _pressure_phase_observer(representation: str, omitted: str | None = None):
         for node in range(4):
             graph.nodes[node][ALIAS_DNFR[0]] = state[node]
             graph.nodes[node][ALIAS_THETA[0]] = state[4 + node]
-        channels = tetrad_observation_channels(
-            graph, representation=representation
-        )
+        channels = tetrad_observation_channels(graph, representation=representation)
         return np.concatenate(
             [value for name, value in channels.items() if name != omitted]
         )
@@ -199,17 +195,13 @@ def test_finite_difference_rejects_invalid_rank_tolerance(bad_tolerance):
         )
 
 
-@pytest.mark.parametrize(
-    "boolean", [True, False, np.bool_(True), np.bool_(False)]
-)
+@pytest.mark.parametrize("boolean", [True, False, np.bool_(True), np.bool_(False)])
 def test_public_observability_numeric_controls_reject_booleans(boolean):
     graph = _state_with_uniform_capacity(1.0)
     generator = np.eye(2)
     observer = np.eye(2)
     calls = (
-        lambda: epi_diffusion_reconstruction_certificate(
-            graph, tolerance=boolean
-        ),
+        lambda: epi_diffusion_reconstruction_certificate(graph, tolerance=boolean),
         lambda: finite_difference_observer_certificate(
             np.ones(2), lambda state: state, step=boolean
         ),
@@ -258,10 +250,15 @@ def test_observation_signature_rejects_boolean_physical_channels(channel, boolea
 def test_observation_signature_validates_node_order_before_channel_reads(node_order):
     graph = _state_with_uniform_capacity(1.0)
     graph.nodes[1][ALIAS_DNFR[0]] = True
-    with pytest.raises(ValueError, match="node_order must contain every graph node exactly once"):
+    with pytest.raises(
+        ValueError, match="node_order must contain every graph node exactly once"
+    ):
         observation_signature(
-            graph, tetrad_representation="global", include_capacity=True,
-            include_pressure=True, node_order=node_order,
+            graph,
+            tetrad_representation="global",
+            include_capacity=True,
+            include_pressure=True,
+            node_order=node_order,
         )
 
 
@@ -469,9 +466,7 @@ def test_extreme_common_capacity_normalizes_conserved_mean_without_overflow():
 def test_unrepresentable_conserved_metric_is_rejected_explicitly():
     graph = nx.path_graph(2)
     for node in graph:
-        graph.nodes[node].update(
-            EPI=float(node), nu_f=np.nextafter(0.0, 1.0)
-        )
+        graph.nodes[node].update(EPI=float(node), nu_f=np.nextafter(0.0, 1.0))
 
     with pytest.raises(ValueError, match="metric weights.*floating-point range"):
         epi_diffusion_reconstruction_certificate(graph)
@@ -522,8 +517,7 @@ def test_uniform_extreme_weight_scale_does_not_claim_numerical_reconstruction(
         certificate.relative_rank_tolerance * certificate.singular_values[0]
     )
     assert certificate.augmented_rank_tolerance == pytest.approx(
-        certificate.relative_rank_tolerance
-        * certificate.augmented_singular_values[0]
+        certificate.relative_rank_tolerance * certificate.augmented_singular_values[0]
     )
 
 

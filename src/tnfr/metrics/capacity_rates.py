@@ -47,9 +47,9 @@ def _represented_or_none(exact: Fraction) -> float | None:
 
 
 def _secant(left: CapacitySample, right: CapacitySample) -> Fraction:
-    return (
-        Fraction.from_float(right[1]) - Fraction.from_float(left[1])
-    ) / (Fraction.from_float(right[0]) - Fraction.from_float(left[0]))
+    return (Fraction.from_float(right[1]) - Fraction.from_float(left[1])) / (
+        Fraction.from_float(right[0]) - Fraction.from_float(left[0])
+    )
 
 
 @dataclass(frozen=True)
@@ -77,11 +77,13 @@ class CapacityRateObservation:
             "second_difference_status": self.second_difference_status,
             "rate_interval": (
                 [self.samples[-2][0], self.samples[-1][0]]
-                if advancing and len(self.samples) >= 2 else None
+                if advancing and len(self.samples) >= 2
+                else None
             ),
             "second_difference_times": (
                 [sample[0] for sample in self.samples]
-                if advancing and len(self.samples) == 3 else None
+                if advancing and len(self.samples) == 3
+                else None
             ),
         }
 
@@ -105,11 +107,13 @@ def observe_capacity_rates(
     """
     samples = _samples(previous_samples)
     time = (
-        None if sample_time is None
+        None
+        if sample_time is None
         else finite_represented_real(sample_time, "capacity observation time")[0]
     )
     value = (
-        None if capacity is None
+        None
+        if capacity is None
         else finite_represented_real(capacity, "capacity observation value")[0]
     )
     if time is not None and samples and time < samples[-1][0]:
@@ -140,8 +144,13 @@ def observe_capacity_rates(
         second = _represented_or_none(exact_second)
         second_status = "available" if second is not None else "unrepresentable"
     return CapacityRateObservation(
-        time, samples, "advancing_time", rate, second,
-        "available" if rate is not None else "unrepresentable", second_status,
+        time,
+        samples,
+        "advancing_time",
+        rate,
+        second,
+        "available" if rate is not None else "unrepresentable",
+        second_status,
     )
 
 
@@ -151,7 +160,8 @@ def plan_capacity_rate_observations(
     """Validate every node before a caller commits any diagnostic writes."""
     time = (
         finite_represented_real(G.graph["_t"], "graph runtime time")[0]
-        if "_t" in G.graph else None
+        if "_t" in G.graph
+        else None
     )
     result: dict[Any, CapacityRateObservation] = {}
     for node, data in G.nodes(data=True):
@@ -198,13 +208,16 @@ def aggregate_capacity_rates(
     count = len(observations)
     first_count = sum(item.rate is not None for item in observations.values())
     seconds = tuple(
-        item.second_difference for item in observations.values()
+        item.second_difference
+        for item in observations.values()
         if item.second_difference is not None
     )
     mean = None
     status = "empty" if not count else "incomplete"
     if count and len(seconds) == count:
-        exact_mean = sum((Fraction.from_float(value) for value in seconds), Fraction()) / count
+        exact_mean = (
+            sum((Fraction.from_float(value) for value in seconds), Fraction()) / count
+        )
         mean = _represented_or_none(exact_mean)
         status = "complete" if mean is not None else "aggregate_unrepresentable"
     return mean, {

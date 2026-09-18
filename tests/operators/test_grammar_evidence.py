@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from fractions import Fraction
 import json
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -47,9 +47,7 @@ def _execution(
     )
     if sequence == ("transition",):
         graph.graph["compute_delta_nfr"] = _refresh_pure_epi_pressure
-    for node, epi, pressure in zip(
-        graph, (0.25, -0.25), (-0.5, 0.5), strict=True
-    ):
+    for node, epi, pressure in zip(graph, (0.25, -0.25), (-0.5, 0.5), strict=True):
         graph.nodes[node].update(
             EPI=epi,
             epi_kind="test",
@@ -80,8 +78,12 @@ def test_public_observer_keeps_current_snapshot_separate_from_executed_evidence(
     for node in current:
         current.nodes[node].update(EPI=7.0, nu_f=2.0, theta=0.0)
     report = observe_grammar(
-        current, 0, ["IL", "SHA"], execution_evidence=execution,
-        contract_satisfied=True, u6_checked=True,
+        current,
+        0,
+        ["IL", "SHA"],
+        execution_evidence=execution,
+        contract_satisfied=True,
+        u6_checked=True,
     )
     assert report.sequence_valid
     assert report.structural_evidence.execution is execution

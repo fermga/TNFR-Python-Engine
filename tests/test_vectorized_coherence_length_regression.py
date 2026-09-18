@@ -56,5 +56,7 @@ def test_declared_unreachable_pairs_return_unavailable_fit():
     G, nodes, dnfr = _ring(8)
     distances = np.full((len(nodes), len(nodes)), np.inf)
     np.fill_diagonal(distances, 0.0)
-    result = compute_coherence_length_vectorized(G, nodes, dnfr, distance_matrix=distances)
+    result = compute_coherence_length_vectorized(
+        G, nodes, dnfr, distance_matrix=distances
+    )
     assert math.isnan(result)

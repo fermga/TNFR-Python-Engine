@@ -22,14 +22,18 @@ def test_nonzero_discrete_scalar_embedding_is_not_non_scalar_storage(value):
     ) == (0.0, 0, 3)
 
 
-@pytest.mark.parametrize("continuous,discrete", (
-    ((1.0, -1.0), (0.0, 0.0)),
-    ((1.0j, -1.0j), (0.0, 0.0)),
-    ((1.0, 1.0), (1.0, 2.0)),
-    ((1.0, np.nextafter(1.0, 2.0)), (1.0, 1.0)),
-))
+@pytest.mark.parametrize(
+    "continuous,discrete",
+    (
+        ((1.0, -1.0), (0.0, 0.0)),
+        ((1.0j, -1.0j), (0.0, 0.0)),
+        ((1.0, 1.0), (1.0, 2.0)),
+        ((1.0, np.nextafter(1.0, 2.0)), (1.0, 1.0)),
+    ),
+)
 def test_resolved_nonuniform_or_complex_content_cannot_hide_in_equal_magnitudes(
-    continuous, discrete,
+    continuous,
+    discrete,
 ):
     element = BEPIElement(continuous, discrete, (0.0, 1.0))
     # Even a very large historical atol cannot discard represented variation.
@@ -45,11 +49,19 @@ def test_storage_fraction_counts_a_mixed_finite_generator_once():
     assert diagnostic._bepi_storage_fraction(iter(())) == (0.0, 0, 0)
 
 
-@pytest.mark.parametrize("invalid", (
-    True, np.bool_(False), "1.0", object(), np.inf, np.nan,
-    SimpleNamespace(f_continuous=(0.0, 1.0), a_discrete=(0.0, 0.0)),
-    {"continuous": [0.0, np.inf], "discrete": [0.0], "grid": [0.0, 1.0]},
-))
+@pytest.mark.parametrize(
+    "invalid",
+    (
+        True,
+        np.bool_(False),
+        "1.0",
+        object(),
+        np.inf,
+        np.nan,
+        SimpleNamespace(f_continuous=(0.0, 1.0), a_discrete=(0.0, 0.0)),
+        {"continuous": [0.0, np.inf], "discrete": [0.0], "grid": [0.0, 1.0]},
+    ),
+)
 def test_unsupported_or_nonfinite_storage_is_not_silently_classified_scalar(invalid):
     with pytest.raises((TypeError, ValueError)):
         diagnostic._bepi_storage_fraction((invalid,))
@@ -108,8 +120,12 @@ def test_zero_entropy_does_not_erase_observed_non_scalar_storage(monkeypatch):
 def test_deprecated_thresholds_are_metadata_not_type_or_tolerance_tests(monkeypatch):
     _synthetic_probe(monkeypatch, np.ones((3, 9)), [1.0] * 3)
     result = diagnostic.compute_epi_type_signature(
-        n_nodes=3, n_steps=8, n_bins=4,
-        scalar_threshold=-100, bepi_threshold=-100, storage_atol=100,
+        n_nodes=3,
+        n_steps=8,
+        n_bins=4,
+        scalar_threshold=-100,
+        bepi_threshold=-100,
+        storage_atol=100,
     )
     assert result.verdict == "REAL_SCALAR_STORAGE"
     assert result.diagnostics["scalar_threshold"] == -100

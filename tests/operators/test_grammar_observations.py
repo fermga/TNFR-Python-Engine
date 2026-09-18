@@ -7,8 +7,8 @@ from copy import deepcopy
 import networkx as nx
 import pytest
 
-from tnfr.operators.grammar_observations import observe_grammar
 from tnfr.operators import Coupling, Resonance, Silence
+from tnfr.operators.grammar_observations import observe_grammar
 from tnfr.types import serialize_bepi
 
 

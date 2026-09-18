@@ -13,7 +13,6 @@ from ..mathematics.unified_numerical import np
 from ._edge_semantics import effective_edge_length, structural_path_weight
 from ._helpers import finite_real_scalar
 
-
 DISTANCE_DESCRIPTION = (
     "outgoing shortest paths: length, else weight, else 1; parallel minimum; "
     "positive finite pair distances only"
@@ -32,7 +31,7 @@ def coherence_sources(nodes, precision_mode):
         return nodes
     minimum = 30 if precision_mode == "research" else 20
     count = max(minimum, len(nodes) // 20)
-    return nodes[::max(1, len(nodes) // count)]
+    return nodes[:: max(1, len(nodes) // count)]
 
 
 def coherence_sample_description(graph, nodes, sources):
@@ -47,7 +46,9 @@ def coherence_sample_description(graph, nodes, sources):
 
 def _validate_graph(graph, nodes):
     if len(set(nodes)) != len(nodes) or set(nodes) != set(graph):
-        raise ValueError("coherence node order must contain every graph node exactly once")
+        raise ValueError(
+            "coherence node order must contain every graph node exactly once"
+        )
     # Validate every component, including unreachable and unsampled edges.
     for _, _, attributes in graph.edges(data=True):
         effective_edge_length(attributes)
@@ -56,7 +57,9 @@ def _validate_graph(graph, nodes):
 def _distance_array(values, size, directed):
     raw = np.asarray(values)
     if raw.dtype.kind not in "iuf" or raw.shape != (size, size):
-        raise ValueError("distance_matrix must be a real square array matching node order")
+        raise ValueError(
+            "distance_matrix must be a real square array matching node order"
+        )
     with np.errstate(over="ignore", under="ignore", invalid="ignore"):
         distances = np.asarray(raw, dtype=float)
     if np.any(np.isfinite(raw) & ~np.isfinite(distances)) or np.any(
@@ -64,7 +67,9 @@ def _distance_array(values, size, directed):
     ):
         raise ValueError("distance_matrix contains an unrepresentable finite distance")
     if np.any(np.isnan(distances)) or np.any(distances < 0):
-        raise ValueError("distance_matrix permits nonnegative distances and positive infinity only")
+        raise ValueError(
+            "distance_matrix permits nonnegative distances and positive infinity only"
+        )
     if np.any(np.diag(distances) != 0):
         raise ValueError("distance_matrix must have a zero diagonal")
     if not directed and not np.array_equal(distances, distances.T):
@@ -77,7 +82,9 @@ def _graph_distance_rows(graph, sources):
     for source in sources:
         row = nx.single_source_dijkstra_path_length(graph, source, weight=weight)
         if any(not math.isfinite(distance) for distance in row.values()):
-            raise ValueError("reachable path distance exceeds the finite represented range")
+            raise ValueError(
+                "reachable path distance exceeds the finite represented range"
+            )
         yield source, row
 
 
@@ -122,8 +129,14 @@ def _fit_products(pairs):
 
 
 def fit_coherence_length(
-    graph, nodes, delta_nfr, *, sources, dtype=np.float64,
-    materialize=False, distance_matrix=None,
+    graph,
+    nodes,
+    delta_nfr,
+    *,
+    sources,
+    dtype=np.float64,
+    materialize=False,
+    distance_matrix=None,
 ):
     """Fit the declared static product profile with one common pair policy.
 
@@ -140,10 +153,13 @@ def fit_coherence_length(
     if len(set(sources)) != len(sources) or not set(sources).issubset(nodes):
         raise ValueError("coherence sources must be distinct graph nodes")
     index = {node: i for i, node in enumerate(nodes)}
-    pressure = np.asarray([
-        finite_real_scalar(delta_nfr.get(node, 0.0), "coherence pressure")
-        for node in nodes
-    ], dtype=dtype)
+    pressure = np.asarray(
+        [
+            finite_real_scalar(delta_nfr.get(node, 0.0), "coherence pressure")
+            for node in nodes
+        ],
+        dtype=dtype,
+    )
     coherence = structural_coherence(pressure)
     matrix = None
     row_index = index
@@ -157,9 +173,18 @@ def fit_coherence_length(
                 matrix[row_index[source], index[target]] = distance
 
     rows = (
-        ((source, {target: matrix[row_index[source], j]
-                   for j, target in enumerate(nodes)}) for source in sources)
-        if matrix is not None else _graph_distance_rows(graph, sources)
+        (
+            (
+                source,
+                {
+                    target: matrix[row_index[source], j]
+                    for j, target in enumerate(nodes)
+                },
+            )
+            for source in sources
+        )
+        if matrix is not None
+        else _graph_distance_rows(graph, sources)
     )
     source_set = set(sources)
 

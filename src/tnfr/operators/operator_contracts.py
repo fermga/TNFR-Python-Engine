@@ -540,9 +540,7 @@ def contract_identifiability_certificate(
     groups = tuple(
         (signature, tuple(names)) for signature, names in sorted(grouped.items())
     )
-    unique = tuple(
-        names[0] for _, names in groups if len(names) == 1
-    )
+    unique = tuple(names[0] for _, names in groups if len(names) == 1)
     ambiguous = tuple(names for _, names in groups if len(names) > 1)
     return ContractIdentifiabilityCertificate(
         features=tuple(features),
