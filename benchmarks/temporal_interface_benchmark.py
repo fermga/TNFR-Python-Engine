@@ -50,8 +50,8 @@ import json
 import math
 import re
 import sys
-import zipfile
 import warnings
+import zipfile
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
@@ -69,7 +69,6 @@ import numpy as np  # noqa: E402
 from tnfr.validation.temporal_interface import (  # noqa: E402
     TemporalInterfaceConfig,
     evaluate_early_warning,
-    window_tetrad_series,
 )
 
 # TransnetBW publishes monthly grid-frequency archives (CC-BY).  The dataset is
@@ -510,11 +509,9 @@ def run_temporal_benchmark(
     comparison = evaluate_early_warning(
         series, transition_index=transition_index, config=config
     )
-    series_obj = window_tetrad_series(series, config=config)
-
     report["status"] = "ok"
     report["transition_index"] = transition_index
-    report["n_windows"] = int(series_obj.window_end.size)
+    report["n_windows"] = comparison.metadata["n_windows"]
     report["n_pre_transition_windows"] = comparison.n_pre_transition_windows
     report["trends"] = {
         k: (None if math.isnan(v) else round(float(v), 4))

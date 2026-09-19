@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import importlib.util
 import json
 from fractions import Fraction
 from pathlib import Path
@@ -11,6 +10,7 @@ import pytest
 
 import tnfr.physics as physics
 import tnfr.physics.event_remesh_reference as reference_module
+from tests.example_protocol_helpers import assert_prebuilt_report_main, load_example
 
 EXAMPLE_PATH = (
     Path(__file__).resolve().parents[2]
@@ -20,20 +20,9 @@ EXAMPLE_PATH = (
 )
 
 
-def _load_example():
-    spec = importlib.util.spec_from_file_location(
-        "event_remesh_reference_family_example",
-        EXAMPLE_PATH,
-    )
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
 @pytest.fixture(scope="module")
 def example_and_protocol():
-    example = _load_example()
+    example = load_example(EXAMPLE_PATH)
     protocol = example.run_protocol()
     return example, protocol, example.build_report(protocol)
 
@@ -114,14 +103,13 @@ def test_report_separates_the_finite_result_from_open_claims(
         "future_stability": False,
     }
 
-
-def test_main_emits_finite_json(example_and_protocol, monkeypatch, capsys) -> None:
-    example, protocol, report = example_and_protocol
-    monkeypatch.setattr(example, "run_protocol", lambda: protocol)
-    monkeypatch.setattr(example, "build_report", lambda _: report)
-
-    example.main()
-    report = json.loads(capsys.readouterr().out)
-
+    # These claims belong to the real report, independently of CLI wiring.
     assert report["claim"] == "finite exact P2 event/REMESH reference family"
     assert report["reference_family_certified"]
+
+
+def test_main_emits_finite_json(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    assert_prebuilt_report_main(load_example(EXAMPLE_PATH), monkeypatch, capsys)

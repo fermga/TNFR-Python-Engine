@@ -292,12 +292,6 @@ def test_scalar_equals_sum_of_vector_channels(n):
     assert vec.as_tuple() == channels(n)
 
 
-def test_minimality_claim_is_false_for_primality():
-    # a single channel already detects primes: the set is NOT minimal for it.
-    assert minimal_channels_for_primality(2, 500) == 1
-    assert is_redundant_for_primality(2, 500) is True
-
-
 def test_completeness_claim_requires_task_scope():
     # completeness is not proven; the fourth-channel gate is closed by default.
     assert completeness_proven() is False

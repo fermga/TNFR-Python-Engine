@@ -1,11 +1,10 @@
-"""Tests for TNFR structural-balance and energy diagnostics.
+"""Tests for declared structural-balance and energy diagnostics.
 
-The suite verifies finite-snapshot computations and their scope metadata. It
-does not infer grammar U1-U6 from residuals or charge drift.
-
-where ρ = Φ_s + K_φ (structural charge) and J = (J_φ, J_ΔNFR) (current).
-
-TIER: CORE PHYSICS — Conservation is a fundamental property of the theory.
+Finite snapshots supply rho = Phi_s + K_phi and currents (J_phi, J_DeltaNFR).
+The tests check their implemented algebra, finite differences, bookkeeping and
+scope metadata, including finite selected operator calls. Computed charge or
+energy candidates need not be conserved by arbitrary nodal evolution. Residuals
+and grammar labels do not derive U1-U6 or a general convergence theorem.
 """
 
 from __future__ import annotations
@@ -16,6 +15,9 @@ import networkx as nx
 import numpy as np
 import pytest
 
+from tests.diagnostic_graph_fixtures import (
+    make_diagnostic_field_graph as _make_tnfr_graph,
+)
 from tnfr.constants import inject_defaults
 from tnfr.constants.canonical import PI
 from tnfr.physics.conservation import (
@@ -46,36 +48,6 @@ from tnfr.physics.conservation import (
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
-
-
-def _make_tnfr_graph(
-    n: int = 30,
-    topology: str = "watts_strogatz",
-    seed: int = 42,
-) -> nx.Graph:
-    """Build a TNFR-ready graph with canonical attributes."""
-    rng = np.random.default_rng(seed)
-
-    if topology == "watts_strogatz":
-        G = nx.watts_strogatz_graph(n, 4, 0.3, seed=seed)
-    elif topology == "barabasi_albert":
-        G = nx.barabasi_albert_graph(n, 3, seed=seed)
-    elif topology == "grid":
-        side = int(math.sqrt(n))
-        G = nx.grid_2d_graph(side, side)
-    else:
-        G = nx.watts_strogatz_graph(n, 4, 0.3, seed=seed)
-
-    inject_defaults(G)
-
-    # Assign structural attributes
-    for node in G.nodes():
-        G.nodes[node]["phase"] = rng.uniform(0, 2 * math.pi)
-        G.nodes[node]["frequency"] = rng.uniform(0.1, 1.0)
-        G.nodes[node]["delta_nfr"] = rng.uniform(-0.5, 0.5)
-        G.nodes[node]["EPI"] = f"epi_{node}"
-
-    return G
 
 
 @pytest.fixture

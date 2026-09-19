@@ -161,6 +161,18 @@ factor certificate. Benchmarks apply only to recorded inputs, environment,
 backend and cache state. Arithmetic telemetry and fallback costs belong in any
 end-to-end comparison.
 
+Run the actual verifier and configured-criteria controls directly:
+
+```bash
+python -m pytest factorization-lab/tests/test_false_positive_verifier.py factorization-lab/tests/test_verification_robustness.py -q
+```
+
+These suites read the production implementation. The copied-criteria simulation
+and duplicate standalone runners have been retired. The verifier suite uses a
+finite curated sample by default; `TNFR_RUN_LONG_TESTS=1` opts into its larger
+generated input set. Criteria-range checks preserve a configured policy; they
+do not derive the thresholds or certify general false-positive resistance.
+
 The obsolete live `notebooks/spectral_history.ipynb` has been retired. Its
 [unaltered historical copy](notebooks/archive/spectral_history_legacy_2026_09_19.ipynb)
 retains saved code, outputs and metadata. It uses the removed `_fft_engine`

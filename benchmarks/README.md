@@ -44,15 +44,11 @@ rg --files benchmarks -g '*.py'
   select physical dimension or particle generations.
 - `emergent_mass_charge_spectrum.py` compares separately prepared fields. Static
   energy ordering is not an observed fission trajectory, force or mass law.
-- `confinement_zones_test.py` retains historical thresholds above the wrapped
-  curvature bound. Those zones are empty, not evidence against physical
-  confinement. Its in-range overlap statistics remain descriptive only.
-- `universality_clusters.py` consumes independently supplied timing-exponent
-  records; its historical producer is absent. Timing clusters and in-sample
-  field correlations are not physical universality or held-out prediction.
 
-The obsolete standalone complex-EPI magnitude-only and curvature-4.88 promotion
-campaigns are removed. Current replacements are the
+The obsolete magnitude-only, out-of-range curvature-zone and orphan timing-
+clustering campaigns are removed. Timing clusters and in-sample field
+correlations do not establish physical universality or held-out prediction.
+Current form and field-domain controls are the
 [signed-form admission tests](../tests/test_nodal_solver_epi_scope.py),
 [storage/entropy scope tests](../tests/test_epi_type_signature_scope.py),
 [wrapped tetrad bounds](../tests/physics/test_tetrad_bounds.py) and

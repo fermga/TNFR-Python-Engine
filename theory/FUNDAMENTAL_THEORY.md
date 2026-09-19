@@ -674,13 +674,12 @@ analysis = TNFR.analyze(net)               # Comprehensive analysis
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [01_hello_world.py](../examples/01_foundations/01_hello_world.py) | Network creation, EPI/νf/θ assignment, C(t) computation |
-| [02_musical_resonance.py](../examples/01_foundations/02_musical_resonance.py) | Phase synchronization, harmonic coupling |
-| [03_network_formation.py](../examples/01_foundations/03_network_formation.py) | Network building, coherence emergence |
-| [05_coherence_evolution.py](../examples/01_foundations/05_coherence_evolution.py) | Coherence trajectories under nodal evolution |
-| [06_network_topologies.py](../examples/01_foundations/06_network_topologies.py) | Topology-dependent dynamics |
-| [08_emergent_phenomena.py](../examples/01_foundations/08_emergent_phenomena.py) | Collective behaviour from nodal equations |
-| [10_simplified_sdk_showcase.py](../examples/01_foundations/10_simplified_sdk_showcase.py) | SDK API: tetrad, conservation, grammar-aware evolution |
+| [01_hello_world.py](../examples/01_foundations/01_hello_world.py) | SDK initialization, one requested operator word and canonical C/tetrad observations |
+| [04_operator_sequences.py](../examples/01_foundations/04_operator_sequences.py) | Flat grammar admission versus an independent illustrative pressure proxy |
+| [07_phase_transitions.py](../examples/01_foundations/07_phase_transitions.py) | Prepared state ensembles and descriptive finite-size diagnostics |
+| [10_simplified_sdk_showcase.py](../examples/01_foundations/10_simplified_sdk_showcase.py) | SDK topology builders, configured evolution and comparison read-outs |
+| [99_structural_diffusion.py](../examples/08_emergent_geometry/99_structural_diffusion.py) | Declared diffusion and auxiliary graph-model correspondences |
+| [179_phase_form_driven_response.py](../examples/08_emergent_geometry/179_phase_form_driven_response.py) | Prescribed phase contrast and derived EPI response; no autonomous maintenance claim |
 
 ### Key Source Modules
 

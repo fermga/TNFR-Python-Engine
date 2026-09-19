@@ -74,7 +74,6 @@ nav:
   - Applications:
       - Factorization lab: factorization-lab/README.md
       - Primality: primality-test/README.md
-  - Manual en español (borrador): manual/INDEX.md
   - Development:
       - Testing: TESTING.md
       - Contributing: CONTRIBUTING.md

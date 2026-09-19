@@ -72,8 +72,7 @@ explicit accuracy or behavior tradeoff.
 ## Documentation
 
 Keep technical code, comments, documentation, commits and pull requests in
-English. The pedagogical manuscripts under [manual/](manual/INDEX.md) remain in
-Spanish by project direction; quotations and raw data retain their language.
+English. Verbatim quotations and raw data retain their original language.
 
 Use [the theory index](theory/README.md) to find derivation owners and
 [the documentation index](docs/README.md) for usage material. The

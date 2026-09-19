@@ -89,34 +89,12 @@ test-quality = [
   "vulture>=2,<3",
 ]
 test-all = [
-  "pytest>=7,<10",
-  "pytest-cov>=4,<8",
-  "pytest-timeout>=2,<3",
-  "hypothesis>=6,<7",
-  "hypothesis-networkx>=0.3,<1.0",
-  "pytest-benchmark>=4,<6",
-  "pytest-xdist>=3,<4",
-  "pydocstyle>=6,<7",
-  "flake8>=5,<8",
-  "flake8-pyproject>=1.2,<2.0",
-  "vulture>=2,<3",
+  "tnfr[test-unit,test-property,test-performance,test-parallel,test-quality]",
   "matplotlib>=3.7,<4.0",
   "sympy>=1.10",
 ]
-test = [  # Legacy alias
-  "pytest>=7,<10",
-  "pytest-cov>=4,<8",
-  "pytest-timeout>=2,<3",
-  "hypothesis>=6,<7",
-  "hypothesis-networkx>=0.3,<1.0",
-  "pytest-benchmark>=4,<6",
-  "pytest-xdist>=3,<4",
-  "pydocstyle>=6,<7",
-  "flake8>=5,<8",
-  "flake8-pyproject>=1.2,<2.0",
-  "vulture>=2,<3",
-  "matplotlib>=3.7,<4.0",
-  "sympy>=1.10",
+test = [
+  "tnfr[test-all]",
 ]
 
 # Type checking
@@ -128,30 +106,13 @@ typecheck = [
 ]
 # Development environment groups
 dev-minimal = [
+  "tnfr[test-unit]",
   "mypy>=1.8,<2.0",
   "black>=23,<26",
-  "pytest>=7,<10",
-  "pytest-cov>=4,<8",
-  "pytest-timeout>=2,<3",
 ]
 dev-full = [
-  "pytest>=7,<10",
-  "pytest-cov>=4,<8",
-  "pytest-timeout>=2,<3",
-  "hypothesis>=6,<7",
-  "hypothesis-networkx>=0.3,<1.0",
-  "pytest-benchmark>=4,<6",
-  "pytest-xdist>=3,<4",
-  "pydocstyle>=6,<7",
-  "flake8>=5,<8",
-  "flake8-pyproject>=1.2,<2.0",
-  "vulture>=2,<3",
+  "tnfr[test-unit,test-property,test-performance,test-parallel,test-quality,typecheck,compute-jax]",
   "matplotlib>=3.7,<4.0",
-  "jax>=0.4,<1.0",
-  "mypy>=1.8,<2.0",
-  "pyright>=1.1.350,<1.2.0",
-  "networkx-stubs>=0.0.1",
-  "types-cachetools>=6.0.0.0",
 ]
 
 # Release tooling

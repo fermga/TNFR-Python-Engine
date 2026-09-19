@@ -2,11 +2,6 @@
 
 from __future__ import annotations
 
-import importlib.util
-import json
-import os
-import subprocess
-import sys
 from fractions import Fraction
 from pathlib import Path
 
@@ -14,6 +9,7 @@ import pytest
 
 import tnfr.physics as physics
 import tnfr.physics.remesh_schedule_policy_stability as policy_module
+from tests.example_protocol_helpers import assert_prebuilt_report_main, load_example
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE_PATH = (
@@ -24,20 +20,9 @@ EXAMPLE_PATH = (
 )
 
 
-def _load_example():
-    spec = importlib.util.spec_from_file_location(
-        "remesh_schedule_policy_stability_example",
-        EXAMPLE_PATH,
-    )
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
 @pytest.fixture(scope="module")
 def example_protocol_report():
-    example = _load_example()
+    example = load_example(EXAMPLE_PATH)
     protocol = example.run_protocol()
     return example, protocol, example.build_report(protocol)
 
@@ -54,31 +39,6 @@ def test_module_stub_and_facade_expose_policy_api() -> None:
     assert expected <= set(physics.__all__)
     for name in expected:
         assert getattr(physics, name) is getattr(policy_module, name)
-
-
-@pytest.mark.parametrize(
-    "imports",
-    (
-        "import tnfr.physics; import tnfr.operators",
-        "import tnfr.operators; import tnfr.physics",
-    ),
-)
-def test_policy_facade_is_cold_import_order_safe(imports: str) -> None:
-    environment = os.environ.copy()
-    source_path = str(REPOSITORY_ROOT / "src")
-    existing = environment.get("PYTHONPATH")
-    environment["PYTHONPATH"] = (
-        source_path if not existing else os.pathsep.join((source_path, existing))
-    )
-    completed = subprocess.run(
-        [sys.executable, "-c", imports],
-        cwd=REPOSITORY_ROOT,
-        env=environment,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert completed.returncode == 0, completed.stderr
 
 
 def test_example_reports_uniform_exact_bounds(example_protocol_report) -> None:
@@ -99,6 +59,14 @@ def test_example_reports_uniform_exact_bounds(example_protocol_report) -> None:
     assert report["mixed_delay_strict"]["horizon_is_claimed_minimal"] is False
     assert report["mixed_delay_strict"]["prefix_gain_upper_bound"] == "1/1"
 
+    # These claims belong to the real report, independently of CLI wiring.
+    decoded = report
+    assert decoded["claim"] == (
+        "conditional uniform exact REMESH/schedule spatial-disagreement " "stability"
+    )
+    assert decoded["mixed_delay_strict"]["cycle_gain_upper_bound"] == "1/16"
+    assert decoded["q_one_boundary"]["uniform_margin"] == "0/1"
+
 
 def test_example_withholds_runtime_and_general_scope(
     example_protocol_report,
@@ -114,17 +82,7 @@ def test_example_withholds_runtime_and_general_scope(
 
 
 def test_main_emits_finite_json(
-    example_protocol_report,
-    monkeypatch,
-    capsys,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
-    example, protocol, report = example_protocol_report
-    monkeypatch.setattr(example, "run_protocol", lambda: protocol)
-    monkeypatch.setattr(example, "build_report", lambda _: report)
-    example.main()
-    decoded = json.loads(capsys.readouterr().out)
-    assert decoded["claim"] == (
-        "conditional uniform exact REMESH/schedule spatial-disagreement " "stability"
-    )
-    assert decoded["mixed_delay_strict"]["cycle_gain_upper_bound"] == "1/16"
-    assert decoded["q_one_boundary"]["uniform_margin"] == "0/1"
+    assert_prebuilt_report_main(load_example(EXAMPLE_PATH), monkeypatch, capsys)

@@ -1,73 +1,33 @@
 #!/usr/bin/env python3
 """
-Example 109 — P vs NP (TNFR): Coherence Synthesis vs Verification
-=================================================================
+Example 109 — finite MAX-CUT search and exact verification.
 
-The first milestone (PNP-1) of the TNFR-native P vs NP program. This is a
-STRUCTURAL REFORMULATION and a diagnostic measurement, NOT a solution: it
-does not prove P != NP (see "Honest scope").
-
-TNFR-native reformulation
--------------------------
-The nodal equation is a GRADIENT FLOW on the structural potential V:
-
-    dEPI/dt = nu_f * dNFR,   dNFR = -dV/dEPI
-
-(established in src/tnfr/physics/variational.py). Coherence relaxation
-descends V. P vs NP, read through this lens, is the asymmetry between two
-structural tasks:
-
-  * VERIFICATION: given a configuration, evaluate its coherence (here, the
-    cut value / frustration energy). Cost = O(|E|) -- polynomial, cheap.
-    This is the TNFR analogue of checking an NP witness.
-
-  * SYNTHESIS: find a GLOBALLY coherent configuration by nodal relaxation.
-    On a FRUSTRATED topology (odd cycles) the potential V has many local
-    optima = dissonance (OZ) basins. Gradient flow descends to the NEAREST
-    basin, not necessarily the global one.
-
-Encoding (MAX-CUT as TNFR antiphase coupling)
----------------------------------------------
-Each node carries a phase theta. Every edge demands ANTIPHASE (a cut): the
-relaxation
+This auxiliary classical baseline applies a selected antialignment heuristic:
 
     dtheta_i/dt = sum_{j ~ i} sin(theta_i - theta_j)
 
-is the canonical TNFR phase channel (the circular neighbour-coupling that
-elsewhere drives Kuramoto synchronization) with the anti-aligning sign --
-i.e. an all-edge dissonance (OZ) demand. The global minimum of the
-frustration energy E = sum_{(i,j)} cos(theta_i - theta_j) over theta in
-{0, pi}^n is exactly the MAX-CUT of the graph (an NP-hard objective).
+The continuous vector field is the negative gradient of
+V = sum_{(i,j)} cos(theta_i - theta_j). The implemented finite Euler step
+has no monotone-energy certificate for its selected step size. On binary
+phases {0, pi}, V = |E| - 2 * cut, so minimizing the binary objective is
+equivalent to MAX-CUT. The heuristic rounds its final continuous phases.
 
-PNP-1 measurement
------------------
-Across problem sizes n, measure the fraction of random initial conditions
-whose relaxation reaches the GLOBAL optimum (hit rate), and confirm that the
-best over many restarts DOES reach it (so a low hit rate is genuine TRAPPING
-in local optima, not an encoding failure). The honest signature of synthesis
-hardness is: hit rate DROPS and required restarts GROW with n, while
-verification stays O(|E|).
+Small supplied regular graphs admit an exhaustive reference optimum. Seeded
+restarts report the finite fraction reaching that optimum and an empirical
+trend; neither decreasing hit rate nor convergence to a local optimum is
+assumed. Exhaustive verification of the optimum costs more than evaluating a
+single supplied cut, which requires one pass over the edges.
 
-Honest scope
-------------
-- This MIRRORS the P vs NP asymmetry (verify easy, synthesize hard); it does
-  NOT prove P != NP. The open question is precisely whether some polynomial
-  strategy escapes the traps -- bare gradient flow is only one strategy.
-- The TNFR catalog has escape operators (OZ controlled dissonance, ZHIR
-  mutation, THOL re-organization, REMESH) not used here. Whether the FULL
-  catalog collapses the trapping to polynomial is the open milestone PNP-2;
-  the honest expectation (exponentially many dissonance basins) reflects
-  P != NP but remains unproven.
-- MAX-CUT has a classical 0.878 approximation (Goemans-Williamson); only
-  EXACT global optimization is hard. This example measures exact-optimum
-  trapping, the TNFR-native reflection of that hardness.
+This is not the canonical circular-neighbor pressure channel, a TNFR operator
+schedule, or a derivation from the nodal equation. The held pure-EPI gradient
+bridge does not make arbitrary phase dynamics canonical. Finite heuristic
+performance establishes no asymptotic complexity result or answer to P vs NP.
 
 References
 ----------
-- theory/TNFR_P_VS_NP_RESEARCH_NOTES.md (program, milestones, classification)
-- src/tnfr/physics/variational.py (nodal equation as gradient flow)
-- src/tnfr/physics/structural_diffusion.py (phase channel = Kuramoto coupling)
-- AGENTS.md section "Regime Correspondences from Nodal Dynamics"
+- theory/TNFR_P_VS_NP_RESEARCH_NOTES.md (parked comparison and scope)
+- theory/NODAL_PARAMETER_FOUNDATIONS.md (constitutive dependencies)
+- theory/TNFR_VARIATIONAL_PRINCIPLE.md (restricted gradient bridge)
 """
 
 import itertools
@@ -94,9 +54,9 @@ def max_cut_bruteforce(G):
 
 
 def tnfr_phase_relaxation(G, seed, steps=400, dt=0.1):
-    """Canonical TNFR phase channel with anti-aligning (MAX-CUT) sign.
+    """Legacy-named auxiliary antialignment Euler heuristic.
 
-    dtheta_i = sum_{j~i} sin(theta_i - theta_j)  (descends frustration E).
+    Its continuous field descends V; a selected Euler step need not do so.
     Returns the cut value of the rounded {0, pi} assignment.
     """
     rng = np.random.default_rng(seed)
@@ -115,7 +75,7 @@ def tnfr_phase_relaxation(G, seed, steps=400, dt=0.1):
 
 def experiment_trapping():
     print("=" * 72)
-    print("PNP-1: Coherence SYNTHESIS vs VERIFICATION on frustrated MAX-CUT")
+    print("Finite MAX-CUT: heuristic search and exact verification")
     print("=" * 72)
     print()
     print("Verification (evaluate a cut)   = O(|E|), polynomial -- cheap.")
@@ -160,19 +120,19 @@ def experiment_trapping():
     print(f"  hit-rate trend slope d(hit_rate)/dn = {slope:+.4f} per node")
     print(f"  monotone decreasing: {bool(np.all(np.diff(hrs) <= 1e-9))}")
     print()
-    print("VERDICT (PNP-1): coherence synthesis by bare gradient flow gets")
-    print("increasingly TRAPPED in local optima (dissonance basins) as size")
-    print("grows -- hit rate drops, restarts grow -- while verification stays")
-    print("O(|E|). 'best/all = reached' confirms the global optimum IS")
-    print("reachable with enough restarts, so the low hit rate is genuine")
-    print("trapping, not an encoding failure.")
+    print("The finite hit rates and empirical slope are reported above.")
+    print("Neither a decreasing trend nor local trapping is assumed.")
+    print("Evaluating one supplied cut requires one pass over the edges;")
+    print("the exhaustive reference optimum is a separate computation.")
+    print("A successful restart records one reached optimum, without a")
+    print("guarantee for another instance, restart or asymptotic size.")
     print()
 
 
 def main():
     print()
-    print("  TNFR Example 109: P vs NP -- Coherence Synthesis vs Verification")
-    print("  Milestone PNP-1 (structural reformulation, NOT a proof)")
+    print("  TNFR Example 109: Auxiliary finite MAX-CUT baseline")
+    print("  Supplied classical heuristic and exhaustive small-graph reference")
     print("  ===============================================================")
     print()
     experiment_trapping()
@@ -180,16 +140,16 @@ def main():
     print("WHAT THIS ESTABLISHES (and what it does NOT)")
     print("=" * 72)
     print()
-    print("ESTABLISHES: a TNFR-native reformulation of P vs NP as the")
-    print("asymmetry between coherence VERIFICATION (O(|E|), polynomial) and")
-    print("coherence SYNTHESIS (gradient-flow relaxation, which traps in")
-    print("dissonance basins with growing size). This is the same disciplined")
-    print("pattern as the Riemann / Navier-Stokes / Yang-Mills programs.")
+    print("REPORTS: finite outcomes of one supplied classical heuristic")
+    print("against enumerated optima. The implemented phase update is")
+    print("not the canonical TNFR pressure channel or operator schedule.")
+    print("Rounded endpoints do not prove continuous local optimality,")
+    print("and measured hit rates do not establish an asymptotic law.")
     print()
-    print("DOES NOT: prove P != NP. Bare gradient flow is one strategy; the")
-    print("full TNFR operator catalog (OZ, ZHIR, THOL, REMESH escape moves) is")
-    print("not used here. Whether the full catalog synthesizes in polynomial")
-    print("time is the open milestone PNP-2. No Clay claim is made.")
+    print("DOES NOT: prove P != NP or derive an optimization law from TNFR.")
+    print("No canonical operator catalog is executed in this baseline.")
+    print("Its finite comparison does not reopen the parked P vs NP branch;")
+    print("the research plan owns any subsequent admission decision.")
     print()
 
 

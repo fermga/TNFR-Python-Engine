@@ -46,7 +46,7 @@ def pytest_configure(config: pytest.Config) -> None:
 
 @pytest.fixture(scope="session")
 def structural_tolerances() -> dict[str, float]:
-    """Return the canonical absolute/relative tolerances used in tests."""
+    """Return the shared numerical comparison tolerances used in tests."""
 
     return {"atol": STRUCTURAL_ATOL, "rtol": STRUCTURAL_RTOL}
 
@@ -84,28 +84,15 @@ def reset_cached_import():
 
 
 @pytest.fixture(autouse=True)
-def reset_global_state(request):
-    """Reset all global state between tests to ensure test isolation.
+def reset_global_state():
+    """Reset the selected mutable process caches used by these tests.
 
-    This fixture resets:
-    - Callback manager state
-    - Backend caches
-    - Import caches
-    - Global cache managers
-    - Other module-level state
-
-    Maintains TNFR canonical invariants (§3.8 - controlled determinism).
+    Logging flags, callback limits, backend/cache managers, immutable-value
+    checks, selector thresholds and RNG caches have explicit resets below.
+    Import caches are intentionally retained; reset_cached_import owns opt-in
+    clearing. Graph-owned callbacks, observers and integrators require fresh
+    graph fixtures. This is not a claim to reset every possible global object.
     """
-    # Skip for specific tests that explicitly manage logging state
-    skip_patterns = [
-        "test_logging_utils_proxy_state",
-        "test_configure_logging",
-        "test_reset_logging_state",
-    ]
-    if any(pattern in request.node.name for pattern in skip_patterns):
-        yield
-        return
-
     # Reset state before test
     _reset_all_state()
 
@@ -116,7 +103,7 @@ def reset_global_state(request):
 
 
 def _reset_all_state() -> None:
-    """Helper to reset all global state."""
+    """Apply the supported cache resets without importing retired subsystems."""
 
     # Reset logging configured flag (but don't call _reset_logging_state as it may cause issues)
     try:
@@ -201,143 +188,6 @@ def _reset_all_state() -> None:
     except (ImportError, AttributeError):
         pass
 
-    # Reset functools lru_caches
-    try:
-        from tnfr.utils import cache as cache_module
-
-        if hasattr(cache_module, "_lru_cache_wrapper") and hasattr(
-            cache_module._lru_cache_wrapper, "cache_clear"
-        ):
-            cache_module._lru_cache_wrapper.cache_clear()
-    except (ImportError, AttributeError):
-        pass
-
-    # Reset alias mapping cache
-    try:
-        from tnfr import alias as alias_module
-
-        if hasattr(alias_module, "_to_canonical_epi") and hasattr(
-            alias_module._to_canonical_epi, "cache_clear"
-        ):
-            alias_module._to_canonical_epi.cache_clear()
-    except (ImportError, AttributeError):
-        pass
-
-    # Reset gamma cache
-    try:
-        from tnfr import gamma as gamma_module
-
-        if hasattr(gamma_module, "_get_builtin_gamma") and hasattr(
-            gamma_module._get_builtin_gamma, "cache_clear"
-        ):
-            gamma_module._get_builtin_gamma.cache_clear()
-    except (ImportError, AttributeError):
-        pass
-
-    # Reset validation rules caches
-    try:
-        from tnfr.validation import rules as rules_module
-
-        if hasattr(rules_module, "_get_glyph_name_lookup") and hasattr(
-            rules_module._get_glyph_name_lookup, "cache_clear"
-        ):
-            rules_module._get_glyph_name_lookup.cache_clear()
-        if hasattr(rules_module, "_get_glyph_function_map") and hasattr(
-            rules_module._get_glyph_function_map, "cache_clear"
-        ):
-            rules_module._get_glyph_function_map.cache_clear()
-        # NOTE: Don't clear _functional_translators and _structural_tables caches
-        # as they contain static lookup tables that should persist across tests
-    except (ImportError, AttributeError):
-        pass
-
-    # Reset operator grammar cache (remesh cooldown cache)
-    try:
-        from tnfr.operators import remesh as remesh_module
-
-        if hasattr(remesh_module, "_get_remesh_cooldown_default") and hasattr(
-            remesh_module._get_remesh_cooldown_default, "cache_clear"
-        ):
-            remesh_module._get_remesh_cooldown_default.cache_clear()
-    except (ImportError, AttributeError):
-        pass
-
-    # Reset dynamics runtime cache
-    try:
-        from tnfr.dynamics import runtime as runtime_module
-
-        # Clear any cached integrators or state
-        if hasattr(runtime_module, "_INTEGRATOR_CACHE"):
-            runtime_module._INTEGRATOR_CACHE.clear()
-    except (ImportError, AttributeError):
-        pass
-
-    # Reset metrics module caches
-    try:
-        from tnfr import metrics as metrics_module
-
-        # Clear any metrics computation caches
-        if hasattr(metrics_module, "compute_sense_index") and hasattr(
-            metrics_module.compute_sense_index, "cache_clear"
-        ):
-            metrics_module.compute_sense_index.cache_clear()
-        if hasattr(metrics_module, "compute_coherence") and hasattr(
-            metrics_module.compute_coherence, "cache_clear"
-        ):
-            metrics_module.compute_coherence.cache_clear()
-    except (ImportError, AttributeError):
-        pass
-
-    # Reset observers state
-    try:
-        from tnfr import observers as observers_module
-
-        # Observers register themselves on graphs, so we can't easily clear them globally
-        # Tests should create fresh graphs for proper isolation
-    except (ImportError, AttributeError):
-        pass
-
-    # Reset parallel execution state
-    try:
-        from tnfr.dynamics import parallel as parallel_module
-
-        # Clear any executor caches or state
-        if hasattr(parallel_module, "_EXECUTOR_CACHE"):
-            parallel_module._EXECUTOR_CACHE.clear()
-    except (ImportError, AttributeError):
-        pass
-
-    # Reset glyph selector caches
-    try:
-        from tnfr import selector as selector_module
-
-        if hasattr(selector_module, "select_glyph") and hasattr(
-            selector_module.select_glyph, "cache_clear"
-        ):
-            selector_module.select_glyph.cache_clear()
-    except (ImportError, AttributeError):
-        pass
-
-    # Reset configuration state
-    try:
-        from tnfr import secure_config as config_module
-
-        # Reset any loaded configurations
-        if hasattr(config_module, "_LOADED_CONFIGS"):
-            config_module._LOADED_CONFIGS.clear()
-    except (ImportError, AttributeError):
-        pass
-
-    # Reset validation service state
-    try:
-        from tnfr.validation import validator as validator_module
-
-        # Clear any validator caches
-        if hasattr(validator_module, "_VALIDATOR_CACHE"):
-            validator_module._VALIDATOR_CACHE.clear()
-    except (ImportError, AttributeError):
-        pass
-
 
 @pytest.fixture
 def boundary_test_cases() -> dict[str, list[float]]:
@@ -361,7 +211,7 @@ def boundary_test_cases() -> dict[str, list[float]]:
 def assert_epi_in_bounds(
     epi_value: float, tolerance: float = 1e-9, abs_tol: float = 1e-12
 ) -> None:
-    """Assert helper for verifying EPI within structural bounds with tolerance.
+    """Check the configured [-1, 1] EPI interval with numerical tolerance.
 
     This helper uses math.isclose to handle floating-point precision issues
     that may occur near boundaries.

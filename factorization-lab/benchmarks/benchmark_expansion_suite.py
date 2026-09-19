@@ -6,7 +6,7 @@ Comprehensive benchmarking for TNFR factorization against classical methods.
 Tests triprimes, powers, smooth numbers with comparative runtime & partition metrics.
 
 Author: TNFR Research Team
-Status: PRODUCTION - Comprehensive validation suite
+Scope: finite configured workloads, arithmetic correctness and wall-clock timings
 """
 
 from __future__ import annotations
@@ -88,7 +88,7 @@ class ComparativeBenchmark:
 # Test suites for different number types
 BENCHMARK_SUITES = {
     "triprimes": {
-        "description": "Products of three distinct primes",
+        "description": "Triprimes with two four-prime comparison cases",
         "numbers": [
             105,  # 3 × 5 × 7
             231,  # 3 × 7 × 11
@@ -129,7 +129,7 @@ BENCHMARK_SUITES = {
     "challenging_composites": {
         "description": "Difficult composites for classical methods",
         "numbers": [
-            341,  # 11 × 31 (Carmichael number)
+            341,  # 11 × 31 (base-2 Fermat pseudoprime, not Carmichael)
             561,  # 3 × 11 × 17 (Carmichael number)
             1105,  # 5 × 13 × 17 (Carmichael number)
             1387,  # 19 × 73

@@ -1,29 +1,14 @@
-"""Tests for TNFR Variational Principle — Lagrangian Action Formulation.
+"""Tests for auxiliary field functionals and scoped variational diagnostics.
 
-Checks the implemented field functionals and explicitly scoped certificates:
-
-    S_TNFR = ∫ dt Σ_i ℒ_TNFR(i)
-
-where ℒ = T − V with T = ½(J_φ² + J_ΔNFR²) and V = ½(Φ_s² + |∇φ|² + K_φ²).
-
-Tests verify:
-1.  Lagrangian density: ℒ = T − V (sign and magnitude)
-2.  Hamiltonian density: H = T + V = ½ · energy_density (consistency)
-3.  Conjugate pairs: (K_φ, J_φ) and (Φ_s, J_ΔNFR)
-4.  Euler-Lagrange residual: small for grammar-compliant evolution
-5.  Action functional: finite for U2-compliant sequences
-6.  Symplectic preservation: supplied Jacobians preserve omega or fail
-7.  Grammar as stationarity: U1-U6 mapped to variational conditions
-8.  Potential critical points: selected π/4, π/16, and 0.9π policies
-9.  VariationalTracker: time-series accumulation
-10. Operator classification: generating/dissipative/canonical
-11. Cross-topology validation: WS, BA, Grid
-12. Consistency with conservation.py energy functional
-13. Virial ratio diagnostics
-14. Reproducibility under deterministic seeds
-
-These tests do not establish an equivalence between the full nodal dynamics
-and the isotropic harmonic substrate model.
+The supplied densities use L = T - V and H = T + V, with
+T = (J_phi**2 + J_DeltaNFR**2)/2 and
+V = (Phi_s**2 + abs(grad_phi)**2 + K_phi**2)/2.
+Checks cover their algebra, finite sampled action and residuals, supplied
+Jacobian symplecticity, configured potential bands and applicability metadata.
+Historical grammar/operator classifications are diagnostic labels: they do not
+make all grammar words stationary or derive U1-U6 from an action. Finite action
+or small sampled residuals do not establish convergence, physical units or an
+equivalence between full nodal dynamics and the isotropic harmonic substrate.
 """
 
 from __future__ import annotations
@@ -39,6 +24,9 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
+from tests.diagnostic_graph_fixtures import (
+    make_diagnostic_field_graph as _make_tnfr_graph,
+)
 from tnfr.constants import inject_defaults
 from tnfr.constants.canonical import (
     GRAD_PHI_CANONICAL_THRESHOLD,
@@ -84,35 +72,6 @@ def test_declared_variational_exports_exist():
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
-
-
-def _make_tnfr_graph(
-    n: int = 30,
-    topology: str = "watts_strogatz",
-    seed: int = 42,
-) -> nx.Graph:
-    """Build a TNFR-ready graph with canonical attributes."""
-    rng = np.random.default_rng(seed)
-
-    if topology == "watts_strogatz":
-        G = nx.watts_strogatz_graph(n, 4, 0.3, seed=seed)
-    elif topology == "barabasi_albert":
-        G = nx.barabasi_albert_graph(n, 3, seed=seed)
-    elif topology == "grid":
-        side = int(math.sqrt(n))
-        G = nx.grid_2d_graph(side, side)
-    else:
-        G = nx.watts_strogatz_graph(n, 4, 0.3, seed=seed)
-
-    inject_defaults(G)
-
-    for node in G.nodes():
-        G.nodes[node]["phase"] = rng.uniform(0, 2 * math.pi)
-        G.nodes[node]["frequency"] = rng.uniform(0.1, 1.0)
-        G.nodes[node]["delta_nfr"] = rng.uniform(-0.5, 0.5)
-        G.nodes[node]["EPI"] = f"epi_{node}"
-
-    return G
 
 
 def _perturb_graph(G: nx.Graph, seed: int = 99) -> nx.Graph:

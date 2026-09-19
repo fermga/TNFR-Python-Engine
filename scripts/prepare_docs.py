@@ -91,7 +91,6 @@ def prepare() -> Path:
         "benchmarks",
         "factorization-lab",
         "primality-test",
-        "manual",
         "scripts",
         "src/tnfr",
         "tests",

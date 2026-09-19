@@ -1,10 +1,12 @@
-"""Tests for the emergent symplectic substrate.
+"""Tests for the specified auxiliary symplectic substrate.
 
 Module under test: physics/symplectic_substrate.py.
 Verifies the specified ambient harmonic model: antisymmetric non-degenerate
 closed 2-form, canonical
 Poisson brackets, Jacobi identity, Liouville volume preservation, harmonic
-Hamiltonian flow, and consistency with the canonical energy functional.
+Hamiltonian flow, and consistency with the canonical energy functional. These
+identities do not establish that the graph's nodal dynamics produces this flow
+or that its evolving coordinates remain realizable as graph fields.
 """
 
 from __future__ import annotations
@@ -184,7 +186,7 @@ class TestEnergyConsistency:
 
 
 class TestCanonicalCertificate:
-    """The full certificate validates the emergent symplectic manifold."""
+    """The certificate checks the specified ambient canonical structure."""
 
     def test_valid_manifold(self) -> None:
         G = _canonical_graph(30)

@@ -9,8 +9,9 @@
 ## 1. Scope
 
 This document records five scoped comparisons between TNFR observables and
-separately declared physical models. Each comparison states its assumptions,
-telemetry and validation artifact. The nodal equation
+separately declared physical models. Each comparison states its assumptions
+and available evidence; proposed comparisons without a retained driver are
+identified explicitly. The nodal equation
 $\partial\mathrm{EPI}/\partial t = \nu_f\,\Delta\mathrm{NFR}(t)$ directly gives a
 first-order structural drift law. It does not, by itself, derive Newtonian,
 quantum or thermodynamic dynamics. Those labels apply only to the adapters or
@@ -22,9 +23,9 @@ auxiliary models named below.
 |------------|----------------|-------------------|---------------|--------|
 | Classical adapter | `classical_mechanics.py` | Harmonic and circular-orbit closure | `test_classical_mechanics.py` | Finite regression |
 | Kinematic adapter | `classical_mechanics.py` | Two-train analytical | Embedded in example | Demonstrated |
-| Finite spectral model | `quantum_mechanics.py` | Particle in a box | None | Partial |
-| Fourier/interference model | Example only | Fourier bound | None | Partial |
-| Coupled-oscillator thermal proxy | Example only | Newton cooling law | None | Demonstration |
+| Finite spectral comparison | `quantum_mechanics.py` | Supplied mode labels | None | Legacy adapter; normalization unresolved |
+| Fourier/interference comparison | No retained driver | Declared Fourier convention required | None | Proposed correspondence only |
+| Coupled-oscillator thermal proxy | No retained driver | Newton cooling comparison proposed | None | Proposed correspondence only |
 
 ## 2. Classical Adapter and Overdamped Limit
 
@@ -187,21 +188,27 @@ wave equation, superposition principle or a measurement rule on its own.
 
 ### 4.4 Validation boundary
 
-`examples/02_physics_regimes/13_quantum_mechanics_demo.py` compares a declared
-one-dimensional cavity operator with its finite standing-wave spectrum. Until a
-dedicated quantitative test fixes operator, normalization and tolerances, this
-remains a partial spectral correspondence rather than a TNFR derivation of
-quantum mechanics.
+The retired example 13 adjusted an energy array toward an imposed phase
+reticulum using a handwritten noisy update. It did not construct a cavity
+operator or derive its spectrum; it is not retained as spectral evidence.
+
+The legacy `QuantumMechanicsMapper` remains an auxiliary adapter with unresolved
+conventions. `calculate_theoretical_levels(L)` currently returns `n**2` and
+ignores `L`, despite its docstring's `n**2/(8*L**2)` formula. Its reverse mapper
+constructs `abs(EPI)*exp(i*phase)` rather than inverting the separate assignment
+of complex input to `(K_phi, J_phi)`. These are not validated inverse mappings
+or a derived wave dynamics. A quantitative spectral comparison would need a
+declared operator, normalization and dedicated tests before supplying evidence.
 
 ## 5. Fourier Width and Interference Correspondence
 
 ### 5.1 Fourier-width product
 
-For a declared signal window, temporal and frequency widths satisfy the
-uncertainty relation associated with the selected Fourier convention. A
-Gaussian value near $0.16$ is convention-dependent; it is not a universal TNFR
-constant. Every reported product must name the width estimator, normalization
-and sampling window.
+An analytical Fourier-width bound requires specified normalization, integrable
+signals and a compatible second-moment definition. A finite sampled window
+does not automatically inherit that bound. Every reported product must name
+its width estimator, Fourier convention and sampling window; no fixed TNFR
+constant has been derived by this comparison.
 
 ### 5.2 Two-path interference
 
@@ -214,17 +221,19 @@ direct argument of the constitutive $C(t)$ kernel.
 
 ### 5.3 Validation boundary
 
-`examples/02_physics_regimes/14_uncertainty_and_interference.py` demonstrates a
-finite Fourier-width product and an auxiliary interference pattern. It does not
-currently validate a fixed analytical bound or a canonical pressure-to-phase
-bridge, and it has no dedicated test module.
+The retired example 14 combined a raw-array Fourier-width calculation with a
+separately forced wave-grid model. Its magnitude-weighted, truncated frequency
+read-out did not validate a stated analytical uncertainty bound; its wave
+intensity was not canonical structural coherence. No quantitative validation
+or canonical pressure-to-phase bridge is retained for this proposed comparison.
 
 ## 6. Coupled-oscillator Thermal Proxy
 
-This section concerns `17_thermodynamics_demo.py`, which uses a Kuramoto-style
-phase model and thermal labels for selected diagnostics. It does not derive the
-laws of thermodynamics from TNFR and currently has no dedicated quantitative
-test.
+This section describes a proposed Kuramoto-style comparison with thermal labels
+for selected diagnostics. The previously cited `17_thermodynamics_demo.py` is
+not a retained entry point; example 17 concerns conservation instead. There is
+no dedicated quantitative thermal validation here and no derivation of the
+laws of thermodynamics from TNFR.
 
 ### 6.1 Declared proxy mapping
 
@@ -261,16 +270,16 @@ omitting named stabilizers or closure operators.
 
 ### 6.5 Cooling comparison
 
-The coffee-cup example evolves a central random-phase patch and an outer aligned
-ring with a coupled-oscillator equation. A Newton-cooling comparison would fit
+A proposed coffee-cup proxy would couple a central random-phase patch to an
+outer aligned ring under a supplied oscillator law. A Newton-cooling comparison would fit
 
 $$
 T(t)=T_{\mathrm{env}}+(T_0-T_{\mathrm{env}})e^{-kt}
 $$
 
 to a predeclared temperature proxy and report residuals and uncertainty. The
-current demonstration does not yet extract that time constant, so exponential
-cooling remains a hypothesis to test.
+comparison has no retained validated driver or extracted time constant;
+exponential cooling remains a hypothesis outside the active research gate.
 
 ## 7. Regime Transition Summary
 
@@ -303,8 +312,6 @@ equation.
 | Symplectic integrators | `src/tnfr/dynamics/symplectic.py` |
 | Structural field computation | `src/tnfr/physics/fields.py` |
 | Central-force demonstration | `examples/02_physics_regimes/12_classical_mechanics_demo.py` |
-| Quantum cavity benchmark | `examples/02_physics_regimes/13_quantum_mechanics_demo.py` |
-| Uncertainty/interference | `examples/02_physics_regimes/14_uncertainty_and_interference.py` |
 | Two-train kinematics | `examples/02_physics_regimes/15_train_crossing_demo.py` |
 
 ---
@@ -357,14 +364,12 @@ does not override those observational dependencies or provide a force law.
 |---------|---------------------------|
 | [11_classical_limit_comparison.py](../examples/02_physics_regimes/11_classical_limit_comparison.py) | Finite comparison of Newtonian and declared phase-coupled N-body adapters |
 | [12_classical_mechanics_demo.py](../examples/02_physics_regimes/12_classical_mechanics_demo.py) | Declared inverse-square central-force trajectory |
-| [13_quantum_mechanics_demo.py](../examples/02_physics_regimes/13_quantum_mechanics_demo.py) | Finite standing-wave spectral correspondence |
-| [14_uncertainty_and_interference.py](../examples/02_physics_regimes/14_uncertainty_and_interference.py) | Auxiliary Fourier-width and interference correspondence |
 | [15_train_crossing_demo.py](../examples/02_physics_regimes/15_train_crossing_demo.py) | Prescribed constant-velocity kinematic adapter |
 
 ### Key Source Modules
 
 - `src/tnfr/physics/classical_mechanics.py` — Explicit classical adapter and diagnostics
-- `src/tnfr/physics/quantum_mechanics.py` — Finite spectral correspondence utilities
+- `src/tnfr/physics/quantum_mechanics.py` — Legacy mappings and supplied mode labels; limitations in §4.4
 
 ---
 

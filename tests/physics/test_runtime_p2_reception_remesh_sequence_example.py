@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-import importlib.util
-import json
 from pathlib import Path
 
 import pytest
 
 import tnfr.physics as physics
 import tnfr.physics.runtime_p2_reception_remesh_sequence as sequence_module
+from tests.example_protocol_helpers import assert_prebuilt_report_main, load_example
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE_PATH = (
@@ -20,20 +19,9 @@ EXAMPLE_PATH = (
 )
 
 
-def _load_example():
-    spec = importlib.util.spec_from_file_location(
-        "runtime_p2_reception_remesh_sequence_example",
-        EXAMPLE_PATH,
-    )
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
 @pytest.fixture(scope="module")
 def example_protocol_report():
-    example = _load_example()
+    example = load_example(EXAMPLE_PATH)
     protocol = example.run_protocol()
     return example, protocol, example.build_report(protocol)
 
@@ -86,14 +74,7 @@ def test_example_keeps_finite_scope_explicit(example_protocol_report) -> None:
 
 
 def test_main_emits_the_prebuilt_finite_report(
-    example_protocol_report,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    example, protocol, report = example_protocol_report
-    monkeypatch.setattr(example, "run_protocol", lambda: protocol)
-    monkeypatch.setattr(example, "build_report", lambda _value: report)
-
-    example.main()
-
-    assert json.loads(capsys.readouterr().out) == report
+    assert_prebuilt_report_main(load_example(EXAMPLE_PATH), monkeypatch, capsys)

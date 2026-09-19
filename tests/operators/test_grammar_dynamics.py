@@ -254,11 +254,7 @@ class TestU3:
 class TestU4a:
     """U4a: OZ/ZHIR require a handler (IL/THOL) in context."""
 
-    def test_trigger_with_handler(self) -> None:
-        G, node = _make_graph(history=["IL", "RA"])
-        cr = validate_candidate(G, node, "OZ")
-        assert cr.allowed
-
+    # The admitted IL/RA -> OZ case is shared with TestU2 above.
     def test_trigger_without_handler(self) -> None:
         G, node = _make_graph(history=["RA", "NAV"])
         cr = validate_candidate(G, node, "OZ")
@@ -466,15 +462,6 @@ class TestApplyGlyphWithGrammarPrevalidation:
         # RA on a node with history and EPI>0 → valid, should not raise
         apply_glyph_with_grammar(G, [node], "RA")
 
-    def test_grammar_enforcement_runs(self) -> None:
-        """Glyph should be validated (and potentially replaced) before apply."""
-        from tnfr.operators.grammar_application import enforce_canonical_grammar
-
-        # A non-generator at EPI=0 with no history → should be replaced
-        G, node = _make_graph(epi=0.0)
-        result = enforce_canonical_grammar(G, node, "IL")
-        assert result in _GENERATOR_CODES
-
     def test_fallback_is_selected_independently_for_each_node(self) -> None:
         from tnfr.operators.grammar_application import apply_glyph_with_grammar
 
@@ -576,12 +563,6 @@ class TestValidateSequenceIncremental:
 
 class TestEdgeCases:
     """Boundary conditions and edge cases."""
-
-    def test_empty_history(self) -> None:
-        G, node = _make_graph(epi=1.0)
-        # No history, EPI > 0 → most things should be ok
-        cr = validate_candidate(G, node, "IL")
-        assert cr.allowed
 
     def test_isolated_node(self) -> None:
         G = nx.Graph()

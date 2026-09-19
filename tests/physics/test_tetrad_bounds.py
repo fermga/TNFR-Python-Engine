@@ -1,10 +1,11 @@
-"""Genuine structural-field tetrad bounds (π is the sole structural scale).
+"""Phase-wrap bounds and finite readout checks on declared graph fixtures.
 
 The four-field tetrad is the repository's canonical structural read-out; its
-universal observability minimality remains open. The only genuine structural
-scale is π: both phase derivatives are wrapped angles, so |∇φ| ≤ π and |K_φ| ≤
-π for any configuration. These tests check field computability and those π
-bounds — no φ/γ/e correspondence.
+universal observability minimality remains open. Defined phase derivatives are
+wrapped angles, so |∇φ| ≤ π and |K_φ| ≤ π. This phase-sector bound does not
+identify a unique physical scale for the potential or correlation length.
+These tests check the bounds and field computability on their fixtures;
+curvature at a cancelled circular mean remains outside the numeric readout.
 """
 
 from __future__ import annotations

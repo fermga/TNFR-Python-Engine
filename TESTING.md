@@ -21,11 +21,20 @@ python -m pytest
 dependency. There are no `dev` or `all` extras. Smaller extras such as
 `test-unit` install only their declared tools and may not support collection
 of the whole repository.
+Aggregate extras reference the smaller groups so their dependency bounds have
+one owner; the compatibility alias does not maintain another dependency list.
 
 The default configuration sets `pythonpath = ["src"]`, `testpaths = ["tests"]`
 and `addopts = "-m 'not slow'"`. Pytest imports the working source tree and
 excludes tests marked slow. It does not enable strict markers, benchmark skipping
 or short tracebacks automatically.
+
+Local execution is serial by default. To use the main CI scheduling policy,
+run `python -m pytest -n 2 --dist loadfile`; this keeps the same `not slow`
+selection and assertions. Each file stays on one worker to reuse its module
+fixtures. Workers isolate Python state and prepare session fixtures independently.
+Pytest-benchmark does not collect timing measurements
+under xdist; performance measurements need a separate serial run.
 
 Choose an affected directory, module or test for bounded validation:
 
@@ -53,15 +62,39 @@ Core nodal behavior is in [core_physics/](tests/core_physics/), operators in
 [operators/](tests/operators/), specialized certificates in
 [physics/](tests/physics/) and public network usage in [sdk/](tests/sdk/).
 [conftest.py](tests/conftest.py) and [utils.py](tests/utils.py) own shared helpers.
+The [core scope map](tests/core_physics/README.md) identifies the engine tests
+that replace retired self-contained illustrations.
+
+The separately packaged arithmetic applications have their own test paths:
+
+```sh
+python -m pytest factorization-lab/tests -q
+python -m pytest factorization-lab/benchmarks/test_benchmark_suite.py -q
+python -m pytest primality-test/tests -q
+```
+
+Run these as separate invocations: their local import roots differ from the core
+suite. The root default selection does not include them. See the corresponding
+[factorization guide](factorization-lab/README.md) and
+[primality guide](primality-test/README.md) for application setup and scope.
 
 Research producers under [benchmarks/](benchmarks/README.md) have declared entry
 points and provenance requirements; a default pytest run does not implicitly
 cover them. Do not regenerate retained evidence for an unrelated change.
 
-The [Makefile](Makefile) target `make test` runs the core_physics, operators
-and physics directories, then executes `benchmarks/riemann_program.py`. It
-is neither the full pytest suite nor a guaranteed quick check. `make validate`
-checks importability, references, documentation integrity and SDK tests.
+For examples with `run_protocol` and `build_report`, reuse the real report through
+a module fixture for numerical and scope checks. The shared
+[example helper](tests/example_protocol_helpers.py) checks `main` separately with
+a sentinel protocol and synthetic report, without rerunning a scientific producer.
+[Runtime facade tests](tests/physics/test_runtime_facade_imports.py) own the two
+cold import orders for the P2/REMESH example families; those checks still use
+fresh processes and resolve the actual public APIs.
+
+The [Makefile](Makefile) target `make test` uses the configured pytest selection;
+`make dev-test` adds coverage over `src`, including compatibility shims. Research
+producers run through their explicit targets, such as `make riemann-benchmark`.
+`make validate` checks importability, references, documentation integrity and
+SDK tests.
 
 ## Structural regression evidence
 
@@ -184,6 +217,12 @@ python -m pytest tests/sdk --cov=tnfr --cov-report=term-missing
 ```
 
 The current project configuration does not enforce a coverage percentage.
+The Python 3.11 CI job instead uses `--cov=src` to retain the whole source-directory
+scope, with `-n 2 --dist loadfile`. Pytest-cov combines the workers' data and
+produces terminal and XML reports. Do not wrap distributed pytest with
+`coverage run`: that alone measures the controller instead of combining worker
+execution. Coverage of Python subprocesses launched inside tests is a separate
+configuration and is not enabled here.
 
 ## Retained C6 campaign reproduction
 

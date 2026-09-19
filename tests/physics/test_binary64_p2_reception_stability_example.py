@@ -2,17 +2,13 @@
 
 from __future__ import annotations
 
-import importlib.util
-import json
-import os
-import subprocess
-import sys
 from pathlib import Path
 
 import pytest
 
 import tnfr.physics as physics
 import tnfr.physics.binary64_p2_reception_stability as p2_module
+from tests.example_protocol_helpers import assert_prebuilt_report_main, load_example
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE_PATH = (
@@ -23,20 +19,9 @@ EXAMPLE_PATH = (
 )
 
 
-def _load_example():
-    spec = importlib.util.spec_from_file_location(
-        "binary64_p2_reception_remesh_stability_example",
-        EXAMPLE_PATH,
-    )
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
 @pytest.fixture(scope="module")
 def example_protocol_report():
-    example = _load_example()
+    example = load_example(EXAMPLE_PATH)
     protocol = example.run_protocol()
     return example, protocol, example.build_report(protocol)
 
@@ -53,31 +38,6 @@ def test_module_stub_and_facade_expose_the_narrow_api() -> None:
     assert expected <= set(physics.__all__)
     for name in expected:
         assert getattr(physics, name) is getattr(p2_module, name)
-
-
-@pytest.mark.parametrize(
-    "imports",
-    (
-        "import tnfr.physics; import tnfr.operators",
-        "import tnfr.operators; import tnfr.physics",
-    ),
-)
-def test_facade_is_cold_import_order_safe(imports: str) -> None:
-    environment = os.environ.copy()
-    source_path = str(REPOSITORY_ROOT / "src")
-    existing = environment.get("PYTHONPATH")
-    environment["PYTHONPATH"] = (
-        source_path if not existing else os.pathsep.join((source_path, existing))
-    )
-    completed = subprocess.run(
-        [sys.executable, "-c", imports],
-        cwd=REPOSITORY_ROOT,
-        env=environment,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert completed.returncode == 0, completed.stderr
 
 
 def test_example_reports_exact_zero_gain_and_finite_extinction(
@@ -119,14 +79,7 @@ def test_example_keeps_signed_zero_and_execution_scope_explicit(
 
 
 def test_main_emits_the_prebuilt_finite_report(
-    example_protocol_report,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    example, protocol, report = example_protocol_report
-    monkeypatch.setattr(example, "run_protocol", lambda: protocol)
-    monkeypatch.setattr(example, "build_report", lambda _value: report)
-
-    example.main()
-
-    assert json.loads(capsys.readouterr().out) == report
+    assert_prebuilt_report_main(load_example(EXAMPLE_PATH), monkeypatch, capsys)

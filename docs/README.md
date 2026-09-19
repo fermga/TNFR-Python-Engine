@@ -33,7 +33,6 @@ provides the detailed scientific-document inventory and status.
 | Optional Torch backend | [Torch scope](TORCH_BACKEND.md) | Backend operations versus graph-pressure execution and measured acceleration |
 | Structural application interfaces | [Interface guide](STRUCTURAL_INTERFACE_THEORY.md) | Engineering protocol; independent validation required |
 | EEG correspondence report | [EEG report](EMPIRICAL_CONFRONTATION_EEG.md) | External report, not admission of the repository measurement model |
-| Spanish educational manuscript | [Manual index](../manual/INDEX.md) | Editorial draft subordinate to technical owners; language retained by user request |
 | Historical release notes | [Changelog](../CHANGELOG.md) | Statements about past versions, not current guarantees |
 | Research history | [Historical archive](../theory/research/archive/README.md) | Frozen source context and explicit supersession |
 
@@ -48,8 +47,8 @@ when its source metadata changes. This command does not prove mathematical claim
 
 The agent mirror is the only intentionally exact prose duplicate. Templates
 provide structure and links; they do not define extra grammar or acceptance laws.
-The manual may use analogies, but an analogy cannot override a technical contract
-or become evidence of physical emergence.
+An educational analogy cannot override a technical contract or become evidence
+of physical emergence.
 
 ## Historical and generated material
 

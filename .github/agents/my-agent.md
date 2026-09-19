@@ -34,8 +34,6 @@ theorem true. Update this file as a coherent reference, not a session log.
 
 - Use English in code, documentation, comments, commits, issues and PRs;
   preserve verbatim quotations and raw data in their original language.
-  The educational manuscript in `manual/` retains Spanish by explicit user
-  instruction; its technical claims follow the same current scope.
 - State the model, assumptions and evidence for claims. Distinguish exact
   identities, conditional theorems, configured contracts, finite observations,
   auxiliary models and open hypotheses.

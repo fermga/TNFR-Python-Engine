@@ -9,7 +9,7 @@ not establish current GitHub run health, branch protection or enabled secrets.
 
 | Workflow | Trigger and configured scope |
 | --- | --- |
-| [ci.yml](workflows/ci.yml) | Push and PR to main/master. Blocking formatting hooks, flake8 and default pytest selection on Python 3.10–3.13; coverage report on 3.11. Pydocstyle, mypy, pyright and vulture report advisories. |
+| [ci.yml](workflows/ci.yml) | Push and PR to main/master. Blocking formatting hooks, flake8 and default pytest selection on Python 3.10–3.13 with two pytest-xdist workers; combined coverage report on 3.11. Pydocstyle, mypy, pyright and vulture report advisories. |
 | [tests.yml](workflows/tests.yml) | Push and PR to main. Focused SDK tests on Python 3.11; overlaps the broader CI selection. |
 | [docs.yml](workflows/docs.yml) | Filtered push/PR to main and manual invocation. References, documentation integrity, staging and strict MkDocs build; publishes Pages only on pushes to main. |
 | [verify-references.yml](workflows/verify-references.yml) | Filtered Markdown/notebook changes on PRs and pushes to main/develop. Independent local Markdown target and fragment check. |
@@ -25,8 +25,23 @@ percentage, prove physical theorems or certify every optional backend. Audit
 coverage excludes optional compute, documentation and deployment environments
 unless their dependencies happen to be installed through the declared groups.
 
+The main test matrix uses `-n 2 --dist loadfile`; worker scheduling changes
+execution order, not test selection or assertions. Each file stays on one worker,
+so its module fixtures are reused across its tests. Workers own separate Python
+state and session fixtures. Tests that write files must retain independent
+temporary paths. Python 3.11 uses pytest-cov to combine
+worker coverage over `src`, preserving the previous source-directory scope.
+The existing configuration does not enable coverage of separate Python
+subprocesses launched by tests.
+
+Pytest-benchmark automatically disables timing measurements under xdist, while
+still running benchmarked functions and their assertions. The current `tests/`
+suite has no consumers of its benchmark fixture; this matrix is not a timing
+benchmark. Run future performance measurements separately without xdist.
+
 Each Python test job attempts to retain its JUnit report for 14 days, including
-when tests fail. A report from an interrupted run covers only the tests reached;
+when tests fail. The 3.11 job also retains its combined coverage XML when
+produced. A report from an interrupted run covers only the tests reached;
 its presence does not establish completion or success.
 
 ## Documentation publication

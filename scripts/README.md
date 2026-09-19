@@ -25,8 +25,8 @@ their original context. Local
 research evidence is identified explicitly instead of linked as published content.
 
 The reference check also resolves this repository's GitHub `blob/main` and
-`tree/main` links against the checkout. It includes the Spanish manuscript and
-reference-style links, and ignores Markdown examples inside fenced code blocks.
+`tree/main` links against the checkout. It resolves reference-style links and
+ignores Markdown examples inside fenced code blocks.
 External websites and frozen run captures are outside this local check.
 
 The operator table in `docs/API_CONTRACTS.md` is generated from the registry.

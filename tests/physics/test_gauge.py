@@ -1,29 +1,13 @@
-"""Tests for the auxiliary U(1) field-coordinate diagnostics.
+"""Tests for auxiliary U(1) field-coordinate diagnostics.
 
-The local rotation identities are algebraic.  The bundled connection
-A=d(arg Ψ) is pure gauge, so its cycle sum vanishes analytically and the
-curvature/Yang-Mills-named outputs are numerical closure diagnostics.
-
-Tests verify:
-1.  Gauge transformation: K_φ'/J_φ' rotation by angle α
-2.  |Ψ|² invariance under local U(1)
-3.  Energy density ℰ invariance
-4.  Topological norm |𝒯|² = 𝒬² + 𝒬̃² invariance
-5.  Chirality norm |𝒳|² = χ² + χ̃² invariance
-6.  Symmetry breaking 𝒮 non-invariance
-7.  Noether charge Q NON-invariance (expected)
-8.  Gauge connection A_ij = arg(Ψ_j) − arg(Ψ_i) antisymmetry
-9.  Covariant derivative D_ij Ψ magnitude invariance
-10. Exact-connection cycle closure F_C ≈ 0
-11. Legacy Yang-Mills diagnostic is numerical residual only
-12. Energy decomposition consistency
-13. Interaction regime classification
-14. Multi-topology validation (WS, BA, Grid)
-15. Dual charges (𝒬̃, χ̃) correctness
-16. GaugeSnapshot capture
-17. Reproducibility under deterministic seeds
-
-TIER: AUXILIARY ALGEBRAIC MODEL — no operator or dynamical derivation.
+The specified rotations preserve selected coordinate norms and transform other
+fields covariantly. The supplied connection A = d(arg Psi) is an exact vertex-
+argument difference, with analytic cycle closure; the Yang-Mills-named outputs
+measure numerical closure residuals of this construction. Tests also cover the
+configured interaction-regime readouts on fresh seeded graph fixtures.
+These algebraic checks do not establish that the coordinate rotations are
+realizable as nodal operators, that their flow is autonomous or that the
+regimes identify physical forces.
 """
 
 from __future__ import annotations
@@ -38,6 +22,9 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
+from tests.diagnostic_graph_fixtures import (
+    make_diagnostic_field_graph as _make_tnfr_graph,
+)
 from tnfr.constants import inject_defaults
 from tnfr.physics.canonical import compute_phase_curvature, compute_phase_gradient
 from tnfr.physics.extended import compute_dnfr_flux, compute_phase_current
@@ -85,35 +72,6 @@ from tnfr.physics.unified import (
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
-
-
-def _make_tnfr_graph(
-    n: int = 30,
-    topology: str = "watts_strogatz",
-    seed: int = 42,
-) -> nx.Graph:
-    """Build a TNFR-ready graph with canonical attributes."""
-    rng = np.random.default_rng(seed)
-
-    if topology == "watts_strogatz":
-        G = nx.watts_strogatz_graph(n, 4, 0.3, seed=seed)
-    elif topology == "barabasi_albert":
-        G = nx.barabasi_albert_graph(n, 3, seed=seed)
-    elif topology == "grid":
-        side = int(math.sqrt(n))
-        G = nx.grid_2d_graph(side, side)
-    else:
-        G = nx.watts_strogatz_graph(n, 4, 0.3, seed=seed)
-
-    inject_defaults(G)
-
-    for node in G.nodes():
-        G.nodes[node]["phase"] = rng.uniform(0, 2 * math.pi)
-        G.nodes[node]["frequency"] = rng.uniform(0.1, 1.0)
-        G.nodes[node]["delta_nfr"] = rng.uniform(-0.5, 0.5)
-        G.nodes[node]["EPI"] = f"epi_{node}"
-
-    return G
 
 
 @pytest.fixture

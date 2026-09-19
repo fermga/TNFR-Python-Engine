@@ -23,6 +23,7 @@ import pytest
 
 pytest.importorskip("networkx")
 
+from tnfr.validation import temporal_interface
 from tnfr.validation.temporal_interface import (
     EarlyWarningComparison,
     TemporalInterfaceConfig,
@@ -52,6 +53,28 @@ def _load_benchmark_module():
 
 
 BENCH = _load_benchmark_module()
+
+
+@pytest.fixture(scope="module")
+def synthetic_fold_observation():
+    """Share one real computation across its read-only output contracts."""
+    signal = BENCH.synthetic_fold_transition(n=2400, transition_at=1800, seed=6)
+    config = TemporalInterfaceConfig(window=240, step=30)
+    windows = []
+
+    def capture_windows(*args, **kwargs):
+        result = window_tetrad_series(*args, **kwargs)
+        windows.append(result)
+        return result
+
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(temporal_interface, "window_tetrad_series", capture_windows)
+        comparison = evaluate_early_warning(
+            signal, transition_index=1800, config=config
+        )
+    assert len(windows) == 1
+    assert comparison.metadata["n_windows"] == windows[0].window_end.size
+    return windows[0], comparison
 
 
 # ---------------------------------------------------------------------------
@@ -120,10 +143,8 @@ def test_build_graph_sets_phase_and_pressure_attributes():
 # ---------------------------------------------------------------------------
 # Rolling tetrad and baselines
 # ---------------------------------------------------------------------------
-def test_window_tetrad_series_structure():
-    series = BENCH.synthetic_fold_transition(n=1200, transition_at=900, seed=3)
-    config = TemporalInterfaceConfig(window=200, step=40)
-    out = window_tetrad_series(series, config=config)
+def test_window_tetrad_series_structure(synthetic_fold_observation):
+    out, _ = synthetic_fold_observation
     assert isinstance(out, WindowTetradSeries)
     # window_end must be strictly increasing.
     assert np.all(np.diff(out.window_end) > 0)
@@ -183,10 +204,8 @@ def test_kendall_tau_handles_nan_and_short():
 # ---------------------------------------------------------------------------
 # Early-warning evaluation
 # ---------------------------------------------------------------------------
-def test_evaluate_early_warning_reports_comparison():
-    series = BENCH.synthetic_fold_transition(n=2400, transition_at=1800, seed=6)
-    config = TemporalInterfaceConfig(window=240, step=30)
-    result = evaluate_early_warning(series, transition_index=1800, config=config)
+def test_evaluate_early_warning_reports_comparison(synthetic_fold_observation):
+    _, result = synthetic_fold_observation
     assert isinstance(result, EarlyWarningComparison)
     assert set(result.tnfr_indicators).issubset(set(result.trends))
     assert set(result.baseline_indicators).issubset(set(result.trends))
@@ -197,10 +216,8 @@ def test_evaluate_early_warning_reports_comparison():
     assert result.best_baseline[1] >= result.best_tnfr[1]
 
 
-def test_evaluate_early_warning_summary_runs():
-    series = BENCH.synthetic_fold_transition(n=1200, transition_at=900, seed=7)
-    config = TemporalInterfaceConfig(window=200, step=40)
-    result = evaluate_early_warning(series, transition_index=900, config=config)
+def test_evaluate_early_warning_summary_runs(synthetic_fold_observation):
+    _, result = synthetic_fold_observation
     summary = result.summary()
     assert isinstance(summary, str) and summary
 
@@ -277,8 +294,34 @@ def test_download_grid_frequency_graceful_skip(monkeypatch, tmp_path):
     assert result is None
 
 
-def test_run_temporal_benchmark_synthetic_ok():
-    config = TemporalInterfaceConfig(window=240, step=30)
+def test_run_temporal_benchmark_uses_one_comparison_and_its_window_count(monkeypatch):
+    signal = np.linspace(0.0, 1.0, 16)
+    config = TemporalInterfaceConfig(window=8, step=4, k_neighbours=2)
+    comparison = EarlyWarningComparison(
+        indicators=("grad_phi", "variance"),
+        trends={"grad_phi": 0.123456, "variance": float("nan")},
+        tnfr_indicators=("grad_phi",),
+        baseline_indicators=("variance",),
+        best_tnfr=("grad_phi", 0.123456),
+        best_baseline=("variance", float("nan")),
+        n_pre_transition_windows=3,
+        interpretation="Controlled serialization input, not numerical evidence.",
+        metadata={"n_windows": 3},
+    )
+    calls = []
+
+    def evaluate(received, *, transition_index, config):
+        calls.append((received, transition_index, config))
+        return comparison
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("the benchmark must not recompute window telemetry")
+
+    monkeypatch.setattr(BENCH, "synthetic_fold_transition", lambda: signal)
+    monkeypatch.setattr(BENCH, "evaluate_early_warning", evaluate)
+    # Guard both the owner and the historical directly imported alias.
+    monkeypatch.setattr(temporal_interface, "window_tetrad_series", forbidden)
+    monkeypatch.setattr(BENCH, "window_tetrad_series", forbidden, raising=False)
     report = BENCH.run_temporal_benchmark(
         source="synthetic",
         year=2020,
@@ -287,9 +330,19 @@ def test_run_temporal_benchmark_synthetic_ok():
         max_points=6000,
         max_bytes=80_000_000,
     )
+    assert len(calls) == 1
+    assert calls[0][0] is signal
+    assert calls[0][1] == 1800
+    assert calls[0][2] is config
     assert report["status"] == "ok"
-    assert report["n_windows"] > 0
-    assert "interpretation" in report
+    assert report["n_windows"] == comparison.metadata["n_windows"]
+    assert report["n_pre_transition_windows"] == 3
+    assert report["trends"] == {"grad_phi": 0.1235, "variance": None}
+    assert report["best_tnfr_tau"] == 0.1235
+    assert report["best_baseline_tau"] is None
+    assert report["interpretation"] == comparison.interpretation
+    assert report["processing_mode"] == "retrospective_descriptive"
+    assert report["prospective_prediction"] is False
 
 
 def test_run_temporal_benchmark_grid_graceful_skip(monkeypatch):

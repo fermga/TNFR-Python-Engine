@@ -75,8 +75,13 @@ independent proof of every retained theorem or a new physical experiment.
 
 The [second retirement manifest](DOCUMENTATION_SECOND_CLEANUP_MANIFEST_2026-09-19.json)
 records obsolete entry points, their reasons for retirement and current owners.
-The old spectral notebook and four-chapter editorial verdict retain exact
-original bytes in their respective project archives. The
-[documentation map](../../../docs/README.md) owns the current guide structure;
-[the Spanish manuscript index](../../../manual/INDEX.md) owns its draft status.
+The old spectral notebook retains exact original bytes in its project archive.
+The educational manuscript, including its editorial archive, was subsequently
+removed by the repository owner. The
+[documentation map](../../../docs/README.md) owns the current guide structure.
 This maintenance pass does not advance the scientific execution gate.
+
+The subsequent [tests/examples retirement map](TESTS_EXAMPLES_CLEANUP_2026-09-19.json)
+records removed paths, original Git-blob hashes and retained controls, including
+the owner-requested manuscript removal. Current test/example helpers remain in
+their maintained directories; retired code is recoverable from Git history.

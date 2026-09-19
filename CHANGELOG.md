@@ -24,13 +24,13 @@ All notable changes to this project will be documented in this file.
   queue; archived long historical notebooks and superseded proposals unchanged.
 - Corrected unsupported conservation, complete-state, autonomous-emergence and
   arithmetic claims in guides, source explanations and release metadata.
-- Revised the 26-chapter Spanish educational manuscript as an explicitly labeled
-  draft with technical references and a separate reader-evaluation protocol.
+- Removed the educational manuscript and its site navigation; maintained
+  technical guides and examples own the current explanations.
 - Generate the operator contract table from the registry and reject metadata
   drift. Validate local/current-main references, directory fragments and
   reference-style links; retain checks under optimized Python.
 - Build one MkDocs site with working mathematical typesetting, diagrams,
-  manuscript navigation and historical downloads.
+  current guide navigation and historical downloads.
 
 ### Maintenance and compatibility
 
@@ -61,6 +61,24 @@ All notable changes to this project will be documented in this file.
 - Classified the expensive C6 historical report producers as slow tests;
   their lightweight input-validation and independent exact-model checks remain
   in the default selection. No producer result is inferred from that classification.
+- Retired self-contained toy tests, copied verifier criteria, duplicate test
+  runners and obsolete curvature/timing campaigns. Retained their useful
+  contracts in tests that call the actual engine and preserved retirement reasons.
+- Replaced introductory toy dynamics with the shared SDK entry point. Removed
+  misleading standalone demonstrations and kept explicit model boundaries for
+  retained research examples.
+- Centralized example loading and CLI checks; retained independent numerical
+  assertions while reducing duplicated cold-import processes. Parallel CI keeps
+  each test file together so module fixtures run once per worker.
+- Reuse the temporal evaluation's existing window count instead of recomputing
+  its complete field series. Test report wiring separately from numerical work.
+- Share diagnostic graph preparation while retaining fresh mutable graphs.
+  Remove ineffective test resets for absent subsystems and retain the actual
+  cache, callback, RNG and transaction isolation controls.
+- Compose testing/development extras from their existing dependency groups.
+  `make test` follows the configured pytest suite; research producers have
+  separate explicit commands. Benchmark wrapper checks no longer accept arbitrary
+  exceptions as successful tests.
 
 ### Evidence and open scope
 

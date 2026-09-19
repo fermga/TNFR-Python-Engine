@@ -1,9 +1,11 @@
-"""Tests for scoped TNFR conservation/gauge snapshot diagnostics.
+"""Tests for scoped conservation/gauge snapshot diagnostics.
 
-The historical grammar-symmetry rows remain available, but each row states
-whether the supplied evidence can assess the corresponding U-rule. A current
-graph snapshot assesses U3 phase compatibility; U6 needs a reference state;
-U1, U2, U4, and U5 need operator or hierarchy context outside this module.
+These checks compare declared field decompositions, auxiliary geometric
+identities and the applicability metadata of historical grammar-symmetry rows.
+A current graph can assess U3 phase compatibility; U6 needs a reference;
+U1, U2, U4 and U5 need operator or hierarchy context outside a lone snapshot.
+Agreement between diagnostic formulas does not derive a joint nodal dynamics,
+conservation under arbitrary operators or physical gauge unification.
 """
 
 from __future__ import annotations
@@ -18,6 +20,9 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
+from tests.diagnostic_graph_fixtures import (
+    make_diagnostic_field_graph as _make_tnfr_graph,
+)
 from tnfr.constants import inject_defaults
 from tnfr.physics.conservation import capture_conservation_snapshot
 from tnfr.physics.conservation_gauge_unification import (
@@ -38,35 +43,6 @@ from tnfr.physics.conservation_gauge_unification import (
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
-
-
-def _make_tnfr_graph(
-    n: int = 30,
-    topology: str = "watts_strogatz",
-    seed: int = 42,
-) -> nx.Graph:
-    """Build a TNFR-ready graph with canonical attributes."""
-    rng = np.random.default_rng(seed)
-
-    if topology == "watts_strogatz":
-        G = nx.watts_strogatz_graph(n, 4, 0.3, seed=seed)
-    elif topology == "barabasi_albert":
-        G = nx.barabasi_albert_graph(n, 3, seed=seed)
-    elif topology == "grid":
-        side = int(math.sqrt(n))
-        G = nx.grid_2d_graph(side, side)
-    else:
-        G = nx.watts_strogatz_graph(n, 4, 0.3, seed=seed)
-
-    inject_defaults(G)
-
-    for node in G.nodes():
-        G.nodes[node]["phase"] = rng.uniform(0, 2 * math.pi)
-        G.nodes[node]["frequency"] = rng.uniform(0.1, 1.0)
-        G.nodes[node]["delta_nfr"] = rng.uniform(-0.5, 0.5)
-        G.nodes[node]["EPI"] = f"epi_{node}"
-
-    return G
 
 
 @pytest.fixture
