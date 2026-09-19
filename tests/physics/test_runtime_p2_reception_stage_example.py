@@ -5,15 +5,14 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
 import tnfr.physics as physics
 import tnfr.physics.runtime_p2_reception_stage as runtime_p2_module
-
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE_PATH = (
@@ -48,8 +47,8 @@ def test_module_stub_and_facade_expose_the_runtime_api() -> None:
         "certify_executed_p2_half_reception_stage",
     }
     assert set(runtime_p2_module.__all__) == expected
-    stub = Path(runtime_p2_module.__file__).with_suffix(".pyi").read_text(
-        encoding="utf-8"
+    stub = (
+        Path(runtime_p2_module.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
     )
     assert "class ExecutedP2HalfReceptionStageCertificate" in stub
     assert "def certify_executed_p2_half_reception_stage" in stub

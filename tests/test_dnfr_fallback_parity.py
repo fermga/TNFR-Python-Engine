@@ -19,13 +19,19 @@ def _pressure(graph, *, vectorized, n_jobs=None):
 
 
 @pytest.mark.parametrize("channel", ["phase", "epi", "vf", "topo"])
-@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
 def test_fallback_matches_fused_channels(graph_type, channel):
     """Weighted successors, loops, parallel arcs and sinks retain semantics."""
     graph = graph_type()
     graph.add_nodes_from(range(5))
-    graph.add_weighted_edges_from([(0, 0, 1.0), (0, 1, 0.5), (0, 2, 1.5), (0, 1, 0.25), (1, 3, 0.0)])
-    graph.graph["_dnfr_weights"] = {key: float(key == channel) for key in ("phase", "epi", "vf", "topo")}
+    graph.add_weighted_edges_from(
+        [(0, 0, 1.0), (0, 1, 0.5), (0, 2, 1.5), (0, 1, 0.25), (1, 3, 0.0)]
+    )
+    graph.graph["_dnfr_weights"] = {
+        key: float(key == channel) for key in ("phase", "epi", "vf", "topo")
+    }
     for node in graph:
         set_attr(graph.nodes[node], ALIAS_EPI, node * 0.25)
         set_attr(graph.nodes[node], ALIAS_THETA, node * 0.2)
@@ -36,7 +42,9 @@ def test_fallback_matches_fused_channels(graph_type, channel):
 
 @pytest.mark.parametrize("n_jobs", [None, 2])
 @pytest.mark.parametrize("pure_python", [False, True])
-def test_fallback_weighted_epi_matches_random_walk_laplacian(n_jobs, pure_python, monkeypatch):
+def test_fallback_weighted_epi_matches_random_walk_laplacian(
+    n_jobs, pure_python, monkeypatch
+):
     """EPI pressure is D^-1 W EPI - EPI; outgoing-isolated nodes have zero."""
     graph = nx.DiGraph()
     graph.add_weighted_edges_from([(0, 1, 0.5), (0, 2, 1.5)])
@@ -52,4 +60,6 @@ def test_fallback_weighted_epi_matches_random_walk_laplacian(n_jobs, pure_python
         monkeypatch.setattr(dnfr_module, "np", None)
         monkeypatch.setattr(numerical_module, "np", None)
         monkeypatch.setattr(numerical_module, "NUMPY_AVAILABLE", False)
-    assert _pressure(graph, vectorized=False, n_jobs=n_jobs) == pytest.approx([1.75, 0.0, 0.0])
+    assert _pressure(graph, vectorized=False, n_jobs=n_jobs) == pytest.approx(
+        [1.75, 0.0, 0.0]
+    )

@@ -135,9 +135,7 @@ def run_adapter_system(
     )
     node_ids = [f"body_{index}" for index in range(system.n_bodies)]
     projector_rate_norm = float(
-        np.linalg.norm(
-            compute_tnfr_delta_nfr(system.graph, node_ids, system.hbar_str)
-        )
+        np.linalg.norm(compute_tnfr_delta_nfr(system.graph, node_ids, system.hbar_str))
     )
     initial_force_norm = float(
         np.linalg.norm(compute_nbody_pair_forces(system.graph, initial_positions))

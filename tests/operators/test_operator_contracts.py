@@ -8,11 +8,10 @@ display/class, and symbolic naming layers remain distinct.
 
 from __future__ import annotations
 
+import warnings
 from collections import deque
 
 import networkx as nx
-import warnings
-
 import pytest
 
 from tnfr.operators.grammar_types import FUNCTION_TO_GLYPH
@@ -23,8 +22,8 @@ from tnfr.operators.operator_contracts import (
     OperatorContract,
     OperatorScale,
     StateChannel,
-    contract_identifiability_certificate,
     contract_for,
+    contract_identifiability_certificate,
     english_name,
     iter_contracts,
     operators_at_scale,
@@ -135,24 +134,22 @@ class TestGroundTruthChannels:
         )
         for node, value in enumerate((1.0, -2.0)):
             graph.nodes[node]["EPI"] = value
-        graph.graph["_epi_hist"] = deque([
-            {0: 4.0, 1: 8.0},
-            {0: 3.0, 1: 6.0},
-            {0: 2.0, 1: 5.0},
-        ])
+        graph.graph["_epi_hist"] = deque(
+            [
+                {0: 4.0, 1: 8.0},
+                {0: 3.0, 1: 6.0},
+                {0: 2.0, 1: 5.0},
+            ]
+        )
 
         apply_network_remesh(graph)
 
         alpha = 0.25
         assert graph.nodes[0]["EPI"] == pytest.approx(
-            (1.0 - alpha) ** 2 * 1.0
-            + alpha * (1.0 - alpha) * 3.0
-            + alpha * 4.0
+            (1.0 - alpha) ** 2 * 1.0 + alpha * (1.0 - alpha) * 3.0 + alpha * 4.0
         )
         assert graph.nodes[1]["EPI"] == pytest.approx(
-            (1.0 - alpha) ** 2 * -2.0
-            + alpha * (1.0 - alpha) * 6.0
-            + alpha * 8.0
+            (1.0 - alpha) ** 2 * -2.0 + alpha * (1.0 - alpha) * 6.0 + alpha * 8.0
         )
 
 

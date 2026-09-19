@@ -1,18 +1,14 @@
 """Runtime and certificate boundary for local Resonance (RA)."""
 
+import math
 from copy import deepcopy
 from fractions import Fraction
-import math
 
 import networkx as nx
 import numpy as np
 import pytest
 
-from tnfr.constants.canonical import (
-    COUPLING_FINE,
-    COUPLING_GENTLE,
-    COUPLING_MODERATE,
-)
+from tnfr.constants.canonical import COUPLING_FINE, COUPLING_GENTLE, COUPLING_MODERATE
 from tnfr.errors import TNFRValueError
 from tnfr.node import NodeNX
 from tnfr.operators import _op_RA, apply_glyph, get_glyph_factors
@@ -78,7 +74,9 @@ def test_runtime_matches_certificate_for_epi_kind_frequency_and_phase():
         "RA_vf_amplification": 0.25,
         "RA_phase_coupling": 0.5,
     }
-    _op_RA(NodeNX.from_graph(runtime, target), get_glyph_factors(NodeNX(runtime, target)))
+    _op_RA(
+        NodeNX.from_graph(runtime, target), get_glyph_factors(NodeNX(runtime, target))
+    )
 
     assert certificate.graph_neighbors == (good, bad)
     assert certificate.runtime_neighbors == (good,)
@@ -198,9 +196,7 @@ def test_exact_antipodal_boundary_does_not_choose_an_arbitrary_phase():
 
 def test_one_third_consensus_exposes_binary64_nonaffinity_boundary():
     graph = _state(nx.star_graph(2), {0: 1 / 3, 1: 1 / 3, 2: 1 / 3})
-    result = certify_resonance_epi_realization(
-        graph, 0, fixed_support_declared=True
-    )
+    result = certify_resonance_epi_realization(graph, 0, fixed_support_declared=True)
 
     assert result.runtime_proposed_target_value != 1 / 3
     assert result.exact_represented_target_row_sum != Fraction(1)
@@ -231,7 +227,10 @@ def test_successful_ra_has_post_flow_but_abstains_from_pre_post_switching():
     assert result.post_diffusion_certificate.is_certified
     assert not result.pre_post_metric_exactly_proportional
     assert result.pre_post_switching_certificate is None
-    assert "pre_post_metrics_not_exactly_proportional" in result.switching_abstention_reasons
+    assert (
+        "pre_post_metrics_not_exactly_proportional"
+        in result.switching_abstention_reasons
+    )
     assert result.affine_jump_certificate is not None
     assert result.nested_affine_certificate_uses_post_resonance_metric
     assert result.pressure_refresh_required
@@ -254,9 +253,7 @@ def test_default_certificate_factors_equal_runtime_factor_resolution():
     graph = _state(nx.path_graph(2), {0: 0.2, 1: 0.3})
     graph.graph["GLYPH_FACTORS"] = {"AL_boost": 0.7}
     factors = get_glyph_factors(NodeNX.from_graph(graph, 0))
-    result = certify_resonance_epi_realization(
-        graph, 0, fixed_support_declared=True
-    )
+    result = certify_resonance_epi_realization(graph, 0, fixed_support_declared=True)
 
     assert result.mix_factor == factors["RA_epi_diff"] == COUPLING_MODERATE
     assert (
@@ -265,24 +262,18 @@ def test_default_certificate_factors_equal_runtime_factor_resolution():
         == COUPLING_FINE
     )
     assert (
-        result.phase_coupling_factor
-        == factors["RA_phase_coupling"]
-        == COUPLING_GENTLE
+        result.phase_coupling_factor == factors["RA_phase_coupling"] == COUPLING_GENTLE
     )
 
 
 def test_certificate_rejects_directed_isolated_rich_and_relaxed_phase_gate():
     directed = _state(nx.DiGraph([(0, 1)]), {0: 0.2, 1: 0.3})
     with pytest.raises(ValueError, match="undirected"):
-        certify_resonance_epi_realization(
-            directed, 0, fixed_support_declared=True
-        )
+        certify_resonance_epi_realization(directed, 0, fixed_support_declared=True)
 
     isolated = _state(nx.empty_graph(1), {0: 0.2})
     with pytest.raises(ValueError, match="at least two nodes|connected"):
-        certify_resonance_epi_realization(
-            isolated, 0, fixed_support_declared=True
-        )
+        certify_resonance_epi_realization(isolated, 0, fixed_support_declared=True)
 
     rich = _state(nx.path_graph(2), {0: 0.2, 1: 0.3})
     rich.nodes[1]["EPI"] = {

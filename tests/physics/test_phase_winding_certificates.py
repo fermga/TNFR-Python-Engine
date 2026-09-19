@@ -67,9 +67,7 @@ def test_phase_perturbation_below_margin_preserves_winding():
     margin = min(before.minimum_u3_margin, before.minimum_branch_margin)
     perturbation = margin / 8
     for node in graph:
-        graph.nodes[node]["theta"] += perturbation * math.sin(
-            2 * math.pi * node / 8
-        )
+        graph.nodes[node]["theta"] += perturbation * math.sin(2 * math.pi * node / 8)
     after = certify_phase_winding(graph, range(8))
     assert after.winding == before.winding == 1
     assert after.u3_admissible
@@ -171,8 +169,7 @@ def test_winding_word_rejects_invalid_phase_before_mutation(bad_phase):
 
 def test_legacy_particle_api_returns_only_winding_sector_labels():
     results = {
-        target: classify_particle(winding_ring(12, target))
-        for target in (0, 1, 2)
+        target: classify_particle(winding_ring(12, target)) for target in (0, 1, 2)
     }
     labels = {target: result.winding_class for target, result in results.items()}
     assert labels == {
@@ -342,9 +339,7 @@ def test_telemetry_failure_propagates_instead_of_fabricating_zero(monkeypatch):
     def fail(_graph):
         raise RuntimeError("telemetry failed")
 
-    monkeypatch.setattr(
-        "tnfr.physics.emergent_particles.compute_energy_density", fail
-    )
+    monkeypatch.setattr("tnfr.physics.emergent_particles.compute_energy_density", fail)
     with pytest.raises(RuntimeError, match="telemetry failed"):
         classify_winding_sector(winding_ring(8, 1))
 

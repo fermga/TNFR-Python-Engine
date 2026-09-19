@@ -5,7 +5,10 @@ from fractions import Fraction
 import pytest
 
 from benchmarks.forced_support_balance import (
-    CASES, SEGMENT_COUNTS, STEP, run_forced_support_case,
+    CASES,
+    SEGMENT_COUNTS,
+    STEP,
+    run_forced_support_case,
 )
 
 
@@ -79,14 +82,18 @@ def test_actual_capacity_phase_forcing_has_nonzero_derived_mean_drift(cases):
     metric = reference["metric_weights"]
     assert reference["compatibility_residual"] < 0
     assert reference["mean_drift"] < 0
-    assert reference["mean_drift"] * sum(metric) == reference[
-        "compatibility_residual"
-    ]
-    assert sum(
-        weight * value for weight, value in zip(
-            metric, reference["relative_profile"], strict=True,
+    assert reference["mean_drift"] * sum(metric) == reference["compatibility_residual"]
+    assert (
+        sum(
+            weight * value
+            for weight, value in zip(
+                metric,
+                reference["relative_profile"],
+                strict=True,
+            )
         )
-    ) == 0
+        == 0
+    )
     assert reference["profile_residual"] == (0,) * 9
     assert reference["max_convex_step"] >= Fraction(1, 4)
     initial = case["initial_relative_state"]

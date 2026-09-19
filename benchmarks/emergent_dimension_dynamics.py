@@ -104,14 +104,28 @@ def main() -> None:
     dimensions = [item["simplex_dimension"] for item in result["accretion"]]
     print("Compatible samples appended: clique sizes", sizes)
     print("Corresponding simplex dimensions:", dimensions)
-    for label, key in (("Incompatible append", "incompatible_append"),
-                       ("Auxiliary averaging", "averaging")):
+    for label, key in (
+        ("Incompatible append", "incompatible_append"),
+        ("Auxiliary averaging", "averaging"),
+    ):
         pair = result[key]
-        print(label, "clique size:", pair["before"]["max_clique_size"],
-              "->", pair["after"]["max_clique_size"])
-        print(label, "simplex dimension:", pair["before"]["simplex_dimension"],
-              "->", pair["after"]["simplex_dimension"])
-    print("These finite constructions do not demonstrate autonomous or physical dimension.")
+        print(
+            label,
+            "clique size:",
+            pair["before"]["max_clique_size"],
+            "->",
+            pair["after"]["max_clique_size"],
+        )
+        print(
+            label,
+            "simplex dimension:",
+            pair["before"]["simplex_dimension"],
+            "->",
+            pair["after"]["simplex_dimension"],
+        )
+    print(
+        "These finite constructions do not demonstrate autonomous or physical dimension."
+    )
 
 
 if __name__ == "__main__":

@@ -98,9 +98,7 @@ def test_nul_derives_pressure_densification_and_records_binary64_residual():
 
 
 def test_inconsistent_explicit_nul_pair_rejects_atomically():
-    graph = _graph(
-        factors={"NUL_scale": 0.5, "NUL_densification_factor": 3.0}
-    )
+    graph = _graph(factors={"NUL_scale": 0.5, "NUL_densification_factor": 3.0})
     node_before = deepcopy(graph.nodes[0])
     graph_before = deepcopy(graph.graph)
 

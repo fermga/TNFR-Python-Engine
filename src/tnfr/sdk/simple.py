@@ -2112,47 +2112,46 @@ class Network:
         )
 
     def rhythm(self) -> dict[str, Any]:
-        """The emergent pulse: the resonant rhythm the substrate plays.
+        """Read the spectrum of the separately specified graph-wave model.
 
-        TNFR is a substrate that *vibrates and keeps a rhythm* -- the
-        conservative face of the nodal dynamics. Every structural mode
-        oscillates at omega_k = sqrt(lambda_k), and the equilibria (the
-        dNFR = 0 coherence states) are the BEATS the vibration passes through.
-        Where :meth:`nfr` is the dissipative read-out (the relaxed state),
-        this is its conservative twin -- the resonant spectrum, the dominant
-        beat and the self-similar (fractal) signature -- closed-form from the
-        structural spectrum (no time integration).
+        The auxiliary equation ``q'' = -L q`` assigns angular frequencies
+        ``omega_k = sqrt(lambda_k)`` in its own time convention. This snapshot
+        computes spectral values without observing a vibration or deriving
+        that wave equation from the first-order nodal law. Spectral
+        multiplicity does not by itself establish fractal structure, and
+        zero pressure does not identify a beat event.
 
         Returns
         -------
         dict
             ``resonant_spectrum`` (leading omega_k), ``fundamental``,
-            ``dominant_beat``, ``spectral_multiplicity`` (fractal signature),
-            ``vibration_energy``, ``n_modes``.
+            ``dominant_beat`` (smallest retained positive frequency gap),
+            ``spectral_multiplicity`` (rounded eigenvalue multiplicity),
+            ``vibration_energy`` (legacy name for half the spectral trace,
+            not measured wave-state energy), ``n_modes``.
         """
         from ..physics.structural_diffusion import compute_emergent_pulse
 
         return compute_emergent_pulse(self.G)
 
     def resonance(self) -> dict[str, Any]:
-        """The per-NFR pulse and the resonance that couples the NFRs.
+        """Read stored structural capacities and local/global phase alignment.
 
-        Where :meth:`rhythm` is the collective network pulse, this is its
-        *source*: each NFR is itself a phase oscillator (the single-node
-        reduction of the nodal equation) pulsing at its own structural
-        frequency nu_f with phase phi. Resonance -- the local phase synchrony
-        per NFR and the global Kuramoto order R -- couples those pulses, and
-        the collective rhythm emerges as they lock (R -> 1). The local face
-        of the rhythm, from canonical per-node quantities. Most informative
-        after :meth:`evolve`.
+        Capacity ``nu_f`` multiplies pressure in the nodal equation; it is
+        not an observed oscillation frequency or a derived phase speed.
+        Local synchrony and global Kuramoto order ``R`` summarize the current
+        phases. They neither establish an oscillator at each node nor
+        identify engine evolution with the auxiliary wave in :meth:`rhythm`.
 
         Returns
         -------
         dict
-            ``mean_frequency``, ``frequency_spread`` (the per-NFR pulse
-            rates nu_f), ``phase_coherence`` (collective Kuramoto R),
-            ``mean_local_resonance`` (mean per-NFR resonance),
-            ``resonance_gate`` (Delta phi_max), ``n_pulsing``, ``n_nodes``.
+            ``mean_frequency``, ``frequency_spread`` (capacity statistics),
+            ``phase_coherence`` (collective Kuramoto R),
+            ``mean_local_resonance`` (mean local phase synchrony),
+            ``resonance_gate`` (canonical default Delta phi_max),
+            ``n_pulsing`` (legacy name for the number of positive capacities,
+            not observed oscillators), ``n_nodes``.
         """
         from ..physics.structural_diffusion import compute_nodal_pulse
 
@@ -2161,26 +2160,21 @@ class Network:
     def pulse_trajectory(
         self, steps: int = 8, sequence: str = "basic_activation"
     ) -> dict[str, Any]:
-        """The pulse IN MOTION: the rhythm forming as the NFR pulses resonate.
+        """Sample synchronization along a supplied operator sequence on a copy.
 
-        The snapshot read-outs (:meth:`rhythm`, :meth:`resonance`) see a single
-        instant; the interesting structure appears only when the dynamics
-        *runs*. This records ``max(1, steps)`` samples from a **copy** of the
-        network, evolving once between consecutive samples so the caller's
-        network is untouched. Each sample contains the collective resonance
-        ``R(t)`` (Kuramoto order), coherence ``C(t)``, and mean per-NFR local
-        resonance; together they show how the collective rhythm emerges from
-        the resonating per-NFR pulses.
+        Record ``max(1, steps)`` samples, calling :meth:`evolve` once between
+        consecutive samples. The caller's nodal state is not advanced;
+        spectral cache bookkeeping may refresh. Samples report Kuramoto order,
+        coherence and mean local phase synchrony, indexed by sequence calls.
+        They do not by themselves establish periodic motion, autonomous
+        emergence or long-time behavior.
 
-        Two grounded facts shape it: (1) the collective topological pulse
-        ``omega_k = sqrt(lambda_k)`` is **invariant** under evolution on a fixed
-        graph, so it is computed once (not per step); (2) the per-NFR pulses
-        typically lock with their neighbours (local resonance) **before** the
-        global rhythm forms -- ``local_leads_global`` records that cascade
-        (clusters lock, then merge). Threshold crossings are linearly
-        interpolated between samples so two crossings within one evolution
-        step retain their observed order. Most informative from a perturbed /
-        off-equilibrium state.
+        ``collective_pulse`` describes the original graph only. Its spectrum
+        remains unchanged only if the relevant weighted graph operator does;
+        this method does not verify that condition during the supplied word.
+        ``local_leads_global`` compares selected local-0.9 and global-0.5
+        thresholds using linear interpolation between samples. It is a finite
+        diagnostic, not a universal local-before-global synchronization law.
 
         Returns
         -------
@@ -2188,10 +2182,11 @@ class Network:
             ``phase_coherence`` (R(t)), ``coherence`` (C(t)),
             ``local_resonance`` (mean per-NFR local resonance per step);
             ``synchronizing`` (bool, R rises overall), ``delta_R`` (net change),
-            ``asymptotic_R`` (final R), ``local_leads_global`` (bool: the
-            interpolated local-0.9 crossing precedes the interpolated R-0.5
-            crossing); ``collective_pulse`` (the invariant fundamental +
-            dominant beat), ``steps``.
+            ``asymptotic_R`` (legacy name for the last finite sample),
+            ``local_leads_global`` (local-0.9 is reached and either precedes
+            the interpolated R-0.5 crossing or R-0.5 is never observed);
+            ``collective_pulse`` (original graph's auxiliary fundamental and
+            frequency gap), ``steps``.
         """
         from ..gamma import kuramoto_R_psi
         from ..physics.structural_diffusion import (
@@ -2212,8 +2207,8 @@ class Network:
             r_t.append(r)
             c_t.append(c)
             local_t.append(local)
-        # the collective topological pulse is invariant under evolution on a
-        # fixed graph -> compute it once, not per step
+        # Report the original graph spectrum, without claiming it describes
+        # every graph reached by the supplied operator sequence.
         pulse = compute_emergent_pulse(self.G)
         delta_r = r_t[-1] - r_t[0]
         t_local = _first_interpolated_crossing(local_t, 0.9)

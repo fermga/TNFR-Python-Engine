@@ -96,10 +96,7 @@ def test_monitor_uses_an_explicit_sequential_baseline(
 
     assert metrics.speedup == 4.0
     assert metrics.parallelization_efficiency == 1.0
-    assert (
-        metrics.parallelization_efficiency_basis
-        == "measured_sequential_baseline"
-    )
+    assert metrics.parallelization_efficiency_basis == "measured_sequential_baseline"
 
 
 @pytest.mark.parametrize("baseline", [0.0, -1.0, math.inf, math.nan, True])
@@ -137,6 +134,8 @@ def test_auto_scaler_rejects_invalid_memory_observations(
 def test_auto_scaler_rejects_nonboolean_gpu_availability() -> None:
     with pytest.raises(TypeError, match="boolean availability"):
         TNFRAutoScaler().recommend_execution_strategy(graph_size=2_000, has_gpu=1)
+
+
 @pytest.mark.parametrize("value", [None, math.inf, math.nan, True, "unknown"])
 def test_auto_scaler_ignores_unobserved_or_invalid_performance_metrics(
     value: object,
@@ -152,10 +151,16 @@ def test_auto_scaler_ignores_unobserved_or_invalid_performance_metrics(
     assert suggestions == [
         "No threshold-based suggestion was triggered by the supplied metrics"
     ]
+
+
 @pytest.mark.parametrize(
     ("expected_nodes", "workers", "message"),
-    [(-1, 1, "expected_nodes"), (1.5, 1, "expected_nodes"), (1, 0, "workers"),
-     (1, True, "workers")],
+    [
+        (-1, 1, "expected_nodes"),
+        (1.5, 1, "expected_nodes"),
+        (1, 0, "workers"),
+        (1, True, "workers"),
+    ],
 )
 def test_monitor_rejects_invalid_counts(
     expected_nodes: object,

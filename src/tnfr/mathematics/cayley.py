@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from fractions import Fraction
 import cmath
 import math
+from fractions import Fraction
 
 import numpy as np
 
@@ -33,9 +33,7 @@ def _normalized_connection(
 def cayley_laplacian(modulus: int, connection: set[int]) -> Matrix:
     r"""Return exact ``L_rw = I - (1/d)W`` on ``Z/modulus Z``."""
     normalized, inverse_degree = _normalized_connection(modulus, connection)
-    matrix: Matrix = [
-        [Fraction(0) for _ in range(modulus)] for _ in range(modulus)
-    ]
+    matrix: Matrix = [[Fraction(0) for _ in range(modulus)] for _ in range(modulus)]
     for source in range(modulus):
         matrix[source][source] = Fraction(1)
         for target in range(modulus):
@@ -63,7 +61,9 @@ def cayley_action(
     normalized, inverse_degree = _normalized_connection(modulus, connection)
     shifts = normalized - {0}
     return [
-        vector[source] - inverse_degree * sum(
+        vector[source]
+        - inverse_degree
+        * sum(
             (vector[(source + shift) % modulus] for shift in shifts),
             Fraction(0),
         )
@@ -77,9 +77,7 @@ def cayley_spectrum(modulus: int, connection: set[int]) -> list[complex]:
     shifts = normalized - {0}
     omega = cmath.exp(2j * math.pi / modulus)
     return [
-        1.0 - float(inverse_degree) * sum(
-            omega ** (mode * shift) for shift in shifts
-        )
+        1.0 - float(inverse_degree) * sum(omega ** (mode * shift) for shift in shifts)
         for mode in range(modulus)
     ]
 
@@ -105,10 +103,7 @@ def cayley_diffusion_action(
     topology with one common nonnegative capacity; heterogeneous ``nu_f``
     requires the noncommuting-capacity transport path instead.
     """
-    if (
-        not math.isfinite(structural_time)
-        or structural_time < 0.0
-    ):
+    if not math.isfinite(structural_time) or structural_time < 0.0:
         raise ValueError("structural_time must be finite and nonnegative")
     if not math.isfinite(capacity) or capacity < 0.0:
         raise ValueError("capacity must be finite and nonnegative")

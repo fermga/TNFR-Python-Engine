@@ -78,9 +78,7 @@ def _gaussian_power(u: Gaussian, k: int, p: int) -> Gaussian:
     return r
 
 
-def gaussian_kth_power_set(
-    p: int, k: int, *, units_only: bool = True
-) -> set[Gaussian]:
+def gaussian_kth_power_set(p: int, k: int, *, units_only: bool = True) -> set[Gaussian]:
     r"""Non-zero ``k``-th powers in ``Z[i]/(p)`` (units only by default)."""
     if k < 1:
         raise ValueError("power k must be >= 1")
@@ -104,9 +102,7 @@ def _count_distinct(values: np.ndarray, tol: float) -> int:
     return len(uniq)
 
 
-def gaussian_cayley_spectrum_count(
-    p: int, k: int, *, units_only: bool = True
-) -> int:
+def gaussian_cayley_spectrum_count(p: int, k: int, *, units_only: bool = True) -> int:
     r"""Distinct eigenvalue count of the additive ``k``-th power Cayley graph.
 
     Nodes are the ``p^2`` residues of ``Z[i]/(p)``; ``u → u + s`` for every

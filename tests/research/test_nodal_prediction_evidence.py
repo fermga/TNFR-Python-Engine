@@ -1,10 +1,10 @@
 """Public forecast-to-evidence integration; synthetic software control only."""
 
-from dataclasses import FrozenInstanceError, asdict
 import hashlib
 import json
-from pathlib import Path
 import platform
+from dataclasses import FrozenInstanceError, asdict
+from pathlib import Path
 
 import networkx as nx
 import numpy as np
@@ -29,9 +29,12 @@ from tnfr.validation import (
 
 
 def _save_json(path, payload):
-    safe_write(path, lambda stream: stream.write(
-        json_dumps(payload, sort_keys=True, allow_nan=False) + "\n"
-    ))
+    safe_write(
+        path,
+        lambda stream: stream.write(
+            json_dumps(payload, sort_keys=True, allow_nan=False) + "\n"
+        ),
+    )
 
 
 def test_reserved_prediction_bundle_admits_only_its_actual_saved_bytes(tmp_path):
@@ -40,14 +43,20 @@ def test_reserved_prediction_bundle_admits_only_its_actual_saved_bytes(tmp_path)
     factor = 1 - 2 * 0.4 / 8
     amplitudes = 0.7 * factor ** np.arange(9)
     training = NodalMeasurementRun(
-        run_id="calibration", acquisition_id="software-preparation-A",
-        channel_ids=("left", "right"), timestamps=times,
+        run_id="calibration",
+        acquisition_id="software-preparation-A",
+        channel_ids=("left", "right"),
+        timestamps=times,
         samples=(1 + amplitudes, 1 - amplitudes),
-        value_unit="fixture_units", time_unit="fixture_seconds",
+        value_unit="fixture_units",
+        time_unit="fixture_seconds",
     )
     calibration = calibrate_nodal_prediction(
-        [training], graph=nx.Graph([("left", "right")]),
-        offsets=(0, 0), scales=(1, 1), structural_time_per_unit=1,
+        [training],
+        graph=nx.Graph([("left", "right")]),
+        offsets=(0, 0),
+        scales=(1, 1),
+        structural_time_per_unit=1,
         support_provenance="independently specified software P2 edge",
         measurement_provenance="synthetic unit map; no laboratory admission",
     )
@@ -60,10 +69,14 @@ def test_reserved_prediction_bundle_admits_only_its_actual_saved_bytes(tmp_path)
         restored.capacity = 999
 
     forecast = forecast_nodal_response(
-        restored, evaluation_run_id="reserved",
+        restored,
+        evaluation_run_id="reserved",
         evaluation_acquisition_id="software-preparation-B",
-        initial_measurement=(1.5, 2.5), timestamps=times,
-        absolute_error_bound=1e-12, max_structural_step=0.125, max_steps=8,
+        initial_measurement=(1.5, 2.5),
+        timestamps=times,
+        absolute_error_bound=1e-12,
+        max_structural_step=0.125,
+        max_steps=8,
     )
     issued_hash = forecast.content_hash
     forecast_path = write_nodal_forecast(forecast, tmp_path / "forecast.json")
@@ -71,13 +84,19 @@ def test_reserved_prediction_bundle_admits_only_its_actual_saved_bytes(tmp_path)
     # Construct the reserved response only after freezing and saving prediction.
     reserved_amplitudes = -0.5 * factor ** np.arange(9)
     observation = NodalMeasurementRun(
-        run_id="reserved", acquisition_id="software-preparation-B",
-        channel_ids=("left", "right"), timestamps=times,
+        run_id="reserved",
+        acquisition_id="software-preparation-B",
+        channel_ids=("left", "right"),
+        timestamps=times,
         samples=(2 + reserved_amplitudes, 2 - reserved_amplitudes),
-        value_unit="fixture_units", time_unit="fixture_seconds",
+        value_unit="fixture_units",
+        time_unit="fixture_seconds",
     )
     score = score_nodal_forecast(
-        forecast, restored, observation, expected_forecast_hash=issued_hash,
+        forecast,
+        restored,
+        observation,
+        expected_forecast_hash=issued_hash,
     )
     assert score.meets_declared_error_bound
     assert score.physical_status == "not_admitted_by_this_score"
@@ -87,29 +106,38 @@ def test_reserved_prediction_bundle_admits_only_its_actual_saved_bytes(tmp_path)
 
     repository = Path(__file__).resolve().parents[2]
     revision, dirty, dirty_hash = current_git_source_provenance(
-        repository, ("src/tnfr/validation", "src/tnfr/research",
-                     "tests/research/test_nodal_prediction_evidence.py"),
+        repository,
+        (
+            "src/tnfr/validation",
+            "src/tnfr/research",
+            "tests/research/test_nodal_prediction_evidence.py",
+        ),
     )
     names = ("calibration.json", "forecast.json", "result.json")
     manifest = CoreExperimentManifest(
         claim_id="P1-software-forecast-evidence-integration",
-        git_sha=revision, source_dirty=dirty, dirty_source_hash=dirty_hash,
+        git_sha=revision,
+        source_dirty=dirty,
+        dirty_source_hash=dirty_hash,
         versions={"python": platform.python_version(), "numpy": np.__version__},
         graph_construction="fixed undirected two-node unit-conductance graph",
         capacity_specification="common positive capacity from calibration only",
         solver="shared refreshed-Euler nodal integrator; eight finite steps",
-        result_status=ClaimStatus.MEASURED, timestep=0.125,
+        result_status=ClaimStatus.MEASURED,
+        timestep=0.125,
         telemetry=("max_absolute_error", "issued_forecast_hash"),
         controls=("independent analytic eigenmode", "modified artifact bytes"),
         artifacts=names,
     )
     sidecar = EvidenceSidecar(
-        manifest=manifest, artifact="result.json",
+        manifest=manifest,
+        artifact="result.json",
         model="restricted pure-EPI software P2 transport",
         norm="maximum absolute EPI coordinate error",
         distance_convention="unit-conductance P2, ordered left/right channels",
         clock="declared fixture seconds; structural bridge one",
-        finite_horizon=1.0, tail_status="UNASSESSED_FINITE_WINDOW",
+        finite_horizon=1.0,
+        tail_status="UNASSESSED_FINITE_WINDOW",
         provenance={
             "uses_future_samples": False,
             "uses_outcome_derived_wiring": False,
@@ -118,17 +146,23 @@ def test_reserved_prediction_bundle_admits_only_its_actual_saved_bytes(tmp_path)
             "uses_postselection": False,
         },
         claim_statement="issued software prediction meets its fixed error budget",
-        claim_status="measured", scope="synthetic integration control only",
-        assumptions=("fixed P2", "declared independent acquisition identities",
-                     "no physical measurement admission or trusted chronology"),
+        claim_status="measured",
+        scope="synthetic integration control only",
+        assumptions=(
+            "fixed P2",
+            "declared independent acquisition identities",
+            "no physical measurement admission or trusted chronology",
+        ),
         outcome="finite software residual within 1e-12",
         source_imports=("tnfr.validation", "tnfr.research.evidence_sidecar"),
         dirty_source_hash=dirty_hash or "",
         graph_context={"nodes": ["left", "right"], "edges": [[0, 1]]},
         state_context={"initial_measurement": [1.5, 2.5]},
         numerical_context={"absolute_error_bound": 1e-12, "max_steps": 8},
-        observation_context={"issued_hash": issued_hash,
-                             "physical_status": score.physical_status},
+        observation_context={
+            "issued_hash": issued_hash,
+            "physical_status": score.physical_status,
+        },
         cost_context={"steps_executed": forecast.steps_executed},
         artifact_hashes={
             name: hashlib.sha256((tmp_path / name).read_bytes()).hexdigest()

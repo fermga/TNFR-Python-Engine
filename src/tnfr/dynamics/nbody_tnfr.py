@@ -39,8 +39,8 @@ from typing import TYPE_CHECKING, Any
 from numpy.typing import NDArray
 
 from ..alias import get_attr, get_theta_attr
-from ..constants.canonical import EPI_MAX_CANONICAL
 from ..constants.aliases import ALIAS_VF
+from ..constants.canonical import EPI_MAX_CANONICAL
 from ..errors.contextual import NetworkConfigError
 from ..mathematics.unified_numerical import np
 from ..operators.hamiltonian import InternalHamiltonian
@@ -668,9 +668,7 @@ class TNFRNBodySystem:
             )
 
         # Adapter parameters
-        self.coupling_strength = _finite_scalar(
-            coupling_strength, "coupling_strength"
-        )
+        self.coupling_strength = _finite_scalar(coupling_strength, "coupling_strength")
         self.coherence_strength = _finite_scalar(
             coherence_strength, "coherence_strength"
         )
@@ -699,9 +697,7 @@ class TNFRNBodySystem:
         self.graph.graph["PHASE_DYNAMICS"] = "fixed"
         self.graph.graph["H_COUPLING_STRENGTH"] = self.coupling_strength
         self.graph.graph["H_COH_STRENGTH"] = self.coherence_strength
-        self.graph.graph["NBODY_DISTANCE_REGULARIZATION"] = (
-            self.distance_regularization
-        )
+        self.graph.graph["NBODY_DISTANCE_REGULARIZATION"] = self.distance_regularization
 
         epi_seed = min(0.5, EPI_MAX_CANONICAL * 0.95)
 
@@ -991,9 +987,7 @@ class TNFRNBodySystem:
         try:
             n_steps, final_step = _integration_schedule(self.time, t_final, dt)
         except ValueError as exc:
-            raise NetworkConfigError(
-                parameter="dt", value=dt, reason=str(exc)
-            ) from exc
+            raise NetworkConfigError(parameter="dt", value=dt, reason=str(exc)) from exc
 
         if n_steps < 1:
             raise NetworkConfigError(
@@ -1003,9 +997,7 @@ class TNFRNBodySystem:
             )
 
         # Pre-allocate storage
-        n_stored = 1 + (n_steps // store_interval) + int(
-            n_steps % store_interval != 0
-        )
+        n_stored = 1 + (n_steps // store_interval) + int(n_steps % store_interval != 0)
         times = np.zeros(n_stored)
         positions_hist = np.zeros((n_stored, self.n_bodies, 3))
         velocities_hist = np.zeros((n_stored, self.n_bodies, 3))
@@ -1035,9 +1027,7 @@ class TNFRNBodySystem:
         # Evolution loop
         for step in range(n_steps):
             step_dt = (
-                final_step
-                if final_step is not None and step + 1 == n_steps
-                else dt
+                final_step if final_step is not None and step + 1 == n_steps else dt
             )
             self.step(step_dt)
 

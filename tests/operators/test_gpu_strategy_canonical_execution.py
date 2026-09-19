@@ -17,16 +17,13 @@ from tnfr.constants.aliases import (
     ALIAS_THETA,
     ALIAS_VF,
 )
+from tnfr.node import NodeNX
 from tnfr.operators.strategies import gpu_strategies
 from tnfr.operators.strategies.gpu_strategies import (
     GPUEmissionStrategy,
     GPUResonanceStrategy,
 )
-from tnfr.operators.strategies.strategy import (
-    StrategyContext,
-    StructuralFields,
-)
-from tnfr.node import NodeNX
+from tnfr.operators.strategies.strategy import StrategyContext, StructuralFields
 from tnfr.types import real_scalar_epi
 
 
@@ -158,9 +155,7 @@ def test_gpu_emission_uses_canonical_factor_and_metadata(monkeypatch) -> None:
     graph = _graph()
     graph.graph["GLYPH_FACTORS"] = {"AL_boost": 0.25}
     before = {node: _node_state(graph, node) for node in graph}
-    strategy, prepared, engine = _prepare(
-        monkeypatch, GPUEmissionStrategy, graph
-    )
+    strategy, prepared, engine = _prepare(monkeypatch, GPUEmissionStrategy, graph)
 
     result = strategy.apply(prepared)
 
@@ -195,9 +190,7 @@ def test_gpu_resonance_uses_canonical_factors_identity_and_provenance(
         "RA_vf_amplification": 0.25,
         "RA_phase_coupling": 0.5,
     }
-    strategy, prepared, _engine = _prepare(
-        monkeypatch, GPUResonanceStrategy, graph
-    )
+    strategy, prepared, _engine = _prepare(monkeypatch, GPUResonanceStrategy, graph)
 
     result = strategy.apply(prepared)
 
@@ -221,9 +214,7 @@ def test_gpu_resonance_reports_inactive_frequency_amplification(monkeypatch) -> 
     graph = _graph()
     for node in graph:
         graph.nodes[node].update(EPI=0.0, glyph_history=["AL", "IL"])
-    strategy, prepared, _engine = _prepare(
-        monkeypatch, GPUResonanceStrategy, graph
-    )
+    strategy, prepared, _engine = _prepare(monkeypatch, GPUResonanceStrategy, graph)
 
     result = strategy.apply(prepared)
 
@@ -244,9 +235,7 @@ def test_gpu_resonance_runs_the_shared_pressure_refresh(monkeypatch) -> None:
             subject.nodes[node][ALIAS_DNFR[0]] = 7.0
 
     graph.graph["compute_delta_nfr"] = refresh
-    strategy, prepared, _engine = _prepare(
-        monkeypatch, GPUResonanceStrategy, graph
-    )
+    strategy, prepared, _engine = _prepare(monkeypatch, GPUResonanceStrategy, graph)
 
     result = strategy.apply(prepared)
 
@@ -267,9 +256,7 @@ def test_gpu_resonance_rolls_back_a_failed_pressure_refresh(monkeypatch) -> None
 
     graph.graph["compute_delta_nfr"] = rejected_refresh
     before = _observable_snapshot(graph)
-    strategy, prepared, _engine = _prepare(
-        monkeypatch, GPUResonanceStrategy, graph
-    )
+    strategy, prepared, _engine = _prepare(monkeypatch, GPUResonanceStrategy, graph)
 
     result = strategy.apply(prepared)
 
@@ -287,9 +274,7 @@ def test_gpu_resonance_rejects_phase_incompatible_block_atomically(
     graph.nodes[1]["glyph_history"] = ["AL", "IL"]
     graph.nodes[1][ALIAS_THETA[0]] = 2.0
     before = _observable_snapshot(graph)
-    strategy, prepared, _engine = _prepare(
-        monkeypatch, GPUResonanceStrategy, graph
-    )
+    strategy, prepared, _engine = _prepare(monkeypatch, GPUResonanceStrategy, graph)
 
     result = strategy.apply(prepared)
 
@@ -302,15 +287,11 @@ def test_gpu_resonance_rejects_phase_incompatible_block_atomically(
 
 def test_gpu_resonance_rejects_identity_change_atomically(monkeypatch) -> None:
     graph = _graph()
-    graph.nodes[0].update(
-        EPI=-0.1, theta=0.0, glyph_history=["AL", "IL"]
-    )
+    graph.nodes[0].update(EPI=-0.1, theta=0.0, glyph_history=["AL", "IL"])
     graph.nodes[1].update(EPI=1.0, theta=0.1, glyph_history=["AL", "IL"])
     graph.graph["GLYPH_FACTORS"] = {"RA_epi_diff": 0.5}
     before = _observable_snapshot(graph)
-    strategy, prepared, _engine = _prepare(
-        monkeypatch, GPUResonanceStrategy, graph
-    )
+    strategy, prepared, _engine = _prepare(monkeypatch, GPUResonanceStrategy, graph)
 
     result = strategy.apply(prepared)
 
@@ -347,9 +328,7 @@ def test_gpu_block_rolls_back_prior_commits_and_monitor_state(monkeypatch) -> No
     graph.graph["integrity_monitor"] = monitor
     before = _observable_snapshot(graph)
     monitor_before = deepcopy(vars(monitor))
-    strategy, prepared, _engine = _prepare(
-        monkeypatch, GPUEmissionStrategy, graph
-    )
+    strategy, prepared, _engine = _prepare(monkeypatch, GPUEmissionStrategy, graph)
 
     result = strategy.apply(prepared)
 
@@ -383,12 +362,8 @@ def test_gpu_rollback_restores_nested_runtime_mapping_contents(monkeypatch) -> N
     custom_cache = {"nested": {"value": 1}}
     graph.graph["custom_cache"] = custom_cache
     graph.graph["integrity_monitor"] = _MutateNestedCacheThenReject()
-    nodes_before = deepcopy(
-        {node: dict(data) for node, data in graph.nodes(data=True)}
-    )
-    strategy, prepared, _engine = _prepare(
-        monkeypatch, GPUEmissionStrategy, graph
-    )
+    nodes_before = deepcopy({node: dict(data) for node, data in graph.nodes(data=True)})
+    strategy, prepared, _engine = _prepare(monkeypatch, GPUEmissionStrategy, graph)
 
     result = strategy.apply(prepared)
 
@@ -468,12 +443,10 @@ def test_gpu_rollback_failure_keeps_primary_error_and_reports_secondary(
     assert result.telemetry["rolled_back"] is False
     assert result.telemetry["error"] == "late availability telemetry failed"
     assert (
-        result.telemetry["rollback_error"]
-        == "RuntimeError: secondary rollback failure"
+        result.telemetry["rollback_error"] == "RuntimeError: secondary rollback failure"
     )
     assert result.warnings == [
-        "Canonical Emission transaction failed: "
-        "late availability telemetry failed"
+        "Canonical Emission transaction failed: " "late availability telemetry failed"
     ]
     assert _observable_snapshot(graph) == before
 
@@ -622,9 +595,7 @@ def test_gpu_proof_hash_binds_context_operator_and_state() -> None:
     graph = _graph()
     ctx = _context("AL")
 
-    base = gpu_strategies._operation_proof_hash(
-        graph, ctx, "AL", outcome="committed"
-    )
+    base = gpu_strategies._operation_proof_hash(graph, ctx, "AL", outcome="committed")
     other_partition = gpu_strategies._operation_proof_hash(
         graph,
         replace(ctx, partition_id="other-block"),

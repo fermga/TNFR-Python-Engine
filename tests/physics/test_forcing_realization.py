@@ -1,9 +1,9 @@
 """Nonlinear phase forcing, numerical residuals and graph-read boundaries."""
 
+import math
 from copy import deepcopy
 from dataclasses import FrozenInstanceError, replace
 from fractions import Fraction
-import math
 
 import networkx as nx
 import pytest
@@ -13,8 +13,10 @@ from tnfr.constants.aliases import ALIAS_DNFR
 from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.operators import apply_glyph
 from tnfr.physics import forcing_realization as realization
-from tnfr.physics.forcing_realization import capture_non_epi_forcing, decompose_non_epi_forcing
-
+from tnfr.physics.forcing_realization import (
+    capture_non_epi_forcing,
+    decompose_non_epi_forcing,
+)
 
 F = Fraction
 
@@ -27,11 +29,17 @@ def _graph():
     graph.add_edge(0, 1, weight=1.0)
     graph.add_edge(0, 3, weight=0.0)
     for node, epi, capacity, phase in zip(
-        graph, (1.0, 0.5, -0.25, 2.0), (1.0, 2.0, 4.0, 8.0),
-        (0.0, 0.0, 0.0, math.pi / 2), strict=True,
+        graph,
+        (1.0, 0.5, -0.25, 2.0),
+        (1.0, 2.0, 4.0, 8.0),
+        (0.0, 0.0, 0.0, math.pi / 2),
+        strict=True,
     ):
         graph.nodes[node].update(
-            EPI=epi, nu_f=capacity, theta=phase, delta_nfr=0.0,
+            EPI=epi,
+            nu_f=capacity,
+            theta=phase,
+            delta_nfr=0.0,
             glyph_history=["IL"],
         )
     graph.graph.update(
@@ -42,14 +50,17 @@ def _graph():
 
 
 def _pressure(graph):
-    return tuple(F(float(get_attr(graph.nodes[node], ALIAS_DNFR, 0.0))) for node in graph)
+    return tuple(
+        F(float(get_attr(graph.nodes[node], ALIAS_DNFR, 0.0))) for node in graph
+    )
 
 
 def test_zero_weight_neighbor_contributes_nonlinear_phase_and_exact_support_forcing():
     graph = _graph()
     result = capture_non_epi_forcing(graph)
-    assert result.normalized_weights == tuple((name, F(1, 4)) for name in
-                                              ("phase", "epi", "vf", "topo"))
+    assert result.normalized_weights == tuple(
+        (name, F(1, 4)) for name in ("phase", "epi", "vf", "topo")
+    )
     # Three phasors sum to 2+i; an arithmetic average of angles gives pi/6.
     expected_phase = math.atan2(1.0, 2.0) / math.pi
     assert float(result.phase_gradient[0]) == pytest.approx(expected_phase, abs=1e-16)
@@ -65,13 +76,17 @@ def test_zero_weight_neighbor_contributes_nonlinear_phase_and_exact_support_forc
     assert capture_non_epi_forcing(without_zero_support).phase_gradient[0] == 0
 
 
-def test_detached_channel_decomposition_reuses_exact_products_without_kernel_calls(monkeypatch):
+def test_detached_channel_decomposition_reuses_exact_products_without_kernel_calls(
+    monkeypatch,
+):
     result = capture_non_epi_forcing(_graph())
 
     def forbidden(**kwargs):
         raise AssertionError("detached arithmetic cannot call a phase kernel")
 
-    monkeypatch.setattr(realization.fused_dnfr, "compute_fused_gradients_symmetric", forbidden)
+    monkeypatch.setattr(
+        realization.fused_dnfr, "compute_fused_gradients_symmetric", forbidden
+    )
     channels = dict(decompose_non_epi_forcing(result))
     assert tuple(channels) == ("phase", "vf", "topo")
     assert channels["phase"] == tuple(value / 4 for value in result.phase_gradient)
@@ -83,20 +98,33 @@ def test_detached_channel_decomposition_reuses_exact_products_without_kernel_cal
 def test_channel_decomposition_rebuilds_support_caches_and_excludes_pressure_defects():
     result = capture_non_epi_forcing(_graph())
     expected = decompose_non_epi_forcing(result)
-    forged = replace(result, snapshot=replace(
-        result.snapshot, capacity_gradient=(F(999),) * 4,
-        topology_gradient=(F(999),) * 4, stored_pressure=(F(99),) * 4,
-    ), kernel_pressure_defect=(F(99),) * 4, stored_pressure_residual=(F(99),) * 4)
+    forged = replace(
+        result,
+        snapshot=replace(
+            result.snapshot,
+            capacity_gradient=(F(999),) * 4,
+            topology_gradient=(F(999),) * 4,
+            stored_pressure=(F(99),) * 4,
+        ),
+        kernel_pressure_defect=(F(99),) * 4,
+        stored_pressure_residual=(F(99),) * 4,
+    )
     assert decompose_non_epi_forcing(forged) == expected
 
 
-@pytest.mark.parametrize("field,value", (
-    ("forcing", (F(0),) * 4),
-    ("epi_weight", F(1, 2)),
-    ("phase_gradient", (F(0),)),
-    ("normalized_weights", (("phase", F(1)),)),
-    ("normalized_weights", tuple((key, F(-1, 4)) for key in ("phase", "epi", "vf", "topo"))),
-))
+@pytest.mark.parametrize(
+    "field,value",
+    (
+        ("forcing", (F(0),) * 4),
+        ("epi_weight", F(1, 2)),
+        ("phase_gradient", (F(0),)),
+        ("normalized_weights", (("phase", F(1)),)),
+        (
+            "normalized_weights",
+            tuple((key, F(-1, 4)) for key in ("phase", "epi", "vf", "topo")),
+        ),
+    ),
+)
 def test_channel_decomposition_rejects_inconsistent_coefficients(field, value):
     result = capture_non_epi_forcing(_graph())
     with pytest.raises(ValueError):
@@ -118,7 +146,8 @@ def test_fresh_full_kernel_matches_runtime_but_exact_channel_assembly_has_own_de
     for index in range(4):
         assert result.full_kernel_pressure[index] == (
             result.epi_weight * result.snapshot.epi_gradient[index]
-            + result.forcing[index] + result.kernel_pressure_defect[index]
+            + result.forcing[index]
+            + result.kernel_pressure_defect[index]
         )
 
 
@@ -147,7 +176,10 @@ def test_actual_cached_coefficients_win_over_changed_configuration_and_metadata(
     graph.graph["_DNFR_META"] = {"weights_norm": {"phase": 1.0}}
     result = capture_non_epi_forcing(graph)
     assert dict(result.normalized_weights) == {
-        "phase": F(1, 2), "epi": F(1, 4), "vf": F(1, 4), "topo": F(0),
+        "phase": F(1, 2),
+        "epi": F(1, 4),
+        "vf": F(1, 4),
+        "topo": F(0),
     }
     assert result.forcing[0] == result.phase_gradient[0] / 2 + F(11, 12)
     default_compute_delta_nfr(graph)
@@ -182,14 +214,20 @@ def test_kernel_reads_actual_neighbor_insertion_order(monkeypatch):
     seen = []
 
     def recording_kernel(**kwargs):
-        seen.append(tuple(zip(map(int, kwargs["edge_src"]), map(int, kwargs["edge_dst"]))))
+        seen.append(
+            tuple(zip(map(int, kwargs["edge_src"]), map(int, kwargs["edge_dst"])))
+        )
         assert kwargs["accumulate_both_directions"] is False
         assert kwargs["use_jit"] is False
         return original(**kwargs)
 
-    monkeypatch.setattr(realization.fused_dnfr, "compute_fused_gradients_symmetric", recording_kernel)
+    monkeypatch.setattr(
+        realization.fused_dnfr, "compute_fused_gradients_symmetric", recording_kernel
+    )
     result = capture_non_epi_forcing(graph)
-    expected = tuple((node, neighbor) for node in graph for neighbor in graph.neighbors(node))
+    expected = tuple(
+        (node, neighbor) for node in graph for neighbor in graph.neighbors(node)
+    )
     assert result.snapshot.support_neighbors[0] == (1, 2, 3)
     assert expected[:3] == ((0, 2), (0, 1), (0, 3))
     assert seen and all(edges == expected for edges in seen)

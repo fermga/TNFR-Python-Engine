@@ -9,9 +9,9 @@ energy fraction under the fixed certificate's weighted metric.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from fractions import Fraction
-import math
 from numbers import Real
 from typing import Any
 
@@ -199,18 +199,14 @@ class ContinuousRelaxationDurationDiagnostic:
     _source_certificate_stamp: tuple[Any, ...] = field(
         default=(), repr=False, compare=False
     )
-    _proof_stamp: tuple[Any, ...] = field(
-        default=(), repr=False, compare=False
-    )
+    _proof_stamp: tuple[Any, ...] = field(default=(), repr=False, compare=False)
 
     def __post_init__(self) -> None:
         """Reject type coercions and mutable replacements in sealed fields."""
 
         if type(self.nodes) is not tuple:
             raise TypeError("nodes must be an immutable tuple")
-        represented_duration = represented_fraction(
-            self.flow_duration, "flow_duration"
-        )
+        represented_duration = represented_fraction(self.flow_duration, "flow_duration")
         if represented_duration < 0:
             raise ValueError("flow_duration must be nonnegative")
         _require_float(self.target_fraction, "target_fraction")
@@ -221,9 +217,7 @@ class ContinuousRelaxationDurationDiagnostic:
             raise TypeError("exact_target_fraction must be an exact Fraction")
         if self.exact_flow_duration != represented_duration:
             raise ValueError("exact_flow_duration must match flow_duration")
-        if self.exact_target_fraction != Fraction.from_float(
-            self.target_fraction
-        ):
+        if self.exact_target_fraction != Fraction.from_float(self.target_fraction):
             raise ValueError("exact_target_fraction must match target_fraction")
         if not 0.0 < self.target_fraction < 1.0:
             raise ValueError("target_fraction must lie strictly between zero and one")
@@ -315,9 +309,7 @@ class ContinuousRelaxationDurationDiagnostic:
                     self.exact_required_flow_duration_upper_bound
                 ),
                 required_duration=self.required_flow_duration,
-                certified_decay_factor_upper=(
-                    self.certified_decay_factor_upper_bound
-                ),
+                certified_decay_factor_upper=(self.certified_decay_factor_upper_bound),
                 reaches_target=self.duration_reaches_target,
                 abstained=self.abstained,
                 abstention_reason=self.abstention_reason,
@@ -391,9 +383,7 @@ def _diagnostic(
         certified_energy_decay_rate_lower_bound=certified_rate,
         spectral_energy_decay_rate_estimate=spectral_rate,
         exact_log_target_upper_bound=log_target_upper,
-        exact_required_flow_duration_upper_bound=(
-            exact_required_duration_upper
-        ),
+        exact_required_flow_duration_upper_bound=(exact_required_duration_upper),
         required_flow_duration=required_duration,
         required_flow_duration_estimate=required_duration_estimate,
         certified_decay_factor_upper_bound=certified_decay_factor_upper,
@@ -425,9 +415,7 @@ def diagnose_continuous_relaxation_duration(
     duration, exact_duration = nonnegative_represented_time(
         flow_duration, "flow_duration"
     )
-    target, exact_target = finite_represented_real(
-        target_fraction, "target_fraction"
-    )
+    target, exact_target = finite_represented_real(target_fraction, "target_fraction")
     tol, _ = finite_represented_real(tolerance, "tolerance")
     if not 0.0 < target < 1.0:
         raise ValueError("target_fraction must lie strictly between zero and one")
@@ -435,9 +423,7 @@ def diagnose_continuous_relaxation_duration(
         raise ValueError("tolerance must be finite and positive")
 
     try:
-        certificate = verify_heterogeneous_diffusion_stability(
-            graph, tolerance=tol
-        )
+        certificate = verify_heterogeneous_diffusion_stability(graph, tolerance=tol)
     except ValueError as exc:
         try:
             nodes = tuple(graph.nodes())
@@ -476,9 +462,7 @@ def diagnose_continuous_relaxation_duration(
     raw_nodes = getattr(certificate, "nodes", ())
     nodes = raw_nodes if type(raw_nodes) is tuple else ()
     raw_source_stamp = getattr(certificate, "_proof_stamp", ())
-    source_stamp = (
-        raw_source_stamp if type(raw_source_stamp) is tuple else ()
-    )
+    source_stamp = raw_source_stamp if type(raw_source_stamp) is tuple else ()
     spectral_rate = _unsealed_spectral_rate(
         getattr(certificate, "exponential_rate", None)
     )
@@ -550,25 +534,17 @@ def diagnose_continuous_relaxation_duration(
         )
     exact_required_duration_upper = log_target_upper / exact_rate
     required_duration = fraction_upper_float(exact_required_duration_upper)
-    reaches_target = bool(
-        exact_rate * exact_duration >= log_target_upper
-    )
-    certified_decay_factor_upper = exp_upper_float(
-        -exact_rate * exact_duration
-    )
+    reaches_target = bool(exact_rate * exact_duration >= log_target_upper)
+    certified_decay_factor_upper = exp_upper_float(-exact_rate * exact_duration)
     if reaches_target:
         # The rational log comparison independently proves the target itself
         # is an upper bound and can tighten the separately enclosed exponential.
-        certified_decay_factor_upper = min(
-            certified_decay_factor_upper, target
-        )
+        certified_decay_factor_upper = min(certified_decay_factor_upper, target)
     required_duration_estimate = None
     decay_factor_estimate = None
     if certified_rate > 0.0:
         logarithmic_target_estimate = -math.log(target)
-        required_duration_estimate = (
-            logarithmic_target_estimate / certified_rate
-        )
+        required_duration_estimate = logarithmic_target_estimate / certified_rate
         decay_exponent_estimate = certified_rate * duration
         decay_factor_estimate = math.exp(-decay_exponent_estimate)
     return _diagnostic(

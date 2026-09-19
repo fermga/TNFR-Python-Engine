@@ -100,26 +100,17 @@ def test_normal_bounded_witness_requires_eta_two_to_210_minus_one_quarter() -> N
         Fraction(1, 2**105) + Fraction(1, 2**157),
     )
     assert observation.exact_global_pair == (Fraction(1), Fraction(1))
-    assert (
-        observation.exact_input_pairwise_jensen_denominator == denominator
-    )
+    assert observation.exact_input_pairwise_jensen_denominator == denominator
     assert observation.exact_ideal_squared_separation == ideal_squared_separation
     assert observation.exact_raw_squared_separation == runtime_squared_separation
-    assert observation.exact_bounded_squared_separation == (
-        runtime_squared_separation
-    )
+    assert observation.exact_bounded_squared_separation == (runtime_squared_separation)
     assert observation.exact_rounding_signed_squared_separation_defect == (
         signed_defect
     )
     assert observation.exact_clipping_signed_squared_separation_defect == 0
-    assert observation.exact_total_signed_squared_separation_defect == (
-        signed_defect
-    )
+    assert observation.exact_total_signed_squared_separation_defect == (signed_defect)
     assert observation.exact_relative_signed_defect_ratio == exact_eta
-    assert (
-        observation.exact_minimum_nonnegative_relative_defect_bound
-        == exact_eta
-    )
+    assert observation.exact_minimum_nonnegative_relative_defect_bound == exact_eta
     assert Fraction(1, 1) / (1 + exact_eta) == Fraction(
         4,
         2**212 + 3,
@@ -148,17 +139,13 @@ def test_two_node_energy_convention_scales_pair_quantities_by_one_quarter() -> N
         (1.0, 1.0),
     )
 
-    jensen_energy = (
-        observation.exact_input_pairwise_jensen_denominator / 4
-    )
+    jensen_energy = observation.exact_input_pairwise_jensen_denominator / 4
     centered_energy_defect = (
         observation.exact_total_signed_squared_separation_defect / 4
     )
 
     assert jensen_energy == Fraction(1, 2**318)
-    assert centered_energy_defect == (
-        Fraction(1, 2**108) - Fraction(1, 2**320)
-    )
+    assert centered_energy_defect == (Fraction(1, 2**108) - Fraction(1, 2**320))
     assert centered_energy_defect / jensen_energy == (
         observation.exact_minimum_nonnegative_relative_defect_bound
     )
@@ -180,20 +167,13 @@ def test_ideal_head_cancellation_keeps_a_positive_pairwise_denominator() -> None
 
     assert observation.exact_ideal_pair[0] == observation.exact_ideal_pair[1]
     assert observation.exact_ideal_squared_separation == 0
-    assert observation.exact_input_pairwise_jensen_denominator == (
-        Fraction(3, 2**317)
-    )
-    assert observation.runtime_raw_pair[0].hex() == (
-        "0x1.0000000000001p-54"
-    )
-    assert observation.runtime_raw_pair[1].hex() == (
-        "0x1.0000000000002p-54"
-    )
+    assert observation.exact_input_pairwise_jensen_denominator == (Fraction(3, 2**317))
+    assert observation.runtime_raw_pair[0].hex() == ("0x1.0000000000001p-54")
+    assert observation.runtime_raw_pair[1].hex() == ("0x1.0000000000002p-54")
     assert observation.exact_raw_squared_separation == Fraction(1, 2**212)
     assert observation.exact_relative_signed_defect_ratio == Fraction(2**105, 3)
-    assert (
-        observation.exact_minimum_nonnegative_relative_defect_bound
-        == Fraction(2**105, 3)
+    assert observation.exact_minimum_nonnegative_relative_defect_bound == Fraction(
+        2**105, 3
     )
 
 
@@ -328,9 +308,7 @@ def test_alpha_one_handles_maximum_finite_endpoints_without_float_squaring() -> 
         epi_max=maximum,
     )
 
-    expected = tuple(
-        Fraction.from_float(value) for value in (-maximum, maximum)
-    )
+    expected = tuple(Fraction.from_float(value) for value in (-maximum, maximum))
     assert observation.exact_ideal_pair == expected
     assert observation.exact_runtime_raw_pair == expected
     assert observation.exact_runtime_bounded_pair == expected
@@ -436,12 +414,8 @@ def test_runtime_history_class_accepts_endpoints_subnormals_and_signed_zero() ->
         (1.0, -1.0),
     )
 
-    assert certificate.represented_history_belongs_to_class(
-        chronological_history
-    )
-    assert certificate.represented_history_belongs_to_class(
-        chronological_history * 16
-    )
+    assert certificate.represented_history_belongs_to_class(chronological_history)
+    assert certificate.represented_history_belongs_to_class(chronological_history * 16)
 
 
 @pytest.mark.parametrize(

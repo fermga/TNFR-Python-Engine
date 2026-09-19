@@ -1,9 +1,9 @@
-"""Public high-level TNFR factorization API.
+"""High-level wrapper for the experimental factorization lab.
 
-All factor recovery emerges from nodal dynamics: Laplacian spectrum -> tetrad proxies ->
-partition nodal decoding -> structural verification. This wrapper exposes a stable
-entry-point without requiring direct interaction with the lower level factorizer.
-"""
+The pipeline combines a supplied arithmetic graph, spectral heuristics,
+classical arithmetic telemetry and optional partition workflows. It does not
+derive autonomous factor recovery from the nodal equation. Candidate and
+structural-acceptance labels require separate arithmetic verification."""
 
 from __future__ import annotations
 
@@ -18,11 +18,13 @@ __all__ = ["FactorizationResult", "factorize"]
 
 @dataclass
 class FactorizationResult:
-    """User-facing factorization outcome.
+    """User-facing candidate analysis and diagnostic records.
 
-    Fields consolidate spectral + TNFR verification artifacts. Arithmetic checks are
-    optional; in pure mode the candidate list is nodal / structural only.
-    """
+    ``tnfr_certified_factors`` retains its compatibility name for heuristic
+    acceptance; its verifier records divisibility separately and does not use
+    that field in the final acceptance condition. ``pure_mode`` identifies a
+    partial policy choice, not absence of arithmetic throughout the pipeline.
+    Telemetry names include lab proxies, not necessarily canonical graph fields."""
 
     n: int
     modulus: int
@@ -51,22 +53,34 @@ def factorize(
     max_nodes: int | None = None,
     modulus: int | None = None,
 ) -> FactorizationResult:
-    """Factorize integer ``n`` using TNFR spectral-nodal dynamics.
+    """Analyze integer ``n`` with spectral and arithmetic lab heuristics.
 
     Parameters
     ----------
     n: int
-        Integer to factor (>1).
+        Integer greater than one.
     pure: bool | None
-        If True, enable pure TNFR mode (no gcd refinement). If False, retain
-        assisted arithmetic hints. If None, use existing environment setting.
+        Set the temporary ``TNFR_PURE_MODE`` policy, or inherit the environment
+        when None. True skips arithmetic-hint injection and gcd refinement in
+        the initial seed stage; arithmetic telemetry, divisibility-based size
+        hints and the empty-candidate fallback remain in the full pipeline.
     trace: bool
-        Whether to emit operator certificate artifacts.
+        Emit analysis, partition and optional workflow records. Their legacy
+        certificate names do not establish an executed factorization proof.
     max_nodes: int | None
-        Override maximum graph nodes for Paley construction.
+        Maximum graph size. None is passed through as no cap, unlike the
+        low-level factorizer constructor's omitted-argument default of 4097.
     modulus: int | None
-        Optional explicit Paley modulus (must be 1 mod 4 and odd).
-    """
+        Optional graph modulus; odd values 1 modulo 4 are the intended domain.
+        The builder checks the lower bound 5, not all mathematical hypotheses
+        of classical prime-modulus Paley graph results.
+
+    Notes
+    -----
+    The temporary environment override is restored on return. It is process-wide
+    while the call runs, so concurrent callers must coordinate different modes.
+    Verify each returned proper factor arithmetically. ``trace=False`` suppresses
+    explicit certificate export, not necessarily all optional diagnostic output."""
     if n <= 1:
         raise ValueError("n must be > 1")
 
@@ -95,20 +109,20 @@ def factorize(
     )
 
     telemetry: Dict[str, Any] = {
-        # Structural Field Tetrad (§7, TNFR_NUMBER_THEORY.md)
+        # Lab spectral proxies; these are not the canonical nodewise tetrad.
         "phi_s": analysis.phi_s,
         "phase_gradient": analysis.phase_gradient,
         "phase_curvature": analysis.phase_curvature,
         "coherence_length": analysis.coherence_length,
         "coherence_score": analysis.coherence_score,
-        # Nodal equation components (§5-6)
+        # Static arithmetic readouts; factor/divisor statistics are supplied.
         "delta_nfr": analysis.arithmetic_delta_nfr,
         "epi": analysis.arithmetic_epi,
         "nu_f": analysis.arithmetic_nu_f,
         "local_coherence": analysis.arithmetic_local_coherence,
         # Pressure decomposition (§6, component_breakdown)
         "pressure_components": analysis.arithmetic_components,
-        # Conservation proxies (Noether charge Q = Φ_s + K_φ, Lyapunov E)
+        # Descriptive combinations only; no conservation or Lyapunov proof.
         "noether_charge_proxy": analysis.phi_s + analysis.phase_curvature,
         "energy_proxy": 0.5
         * (

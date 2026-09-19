@@ -8,8 +8,8 @@ does not bind REMESH history to the graph or prove repeated runtime stability.
 
 from __future__ import annotations
 
-from fractions import Fraction
 import json
+from fractions import Fraction
 from typing import Any
 
 import networkx as nx
@@ -100,25 +100,16 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
         "epi_before": list(certificate.binary64_epi_before),
         "epi_after": list(certificate.binary64_epi_after),
         "normalized_metric": [
-            _fraction_text(value)
-            for value in certificate.exact_normalized_metric
+            _fraction_text(value) for value in certificate.exact_normalized_metric
         ],
-        "energy_before": _fraction_text(
-            certificate.exact_centered_energy_before
-        ),
-        "energy_after": _fraction_text(
-            certificate.exact_centered_energy_after
-        ),
-        "q": _fraction_text(
-            certificate.exact_global_kernel_energy_gain_upper_bound
-        ),
+        "energy_before": _fraction_text(certificate.exact_centered_energy_before),
+        "energy_after": _fraction_text(certificate.exact_centered_energy_after),
+        "q": _fraction_text(certificate.exact_global_kernel_energy_gain_upper_bound),
         "scope": {
             "finite_executor_bound_epi_stage": (
                 certificate.finite_executor_bound_epi_stage_certified
             ),
-            "finite_grammar_admission": (
-                certificate.finite_grammar_admission_observed
-            ),
+            "finite_grammar_admission": (certificate.finite_grammar_admission_observed),
             "two_phase_reception_stage": (
                 certificate.canonical_two_phase_reception_stage_observed
             ),

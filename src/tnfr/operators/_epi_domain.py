@@ -19,9 +19,7 @@ __all__ = [
 ]
 
 
-AFFINE_EPI_GLYPHS = frozenset(
-    {Glyph.AL, Glyph.EN, Glyph.RA, Glyph.VAL, Glyph.NUL}
-)
+AFFINE_EPI_GLYPHS = frozenset({Glyph.AL, Glyph.EN, Glyph.RA, Glyph.VAL, Glyph.NUL})
 """Glyphs whose scalar stage consumes and writes a real EPI coordinate.
 
 Their unclipped local arithmetic is affine. Boundary clipping and identity

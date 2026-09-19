@@ -1,26 +1,15 @@
-"""Integrated Force Regime Orchestration Study
-================================================
+"""Finite joint field statistics and configured regime labels.
 
-This benchmark orchestrates a unified, multi-task study of the Structural
-Field Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) across topologies and operator regimes.
-
-Tasks implemented (exported as JSONL records):
-- Task 1: Field Interaction Matrix (per-snapshot correlations)
-- Task 2: Composite Field Metrics (stress indices)
-- Task 3: Force Regime Phase Diagram (intensity sweep and regime labels)
-- Task 4: Temporal Orchestration Analysis (lead/lag among fields)
-- Task 5: Operator-Field Coupling Analysis (per-operator deltas)
-- Task 6: Cross-Domain Unification Test (consistency across topologies)
-
-Status: Research harness for unified analysis; leverages CANONICAL fields.
-
-Usage (PowerShell):
-    python benchmarks/integrated_force_regime_study.py \
-        --topologies ring,ws,scale_free,grid --sizes 30 \
-        --runs 5 --seed 42 --export results/integrated_force_study.jsonl
-
-The script writes JSONL lines, one per measurement/event, with a `task`
-field indicating the task type. It avoids side effects on the codebase.
+This harness computes per-snapshot correlations, composite indices, intensity
+comparisons, temporal lead/lag summaries, operator deltas and cross-topology
+comparisons. The JSONL task identifiers retain historical names such as force
+regime and unification. Those labels do not demonstrate physical forces,
+causality, a phase transition or a unified autonomous dynamics.
+The four fields are diagnostics, not a demonstrated complete state. Thresholds,
+correlation rules and operator schedules remain explicit experiment choices.
+Coherence-length fits and spectral fallbacks require their own provenance;
+legacy rows without that provenance are insufficient for cross-estimator claims.
+See docs/STRUCTURAL_FIELDS_TETRAD.md and theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md.
 """
 
 # flake8: noqa

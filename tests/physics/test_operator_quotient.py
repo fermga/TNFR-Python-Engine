@@ -11,12 +11,8 @@ from tnfr.physics.structural_morphism import certify_epi_coarse_graining
 
 
 def _pair_quotient():
-    projection = np.array(
-        [[0.5, 0.5, 0.0, 0.0], [0.0, 0.0, 0.5, 0.5]], dtype=float
-    )
-    lift = np.array(
-        [[1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, 1.0]], dtype=float
-    )
+    projection = np.array([[0.5, 0.5, 0.0, 0.0], [0.0, 0.0, 0.5, 0.5]], dtype=float)
+    lift = np.array([[1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, 1.0]], dtype=float)
     return projection, lift
 
 
@@ -52,9 +48,7 @@ def test_uniform_linear_operator_has_zero_global_quotient_residuals():
 
 
 def test_exact_epi_diffusion_quotient_satisfies_generic_operator_certificate():
-    diffusion = certify_epi_coarse_graining(
-        _epi_graph(), [(0, 3), (1, 2)]
-    )
+    diffusion = certify_epi_coarse_graining(_epi_graph(), [(0, 3), (1, 2)])
 
     result = certify_operator_quotient(
         diffusion.projection,
@@ -92,15 +86,15 @@ def test_nonzero_global_residual_is_only_within_declared_tolerance():
     micro[0, 0] += 1e-3
     macro = np.eye(2)
 
-    result = certify_operator_quotient(
-        projection, lift, micro, macro, tolerance=1e-2
-    )
+    result = certify_operator_quotient(projection, lift, micro, macro, tolerance=1e-2)
 
     assert result.global_projection_residual > 0.0
     assert result.global_projected_closure_within_tolerance
     assert "within the declared tolerance" in result.claim_status
     assert result.claim_status.startswith("PASSED")
-    assert not any(name.startswith("exact_global") for name in result.__dataclass_fields__)
+    assert not any(
+        name.startswith("exact_global") for name in result.__dataclass_fields__
+    )
 
 
 def test_nonlinear_lifted_closure_can_fail_on_unresolved_fibers():
@@ -319,9 +313,7 @@ def test_invalid_quotient_and_dimension_changing_map_are_rejected():
     bad_lift = lift.copy()
     bad_lift[0, 0] = 0.0
     with pytest.raises(ValueError, match="projection @ lift"):
-        certify_operator_quotient(
-            projection, bad_lift, np.eye(4), np.eye(2)
-        )
+        certify_operator_quotient(projection, bad_lift, np.eye(4), np.eye(2))
 
     with pytest.raises(ValueError, match="dimension-changing"):
         certify_operator_quotient(
@@ -336,9 +328,7 @@ def test_invalid_quotient_and_dimension_changing_map_are_rejected():
 def test_boolean_matrix_probe_and_callable_output_are_rejected():
     projection, lift = _pair_quotient()
     with pytest.raises(ValueError, match="not booleans"):
-        certify_operator_quotient(
-            projection.astype(bool), lift, np.eye(4), np.eye(2)
-        )
+        certify_operator_quotient(projection.astype(bool), lift, np.eye(4), np.eye(2))
     with pytest.raises(ValueError, match="not booleans"):
         certify_operator_quotient(
             projection,
@@ -360,9 +350,7 @@ def test_boolean_matrix_probe_and_callable_output_are_rejected():
 def test_textual_numeric_payloads_are_not_silently_coerced():
     projection, lift = _pair_quotient()
     with pytest.raises(ValueError, match="real numeric"):
-        certify_operator_quotient(
-            projection.astype(str), lift, np.eye(4), np.eye(2)
-        )
+        certify_operator_quotient(projection.astype(str), lift, np.eye(4), np.eye(2))
     with pytest.raises(ValueError, match="real numeric"):
         certify_operator_quotient(
             projection,

@@ -12,16 +12,20 @@ does not change its production callers or introduce another physical field.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from fractions import Fraction
-import math
 from typing import Any
 
 from .._binary64 import uses_ieee_binary64_rounding
 
 __all__ = [
-    "euler_update", "NODAL_REMAINDER_DENOMINATOR_BITS", "NODAL_REMAINDER_ABSOLUTE_BOUND",
-    "NodalRemainderState", "NodalRemainderStep", "initialize_nodal_remainder",
+    "euler_update",
+    "NODAL_REMAINDER_DENOMINATOR_BITS",
+    "NODAL_REMAINDER_ABSOLUTE_BOUND",
+    "NodalRemainderState",
+    "NodalRemainderStep",
+    "initialize_nodal_remainder",
     "advance_nodal_remainder",
 ]
 
@@ -50,7 +54,9 @@ def _binary64_tuple(values, label):
         raise TypeError(f"{label} must be an ordered tuple of binary64 floats")
     if not values:
         raise ValueError(f"{label} must be nonempty")
-    return tuple(_finite_binary64(value, f"{label}[{i}]") for i, value in enumerate(values))
+    return tuple(
+        _finite_binary64(value, f"{label}[{i}]") for i, value in enumerate(values)
+    )
 
 
 def _remainder_band(lower, upper):
@@ -63,7 +69,9 @@ def _remainder_band(lower, upper):
 
 def _require_remainder_rounding():
     if not uses_ieee_binary64_rounding():
-        raise RuntimeError("nodal remainder updates require the declared IEEE binary64 rounding behavior")
+        raise RuntimeError(
+            "nodal remainder updates require the declared IEEE binary64 rounding behavior"
+        )
 
 
 @dataclass(frozen=True)
@@ -100,13 +108,19 @@ def _validate_nodal_remainder_state(state):
         if type(remainder) is not Fraction:
             raise TypeError("every remainder must be an exact Fraction")
         denominator = remainder.denominator
-        if (denominator & (denominator - 1)
-                or denominator.bit_length() - 1 > NODAL_REMAINDER_DENOMINATOR_BITS):
-            raise ValueError("the remainder must use the bounded dyadic nodal representation")
+        if (
+            denominator & (denominator - 1)
+            or denominator.bit_length() - 1 > NODAL_REMAINDER_DENOMINATOR_BITS
+        ):
+            raise ValueError(
+                "the remainder must use the bounded dyadic nodal representation"
+            )
     if any(not lower <= value <= upper for value in epi):
         raise ValueError("visible EPI leaves the declared positive band")
-    exact = tuple(Fraction.from_float(value) + remainder
-                  for value, remainder in zip(epi, state.remainder, strict=True))
+    exact = tuple(
+        Fraction.from_float(value) + remainder
+        for value, remainder in zip(epi, state.remainder, strict=True)
+    )
     exact_lower, exact_upper = Fraction.from_float(lower), Fraction.from_float(upper)
     if any(not exact_lower <= value <= exact_upper for value in exact):
         raise ValueError("reconstructed exact EPI leaves the declared positive band")
@@ -133,7 +147,10 @@ class NodalRemainderStep:
 
 
 def initialize_nodal_remainder(
-    epi: tuple[float, ...], *, epi_lower: float = 0.05, epi_upper: float = 1.0,
+    epi: tuple[float, ...],
+    *,
+    epi_lower: float = 0.05,
+    epi_upper: float = 1.0,
 ) -> NodalRemainderState:
     """Start the explicit numerical representation with zero carry.
 
@@ -149,8 +166,11 @@ def initialize_nodal_remainder(
 
 
 def advance_nodal_remainder(
-    state: NodalRemainderState, *, timestep: float,
-    capacity: tuple[float, ...], pressure: tuple[float, ...],
+    state: NodalRemainderState,
+    *,
+    timestep: float,
+    capacity: tuple[float, ...],
+    pressure: tuple[float, ...],
 ) -> NodalRemainderStep:
     """Carry exact dyadic nodal area into the next visible EPI update.
 
@@ -191,24 +211,51 @@ def advance_nodal_remainder(
     if h < 0 or any(value < 0 for value in capacities):
         raise ValueError("timestep and capacity must be nonnegative")
     exact_h = Fraction.from_float(h)
-    increment = tuple(exact_h * Fraction.from_float(nu) * Fraction.from_float(force)
-                      for nu, force in zip(capacities, pressures, strict=True))
-    exact_after = tuple(value + change for value, change in zip(exact_before, increment, strict=True))
-    lower, upper = Fraction.from_float(state.epi_lower), Fraction.from_float(state.epi_upper)
+    increment = tuple(
+        exact_h * Fraction.from_float(nu) * Fraction.from_float(force)
+        for nu, force in zip(capacities, pressures, strict=True)
+    )
+    exact_after = tuple(
+        value + change for value, change in zip(exact_before, increment, strict=True)
+    )
+    lower, upper = Fraction.from_float(state.epi_lower), Fraction.from_float(
+        state.epi_upper
+    )
     if any(not lower <= value <= upper for value in exact_after):
         raise ValueError("exact nodal update leaves the declared positive EPI band")
     visible = tuple(float(value) for value in exact_after)
-    remainder = tuple(value - Fraction.from_float(encoded)
-                      for value, encoded in zip(exact_after, visible, strict=True))
+    remainder = tuple(
+        value - Fraction.from_float(encoded)
+        for value, encoded in zip(exact_after, visible, strict=True)
+    )
     after = NodalRemainderState(visible, remainder, state.epi_lower, state.epi_upper)
     _validate_nodal_remainder_state(after)
-    visible_increment = tuple(Fraction.from_float(final) - Fraction.from_float(initial)
-                              for initial, final in zip(state.epi, after.epi, strict=True))
-    transfer = tuple(before - final for before, final in zip(state.remainder, after.remainder, strict=True))
-    residual = tuple(actual - area - carried for actual, area, carried
-                     in zip(visible_increment, increment, transfer, strict=True))
+    visible_increment = tuple(
+        Fraction.from_float(final) - Fraction.from_float(initial)
+        for initial, final in zip(state.epi, after.epi, strict=True)
+    )
+    transfer = tuple(
+        before - final
+        for before, final in zip(state.remainder, after.remainder, strict=True)
+    )
+    residual = tuple(
+        actual - area - carried
+        for actual, area, carried in zip(
+            visible_increment, increment, transfer, strict=True
+        )
+    )
     if any(residual):
-        raise RuntimeError("nodal remainder update lost its exact visible/carry balance")
+        raise RuntimeError(
+            "nodal remainder update lost its exact visible/carry balance"
+        )
     return NodalRemainderStep(
-        state, after, h, capacities, pressures, increment, visible_increment, transfer, residual,
+        state,
+        after,
+        h,
+        capacities,
+        pressures,
+        increment,
+        visible_increment,
+        transfer,
+        residual,
     )

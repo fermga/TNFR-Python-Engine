@@ -13,7 +13,7 @@ Where:
   - EPI: Primary Information Structure (coherent form)
   - νf: Structural frequency in Hz_str (structural hertz)
   - ΔNFR: Nodal gradient (reorganization operator)
-  - t: Structural time (not chronological time)
+  - t: Declared evolution coordinate; a physical-clock bridge is separate
 
 This implementation ensures theoretical fidelity to the TNFR paradigm by:
   1. Making the canonical equation explicit in code
@@ -46,6 +46,7 @@ from ..alias import get_attr, set_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..errors.contextual import FrequencyError, NetworkConfigError, TNFRValueError
 from ..mathematics.unified_numerical import np
+from ..types import require_finite_real_scalar_epi
 
 if TYPE_CHECKING:
     from ..types import GraphLike
@@ -109,7 +110,9 @@ def compute_canonical_nodal_derivative(
     Notes:
         - This function is the canonical reference implementation
         - The result represents the instantaneous rate of EPI evolution
-        - Units: [∂EPI/∂t] = Hz_str (structural reorganization rate)
+        - Units: [∂EPI/∂t] = [EPI]/[t]. When [νf] = 1/[t], pressure
+          has the EPI chart's units. The derivative has units Hz_str only
+          for a dimensionless EPI chart with structural-time units.
         - Computing the product does not establish physical unit calibration,
           operator closure, or the remaining channel evolution laws.
 
@@ -698,7 +701,16 @@ def _integrate_with_backend(
     # Initialize arrays using backend (canonical alias-aware reads:
     # honour Greek primaries 'νf'/'ΔNFR' as well as ASCII aliases)
     epi_values = backend.as_array(
-        [get_attr(G.nodes[node], ALIAS_EPI, 0.0) for node in nodes]
+        [
+            get_attr(
+                G.nodes[node],
+                ALIAS_EPI,
+                0.0,
+                strict=True,
+                conv=require_finite_real_scalar_epi,
+            )
+            for node in nodes
+        ]
     )
     vf_values = backend.as_array(
         [get_attr(G.nodes[node], ALIAS_VF, 1.0) for node in nodes]

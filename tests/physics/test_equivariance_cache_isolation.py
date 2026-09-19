@@ -17,13 +17,13 @@ from __future__ import annotations
 import networkx as nx
 
 from tnfr.dynamics import default_compute_delta_nfr
+from tnfr.operators.definitions import Resonance, Silence, Transition
 from tnfr.physics import operator_equivariance as oe
 from tnfr.physics.operator_equivariance import (
+    _isolate_graph_caches,
     audit_operator_equivariance,
     operator_equivariance_residual,
-    _isolate_graph_caches,
 )
-from tnfr.operators.definitions import Resonance, Silence, Transition
 
 # The operator-equivariance tolerance (the audit's own default). Residuals on a
 # Fix(Γ) seed cancel exactly, so this is a generous bound, not a fitted constant.

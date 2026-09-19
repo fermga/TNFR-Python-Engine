@@ -21,7 +21,6 @@ def _evaluate_binary64_half_reception_pair(
     lower: float,
     upper: float,
 ) -> Binary64Pair: ...
-
 @dataclass(frozen=True, slots=True)
 class P2HalfReceptionRemeshStabilityCertificate:
     remesh_class_certificate: UniformAlphaOneHardClipRemeshClassCertificate = field(

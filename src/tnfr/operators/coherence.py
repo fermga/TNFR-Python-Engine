@@ -126,17 +126,11 @@ class Coherence(Operator):
     def _validate_precondition_config(self, G: TNFRGraph) -> None:
         """Validate the optional strict IL thresholds before their consumer."""
 
-        from ..config.thresholds import (
-            DNFR_IL_CRITICAL,
-            EPI_IL_MIN,
-            VF_IL_MIN,
-        )
+        from ..config.thresholds import DNFR_IL_CRITICAL, EPI_IL_MIN, VF_IL_MIN
 
         raw = G.graph.get("IL_PRECONDITIONS", {})
         if not isinstance(raw, Mapping):
-            reject_operator_argument(
-                self.name, "IL_PRECONDITIONS must be a mapping"
-            )
+            reject_operator_argument(self.name, "IL_PRECONDITIONS must be a mapping")
         finite_real(
             raw.get("min_epi", EPI_IL_MIN),
             operator=self.name,
@@ -162,9 +156,7 @@ class Coherence(Operator):
                     label=f"IL_PRECONDITIONS.{key}",
                 )
 
-    def _validate_sinks_and_monitor(
-        self, G: TNFRGraph, kw: Mapping[str, Any]
-    ) -> None:
+    def _validate_sinks_and_monitor(self, G: TNFRGraph, kw: Mapping[str, Any]) -> None:
         """Reject malformed active telemetry targets before IL dispatch."""
 
         for key in (
@@ -221,9 +213,7 @@ class Coherence(Operator):
             **kw,
         )
 
-    def _after_glyph_application(
-        self, G: TNFRGraph, node: Any, **kw: Any
-    ) -> None:
+    def _after_glyph_application(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Commit phase and IL telemetry before monitor and metric hooks."""
 
         proposal = kw.get("_coherence_stage_proposal")

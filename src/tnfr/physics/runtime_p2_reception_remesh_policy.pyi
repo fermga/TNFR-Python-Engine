@@ -2,12 +2,8 @@ from __future__ import annotations
 
 import networkx as nx
 
-from ..operators.event_remesh_causal_runtime import (
-    EventRemeshCycleExecutionSpec,
-)
-from .binary64_p2_reception_stability import (
-    P2HalfReceptionRemeshStabilityCertificate,
-)
+from ..operators.event_remesh_causal_runtime import EventRemeshCycleExecutionSpec
+from .binary64_p2_reception_stability import P2HalfReceptionRemeshStabilityCertificate
 from .runtime_p2_reception_remesh_sequence import (
     ExecutedP2HalfReceptionRemeshSequenceCertificate,
 )

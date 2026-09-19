@@ -38,9 +38,6 @@ except ImportError:
 
 # Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
 from ..constants.operational import (
-    NODAL_OPT_COUPLING_CANONICAL,
-)
-from ..constants.operational import (
     CACHE_OPT_COMPRESSION_BASE_CANONICAL,
     CACHE_OPT_COMPRESSION_MAX_CANONICAL,
     CACHE_OPT_COMPRESSION_SCALE_CANONICAL,
@@ -59,6 +56,7 @@ from ..constants.operational import (
     CACHE_OPT_SHARED_MEMORY_CANONICAL,
     CACHE_OPT_SPECTRAL_MEMORY_CANONICAL,
     CACHE_OPT_SPECTRAL_TIME_CANONICAL,
+    NODAL_OPT_COUPLING_CANONICAL,
 )
 
 # Import TNFR cache infrastructure

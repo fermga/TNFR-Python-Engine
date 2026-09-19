@@ -158,7 +158,9 @@ def validate_graph_seed(G: TNFRGraph | GraphLike) -> int | None:
     """Check graph seed configuration without recording or drawing entropy."""
     from .config import get_config
 
-    return validate_seed(get_config().get_param_with_fallback(get_graph(G), "RANDOM_SEED"))
+    return validate_seed(
+        get_config().get_param_with_fallback(get_graph(G), "RANDOM_SEED")
+    )
 
 
 def resolve_graph_seed(G: TNFRGraph | GraphLike) -> int:

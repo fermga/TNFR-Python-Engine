@@ -13,19 +13,35 @@ from .._exact_time import exact_or_represented_real
 from ._cycle_algebra import Vector, dot, ordered_vector
 from ._exact_linear_algebra import exact_matrix_inverse
 from .support_transport import (
-    SupportTransportEuler, SupportTransportReset, SupportTransportSnapshot,
-    _energy, _laplacian, _rebuild,
-    observe_support_transport_euler, observe_support_transport_reset,
+    SupportTransportEuler,
+    SupportTransportReset,
+    SupportTransportSnapshot,
+    _energy,
+    _laplacian,
+    _rebuild,
+    observe_support_transport_euler,
+    observe_support_transport_reset,
 )
 
 __all__ = [
-    "ForcedSupportBalance", "ForcedSupportState", "ForcedSupportStep",
-    "derive_forced_support_balance", "observe_forced_support_state",
+    "ForcedSupportBalance",
+    "ForcedSupportState",
+    "ForcedSupportStep",
+    "derive_forced_support_balance",
+    "observe_forced_support_state",
     "observe_forced_support_step",
-    "ForcedSupportPattern", "ForcedSupportResetEnergy", "ForcedSupportReset",
-    "observe_forced_support_pattern", "observe_forced_support_reset",
-    "ForcedSupportJumpEnergy", "ForcedSupportEvent", "observe_forced_support_event",
-    "ForcedSupportTarget", "observe_forced_support_target",
+    "ForcedSupportPattern",
+    "ForcedSupportResetEnergy",
+    "ForcedSupportReset",
+    "observe_forced_support_pattern",
+    "observe_forced_support_reset",
+    "ForcedSupportJumpEnergy",
+    "ForcedSupportEvent",
+    "observe_forced_support_event",
+    "ForcedSupportTarget",
+    "observe_forced_support_target",
+    "ForcedSupportShape",
+    "observe_forced_support_shape",
 ]
 
 
@@ -48,7 +64,10 @@ class ForcedSupportBalance:
 
 
 def derive_forced_support_balance(
-    snapshot, *, epi_weight, forcing,
+    snapshot,
+    *,
+    epi_weight,
+    forcing,
 ) -> ForcedSupportBalance:
     """Solve e*B*z=D*F-vbar*(d/nu), fixing the gauge sum(d*z/nu)=0.
 
@@ -86,7 +105,9 @@ def derive_forced_support_balance(
         visited.update(new)
         pending.extend(new)
     if len(visited) != size or any(d <= 0 for d in strengths):
-        raise ValueError("positive conductance must be connected with positive strengths")
+        raise ValueError(
+            "positive conductance must be connected with positive strengths"
+        )
     d = tuple(strengths)
     metric = tuple(di / nu for di, nu in zip(d, source.capacity))
     mass = sum(metric, Fraction(0))
@@ -107,8 +128,18 @@ def derive_forced_support_balance(
     if any(residual) or center_residual:
         raise RuntimeError("exact relative profile lost its Poisson or gauge identity")
     return ForcedSupportBalance(
-        source, e, f, d, metric, compatibility, drift, profile, residual,
-        center_residual, compatibility == 0, 1 / (e * max(source.capacity)),
+        source,
+        e,
+        f,
+        d,
+        metric,
+        compatibility,
+        drift,
+        profile,
+        residual,
+        center_residual,
+        compatibility == 0,
+        1 / (e * max(source.capacity)),
     )
 
 
@@ -117,7 +148,9 @@ def _reference(value):
         raise TypeError("reference must be a ForcedSupportBalance")
     # Public cached fields are not provenance or trusted mathematical results.
     return derive_forced_support_balance(
-        value.source, epi_weight=value.epi_weight, forcing=value.forcing,
+        value.source,
+        epi_weight=value.epi_weight,
+        forcing=value.forcing,
     )
 
 
@@ -137,7 +170,10 @@ def _pattern(reference, epi):
     mean = dot(reference.metric_weights, epi) / sum(reference.metric_weights)
     error = tuple(x - mean - z for x, z in zip(epi, reference.relative_profile))
     return ForcedSupportPattern(
-        reference.source.nodes, epi, mean, error,
+        reference.source.nodes,
+        epi,
+        mean,
+        error,
         dot(reference.metric_weights, tuple(u**2 for u in error)) / 2,
         _energy(reference.source.conductance, error),
     )
@@ -178,17 +214,30 @@ class ForcedSupportState:
 def _state(reference, snapshot):
     value = _rebuild(snapshot)
     source = reference.source
-    if any(getattr(value, field) != getattr(source, field) for field in (
-        "nodes", "conductance", "support_neighbors", "capacity",
-    )):
+    if any(
+        getattr(value, field) != getattr(source, field)
+        for field in (
+            "nodes",
+            "conductance",
+            "support_neighbors",
+            "capacity",
+        )
+    ):
         raise ValueError("observation requires the reference support and capacity")
     pattern = _pattern(reference, value.epi)
-    pressure = tuple(reference.epi_weight * g + f
-                     for g, f in zip(value.epi_gradient, reference.forcing))
+    pressure = tuple(
+        reference.epi_weight * g + f
+        for g, f in zip(value.epi_gradient, reference.forcing)
+    )
     defect = tuple(p - expected for p, expected in zip(value.stored_pressure, pressure))
     return ForcedSupportState(
-        value, pattern.mean, pattern.relative_error,
-        pattern.error_variance, pattern.error_dirichlet_energy, pressure, defect,
+        value,
+        pattern.mean,
+        pattern.relative_error,
+        pattern.error_variance,
+        pattern.error_dirichlet_energy,
+        pressure,
+        defect,
     )
 
 
@@ -200,6 +249,130 @@ def observe_forced_support_state(reference, snapshot) -> ForcedSupportState:
     observer never identifies these possibilities from stored pressure alone.
     """
     return _state(_reference(reference), snapshot)
+
+
+@dataclass(frozen=True)
+class ForcedSupportShape:
+    """Exact induced shape/rate response of a held reversible relative model.
+
+    The normalized shape is y/sqrt(norm_squared); its derivative multiplied
+    by that radius is shape_tangent_scaled. The rate is a Rayleigh quotient,
+    not a new primitive capacity. At zero relative error the direction and
+    all ratio-based readings are unavailable, including stationary_shape.
+    """
+
+    reference: ForcedSupportBalance
+    state: ForcedSupportState
+    norm_squared: Fraction
+    norm_squared_rate: Fraction
+    generator_image: Vector
+    shape_tangent_scaled: Vector | None
+    relaxation_rate: Fraction | None
+    spectral_variance: Fraction | None
+    relaxation_rate_derivative: Fraction | None
+    radius_squared_balance_residual: Fraction
+    rayleigh_balance_residual: Fraction
+    tangent_orthogonality_residual: Fraction | None
+    rate_identity_residual: Fraction | None
+    scope: tuple[str, ...] = (
+        "fixed_reversible_generator_metric_capacity_and_held_forcing",
+        "exact_conditional_model_derivatives_not_runtime_derivatives",
+        "stored_pressure_defect_retained_in_state",
+        "normalized_shape_preserves_epi_sign_and_is_not_graph_rewiring",
+        "relaxation_rate_is_not_primitive_nodal_capacity",
+        "no_phase_law_macro_pressure_closure_or_sustained_pattern_claim",
+    )
+
+    @property
+    def stationary_shape(self) -> bool | None:
+        """Whether a defined normalized direction is instantaneously fixed."""
+        return None if self.spectral_variance is None else self.spectral_variance == 0
+
+
+def observe_forced_support_shape(reference, snapshot) -> ForcedSupportShape:
+    """Derive normalized shape and Rayleigh-rate evolution without feedback.
+
+    For the reference's centered error y, the held model gives y'=-A*y,
+    A=e*diag(nu/d)*B and H=diag(d/nu), so H*A=e*B is symmetric. For S=y^T H y>0,
+
+        kappa = (y^T H A y)/S,
+        S' = -2*kappa*S,
+        sqrt(S)*q' = -A*y+kappa*y,    q=y/sqrt(S),
+        kappa' = -2*||A*y-kappa*y||_H^2/S.
+
+    These are pushforwards of the supplied model, computed from state and
+    generator rather than from a fitted temporal derivative. They select no
+    pressure/capacity factorization, angular coordinate or energy feedback.
+    The radius is not rescaled in a graph, and normalizing its observation
+    does not preserve a physical amplitude. The existing reference/state
+    owners rebuild caches, enforce the held support/capacity and retain the
+    stored-pressure defect; that defect is not silently identified with zero.
+    All results are rational, with no eigenbasis or square-root evaluation.
+    """
+    ref = _reference(reference)
+    state = _state(ref, snapshot)
+    y = state.relative_error
+    h = ref.metric_weights
+
+    def inner(left, right):
+        return dot(h, tuple(a * b for a, b in zip(left, right, strict=True)))
+
+    def generator(values):
+        return tuple(
+            ref.epi_weight * nu * value / d
+            for nu, value, d in zip(
+                ref.source.capacity,
+                _laplacian(ref.source.conductance, values),
+                ref.strengths,
+                strict=True,
+            )
+        )
+
+    ay = generator(y)
+    relative_rate = tuple(
+        nu * pressure - ref.mean_drift
+        for nu, pressure in zip(
+            ref.source.capacity, state.modeled_pressure, strict=True
+        )
+    )
+    if any(a + b for a, b in zip(relative_rate, ay, strict=True)):
+        raise ArithmeticError("held-model centered rate differs from -A*y")
+    norm_squared = 2 * state.error_variance
+    norm_rate = 2 * inner(y, relative_rate)
+    numerator = inner(y, ay)
+    radius_residual = norm_rate + 2 * numerator
+    rayleigh_residual = numerator - 2 * ref.epi_weight * state.error_dirichlet_energy
+    tangent = rate = variance = rate_derivative = orthogonality = rate_residual = None
+    if norm_squared:
+        rate = numerator / norm_squared
+        tangent = tuple(-value + rate * yi for value, yi in zip(ay, y, strict=True))
+        variance = inner(tangent, tangent) / norm_squared
+        rate_derivative = -2 * variance
+        orthogonality = inner(y, tangent)
+        numerator_rate = inner(relative_rate, ay) + inner(y, generator(relative_rate))
+        quotient_rate = (numerator_rate * norm_squared - numerator * norm_rate) / (
+            norm_squared * norm_squared
+        )
+        rate_residual = rate_derivative - quotient_rate
+        if rate <= 0 or variance < 0 or orthogonality or rate_residual:
+            raise ArithmeticError("exact normalized shape/rate identities failed")
+    if radius_residual or rayleigh_residual:
+        raise ArithmeticError("exact radius or Dirichlet-Rayleigh identity failed")
+    return ForcedSupportShape(
+        ref,
+        state,
+        norm_squared,
+        norm_rate,
+        ay,
+        tangent,
+        rate,
+        variance,
+        rate_derivative,
+        radius_residual,
+        rayleigh_residual,
+        orthogonality,
+        rate_residual,
+    )
 
 
 @dataclass(frozen=True)
@@ -222,7 +395,10 @@ class ForcedSupportStep:
 
 
 def observe_forced_support_step(
-    reference, before, after, dt,
+    reference,
+    before,
+    after,
+    dt,
 ) -> ForcedSupportStep:
     """Separate frozen-model drift, pressure realization and endpoint defects.
 
@@ -239,7 +415,9 @@ def observe_forced_support_step(
     if h < 0:
         raise ValueError("dt must be nonnegative")
     support_budget = observe_support_transport_euler(
-        before_state.snapshot, after_state.snapshot, h,
+        before_state.snapshot,
+        after_state.snapshot,
+        h,
     )
     mass = sum(ref.metric_weights)
     mean_change = after_state.mean - before_state.mean
@@ -249,16 +427,21 @@ def observe_forced_support_step(
     mean_residual = mean_change - mean_model - mean_pressure - mean_step
 
     bu = _laplacian(ref.source.conductance, before_state.relative_error)
-    error_pressure = tuple(-ref.epi_weight * value / d
-                           for value, d in zip(bu, ref.strengths))
-    error_before = replace(before_state.snapshot, epi=before_state.relative_error,
-                           stored_pressure=error_pressure)
+    error_pressure = tuple(
+        -ref.epi_weight * value / d for value, d in zip(bu, ref.strengths)
+    )
+    error_before = replace(
+        before_state.snapshot,
+        epi=before_state.relative_error,
+        stored_pressure=error_pressure,
+    )
     error_after = replace(after_state.snapshot, epi=after_state.relative_error)
     error_budget = observe_support_transport_euler(error_before, error_after, h)
     combined_defect = tuple(
         h * nu * pressure_error + step_error
         for nu, pressure_error, step_error in zip(
-            ref.source.capacity, before_state.pressure_defect,
+            ref.source.capacity,
+            before_state.pressure_defect,
             support_budget.state_defect,
         )
     )
@@ -270,9 +453,19 @@ def observe_forced_support_step(
     if mean_residual or any(recurrence_residual):
         raise RuntimeError("exact mean or centered error recurrence lost its identity")
     return ForcedSupportStep(
-        ref, before_state, after_state, h, support_budget, error_budget,
-        mean_change, mean_model, mean_pressure, mean_step, mean_residual,
-        recurrence_residual, h <= ref.max_convex_step,
+        ref,
+        before_state,
+        after_state,
+        h,
+        support_budget,
+        error_budget,
+        mean_change,
+        mean_model,
+        mean_pressure,
+        mean_step,
+        mean_residual,
+        recurrence_residual,
+        h <= ref.max_convex_step,
     )
 
 
@@ -313,7 +506,10 @@ class ForcedSupportReset:
 
 
 def observe_forced_support_reset(
-    before_reference, after_reference, before, after,
+    before_reference,
+    after_reference,
+    before,
+    after,
 ) -> ForcedSupportReset:
     """Account for a new profile/metric without mistaking it for EPI recovery.
 
@@ -340,9 +536,13 @@ def _reset_from_validated(ref0, ref1, state0, state1) -> ForcedSupportReset:
     u0, u1 = state0.relative_error, state1.relative_error
     du = tuple(right - left for left, right in zip(u0, u1))
     mean_jump = state1.mean - state0.mean
-    dz = tuple(right - left for left, right in zip(
-        ref0.relative_profile, ref1.relative_profile,
-    ))
+    dz = tuple(
+        right - left
+        for left, right in zip(
+            ref0.relative_profile,
+            ref1.relative_profile,
+        )
+    )
     if any(shift + mean_jump + profile_shift for shift, profile_shift in zip(du, dz)):
         raise RuntimeError("exact same-EPI reference shift lost its identity")
     h0, h1 = ref0.metric_weights, ref1.metric_weights
@@ -353,7 +553,8 @@ def _reset_from_validated(ref0, ref1, state0, state1) -> ForcedSupportReset:
         state1.error_variance - state0.error_variance,
     )
     error_reset = observe_support_transport_reset(
-        replace(state0.snapshot, epi=u0), replace(state1.snapshot, epi=u0),
+        replace(state0.snapshot, epi=u0),
+        replace(state1.snapshot, epi=u0),
     )
     dirichlet = _reset_energy(
         error_reset.energy_change,
@@ -362,8 +563,18 @@ def _reset_from_validated(ref0, ref1, state0, state1) -> ForcedSupportReset:
         state1.error_dirichlet_energy - state0.error_dirichlet_energy,
     )
     return ForcedSupportReset(
-        ref0, ref1, state0, state1, raw_reset, error_reset, mean_jump, dz, du,
-        ref1.mean_drift - ref0.mean_drift, variance, dirichlet,
+        ref0,
+        ref1,
+        state0,
+        state1,
+        raw_reset,
+        error_reset,
+        mean_jump,
+        dz,
+        du,
+        ref1.mean_drift - ref0.mean_drift,
+        variance,
+        dirichlet,
     )
 
 
@@ -418,7 +629,10 @@ class ForcedSupportEvent:
 
 
 def observe_forced_support_event(
-    before_reference, after_reference, before, after,
+    before_reference,
+    after_reference,
+    before,
+    after,
 ) -> ForcedSupportEvent:
     """Account for an EPI jump and changing profile/metric on the same nodes.
 
@@ -445,22 +659,34 @@ def observe_forced_support_event(
     state0, state1 = _state(ref0, before), _state(ref1, after)
     if state0.snapshot.nodes != state1.snapshot.nodes:
         raise ValueError("an event requires identical node count and order")
-    delta = tuple(right - left for left, right in zip(
-        state0.snapshot.epi, state1.snapshot.epi,
-    ))
+    delta = tuple(
+        right - left
+        for left, right in zip(
+            state0.snapshot.epi,
+            state1.snapshot.epi,
+        )
+    )
     mean_delta = dot(ref0.metric_weights, delta) / sum(ref0.metric_weights)
     centered_delta = tuple(value - mean_delta for value in delta)
     midpoint = _pattern(ref0, state1.snapshot.epi)
     reset = _reset_from_validated(
-        ref0, ref1,
+        ref0,
+        ref1,
         _state(ref0, replace(state0.snapshot, epi=state1.snapshot.epi)),
         state1,
     )
     error0 = state0.relative_error
     variance_jump = _jump_energy(
-        dot(ref0.metric_weights, tuple(u * q for u, q in zip(
-            error0, centered_delta,
-        ))),
+        dot(
+            ref0.metric_weights,
+            tuple(
+                u * q
+                for u, q in zip(
+                    error0,
+                    centered_delta,
+                )
+            ),
+        ),
         dot(ref0.metric_weights, tuple(q**2 for q in centered_delta)) / 2,
         midpoint.error_variance - state0.error_variance,
     )
@@ -472,32 +698,51 @@ def observe_forced_support_event(
     mean_change = state1.mean - state0.mean
     mean_residual = mean_change - mean_delta - reset.mean_reweighting
     error_residual = tuple(
-        new - old - q - shift for new, old, q, shift in zip(
-            state1.relative_error, error0, centered_delta, reset.error_shift,
+        new - old - q - shift
+        for new, old, q, shift in zip(
+            state1.relative_error,
+            error0,
+            centered_delta,
+            reset.error_shift,
         )
     )
     variance_change = state1.error_variance - state0.error_variance
-    dirichlet_change = (
-        state1.error_dirichlet_energy - state0.error_dirichlet_energy
-    )
+    dirichlet_change = state1.error_dirichlet_energy - state0.error_dirichlet_energy
     variance_residual = (
-        variance_change - variance_jump.energy_change
+        variance_change
+        - variance_jump.energy_change
         - reset.variance_budget.energy_change
     )
     dirichlet_residual = (
-        dirichlet_change - dirichlet_jump.energy_change
+        dirichlet_change
+        - dirichlet_jump.energy_change
         - reset.dirichlet_budget.energy_change
     )
-    if (mean_residual or any(error_residual) or variance_residual
-            or dirichlet_residual):
+    if mean_residual or any(error_residual) or variance_residual or dirichlet_residual:
         raise RuntimeError("exact full-event coordinate or energy identity was lost")
     return ForcedSupportEvent(
-        ref0, ref1, state0, state1, midpoint, delta, centered_delta,
-        mean_delta, reset.mean_reweighting, mean_change, mean_residual,
-        reset.profile_shift, reset.error_shift, error_residual,
-        variance_jump, dirichlet_jump, reset.variance_budget,
-        reset.dirichlet_budget, variance_change, dirichlet_change,
-        variance_residual, dirichlet_residual,
+        ref0,
+        ref1,
+        state0,
+        state1,
+        midpoint,
+        delta,
+        centered_delta,
+        mean_delta,
+        reset.mean_reweighting,
+        mean_change,
+        mean_residual,
+        reset.profile_shift,
+        reset.error_shift,
+        error_residual,
+        variance_jump,
+        dirichlet_jump,
+        reset.variance_budget,
+        reset.dirichlet_budget,
+        variance_change,
+        dirichlet_change,
+        variance_residual,
+        dirichlet_residual,
     )
 
 
@@ -535,7 +780,11 @@ class ForcedSupportTarget:
 
 
 def observe_forced_support_target(
-    target_reference, reference, snapshot, *, forcing_components=None,
+    target_reference,
+    reference,
+    snapshot,
+    *,
+    forcing_components=None,
 ) -> ForcedSupportTarget:
     """Resolve r=P0*(nu*F-A*z0), its channels and the old-target energy rate.
 
@@ -569,8 +818,10 @@ def observe_forced_support_target(
         return tuple(
             ref.epi_weight * nu * value / degree
             for nu, value, degree in zip(
-                ref.source.capacity, _laplacian(ref.source.conductance, values),
-                ref.strengths, strict=True,
+                ref.source.capacity,
+                _laplacian(ref.source.conductance, values),
+                ref.strengths,
+                strict=True,
             )
         )
 
@@ -582,35 +833,59 @@ def observe_forced_support_target(
         components, names = [], set()
         for name, values in forcing_components:
             if not isinstance(name, str) or not name or name == "epi" or name in names:
-                raise ValueError("forcing component names must be unique and exclude epi")
+                raise ValueError(
+                    "forcing component names must be unique and exclude epi"
+                )
             vector = ordered_vector(values, f"forcing component {name}")
             if len(vector) != size:
                 raise ValueError("forcing components must match the node order")
             components.append((name, vector))
             names.add(name)
         components = tuple(components)
-        total = tuple(sum((vector[i] for _, vector in components), Fraction(0))
-                      for i in range(size))
+        total = tuple(
+            sum((vector[i] for _, vector in components), Fraction(0))
+            for i in range(size)
+        )
         if total != ref.forcing:
-            raise ValueError("forcing components must sum exactly to the current forcing")
+            raise ValueError(
+                "forcing components must sum exactly to the current forcing"
+            )
 
     epi_pressure = tuple(
         -ref.epi_weight * value / degree
         for value, degree in zip(
             _laplacian(ref.source.conductance, target.relative_profile),
-            ref.strengths, strict=True,
+            ref.strengths,
+            strict=True,
         )
     )
     pressure_channels = (("epi", epi_pressure),) + components
-    projected = tuple((name, project(tuple(
-        nu * value for nu, value in zip(ref.source.capacity, values, strict=True)
-    ))) for name, values in pressure_channels)
-    target_rate = tuple(nu * (epi + force) for nu, epi, force in zip(
-        ref.source.capacity, epi_pressure, ref.forcing, strict=True,
-    ))
+    projected = tuple(
+        (
+            name,
+            project(
+                tuple(
+                    nu * value
+                    for nu, value in zip(ref.source.capacity, values, strict=True)
+                )
+            ),
+        )
+        for name, values in pressure_channels
+    )
+    target_rate = tuple(
+        nu * (epi + force)
+        for nu, epi, force in zip(
+            ref.source.capacity,
+            epi_pressure,
+            ref.forcing,
+            strict=True,
+        )
+    )
     residual = project(target_rate)
-    if any(sum((v[i] for _, v in projected), Fraction(0)) != residual[i]
-           for i in range(size)):
+    if any(
+        sum((v[i] for _, v in projected), Fraction(0)) != residual[i]
+        for i in range(size)
+    ):
         raise RuntimeError("target channel projection lost its identity")
     limiting = _pattern(target, ref.relative_profile)
     induced_residual = project(action(limiting.relative_error))
@@ -618,8 +893,13 @@ def observe_forced_support_target(
     compatible = not any(residual)
     if any(identity) or compatible != (not any(limiting.relative_error)):
         raise RuntimeError("target compatibility lost its profile equivalence")
-    gram = tuple(tuple(dot(metric, tuple(a * b for a, b in zip(left, right)))
-                       for _, right in projected) for _, left in projected)
+    gram = tuple(
+        tuple(
+            dot(metric, tuple(a * b for a, b in zip(left, right)))
+            for _, right in projected
+        )
+        for _, left in projected
+    )
     energy = dot(metric, tuple(value**2 for value in residual)) / 2
     channel_identity = energy - sum((sum(row) for row in gram), Fraction(0)) / 2
 
@@ -627,24 +907,60 @@ def observe_forced_support_target(
     u = pattern.relative_error
     au = action(u)
     homogeneous = -dot(metric, tuple(value * drift for value, drift in zip(u, au)))
-    target_source = dot(metric, tuple(value * force for value, force in zip(u, residual)))
-    model_rate = tuple(nu * p for nu, p in zip(
-        ref.source.capacity, state.modeled_pressure, strict=True,
-    ))
+    target_source = dot(
+        metric, tuple(value * force for value, force in zip(u, residual))
+    )
+    model_rate = tuple(
+        nu * p
+        for nu, p in zip(
+            ref.source.capacity,
+            state.modeled_pressure,
+            strict=True,
+        )
+    )
     rate = dot(metric, tuple(value * drift for value, drift in zip(u, model_rate)))
     rate_identity = rate - homogeneous - target_source
-    pressure_defect = dot(metric, tuple(value * nu * defect for value, nu, defect in zip(
-        u, ref.source.capacity, state.pressure_defect, strict=True,
-    )))
+    pressure_defect = dot(
+        metric,
+        tuple(
+            value * nu * defect
+            for value, nu, defect in zip(
+                u,
+                ref.source.capacity,
+                state.pressure_defect,
+                strict=True,
+            )
+        ),
+    )
     ratio = metric[0] / ref.metric_weights[0]
-    proportionality = ratio if all(
-        old == ratio * new for old, new in zip(metric, ref.metric_weights)
-    ) else None
+    proportionality = (
+        ratio
+        if all(old == ratio * new for old, new in zip(metric, ref.metric_weights))
+        else None
+    )
     if channel_identity or rate_identity:
         raise RuntimeError("target energy accounting lost its exact identity")
     return ForcedSupportTarget(
-        target, ref, state, pattern, limiting, target_rate, residual, identity,
-        compatible, pressure_channels, projected, gram, energy, channel_identity,
-        model_rate, homogeneous, target_source, rate, rate_identity,
-        pressure_defect, rate + pressure_defect, proportionality,
+        target,
+        ref,
+        state,
+        pattern,
+        limiting,
+        target_rate,
+        residual,
+        identity,
+        compatible,
+        pressure_channels,
+        projected,
+        gram,
+        energy,
+        channel_identity,
+        model_rate,
+        homogeneous,
+        target_source,
+        rate,
+        rate_identity,
+        pressure_defect,
+        rate + pressure_defect,
+        proportionality,
     )

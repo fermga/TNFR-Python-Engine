@@ -7,16 +7,11 @@ import math
 import networkx as nx
 import pytest
 
-from tnfr.dynamics.emergent_centralization import (
-    TNFREmergentCentralizationEngine,
-)
+from tnfr.dynamics.emergent_centralization import TNFREmergentCentralizationEngine
 from tnfr.dynamics.propagation import propagate_dissonance
 from tnfr.mathematics import number_theory
 from tnfr.mathematics.number_theory import ArithmeticTNFRNetwork
-from tnfr.multiscale.hierarchical import (
-    HierarchicalTNFRNetwork,
-    ScaleDefinition,
-)
+from tnfr.multiscale.hierarchical import HierarchicalTNFRNetwork, ScaleDefinition
 from tnfr.physics.integrity import _postcond_transition
 from tnfr.riemann.delta_phi_max_type_signature import (
     _u3_scalar_verdict,
@@ -32,8 +27,9 @@ def test_phase_centralization_clusters_neighbors_across_wrap() -> None:
         graph.nodes[node].update(theta=phase, nu_f=1.0)
 
     coordination_nodes = (
-        TNFREmergentCentralizationEngine()
-        .analyze_phase_coordination_centralization(graph)
+        TNFREmergentCentralizationEngine().analyze_phase_coordination_centralization(
+            graph
+        )
     )
 
     assert [item.node_id for item in coordination_nodes] == [0]

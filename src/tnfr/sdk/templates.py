@@ -39,8 +39,12 @@ from ._defaults import (
     SDK_VF_RANGE_MODERATE_MIN,
 )
 from ._topology import (
-    contact_degree, hierarchical_edges, nonnegative_integer, positive_integer,
-    probability, rewired_contact_edges,
+    contact_degree,
+    hierarchical_edges,
+    nonnegative_integer,
+    positive_integer,
+    probability,
+    rewired_contact_edges,
 )
 from .fluent import NetworkConfig, NetworkResults, TNFRNetwork
 
@@ -100,7 +104,9 @@ class TNFRTemplates:
         connections_per_person = contact_degree(people, connections_per_person)
         simulation_steps = nonnegative_integer(simulation_steps, "simulation_steps")
 
-        network = TNFRNetwork("social_network", config=NetworkConfig(random_seed=random_seed))
+        network = TNFRNetwork(
+            "social_network", config=NetworkConfig(random_seed=random_seed)
+        )
 
         # Operational frequency range; no conversion to human timescales.
         network.add_nodes(
@@ -108,11 +114,17 @@ class TNFRTemplates:
         )
 
         graph = network.graph
-        graph.add_edges_from(rewired_contact_edges(
-            list(graph), connections_per_person, SDK_REWIRING_PROB_DEFAULT, network._rng,
-        ))
+        graph.add_edges_from(
+            rewired_contact_edges(
+                list(graph),
+                connections_per_person,
+                SDK_REWIRING_PROB_DEFAULT,
+                network._rng,
+            )
+        )
         graph.graph["template_topology"] = {
-            "kind": "rewired_contact_ring", "mean_degree": connections_per_person,
+            "kind": "rewired_contact_ring",
+            "mean_degree": connections_per_person,
             "rewiring_probability": SDK_REWIRING_PROB_DEFAULT,
         }
 
@@ -168,7 +180,9 @@ class TNFRTemplates:
         >>> avg_si = sum(results.sense_indices.values()) / len(results.sense_indices)
         >>> print(f"Average neural sense: {avg_si:.3f}")
         """
-        network = TNFRNetwork("neural_model", config=NetworkConfig(random_seed=random_seed))
+        network = TNFRNetwork(
+            "neural_model", config=NetworkConfig(random_seed=random_seed)
+        )
 
         # Neural frequencies: high end of valid range (0.5-1.0 Hz_str)
         network.add_nodes(
@@ -223,7 +237,9 @@ class TNFRTemplates:
         species = positive_integer(species, "species")
         evolution_steps = nonnegative_integer(evolution_steps, "evolution_steps")
         interaction_strength = probability(interaction_strength)
-        network = TNFRNetwork("ecosystem", config=NetworkConfig(random_seed=random_seed))
+        network = TNFRNetwork(
+            "ecosystem", config=NetworkConfig(random_seed=random_seed)
+        )
 
         # Shared operational frequency interval, measured in Hz_str.
         network.add_nodes(
@@ -286,8 +302,12 @@ class TNFRTemplates:
         """
         ideas = positive_integer(ideas, "ideas")
         inspiration_level = probability(inspiration_level)
-        development_cycles = nonnegative_integer(development_cycles, "development_cycles")
-        network = TNFRNetwork("creative_process", config=NetworkConfig(random_seed=random_seed))
+        development_cycles = nonnegative_integer(
+            development_cycles, "development_cycles"
+        )
+        network = TNFRNetwork(
+            "creative_process", config=NetworkConfig(random_seed=random_seed)
+        )
 
         # Shared operational frequency interval, measured in Hz_str.
         network.add_nodes(
@@ -296,7 +316,8 @@ class TNFRTemplates:
 
         network.connect_nodes(inspiration_level, "small_world")
         network.graph.graph["template_topology"] = {
-            "kind": "small_world", "rewiring_probability": inspiration_level,
+            "kind": "small_world",
+            "rewiring_probability": inspiration_level,
         }
 
         # Creative process in phases
@@ -358,13 +379,15 @@ class TNFRTemplates:
         hierarchy_depth = positive_integer(hierarchy_depth, "hierarchy_depth")
         if hierarchy_depth > agents:
             raise ValueError("hierarchy_depth cannot exceed agents")
-        coordination_steps = nonnegative_integer(coordination_steps, "coordination_steps")
-        network = TNFRNetwork("organizational_network", config=NetworkConfig(random_seed=random_seed))
+        coordination_steps = nonnegative_integer(
+            coordination_steps, "coordination_steps"
+        )
+        network = TNFRNetwork(
+            "organizational_network", config=NetworkConfig(random_seed=random_seed)
+        )
 
         # Shared operational frequency interval, measured in Hz_str.
-        network.add_nodes(
-            agents, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_LOW_MAX)
-        )
+        network.add_nodes(agents, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_LOW_MAX))
 
         graph = network.graph
         edges, levels = hierarchical_edges(list(graph), hierarchy_depth)
@@ -372,7 +395,8 @@ class TNFRTemplates:
         for node, level in levels.items():
             graph.nodes[node]["hierarchy_level"] = level
         graph.graph["template_topology"] = {
-            "kind": "layered_organization", "hierarchy_depth": hierarchy_depth,
+            "kind": "layered_organization",
+            "hierarchy_depth": hierarchy_depth,
         }
 
         # Simulate organizational dynamics

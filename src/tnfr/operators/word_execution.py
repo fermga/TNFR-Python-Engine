@@ -178,19 +178,14 @@ def execute_network_operator_stage(
         return replace(
             result,
             epi_jump_certificate_abstention_reason=(
-                "epi_jump_certificate_unavailable_for_glyph:"
-                f"{operator.glyph.value}"
+                "epi_jump_certificate_unavailable_for_glyph:" f"{operator.glyph.value}"
             ),
         )
 
     if operator.name == "coupling":
-        return unsupported(
-            execute_coupling_stage(graph, operator, targets, **kwargs)
-        )
+        return unsupported(execute_coupling_stage(graph, operator, targets, **kwargs))
     if operator.name == "dissonance":
-        return unsupported(
-            execute_dissonance_stage(graph, operator, targets, **kwargs)
-        )
+        return unsupported(execute_dissonance_stage(graph, operator, targets, **kwargs))
     if operator.name == "self_organization":
         return unsupported(
             execute_self_organization_stage(
@@ -205,10 +200,7 @@ def execute_network_operator_stage(
             execute_recursivity_stage(graph, operator, targets, **kwargs)
         )
     if operator.glyph in POINTWISE_TWO_PHASE_GLYPHS:
-        if (
-            include_epi_jump_certificate
-            and operator.glyph in POINTWISE_EPI_JUMP_GLYPHS
-        ):
+        if include_epi_jump_certificate and operator.glyph in POINTWISE_EPI_JUMP_GLYPHS:
             return execute_pointwise_stage(
                 graph,
                 operator,
@@ -217,12 +209,8 @@ def execute_network_operator_stage(
                 _allow_epi_jump_certificate_abstention=True,
                 **kwargs,
             )
-        return unsupported(
-            execute_pointwise_stage(graph, operator, targets, **kwargs)
-        )
-    return unsupported(
-        execute_operator_major_stage(graph, operator, targets, **kwargs)
-    )
+        return unsupported(execute_pointwise_stage(graph, operator, targets, **kwargs))
+    return unsupported(execute_operator_major_stage(graph, operator, targets, **kwargs))
 
 
 def run_network_sequence(

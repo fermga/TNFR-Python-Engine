@@ -15,9 +15,9 @@ solver behavior.
 
 from __future__ import annotations
 
-from fractions import Fraction
 import json
 import math
+from fractions import Fraction
 from typing import Any
 
 from tnfr.physics import (
@@ -41,9 +41,7 @@ def run_protocol() -> dict[str, Any]:
     tiny = math.ulp(0.0)
     return {
         "certificate": certificate,
-        "ordinary_output": certificate.evaluate_binary64_schedule_pair(
-            (-1.0, 0.5)
-        ),
+        "ordinary_output": certificate.evaluate_binary64_schedule_pair((-1.0, 0.5)),
         "signed_zero_boundary": certificate.evaluate_binary64_schedule_pair(
             (-tiny, -0.0)
         ),
@@ -71,13 +69,10 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
         ),
         "node_order": list(certificate.node_order),
         "normalized_metric": [
-            _fraction_text(value)
-            for value in certificate.exact_normalized_metric
+            _fraction_text(value) for value in certificate.exact_normalized_metric
         ],
         "mix_factor_hex": certificate.binary64_mix_factor.hex(),
-        "q": _fraction_text(
-            certificate.exact_schedule_energy_gain_upper_bound
-        ),
+        "q": _fraction_text(certificate.exact_schedule_energy_gain_upper_bound),
         "eta": _fraction_text(
             certificate.exact_pre_schedule_relative_energy_defect_upper_bound
         ),

@@ -106,10 +106,14 @@ def main() -> None:
     # -- M4: can a THIRD conjugate sector emerge? (structural lock: NO) ------
     pt = extract_phase_space_point(net.G)
     print("\n[M4] Can a THIRD conjugate sector emerge (U(2) -> U(3))?")
-    print(f"     conjugate sectors/node : {len(CONJUGATE_PAIR_LABELS)} "
-          f"{CONJUGATE_PAIR_LABELS}")
-    print(f"     symplectic block       : {BLOCK_SYMPLECTIC_FORM.shape} "
-          "= 4 dims/node = 2 pairs")
+    print(
+        f"     conjugate sectors/node : {len(CONJUGATE_PAIR_LABELS)} "
+        f"{CONJUGATE_PAIR_LABELS}"
+    )
+    print(
+        f"     symplectic block       : {BLOCK_SYMPLECTIC_FORM.shape} "
+        "= 4 dims/node = 2 pairs"
+    )
     print("     |grad phi| (1st order) : background, NO conjugate momentum")
     assert len(CONJUGATE_PAIR_LABELS) == 2, "substrate is not 2-sector"
     assert BLOCK_SYMPLECTIC_FORM.shape == (4, 4), "block is not 4x4"

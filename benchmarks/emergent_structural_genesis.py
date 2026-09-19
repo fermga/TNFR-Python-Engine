@@ -91,10 +91,7 @@ def main() -> None:
     print("\n[M1] SDK zero-form initialization.")
     net = TNFR.create(n, seed=0).ring()
     initial_epi = epi_magnitude(net)
-    initial_vf = {
-        float(net.G.nodes[node][VF_KEY])
-        for node in net.G.nodes()
-    }
+    initial_vf = {float(net.G.nodes[node][VF_KEY]) for node in net.G.nodes()}
     print(f"     mean |EPI| = {initial_epi:.4f}")
     print(f"     initialized nu_f values = {sorted(initial_vf)} Hz_str")
     print("     U1 requires a generator to open a standalone operator word.")
@@ -112,10 +109,7 @@ def main() -> None:
         net.evolve(1, sequence="basic_activation")
         current_epi = epi_magnitude(net)
         epi_series.append(current_epi)
-        print(
-            f"     {cycle:>6} {current_epi:>12.4f} "
-            f"{net.coherence():>14.4f}"
-        )
+        print(f"     {cycle:>6} {current_epi:>12.4f} " f"{net.coherence():>14.4f}")
     assert epi_series[-1] > epi_series[0]
     assert all(
         epi_series[index + 1] >= epi_series[index] - 1e-9
@@ -137,14 +131,8 @@ def main() -> None:
     constructed = winding_ring(n, 1)
     unit_winding, raw_winding = winding_number(constructed)
     classification = classify_particle(constructed)
-    print(
-        f"     constructed W = {unit_winding:+d} "
-        f"(raw {raw_winding:.6f})"
-    )
-    print(
-        "     compatibility classifier label: "
-        f"{classification.particle_class}"
-    )
+    print(f"     constructed W = {unit_winding:+d} " f"(raw {raw_winding:.6f})")
+    print("     compatibility classifier label: " f"{classification.particle_class}")
     assert unit_winding == 1
     assert abs(raw_winding - 1.0) < 1e-9
     print("     -> PASS: the constructed graph has the requested winding.")

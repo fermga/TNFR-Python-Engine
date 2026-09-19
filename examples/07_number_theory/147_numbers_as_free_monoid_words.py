@@ -264,7 +264,9 @@ def main():
     print("  monoid backbone, +zeta per prime), the divisor/abundance channels")
     print("  are MULTIPLICATIVE (the divisor lattice). The dual-lever (pressure")
     print("  dNFR vs capacity nu_f) is a restricted analogy with the two additive")
-    print("  gradings, count Omega and log-size. This restates classical multiplicative")
+    print(
+        "  gradings, count Omega and log-size. This restates classical multiplicative"
+    )
     print("  number theory through the lens; no new number theory, no open")
     print("  problem closed.")
     print()

@@ -1,52 +1,17 @@
-"""Emergent NFR Where: how far the nodal/spectral order carries the locations.
+"""Prepared ring nodal positions and an independent prime-count comparison.
 
-THE QUESTION (user, theory creator): we know WHAT a pressure-free point is
-(dNFR=0 = flat = where a per-NFR pulse beats, the Chladni node) -- but WHERE do
-those beats fall, and how far does the emergent nodal/spectral geometry carry
-the prime/atom locations before the S_n wall?
+Selected sinusoidal ring modes have regular sampled zeros. Symmetry or a
+Courant nodal-domain bound alone does not force this geometry on general graphs.
+Primes are constructed with a sieve and compared with the imported n/log(n)
+formula. That comparison does not derive prime density from TNFR evolution.
+Prime gaps, the Riemann zero-count remainder S(T), and a chosen representation
+complement Fix(G)^perp are different objects; this script constructs no map
+identifying them. Irregular prime gaps do not establish such an obstruction.
+A zero pure-EPI pressure is an instantaneous rate condition, not the definition
+of an NFR or a derived atom. No physical shell or prime-location law is tested.
 
-THE STRUCTURAL FACT: the standing nodes of a SYMMETRIC emergent operator are a
-REGULAR lattice -- Courant nodal-domain ordering plus the symmetry group force
-even spacing. So the emergent geometry natively produces REGULAR equilibrium
-lattices. Atoms are symmetric (sphere / simplex), so their shells are carried
-in full. The integers carry a smooth (regular) density but an IRREGULAR fine
-structure -- that irregularity is exactly the S_n-breaking residue (the wall).
-
-WHAT EMERGES (measured):
-  - M1 SYMMETRIC -> REGULAR: on the ring the standing nodes of every mode are
-    evenly spaced (constant gap); the symmetry also fixes the shell
-    degeneracies. The emergent geometry carries symmetric equilibria (the atom
-    shells) completely.
-  - M2 PRIMES, smooth part CARRIED: the prime density pi(n) ~ n/log n (the
-    smooth / regular trend) tracks the prime count with a near-constant ratio
-    -- the average NFR spacing log(n) is carried by the emergent order.
-  - M3 PRIMES, fine part = the WALL: the individual prime locations are
-    IRREGULAR (gap std/mean ~ 0.7, gaps from 2 to large); no constant-gap
-    (symmetric) operator produces this spectrum. Placing standing nodes at the
-    primes requires BREAKING S_n (a non-regular spectrum) = Fix(S_n)^perp =
-    the Riemann residue S(T). The prime SUPPORT does partially emerge from the
-    residue spectral-gap geometry (paley_bridge.py: lambda_2 = an
-    emergent-geometry quantity), but the fine distribution stays at the wall.
-
-So the nodal/spectral order carries the SYMMETRIC / SMOOTH equilibria -- the
-atom shells fully, the prime density -- but the IRREGULAR fine structure (the
-individual primes, S(T)) is the S_n wall, located precisely as a geometric
-statement: the prime operator must be non-regular (symmetry-breaking).
-
-HONEST SCOPE: Courant nodal-domain regularity, the prime number theorem, and
-the S_n equivariance wall are standard; the TNFR content is the reading dNFR=0
-= NFR = nodal point, so "where the equilibria fall" = the nodal geometry,
-carried up to the symmetry. The primes are GROUND TRUTH here (a sieve), used to
-MEASURE the reach -- NOT derived. Closes nothing (the prime fine structure is
-RH). R and pi assumed.
-
-Run:
-    python benchmarks/emergent_nfr_where.py
-
-Theoretical anchor: AGENTS.md (NFR = dNFR=0 region; discrete-mode / Chladni /
-Courant); benchmarks/emergent_nfr_geometry.py (every node a pulsing NFR),
-benchmarks/paley_bridge.py (the residue spectral-gap partial reach),
-benchmarks/equivariance_wall.py (the Fix(S_n)^perp wall). Status: RESEARCH.
+Status: auxiliary or finite evidence. See theory/EMERGENT_ONTOLOGY.md and
+theory/NODAL_PARAMETER_FOUNDATIONS.md for model and physical-bridge limits.
 """
 
 from __future__ import annotations
@@ -61,12 +26,12 @@ def primes_upto(n):
     sieve[:2] = False
     for i in range(2, int(n**0.5) + 1):
         if sieve[i]:
-            sieve[i * i::i] = False
+            sieve[i * i :: i] = False
     return np.flatnonzero(sieve)
 
 
 def ring_nodal_positions(n, k):
-    """Vertices where mode k of the ring C_n is zero (the nodal NFRs)."""
+    """Sample vertices where a chosen sinusoidal mode of C_n is zero."""
     idx = np.arange(n)
     v = np.cos(2 * np.pi * k * idx / n)
     return idx[np.abs(v) < 1e-9]
@@ -86,9 +51,11 @@ def main() -> None:
         gaps = np.diff(pos)
         const = bool(np.std(gaps) < 1e-9)
         m1_ok = m1_ok and const and len(pos) == 2 * k
-        print(f"  C_{n} mode k={k}: {len(pos)} standing nodes, gap={gaps[0]}, "
-              f"constant={const}")
-    print("  symmetry -> evenly spaced nodes + degenerate shells (atoms)")
+        print(
+            f"  C_{n} mode k={k}: {len(pos)} standing nodes, gap={gaps[0]}, "
+            f"constant={const}"
+        )
+    print("  selected ring symmetry -> the displayed nodal spacing and degeneracies")
     assert m1_ok
 
     # M2 -- primes: the SMOOTH density (PNT) is carried
@@ -101,33 +68,37 @@ def main() -> None:
         ratios.append(pi_n / pnt)
         print(f"  pi({nn})={pi_n}, n/log n={pnt:.0f}, ratio={pi_n / pnt:.3f}")
     smooth_ok = max(ratios) - min(ratios) < 0.06  # ~constant => carried
-    print(f"  ratio ~ constant ({min(ratios):.2f}-{max(ratios):.2f}): "
-          f"smooth node density carried={smooth_ok}")
+    print(
+        f"  ratio ~ constant ({min(ratios):.2f}-{max(ratios):.2f}): "
+        f"smooth node density carried={smooth_ok}"
+    )
     assert smooth_ok
 
-    # M3 -- primes: the FINE structure is IRREGULAR = the S_n wall
-    print("\nM3 -- primes: the fine structure is IRREGULAR = the wall:")
+    # M3 -- primes: measured sieve gaps are not constant
+    print("\nM3 -- primes: the supplied sieve has nonconstant gaps:")
     gaps = np.diff(P)
     irr = gaps.std() / gaps.mean()
     print(f"  prime gap std/mean={irr:.2f} (IRREGULAR; regular lattice -> 0)")
     print(f"  gaps range {gaps.min()} (twin primes) to {gaps.max()}: no")
-    print("  constant-gap (symmetric) operator produces this spectrum")
-    print("  => no SYMMETRIC operator has standing nodes at primes; placing")
-    print("     them needs breaking S_n (non-regular) = Fix(S_n)^perp")
-    print("     = Riemann residue S(T). Support partial (residue lambda_2);")
-    print("     fine distribution = the wall.")
+    print("  constant spacing describes these sieve gaps.")
+    print("  This does not exclude arbitrary symmetric matrices or graph models.")
+    print("     No representation action on this prime-gap data is constructed.")
+    print("     No map from these gaps to the zero-count remainder S(T) is given.")
+    print(
+        "     The observed gap variability alone supplies neither such map nor proof."
+    )
     assert irr > 0.3 and gaps.min() < gaps.max() / 4
 
     print("\n" + "=" * 70)
-    print("VERDICT: the emergent nodal/spectral order carries the SYMMETRIC /")
-    print("SMOOTH equilibria -- the atom shells in full (M1), the prime")
-    print("density (M2) -- because a symmetric operator's standing nodes are")
-    print("a REGULAR lattice (Courant + symmetry). The IRREGULAR fine")
-    print("structure of the primes (M3) is the S_n-breaking residue")
-    print("Fix(S_n)^perp = S(T) = the wall. 'Where the beats fall' is nodal")
-    print("geometry, carried up to the symmetry; the prime fine structure is")
-    print("RH. HONEST SCOPE: Courant/PNT/S_n-wall standard; primes are ground")
-    print("truth (measured, not derived); closes nothing. R and pi assumed.")
+    print("FINITE COMPARISONS:")
+    print("The chosen ring modes have the displayed regular sampled zero sets.")
+    print("This is not a theorem for every symmetric graph or operator.")
+    print("Prime counts and gaps come from an explicit sieve.")
+    print("The n/log(n) comparison is supplied mathematics, not a TNFR prediction.")
+    print("No map equates prime gaps, S(T), and a representation complement.")
+    print("No particle, atomic shell or physical space is identified here.")
+    print("Zero pressure is an instantaneous pure-EPI rate condition.")
+    print("Autonomous identity and the physical bridge remain separate open questions.")
     print("=" * 70)
 
 

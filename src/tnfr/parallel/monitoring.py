@@ -8,10 +8,10 @@ CPU utilization alone is not such a baseline.
 from __future__ import annotations
 
 import math
-from numbers import Real
-from operator import index as integer_index
 import time
 from dataclasses import dataclass
+from numbers import Real
+from operator import index as integer_index
 from typing import Any
 
 try:
@@ -93,9 +93,7 @@ class PerformanceMetrics:
     parallelization_efficiency: float | None
     memory_efficiency: float | None
     speedup: float | None = None
-    parallelization_efficiency_basis: str = (
-        "not_measured_no_sequential_baseline"
-    )
+    parallelization_efficiency_basis: str = "not_measured_no_sequential_baseline"
     resource_metrics_available: bool = False
 
 
@@ -147,9 +145,7 @@ class ParallelExecutionMonitor:
                 self._current_metrics["memory_samples"].append(
                     mem_info.rss / 1024 / 1024
                 )
-                self._current_metrics["cpu_samples"].append(
-                    self._process.cpu_percent()
-                )
+                self._current_metrics["cpu_samples"].append(self._process.cpu_percent())
             except Exception:
                 pass
 
@@ -179,9 +175,7 @@ class ParallelExecutionMonitor:
         """
         if self._current_metrics is None:
             raise RuntimeError("Monitoring not started")
-        final_coherence = _finite_coherence(
-            final_coherence, name="final_coherence"
-        )
+        final_coherence = _finite_coherence(final_coherence, name="final_coherence")
         initial_coherence = _finite_coherence(
             initial_coherence, name="initial_coherence"
         )
@@ -206,9 +200,7 @@ class ParallelExecutionMonitor:
                 self._current_metrics["memory_samples"].append(
                     mem_info.rss / 1024 / 1024
                 )
-                self._current_metrics["cpu_samples"].append(
-                    self._process.cpu_percent()
-                )
+                self._current_metrics["cpu_samples"].append(self._process.cpu_percent())
             except Exception:
                 pass
 
@@ -219,9 +211,7 @@ class ParallelExecutionMonitor:
             self._current_metrics.get("cpu_samples", [])
         )
         peak_memory = max(memory_samples) if memory_samples else None
-        avg_cpu = (
-            sum(cpu_samples) / len(cpu_samples) if cpu_samples else None
-        )
+        avg_cpu = sum(cpu_samples) / len(cpu_samples) if cpu_samples else None
 
         nodes = self._current_metrics["expected_nodes"]
         workers = self._current_metrics["workers"]
@@ -281,8 +271,7 @@ class ParallelExecutionMonitor:
 
         if (
             latest.parallelization_efficiency is not None
-            and latest.parallelization_efficiency
-            < _PARALLELIZATION_EFFICIENCY_ALERT
+            and latest.parallelization_efficiency < _PARALLELIZATION_EFFICIENCY_ALERT
         ):
             suggestions.append(
                 "⚡ Low measured parallelization efficiency - consider reducing "

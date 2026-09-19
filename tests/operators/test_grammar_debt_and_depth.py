@@ -10,11 +10,16 @@ import pytest
 from tnfr.constants import inject_defaults
 from tnfr.glyph_history import push_glyph
 from tnfr.operators.definitions import (
-    Coherence, Emission, Expansion, Recursivity, Silence,
+    Coherence,
+    Emission,
+    Expansion,
+    Recursivity,
+    Silence,
 )
 from tnfr.operators.grammar_core import GrammarValidator
 from tnfr.operators.grammar_dynamics import (
-    validate_candidate, validate_sequence_incremental,
+    validate_candidate,
+    validate_sequence_incremental,
 )
 from tnfr.operators.grammar_memoization import validate_sequence_optimized
 
@@ -31,8 +36,10 @@ def _graph(history=()):
 @pytest.mark.parametrize("initial_stabilizers", [0, 1, 8])
 def test_later_stabilization_does_not_erase_over_capacity_prefix(initial_stabilizers):
     sequence = (
-        [Emission()] + [Coherence()] * initial_stabilizers
-        + [Expansion()] * 3 + [Coherence(), Silence()]
+        [Emission()]
+        + [Coherence()] * initial_stabilizers
+        + [Expansion()] * 3
+        + [Coherence(), Silence()]
     )
     valid, message = GrammarValidator.validate_convergence(sequence)
     assert not valid
@@ -189,8 +196,10 @@ def test_prior_coherence_survives_trace_eviction(history_window):
         push_glyph(graph.nodes[0], "EN", history_window)
     result = validate_candidate(graph, 0, "ZHIR")
     assert not result.allowed
-    assert any(v.rule == "U4b" and "recent destabilizer" in v.message
-               for v in result.violations)
+    assert any(
+        v.rule == "U4b" and "recent destabilizer" in v.message
+        for v in result.violations
+    )
 
 
 def test_deliberate_trace_reset_clears_lifetime_coherence():
@@ -203,8 +212,7 @@ def test_deliberate_trace_reset_clears_lifetime_coherence():
     reset_grammar_state_from_history(graph.nodes[0])
     result = validate_candidate(graph, 0, "ZHIR")
     assert not result.allowed
-    assert any(v.rule == "U4b" and "prior IL" in v.message
-               for v in result.violations)
+    assert any(v.rule == "U4b" and "prior IL" in v.message for v in result.violations)
 
 
 @pytest.mark.parametrize("existing_marker", [False, True])
@@ -251,7 +259,8 @@ def test_explicit_application_callback_records_lifetime_coherence():
 def test_mutation_readers_preserve_evicted_coherence(reader):
     from tnfr.operators.preconditions import validate_mutation
     from tnfr.operators.preconditions.mutation import (
-        diagnose_mutation_readiness, validate_grammar_u4b,
+        diagnose_mutation_readiness,
+        validate_grammar_u4b,
     )
 
     graph = _graph()
@@ -265,12 +274,16 @@ def test_mutation_readers_preserve_evicted_coherence(reader):
     elif reader == "modular":
         validate_grammar_u4b(graph, 0)
     elif reader == "readiness":
-        assert diagnose_mutation_readiness(graph, 0)["checks"]["il_precedence"]["passed"]
+        assert diagnose_mutation_readiness(graph, 0)["checks"]["il_precedence"][
+            "passed"
+        ]
     else:
         from tnfr.operators.metrics_structural import mutation_metrics
 
         validate_grammar_u4b(graph, 0)
-        assert mutation_metrics(graph, 0, theta_before=0.0, epi_before=0.6)["il_precedence_found"]
+        assert mutation_metrics(graph, 0, theta_before=0.0, epi_before=0.6)[
+            "il_precedence_found"
+        ]
 
 
 @pytest.mark.parametrize("token", ["IL", "il", "Glyph.IL", "Coherence"])

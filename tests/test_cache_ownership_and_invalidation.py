@@ -1,16 +1,22 @@
 """Cache results must preserve graph ownership and explicit request semantics."""
 
-from pathlib import Path
 import pickle
+from pathlib import Path
 
 import networkx as nx
 import numpy as np
 import pytest
 
 from tnfr.cache import (
-    CacheLevel, GraphChangeTracker, PersistentTNFRCache, TNFRHierarchicalCache,
-    cache_tnfr_computation, cached_nodes_and_A, edge_version_cache,
-    increment_edge_version, invalidate_function_cache,
+    CacheLevel,
+    GraphChangeTracker,
+    PersistentTNFRCache,
+    TNFRHierarchicalCache,
+    cache_tnfr_computation,
+    cached_nodes_and_A,
+    edge_version_cache,
+    increment_edge_version,
+    invalidate_function_cache,
 )
 from tnfr.metrics.buffer_cache import ensure_numpy_buffers
 from tnfr.utils.unified_cache import UnifiedLRUCache
@@ -18,14 +24,20 @@ from tnfr.utils.unified_cache import UnifiedLRUCache
 
 def test_copied_graph_does_not_reuse_original_cache_or_scratch_arrays():
     original = nx.path_graph(3)
-    first = ensure_numpy_buffers(original, key_prefix="ownership", count=3, buffer_count=1)
+    first = ensure_numpy_buffers(
+        original, key_prefix="ownership", count=3, buffer_count=1
+    )
     first[0][:] = 1.0
     copied = original.copy()
-    second = ensure_numpy_buffers(copied, key_prefix="ownership", count=3, buffer_count=1)
+    second = ensure_numpy_buffers(
+        copied, key_prefix="ownership", count=3, buffer_count=1
+    )
     second[0][:] = 2.0
     assert second[0] is not first[0]
     np.testing.assert_array_equal(first[0], np.ones(3))
-    assert original.graph["_tnfr_cache_manager"] is not copied.graph["_tnfr_cache_manager"]
+    assert (
+        original.graph["_tnfr_cache_manager"] is not copied.graph["_tnfr_cache_manager"]
+    )
 
 
 def test_invalidation_of_copy_preserves_original_cache():
@@ -71,19 +83,27 @@ def test_operator_on_copy_does_not_mutate_original_through_cached_adapter():
     assert abs(copied.nodes[0]["ΔNFR"]) < 0.2
 
 
-@pytest.mark.parametrize("dtype", [np.float32, np.int64, np.complex128, np.dtype([("x", "i4")])])
+@pytest.mark.parametrize(
+    "dtype", [np.float32, np.int64, np.complex128, np.dtype([("x", "i4")])]
+)
 def test_buffer_key_includes_dtype(dtype):
     graph = nx.path_graph(2)
     first = ensure_numpy_buffers(graph, key_prefix="typed", count=2, buffer_count=1)
-    second = ensure_numpy_buffers(graph, key_prefix="typed", count=2, buffer_count=1, dtype=dtype)
+    second = ensure_numpy_buffers(
+        graph, key_prefix="typed", count=2, buffer_count=1, dtype=dtype
+    )
     assert second[0].dtype == np.dtype(dtype)
     assert first[0].dtype == np.dtype(float)
 
 
 def test_equivalent_buffer_dtype_requests_reuse_storage():
     graph = nx.Graph()
-    first = ensure_numpy_buffers(graph, key_prefix="typed", count=2, buffer_count=1, dtype="f8")
-    second = ensure_numpy_buffers(graph, key_prefix="typed", count=2, buffer_count=1, dtype=np.float64)
+    first = ensure_numpy_buffers(
+        graph, key_prefix="typed", count=2, buffer_count=1, dtype="f8"
+    )
+    second = ensure_numpy_buffers(
+        graph, key_prefix="typed", count=2, buffer_count=1, dtype=np.float64
+    )
     assert first is second
 
 
@@ -104,15 +124,21 @@ def test_adjacency_key_preserves_explicit_node_order():
     cached_nodes_and_A(graph, nodes=(0, 1, 2))
     nodes, adjacency = cached_nodes_and_A(graph, nodes=(1, 2, 0))
     assert nodes == (1, 2, 0)
-    np.testing.assert_array_equal(adjacency, nx.to_numpy_array(graph, nodelist=nodes, weight=None))
+    np.testing.assert_array_equal(
+        adjacency, nx.to_numpy_array(graph, nodelist=nodes, weight=None)
+    )
 
 
 @pytest.mark.parametrize("weighted", [False, True])
 def test_lru_clear_releases_capacity_and_removal_resources(weighted):
     removed = []
     locks = {"old": object()}
-    cache = UnifiedLRUCache(maxsize=2, getsizeof=len if weighted else None,
-                            locks=locks, eviction_callbacks=lambda k, v: removed.append(k))
+    cache = UnifiedLRUCache(
+        maxsize=2,
+        getsizeof=len if weighted else None,
+        locks=locks,
+        eviction_callbacks=lambda k, v: removed.append(k),
+    )
     cache["old"] = "ab"
     cache.clear()
     assert cache.currsize == 0
@@ -123,10 +149,15 @@ def test_lru_clear_releases_capacity_and_removal_resources(weighted):
     assert cache["new"] == "cd"
 
 
-@pytest.mark.parametrize("disk_flag,level", [(False, CacheLevel.GRAPH_STRUCTURE), (True, CacheLevel.TEMPORARY)])
+@pytest.mark.parametrize(
+    "disk_flag,level",
+    [(False, CacheLevel.GRAPH_STRUCTURE), (True, CacheLevel.TEMPORARY)],
+)
 def test_persistent_memory_only_write(disk_flag, level, tmp_path):
     cache = PersistentTNFRCache(cache_dir=tmp_path)
-    cache.set_persistent("key", 42, level, {"graph_topology"}, persist_to_disk=disk_flag)
+    cache.set_persistent(
+        "key", 42, level, {"graph_topology"}, persist_to_disk=disk_flag
+    )
     assert cache.get_persistent("key", level) == 42
     assert not list(tmp_path.rglob("*.pkl"))
 
@@ -194,6 +225,7 @@ def test_separately_constructed_cached_closures_have_distinct_values():
         @cache_tnfr_computation(CacheLevel.TEMPORARY, set(), cache_instance=cache)
         def read():
             return value
+
         return read
 
     first, second = make_reader(1), make_reader(2)
@@ -201,15 +233,30 @@ def test_separately_constructed_cached_closures_have_distinct_values():
     assert second() == 2
 
 
-@pytest.mark.parametrize("mutation", ["add_nodes_from", "add_edges_from", "remove_nodes_from", "remove_edges_from", "clear_edges", "clear"])
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "add_nodes_from",
+        "add_edges_from",
+        "remove_nodes_from",
+        "remove_edges_from",
+        "clear_edges",
+        "clear",
+    ],
+)
 def test_graph_tracker_covers_bulk_topology_mutation(mutation):
     graph = nx.path_graph(3)
     cache = TNFRHierarchicalCache()
     GraphChangeTracker(cache).track_graph_changes(graph)
     cache.set("metric", 1, CacheLevel.GRAPH_STRUCTURE, {"graph_topology"})
-    arguments = {"add_nodes_from": ([3, 4],), "add_edges_from": ([(0, 2)],),
-                 "remove_nodes_from": ([2],), "remove_edges_from": ([(0, 1)],),
-                 "clear_edges": (), "clear": ()}
+    arguments = {
+        "add_nodes_from": ([3, 4],),
+        "add_edges_from": ([(0, 2)],),
+        "remove_nodes_from": ([2],),
+        "remove_edges_from": ([(0, 1)],),
+        "clear_edges": (),
+        "clear": (),
+    }
     getattr(graph, mutation)(*arguments[mutation])
     assert cache.get("metric", CacheLevel.GRAPH_STRUCTURE) is None
 
@@ -278,8 +325,12 @@ class _WriteMarkerOnUnpickle:
         return Path.write_text, (Path(self.path), "outer pickle executed")
 
 
-@pytest.mark.parametrize("extension", [b"\x82\x01", b"\x83\x00\x01", b"\x84\x00\x00\x01\x00"])
-def test_secure_shelve_rejects_extension_opcodes_before_unpickling(tmp_path, monkeypatch, extension):
+@pytest.mark.parametrize(
+    "extension", [b"\x82\x01", b"\x83\x00\x01", b"\x84\x00\x00\x01\x00"]
+)
+def test_secure_shelve_rejects_extension_opcodes_before_unpickling(
+    tmp_path, monkeypatch, extension
+):
     from tnfr.cache import SecurityError, create_secure_shelve_layer
     from tnfr.utils import cache_layers
 
@@ -305,7 +356,9 @@ def test_secure_shelve_rejects_outer_pickle_before_execution(tmp_path):
     from tnfr.cache import SecurityError, create_secure_shelve_layer
 
     marker = tmp_path / "unpickle-marker.txt"
-    layer = create_secure_shelve_layer(str(tmp_path / "secure-cache"), secret=b"test-secret")
+    layer = create_secure_shelve_layer(
+        str(tmp_path / "secure-cache"), secret=b"test-secret"
+    )
     try:
         # Simulate tampering with the outer shelve bytes; the payload is harmless.
         layer._shelf.dict[b"tampered"] = pickle.dumps(_WriteMarkerOnUnpickle(marker))
@@ -320,7 +373,9 @@ def test_secure_shelve_rejects_outer_pickle_before_execution(tmp_path):
 def test_secure_shelve_roundtrip_bytes_and_objects(tmp_path, protocol):
     from tnfr.cache import create_secure_shelve_layer
 
-    layer = create_secure_shelve_layer(str(tmp_path / "secure-cache"), secret=b"test-secret", protocol=protocol)
+    layer = create_secure_shelve_layer(
+        str(tmp_path / "secure-cache"), secret=b"test-secret", protocol=protocol
+    )
     try:
         for name, value in [("bytes", b"payload"), ("object", {"value": [1, 2]})]:
             layer.store(name, value)
@@ -364,13 +419,20 @@ def test_secure_redis_roundtrip_preserves_raw_bytes_and_objects():
 
 @pytest.mark.parametrize("backend", ["shelve", "redis"])
 def test_signature_authenticates_raw_versus_pickle_interpretation(backend, tmp_path):
-    from tnfr.cache import SecurityError, create_secure_redis_layer, create_secure_shelve_layer
+    from tnfr.cache import (
+        SecurityError,
+        create_secure_redis_layer,
+        create_secure_shelve_layer,
+    )
     from tnfr.utils.cache_layers import _SIGNATURE_PREFIX
 
     marker = tmp_path / "mode-marker.txt"
     client = _RedisMemoryClient()
-    layer = (create_secure_shelve_layer(str(tmp_path / "signed"), secret=b"secret")
-             if backend == "shelve" else create_secure_redis_layer(client, secret=b"secret"))
+    layer = (
+        create_secure_shelve_layer(str(tmp_path / "signed"), secret=b"secret")
+        if backend == "shelve"
+        else create_secure_redis_layer(client, secret=b"secret")
+    )
     try:
         # Signing raw bytes grants no permission to execute them as a pickle.
         layer.store("raw", pickle.dumps(_WriteMarkerOnUnpickle(marker)))
@@ -379,7 +441,7 @@ def test_signature_authenticates_raw_versus_pickle_interpretation(backend, tmp_p
         else:
             envelope = client.data[layer._format_key("raw")]
         offset = len(_SIGNATURE_PREFIX)
-        tampered = envelope[:offset] + b"\x01" + envelope[offset + 1:]
+        tampered = envelope[:offset] + b"\x01" + envelope[offset + 1 :]
         if backend == "shelve":
             layer._shelf["raw"] = tampered
         else:
@@ -409,7 +471,9 @@ def test_old_signed_envelopes_are_rejected_for_rebuilding(tmp_path):
     payload = pickle.dumps({"legacy": True})
     signature = create_hmac_signer(b"secret")(payload)
     envelope = b"TNFRSIG1\x01" + len(signature).to_bytes(4, "big") + signature + payload
-    layer = create_secure_shelve_layer(str(tmp_path / "legacy-signed"), secret=b"secret")
+    layer = create_secure_shelve_layer(
+        str(tmp_path / "legacy-signed"), secret=b"secret"
+    )
     try:
         layer._shelf["old"] = envelope
         with pytest.raises(SecurityError, match="legacy"):

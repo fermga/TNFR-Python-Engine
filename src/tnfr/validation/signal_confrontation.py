@@ -217,8 +217,10 @@ def _fit_modal_roots(graph: Any, data: np.ndarray) -> ModalRootDiagnostic:
         if discriminant < 0.0:
             num += energy
     counts = dict(
-        fitted_modes=fitted, unresolved_modes=unresolved,
-        growing_modes=growing, decaying_modes=decaying,
+        fitted_modes=fitted,
+        unresolved_modes=unresolved,
+        growing_modes=growing,
+        decaying_modes=decaying,
         boundary_modes=boundary,
     )
     if unresolved:
@@ -229,13 +231,15 @@ def _fit_modal_roots(graph: Any, data: np.ndarray) -> ModalRootDiagnostic:
         )
     fraction = num / den
     return ModalRootDiagnostic(
-        status="resolved", reason="descriptive affine AR(2) fits only",
+        status="resolved",
+        reason="descriptive affine AR(2) fits only",
         complex_root_fraction=fraction,
         root_classification=(
             "complex_dominated" if fraction > 0.5 else "real_dominated"
         ),
-        stability=("growing" if growing else "unit_boundary" if boundary
-                   else "decaying"),
+        stability=(
+            "growing" if growing else "unit_boundary" if boundary else "decaying"
+        ),
         **counts,
     )
 
@@ -245,14 +249,10 @@ def _modal_roots_from_graph(graph: Any, data: np.ndarray) -> ModalRootDiagnostic
         with np.errstate(over="raise", invalid="raise", divide="raise"):
             return _fit_modal_roots(graph, data)
     except Exception as error:
-        return ModalRootDiagnostic(
-            "failure", f"{type(error).__name__}: {error}"
-        )
+        return ModalRootDiagnostic("failure", f"{type(error).__name__}: {error}")
 
 
-def diagnose_modal_roots(
-    signals: Any, *, k_neighbours: int = 4
-) -> ModalRootDiagnostic:
+def diagnose_modal_roots(signals: Any, *, k_neighbours: int = 4) -> ModalRootDiagnostic:
     """Read graph-mode AR roots without equating them with physical regimes.
 
     Malformed/nonfinite observations raise ValueError. Short, constant or
@@ -266,9 +266,7 @@ def diagnose_modal_roots(
         phase, amp = phase_amplitude_matrices(data)
         graph = build_coupling_graph(phase, amp, k_neighbours=k_neighbours)
     except Exception as error:
-        return ModalRootDiagnostic(
-            "failure", f"{type(error).__name__}: {error}"
-        )
+        return ModalRootDiagnostic("failure", f"{type(error).__name__}: {error}")
     return _modal_roots_from_graph(graph, data)
 
 
@@ -277,9 +275,7 @@ def _wave_fraction_from_graph(graph: Any, data: np.ndarray) -> float | None:
     return _modal_roots_from_graph(graph, data).complex_root_fraction
 
 
-def emergent_wave_fraction(
-    signals: Any, *, k_neighbours: int = 4
-) -> float | None:
+def emergent_wave_fraction(signals: Any, *, k_neighbours: int = 4) -> float | None:
     """Legacy name for the descriptive complex-root energy fraction.
 
     Returns None on failure or unresolved fits, never a fabricated zero.
@@ -331,7 +327,8 @@ class SignalConfrontation:
         """
         result = asdict(self)
         nonfinite = [
-            name for name, value in result.items()
+            name
+            for name, value in result.items()
             if isinstance(value, float) and not np.isfinite(value)
         ]
         for name in nonfinite:
@@ -355,8 +352,7 @@ class SignalConfrontation:
                 f"fitted stability={modal.stability} ({modal.reason})"
             )
         fraction = (
-            "unavailable" if self.wave_fraction is None
-            else f"{self.wave_fraction:.2f}"
+            "unavailable" if self.wave_fraction is None else f"{self.wave_fraction:.2f}"
         )
         return (
             f"SignalConfrontation[{self.n_channels}ch × {self.n_samples}]: "
@@ -369,9 +365,7 @@ class SignalConfrontation:
         )
 
 
-def confront_signal(
-    signals: Any, *, k_neighbours: int = 4
-) -> SignalConfrontation:
+def confront_signal(signals: Any, *, k_neighbours: int = 4) -> SignalConfrontation:
     """Confront a real multichannel signal with scoped TNFR magnitudes.
 
     The returned ``coherence`` is a static pressure snapshot with ``dEPI = 0``
@@ -454,7 +448,7 @@ class NodalPredictionSkill:
     n_samples: int
     diffusivity: float  # fitted c = ν_f·dt (the structural diffusion step)
     nodal_skill: float  # 1 − MSE(nodal) / MSE(persistence)
-    ar1_skill: float    # 1 − MSE(per-channel AR-1) / MSE(persistence)
+    ar1_skill: float  # 1 − MSE(per-channel AR-1) / MSE(persistence)
     evaluation_scope: str = "same_window_descriptive_fit"
 
     @property
@@ -497,7 +491,7 @@ def _nodal_skill_from_graph(
     sd = x.std(axis=1, keepdims=True)
     sd[sd < 1e-12] = 1.0
     xc = (x - mu) / sd
-    r = xc[:, 1:] - xc[:, :-1]           # actual one-step increment
+    r = xc[:, 1:] - xc[:, :-1]  # actual one-step increment
     d = -(np.asarray(lrw, dtype=float) @ xc[:, :-1])  # diffusion direction
     den = float(np.sum(d * d))
     c = float(np.sum(r * d) / den) if den > 0.0 else 0.0

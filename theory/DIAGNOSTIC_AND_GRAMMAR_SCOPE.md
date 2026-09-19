@@ -131,9 +131,9 @@ parameter domains are centralized in
 
 ## 4. Structural potential and topology-dependent bounds
 
-For a fixed distance convention and positive finite distances, define
+For a fixed distance convention, define
 
-    B_ij = d(i,j)⁻² for reachable j ≠ i; otherwise 0,
+    B_ij = d(i,j)⁻² for reachable j ≠ i with 0 < d(i,j) < infinity; otherwise 0,
     Φ_s = B p.
 
 The field is linear in pressure. The triangle inequality gives the exact bound
@@ -259,7 +259,8 @@ The [shared Si owner](../src/tnfr/metrics/sense_index.py) computes
 
 with clamped normalized components, wrapped phase dispersion, configured
 normalized weights and graph-wide absolute maxima. A zero maximum uses
-denominator one; the implementation can reuse cached maxima. Thus Si is a
+denominator one; both current Si backends refresh maxima from the effective
+stored aliases before normalization. Thus Si is a
 defined structural read-out. Its formula discards pressure sign, and common
 positive capacity rescaling preserves the normalized capacity term. It is
 not a complete dynamical coordinate or a proved stability certificate.
@@ -305,7 +306,7 @@ research line, retain Si as a read-out; do not use its weights, thresholds or
 counter policy to fill an unexplained causal step. Its existing controllers
 remain available as explicitly conditional engineering models.
 
-The next mathematical connection is the
+The corresponding reusable constraint is the
 [source-tangency identity](FORCED_SUPPORT_BALANCE.md#22-source-tangency-without-a-telemetry-controller):
 it derives what phase/capacity evolution must satisfy to preserve zero
 pressure, without selecting that evolution through Si. The finite witnesses
@@ -318,6 +319,52 @@ applies this same distinction to the word frequency: accumulated capacity
 follows from the nodal equation, while identifying it with circular phase
 requires an additional relation. The configured oscillator and phase-relaxation
 models are not uniquely selected by that equation.
+
+### Uniform capacity and default selector reachability
+
+The configured diagnostic and selector have a concrete interaction on the
+retained prism. More generally, consider a nonempty graph with valid finite
+readings, equal positive capacities, fresh Si normalization and the default
+nonnegative normalized `SI_WEIGHTS`. Every node has `nu_norm=1`, so
+
+\[
+\mathrm{Si}_i=\operatorname{clip}_{[0,1]}
+ \{\alpha+\beta(1-\mathrm{disp}_i)+\gamma(1-|p_i|_{\mathrm{norm}})\}
+ \ \ge\alpha.
+\]
+
+The configured primary weight represents `pi/(pi+1)>3/4`, while the default
+selector's upper cut is `si_hi=1/2`. Hence every node's **default base choice
+is IL**, independently of its pressure sign/magnitude and phase alignment.
+The represented normalized coefficients also satisfy this strict separation;
+the claim is not based on rounding them to displayed decimal values.
+Both current Si backends use the actual positive maximum, including positive
+subnormal capacities; their denominator-one fallback concerns only an exactly
+zero maximum. This theorem excludes that all-zero inactive class.
+
+The complete decision path must still be distinguished from its base choice.
+The [native selector](../src/tnfr/dynamics/selectors.py) can force AL or EN
+through its configured lag counters. The shared
+[grammar fallback](../src/tnfr/operators/grammar_dynamics.py) tries
+`IL,THOL,EN,SHA,RA,NAV,AL`, never ZHIR. Thus this ordinary default path cannot
+introduce ZHIR while the stated diagnostic condition holds. When IL itself
+is admitted and neither lag forces a replacement, the applied glyph is IL.
+The parametric selector, custom callables, stale or skipped Si refresh,
+heterogeneous capacities and changed diagnostic weights/cuts have different
+scope. No conclusion about all future steps follows if those conditions change.
+
+A valid signed growth secant and U4b context can therefore make Mutation
+**eligible without making it selected**. A manually requested Mutation or a
+custom selector returning it would test a different occurrence rule. The
+configured Si formula does not prove that the physical nodal structure forbids
+a phase change. Conversely, altering Si weights or disabling its refresh to
+obtain the desired event would not derive a missing TNFR mechanism.
+This is a control-policy reachability result, not a newly prescribed policy
+or a defect warranting an arbitrary threshold change.
+
+Controls: [diagnostic lower bound and selection](../tests/physics/test_uniform_capacity_selector_scope.py).
+The single finite causal check and source-work interpretation belong to the
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
 
 ## 8. Grammar derivation: premises, language and trajectories
 
@@ -553,8 +600,8 @@ grounds to remove existing contracts without a replacement theorem.
 
 For the main generative question, the audit closes the proposed strict-U3
 **rank** implication negatively while the witness's finite fixed-source set
-is locally rigid. The next task must distinguish finite geometry from tangent
-freedom before using either to support autonomous NFR maintenance. A joint
+is locally rigid. Finite geometry must be distinguished from tangent freedom
+before using either to support autonomous NFR maintenance. A joint
 phase/capacity/support law would still need independent structural derivation;
 grammar admission or a telemetry score cannot silently supply it. The single
 [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md) retains that queue.
@@ -668,8 +715,10 @@ instantaneous U3 gate or a U6 threshold alone cannot stand in for this joint
 claim. Reuse the existing exact quotient/memory tests to ask whether a proposed
 macro observation closes; use the tetrad to report its geometric and
 correlation consequences without imposing a diagnostic target as a new force.
-The plan now places this foundation work before any new long trajectory
-campaign or reinterpretation of a configured selector as emergent physics.
+These are constitutive admission requirements. The
+[single execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md) owns their
+current priority; this scope note does not open another trajectory campaign
+or promote a configured selector to emergent physics.
 
 ## 14. Constitutive closure audit from the nodal law
 
@@ -704,6 +753,46 @@ therefore gives a constant pressure slope, not automatic relaxation. With
 capacity one, p=1/2 and zero flux, the configured phase rate is 0.575, not
 zero: zero flux removes transport terms, not all auxiliary dynamics. These
 documentation errors are corrected without changing the arithmetic.
+
+### Optional pressure composition and source consistency
+
+Composing the actual shared readers sharpens the preceding scalar-input audit.
+On fixed unique-neighbor support let `L_U=I-N^-1 U`, with zero rows at
+isolates. The pressure-contrast reader gives `J_p=-L_U p`; the integrator's
+scalar "divergence" gives `diag(sqrt(k))*L_U J_p`, where `k` counts unique
+neighbors. The optional pressure response therefore implements
+
+\[
+\dot p=(1+0.135)\operatorname{diag}(\sqrt{k})L_U^2p.
+\]
+
+This is not an incidence divergence of oriented edge fluxes. On a regular
+undirected graph the nonconstant eigenmodes have positive squared-Laplacian
+rates, rather than diffusion decay. The formula is a continuous vector-field
+interpretation of the supplied update; finite Euler steps, rounding and
+clipping retain separate effects.
+
+The retained unit prism provides an in-band, zero-phase-gap control.
+Set `x=1/2*1-P/4`, `P=(1,-1,0)^2`, unit capacity, and pure-EPI pressure.
+The shared canonical pressure is `p=P/4` and `L_U P=P`. Differentiating that
+same constitutive law using the shared joint-response owner requires
+`p_dot=-L_U*x_dot=-p`. The optional block instead gives
+`p_dot=(1+0.135)*sqrt(3)*p`, with the opposite sign. Both expressions refer
+to the same prepared state; no trajectory, fitted parameter or numerical
+step size is needed to detect the incompatibility.
+
+The optional path remains an explicitly configured independent-pressure
+model, disabled by default in `update_epi_via_nodal_equation`. Ordinary
+runtime dispatches its resolved integrator directly and then coordinates
+phase and adapts capacity; this wrapper's flag alone does not replace that
+path. Reversing one sign would not derive agreement
+with the full multichannel chain rule. Its arithmetic is retained while
+unwarranted conservation/invariant claims are removed. Three unused private
+synthetic flux helpers are removed; execution already used the shared real
+field readers and divergence owner. The [fresh-pressure phase comparison](TNFR_VARIATIONAL_PRINCIPLE.md#1314-existing-optional-feedback-pressure-consistency-before-recurrence)
+has a separate exact dissipation identity on a regular prism chart and is
+not silently substituted for the optional model. Controls:
+[extended-pressure scope](../tests/physics/test_extended_pressure_feedback_scope.py).
 
 ### Capacity remains undetermined even under dissipation
 
@@ -767,6 +856,9 @@ fallback must not certify every fit or backend. Portable controls in
 state which estimator they use. No complete tetrad-autonomy theorem follows.
 
 ### What is now derived and what must come next
+
+This subsection records mathematical dependencies, not a chronological task
+queue. The execution plan determines the current next step.
 
 The variational calculation supplies useful positive constraints: the EPI
 law fixes the x-dependent part of a compatible potential, requiring reciprocal

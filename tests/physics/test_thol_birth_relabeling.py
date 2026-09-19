@@ -20,11 +20,16 @@ from benchmarks.thol_birth_transport import STEPS, _birth_graph
 from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.dynamics.sampling import update_node_sample
 from tnfr.operators import (
-    build_operator_event_schedule, build_physical_flow_partition,
+    build_operator_event_schedule,
+    build_physical_flow_partition,
     execute_operator_event_schedule,
 )
 from tnfr.operators.definitions import (
-    Coherence, Coupling, Dissonance, SelfOrganization, Silence,
+    Coherence,
+    Coupling,
+    Dissonance,
+    SelfOrganization,
+    Silence,
 )
 from tnfr.operators.grammar_dynamics import validate_candidate
 from tnfr.utils import ensure_node_offset_map
@@ -62,9 +67,7 @@ def _node_record(data, inverse):
             result[field] = [inverse[node] for node in result[field]]
     for record in result.get("sub_epis", ()):
         record["node_id"] = inverse[record["node_id"]]
-        record["hierarchy_path"] = [
-            inverse[node] for node in record["hierarchy_path"]
-        ]
+        record["hierarchy_path"] = [inverse[node] for node in record["hierarchy_path"]]
     return _literal(result)
 
 
@@ -105,14 +108,25 @@ def _projection(graph, inverse):
             inverse[node]: offset
             for node, offset in ensure_node_offset_map(graph).items()
         },
-        "policy": _literal({
-            key: graph.graph.get(key) for key in (
-                "SORT_NODES", "RANDOM_SEED", "UM_FUNCTIONAL_LINKS",
-                "UM_BIDIRECTIONAL", "UM_CANDIDATE_COUNT", "UM_CANDIDATE_MODE",
-                "GLYPH_FACTORS", "GLYPH_HYSTERESIS_WINDOW", "EPI_MIN",
-                "EPI_MAX", "CLIP_MODE", "_dnfr_weights",
-            )
-        }),
+        "policy": _literal(
+            {
+                key: graph.graph.get(key)
+                for key in (
+                    "SORT_NODES",
+                    "RANDOM_SEED",
+                    "UM_FUNCTIONAL_LINKS",
+                    "UM_BIDIRECTIONAL",
+                    "UM_CANDIDATE_COUNT",
+                    "UM_CANDIDATE_MODE",
+                    "GLYPH_FACTORS",
+                    "GLYPH_HYSTERESIS_WINDOW",
+                    "EPI_MIN",
+                    "EPI_MAX",
+                    "CLIP_MODE",
+                    "_dnfr_weights",
+                )
+            }
+        ),
         "oz_events": _literal(events),
         "operator_metrics": _literal(metrics),
         # No scheduled operator events occur: THOL is a direct public call.
@@ -128,11 +142,16 @@ def _apply(graph, parent, operator):
 
 def _execute_preparation_flow(graph, inverse):
     schedule = build_operator_event_schedule(
-        (), start_time=0.0, flow_durations=(sum(STEPS),),
+        (),
+        start_time=0.0,
+        flow_durations=(sum(STEPS),),
     )
     partition = build_physical_flow_partition(schedule.intervals[0], STEPS)
     receipt = execute_operator_event_schedule(
-        graph, schedule, method="euler", physical_flow_partitions=(partition,),
+        graph,
+        schedule,
+        method="euler",
+        physical_flow_partitions=(partition,),
     )
     # Authenticate each original receipt; never construct a relabeled seal.
     assert receipt.runtime_clock_checked
@@ -145,13 +164,21 @@ def _execute_preparation_flow(graph, inverse):
         "targets": tuple(inverse[n] for n in receipt.target_nodes),
         "final_time": _literal(receipt.final_time),
         "refresh_calls": receipt.physical_pressure_refresh_callback_invocations,
-        "boundaries": tuple((
-            _literal(boundary.time), _literal(boundary.after.epi),
-            _literal(boundary.after.delta_nfr),
-            boundary.nonpressure_state_preserved,
-        ) for boundary in evidence.boundary_observations),
-        "methods": tuple(item.resolved_method for item in evidence.segment_flow_evidence),
-        "clipping": tuple(item.clipping_applied for item in evidence.segment_flow_evidence),
+        "boundaries": tuple(
+            (
+                _literal(boundary.time),
+                _literal(boundary.after.epi),
+                _literal(boundary.after.delta_nfr),
+                boundary.nonpressure_state_preserved,
+            )
+            for boundary in evidence.boundary_observations
+        ),
+        "methods": tuple(
+            item.resolved_method for item in evidence.segment_flow_evidence
+        ),
+        "clipping": tuple(
+            item.clipping_applied for item in evidence.segment_flow_evidence
+        ),
     }
 
 
@@ -222,23 +249,42 @@ def test_marked_birth_relabels_newborns_hierarchy_and_causal_history(relabeled_b
     assert child in original[0]["raw_coupling"]["sample"]
 
 
-@pytest.mark.parametrize("change", (
-    "child_epi", "parent_pointer", "hierarchy_path", "birth_record",
-    "edge_weight", "physical_history", "glyph_mark", "sample",
-))
+@pytest.mark.parametrize(
+    "change",
+    (
+        "child_epi",
+        "parent_pointer",
+        "hierarchy_path",
+        "birth_record",
+        "edge_weight",
+        "physical_history",
+        "glyph_mark",
+        "sample",
+    ),
+)
 def test_projection_detects_node_edge_pointer_and_history_corruption(
-    relabeled_births, change,
+    relabeled_births,
+    change,
 ):
     _, relabeled = relabeled_births
     expected, _, live, inverse = relabeled
     graph = live.copy()
-    graph.graph = deepcopy({
-        key: value for key, value in live.graph.items()
-        if key in {
-            "_t", "hierarchy", "_node_sample", "_oz_propagation_events",
-            "operator_metrics", "hybrid_event_log", *expected["closure"]["policy"],
+    graph.graph = deepcopy(
+        {
+            key: value
+            for key, value in live.graph.items()
+            if key
+            in {
+                "_t",
+                "hierarchy",
+                "_node_sample",
+                "_oz_propagation_events",
+                "operator_metrics",
+                "hybrid_event_log",
+                *expected["closure"]["policy"],
+            }
         }
-    })
+    )
     for node in graph:
         graph.nodes[node].clear()
         graph.nodes[node].update(deepcopy(live.nodes[node]))
@@ -268,7 +314,8 @@ def test_projection_detects_node_edge_pointer_and_history_corruption(
 
 @pytest.mark.parametrize("omit_child", (False, True))
 def test_newborn_correspondence_must_be_a_complete_bijection(
-    relabeled_births, omit_child,
+    relabeled_births,
+    omit_child,
 ):
     graph, inverse = relabeled_births[1][2:]
     corrupted = dict(inverse)

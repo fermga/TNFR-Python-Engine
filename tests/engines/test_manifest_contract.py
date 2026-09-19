@@ -3,24 +3,32 @@
 import json
 import math
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import networkx as nx
 import pytest
 
+from scripts.run_self_optimization import (
+    _collect_partition_entries,
+    _compute_telemetry_deltas,
+    parse_args,
+    run,
+)
 from tnfr.constants.aliases import ALIAS_THETA, ALIAS_VF
 from tnfr.engines.manifest import (
-    collect_manifest_telemetry, decode_graph, encode_graph, write_manifest_bundle,
+    collect_manifest_telemetry,
+    decode_graph,
+    encode_graph,
+    write_manifest_bundle,
 )
 from tnfr.parallel import FractalPartitioner
-from scripts.run_self_optimization import (
-    _collect_partition_entries, _compute_telemetry_deltas, parse_args, run,
+
+
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
 )
-
-
-@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
 def test_json_graph_round_trip_preserves_labels_weights_triad_and_history(graph_type):
     graph = graph_type()
     graph.graph.update(seed=42, operator_history=["AL", "IL", "SHA"])
@@ -61,7 +69,9 @@ def test_partition_limit_covers_coherent_graph_without_loss(adaptive):
     graph = nx.path_graph(["n0", 1, "n2", 3, "n4", 5, "n6"])
     nx.set_node_attributes(graph, 1.0, "vf")
     partitions = FractalPartitioner(
-        max_partition_size=2, adaptive=adaptive, use_spatial_index=False,
+        max_partition_size=2,
+        adaptive=adaptive,
+        use_spatial_index=False,
     ).partition_network(graph)
     assert [len(nodes) for nodes, _ in partitions] == [2, 2, 2, 1]
     assert set().union(*(nodes for nodes, _ in partitions)) == set(graph)
@@ -72,7 +82,9 @@ def test_partition_limit_covers_coherent_graph_without_loss(adaptive):
 
 def test_zero_structural_aliases_take_precedence_in_partition_coherence():
     graph = nx.path_graph(2)
-    graph.nodes[0].update({ALIAS_VF[0]: 0.0, "vf": 7.0, ALIAS_THETA[0]: 0.0, "phase": 3.0})
+    graph.nodes[0].update(
+        {ALIAS_VF[0]: 0.0, "vf": 7.0, ALIAS_THETA[0]: 0.0, "phase": 3.0}
+    )
     graph.nodes[1].update({ALIAS_VF[0]: 0.0, ALIAS_THETA[0]: 0.0})
     partitioner = FractalPartitioner(use_spatial_index=False)
     assert partitioner._compute_community_coherence(graph, {0}, 1) == pytest.approx(1.0)
@@ -99,7 +111,10 @@ print(json.dumps([[n for n in graph if n in nodes] for nodes, _ in parts]))
     outputs = []
     for hash_seed in (1, 42):
         result = subprocess.run(
-            [sys.executable, "-c", script], check=True, capture_output=True, text=True,
+            [sys.executable, "-c", script],
+            check=True,
+            capture_output=True,
+            text=True,
             env={**os.environ, "PYTHONHASHSEED": str(hash_seed)},
         )
         outputs.append(json.loads(result.stdout.strip().splitlines()[-1]))
@@ -118,7 +133,8 @@ def test_dry_run_deltas_are_not_archived_manifest_drift():
 
 def test_snapshot_improvement_is_reported_without_archived_baseline():
     deltas = _compute_telemetry_deltas(
-        {}, {"before": {"coherence": 0.4}, "after": {"coherence": 0.6}},
+        {},
+        {"before": {"coherence": 0.4}, "after": {"coherence": 0.6}},
     )
     assert deltas["delta_c"] == pytest.approx(0.2)
 
@@ -127,16 +143,31 @@ def test_snapshot_improvement_is_reported_without_archived_baseline():
 def test_runner_consumes_generic_graph_and_reports_partition_identity(graph, tmp_path):
     telemetry = collect_manifest_telemetry(graph)
     paths = write_manifest_bundle(
-        tmp_path, "manifest.json", "summary.json",
-        {"operation_type": "pattern_discovery"}, {}, [("batch:p0", graph, telemetry)],
+        tmp_path,
+        "manifest.json",
+        "summary.json",
+        {"operation_type": "pattern_discovery"},
+        {},
+        [("batch:p0", graph, telemetry)],
     )
-    result = run(parse_args([
-        "--manifest", str(paths["manifest_absolute"]), "--output-dir", str(tmp_path / "run"),
-        "--seed", "42", "--quiet",
-    ]))
+    result = run(
+        parse_args(
+            [
+                "--manifest",
+                str(paths["manifest_absolute"]),
+                "--output-dir",
+                str(tmp_path / "run"),
+                "--seed",
+                "42",
+                "--quiet",
+            ]
+        )
+    )
     assert result["success_count"] == 1, result["partition_results"]
     entry = result["partition_results"][0]
-    payload = json.loads(Path(entry["engine"]["snapshot_path"]).read_text(encoding="utf-8"))
+    payload = json.loads(
+        Path(entry["engine"]["snapshot_path"]).read_text(encoding="utf-8")
+    )
     assert payload["metadata"]["partition_id"] == "batch:p0"
     assert entry["seed"] == 42
     assert result["operation_type"] == "pattern_discovery"
@@ -145,10 +176,12 @@ def test_runner_consumes_generic_graph_and_reports_partition_identity(graph, tmp
 def test_duplicate_manifest_partition_ids_are_rejected(tmp_path):
     payload = tmp_path / "partition.json"
     payload.write_text("{}", encoding="utf-8")
-    manifest = {"entries": [
-        {"partition_id": "p0", "relative_path": payload.name},
-        {"partition_id": "p0", "relative_path": payload.name},
-    ]}
+    manifest = {
+        "entries": [
+            {"partition_id": "p0", "relative_path": payload.name},
+            {"partition_id": "p0", "relative_path": payload.name},
+        ]
+    }
     with pytest.raises(ValueError, match="Duplicate"):
         _collect_partition_entries(manifest, tmp_path / "manifest.json", None)
 
@@ -156,18 +189,31 @@ def test_duplicate_manifest_partition_ids_are_rejected(tmp_path):
 def test_seed_offset_stays_with_original_entry_after_filtering(tmp_path, monkeypatch):
     graph = nx.path_graph(2)
     paths = write_manifest_bundle(
-        tmp_path, "manifest.json", "summary.json", {}, {},
+        tmp_path,
+        "manifest.json",
+        "summary.json",
+        {},
+        {},
         [("p0", graph, {}), ("p1", graph, {})],
     )
     from scripts.run_self_optimization import PartitionProcessor
 
     observed = []
+
     def capture(self, **kwargs):
         observed.append(kwargs["seed_value"])
         return {"dry_run": True}
+
     monkeypatch.setattr(PartitionProcessor, "_run_optimizer", capture)
-    common = ["--manifest", str(paths["manifest_absolute"]), "--output-dir", str(tmp_path / "run"),
-              "--seed", "42", "--quiet"]
+    common = [
+        "--manifest",
+        str(paths["manifest_absolute"]),
+        "--output-dir",
+        str(tmp_path / "run"),
+        "--seed",
+        "42",
+        "--quiet",
+    ]
     run(parse_args(common))
     run(parse_args([*common, "--partitions", "p1"]))
     assert observed == [42, 43, 43]

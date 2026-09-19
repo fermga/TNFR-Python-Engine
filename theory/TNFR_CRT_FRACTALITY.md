@@ -13,24 +13,23 @@ C4 (spectral tolerance), C5 (claim manifest, circularity audit).
 
 ## 1. The multiscale object
 
-TNFR axiom **U5** (multi-scale coherence, [AGENTS.md](../AGENTS.md) §6) requires
-that nested EPIs compose without identity loss. The Chinese Remainder Theorem is
-the arithmetic realisation of exactly that: for coprime moduli `a, b` the
-additive group splits,
+For coprime moduli `a, b`, the Chinese Remainder Theorem gives the declared
+arithmetic product carrier
 
 $$\mathbb{Z}/ab\mathbb{Z} \;\cong\; \mathbb{Z}/a\mathbb{Z}\times\mathbb{Z}/b\mathbb{Z},$$
 
 and the unit group splits multiplicatively,
 $(\mathbb{Z}/ab\mathbb{Z})^\ast \cong (\mathbb{Z}/a\mathbb{Z})^\ast\times(\mathbb{Z}/b\mathbb{Z})^\ast$.
-The parent network `ℤ/abℤ` is the whole; the two coprime factor networks are its
-sub-EPIs (finer scales).
+The two factors parameterize the parent network. This exact product
+construction is useful for scale comparisons; it does not instantiate the
+engine's nested-EPI hierarchy, execute REMESH, or prove its U5 contract.
 
-## 2. The unit restriction (why it must be the units)
+## 2. A sufficient product-compatible connection family
 
 Write `S_m = ` the connection set of the residue Cayley digraph
 `Cay(ℤ/mℤ, S_m)`, and `L_m = I − (1/|S_m|) W_m` for its random-walk Laplacian
 (R2). The theorem needs the connection set to CRT-factor **exactly**, and that
-holds **iff** the set is the k-th powers of the **units**:
+is guaranteed for the k-th powers of the **units**:
 
 $$S_m = \{\, u^k \bmod m : \gcd(u, m) = 1 \,\} = \texttt{unit\_power\_residue\_set}(m, k).$$
 
@@ -40,7 +39,10 @@ coincides with the R2 set `power_residue_set`; for composite `m` it is a **prope
 subset** (`unit_power_residue_set(15, 2) = {1, 4}` vs
 `power_residue_set(15, 2) = {1, 4, 6, 9, 10}`). The unrestricted set includes
 non-units and does **not** factor under CRT — it is the non-factorizing control
-(§5).
+(§5). Product factorization is the actual hypothesis, not a characterization
+of unit sets: any prescribed nonempty `T_a` and `T_b` with parent connection
+set `CRT^-1(T_a × T_b)` gives the same product identity, including suitable
+non-unit sets.
 
 ## 3. The Kronecker identity (DERIVED, exact over ℚ)
 
@@ -57,7 +59,7 @@ The last identity holds because `P_m = I − L_m` and
 `fractions.Fraction`: `crt_kronecker_residual(a, b, k) == 0` for every tested
 coprime pair and power (no floating point).
 
-## 4. Eigenvalue composition and the U5 gap bound (DERIVED + MEASURED)
+## 4. Eigenvalue composition and the nonzero-modulus bound
 
 Kronecker structure fixes the parent spectrum as the **child eigenvalue
 composition**. If `λ ∈ spec(L_a)` and `μ ∈ spec(L_b)` then
@@ -67,30 +69,40 @@ $$\lambda_{\text{parent}} = \lambda + \mu - \lambda\mu = 1 - (1-\lambda)(1-\mu).
 The random-walk Laplacian always has the constant mode `λ = 0` (the trivial /
 neutral EPI), so setting `μ = 0` gives `λ` unchanged: **every child eigenvalue
 embeds in the parent spectrum**. Hence the parent's non-zero spectrum is the
-union of the child non-zero spectra **plus** genuinely multiscale cross modes
-`λ + μ − λμ` (`λ, μ ≠ 0`), and the spectral gap obeys the exact U5 bound
+union of the child non-zero spectra and the nonzero cross modes
+`λ + μ − λμ`. Define `g(L)=min{|lambda|:lambda in spec(L),lambda!=0}`
+when that set is nonempty. The exact modulus bound is
 
-$$\lambda_2(ab) = \min\!\big(\lambda_2(a),\, \lambda_2(b),\,
-\min_{\lambda,\mu\neq 0}|\lambda + \mu - \lambda\mu|\big)
-\;\le\; \min\!\big(\lambda_2(a), \lambda_2(b)\big).$$
+$$g(L_{ab})=\min\!\left(g(L_a),g(L_b),
+\min_{\substack{\lambda,\mu\ne0\\\lambda+\mu-\lambda\mu\ne0}}
+|\lambda+\mu-\lambda\mu|\right)
+\le\min(g(L_a),g(L_b)).$$
 
-**Reading (U5 telemetry).** Composing scales never *speeds up* the slowest
-sub-EPI — it can only add slower cross-scale modes. The composite's coherence
-timescale is at least as long as its slowest factor's. Equality holds when the
-child spectra are real in `[0, 1]` (symmetric connection); when the unit set is
-not symmetric the spectrum is complex and a cross mode can be strictly smaller
-(e.g. `4 × 9, k = 2`: `λ₂ = 0.518 < min = 1.000`). The numerical eigenvalue
-composition matches to `~4e-15`, below the derived tolerance `√ε·‖L‖₂` (C4).
+An empty cross-mode set contributes no minimum. Excluding zero cross modes
+matters: additional stationary modes can appear in a product, and the smallest
+nonzero modulus does not certify connectedness or convergence to one constant.
+Equality holds if both child spectra lie in `[0,1]`, because
+`lambda+mu-lambda*mu >= max(lambda,mu)` there. Symmetric connection alone only
+places the random-walk Laplacian spectrum in `[0,2]`; it does not imply that
+stronger hypothesis.
 
-## 5. Non-factorizing control (the unit restriction is necessary)
+The implementation's compatibility-named `spectral_gap` uses eigenvalue
+moduli above a numerical tolerance. For directed heat flow, decay depends on
+real parts, so that value cannot generally be interpreted as a coherence
+timescale. The recorded `4 × 9, k=2` modulus is about `0.518` versus child
+moduli `1.000`; it is a finite spectral comparison. Numerical eigenvalue
+composition matches to about `4e-15` on the reported cases. Neither this
+thresholded statistic nor the exact product theorem certifies U5.
+
+## 5. Non-factorizing control for the unrestricted power-residue family
 
 The unrestricted set is the control. `residue_set_factors(a, b, k, unit=False)`
 returns `False` — even for coprime primes (`3 × 5`), because the non-unit powers
 `{6, 9, 10}` of `ℤ/15ℤ` have no CRT product preimage in
 `S_3 × S_5 = {1} × {1, 4}`. Consequently the Kronecker identity **fails** for the
 unrestricted operator (`full_power_residue_laplacian`): the measured residual is
-`0.30, 0.09, …` — non-zero. This isolates the unit group as the exact carrier of
-the multiscale product structure.
+`0.30, 0.09, …` — non-zero. These controls distinguish the two implemented
+families; they do not make unit membership necessary for every product graph.
 
 ## 6. Honest scope — synthesis, not factoring
 
@@ -102,9 +114,10 @@ circularity audit therefore records
 `uses_known_factors = True` (claim `NT-P03`). The algebraic product theorem
 (Kronecker identity + eigenvalue law, §3–4) stands on its own and is tested
 **separately** from any inverse use: recognising a *given* `L_ab` **as** a
-product `L_a ⊗ L_b` requires already knowing `a, b`, so nothing here is, or may
-be presented as, a factoring algorithm. The forward direction — assembling the
-whole from known parts — is legitimate multiscale (U5) structure; the inverse
+product `I-(I-L_a) ⊗ (I-L_b)` is not an inverse operation implemented here.
+This code is supplied `a,b`; the statement is an implementation dependency,
+not a lower bound on every possible inverse algorithm. The forward direction
+assembles a declared product transport model; the inverse
 direction (recovering unknown factors) is **not** claimed and is out of scope.
 
 ## 7. Claim ledger
@@ -113,11 +126,11 @@ direction (recovering unknown factors) is **not** claimed and is out of scope.
 |-------|-------|--------|
 | `L_ab = I − (I−L_a)⊗(I−L_b)` (unit set, coprime) | CRT unit bijection + Kronecker | **DERIVED** + MEASURED (exact `0` over ℚ) |
 | `λ_parent = λ + μ − λμ` | Kronecker eigenvalues | **DERIVED** + MEASURED (`~4e-15`) |
-| `λ₂(ab) ≤ min(λ₂(a), λ₂(b))` | trivial-mode embedding | **DERIVED** + MEASURED |
-| unit restriction necessary | control residual `≠ 0` | **MEASURED** |
+| `g(L_ab) ≤ min(g(L_a), g(L_b))` | trivial-mode embedding, exact nonzero moduli | **DERIVED**; finite thresholded comparisons are separate |
+| unrestricted family can fail to factor | control residual `≠ 0` | **MEASURED**; not a universal necessity claim |
 | factoring / discovery | — | **NEGATIVE** (synthesis only; `NT-P03` forbids discovery claim) |
 
-**Bottom line.** R3 makes CRT an explicit U5 multiscale model on a family of unit
-residue networks: the whole operator, its spectrum, and its slowest coherence
-timescale are exactly composed from the sub-EPIs. It closes no open problem and
-provides no factoring capability.
+R3 supplies an exact finite product identity for a declared family of unit
+residue networks. The operator and spectrum compose as shown; joint nodal
+emergence, full-tetrad transport, U5 and generic decay-time claims do not follow.
+It closes no open problem and provides no factoring capability.

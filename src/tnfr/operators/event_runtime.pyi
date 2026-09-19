@@ -8,11 +8,11 @@ from typing import Any
 import networkx as nx
 
 from ..physics.network_stage_stability import AllTargetNeighborStageCertificate
-from ..physics.pointwise_stage_stability import (
-    PointwiseEPIJumpRealizationCertificate,
+from ..physics.pointwise_stage_stability import PointwiseEPIJumpRealizationCertificate
+from ..physics.runtime_flow_stability import (
+    NodalFlowIntervalCertificate,
+    NodalFlowStateSnapshot,
 )
-from ..physics.runtime_flow_stability import NodalFlowIntervalCertificate
-from ..physics.runtime_flow_stability import NodalFlowStateSnapshot
 from ..types import Glyph
 from .event_timing import (
     OperatorEventSchedule,
@@ -25,7 +25,6 @@ from .network_stage import (
     NetworkStageResult,
     ReceptionStageObservation,
 )
-
 
 @dataclass(frozen=True, slots=True)
 class ExecutedOperatorEvent:
@@ -46,7 +45,6 @@ class ExecutedOperatorEvent:
 
     def __post_init__(self) -> None: ...
     def _proof_fields_are_intact(self) -> bool: ...
-
     @classmethod
     def from_stage(
         cls,
@@ -54,7 +52,6 @@ class ExecutedOperatorEvent:
         result: NetworkStageResult,
     ) -> ExecutedOperatorEvent: ...
     def as_record(self) -> dict[str, Any]: ...
-
 
 @dataclass(frozen=True, slots=True)
 class ExecutedNodalFlowInterval:
@@ -84,7 +81,6 @@ class ExecutedNodalFlowInterval:
     def runtime_bound_exact_affine_map_identified(self) -> bool: ...
     @property
     def runtime_bound_global_disagreement_contraction_certified(self) -> bool: ...
-
 
 @dataclass(frozen=True, slots=True)
 class PressureRefreshBoundaryObservation:
@@ -126,7 +122,6 @@ class PressureRefreshBoundaryObservation:
     @property
     def nonpressure_state_preserved(self) -> bool: ...
 
-
 @dataclass(frozen=True, slots=True)
 class PhysicalEulerModalObservation:
     parent_interval_index: int
@@ -152,7 +147,6 @@ class PhysicalEulerModalObservation:
     def _proof_fields_are_intact(self) -> bool: ...
     @property
     def modal_diagnostic_established(self) -> bool: ...
-
 
 @dataclass(frozen=True, slots=True)
 class ExecutedPressureRefreshedFlowPartition:
@@ -201,7 +195,6 @@ class ExecutedPressureRefreshedFlowPartition:
     @property
     def exact_common_metric_gain_product_certified(self) -> bool: ...
 
-
 @dataclass(frozen=True, slots=True)
 class ExecutedGlyphStage:
     event: ExecutedOperatorEvent
@@ -231,9 +224,9 @@ class ExecutedGlyphStage:
     post_flow_endpoint_continuous: bool | None = ...
     pre_flow_metric_compatible: bool | None = ...
     post_flow_metric_compatible: bool | None = ...
-    mutation_decision_observations: tuple[
-        MutationStageDecisionObservation, ...
-    ] = field(...)
+    mutation_decision_observations: tuple[MutationStageDecisionObservation, ...] = (
+        field(...)
+    )
     reception_observations: tuple[ReceptionStageObservation, ...] = field(...)
     solver_accuracy_certified: bool = field(default=..., init=False)
     future_or_repeated_schedule_stability_certified: bool = field(
@@ -247,7 +240,6 @@ class ExecutedGlyphStage:
     def represented_affine_gain_bound_at_observed_endpoint_certified(
         self,
     ) -> bool: ...
-
 
 @dataclass(frozen=True, slots=True)
 class RepresentedEPIScheduleOperation:
@@ -266,7 +258,6 @@ class RepresentedEPIScheduleOperation:
 
     @property
     def represented_affine_gain_certified(self) -> bool: ...
-
 
 @dataclass(frozen=True, slots=True)
 class ObservedRepresentedEPIScheduleComposition:
@@ -289,7 +280,6 @@ class ObservedRepresentedEPIScheduleComposition:
     def full_multichannel_stability_certified(self) -> bool: ...
     @property
     def future_or_repeated_schedule_stability_certified(self) -> bool: ...
-
     @property
     def represented_affine_composition_gain_certified(self) -> bool: ...
     @property
@@ -323,17 +313,11 @@ class OperatorEventExecutionResult:
     runtime_clock_checked: bool = field(default=..., init=False)
     flow_provenance: str = field(default=..., init=False)
     nodal_flow_inputs: str = field(default=..., init=False)
-    whole_schedule_graph_state_atomic: bool = field(
-        default=..., init=False
-    )
-    operator_jumps_have_zero_duration: bool = field(
-        default=..., init=False
-    )
+    whole_schedule_graph_state_atomic: bool = field(default=..., init=False)
+    operator_jumps_have_zero_duration: bool = field(default=..., init=False)
     solver_accuracy_certified: bool = field(default=..., init=False)
     adaptive_u2_u4_policy: bool = field(default=..., init=False)
-    external_side_effects_rolled_back: bool = field(
-        default=..., init=False
-    )
+    external_side_effects_rolled_back: bool = field(default=..., init=False)
     future_or_repeated_schedule_stability_certified: bool = field(
         default=...,
         init=False,
@@ -342,7 +326,6 @@ class OperatorEventExecutionResult:
     _proof_stamp: tuple[Any, ...] = field(...)
     def __post_init__(self) -> None: ...
     def _proof_fields_are_intact(self) -> bool: ...
-
     @property
     def physical_pressure_reevaluated_partitions_established(
         self,
@@ -360,7 +343,6 @@ class OperatorEventExecutionResult:
     @property
     def all_glyph_stages_represented_affine(self) -> bool | None: ...
 
-
 def execute_operator_event_schedule(
     graph: nx.Graph,
     schedule: OperatorEventSchedule,
@@ -373,6 +355,5 @@ def execute_operator_event_schedule(
     include_stage_certificates: bool = ...,
     physical_flow_partitions: Iterable[PhysicalFlowPartition] = ...,
 ) -> OperatorEventExecutionResult: ...
-
 
 __all__: tuple[str, ...]

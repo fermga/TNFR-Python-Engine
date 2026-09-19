@@ -1,15 +1,9 @@
-"""
-Optimized TNFR Primality Testing with Advanced Performance Features
+"""Cached arithmetic-pressure predicates, batch calls and local timings.
 
-This module provides enhanced implementations with:
-- Advanced caching strategies
-- Batch processing capabilities
-- Performance monitoring
-- Sieve optimizations
-- Statistical analysis
-
-For maximum performance in production applications.
-"""
+The class stores final pressure values for repeat inputs. Batching loops over
+that predicate; the sieve uses classical elimination before pressure checks.
+Measured cache speedups are workload dependent and do not establish a new
+primality complexity bound or production performance guarantee."""
 
 from __future__ import annotations
 
@@ -21,21 +15,16 @@ from .core import tnfr_delta_nfr, tnfr_is_prime
 
 
 class OptimizedTNFRPrimality:
-    """
-    High-performance TNFR primality tester with advanced optimizations.
+    """Cache final pressure values and collect workload timing statistics.
 
-    Features:
-    - Multi-level caching
-    - Batch processing
-    - Performance analytics
-    - Sieve integration
-    - Statistical monitoring
+    ``cache_size`` limits stored pressure results. Batch processing repeats the
+    same predicate; allocated divisor/factor dictionaries are not used by that
+    path. The test uses a fixed strict tolerance of 1e-10.
 
     Example:
         optimizer = OptimizedTNFRPrimality()
         results = optimizer.batch_test([97, 997, 9973])
-        stats = optimizer.get_statistics()
-    """
+        stats = optimizer.get_statistics()"""
 
     def __init__(self, cache_size: int = 10000):
         """

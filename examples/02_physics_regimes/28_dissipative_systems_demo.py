@@ -75,9 +75,7 @@ def _amplitude_damping_channel(
     )
 
 
-def _dephasing_channel(
-    density: np.ndarray, gamma: float, time: float
-) -> np.ndarray:
+def _dephasing_channel(density: np.ndarray, gamma: float, time: float) -> np.ndarray:
     result = density.copy()
     decay = math.exp(-gamma * time)
     result[0, 1] *= decay
@@ -191,6 +189,8 @@ def demo_exact_trajectories() -> None:
     )
     print("  Result: amplitude damping mixes then purifies; dephasing only mixes.")
     print()
+
+
 def demo_predictions_and_balance() -> None:
     print("=" * 72)
     print("5. ANALYTICAL PREDICTIONS AND TRACE-DISTANCE BALANCE")

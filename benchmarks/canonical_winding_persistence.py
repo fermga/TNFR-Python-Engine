@@ -25,7 +25,10 @@ import numpy as np  # noqa: E402
 
 from tnfr.alias import get_attr  # noqa: E402
 from tnfr.constants.aliases import (  # noqa: E402
-    ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF,
+    ALIAS_DNFR,
+    ALIAS_EPI,
+    ALIAS_THETA,
+    ALIAS_VF,
 )
 from tnfr.constants.canonical import UM_THETA_PUSH  # noqa: E402
 from tnfr.dynamics.dnfr import default_compute_delta_nfr  # noqa: E402
@@ -34,15 +37,19 @@ from tnfr.operators.word_execution import run_network_sequence  # noqa: E402
 from tnfr.physics.coupling_winding import observe_coupling_gap_step  # noqa: E402
 from tnfr.physics.emergent_particles import winding_ring  # noqa: E402
 from tnfr.physics.fields import (  # noqa: E402
-    compute_phase_curvature, compute_phase_gradient,
-    compute_structural_potential, estimate_coherence_length_with_provenance,
+    compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
+    estimate_coherence_length_with_provenance,
 )
 from tnfr.physics.winding_certificates import (  # noqa: E402
-    certify_phase_winding, observe_winding_word,
+    certify_phase_winding,
+    observe_winding_word,
 )
 from tnfr.research.claims import ClaimStatus  # noqa: E402
 from tnfr.research.core_manifests import (  # noqa: E402
-    CoreExperimentManifest, current_git_source_provenance,
+    CoreExperimentManifest,
+    current_git_source_provenance,
 )
 from tnfr.utils.numeric import angle_diff  # noqa: E402
 
@@ -189,8 +196,7 @@ def run_coupling_case(count, winding, *, coupling_steps=8):
         ),
         "observations": observations,
         "endpoint_winding_preserved": all(
-            row["certificate"]["winding"] == initial.winding
-            for row in observations
+            row["certificate"]["winding"] == initial.winding for row in observations
         ),
         "observed_endpoint_lifetime_stages": len(observations),
         "policy": {
@@ -222,20 +228,26 @@ def run_transition_counterexample(*, steps=14):
         phases_before = _values(graph, ALIAS_THETA)
         result = observe_winding_word(graph, range(8), 0, [Transition()])
         step = result.steps[0]
-        observations.append({
-            "invocation": index + 1,
-            "certificate": asdict(step.certificate),
-            "theta_before": phases_before[0],
-            "theta_after": _values(graph, ALIAS_THETA)[0],
-            "phase_changes": step.phase_changes,
-            "actual_history": result.actual_history,
-            "epi": _values(graph, ALIAS_EPI),
-            "capacity": _values(graph, ALIAS_VF),
-            "pressure": _values(graph, ALIAS_DNFR),
-        })
+        observations.append(
+            {
+                "invocation": index + 1,
+                "certificate": asdict(step.certificate),
+                "theta_before": phases_before[0],
+                "theta_after": _values(graph, ALIAS_THETA)[0],
+                "phase_changes": step.phase_changes,
+                "actual_history": result.actual_history,
+                "epi": _values(graph, ALIAS_EPI),
+                "capacity": _values(graph, ALIAS_VF),
+                "pressure": _values(graph, ALIAS_DNFR),
+            }
+        )
     first_loss = next(
-        (row["invocation"] for row in observations
-         if row["certificate"]["winding"] != initial.winding), None
+        (
+            row["invocation"]
+            for row in observations
+            if row["certificate"]["winding"] != initial.winding
+        ),
+        None,
     )
     return {
         "initial": asdict(initial),
@@ -275,7 +287,8 @@ def winding_domain_controls():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--output", type=Path,
+        "--output",
+        type=Path,
         default=ROOT / "artifacts/research/canonical_winding_persistence.json",
     )
     args = parser.parse_args()
@@ -283,10 +296,13 @@ def main():
     sha, dirty, digest = current_git_source_provenance(ROOT, source_scope)
     manifest = CoreExperimentManifest(
         claim_id="O3.a-configured-coupling-winding-endpoints",
-        git_sha=sha, source_dirty=dirty, dirty_source_hash=digest,
+        git_sha=sha,
+        source_dirty=dirty,
+        dirty_source_hash=digest,
         versions={
             "python": platform.python_version(),
-            "networkx": nx.__version__, "numpy": np.__version__,
+            "networkx": nx.__version__,
+            "numpy": np.__version__,
         },
         graph_construction=(
             "Unit C8/C16, phase=2*pi*W*i/n+(pi/16)*sin(2*pi*i/n), W=0,1"
@@ -295,15 +311,21 @@ def main():
             "Initially one; recorded default SHA attenuation after each UM"
         ),
         solver="Canonical discrete operator stages; no physical timestep",
-        result_status=ClaimStatus.MEASURED, seed=17,
+        result_status=ClaimStatus.MEASURED,
+        seed=17,
         operator_sequence=("(UM SHA)^8", "NAV at node0,14 calls"),
         telemetry=(
-            "winding/branch/U3 margins", "exact companion gap residual",
-            "nodal triad and pressure", "initial/final tetrad",
-            "positive circulation concentration", "actual per-node history",
+            "winding/branch/U3 margins",
+            "exact companion gap residual",
+            "nodal triad and pressure",
+            "initial/final tetrad",
+            "positive circulation concentration",
+            "actual per-node history",
         ),
         controls=(
-            "W=0", "C8/C16", "default NAV changes W=1 to W=0",
+            "W=0",
+            "C8/C16",
+            "default NAV changes W=1 to W=0",
             "branch-boundary and absent-cycle tests",
         ),
         artifacts=(str(args.output),),
@@ -331,8 +353,7 @@ def main():
         "source_scope": source_scope,
         "empirical_status": "Untested: no physical data or laboratory experiment",
         "positive_and_zero_cases": [
-            run_coupling_case(count, winding)
-            for count in (8, 16) for winding in (0, 1)
+            run_coupling_case(count, winding) for count in (8, 16) for winding in (0, 1)
         ],
         "canonical_transition_counterexample": run_transition_counterexample(),
         "domain_controls": winding_domain_controls(),

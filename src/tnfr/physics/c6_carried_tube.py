@@ -5,13 +5,15 @@ neither prescribe an operator sequence nor certify future graph admission.
 The common mean is bounded separately from centered disagreement.
 """
 
-from dataclasses import dataclass
-from fractions import Fraction as F
 import math
 import sys
+from dataclasses import dataclass
+from fractions import Fraction as F
 
 from ..dynamics._euler_kernel import (
-    NodalRemainderState, _finite_binary64, _require_remainder_rounding,
+    NodalRemainderState,
+    _finite_binary64,
+    _require_remainder_rounding,
     _validate_nodal_remainder_state,
 )
 from ._cycle_algebra import Matrix, Vector, dot, laplacian_action, laplacian_matrix
@@ -19,10 +21,14 @@ from .c6_carried_profile import C6CarriedProfile, derive_c6_carried_profile
 from .forced_support import observe_forced_support_pattern
 
 __all__ = [
-    "C6CarriedContraction", "derive_c6_carried_contraction",
-    "C6CarriedTube", "derive_c6_carried_tube",
-    "C6CarriedBandHorizon", "derive_c6_carried_band_horizon",
-    "C6CarriedCutExclusion", "observe_c6_carried_cut_exclusion",
+    "C6CarriedContraction",
+    "derive_c6_carried_contraction",
+    "C6CarriedTube",
+    "derive_c6_carried_tube",
+    "C6CarriedBandHorizon",
+    "derive_c6_carried_band_horizon",
+    "C6CarriedCutExclusion",
+    "observe_c6_carried_cut_exclusion",
 ]
 
 
@@ -61,20 +67,34 @@ def derive_c6_carried_contraction(profile, *, timestep: float) -> C6CarriedContr
     h = _finite_binary64(timestep, "timestep")
     s = F(h) * ref.forced_balance.epi_weight
     if not 0 < s < 1:
-        raise ValueError("strict C6 spatial contraction requires 0 < timestep*epi_weight < 1")
+        raise ValueError(
+            "strict C6 spatial contraction requires 0 < timestep*epi_weight < 1"
+        )
     laplacian = laplacian_matrix(6)
     identity = tuple(tuple(F(i == j) for j in range(6)) for i in range(6))
     projection = tuple(tuple(value - F(1, 6) for value in row) for row in identity)
-    transition = tuple(tuple(value - s * laplacian[i][j] for j, value in enumerate(row))
-                       for i, row in enumerate(identity))
+    transition = tuple(
+        tuple(value - s * laplacian[i][j] for j, value in enumerate(row))
+        for i, row in enumerate(identity)
+    )
     eigenvalues = (F(1, 2), F(1, 2), F(3, 2), F(3, 2), F(2))
-    vectors = tuple(tuple(map(F, row)) for row in (
-        (2, 1, -1, -2, -1, 1), (0, 1, 1, 0, -1, -1),
-        (2, -1, -1, 2, -1, -1), (0, 1, -1, 0, 1, -1), (1, -1, 1, -1, 1, -1),
-    ))
+    vectors = tuple(
+        tuple(map(F, row))
+        for row in (
+            (2, 1, -1, -2, -1, 1),
+            (0, 1, 1, 0, -1, -1),
+            (2, -1, -1, 2, -1, -1),
+            (0, 1, -1, 0, 1, -1),
+            (1, -1, 1, -1, 1, -1),
+        )
+    )
     basis = ((F(1),) * 6,) + vectors
-    if any(not dot(v, v) for v in basis) or any(dot(v, w) for i, v in enumerate(basis) for w in basis[i + 1:]):
-        raise RuntimeError("the six rational directions lost their complete orthogonal basis")
+    if any(not dot(v, v) for v in basis) or any(
+        dot(v, w) for i, v in enumerate(basis) for w in basis[i + 1 :]
+    ):
+        raise RuntimeError(
+            "the six rational directions lost their complete orthogonal basis"
+        )
     for value, vector in zip(eigenvalues, vectors, strict=True):
         if laplacian_action(vector) != tuple(value * entry for entry in vector):
             raise RuntimeError("the rational cycle mode lost its Laplacian identity")
@@ -82,7 +102,19 @@ def derive_c6_carried_contraction(profile, *, timestep: float) -> C6CarriedContr
     q = max(map(abs, factors))
     if not 0 <= q < 1 or any(sum(row) != 1 for row in transition):
         raise RuntimeError("the centered contraction or preserved mean identity failed")
-    return C6CarriedContraction(ref, h, s, laplacian, projection, transition, eigenvalues, vectors, factors, q, q * q)
+    return C6CarriedContraction(
+        ref,
+        h,
+        s,
+        laplacian,
+        projection,
+        transition,
+        eigenvalues,
+        vectors,
+        factors,
+        q,
+        q * q,
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -119,7 +151,9 @@ class C6CarriedTube:
         return False
 
 
-def derive_c6_carried_tube(profile, *, state: NodalRemainderState, timestep: float) -> C6CarriedTube:
+def derive_c6_carried_tube(
+    profile, *, state: NodalRemainderState, timestep: float
+) -> C6CarriedTube:
     """Derive all numerical defect bounds from the declared band and coefficients.
 
     Let D=upper-lower, u=2^-53, t=2^-1075 and A be the actual represented
@@ -142,36 +176,65 @@ def derive_c6_carried_tube(profile, *, state: NodalRemainderState, timestep: flo
     ref = contraction.profile
     exact = _validate_nodal_remainder_state(state)
     source = ref.lattice.source
-    if len(exact) != 6 or not source.epi_lower <= state.epi_lower <= state.epi_upper <= source.epi_upper:
-        raise ValueError("the six-coordinate state's band must lie inside the reference slab")
+    if (
+        len(exact) != 6
+        or not source.epi_lower
+        <= state.epi_lower
+        <= state.epi_upper
+        <= source.epi_upper
+    ):
+        raise ValueError(
+            "the six-coordinate state's band must lie inside the reference slab"
+        )
     weight, h = ref.forced_balance.epi_weight, F(contraction.timestep)
     width = F(state.epi_upper) - F(state.epi_lower)
     unit, half_subnormal = F(1, 2**53), F(1, 2**1075)
     product = weight * width
     product_error = unit * product + half_subnormal
-    assembly_argument = max(abs(value) for value in ref.forced_balance.forcing) + product + product_error
+    assembly_argument = (
+        max(abs(value) for value in ref.forced_balance.forcing)
+        + product
+        + product_error
+    )
     if max(product, assembly_argument) > F(sys.float_info.max):
-        raise ValueError("the uniform pressure envelope cannot certify finite binary64 operations")
+        raise ValueError(
+            "the uniform pressure envelope cannot certify finite binary64 operations"
+        )
     assembly_error = unit * assembly_argument + half_subnormal
     rounding = product_error + assembly_error
     carry = F(math.ulp(state.epi_upper)) / 2
     forcing = 2 * weight * carry + rounding
     norm_squared = 6 * forcing**2
-    pattern = observe_forced_support_pattern(ref.forced_balance, nodes=tuple(range(6)), epi=exact)
+    pattern = observe_forced_support_pattern(
+        ref.forced_balance, nodes=tuple(range(6)), epi=exact
+    )
     energy = dot(pattern.relative_error, pattern.relative_error)
-    floor = h * h * norm_squared / (1 - contraction.norm_factor)**2
+    floor = h * h * norm_squared / (1 - contraction.norm_factor) ** 2
     source_mean = sum(ref.forced_balance.forcing, F(0)) / 6
     return C6CarriedTube(
-        contraction, state, carry, product_error, assembly_error, rounding, forcing, norm_squared,
-        pattern.relative_error, energy, floor, max(energy, floor),
-        h * (abs(source_mean) + rounding), sum(exact, F(0)) / 6,
+        contraction,
+        state,
+        carry,
+        product_error,
+        assembly_error,
+        rounding,
+        forcing,
+        norm_squared,
+        pattern.relative_error,
+        energy,
+        floor,
+        max(energy, floor),
+        h * (abs(source_mean) + rounding),
+        sum(exact, F(0)) / 6,
     )
 
 
 def _tube(tube):
     if type(tube) is not C6CarriedTube:
         raise TypeError("tube must be a C6CarriedTube")
-    return derive_c6_carried_tube(tube.contraction.profile, state=tube.state, timestep=tube.contraction.timestep)
+    return derive_c6_carried_tube(
+        tube.contraction.profile, state=tube.state, timestep=tube.contraction.timestep
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -215,7 +278,10 @@ def derive_c6_carried_band_horizon(tube) -> C6CarriedBandHorizon:
     bound = _tube(tube)
     lower, upper = F(bound.state.epi_lower), F(bound.state.epi_upper)
     profile = bound.contraction.profile.forced_balance.relative_profile
-    margin = min(min(bound.initial_mean + value - lower, upper - bound.initial_mean - value) for value in profile)
+    margin = min(
+        min(bound.initial_mean + value - lower, upper - bound.initial_mean - value)
+        for value in profile
+    )
     squared = F(5, 6) * bound.energy_bound
     rate = bound.mean_increment_bound
 
@@ -238,8 +304,12 @@ def derive_c6_carried_band_horizon(tube) -> C6CarriedBandHorizon:
         next_margin = margin - (maximum + 1) * rate
         next_passes = admitted(maximum + 1)
         if next_passes:
-            raise RuntimeError("the sufficient band horizon is not the maximal admitted integer")
-    return C6CarriedBandHorizon(bound, squared, margin, initial, maximum, next_margin, next_passes, unbounded)
+            raise RuntimeError(
+                "the sufficient band horizon is not the maximal admitted integer"
+            )
+    return C6CarriedBandHorizon(
+        bound, squared, margin, initial, maximum, next_margin, next_passes, unbounded
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -276,4 +346,12 @@ def observe_c6_carried_cut_exclusion(tube, *, node: int) -> C6CarriedCutExclusio
     cut = ref.lattice.rows[node].nonpositive_max_index
     distance = quantum * (index - cut) / 2 - 2 * bound.carry_bound
     squared = F(3, 2) * bound.energy_bound
-    return C6CarriedCutExclusion(bound, node, cut, index, distance, squared, distance > 0 and distance**2 > squared)
+    return C6CarriedCutExclusion(
+        bound,
+        node,
+        cut,
+        index,
+        distance,
+        squared,
+        distance > 0 and distance**2 > squared,
+    )

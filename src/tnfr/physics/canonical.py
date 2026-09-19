@@ -638,12 +638,15 @@ def _coherence_fit_cached(G, nodes, sources, pressure_values, vectorized):
 
 
 def _spectral_gap_coherence_length(G: Any) -> float:
-    """Graph-spectral fallback scale ``1/√λ_gap`` from ``L_rw``.
+    """Selected graph-spectral scale ``1/√λ_selected`` from ``L_rw``.
 
     This topology-only value is used when the state-dependent autocorrelation
-    fit degenerates. On a connected undirected graph the smallest positive
-    mode is λ₂. On disconnected or degenerate graphs it does not describe
-    correlations across components and may be unavailable.
+    fit degenerates. The numerical policy selects the smallest computed
+    eigenvalue strictly above 1e-9. On connected undirected support a positive
+    λ₂ below that cutoff is skipped, so the result need not represent the
+    slowest nonuniform mode. The cutoff is an estimator policy, not a physical
+    threshold. On disconnected or degenerate graphs the result does not
+    describe correlations across components and may be unavailable.
     """
     from .structural_diffusion import (  # local import: avoid module cycle
         structural_eigenvalues,
@@ -670,9 +673,11 @@ def estimate_coherence_length(G: Any) -> float:
     edges use their minimum and directed graphs use outgoing paths.
     When that fit degenerates -- a uniformly coherent / near-equilibrium field
     (all per-node ``C ≈ 1`` ⇒ flat correlation ⇒ non-negative slope) or a graph
-    too small -- fall back to the topology-only scale ``1/√λ₂`` on a valid
-    connected graph. The returned provenance distinguishes the fit from this
-    fallback; the fitted value has path-length units, while the fallback is a
+    too small -- fall back to the topology-only scale ``1/√λ_selected`` when
+    a supported symmetric spectrum has an eigenvalue above 1e-9. The smallest
+    computed mode above that cutoff is selected; it need not be λ₂ even on a
+    connected graph. The provenance-aware companion identifies this policy.
+    The fitted value has path-length units, while the fallback is a
     dimensionless normalized-generator mode scale. They are not interchangeable
     observables. Invalid edge lengths raise rather than selecting a fallback.
     """
@@ -748,7 +753,11 @@ def _coherence_graph_regime(G: Any) -> str:
 
 @dataclass(frozen=True)
 class CoherenceLengthEstimate:
-    """Fit length or distinct spectral scale, identified by method and units."""
+    """Fit length or distinct spectral scale, identified by method and units.
+
+    The historical ``spectral_gap`` method name retains the explicit
+    ``positive_mode_selection`` policy; it does not certify selection of λ₂.
+    """
 
     value: float
     method: str

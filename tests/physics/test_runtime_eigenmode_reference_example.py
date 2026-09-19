@@ -11,7 +11,6 @@ import pytest
 import tnfr.physics as physics
 import tnfr.physics.runtime_eigenmode_reference as runtime_module
 
-
 EXAMPLE_PATH = (
     Path(__file__).resolve().parents[2]
     / "examples"
@@ -46,21 +45,10 @@ def test_module_stub_and_facade_expose_runtime_reference_api() -> None:
     }
 
     assert set(runtime_module.__all__) == expected
-    stub = Path(runtime_module.__file__).with_suffix(".pyi").read_text(
-        encoding="utf-8"
-    )
-    assert (
-        "class ExecutedReversibleSingleEigenmodeEulerPartitionObservation"
-        in stub
-    )
-    assert (
-        "class ExecutedReversibleSingleEigenmodeEulerReferenceObservation"
-        in stub
-    )
-    assert (
-        "def observe_executed_reversible_single_eigenmode_euler_reference"
-        in stub
-    )
+    stub = Path(runtime_module.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
+    assert "class ExecutedReversibleSingleEigenmodeEulerPartitionObservation" in stub
+    assert "class ExecutedReversibleSingleEigenmodeEulerReferenceObservation" in stub
+    assert "def observe_executed_reversible_single_eigenmode_euler_reference" in stub
     assert expected <= set(physics.__all__)
     assert (
         physics.ExecutedReversibleSingleEigenmodeEulerPartitionObservation

@@ -39,6 +39,8 @@ import re
 from dataclasses import dataclass
 from typing import Any, Callable
 
+from .._coherence_validation import validate_structural_coherence
+
 # Unified configuration integration
 from ..config import get_config
 from ..errors import TNFRValueError
@@ -46,7 +48,6 @@ from ..errors.contextual import (  # noqa: F401 – re-exported via __init__
     TNFRSecurityError,
 )
 from ..mathematics.unified_numerical import np
-from .._coherence_validation import validate_structural_coherence
 
 logger = logging.getLogger(__name__)
 
@@ -370,9 +371,7 @@ class TNFRUnifiedValidationSystem:
         validated_value = coherence
 
         try:
-            validated_value = validate_structural_coherence(
-                coherence, name=field_name
-            )
+            validated_value = validate_structural_coherence(coherence, name=field_name)
         except (TypeError, ValueError) as exc:
             errors.append(str(exc))
         else:

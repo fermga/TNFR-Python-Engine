@@ -3,27 +3,29 @@
 from __future__ import annotations
 
 import copy
-from fractions import Fraction
 import math
+from fractions import Fraction
 
 import networkx as nx
 import numpy as np
 import pytest
 
+from tnfr.alias import get_attr
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY, inject_defaults
 from tnfr.constants.aliases import ALIAS_D2EPI, ALIAS_DEPI, ALIAS_THETA
-from tnfr.alias import get_attr
 from tnfr.dynamics import integrators
 from tnfr.dynamics.symplectic import TNFRSymplecticIntegrator
 from tnfr.errors.contextual import NetworkConfigError
-
 
 SYMPLECTIC_METHODS = ["velocity_verlet", "leapfrog", "yoshida_4th_order"]
 
 
 def _mechanical_node(q=0.0, velocity=1.0):
-    return {EPI_PRIMARY: np.array([q, velocity]), VF_PRIMARY: 1.0,
-            DNFR_PRIMARY: np.array([0.0, -q])}
+    return {
+        EPI_PRIMARY: np.array([q, velocity]),
+        VF_PRIMARY: 1.0,
+        DNFR_PRIMARY: np.array([0.0, -q]),
+    }
 
 
 def _harmonic_force(node):
@@ -50,14 +52,18 @@ def test_symplectic_zero_step_preserves_state_without_force_evaluation(method):
     assert node[DNFR_PRIMARY] is pressure
 
 
-@pytest.mark.parametrize("method,order", [("velocity_verlet", 2), ("yoshida_4th_order", 4)])
+@pytest.mark.parametrize(
+    "method,order", [("velocity_verlet", 2), ("yoshida_4th_order", 4)]
+)
 def test_symplectic_harmonic_oscillator_has_claimed_convergence_order(method, order):
     exact = np.array([math.cos(1.0), -math.sin(1.0)])
     errors = []
     for steps in [10, 20, 40]:
         node = _mechanical_node(1.0, 0.0)
         for _ in range(steps):
-            getattr(TNFRSymplecticIntegrator, method)(node, 1.0 / steps, _harmonic_force)
+            getattr(TNFRSymplecticIntegrator, method)(
+                node, 1.0 / steps, _harmonic_force
+            )
         errors.append(np.linalg.norm(node[EPI_PRIMARY] - exact))
     measured = np.log2(np.asarray(errors[:-1]) / errors[1:])
     assert measured == pytest.approx([order, order], abs=0.04)
@@ -87,10 +93,12 @@ def test_symplectic_nonfinite_steps_are_rejected_before_mutation(method, dt):
 def _graph(*, extended=False):
     graph = nx.empty_graph(1)
     inject_defaults(graph)
-    graph.graph.update(DT=0.1, DT_MIN=0.0, GAMMA={"type": "none"},
-                       use_extended_dynamics=extended)
-    graph.nodes[0].update({EPI_PRIMARY: 0.4, VF_PRIMARY: 1.0,
-                           DNFR_PRIMARY: 0.0, "theta": 0.0})
+    graph.graph.update(
+        DT=0.1, DT_MIN=0.0, GAMMA={"type": "none"}, use_extended_dynamics=extended
+    )
+    graph.nodes[0].update(
+        {EPI_PRIMARY: 0.4, VF_PRIMARY: 1.0, DNFR_PRIMARY: 0.0, "theta": 0.0}
+    )
     return graph
 
 
@@ -109,7 +117,9 @@ def test_explicit_and_default_invalid_nodal_timesteps_share_validation(default, 
 
 @pytest.mark.parametrize("extended", [False, True])
 @pytest.mark.parametrize("vectorized", [False, True])
-def test_zero_timestep_is_identity_even_with_clipping(monkeypatch, extended, vectorized):
+def test_zero_timestep_is_identity_even_with_clipping(
+    monkeypatch, extended, vectorized
+):
     graph = _graph(extended=extended)
     graph.graph["CLIP_MODE"] = "soft"
     graph.nodes[0][EPI_PRIMARY] = -0.4
@@ -123,7 +133,9 @@ def test_zero_timestep_is_identity_even_with_clipping(monkeypatch, extended, vec
 
 @pytest.mark.parametrize("vectorized", [False, True])
 @pytest.mark.parametrize("vf,pressure", [(0.0, 1.0), (1.0, 0.0)])
-def test_zero_nodal_derivative_is_not_changed_by_soft_clipping(monkeypatch, vectorized, vf, pressure):
+def test_zero_nodal_derivative_is_not_changed_by_soft_clipping(
+    monkeypatch, vectorized, vf, pressure
+):
     graph = _graph()
     graph.graph["CLIP_MODE"] = "soft"
     graph.nodes[0].update({VF_PRIMARY: vf, DNFR_PRIMARY: pressure})
@@ -151,11 +163,26 @@ def test_extended_euler_is_independent_of_node_insertion_order():
         inject_defaults(graph)
         graph.graph.update(use_extended_dynamics=True, DT_MIN=0.0)
         for node in graph:
-            graph.nodes[node].update({EPI_PRIMARY: 0.4, VF_PRIMARY: 1.0,
-                                     DNFR_PRIMARY: 0.1 * (node + 1), "theta": 0.4 * node})
+            graph.nodes[node].update(
+                {
+                    EPI_PRIMARY: 0.4,
+                    VF_PRIMARY: 1.0,
+                    DNFR_PRIMARY: 0.1 * (node + 1),
+                    "theta": 0.4 * node,
+                }
+            )
         integrators.update_epi_via_nodal_equation(graph, dt=0.1)
-        results.append(np.array([[graph.nodes[i][key] for key in
-                                 [EPI_PRIMARY, "theta", DNFR_PRIMARY]] for i in range(3)]))
+        results.append(
+            np.array(
+                [
+                    [
+                        graph.nodes[i][key]
+                        for key in [EPI_PRIMARY, "theta", DNFR_PRIMARY]
+                    ]
+                    for i in range(3)
+                ]
+            )
+        )
     assert results[0] == pytest.approx(results[1], abs=1e-14)
 
 
@@ -168,13 +195,19 @@ def test_extended_does_not_silently_substitute_euler_for_rk4():
 
 
 @pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph])
-def test_flux_divergence_is_independent_of_graph_size_and_disconnected_padding(graph_type):
+def test_flux_divergence_is_independent_of_graph_size_and_disconnected_padding(
+    graph_type,
+):
     graph = graph_type()
     graph.add_edge(0, 1, weight=4.0)
     if graph.is_multigraph():
         graph.add_edge(0, 1, weight=2.0)
-    expected = {node: integrators._compute_flux_divergence_centralized(graph, {0: 2., 1: 1.}, node)
-                for node in graph}
+    expected = {
+        node: integrators._compute_flux_divergence_centralized(
+            graph, {0: 2.0, 1: 1.0}, node
+        )
+        for node in graph
+    }
     graph.add_nodes_from(range(2, 101))
     flux = {node: 1.0 for node in graph}
     flux[0] = 2.0
@@ -186,6 +219,7 @@ def test_flux_divergence_is_independent_of_graph_size_and_disconnected_padding(g
 
 def test_cpu_canonical_integrator_does_not_import_optional_gpu_system(monkeypatch):
     import builtins
+
     from tnfr.dynamics.canonical import integrate_canonical_nodal_equation
 
     original_import = builtins.__import__
@@ -198,7 +232,9 @@ def test_cpu_canonical_integrator_does_not_import_optional_gpu_system(monkeypatc
     monkeypatch.setattr(builtins, "__import__", import_without_gpu)
     graph = _graph()
     graph.nodes[0][DNFR_PRIMARY] = 0.5
-    result = integrate_canonical_nodal_equation(graph, dt=0.1, max_steps=1, use_gpu=False)
+    result = integrate_canonical_nodal_equation(
+        graph, dt=0.1, max_steps=1, use_gpu=False
+    )
     assert graph.nodes[0][EPI_PRIMARY] == pytest.approx(0.45)
     assert result["backend_used"] == "cpu"
 
@@ -209,7 +245,9 @@ def test_canonical_zero_step_is_not_replaced_by_default():
     graph = _graph()
     graph.nodes[0][DNFR_PRIMARY] = 0.5
     original = copy.deepcopy(graph)
-    result = integrate_canonical_nodal_equation(graph, dt=0.0, max_steps=1, use_gpu=False)
+    result = integrate_canonical_nodal_equation(
+        graph, dt=0.0, max_steps=1, use_gpu=False
+    )
     assert dict(graph.nodes[0]) == dict(original.nodes[0])
     assert result["steps"] == 0
     assert result["parameters"]["dt"] == 0.0
@@ -229,11 +267,20 @@ def test_canonical_constant_pressure_is_exact_and_preserves_zero_tolerance(metho
     assert result["steps"] == 5
 
 
-@pytest.mark.parametrize("parameter,value", [
-    ("dt", math.nan), ("dt", math.inf), ("max_steps", 0), ("max_steps", 1.5),
-    ("tolerance", math.nan), ("tolerance", -0.1),
-])
-def test_canonical_integrator_rejects_invalid_parameters_without_mutation(parameter, value):
+@pytest.mark.parametrize(
+    "parameter,value",
+    [
+        ("dt", math.nan),
+        ("dt", math.inf),
+        ("max_steps", 0),
+        ("max_steps", 1.5),
+        ("tolerance", math.nan),
+        ("tolerance", -0.1),
+    ],
+)
+def test_canonical_integrator_rejects_invalid_parameters_without_mutation(
+    parameter, value
+):
     from tnfr.dynamics.canonical import integrate_canonical_nodal_equation
 
     graph = _graph()
@@ -247,7 +294,9 @@ def test_canonical_integrator_rejects_invalid_parameters_without_mutation(parame
 
 @pytest.mark.parametrize("method,order", [("euler", 1), ("rk4", 4)])
 @pytest.mark.parametrize("vectorized", [False, True])
-def test_nodal_harmonic_forcing_has_claimed_quadrature_order(monkeypatch, method, order, vectorized):
+def test_nodal_harmonic_forcing_has_claimed_quadrature_order(
+    monkeypatch, method, order, vectorized
+):
     if not vectorized:
         monkeypatch.setattr(integrators, "np", None)
     beta, omega = 0.2, 1.7
@@ -255,11 +304,20 @@ def test_nodal_harmonic_forcing_has_claimed_quadrature_order(monkeypatch, method
     errors = []
     for steps in [10, 20, 40]:
         graph = _graph()
-        graph.graph["GAMMA"] = {"type": "harmonic", "beta": beta, "omega": omega, "phi": 0.0}
+        graph.graph["GAMMA"] = {
+            "type": "harmonic",
+            "beta": beta,
+            "omega": omega,
+            "phi": 0.0,
+        }
         for _ in range(steps):
-            integrators.update_epi_via_nodal_equation(graph, dt=1.0 / steps, method=method)
+            integrators.update_epi_via_nodal_equation(
+                graph, dt=1.0 / steps, method=method
+            )
         errors.append(abs(graph.nodes[0][EPI_PRIMARY] - exact))
-    assert np.log2(np.asarray(errors[:-1]) / errors[1:]) == pytest.approx([order, order], abs=0.05)
+    assert np.log2(np.asarray(errors[:-1]) / errors[1:]) == pytest.approx(
+        [order, order], abs=0.05
+    )
 
 
 @pytest.mark.parametrize("mode", ["hard", "soft"])
@@ -268,7 +326,9 @@ def test_array_clipping_matches_scalar_boundary_policy(mode):
 
     values = np.array([-3.0, -1.0, 0.1, 0.4, 0.9, 3.0])
     expected = [structural_clip(value, lo=-1.0, hi=1.0, mode=mode) for value in values]
-    assert structural_clip_array(values, lo=-1.0, hi=1.0, mode=mode) == pytest.approx(expected, abs=1e-15)
+    assert structural_clip_array(values, lo=-1.0, hi=1.0, mode=mode) == pytest.approx(
+        expected, abs=1e-15
+    )
 
 
 def _phase_pair(phase_shift=0.0):
@@ -276,8 +336,14 @@ def _phase_pair(phase_shift=0.0):
     inject_defaults(graph)
     graph.graph.update(use_extended_dynamics=True, DT_MIN=0.0)
     for node in graph:
-        graph.nodes[node].update({EPI_PRIMARY: 0.4, VF_PRIMARY: 0.0,
-                                 DNFR_PRIMARY: 0.0, "phase": node * math.pi / 2 + phase_shift})
+        graph.nodes[node].update(
+            {
+                EPI_PRIMARY: 0.4,
+                VF_PRIMARY: 0.0,
+                DNFR_PRIMARY: 0.0,
+                "phase": node * math.pi / 2 + phase_shift,
+            }
+        )
     return graph
 
 
@@ -308,9 +374,13 @@ def test_extended_phase_pair_has_first_order_euler_convergence():
         graph = _phase_pair()
         for _ in range(steps):
             integrators.update_epi_via_nodal_equation(graph, dt=duration / steps)
-        actual_delta = get_attr(graph.nodes[1], ALIAS_THETA) - get_attr(graph.nodes[0], ALIAS_THETA)
+        actual_delta = get_attr(graph.nodes[1], ALIAS_THETA) - get_attr(
+            graph.nodes[0], ALIAS_THETA
+        )
         errors.append(abs(actual_delta - exact_delta))
-    assert np.log2(np.asarray(errors[:-1]) / errors[1:]) == pytest.approx([1.0, 1.0], abs=0.06)
+    assert np.log2(np.asarray(errors[:-1]) / errors[1:]) == pytest.approx(
+        [1.0, 1.0], abs=0.06
+    )
 
 
 @pytest.mark.parametrize("vectorized", [False, True])
@@ -335,7 +405,9 @@ def test_real_numpy_timestep_scalars_preserve_constant_derivative(value, from_gr
     assert graph.graph["_t"] == pytest.approx(float(value))
 
 
-@pytest.mark.parametrize("value", [np.float32(-0.1), np.float32(np.nan), np.float32(np.inf)])
+@pytest.mark.parametrize(
+    "value", [np.float32(-0.1), np.float32(np.nan), np.float32(np.inf)]
+)
 @pytest.mark.parametrize("from_graph", [False, True])
 def test_invalid_numpy_timesteps_fail_before_state_changes(value, from_graph):
     graph = _graph()
@@ -343,7 +415,9 @@ def test_invalid_numpy_timesteps_fail_before_state_changes(value, from_graph):
         graph.graph["DT"] = value
     original_node = dict(graph.nodes[0])
     with pytest.raises(NetworkConfigError):
-        integrators.update_epi_via_nodal_equation(graph, dt=None if from_graph else value)
+        integrators.update_epi_via_nodal_equation(
+            graph, dt=None if from_graph else value
+        )
     assert dict(graph.nodes[0]) == original_node
     assert "_t" not in graph.graph
 
@@ -357,17 +431,22 @@ def test_timestep_real_scalar_validation_preserves_existing_bool_policy(value):
 
 
 @pytest.mark.parametrize("vectorized", [False, True])
-def test_held_zero_sum_pressure_does_not_imply_binary64_mean_conservation(monkeypatch, vectorized):
+def test_held_zero_sum_pressure_does_not_imply_binary64_mean_conservation(
+    monkeypatch, vectorized
+):
     # A prescribed integrator-input fixture, not a canonically generated pressure field.
     graph = nx.empty_graph(6)
     inject_defaults(graph)
     graph.graph.update(DT_MIN=1 / 16, GAMMA={"type": "none"}, CLIP_MODE="hard")
-    pressure = 2.0 ** -50
+    pressure = 2.0**-50
     for node in graph:
-        graph.nodes[node].update({
-            EPI_PRIMARY: 0.5, VF_PRIMARY: 1.0,
-            DNFR_PRIMARY: pressure if node % 2 == 0 else -pressure,
-        })
+        graph.nodes[node].update(
+            {
+                EPI_PRIMARY: 0.5,
+                VF_PRIMARY: 1.0,
+                DNFR_PRIMARY: pressure if node % 2 == 0 else -pressure,
+            }
+        )
     if not vectorized:
         monkeypatch.setattr(integrators, "np", None)
     integrators.update_epi_via_nodal_equation(graph, dt=0.25, method="euler")
@@ -380,9 +459,12 @@ def test_held_zero_sum_pressure_does_not_imply_binary64_mean_conservation(monkey
 
 @pytest.mark.parametrize("vectorized", [False, True])
 @pytest.mark.parametrize("clip_mode", ["hard", "soft"])
-@pytest.mark.parametrize("pressure", [-2.0 ** -51, 2.0 ** -50])
+@pytest.mark.parametrize("pressure", [-(2.0**-51), 2.0**-50])
 def test_held_rounding_stasis_preserves_epi_but_updates_rate_and_time(
-    monkeypatch, vectorized, clip_mode, pressure,
+    monkeypatch,
+    vectorized,
+    clip_mode,
+    pressure,
 ):
     graph = _graph()
     graph.graph.update(DT_MIN=1 / 16, CLIP_MODE=clip_mode)
@@ -400,12 +482,14 @@ def test_held_rounding_stasis_preserves_epi_but_updates_rate_and_time(
 @pytest.mark.parametrize("route", ["batch", "default"])
 def test_euler_preserves_separate_multiply_and_add(monkeypatch, vectorized, route):
     graph = _graph()
-    step, rate = 1.0 + 2.0 ** -52, 1.0 - 2.0 ** -52
+    step, rate = 1.0 + 2.0**-52, 1.0 - 2.0**-52
     graph.nodes[0].update({EPI_PRIMARY: -1.0, DNFR_PRIMARY: rate})
     if not vectorized:
         monkeypatch.setattr(integrators, "np", None)
     if route == "batch":
-        result = integrators._apply_increments(graph, step, {0: (rate,)}, method="euler")
+        result = integrators._apply_increments(
+            graph, step, {0: (rate,)}, method="euler"
+        )
         actual, derivative = result[0][:2]
     else:
         integrators.update_epi_via_nodal_equation(graph, dt=step, method="euler")

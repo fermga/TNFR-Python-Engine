@@ -62,8 +62,7 @@ def _state(graph: nx.Graph) -> tuple[object, ...]:
         tuple(graph.nodes),
         deepcopy(dict(graph.nodes(data=True))),
         tuple(
-            (left, right, dict(data))
-            for left, right, data in graph.edges(data=True)
+            (left, right, dict(data)) for left, right, data in graph.edges(data=True)
         ),
         deepcopy(graph.graph),
     )
@@ -204,11 +203,7 @@ def test_outer_history_must_be_replayable_and_indexed(history: object) -> None:
     graph.graph["_epi_hist"] = history
     nodes_before = deepcopy(dict(graph.nodes(data=True)))
     metadata_before = deepcopy(
-        {
-            key: value
-            for key, value in graph.graph.items()
-            if key != "_epi_hist"
-        }
+        {key: value for key, value in graph.graph.items() if key != "_epi_hist"}
     )
 
     with pytest.raises(TNFRValueError, match="replayable indexed history"):
@@ -217,9 +212,7 @@ def test_outer_history_must_be_replayable_and_indexed(history: object) -> None:
     assert dict(graph.nodes(data=True)) == nodes_before
     assert graph.graph["_epi_hist"] is history
     assert {
-        key: value
-        for key, value in graph.graph.items()
-        if key != "_epi_hist"
+        key: value for key, value in graph.graph.items() if key != "_epi_hist"
     } == metadata_before
 
 
@@ -415,9 +408,7 @@ def test_callback_registry_normalization_does_not_dispatch_mapping_overrides() -
     assert Registry.calls == 0
     assert "materialization_marker" not in graph.graph
     assert graph.graph["callbacks"] is registry
-    assert graph.graph["_callbacks_dirty"] == {
-        CallbackEvent.ON_REMESH.value
-    }
+    assert graph.graph["_callbacks_dirty"] == {CallbackEvent.ON_REMESH.value}
 
 
 def test_opt_in_evidence_separates_affine_mean_and_disagreement_claims() -> None:
@@ -576,12 +567,8 @@ def test_public_remesh_stubs_expose_the_result_contract() -> None:
     from pathlib import Path
 
     package_dir = Path(remesh_module.__file__).resolve().parent
-    remesh_stub = ast.parse(
-        (package_dir / "remesh.pyi").read_text(encoding="utf-8")
-    )
-    package_stub = ast.parse(
-        (package_dir / "__init__.pyi").read_text(encoding="utf-8")
-    )
+    remesh_stub = ast.parse((package_dir / "remesh.pyi").read_text(encoding="utf-8"))
+    package_stub = ast.parse((package_dir / "__init__.pyi").read_text(encoding="utf-8"))
     functions = {
         node.name: node
         for node in remesh_stub.body
@@ -600,8 +587,7 @@ def test_public_remesh_stubs_expose_the_result_contract() -> None:
     imported_records = {
         alias.name
         for node in remesh_stub.body
-        if isinstance(node, ast.ImportFrom)
-        and node.module == "_delayed_remesh_kernel"
+        if isinstance(node, ast.ImportFrom) and node.module == "_delayed_remesh_kernel"
         for alias in node.names
     }
     assert imported_records == {
@@ -611,6 +597,7 @@ def test_public_remesh_stubs_expose_the_result_contract() -> None:
         "DelayedRemeshStabilityEvidence",
     }
     assert package_stub.body
+
 
 def test_exact_evidence_overflow_rejects_before_graph_writes() -> None:
     magnitude = float.fromhex("0x1p+1023")
@@ -727,6 +714,7 @@ def test_empty_support_is_a_side_effect_free_noop() -> None:
     assert "_last_remesh_step" not in graph.graph
     assert "_last_remesh_ts" not in graph.graph
     assert callback_observations == []
+
 
 def test_direct_apply_records_post_remesh_epi_time_right_endpoint() -> None:
     graph = _graph(current=(2.0, 0.0), past=(0.0, 2.0))
@@ -863,6 +851,7 @@ def test_ordinary_runtime_remesh_updates_authoritative_epi_time_tail(
     assert graph.nodes[1]["EPI"] == 1.5
     assert list(graph.nodes[0]["epi_time_history"]) == [(0.0, 0.5)]
     assert list(graph.nodes[1]["epi_time_history"]) == [(0.0, 1.5)]
+
 
 def test_structural_memory_epi_write_records_a_second_right_endpoint(
     monkeypatch: pytest.MonkeyPatch,
@@ -1198,9 +1187,7 @@ def test_standalone_remesh_does_not_materialize_networkx_cached_views() -> None:
     result = apply_network_remesh(graph)
 
     assert result.applied
-    assert all(
-        key not in graph.__dict__ for key in ("nodes", "edges", "degree", "adj")
-    )
+    assert all(key not in graph.__dict__ for key in ("nodes", "edges", "degree", "adj"))
 
 
 def _single_node_graph(epi: object = 1.0) -> nx.Graph:

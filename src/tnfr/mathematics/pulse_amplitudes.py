@@ -50,10 +50,9 @@ def circulant_eigenvalues(p: int, k: int) -> np.ndarray:
     if d == 0:
         raise ValueError("empty power-residue connection set")
     omega = np.exp(2j * np.pi / p)
-    return np.array([
-        1.0 - sum(omega ** ((j * r) % p) for r in residues) / d
-        for j in range(p)
-    ])
+    return np.array(
+        [1.0 - sum(omega ** ((j * r) % p) for r in residues) / d for j in range(p)]
+    )
 
 
 def fourier_basis(p: int) -> np.ndarray:
@@ -78,8 +77,9 @@ def _groups(eigs: np.ndarray, tol: float) -> list[list[int]]:
     return groups
 
 
-def pulse_amplitudes(p: int, k: int, *, tol: float = 1e-9
-                     ) -> list[tuple[complex, int, Fraction]]:
+def pulse_amplitudes(
+    p: int, k: int, *, tol: float = 1e-9
+) -> list[tuple[complex, int, Fraction]]:
     r"""``(eigenvalue, multiplicity, amplitude = m_λ/p)`` per distinct eigenvalue.
 
     The amplitude is exact (an integer multiplicity over ``p``); the eigenvalue
@@ -93,8 +93,9 @@ def pulse_amplitudes(p: int, k: int, *, tol: float = 1e-9
     return out
 
 
-def projection_amplitudes(p: int, k: int, *, tol: float = 1e-9
-                          ) -> list[tuple[complex, float]]:
+def projection_amplitudes(
+    p: int, k: int, *, tol: float = 1e-9
+) -> list[tuple[complex, float]]:
     r"""``a_λ = e₀^* P_λ e₀`` from the orthogonal spectral projector.
 
     Independent of the multiplicity count: ``P_λ = Σ_{j∈λ} f_j f_j^*`` and
@@ -113,8 +114,9 @@ def projection_amplitudes(p: int, k: int, *, tol: float = 1e-9
     return out
 
 
-def moment_reconstruction_residual(p: int, k: int, *,
-                                   count: int | None = None) -> float:
+def moment_reconstruction_residual(
+    p: int, k: int, *, count: int | None = None
+) -> float:
     r"""``max_m |Σ_λ a_λ λ^m − μ_m|`` for the exact rational moments
     ``μ_m = e₀ᵀ L^m e₀`` — the dynamical confirmation that ``a_λ = m_λ/p``."""
     if count is None:
@@ -126,14 +128,14 @@ def moment_reconstruction_residual(p: int, k: int, *,
     amps = pulse_amplitudes(p, k)
     resid = 0.0
     for m, mu in enumerate(moments):
-        recon = sum(complex(a) * (lam ** m) for lam, _, a in amps)
+        recon = sum(complex(a) * (lam**m) for lam, _, a in amps)
         resid = max(resid, abs(recon - complex(float(mu))))
     return resid
 
 
-def amplitudes_basis_invariance_residual(p: int, k: int, *,
-                                         tol: float = 1e-9,
-                                         seed: int = 0) -> float:
+def amplitudes_basis_invariance_residual(
+    p: int, k: int, *, tol: float = 1e-9, seed: int = 0
+) -> float:
     r"""``max_λ |e₀^*P_λe₀ − e₀^*P_λ'e₀|`` for a unitarily-rotated eigenbasis.
 
     Rotating the eigenvectors inside each degenerate eigenspace leaves the
@@ -163,7 +165,7 @@ class PulseAmplitudeCertificate:
 
     p: int
     k: int
-    n_distinct: int              # #amplitudes = #distinct eigenvalues
+    n_distinct: int  # #amplitudes = #distinct eigenvalues
     rank_matches_cyclotomy: bool  # == gcd(k, p-1) + 1
     amplitudes_sum_to_one: bool
     amplitude_equals_multiplicity: bool  # a_λ == m_λ/p (projection check)
@@ -173,15 +175,15 @@ class PulseAmplitudeCertificate:
     claim_status: str
 
 
-def certify_pulse_amplitudes(p: int, k: int, *, tol: float = 1e-9
-                             ) -> PulseAmplitudeCertificate:
+def certify_pulse_amplitudes(
+    p: int, k: int, *, tol: float = 1e-9
+) -> PulseAmplitudeCertificate:
     r"""Bundle the amplitude theorem checks for the ``(p, k)`` pointed pulse."""
     amps = pulse_amplitudes(p, k, tol=tol)
     proj = projection_amplitudes(p, k, tol=tol)
     total = sum(a for _, _, a in amps)
     equals_mult = all(
-        abs(pa - float(a)) < max(tol, 1e-6)
-        for (_, _, a), (_, pa) in zip(amps, proj)
+        abs(pa - float(a)) < max(tol, 1e-6) for (_, _, a), (_, pa) in zip(amps, proj)
     )
     return PulseAmplitudeCertificate(
         p=p,
@@ -191,8 +193,7 @@ def certify_pulse_amplitudes(p: int, k: int, *, tol: float = 1e-9
         amplitudes_sum_to_one=(total == Fraction(1)),
         amplitude_equals_multiplicity=equals_mult,
         moment_reconstruction_residual=moment_reconstruction_residual(p, k),
-        basis_invariance_residual=amplitudes_basis_invariance_residual(p, k,
-                                                                       tol=tol),
+        basis_invariance_residual=amplitudes_basis_invariance_residual(p, k, tol=tol),
         tolerance=tol,
         claim_status=(
             "amplitudes = normalized spectral multiplicities m_λ/n DERIVED "

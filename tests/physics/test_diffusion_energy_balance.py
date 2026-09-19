@@ -28,8 +28,10 @@ def _graph(kind=nx.Graph):
 
 def _edge_energy(graph, field):
     # Each undirected edge appears once; parallel edges contribute separately.
-    return sum(0.5 * data.get("weight", 1.0) * (field[u] - field[v]) ** 2
-               for u, v, data in graph.edges(data=True))
+    return sum(
+        0.5 * data.get("weight", 1.0) * (field[u] - field[v]) ** 2
+        for u, v, data in graph.edges(data=True)
+    )
 
 
 @pytest.mark.parametrize("kind", [nx.Graph, nx.MultiGraph])
@@ -44,25 +46,32 @@ def test_gradient_and_dissipation_match_independent_finite_differences(kind):
         plus, minus = dict(field), dict(field)
         plus[node] += epsilon
         minus[node] -= epsilon
-        numerical_gradient.append((_edge_energy(graph, plus) - _edge_energy(graph, minus))
-                                  / (2 * epsilon))
+        numerical_gradient.append(
+            (_edge_energy(graph, plus) - _edge_energy(graph, minus)) / (2 * epsilon)
+        )
     np.testing.assert_allclose(balance.gradient, numerical_gradient, atol=2e-9)
     assert balance.energy == pytest.approx(_edge_energy(graph, field))
     plus = {n: field[n] + epsilon * balance.epi_rate[i] for i, n in enumerate(graph)}
     minus = {n: field[n] - epsilon * balance.epi_rate[i] for i, n in enumerate(graph)}
-    derivative = (_edge_energy(graph, plus) - _edge_energy(graph, minus)) / (2 * epsilon)
+    derivative = (_edge_energy(graph, plus) - _edge_energy(graph, minus)) / (
+        2 * epsilon
+    )
     assert balance.energy_rate == pytest.approx(derivative, abs=3e-9)
     assert balance.energy_rate < 0.0
     assert nx.utils.graphs_equal(graph, before)
 
 
 @pytest.mark.parametrize("kind", [nx.Graph, nx.MultiGraph])
-def test_mobility_flow_matches_canonical_pressure_with_loops_and_heterogeneous_capacity(kind):
+def test_mobility_flow_matches_canonical_pressure_with_loops_and_heterogeneous_capacity(
+    kind,
+):
     graph = _graph(kind)
     balance = compute_diffusion_energy(graph)
     default_compute_delta_nfr(graph)
-    actual = [graph.nodes[n]["nu_f"] * get_attr(graph.nodes[n], ALIAS_DNFR)
-              for n in balance.nodes]
+    actual = [
+        graph.nodes[n]["nu_f"] * get_attr(graph.nodes[n], ALIAS_DNFR)
+        for n in balance.nodes
+    ]
     np.testing.assert_allclose(balance.epi_rate, actual, atol=1e-13)
     assert balance.mobility[-1] == balance.epi_rate[-1] == 0.0
 
@@ -125,14 +134,18 @@ def test_positive_mobility_underflow_cannot_falsely_certify_stationarity():
         compute_diffusion_energy(graph)
 
 
-@pytest.mark.parametrize("epi_power,capacity_power", [
-    (-600, 0),       # The positive edge energy underflows in its product.
-    (-537, 0),       # The product is exact; division by two loses the energy.
-    (-400, -400),    # Energy and EPI rate survive, but dissipation underflows.
-    (-300, -900),    # Energy survives, but the EPI rate itself underflows.
-])
+@pytest.mark.parametrize(
+    "epi_power,capacity_power",
+    [
+        (-600, 0),  # The positive edge energy underflows in its product.
+        (-537, 0),  # The product is exact; division by two loses the energy.
+        (-400, -400),  # Energy and EPI rate survive, but dissipation underflows.
+        (-300, -900),  # Energy survives, but the EPI rate itself underflows.
+    ],
+)
 def test_nonzero_balance_terms_cannot_be_silently_rounded_to_zero(
-    epi_power, capacity_power,
+    epi_power,
+    capacity_power,
 ):
     graph = nx.path_graph(2)
     graph.nodes[0].update(EPI=2.0**epi_power, nu_f=2.0**capacity_power)
@@ -151,8 +164,8 @@ def test_exact_representable_subnormal_energy_is_not_rejected():
     graph.nodes[1].update(EPI=0.0, nu_f=1.0)
     balance = compute_diffusion_energy(graph)
     assert balance.energy == 2.0**-1073
-    assert balance.energy_rate == -2.0**-1071
-    np.testing.assert_array_equal(balance.epi_rate, [-2.0**-536, 2.0**-536])
+    assert balance.energy_rate == -(2.0**-1071)
+    np.testing.assert_array_equal(balance.epi_rate, [-(2.0**-536), 2.0**-536])
 
 
 def test_zero_capacity_allows_genuine_zero_dissipation_at_small_positive_energy():
@@ -165,10 +178,15 @@ def test_zero_capacity_allows_genuine_zero_dissipation_at_small_positive_energy(
     np.testing.assert_array_equal(balance.epi_rate, [0.0, 0.0])
 
 
-@pytest.mark.parametrize("attribute,value", [
-    ("EPI", float("nan")), ("EPI", float("inf")),
-    ("nu_f", -1.0), ("nu_f", float("inf")),
-])
+@pytest.mark.parametrize(
+    "attribute,value",
+    [
+        ("EPI", float("nan")),
+        ("EPI", float("inf")),
+        ("nu_f", -1.0),
+        ("nu_f", float("inf")),
+    ],
+)
 def test_invalid_nodal_state_is_rejected(attribute, value):
     graph = _graph()
     graph.nodes["a"][attribute] = value
@@ -187,7 +205,10 @@ def test_invalid_conductance_is_rejected(weight):
 def test_asymmetric_adjacency_rejected_and_symmetric_directed_representation_agrees():
     graph = _graph()
     directed = graph.to_directed()
-    assert compute_diffusion_energy(directed).energy == compute_diffusion_energy(graph).energy
+    assert (
+        compute_diffusion_energy(directed).energy
+        == compute_diffusion_energy(graph).energy
+    )
     directed.remove_edge("a", "b")
     with pytest.raises(ValueError, match="symmetric"):
         compute_diffusion_energy(directed)

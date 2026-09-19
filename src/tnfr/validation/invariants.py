@@ -707,6 +707,7 @@ class Invariant9_StructuralMetrics(TNFRInvariant):
 
         return violations
 
+
 class Invariant10_DomainNeutrality(TNFRInvariant):
     """Invariante 10: Domain neutrality - trans-scale and trans-domain."""
 

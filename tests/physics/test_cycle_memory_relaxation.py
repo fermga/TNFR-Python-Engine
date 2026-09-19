@@ -13,7 +13,6 @@ from tnfr.physics.remesh_history_stability import (
 )
 from tnfr.utils import normalize_weights
 
-
 F = Fraction
 
 
@@ -95,11 +94,16 @@ def test_full_state_cycle_gain_contains_a_multimode_local_bump(count):
 
 @pytest.mark.parametrize("alpha,history_length", [(0, 1), (F(1, 2), 4), (1, 2)])
 def test_active_delays_and_finite_history_envelope_match_the_runtime_order(
-    alpha, history_length,
+    alpha,
+    history_length,
 ):
     reference = certify_cycle_memory_relaxation(
-        8, epi_weight=1, step_sizes=(F(1, 4),), alpha=alpha,
-        tau_local=3, tau_global=1,
+        8,
+        epi_weight=1,
+        step_sizes=(F(1, 4),),
+        alpha=alpha,
+        tau_local=3,
+        tau_global=1,
     )
     assert reference.euler_policy.history_length == history_length
     initial = history = tuple(
@@ -131,8 +135,12 @@ def test_next_history_head_is_scheduled_post_remesh_not_raw_post_remesh():
 
 def test_pure_delay_damps_each_spatial_lineage_without_damping_uniform_means():
     reference = certify_cycle_memory_relaxation(
-        4, epi_weight=1, step_sizes=(F(1, 4),), alpha=1,
-        tau_local=3, tau_global=1,
+        4,
+        epi_weight=1,
+        step_sizes=(F(1, 4),),
+        alpha=1,
+        tau_local=3,
+        tau_global=1,
     )
     uniform = ((F(1),) * 4, (F(3),) * 4)
     once, _ = _advance(uniform, reference)
@@ -184,9 +192,7 @@ def test_memory_can_increase_current_energy_inside_a_decreasing_augmented_budget
 
 
 def test_scalar_gain_bound_is_a_bound_not_an_exact_cycle_gap():
-    reference = certify_cycle_memory_relaxation(
-        4, epi_weight=1, step_sizes=(F(1, 4),)
-    )
+    reference = certify_cycle_memory_relaxation(4, epi_weight=1, step_sizes=(F(1, 4),))
     # C4 has nonconstant eigenvalue 1; the rational generic lower bound is 1/2.
     mode = (F(1), F(0), F(-1), F(0))
     actual_gain = _energy(_flow(mode, reference)) / _energy(mode)
@@ -197,8 +203,12 @@ def test_scalar_gain_bound_is_a_bound_not_an_exact_cycle_gap():
 def test_detached_inputs_exact_reader_and_nested_seal():
     steps = [F(1, 4), F(1, 4)]
     result = certify_cycle_memory_relaxation(
-        np.int64(8), capacity=F(np.int64(1)), epi_weight=F(1, 2),
-        step_sizes=steps, alpha=np.float64(0.5), tau_local=np.int64(1),
+        np.int64(8),
+        capacity=F(np.int64(1)),
+        epi_weight=F(1, 2),
+        step_sizes=steps,
+        alpha=np.float64(0.5),
+        tau_local=np.int64(1),
     )
     steps[0] = 100
     assert result.step_sizes == (F(1, 4), F(1, 4))
@@ -211,13 +221,23 @@ def test_detached_inputs_exact_reader_and_nested_seal():
 
 
 @pytest.mark.parametrize(
-    "kwargs", [{"capacity": 0}, {"capacity": -1}, {"capacity": True},
-               {"epi_weight": 0}, {"epi_weight": float("inf")},
-               {"step_sizes": ()}, {"step_sizes": (0,)},
-               {"step_sizes": (F(-1, 4),)}, {"step_sizes": {F(1, 4)}},
-               {"epi_weight": 1, "step_sizes": (F(3, 4),)},
-               {"alpha": F(-1, 2)}, {"alpha": F(3, 2)},
-               {"tau_local": 0}, {"tau_global": True}],
+    "kwargs",
+    [
+        {"capacity": 0},
+        {"capacity": -1},
+        {"capacity": True},
+        {"epi_weight": 0},
+        {"epi_weight": float("inf")},
+        {"step_sizes": ()},
+        {"step_sizes": (0,)},
+        {"step_sizes": (F(-1, 4),)},
+        {"step_sizes": {F(1, 4)}},
+        {"epi_weight": 1, "step_sizes": (F(3, 4),)},
+        {"alpha": F(-1, 2)},
+        {"alpha": F(3, 2)},
+        {"tau_local": 0},
+        {"tau_global": True},
+    ],
 )
 def test_invalid_declared_domain_is_rejected(kwargs):
     with pytest.raises((TypeError, ValueError)):

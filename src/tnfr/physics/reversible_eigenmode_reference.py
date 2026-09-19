@@ -144,8 +144,7 @@ def _strict_exact_matrix(value: Any, width: int | None = None) -> bool:
         return False
     size = len(value) if width is None else width
     return bool(
-        len(value) == size
-        and all(_strict_exact_vector(row, size) for row in value)
+        len(value) == size and all(_strict_exact_vector(row, size) for row in value)
     )
 
 
@@ -172,24 +171,27 @@ def _matrix_vector(matrix: ExactMatrix, vector: ExactVector) -> ExactVector:
 
 def _weighted_mean(values: ExactVector, metric: ExactVector) -> Fraction:
     total = sum(metric, Fraction(0))
-    return sum(
-        (
-            weight * value
-            for weight, value in zip(metric, values, strict=True)
-        ),
-        Fraction(0),
-    ) / total
+    return (
+        sum(
+            (weight * value for weight, value in zip(metric, values, strict=True)),
+            Fraction(0),
+        )
+        / total
+    )
 
 
 def _centered_energy(values: ExactVector, metric: ExactVector) -> Fraction:
     center = _weighted_mean(values, metric)
-    return sum(
-        (
-            weight * (value - center) ** 2
-            for weight, value in zip(metric, values, strict=True)
-        ),
-        Fraction(0),
-    ) / 2
+    return (
+        sum(
+            (
+                weight * (value - center) ** 2
+                for weight, value in zip(metric, values, strict=True)
+            ),
+            Fraction(0),
+        )
+        / 2
+    )
 
 
 def _max_abs(values: ExactVector) -> Fraction:
@@ -441,10 +443,7 @@ def _certificate_values(
 ) -> dict[str, Any]:
     if type(value) is not ReversibleSingleEigenmodeEulerReferenceCertificate:
         raise TypeError("certificate must have its canonical result type")
-    return {
-        name: object.__getattribute__(value, name)
-        for name in _FIELD_NAMES
-    }
+    return {name: object.__getattribute__(value, name) for name in _FIELD_NAMES}
 
 
 def _stamp_from_values(values: dict[str, Any]) -> tuple[Any, ...]:
@@ -502,8 +501,7 @@ def _derive_values(
         raise TNFRValueError("every capacity must be positive")
 
     metric = tuple(
-        degree / capacity
-        for degree, capacity in zip(degrees, nu_f, strict=True)
+        degree / capacity for degree, capacity in zip(degrees, nu_f, strict=True)
     )
     metric_total = sum(metric, Fraction(0))
     normalized_metric = tuple(value / metric_total for value in metric)
@@ -519,8 +517,7 @@ def _derive_values(
         for row in range(size)
     )
     reversible_identity = all(
-        metric[left] * generator[left][right]
-        == metric[right] * generator[right][left]
+        metric[left] * generator[left][right] == metric[right] * generator[right][left]
         for left in range(size)
         for right in range(size)
     )
@@ -574,17 +571,13 @@ def _derive_values(
     segment_factors = tuple(
         tuple(Fraction(1) - value for value in row) for row in scaled
     )
-    euler_factors = tuple(
-        math.prod(row, start=Fraction(1)) for row in segment_factors
-    )
+    euler_factors = tuple(math.prod(row, start=Fraction(1)) for row in segment_factors)
     hmax = tuple(max(partition) for partition in partitions)
     quadratic = tuple(
-        sum((value * value for value in row), Fraction(0)) / 2
-        for row in scaled
+        sum((value * value for value in row), Fraction(0)) / 2 for row in scaled
     )
     hmax_bounds = tuple(
-        eigenvalue * eigenvalue * total_duration * value / 2
-        for value in hmax
+        eigenvalue * eigenvalue * total_duration * value / 2 for value in hmax
     )
     if any(
         bound > hmax_bound
@@ -616,8 +609,7 @@ def _derive_values(
         exp_upper,
     )
     euler_endpoints = tuple(
-        tuple(mean + factor * value for value in mode)
-        for factor in euler_factors
+        tuple(mean + factor * value for value in mode) for factor in euler_factors
     )
     mode_linf = _max_abs(mode)
     mode_energy = _centered_energy(mode, metric)
@@ -631,12 +623,10 @@ def _derive_values(
     energy_hmax = tuple(mode_energy * value * value for value in hmax_bounds)
 
     factor_improvements = tuple(
-        finer - coarser
-        for coarser, finer in zip(euler_factors, euler_factors[1:])
+        finer - coarser for coarser, finer in zip(euler_factors, euler_factors[1:])
     )
     quadratic_improvements = tuple(
-        coarser - finer
-        for coarser, finer in zip(quadratic, quadratic[1:])
+        coarser - finer for coarser, finer in zip(quadratic, quadratic[1:])
     )
     linf_improvements = tuple(
         coarser - finer
@@ -694,8 +684,7 @@ def _derive_values(
         (
             "exact_euler_modal_recurrence",
             all(
-                endpoint
-                == tuple(mean + factor * value for value in mode)
+                endpoint == tuple(mean + factor * value for value in mode)
                 for endpoint, factor in zip(
                     euler_endpoints,
                     euler_factors,

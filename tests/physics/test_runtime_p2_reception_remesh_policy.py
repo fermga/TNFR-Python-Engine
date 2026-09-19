@@ -10,9 +10,7 @@ import pytest
 
 import tnfr.physics.runtime_p2_reception_remesh_policy as policy_module
 from tnfr.errors import TNFRValueError
-from tnfr.operators.event_remesh_causal_runtime import (
-    EventRemeshCycleExecutionSpec,
-)
+from tnfr.operators.event_remesh_causal_runtime import EventRemeshCycleExecutionSpec
 from tnfr.operators.event_timing import build_operator_event_schedule
 from tnfr.physics.binary64_p2_reception_stability import (
     certify_p2_half_reception_remesh_stability,
@@ -216,8 +214,7 @@ def test_noncanonical_schedule_is_rejected_without_writes() -> None:
     assert "hybrid_event_log" not in graph.graph
 
 
-def test_policy_rejects_a_noncanonical_partition_source_without_consuming_it(
-) -> None:
+def test_policy_rejects_a_noncanonical_partition_source_without_consuming_it() -> None:
     graph = _graph()
     history = graph.graph["_epi_hist"]
     before = _graph_signature(graph)

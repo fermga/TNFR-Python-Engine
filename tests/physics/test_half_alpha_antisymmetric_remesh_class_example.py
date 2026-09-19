@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from fractions import Fraction
 import importlib.util
 import json
+from fractions import Fraction
 from pathlib import Path
 
 import pytest
-
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE_PATH = (
@@ -44,19 +43,11 @@ def test_example_exposes_the_class_and_strict_schedule_composition(
     certificate = protocol["certificate"]
     strict = protocol["strict_policy"]
 
-    assert (
-        certificate.half_alpha_antisymmetric_hard_clip_class_certificate_certified
-    )
-    assert certificate.exact_uniform_relative_defect_upper_bound == Fraction(
-        135, 124
-    )
-    assert certificate.exact_strict_schedule_gain_threshold == Fraction(
-        124, 259
-    )
+    assert certificate.half_alpha_antisymmetric_hard_clip_class_certificate_certified
+    assert certificate.exact_uniform_relative_defect_upper_bound == Fraction(135, 124)
+    assert certificate.exact_strict_schedule_gain_threshold == Fraction(124, 259)
     assert strict.exact_effective_head_energy_gain_upper_bound == Fraction(259, 279)
-    assert strict.exact_uniform_normalized_block_margin_lower_bound == Fraction(
-        20, 279
-    )
+    assert strict.exact_uniform_normalized_block_margin_lower_bound == Fraction(20, 279)
     assert report["class"]["uniform_eta"] == "135/124"
     assert report["class"]["strict_q_threshold"] == "124/259"
     proof = report["class"]["global_bound_proof"]
@@ -113,9 +104,7 @@ def test_example_records_sharpness_and_both_excluded_generalizations(
         "0/1",
         "0/1",
     ]
-    assert excluded["general_metric_centered_output_center"] == (
-        f"-1/{2**84}"
-    )
+    assert excluded["general_metric_centered_output_center"] == (f"-1/{2**84}")
     assert not excluded["general_metric_centering_forward_invariant"]
     assert excluded["unit_lattice_runtime_output"] == [
         "0x1.0000000000000p-2",

@@ -8,9 +8,9 @@ exact spatial consensus after ``tau_global + 1`` observed cycles.
 
 from __future__ import annotations
 
+import json
 from collections import deque
 from fractions import Fraction
-import json
 from typing import Any
 
 import networkx as nx
@@ -119,10 +119,7 @@ def _history_text(
     histories: tuple[tuple[tuple[Fraction, Fraction], ...], ...],
 ) -> list[list[list[str]]]:
     return [
-        [
-            [_fraction_text(left), _fraction_text(right)]
-            for left, right in history
-        ]
+        [[_fraction_text(left), _fraction_text(right)] for left, right in history]
         for history in histories
     ]
 
@@ -135,19 +132,16 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
     return {
         "claim": "finite causal P2 active-history disagreement extinction",
         "certificate_valid": (
-            certificate
-            .executed_p2_half_reception_remesh_sequence_certificate_certified
+            certificate.executed_p2_half_reception_remesh_sequence_certificate_certified
         ),
         "cycle_count": certificate.cycle_count,
         "extinction_horizon": certificate.active_history_extinction_horizon,
         "extinction_cycle_index": certificate.guaranteed_extinction_cycle_index,
         "post_reception_energies": [
-            _fraction_text(value)
-            for value in certificate.exact_post_reception_energies
+            _fraction_text(value) for value in certificate.exact_post_reception_energies
         ],
         "post_remesh_energies": [
-            _fraction_text(value)
-            for value in certificate.exact_post_remesh_energies
+            _fraction_text(value) for value in certificate.exact_post_remesh_energies
         ],
         "active_history_suffixes": _history_text(
             certificate.exact_active_history_suffixes

@@ -1,2 +1,16 @@
-# Preserve the archived roadmap's original mixed line endings and byte digest.
-theory/research/archive/ROADMAP_PRE_FIVE_STAGE_2026-09-17.txt -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+# Frozen raw archives preserve original bytes, including historical whitespace.
+# Live source and documentation retain the normal whitespace checks.
+theory/research/archive/ROADMAP_PRE_FIVE_STAGE_2026-09-17.txt -text -whitespace
+theory/research/archive/PORTFOLIO_PRE_COHORT_CONSOLIDATION_2026-09-19.txt -text -whitespace
+theory/research/archive/EXECUTION_PLAN_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt -text -whitespace
+theory/research/archive/CORE_PROGRAM_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt -text -whitespace
+theory/research/archive/CATALOG_PROGRAM_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt -text -whitespace
+theory/research/archive/STRATEGY_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt -text -whitespace
+theory/research/archive/RIEMANN_NOTEBOOK_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt -text -whitespace
+theory/research/archive/AGENT_SYNTHESIS_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt -text -whitespace
+theory/research/archive/NUCLEUS_B_PROPOSAL_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt -text -whitespace
+theory/research/archive/README_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt -text -whitespace
+theory/research/archive/APPLIED_ANALYSIS_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt -text -whitespace
+manual/archive/EDITORIAL_AUDIT_2026-08-02.txt -text -whitespace
+factorization-lab/notebooks/archive/spectral_history_legacy_2026_09_19.ipynb -text -whitespace
+theory/research/archive/DEVELOPMENT_LOG_PRE_0.0.3.6_2026-09-19.txt -text -whitespace

@@ -1,17 +1,11 @@
 #!/usr/bin/env python3
-"""Tetrad Universality Correlation Analysis
+"""Passive per-topology correlations of recorded field observations.
 
-Reads one or more benchmark result files (JSONL or CSV) containing
-observations of the structural field tetrad (Φ_s, |∇φ|, K_φ, ξ_C) and
-coherence metrics (C(t), Si) and computes per-topology correlations.
-
-The script is intentionally lightweight: it performs passive statistical
-aggregation only (READ-ONLY) and never mutates TNFR state.
-
-Output: JSONL summary rows, one per topology, including Pearson
-correlations and simple ranking of predictive strength.
-
-Can be extended later with partial correlations or regression models.
+Reads JSONL or CSV and ranks in-sample Pearson associations. This is not a
+held-out predictive evaluation, a causal analysis or a universality theorem.
+Rows must share field definitions and coherence-length estimator provenance
+before comparison; this legacy aggregator does not establish those conditions.
+No TNFR graph evolves. Output remains JSONL summaries by topology.
 """
 
 from __future__ import annotations

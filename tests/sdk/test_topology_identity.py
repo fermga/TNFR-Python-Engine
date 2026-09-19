@@ -7,18 +7,23 @@ import networkx as nx
 import pytest
 
 from tnfr.sdk.fluent import TNFRNetwork
-from tnfr.sdk.simple import Network, TNFR
+from tnfr.sdk.simple import TNFR, Network
 
 
-@pytest.mark.parametrize("topology,kwargs", [
-    ("small_world", {"k": 2, "p": 0.4, "seed": 3}),
-    ("scale_free", {"m": 1, "seed": 3}),
-    ("grid", {}),
-])
+@pytest.mark.parametrize(
+    "topology,kwargs",
+    [
+        ("small_world", {"k": 2, "p": 0.4, "seed": 3}),
+        ("scale_free", {"m": 1, "seed": 3}),
+        ("grid", {}),
+    ],
+)
 def test_generated_topology_uses_existing_mixed_node_labels(topology, kwargs):
     labels = ["a", ("b", 1), 9, "d", frozenset({5}), "f"]
     graph = nx.Graph()
-    graph.add_nodes_from((node, {"identity": index}) for index, node in enumerate(labels))
+    graph.add_nodes_from(
+        (node, {"identity": index}) for index, node in enumerate(labels)
+    )
     before = deepcopy(dict(graph.nodes(data=True)))
     getattr(Network(graph), topology)(**kwargs)
     assert list(graph) == labels
@@ -26,10 +31,13 @@ def test_generated_topology_uses_existing_mixed_node_labels(topology, kwargs):
     assert nx.is_connected(graph)
 
 
-@pytest.mark.parametrize("topology,kwargs", [
-    ("small_world", {"k": 4, "p": 0.7}),
-    ("scale_free", {"m": 2}),
-])
+@pytest.mark.parametrize(
+    "topology,kwargs",
+    [
+        ("small_world", {"k": 4, "p": 0.7}),
+        ("scale_free", {"m": 2}),
+    ],
+)
 def test_network_seed_is_the_default_for_every_stochastic_topology(topology, kwargs):
     actual = TNFR.create(20, seed=13)
     explicit = TNFR.create(20)
@@ -67,8 +75,11 @@ def test_empty_star_is_an_empty_topology():
 
 @pytest.mark.parametrize("api", ["simple", "fluent"])
 def test_single_node_ring_has_no_self_coupling(api):
-    graph = (TNFR.create(1).ring().G if api == "simple"
-             else TNFRNetwork().add_nodes(1).connect_nodes(connection_pattern="ring").graph)
+    graph = (
+        TNFR.create(1).ring().G
+        if api == "simple"
+        else TNFRNetwork().add_nodes(1).connect_nodes(connection_pattern="ring").graph
+    )
     assert graph.number_of_edges() == 0
 
 

@@ -246,13 +246,10 @@ def run_u6_confinement_sweep(
                             "u6_aggregation": "mean_absolute_nodewise_drift",
                             "u6_comparison": "strict_less_than",
                             "u6_definition": (
-                                "mean_i |Phi_s_after(i)-Phi_s_before(i)| "
-                                "< threshold"
+                                "mean_i |Phi_s_after(i)-Phi_s_before(i)| " "< threshold"
                             ),
                             "legacy_u6_fields_are_magnitude_proxies": True,
-                            "connection_scope": (
-                                "derived_exact_vertex_phase_one_form"
-                            ),
+                            "connection_scope": ("derived_exact_vertex_phase_one_form"),
                             "curvature_is_numerical_residual": True,
                             "yang_mills_names_are_legacy_consistency_diagnostics": (
                                 True
@@ -372,9 +369,7 @@ def _validated_ratios(values: Iterable[Any]) -> tuple[float, ...]:
             raise TypeError("target_u6_ratios must contain only real numbers")
         ratio = float(value)
         if not math.isfinite(ratio) or ratio < 0.0:
-            raise ValueError(
-                "target_u6_ratios must contain finite non-negative values"
-            )
+            raise ValueError("target_u6_ratios must contain finite non-negative values")
         if ratio > maximum:
             raise ValueError(
                 "target_u6_ratios are too large for the squared potential penalty"
@@ -444,12 +439,8 @@ def _summarise_points(
     outside_warning = tuple(
         point for point in points if not point.potential_magnitude_within_warning
     )
-    below_legacy_scale = tuple(
-        point for point in points if point.u6_confined
-    )
-    at_or_above_legacy_scale = tuple(
-        point for point in points if not point.u6_confined
-    )
+    below_legacy_scale = tuple(point for point in points if point.u6_confined)
+    at_or_above_legacy_scale = tuple(point for point in points if not point.u6_confined)
     positive = tuple(point for point in points if point.gap > eigen_tolerance)
     curvature_active = tuple(point for point in points if point.curvature_active)
 
@@ -458,9 +449,7 @@ def _summarise_points(
         "n_within_potential_magnitude_warning": len(within_warning),
         "n_outside_potential_magnitude_warning": len(outside_warning),
         "n_below_legacy_u6_normalization_scale": len(below_legacy_scale),
-        "n_at_or_above_legacy_u6_normalization_scale": len(
-            at_or_above_legacy_scale
-        ),
+        "n_at_or_above_legacy_u6_normalization_scale": len(at_or_above_legacy_scale),
         # Compatibility aliases introduced with the scope correction.
         "n_below_pi_magnitude_scale": len(within_warning),
         "n_at_or_above_pi_magnitude_scale": len(outside_warning),
@@ -483,16 +472,12 @@ def _summarise_points(
         "mean_outside_potential_magnitude_warning_gap": _mean(
             point.gap for point in outside_warning
         ),
-        "mean_below_pi_magnitude_gap": _mean(
-            point.gap for point in within_warning
-        ),
+        "mean_below_pi_magnitude_gap": _mean(point.gap for point in within_warning),
         "mean_at_or_above_pi_magnitude_gap": _mean(
             point.gap for point in outside_warning
         ),
         "mean_confined_gap": _mean(point.gap for point in below_legacy_scale),
-        "mean_unconfined_gap": _mean(
-            point.gap for point in at_or_above_legacy_scale
-        ),
+        "mean_unconfined_gap": _mean(point.gap for point in at_or_above_legacy_scale),
         "mean_yang_mills_residual": _mean(
             point.mean_yang_mills_residual for point in points
         ),
@@ -504,10 +489,7 @@ def _summarise_points(
             point.mean_pure_gauge_consistency_residual for point in points
         ),
         "max_pure_gauge_consistency_residual": max(
-            (
-                point.max_pure_gauge_consistency_residual
-                for point in points
-            ),
+            (point.max_pure_gauge_consistency_residual for point in points),
             default=0.0,
         ),
         "curvature_active_fraction": _fraction(
@@ -527,9 +509,7 @@ def _summarise_points(
             [point.gap for point in points],
         ),
         "u6_drift_assessed": False,
-        "u6_definition": (
-            "mean_i |Phi_s_after(i)-Phi_s_before(i)| < threshold"
-        ),
+        "u6_definition": ("mean_i |Phi_s_after(i)-Phi_s_before(i)| < threshold"),
         "legacy_u6_fields_are_magnitude_proxies": True,
         "curvature_is_numerical_residual": True,
         "scope": "finite_graph_y2_empirical_not_clay_proof",

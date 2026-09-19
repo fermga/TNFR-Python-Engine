@@ -32,20 +32,18 @@ def test_uniform_silence_slows_a_bump_without_removing_its_pressure(winding):
     pressure = _channel(graph, ALIAS_DNFR)
     assert max(map(abs, pressure)) > 0
 
-    run_network_sequence(
-        graph, ["silence"], context={"initial_epi_nonzero": True}
-    )
+    run_network_sequence(graph, ["silence"], context={"initial_epi_nonzero": True})
     assert _channel(graph, ALIAS_EPI) == epi
     assert _channel(graph, ALIAS_THETA) == phases
     assert _channel(graph, ALIAS_DNFR) == pressure
     assert _channel(graph, ALIAS_VF) == (SHA_VF_FACTOR,) * 8
     assert certify_phase_winding(graph, range(8)).winding == winding
-    rates = tuple(nu * delta for nu, delta in zip(
-        _channel(graph, ALIAS_VF), pressure, strict=True
-    ))
+    rates = tuple(
+        nu * delta
+        for nu, delta in zip(_channel(graph, ALIAS_VF), pressure, strict=True)
+    )
     assert max(map(abs, rates)) == SHA_VF_FACTOR * max(map(abs, pressure))
-    assert all(tuple(graph.nodes[node]["glyph_history"]) == ("SHA",)
-               for node in graph)
+    assert all(tuple(graph.nodes[node]["glyph_history"]) == ("SHA",) for node in graph)
 
 
 def test_geometric_capacity_clock_leaves_a_nonzero_exact_diffusion_mode():

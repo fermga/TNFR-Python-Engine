@@ -183,11 +183,7 @@ def experiment_2_cheeger():
         h_fiedler = _fiedler_conductance(G, A)
         h_exact = _exact_conductance(G)
         fiedler_optimal = abs(h_fiedler - h_exact) <= 1e-12
-        cheeger_ok = (
-            h_exact * h_exact / 2 - 1e-9
-            <= lam2
-            <= 2 * h_exact + 1e-9
-        )
+        cheeger_ok = h_exact * h_exact / 2 - 1e-9 <= lam2 <= 2 * h_exact + 1e-9
         print(
             f"  {name:20s} {lam2:>9.4f} {h_exact:>10.4f} "
             f"{h_fiedler:>9.4f} {str(fiedler_optimal):>13} "
@@ -264,8 +260,10 @@ def experiment_4_coemergent_tree():
         print(f"  {name:18s} {gap:>9.4f} {str(nx.is_tree(G)):>8}")
     smallest = min(measured, key=lambda item: item[1])
     print()
-    print(f"  -> Smallest gap in this four-graph table: {smallest[0]} "
-          f"({smallest[1]:.4f}).")
+    print(
+        f"  -> Smallest gap in this four-graph table: {smallest[0]} "
+        f"({smallest[1]:.4f})."
+    )
     print("     This finite ranking is not a universal extremal property of trees,")
     print("     REMESH outputs, or connected graphs.")
 

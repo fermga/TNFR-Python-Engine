@@ -100,8 +100,7 @@ def main() -> None:
     print("\nM1 -- distinct resonant tones of the residue-NFR pulse:")
     all_ok = True
     for k in (2, 3, 4, 5):
-        row_ok = all(residue_tones(p, k) == power_residue_rank(p, k)
-                     for p in PRIMES)
+        row_ok = all(residue_tones(p, k) == power_residue_rank(p, k) for p in PRIMES)
         all_ok = all_ok and row_ok
         status = "all = gcd(k,p-1)+1" if row_ok else "MISMATCH"
         print(f"   k={k}: {status}  (p=37 -> {residue_tones(37, k)} tones)")
@@ -115,23 +114,29 @@ def main() -> None:
         tones = sorted({round(x, 5) for x in pulse["resonant_spectrum"]})
         rank = structural_frequency_rank(graph)
         mult = pulse["spectral_multiplicity"]
-        print(f"   p={p:>2}: rank={rank} (silent + 2 tones)  tones={tones}  "
-              f"mult={mult} (=(p-1)/2={(p - 1) // 2})")
+        print(
+            f"   p={p:>2}: rank={rank} (silent + 2 tones)  tones={tones}  "
+            f"mult={mult} (=(p-1)/2={(p - 1) // 2})"
+        )
 
     # M3 -- composites enrich the chord multiplicatively (factorization type)
     print("\nM3 -- composites split the chord (tone-count is multiplicative):")
     notes = {15: " = 3x3 (3*5)", 45: " = 4x3 (9*5)"}
     for m in [9, 15, 21, 25, 35, 45, 49]:
         tones = residue_tones(m, 2)
-        print(f"   m={m:>2} (composite): {tones} tones{notes.get(m, '')}  "
-              f"(prime signature = 3)")
+        print(
+            f"   m={m:>2} (composite): {tones} tones{notes.get(m, '')}  "
+            f"(prime signature = 3)"
+        )
 
     # M4 -- a prime is maximally degenerate (minimal chord at any size)
     print("\nM4 -- the prime chord stays minimal (3 tones) at any size:")
     for p in [11, 23, 47, 59, 83, 107]:
         tones = residue_tones(p, 2)
-        print(f"   p={p:>3} (prime={isprime(p)}): {tones} tones over {p} "
-              f"nodes -> mean multiplicity ~{p / tones:.1f}")
+        print(
+            f"   p={p:>3} (prime={isprime(p)}): {tones} tones over {p} "
+            f"nodes -> mean multiplicity ~{p / tones:.1f}"
+        )
 
     print("\n" + "=" * 72)
     print(

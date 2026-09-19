@@ -20,6 +20,7 @@ import os
 from dataclasses import dataclass, field, fields
 from typing import Any, Literal
 
+from .config.parsing import parse_bool
 from .constants.canonical import (
     GRAD_PHI_CANONICAL_THRESHOLD,
     K_PHI_CANONICAL_THRESHOLD,
@@ -27,7 +28,6 @@ from .constants.canonical import (
     XI_C_CRITICAL_RATIO,
 )
 from .errors import TNFRValueError
-from .config.parsing import parse_bool
 
 __all__ = [
     "TNFRConfig",

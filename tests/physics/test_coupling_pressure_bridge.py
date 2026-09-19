@@ -27,7 +27,8 @@ def test_gap_divergence_matches_canonical_pressure_and_nodal_euler(
     graph.graph["vectorized_dnfr"] = vectorized
     for node in graph:
         set_theta(
-            graph, node,
+            graph,
+            node,
             graph.nodes[node]["theta"]
             + math.pi / 16 * math.sin(math.tau * node / size),
         )
@@ -51,11 +52,9 @@ def test_gap_divergence_matches_canonical_pressure_and_nodal_euler(
     before = [get_attr(graph.nodes[i], ALIAS_EPI) for i in graph]
     update_epi_via_nodal_equation(graph, dt=0.125, t=0.0, method="euler")
     assert [get_attr(graph.nodes[i], ALIAS_EPI) for i in graph] == pytest.approx(
-        [
-            value + 0.125 * pressure
-            for value, pressure in zip(before, actual_pressure)
-        ],
-        abs=_ATOL, rel=0,
+        [value + 0.125 * pressure for value, pressure in zip(before, actual_pressure)],
+        abs=_ATOL,
+        rel=0,
     )
     assert [graph.nodes[i]["theta"] for i in graph] == phases
     assert certify_phase_winding(graph, range(size)).winding == winding

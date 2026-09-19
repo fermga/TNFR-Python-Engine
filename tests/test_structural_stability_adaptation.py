@@ -10,21 +10,14 @@ import pytest
 
 import tnfr.dynamics.adaptation as adaptation_module
 from tnfr.constants import inject_defaults
-from tnfr.dynamics import (
-    adapt_vf_after_structural_stability,
-    adapt_vf_by_coherence,
-)
+from tnfr.dynamics import adapt_vf_after_structural_stability, adapt_vf_by_coherence
 
 
 def _stable_pair() -> nx.Graph:
     graph = nx.Graph()
     graph.add_edge("left", "right")
-    graph.nodes["left"].update(
-        {"νf": 0.2, "Si": 0.9, "ΔNFR": 0.0, "stable_count": 1}
-    )
-    graph.nodes["right"].update(
-        {"νf": 1.0, "Si": 0.9, "ΔNFR": 0.0, "stable_count": 1}
-    )
+    graph.nodes["left"].update({"νf": 0.2, "Si": 0.9, "ΔNFR": 0.0, "stable_count": 1})
+    graph.nodes["right"].update({"νf": 1.0, "Si": 0.9, "ΔNFR": 0.0, "stable_count": 1})
     inject_defaults(graph)
     graph.graph["VF_ADAPT_TAU"] = 2
     graph.graph["VF_ADAPT_MU"] = 0.5
@@ -110,6 +103,7 @@ def test_fallback_si_threshold_is_validated_before_state_changes() -> None:
         adapt_vf_after_structural_stability(graph)
 
     assert dict(graph.nodes(data=True)) == before
+
 
 @pytest.mark.parametrize("key", ["SELECTOR_THRESHOLDS", "GLYPH_THRESHOLDS"])
 def test_threshold_containers_must_be_mappings(key: str) -> None:

@@ -29,9 +29,7 @@ from fractions import Fraction
 from typing import Any
 
 from ..errors import TNFRValueError
-from ..operators.event_runtime import (
-    ExecutedPressureRefreshedFlowPartition,
-)
+from ..operators.event_runtime import ExecutedPressureRefreshedFlowPartition
 from ..utils._structural_signature import (
     binary64_vectors_are_identical,
     proof_stamps_are_identical,
@@ -52,12 +50,8 @@ ExactVector = tuple[Fraction, ...]
 ExactMatrix = tuple[ExactVector, ...]
 ExactPartition = tuple[Fraction, ...]
 
-_PARTITION_PROOF_VERSION = (
-    "executed_reversible_single_eigenmode_euler_partition_v1"
-)
-_REFERENCE_PROOF_VERSION = (
-    "executed_reversible_single_eigenmode_euler_reference_v1"
-)
+_PARTITION_PROOF_VERSION = "executed_reversible_single_eigenmode_euler_partition_v1"
+_REFERENCE_PROOF_VERSION = "executed_reversible_single_eigenmode_euler_reference_v1"
 _SCOPE = (
     "Finite offline binding of individually executor-certified, explicitly "
     "pressure-refreshed Euler partitions to one exact rational reversible "
@@ -156,13 +150,9 @@ def _materialize_executions(value: Any) -> tuple[Any, ...]:
         raise TypeError("partitions must be an ordered iterable sequence") from exc
     if not result:
         raise TNFRValueError("partitions must contain runtime partition evidence")
-    if any(
-        type(item) is not ExecutedPressureRefreshedFlowPartition
-        for item in result
-    ):
+    if any(type(item) is not ExecutedPressureRefreshedFlowPartition for item in result):
         raise TypeError(
-            "partitions must contain ExecutedPressureRefreshedFlowPartition "
-            "evidence"
+            "partitions must contain ExecutedPressureRefreshedFlowPartition " "evidence"
         )
     return result
 
@@ -289,19 +279,13 @@ def _execution_facts(
             certificate.exact_nodal_equation_residual is None
             or certificate.exact_pressure_residual is None
         ):
-            raise TNFRValueError(
-                "runtime flow residual evidence is incomplete"
-            )
+            raise TNFRValueError("runtime flow residual evidence is incomplete")
 
     return _ExecutionFacts(
         execution=execution,
         nodes=nodes,
-        segment_durations=tuple(
-            segment.exact_duration for segment in segments
-        ),
-        runtime_boundary_epi=tuple(
-            boundary.after.exact_epi for boundary in boundaries
-        ),
+        segment_durations=tuple(segment.exact_duration for segment in segments),
+        runtime_boundary_epi=tuple(boundary.after.exact_epi for boundary in boundaries),
     )
 
 
@@ -325,9 +309,7 @@ def _require_common_sources(facts: tuple[_ExecutionFacts, ...]) -> None:
         for boundary in item.execution.boundary_observations:
             snapshot = boundary.after
             if snapshot.exact_nu_f != capacity:
-                raise TNFRValueError(
-                    "runtime partitions require common fixed capacity"
-                )
+                raise TNFRValueError("runtime partitions require common fixed capacity")
             if snapshot.conductance != conductance:
                 raise TNFRValueError(
                     "runtime partitions require common fixed conductance"
@@ -365,8 +347,8 @@ def _reference_from_facts(
 class ExecutedReversibleSingleEigenmodeEulerPartitionObservation:
     """One executor-bound row of a reversible eigenmode partition family."""
 
-    reference_certificate: ReversibleSingleEigenmodeEulerReferenceCertificate = (
-        field(repr=False)
+    reference_certificate: ReversibleSingleEigenmodeEulerReferenceCertificate = field(
+        repr=False
     )
     execution: ExecutedPressureRefreshedFlowPartition = field(repr=False)
     partition_index: int
@@ -404,8 +386,7 @@ class ExecutedReversibleSingleEigenmodeEulerPartitionObservation:
                 type(reference)
                 is not ReversibleSingleEigenmodeEulerReferenceCertificate
                 or not reference.reference_certificate_certified
-                or type(execution)
-                is not ExecutedPressureRefreshedFlowPartition
+                or type(execution) is not ExecutedPressureRefreshedFlowPartition
             ):
                 return False
             expected = _derive_partition_values(
@@ -446,9 +427,7 @@ class ExecutedReversibleSingleEigenmodeEulerPartitionObservation:
 
 _PARTITION_FIELD_NAMES = tuple(
     item.name
-    for item in fields(
-        ExecutedReversibleSingleEigenmodeEulerPartitionObservation
-    )
+    for item in fields(ExecutedReversibleSingleEigenmodeEulerPartitionObservation)
     if item.name != "_proof_stamp"
 )
 
@@ -456,14 +435,10 @@ _PARTITION_FIELD_NAMES = tuple(
 def _partition_values(
     value: ExecutedReversibleSingleEigenmodeEulerPartitionObservation,
 ) -> dict[str, Any]:
-    if (
-        type(value)
-        is not ExecutedReversibleSingleEigenmodeEulerPartitionObservation
-    ):
+    if type(value) is not ExecutedReversibleSingleEigenmodeEulerPartitionObservation:
         raise TypeError("partition observation must have its canonical type")
     return {
-        name: object.__getattribute__(value, name)
-        for name in _PARTITION_FIELD_NAMES
+        name: object.__getattribute__(value, name) for name in _PARTITION_FIELD_NAMES
     }
 
 
@@ -495,13 +470,9 @@ def _derive_partition_values(
     *,
     reference_already_validated: bool = False,
 ) -> dict[str, Any]:
-    if (
-        type(reference)
-        is not ReversibleSingleEigenmodeEulerReferenceCertificate
-        or (
-            not reference_already_validated
-            and not reference.reference_certificate_certified
-        )
+    if type(reference) is not ReversibleSingleEigenmodeEulerReferenceCertificate or (
+        not reference_already_validated
+        and not reference.reference_certificate_certified
     ):
         raise TNFRValueError("exact eigenmode reference is not intact")
     if (
@@ -543,8 +514,7 @@ def _derive_partition_values(
         running_factor *= factor
         reference_boundaries.append(
             tuple(
-                reference.exact_weighted_mean
-                + running_factor * mode_value
+                reference.exact_weighted_mean + running_factor * mode_value
                 for mode_value in reference.exact_centered_mode
             )
         )
@@ -556,9 +526,7 @@ def _derive_partition_values(
     local_defects: list[ExactVector] = []
     propagated = (Fraction(0),) * width
 
-    for index, (duration, flow) in enumerate(
-        zip(durations, flows, strict=True)
-    ):
+    for index, (duration, flow) in enumerate(zip(durations, flows, strict=True)):
         certificate = flow.certificate
         if certificate is None:
             raise TNFRValueError("runtime flow certificate is absent")
@@ -578,10 +546,7 @@ def _derive_partition_values(
             )
         rho = certificate.exact_pressure_residual
         eta = certificate.exact_nodal_equation_residual
-        if (
-            not _strict_exact_vector(rho, width)
-            or not _strict_exact_vector(eta, width)
-        ):
+        if not _strict_exact_vector(rho, width) or not _strict_exact_vector(eta, width):
             raise TNFRValueError("runtime flow residual evidence is incomplete")
         local = tuple(
             duration * capacity * pressure_residual + execution_residual
@@ -617,9 +582,7 @@ def _derive_partition_values(
         reference_boundaries[-1],
     )
     if propagated != endpoint_defect:
-        raise RuntimeError(
-            "complete-matrix runtime defect propagation is inconsistent"
-        )
+        raise RuntimeError("complete-matrix runtime defect propagation is inconsistent")
 
     continuous_lower = reference.exact_continuous_endpoint_lower_bound
     continuous_upper = reference.exact_continuous_endpoint_upper_bound
@@ -652,20 +615,26 @@ def _derive_partition_values(
     linf_lower = max(coordinate_minima, default=Fraction(0))
     linf_upper = max(coordinate_maxima, default=Fraction(0))
     metric = reference.exact_reversible_metric
-    energy_lower = sum(
-        (
-            weight * value * value
-            for weight, value in zip(metric, coordinate_minima, strict=True)
-        ),
-        Fraction(0),
-    ) / 2
-    energy_upper = sum(
-        (
-            weight * value * value
-            for weight, value in zip(metric, coordinate_maxima, strict=True)
-        ),
-        Fraction(0),
-    ) / 2
+    energy_lower = (
+        sum(
+            (
+                weight * value * value
+                for weight, value in zip(metric, coordinate_minima, strict=True)
+            ),
+            Fraction(0),
+        )
+        / 2
+    )
+    energy_upper = (
+        sum(
+            (
+                weight * value * value
+                for weight, value in zip(metric, coordinate_maxima, strict=True)
+            ),
+            Fraction(0),
+        )
+        / 2
+    )
     exact_affine = all(
         object.__getattribute__(
             flow,
@@ -744,8 +713,8 @@ def _seal_partition(
 class ExecutedReversibleSingleEigenmodeEulerReferenceObservation:
     """Sealed finite family linking executor evidence to one exact reference."""
 
-    reference_certificate: ReversibleSingleEigenmodeEulerReferenceCertificate = (
-        field(repr=False)
+    reference_certificate: ReversibleSingleEigenmodeEulerReferenceCertificate = field(
+        repr=False
     )
     partition_observations: tuple[
         ExecutedReversibleSingleEigenmodeEulerPartitionObservation,
@@ -866,9 +835,7 @@ class ExecutedReversibleSingleEigenmodeEulerReferenceObservation:
 
 _REFERENCE_FIELD_NAMES = tuple(
     item.name
-    for item in fields(
-        ExecutedReversibleSingleEigenmodeEulerReferenceObservation
-    )
+    for item in fields(ExecutedReversibleSingleEigenmodeEulerReferenceObservation)
     if item.name != "_proof_stamp"
 )
 
@@ -876,14 +843,10 @@ _REFERENCE_FIELD_NAMES = tuple(
 def _reference_values(
     value: ExecutedReversibleSingleEigenmodeEulerReferenceObservation,
 ) -> dict[str, Any]:
-    if (
-        type(value)
-        is not ExecutedReversibleSingleEigenmodeEulerReferenceObservation
-    ):
+    if type(value) is not ExecutedReversibleSingleEigenmodeEulerReferenceObservation:
         raise TypeError("runtime reference observation must have canonical type")
     return {
-        name: object.__getattribute__(value, name)
-        for name in _REFERENCE_FIELD_NAMES
+        name: object.__getattribute__(value, name) for name in _REFERENCE_FIELD_NAMES
     }
 
 
@@ -925,11 +888,13 @@ def _derive_reference_values(
     reference_override: (
         ReversibleSingleEigenmodeEulerReferenceCertificate | None
     ) = None,
-    row_overrides: tuple[
-        ExecutedReversibleSingleEigenmodeEulerPartitionObservation,
-        ...,
-    ]
-    | None = None,
+    row_overrides: (
+        tuple[
+            ExecutedReversibleSingleEigenmodeEulerPartitionObservation,
+            ...,
+        ]
+        | None
+    ) = None,
 ) -> dict[str, Any]:
     facts = tuple(_execution_facts(execution) for execution in executions)
     canonical_reference = _reference_from_facts(facts)
@@ -938,22 +903,18 @@ def _derive_reference_values(
     else:
         reference = reference_override
         if (
-            type(reference)
-            is not ReversibleSingleEigenmodeEulerReferenceCertificate
+            type(reference) is not ReversibleSingleEigenmodeEulerReferenceCertificate
             or not reference.reference_certificate_certified
             or not proof_stamps_are_identical(
                 _raw_stamp_or_none(reference),
                 _raw_stamp_or_none(canonical_reference),
             )
         ):
-            raise TNFRValueError(
-                "stored exact reference is forged, stale, or unbound"
-            )
+            raise TNFRValueError("stored exact reference is forged, stale, or unbound")
 
     if row_overrides is None:
         rows = tuple(
-            _build_partition(reference, index, fact)
-            for index, fact in enumerate(facts)
+            _build_partition(reference, index, fact) for index, fact in enumerate(facts)
         )
     else:
         rows = row_overrides
@@ -969,10 +930,8 @@ def _derive_reference_values(
             raise TNFRValueError("stored runtime partition rows are invalid")
         for index, (row, fact) in enumerate(zip(rows, facts, strict=True)):
             if (
-                object.__getattribute__(row, "reference_certificate")
-                is not reference
-                or object.__getattribute__(row, "execution")
-                is not fact.execution
+                object.__getattribute__(row, "reference_certificate") is not reference
+                or object.__getattribute__(row, "execution") is not fact.execution
                 or object.__getattribute__(row, "partition_index") != index
             ):
                 raise TNFRValueError(

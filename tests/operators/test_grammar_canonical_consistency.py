@@ -89,16 +89,15 @@ class TestBifurcationWindowEmergent:
         q = 1.0 - nu_f * dt * rho
         band = 1.0 / (math.pi + 1.0)
         n = 1
-        while q ** n >= band:
+        while q**n >= band:
             n += 1
         assert pd.derive_bifurcation_window_from_physics(nu_f, dt) == n
 
     def test_window_adapts_to_dt(self) -> None:
         # a smaller step => slower per-step relaxation => a larger window
-        assert (
-            pd.derive_bifurcation_window_from_physics(dt=0.25)
-            > pd.derive_bifurcation_window_from_physics(dt=0.5)
-        )
+        assert pd.derive_bifurcation_window_from_physics(
+            dt=0.25
+        ) > pd.derive_bifurcation_window_from_physics(dt=0.5)
 
     def test_single_emergent_window_for_all_destabilizers(self) -> None:
         # the graduated split is dropped: every destabilizer shares the SINGLE
@@ -126,9 +125,7 @@ class TestBifurcationWindowEmergent:
         # capacity = floor(1/(nu_f*dt*rho)) = floor(1/(1-q)), rho = 1
         nu_f, dt, rho = 1.0, 0.5, 1.0
         relax = nu_f * dt * rho
-        assert pd.derive_u2_debt_capacity_from_physics(nu_f, dt) == int(
-            1.0 / relax
-        )
+        assert pd.derive_u2_debt_capacity_from_physics(nu_f, dt) == int(1.0 / relax)
 
     def test_grammar_repeat_window_is_the_relaxation_window(self) -> None:
         # the GRAMMAR repeat-avoidance window (don't re-fire a destabilizer

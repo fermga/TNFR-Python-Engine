@@ -19,9 +19,9 @@ from tnfr.operators.event_runtime import (
 )
 from tnfr.operators.event_timing import build_operator_event_schedule
 from tnfr.operators.network_stage import (
+    TWO_PHASE_JACOBI,
     MutationStageDecisionObservation,
     NetworkStageResult,
-    TWO_PHASE_JACOBI,
     execute_pointwise_stage,
 )
 from tnfr.types import Glyph
@@ -49,8 +49,7 @@ def _mutation_graph() -> nx.Graph:
     return graph
 
 
-def test_two_phase_mutation_exposes_ordered_decisions_without_epi_certificate(
-) -> None:
+def test_two_phase_mutation_exposes_ordered_decisions_without_epi_certificate() -> None:
     graph = _mutation_graph()
     targets = (2, 0, 1)
 
@@ -69,8 +68,7 @@ def test_two_phase_mutation_exposes_ordered_decisions_without_epi_certificate(
     assert all(item.glyph is Glyph.ZHIR for item in observations)
     assert all(item._proof_fields_are_intact() for item in observations)
     assert all(
-        item.trigger_certificate.threshold_gate_satisfied
-        for item in observations
+        item.trigger_certificate.threshold_gate_satisfied for item in observations
     )
     assert all(item.trigger_certificate.evidence_valid for item in observations)
     assert all(item.trigger_certificate.evidence is not None for item in observations)
@@ -145,12 +143,12 @@ def test_event_stage_retains_executor_owned_mutation_decisions() -> None:
 
     assert stage.event.glyph is Glyph.ZHIR
     assert len(stage.mutation_decision_observations) == len(graph)
-    assert tuple(
-        item.node for item in stage.mutation_decision_observations
-    ) == result.target_nodes
+    assert (
+        tuple(item.node for item in stage.mutation_decision_observations)
+        == result.target_nodes
+    )
     assert all(
-        item._proof_fields_are_intact()
-        for item in stage.mutation_decision_observations
+        item._proof_fields_are_intact() for item in stage.mutation_decision_observations
     )
     assert all(
         item.trigger_certificate.physical_time_resolved
@@ -159,9 +157,7 @@ def test_event_stage_retains_executor_owned_mutation_decisions() -> None:
 
 
 def test_network_stage_result_rejects_mutation_observation_corruption() -> None:
-    result = execute_pointwise_stage(
-        _mutation_graph(), Mutation(), (0, 1, 2), tau=0.01
-    )
+    result = execute_pointwise_stage(_mutation_graph(), Mutation(), (0, 1, 2), tau=0.01)
     observations = result.mutation_decision_observations
 
     with pytest.raises(ValueError, match="one decision observation"):
@@ -177,11 +173,8 @@ def test_network_stage_result_rejects_mutation_observation_corruption() -> None:
         result.__post_init__()
 
 
-def test_mutation_observation_stamp_comparison_never_dispatches_user_equality(
-) -> None:
-    result = execute_pointwise_stage(
-        _mutation_graph(), Mutation(), (0, 1, 2), tau=0.01
-    )
+def test_mutation_observation_stamp_comparison_never_dispatches_user_equality() -> None:
+    result = execute_pointwise_stage(_mutation_graph(), Mutation(), (0, 1, 2), tau=0.01)
     observation = result.mutation_decision_observations[0]
 
     class ExitOnEquality:
@@ -205,9 +198,7 @@ def test_mutation_observation_stamp_comparison_never_dispatches_user_equality(
 
 
 def test_mutation_observation_rejects_forged_nested_decisions() -> None:
-    result = execute_pointwise_stage(
-        _mutation_graph(), Mutation(), (0, 1, 2), tau=0.01
-    )
+    result = execute_pointwise_stage(_mutation_graph(), Mutation(), (0, 1, 2), tau=0.01)
     observation = result.mutation_decision_observations[0]
     certificate = observation.trigger_certificate
     assert certificate.evidence is not None
@@ -274,9 +265,7 @@ def test_mutable_and_hostile_node_identifiers_are_structurally_sealed() -> None:
             epi_history=[0.0, 0.1, epi],
         )
 
-    result = execute_pointwise_stage(
-        graph, Mutation(), (mutable, peer), tau=0.01
-    )
+    result = execute_pointwise_stage(graph, Mutation(), (mutable, peer), tau=0.01)
     mutable_observation = result.mutation_decision_observations[0]
     hostile_observation = replace(
         mutable_observation,
@@ -325,9 +314,10 @@ def test_mutation_decision_observation_has_public_inline_type_surface() -> None:
 
     assert "MutationStageDecisionObservation" in public_names
     assert "NetworkStageResult" in public_names
-    assert result_hints["mutation_decision_observations"] == tuple[
-        MutationStageDecisionObservation, ...
-    ]
+    assert (
+        result_hints["mutation_decision_observations"]
+        == tuple[MutationStageDecisionObservation, ...]
+    )
 
 
 class _VariableReprNode:
@@ -479,8 +469,7 @@ def _event_mutation_execution() -> OperatorEventExecutionResult:
     )
 
 
-def test_executed_glyph_stage_seal_fails_closed_under_decision_tampering(
-) -> None:
+def test_executed_glyph_stage_seal_fails_closed_under_decision_tampering() -> None:
     import tnfr.operators.event_runtime as event_runtime
 
     result = _event_mutation_execution()
@@ -506,7 +495,7 @@ def test_executed_glyph_stage_seal_fails_closed_under_decision_tampering(
         mutation_stage,
         mutation_decision_observations=tuple(reversed(observations)),
     )
-    assert observations[0].minimum_nu_f.hex() == 0.0.hex()
+    assert observations[0].minimum_nu_f.hex() == (0.0).hex()
     signed_zero_observation = replace(
         observations[0],
         minimum_nu_f=-0.0,
@@ -520,29 +509,21 @@ def test_executed_glyph_stage_seal_fails_closed_under_decision_tampering(
         reversed_observations,
     ):
         assert not forged._proof_fields_are_intact()
-        assert not (
-            forged
-            .represented_affine_gain_bound_at_observed_endpoint_certified
-        )
+        assert not (forged.represented_affine_gain_bound_at_observed_endpoint_certified)
 
     resealed_attachment = replace(
         attached_to_emission,
-        _proof_stamp=event_runtime._executed_glyph_stage_stamp(
-            attached_to_emission
-        ),
+        _proof_stamp=event_runtime._executed_glyph_stage_stamp(attached_to_emission),
     )
     resealed_reversal = replace(
         reversed_observations,
-        _proof_stamp=event_runtime._executed_glyph_stage_stamp(
-            reversed_observations
-        ),
+        _proof_stamp=event_runtime._executed_glyph_stage_stamp(reversed_observations),
     )
     assert not resealed_attachment._proof_fields_are_intact()
     assert not resealed_reversal._proof_fields_are_intact()
 
 
-def test_event_result_rejects_removed_reordered_or_forged_stage_evidence(
-) -> None:
+def test_event_result_rejects_removed_reordered_or_forged_stage_evidence() -> None:
     result = _event_mutation_execution()
     stages = result.glyph_stage_evidence
     mutation_stage = stages[3]
@@ -567,8 +548,7 @@ def test_event_result_rejects_removed_reordered_or_forged_stage_evidence(
         replace(result, stage_certification_requested=False)
 
 
-def test_stage_seal_accepts_ordered_target_subset_against_full_endpoints(
-) -> None:
+def test_stage_seal_accepts_ordered_target_subset_against_full_endpoints() -> None:
     import tnfr.operators.event_runtime as event_runtime
     from tnfr.physics.runtime_flow_stability import capture_nodal_flow_state
 
@@ -605,10 +585,10 @@ def test_stage_seal_accepts_ordered_target_subset_against_full_endpoints(
     )
 
     assert left.nodes == (0, 1, 2)
-    assert tuple(
-        observation.node
-        for observation in stage.mutation_decision_observations
-    ) == targets
+    assert (
+        tuple(observation.node for observation in stage.mutation_decision_observations)
+        == targets
+    )
     assert stage._proof_fields_are_intact()
 
     composition = event_runtime._compose_observed_represented_epi_schedule(

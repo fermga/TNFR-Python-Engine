@@ -42,8 +42,7 @@ def _set_pure_epi_pressure(graph: nx.Graph) -> None:
     for node in graph:
         neighbours = tuple(graph.neighbors(node))
         graph.nodes[node]["delta_nfr"] = (
-            sum(values[item] for item in neighbours) / len(neighbours)
-            - values[node]
+            sum(values[item] for item in neighbours) / len(neighbours) - values[node]
         )
 
 
@@ -145,10 +144,7 @@ def _matrix_vector(
 ) -> tuple[Fraction, ...]:
     return tuple(
         sum(
-            (
-                entry * value
-                for entry, value in zip(row, vector, strict=True)
-            ),
+            (entry * value for entry, value in zip(row, vector, strict=True)),
             Fraction(0),
         )
         for row in matrix
@@ -176,8 +172,7 @@ def dyadic_three_cycle_execution() -> ExecutedEventRemeshCycleSequence:
 
 
 @pytest.fixture(scope="module")
-def dyadic_certificate(
-) -> UniformRemeshScheduleRelativeDefectStabilityCertificate:
+def dyadic_certificate() -> UniformRemeshScheduleRelativeDefectStabilityCertificate:
     return _relative_certificate()
 
 
@@ -217,9 +212,9 @@ def test_direct_module_and_stub_expose_runtime_relative_defect_api() -> None:
         "observe_executed_event_remesh_relative_defect_block",
     )
     package = Path(runtime_module.__file__).parent
-    stub = (
-        package / "runtime_remesh_schedule_relative_defect.pyi"
-    ).read_text(encoding="utf-8")
+    stub = (package / "runtime_remesh_schedule_relative_defect.pyi").read_text(
+        encoding="utf-8"
+    )
     assert "class RuntimeRemeshScheduleRelativeDefectBlockObservation" in stub
     assert "def observe_executed_event_remesh_relative_defect_block" in stub
 
@@ -233,9 +228,7 @@ def test_zero_defect_dyadic_block_is_bound_to_causal_execution(
     certificate = dyadic_certificate
     observation = dyadic_observation
 
-    assert type(observation) is (
-        RuntimeRemeshScheduleRelativeDefectBlockObservation
-    )
+    assert type(observation) is (RuntimeRemeshScheduleRelativeDefectBlockObservation)
     assert observation.source_execution is execution
     assert observation.relative_defect_certificate is certificate
     assert observation.block_observation.source_execution is execution
@@ -279,9 +272,7 @@ def test_construction_and_queries_validate_dependencies_once_without_cache(
     block_type = runtime_module.RuntimeRemeshScheduleBlockMarginObservation
     original_source_check = runtime_module._execution_is_intact
     original_certificate_check = runtime_module._certificate_is_intact
-    original_block_check = (
-        block_type._proof_fields_are_intact_after_source_validation
-    )
+    original_block_check = block_type._proof_fields_are_intact_after_source_validation
 
     def source_check(value: object) -> bool:
         counts["source"] += 1

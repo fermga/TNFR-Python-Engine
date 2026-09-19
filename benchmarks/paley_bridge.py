@@ -524,7 +524,9 @@ def test_canonical_rw_equivalence(limit: int = 200) -> bool:
 
     print("  Paley circulants are REGULAR (deg d = (n-1)/2 for prime n == 1 mod 4), so")
     print("  L_rw = (1/d) L EXACTLY: same eigenvectors and ordering, eigenvalues / d.")
-    print("  Canonical closed form: lambda_2(L_rw) = sqrt n/(sqrt n+1) = 1 - 1/(sqrt n+1).")
+    print(
+        "  Canonical closed form: lambda_2(L_rw) = sqrt n/(sqrt n+1) = 1 - 1/(sqrt n+1)."
+    )
     print()
     print(
         "      n | deg d |  lam2(L) comb | lam2(L_rw) can | sqrt/(sqrt+1) |"

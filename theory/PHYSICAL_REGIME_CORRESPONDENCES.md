@@ -127,7 +127,9 @@ $$
 \partial\mathrm{EPI}/\partial t=0.
 $$
 
-This freezes the EPI coordinate represented by the nodal equation. Constant
+This gives zero instantaneous unforced EPI rate. A fixed EPI trajectory needs
+pressure to remain zero; changing phase, capacity or support can generate later
+pressure. Constant
 translation does not follow unless a separate kinematic adapter stores velocity
 and advances an external position coordinate.
 
@@ -275,7 +277,7 @@ cooling remains a hypothesis to test.
 The comparisons can be organized by their declared pressure and phase
 conditions. This table is a model index, not a phase diagram derived from TNFR:
 
-| Comparison | $\Delta\mathrm{NFR}$ | $|\nabla\phi|$ | Primary telemetry | Declared model |
+| Comparison | $\Delta\mathrm{NFR}$ | $\lvert\nabla\phi\rvert$ | Primary telemetry | Declared model |
 |--------|---------------------|----------------|-------------------|-------------------|
 | Zero-pressure chart | $=0$ | Measured separately | EPI rate, $C(t)$ | Fixed EPI |
 | Classical adapter | External force value; graph bridge optional | Optional low-spread regime | Adapter $q,p,F$; tetrad only through a declared bridge | Explicit $F=ma$ adapter |
@@ -326,7 +328,7 @@ from coherence or from the nodal equation.
 | **Φ_s** | Inverse-square ΔNFR accumulation | Potential-like readout | U6 monitors drift between declared snapshots; a well analogy adds no bound |
 | **\|∇φ\|** | Local desynchronization | Optional stress comparison | No mechanical stress or force identity is implied |
 | **K_φ** | Phase torsion read-out | Curvature comparison | Does not generate the adapter force |
-| **ξ_C** | Correlation decay scale | Interaction-range comparison | Does not set either N-body pair law |
+| **ξ_C** | Static product-fit length or separate spectral fallback | Correlation-range comparison only on the fit branch | Does not set either N-body pair law; estimator provenance is required |
 | **Ψ = K_φ + i·J_φ** | Complex auxiliary geometric field | Phase-space comparison | No Hamilton-Jacobi identity is established |
 | **Operator sequences** | Canonical engine transformations | Work/impulse comparison | No equivalence between grammar validity and mechanical admissibility is established |
 
@@ -342,7 +344,12 @@ from coherence or from the nodal equation.
   selected before/after policy, not a potential-energy bound
 - |∇φ| → local phase-stress comparison
 - K_φ → phase-curvature comparison; no centripetal/Coriolis force follows from it
-- ξ_C → fitted correlation-range comparison; the N-body force laws do not read it
+- ξ_C → fitted correlation-range comparison, with the dimensionless spectral
+  fallback reported separately; the N-body force laws do not read it
+
+The [tetrad guide](../docs/STRUCTURAL_FIELDS_TETRAD.md#coherence-length)
+owns the fit, fallback, distance and sampling conventions. A comparison table
+does not override those observational dependencies or provide a force law.
 
 ### Executable Demonstrations
 

@@ -54,10 +54,7 @@ def _graph(
             glyph_history=[],
         )
     graph.graph["_epi_hist"] = deque(
-        (
-            {node: value for node, value in enumerate(snapshot)}
-            for snapshot in history
-        ),
+        ({node: value for node, value in enumerate(snapshot)} for snapshot in history),
         maxlen=64,
     )
     return graph
@@ -101,9 +98,7 @@ def test_public_physics_facade_and_stub_expose_bridge_api() -> None:
 
 
 def test_exact_representable_runtime_transition_matches_companion() -> None:
-    bridge = observe_runtime_remesh_history_bridge(
-        _cycle(_graph(), weights=(1.0, 3.0))
-    )
+    bridge = observe_runtime_remesh_history_bridge(_cycle(_graph(), weights=(1.0, 3.0)))
 
     assert type(bridge) is RuntimeRemeshHistoryBridgeObservation
     assert bridge.bridge_observation_certified
@@ -116,10 +111,7 @@ def test_exact_representable_runtime_transition_matches_companion() -> None:
         Fraction(3, 2),
     )
     assert bridge.exact_runtime_raw_next_field == bridge.exact_ideal_next_field
-    assert (
-        bridge.exact_runtime_bounded_next_field
-        == bridge.exact_ideal_next_field
-    )
+    assert bridge.exact_runtime_bounded_next_field == bridge.exact_ideal_next_field
     assert bridge.exact_rounding_residual == (Fraction(0), Fraction(0))
     assert bridge.exact_clipping_residual == (Fraction(0), Fraction(0))
     assert bridge.exact_total_residual == (Fraction(0), Fraction(0))

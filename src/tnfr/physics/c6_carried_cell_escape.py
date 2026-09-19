@@ -10,17 +10,26 @@ from dataclasses import dataclass
 from fractions import Fraction as F
 
 from ..dynamics._euler_kernel import (
-    NODAL_REMAINDER_ABSOLUTE_BOUND, NODAL_REMAINDER_DENOMINATOR_BITS,
-    NodalRemainderState, NodalRemainderStep, _binary64_tuple,
-    _validate_nodal_remainder_state, advance_nodal_remainder,
+    NODAL_REMAINDER_ABSOLUTE_BOUND,
+    NODAL_REMAINDER_DENOMINATOR_BITS,
+    NodalRemainderState,
+    NodalRemainderStep,
+    _binary64_tuple,
+    _validate_nodal_remainder_state,
+    advance_nodal_remainder,
 )
 from .c6_carried_closure import C6CarriedClosure, derive_c6_carried_closure
-from .c6_pressure_lattice import _observe_rebuilt_c6_pressure_lattice, _pressure_at_gradient_index
+from .c6_pressure_lattice import (
+    _observe_rebuilt_c6_pressure_lattice,
+    _pressure_at_gradient_index,
+)
 from .nodal_remainder import derive_nodal_remainder_itinerary
 
 __all__ = [
-    "C6CarriedCompleteCellObstruction", "derive_c6_carried_complete_cell_obstruction",
-    "C6CarriedCompleteCellEscape", "observe_c6_carried_complete_cell_escape",
+    "C6CarriedCompleteCellObstruction",
+    "derive_c6_carried_complete_cell_obstruction",
+    "C6CarriedCompleteCellEscape",
+    "observe_c6_carried_complete_cell_escape",
 ]
 
 
@@ -78,11 +87,15 @@ def _closure(value):
         raise TypeError("closure must be a C6CarriedClosure")
     tube = value.base_tube
     return derive_c6_carried_closure(
-        tube.contraction.profile, state=tube.state, timestep=tube.contraction.timestep,
+        tube.contraction.profile,
+        state=tube.state,
+        timestep=tube.contraction.timestep,
     )
 
 
-def derive_c6_carried_complete_cell_obstruction(closure) -> C6CarriedCompleteCellObstruction:
+def derive_c6_carried_complete_cell_obstruction(
+    closure,
+) -> C6CarriedCompleteCellObstruction:
     """Derive uniform sign and held-negative-cell bounds from existing owners.
 
     Positive coefficients and monotone nearest-even rounding make the
@@ -107,20 +120,33 @@ def derive_c6_carried_complete_cell_obstruction(closure) -> C6CarriedCompleteCel
     delta = lattice.epi_quantum
     grid = F(1, 2**NODAL_REMAINDER_DENOMINATOR_BITS)
     if upper - lower < delta:
-        raise ValueError("the displayed band must span at least one EPI lattice quantum")
+        raise ValueError(
+            "the displayed band must span at least one EPI lattice quantum"
+        )
     if delta > NODAL_REMAINDER_ABSOLUTE_BOUND:
         raise ValueError("the slab must leave the shared carry bound inactive")
     minimum_width = delta / 2 - 2 * grid
-    pressure_lower = tuple(F(_pressure_at_gradient_index(lattice, i, m))
-                           for i, m in enumerate(closed.gradient_index_lower))
-    pressure_upper = tuple(F(_pressure_at_gradient_index(lattice, i, m))
-                           for i, m in enumerate(closed.gradient_index_upper))
+    pressure_lower = tuple(
+        F(_pressure_at_gradient_index(lattice, i, m))
+        for i, m in enumerate(closed.gradient_index_lower)
+    )
+    pressure_upper = tuple(
+        F(_pressure_at_gradient_index(lattice, i, m))
+        for i, m in enumerate(closed.gradient_index_upper)
+    )
     h = F(tube.contraction.timestep)
     maximum = h * max(F(0), *(-p for p in pressure_lower))
     if not maximum < minimum_width:
-        raise ValueError("negative nodal increments must be smaller than each admissible cell width")
+        raise ValueError(
+            "negative nodal increments must be smaller than each admissible cell width"
+        )
     return C6CarriedCompleteCellObstruction(
-        closed, grid, minimum_width, pressure_lower, pressure_upper, maximum,
+        closed,
+        grid,
+        minimum_width,
+        pressure_lower,
+        pressure_upper,
+        maximum,
     )
 
 
@@ -157,7 +183,9 @@ class C6CarriedCompleteCellEscape:
 
 
 def observe_c6_carried_complete_cell_escape(
-    obstruction, *, epi_states: tuple[tuple[float, ...], ...],
+    obstruction,
+    *,
+    epi_states: tuple[tuple[float, ...], ...],
 ) -> C6CarriedCompleteCellEscape:
     """Construct a legal counterexample to a supplied complete-cell family.
 
@@ -177,25 +205,52 @@ def observe_c6_carried_complete_cell_escape(
     tube = bound.closure.base_tube
     lattice = tube.contraction.profile.lattice
     low, high = tube.state.epi_lower, tube.state.epi_upper
-    readings = tuple(_observe_rebuilt_c6_pressure_lattice(lattice, epi) for epi in states)
+    readings = tuple(
+        _observe_rebuilt_c6_pressure_lattice(lattice, epi) for epi in states
+    )
     for reading in readings:
         if any(not low <= x <= high for x in reading.epi):
-            raise ValueError("every displayed cell must lie in the closure's declared band")
-        if any(not lo <= m <= hi for lo, m, hi in zip(
-                bound.closure.gradient_index_lower, reading.gradient_indices,
-                bound.closure.gradient_index_upper, strict=True)):
-            raise ValueError("every displayed cell must satisfy the rebuilt gradient bounds")
-        if any(not lo <= F(p) <= hi for lo, p, hi in zip(
-                bound.pressure_lower, reading.pressure, bound.pressure_upper, strict=True)):
-            raise RuntimeError("the canonical pressure lost its monotone interval bound")
+            raise ValueError(
+                "every displayed cell must lie in the closure's declared band"
+            )
+        if any(
+            not lo <= m <= hi
+            for lo, m, hi in zip(
+                bound.closure.gradient_index_lower,
+                reading.gradient_indices,
+                bound.closure.gradient_index_upper,
+                strict=True,
+            )
+        ):
+            raise ValueError(
+                "every displayed cell must satisfy the rebuilt gradient bounds"
+            )
+        if any(
+            not lo <= F(p) <= hi
+            for lo, p, hi in zip(
+                bound.pressure_lower,
+                reading.pressure,
+                bound.pressure_upper,
+                strict=True,
+            )
+        ):
+            raise RuntimeError(
+                "the canonical pressure lost its monotone interval bound"
+            )
     selected = max(range(len(states)), key=lambda i: sum(map(F, states[i]), F(0)))
     epi, pressure = states[selected], readings[selected].pressure
     cells = derive_nodal_remainder_itinerary(
-        epi_states=(epi, epi), timesteps=(0.,), capacities=((1.,) * 6,),
-        pressures=(pressure,), epi_lower=low, epi_upper=high,
+        epi_states=(epi, epi),
+        timesteps=(0.0,),
+        capacities=((1.0,) * 6,),
+        pressures=(pressure,),
+        epi_lower=low,
+        epi_upper=high,
     ).coordinates
     exact = tuple(cell.last_grid_index * bound.grid_quantum for cell in cells)
-    state = NodalRemainderState(epi, tuple(x - F(v) for x, v in zip(exact, epi, strict=True)), low, high)
+    state = NodalRemainderState(
+        epi, tuple(x - F(v) for x, v in zip(exact, epi, strict=True)), low, high
+    )
     if _validate_nodal_remainder_state(state) != exact:
         raise RuntimeError("the complete-cell extremum lost its shared nodal encoding")
     added = tuple(F(tube.contraction.timestep) * F(p) for p in pressure)
@@ -203,23 +258,47 @@ def observe_c6_carried_complete_cell_escape(
     for cell, a in zip(cells, added, strict=True):
         width = (cell.last_grid_index - cell.first_grid_index) * bound.grid_quantum
         if width < bound.minimum_cell_grid_width or a < -width:
-            raise RuntimeError("the complete-cell width failed its uniform negative-step bound")
+            raise RuntimeError(
+                "the complete-cell width failed its uniform negative-step bound"
+            )
     failure = any(not F(low) <= x <= F(high) for x in candidate)
-    increased = tuple(i for i, (a, x, v) in enumerate(zip(added, candidate, epi, strict=True))
-                      if a > 0 and float(x) > v)
-    if not any(a > 0 for a in added) or any(float(x) < v for x, v in zip(candidate, epi, strict=True)):
-        raise RuntimeError("the maximal-carry witness lost its one-sided visible escape")
+    increased = tuple(
+        i
+        for i, (a, x, v) in enumerate(zip(added, candidate, epi, strict=True))
+        if a > 0 and float(x) > v
+    )
+    if not any(a > 0 for a in added) or any(
+        float(x) < v for x, v in zip(candidate, epi, strict=True)
+    ):
+        raise RuntimeError(
+            "the maximal-carry witness lost its one-sided visible escape"
+        )
     endpoint = None
     visible_sum = None
     before_sum = sum(map(F, epi), F(0))
     if not failure:
         endpoint = advance_nodal_remainder(
-            state, timestep=tube.contraction.timestep, capacity=(1.,) * 6, pressure=pressure,
+            state,
+            timestep=tube.contraction.timestep,
+            capacity=(1.0,) * 6,
+            pressure=pressure,
         )
         visible_sum = sum(map(F, endpoint.after.epi), F(0))
         if not increased or visible_sum <= before_sum or endpoint.after.epi in states:
-            raise RuntimeError("the maximal visible-sum witness failed to escape its family")
+            raise RuntimeError(
+                "the maximal visible-sum witness failed to escape its family"
+            )
     return C6CarriedCompleteCellEscape(
-        bound, states, selected, state, pressure, added, candidate, endpoint,
-        failure, increased, before_sum, visible_sum,
+        bound,
+        states,
+        selected,
+        state,
+        pressure,
+        added,
+        candidate,
+        endpoint,
+        failure,
+        increased,
+        before_sum,
+        visible_sum,
     )

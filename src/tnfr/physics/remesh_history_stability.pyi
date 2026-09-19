@@ -105,7 +105,6 @@ def certify_uniform_remesh_history_stability(
     tau_local: Integral,
     tau_global: Integral,
 ) -> UniformRemeshHistoryStabilityCertificate: ...
-
 def observe_uniform_remesh_history_transition(
     certificate: UniformRemeshHistoryStabilityCertificate,
     history: Iterable[Iterable[Real]],

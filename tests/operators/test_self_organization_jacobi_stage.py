@@ -25,8 +25,8 @@ from tnfr.operators.network_stage import (
     TWO_PHASE_JACOBI,
     execute_self_organization_stage,
 )
-from tnfr.operators.word_execution import run_network_sequence
 from tnfr.operators.preconditions import OperatorPreconditionError
+from tnfr.operators.word_execution import run_network_sequence
 
 
 def _add_parent(
@@ -128,12 +128,8 @@ def test_collision_safe_support_merge_is_target_order_invariant(
     forward = _collision_graph(graph_type)
     reverse = _collision_graph(graph_type)
 
-    execute_self_organization_stage(
-        forward, SelfOrganization(), (1, "1"), tau=0.1
-    )
-    execute_self_organization_stage(
-        reverse, SelfOrganization(), ("1", 1), tau=0.1
-    )
+    execute_self_organization_stage(forward, SelfOrganization(), (1, "1"), tau=0.1)
+    execute_self_organization_stage(reverse, SelfOrganization(), ("1", 1), tau=0.1)
 
     assert _structural_state(reverse) == _structural_state(forward)
     assert tuple(forward.nodes) == (1, "1", "1_sub_0", "1_sub_1")
@@ -146,9 +142,10 @@ def test_collision_safe_support_merge_is_target_order_invariant(
         "1": ["1_sub_1"],
     }
     assert forward.graph[STAGE_SCHEDULE_KEY]["schedule"] == TWO_PHASE_JACOBI
-    assert forward.graph[STAGE_CONTRACT_KEY][
-        "structural_state_target_order_invariant"
-    ] is True
+    assert (
+        forward.graph[STAGE_CONTRACT_KEY]["structural_state_target_order_invariant"]
+        is True
+    )
 
 
 def test_single_target_stage_matches_direct_prepared_transaction() -> None:
@@ -167,16 +164,12 @@ def test_single_target_stage_matches_direct_prepared_transaction() -> None:
     )
 
     assert tuple(staged.nodes) == tuple(direct.nodes)
-    assert {
-        node: dict(data) for node, data in staged.nodes(data=True)
-    } == {
+    assert {node: dict(data) for node, data in staged.nodes(data=True)} == {
         node: dict(data) for node, data in direct.nodes(data=True)
     }
     stage_only = {STAGE_SCHEDULE_KEY, STAGE_CONTRACT_KEY}
     assert {
-        key: value
-        for key, value in staged.graph.items()
-        if key not in stage_only
+        key: value for key, value in staged.graph.items() if key not in stage_only
     } == dict(direct.graph)
 
 
@@ -195,9 +188,7 @@ def test_every_target_is_planned_from_one_unchanged_stage_snapshot(
 
     monkeypatch.setattr(SelfOrganization, "_prepare_execution", recording_prepare)
 
-    execute_self_organization_stage(
-        graph, SelfOrganization(), ("1", 1), tau=0.1
-    )
+    execute_self_organization_stage(graph, SelfOrganization(), ("1", 1), tau=0.1)
 
     assert len(observed) == 2
     assert len({identity for identity, _nodes in observed}) == 1
@@ -273,9 +264,7 @@ def test_merged_support_is_validated_before_any_live_write(
     )
 
     with pytest.raises(RuntimeError, match="rejected detached THOL hierarchy"):
-        execute_self_organization_stage(
-            graph, SelfOrganization(), ("1", 1), tau=0.1
-        )
+        execute_self_organization_stage(graph, SelfOrganization(), ("1", 1), tau=0.1)
 
     assert _plain_state(graph) == before
 
@@ -297,9 +286,7 @@ def test_late_monitor_failure_restores_topology_state_and_monitor() -> None:
     monitor_before = deepcopy(vars(monitor))
 
     with pytest.raises(RuntimeError, match="rejected second THOL target"):
-        execute_self_organization_stage(
-            graph, SelfOrganization(), ("1", 1), tau=0.1
-        )
+        execute_self_organization_stage(graph, SelfOrganization(), ("1", 1), tau=0.1)
 
     assert _plain_state(graph) == before
     assert vars(monitor) == monitor_before
@@ -362,13 +349,10 @@ def test_primary_channels_use_alias_and_pressure_cache_boundaries() -> None:
     graph.nodes[1]["accel"] = -99.0
     graph.nodes["1"]["accel"] = -99.0
 
-    execute_self_organization_stage(
-        graph, SelfOrganization(), ("1", 1), tau=0.1
-    )
+    execute_self_organization_stage(graph, SelfOrganization(), ("1", 1), tau=0.1)
 
     pressures = {
-        node: abs(float(get_attr(graph.nodes[node], ALIAS_DNFR)))
-        for node in (1, "1")
+        node: abs(float(get_attr(graph.nodes[node], ALIAS_DNFR))) for node in (1, "1")
     }
     expected_node = max(pressures, key=pressures.get)
     assert graph.graph["_dnfrmax"] == pytest.approx(pressures[expected_node])
@@ -396,9 +380,7 @@ def test_stage_alignment_uses_public_metabolism_readout() -> None:
     graph.nodes[0]["sub_nodes"] = ["old"]
     graph.nodes[0]["sub_epis"] = [{"epi": 0.1, "node_id": "old"}]
 
-    execute_self_organization_stage(
-        graph, SelfOrganization(), (0,), tau=0.1
-    )
+    execute_self_organization_stage(graph, SelfOrganization(), (0,), tau=0.1)
 
     stored = graph.nodes[0]["_thol_subepi_amplitude_alignment"]
     assert stored == compute_subepi_amplitude_alignment(graph, 0)
@@ -430,11 +412,10 @@ def test_conflicting_graph_hierarchy_rejects_stage_before_live_write() -> None:
     before = _plain_state(graph)
 
     with pytest.raises(OperatorPreconditionError, match="must match parent sub_nodes"):
-        execute_self_organization_stage(
-            graph, SelfOrganization(), (0,), tau=0.1
-        )
+        execute_self_organization_stage(graph, SelfOrganization(), (0,), tau=0.1)
 
     assert _plain_state(graph) == before
+
 
 def test_noncanonical_override_uses_transactional_gauss_seidel_fallback(
     monkeypatch: pytest.MonkeyPatch,
@@ -454,9 +435,7 @@ def test_noncanonical_override_uses_transactional_gauss_seidel_fallback(
 
     assert calls == ["1", 1]
     assert result.schedule == OPERATOR_MAJOR_GAUSS_SEIDEL
-    assert graph.graph[STAGE_SCHEDULE_KEY]["schedule"] == (
-        OPERATOR_MAJOR_GAUSS_SEIDEL
-    )
+    assert graph.graph[STAGE_SCHEDULE_KEY]["schedule"] == (OPERATOR_MAJOR_GAUSS_SEIDEL)
 
 
 def test_grammar_replacement_uses_transactional_gauss_seidel_fallback() -> None:
@@ -468,9 +447,7 @@ def test_grammar_replacement_uses_transactional_gauss_seidel_fallback() -> None:
         glyph_history=["AL"],
     )
 
-    result = execute_self_organization_stage(
-        graph, SelfOrganization(), (0,), tau=0.1
-    )
+    result = execute_self_organization_stage(graph, SelfOrganization(), (0,), tau=0.1)
 
     assert result.schedule == OPERATOR_MAJOR_GAUSS_SEIDEL
     assert graph.nodes[0]["glyph_history"][-1] == "IL"

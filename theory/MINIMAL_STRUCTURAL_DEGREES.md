@@ -81,8 +81,10 @@ The negative result above identifies capacity as a necessary predictive model
 parameter. A graph-specific positive result is also available when the complete
 nodal structural-potential field is retained.
 
-For fixed connected undirected conductance, let `K` be the canonical
-inverse-square shortest-path kernel. Pure EPI pressure gives
+For fixed connected reciprocal nonnegative conductance with positive nodal
+strengths and fixed positive capacities, let `K` be the canonical
+inverse-square shortest-path kernel on its declared distance domain. With
+unit pure-EPI channel coefficient, pressure gives
 
 ```text
 Phi_s = -K L_rw x,    x = EPI.
@@ -171,11 +173,14 @@ scaling when its denominator is nonzero.
 
 ### 4.3 Circular curvature
 
+Where the circular mean is available,
 K_φ = wrap(φ_i − circular_mean(neighbors)) gives |K_φ| ≤ π by definition.
-The 0.9π threshold is an operational margin inside that exact bound.
-Near-antiphase configurations also require care with the circular mean when
-the neighbor resultant is small. A hotspot is a diagnostic flag, not a proof
-of a singularity in an underlying continuous manifold.
+The 0.9π threshold is an operational margin inside that exact bound. The
+shared reader accepts every nonzero represented phasor resultant without an
+arbitrary small-magnitude cutoff; exact represented cancellation on nonempty
+support makes curvature unavailable. Isolates retain the documented zero
+convention. These arithmetic availability conditions do not prove a
+trigonometric singularity or a singularity of a continuous manifold.
 
 ### 4.4 Correlation length
 
@@ -207,6 +212,14 @@ channel prove that no additional observable can carry independent information.
 The strong claim of a minimal complete representation therefore remains open
 until its target state space and equivalence relation are specified and the
 appropriate injectivity and non-redundancy results are proved.
+
+A positive example with those choices fixed is the
+[P5 reflection quotient](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#a-complete-reflection-invariant-form-state-on-the-retained-p5).
+Its three even coordinates and constrained quadratic hidden-mode matrix
+reconstruct form up to reflection under the declared pure-EPI law. This is
+not the four-field tetrad, a universal state basis, or a reduction to three
+dimensions near the reflection-fixed stratum. The linked derivation owns
+the injectivity, rate, decoder and field-covariance results.
 
 ## 6. Energy, currents, and conservation
 
@@ -253,7 +266,7 @@ program assumptions and open conjectures.
 | Potential has a uniform π-fraction maximum | False without additional pressure/geometry assumptions |
 | Three operations bound every diffusion relaxation time | False; the 21-node path is a counterexample |
 | Laplacian compositions prove tetrad completeness | False inference; operator generation is not reconstruction |
-| Tetrad is a minimal sufficient statistic for a specified state quotient | Open; quotient and observable class must first be specified |
+| Tetrad is a universal minimal sufficient state statistic | Not established; task-specific quotients require explicit injectivity and dynamics proofs |
 | Full Φ_s plus one zero-mode scalar reconstructs EPI | Conditional on `rank(-K L_rw)=N-1`, fixed graph and pure EPI pressure |
 | Rank condition holds on every connected graph | Open; measured on all 142 connected simple graph-atlas cases through six nodes |
 | Full-rank potential reconstruction is uniformly well-conditioned | False across unrestricted weights; extreme weighted stars are arbitrarily ill-conditioned candidates |
@@ -270,4 +283,3 @@ necessity.
 - [Mathematical scope and exact witnesses](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md).
 - [Unified grammar](UNIFIED_GRAMMAR_RULES.md).
 - [Fundamental theory](FUNDAMENTAL_THEORY.md): broader theory context.
-- [Finite-graph witnesses and scope](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md).

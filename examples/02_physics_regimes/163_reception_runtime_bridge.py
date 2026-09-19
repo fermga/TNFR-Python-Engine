@@ -16,9 +16,9 @@ certified diffusion timescale to obtain a strict contraction.
 
 from __future__ import annotations
 
-from fractions import Fraction
 import json
 import platform
+from fractions import Fraction
 from pathlib import Path
 from typing import Any
 
@@ -31,7 +31,6 @@ from tnfr.research import (
     CoreExperimentManifest,
     current_git_source_provenance,
 )
-
 
 NODES = ("hub", "strong", "weak")
 EDGE_WEIGHTS = (9.0, 1.0)
@@ -197,9 +196,7 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
             "exact_hybrid_contraction_decision": (
                 hybrid.disagreement_contracts_over_declared_horizon
             ),
-            "initial_weighted_mean_preserved": (
-                hybrid.initial_weighted_mean_preserved
-            ),
+            "initial_weighted_mean_preserved": (hybrid.initial_weighted_mean_preserved),
         },
         "manifest": manifest.to_dict(),
         "scope": {

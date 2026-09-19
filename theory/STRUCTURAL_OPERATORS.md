@@ -83,12 +83,14 @@ Throughout this document:
 
 ### 2.1 Structural Triad
 
-Each node $i$ carries three irreducible attributes:
+Each node $i$ carries the declared structural triad. This representation is
+not a proof that the three attributes remain independent under every richer
+form representation or specified quotient:
 
 | Attribute | Symbol | Domain | Units |
 |-----------|--------|--------|-------|
-| Form | $\text{EPI}_i$ | $\mathcal{B}_{\text{EPI}}$ (Banach space) | — |
-| Frequency | $\nu_{f,i}$ | $\mathbb{R}^+$ | Hz_str |
+| Form | $\text{EPI}_i$ | Declared form space; scalar glyphs require a signed real chart or uniform-real BEPI embedding | Declared form unit X |
+| Frequency | $\nu_{f,i}$ | Nonnegative reals; individual operators may require strict positivity | Hz_str |
 | Phase | $\phi_i$ (or $\theta_i$) | $[0, 2\pi)$ | rad |
 
 The derived quantity $\Delta\text{NFR}_i$ (structural pressure) drives evolution.
@@ -98,14 +100,20 @@ also update declared secondary channels.
 
 ### 2.2 Operator as Transformation
 
-An operator $\hat{O}$ maps the node state $\sigma_i = (\text{EPI}_i, \nu_{f,i}, \phi_i, \Delta\text{NFR}_i)$ to a new state:
+An operator is an event map on its declared full input state $z$, which can
+include neighbors, graph data and history. Its local channel projection is
+$\sigma_i=(\text{EPI}_i,\nu_{f,i},\phi_i,\Delta\text{NFR}_i)$:
 
 $$
-\hat{O}: \sigma_i \mapsto \sigma_i' = (\text{EPI}_i', \nu_{f,i}', \phi_i', \Delta\text{NFR}_i')
+\hat{O}: z\mapsto z',\qquad
+\sigma_i'=\operatorname{proj}_i(z').
 $$
 
 subject to:
-1. **Nodal equation**: The resulting state must be consistent with $\partial\text{EPI}/\partial t = \nu_f \cdot \Delta\text{NFR}$.
+1. **Flow/event distinction**: Continuous segments obey the declared nodal
+   law; direct EPI-writing events contribute separate jumps. Stored pressure
+   after an event need not equal freshly evaluated constitutive pressure.
+   A local channel tuple alone need not determine an operator's result.
 2. **Grammar constraints**: The operator must satisfy its declared U1--U5 role;
    U6 is evaluated from before/after $\Phi_s$ telemetry.
 3. **Contracts**: Pre-conditions and post-conditions specific to each operator.
@@ -495,18 +503,18 @@ common-metric gates pass.
 
 ## 3. The Operator Taxonomy
 
-The 13 operators partition into functional classes defined by their effect on the nodal equation:
+The 13 operators have overlapping functional roles declared by their contracts:
 
 | Class | Operators | Declared structural role | Grammar Roles |
 |-------|-----------|--------------------------|---------------|
-| **Generators** | AL, NAV, REMESH | Create or activate EPI | U1a |
+| **Generators** | AL, NAV, REMESH | Supported initiation/activation context | U1a |
 | **Integrator** | EN | Integrates external input | — |
 | **Stabilizers** | IL, THOL | Direct pressure reduction (IL) or stabilizing reorganization (THOL) | U2 |
 | **Destabilizers** | OZ, ZHIR, VAL | Incur pressure, phase, or capacity debt | U2 |
 | **Coupling** | UM, RA | Phase synchronization | U3 |
 | **Transformers** | ZHIR, THOL | Bifurcation-driven change | U4a, U4b |
 | **Closure** | SHA, NAV, REMESH, OZ | Terminate sequences | U1b |
-| **Simplifier** | NUL | Reduces dimensionality | — |
+| **Simplifier** | NUL | Attenuates capacity and rescales stored pressure | — |
 
 Some operators appear in multiple classes. THOL is simultaneously a stabilizer (U2) and a transformer (U4b). NAV and REMESH serve as both generators (U1a) and closures (U1b). OZ is both a destabilizer (U2) and closure (U1b). This multiplicity reflects the richness of their physics.
 
@@ -525,7 +533,9 @@ repair for a mathematical singularity.
 
 ### 4.1 Emission (AL)
 
-**Physics**: Foundational activation of nodal resonance. Creates EPI from vacuum via resonant emission.
+**Physics**: Declared activation by a positive EPI increment on an existing
+node. Zero EPI is a coordinate value, not absence of the nodal substrate;
+the map does not derive creation from a vacuum.
 
 **Primary-channel transformation**:
 
@@ -565,7 +575,9 @@ channel and sign, not this threshold).
 
 ### 4.2 Transition (NAV)
 
-**Physics**: Controlled regime shift. Navigates between attractor states (dormant → active → resonant) with regime-specific parameter adjustment.
+**Physics**: Configured adjustments selected by latent/active/resonant state
+labels. These operational labels do not establish dynamical attractors or
+prove transitions between them.
 
 **Transformation** (regime-dependent):
 
@@ -854,7 +866,9 @@ where $\lambda \approx 0.3$ is the phase locking coefficient and $\bar{\theta}_{
 
 ### 6.2 Self-Organization (THOL)
 
-**Physics**: Autonomous emergence via bifurcation. Creates sub-EPIs when the structural acceleration exceeds the bifurcation threshold, implementing operational fractality.
+**Physics**: An invoked pressure-reorganization map with conditional nested
+child creation. Its acceleration threshold, invocation and hierarchy policy
+are supplied inputs; executing THOL does not derive autonomous emergence.
 
 Its primary contract channel is $\Delta\text{NFR}$ with direction
 **reorganize**:
@@ -916,7 +930,9 @@ alias for the general fragmentation-risk cut. It is not read by THOL and does
 not supply the explicit U5 coefficient.
 
 **Properties**:
-- **Autopoietic**: Creates independent sub-nodes with hierarchy metadata (bifurcation level, hierarchy path, parent reference).
+- **Nested creation**: Creates child coordinates with hierarchy metadata
+  (bifurcation level, hierarchy path, parent reference). Independent persistence
+  and autonomous maintenance do not follow from this event.
 - **Metabolic integration**: When enabled, captures network signals and metabolizes them into sub-EPI values.
 - **Amplitude-alignment telemetry**: `compute_subepi_amplitude_alignment`
   returns $1/(1+\operatorname{var}(a_{\rm child}))$ for stored child EPI
@@ -943,8 +959,15 @@ budget, disconnected zero modes and finite implementation evidence.
 **Grammar**: Stabilizer (U2); Bifurcation Handler (U4a); Transformer (U4b).
 
 **Contract**:
-- Pre: Sufficient EPI history ($\geq 3$ points); $\nu_f > 0$; elevated $\Delta\text{NFR}$.
-- Post: Sub-EPIs spawned (if bifurcation); parent identity and hierarchy metadata preserved.
+- Pre: Finite supported state and valid configuration. When enabled, the
+  optional strict gate additionally checks configured EPI/capacity minima,
+  positive stored pressure, connectivity and at least three active history
+  samples. Exceeding the acceleration threshold is not required to execute
+  the pressure action. See the shared
+  [THOL precondition owner](../src/tnfr/operators/preconditions/self_organization.py).
+- Post: Parent EPI, capacity and phase are preserved; pressure follows the
+  signed acceleration proposal. Child creation additionally requires its
+  threshold, depth and proposal checks; a successful THOL may create no child.
 
 ---
 
@@ -969,7 +992,10 @@ where the default amplification is
 $f=(\pi+1)/\pi\approx1.3183$, the reciprocal of the default IL retention.
 It remains an operational gain; the contract fixes only $f>1$.
 
-**Bifurcation trigger**: When $\partial^2\text{EPI}/\partial t^2 > \tau$, the system enters a bifurcation-active state requiring a handler (IL or THOL per U4a).
+**Bifurcation read-out**: The implementation compares the magnitude of its
+observed structural acceleration with the configured threshold $\tau$.
+A flag records that comparison, not a bifurcation theorem for an underlying
+continuous law. U4a separately requires handler context for the trigger token.
 
 **Key constants**:
 
@@ -1016,13 +1042,17 @@ $$
 
 **Contract**:
 - Pre: EPI above minimum; coherence above 0.866; bounded $\Delta\text{NFR}$.
-- Post: Dimensionality increased; requires IL/THOL compensation. Avoid VAL$\to$VAL chaining.
+- Post: Capacity is not decreased; no EPI, graph or state-space dimension
+  increase follows from multiplying $\nu_f$. U2 compensation and prefix-debt
+  limits still apply.
 
 ---
 
 ## 8. Coupling and Propagation
 
-Coupling operators establish and utilize phase-synchronized links between nodes. Grammar rule U3 requires phase compatibility verification: $|\phi_i - \phi_j| \leq \Delta\phi_{\max}$.
+Coupling operators establish and utilize phase-compatible links between nodes.
+Grammar rule U3 verifies circular separation:
+$|\operatorname{wrap}(\phi_i-\phi_j)|\leq\Delta\phi_{\max}$.
 
 ### 8.1 Coupling (UM)
 
@@ -1031,7 +1061,7 @@ Coupling operators establish and utilize phase-synchronized links between nodes.
 **Transformation**:
 
 $$
-\phi_i' \to \phi_j', \qquad |\phi_i - \phi_j| \leq \Delta\phi_{\max}
+\phi_i' \to \phi_j', \qquad |\operatorname{wrap}(\phi_i - \phi_j)| \leq \Delta\phi_{\max}
 $$
 
 **Compatibility threshold**: $\pi/(\pi+1) \approx 0.7585$ (the high-coherence gate, complement of the fragmentation threshold $1/(\pi+1)$).
@@ -1041,12 +1071,16 @@ $$
 | Constant | Value | Derivation |
 |----------|-------|------------|
 | Compatibility threshold | $\pi/(\pi+1) \approx 0.7585$ | high-coherence gate |
-| Phase push | $1/(\pi + 1) \approx 0.241$ | Same physics as EN mixing |
+| Phase push | $1/(\pi + 1) \approx 0.241$ | Configured circular-alignment gain; shared numeric value with EN mixing |
 | $\Delta\text{NFR}$ reduction | $1/(2\pi)\approx0.1592$ | Default phase-alignment pressure-relief gain |
 
 **Properties**:
-- **Phase verification mandatory**: Antiphase ($|\phi_i - \phi_j| > \Delta\phi_{\max}$) produces destructive interference; coupling is forbidden.
-- **EPI identity preserving**: Form is not modified; only phase alignment changes.
+- **Phase verification mandatory**: Circular separation above the configured
+  U3 limit rejects coupling. This gate alone supplies no wave-amplitude or
+  destructive-interference calculation.
+- **EPI identity preserving**: Form is not modified; phase alignment, optional
+  capacity synchronization, pressure relief and functional-link proposals
+  have separate configured effects.
 - **$\nu_f$ synchronization**: Optional frequency alignment across coupled nodes.
 
 **Grammar**: Coupling (U3); requires phase verification.
@@ -1346,11 +1380,15 @@ EPI is preserved via latency snapshot.
 
 **Contract**:
 - Pre: Existing EPI; $\Delta\text{NFR}$ not at critical levels.
-- Post: $\nu_f \to 0$; EPI remains invariant; latent flag set with snapshot.
+- Post: Capacity is not increased; EPI, pressure and phase remain fixed at
+  the event, with the declared latency metadata. Finite attenuation need not
+  produce zero capacity or freeze subsequent nodal evolution.
 
 ### 10.2 Contraction (NUL)
 
-**Physics**: Densifies and consolidates structural form by reducing dimensionality. Compresses $\nu_f$ while increasing local $\Delta\text{NFR}$ density.
+**Physics**: Attenuates capacity and rescales stored pressure by the reciprocal
+configured factor. This changes neither graph dimension nor the dimension of
+the EPI state space; “contraction” names this declared map.
 
 **Transformation**:
 
@@ -1385,7 +1423,9 @@ misreported as densification.
 
 **Contract**:
 - Pre: Non-trivial EPI (not $\approx 0$).
-- Post: Dimensionality reduced; pressure density increased. Avoid NUL$\to$NUL chaining.
+- Post: Capacity is not increased; stored pressure follows the checked
+  reciprocal proposal, with zero pressure remaining zero. Subsequent pressure
+  refresh is a separate constitutive operation.
 
 ---
 
@@ -1505,15 +1545,15 @@ Every operator has a postcondition contract anchored to the **direct effect on n
 | 2 | Reception | EN | EPI | Immediate operator-local $C(t)$, $\Delta\mathrm{NFR}$ and $d\mathrm{EPI}$ unchanged |
 | 3 | Coherence | IL | $\Delta\text{NFR}$ | $C(t)$ non-decreasing; $\lvert\Delta\text{NFR}\rvert$ reduced |
 | 4 | Dissonance | OZ | $\Delta\text{NFR}$ | $\lvert\Delta\text{NFR}\rvert$ not decreased |
-| 5 | Coupling | UM | $\theta$ | Phase compatibility $\lvert\phi_i - \phi_j\rvert \le \Delta\phi_{\max}$ |
+| 5 | Coupling | UM | $\theta$ | U3 uses wrapped phase separation; optional pressure-relief contract does not increase its magnitude |
 | 6 | Resonance | RA | EPI | EPI structural identity (sign/kind) preserved |
-| 7 | Silence | SHA | $\nu_f$ | EPI preserved over time; $\nu_f$ frozen |
+| 7 | Silence | SHA | $\nu_f$ | Capacity not increased; EPI, pressure and phase unchanged at the event |
 | 8 | Expansion | VAL | $\nu_f$ | $\nu_f$ not decreased (capacity added) |
 | 9 | Contraction | NUL | $\nu_f$ | $\nu_f$ not increased (capacity removed) |
-| 10 | Self-Organization | THOL | $\Delta\text{NFR}$ | Global form preserved; sub-EPIs created (if bifurcation) |
+| 10 | Self-Organization | THOL | $\Delta\text{NFR}$ | Parent EPI, capacity and phase fixed; signed pressure reorganization and conditional nested creation |
 | 11 | Mutation | ZHIR | $\theta$ | Phase $\theta$ changed when $\Delta\text{EPI}/\Delta t > \xi$ |
-| 12 | Transition | NAV | $\Delta\text{NFR}$ | Controlled trajectory; no coherence collapse |
-| 13 | Recursivity | REMESH | EPI (network) | Nested structure maintained; parent identity preserved |
+| 12 | Transition | NAV | $\Delta\text{NFR}$ | Declared state change in capacity, phase or pressure; no general future-coherence guarantee |
+| 13 | Recursivity | REMESH | EPI (network) | History mixing at network scope; node-level advisory rather than a universal identity theorem |
 
 The contract catalog is complete as a specification but is not instantaneously
 identifiable from its categorical fields. The exact certificate
@@ -1538,7 +1578,7 @@ contracts in [`operators/operator_contracts.py`](../src/tnfr/operators/operator_
 
 | Symbol | Name | Value | Role |
 |--------|------|-------|------|
-| $\pi$ | Pi | $3.141592653589793$ | the one genuine structural scale: bounds the phase sector ($\lvert\nabla\phi\rvert \le \pi$, $\lvert K_\phi\rvert \le \pi$) |
+| $\pi$ | Pi | $3.141592653589793$ | Exact radian wrap scale: bounds the defined phase read-outs ($\lvert\nabla\phi\rvert \le \pi$, $\lvert K_\phi\rvert \le \pi$) |
 
 ### 14.2 Operator gain magnitudes (operational)
 
@@ -1547,14 +1587,17 @@ qualitative direction or intent, not every magnitude):
 
 | Constant | Value | Used by |
 |----------|-------|---------|
-| EN / THOL collective-coherence fraction | $1/(\pi + 1) \approx 0.241$ | EN mixing, UM phase push, THOL/VAL threshold (π-derived) |
+| Selected mixing/gate fraction | $1/(\pi + 1) \approx 0.241$ | EN mixing, UM phase push and a VAL gate; the THOL collective-coherence alias is inert |
 | SHA / NUL frequency factor | $1-1/(4\pi)\approx0.9204$ | SHA suppression and NUL compression |
 | NUL densification factor | $1/(1-1/(4\pi))\approx1.0865$ | Reciprocal configured capacity factor |
 | VAL scale factor | $1+1/(4\pi)\approx1.0796$ | VAL capacity expansion |
 | AL emission boost | configured positive gain | AL creation; direct-handler fallback is `COUPLING_GENTLE` |
 | THOL fractal scale | $0.3$ | Sub-EPI scaling |
 
-The complete, authoritative set lives in `src/tnfr/constants/canonical.py`; among them the only genuine structural scale is the phase scale $\pi$ (the $1/(\pi+1)$ entry above is the one π-derived value).
+Current values live in `src/tnfr/constants/canonical.py` and their configuration
+owners. The phase-wrap bound is exact in the radian chart; neither
+$1/(\pi+1)$ nor another expression containing $\pi$ derives a required gain
+or coherence threshold from that bound.
 
 ### 14.3 Constant-Operator-Grammar Traceability
 
@@ -1567,10 +1610,10 @@ OZ   (ΔNFR ↑, amplification)   →  U2 (destabilizer)
 IL   (ΔNFR ↓, reduction)       →  U2 (stabilizer), U4a (handler)
 EN   (EPI, mixing)             →  integrator
 VAL  (νf ↑, expansion)         →  U2 (destabilizer)
-SHA  (νf → 0, suppression)     →  U1b (closure)
+SHA  (νf attenuated)          →  U1b (closure)
 ZHIR (θ, mutation)             →  U4b (transformer)
-THOL (sub-EPI, self-org)       →  U2 (stabilizer), U4b (transformer)
-AL   (EPI from vacuum)         →  U1a (generator)
+THOL (signed pressure action) →  U2 (stabilizer), U4b (transformer)
+AL   (EPI activation map)     →  U1a (generator)
 ```
 
 **Source**: `src/tnfr/constants/canonical.py` and
@@ -1646,7 +1689,7 @@ channel, direction, scale and postcondition).
 | `src/tnfr/physics/pointwise_stage_stability.py` | Executor-bound pointwise represented-map certificates |
 | `src/tnfr/physics/runtime_flow_stability.py` | Detached observed-flow certificates and proof sealing |
 | `src/tnfr/physics/_exact_metric.py` | Shared exact positive-metric normalization and proportionality |
-| `src/tnfr/constants/canonical.py` | All derived constants |
+| `src/tnfr/constants/canonical.py` | Phase scale and configured gains, bounds and diagnostic policies |
 
 ### 15.2 Base Operator Workflow
 

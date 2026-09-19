@@ -107,9 +107,7 @@ def _validated_tolerance(value: float) -> float:
         ) from exc
 
     if not math.isfinite(result) or not 0.0 < result < 1.0:
-        raise ValueError(
-            "tolerance must be a finite real in the open interval (0, 1)"
-        )
+        raise ValueError("tolerance must be a finite real in the open interval (0, 1)")
     return result
 
 

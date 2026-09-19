@@ -10,12 +10,12 @@ import hashlib
 import math
 import time
 import weakref
-from functools import wraps
 from collections import OrderedDict
 from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
+from functools import wraps
 from typing import Any, Callable
 
 from ..mathematics.unified_numerical import np
@@ -34,7 +34,6 @@ from ..constants.operational import (
     MULTIMODAL_CACHE_TARGET_CANONICAL,
     MULTIMODAL_CACHE_TETRAD_IMPORTANCE_CANONICAL,
 )
-
 
 _RUNTIME_GRAPH_KEYS = frozenset(
     {
@@ -174,6 +173,7 @@ def _graph_state_token(graph: Any, seen: set[int] | None = None) -> Any:
         nodes,
         edges,
     )
+
 
 class CacheEntryType(Enum):
     """Types of cached computations."""
@@ -445,9 +445,7 @@ class TNFRUnifiedMultiModalCache:
             CacheInvalidationTrigger.TOPOLOGY_CHANGE,
             CacheInvalidationTrigger.EDGE_WEIGHT_CHANGE,
         }:
-            invalidated_count = self._invalidate_by_types(
-                set(CacheEntryType), G
-            )
+            invalidated_count = self._invalidate_by_types(set(CacheEntryType), G)
 
         elif trigger == CacheInvalidationTrigger.NODE_PARAMETER_CHANGE:
             # Node parameter changes affect nodal states and dependent computations
@@ -496,10 +494,7 @@ class TNFRUnifiedMultiModalCache:
         keys_to_remove = []
         for key, entry in self._cache.items():
             if entry.entry_type in types_to_invalidate:
-                if (
-                    graph_identity is None
-                    or entry.graph_identity == graph_identity
-                ):
+                if graph_identity is None or entry.graph_identity == graph_identity:
                     keys_to_remove.append(key)
 
         # Remove invalidated entries

@@ -163,7 +163,9 @@ obstructions or make one programme's evidence establish another's claim.
 | PNP-4 | Encoding generality: SAT / graph-colouring beyond MAX-CUT | open |
 | PNP-5 | Worst-case separation (Clay-hard boundary) | open, **not assumed** |
 
-PNP-5 is the Clay-strength statement and is not claimed.
+PNP-5 is not claimed. The table is a historical comparison inventory, not an
+active parallel queue; the [single execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md)
+owns priorities.
 
 ---
 

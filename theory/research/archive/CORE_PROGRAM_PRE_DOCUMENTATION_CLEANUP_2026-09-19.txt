@@ -1,0 +1,2125 @@
+# TNFR core dynamics research program
+
+This program maps the proposed research lines to current repository evidence.
+Every line begins open and changes status only through a scoped derivation,
+counterexample or reproducible measurement. The nodal equation and existing
+operator contracts remain authoritative.
+
+The [strategic review](NODAL_RESEARCH_STRATEGY.md) prioritizes generative
+coherence: formation, persistence and interaction of regions under declared
+nodal dynamics. Measurement validity and held-out prediction remain the
+supporting physical bridge. C6 remains a separate parked proof branch;
+its indefinite closure is not a prerequisite for a scoped regional study.
+The [portfolio](../TNFR_lineas_de_investigacion.txt) classifies the research
+axes; the [five-stage plan](research/FIVE_STAGE_EXECUTION_PLAN.md) alone owns
+active execution order and status. This document remains the technical S1-S16
+evidence inventory, not a parallel task queue. P1 has implemented abstention
+and calibration/evaluation separation; physical model admission remains open.
+No new empirical result is asserted here. The
+[regional reuse review](NODAL_RESEARCH_STRATEGY.md#region-formation-integrated-reuse-and-missing-mechanisms)
+connects these existing S-lines without reopening completed closure or
+selection tests.
+
+| Line | Question | Current status |
+| --- | --- | --- |
+| S1 | Stability for nontrivial dynamics | Fixed and bounded time-varying EPI diffusion derived; exact-common-metric switching plus declared affine EPI resets have a conservative hybrid gain budget. All thirteen runtime glyph stages use immutable all-target proposals. Event execution composes eligible represented affine gains for one observed finite trace. Ordered supplied event/REMESH cycle results expose sealed exact nodal/history boundaries. A separate exact finite companion theorem gives nonincreasing augmented disagreement for uniform, unclipped REMESH with fixed delays, support and metric; `0<alpha<1` mixes temporally, while `alpha=1` preserves possible cycles. One applied executor-sealed REMESH transition is identified against that companion with exact signed binary64 rounding/clipping defects. A stricter adjacent-cycle adapter binds the next represented schedule to the recorded next-history head and telescopes finite energy balances in one common metric. A graph-owned outer executor gives a compatible requested telescope same-invocation causal provenance and finite graph-owned atomicity; its explicit no-telescope branch retains the causal trace for words without a common affine schedule metric. A sealed observer measures exact normalized margins on contiguous finite blocks; one witness has `kappa=139/256`, while the causal `alpha=1` boundary has zero margin. Equilibrium and amplitude scaling rule out a uniform positive absolute drop. A conditional exact policy theorem closes the normalized spatial-disagreement margin `1-q` and prefix gain upper bound one for consensus-preserving common-`q` schedules. Its robust extension proves `q_eff=q*(1+eta)` under the signed bound `E_H(z)-E_H(y)<=eta*J`; a causal observer verifies this hypothesis, every represented gain and the full energy-vector envelope on one finite block. The broad bounded binary64 box is refuted by an exact `alpha=1/2` defect witness; the restricted antisymmetric P2 hard-clip class at `alpha=1/2` has sharp uniform `eta=135/124`, is REMESH-forward-invariant and composes strictly when `q<124/259`. The `alpha=1`, `eta=0` REMESH class and the P2 half-Reception `q=0` EPI kernel close one restricted repeated numeric composition. One executed graph-owned EN EPI stage is bound to the P2 kernel and its captured endpoint. A finite same-invocation adapter binds every selected EN and same-cycle `alpha=1` REMESH, verifies the active suffix of length `tau_global+1`, and records post-horizon spatial extinction. A reusable outer policy now preflights, executes and post-certifies every such finite invocation transactionally, including rollback of graph-owned state. A priori preservation under future unobserved complete-runtime execution, auxiliary Reception-state stability, extending the half-alpha result beyond antisymmetric P2 or to complete runtime, solver accuracy, full multichannel dynamics and changing parameters/support remain open |
+| S2 | A TNFR Lyapunov functional | Exact weighted fixed-capacity and common time-varying functionals derived; an affine reset has finite global gain exactly when it preserves the consensus subspace. Composition uses rational quotient-gain bounds and requires exact endpoint continuity. The uniform exact delayed-REMESH companion has a stationary-weighted augmented disagreement functional with an exact Jensen dissipation identity. A sealed runtime bridge separates exact Jensen dissipation from signed rounding and clipping defects. The adjacent schedule layer adds a represented schedule defect, gain slack and sufficient lower bound, then sums these balances across a finite compatible cycle sequence without multiplying fixed-history gains. One outer graph transaction binds that finite sum to actual causal cycle execution, and the block observer normalizes its lower bound by positive initial energy. Hard clipping onto one common scalar interval is disagreement-nonexpansive; soft-knee and rounding counterexamples block unconditional promotion. Absolute uniform drop is obstructed by equilibrium and amplitude scaling. For the conditional exact schedule family, the augmented spatial-disagreement functional has prefix gain at most one and geometric decay under `q<1`. A signed relative head defect is now absorbed exactly by `q_eff=q*(1+eta)` when `delta<=eta*J`; the finite causal adapter verifies the resulting sufficient Lyapunov envelope on selected executions. At `alpha=1/2`, the antisymmetric P2 hard-clip class supplies sharp uniform `eta=135/124`; `q=4/9` therefore gives `q_eff=259/279` and margin `20/279`, while `q=124/259` is the zero-margin boundary. The `alpha=1` boundary supplies a forward-invariant REMESH-only zero-defect budget and the P2 half-Reception EPI kernel supplies `q=0`; one executed EN EPI stage is bound to `q=0`, and a finite same-invocation adapter binds every selected EN and same-cycle REMESH through the active suffix. The per-call policy revalidates and transactionally realizes that finite envelope before commit. Future unobserved complete-runtime binding, auxiliary Reception-state stability, extension beyond the antisymmetric P2 REMESH class, changing coefficients/metric/support and a full tetrad/nonlinear-operator functional remain open |
+| S3 | Tetrad observability and minimality | Tetrad-only prediction disproved; full `Phi_s` plus one zero-mode scalar conditionally reconstructs EPI; universal rank/minimality open |
+| S4 | Spectrum of heterogeneous `nu_f` | Generalized fixed-capacity gap, time-varying bound and minimum common-metric switching-family gap derived. A sealed exact-rational kernel treats any one exact nonuniform eigenmode of a fixed connected symmetric rational conductance with arbitrary positive heterogeneous rational capacity. Its finite runtime adapter now derives the same fixed generator, metric, mode and partition family from executor-owned pressure-refreshed flows, separates represented pressure/execution defects and propagates them with the full Euler matrices. The directed case remains open |
+| S5 | Spectral adaptive grammar | Explicit physical flow partitions execute pressure refresh at every boundary and retain sealed segment/modal evidence. The exact reversible single-mode kernel proves conditional exact-real convergence as `h_max -> 0`; its general runtime adapter now binds finite individually certified executions and provides signed rational continuous-error enclosures. The effective-P2 specialization separately adds finite REMESH scaling and a committed residual. Binary64/runtime mesh convergence, solver order or accuracy, common causal family provenance, mixed modes and adaptive U2/U4 remain open |
+| S6 | Coherence phase transitions | Signed-global classifier corrected and a balanced static-ensemble finite-size protocol added; an actual transition and universality remain open |
+| S7 | Dynamic nodal-topology transitions | Descriptive inverse-square-kernel transition certificates align labels with tetrad, C and Si endpoint deltas; precursor prediction open |
+| S8 | Coarse-graining and closure | Exact reversible closure is derived for pure EPI and the fixed-branch pairwise phase realization. The canonical phasor channel closes on a strongly restricted lifted block-constant subspace, while a `K3,3` state with the same macro phase and different projected rates refutes global projected autonomy. Branch crossing, zero resultants and changing support remain open |
+| S9 | Renormalization flow of operators | Pure-EPI diffusion and the fixed-branch pairwise phase realization stay in-family under certified exact intertwining quotients. The canonical phasor counterexample and generic matrix/callable protocol expose unresolved fibers; nonlinear catalog-wide flow remains open |
+| S10 | Completeness of the 13 operators | **OPEN**: contract snapshots and catalog-independent quotient machinery are groundwork; the admissible transformation space and generation theorem are undefined |
+| S11 | Geometry of coherence level sets | Local levels are L1 diamonds; for fixed `N`, the complete ambient network level is an exactly stratified `2N`-dimensional cross-polytope, and its fixed-capacity nodal-equation slice is an `N`-dimensional weighted cross-polytope. Variable-capacity/changing-support strata and temporal dynamics remain open |
+| S12 | Dissipative-symplectic bridge | Exact decoupled metriplectic product derived. Fixed-P2 geometric read-outs cannot realize a nonzero continuous harmonic flow; fixed-phase pure-EPI potential/flux instead close with decay rate `nu_0+nu_1`. Broader TNFR-derived realizability and coupling remain open |
+| S13 | Non-normality and dissonance bursts | Logarithmic-norm sign exactly characterizes fixed linear pressure growth; numerical signs within backward error abstain; finite-family prediction measured and canonical directed U2 metric open |
+| S14 | Structural information geometry | A relabeling-invariant structural-state metric is exact within a declared finite simple-graph topology/label class; cross-topology, nesting and history geometry open |
+| S15 | Inverse identification from telemetry | Known-target, node-level one-step signatures separate all 13 operators on declared probes and have a finite-prototype noise margin. ZHIR now has a replayable prediction/observation residual, immutable accepted-stage decision records and offline pre-jump observations that preserve rejected gates and distinguish rational secants from its actual binary64 threshold arithmetic. All thirteen atomic stages remove contracted target-order and partial-commit confounds before pressure refresh; target localization, aggregate inversion, mixed schedules, unseen states and complete words remain open |
+| S16 | Observable, stable and scale-persistent NFR structure | Endpoint and sampled-path certificates compose restricted pure-EPI hypotheses, stable forward-Euler updates and a common switching metric. All thirteen glyphs have atomic all-target Jacobi stages. Executed schedules and individually atomic event/REMESH cycles feed a sealed finite three-mesh comparison. The uniform exact companion theorem closes augmented-history monotonicity and temporal convergence on fixed support/metric without clipping; an adjacent-cycle layer gives a finite represented history telescope. A graph-owned executor binds a compatible requested telescope to one causal finite invocation with atomicity and can retain the causal trace without that telescope when no common affine schedule metric exists. A block observer extracts exact normalized lower margins without promoting them to class-wide results. The exact policy theorem gives common-`q` repeated spatial-disagreement decay; its relative-defect extension preserves it with `q_eff=q*(1+eta)` and its causal adapter verifies the robust vector envelope on finite runtime blocks, including positive binary64 defect. The antisymmetric P2 `alpha=1/2` hard-clip class now supplies a sharp uniform binary64 defect budget and REMESH-only forward invariance. The general reversible exact mode is also bound offline to executor-owned pressure-refreshed partitions with complete-matrix defect propagation. A restricted P2 half-Reception/`alpha=1` binary64 EPI-kernel class is now forward invariant and extinguishes spatial disagreement after the finite companion horizon; one graph-owned EN EPI event is bound to that kernel and its endpoint, and a finite same-invocation adapter binds every observed EN/REMESH cycle, the active suffix and post-horizon extinction. A transactional policy now enforces and certifies those current finite conditions independently on every invocation. Their a priori persistence under future unobserved complete-runtime execution, auxiliary Reception-state stability, broader state classes and support, generic runtime convergence and changing node support remain open |
+
+## Implementation map
+
+The program is centralized here; implementation and falsification tests remain
+next to the subsystem they certify.
+
+| Lines | Executable certificate or diagnostic | Primary tests |
+| --- | --- | --- |
+| S1, S2, S4, S5 | [`structural_diffusion.py`](../src/tnfr/physics/structural_diffusion.py), [`hybrid_operator_stability.py`](../src/tnfr/physics/hybrid_operator_stability.py), [`_exact_metric.py`](../src/tnfr/physics/_exact_metric.py), [`pointwise_stage_stability.py`](../src/tnfr/physics/pointwise_stage_stability.py), [`runtime_flow_stability.py`](../src/tnfr/physics/runtime_flow_stability.py), [`event_refinement.py`](../src/tnfr/physics/event_refinement.py), [`event_duration.py`](../src/tnfr/physics/event_duration.py), [`event_timing.py`](../src/tnfr/operators/event_timing.py), [`event_runtime.py`](../src/tnfr/operators/event_runtime.py), [`event_remesh_runtime.py`](../src/tnfr/operators/event_remesh_runtime.py), [`event_remesh_sequence.py`](../src/tnfr/operators/event_remesh_sequence.py), [`event_remesh_causal_runtime.py`](../src/tnfr/operators/event_remesh_causal_runtime.py), [`event_remesh_refinement.py`](../src/tnfr/physics/event_remesh_refinement.py), [`event_remesh_reference.py`](../src/tnfr/physics/event_remesh_reference.py), [`event_remesh_reference.pyi`](../src/tnfr/physics/event_remesh_reference.pyi), [`remesh_history_stability.py`](../src/tnfr/physics/remesh_history_stability.py), [`runtime_remesh_history_stability.py`](../src/tnfr/physics/runtime_remesh_history_stability.py), [`remesh_schedule_stability.py`](../src/tnfr/physics/remesh_schedule_stability.py), [`runtime_remesh_schedule_stability.py`](../src/tnfr/physics/runtime_remesh_schedule_stability.py), [`_delayed_remesh_kernel.py`](../src/tnfr/operators/_delayed_remesh_kernel.py), [`network_stage_stability.py`](../src/tnfr/physics/network_stage_stability.py) | [`test_heterogeneous_diffusion_stability.py`](../tests/physics/test_heterogeneous_diffusion_stability.py), [`test_hybrid_operator_stability.py`](../tests/physics/test_hybrid_operator_stability.py), [`test_pointwise_stage_stability.py`](../tests/physics/test_pointwise_stage_stability.py), [`test_runtime_flow_stability.py`](../tests/physics/test_runtime_flow_stability.py), [`test_runtime_flow_refinement.py`](../tests/physics/test_runtime_flow_refinement.py), [`test_event_refinement.py`](../tests/physics/test_event_refinement.py), [`test_event_duration_relaxation.py`](../tests/physics/test_event_duration_relaxation.py), [`test_operator_event_timing.py`](../tests/operators/test_operator_event_timing.py), [`test_physical_flow_partition.py`](../tests/operators/test_physical_flow_partition.py), [`test_pressure_refreshed_event_runtime.py`](../tests/operators/test_pressure_refreshed_event_runtime.py), [`test_runtime_pressure_refresh.py`](../tests/test_runtime_pressure_refresh.py), [`test_operator_event_flow_certificates.py`](../tests/operators/test_operator_event_flow_certificates.py), [`test_epi_jump_certificate_plumbing.py`](../tests/operators/test_epi_jump_certificate_plumbing.py), [`test_operator_event_stage_certificates.py`](../tests/operators/test_operator_event_stage_certificates.py), [`test_operator_event_composition_adversarial.py`](../tests/operators/test_operator_event_composition_adversarial.py), [`test_event_remesh_runtime.py`](../tests/operators/test_event_remesh_runtime.py), [`test_event_remesh_cycle_sequence.py`](../tests/operators/test_event_remesh_cycle_sequence.py), [`test_event_remesh_causal_runtime.py`](../tests/operators/test_event_remesh_causal_runtime.py), [`test_event_remesh_causal_runtime_example.py`](../tests/operators/test_event_remesh_causal_runtime_example.py), [`test_event_remesh_refinement.py`](../tests/physics/test_event_remesh_refinement.py), [`test_event_remesh_reference.py`](../tests/physics/test_event_remesh_reference.py), [`test_event_remesh_reference_example.py`](../tests/physics/test_event_remesh_reference_example.py), [`test_remesh_history_stability.py`](../tests/physics/test_remesh_history_stability.py), [`test_runtime_remesh_history_stability.py`](../tests/physics/test_runtime_remesh_history_stability.py), [`test_remesh_schedule_stability.py`](../tests/physics/test_remesh_schedule_stability.py), [`test_runtime_remesh_schedule_stability.py`](../tests/physics/test_runtime_remesh_schedule_stability.py), [`test_delayed_remesh_contract.py`](../tests/operators/test_delayed_remesh_contract.py), [`test_network_stage_stability.py`](../tests/physics/test_network_stage_stability.py) |
+| S4, S5, S16 exact modal reference and finite runtime binding | [`reversible_eigenmode_reference.py`](../src/tnfr/physics/reversible_eigenmode_reference.py), [`reversible_eigenmode_reference.pyi`](../src/tnfr/physics/reversible_eigenmode_reference.pyi), [`runtime_eigenmode_reference.py`](../src/tnfr/physics/runtime_eigenmode_reference.py), [`runtime_eigenmode_reference.pyi`](../src/tnfr/physics/runtime_eigenmode_reference.pyi) | [`test_reversible_eigenmode_reference.py`](../tests/physics/test_reversible_eigenmode_reference.py), [`test_reversible_eigenmode_reference_example.py`](../tests/physics/test_reversible_eigenmode_reference_example.py), [`test_runtime_eigenmode_reference.py`](../tests/physics/test_runtime_eigenmode_reference.py), [`test_runtime_eigenmode_reference_example.py`](../tests/physics/test_runtime_eigenmode_reference_example.py) |
+| S1, S2, S16 causal finite-block margin | [`runtime_remesh_schedule_block_margin.py`](../src/tnfr/physics/runtime_remesh_schedule_block_margin.py), [`runtime_remesh_schedule_block_margin.pyi`](../src/tnfr/physics/runtime_remesh_schedule_block_margin.pyi) | [`test_runtime_remesh_schedule_block_margin.py`](../tests/physics/test_runtime_remesh_schedule_block_margin.py), [`test_runtime_remesh_schedule_block_margin_example.py`](../tests/physics/test_runtime_remesh_schedule_block_margin_example.py) |
+| S1, S2, S16 exact uniform REMESH/schedule policy | [`remesh_schedule_policy_stability.py`](../src/tnfr/physics/remesh_schedule_policy_stability.py), [`remesh_schedule_policy_stability.pyi`](../src/tnfr/physics/remesh_schedule_policy_stability.pyi) | [`test_remesh_schedule_policy_stability.py`](../tests/physics/test_remesh_schedule_policy_stability.py), [`test_remesh_schedule_policy_stability_example.py`](../tests/physics/test_remesh_schedule_policy_stability_example.py) |
+| S1, S2, S16 relative-defect policy and causal verification | [`remesh_schedule_relative_defect_stability.py`](../src/tnfr/physics/remesh_schedule_relative_defect_stability.py), [`remesh_schedule_relative_defect_stability.pyi`](../src/tnfr/physics/remesh_schedule_relative_defect_stability.pyi), [`runtime_remesh_schedule_relative_defect.py`](../src/tnfr/physics/runtime_remesh_schedule_relative_defect.py), [`runtime_remesh_schedule_relative_defect.pyi`](../src/tnfr/physics/runtime_remesh_schedule_relative_defect.pyi) | [`test_remesh_schedule_relative_defect_stability.py`](../tests/physics/test_remesh_schedule_relative_defect_stability.py), [`test_runtime_remesh_schedule_relative_defect.py`](../tests/physics/test_runtime_remesh_schedule_relative_defect.py), [`test_runtime_remesh_schedule_relative_defect_example.py`](../tests/physics/test_runtime_remesh_schedule_relative_defect_example.py) |
+| S1, S2, S16 binary64 REMESH boundary and P2 kernel composition | [`binary64_remesh_relative_defect.py`](../src/tnfr/physics/binary64_remesh_relative_defect.py), [`binary64_remesh_relative_defect.pyi`](../src/tnfr/physics/binary64_remesh_relative_defect.pyi), [`binary64_p2_reception_stability.py`](../src/tnfr/physics/binary64_p2_reception_stability.py), [`binary64_p2_reception_stability.pyi`](../src/tnfr/physics/binary64_p2_reception_stability.pyi) | [`test_binary64_remesh_relative_defect.py`](../tests/physics/test_binary64_remesh_relative_defect.py), [`test_binary64_remesh_relative_defect_example.py`](../tests/physics/test_binary64_remesh_relative_defect_example.py), [`test_half_alpha_antisymmetric_remesh_class.py`](../tests/physics/test_half_alpha_antisymmetric_remesh_class.py), [`test_half_alpha_antisymmetric_remesh_class_example.py`](../tests/physics/test_half_alpha_antisymmetric_remesh_class_example.py), [`test_binary64_p2_reception_stability.py`](../tests/physics/test_binary64_p2_reception_stability.py), [`test_binary64_p2_reception_stability_example.py`](../tests/physics/test_binary64_p2_reception_stability_example.py) |
+| S1, S2, S16 finite executed P2 EN binding | [`runtime_p2_reception_stage.py`](../src/tnfr/physics/runtime_p2_reception_stage.py), [`runtime_p2_reception_stage.pyi`](../src/tnfr/physics/runtime_p2_reception_stage.pyi) | [`test_runtime_p2_reception_stage.py`](../tests/physics/test_runtime_p2_reception_stage.py), [`test_runtime_p2_reception_stage_example.py`](../tests/physics/test_runtime_p2_reception_stage_example.py) |
+| S1, S2, S16 finite causal P2 EN/REMESH sequence | [`runtime_p2_reception_remesh_sequence.py`](../src/tnfr/physics/runtime_p2_reception_remesh_sequence.py), [`runtime_p2_reception_remesh_sequence.pyi`](../src/tnfr/physics/runtime_p2_reception_remesh_sequence.pyi) | [`test_runtime_p2_reception_remesh_sequence.py`](../tests/physics/test_runtime_p2_reception_remesh_sequence.py), [`176_runtime_p2_reception_remesh_sequence.py`](../examples/02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py) |
+| S1, S2, S16 transactional per-invocation P2 policy | [`runtime_p2_reception_remesh_policy.py`](../src/tnfr/physics/runtime_p2_reception_remesh_policy.py), [`runtime_p2_reception_remesh_policy.pyi`](../src/tnfr/physics/runtime_p2_reception_remesh_policy.pyi) | [`test_runtime_p2_reception_remesh_policy.py`](../tests/physics/test_runtime_p2_reception_remesh_policy.py), [`177_runtime_p2_reception_remesh_policy.py`](../examples/02_physics_regimes/177_runtime_p2_reception_remesh_policy.py) |
+| S3 | [`observability.py`](../src/tnfr/physics/observability.py) | [`test_tetrad_observability.py`](../tests/physics/test_tetrad_observability.py) |
+| S6 | [`phase_transition.py`](../src/tnfr/physics/phase_transition.py), [`phase_scaling.py`](../src/tnfr/physics/phase_scaling.py) | [`test_phase_transition.py`](../tests/physics/test_phase_transition.py), [`test_phase_scaling.py`](../tests/physics/test_phase_scaling.py) |
+| S7 | [`topology_transitions.py`](../src/tnfr/physics/topology_transitions.py) | [`test_topology_transitions.py`](../tests/physics/test_topology_transitions.py) |
+| S8, S9 | [`structural_morphism.py`](../src/tnfr/physics/structural_morphism.py), [`operator_quotient.py`](../src/tnfr/physics/operator_quotient.py), [`phase_quotient.py`](../src/tnfr/physics/phase_quotient.py) | [`test_epi_coarse_graining.py`](../tests/physics/test_epi_coarse_graining.py), [`test_operator_quotient.py`](../tests/physics/test_operator_quotient.py), [`test_phase_quotient.py`](../tests/physics/test_phase_quotient.py) |
+| S10 | [`operator_contracts.py`](../src/tnfr/operators/operator_contracts.py), [`stage_contracts.py`](../src/tnfr/operators/stage_contracts.py), [`_coupling_stage_kernel.py`](../src/tnfr/operators/_coupling_stage_kernel.py), [`_dissonance_stage_kernel.py`](../src/tnfr/operators/_dissonance_stage_kernel.py), [`al_sha_stage_proposals.py`](../src/tnfr/operators/al_sha_stage_proposals.py), [`_scale_operator_kernel.py`](../src/tnfr/operators/_scale_operator_kernel.py), [`_mutation_stage_kernel.py`](../src/tnfr/operators/_mutation_stage_kernel.py), [`transition.py`](../src/tnfr/operators/transition.py), [`jitter.py`](../src/tnfr/operators/jitter.py), [`operator_quotient.py`](../src/tnfr/physics/operator_quotient.py) | [`test_operator_contracts.py`](../tests/operators/test_operator_contracts.py), [`test_stage_contracts.py`](../tests/operators/test_stage_contracts.py), [`test_coupling_jacobi_stage.py`](../tests/operators/test_coupling_jacobi_stage.py), [`test_dissonance_jacobi_stage.py`](../tests/operators/test_dissonance_jacobi_stage.py), [`test_al_sha_stage_proposals.py`](../tests/operators/test_al_sha_stage_proposals.py), [`test_scale_operator_kernel.py`](../tests/operators/test_scale_operator_kernel.py), [`test_mutation_stage_kernel.py`](../tests/operators/test_mutation_stage_kernel.py), [`test_nav_pointwise_stage.py`](../tests/operators/test_nav_pointwise_stage.py), [`test_jitter_proposal.py`](../tests/operators/test_jitter_proposal.py), [`test_operator_quotient.py`](../tests/physics/test_operator_quotient.py) |
+| S11, S14 | [`coherence_geometry.py`](../src/tnfr/physics/coherence_geometry.py), [`structural_state_distance.py`](../src/tnfr/physics/structural_state_distance.py) | [`test_coherence_geometry.py`](../tests/physics/test_coherence_geometry.py), [`test_structural_state_distance.py`](../tests/physics/test_structural_state_distance.py) |
+| S12 | [`metriplectic.py`](../src/tnfr/physics/metriplectic.py), [P2 realizability proof](TNFR_VARIATIONAL_PRINCIPLE.md#37-p2-read-out-realizability-obstruction-and-derived-flow) | [`test_metriplectic_product.py`](../tests/physics/test_metriplectic_product.py), [`test_symplectic_graph_realizability.py`](../tests/physics/test_symplectic_graph_realizability.py) |
+| S13 | [`nonnormal_prediction.py`](../src/tnfr/physics/nonnormal_prediction.py) | [`test_nonnormal_prediction.py`](../tests/physics/test_nonnormal_prediction.py) |
+| S15 | [`temporal_identifiability.py`](../src/tnfr/physics/temporal_identifiability.py), [`mutation_trigger.py`](../src/tnfr/physics/mutation_trigger.py), [`event_refinement.py`](../src/tnfr/physics/event_refinement.py), [`network_stage.py`](../src/tnfr/operators/network_stage.py) | [`test_temporal_identifiability.py`](../tests/physics/test_temporal_identifiability.py), [`test_mutation_trigger.py`](../tests/physics/test_mutation_trigger.py), [`test_event_refinement.py`](../tests/physics/test_event_refinement.py), [`test_mutation_decision_observation.py`](../tests/operators/test_mutation_decision_observation.py) |
+| S16 | [`core_research_integration.py`](../src/tnfr/physics/core_research_integration.py), [`core_research_trajectory.py`](../src/tnfr/physics/core_research_trajectory.py), [`runtime_flow_stability.py`](../src/tnfr/physics/runtime_flow_stability.py), [`event_refinement.py`](../src/tnfr/physics/event_refinement.py), [`network_stage.py`](../src/tnfr/operators/network_stage.py), [`event_runtime.py`](../src/tnfr/operators/event_runtime.py), [`event_remesh_runtime.py`](../src/tnfr/operators/event_remesh_runtime.py), [`event_remesh_sequence.py`](../src/tnfr/operators/event_remesh_sequence.py), [`event_remesh_causal_runtime.py`](../src/tnfr/operators/event_remesh_causal_runtime.py), [`event_remesh_refinement.py`](../src/tnfr/physics/event_remesh_refinement.py), [`event_remesh_reference.py`](../src/tnfr/physics/event_remesh_reference.py), [`event_remesh_reference.pyi`](../src/tnfr/physics/event_remesh_reference.pyi), [`remesh_history_stability.py`](../src/tnfr/physics/remesh_history_stability.py), [`runtime_remesh_history_stability.py`](../src/tnfr/physics/runtime_remesh_history_stability.py), [`remesh_schedule_stability.py`](../src/tnfr/physics/remesh_schedule_stability.py), [`runtime_remesh_schedule_stability.py`](../src/tnfr/physics/runtime_remesh_schedule_stability.py), [`remesh.py`](../src/tnfr/operators/remesh.py), [`stage_contracts.py`](../src/tnfr/operators/stage_contracts.py) | [`test_core_research_integration.py`](../tests/physics/test_core_research_integration.py), [`test_core_research_trajectory.py`](../tests/physics/test_core_research_trajectory.py), [`test_runtime_flow_stability.py`](../tests/physics/test_runtime_flow_stability.py), [`test_runtime_flow_refinement.py`](../tests/physics/test_runtime_flow_refinement.py), [`test_event_refinement.py`](../tests/physics/test_event_refinement.py), [`test_operator_event_runtime.py`](../tests/operators/test_operator_event_runtime.py), [`test_operator_event_flow_certificates.py`](../tests/operators/test_operator_event_flow_certificates.py), [`test_epi_jump_certificate_plumbing.py`](../tests/operators/test_epi_jump_certificate_plumbing.py), [`test_operator_event_stage_certificates.py`](../tests/operators/test_operator_event_stage_certificates.py), [`test_operator_event_composition_adversarial.py`](../tests/operators/test_operator_event_composition_adversarial.py), [`test_event_remesh_runtime.py`](../tests/operators/test_event_remesh_runtime.py), [`test_event_remesh_cycle_sequence.py`](../tests/operators/test_event_remesh_cycle_sequence.py), [`test_event_remesh_causal_runtime.py`](../tests/operators/test_event_remesh_causal_runtime.py), [`test_event_remesh_causal_runtime_example.py`](../tests/operators/test_event_remesh_causal_runtime_example.py), [`test_event_remesh_refinement.py`](../tests/physics/test_event_remesh_refinement.py), [`test_event_remesh_reference.py`](../tests/physics/test_event_remesh_reference.py), [`test_event_remesh_reference_example.py`](../tests/physics/test_event_remesh_reference_example.py), [`test_remesh_history_stability.py`](../tests/physics/test_remesh_history_stability.py), [`test_runtime_remesh_history_stability.py`](../tests/physics/test_runtime_remesh_history_stability.py), [`test_remesh_schedule_stability.py`](../tests/physics/test_remesh_schedule_stability.py), [`test_runtime_remesh_schedule_stability.py`](../tests/physics/test_runtime_remesh_schedule_stability.py), [`test_delayed_remesh_contract.py`](../tests/operators/test_delayed_remesh_contract.py), [`test_operator_major_stage_atomicity.py`](../tests/operators/test_operator_major_stage_atomicity.py), [`test_stage_contracts.py`](../tests/operators/test_stage_contracts.py) |
+
+## Current restricted results
+
+The O3.a phase-persistence study connects the existing UM operator kernel to
+the same normalized cycle Laplacian used by pure-EPI diffusion. With
+target-only Coupling, fixed cycle support and strict U3-compatible phase gaps,
+the gap map preserves circulation and its initial interval while decreasing
+squared gap spread. This is a configured phase-map theorem, with operator
+count rather than an inferred physical clock. Its constant-gap limit can
+carry nonzero winding and zero canonical pressure; it is spatially extended.
+The [proof and scope](COUPLING_WINDING_PERSISTENCE.md),
+[exact observer](../src/tnfr/physics/coupling_winding.py),
+[pressure bridge tests](../tests/physics/test_coupling_pressure_bridge.py) and
+[production benchmark](../benchmarks/canonical_winding_persistence.py) separate
+exact gap arithmetic, finite runtime residuals and a Transition-induced loss.
+Default bidirectional UM, broader operator words, physical lifetime and
+localized self-maintaining entities remain outside this result.
+
+The [capacity-localization study](CAPACITY_LOCALIZATION_BALANCE.md) then
+activates physical nodal flow and distinguishes three mechanisms. With
+uniform capacity and a regular twist, an EPI bump diffuses despite its
+retained winding. On a fixed unit cycle with positive held capacity,
+`y=EPI+(w_vf/w_epi)*nu_f` instead follows heterogeneous diffusion, so its
+uniform limit corresponds to a nonuniform EPI profile tied to capacity.
+An actual local SHA preparation can supply that capacity contrast; its
+selected origin is not spontaneous symmetry breaking. UM capacity
+synchronization and global SHA change the balance after pressure refresh.
+Repeated scalar capacity attenuation can also retain form through a finite
+mobility clock while pressure remains nonzero. The
+[exact observer](../src/tnfr/physics/capacity_localization.py) and
+[physical-flow benchmark](../benchmarks/capacity_localization.py) retain these
+distinct scopes. Weighted EPI and unweighted capacity walks need not agree;
+the simple shifted-field identity is not a general weighted-graph theorem.
+
+The [joint cycle study](CYCLE_SUPPORT_DYNAMICS.md) retains a periodic phase
+offset `a=p/pi` as well as capacity in the derived coordinate
+`y=EPI+(w_vf/w_epi)*nu_f+(w_phase/w_epi)*a`. Within the strict midpoint
+chart, canonical target-only UM and global SHA change this coordinate even
+though they preserve EPI. Their exact Dirichlet-energy jump and the shared
+nodal Euler energy change have separate algebraic budgets. The private
+cycle algebra is shared with the earlier gap and capacity observers.
+An exact default-factor checkerboard example starts at zero pressure and
+retains nonuniform EPI under repeated UM/SHA with fixed-duration physical
+flows, while capacity tends to zero. Its limiting pressure is nonzero:
+this is finite-clock retention, not an active self-maintaining equilibrium.
+The [runtime study](../benchmarks/cycle_support_dynamics.py) measures three
+finite preparations on one unchanged cycle per case, with pressure and
+arithmetic defects, chronological energy sums and per-call atomicity.
+Finite invocation evidence does not establish future admission, an observed
+intermediate phase path or a complete-runtime asymptotic theorem.
+
+The [positive-capacity memory study](CYCLE_MEMORY_RELAXATION.md) supplies
+the existing REMESH policy theorem with a derived spatial gain. On a fixed
+unit cycle with uniform positive capacity and vanishing other channel
+pressures, `lambda_2>=8/n^2` gives conservative rational gains for a repeated
+refreshed Euler partition and, separately, exact continuous flow. For
+unclipped uniform delayed mixing, the retained sealed policy certificate
+then proves spatial disagreement decay across active-history blocks.
+This includes pure delay: historical means may cycle, but the nonuniform
+spatial component contracts. Positive-mode startup histories can delay
+relaxation, and current contrast can rebound without violating the
+augmented-energy bound. Summable exposure on one delay lineage and reused
+fixed history fall outside this repeated-partition result.
+The [finite implementation study](../benchmarks/cycle_memory_relaxation.py)
+uses the admitted UM/IL/advisory-Recursivity word, positive held capacity,
+prepared pre-REMESH history and a separately applied delayed map. Its outer
+causal execution explicitly omits a runtime telescope; pressure and Euler
+rounding, delayed-map defects and finite observed envelopes are recorded
+independently. These observations do not certify future binary64 contraction
+or a self-maintaining localized entity. The
+[exact adapter](../src/tnfr/physics/cycle_memory_relaxation.py) centralizes the
+bridge to the existing history theorem without duplicating its recurrence.
+
+The [THOL feedback audit](THOL_PRESSURE_FEEDBACK.md) resolves a separate
+execution inconsistency: graph-backed primitive THOL now reconstructs signed
+acceleration from the same active history as public SelfOrganization, and
+both share one checked pressure proposal. Cached substep acceleration is
+telemetry, not replacement physical evidence. Primitive pressure action and
+public child creation retain distinct scopes. A pressure increment contributes
+`h*nu_f*THOL_accel*A_hat` to a following held-input nodal step; a preceding
+canonical refresh overwrites it. A later refresh cannot undo EPI already
+integrated. Public children are actual isolated nodes, so they add disconnected
+EPI zero modes without implicit parent transport feedback. The
+[finite route comparison](../benchmarks/thol_pressure_feedback.py) records
+physical history, actual glyph admission, refresh order, integrator boundaries
+and a separately prepared birth control. Repeated restoration and admission
+across subsequent support changes remain open.
+
+The [causal birth and transport study](THOL_BIRTH_AND_TRANSPORT.md) connects
+these two stages in a bounded executed preparation. On an explicitly declared
+scalar chart, two refreshed nodal Euler intervals supply physical acceleration
+above the unchanged THOL birth threshold. Public THOL creates the child;
+parent-target UM subsequently admits and commits its functional edge using
+the existing U3 and compatibility gates. The existing sampling refresh makes
+the newborn available to candidate selection. Functional-links-off and stale
+candidate controls separate child creation from transport. Post-attachment
+flow uses the enlarged graph, with closure measured separately.
+The [shared support observer](../src/tnfr/physics/support_transport.py) reads
+effective weighted EPI conductance, unweighted capacity/topology gradients,
+and exact Dirichlet reset/Euler budgets. It reuses the common conductance
+reader and distinguishes stored pressure from a verified canonical refresh;
+its detached algebra is not an executor certificate. Attachment changes the
+generator and its metric. A finite active parent-child exchange is now
+observed, while a repeated restoring policy and physical correspondence
+remain open.
+
+The [frozen-support balance](FORCED_SUPPORT_BALANCE.md) now implements the
+next nodal reference. For connected symmetric conductance, positive capacity
+and held non-EPI forcing `F`, equilibrium requires `sum(d_i*F_i)=0`.
+Otherwise the H-weighted mean drifts at
+`sum(d_i*F_i)/sum(d_i/nu_i)`, while the relative profile solves an exact
+compatible Poisson system. Its algebraic gauge fixes the profile's mean;
+it introduces no new pressure term. The error around that moving profile
+reduces to existing homogeneous diffusion. A separate read-only adapter
+captures the actual nonlinear phase kernel on the bounded default NumPy
+branch and keeps kernel arithmetic distinct from stored-pressure writes.
+The finite attached, compatible and clipping controls retain those frozen
+inputs, compare the exact profile, and account separately for pressure and
+endpoint defects. Existing support-energy observers are reused on detached
+relative coordinates. Constant profile energy can coexist with nonzero
+uniform drift; neither that diagnostic nor the finite trajectory establishes
+active restoration under further structural events or clipped asymptotics.
+
+The [child-target Coupling study](CHILD_COUPLING_FEEDBACK.md) continues from
+the retained attached endpoint. Its admitted UM changes child capacity and
+adds functional links while preserving EPI in the measured event. The shared
+profile observer now accounts exactly for the resulting metric, weighted-mean
+and profile changes, and separately evaluates the original derived profile
+under its original metric. That fixed comparison is unchanged at the event;
+the smaller new-model mean drift alone is not evidence of recovery. An
+independently executed no-extra-event branch and subsequent held-input Euler
+intervals separate the event from later relaxation. Phase forcing can change
+through the neighbor sets and weighted projection even when node phases stay
+unchanged. This finite comparison retains actual operator writes and numerical
+defects. At the measured endpoint the UM branch has greater original-profile
+error than both its own initial value and the control, despite decreasing
+error toward its new profile. It does not establish a restoring policy under
+repeated events.
+
+The same [shared accounting](CHILD_COUPLING_FEEDBACK.md#7-exact-full-event-accounting-on-the-same-ordered-nodes)
+now covers actual EPI jumps on an unchanged ordered node set. It first
+evaluates the jump in the old profile/metric, then reuses the same-EPI reset
+at the post-jump field. Exact mean, variance and Dirichlet differences telescope;
+the public midpoint is a pressure-free algebraic pattern read-out, with no
+operator write-order or causal claim. Independent controls include zero new-
+profile error alongside increased fixed-original-profile error. The matched
+VAL/IL preparation and additional-UM response experiment is now implemented.
+At its fixed endpoint the nominal perturbation has slightly lower original-
+target error than the unperturbed continuation, so its measured positive UM
+benefit is a response result, not a damage/repair result. Exact event/flow
+accounting and independently matched preparations separate these claims.
+The held exact-model limiting original-target errors are all positive.
+The [shared target observer](CHILD_COUPLING_FEEDBACK.md#10-compatibility-channel-cancellation-and-the-old-metric)
+now proves the exact equivalence of zero projected target rate and zero
+relative-profile mismatch, and separates signed old-metric drift from source
+and stored-pressure effects. A P3 counterexample prevents promoting target
+compatibility alone to old-metric monotonicity. The retained U/P/F channel
+analysis identifies improved phase/EPI cancellation but positive outward
+target rates. On synchronized equal-conductance support, the exact default
+capacity forcing gives `z=-(w_vf/e)*P_H*nu`; target preservation requires a
+spatially uniform capacity increment at fixed channel ratio. One admitted
+P2 VAL/IL/UM/SHA control reduces rather than removes the resulting mismatch.
+The [joint P2 model](CHILD_COUPLING_FEEDBACK.md#13-joint-capacity-and-form-evolution-on-synchronized-p2)
+now has an exact capacity/lifted-EPI recurrence, a sufficient positive invariant
+box and a conditional disagreement/mean envelope. Sixteen supplied default
+UM/IL/refresh/flow blocks are compared with a matched held-capacity branch;
+actual IL separator neutrality after refresh and capacity/pressure/execution
+defects are retained. Direct UM repetition fails a canonical transition
+validator, and a nonzero binary64 capacity-gap fixed point prevents promoting
+exact-model restoration to represented execution. A separate conditional
+binary64 result on capacities `(v,1)`, `1<=v<=2`, now classifies fixed lattice
+indices 0..6 and proves descent to six from above within an analytic 512-update
+bound. Five single-event/flow controls bind production endpoints and show
+uniform stored EPI despite a nonzero exact frozen profile. The shared UM
+capacity blend and IEEE probe avoid separate numeric implementations.
+The [compatible-support result](CHILD_COUPLING_FEEDBACK.md#17-compatible-capacity-support-and-differentiated-prepared-regions)
+now characterizes exact simultaneous UM fixed capacities as componentwise
+constants on its U3-selected graph, with conserved component means and a strict
+Dirichlet drop off that set. The shared reader distinguishes that graph from
+pressure support and records blocked targets. Two linked prepared triangles
+with split phases preserve their capacity contrast in one actual default
+all-target UM and drive a nonuniform held EPI profile. An aligned control
+also creates eight links, so topology changes remain part of its comparison.
+Each executes one nodal interval with signed defects and a separate closure.
+The [local phase test](CHILD_COUPLING_FEEDBACK.md#18-antipodal-phase-response-under-simultaneous-um-and-il)
+now supplies that obstruction: in the two-coordinate antipodal chart, default
+simultaneous UM followed by IL has a Jacobian with an eigenvalue above one
+for every positive IL phase coefficient. Five finite controls retain the
+predicted bridge amplification, raw pressure contraction, changed refreshed
+pressure and subsequent nodal response. The zero control retains its small
+binary64 phase residue. Autonomous phase/region formation, action selection
+and invariant full-state admission remain open. A shared exact cosine-Gram
+and receiver-average response now drives both that obstruction and the
+[default C6 winding comparator](COUPLING_WINDING_PERSISTENCE.md#8-one-shared-local-response-for-circular-means).
+C6 has strict centered tangent contraction, neutral global rotation and a
+separate nonlinear exact phase box of radius at most `pi/24`, retaining
+edge/nonedge gate margins `pi/12`. The four nonzero finite controls reduce
+phase deformation; all five preserve winding while recording the actual
+nodal EPI response. The null retains its small numerical phase residue.
+The tangent bound is not transferred to the finite nonlinear box;
+nonlinear UM need not conserve the arithmetic phase-error mean. A separate
+[joint-domain argument](COUPLING_WINDING_PERSISTENCE.md#11-nonlinear-contraction-and-a-joint-phasecapacityepi-domain)
+now proves nonlinear oscillation factor `rho=1-2*t/15` there. With
+`z=e/pi`, uniform positive capacity, `0<=s=h*nu*w_epi<=1` and
+`B=h*nu*w_phase*rho/(1-rho)`, the reserves
+`min(EPI)-B*osc(z)>=ell` and `max(EPI)+B*osc(z)<=U` are preserved by the
+exact phase-first UM/IL plus refreshed held-Euler model. For fixed `0<s<1`,
+EPI tends to its initial mean while phase tends to a rotated winding. The
+boundary `s=1` permits an alternating EPI orbit. This is prepared phase
+organization, not sustained EPI localization. The
+[additive-defect extension](COUPLING_WINDING_PERSISTENCE.md#13-additive-defects-finite-reserves-and-the-neutral-epi-mean)
+now retains phase contraction excess, signed endpoint errors and their exact
+mean/reserve prefixes, including the formerly excluded null records. A
+separate conditional uniform bound uses the two-step C6 Euler overlap
+`k=min(s^2,4*s*(1-s))` and `V(x)=osc(x)+osc(T*x)`. Its numerical-error and
+signed cumulative-mean hypotheses are independent premises; finite observed
+extrema do not establish them. Uniformly small per-step errors alone cannot
+protect the neutral EPI mean from cumulative drift. The held quarter-flow
+arithmetic now has an a priori local error bound and exact rounding-cell
+observations in [binary64_nodal_flow.py](../src/tnfr/physics/binary64_nodal_flow.py).
+An explicit zero-sum held-pressure fixture has nonzero mean drift; the
+retained null instead has unchanged EPI under nonzero pressure. These are
+distinct numerical effects, neither a zero-pressure equilibrium nor a
+complete-state stability result. Backend phase/pressure accuracy, uniform
+signed mean control, complete represented runtime preservation, action
+selection and canonical formation remain open. The proof and backend scope
+are recorded in the same winding note, section 16. Its
+[opposite-pair continuation](COUPLING_WINDING_PERSISTENCE.md#17-opposite-pair-closure-and-a-restricted-mean-preserving-arithmetic-class)
+adds an exact finite nonlinear partial observable: centered opposite phase
+pairs evolve with `(1-t)*(1-3*alpha/2)`, and the corresponding EPI pairs form
+a closed triangular two-component nodal recurrence. This supplies an S2/S6
+reduction without reconstructing the full phase state or fixing common
+rotation. A separate paired binary64 pure-EPI C6 class preserves its interval
+and exact mean on one common lattice. Its pressure and rounding premises
+exclude the inherited full winding records: the retained IL/refresh can
+destroy opposite pressure pairing, and EPI endpoints can cross a binade
+boundary. The subsequent
+[phase realization correction](COUPLING_WINDING_PERSISTENCE.md#18-certified-two-neighbor-phase-realization)
+uses a certified true-circle midpoint for eligible two-neighbor IL and
+pressure evaluations, with one shared CPU kernel and explicit fallback.
+Exact C6 edge cancellation yields a local rounding bound. Repeating the
+same finite controls removes the observed k3 mean drift but retains k1's;
+joint-runtime preservation, summability and formation remain open.
+The [inverse pressure-cell result](COUPLING_WINDING_PERSISTENCE.md#19-pressure-boxes-and-the-two-binade-mean-bias-law)
+now characterizes maximal represented pressure boxes for complete held EPI
+traces. Exactly zero-sum and opposite-paired pressures inside those boxes
+retain the corrected k1 drift. A two-binade arithmetic law explains its sign
+and size at EPI `0.5`. Pressure cancellation alone therefore cannot close the
+mean argument; evolving addition cells and their accumulated signed errors
+must enter any joint invariant or explicitly different solver contract.
+The [explicit remainder reference](COUPLING_WINDING_PERSISTENCE.md#20-exact-nodal-area-with-a-carried-numerical-remainder)
+now retains exact represented nodal area and bounds the executor mean
+defect by the terminal remainder, independently of the finite step count.
+The reconstructed mean is conserved under balanced area; the displayed
+mean need not be. Supplied-pressure comparisons reuse the retained cases.
+Graph adoption still requires pressure-readout, operator/reset, history
+and certificate contracts, and pressure-realization error retains its own
+accumulated budget. The production integrator is unchanged.
+The [restricted carried runtime](COUPLING_WINDING_PERSISTENCE.md#21-live-pressure-and-an-explicit-carried-flowevent-contract)
+now binds actual visible-pressure refresh and admitted EPI-preserving
+UM/IL/SHA events to persistent carried state and whole-invocation rollback.
+Its exact EPI pressure-readout difference has zero arithmetic mean on
+regular graphs with common capacity. Matched finite C6 branches retain
+their separate generated sources and executor defects. Generated-pressure
+summability, domain preservation and general EPI/REMESH jump rules remain open.
+The [fixed-phase pressure obstruction](COUPLING_WINDING_PERSISTENCE.md#22-generated-pressure-can-exclude-a-fixed-phase-numerical-equilibrium)
+now excludes any zero-pressure EPI tuple in `[0.05,1]^6` for the retained
+null post-UM/IL phase slice under the shared binary64 CPU map. Exact inverse
+rounding cells miss the EPI-gradient lattice at every node. With fixed
+positive steps, carried EPI cannot converge on that slice. A separate
+exact cell horizon distinguishes loss of visible stasis from band exit.
+Neither result settles mean drift or future phase-changing words. The
+next joint bound must allow finite-resolution trapping or cancellation
+instead of assuming an unattainable fixed-phase numerical equilibrium.
+The [generated phase-cycle result](COUPLING_WINDING_PERSISTENCE.md#23-exact-closure-of-the-generated-umil-phase-component)
+now replays the unchanged null's default UM/IL phase projection to an exact
+period-one tail after 89 transitions. All edge/nonedge gates remain valid
+on that finite closed path. Its weighted phase source has mean
+`-1/(6*2^109)` and is not a bounded zero-mean forcing. An exact periodic
+source budget isolates the compensation required from refreshed EPI and
+channel arithmetic. That compensation and full-runtime trapping remain
+open; only the phase component has conditional repeated-map closure.
+The [local pressure-lattice continuation](COUPLING_WINDING_PERSISTENCE.md#24-local-pressure-lattice-product-trap-obstruction-and-finite-compensation)
+now binds both EPI reducers exactly across the `0.5` binade. Its sign
+thresholds exclude reconstructed-coordinate Cartesian traps under
+individual positive carried steps in `[3/8,5/8]`. One adjacent EPI state
+has exact generated mean compensation for a finite cell prefix; the first
+cell exit loses that balance. An exact separating functional excludes
+permanent residence, with any admissible carry, in the complete 13-state
+control class. Larger correlated traps, block-sampled return, full-state
+reachability and runtime admission remain open.
+The [carry-compatible itinerary criterion](COUPLING_WINDING_PERSISTENCE.md#25-exact-carry-compatible-itineraries-across-pressure-cell-boundaries)
+now intersects translated rounding cells with the exact encoding lattice,
+distinguishing feasible complete words from separately feasible edges.
+A repeated visible word closes its carried state only with zero vector
+nodal area. The balanced self-loop permits at most twelve transitions over
+all admissible initial carries. Two further derived boundaries from the
+retained first exit show actual pressure-mean sign reversals without a
+closed orbit. Candidate correlated return classes must now pass whole-word
+carry compatibility and coordinatewise balance before a live extension.
+The four observed states still have a strict node-1 pressure separator;
+any cycle containing them needs additional states reversing that nodal drift.
+The [pressure-sign continuation](COUPLING_WINDING_PERSISTENCE.md#26-pressure-sign-sectors-and-the-carried-curvature-budget)
+now reaches such a state after three more derived boundaries and nineteen
+steps: node 2 changes EPI, reversing node 1's pressure while its own
+displayed EPI stays fixed. Its accumulated area is still negative at that
+first hit. Uniform strict-sector drift bounds and an exact nodal/carry
+curvature budget delimit its finite continuation.
+The [positive-area budget](COUPLING_WINDING_PERSISTENCE.md#27-finite-positive-pressure-repayment-and-exact-return-obstructions)
+now shows that this positive episode lasts only two steps and leaves a
+negative accumulated node-1 area relative to the earlier B27 endpoint.
+A constant-source crossing would require four steps, after the actual
+pressure has already changed. An exact integer constraint also excludes
+a short zero-area return using only the two observed node-1 pressure levels
+at the fixed step and capacity. Additional canonically reachable levels or
+a correlated trapping class must now be assessed through all six area
+budgets and incoming-carry compatibility; neither boundedness nor a broader
+return is decided by that two-level constraint.
+The [third-level continuation](COUPLING_WINDING_PERSISTENCE.md#28-a-third-pressure-level-and-a-transverse-finite-class-drift)
+then reaches another node-1 pressure after four boundaries and eleven
+steps. Its earlier negative area is overshot, but the vector and mean
+areas remain nonzero. The generalized finite-level congruence retains
+the same scalar length restriction for these three levels. More decisively,
+constant positive node-4 pressure excludes permanent confinement to the
+three observed visible states for every admissible carry: their residence
+is at most 43 steps under the declared update conditions. The next gate
+is a compatible neighborhood transition that changes that drift, with
+all coordinate budgets retained; larger correlated trapping stays open.
+The [frozen-stencil audit](COUPLING_WINDING_PERSISTENCE.md#29-frozen-neighborhood-bounds-and-a-censored-node-4-sign-test)
+now binds that locality to an executable observer. The retained carry
+gives a conditional 21-step center deadline, while a neighbor changes at
+step 15 and weakens the pressure without changing its positive sign.
+The eight-boundary sign test is censored after eighteen steps. Reaching
+nonpositive pressure still requires eight more gradient-index units at
+the saved endpoint. A shared cycle-gradient owner now checks the full
+nodal area before applying the Laplacian, preserving the common-mode
+budget. Coupled neighborhood reachability and trapping remain unresolved;
+a further unstructured continuation is insufficient.
+
+B2.d.32-B2.d.36 now replace that proposed continuation with five completed
+structural steps, detailed in
+[section 30](COUPLING_WINDING_PERSISTENCE.md#30-a-coupled-profile-disagreement-tube-and-finite-numerical-band-horizon).
+The existing forced-support solver supplies the canonical centered profile
+`w_epi*L*z=A-mean(A)*1` for the fixed represented phase source and unit C6.
+The shared pressure and carried-step owners then verify the exact recurrence
+`y_next=(I-h*w_epi*L)*y+h*P*(w_epi*L*r+eta)`, with
+`P` the arithmetic-centering projection, `y=P*X-z`, `X=x+r`, and `eta`
+the generated EPI-product and assembly defects.
+All eighteen previously retained steps satisfy this identity; no additional
+trajectory is executed. An exact rational C6 eigenbasis gives the centered
+norm factor `q=573161353023261791/2^59` at the unchanged `h=1/16` and
+default EPI weight. The homogeneous squared-norm factor is `q^2`, distinct
+from the affine energy estimate used with persistent numerical defects.
+
+The declared `[3/8,5/8]` slab and represented coefficients independently
+bound rounding and carry feedback, giving the energy envelope a floor of about
+`6.6560e-31`. A separate induction combines that spatial envelope with an
+absolute mean-increment bound and certifies a sufficient conditional
+numerical-band horizon of `196713720348826219` steps; none of those future
+steps was executed. This concerns only the fixed-source, unit-capacity,
+carried numerical map. It does not certify live phase evolution, grammar
+admission, future runtime execution or asymptotic convergence. The retained
+eighteen-step signed mean change is `-131/(3*2^114)`: phase source
+`-3/2^113`, product/assembly rounding `-113/(3*2^114)`, and carry feedback
+zero. This first centered bound did not supply an indefinite signed mean
+budget or decide node 4's nonpositive-pressure cut.
+
+B2.d.37-B2.d.40 now close four further restricted questions. The
+[self-consistent bound](COUPLING_WINDING_PERSISTENCE.md#31-b37-closing-the-spatial-and-rounding-bounds-on-each-other)
+uses the profile and its own spatial envelope to bound the pressure gradient,
+then closes the resulting rounding inequality exactly. At the retained
+endpoint it reduces the energy floor to approximately
+`2.958228394578814e-31` and the per-node product/assembly error bound to
+`6.731922543446726e-32`. These are uniform conditional bounds, not maxima
+fitted to the observed prefix.
+
+The
+[static compensation certificate](COUPLING_WINDING_PERSISTENCE.md#32-b38-static-compensation-refutes-a-class-wide-linear-drift-argument)
+then supplies seven admissible carried states inside that envelope, all
+with the retained endpoint's exact reconstructed mean. Their freshly
+generated canonical pressure vectors have strictly positive rational
+coefficients with sum one and weighted vector sum zero. This refutes a
+universally strictly signed fixed linear drift over the enclosed class,
+including that exact-mean slice. The coefficients are algebraic witnesses,
+not a dynamical mixing rule. A reachable subset, compatible transition
+ordering and actual temporal compensation require separate evidence.
+
+The
+[finite passage theorem](COUPLING_WINDING_PERSISTENCE.md#33-b39-a-finite-first-passage-theorem-for-the-pressure-cut)
+combines the closed spatial envelope, a signed mean-pressure bound and
+the least strictly positive represented node-4 pressure. Positivity at
+every readout before `N=30255` would force its centered coordinate outside
+the envelope. The earlier band guarantee covers those transitions, so
+some readout with index at most `30254` must be nonpositive on this fixed
+numerical map. Readout zero is the B31 endpoint; this theorem does not
+claim its first actual hit or any future live operator admission.
+
+The
+[decisive carried continuation](COUPLING_WINDING_PERSISTENCE.md#34-b40-the-realized-first-passage-and-a-finite-mean-budget-reversal)
+reaches that first hit after 118 steps and 59 visible cell boundaries:
+readouts `0..117` are positive, while the endpoint has `m4=-22` and
+`p4=-187043320717485/2^105`. The same run repays the earlier B27 mean
+deficit by overshoot at step 59, from `-1/(3*2^114)` immediately before
+crossing to `1/2^113` after it. Its final mean area is `41/2^112`
+relative to B31 and `217/(3*2^114)` relative to B27. The local mean
+split is phase source `-59/(3*2^113)`, product/assembly rounding
+`305/(3*2^113)`, and zero carry feedback. All six net coordinate areas
+remain nonzero.
+
+The node-4 sign question and this finite mean-deficit crossing are resolved;
+neither supplies an exact vector return or an indefinite signed mean bound.
+B2.d.41 now proves a
+[complete-cell obstruction](COUPLING_WINDING_PERSISTENCE.md#35-b41-complete-carry-cells-cannot-provide-invariant-trapping):
+no nonempty finite family of displayed tuples within B37's gradient bounds
+can be invariant if every legal incoming carry is admitted at each tuple.
+Selecting greatest admissible carries at a maximum-visible-sum tuple keeps
+negative-pressure coordinates fixed and makes a positive coordinate increase
+or fail band admission. This supplies an outward hypothetical carry; it does
+not show that the retained B40 trajectory escapes, and energy-trimmed or
+jointly correlated carry subcells remain outside the obstruction.
+
+B2.d.42 separately verifies the
+[seven-cell transition graph](COUPLING_WINDING_PERSISTENCE.md#36-b42-every-carry-leaves-the-seven-static-compensation-cells)
+for B38's static compensation points. All 49 exact carry-feasibility tests
+leave only self-loops and the zero-based edge `5 -> 4`. Maximal cell
+residence and reverse-DAG induction prove that every legal incoming carry
+leaves this seven-cell family or fails band admission within 77 steps.
+This excludes a periodic carried orbit confined to those cells; it proves
+neither whole-band exit nor entry from the saved state. The static positive
+convex pressure balance remains valid but cannot serve as a closed temporal
+class. Both blocks reuse the fixed source without advancing saved B40.
+
+B2.d.43 now closes a separate
+[finite live preparation bridge](COUPLING_WINDING_PERSISTENCE.md#37-b43-a-finite-live-bridge-from-the-original-winding-preparation).
+The original null C6 preparation executes 89 UM/IL pairs, 356 canonical
+pressure-refreshed carried steps and a terminal SHA: 179 admitted events
+in one graph-owned invocation. Its final phase matches the fixed source
+used by B40. At time `22`, the actual tail-entry EPI offsets from `.5` in
+units `delta=2^-54` are `(-3,0,2,-1,6,-5)`; immediately before SHA at
+`22.25` they are `(-3,0,2,0,8,-5)`. No detached carry is imported or reset.
+All six accumulated nodal-balance residuals vanish, and the mean nodal
+area from this preparation is `3293/(3*2^114)`. Independent replay verifies
+every retained flow. Unit capacity applies to the measured flows; terminal
+SHA changes it to `0.9204225284540524`. This finite causal result authenticates
+its own tail state under the declared carried solver, not the historical
+detached B27-B40 state or a later invocation.
+
+The next gate is forward inclusion of joint carry/shape subcells with a
+bounded signed vector budget, or a proved recurrent-budget obstruction.
+The graph-owned branch must use B43's actual tail carry and derived
+closure; any study retaining detached B40 must identify that distinct branch.
+The fixed unit-capacity map remains a conditional model after terminal SHA.
+Searching a larger family of complete carry cells within the same gradient
+class cannot bypass B41. Another node-4 sign search or a fixed linear
+separator over the full certified class would also repeat resolved
+questions. Historical detached-state reachability, indefinite trapping,
+future complete-runtime admission and empirical correspondence remain open.
+
+B2.d.44 tests the first separable candidate at B43's actual pre-SHA state:
+the closed centered-energy tube intersected with an independent mean interval.
+The [local mean-cylinder obstruction](COUPLING_WINDING_PERSISTENCE.md#38-b44-a-bounded-mean-interval-does-not-close-the-centered-energy-tube)
+uses two canonical pressure templates with mean increments `-2^-114` and
+`3*2^-114`. Legal uniform carry translations preserve their centered energy
+and supply an outward witness at either boundary of every supported local
+interval containing the actual initial mean. These are hypothetical inputs,
+not escape observations on the retained trajectory.
+
+B2.d.45 [retains the necessary coordinate arithmetic class](COUPLING_WINDING_PERSISTENCE.md#39-b45-the-coordinate-arithmetic-class-does-not-rescue-local-mean-confinement).
+Its spacings `(1,1,2,4,8,4)*2^-113` come from exact canonical increment gcds.
+Flooring five carries onto their affine grids and balancing the sixth
+preserves the requested mean. An analytic energy bound makes both outward
+witnesses legal inside a slightly smaller derived mean window. Arithmetic
+class membership therefore does not rescue this local separable candidate.
+It still does not establish witness reachability or whole-band escape.
+The next inclusion candidate must couple mean boundaries to shape and carry,
+or explicitly address a wider domain beyond these local exclusions.
+The earlier target-only theorem remains a separate result.
+
+B2.d.46 derives [opposite-node relay strips and a signed local budget](COUPLING_WINDING_PERSISTENCE.md#40-b46-opposite-node-relay-strips-and-a-signed-local-budget)
+from B43's actual pre-SHA state. Four canonical pressure rows supply two
+exact modular rotations and a full-vector drift identity. Both relay
+coordinates remain in their joint strips while the other displayed values
+hold, but a corrected node-4 coordinate has strictly negative drift. Its
+analytic bound requires departure by step 10; a conditional shared-kernel
+continuation finds the first exit at step 7, with zero nodal balance residual
+and mean area `2^-114`. The next conditional endpoint is retained with all
+remainders. Node 4's new visible value changes the old relay pressures, so
+extension requires a verified boundary handoff and compatible corrected
+budgets. Neither this local inclusion nor its finite exit proves whole-band
+escape, an indefinite trapping region or future graph-owned admission.
+
+B2.d.47 [extends the surviving relay budget across that boundary](COUPLING_WINDING_PERSISTENCE.md#41-b47-a-local-relay-budget-survives-the-interacting-boundary).
+Exact C6 pressure locality leaves the node-0/node-1 corrected budget
+unchanged under arbitrary admitted node-3/node-4 values while displayed
+nodes `(1,2,5)` hold. The latter two switches have a nonzero represented
+interaction, which prevents promoting them to independent relays. A signed
+budget proves a 198-step deadline from B46's full carried endpoint; the
+first held-node change occurs at step 197, node 1. All nodal and corrected
+budgets close exactly, with the finite band premise certified separately.
+The next conditional endpoint retains its complete numerical lineage and
+carry. Its changed node 1 now affects the relay itself, requiring a new
+dependency-boundary proof before further composition. Indefinite trapping
+and future graph-owned admission remain open.
+
+B2.d.48 implements [exact correlated-set viability](COUPLING_WINDING_PERSISTENCE.md#42-b48-exact-correlated-set-viability-and-the-remaining-global-gap)
+for this fixed carried C6 map. Complete preimage intersections retain the
+actual carry, nearest-even ties and derived coordinate cosets. A finite
+fixed point containing the supplied origin proves indefinite conditional
+boundedness; exclusion and resource exhaustion have distinct outcomes.
+The profile-derived 64-cell candidate retains the actual B47 origin through
+three complete descents with 64, 416, and 4,285 boxes, then exhausts its work guard.
+It is inconclusive, without a new trajectory or global stability claim.
+Exact affine and nonlinear dual controls rule out two named quadratic
+shortcuts, not all quadratic or piecewise invariants. The required current
+result remains a closed correlated region or a compatible signed temporal
+escape budget for the unchanged B47 state.
+
+B2.d.49 adds [protected pair contrasts and relational past envelopes](COUPLING_WINDING_PERSISTENCE.md#43-b49-protected-pair-contrasts-and-relational-past-envelopes)
+inside the same viability owner and benchmark. Fifteen conditional pair
+barriers tighten the profile cube; one exact difference-bound zone per cell
+avoids explicit box fragmentation. The current 64-zone search completes
+259 image layers, reduces outgoing coordinate facets from 72 to 56 and
+retains B47, then reaches its computational guard. It remains inconclusive.
+Positive finite-state controls separately verify the invariant-core and
+actual-entry proof paths. Membership in an outer envelope does not prove
+temporal reachability, and a surviving outward state is not an observed
+escape. The next gate is a universally checked temporal/carry refinement
+of those states, or a different source-derived candidate.
+
+B2.d.50 adds [exact point predecessors](COUPLING_WINDING_PERSISTENCE.md#44-b50-exact-point-predecessors-and-the-temporal-correlation-gap)
+to the same owner. Complete predecessor frontiers preserve full carry and
+shared-kernel successor links, separating past feasibility, early transient
+visits and actual-origin paths. Nine of ten selected B49 outward points have
+exhausted R259 trees without the origin; verified clipped forward inclusion
+then excludes those points as the first cube-exit cause. This does not remove
+entire outward facets. A bounded one/two-cell temporal-label prototype reduces
+distinct outward facets to 48/46 but still supplies no invariant core.
+The next gate is universal temporal refinement over regions rather than
+further isolated point checks; actual C6 indefinite boundedness remains open.
+
+B2.d.51 implements [whole outgoing-region exclusion](COUPLING_WINDING_PERSISTENCE.md#45-b51-whole-outgoing-regions-excluded-by-their-complete-pasts)
+in the same owner and campaign. Complete per-cell predecessor hulls, exact
+RN cube facets and origin exclusion now rule out 24 whole first-exit slabs:
+all 16 node-1 upper and eight node-5 upper slabs. Their complete layers become
+empty; the established clipped R259 inclusion and conditional pair-strip
+preservation bind this to the actual B47 origin before any first exit.
+The other 32 slabs remain resource-undecided,
+covering node-0 lower, node-2 lower, node-3 upper and node-4 upper. Regional
+counts are not a probability or completion percentage. Removing the 24
+excluded slabs tightens 104 bounds across 22 cells, but the same bounded
+search excludes no further slab. The next target is a universal coupled
+pressure/carry proof retaining richer temporal relations for these classes.
+
+B2.d.52 adds an [exact nodal excursion certificate](COUPLING_WINDING_PERSISTENCE.md#46-b52-a-nodal-excursion-budget-excludes-the-node-2-lower-boundary).
+A derived linear coordinate increases throughout node 2's lower-cell
+visits, and every reentry lies strictly above all lower unsafe slabs.
+The initial visit clears its derived finite gate after 56 canonical carried
+steps. This excludes eight additional whole first-exit slabs for arbitrary
+later time under the same conditional map. The campaign reconstructs the
+24 prior exclusions and shares full RN geometry and target construction.
+Combined coverage is 32 of 56 slabs, with node-0 lower, node-3 upper and
+node-4 upper still open. Global C6 boundedness and live runtime promotion
+remain unproved; proof coordinates do not change the physical dynamics.
+
+B2.d.53 adds [cell-offset excursion certificates](COUPLING_WINDING_PERSISTENCE.md#47-b53-separate-cell-offset-budgets-exclude-four-further-regions)
+for four node-3 upper slabs. Origin-injected forward hulls first refine the
+domain after reverified B51/B52 exclusions. Each target then has its own
+strict drift, complete ingress separation and initial-potential check;
+all four initial gates are zero. The shared campaign verifies untrusted
+rational proposals and binds seven input artifacts. Coverage is 36 of 56,
+with 20 unresolved slabs: node-0 lower 8, node-3 upper 4, node-4 upper 8.
+Exact short return relations provide a further independently checked
+domain refinement, but no additional exclusion yet. Fixed-point clipping
+and resource-limited searches do not close indefinite C6 boundedness.
+
+B2.d.54 adds [whole-region backward return exclusions](COUPLING_WINDING_PERSISTENCE.md#48-b54-complete-return-guards-exclude-two-node-0-lower-regions).
+One shared owner derives the canonical direct/two-step guards, preserves
+all intermediate exits, and checks complete predecessor layers. Node-0
+lower masks 4 and 12 have empty return layer 7 and exclude the unchanged
+origin at every earlier layer. The eight-input campaign reconstructs B53
+and raises coverage to 38 of 56 slabs, with 18 unresolved. No additional
+trajectory steps are required. A two-return forward refinement tightens
+the domain further but proves no additional exclusion; global boundedness
+and live-runtime promotion remain open.
+
+B2.d.55 adds [exact unions of return predecessors](COUPLING_WINDING_PERSISTENCE.md#49-b55-exact-unions-exclude-another-complete-first-exit-region).
+Keeping separate regions within each represented cell excludes node-0
+lower mask 0 at return depth 4; a joined envelope had retained spurious
+pasts. The shared return owner now bounds intersection, subsumption and
+zone work while preserving complete original targets. The nine-input
+campaign reconstructs B54, adds no trajectory steps, and raises coverage
+to 39 of 56 slabs, with 17 unresolved. Signed-pair bounds and fixed carry-
+sign partitions produce no further exclusion in their bounded controls.
+Global boundedness of this C6 branch remains open.
+
+B2.d.56 separates [global counts from joint return chronology](COUPLING_WINDING_PERSISTENCE.md#50-b56-global-counts-lose-chronology-while-word-budgets-recover-it).
+Exact balanced generators and a positive zero-displacement circulation
+prove that incidence/displacement counts alone admit all remaining target
+cosets. They establish abstract label walks, without simultaneous RN guards.
+A shared exact word verifier instead composes those guards at one carried
+source and derives sharp consecutive-repetition budgets: one and two for
+two retained cycles. A prefix-memory product forbidding their first
+impossible repetitions has 43 vertices and 2,113 arcs, yet its exact count
+relaxation still admits every original coordinate coset. Coverage remains
+39/56; arbitrary interleavings and the seventeen whole-region exclusions
+remain open. The next refinement must combine temporal memory with joint
+carried-state constraints. The focused implementation suite passes 197 tests.
+
+B2.d.57 implements that joint-state refinement with
+[last-return memory](COUPLING_WINDING_PERSISTENCE.md#51-b57-joint-last-return-memory-excludes-a-further-whole-exit-slab).
+Canonical endpoint guards and complete descending worklist updates preserve
+every pre-first-exit origin history. Whole-target backward queries also
+retain terminal transient steps. Node 3 upper mask 30 now has an empty
+complete past at depth 136; the unchanged origin is absent throughout.
+Coverage rises to 40/56, with sixteen slabs pending.
+B2.d.58 [audits the propagated exclusions](COUPLING_WINDING_PERSISTENCE.md#52-b58-exact-redundancy-and-selective-safe-memory-partitions).
+All four scalar cuts preserve the complete residual query graph and every
+original target initialization; repeating that operator gives no refinement.
+An exact selective partition preserves the holes in four terminal-memory
+classes. Its matched-depth prototype tightens 25, 38, 66 and 75 memory
+projections at depths 2 through 5, without closing another whole slab under
+the tested limits.
+B2.d.59 [integrates the partition canonically](COUPLING_WINDING_PERSISTENCE.md#53-b59-canonical-fixed-safe-piece-memory-certificates).
+It independently reproves the exclusion before subtracting each exact
+unjoined preimage, preserves fixed safe seeds and shares whole-target query
+semantics with ordinary memory. All sixteen full targets remain unresolved
+under their separate 250,000-work budgets. Exact path analysis identifies
+nine depth-one predecessor pieces in six additional memories.
+B2.d.60 [implements optional exact predecessor cuts](COUPLING_WINDING_PERSISTENCE.md#54-b60-exact-predecessor-cuts-and-their-computational-cost),
+preserving the depth-zero default. Matched-sweep controls improve a few
+projected histories, but equal nominal work gives mutually incomparable
+covers. The independently replayed sixteen-target campaign excludes no
+additional slab within the same resource caps. At the nominal 500,000
+forward-work cap, B59's original-memory DBM hull projections are tighter in
+454 histories and equal in 811; B60 improves none. This does not compare
+complete nonconvex unions. No nodal parameter or trajectory is changed.
+B2.d.61 [verifies that bounded priority experiment](COUPLING_WINDING_PERSISTENCE.md#55-b61-priority-refinement-excludes-another-original-exit-label).
+Keeping every B60 seed, root and arc, its two-queue schedule charges
+classification and complete updates to the same 500,000-work budget.
+The full node-3 upper mask-28 target now has empty direct, terminal and
+origin observations. A separate exact origin-cover bridge transfers this
+result to the original label: coverage rises to 41/56, with fifteen open.
+This is a new exclusion, not a cheaper depth-zero initialization or a
+general efficiency result. Independent replay verifies all 32,112 visits;
+625 pending vertices remain, so no global fixed point is claimed.
+The optional policy was initially a separate experiment; B2.d.63 below
+integrates it in the production owner while preserving FIFO defaults.
+B59 remains a comparison baseline; forward refinement need not be rerun
+per target.
+B2.d.62 [audits canonical synergies and proof reuse](COUPLING_WINDING_PERSISTENCE.md#56-b62-canonical-synergies-and-proof-ownership).
+It derives a one-pass retained-cover inclusion check and distinguishes
+same-partition intersection from cross-partition hull projection. B61 and
+its same-index B60 intersection pass that check; the B59-hull intersection
+fails at thirteen vertices while retaining its two-parent coverage premise.
+All fifteen pending targets remain nonempty on five tested initializations,
+so coverage stays 41/56. No backward layer or trajectory is advanced.
+The shared-owner integration in B2.d.63 retains this evidence. The next
+mathematical tests concern exact mask28 predecessor cuts and local-pressure
+residence combined with ingress/return memory. Bare C6 symmetry, global
+counts and coarse component decomposition do not supply the missing
+chronological constraint.
+B2.d.63 [integrates priority discovery and retained-cover verification](COUPLING_WINDING_PERSISTENCE.md#57-b63-shared-priority-discovery-and-retained-cover-verification)
+in the same return owner. New public APIs reconstruct canonical source,
+exclusions, seeds, roots and arcs before accepting exact candidate arrays.
+The complete image gate and shared whole-target queries reject forged or
+partial coverage; advisory regions authorize scheduling only. Legacy FIFO
+classes and depth-zero behavior remain unchanged. The focused suite passes
+232 distinct tests, including 91 new cases. The full fifteen-input campaign
+reproduces the B61 priority result with explicit hint-validation and
+cover-check costs and queries all sixteen original pending labels. Coverage
+remains 41/56, with fifteen resource-limited queries. Independent arithmetic
+replays all sixteen queries and the complete cover checks; both historical
+FIFO controls retain their exact arrays, queues and counters. This is proof
+infrastructure for the unchanged nodal model, not a new physical mechanism
+or a global stability theorem.
+B2.d.64 [tests exact exclusion transfer and local chronology](COUPLING_WINDING_PERSISTENCE.md#58-b64-exact-exclusion-transfer-and-local-chronology).
+The mask28 exclusion yields ten nonredundant exact forbidden pieces in
+each weaker B59/B60 cover. They affect no retained B63 state and do not
+change the fifteen target initializations. Three matched-budget B59
+continuations give no componentwise improvement or new empty target.
+On B63, the node0 stencil instead selects an acyclic 35-history subgraph:
+two local image passes tighten three zones, and a 259-piece exact ingress
+federation preserves additional correlations lost by the converged hull.
+All five node0 targets still have nonempty observations. The next gate is
+their surviving exterior ingress/prehistory, beginning with the two
+mask8 feeders and their 34 incoming candidates, preserving complete
+terminal and nodal-step provenance. Coverage remains41/56 with15 pending; no
+production source or physical coefficient changes. Global C6 boundedness
+and full-runtime promotion remain open.
+
+B2.d.65 [evaluates the complete mask8 prehistory layer](COUPLING_WINDING_PERSISTENCE.md#59-b65-a-complete-mask-8-prehistory-layer):
+27 of34 candidates are empty and seven survive, with complete ingress,
+root, target-domain and intermediate-guard checks. The two suffix families
+share exactly two small positive node0 increments before the negative
+mask8 update, but keep distinct full guards and six-coordinate states.
+This neither proves reachability nor excludes another whole region.
+The next smaller complete family, evaluated in B66 below, has16 candidates
+at feeder45's three source histories; the other family has39. Scientific source, nodal
+parameters and the41/56 regional count remain unchanged.
+
+B2.d.66 [measures exact geometric gain and reuses local histories](COUPLING_WINDING_PERSISTENCE.md#60-b66-exact-geometric-gain-and-reuse-of-local-histories).
+The complete 16-candidate feeder45 layer leaves four nonempty pieces and
+eliminates parent6; the other two parents and the selected-family endpoint
+union strictly shrink. Reusing all 14 relevant B64 local source pieces
+leaves eight intersections plus two unchanged exterior pieces. That exact
+ten-piece endpoint union shrinks again although its DBM hull is unchanged.
+Thus the gain depends on preserving separate compatible histories, not on
+having fewer pieces. The 726 charged DBM operations exclude lineage/word
+audits and independent validation. Restoring the four unchanged feeder97
+pieces still gives a strict complete-observation endpoint-union reduction,
+verified by a separate 2,243-operation difference check. No source or trajectory changes;
+coverage remains 41/56, with 15 pending and both mask8 feeders still open.
+The next gate, completed in B67 below, is feeder97's complete 39-candidate
+family with exact-union comparison and the B66 feeder45 pieces retained.
+
+B2.d.67 [completes the second family with shared refinement](COUPLING_WINDING_PERSISTENCE.md#61-b67-the-second-mask8-family-and-a-shared-refinement-kernel).
+The 39 candidates leave seven; all 49 applicable B64 local-cover pieces
+leave eleven intersections plus two exterior pieces. Parent39 is excluded
+by the first layer and parent66 by the existing-cover reuse, both only in
+their target-conditioned histories. Preserving the ten feeder45 pieces gives
+23 endpoints whose exact union shrinks although its hull is unchanged.
+The producer charges 5,495 DBM operations; verification is separate.
+The common detached refinement helper reuses production geometry and keeps
+historical evidence immutable. Coverage remains 41/56, with 15 pending.
+
+Four exact endpoint-containment links reduce observation comparison to19
+pieces, while all23 history records are retained. Their existing local
+prefixes expose22 exterior sources. Only source41 is shared, by two
+disjoint alternatives with different nodal suffixes. The next gate tests
+those alternatives against all12 incoming arcs:24 branch pullbacks share12
+source guards, with all21 other histories preserved. This avoids expanding
+the full308-candidate frontier; no new predecessor was evaluated when
+normalizing the existing prefixes. Endpoint containment never permits
+substitution of a different source history during later refinement.
+
+B2.d.68 [tests the shared source and audits arithmetic relevance](COUPLING_WINDING_PERSISTENCE.md#62-b68-a-shared-source-control-and-the-boundary-of-local-progress).
+All24 branch/arc candidates leave six pieces while the other21 paths stay
+intact. One selected branch strictly shrinks; the other's complete incoming
+union reconstructs its old geometry, despite fewer surviving candidates.
+The complete27-piece endpoint union is strictly smaller with unchanged
+hull. The cache saves12 source-guard intersections; total producer work is
+1,976 DBM operations, with independent geometry replay and misuse controls.
+
+Re-deriving all64 pressure rows gives necessary coordinate moduli
+`(1,1,4,8,8,8)` relative to B47. All27 retained and all6 removed pieces have
+explicit coset witnesses rounding to mask8, checked independently. The
+existing residue adapter needs33 quotient closures. This verifies that
+the gain affects coset-admissible hypothetical states while also ruling
+out these cosets alone as a closure shortcut for any retained piece.
+Neither feasibility nor finite compatible suffixes imply origin reachability.
+
+Whole-label coverage has remained41/56 since B61. Local improvements give
+no proven termination rate for the search. The next gate therefore changes
+from automatic history expansion to an exact applicability audit of old
+separator obstructions on the retained history cover/current frontier,
+before another global certificate proposal. The first audit selects B56
+affine-frontier result0:64 supported inequalities and77 coefficients for
+the mask8 lower target at depth6. Old dual witnesses require
+new guard and history-label checks; their failure to transfer is not a
+positive theorem. Preserve all27 path obligations. The pre-exit clipped
+cover and an invariant of the un-clipped nodal map remain distinct, and
+exit from the chosen cube would not itself prove unboundedness.
+
+B2.d.69 [audits the old dual and refutes blanket positive entry](COUPLING_WINDING_PERSISTENCE.md#63-b69-direct-dual-transfer-fails-and-a-short-entry-policy-obstruction).
+The old64-term dual remains valid in its original77-coefficient problem,
+but only16 fixed constraints transfer directly:14 drift, two ingress and
+zero target witnesses. All64 fixed points fail the finer coordinate cosets.
+This direct-admission audit does not rule out other algebraic implications
+and does not prove that a separator exists.
+
+A new coset-admissible retained path `32 -> 16 -> 26 -> 48 -> 8` supplies
+five inequalities with exact zero-vector sum and strict mass one. Blanket
+positive entry, internal nondecrease and current-target nonpositivity are
+inconsistent on that path. Arbitrary consistent state-function values have
+the same contradiction under these requirements. This does not establish
+reachability from B47, transfer the old depth-six target dual, or refute an
+origin-conditioned global certificate. Both results have independent exact
+validators and malformed-input controls.
+
+The next gate specifies an origin-conditioned history-affine certificate
+over910 nonempty zones:6,370 proof coefficients,7,150 complete clipped arc
+obligations,27 target pieces and one actual root. Vertex260 is the nonzero
+first-return image `57 -> 58`, not B47's zero sentinel. Preserve the
+original-target/terminal bridge. Specification, exact verification cost
+and sparsity checks precede any candidate search; the naive formulation's
+301,434 dual multipliers are only a size warning, not a runtime forecast.
+The detailed owner is `artifacts/research/c6_b69_scope_and_next_gate.md`,
+with a reproducible inventory and `b69_final_validation.json` checkpoint.
+No production dynamics change, positive barrier or new whole-label
+exclusion follows. Coverage remains41/56, with15 pending.
+
+B2.d.70 implements the [complete origin-conditioned specification and exact checker](COUPLING_WINDING_PERSISTENCE.md#64-b70-executable-history-affine-obligations-and-exact-verification).
+All 7,178 obligations remain. Exact pooling stores 7,108 geometries; sequential
+facet removal reduces 301,434 weighted inequalities to 97,228 with identical
+closures. The checker binds the root, every translated drift and every target
+to the complete specification and verifies sparse rational conic bounds.
+Constant-zero and constant-one controls fail the root and target requirements,
+respectively. Accepted algebraic fixtures are separate from C6 evidence.
+An adapter reuses the existing exact transport extremum owner for rational
+coefficients, returning an attaining witness and a checked dual. B71 below
+prepares the bounded candidate search under the same recorded resource cap.
+No positive C6 barrier or new region exclusion follows: coverage is 41/56.
+
+B2.d.71 centralizes the [repository mechanism and verification-boundary audit](C6_RESEARCH_MECHANISM_AUDIT.md).
+Its 308-file inventory and 19 candidate duplicate groups do not constitute
+complete semantic verification. Exact controls expose interpreter/input
+gaps without demonstrating a false certificate in normal C6 replay, correct
+the Silence documentation and supersede the historical zero-root-mean
+premise. Rank-six controls exclude a shared-gradient exact invariant on all
+arcs; they leave the current history-affine barrier family open. The known
+908-history corridor offers only modest optional savings, whose rational
+sink completion need not preserve discovery norm/bit limits. Its repair plan
+requires explicit execution/input boundaries and one affine-obligation
+transform before candidate search; B72 implements it below. No LP ran or scientific source changed in
+this audit: 41/56 labels remain excluded and 15 remain pending.
+
+B2.d.72 implements the [shared verification boundary and bounded search](C6_RESEARCH_MECHANISM_AUDIT.md).
+The new `src/tnfr/research/history_affine.py` owner shares exact admission,
+affine forms, point rows, local extrema and final checks; matrix and Silence
+contracts are repaired without changing nodal evolution. Validation records
+451 tests, 11 independent mutation controls, all 7,177 historical forms/rows
+and 62 matching archived extrema. One real LP returns status 1 at its time
+limit (20.051 solver seconds, 23.305 total, 20,692 iterations), with no primal
+candidate, exact scan, oracle call or second proposal. This is inconclusive.
+B73 below completes the separately versioned, 20-second feasibility-only
+point LP: 6,370 free coefficients, zero objective and the same 7,178 point
+constraints including the root. Removing norm-objective auxiliaries preserves
+finite feasibility, without guaranteeing faster solving. All full exact
+acceptance requirements and the 256-bit/`2^20` coefficient caps remain.
+The checkpoint is [b72_final_validation.json](../artifacts/research/b72_final_validation.json);
+historical evidence is preserved, and coverage remains **41/56, with 15 pending**.
+
+B2.d.73 completes the [feasibility-only control and coordinate diagnostic](../artifacts/research/c6_b73_result_and_next_gate.md).
+The smaller 7,178-by-6,370 proposal retains every point condition and also
+times out without a primal candidate. No exact scan, oracle call or new cut
+follows. Independent preflight checks all point rows, including the root,
+and seven malformed controls; the 451 B72 tests and 62 extrema are reused,
+not rerun. Source and coverage remain unchanged: **41/56, with 15 pending**.
+The two-chart diagnostic selects first-evaluation recentering for its
+sparser point matrix, while its within-column magnitude ratio worsens.
+B74 below completes binary64 materialization/scaling and inverse original-coordinate
+caps before its separately versioned 20-second translated proposal.
+Finite zero-column omission must restore all coefficient slots
+before the full exact checker. No automatic budget growth follows.
+Evidence is sealed by
+[b73_final_validation.json](../artifacts/research/b73_final_validation.json).
+
+B2.d.74 completes the [scaled proposal and exact rejection](../artifacts/research/c6_b74_result_and_next_gate.md).
+Positive exact scaling of 22 rows preserves all 59,682 entries at solver
+loading; independent preflight and reconstruction controls pass. The single
+LP returns a candidate in 7.629 seconds, and all 7,177 guarded checks complete.
+Independent primal/dual verification confirms 5,949 failures: 5,922 drifts
+and all 27 targets. Solver success is not exact sampled feasibility either.
+Of the failed full conditions, 4,403 have nonnegative sampled anchors; 5,933
+retained negative witnesses also reject the exact lift before denominator
+limiting. These are candidate-specific geometric/numerical diagnostics,
+not trajectory reachability or affine-family impossibility. Source and
+coverage remain unchanged: **41/56, with 15 pending**.
+B75 below completes its bounded witness-refinement gate. All original
+coefficient slots, caps, root admission and full guarded checks remain.
+The evidence is sealed by [b74_final_validation.json](../artifacts/research/b74_final_validation.json).
+
+B2.d.75 completes the [verified witness refinement](../artifacts/research/c6_b75_result_and_next_gate.md).
+It adds 256 retained witnesses while preserving every initial row. Recomputing
+the proposal reactivates 134 columns: 7,434 rows, 4,050 active variables and
+62,379 entries pass independent preflight and loading checks. Its single LP
+times out after 20.023 solver seconds without a candidate; no exact scan or
+new region exclusion follows. Witness evaluations are unavailable, not passed
+or failed. The intermediate primal-status message does not prove infeasibility.
+Independent post-validation passes; source and coverage stay **41/56, 15 pending**.
+A no-optimization installed-source audit verifies that a future `highs-ipm`
+comparison can preserve the complete matrix and options except the solver
+selector. The next gate permits one 20-second attempt on that frozen model,
+after preflight and with unchanged exact acceptance, without further cuts or
+history. No performance or feasibility guarantee follows. Evidence is sealed by
+[b75_final_validation.json](../artifacts/research/b75_final_validation.json).
+
+This is a scoped numerical proof programme, not an established prerequisite
+for general TNFR understanding. Its transferable content includes signed
+nodal budgets, complete guarded induction and control of correlations lost
+by joining histories. Require measured geometric gain or a new useful
+mechanism before increasing depth. Broader work should reuse the existing
+mean/shape, diffusion and event-budget owners to distinguish spatial
+contraction from uniform drift; neither binary64 bookkeeping nor completion
+of C6 alone establishes general multichannel stability or physical emergence.
+
+Lines S1, S2 and S4 share one exact restricted result:
+[Heterogeneous EPI diffusion stability theorem](TNFR_DIFFUSION_STABILITY_THEOREM.md).
+It proves exponential convergence in the metric `diag(d_i/nu_f_i)` for fixed
+positive capacities and a common Dirichlet-energy bound for arbitrary
+time-varying capacities inside positive finite bounds. The executable
+time-varying result is an exact-real continuous theorem induced by the effective
+binary64 conductances and bounds: its rational proof, its ordinary binary64
+spectral diagnostics, availability of a positive published float rate, and
+verification of a runtime integration path are four separate facts. The
+consensus value is schedule-dependent unless capacity ratios remain fixed.
+These results explicitly do not promote grammar U2 into a general convergence
+theorem.
+
+The new pure S4/S5/S16 reference kernel isolates one exact nonuniform mode on
+any fixed connected symmetric rational conductance with positive rational
+capacity. With `A=diag(nu_f)L_rw`, `H=diag(d_i/nu_i)` and
+`v=x_0-mean_H(x_0)*1`, it requires the exact identity `A*v=mu*v`, `mu>0`.
+It then certifies the exponential solution, the refreshed-Euler product for
+each exact partition, rational `L_inf` and `H`-error-energy bounds, and strict
+improvement under proper positive subdivision. The `O(h_max)` factor bound
+proves convergence for every fixed-data admissible exact-real partition family
+with `h_max -> 0`. The complete proof is centralized in the
+[`exact reversible single-eigenmode Euler reference theorem`](TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem).
+The `mu*T <= 4096` implementation cutoff caps only the rational enclosure's
+integer-power exponent; it does not cap arbitrary rational bit size. Example
+[`167_reversible_eigenmode_reference.py`](../examples/02_physics_regimes/167_reversible_eigenmode_reference.py)
+certifies both nonuniform modes of nonregular `P3`. The pure certificate does
+not inspect an executor or establish binary64 asymptotics, solver order, mixed
+modes, directed transport, glyphs, REMESH or full TNFR stability.
+
+The S4/S5/S16 runtime adapter is now **IMPLEMENTED** by
+[`observe_executed_reversible_single_eigenmode_euler_reference`](../src/tnfr/physics/runtime_eigenmode_reference.py).
+It accepts finite intact executor-owned pressure-refreshed partitions, derives
+the common exact source problem from their captured node order, conductance,
+capacity, initial EPI and durations, and binds them to the general theorem. At
+each segment it records the pressure residual `rho`, held-input execution
+residual `eta`, and combined local defect
+`epsilon=h*diag(nu_f)*rho+eta`. It propagates these generally off-mode vectors
+with the complete matrix recurrence
+`r_next=(I-h*A)r+epsilon`, then encloses the signed represented-minus-continuous
+endpoint and its exact rational `L_inf` and `H`-energy errors. The family is an
+offline caller ordering of individually certified executions. It does not
+establish common causal provenance, runtime or binary64 mesh convergence,
+solver accuracy/order, glyph/REMESH behavior, repetition or future stability.
+Example
+[`168_runtime_reversible_eigenmode_reference.py`](../examples/02_physics_regimes/168_runtime_reversible_eigenmode_reference.py)
+exercises nonzero represented defects on nonregular `P3`.
+
+Line S3 now has both a negative and a conditional positive result. Uniform
+capacity rescaling leaves the initial tetrad unchanged while changing EPI
+velocity, so the tetrad alone is not predictively sufficient. On a fixed graph,
+the full nodal potential observes `-K L_rw EPI`; when this operator has rank
+`N-1`, one conserved zero-mode scalar completes EPI reconstruction. The rank
+condition holds on all 142 connected simple graph-atlas cases through six nodes,
+but its universal validity remains open. Extreme weighted stars retain algebraic
+rank while becoming severely ill-conditioned, so robust inverse reconstruction
+requires separate scale-aware rank thresholds and a small reconstruction
+residual. The certificate distinguishes structural rank from numerical success.
+Diffusion uses edge `weight` as conductance; potential geometry uses an explicit
+`length` when provided and otherwise preserves `weight` as a compatibility
+fallback. Studies with distinct physical channels must declare both.
+
+Line S5 now separates three clocks. The existing non-normative spectral
+diagnostic computes the explicit-Euler modal factor and step count for frozen
+symmetric EPI diffusion, including heterogeneous capacity and the stability
+interval `0<dt<2/lambda_max`. The 21-node path requires 231 steps at canonical
+`dt` while `K4` requires 2; U4 remains a three-position grammar policy.
+
+The finite operator-event contract represents each canonical operator as an
+instantaneous zero-duration jump. A schedule with `m` events therefore has
+exactly `m+1` declared nodal-flow intervals. Materialized binary64 durations
+are retained as exact `Fraction` values; their exact prefix sums define the
+authoritative offsets and physical ordering. Absolute binary64 timestamps are
+representations only. They can coincide or have a subtraction different from
+the declared duration, so schedule logic does not reconstruct interval duration
+from them and the builder does not write `epi_time_history`. Coincident jumps
+belong to the hybrid event log and retain the stable `event_index` order.
+
+For one declared flow interval,
+[`diagnose_continuous_relaxation_duration`](../src/tnfr/physics/event_duration.py)
+uses the frozen connected symmetric positive-capacity pure-EPI theorem. It
+forms a rational upper bound on `log(1/target)` and decides sufficiency only by
+the rational comparison `rate_lower * duration >= log_upper`. The displayed
+required duration is rounded upward and the reported decay factor is an upper
+bound. Libm duration/factor values and the source eigensolver rate remain
+explicitly non-proof estimates; an invalid spectral estimate is discarded
+without blocking an intact exact proof. The reproducible
+[`165_operator_event_relaxation.py`](../examples/02_physics_regimes/165_operator_event_relaxation.py)
+exposes timestamp subtraction loss and coincident-event ordering.
+
+The schedule builder and duration diagnostic remain read-only. The separate
+`execute_operator_event_schedule` runtime now binds a valid finite schedule to
+the graph's configured nodal integrator and the same canonical all-target stage
+dispatcher used by ordinary words. It freezes the initial target tuple, checks
+the live binary64 clock at every boundary, and rejects positive intervals for
+which exact-prefix endpoints collapse or direct binary64 addition misses the
+scheduled endpoint. A ZHIR pre-flow is additionally rejected if subtracting its
+displayed endpoints does not recover the authoritative declared duration, so
+its observed secant cannot silently use a different interval. A whole-schedule
+graph transaction covers flows, jumps, histories, runtime caches and
+`hybrid_event_log`; effects already emitted by external callbacks or resources
+are outside that rollback.
+
+The integrator footprint is now explicit. One positive flow call may change
+only EPI, `dEPI_dt`, `d2EPI_dt2` and the runtime clock. A custom integrator must
+also satisfy the exact represented-rational held-input identity
+`EPI_right-EPI_left = dt*nu_f_left*DeltaNFR_left` at every target. This validates
+one finite realization of the nodal equation; it proves neither solver accuracy
+nor order. The transaction carrying this check is owner-bound to its originating
+graph. It preserves NetworkX structural mapping identities and aliases plus
+capturable callback-owned state. Mutable structural keys with non-identity
+hash/equality, custom `__deepcopy__` hooks and unmodelled opaque C state are
+rejected before writes, while common immutable atoms remain admissible. The
+rollback covers graph-reachable capturable state, not emitted I/O or warnings,
+external resources or aliases held only outside the graph.
+
+The read-only `capture_nodal_flow_state` endpoint contains ordered support,
+scalar EPI, capacity, stored pressure and effective conductance without
+retaining the graph. `certify_observed_nodal_flow_interval` interprets every
+finite binary64 input as its exact rational value and reports separately: the
+integrated held-pressure nodal identity, exact pure-EPI pressure identity,
+shared binary64 pressure replay, one-step Euler endpoint replay, sequential
+held-pressure substep replay and exact rational Euler quotient gain. A passing
+endpoint relation does not infer an integrator or certify runtime provenance.
+
+With `include_flow_certificates=True`, the event executor captures immediately
+before and after the single integrator call for every positive unpartitioned
+interval and stores one `ExecutedNodalFlowInterval` in `flow_interval_evidence`.
+A physically partitioned parent instead always captures one record per segment
+inside `physical_flow_partition_evidence[*].segment_flow_evidence`. Each runtime
+wrapper derives provenance from the actual object and configuration. Trusted
+sequential held-pressure identification requires the exact built-in
+`DefaultIntegrator`,
+Euler with one or more substeps, live Gamma type `none`, inactive clipping,
+disabled extended dynamics, stable support, unchanged capacity and pressure,
+an exact represented substep-duration sum equal to the declared interval, and a
+matching endpoint replay. The older binary64 interval property and exact
+rational pure-EPI affine map remain restricted to one substep. A custom
+integrator or subclass, RK4, any other Gamma type, clipping, extended dynamics
+or a duration-sum mismatch blocks sequential held-pressure identification.
+Internal substeps do not refresh pressure and therefore do not constitute a
+physical diffusion refinement or support a modal diffusion decision.
+
+`observe_event_local_zhir_prejump` now pairs one executor-sealed nonempty flow
+offline with a scheduled ZHIR boundary at the same exact and represented
+coordinate. It records the exact rational endpoint secant separately from the
+binary64 EPI subtraction, timestamp subtraction and division used by the actual
+Mutation gate; both accepted and rejected strict-threshold decisions remain
+observable. Two otherwise identical observations with different internal
+substep counts gain an event-local invariance certificate only when their actual
+decisions agree and every exact represented binary64 rate perturbation is
+strictly smaller than the baseline distance to `xi`. Equality abstains. This
+closes the held-pressure internal-subdivision baseline without proving
+shared schedule-execution provenance, modal or solver equivalence, U4
+readiness, adaptive policy or future behavior. The separately executed
+physical path below supplies the pressure-reevaluated comparison.
+
+`PhysicalFlowPartition` declares at least two positive segments whose exact
+represented durations cover one scheduled parent interval. Every segment must
+advance and reproduce its binary64 endpoint by both addition and subtraction.
+The `physical_flow_partitions=` executor path invokes the centralized
+pressure reader before each segment and at the terminal boundary. Its sealed
+`ExecutedPressureRefreshedFlowPartition` binds all boundary snapshots,
+callback identity, segment flow certificates, segment-start modal diagnostics
+and any exact common-metric gain product. A callback may change pressure and
+known derived pressure/cache state only. EPI, capacity, phase, histories,
+full edge state, conductance, clock and persistent graph configuration must
+remain fixed. An existing non-`None` cached `_dnfr_weights` value is immutable;
+the canonical default hook may initialize a missing or `None` cache. Failure at
+any boundary or later segment restores the graph-owned transaction.
+
+For a fixed pure-EPI generator A, the exact-real held-pressure Euler model has
+`g_H(mu)=1-T*mu` even when the integrator uses internal substeps; its exact-real
+pressure-refreshed counterpart has `g_R(mu)=product_k(1-h_k*mu)`. Runtime
+endpoints remain separate binary64 observations. The comparison evaluates these
+model factors in ordinary binary64 only after trusted held-pressure segment
+replays and exact common node order, capacity and conductance are established;
+equality of sorted spectra alone is insufficient because isospectral generators
+need not commute. Exact identification of an observed endpoint with a rational
+affine map requires the separate exact-affine certificate. On the unit-capacity
+K2 nonuniform mode, T=1.25 makes the held model factor -1.5 while two physical
+segments of 0.625 give a composite model factor 0.0625, so their modal stability
+decisions differ.
+`observe_event_local_zhir_physical_prejump` likewise keeps Mutation's live
+terminal-segment secant separate from the offline whole-parent secant.
+`compare_event_local_zhir_physical_refinement` records endpoint, rate, gate
+and modal differences against a matched held-pressure baseline. This closes the
+finite physical-partition execution and comparison target; it does not certify
+solver order, mesh convergence, U4 readiness, adaptive policy or future
+behavior.
+
+`observe_executed_event_local_zhir_physical_prejump` closes a narrower
+provenance gap. Starting from one intact stage-certified execution result and a
+committed ZHIR event index, it binds the scheduled event, executed event,
+preceding physical partition, terminal pre-flow, glyph stage, ordered decisions
+and trigger certificates by identity. Its common-execution claim is stronger
+than the offline coordinate pairing above, but remains limited to that finite
+window and establishes no solver, convergence, general U4 or future result.
+
+Exact rational pure-EPI affine promotion additionally requires at least two
+nodes, fixed symmetric nonnegative conductance with positive row strengths,
+positive capacity, the exact pressure `-L_rw EPI` and the exact nodal identity.
+Changed support, conductance, capacity or pressure blocks the corresponding
+promotion. Stale pressure exposes the separation directly: the exact
+held-pressure nodal identity and trusted binary64 runtime replay can pass while
+the pure-EPI affine map and quotient theorem abstain.
+
+The executor records a boundary on both sides of every positive flow and after
+each jump. A same-time EPI jump restarts the local timestamped history, so it
+cannot become a finite secant. Every ZHIR event needs a positive immediately
+preceding flow whose displayed timestamp difference equals its authoritative
+declared duration; the event runtime then evaluates its fresh two-sample
+evidence at the jump. Interval certification remains opt-in and by
+itself does not certify solver accuracy, equivalent-step refinement, glyph
+gains, future or repeated schedules, or an adaptive U2/U4 policy.
+
+Every accepted two-phase ZHIR stage now seals one ordered decision observation
+per target directly from the immutable proposal: the full threshold certificate,
+minimum capacity, phase/regime decision, structural acceleration, bifurcation
+read-out and U4 context. This evidence exists independently of an EPI jump
+certificate and is carried into opt-in `ExecutedGlyphStage` records, so later
+live `_zhir_gate_*` metadata cannot rewrite the observed decision.
+
+The stricter `include_stage_certificates=True` option implies interval capture
+and produces one `ExecutedGlyphStage` for every accepted event. The dispatcher
+reuses its own frozen-proposal pointwise certificate for
+AL/SHA/VAL/NUL/ZHIR/NAV and its all-target neighbour certificate for EN/RA.
+Other glyphs and rejected certificate domains retain explicit abstention
+reasons. Each available certificate is bound to the EPI snapshots captured
+around the actual stage, its exact pre/post metric rays and any immediately
+adjacent positive-flow evidence. An opaque pressure callback that writes EPI
+therefore breaks the endpoint identity instead of being silently absorbed.
+
+The sealed `ObservedRepresentedEPIScheduleComposition` retains one
+`RepresentedEPIScheduleOperation` for every positive flow and glyph in actual
+chronological order. It publishes its normalized metric, gain factors and exact
+product only when the operation cardinality is complete, every operation has
+intact represented affine evidence, node order matches, consecutive observed
+EPI endpoints are exactly continuous and a single normalized positive rational
+metric applies to the entire trace. Its global contraction property belongs to
+those represented rational maps. The separate
+`runtime_schedule_global_gain_certified` field is always false: the endpoint
+binding does not prove a global executable binary64 map, solver accuracy,
+full-multichannel stability, future schedules or repeated execution.
+
+`execute_event_remesh_cycle` supplies the first operational mixed boundary. One
+outer graph transaction executes the schedule, binds its immutable result to the
+live endpoint clock and committed event log, verifies frozen ordered node support
+and incoming delayed history, appends the endpoint through the ordinary
+pre-REMESH `_epi_hist` helper, and invokes the delayed map. Edges may change in
+the schedule, while the EPI-only map and its ON_REMESH observers preserve that
+post-schedule topology and remain read-only over all graph-owned metadata,
+histories and stored non-EPI aliases. Capturable observer-owned state reachable
+from the graph shares that rollback boundary. The pressure hook, phase and
+materialized deterministic REMESH controls remain fixed. Shared validation
+covers positive-integer delays, materializable deque capacity, alpha source,
+bounds and clipping policy before positive flow.
+
+The uniform or supplied positive diagonal metric is materialized once and reused
+for all cycle-level weighted EPI observations and delayed-map evidence; legacy
+REMESH metadata retains unweighted means. Exact weighted means, drifts and
+disagreements remain authoritative when an optional binary64 display is `None`.
+Capacity vectors, completed schedule callbacks and an optional post-REMESH
+pressure refresh remain separate. The latter runs only after an applied map and
+counts only after returning. Delay `tau` reads `_epi_hist[-(tau + 1)]`; no second
+delayed-history sample follows the jump. The applied jump instead records its
+same-time right endpoint in `epi_time_history`, preventing a later Mutation gate
+from treating it as flow. This establishes one-cycle graph-state atomicity and a
+reproducible evolving-history convention. The cycle forwards both certificate
+options and retains the finite represented flow/glyph composition inside the
+event result. The separately invoked delayed map and its one-step evidence
+remain outside that composition. The cycle therefore provides no global
+binary64 runtime gain or repeated-stability theorem after the next schedule
+changes state, capacity, pressure or history. Capturable graph-reachable
+integrator and callback state is covered; emitted I/O or warnings, external
+resources and external-only aliases remain outside rollback.
+
+The optional `physical_flow_partitions` iterable is materialized once inside
+this outer transaction and the exact resulting tuple is passed unchanged to the
+event executor. Iterator failure is therefore transactional, and a stateful
+iterable cannot supply a different plan on a second traversal. External-only
+iterator state is not restored with the graph.
+
+Each cycle result now contains a sealed
+`RemeshHistoryTransitionObservation`. For bounded capacity `M`, exact incoming
+history `H_in` and exact pre-REMESH state `x_pre`, it checks
+`H_out = tail_M(tail_M(H_in) || (x_pre,))`, including rebuild truncation and
+append eviction. The local and global lag selections are derived independently
+from `H_out`, so insufficient history for one does not erase an available value
+for the other. The enclosing cycle seal binds this transition to its exact
+recorded schedule, REMESH plan and EPI, capacity, pressure, phase and clock
+boundaries. A requested pressure callback that returns once after a changed
+REMESH state is operationally complete; this is not a proof of
+`DeltaNFR = -L_rw EPI`.
+
+`compose_event_remesh_cycle_observations` is pure: it observes at least two
+sealed `EventRemeshCycleResult` objects supplied in caller order without
+executing or mutating the graph. One sealed
+`EventRemeshCycleBoundaryObservation` per pair checks exact schedule-time,
+post-REMESH/pre-schedule EPI, complete
+outgoing/incoming delayed history, capacity, post-refresh/pre-schedule pressure
+and phase continuity on ordered support. The resulting
+`ObservedEventRemeshCycleSequence` requires one exact normalized positive metric
+ray across its cycle observations. It reports raw metric equality separately,
+because proportional vectors preserve disagreement geometry while rescaling
+energy. Tri-state nested schedule metric alignment is also diagnostic; every
+schedule composition and REMESH result remains independently available.
+
+`exact_recorded_boundary_continuity_certified` concerns only the sealed
+recorded boundaries. `exact_common_metric_cycle_sequence_certified` is the
+stronger result: every cycle metric must share one normalized ray and every
+nested schedule composition must expose the matching ray. Exact raw metric
+equality is not required by that result.
+
+Sequence indices are zero-based local ordinals rather than runtime call ids.
+The composer rejects reuse of the identical result object, preventing trivial
+self-pairing. Distinct value-equal copies still cannot establish causal order,
+consecutive calls or shared-graph execution provenance.
+
+This closes the ordered-observation step without promoting a stability theorem.
+In one explicit sequential execution with lag one and `alpha=1`, EPI `(2,0)`
+and prior delayed row `(0,2)` produce `(0,2)` after the first empty-schedule
+cycle and `(2,0)` after the second. Both one-step REMESH results have zero
+current-state coefficient,
+so multiplying their fixed-history factors would falsely predict collapse.
+The sequence therefore certifies no mixed gain, evolving-history repetition,
+runtime-global gain, whole-sequence atomicity, full graph/grammar-history
+continuity, solver accuracy, shared execution provenance or future cycle.
+
+The finite three-mesh step proposed for S5 and S16 is now executable through
+`observe_event_remesh_three_mesh_refinement`. It accepts three already committed,
+individually sealed cycle results whose intermediate physical boundaries
+strictly refine the coarse boundaries and whose fine boundaries strictly refine
+the intermediate boundaries. It requires one compatible finite execution
+problem: identical
+schedule and ordered full support, matching initial EPI/capacity/phase/pressure,
+captured conductance, normalized metric, integrator and callback metadata,
+incoming delayed history and REMESH controls. Exact represented EPI checkpoints
+at pre-schedule, physical-boundary, pre-REMESH and post-REMESH coordinates yield
+pairwise persistent-node `L_inf` errors. Optional ZHIR rows use the
+executor-linked physical pre-jump observation, and modal products appear only
+where one captured generator is common to all three executions.
+
+This implements a sealed finite refinement observation, including an explicit
+diagnostic for decreasing intermediate/fine error at coarse checkpoints. Seal
+integrity, strict nesting and decreasing measured errors are not a solver-order
+or convergence proof and imply no Lyapunov decrease or combined
+schedule-times-REMESH gain.
+
+The effective-P2 executor-linked REMESH reference family is certified by
+[`observe_p2_event_remesh_reference_family`](../src/tnfr/physics/event_remesh_reference.py).
+It binds the two-node homogeneous-capacity specialization of the general pure
+reversible eigenmode theorem to the generic runtime observer. The accepted
+domain is an event-free effective two-node path with
+a nonuniform initial mode, fixed positive conductance, homogeneous positive
+capacity, pure-EPI pressure refresh, exact represented
+Euler segments in `0 < lambda*h < 1`, two proper positive subdivisions, unit
+REMESH delays, the initial field as delayed data and hard clipping on one common
+scalar interval. Rational exponential enclosures prove finite continuous/Euler
+error bounds and strict subdivision improvement. The ideal REMESH error scales
+by `beta=(1-alpha)^2`, and the runtime bound adds the exact signed
+rounding-plus-clipping residual norm. This closes one compatible finite P2
+problem only; solver order, generic or binary64 asymptotic convergence, glyph
+and mixed-channel dynamics, changing support or metric, repetition and future
+behavior remain outside the certificate. The equations and proof boundary are
+split deliberately: the complete continuous/Euler proof is centralized in
+[`TNFR_DIFFUSION_STABILITY_THEOREM.md`](TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem),
+while the REMESH specialization and runtime residual are in
+[`REMESH_INFINITY_DERIVATION.md`](REMESH_INFINITY_DERIVATION.md#28-effective-p2-three-mesh-reference-family).
+The public `2/4/8`-segment witness is
+[`166_event_remesh_reference_family.py`](../examples/02_physics_regimes/166_event_remesh_reference_family.py).
+
+The separate exact uniform REMESH companion now closes the restricted
+augmented-history question. After coincident delays are combined, its finite
+history matrix is row stochastic with invariant temporal weights
+
+$$
+\pi_0=\frac{1}{1+\gamma\tau_l+\delta\tau_g},\qquad
+\pi_j=\pi_0\bigl(\gamma\mathbf 1_{j\leq\tau_l}
+                 +\delta\mathbf 1_{j\leq\tau_g}\bigr).
+$$
+
+For a fixed positive diagonal spatial metric, the stationary-weighted sum of
+centered disagreement energies has an exact nonnegative Jensen dissipation.
+At `0 < alpha < 1`, the companion is primitive and every coordinate converges
+to the preserved stationary history barycenter. At `alpha=1`, it is a
+pure-delay permutation, the augmented energy is conserved and periodic orbits
+remain possible. The alternating witness is therefore a proved boundary to
+strict decay, not a contradiction. This theorem excludes the clipped
+binary64 runtime, changing parameters/metric/support, spatial consensus,
+zero pressure and schedule-times-REMESH composition. Implementation and exact
+transition checks live in
+[`remesh_history_stability.py`](../src/tnfr/physics/remesh_history_stability.py);
+the derivation is centralized in
+[`REMESH_INFINITY_DERIVATION.md`](REMESH_INFINITY_DERIVATION.md#24-exact-finite-companion-history-stability).
+
+Three narrower layers now cross part of that theorem/runtime boundary without
+changing the theorem itself. First,
+[`observe_runtime_remesh_history_bridge`](../src/tnfr/physics/runtime_remesh_history_stability.py)
+binds one applied executor-sealed REMESH result to the exact companion and
+retains the signed binary64 rounding and clipping residuals. Second,
+[`observe_remesh_schedule_history_transition`](../src/tnfr/physics/remesh_schedule_stability.py)
+adds an algebraic schedule-head defect, a verified finite gain bound and a
+sufficient energy-drop lower bound in the same metric. Third,
+[`observe_runtime_remesh_schedule_sequence`](../src/tnfr/physics/runtime_remesh_schedule_stability.py)
+requires the next represented schedule endpoint to become the next recorded
+history head and telescopes all compatible adjacent balances. Hard clipping
+onto one common scalar interval is nonexpansive in the declared disagreement
+metric; soft clipping and rounding
+retain explicit counterexamples to unconditional decrease. The caller-ordered
+sequence does not establish shared causal graph provenance, cross-call
+atomicity, a global executable map, a uniform positive normalized block margin
+over a declared forward-invariant runtime class, an intrablock runtime prefix-amplification
+bound or future stability.
+
+[`execute_event_remesh_cycle_sequence`](../src/tnfr/operators/event_remesh_causal_runtime.py)
+crosses that provenance boundary for one declared finite run. It executes
+ordered `EventRemeshCycleExecutionSpec` values on one graph under one outer
+graph transaction. Each sealed `CausalEventRemeshCycleReceipt` retains its
+zero-based ordinal, exact spec and `EventRemeshCycleResult`, including schedule
+identity. The enclosing `ExecutedEventRemeshCycleSequence` always retains the
+offline cycle observation. By default, `require_runtime_telescope=True` also
+requires and retains its compatible runtime schedule/history telescope. The
+explicit `False` branch always records `runtime_telescope=None`, thereby
+admitting words without one common affine schedule metric; telescope-specific properties remain false while
+same-invocation causal order, one graph identity and finite graph-owned
+atomicity remain certified. The nested observers keep their negative provenance
+properties when used separately. No schedule/REMESH gain product, solver accuracy or order,
+mesh convergence, repeated stability, future behavior or rollback of external
+effects follows.
+
+[`observe_executed_event_remesh_block_margin`](../src/tnfr/physics/runtime_remesh_schedule_block_margin.py)
+now selects any nonempty contiguous block of a causal execution that retained
+its telescope. It
+retains the authoritative boundary objects and verifies exactly
+`D_block=K_block+S_block`, with nonnegative schedule slack `S_block`. For
+positive initial augmented energy it records
+`kappa=K_block/V_before`, the observed drop fraction and the endpoint bound
+`V_after/V_before<=1-kappa`; all three normalized diagnostics are undefined at
+zero initial energy. The implemented two-cycle witness gives
+`kappa=139/256`, while the lag-one `alpha=1` identity-schedule orbit gives
+`kappa=0`.
+
+This closes measurement for one finite causal block, not a repeated runtime
+theorem. Equilibrium has zero drop, and amplitude scaling drives every
+quadratic absolute drop to zero, so a uniform positive absolute margin is
+unavailable.
+
+The next exact-model step is now complete. For histories sampled immediately
+after each schedule, assume every possibly varying exact schedule preserves
+spatial consensus and has disagreement-energy gain at most a common `q` in one
+fixed positive metric. With the fixed uniform unclipped REMESH companion `P`,
+the componentwise envelope is `B_q=diag(q,1,...,1)P`. Every prefix is
+nonexpansive. Over the sufficient universal horizon
+`L=active_max_delay+1`, exact path coverage gives `B_q^L<=qP^L`, hence block
+gain at most `q`, normalized margin at least `1-q` and
+`V[k+n]<=q^floor(n/L)V[k]`. Strict `q<1` therefore gives geometric decay of
+spatial disagreement in all history rows, including the `alpha=1` pure-delay
+case. It does not control their spatially uniform temporal means. At `q=1`, the
+theorem supplies zero margin and makes no convergence decision.
+
+This conditional theorem is implemented by
+[`certify_uniform_remesh_schedule_policy_stability`](../src/tnfr/physics/remesh_schedule_policy_stability.py).
+It does not inspect schedule maps or identify the binary64 executor.
+
+The next robust conditional step is also complete. With
+`J_k=sum_d c_d E_H(x[k-d])`, ideal head `y_k`, bounded head `z_k` and signed
+defect `delta_k=E_H(z_k)-E_H(y_k)`, the hypothesis
+`delta_k<=eta*J_k` gives `q_eff=q*(1+eta)`. The same exact companion proof
+therefore gives prefix gain at most one for `q_eff<=1`, block margin
+`1-q_eff` and geometric spatial-disagreement decay for `q_eff<1`. The
+`q_eff=1` boundary has zero margin; larger values are rejected. `J_k`, rather
+than `E_H(y_k)`, remains valid under ideal-head cancellation, and `J_k=0` is
+handled without division.
+
+[`observe_executed_event_remesh_relative_defect_block`](../src/tnfr/physics/runtime_remesh_schedule_relative_defect.py)
+binds this theorem to one selected causal execution block whose source retained
+the compatible runtime telescope. It verifies every
+signed defect, represented schedule gain, componentwise history-energy
+envelope and complete-block endpoint factor. This closes finite runtime
+measurement, not repetition in general. The represented-number boundary is now
+sharper: an exact pairwise reduction exposes a normal-valued `alpha=1/2`
+witness requiring `eta=2^210-1/4`, so a bounded hard-clipped box alone cannot
+supply a useful general budget. At `alpha=1`, sufficient in-interval history
+does give a REMESH-only forward-invariant class with `eta=0`.
+
+The first useful restricted `0<alpha<1` represented class is also complete.
+For ordered P2 histories with rows `(a,-a)`, `alpha=1/2`, fixed positive
+metric and delays, and a symmetric hard interval of radius at least
+`4*2^-1074`, the production REMESH map preserves the class and has sharp
+uniform `eta=135/124`. The IEEE proof controls `sqrt(D)>=11*2^-1074`
+analytically and enumerates all 6,615 integer-core candidates below that
+boundary, 3,890 of which have positive admissible `D`; the maximum is attained
+at `(-3,-2,-3)*2^-1074`. Thus `q<124/259` is the exact strict composition
+threshold. The example `q=4/9` gives `q_eff=259/279` and margin `20/279`, while
+equality at `q=124/259` gives only nonincrease. Arbitrary metric-centered rows
+and unrestricted fixed lattices are excluded by explicit counterexamples.
+This is REMESH-only forward invariance, not a verified schedule or complete
+runtime class.
+
+On abstract P2
+support, the immutable-snapshot Reception EPI kernel with exact binary64 mix
+`0.5` has global disagreement gain `q=0`; composing these two restricted
+kernels extinguishes active-history disagreement after `tau_global+1` cycles.
+One sealed graph-owned event binds the kernel to its grammar-admitted two-phase
+EN EPI stage and captured endpoint. A second adapter now binds every selected
+EN and every same-cycle `alpha=1` hard-clipped REMESH in one executor-owned
+finite P2 sequence. For `N>=L=tau_global+1`, it verifies the in-interval active
+suffix of length `L` and records zero spatial disagreement at every observed
+post-horizon and final post-REMESH endpoint. Older retained rows remain outside
+the active suffix. The reusable policy entry point now snapshots before caller
+input materialization, revalidates this current restricted state, executes the
+canonical zero-flow word and post-certifies it before commit. Successive calls
+therefore produce independent finite certificates, while any failure restores
+graph-owned state. Auxiliary Reception-state stability, a priori preservation
+under future unobserved execution, extension of the half-alpha result beyond
+antisymmetric P2, and complete-runtime binding are the next runtime boundaries.
+
+ZHIR now supplies a narrower event-local temporal boundary shared by S5 and
+S15. The nodal equation predicts the instantaneous rate
+`nu_f * DeltaNFR`; two fresh timestamped EPI samples measure a signed secant
+over their actual interval; three strictly ordered samples separately support
+a nonuniform finite-difference acceleration. These quantities can disagree and
+are never substituted for one another. Only the observed signed secant can
+satisfy the strict Mutation threshold, while active capacity and U4b context
+remain independent requirements. The physical prediction/observation
+`rate_gap` is a finite-interval closure residual, not an acceleration or a
+proof that the nodal law failed between samples. Legacy histories retain a
+declared unit-operator-step basis and therefore cannot produce that physical
+residual. Missing, malformed or stale evidence yields abstention rather than a
+fabricated non-crossing. This makes one operator trigger replayable and gives
+inverse identification an additional temporal channel. The finite event
+runtime binds fresh evidence to an executed jump when a positive representable
+pre-flow exists; it still does not derive the three-position U4b window from
+graph relaxation or prove invariance under equivalent solver refinement.
+
+The next restricted extension admits topology switching. A finite family of
+connected symmetric graphs has a common quadratic Lyapunov function when all
+`d_i/nu_i` metric vectors are exactly proportional. The implementation checks
+that projective relation by rational cross-products of the represented binary64
+values, separately from normalized caller-tolerance proximity; only the former
+promotes its finite family to this theorem. The minimum generalized gap across
+the family gives an exponential envelope under arbitrary switching. A family
+with changing degree and fixed capacity supplies a counterexample to the
+common-metric hypothesis, while leaving stability outside this theorem open.
+
+Lines S1 and S2 now cross one further boundary without turning grammar labels
+into dynamics. For a declared affine EPI reset `x+ = Ax+b` in the same positive
+metric, a finite global disagreement gain exists exactly when `A1` and `b` are
+uniform. Failure produces an explicit consensus input with zero incoming and
+positive outgoing disagreement energy. In the passing case the sharp gain is
+the induced norm of `QAQ`; the executable certificate uses exact rational
+quotient reduction for scalar and small quotient maps and retains the rational
+weighted-Frobenius norm as a fallback for larger non-scalar maps. This removes
+the false `N-1` identity penalty while keeping every compositional factor above
+the sharp gain, without trusting a rounded SVD estimate or a caller-declared
+multiplier. A
+repeated positive-duration word contracts disagreement when its cumulative
+log-gain is smaller than the certified diffusion decay. Exact preservation of
+the weighted mean additionally fixes the limiting consensus to the initial
+weighted mean. The result says nothing about whether a runtime implementation
+really equals the declared affine map, and it leaves nonlinear, phase,
+pressure, topology, history and REMESH effects open. See
+[`hybrid_operator_stability.py`](../src/tnfr/physics/hybrid_operator_stability.py)
+and the centralized
+[diffusion stability theorem](TNFR_DIFFUSION_STABILITY_THEOREM.md#affine-reset-gain-and-hybrid-word-theorem).
+The executable
+[`162_hybrid_epi_stability.py`](../examples/02_physics_regimes/162_hybrid_epi_stability.py)
+records a mean-preserving amplification absorbed by diffusion, a uniform
+translation that separates disagreement decay from consensus drift, and the
+exact infinite-gain witness for a local offset.
+
+Reception (EN) and Resonance (RA) now supply the first two runtime realization
+bridges for this generic result, locally and as complete all-target stages.
+Their centralized kernel blends the target
+with the **unweighted** arithmetic mean of runtime neighbours, even when the
+pure-EPI transport uses weighted conductance. On fixed connected undirected
+support, with scalar or uniform-real BEPI input, a convex mix, bounded values,
+and inactive hard clipping, the ideal-real EPI action is affine and preserves
+constant fields. A nontrivial local blend nevertheless changes every positive
+weighted mean as a global functional; disagreement contraction and consensus
+drift remain separate questions.
+
+RA narrows that neighbour set before averaging: only nodes satisfying the
+individual circular U3 test contribute to its EPI mean, circular phase mean,
+or frequency trigger. Its graph phase limit must lie in `[0, pi/2]`, so it may
+tighten but cannot relax the canonical gate. Before any state or tracking
+mutation, RA also requires `RA_epi_diff` in `[0,1]`, a nonnegative
+`RA_vf_amplification`, and `RA_phase_coupling` in `[0,1]`. Its identity contract
+does not freeze the scalar EPI. It rejects a strict negative-to-positive or
+positive-to-negative proposal, treats exact zero as a neutral sign boundary,
+and preserves an established nonempty `epi_kind`; an absent kind may be
+initialized. Sign and kind are independent conditions.
+
+The RA certificate keeps four statements separate: the ideal-real convex EPI
+blend, the matrix assembled from represented binary64 coefficients, the actual
+two-stage binary64 proposal at the supplied snapshot, and the accepted snapshot
+after the identity gate. The represented row is promoted to the affine jump
+theorem only when its consensus identity passes exactly. Snapshot agreement
+with either affine layer is diagnostic; separate rounding, clipping, gates,
+phase, and capacity changes prevent any global binary64 runtime-affinity claim.
+
+When an accepted RA amplifies only the target frequency, it generally changes
+the diffusion metric `h_i=d_i/nu_i`. The fixed post-RA flow can still receive a
+heterogeneous diffusion certificate, and the represented jump is audited in
+that post-RA metric. A theorem for arbitrary switching between the pre/post
+generators abstains unless their represented metric vectors are exactly
+proportional. Optional recovery composes the represented jump with the fixed
+post-RA flow; its break-even duration is display-only and its Boolean verdict
+comes from the exact hybrid composer.
+
+Both bridges expose the same state-consistency boundary. If the stored pure-EPI
+pressure before an accepted update is `p=-L_rw x` and the target changes only
+coordinate `i` by `delta`, retaining the old pressure leaves the exact defect
+`delta L_rw e_i`. On connected positive conductance this vanishes exactly iff
+`delta=0`. Every accepted nontrivial EN or RA EPI update must therefore refresh
+pressure before a subsequent segment is interpreted as pure-EPI flow. The
+binary64 defect norm is a separate snapshot diagnostic. See
+[`reception_realization.py`](../src/tnfr/physics/reception_realization.py) and
+[`resonance_realization.py`](../src/tnfr/physics/resonance_realization.py).
+
+The all-target extension assembles every local row from the same stage-start
+snapshot and recomputes a finite repeated structural trace. Convex ideal-real
+mixing preserves any declared finite hard interval for arbitrary repetitions.
+Fixed-map promotion additionally requires fixed support; RA requires declared
+fixed U3 neighbour sets and a common sign/kind domain that remains admissible.
+The represented stage receives its own exact row-sum and rational quotient-gain
+tests. Runtime agreement, clipping interventions, consensus drift, RA capacity
+metric changes and atomic identity rejection remain separate outputs. The
+public runtime and certificate agree at every tested finite step, while degree-
+three averaging supplies a concrete case where the two-stage binary64 result is
+not exact represented matrix multiplication. No global binary64 runtime-affinity
+claim follows. See
+[`network_stage_stability.py`](../src/tnfr/physics/network_stage_stability.py).
+
+One certified all-target stage can now be composed directly with a strictly
+positive-duration fixed post-stage pure-EPI flow. The bridge reconstructs every
+available local affine-domain condition and validates node order, represented
+coefficients, exact row algebra, nested proof stamps and the post-stage metric
+before calling the generic hybrid composer. The original raw EPI payload is no
+longer present, so its scalar-embedding observation is carried from the local
+certificate and explicitly not revalidated without the graph. Failed support,
+clipping or identity hypotheses yield an abstention. A selective RA capacity
+change may alter the pre/post metric and still admit the fixed post-RA flow; it
+does not establish a switching theorem. Disagreement contraction, represented
+and observed weighted-mean drift, and the aggregated binary64 pure-EPI pressure
+defect remain separate. The bridge requires runtime pressure refresh
+conservatively after relevant EPI, phase or capacity changes but does not certify
+that refresh. Global runtime affinity and repetition of the stage-flow schedule
+remain open.
+
+Lines S8 and S9 now have exact scale results and a decisive phase obstruction.
+The reversible partition average `R` closes the pure-EPI macro equation exactly
+iff it intertwines the micro and quotient generators. Exact quotients remain
+in the `diag(nu_f)L_rw` family; non-equitable partitions expose unresolved
+within-block modes. This is structural transport under U5, not an additional
+operator and not a proof that all 13 operators close.
+
+For those unresolved modes, the exact fixed-generator elimination now gives
+a projected memory kernel and an initial hidden-state source, both derived
+from the existing pure-EPI law. The kernel vanishes exactly at reversible
+quotient closure. Independent P4/P5 controls distinguish an autonomous
+quotient, two states with identical macro observations but different rates,
+and memory generated even with zero initial hidden state. The proof is in
+[DERIVED_EPI_MEMORY.md](DERIVED_EPI_MEMORY.md); implementation and regressions
+are [epi_memory.py](../src/tnfr/physics/epi_memory.py) and
+[test_epi_memory.py](../tests/physics/test_epi_memory.py).
+The finite observer reuses the quotient geometry and approximate exponential,
+retains geometry/rate residuals, and rejects numerical loss of necessary
+diffusion invariants. These checks do not enclose numerical error or bind an
+engine trajectory. On the fixed P5 fixture, finite-memory approximation now
+has a derived uniform and causal trajectory-error bound, retaining the
+initial hidden source. A finite method-of-steps formula encloses both
+solutions with rational exponential bounds, separating truncation error from
+evaluation width; see section 8 of the same note and
+[p5_memory_truncation.py](../src/tnfr/physics/p5_memory_truncation.py).
+The fixed P5 reflection quotient now supplies an exact three-coordinate
+realization shared by diffusion and uniform unclipped REMESH. A further
+two-coordinate observation loses one contrast and induces the derived memory.
+The orbit realization is minimal among autonomous linear states containing
+those two outputs. Its metric and stationary-history energy split reuse the
+existing quotient and REMESH companion theorems through
+[p5_reduction.py](../src/tnfr/physics/p5_reduction.py).
+With actual sampled diffusion history, a positive decaying mode gives a
+counterexample to replacing forward nodal flow with the complete REMESH echo.
+This does not rule out every larger derived scheme containing both operations.
+Finite production tests distinguish exact commutation from signed rounding
+and clipping defects. Discarded microscopic modes can remain out of equilibrium
+when the quotient is at consensus; reduced gains are not full-network gains.
+The complete proof and boundaries are in section 9 of the same memory note.
+
+In one open semicircle chart, the pairwise wrapped phase realization is the
+linear field `-(1/pi) diag(nu_f)L_rw q` and inherits the same reversible
+quotient identities. The engine's actual phase channel instead compares each
+phase with the argument of an unweighted neighbor-phasor sum. It closes exactly
+on the lifted block-constant subspace only under equitable support profiles, no
+intra-fiber edges, equal active macro-neighbor multiplicities and block-constant
+capacity. A `K3,3` construction gives two micro states with the same macro
+phase coordinate and different projected canonical rates, so global projected
+autonomy is false. Branch crossings, zero phasor resultants, finite-time
+evolution and changing support remain outside the certificate.
+
+Lines S11 and S14 have exact instantaneous coherence geometry. Locally,
+`C=1/(1+|DeltaNFR|+|dEPI|)` makes every finite non-equilibrium level an L1
+diamond with four nonsmooth vertices. For a fixed nonempty network of `N`
+nodes, the canonical mean aggregation gives the boundary of a
+`2N`-dimensional cross-polytope with total L1 radius `N(1/C-1)`, `4N`
+vertices and exact face counts `2^(k+1) binom(2N,k+1)`. Its regular locus is
+the union of `2^(2N)` open facets; all lower-dimensional faces are
+absolute-value singular strata. The superlevel set is closed and convex.
+
+Imposing the nodal equation at declared fixed capacities restricts the
+ambient chart to `dEPI_i=nu_f_i DeltaNFR_i` and the weighted level
+`sum_i(1+nu_f_i)|DeltaNFR_i|=N(1/C-1)`. This is an exact weighted
+`N`-dimensional cross-polytope in pressure coordinates, with Euclidean radii
+and induced regular-gradient norm reported by
+[`fixed_capacity_coherence_level_set_geometry`](../src/tnfr/physics/coherence_geometry.py).
+These results provide an L1 distance and a complete fixed-dimension
+stratification; they do not select a smooth information metric or prove
+temporal attraction. Variable capacity and changing node count require
+separate strata.
+
+They now also have an exact fixed-topology state result. Assign effective
+positive scales to EPI, `nu_f`, circular phase, `DeltaNFR`, `dEPI`, edge
+conductance and structural edge length; take their scaled Euclidean product over
+nodes and edges; and minimize over every topology- and declared
+label-preserving isomorphism. The compatibility API lets an omitted length scale
+reuse the conductance scale; dimensional studies should declare both. The
+resulting quotient distance is a metric on finite simple-graph state isomorphism
+classes within that topology/label class.
+It is invariant under node relabeling and phase wrapping and reports, rather
+than hides, each snapshot's nodal-equation residual. It counts all metric
+minimizers, uses an explicit lexicographic component refinement, and withholds
+the node mapping if that refinement is still ambiguous. Factorial isomorphism
+enumeration, changing topology, multigraphs, nested EPI identity and histories
+remain outside this result. See
+[`fixed_topology_structural_state_distance`](../src/tnfr/physics/structural_state_distance.py).
+
+The spectral-coordinate executor supplied a separate negative implementation
+result. Transforming `nu_f` and `DeltaNFR` independently and multiplying their
+graph-Fourier coefficients is not the transform of their nodal product; even a
+constant `nu_f` is concentrated in the zero mode. Moreover, the orthonormal
+eigenbasis diagonalizes `L_sym`, while canonical EPI pressure is `-L_rw EPI`.
+The corrected path reconstructs the scalar EPI field, applies the fixed
+canonical random-walk operator, multiplies by heterogeneous capacity pointwise,
+then projects the rate back into the orthonormal coordinates. An irregular
+weighted graph with an isolated node is the independent regression oracle:
+the executor agrees with `structural_diffusion_operator`, and the isolate has
+zero pressure and rate. This establishes solver fidelity for one explicit-Euler
+step; it does not make the dense full-basis implementation asymptotically fast.
+
+Network-stage scheduling now has a bounded positive result and an explicit
+remaining boundary. SDK words and supported GPU blocks execute in declared
+order across glyph stages. All thirteen SDK glyph stages use the shared
+two-phase path when grammar selects the requested glyph for every target:
+neighbour- or topology-reading EN/IL/UM/RA, overlapping-pressure OZ, THOL's
+child-support and hierarchy merge, pointwise AL/SHA/VAL/NUL/ZHIR/NAV, and the
+REMESH advisory merge. Supported GPU AL and RA blocks reuse their respective
+path. Every target reads the same detached stage-start graph; the
+executor preflights all targets, builds and validates frozen proposals, then
+performs one transactional commit of state, histories, grammar bookkeeping,
+telemetry and the pressure refresh. Validation, monitor, warning-policy or
+refresh failure rolls the complete stage back.
+
+The committed primary structural channels are target-order invariant before
+the opaque pressure-refresh callback: EPI for AL; EPI and `epi_kind` for EN;
+`DeltaNFR` and phase for IL; `DeltaNFR` and per-node RNG progress for OZ;
+phase on every proposed node, optional target
+`nu_f`/`DeltaNFR`, and new edge support for UM; EPI, `epi_kind`, `nu_f` and
+phase for RA; `nu_f` for SHA; EPI and `nu_f` for VAL; EPI, `nu_f` and
+`DeltaNFR` for NUL; and `d2EPI`, `DeltaNFR`, child nodes,
+`sub_nodes`, `sub_epis` and graph `hierarchy` for THOL; REMESH leaves every structural channel and support unchanged. IL's
+sign-preserving pressure contraction and circular phase lock come from one pure
+kernel shared with direct execution. Its canonical stage/global and
+radius-local structural `C(t)` telemetry is separate from retained auxiliary
+pressure-dispersion keys, and its integrity check compares bound before/after
+snapshots rather than the latest graph event. ZHIR's primary phase write and
+structural-acceleration telemetry derive from snapshot-bound temporal evidence
+and U4 context. NAV commits `nu_f`, phase, `DeltaNFR` and per-node RNG progress
+from the same snapshot. In random mode, a missing graph seed is resolved inside
+the transaction, copied into the detached snapshot, restored on rejection and
+persisted on success; stable node offsets and draw counts keep each stream
+independent of target order. AL/SHA use one wall-clock timestamp, and NAV uses
+one shared latency-observation instant, for every target in their respective
+stage. Ordered lifecycle, audit/telemetry and monitor streams retain the
+requested target order. IL warnings are emitted only after all other fallible
+stage effects succeed and still trigger rollback under warning-as-error policy.
+Cache state and the opaque pressure refresh remain outside the invariance claim;
+identity-bearing caches remain tied to their live graph and node objects.
+Relabeling equivariance also remains outside this result. A grammar replacement
+is executed and reported through the transactional Gauss-Seidel fallback rather
+than silently inheriting the declared two-phase schedule. UM merges overlapping
+shortest-arc phase displacements in stable snapshot order, then revalidates U3
+for retained relations and proposed links; this is an explicit engine policy
+rather than a phase-dynamics theorem.
+
+This repair is stage-local. It does not make a mixed word simultaneous or prove
+arbitrary relabeling equivariance. The pointwise realization certificate
+replays AL/SHA/VAL/NUL/ZHIR/NAV proposals from the executor's own detached
+snapshot and frozen proposal tuple, binds their exact represented EPI map, and
+conditionally adds pre-flow and common pre/post-metric gain levels. A successful
+`NetworkStageResult` carries that pre-commit certificate. By itself it does not
+cover IL/UM multichannel, OZ overlapping pressure or THOL support/hierarchy
+merges, histories, monitors, pressure refresh, mixed words or repetition. The
+event runtime can compose supported pointwise and EN/RA represented maps only
+after binding every operation to its observed endpoint and one common metric.
+THOL resolves
+cross-parent child-ID collisions and structural commit order in immutable
+snapshot-node rank, and validates its complete support and
+hierarchy merge on a detached graph before the first live write.
+REMESH shares one immutable advisory proposal across targets, deduplicates its
+graph event per telemetry step and does not invoke apply_network_remesh.
+Multi-target IL and UM historically used the sequential schedule; their
+canonical word paths now use immutable proposal rules. OZ instead combines snapshot-bound local proposals with all incoming
+propagation magnitudes through `math.fsum` in immutable snapshot-node rank.
+The local magnitude postcondition is evaluated before this signed accumulation,
+which can partially cancel a negative local pressure. A late target or
+pressure-refresh failure restores the stage-start graph.
+
+[`stage_contracts.py`](../src/tnfr/operators/stage_contracts.py) records a
+conservative all-target read/write footprint, structural overlap, current and
+required merge law, shared and direct-call rollback scope, structural-state
+target-order result, relabeling scope and concrete promotion blockers for all
+13 operators. Live schedule telemetry is derived from that registry and
+distinguishes the declared operator schedule from an observed grammar fallback.
+All thirteen glyph stages have an implemented and tested complete two-phase
+proposal/commit contract. REMESH's glyph stage proves only its advisory merge.
+The separately invoked delayed network EPI operation now has its own immutable
+plan/result contract, exact-support history boundary and graph-state atomic
+commit. Its one-step evidence does not prove history-updated repetition. NUL
+audit events carry target identity, and its metrics use the captured pre-stage
+pressure (or the matching node event) to distinguish signed pressure change
+from magnitude densification; zero pressure is not reported as densified. NAV
+transition telemetry separately records pre-handler, handler and post-retention
+pressure. The positive and failing cases live in
+[`test_stage_contracts.py`](../tests/operators/test_stage_contracts.py),
+[`test_coherence_jacobi_stage.py`](../tests/operators/test_coherence_jacobi_stage.py),
+[`test_coupling_jacobi_stage.py`](../tests/operators/test_coupling_jacobi_stage.py), [`test_dissonance_jacobi_stage.py`](../tests/operators/test_dissonance_jacobi_stage.py),
+[`test_self_organization_jacobi_stage.py`](../tests/operators/test_self_organization_jacobi_stage.py),
+[`test_recursivity_jacobi_stage.py`](../tests/operators/test_recursivity_jacobi_stage.py),
+[`test_pointwise_network_stage.py`](../tests/operators/test_pointwise_network_stage.py),
+[`test_nav_pointwise_stage.py`](../tests/operators/test_nav_pointwise_stage.py),
+[`test_operator_major_stage_atomicity.py`](../tests/operators/test_operator_major_stage_atomicity.py),
+[`test_network_stage_schedule_diagnostic.py`](../tests/sdk/test_network_stage_schedule_diagnostic.py)
+and the GPU canonical-execution tests.
+
+Line S12 now has an exact baseline: the harmonic substrate and symmetric EPI
+diffusion form a metriplectic-style direct product with conserved substrate
+energy and decreasing Dirichlet energy. Its cross tensors vanish. The
+certificate separately compares stored `DeltaNFR` with the pressure implied by
+the EPI channel; agreement is diagnostic and is not required by the decoupled
+product identity. A graph-derived bridge must also preserve the realizable
+read-out image. On fixed mutual-singleton P2, the geometric image excludes
+nonzero continuous harmonic flow, while the fixed-phase pure-EPI potential/flux
+has a closed dissipative law with rate `nu_0+nu_1`; see the
+[P2 proof](TNFR_VARIATIONAL_PRINCIPLE.md#37-p2-read-out-realizability-obstruction-and-derived-flow).
+Broader TNFR-derived coupling and realizability remain open. The scale, stability,
+observability and coarse-graining results form the first conditional S16 chain.
+Full treatment is centralized in
+[Exact scale, coherence-geometry and bridge results](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md).
+
+Line S16 now has an executable intersection certificate rather than a narrative
+concatenation. For two independently frozen states with identical node and bare
+edge support, one declared partition and explicit state-channel scales, it runs
+the stability, EPI reconstruction, reversible quotient and structural-distance
+certificates at both endpoints. It also checks that stored pressure is the pure
+EPI channel and that `dEPI=nu_f*DeltaNFR`. The joint Boolean is true only when
+all fifteen named numerical conditions pass; failures remain individually
+inspectable. A passing finite example demonstrates a nonempty numerical
+intersection under the declared tolerance; it does not certify a trajectory
+between endpoints. See
+[`certify_core_research_integration`](../src/tnfr/physics/core_research_integration.py).
+The executable
+[`160_core_research_integration.py`](../examples/02_physics_regimes/160_core_research_integration.py)
+constructs a nontrivial passing case and emits the fifteen decisions together
+with a domain-neutral reproducibility manifest.
+
+The time-resolved extension accepts at least two strictly ordered snapshots.
+Every adjacent pair must pass the endpoint certificate. For each persistent
+node identifier and interval it separately evaluates the declared forward-Euler
+defect
+
+`r_i^k = EPI_i^(k+1) - EPI_i^k - dt_k nu_i^k DeltaNFR_i^k`.
+
+The scaled L-infinity defect must fit the trajectory tolerance, and every step
+must lie inside its graph-specific explicit-Euler modal stability interval.
+Stationary-mode resolution uses a separate dimensionless spectral tolerance
+relative to the fastest rate, avoiding the earlier dimensional error of using
+the path residual tolerance as an absolute rate cutoff. An algebraically exact
+Euler update can still be an unstable discretization when its timestep is too
+large. The certificate then
+requires the exact common-metric switching theorem for the finite sampled
+transport family and evaluates that common quadratic at every snapshot. Each
+snapshot is reprojected onto its own instantaneous weighted consensus
+coordinate before the common-metric disagreement energy is evaluated; the
+first snapshot's center is not frozen. Any individual increase or the
+cumulative positive variation over the entire path
+beyond the declared EPI-squared scale tolerance blocks the joint temporal
+result. It reports every interval certificate, all failures in the first
+failing interval, the sampled energy series and whether the transport operator
+was actually fixed; fixed transport is diagnostic because the common metric
+theorem also admits a restricted switching family.
+
+[`compare_core_research_trajectory_refinement`](../src/tnfr/physics/core_research_trajectory.py)
+certifies both the coarse and fine paths with their own strict trajectory
+tolerance, then applies a separately declared agreement tolerance. Every coarse
+time must have one unambiguous fine-grid match, and the fine maximum step must be
+strictly smaller. The decisive EPI error compares the same persistent node ids.
+The relabeling-quotient structural distance remains diagnostic: independently
+minimizing a graph isomorphism at each time could otherwise hide an exchange of
+nodal identity. Promotion additionally requires an explicit
+`same_dynamics_declared=True`; the certificate records this caller assertion
+because snapshots alone cannot prove that two meshes used the same generator
+and event schedule.
+
+The reproducible
+[`161_core_research_trajectory.py`](../examples/02_physics_regimes/161_core_research_trajectory.py)
+integrates one non-equilibrium fixed pure-EPI generator on nested Euler meshes.
+Both temporal certificates pass; the fine mesh is closer than the coarse mesh
+to the independently evaluated fixed-generator semigroup at every noninitial
+common time. This is a finite two-mesh measurement. It proves neither a mesh
+limit nor an order of convergence, and says nothing about unsampled regimes,
+phase evolution, nonlinear pressure, operators, REMESH or support changes.
+
+Lines S10 and S15 share a further negative result. The tuple `(primary channel,
+direction, scale, context)` separates eleven operators but leaves Silence and
+Contraction in one equivalence class. Names, glyphs and free-text descriptions
+are excluded because they would make inverse identification tautological.
+Instantaneous contract telemetry is therefore insufficient for all 13
+operators; a temporal or quantitative postcondition channel is necessary.
+The finite-probe implementation supplies that next layer without placing names,
+glyphs or contract categories in the observed features. Across the default
+three deterministic heterogeneous path probes, one-step changes in EPI,
+`nu_f`, `DeltaNFR`, wrapped phase, nodal velocity and graph size give 13 distinct
+rows. The matrix and affine ranks are both 12, while distinctness itself is the
+finite-hypothesis identification criterion. Silence and Contraction separate
+because only the latter changes EPI on these probes. The tested target node and
+operator candidates are supplied to the protocol, and the features contain raw
+node-level changes rather than only aggregate C, Si, phase synchronization and
+tetrad telemetry. This is a reproducible measurement, not a proof for unseen
+states, stochastic observation laws, target localization, compositions or
+arbitrary grammar words.
+
+For the resulting finite prototype matrix, choose explicit positive feature
+scales and either the scaled L-infinity or L2 norm. If `delta` is the minimum
+pairwise prototype distance, the triangle inequality proves that every
+observation within the strict radius `delta/2` of its generating prototype has
+that prototype as its unique nearest row. The executable certificate reports
+`delta`, the closest pairs and the open noise radius, and the classifier refuses
+to label a midpoint tie as robust. The default operator experiment attaches the
+unit-scaled L-infinity certificate after applying the same declared decimal
+quantization used by the row partition. The half-separation theorem is exact.
+For supplied binary64 rows and scales, exact rational comparisons determine
+the closest pairs and the reported minimum is rounded downward before it is
+halved, so the executable radius is conservative. Numerically unrepresentable
+scaled separations are rejected instead of being mistaken for duplicate
+prototypes. Unit feature scales are a coordinate convention, not a calibrated
+observation model. This finite-family guarantee does not estimate a noise
+distribution or cover a new graph state.
+See
+[`probe_canonical_operator_identifiability`](../src/tnfr/physics/temporal_identifiability.py).
+
+Line S6 contained a semantic implementation error: phase classification used
+`mean(abs(S))` and `mean(abs(chi))` while documenting `abs(mean(S))` and
+`abs(mean(chi))`. Random opposing chirality was therefore promoted to
+homochirality. Classification now uses signed global means; mean absolute
+magnitudes remain separate local-activity telemetry. Susceptibility maxima,
+correlation length and time-series exponents remain measured diagnostics, not
+proofs of divergence or a universal transition class.
+
+S6 now also has an explicit finite-size protocol. A rectangular sweep over a
+shared control grid reports the sampled susceptibility maximum for each node
+count, replicate standard errors, and log-log slopes of peak susceptibility,
+order magnitude and coherence length against `N`. These slopes are not named
+thermodynamic exponent ratios because no graph-independent map from node count
+to linear size has been derived. Every exact sampled maximizer is retained:
+plateaus are marked ambiguous, and a plateau touching either grid boundary is
+unbracketed even when its first maximizer is interior. The legacy
+`symmetry_zscore` is likewise an
+operational standardized spatial imbalance: coupled graph nodes are not
+independent samples, so it is not a p-value without a separate sampling model.
+The bundled example samples static graph-state ensembles and can return
+unbracketed boundary maxima; it demonstrates the measurement protocol and does
+not itself establish a dynamical phase transition.
+
+S7 now has a read-only finite-sequence detector. It records the canonical
+radial/annular/multinodal label together with tetrad, flow, coherence and Si
+snapshots, then emits endpoint differences after aligning exact relabelings.
+Equal persistent node ids take precedence when both snapshots use the same
+support. Node support, edge support, direction, effective conductance and
+structural-length changes are reported separately, and circular phase-curvature
+deltas stay in the principal wrapped interval. A transition is bracketed by
+adjacent samples and is not interpolated.
+State-preserving isomorphism uses all five nodal channels as well as the derived
+read-outs. When graph symmetry leaves several admissible correspondences with
+different pointwise changes, the certificate reports the ambiguity and withholds
+mapping-dependent deltas instead of selecting the first isomorphism.
+The present classifier reads unit-source graph geometry, so changing EPI,
+phase or pressure on a fixed graph cannot by itself change the topology label;
+causal operator attribution and universal precursors remain open.
+Its radial/annular cuts are calibrated only for the canonical inverse-square
+kernel, and the certificate rejects alternate exponents instead of attaching
+canonical labels to an uncalibrated geometry.
+
+S9 now separates two closure identities for a declared projection `R`, lift
+`P`, micro map `F` and macro map `F_bar`. Projected autonomy requires
+`R F = F_bar R`; invariance of lifted macro states requires
+`F P = P F_bar`. Neither implies the other in general. Matrices obtain global
+finite-dimensional residuals with explicitly tolerance-conditioned decisions,
+while nonlinear callables are only tested on declared lifted and arbitrary
+probes. Repeated evaluations also detect stateful behavior on those probes.
+These checks can expose dependence on unresolved fibers but cannot prove a
+global identity or callable purity. Graph,
+history and nested-EPI mutations are explicitly outside the fixed-vector
+protocol. See
+[`certify_operator_quotient`](../src/tnfr/physics/operator_quotient.py).
+
+S13 has an exact restricted linear result. For fixed directed pure-EPI flow,
+`p=DeltaNFR=-Lx` obeys `p'=-Lp`. When there is one consensus mode,
+`range(L)=ker(pi^T)`, so the restricted semigroup norm is the worst-case
+reachable pressure gain. The Euclidean logarithmic norm
+`mu_2(-L_sub)` is nonpositive exactly when that semigroup is contractive; a
+positive value gives an immediately growing pressure direction. The spectral
+abscissa remains an asymptotic diagnostic and cannot exclude this transient.
+The implementation evaluates the mathematical sign in binary64 and publishes
+positive/negative predictions only outside a matrix-derived backward-error
+band. Values inside that band are `numerically_unresolved`; they are excluded
+from accuracy scores and prevent a finite scan from being labeled consistent
+with the exact theorem.
+In the declared deterministic 16-graph family, all spectra are stable, four
+graphs burst, the spectral sign rule has balanced accuracy 0.50, and the
+logarithmic-norm sign rule has 1.00 on both the even-index calibration split
+and odd-index holdout. These scores and magnitude rankings are finite-family
+measurements. See
+[`benchmark_nonnormal_prediction`](../src/tnfr/physics/nonnormal_prediction.py).
+
+## Falsification ledger
+
+| Line | Next precise test | Result that blocks promotion |
+| --- | --- | --- |
+| S1-S2 | Audit the complete auxiliary Reception state and either derive an a priori invariant P2 complete-runtime class or extend the `alpha=1/2` antisymmetric REMESH class to broader represented states/support | A later invocation leaves the restricted hypotheses despite per-call enforcement; auxiliary channels break the proposed functional; the broader class has no useful finite uniform `eta`; or its `q_eff` reaches one |
+| S3 | Prove or refute `rank(-K L_rw)=N-1` beyond the finite atlas | One connected positive-conductance graph with nullity greater than one |
+| S4 | With the fixed reversible runtime boundary implemented, study a directed contraction quantity and its transient bound | A stable directed spectrum has an unbounded claimed metric transient, or the proposed quantity silently assumes reversibility |
+| S5 | Determine which additional causal and consistency hypotheses could turn finite runtime error observations into a reproducible refinement protocol | Any protocol treats caller-ordered runs as causally shared, omits off-mode defect propagation, or promotes finite residuals to convergence, accuracy or solver order |
+| S6 | Run the implemented shared-grid protocol across replicated graph families | Size slopes fail held-out family reproducibility intervals |
+| S7 | Compare recorded pre-transition trajectories with matched non-transition controls | No precursor beats the matched controls out of sample |
+| S8 | Characterize branch transitions, zero-resultant singularities and changing support after the global canonical phase-autonomy counterexample | A proposed closure depends on unresolved phase fibers, drops support used by the canonical channel or crosses an undeclared wrap branch |
+| S9 | Map each fixed-state operator onto the generic quotient protocol | A proposed closed operator depends on an unresolved fiber or leaves the declared macro family |
+| S10 | Define the admissible transformation space independently of the catalog | One admissible transformation cannot be generated or classified |
+| S11 | Stratify the variable-capacity nodal-consistent set and its changing-`N` boundaries | A proposed chart crosses a zero-coordinate stratum, omits a capacity/support singularity or infers temporal attraction from instantaneous geometry |
+| S12 | Derive any proposed coupling from TNFR and prove graph-read-out realizability as well as its balance laws; retain P2 as a rejection control | The proposed flow leaves the realizable image, needs an independent physical postulate or violates its claimed balance |
+| S13 | Repeat the benchmark across held-out graph families and operator-driven trajectories | The exact linear sign criterion fails in scope, or spectral baselines match finite predictive rankings out of sample |
+| S14 | Extend the fixed-class metric across topology, nesting and histories with explicit edit costs | Triangle inequality, relabeling invariance or phase-wrap invariance fails |
+| S15 | Estimate observation scales/noise laws, then test unseen graph families, mixed schedules and complete grammar words | Operators or words claimed identifiable have overlapping observation laws, or empirical errors exceed the certified finite-prototype margin |
+| S16 | Determine whether the independently enforced P2 invocations form an a priori invariant complete-runtime class including auxiliary state | A later call is rejected because support, metric, interval, delays, alpha source or the exact `q=eta=0` kernel conditions fail; auxiliary channels invalidate the extension; or causal provenance cannot be retained |
+
+## Completed runtime and causal-binding milestones
+
+The general reversible single-eigenmode kernel completes the mathematical
+reference-family milestone. For fixed connected symmetric rational conductance,
+positive rational capacity and one exact nonuniform eigenmode, it proves the
+exponential solution, refreshed-Euler factor and `L_inf`/`H`-error-energy
+bounds, strict proper-subdivision improvement and conditional exact-real
+convergence as `h_max -> 0`. The general finite runtime adapter now binds
+executor-owned pressure-refreshed partitions to that exact problem and retains
+the pressure, held-input and combined local defects. Their endpoint effect is
+propagated through the complete Euler matrices, including components outside
+the reference eigenspace. The effective-P2 family remains the separate runtime
+specialization that adds unit-delay ideal REMESH scaling and a finite signed
+REMESH residual bound. Neither finite adapter proves runtime convergence or
+solver order.
+
+The graph-owned causal milestone is also complete for one finite invocation.
+The outer executor runs declared schedule/REMESH cycle specs on one graph,
+binds every receipt to its exact spec and schedule, derives the existing finite
+energy telescope and rolls back graph-owned state as one transaction. This
+gives the telescope a causal interpretation only for that completed finite
+block. The block-margin observer now measures its exact normalized lower bound:
+one fixture yields `139/256`, and the `alpha=1` boundary yields zero. These
+finite values do not define a repeatable runtime class. Absolute uniform
+decrease is already blocked by equilibrium and amplitude scaling.
+
+The separate exact policy-class milestone is now complete. A common
+fixed-metric schedule gain `q` gives prefix gain upper bound one and block gain `q` over
+the universal companion horizon. For `q<1`, this proves uniform normalized
+margin `1-q` and repeated geometric spatial-disagreement decay. The schedules,
+runtime defects and future configuration invariance are hypotheses outside the
+certificate, so the result does not promote the finite executor telescope.
+
+The robust relative-defect milestone is complete at both its conditional and
+finite-observation levels. If the signed centered-energy defect satisfies
+`delta<=eta*J`, the exact policy factor becomes `q_eff=q*(1+eta)`; values below
+one preserve a positive block margin, equality preserves only nonincrease and
+values above one are rejected. The causal adapter verifies `J`, the defect and
+slack, every represented `q_j<=q`, the full energy-vector envelope and the
+finite endpoint factor on one selected block. The `alpha=0.4` fixture confirms
+that a positive binary64 defect can be admitted at its exact minimum `eta`.
+This evidence does not establish one uniform future budget.
+
+The represented binary64 boundary and the first restricted repeated
+composition are also complete. Pairwise variance reduces the uniform REMESH
+defect question to scalar pairs and supplies the exact `alpha=1/2` obstruction
+`eta=2^210-1/4`. The sufficient-history `alpha=1` hard-clipped class instead
+has `eta=0` under REMESH alone. Between those boundaries, the restricted
+antisymmetric P2 hard-clip class at `alpha=1/2` is REMESH-forward-invariant and
+has sharp uniform `eta=135/124`. Its proof combines an analytic large-norm IEEE
+bound with exact enumeration of 6,615 finite-core candidates, 3,890 admissible,
+and the sharp subnormal tuple `(-3,-2,-3)`. It composes strictly for
+`q<124/259`; `q=4/9` yields the exact positive margin `20/279`, while equality
+at the threshold has zero margin. On abstract mutual-singleton P2 support, an
+exact-half immutable-snapshot Reception EPI kernel maps every finite binary64
+pair in the source interval to numeric consensus, so `q=0` in every positive
+diagonal metric. Their
+restricted composition eliminates active-history spatial disagreement after
+`tau_global+1` cycles. Signed-zero bit identity, a real graph, complete EN
+stage validation, grammar admission, event execution, solver accuracy and full
+TNFR stability are outside the abstract result. A separate sealed adapter now
+binds one completed graph-owned event to its grammar-admitted two-phase EN EPI
+stage, exact runtime neighbors, metric and captured `q=0` endpoint. The finite
+sequence adapter additionally binds each observed EN stage and its same-cycle
+`alpha=1` REMESH bridge to one executor-owned P2 invocation. Once
+`N>=tau_global+1`, it checks only the active chronological suffix and records
+zero post-horizon and final spatial disagreement. It does not audit all
+auxiliary Reception state, bind the current live graph after observation or
+prove future or unobserved execution. The reusable policy now performs a fresh
+static preflight, causal execution and deep finite post-certification inside one
+outer graph transaction on each call. Invalid post-certification and any graph
+mutation during that observational phase also roll back. Two accepted calls are
+two separately certified finite invocations; neither is an a priori theorem
+about the other.
+
+The first auxiliary boundary is now implemented below that open theorem. Every
+accepted two-phase EN target has one owner-bound, value-sealed pre-EN snapshot
+shared by neighbour integration, semantic-kind selection, optional source
+detection and metrics. A sealed stage observation verifies pre/post EPI and kind
+and the tracked source commit after all graph-mutating stage checks and before
+warning publication; event execution binds the ordered observations to its
+target support. This removes
+the former mixed-time metric read and the missing kind/source provenance. It
+does not establish raw auxiliary invariance: absolute counters and logs still
+change between calls and must be treated as cocycles, and the finite projection
+that normalizes those increments remains the next active problem.
+
+Other open branches remain:
+
+- formalize the finite auxiliary Reception projection from the new sealed
+  kind/source observations and normalized counter/log cocycles, then determine
+  whether the per-invocation P2/REMESH hypotheses define an a priori invariant
+  complete-runtime class;
+- extend the `alpha=1/2` antisymmetric P2 result to broader represented state
+  classes, support or other `0<alpha<1` coefficients while retaining a useful
+  uniform `eta` and `q_eff<1`;
+- extend phase and nonlinear quotient analysis to branch transitions, zero
+  phasor resultants and changing support;
+- test topology precursors and temporal operator signatures on held-out graph
+  families, noise models and complete grammar words;
+- derive and check graph-realizable dissipative-symplectic coupling beyond the
+  P2 obstruction, and seek a canonical directed contraction metric; and
+- define admissible TNFR transformations independently of the existing catalog
+  before revisiting catalog completeness.
+
+Reusable certificate functions record their declared inputs, numerical decision
+and scope. Publication artifacts must additionally attach a domain-neutral
+`CoreExperimentManifest` with graph construction, capacities, solver, telemetry,
+canonical `ClaimStatus`, Git revision and an explicit clean/dirty source
+declaration. Seed, timestep and operator sequence are recorded when applicable;
+dirty source additionally requires a SHA-256 digest of the declared working
+snapshot. [`current_git_source_provenance`](../src/tnfr/research/core_manifests.py)
+centralizes the scoped Git query and content digest used by executable examples.
+The older
+`ExperimentManifest` retains its arithmetic-specific factor and bit-size fields.
+Passing tests certifies implementation; it does not promote an open statement.

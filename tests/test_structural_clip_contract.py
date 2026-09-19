@@ -33,8 +33,7 @@ def test_soft_clip_preserves_identity_core_and_lands_smoothly_at_boundary():
 
     epsilon = 1e-6
     left_slope = (
-        structural_clip(1.0, mode="soft")
-        - structural_clip(1.0 - epsilon, mode="soft")
+        structural_clip(1.0, mode="soft") - structural_clip(1.0 - epsilon, mode="soft")
     ) / epsilon
     assert abs(left_slope) < 1e-3
 

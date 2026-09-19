@@ -41,11 +41,8 @@ def test_registry_has_exact_identity_parity_with_canonical_contracts() -> None:
 
     assert len(stages) == 13
     assert set(NETWORK_STAGE_CONTRACTS) == {contract.name for contract in canonical}
-    assert [
-        (stage.name, stage.english_name, stage.glyph) for stage in stages
-    ] == [
-        (contract.name, contract.english_name, contract.glyph)
-        for contract in canonical
+    assert [(stage.name, stage.english_name, stage.glyph) for stage in stages] == [
+        (contract.name, contract.english_name, contract.glyph) for contract in canonical
     ]
     verify_stage_contract_consistency()
 
@@ -133,9 +130,10 @@ def test_pressure_refresh_is_an_explicit_opaque_stage_resource() -> None:
         assert metadata["executed_two_phase_contract_complete"] is None
         assert StageResource.PRESSURE_REFRESH.value in metadata["read_set"]
         assert StageResource.PRESSURE_REFRESH.value in metadata["write_set"]
-        assert "custom pressure-refresh callback effects are opaque" in metadata[
-            "footprint_scope"
-        ]
+        assert (
+            "custom pressure-refresh callback effects are opaque"
+            in metadata["footprint_scope"]
+        )
         json.dumps(metadata)
 
 
@@ -183,7 +181,6 @@ def test_structural_target_order_and_relabeling_claims_remain_separate() -> None
             contract.structural_state_target_order_scope
         )
 
-
     thol = stage_contract_for("THOL")
     assert thol.relabeling_equivariant is None
     assert "snapshot-node rank" in thol.relabeling_scope
@@ -217,12 +214,8 @@ def test_cross_target_footprints_pin_current_merge_contracts() -> None:
         StageResource.GRAPH_CONFIGURATION,
     } <= dissonance.write_set
     assert dissonance.current_schedule is StageSchedule.TWO_PHASE_JACOBI
-    assert dissonance.merge_law is (
-        MergeLaw.SNAPSHOT_DELTA_NFR_ADDITIVE_REDUCTION
-    )
-    assert dissonance.merge_law_status is (
-        MergeLawStatus.IMPLEMENTED_AND_TESTED
-    )
+    assert dissonance.merge_law is (MergeLaw.SNAPSHOT_DELTA_NFR_ADDITIVE_REDUCTION)
+    assert dissonance.merge_law_status is (MergeLawStatus.IMPLEMENTED_AND_TESTED)
 
     coupling = stage_contract_for("UM")
     assert (
@@ -257,19 +250,10 @@ def test_cross_target_footprints_pin_current_merge_contracts() -> None:
     assert thol.structural_state_target_order_invariant is True
 
     recursivity = stage_contract_for("REMESH")
-    assert (
-        recursivity.structural_overlap
-        is StructuralOverlap.GRAPH_ADVISORY_ONLY
-    )
+    assert recursivity.structural_overlap is StructuralOverlap.GRAPH_ADVISORY_ONLY
     assert recursivity.current_schedule is StageSchedule.TWO_PHASE_JACOBI
-    assert (
-        recursivity.merge_law
-        is MergeLaw.SNAPSHOT_ADVISORY_DEDUPLICATION
-    )
-    assert (
-        recursivity.merge_law_status
-        is MergeLawStatus.IMPLEMENTED_AND_TESTED
-    )
+    assert recursivity.merge_law is MergeLaw.SNAPSHOT_ADVISORY_DEDUPLICATION
+    assert recursivity.merge_law_status is MergeLawStatus.IMPLEMENTED_AND_TESTED
     assert recursivity.blockers == ()
 
 

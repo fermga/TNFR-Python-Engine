@@ -114,7 +114,10 @@ def download_grid_frequency_month(
     path = cache_path or _ROOT / "results" / "data" / f"{yyyymm}_Frequenz.zip"
     if path.exists():
         if not path.is_file() or path.stat().st_size > max_bytes:
-            print("  [skip] cached archive exceeds the compressed-byte limit", file=sys.stderr)
+            print(
+                "  [skip] cached archive exceeds the compressed-byte limit",
+                file=sys.stderr,
+            )
             return None
         return path
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -183,17 +186,27 @@ def _parse_frequency_rows(text: str, *, max_rows: int):
         if len(fields) < 2:
             raise ValueError(f"row {line_number} has no timestamp/value separation")
         if not timestamps and fields[0].lower().lstrip("\ufeff") in (
-            "timestamp", "time", "datetime", "zeitstempel", "datum"
+            "timestamp",
+            "time",
+            "datetime",
+            "zeitstempel",
+            "datum",
         ):
             continue
         if len(values) >= max_rows:
             raise ValueError("CSV row limit exceeded")
         token = fields[-1].replace(",", ".")
-        if (delimiter == "," and len(fields) == 3
-                and fields[-2].isdigit() and fields[-1].isdigit()):
+        if (
+            delimiter == ","
+            and len(fields) == 3
+            and fields[-2].isdigit()
+            and fields[-1].isdigit()
+        ):
             token = f"{fields[-2]}.{fields[-1]}"
         elif len(fields) != 2:
-            raise ValueError("ambiguous CSV columns; supply one timestamp and one frequency")
+            raise ValueError(
+                "ambiguous CSV columns; supply one timestamp and one frequency"
+            )
         try:
             value = float(token)
         except ValueError:
@@ -221,7 +234,11 @@ def _relative_times(timestamps: tuple[str, ...]):
         return tuple(None for _ in parsed), "mixed_timezone_unavailable"
     if any(right <= left for left, right in zip(elapsed, elapsed[1:])):
         return elapsed, "nonmonotone_timestamp"
-    status = "relative_seconds_timezone_unverified" if parsed[0].tzinfo is None else "relative_seconds"
+    status = (
+        "relative_seconds_timezone_unverified"
+        if parsed[0].tzinfo is None
+        else "relative_seconds"
+    )
     return elapsed, status
 
 
@@ -251,15 +268,22 @@ def load_grid_frequency_record(
     A supplied archive digest binds the bounded bytes before ZIP parsing.
     Multiple CSV members require an explicit member name.
     """
-    for name, value in (("max_points", max_points), ("max_bytes", max_bytes),
-                        ("max_expanded_bytes", max_expanded_bytes),
-                        ("max_member_bytes", max_member_bytes),
-                        ("max_members", max_members), ("max_rows", max_rows)):
+    for name, value in (
+        ("max_points", max_points),
+        ("max_bytes", max_bytes),
+        ("max_expanded_bytes", max_expanded_bytes),
+        ("max_member_bytes", max_member_bytes),
+        ("max_members", max_members),
+        ("max_rows", max_rows),
+    ):
         _positive_limit(value, name)
     expected_digest = None
     if expected_archive_sha256 is not None:
-        if (type(expected_archive_sha256) is not str
-                or re.fullmatch(r"(?:sha256:)?[0-9a-fA-F]{64}", expected_archive_sha256) is None):
+        if (
+            type(expected_archive_sha256) is not str
+            or re.fullmatch(r"(?:sha256:)?[0-9a-fA-F]{64}", expected_archive_sha256)
+            is None
+        ):
             raise ValueError("expected_archive_sha256 must be a SHA-256 digest")
         expected_digest = expected_archive_sha256.removeprefix("sha256:").lower()
     with Path(zip_path).open("rb") as handle:
@@ -279,8 +303,11 @@ def load_grid_frequency_record(
             raise ValueError("archive member exceeds expanded-byte limit")
         if len({item.filename for item in entries}) != len(entries):
             raise ValueError("duplicate archive member names are ambiguous")
-        candidates = [item for item in entries if not item.is_dir()
-                      and item.filename.lower().endswith(".csv")]
+        candidates = [
+            item
+            for item in entries
+            if not item.is_dir() and item.filename.lower().endswith(".csv")
+        ]
         if member_name is not None:
             candidates = [item for item in candidates if item.filename == member_name]
         if not candidates:
@@ -292,15 +319,23 @@ def load_grid_frequency_record(
             raw = handle.read(max_member_bytes + 1)
         if len(raw) > max_member_bytes or len(raw) != selected.file_size:
             raise ValueError("expanded member failed its byte bound")
-    timestamps, values, lines = _parse_frequency_rows(raw.decode("utf-8-sig"), max_rows=max_rows)
+    timestamps, values, lines = _parse_frequency_rows(
+        raw.decode("utf-8-sig"), max_rows=max_rows
+    )
     elapsed, time_status = _relative_times(timestamps)
     stride = max(1, math.ceil(len(values) / max_points))
     return GridFrequencyRecord(
-        timestamps=timestamps, elapsed_seconds=elapsed, values_hz=values,
-        missing=tuple(value is None for value in values), source_line_numbers=lines,
-        selected_indices=tuple(range(0, len(values), stride)), stride=stride,
-        time_status=time_status, archive_sha256=archive_digest,
-        member_sha256=hashlib.sha256(raw).hexdigest(), member_name=selected.filename,
+        timestamps=timestamps,
+        elapsed_seconds=elapsed,
+        values_hz=values,
+        missing=tuple(value is None for value in values),
+        source_line_numbers=lines,
+        selected_indices=tuple(range(0, len(values), stride)),
+        stride=stride,
+        time_status=time_status,
+        archive_sha256=archive_digest,
+        member_sha256=hashlib.sha256(raw).hexdigest(),
+        member_name=selected.filename,
     )
 
 
@@ -314,8 +349,12 @@ def load_grid_frequency_series(
     Gaps are retained as NaN; this view cannot support derivative/rate claims.
     Returns ``None`` on unavailable input or fewer than 512 raw data rows.
     """
-    warnings.warn("values-only grid loading is descriptive; use load_grid_frequency_record "
-                  "to retain time and gap provenance", DeprecationWarning, stacklevel=2)
+    warnings.warn(
+        "values-only grid loading is descriptive; use load_grid_frequency_record "
+        "to retain time and gap provenance",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     try:
         record = load_grid_frequency_record(zip_path, max_points=max_points)
     except Exception as exc:  # noqa: BLE001 - corrupt/partial archive
@@ -323,10 +362,17 @@ def load_grid_frequency_series(
         return None
 
     if len(record.values_hz) < 512:
-        print(f"  [skip] parsed only {len(record.values_hz)} data rows", file=sys.stderr)
+        print(
+            f"  [skip] parsed only {len(record.values_hz)} data rows", file=sys.stderr
+        )
         return None
-    return np.asarray([float("nan") if record.values_hz[i] is None else record.values_hz[i]
-                       for i in record.selected_indices], dtype=float)
+    return np.asarray(
+        [
+            float("nan") if record.values_hz[i] is None else record.values_hz[i]
+            for i in record.selected_indices
+        ],
+        dtype=float,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -413,19 +459,26 @@ def run_temporal_benchmark(
             )
             return report
         try:
-            record = load_grid_frequency_record(zip_path, max_points=max_points, max_bytes=max_bytes)
+            record = load_grid_frequency_record(
+                zip_path, max_points=max_points, max_bytes=max_bytes
+            )
         except (OSError, ValueError, zipfile.BadZipFile) as exc:
             report["status"] = "unavailable"
             report["reason"] = f"Archive admission failed: {exc}"
             return report
         report["ingestion"] = asdict(record)
         if any(record.missing) or record.time_status not in (
-            "relative_seconds", "relative_seconds_timezone_unverified"
+            "relative_seconds",
+            "relative_seconds_timezone_unverified",
         ):
             report["status"] = "unavailable"
-            report["reason"] = "Missing values or unavailable/nonmonotone timestamps; no gap compaction."
+            report["reason"] = (
+                "Missing values or unavailable/nonmonotone timestamps; no gap compaction."
+            )
             return report
-        series = np.asarray([record.values_hz[i] for i in record.selected_indices], dtype=float)
+        series = np.asarray(
+            [record.values_hz[i] for i in record.selected_indices], dtype=float
+        )
         report["data"] = {
             "samples": int(series.size),
             "mean_hz": float(np.mean(series)),

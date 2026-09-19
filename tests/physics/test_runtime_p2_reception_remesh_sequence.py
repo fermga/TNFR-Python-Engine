@@ -200,10 +200,7 @@ def test_more_than_one_horizon_certifies_finite_causal_extinction(
             strict=True,
         )
     )
-    assert (
-        certificate
-        .executed_p2_half_reception_remesh_sequence_certificate_certified
-    )
+    assert certificate.executed_p2_half_reception_remesh_sequence_certificate_certified
 
 
 def test_cycle_count_must_reach_the_global_delay_horizon() -> None:
@@ -234,10 +231,7 @@ def test_stale_rows_before_the_active_history_suffix_are_out_of_scope() -> None:
         for row in suffix
         for value in row
     )
-    assert (
-        certificate
-        .executed_p2_half_reception_remesh_sequence_certificate_certified
-    )
+    assert certificate.executed_p2_half_reception_remesh_sequence_certificate_certified
 
 
 def test_active_suffix_need_not_fill_an_inactive_longer_local_delay() -> None:

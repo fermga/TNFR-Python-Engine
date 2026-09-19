@@ -5,51 +5,54 @@ Emergent Integers as Spectral Multiplicities: A Symmetry -> Degeneracy Falsifier
 QUESTION (the deep one): does TNFR *explain what an integer IS* — as a structural
 invariant — rather than merely *use* integers as external tags?
 
-This harness tests the strongest defensible form of that claim:
+This harness compares spectral counts on explicitly supplied graph controls:
 
     The integers that emerge from the nodal dynamics are the eigenvalue
-    multiplicities of the canonical emergent operator L_rw = I - D^-1 W (the
-    discrete ΔNFR / phase-curvature operator; on a vertex-transitive manifold it
-    shares the eigenspaces of the imposed D - A, so the multiplicities are
-    operator-invariant), and WHICH integers emerge is dictated entirely by
-    the symmetry group of the manifold.
+    multiplicities of L_rw = I - D^-1 W, the isolated scalar EPI pressure
+    operator. On these regular unit-conductance graphs D - A = d*L_rw,
+    so these two operators share eigenspaces. This does not identify nonlinear
+    phase curvature with L_rw or derive the chosen graph from nodal evolution.
 
 WHY THIS IS RIGOROUS (and falsifiable):
   L commutes with every automorphism of the graph, so each eigenspace is an
   invariant subspace of the symmetry group Γ and decomposes into irreducible
-  representations of Γ. For vertex-transitive manifolds the eigenvalue
-  multiplicities are exactly the dimensions of irreps of Γ. Representation
-  theory therefore predicts the emergent integers INDEPENDENTLY of TNFR — it is
-  the ground truth against which we falsify.
+  representations of Γ. An eigenvalue multiplicity can be a SUM of irrep
+  contributions, including repeated copies; vertex transitivity does not make
+  every eigenspace irreducible. Nor do all equivariant operators share their
+  complete eigenspaces: different sectors can coincide at one eigenvalue.
+  The existing inverse_spectrum_to_symmetry.py supplies a concrete control:
+  the truncated-cube graph has multiplicity five with octahedral symmetry,
+  splitting as 2+3. Its combinatorial eigenvalues 3 and 5 each have exact
+  nullity five; the corresponding normalized eigenvalues are 1 and 5/3.
 
-  Allowed irrep dimensions per symmetry group:
+  Reference irrep dimensions used for these selected cases (not a general
+  upper bound or exhaustive prediction for eigenspace multiplicities):
     Cyclic  C_n            : {1, 2}         (rotation blocks)
     Tetrahedral  T_d       : {1, 2, 3}      (the integer 3 first becomes available)
     Octahedral   O_h       : {1, 2, 3}
     Icosahedral  I_h       : {1, 3, 4, 5}   (4 and 5 are the icosahedral signature)
     Full rotation SO(3)    : {1, 3, 5, 7, …} (continuum sphere: every odd 2l+1)
 
-  So "a 3" = the dimension of a 3D irreducible coherent mode; it cannot appear
-  below tetrahedral symmetry. "A 5" requires icosahedral symmetry. The integer
-  is not a tag — it is a count of structurally indistinguishable resonant modes,
-  fixed by the geometry.
+  A measured multiplicity counts spectral modes. A count of three or five
+  alone neither proves irreducibility nor identifies tetrahedral or icosahedral
+  symmetry. Protected sectors must be distinguished from coincident sectors.
 
 WHAT THIS DOES *NOT* CLAIM (the honest boundary):
   This produces CARDINALS (dimensions/counts) as emergent integers. It does NOT
   derive the full arithmetic ring (addition, multiplication, primality) from the
   nodal equation. The number-theory layer still *uses* integers as inputs and
   characterizes their primality; it does not derive their existence. The
-  multiplicity-as-irrep-dimension fact is the structural reading of a known
-  theorem (any Aut(G)-equivariant operator commutes with Aut(G)), not new
-  mathematics — TNFR supplies the physical interpretation (the emergent
-  L_rw = I - D^-1 W is the discrete ΔNFR; its multiplicities are
-  operator-invariant), not the theorem.
+  invariant-eigenspace statement is standard representation theory, not a
+  derivation of arithmetic, graph selection or Euclidean space. The capacity,
+  forcing and operator maps must separately preserve a graph symmetry before
+  it constrains a complete TNFR dynamics. Reported eigenvalue clusters are
+  numerical observations; the finite sphere fixture is not exact SO(3).
 
 Run:
     python benchmarks/emergent_integers_symmetry.py
 
-Theoretical anchor: AGENTS.md (nodal equation; discrete-mode regime; the emergent
-L_rw = I - D^-1 W as discrete ΔNFR/phase curvature). Status: RESEARCH (falsifier).
+Theoretical anchor: AGENTS.md (nodal equation; isolated scalar EPI diffusion).
+Status: RESEARCH (supplied symmetry controls).
 """
 
 from __future__ import annotations
@@ -87,8 +90,8 @@ class SymmetryCase:
     name: str
     builder: object  # callable -> nx.Graph
     group: str
-    allowed_irrep_dims: set[int]  # rep-theory ground truth
-    signature: int  # the largest irrep dim that must appear
+    allowed_irrep_dims: set[int]  # reference catalog, not a multiplicity bound
+    signature: int  # signature checked in this supplied fixture
 
 
 def _fibonacci_sphere(n_points: int = 400, k_neighbors: int = 6) -> nx.Graph:
@@ -127,7 +130,7 @@ CASES = [
 
 
 def _verdict(emergent: set[int], case: SymmetryCase) -> tuple[bool, bool]:
-    """(all emergent dims are allowed irreps, signature integer appears)."""
+    """Check this fixture against its catalog; no general multiplicity theorem."""
     nontrivial = {m for m in emergent if m > 1}
     subset_ok = nontrivial.issubset(case.allowed_irrep_dims)
     signature_ok = case.signature in emergent
@@ -137,7 +140,9 @@ def _verdict(emergent: set[int], case: SymmetryCase) -> tuple[bool, bool]:
 def main() -> None:
     print(__doc__)
     print("=" * 78)
-    print("SYMMETRY  ->  EMERGENT INTEGERS (Laplacian multiplicities)  vs  rep theory")
+    print(
+        "SUPPLIED SYMMETRY CONTROLS: Laplacian multiplicities vs listed irrep dimensions"
+    )
     print("=" * 78)
     print(f"{'manifold':<16}{'group':<20}{'emergent mults':<22}{'allowed':<14}verdict")
     print("-" * 78)
@@ -169,18 +174,18 @@ def main() -> None:
 
     print("=" * 78)
     print(
-        f"OVERALL: {'ALL PASS — emergent integers match rep-theory prediction' if all_pass else 'MISMATCH'}"
+        f"OVERALL: {'ALL PASS — selected fixture counts match the listed values' if all_pass else 'MISMATCH'}"
     )
     print("=" * 78)
     print("\nInterpretation (honest scope):")
     print("  • The integers 1,2,3,4,5,7 are OUTPUTS — eigenvalue multiplicities of")
-    print("    the emergent operator L_rw (discrete ΔNFR); operator-invariant, so")
-    print("    equal to D - A's on these vertex-transitive graphs. Not supplied.")
-    print("  • WHICH integers appear is fixed by the symmetry group's irreducible")
-    print("    representations: 3 first appears at tetrahedral symmetry, 5 requires")
-    print("    icosahedral symmetry, the sphere yields every odd 2l+1.")
-    print("  • So a '3' = dimension of a 3D irreducible coherent mode. The integer is")
-    print("    a structural count, not an arbitrary tag — it fossilizes the geometry.")
+    print("    EPI operator L_rw, equal to D - A's counts on these regular graphs.")
+    print("    The graph geometries are inputs; the spectral counts are read-outs.")
+    print("  • Eigenspaces are symmetry-invariant but can combine irrep sectors.")
+    print("    A count of five alone does not identify icosahedral symmetry:")
+    print("    the truncated cube has an accidental five = two + three.")
+    print("  • These counts establish neither graph selection nor an ambient")
+    print("    Euclidean dimension. The finite sphere is a numerical comparison.")
     print("  • BOUNDARY: this gives cardinals (counts/dimensions), NOT the full")
     print("    arithmetic ring. Deriving (+, ×, primality) of integers from the nodal")
     print("    equation remains open; number_theory.py still takes integers as input.")

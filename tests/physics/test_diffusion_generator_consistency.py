@@ -20,7 +20,8 @@ from tnfr.physics.structural_diffusion import (
 def _triad(graph, frequencies, epi=None):
     for index, node in enumerate(graph):
         graph.nodes[node].update(
-            nu_f=frequencies[index], EPI=float(index) if epi is None else epi[index],
+            nu_f=frequencies[index],
+            EPI=float(index) if epi is None else epi[index],
             theta=0.0,
         )
     return graph
@@ -48,7 +49,10 @@ def test_parallel_weighted_laplacian_matches_independent_adjacency(graph_type):
     adjacency = nx.to_numpy_array(graph, weight="weight")
     degree = adjacency.sum(axis=1)
     expected = np.eye(len(graph)) - np.divide(
-        adjacency, degree[:, None], out=np.zeros_like(adjacency), where=degree[:, None] > 0,
+        adjacency,
+        degree[:, None],
+        out=np.zeros_like(adjacency),
+        where=degree[:, None] > 0,
     )
     expected[degree == 0] = 0.0
     _, actual = structural_diffusion_operator(graph)

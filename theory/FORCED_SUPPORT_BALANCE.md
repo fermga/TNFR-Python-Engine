@@ -15,6 +15,11 @@ The latter separates a regular rigidity theorem from an exact flexible
 family and its U3 boundary. Section 21's fixed-point theorem remains
 conditional on its specified relaxation policies.
 
+**Research status:** This note retains mathematical dependencies and historical
+finite studies, not an execution queue. Prepared regional-response work is
+parked; only the [current G3 gate](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+assigns the next scientific task.
+
 ## 1. The reference comes from the existing nodal channels
 
 The connection studied in
@@ -1012,8 +1017,8 @@ still recorded rather than declared zero by a tolerance.
 
 This closes the bounded numerical gate, not arbitrary runtime invariance,
 transcendental accuracy or regional maintenance. The native default remains
-legacy. The next main discriminator uses already retained paired endpoints
-to separate regional perturbation recovery from loss of the control's form.
+legacy. Section 14 uses already retained paired endpoints to separate
+regional perturbation recovery from loss of the control's form.
 No additional numeric-policy sweep is required by this result.
 
 Local output: `artifacts/research/thol_exact_phase_source_comparison_2026_09_18.json`,
@@ -1216,7 +1221,8 @@ to its members. That is the useful connection to the NFR identity problem:
 a maintenance test must retain regional form, mean contrast and environmental
 response together instead of relying on one global attenuation score.
 
-The next primary test must demonstrate a restoring response after **actual
+The historical follow-up criterion, evaluated in section 16, required a
+restoring response after **actual
 regional form damage** under a predeclared canonical perturbation and
 continuation. Its control must retain measurable nonuniform form, with
 control drift reported; reduced error caused only by control flattening is
@@ -1224,8 +1230,8 @@ not sufficient. Keep the mean-to-shape and boundary contributions visible,
 and distinguish an existing state-dependent restoring mechanism from supplied
 operator timing or an imposed target. A failed damage, control or mechanism
 gate is a reported negative/inconclusive result, not a reason to tune the
-pressure or select a favorable region. The execution plan owns that next
-delivery; no second numerical-policy campaign is opened by this result.
+pressure or select a favorable region. This remains a criterion for that
+study, not a current assignment to repeat it; the execution plan owns resumption.
 
 Local output: `artifacts/research/thol_child_distortion_audit_2026_09_18.json`,
 SHA-256 `f3ba30169c969e2b39a0958f3437ce0c6822a3bd7c52006942f184398c1b66b3`.
@@ -1369,9 +1375,9 @@ supplies the large direct EPI-error reduction.
 This gives a useful comparison with section 15: Reception increased the
 child-cohort error for the earlier all-child perturbation but decreases it
 for this localized perturbation. An operator label alone therefore does
-not determine the sign of a regional form-error budget. The next analytical
-question is to characterize that direction and boundary dependence from
-the existing maps, without another trajectory sweep.
+not determine the sign of a regional form-error budget. Sections 17-18
+characterize that direction and boundary dependence from the existing maps,
+without another trajectory sweep.
 
 The scientific outcome is **supported_in_scope** for finite configured
 recovery toward the evolving control. It does not establish autonomous NFR
@@ -1786,7 +1792,7 @@ to present this map calculation as authenticated runtime execution.
 This closes the ordering/symmetry comparison. Same-snapshot semantics remove
 the exhibited ordering obstruction at the declared-map level, while the
 actual input restriction remains unjustified. Neither symmetry nor regular
-polyhedral shape is established as necessary for an NFR. The next primary
+polyhedral shape is established as necessary for an NFR. The broader open
 question concerns a closed endogenous feedback mechanism for differentiated
 coherence, using the existing nodal channels and explicit state/history;
 additional symmetry sweeps and historical-state restoration are parked.
@@ -2055,9 +2061,11 @@ A stationary lifted local-only phase update with nonzero local gain requires
 Regular winding does not evade this condition. Prescribed winding or an
 imported particle label therefore cannot fill the missing source law.
 
-This completes the bounded tangency calculation. The sole execution plan
-owns the next gate: identify an independently justified nodal relation for
-the missing channel rates/activation and test it against this identity.
+This completes the bounded tangency calculation. Any proposed law for the
+missing channel rates/activation must be independently justified and checked
+against this identity. That requirement does not assign a new law-search
+task; the [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the current gate.
 No controller experiment, C6 restart, topology sweep or new public physics
 claim follows. The finite exact controls reuse existing algebra and are
 recorded in `artifacts/research/source_tangency_checks_2026_09_18.json` with
@@ -2325,3 +2333,93 @@ has a two-dimensional tangent kernel strictly inside the gate, but its extra
 direction is obstructed at second order. Its local finite level set has only
 common rotation. The remaining question concerns finite geometry, not another
 rank calculation. The proof and portable fixture have one owner in that audit.
+
+## 25. Relational time and synchronization are separate claims
+
+The original source describes Reception in terms of shared/relational time
+and synchronization (PDF page 83), and internal process time on
+pages 218-219. This motivates a relational-clock hypothesis; it is not a
+derivation that global synchronization equals elapsed time. Section 23 owns
+the existing accumulated-capacity identity and its source/units audit.
+
+**Alignment need not advance, even while form evolves.** On pure-EPI unit P2,
+positive equal capacities and phase consensus give `R=1`. Holding those phases
+fixed is compatible with the EPI equation while a nonuniform form relaxes:
+for capacity one and initial EPI `(1,0)`,
+`x(t)=((1+exp(-2t))/2,(1-exp(-2t))/2)`. Synchronization remains complete while
+form and its accumulated capacity change. Conversely, uniform EPI/capacity
+permit any differentiable common phase rotation under that same EPI identity.
+The alignment statistic does not identify its speed. Neither control selects
+a complete physical phase law.
+
+On the retained prism with phases `(-a,a,0)` in both triangles, `|a|<pi/4`,
+the same statistic is `R=(1+2*cos(a))/3`. It is even in `a` and has zero
+derivative at `a=0`. Along the supplied control `a=A*cos(chi)`, it repeats
+after half the full phase cycle. It therefore loses orientation and cannot
+serve as a globally invertible clock for that motion. This concerns phase
+alignment; a broader notion of coordination involving form, capacity and
+history must supply its own observation and evolution, not inherit this
+statistic's name.
+
+### A local state clock requires an already specified tangent
+
+For a complete autonomous state law `z_dot=V(z)` and a scalar observation
+`tau=T(z)`, a regular local time coordinate requires
+`h=dT[V]>0`. Then `dz/dtau=V/h`. If the relevant components of `V` are missing,
+the chain rule does not generate them. A single-valued real state function
+cannot increase strictly around a closed orbit: its endpoint difference is
+zero, whereas the integral of a strictly positive rate would be positive.
+An unwrapped angular clock needs a chart/history or cycle count, as well as
+a law for its advance; a circular phase alone supplies neither.
+
+A regular positive reparameterization preserves the oriented path, and an
+onto unbounded time change preserves recurrence. Finite accumulated exposure
+can instead map infinite original time to a finite internal-time endpoint;
+that retention mechanism is already covered by the capacity results and is
+not a proof of continuing active oscillation. Relabeling time does not turn
+the pure gradient trajectories of variational section 13.10 into recurrent
+ones.
+
+### Curve admission can determine a speed without selecting the curve
+
+For a declared full-state curve `z(chi)`, let `v=dx/dchi` be its EPI tangent
+and let `b=diag(nu)*p` be the nodal rate evaluated independently from that
+state and the existing pressure law. A regular positive scalar clock must
+satisfy
+
+\[
+b=h v,\qquad h=d\chi/dt>0.
+\]
+
+For `v!=0`, this is equivalent to collinearity and `v^T b>0`; the only
+possible speed is `h=(v^T b)/(v^T v)`. The inner product merely computes the
+unique proportionality coefficient and introduces no physical metric or
+force. Every component must agree. If exactly one of `b,v` vanishes there
+is no regular positive clock; if both vanish the EPI equation leaves the
+clock unconstrained at that point. At an EPI turning point, phase or other
+coordinates may still move, so failure to identify the clock there must
+not be confused with complete-state stationarity.
+
+This is an EPI admission condition for a supplied curve, not its generation
+mechanism or a complete phase/capacity law. The pressure must not be obtained
+retrospectively as `h*v/nu`. It provides a useful rejection test: changing a
+clock cannot repair a source tangent pointing in the wrong direction.
+
+### Reuse and implementation scope
+
+The existing `structural_time` reader numerically accumulates supplied
+capacity over the supplied grid, starting at its first point. Its trapezoidal
+value is an estimate, not an exact integral for an arbitrary capacity
+function. `certify_structural_time` now uses that accumulated exposure as its
+finite structural observation window, including zero exposure; it previously
+used the final input timestamp instead. It remains a finite numerical
+diagnostic with an unassessed tail, not a derived physical clock or a general
+infinite-time certificate.
+
+Controls: [clock scope](../tests/physics/test_structural_clock_scope.py) and
+[existing structural-time implementation](../tests/physics/test_structural_time.py).
+The complementary [oriented source/form work identity](TNFR_VARIATIONAL_PRINCIPLE.md#1312-oriented-sourceform-work-without-a-selected-clock)
+allows a proposed loop to be rejected before choosing its speed. The
+[single execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+uses these conditions within G3; no synchrony statistic is promoted to a
+controller or a fundamental time law.

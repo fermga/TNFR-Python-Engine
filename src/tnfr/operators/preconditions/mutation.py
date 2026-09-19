@@ -17,10 +17,7 @@ if TYPE_CHECKING:
     import logging
 
 from ...alias import get_attr
-from ...config.operator_names import (
-    BIFURCATION_WINDOW,
-    DESTABILIZERS,
-)
+from ...config.operator_names import BIFURCATION_WINDOW, DESTABILIZERS
 from ...constants.aliases import ALIAS_VF
 from .._mutation_gate import (
     mutation_threshold_sample,
@@ -95,9 +92,11 @@ def validate_mutation_strict(G: TNFRGraph, node: NodeId) -> None:
 
     # 3. Grammar U4b validation
     strict_validation = bool(G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False))
-    if strict_validation or bool(
-        G.graph.get("ZHIR_REQUIRE_IL_PRECEDENCE", False)
-    ) or bool(G.graph.get("ZHIR_REQUIRE_DESTABILIZER", False)):
+    if (
+        strict_validation
+        or bool(G.graph.get("ZHIR_REQUIRE_IL_PRECEDENCE", False))
+        or bool(G.graph.get("ZHIR_REQUIRE_DESTABILIZER", False))
+    ):
         validate_grammar_u4b(G, node, logger)
 
 
@@ -255,9 +254,7 @@ def validate_grammar_u4b(
 
     # Compute the context without writing it. A rejected validation must not
     # leave metadata that falsely reports an accepted mutation path.
-    context = record_destabilizer_context(
-        G, node, logger, record=False, emit_log=False
-    )
+    context = record_destabilizer_context(G, node, logger, record=False, emit_log=False)
     destabilizer_found = context.get("destabilizer_operator")
 
     if require_destabilizer and destabilizer_found is None:

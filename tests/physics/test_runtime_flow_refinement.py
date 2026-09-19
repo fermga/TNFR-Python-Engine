@@ -15,7 +15,6 @@ from tnfr.physics.runtime_flow_stability import (
     certify_observed_nodal_flow_interval,
 )
 
-
 _RUNTIME = {
     "integrator_name": "DefaultIntegrator",
     "method": "euler",
@@ -225,9 +224,7 @@ def test_invalid_or_missing_substep_metadata_causes_explicit_abstention(
     assert result.exact_binary64_held_pressure_replay_residual is None
     assert not result.binary64_held_pressure_replay_matches
     assert not result.binary64_held_pressure_runtime_identified
-    assert "positive_substeps" in (
-        result.failed_held_pressure_runtime_conditions
-    )
+    assert "positive_substeps" in (result.failed_held_pressure_runtime_conditions)
 
 
 def test_sequential_replay_preserves_actual_gamma_none_signed_zero_bits() -> None:
@@ -237,7 +234,7 @@ def test_sequential_replay_preserves_actual_gamma_none_signed_zero_bits() -> Non
     result = _certificate(left, right, duration=1.0, substeps=2)
 
     assert result.binary64_held_pressure_replay is not None
-    assert result.binary64_held_pressure_replay[0].hex() == 0.0.hex()
+    assert result.binary64_held_pressure_replay[0].hex() == (0.0).hex()
     assert result.binary64_held_pressure_replay_matches
     assert result.binary64_held_pressure_runtime_identified
 

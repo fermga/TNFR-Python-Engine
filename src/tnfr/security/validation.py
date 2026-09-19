@@ -28,8 +28,8 @@ from __future__ import annotations
 import math
 from typing import Any
 
-from ..errors import TNFRValueError
 from .._coherence_validation import validate_structural_coherence
+from ..errors import TNFRValueError
 
 
 def validate_structural_frequency(nu_f: float) -> float:

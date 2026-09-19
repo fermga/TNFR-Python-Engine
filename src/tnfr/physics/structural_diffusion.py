@@ -2336,6 +2336,26 @@ def verify_overdamped_regime(
 # ---------------------------------------------------------------------------
 
 
+def _damped_wave_roots(lambdas: Any, gamma: float) -> tuple[Any, Any]:
+    """Return both complex roots without subtracting near-equal real terms.
+
+    Form the larger-magnitude root directly and recover the other from
+    their product, lambda. Zero modes include the gamma=0 double root.
+    The spectral inputs and finite arithmetic range retain their callers'
+    scope; this helper does not assert a nonlinear or runtime wave law.
+    """
+    values = np.asarray(lambdas, dtype=float)
+    root = np.sqrt(gamma * gamma - 4.0 * values + 0j)
+    if gamma >= 0.0:
+        fast = -gamma / 2.0 - root / 2.0
+        slow = np.divide(values, fast, out=np.zeros_like(fast), where=fast != 0.0)
+    else:
+        # Preserve the historical plus/minus ordering for negative damping.
+        slow = -gamma / 2.0 + root / 2.0
+        fast = np.divide(values, slow, out=np.zeros_like(slow), where=slow != 0.0)
+    return slow, fast
+
+
 def damped_wave_rates(G: Any, gamma: float) -> tuple[Any, Any, Any]:
     r"""Per-mode slow/fast rates of the damped graph wave q̈ + γq̇ + Lq = 0.
 
@@ -2369,11 +2389,8 @@ def damped_wave_rates(G: Any, gamma: float) -> tuple[Any, Any, Any]:
     _, lap = structural_diffusion_operator(G)
     lambdas = np.sort(np.linalg.eigvals(lap).real)
     lambdas = np.clip(lambdas, 0.0, None)
-    disc = gamma * gamma - 4.0 * lambdas + 0j
-    root = np.sqrt(disc)
-    s_slow = ((-gamma + root) / 2.0).real
-    s_fast = ((-gamma - root) / 2.0).real
-    return lambdas, s_slow, s_fast
+    s_slow, s_fast = _damped_wave_roots(lambdas, gamma)
+    return lambdas, s_slow.real, s_fast.real
 
 
 @dataclass(frozen=True)
@@ -2409,8 +2426,8 @@ class OverdampedProjectionCertificate:
     slowest_diffusion_rate : float
         The diffusion spectral gap ν_f·λ₂ = λ₂/γ.
     trajectory_max_rel_error : float
-        Max relative L² error between the damped-wave trajectory and the
-        diffusion trajectory exp(−L t/γ)·q₀ over an overdamped time window.
+        Max relative Euclidean error in nodal EPI coordinates between the
+        damped-wave trajectory and exp(−L_rw t/γ)·q₀ over the sampled window.
     projects_to_diffusion : bool
         Whether both the rate and trajectory errors fall within tolerance.
     """
@@ -2464,7 +2481,14 @@ def verify_overdamped_projection(
     structural-diffusion trajectory exp(−L t/γ)·q₀.  No field formula is
     re-implemented — L_rw comes from
     :func:`structural_diffusion_operator` and the orthonormal eigenbasis
-    from the symmetric normalized Laplacian.
+    from the symmetric normalized Laplacian. Initial EPI is transformed by
+    sqrt(row strength) before modal projection, and both trajectories are
+    decoded back to nodal coordinates before the relative-error comparison.
+    A common scale avoids raw degree overflow; isolated coordinates use the
+    identity transform and remain stationary from rest. This is a binary64
+    diagnostic of the specified held graph wave, not a runtime certificate.
+    Unrepresentable transformed initial values or decoded endpoints raise
+    ``ValueError`` instead of producing a trajectory certificate.
 
     Parameters
     ----------
@@ -2494,8 +2518,7 @@ def verify_overdamped_projection(
     nu_f = 1.0 / gamma
 
     # (i) per-mode slow rate vs diffusion rate
-    disc = gamma * gamma - 4.0 * lambdas + 0j
-    s_slow = ((-gamma + np.sqrt(disc)) / 2.0).real
+    s_slow = _damped_wave_roots(lambdas, gamma)[0].real
     diff_rate = lambdas / gamma  # = nu_f * lambda_k
     mask = lambdas > 1e-9
     if np.any(mask):
@@ -2507,22 +2530,29 @@ def verify_overdamped_projection(
     # 4*lam2, reachable when a caller fits gamma from oscillatory data) yields
     # a complex root whose real part -gamma/2 is the envelope decay rate.
     if lam2 > 0.0:
-        s_gap = ((-gamma + np.sqrt(gamma * gamma - 4.0 * lam2 + 0j)) / 2.0).real
+        s_gap = _damped_wave_roots(lam2, gamma)[0].real
         slow_gap = float(-s_gap)
     else:
         slow_gap = 0.0
     diff_gap = lam2 / gamma
 
-    # (ii) trajectory: damped wave vs diffusion in the orthonormal eigenbasis
+    # (ii) L_rw trajectories through the degree-coordinate similarity to L_sym.
     sym_nodes, lsym = _symmetric_normalized_laplacian(G)
     w, V = np.linalg.eigh(lsym)
     w = np.clip(w, 0.0, None)
     q0 = structural_field(G, sym_nodes)
-    c0 = V.T @ q0
-    disc_w = gamma * gamma - 4.0 * w + 0j
-    root_w = np.sqrt(disc_w)
-    ss = (-gamma + root_w) / 2.0
-    sf = (-gamma - root_w) / 2.0
+    conductance = read_conductance(G, sym_nodes, symmetric=True)
+    _, row_scale, row_total = conductance.normalization()
+    positive = row_scale > 0.0
+    degree_root = np.ones(n, dtype=float)
+    if np.any(positive):
+        roots = np.sqrt(row_scale[positive]) * np.sqrt(row_total[positive])
+        degree_root[positive] = roots / np.max(roots)
+    scaled_q0 = degree_root * q0
+    if np.any((q0 != 0.0) & (scaled_q0 == 0.0)):
+        raise ValueError("Wave degree coordinates are below floating-point range")
+    c0 = V.T @ scaled_q0
+    ss, sf = _damped_wave_roots(w, gamma)
     denom = sf - ss
     safe = np.abs(denom) > 1e-12
     a = np.where(safe, c0 * sf / np.where(safe, denom, 1.0), c0)
@@ -2531,8 +2561,16 @@ def verify_overdamped_projection(
     ts = np.linspace(0.05 * horizon, horizon, max(2, n_time_samples))
     traj_err = 0.0
     for t in ts:
-        q_wave = V @ (a * np.exp(ss * t) + b * np.exp(sf * t)).real
-        q_diff = V @ (c0 * np.exp(-w * t / gamma))
+        try:
+            with np.errstate(over="raise", invalid="raise", divide="raise"):
+                q_wave = (
+                    V @ (a * np.exp(ss * t) + b * np.exp(sf * t)).real
+                ) / degree_root
+                q_diff = (V @ (c0 * np.exp(-w * t / gamma))) / degree_root
+        except FloatingPointError as exc:
+            raise ValueError(
+                "Decoded wave coordinates exceed finite floating-point range"
+            ) from exc
         denom_t = float(np.linalg.norm(q_diff)) + 1e-12
         err = float(np.linalg.norm(q_wave - q_diff)) / denom_t
         traj_err = max(traj_err, err)
@@ -2652,9 +2690,7 @@ def verify_undamped_limit(
     omega = np.sqrt(np.clip(lambdas, 0.0, None))  # standing-wave frequencies
 
     # complex roots of s^2 + gamma s + lambda = 0 (full, not just real part)
-    disc = gamma * gamma - 4.0 * lambdas + 0j
-    root = np.sqrt(disc)
-    s_plus = (-gamma + root) / 2.0
+    s_plus = _damped_wave_roots(lambdas, gamma)[0]
     decay = np.abs(s_plus.real)  # envelope decay = gamma/2 (underdamped)
     freq = np.abs(s_plus.imag)  # oscillation frequency
 
@@ -2796,11 +2832,12 @@ def structural_eigenmodes(G: Any) -> tuple[Any, Any]:
 
 
 def nodal_domain_count(mode: Any) -> int:
-    r"""Number of sign changes (nodal domains − 1) of a standing-wave mode.
+    r"""Legacy ordered sign-change statistic for a supplied mode vector.
 
-    The structural "mode number": the k-th standing wave has k sign changes
-    on a 1D manifold (Courant's nodal-domain ordering).  Near-zero entries
-    are ignored to avoid spurious sign flips.
+    Count sign changes after discarding entries with absolute value at most
+    ``1e-12``. The result depends on the supplied node ordering. No adjacency
+    is read, so it does not count connected sign domains on a general graph
+    or certify Courant ordering. The historical function name is retained.
 
     Parameters
     ----------
@@ -2898,8 +2935,9 @@ def compute_nodal_pulse(G: Any) -> dict[str, Any]:
         nu_f: mean and std in Hz_str), ``phase_coherence`` (the collective
         Kuramoto ``R`` in ``[0, 1]`` -- alignment of the current phases),
         ``mean_local_resonance`` (mean per-NFR local phase synchrony in
-        ``[0, 1]``), ``resonance_gate`` (the U3 admissibility bound
-        Delta phi_max), ``n_pulsing`` (legacy name for NFRs with nu_f > 0,
+        ``[0, 1]``), ``resonance_gate`` (the canonical default U3 bound
+        Delta phi_max, not a configured live admission), ``n_pulsing``
+        (legacy name for NFRs with nu_f > 0,
         not an observed oscillation count), ``n_nodes``.
     """
     from ..constants.canonical import DELTA_PHI_MAX
@@ -2921,7 +2959,7 @@ def compute_nodal_pulse(G: Any) -> dict[str, Any]:
         [float(get_attr(G.nodes[k], ALIAS_VF, 0.0) or 0.0) for k in nodes],
         dtype=float,
     )
-    # collective resonance of the per-NFR pulses (Kuramoto order parameter)
+    # Collective alignment of the stored phases (Kuramoto order parameter).
     try:
         from ..gamma import kuramoto_R_psi
 
@@ -2952,19 +2990,18 @@ def compute_nodal_pulse(G: Any) -> dict[str, Any]:
         "phase_coherence": phase_coherence,
         "mean_local_resonance": mean_local,
         "resonance_gate": gate,
-        "n_pulsing": int(np.sum(vf > 1e-9)),
+        "n_pulsing": int(np.sum(vf > 0.0)),
         "n_nodes": n,
     }
 
 
 @dataclass(frozen=True)
 class DiscreteModeCertificate:
-    r"""Verification of the discrete standing-wave modes of a bounded manifold.
+    r"""Finite structural-spectrum and orthonormal-mode diagnostics.
 
-    A bounded structural manifold (finite graph) supports a discrete
-    spectrum of orthonormal standing-wave eigenmodes — the same structure
-    as the discrete harmonics of a vibrating string (Pythagoras), a Chladni
-    plate, or a molecular vibrational spectrum.
+    The mode basis belongs to the symmetric normalized Laplacian. Its
+    spectrum is compared with the random-walk Laplacian; the legacy ordered
+    sign-change heuristic is reported separately and is not a validity gate.
 
     Attributes
     ----------
@@ -2977,14 +3014,17 @@ class DiscreteModeCertificate:
     max_orthonormality_residual : float
         Max |⟨v_i, v_j⟩ − δ_ij| (≈ 0).
     has_uniform_zero_mode : bool
-        λ_1 = 0 (the uniform mode / conserved diffusion mode).
+        Legacy name for the numerical λ_1 = 0 check. On an irregular connected
+        graph the L_sym zero mode is proportional to sqrt(row strength),
+        corresponding to uniform EPI after the degree-coordinate transform.
     spectral_gap : float
-        λ_2 — the first non-trivial mode.
+        The second eigenvalue λ_2; it can be zero on disconnected support.
     matches_diffusion_spectrum : bool
         The L_sym spectrum equals the diffusion operator (L_rw) spectrum.
     nodal_domains_grow : bool
-        The nodal-domain count grows from the lowest to the highest mode
-        (Courant ordering; structural mode number).
+        Legacy name for the ordered-sign heuristic: the first mode has no
+        ordered sign changes and the last has more (True for at most one
+        mode). It does not test intermediate modes or graph nodal domains.
     standing_wave_frequencies : tuple
         The first few standing-wave frequencies ω_k = √λ_k.
     """
@@ -3001,13 +3041,12 @@ class DiscreteModeCertificate:
 
     @property
     def is_valid_discrete_modes(self) -> bool:
-        """True when the manifold verifies as discrete standing waves."""
+        """Combine the finite spectrum, orthonormality and zero-mode checks."""
         return (
             self.spectrum_is_discrete
             and self.modes_orthonormal
             and self.has_uniform_zero_mode
             and self.matches_diffusion_spectrum
-            and self.nodal_domains_grow
         )
 
     def summary(self) -> str:
@@ -3019,10 +3058,10 @@ class DiscreteModeCertificate:
             f"{self.n_modes} discrete modes, "
             f"orthonormal={self.modes_orthonormal} "
             f"(res {self.max_orthonormality_residual:.1e}), "
-            f"uniform λ₁=0={self.has_uniform_zero_mode}, "
+            f"zero eigenvalue λ₁=0={self.has_uniform_zero_mode}, "
             f"spectral gap λ₂={self.spectral_gap:.4f}, "
             f"matches diffusion spectrum={self.matches_diffusion_spectrum}, "
-            f"nodal domains grow={self.nodal_domains_grow}; "
+            f"ordered-sign heuristic={self.nodal_domains_grow}; "
             f"ω_k=√λ_k=[{freqs}]"
         )
 
@@ -3030,13 +3069,13 @@ class DiscreteModeCertificate:
 def verify_discrete_modes(
     G: Any, *, tolerance: float = 1e-9
 ) -> DiscreteModeCertificate:
-    r"""Verify the discrete standing-wave modes of the bounded manifold.
+    r"""Check a finite structural spectrum and its orthonormal mode basis.
 
-    Confirms that the finite manifold has a discrete spectrum of orthonormal
-    standing-wave eigenmodes, with a uniform λ_1 = 0 mode, a spectrum
-    matching the diffusion operator (L_rw), and nodal-domain counts growing
-    with the mode index (Courant) — the structural origin of "discrete
-    modes", the same as the discrete harmonics of a bounded elastic medium.
+    Compare the symmetric normalized spectrum with the random-walk diffusion
+    spectrum and check a zero eigenvalue. The legacy ``nodal_domains_grow``
+    field compares ordered sign changes of the first and last modes. This
+    heuristic depends on enumeration and the chosen degenerate eigenbasis;
+    it is neither a graph nodal-domain theorem nor part of mode validity.
 
     Parameters
     ----------
@@ -3066,7 +3105,7 @@ def verify_discrete_modes(
     rw_spec = np.sort(np.linalg.eigvals(lrw).real)
     matches = bool(np.allclose(np.sort(eigvals), rw_spec, atol=1e-7))
 
-    # nodal-domain counts grow from lowest to highest mode (Courant)
+    # Retain the legacy first/last ordered-sign heuristic as a separate readout.
     counts = [nodal_domain_count(eigvecs[:, k]) for k in range(n)]
     grow = (counts[0] == 0 and counts[-1] > counts[0]) if n > 1 else True
 

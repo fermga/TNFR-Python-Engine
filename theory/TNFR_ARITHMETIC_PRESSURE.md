@@ -14,7 +14,7 @@ primality-discovery algorithm.
 
 ## 1. The three-channel pressure
 
-The canonical arithmetic realisation of the nodal gradient
+The selected static arithmetic pressure descriptor
 ([number_theory.py](../src/tnfr/mathematics/number_theory.py),
 `ArithmeticTNFRFormalism.delta_nfr_value`, unit coefficients) is
 
@@ -63,9 +63,9 @@ so no channel is a linear — or even affine — combination of the others
 | `c1`–`c3` | 0.877 |
 | `c2`–`c3` | 0.931 |
 
-**Correlation is not dependence.** High `r` (≈ 0.9) coexists with full rank: each
-channel carries independent structural information (factor multiplicity, divisor
-count, abundance), even though they move together on composites.
+**Correlation is not linear dependence.** High `r` (≈ 0.9) coexists with full
+rank. This excludes a fixed linear or affine relation; it does not establish
+statistical independence or rule out nonlinear dependencies among the channels.
 
 **Exact proof (PROVED over ℚ).** Beyond the numerical rank, functional
 independence is proved exactly from three witness points
@@ -111,11 +111,16 @@ are inadmissible, so the three-channel set is **not** asserted complete.
 
 ## 6. Honest scope and claim ledger
 
-Computing any channel requires the factorisation of `n` (via `Ω, τ, σ`), so
+The implemented channel computation uses the factorisation of `n` (via
+`Ω, τ, σ`), so
 `ΔNFR(n) = 0` is **not** a fast primality test — it is a structural descriptor
 read *from* the factorisation. The C5 circularity audit therefore records
 `uses_factorization_in_features = True` (verdict **CIRCULAR** for discovery): the
-pressure may **not** be presented as a primality/factoring algorithm.
+pressure may **not** be presented as an independent primality/factoring
+discovery mechanism. This is a dependency of the implementation, not a lower
+bound proving that every algorithm for these arithmetic functions must factor.
+No evolving signed EPI response or law for phase, capacity and support follows
+from assigning these static descriptors.
 
 | Claim | Basis | Status |
 |-------|-------|--------|
@@ -124,11 +129,11 @@ pressure may **not** be presented as a primality/factoring algorithm.
 | `NT-P07c` minimal for primality | single channel suffices | **NEGATIVE** (redundant) |
 | `NT-P07d` three channels structurally complete | no proof; task-scoped | **OPEN** |
 | `NT-P07e` `ΔNFR = 0` as a primality algorithm | needs the factorisation | **CIRCULAR** / no claim |
-| channels correlated but not dependent | `r ≈ 0.9`, rank 3 | **MEASURED** |
+| channels correlated but linearly independent | `r ≈ 0.9`, rank 3 | **MEASURED** |
 | pressure grades compositeness by class | class-conditioned means | **MEASURED** |
 
-**Bottom line.** The three-channel arithmetic pressure is a linearly-independent
+The three-channel arithmetic pressure is a linearly-independent
 set of structural descriptors whose common (and individual) zero set is exactly
 the primes. It is **redundant** for primality (not minimal), **correlated but
-independent** as structure, and of **unproven completeness**. The "minimal and
-complete" description is retained only under this explicit, restricted scope.
+linearly independent**, and of **unproven completeness**. The former "minimal
+and complete" description is superseded; it is not retained as a weaker theorem.

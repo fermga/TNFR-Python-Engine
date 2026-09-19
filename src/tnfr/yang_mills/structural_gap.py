@@ -275,9 +275,7 @@ def build_structural_gauge_gap_operator(
     if G.number_of_nodes() < 2:
         raise ValueError("structural gauge gap requires at least two nodes")
     if G.is_directed() or G.is_multigraph():
-        raise ValueError(
-            "structural gauge gap requires an undirected simple graph"
-        )
+        raise ValueError("structural gauge gap requires an undirected simple graph")
     curvature_weight = _finite_nonnegative(curvature_weight, "curvature_weight")
     confinement_weight = _finite_nonnegative(
         confinement_weight,
@@ -344,9 +342,11 @@ def build_structural_gauge_gap_operator(
     if not all(math.isfinite(value) for value in phi_s_values.values()):
         raise ValueError("structural potential must contain only finite values")
     confinement_potential = {
-        node: (abs(phi_s_values[node]) / U6_STRUCTURAL_POTENTIAL_LIMIT) ** 2
-        if U6_STRUCTURAL_POTENTIAL_LIMIT
-        else 0.0
+        node: (
+            (abs(phi_s_values[node]) / U6_STRUCTURAL_POTENTIAL_LIMIT) ** 2
+            if U6_STRUCTURAL_POTENTIAL_LIMIT
+            else 0.0
+        )
         for node in nodes
     }
     if not all(math.isfinite(value) for value in confinement_potential.values()):
@@ -368,9 +368,7 @@ def build_structural_gauge_gap_operator(
         default=0.0,
     )
     magnitude_warning_ratio = (
-        max_abs_phi_s / PHI_S_VON_KOCH_THRESHOLD
-        if PHI_S_VON_KOCH_THRESHOLD
-        else 0.0
+        max_abs_phi_s / PHI_S_VON_KOCH_THRESHOLD if PHI_S_VON_KOCH_THRESHOLD else 0.0
     )
     max_abs_curvature = max((abs(value) for value in curvature_values), default=0.0)
     try:
@@ -412,30 +410,20 @@ def build_structural_gauge_gap_operator(
         "curvature_closure_tolerance": float(GAUGE_CLOSURE_TOLERANCE),
         "curvature_potential_zero_within_tolerance": True,
         "max_abs_phi_s": float(max_abs_phi_s),
-        "potential_magnitude_warning_threshold": float(
-            PHI_S_VON_KOCH_THRESHOLD
-        ),
+        "potential_magnitude_warning_threshold": float(PHI_S_VON_KOCH_THRESHOLD),
         "potential_magnitude_ratio": float(magnitude_warning_ratio),
         "potential_magnitude_within_warning": bool(magnitude_warning_ratio < 1.0),
-        "legacy_u6_normalization_scale": float(
-            U6_STRUCTURAL_POTENTIAL_LIMIT
-        ),
+        "legacy_u6_normalization_scale": float(U6_STRUCTURAL_POTENTIAL_LIMIT),
         # Kept for consumers of the first scope-correction pass. This is a
         # normalization scale, not a second structural-potential snapshot.
-        "potential_magnitude_reference_scale": float(
-            U6_STRUCTURAL_POTENTIAL_LIMIT
-        ),
-        "potential_magnitude_below_pi_scale": bool(
-            magnitude_warning_ratio < 1.0
-        ),
+        "potential_magnitude_reference_scale": float(U6_STRUCTURAL_POTENTIAL_LIMIT),
+        "potential_magnitude_below_pi_scale": bool(magnitude_warning_ratio < 1.0),
         "u6_drift_assessed": False,
         "u6_reference_required": True,
         "u6_drift_threshold": float(U6_STRUCTURAL_POTENTIAL_LIMIT),
         "u6_aggregation": "mean_absolute_nodewise_drift",
         "u6_comparison": "strict_less_than",
-        "u6_definition": (
-            "mean_i |Phi_s_after(i)-Phi_s_before(i)| < threshold"
-        ),
+        "u6_definition": ("mean_i |Phi_s_after(i)-Phi_s_before(i)| < threshold"),
         # Compatibility aliases from Y1. They denote the single-snapshot
         # magnitude proxy above and must not be read as a U6 verdict.
         "u6_threshold_phi": float(U6_STRUCTURAL_POTENTIAL_LIMIT),
@@ -610,11 +598,7 @@ def _normalise_connection(
         raw = dict(connection)
     except (TypeError, ValueError) as exc:
         raise TypeError("connection must be a mapping") from exc
-    allowed = {
-        oriented
-        for u, v in G.edges()
-        for oriented in ((u, v), (v, u))
-    }
+    allowed = {oriented for u, v in G.edges() for oriented in ((u, v), (v, u))}
     extras = tuple(key for key in raw if key not in allowed)
     if extras:
         raise ValueError("connection contains keys outside the graph edge set")
@@ -667,7 +651,5 @@ def _maximum_holonomy_deviation(
             target = cycle[(index + 1) % len(cycle)]
             reference_sum += float(reference[(source, target)])
             candidate_sum += float(candidate[(source, target)])
-        deviations.append(
-            abs(float(wrap_angle(candidate_sum - reference_sum)))
-        )
+        deviations.append(abs(float(wrap_angle(candidate_sum - reference_sum))))
     return max(deviations, default=0.0)

@@ -40,10 +40,7 @@ from ..utils._structural_signature import (
     proof_stamps_are_identical,
     structural_proof_signature,
 )
-from ._exact_linear_algebra import (
-    ExactSquareMatrix,
-    exact_square_matrix_power,
-)
+from ._exact_linear_algebra import ExactSquareMatrix, exact_square_matrix_power
 from .remesh_history_stability import UniformRemeshHistoryStabilityCertificate
 
 __all__ = (
@@ -136,9 +133,7 @@ def _exact_unit_gain(value: Any) -> Fraction:
                 "schedule_energy_gain_upper_bound must be a finite real scalar"
             ) from exc
         if not math.isfinite(floating):
-            raise TNFRValueError(
-                "schedule_energy_gain_upper_bound must be finite"
-            )
+            raise TNFRValueError("schedule_energy_gain_upper_bound must be finite")
         if floating == 0.0 and source_nonzero:
             raise TNFRValueError(
                 "schedule_energy_gain_upper_bound contains a nonzero value "
@@ -146,9 +141,7 @@ def _exact_unit_gain(value: Any) -> Fraction:
             )
         result = Fraction.from_float(floating)
     if not Fraction(0) <= result <= Fraction(1):
-        raise TNFRValueError(
-            "schedule_energy_gain_upper_bound must be in [0, 1]"
-        )
+        raise TNFRValueError("schedule_energy_gain_upper_bound must be in [0, 1]")
     return result
 
 
@@ -171,10 +164,7 @@ def _left_action(
 ) -> ExactVector:
     return tuple(
         sum(
-            (
-                vector[row] * matrix[row][column]
-                for row in range(len(matrix))
-            ),
+            (vector[row] * matrix[row][column] for row in range(len(matrix))),
             Fraction(0),
         )
         for column in range(len(matrix))
@@ -211,8 +201,7 @@ def _head_scaled_matrix(
 
 def _zero_matrix(dimension: int) -> ExactSquareMatrix:
     return tuple(
-        tuple(Fraction(0) for _column in range(dimension))
-        for _row in range(dimension)
+        tuple(Fraction(0) for _column in range(dimension)) for _row in range(dimension)
     )
 
 
@@ -264,8 +253,7 @@ def _derive_policy_model(
         )
     )
     row_stochastic = all(
-        all(entry >= 0 for entry in row)
-        and sum(row, Fraction(0)) == 1
+        all(entry >= 0 for entry in row) and sum(row, Fraction(0)) == 1
         for row in companion
     )
     stationary_invariant = _left_action(stationary, companion) == stationary
@@ -340,9 +328,7 @@ def _derive_policy_model(
 class UniformRemeshSchedulePolicyStabilityCertificate:
     """Sealed conditional theorem for a uniformly contractive schedule family."""
 
-    remesh_certificate: UniformRemeshHistoryStabilityCertificate = field(
-        repr=False
-    )
+    remesh_certificate: UniformRemeshHistoryStabilityCertificate = field(repr=False)
     schedule_energy_gain_upper_bound: Fraction
     history_length: int
     universal_block_horizon: int
@@ -420,8 +406,7 @@ class UniformRemeshSchedulePolicyStabilityCertificate:
         return bool(
             self._proof_fields_are_intact()
             and type(self.conditions) is tuple
-            and tuple(name for name, _passed in self.conditions)
-            == _CONDITION_NAMES
+            and tuple(name for name, _passed in self.conditions) == _CONDITION_NAMES
             and all(type(passed) is bool and passed for _, passed in self.conditions)
         )
 
@@ -540,9 +525,7 @@ def certify_uniform_remesh_schedule_policy_stability(
         history_length=model.history_length,
         universal_block_horizon=model.universal_block_horizon,
         remesh_companion_matrix=model.remesh_companion_matrix,
-        schedule_energy_domination_matrix=(
-            model.schedule_energy_domination_matrix
-        ),
+        schedule_energy_domination_matrix=(model.schedule_energy_domination_matrix),
         head_avoidance_matrix=model.head_avoidance_matrix,
         remesh_block_power=model.remesh_block_power,
         schedule_block_domination_power=model.schedule_block_domination_power,

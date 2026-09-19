@@ -171,14 +171,17 @@ def test_nonreflexive_or_nonscalar_weight_equality_is_rejected(value):
         automorphism_permutations(graph, weight="weight")
 
 
-@pytest.mark.parametrize("mapping", (
-    {0: 0, 1: 1},                         # Missing source and destination.
-    {0: 0, 1: 1, 2: 1},                   # Duplicate destination.
-    {0: 0, 1: 1, 2: 3},                   # Foreign destination.
-    {0: 0, 1: 1, 2: 2, 3: 3},             # Foreign source.
-    {0: 0, 1: 1, 2: []},                  # Unhashable destination.
-    (0, 1, 2),                            # No declared source mapping.
-))
+@pytest.mark.parametrize(
+    "mapping",
+    (
+        {0: 0, 1: 1},  # Missing source and destination.
+        {0: 0, 1: 1, 2: 1},  # Duplicate destination.
+        {0: 0, 1: 1, 2: 3},  # Foreign destination.
+        {0: 0, 1: 1, 2: 2, 3: 3},  # Foreign source.
+        {0: 0, 1: 1, 2: []},  # Unhashable destination.
+        (0, 1, 2),  # No declared source mapping.
+    ),
+)
 def test_every_permutation_consumer_rejects_incomplete_or_nonbijective_maps(mapping):
     graph = nx.path_graph(3)
     with pytest.raises(ValueError, match="permutation"):
@@ -223,8 +226,7 @@ def test_full_group_average_and_generated_orbit_projector_agree():
     # do not preserve path support: only the supplied vertex action is claimed.
     left = {0: 1, 1: 0, 2: 2, 3: 3}
     right = {0: 0, 1: 1, 2: 3, 3: 2}
-    group = ({0: 0, 1: 1, 2: 2, 3: 3}, left, right,
-             {0: 1, 1: 0, 2: 3, 3: 2})
+    group = ({0: 0, 1: 1, 2: 2, 3: 3}, left, right, {0: 1, 1: 0, 2: 3, 3: 2})
     expected = sum(permutation_matrix(item, list(graph)) for item in group) / 4
     result = reynolds_projector(graph, permutations=(item for item in (left, right)))
     assert np.array_equal(result, expected)
@@ -250,8 +252,9 @@ def test_reordered_domain_preserves_map_orientation_and_orbit_coordinates():
     assert np.array_equal(matrix @ np.array([10, 20, 30]), [20, 10, 30])
     result = reynolds_projector(graph, nodes=nodes, permutations=[mapping])
     assert np.array_equal(result, [[0.5, 0.5, 0], [0.5, 0.5, 0], [0, 0, 1]])
-    assert np.array_equal(reynolds_projector(graph, nodes=graph.nodes),
-                          reynolds_projector(graph))
+    assert np.array_equal(
+        reynolds_projector(graph, nodes=graph.nodes), reynolds_projector(graph)
+    )
 
 
 def test_empty_graph_has_a_well_defined_trivial_action():

@@ -15,13 +15,13 @@ from tnfr.constants.operational import ACTIVE_EMISSION_THRESHOLD
 from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.errors import TNFRValueError
 from tnfr.mathematics import BEPIElement
-from tnfr.operators.network_analysis.source_detection import detect_emission_sources
 from tnfr.operators.definitions import Reception, Resonance
+from tnfr.operators.network_analysis.source_detection import detect_emission_sources
 from tnfr.operators.network_stage import (
-    GraphTransactionSnapshot,
     STAGE_CONTRACT_KEY,
     STAGE_SCHEDULE_KEY,
     TWO_PHASE_JACOBI,
+    GraphTransactionSnapshot,
     execute_neighbor_stage,
 )
 from tnfr.operators.strategies.gpu_strategies import _apply_canonical_block
@@ -233,9 +233,7 @@ def test_resonance_structural_state_is_target_order_invariant_with_telemetry() -
     forward, forward_monitor = graphs[0]
     reverse, reverse_monitor = graphs[1]
     assert _state(forward) == _state(reverse)
-    assert {
-        node: tuple(forward.nodes[node]["glyph_history"]) for node in forward
-    } == {
+    assert {node: tuple(forward.nodes[node]["glyph_history"]) for node in forward} == {
         node: tuple(reverse.nodes[node]["glyph_history"]) for node in reverse
     }
 
@@ -261,9 +259,10 @@ def test_resonance_structural_state_is_target_order_invariant_with_telemetry() -
     for graph, _monitor in graphs:
         contract = graph.graph[STAGE_CONTRACT_KEY]
         assert contract["structural_state_target_order_invariant"] is True
-        assert "ordered lifecycle, telemetry and monitor streams" in contract[
-            "structural_state_target_order_scope"
-        ]
+        assert (
+            "ordered lifecycle, telemetry and monitor streams"
+            in contract["structural_state_target_order_scope"]
+        )
         assert contract["two_phase_contract_complete"] is True
         assert contract["executed_two_phase_contract_complete"] is True
         assert contract["relabeling_equivariant"] is None
@@ -386,8 +385,7 @@ def test_neighbor_stage_restores_supported_runtime_containers_and_graph_attrs() 
         (node, deepcopy(data)) for node, data in source.nodes(data=True)
     )
     graph.add_edges_from(
-        (left, right, deepcopy(data))
-        for left, right, data in source.edges(data=True)
+        (left, right, deepcopy(data)) for left, right, data in source.edges(data=True)
     )
     default_compute_delta_nfr(graph)
     cache_manager = graph.graph["_tnfr_cache_manager"]
@@ -476,10 +474,7 @@ def test_detached_stage_supports_graph_subclasses_with_required_constructor() ->
 
 
 def _graph_iteration_signature(graph: nx.Graph) -> tuple:
-    adjacency = tuple(
-        (node, tuple(graph.adj[node]))
-        for node in graph
-    )
+    adjacency = tuple((node, tuple(graph.adj[node])) for node in graph)
     predecessors = (
         tuple((node, tuple(graph.pred[node])) for node in graph)
         if graph.is_directed()
@@ -533,7 +528,9 @@ def test_transaction_snapshot_restores_exact_networkx_iteration_order(
     assert _graph_iteration_signature(graph) == before
 
 
-def test_failed_stage_restores_node_and_neighbor_order_after_topology_mutation() -> None:
+def test_failed_stage_restores_node_and_neighbor_order_after_topology_mutation() -> (
+    None
+):
     class TopologyMutatingMonitor:
         def before_operator(self, graph, node) -> None:
             pass

@@ -16,9 +16,7 @@ from tnfr.operators.preconditions import OperatorPreconditionError
 
 
 def _context():
-    return ValidatedSequence(
-        [Emission(), Dissonance(), Coherence(), Silence()]
-    ).step(1)
+    return ValidatedSequence([Emission(), Dissonance(), Coherence(), Silence()]).step(1)
 
 
 def _add_state(graph: nx.Graph, node: int, dnfr: float) -> None:
@@ -156,12 +154,8 @@ def test_success_commits_local_pressure_neighbors_history_metrics_and_telemetry(
     assert event["magnitude"] == pytest.approx(0.2)
     assert set(event["affected_nodes"]) == {1, 2}
     assert event["affected_count"] == 2
-    assert graph.nodes[1]["_oz_propagation"][-1]["magnitude"] == pytest.approx(
-        0.2
-    )
-    assert graph.nodes[2]["_oz_propagation"][-1]["magnitude"] == pytest.approx(
-        0.1
-    )
+    assert graph.nodes[1]["_oz_propagation"][-1]["magnitude"] == pytest.approx(0.2)
+    assert graph.nodes[2]["_oz_propagation"][-1]["magnitude"] == pytest.approx(0.1)
 
 
 def test_noise_plan_consumes_exactly_one_live_jitter_draw():
@@ -179,12 +173,10 @@ def test_noise_plan_consumes_exactly_one_live_jitter_draw():
     magnitude = abs(graph.nodes[0][ALIAS_DNFR[0]] - source_before)
     assert magnitude > 0.0
     assert graph.nodes[0]["_rng_jitter_progress"]["draws"] == 1
-    assert graph.nodes[1][ALIAS_DNFR[0]] == pytest.approx(
-        neighbor_before + magnitude
+    assert graph.nodes[1][ALIAS_DNFR[0]] == pytest.approx(neighbor_before + magnitude)
+    assert graph.graph["_oz_propagation_events"][-1]["magnitude"] == pytest.approx(
+        magnitude
     )
-    assert graph.graph["_oz_propagation_events"][-1][
-        "magnitude"
-    ] == pytest.approx(magnitude)
 
 
 class _FailingNodeDict(dict):
@@ -272,6 +264,4 @@ def test_self_loop_uses_planned_post_local_pressure_as_propagation_base():
     Dissonance()(graph, 0, sequence_context=_context())
 
     assert graph.nodes[0][ALIAS_DNFR[0]] == pytest.approx(0.6)
-    assert graph.nodes[0]["_oz_propagation"][-1]["magnitude"] == pytest.approx(
-        0.2
-    )
+    assert graph.nodes[0]["_oz_propagation"][-1]["magnitude"] == pytest.approx(0.2)

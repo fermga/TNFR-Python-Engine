@@ -20,6 +20,7 @@ Run:
 Anchor: theory/EMERGENT_ONTOLOGY.md sections 2.5, 4.4 and 5.1.
 Status: RESEARCH COMPARISON.
 """
+
 from __future__ import annotations
 
 import pathlib
@@ -134,6 +135,7 @@ def main() -> None:
     print("  These are separate graph-model diagnostics, not cosmology, causality,")
     print("  thermodynamics, or one canonical TNFR trajectory.")
     print("=" * 74)
+
 
 if __name__ == "__main__":
     main()

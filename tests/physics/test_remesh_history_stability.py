@@ -90,14 +90,14 @@ def test_exact_companion_and_stationary_distribution() -> None:
         Fraction(1, 3),
         Fraction(2, 9),
     )
-    assert all(
-        sum(row, Fraction(0)) == 1
-        for row in certificate.companion_matrix
+    assert all(sum(row, Fraction(0)) == 1 for row in certificate.companion_matrix)
+    assert (
+        _left_action(
+            certificate.stationary_distribution,
+            certificate.companion_matrix,
+        )
+        == certificate.stationary_distribution
     )
-    assert _left_action(
-        certificate.stationary_distribution,
-        certificate.companion_matrix,
-    ) == certificate.stationary_distribution
     assert certificate.companion_row_stochastic_certified
     assert certificate.stationary_distribution_certified
     assert certificate.jensen_lyapunov_nonincrease_certified
@@ -129,12 +129,8 @@ def test_exact_dissipation_identity_and_monotonicity() -> None:
 
     coefficient_by_delay = dict(certificate.combined_delay_coefficients)
     exact_rhs = Fraction(0)
-    for left_index, (left_delay, left) in enumerate(
-        observation.active_centered_fields
-    ):
-        for right_delay, right in observation.active_centered_fields[
-            left_index + 1 :
-        ]:
+    for left_index, (left_delay, left) in enumerate(observation.active_centered_fields):
+        for right_delay, right in observation.active_centered_fields[left_index + 1 :]:
             squared_distance = sum(
                 weight * (left_value - right_value) ** 2
                 for weight, left_value, right_value in zip(

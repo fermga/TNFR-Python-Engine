@@ -1,51 +1,17 @@
-"""
-Emergent Screening? Does Phi_s self-consistency turn the spherical-well shells
-into the atomic periodic table -- without injecting quantum chemistry?
-============================================================================
+"""Finite spectral iteration with an imposed positive density-feedback potential.
 
-CONTEXT (from benchmarks/emergent_shell_ordering.py): pure TNFR structure gives
-the (2l+1) angular degeneracy, a radial-sum filling order, and -- with the
-emergent radial nucleus of a solid ball -- the INFINITE SPHERICAL WELL closures
-2, 8, 18, 20, 34 (the independent-particle / nuclear shell family). The SOLE
-residual to the CHEMICAL periodic table (2, 10, 18, 36, 54, 86) was identified
-as electron-electron SCREENING. This benchmark asks whether that screening
-EMERGES from TNFR self-consistency, with no foreign theory.
-
-MECHANISM (canonical, TNFR-native -- NOT Hartree-Coulomb):
-  The occupied structural eigenmodes are co-resident sub-EPIs (U5
-  nesting). Each is a DeltaNFR source; their aggregate structural
-  potential is the CANONICAL Phi_s field
-
-      Phi_s(i) = sum_j rho(j) / d(i,j)^2,   rho = sum_occupied |psi_k|^2
-
-  i.e. the SAME inverse-square (alpha=2) kernel as
-  compute_structural_potential (grammar U6) and classify_nodal_topology.
-  Iterating the loop
-
-      occupy lowest modes -> Phi_s -> shift operator -> re-diagonalise
-
-  to self-consistency is just the nodal dynamics acting back on
-  co-resident sub-EPIs. The mechanism is canonical; WHAT IT PRODUCES is
-  measured, not tuned. The mean field is symmetrised radially about the
-  emergent nucleus (a screening field is radial), isolating the
-  l-dependent reordering from discretisation noise.
-
-WHAT EMERGES / WHAT DOES NOT (measured below):
-  - A screening-LIKE effect DOES emerge: self-consistency lifts the (n,l)
-    degeneracy and reorders the levels (the spherical-well "20" closure
-    dissolves as coupling grows).
-  - The ATOMIC order does NOT emerge: at no coupling do the noble-gas numbers
-    appear; the Ne-like "10" closure (1s 2s 2p) never forms -- the first two
-    closures stay 2, 8. The structural back-reaction is REPULSIVE, pushing
-    core-penetrating radial modes (2s) UP, the OPPOSITE of atomic screening
-    (which modulates an ATTRACTIVE nuclear well, absent from a bare manifold).
-
-Run:
-    python benchmarks/emergent_screening.py
-
-Theoretical anchor: AGENTS.md (nodal equation; Phi_s structural potential, U6;
-discrete-mode regime). Builds on benchmarks/emergent_shell_ordering.py
-(solid_ball_graph, the emergent nucleus). Status: RESEARCH (falsifier).
+The graph is a supplied embedded ball. Each iteration forms a density from the
+lowest chosen modes, averages it over declared radial shells, then replaces the
+operator by L + g*diag(K*rho). The occupation count, positive sign, coupling,
+radial averaging and fixed iteration count are inputs; no nodal time law or
+convergence test derives them. Squared eigenmode density is not stored DeltaNFR.
+K uses inverse squared unweighted hop distance. This resembles one structural
+potential kernel but is not a call to the canonical stored-pressure reader;
+explicit edge lengths and their weight fallback can give different distances.
+Mode groups, factor-two capacities and external shell sequences are comparison
+choices. A spectral change is not a physical screening or force certificate.
+Five sampled couplings cannot rule out all models or identify the only missing
+atomic mechanism. See theory/EMERGENT_ONTOLOGY.md for the physical-bridge scope.
 """
 
 from __future__ import annotations
@@ -74,7 +40,10 @@ SPHERICAL_WELL = [2, 8, 18, 20, 34, 40, 58]
 
 
 def phi_s_kernel(G: nx.Graph, nodes: list) -> np.ndarray:
-    """Canonical Phi_s Green's function K(i,j) = 1/d(i,j)^2 (alpha=2)."""
+    """Inverse-square unweighted hop-distance matrix, with zero diagonal.
+
+    The source density and metric here are declared independently of the canonical
+    stored-pressure potential and its explicit-length/weight distance convention."""
     idx = {node: i for i, node in enumerate(nodes)}
     n = len(nodes)
     K = np.zeros((n, n))
@@ -87,7 +56,7 @@ def phi_s_kernel(G: nx.Graph, nodes: list) -> np.ndarray:
 
 
 def radial_bins(G: nx.Graph, nodes: list) -> np.ndarray:
-    """Graph-hop radius of each node from the emergent center (node 0)."""
+    """Unweighted hop radius about the explicitly selected first node."""
     rad_of = nx.single_source_shortest_path_length(G, nodes[0])
     return np.array([rad_of[node] for node in nodes])
 
@@ -126,8 +95,10 @@ def scf_closed_shells(
     z_modes: int = 30,
     iters: int = 20,
 ) -> list[int]:
-    """Self-consistent Phi_s back-reaction; return cumulative closed-shell
-    counts (running sum of mode capacities 2*mult after each shell)."""
+    """Iterate the selected density-feedback matrix, then count grouped modes.
+
+    The fixed iteration count is not a convergence certificate; each mode has
+    a supplied factor-two capacity."""
     Leff = L.copy()
     for _ in range(iters):
         _, V = np.linalg.eigh(Leff)
@@ -153,22 +124,22 @@ def leading_overlap(seq: list[int], ref: list[int]) -> int:
 
 def main() -> None:
     print("=" * 70)
-    print("EMERGENT SCREENING? (Phi_s self-consistency; no QM injected)")
+    print("PRESCRIBED DENSITY-FEEDBACK SPECTRAL COMPARISON")
     print("=" * 70)
 
     G = solid_ball_graph(4, 16, 8)
     nodes = list(G.nodes())
     # NOTE: the base manifold operator here is the imposed combinatorial Laplacian
     # D - A; the canonical EMERGENT structural operator is L_rw = I - D^-1 W
-    # (symmetric twin L_sym). A fully-emergent re-derivation of this screening
+    # (symmetric twin L_sym). Deriving a nodal response for this selected feedback
     # study on L_sym is future work; the Phi_s back-reaction kernel K below IS
-    # canonical (U6).
+    # a separately selected matrix with hop distances.
     L = nx.laplacian_matrix(G, nodelist=nodes).toarray().astype(float)
     K = phi_s_kernel(G, nodes)
     rvec = radial_bins(G, nodes)
 
-    print("\n[M1] Back-reaction kernel is the canonical Phi_s (alpha=2):")
-    print("     V(i) = sum_j rho(j)/d(i,j)^2  (canonical U6 kernel)")
+    print("\n[M1] Declared inverse-square hop-distance kernel (alpha=2):")
+    print("     V(i) = sum_j rho(j)/d(i,j)^2  (chosen hop metric and density source)")
     print(f"     ball nucleus manifold: {len(nodes)} nodes, kernel {K.shape}")
     assert K.shape == (len(nodes), len(nodes))
     assert np.allclose(K, K.T), "Phi_s kernel must be symmetric"
@@ -176,12 +147,12 @@ def main() -> None:
 
     cum0 = scf_closed_shells(L, K, rvec, 0.0)
     cum1 = scf_closed_shells(L, K, rvec, 1.0)
-    print("\n[M2] Does self-consistency lift degeneracy / reorder?")
+    print("\n[M2] Does the finite feedback iteration change spectral groups?")
     print(f"     g=0.0 (independent particle): {cum0[:6]}")
     print(f"     g=1.0 (self-consistent)     : {cum1[:6]}")
     assert cum1 != cum0, "self-consistency had no effect"
     assert 20 in cum0 and 20 not in cum1, "spherical-well 20 not reordered"
-    print("     -> PASS: a screening-LIKE effect emerges -- the")
+    print("     -> PASS: the chosen feedback changes the grouped spectrum -- the")
     print("        spherical-well '20' closure dissolves; levels reorder.")
 
     print("\n[M3] Scan coupling g -- does the ATOMIC order ever emerge?")
@@ -195,11 +166,15 @@ def main() -> None:
         print(f"     {g:<5}  {cum[:7]}")
     print(f"     atomic noble gases          : {ATOMIC_NOBLE}")
     print(f"     spherical well (g=0 family) : {SPHERICAL_WELL}")
-    print(f"\n     max leading atomic match: {best_atomic}/6; "
-          f"Ne-like '10' closure seen: {ten_ever}")
+    print(
+        f"\n     max leading atomic match: {best_atomic}/6; "
+        f"Ne-like '10' closure seen: {ten_ever}"
+    )
     assert best_atomic <= 1, "atomic order unexpectedly emerged"
     assert not ten_ever, "the atomic '10' closure appeared"
-    print("     -> PASS: NO coupling reproduces the atomic table; the '10'")
+    print(
+        "     -> PASS: NO sampled coupling reproduces the supplied atomic sequence; the '10'"
+    )
     print("        (1s 2s 2p) closure never forms. First closures stay 2, 8.")
 
     # -- M4: does the COMPLEMENT -- an attractive center -- emerge? ----------
@@ -207,44 +182,29 @@ def main() -> None:
     center = topo["centers"][0]
     cphi = topo["centrality"][center]
     cvals = np.array(list(topo["centrality"].values()))
-    mults = [s.multiplicity for s in
-             structural_eigenmodes(G, max_modes=40, gap_factor=4.0)[:6]]
-    print("\n[M4] Does an ATTRACTIVE center (DeltaNFR sink) emerge instead?")
-    print(f"     nucleus Phi_s = {cphi:.1f}  (max {cvals.max():.1f}, "
-          f"mean {cvals.mean():.1f})")
+    mults = [
+        s.multiplicity
+        for s in structural_eigenmodes(G, max_modes=40, gap_factor=4.0)[:6]
+    ]
+    print("\n[M4] Where is the potential-readout maximum on the supplied ball?")
+    print(
+        f"     nucleus Phi_s = {cphi:.1f}  (max {cvals.max():.1f}, "
+        f"mean {cvals.mean():.1f})"
+    )
     print(f"     ball spectrum multiplicities : {mults}")
     assert abs(cphi - cvals.max()) < 1e-9, "nucleus is not the Phi_s maximum"
     assert mults[:3] == [1, 3, 5], "spectrum is not spherical-well"
     print("     -> PASS: the nucleus is the Phi_s MAXIMUM (repulsive for")
-    print("        +DeltaNFR, NOT an attractive sink); the spectrum is the")
+    print(
+        "        +DeltaNFR, NOT an attractive sink); the reported spectrum is from the"
+    )
     print("        spherical WELL (2l+1), NOT hydrogenic (Coulomb 2n^2).")
 
     print("\n" + "=" * 70)
     print("VERDICT")
     print("=" * 70)
     print(
-        "A screening-LIKE effect EMERGES: the canonical Phi_s\n"
-        "  self-consistency (occupied sub-EPIs -> 1/d^2 potential ->\n"
-        "  reshifted modes, iterated) lifts the (n,l) degeneracy and\n"
-        "  reorders the levels. The mechanism is TNFR-native -- the nodal\n"
-        "  dynamics acting back on co-resident sub-EPIs (U5), no quantum\n"
-        "  chemistry injected.\n"
-        "BUT the ATOMIC table does NOT emerge: at no coupling do the\n"
-        "  noble-gas numbers appear; the Ne-like '10' closure never forms\n"
-        "  (first closures stay 2, 8). The structural back-reaction is\n"
-        "  REPULSIVE, pushing core-penetrating radial modes (2s) UP -- the\n"
-        "  OPPOSITE of atomic screening, which modulates an ATTRACTIVE\n"
-        "  nuclear Coulomb well (low-l penetrate -> see more unscreened\n"
-        "  charge -> pulled DOWN). A bare repulsive coherence manifold has\n"
-        "  no attractive nucleus, so the sign is wrong for atoms.\n"
-        "IDENTIFICATION: BOTH atomic ingredients are measured NON-emergent\n"
-        "  here: (M3) self-consistent screening has the REPULSIVE sign, and\n"
-        "  (M4) the emergent nucleus is a Phi_s MAXIMUM (repulsive), not an\n"
-        "  attractive DeltaNFR sink -- the spectrum is a box/spherical well,\n"
-        "  not a Coulomb 2n^2 well. The periodic table needs a charged\n"
-        "  many-body Coulomb system (attractive nucleus + screening that\n"
-        "  modulates it); a single relaxing coherence manifold carries\n"
-        "  neither. So the (n+l) postulate in emergent_chemistry stands."
+        "FINITE SPECTRAL ITERATION: the chosen positive density feedback changes some mode groups.\nThe density source, radial projection, sign, coupling and occupation count are supplied.\nTwenty iterations do not by themselves establish self-consistent convergence.\nThe displayed five-coupling comparison does not reproduce the supplied atomic sequence.\nThis does not identify a physical force, nucleus, screening law or unique missing ingredient."
     )
 
 

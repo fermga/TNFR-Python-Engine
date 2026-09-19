@@ -8,7 +8,6 @@ not prove that a multiprocessing path executed.
 from __future__ import annotations
 
 import math
-from multiprocessing import cpu_count
 from numbers import Integral, Real
 from typing import TYPE_CHECKING, Any, Mapping
 
@@ -75,7 +74,9 @@ def _compute_si_chunk(
             raise RuntimeError(f"compute_Si omitted requested node {node!r}")
         raw = values[node]
         if isinstance(raw, bool) or not isinstance(raw, Real):
-            raise RuntimeError(f"compute_Si produced a non-real value for node {node!r}")
+            raise RuntimeError(
+                f"compute_Si produced a non-real value for node {node!r}"
+            )
         value = float(raw)
         if not math.isfinite(value) or not 0.0 <= value <= 1.0:
             raise RuntimeError(
@@ -86,7 +87,8 @@ def _compute_si_chunk(
 
 
 def _merge_si_chunks(
-    expected_nodes: list[Any], chunk_results: list[Mapping[Any, Any]] | tuple[Mapping[Any, Any], ...]
+    expected_nodes: list[Any],
+    chunk_results: list[Mapping[Any, Any]] | tuple[Mapping[Any, Any], ...],
 ) -> dict[Any, float]:
     """Merge disjoint chunks and reject duplicate, missing, or foreign nodes."""
     expected = set(expected_nodes)
@@ -96,14 +98,20 @@ def _merge_si_chunks(
             raise RuntimeError("distributed Si worker returned a non-mapping result")
         for node, raw in chunk.items():
             if node not in expected:
-                raise RuntimeError(f"distributed Si worker returned foreign node {node!r}")
+                raise RuntimeError(
+                    f"distributed Si worker returned foreign node {node!r}"
+                )
             if node in merged:
                 raise RuntimeError(f"distributed Si worker duplicated node {node!r}")
             if isinstance(raw, bool) or not isinstance(raw, Real):
-                raise RuntimeError(f"distributed Si worker returned a non-real value for {node!r}")
+                raise RuntimeError(
+                    f"distributed Si worker returned a non-real value for {node!r}"
+                )
             value = float(raw)
             if not math.isfinite(value) or not 0.0 <= value <= 1.0:
-                raise RuntimeError(f"distributed Si worker returned an invalid value for {node!r}")
+                raise RuntimeError(
+                    f"distributed Si worker returned an invalid value for {node!r}"
+                )
             merged[node] = value
     missing = [node for node in expected_nodes if node not in merged]
     if missing:
@@ -132,7 +140,9 @@ class TNFRDistributedEngine:
         if backend == "ray" and not HAS_RAY:
             raise ImportError("Ray not available. Install with: pip install ray")
         if backend == "dask" and not HAS_DASK:
-            raise ImportError("Dask not available. Install with: pip install dask[distributed]")
+            raise ImportError(
+                "Dask not available. Install with: pip install dask[distributed]"
+            )
         return backend
 
     def initialize_cluster(self, **cluster_config: Any) -> None:
@@ -144,7 +154,9 @@ class TNFRDistributedEngine:
         elif self.backend == "dask" and HAS_DASK and self._client is None:
             self._client = Client(**cluster_config)
         elif cluster_config:
-            raise ValueError("the local compute_Si fallback accepts no cluster configuration")
+            raise ValueError(
+                "the local compute_Si fallback accepts no cluster configuration"
+            )
 
     def shutdown_cluster(self) -> None:
         """Release scheduler resources owned by this engine."""
@@ -186,7 +198,9 @@ class TNFRDistributedEngine:
         nodes = list(graph)
         chunks = [nodes[i : i + chunk_size] for i in range(0, len(nodes), chunk_size)]
         remote_worker = ray.remote(_compute_si_chunk)
-        futures = [remote_worker.remote(chunk, graph, compute_kwargs) for chunk in chunks]
+        futures = [
+            remote_worker.remote(chunk, graph, compute_kwargs) for chunk in chunks
+        ]
         values = _merge_si_chunks(nodes, ray.get(futures))
         return {
             "si_values": values,
@@ -205,7 +219,9 @@ class TNFRDistributedEngine:
         compute_kwargs = _distributed_compute_kwargs(kwargs)
         nodes = list(graph)
         chunks = [nodes[i : i + chunk_size] for i in range(0, len(nodes), chunk_size)]
-        tasks = [delayed(_compute_si_chunk)(chunk, graph, compute_kwargs) for chunk in chunks]
+        tasks = [
+            delayed(_compute_si_chunk)(chunk, graph, compute_kwargs) for chunk in chunks
+        ]
         values = _merge_si_chunks(nodes, compute(*tasks))
         return {
             "si_values": values,
@@ -240,7 +256,9 @@ class TNFRDistributedEngine:
         probability = float(edge_probability)
         if not math.isfinite(probability) or not 0.0 <= probability <= 1.0:
             raise ValueError("edge_probability must be a finite real in [0, 1]")
-        if seed is not None and (isinstance(seed, bool) or not isinstance(seed, Integral)):
+        if seed is not None and (
+            isinstance(seed, bool) or not isinstance(seed, Integral)
+        ):
             raise TypeError("seed must be an integer or None")
         if not isinstance(operator_sequences, list):
             raise TypeError("operator_sequences must be a list")

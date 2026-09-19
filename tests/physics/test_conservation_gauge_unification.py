@@ -151,40 +151,30 @@ class TestGrammarSymmetryMapping:
     def test_u3_is_unassessed_when_edge_phase_is_missing(self):
         graph = nx.path_graph(2)
         inject_defaults(graph)
-        u3 = next(
-            m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3"
-        )
+        u3 = next(m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3")
         assert not u3.is_applicable
         assert not u3.is_satisfied
         assert u3.assessment_status == "not_assessed"
         assert "finite phase" in u3.required_evidence
 
-    @pytest.mark.parametrize(
-        "bad_phase", [None, "0.1", float("nan"), 10**1000]
-    )
+    @pytest.mark.parametrize("bad_phase", [None, "0.1", float("nan"), 10**1000])
     def test_u3_is_unassessed_when_edge_phase_is_invalid(self, bad_phase):
         graph = nx.path_graph(2)
         inject_defaults(graph)
         graph.nodes[0]["phase"] = bad_phase
         graph.nodes[1]["phase"] = 0.0
-        u3 = next(
-            m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3"
-        )
+        u3 = next(m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3")
         assert not u3.is_applicable
         assert u3.assessment_status == "not_assessed"
 
-    @pytest.mark.parametrize(
-        "bad_gate", [True, -0.1, float("inf"), "0.2", 10**1000]
-    )
+    @pytest.mark.parametrize("bad_gate", [True, -0.1, float("inf"), "0.2", 10**1000])
     def test_u3_is_unassessed_when_phase_gate_is_invalid(self, bad_gate):
         graph = nx.path_graph(2)
         inject_defaults(graph)
         graph.nodes[0]["phase"] = 0.0
         graph.nodes[1]["phase"] = 0.1
         graph.graph["delta_phi_max"] = bad_gate
-        u3 = next(
-            m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3"
-        )
+        u3 = next(m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3")
         assert not u3.is_applicable
         assert "delta_phi_max" in u3.required_evidence
 
@@ -195,9 +185,7 @@ class TestGrammarSymmetryMapping:
         graph.nodes[0]["phase"] = 0.0
         graph.nodes[1]["phase"] = math.pi
         graph.graph["delta_phi_max"] = math.pi / 4
-        u3 = next(
-            m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3"
-        )
+        u3 = next(m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3")
         assert u3.is_applicable
         assert not u3.is_satisfied
         assert u3.assessment_status == "fail"
@@ -210,9 +198,7 @@ class TestGrammarSymmetryMapping:
         graph.nodes[0]["phase"] = 0.0
         graph.nodes[1]["phase"] = 4 * math.pi + 0.1
         graph.graph["delta_phi_max"] = 0.2
-        u3 = next(
-            m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3"
-        )
+        u3 = next(m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3")
         assert u3.is_satisfied
         assert u3.diagnostic_value == 0.0
 

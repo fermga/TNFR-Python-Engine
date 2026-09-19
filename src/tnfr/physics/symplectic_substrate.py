@@ -1603,24 +1603,12 @@ def verify_integrability(
         # A zero-action oscillator stays at the origin and has no angle.
         if np.any(active_a):
             da = np.angle(
-                np.exp(
-                    1j
-                    * (
-                        aa["angle_geometric"][active_a]
-                        - (tha0[active_a] - t)
-                    )
-                )
+                np.exp(1j * (aa["angle_geometric"][active_a] - (tha0[active_a] - t)))
             )
             angle_error = max(angle_error, float(np.max(np.abs(da))))
         if np.any(active_b):
             db = np.angle(
-                np.exp(
-                    1j
-                    * (
-                        aa["angle_potential"][active_b]
-                        - (thb0[active_b] - t)
-                    )
-                )
+                np.exp(1j * (aa["angle_potential"][active_b] - (thb0[active_b] - t)))
             )
             angle_error = max(angle_error, float(np.max(np.abs(db))))
 

@@ -11,7 +11,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 import time
+from contextlib import nullcontext, redirect_stdout
 from typing import Any, Dict
 
 # Import standard implementations
@@ -172,8 +174,8 @@ def run_benchmark(
 
 
 def run_validation(max_n: int, use_advanced: bool = False) -> Dict[str, Any]:
-    """Run theory validation with enhanced reporting."""
-    print(f"Validating TNFR theory up to {max_n}...")
+    """Report a finite arithmetic-predicate comparison."""
+    print(f"Comparing arithmetic predicates up to {max_n}...")
     print(f"Algorithm: {'Advanced' if use_advanced and HAS_ADVANCED else 'Standard'}")
     print()
 
@@ -186,9 +188,17 @@ def run_validation(max_n: int, use_advanced: bool = False) -> Dict[str, Any]:
 
     elapsed_time = time.perf_counter() - start_time
 
+    tested = (
+        results["tested_numbers"] if "tested_numbers" in results else results["tested"]
+    )
+    correct = (
+        results["correct_predictions"]
+        if "correct_predictions" in results
+        else results["correct"]
+    )
     print("Validation Results:")
-    print(f"  Numbers tested: {results['tested_numbers']}")
-    print(f"  Correct predictions: {results['correct_predictions']}")
+    print(f"  Numbers tested: {tested}")
+    print(f"  Correct predictions: {correct}")
     print(f"  False positives: {results['false_positives']}")
     print(f"  False negatives: {results['false_negatives']}")
     print(f"  Accuracy: {results['accuracy']:.6f} ({results['accuracy'] * 100:.4f}%)")
@@ -198,7 +208,7 @@ def run_validation(max_n: int, use_advanced: bool = False) -> Dict[str, Any]:
         print(f"  Composite mean ΔNFR: {results['composite_mean_delta_nfr']:.8f}")
 
     print(f"  Validation time: {elapsed_time * 1000:.2f} ms")
-    print(f"  Numbers per second: {results['tested_numbers'] / elapsed_time:.1f}")
+    print(f"  Numbers per second: {tested / elapsed_time:.1f}")
 
     return results
 
@@ -238,15 +248,18 @@ def main() -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  tnfr-primality 17 97 997                    # Test specific numbers
-  tnfr-primality --benchmark 10000 --advanced # Advanced benchmark
-  tnfr-primality --validate 1000 --advanced   # Advanced validation
-  tnfr-primality --infrastructure-status      # Check infrastructure
-  tnfr-primality --batch 2 3 5 7 11 --cached # Cached batch processing
+  tnfr-primality-advanced 17 97 997
+  tnfr-primality-advanced --benchmark 10000 --advanced
+  tnfr-primality-advanced --validate 1000
+  tnfr-primality-advanced --infrastructure-status
+  tnfr-primality-advanced --batch 2 3 5 7 11 --advanced --cached
 
-TNFR Theory:
-  A number n is prime ⟺ ΔNFR(n) = 0, where:
-  ΔNFR(n) = ζ·(ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
+Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
+  n is prime iff DeltaNFR(n) = 0, where
+  DeltaNFR(n) = zeta*(Omega(n)-1) + eta*(tau(n)-2)
+               + theta*(sigma(n)/n - (1+1/n)).
+  Omega counts prime factors with multiplicity; defaults are unit weights.
+  Runtime tolerance and finite checks have separate scope from this identity.
         """,
     )
 
@@ -259,12 +272,12 @@ TNFR Theory:
     parser.add_argument(
         "--advanced",
         action="store_true",
-        help="Use advanced TNFR algorithms (requires infrastructure)",
+        help="Request optional repository arithmetic helpers; unavailable paths fall back",
     )
     parser.add_argument(
         "--cached",
         action="store_true",
-        help="Use cached computation (improves performance)",
+        help="Use the cached wrapper on the advanced path; speedup depends on workload",
     )
 
     # Operation modes
@@ -272,10 +285,13 @@ TNFR Theory:
         "--benchmark",
         type=int,
         metavar="MAX_N",
-        help="Run performance benchmark up to MAX_N",
+        help="Time a fixed prime-only sample with values no greater than MAX_N",
     )
     parser.add_argument(
-        "--validate", type=int, metavar="MAX_N", help="Validate TNFR theory up to MAX_N"
+        "--validate",
+        type=int,
+        metavar="MAX_N",
+        help="Compare arithmetic predicates on the finite range up to MAX_N",
     )
     parser.add_argument(
         "--batch", action="store_true", help="Process numbers in batch mode"
@@ -301,13 +317,24 @@ TNFR Theory:
 
     # Infrastructure status check
     if args.infrastructure_status:
-        show_infrastructure_status()
+        if args.json_output:
+            if HAS_ADVANCED:
+                with redirect_stdout(sys.stderr):
+                    status = get_infrastructure_status()
+                    system_info = get_system_info()
+            else:
+                status = "Advanced TNFR infrastructure not available."
+                system_info = None
+            print(json.dumps({"status": status, "system_info": system_info}, indent=2))
+        else:
+            show_infrastructure_status()
         return 0
 
     # Benchmark mode
     if args.benchmark is not None:
         if args.json_output:
-            results = run_benchmark(args.benchmark, args.advanced, args.cached)
+            with redirect_stdout(sys.stderr):
+                results = run_benchmark(args.benchmark, args.advanced, args.cached)
             print(json.dumps(results, indent=2))
         else:
             run_benchmark(args.benchmark, args.advanced, args.cached)
@@ -316,7 +343,8 @@ TNFR Theory:
     # Validation mode
     if args.validate is not None:
         if args.json_output:
-            results = run_validation(args.validate, args.advanced)
+            with redirect_stdout(sys.stderr):
+                results = run_validation(args.validate, args.advanced)
             print(json.dumps(results, indent=2))
         else:
             run_validation(args.validate, args.advanced)
@@ -329,9 +357,10 @@ TNFR Theory:
             print("-" * 50)
 
         results = []
-        for n in args.numbers:
-            result = test_single_number(n, args.advanced, args.cached, args.timing)
-            results.append(result)
+        with redirect_stdout(sys.stderr) if args.json_output else nullcontext():
+            for n in args.numbers:
+                result = test_single_number(n, args.advanced, args.cached, args.timing)
+                results.append(result)
 
         if args.json_output:
             print(json.dumps(results, indent=2))

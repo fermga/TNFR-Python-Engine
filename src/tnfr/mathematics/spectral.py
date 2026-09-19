@@ -127,9 +127,7 @@ def _get_laplacian_spectrum_cached(
     """
     if nx is None:
         raise ImportError("NetworkX is required for spectral analysis.")
-    if k is not None and (
-        isinstance(k, bool) or not isinstance(k, Integral) or k <= 0
-    ):
+    if k is not None and (isinstance(k, bool) or not isinstance(k, Integral) or k <= 0):
         raise TNFRValueError(
             "k must be a positive integer or None",
             context={"k": k},

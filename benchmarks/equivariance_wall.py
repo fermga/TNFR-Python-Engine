@@ -348,9 +348,7 @@ def main():
     print("  graph representation theory (Schur + Reynolds projector); it UNIFIES the")
     print("  obstruction (one algebraic shape behind all three walls) but does NOT")
     print("  remove it. It does not prove RH, Navier-Stokes, or Yang-Mills; R and pi")
-    print(
-        "  stay assumed substrate; nothing here closes G4=RH."
-    )
+    print("  stay assumed substrate; nothing here closes G4=RH.")
     return 0 if overall else 1
 
 

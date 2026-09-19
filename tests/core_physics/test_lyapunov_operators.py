@@ -19,22 +19,22 @@ import networkx as nx
 import numpy as np
 import pytest
 
-from tnfr.constants import inject_defaults
 from tnfr.config.defaults_core import CORE_DEFAULTS
+from tnfr.constants import inject_defaults
 from tnfr.physics.lyapunov import (
-    OPERATOR_POLICY_MULTIPLIERS,
     OPERATOR_LYAPUNOV_BOUNDS,
+    OPERATOR_POLICY_MULTIPLIERS,
     EnergyClass,
-    U2PolicyRole,
     OperatorLyapunovBound,
-    analyze_operator_policy_context,
+    U2PolicyRole,
     analyze_operator_convergence,
+    analyze_operator_policy_context,
     analyze_spectral_gap,
     compare_operator_energy_to_policy,
-    compute_operator_policy_delta,
     compute_operator_energy_bound,
-    compute_sequence_policy_score,
+    compute_operator_policy_delta,
     compute_sequence_energy_bound,
+    compute_sequence_policy_score,
     evaluate_sequence_policy,
     get_bound,
     get_policy_multiplier,

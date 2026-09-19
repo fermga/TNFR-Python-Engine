@@ -196,9 +196,7 @@ def _derive_simple_cycle_order(G: nx.Graph) -> tuple[Any, ...]:
     return tuple(traversal)
 
 
-def _resolve_cycle_order(
-    G: nx.Graph, order: Iterable[Any] | None
-) -> tuple[Any, ...]:
+def _resolve_cycle_order(G: nx.Graph, order: Iterable[Any] | None) -> tuple[Any, ...]:
     """Use the declared traversal, or derive it for a whole simple cycle."""
     return tuple(order) if order is not None else _derive_simple_cycle_order(G)
 

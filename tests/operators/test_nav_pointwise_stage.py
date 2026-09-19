@@ -42,7 +42,6 @@ from tnfr.operators.stage_contracts import (
 )
 from tnfr.types import Glyph, real_scalar_epi
 
-
 _PROGRESS_KEY = "_rng_jitter_progress"
 
 
@@ -127,10 +126,7 @@ def _plain_state(
     graph: nx.Graph, *, omit_graph_keys: frozenset[str] = frozenset()
 ) -> tuple[object, ...]:
     return (
-        tuple(
-            (node, deepcopy(dict(data)))
-            for node, data in graph.nodes(data=True)
-        ),
+        tuple((node, deepcopy(dict(data))) for node, data in graph.nodes(data=True)),
         tuple(
             (left, right, deepcopy(dict(data)))
             for left, right, data in graph.edges(data=True)
@@ -217,15 +213,17 @@ def test_nav_stage_matches_direct_across_regimes_and_continued_rng_streams(
         event["regime_origin"] for event in pointwise.graph["_nav_transitions"]
     ] == ["active", "latent", "resonant"]
     for node in pointwise:
-        assert pointwise.nodes[node]["glyph_history"] == direct.nodes[node][
-            "glyph_history"
-        ]
-        assert get_attr(
-            pointwise.nodes[node], ALIAS_SOURCE_GLYPH
-        ) == get_attr(direct.nodes[node], ALIAS_SOURCE_GLYPH)
-        assert pointwise.nodes[node]["_regime_before"] == direct.nodes[node][
-            "_regime_before"
-        ]
+        assert (
+            pointwise.nodes[node]["glyph_history"]
+            == direct.nodes[node]["glyph_history"]
+        )
+        assert get_attr(pointwise.nodes[node], ALIAS_SOURCE_GLYPH) == get_attr(
+            direct.nodes[node], ALIAS_SOURCE_GLYPH
+        )
+        assert (
+            pointwise.nodes[node]["_regime_before"]
+            == direct.nodes[node]["_regime_before"]
+        )
 
 
 @pytest.mark.parametrize("random_mode", (False, True))
@@ -273,9 +271,9 @@ def test_nav_structural_state_and_node_rng_progress_are_target_order_invariant(
     ]
     if random_mode:
         for node in forward:
-            assert forward.nodes[node][_PROGRESS_KEY] == reverse.nodes[node][
-                _PROGRESS_KEY
-            ]
+            assert (
+                forward.nodes[node][_PROGRESS_KEY] == reverse.nodes[node][_PROGRESS_KEY]
+            )
             assert forward.nodes[node][_PROGRESS_KEY]["draws"] == node + 3
 
 
@@ -302,9 +300,11 @@ def test_nav_latent_targets_share_one_stage_instant() -> None:
         assert "latency_start_time" not in graph.nodes[node]
         assert "preserved_epi" not in graph.nodes[node]
         assert graph.nodes[node]["_regime_before"] == "latent"
-    assert [
-        event["regime_origin"] for event in graph.graph["_nav_transitions"]
-    ] == ["latent", "latent", "latent"]
+    assert [event["regime_origin"] for event in graph.graph["_nav_transitions"]] == [
+        "latent",
+        "latent",
+        "latent",
+    ]
 
 
 def test_nav_preflight_and_commit_observe_the_wall_clock_once(
@@ -341,9 +341,7 @@ def test_nav_preflight_and_commit_observe_the_wall_clock_once(
     execute_pointwise_stage(graph, Transition(), (2, 0, 1))
 
     assert CountingDateTime.calls == 1
-    assert {
-        graph.nodes[node]["silence_duration"] for node in graph
-    } == {10.0}
+    assert {graph.nodes[node]["silence_duration"] for node in graph} == {10.0}
 
 
 def test_nav_late_random_proposal_failure_leaves_every_target_unchanged() -> None:
@@ -374,15 +372,11 @@ def test_nav_entropy_seed_is_not_written_before_late_proposal_rejection(
     observed_live_seeds: list[int | None] = []
     build_proposal = Transition._build_network_stage_proposal
 
-    def observe_live_seed(
-        self: Transition, *args: Any, **kwargs: Any
-    ) -> Any:
+    def observe_live_seed(self: Transition, *args: Any, **kwargs: Any) -> Any:
         observed_live_seeds.append(graph.graph["RANDOM_SEED"])
         return build_proposal(self, *args, **kwargs)
 
-    monkeypatch.setattr(
-        Transition, "_build_network_stage_proposal", observe_live_seed
-    )
+    monkeypatch.setattr(Transition, "_build_network_stage_proposal", observe_live_seed)
 
     with pytest.raises(OperatorPreconditionError, match="_rng_jitter_progress"):
         execute_pointwise_stage(graph, Transition(), (0, 1, 2))
@@ -498,18 +492,16 @@ def test_nav_monitor_failure_rolls_back_graph_and_monitor_state() -> None:
     graph = _graph(random_mode=True)
     monitor = _RejectingMonitor()
     graph.graph["integrity_monitor"] = monitor
-    before = _plain_state(
-        graph, omit_graph_keys=frozenset({"integrity_monitor"})
-    )
+    before = _plain_state(graph, omit_graph_keys=frozenset({"integrity_monitor"}))
     monitor_before = deepcopy(vars(monitor))
 
     with pytest.raises(RuntimeError, match="monitor rejected second target"):
         execute_pointwise_stage(graph, Transition(), (0, 1, 2))
 
     assert graph.graph["integrity_monitor"] is monitor
-    assert _plain_state(
-        graph, omit_graph_keys=frozenset({"integrity_monitor"})
-    ) == before
+    assert (
+        _plain_state(graph, omit_graph_keys=frozenset({"integrity_monitor"})) == before
+    )
     assert vars(monitor) == monitor_before
 
 
@@ -534,9 +526,7 @@ def test_nav_metric_failure_rolls_back_prior_metrics_and_state(
     monkeypatch.setattr(Transition, "_collect_metrics", rejected_metric)
 
     with pytest.raises(RuntimeError, match="metric rejected second target"):
-        execute_pointwise_stage(
-            graph, Transition(), (0, 1, 2), collect_metrics=True
-        )
+        execute_pointwise_stage(graph, Transition(), (0, 1, 2), collect_metrics=True)
 
     assert _plain_state(graph) == before
 
@@ -548,9 +538,7 @@ def test_nav_entropy_seed_and_progress_are_restored_after_rejection() -> None:
 
     def rejected_callback(subject: nx.Graph) -> None:
         observed["seed"] = subject.graph["RANDOM_SEED"]
-        observed["progress"] = deepcopy(
-            subject.nodes[0].get(_PROGRESS_KEY)
-        )
+        observed["progress"] = deepcopy(subject.nodes[0].get(_PROGRESS_KEY))
         raise RuntimeError("reject resolved entropy seed")
 
     with pytest.raises(RuntimeError, match="reject resolved entropy seed"):
@@ -636,9 +624,7 @@ def test_nav_runtime_schedule_matches_completed_stage_contract() -> None:
     assert "retain requested target order" in (
         contract.structural_state_target_order_scope
     )
-    assert "NAV" not in {
-        gap.glyph for gap in remaining_stage_contract_gaps()
-    }
+    assert "NAV" not in {gap.glyph for gap in remaining_stage_contract_gaps()}
 
     graph = _graph(random_mode=True)
     operator = Transition()
@@ -655,6 +641,6 @@ def test_nav_runtime_schedule_matches_completed_stage_contract() -> None:
         operator,
         observed_schedule=TWO_PHASE_JACOBI,
     )
-    assert graph.graph[STAGE_CONTRACT_KEY][
-        "executed_two_phase_contract_complete"
-    ] is True
+    assert (
+        graph.graph[STAGE_CONTRACT_KEY]["executed_two_phase_contract_complete"] is True
+    )

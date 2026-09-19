@@ -35,9 +35,11 @@ $$
 \operatorname{Tr}D[\rho]=0.
 $$
 
-When the generator is constructed by `build_lindblad_delta_nfr`, exponentiating
-it gives a completely positive trace-preserving semigroup, up to numerical
-error. Spectral non-expansion of an arbitrary matrix is weaker than the GKSL
+For Hermitian `H`, compatible finite collapse operators and nonnegative time,
+the exact GKSL generator has a completely positive trace-preserving semigroup.
+`build_lindblad_delta_nfr` and the numerical exponential implement that model
+within their validation and arithmetic tolerances; an approximate output
+needs its own residual checks. Spectral non-expansion of an arbitrary matrix is weaker than the GKSL
 conditions and does not independently prove complete positivity.
 
 ### Unitality
@@ -55,7 +57,8 @@ pure ground state.
 All functions that accept collapse operators interpret them as the effective
 operators of the modeled generator. If a Liouville generator is multiplied by
 a positive factor `a = nu_f * scale`, the equivalent dissipative inputs are
-`sqrt(a) L_k`; passing the unscaled `L_k` would under-report instantaneous rates.
+`sqrt(a) L_k`, together with Hamiltonian `a H`; passing the unscaled `L_k`
+would under-report instantaneous dissipative rates.
 
 ---
 
@@ -190,8 +193,14 @@ minimum-norm representative, not a uniqueness certificate.
 
 `analyze_dissipation_rates` reports the stationary-mode count, stable decay
 rates, positive-real-part modes, and the trace-preservation residual. A positive
-spectral gap measures relaxation toward the stationary subspace. Convergence
-to one unique state additionally requires a one-dimensional stationary space.
+spectral gap reports the slowest resolved strictly decaying mode. It does not
+exclude nonzero purely imaginary modes: those can oscillate indefinitely.
+Convergence toward the stationary subspace additionally requires absence of
+such neutral nonstationary modes and unstable modes. The implementation reports
+both explicitly. Convergence to one unique state further requires a
+one-dimensional stationary space. These are statements about the admitted
+GKSL model; an arbitrary matrix spectrum alone proves neither a quantum
+channel nor a TNFR evolution law.
 
 ---
 
@@ -201,11 +210,11 @@ to one unique state additionally requires a one-dimensional stationary space.
 |---|---|---|
 | Purity change rate | `(P_after-P_before)/dt` | Signed; either sign is possible |
 | Entropy change rate | `(S_after-S_before)/dt` | Signed; monotone for unital channels |
-| State change rate | `||rho_after-rho_before||_F/dt` | Includes coherent and dissipative motion |
-| Dissipator action norm | `||D[rho_before]||_F` | Instantaneous environmental term |
-| Dissipation bound | `2 sum ||L_k||_2^2 sqrt(P)` | Universal Frobenius bound |
+| State change rate | `norm_F(rho_after-rho_before)/dt` | Includes coherent and dissipative motion |
+| Dissipator action norm | `norm_F(D[rho_before])` | Instantaneous environmental term |
+| Dissipation bound | `2 sum norm_2(L_k)^2 sqrt(P)` | Universal Frobenius bound |
 | Fixed-point contraction ratio | `T_after/T_before` | Requires a supplied stationary state |
-| Frobenius-norm loss rate | `(||rho_before||_F-||rho_after||_F)/dt` | Purity proxy; not a Noether charge |
+| Frobenius-norm loss rate | `(norm_F(rho_before)-norm_F(rho_after))/dt` | Purity proxy; not a Noether charge |
 | Change tier | Maximum absolute purity/entropy rate | Empirical reporting bin |
 
 The compatibility names `purity_decay_rate`, `entropy_production_rate`,

@@ -46,14 +46,10 @@ from ..operators.network_stage import (
     _networkx_runtime_layout,
     _runtime_mapping_items,
 )
-from ..operators.remesh import (
-    _materialize_network_remesh_configuration,
-)
+from ..operators.remesh import _materialize_network_remesh_configuration
 from ..types import Glyph
 from ..utils._structural_signature import binary64_vectors_are_identical
-from .binary64_p2_reception_stability import (
-    P2HalfReceptionRemeshStabilityCertificate,
-)
+from .binary64_p2_reception_stability import P2HalfReceptionRemeshStabilityCertificate
 from .runtime_flow_stability import capture_nodal_flow_state
 from .runtime_p2_reception_remesh_sequence import (
     ExecutedP2HalfReceptionRemeshSequenceCertificate,
@@ -97,8 +93,7 @@ def _require_kernel(
 ) -> P2HalfReceptionRemeshStabilityCertificate:
     if type(value) is not P2HalfReceptionRemeshStabilityCertificate:
         raise TNFRValueError(
-            "kernel_certificate must be an exact P2 half-Reception "
-            "certificate"
+            "kernel_certificate must be an exact P2 half-Reception " "certificate"
         )
     if not value._proof_fields_are_intact() or not all(
         passed for _name, passed in value.conditions
@@ -128,8 +123,7 @@ def _require_exact_policy_specs(
         schedule = object.__getattribute__(spec, "schedule")
         if type(schedule) is not OperatorEventSchedule:
             raise TypeError(
-                f"specs[{index}].schedule must be an exact "
-                "OperatorEventSchedule"
+                f"specs[{index}].schedule must be an exact " "OperatorEventSchedule"
             )
         partition_source = object.__getattribute__(
             spec,
@@ -155,8 +149,7 @@ def _require_zero_flow_policy_schedules(
     for index, schedule in enumerate(schedules):
         if type(schedule) is not OperatorEventSchedule:
             raise TypeError(
-                f"specs[{index}].schedule must be an exact "
-                "OperatorEventSchedule"
+                f"specs[{index}].schedule must be an exact " "OperatorEventSchedule"
             )
         if schedule.cycles != 1 or schedule.operator_names != _POLICY_WORD:
             raise TNFRValueError(
@@ -173,16 +166,14 @@ def _require_zero_flow_policy_schedules(
             or type(schedule.intervals) is not tuple
             or len(schedule.intervals) != 4
             or any(
-                interval.duration != 0.0
-                or interval.exact_duration != Fraction(0)
+                interval.duration != 0.0 or interval.exact_duration != Fraction(0)
                 for interval in schedule.intervals
             )
             or schedule.total_flow_duration != 0.0
             or schedule.exact_total_flow_duration != Fraction(0)
         ):
             raise TNFRValueError(
-                "every policy schedule must have four exact zero-duration "
-                "flows"
+                "every policy schedule must have four exact zero-duration " "flows"
             )
 
 
@@ -195,15 +186,11 @@ def _require_metric(
         type(metric_weights) is not tuple
         or len(metric_weights) != 2
         or any(
-            type(value) is not float
-            or not math.isfinite(value)
-            or value <= 0.0
+            type(value) is not float or not math.isfinite(value) or value <= 0.0
             for value in metric_weights
         )
     ):
-        raise TNFRValueError(
-            "metric_weights must be an exact positive binary64 pair"
-        )
+        raise TNFRValueError("metric_weights must be an exact positive binary64 pair")
     frozen = _materialize_remesh_metric(metric_weights, nodes)
     if type(frozen) is not tuple or len(frozen) != 2:
         raise RuntimeError("P2 metric materialization lost its pair shape")
@@ -214,9 +201,7 @@ def _require_metric(
         pair,
         label="policy metric",
     ) != object.__getattribute__(kernel, "exact_normalized_metric"):
-        raise TNFRValueError(
-            "metric_weights ray does not match the P2 kernel metric"
-        )
+        raise TNFRValueError("metric_weights ray does not match the P2 kernel metric")
     return pair
 
 
@@ -262,13 +247,8 @@ def _require_half_reception_factor(layout: Any) -> None:
         graph_data,
     )
     mix = factors.get("EN_mix")
-    if (
-        type(mix) is not float
-        or not binary64_vectors_are_identical((mix,), (0.5,))
-    ):
-        raise TNFRValueError(
-            "runtime Reception mix must be exact binary64 one half"
-        )
+    if type(mix) is not float or not binary64_vectors_are_identical((mix,), (0.5,)):
+        raise TNFRValueError("runtime Reception mix must be exact binary64 one half")
 
 
 def _require_live_p2_state(
@@ -298,24 +278,20 @@ def _require_live_p2_state(
     source = object.__getattribute__(kernel, "remesh_class_certificate")
     current = _epi_values(graph, nodes)
     if any(
-        value < source.configuration.epi_min
-        or value > source.configuration.epi_max
+        value < source.configuration.epi_min or value > source.configuration.epi_max
         for value in current
     ):
         raise TNFRValueError("current EPI pair is outside the P2 source interval")
 
     _present, _history_object, history = _history_signature(graph, nodes)
     required_incoming = source.required_history_length - 1
-    if not (
-        required_incoming <= len(history) <= source.history_maxlen
-    ):
+    if not (required_incoming <= len(history) <= source.history_maxlen):
         raise TNFRValueError(
             "incoming REMESH history or capacity cannot serve the first cycle"
         )
     active_incoming = history[-source.tau_global :]
     if len(active_incoming) != source.tau_global or any(
-        value < source.configuration.epi_min
-        or value > source.configuration.epi_max
+        value < source.configuration.epi_min or value > source.configuration.epi_max
         for row in active_incoming
         for value in row
     ):
@@ -412,10 +388,8 @@ def execute_p2_half_reception_remesh_policy_invocation(
             execution,
         )
         if (
-            type(certificate)
-            is not ExecutedP2HalfReceptionRemeshSequenceCertificate
-            or object.__getattribute__(certificate, "kernel_certificate")
-            is not kernel
+            type(certificate) is not ExecutedP2HalfReceptionRemeshSequenceCertificate
+            or object.__getattribute__(certificate, "kernel_certificate") is not kernel
             or object.__getattribute__(certificate, "execution") is not execution
         ):
             raise TNFRValueError(

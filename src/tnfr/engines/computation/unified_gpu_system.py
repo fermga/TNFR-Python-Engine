@@ -257,9 +257,7 @@ class TNFRUnifiedGPUSystem:
             logger.error(f"Failed to initialize GPU backends: {e}")
 
     @staticmethod
-    def _read_gpu_memory_mb(
-        backend_info: dict[str, Any], field: str
-    ) -> float | None:
+    def _read_gpu_memory_mb(backend_info: dict[str, Any], field: str) -> float | None:
         """Return an observed finite nonnegative memory value, if present."""
 
         value = backend_info.get(field)

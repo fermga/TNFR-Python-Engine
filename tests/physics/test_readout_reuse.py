@@ -12,7 +12,6 @@ from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_THETA
 from tnfr.operators import apply_glyph
 from tnfr.physics import conservation, unified, variational
 
-
 READERS = (
     "compute_structural_potential",
     "compute_phase_gradient",
@@ -129,7 +128,8 @@ def test_conservation_snapshot_divergence_uses_its_recorded_currents(kind):
             sum(snap.j_phi[j] - snap.j_phi[node] for j in neighbors) / len(neighbors)
             + sum(snap.j_dnfr[j] - snap.j_dnfr[node] for j in neighbors)
             / len(neighbors)
-            if neighbors else 0.0
+            if neighbors
+            else 0.0
         )
         assert snap.divergence[node] == expected
         assert snap.charge_density[node] == snap.phi_s[node] + snap.k_phi[node]

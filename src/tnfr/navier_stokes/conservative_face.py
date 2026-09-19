@@ -65,9 +65,7 @@ def vorticity_modal_spectrum(
     """
     w_hat = flow._vorticity_hat(flow.u_hat)
     ens_k = 0.5 * (
-        np.abs(w_hat[0]) ** 2
-        + np.abs(w_hat[1]) ** 2
-        + np.abs(w_hat[2]) ** 2
+        np.abs(w_hat[0]) ** 2 + np.abs(w_hat[1]) ** 2 + np.abs(w_hat[2]) ** 2
     )
     kmag = np.sqrt(flow.k2)
     kmax = float(np.max(kmag))
@@ -192,9 +190,12 @@ def flow_coherence(flow: TNFRNavierStokes) -> dict[str, Any]:
     wx, wy, wz = flow.vorticity()
     mag = np.sqrt(wx**2 + wy**2 + wz**2)
     neigh = (
-        np.roll(mag, 1, 0) + np.roll(mag, -1, 0)
-        + np.roll(mag, 1, 1) + np.roll(mag, -1, 1)
-        + np.roll(mag, 1, 2) + np.roll(mag, -1, 2)
+        np.roll(mag, 1, 0)
+        + np.roll(mag, -1, 0)
+        + np.roll(mag, 1, 1)
+        + np.roll(mag, -1, 1)
+        + np.roll(mag, 1, 2)
+        + np.roll(mag, -1, 2)
     ) / 6.0
     dnfr = neigh - mag  # = -(L_rw . |omega|): the canonical DeltaNFR realisation
     mean_abs_dnfr = float(np.mean(np.abs(dnfr)))
@@ -294,8 +295,7 @@ class CascadeFrontierCertificate:
     def summary(self) -> str:
         """Human-readable one-line verdict (honest: closes nothing)."""
         pairs = ", ".join(
-            f"Re={r:.0f}:{d:.2f}"
-            for r, d in zip(self.reynolds, self.peak_debt)
+            f"Re={r:.0f}:{d:.2f}" for r, d in zip(self.reynolds, self.peak_debt)
         )
         trend = "GROWS" if self.debt_grows_with_re else "flat/decays"
         allsat = "all saturate" if all(self.saturates) else "NOT all saturate"

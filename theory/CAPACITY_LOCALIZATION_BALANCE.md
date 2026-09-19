@@ -255,6 +255,18 @@ canonical preparation, pressure-refreshed solver partitions and finite
 residuals. These are distinct from a future binary64 or complete-runtime
 stability theorem.
 
+The zero-winding control shares the exact prepared two-channel model; its
+binary64 endpoints need not equal those of represented winding phases. The
+runtime test accounts for their difference with the captured remaining-channel
+pressure defect `delta_p` and Euler residual `epsilon`. For each recorded step,
+`d=h*diag(nu)*delta_p+epsilon`. The common matrix
+`M=I-h*e*diag(nu)*L` has nonnegative entries and unit row sums on these admitted
+steps, so the exact discrepancy satisfies
+`Delta_next=M*Delta+d_zero-d_winding` and
+`||Delta_next||_inf <= ||Delta||_inf+||d_zero-d_winding||_inf`.
+This is a finite bound derived from the retained residuals, not an arbitrary
+equality tolerance or a prediction of unobserved numerical errors.
+
 The change of coordinate also reuses the existing
 [heterogeneous diffusion geometry](../src/tnfr/physics/structural_diffusion.py):
 the reference coordinate `y` has effective capacity `e*nu`. Its exact-model
@@ -273,11 +285,13 @@ held fixed, the combined pressure is
 functional links on this fixed cycle evolves `p` with its phase gap
 coefficient and evolves `nu` with its separate capacity
 coefficient, so this more general balance is likewise conditional on what
-structural fields are retained. That algebraic extension motivates the next
-study of coupled support and release; it is not implemented by the
+structural fields are retained. That algebraic extension is developed in the
+joint support/release study linked below; it is not implemented by the
 capacity-only observer or a claim of spontaneous physical localization.
 The separate [joint cycle observer and proof](CYCLE_SUPPORT_DYNAMICS.md)
 now use the normalized coordinate `a=p/pi`, derive the reset/flow energy
 budget and distinguish default-factor finite-clock retention from an active
 zero-pressure equilibrium. Both observers reuse one private exact cycle
 algebra; their hypotheses and public read-outs remain separate.
+Neither note opens a new cycle campaign; the
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) owns resumption.

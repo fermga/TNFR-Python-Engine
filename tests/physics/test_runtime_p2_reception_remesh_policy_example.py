@@ -11,7 +11,6 @@ import pytest
 import tnfr.physics as physics
 import tnfr.physics.runtime_p2_reception_remesh_policy as policy_module
 
-
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE_PATH = (
     REPOSITORY_ROOT
@@ -42,9 +41,7 @@ def example_protocol_report():
 def test_module_stub_and_facade_expose_the_policy_api() -> None:
     name = "execute_p2_half_reception_remesh_policy_invocation"
     assert policy_module.__all__ == (name,)
-    stub = Path(policy_module.__file__).with_suffix(".pyi").read_text(
-        encoding="utf-8"
-    )
+    stub = Path(policy_module.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
     assert f"def {name}" in stub
     assert name in physics.__all__
     assert getattr(physics, name) is getattr(policy_module, name)

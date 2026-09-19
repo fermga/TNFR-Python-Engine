@@ -5,7 +5,10 @@ from fractions import Fraction
 import pytest
 
 from benchmarks.thol_pressure_feedback import (
-    NEXT_STEP, PREPARATION_STEPS, ROUTES, run_prepared_birth_case,
+    NEXT_STEP,
+    PREPARATION_STEPS,
+    ROUTES,
+    run_prepared_birth_case,
     run_recorded_thol_case,
 )
 from tnfr.config import CORE_DEFAULTS
@@ -36,9 +39,10 @@ def test_observed_acceleration_uses_three_executed_unequal_physical_samples(case
     assert len(preparation["boundaries"]) == 3
     assert all(row["pressure_only_refresh"] for row in preparation["boundaries"])
     assert 0 < observation["observed_acceleration"] < case["default_birth_threshold"]
-    assert abs(
-        observation["observed_acceleration"] - observation["cached_acceleration"]
-    ) > 0.004
+    assert (
+        abs(observation["observed_acceleration"] - observation["cached_acceleration"])
+        > 0.004
+    )
     assert abs(observation["exact_acceleration_arithmetic_residual"]) < 1e-16
     assert not case["cache_poisoned_for_regression"]
 
@@ -51,9 +55,9 @@ def test_each_admitted_route_uses_the_shared_nodal_consumer(cases, route):
     integration = case["integration"]
     assert case["grammar_admission"]["allowed"]
     assert case["default_thol_factor"] == COUPLING_GENTLE
-    assert case["default_birth_threshold"] == CORE_DEFAULTS[
-        "THOL_BIFURCATION_THRESHOLD"
-    ]
+    assert (
+        case["default_birth_threshold"] == CORE_DEFAULTS["THOL_BIFURCATION_THRESHOLD"]
+    )
     assert before["time"] == integration["before"]["time"] == 0.5
     assert integration["after"]["time"] == 0.75
     assert integration["duration"] == NEXT_STEP == 0.25
@@ -77,13 +81,15 @@ def test_public_and_staged_refresh_erase_parent_pressure_feedback(cases):
     held = cases["public_held"]
     for route in ("public_refreshed", "staged_refreshed"):
         case = cases[route]
-        assert case["raw_after_operator"]["pressure"] == held[
-            "raw_after_operator"
-        ]["pressure"]
+        assert (
+            case["raw_after_operator"]["pressure"]
+            == held["raw_after_operator"]["pressure"]
+        )
         assert case["after_refresh"]["pressure"] == case["before"]["pressure"]
         assert case["integration"]["after"]["epi"] == baseline["after"]["epi"]
     assert cases["staged_refreshed"]["stage"] == {
-        "schedule": "two_phase_jacobi", "nodes_processed": 1,
+        "schedule": "two_phase_jacobi",
+        "nodes_processed": 1,
     }
 
 
@@ -91,13 +97,11 @@ def test_held_extra_epi_has_exact_pressure_and_rounding_decomposition(cases):
     baseline = cases["baseline"]["integration"]
     held = cases["public_held"]
     integration = held["integration"]
-    observed = (
-        Fraction.from_float(integration["after"]["epi"][0])
-        - Fraction.from_float(baseline["after"]["epi"][0])
-    )
-    dt_nu = (
-        Fraction.from_float(NEXT_STEP)
-        * Fraction.from_float(held["before"]["capacity"][0])
+    observed = Fraction.from_float(
+        integration["after"]["epi"][0]
+    ) - Fraction.from_float(baseline["after"]["epi"][0])
+    dt_nu = Fraction.from_float(NEXT_STEP) * Fraction.from_float(
+        held["before"]["capacity"][0]
     )
     exact_acceleration_prediction = dt_nu * held["exact_thol_pressure_proposal"]
     operator_rounding = dt_nu * held["exact_pressure_arithmetic_residual"]
@@ -115,44 +119,50 @@ def test_held_extra_epi_has_exact_pressure_and_rounding_decomposition(cases):
 def test_ordinary_selector_consumes_live_acceleration_before_auxiliary_updates(cases):
     public = cases["public_held"]
     selected = cases["selector_runtime"]
-    assert selected["raw_after_operator"]["pressure"] == public[
-        "raw_after_operator"
-    ]["pressure"]
-    assert selected["integration"]["after"]["epi"] == public[
-        "integration"
-    ]["after"]["epi"]
+    assert (
+        selected["raw_after_operator"]["pressure"]
+        == public["raw_after_operator"]["pressure"]
+    )
+    assert (
+        selected["integration"]["after"]["epi"] == public["integration"]["after"]["epi"]
+    )
     legacy_cached_pressure = (
         selected["before"]["pressure"][0]
         + selected["default_thol_factor"]
         * selected["acceleration"]["cached_acceleration"]
     )
-    assert abs(
-        selected["raw_after_operator"]["pressure"][0] - legacy_cached_pressure
-    ) > 0.0003
+    assert (
+        abs(selected["raw_after_operator"]["pressure"][0] - legacy_cached_pressure)
+        > 0.0003
+    )
     endpoint = selected["whole_route_endpoint"]
     assert endpoint["epi"] == selected["integration"]["after"]["epi"]
     assert endpoint["phase"] != selected["integration"]["after"]["phase"]
     assert endpoint["capacity"] == (1.0,) * 8
     assert endpoint["physical_epi_history"][0][-1] == (0.75, endpoint["epi"][0])
     # Direct integration carries a duration but does not itself append history.
-    assert public["whole_route_endpoint"]["physical_epi_history"] == public[
-        "before"
-    ]["physical_epi_history"]
+    assert (
+        public["whole_route_endpoint"]["physical_epi_history"]
+        == public["before"]["physical_epi_history"]
+    )
 
 
 def test_ordinary_selector_ignores_an_explicitly_poisoned_acceleration_cache(cases):
     poisoned = run_recorded_thol_case("selector_runtime", poison_cache=True)
     reference = cases["selector_runtime"]
     assert poisoned["acceleration"]["cached_acceleration"] == 9.0
-    assert poisoned["acceleration"]["observed_acceleration"] == reference[
-        "acceleration"
-    ]["observed_acceleration"]
-    assert poisoned["raw_after_operator"]["pressure"] == reference[
-        "raw_after_operator"
-    ]["pressure"]
-    assert poisoned["integration"]["after"]["epi"] == reference[
-        "integration"
-    ]["after"]["epi"]
+    assert (
+        poisoned["acceleration"]["observed_acceleration"]
+        == reference["acceleration"]["observed_acceleration"]
+    )
+    assert (
+        poisoned["raw_after_operator"]["pressure"]
+        == reference["raw_after_operator"]["pressure"]
+    )
+    assert (
+        poisoned["integration"]["after"]["epi"]
+        == reference["integration"]["after"]["epi"]
+    )
 
 
 def test_prepared_birth_crosses_unmodified_threshold_without_transport_edges(birth):

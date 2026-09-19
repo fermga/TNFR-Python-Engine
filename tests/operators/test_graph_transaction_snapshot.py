@@ -293,8 +293,7 @@ def test_snapshot_restores_object_array_referents_only_for_epi_history() -> None
     assert delayed == {0: 0.0, 1: 2.0}
 
 
-def test_snapshot_gives_invalid_epi_history_domain_error_before_opaque_state(
-) -> None:
+def test_snapshot_gives_invalid_epi_history_domain_error_before_opaque_state() -> None:
     history = iter(({0: 0.0}, {0: 1.0}))
     graph = nx.Graph()
     graph.graph["_epi_hist"] = history
@@ -372,8 +371,7 @@ def test_snapshot_restores_ordinary_callable_bindings_and_owned_state() -> None:
     assert partial_state == []
 
 
-def test_snapshot_accepts_canonical_callback_spec_and_restores_callback_state(
-) -> None:
+def test_snapshot_accepts_canonical_callback_spec_and_restores_callback_state() -> None:
     graph = nx.Graph()
     observations: list[str] = []
 
@@ -974,8 +972,9 @@ def test_snapshot_rejects_registered_copyreg_reducer_before_invocation() -> None
     assert graph.graph["marker"] == "before"
 
 
-def test_snapshot_manually_captures_custom_attribute_lookup_without_calling_it(
-) -> None:
+def test_snapshot_manually_captures_custom_attribute_lookup_without_calling_it() -> (
+    None
+):
     graph = nx.Graph()
     graph.graph["marker"] = "before"
 
@@ -1059,8 +1058,9 @@ def test_snapshot_rejects_nested_mapping_key_with_nonidentity_hash() -> None:
     assert tuple(dict.values(nested)) == ("value",)
 
 
-def test_snapshot_mapping_proxy_policy_preserves_safe_values_and_rejects_mutable(
-) -> None:
+def test_snapshot_mapping_proxy_policy_preserves_safe_values_and_rejects_mutable() -> (
+    None
+):
     safe = MappingProxyType({"type": "none", "parameters": (0.0, None)})
     safe_graph = nx.Graph()
     safe_graph.graph["_gamma_spec"] = safe

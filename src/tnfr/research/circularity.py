@@ -50,14 +50,10 @@ class CircularityAudit:
 
     def to_dict(self) -> dict:
         return {
-            "uses_factorization_in_features": (
-                self.uses_factorization_in_features
-            ),
+            "uses_factorization_in_features": (self.uses_factorization_in_features),
             "uses_gcd_against_candidate": self.uses_gcd_against_candidate,
             "uses_phi_omega_tau_sigma": self.uses_phi_omega_tau_sigma,
-            "factors_used_only_for_scoring": (
-                self.factors_used_only_for_scoring
-            ),
+            "factors_used_only_for_scoring": (self.factors_used_only_for_scoring),
             "graph_construction_requires_answer": (
                 self.graph_construction_requires_answer
             ),
@@ -67,10 +63,7 @@ class CircularityAudit:
 
 def classify(audit: "CircularityAudit") -> CircularityVerdict:
     """Classify an experiment as structural, descriptive or circular."""
-    if (
-        audit.graph_construction_requires_answer
-        or audit.uses_factorization_in_features
-    ):
+    if audit.graph_construction_requires_answer or audit.uses_factorization_in_features:
         return CircularityVerdict.CIRCULAR
     if (
         audit.uses_gcd_against_candidate

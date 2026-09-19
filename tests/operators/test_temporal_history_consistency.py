@@ -14,12 +14,12 @@ from tnfr.constants.aliases import (
     ALIAS_THETA,
     ALIAS_VF,
 )
+from tnfr.operators.nodal_equation import compute_d2epi_dt2
 from tnfr.operators.preconditions import (
     OperatorPreconditionError,
     validate_self_organization,
 )
 from tnfr.operators.preconditions.mutation import diagnose_mutation_readiness
-from tnfr.operators.nodal_equation import compute_d2epi_dt2
 
 
 def _graph(*, epi: float = 1.0) -> nx.Graph:
@@ -52,10 +52,13 @@ def _graph(*, epi: float = 1.0) -> nx.Graph:
 
 
 def _state(graph: nx.Graph):
-    return deepcopy((
-        graph.graph, tuple((node, dict(data)) for node, data in graph.nodes(data=True)),
-        tuple(graph.edges(data=True)),
-    ))
+    return deepcopy(
+        (
+            graph.graph,
+            tuple((node, dict(data)) for node, data in graph.nodes(data=True)),
+            tuple(graph.edges(data=True)),
+        )
+    )
 
 
 def test_legacy_thol_validator_uses_authoritative_physical_acceleration() -> None:
@@ -106,7 +109,9 @@ def test_mutation_readiness_uses_physical_evidence_without_writes() -> None:
     assert dict(graph.graph) == before_graph
 
 
-def test_legacy_thol_validator_rejects_stale_physical_history_without_fallback() -> None:
+def test_legacy_thol_validator_rejects_stale_physical_history_without_fallback() -> (
+    None
+):
     graph = _graph()
     graph.nodes[0]["epi_time_history"] = [(0.0, 0.0), (1.0, 0.1), (2.0, 0.9)]
     graph.nodes[0]["epi_history"] = [0.0, 0.1, 1.0]

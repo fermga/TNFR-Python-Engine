@@ -53,9 +53,7 @@ def test_refreshed_epi_diffusion_is_not_the_extracted_harmonic_flow():
     initial = extract_phase_space_point(graph)
     phases = _read(graph, ALIAS_THETA).copy()
     np.testing.assert_allclose(initial.k_phi, [-math.pi / 3, math.pi / 3])
-    np.testing.assert_allclose(
-        initial.j_phi, [math.sqrt(3) / 2, -math.sqrt(3) / 2]
-    )
+    np.testing.assert_allclose(initial.j_phi, [math.sqrt(3) / 2, -math.sqrt(3) / 2])
     np.testing.assert_allclose(_read(graph, ALIAS_DNFR), [1.0, -1.0])
     harmonic_velocity = hamiltonian_vector_field(initial).reshape(2, 4)
     np.testing.assert_allclose(harmonic_velocity[:, 0], initial.j_phi)
@@ -120,9 +118,7 @@ def test_derived_potential_decay_rate_is_the_sum_of_nodal_capacities(capacity):
     default_compute_delta_nfr(graph)
     after = extract_phase_space_point(graph)
     rate = sum(capacity)
-    np.testing.assert_allclose(
-        (after.phi_s - before.phi_s) / dt, -rate * before.phi_s
-    )
+    np.testing.assert_allclose((after.phi_s - before.phi_s) / dt, -rate * before.phi_s)
     np.testing.assert_allclose(
         (after.j_dnfr - before.j_dnfr) / dt, -rate * before.j_dnfr
     )

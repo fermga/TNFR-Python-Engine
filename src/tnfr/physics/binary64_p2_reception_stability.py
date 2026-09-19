@@ -228,9 +228,7 @@ def _evaluate_binary64_half_reception_pair(
         and lower <= left_bounded <= upper
         and lower <= right_bounded <= upper
     ):
-        raise RuntimeError(
-            "production P2 half-Reception kernel violated its interval"
-        )
+        raise RuntimeError("production P2 half-Reception kernel violated its interval")
     return left_bounded, right_bounded
 
 
@@ -250,9 +248,7 @@ class _P2HalfReceptionModel:
     exact_effective_head_energy_gain_upper_bound: Fraction
     active_history_extinction_horizon: int
     policy_certificate: UniformRemeshSchedulePolicyStabilityCertificate
-    relative_defect_certificate: (
-        UniformRemeshScheduleRelativeDefectStabilityCertificate
-    )
+    relative_defect_certificate: UniformRemeshScheduleRelativeDefectStabilityCertificate
     conditions: tuple[tuple[str, bool], ...]
 
 
@@ -309,8 +305,7 @@ def _model_from_validated_dependencies(
         ),
         (
             "common_hard_clamp_preserves_numeric_consensus_and_interval",
-            source.clip_mode == "hard"
-            and source.epi_min <= source.epi_max,
+            source.clip_mode == "hard" and source.epi_min <= source.epi_max,
         ),
         (
             "restricted_epi_kernel_preserves_support_metric_and_remesh_configuration",
@@ -432,10 +427,8 @@ class P2HalfReceptionRemeshStabilityCertificate:
                 "relative_defect_certificate",
             )
             if (
-                type(source)
-                is not UniformAlphaOneHardClipRemeshClassCertificate
-                or type(policy)
-                is not UniformRemeshSchedulePolicyStabilityCertificate
+                type(source) is not UniformAlphaOneHardClipRemeshClassCertificate
+                or type(policy) is not UniformRemeshSchedulePolicyStabilityCertificate
                 or type(relative)
                 is not UniformRemeshScheduleRelativeDefectStabilityCertificate
                 or not _strict_conditions(self.conditions)
@@ -476,11 +469,9 @@ class P2HalfReceptionRemeshStabilityCertificate:
                     ),
                 )
                 and relative.pre_schedule_relative_energy_defect_upper_bound
-                == expected.relative_defect_certificate
-                .pre_schedule_relative_energy_defect_upper_bound
+                == expected.relative_defect_certificate.pre_schedule_relative_energy_defect_upper_bound
                 and relative.exact_effective_head_energy_gain_upper_bound
-                == expected.relative_defect_certificate
-                .exact_effective_head_energy_gain_upper_bound
+                == expected.relative_defect_certificate.exact_effective_head_energy_gain_upper_bound
                 and relative.conditions
                 == expected.relative_defect_certificate.conditions
             )
@@ -496,11 +487,9 @@ class P2HalfReceptionRemeshStabilityCertificate:
                 "relative_defect_certificate",
             )
             if (
-                type(source)
-                is not UniformAlphaOneHardClipRemeshClassCertificate
+                type(source) is not UniformAlphaOneHardClipRemeshClassCertificate
                 or not source.alpha_one_hard_clip_class_certificate_certified
-                or type(policy)
-                is not UniformRemeshSchedulePolicyStabilityCertificate
+                or type(policy) is not UniformRemeshSchedulePolicyStabilityCertificate
                 or not policy.policy_stability_certificate_certified
                 or type(relative)
                 is not UniformRemeshScheduleRelativeDefectStabilityCertificate
@@ -640,25 +629,19 @@ def certify_p2_half_reception_remesh_stability(
             "remesh_class_certificate must be an exact alpha-one hard-clip "
             "REMESH class certificate"
         )
-    if not (
-        remesh_class_certificate.alpha_one_hard_clip_class_certificate_certified
-    ):
+    if not (remesh_class_certificate.alpha_one_hard_clip_class_certificate_certified):
         raise TNFRValueError(
             "remesh_class_certificate is unsealed, tampered, or inconsistent"
         )
     model = _derive_model(remesh_class_certificate)
     if not all(passed for _name, passed in model.conditions):
         failed = tuple(name for name, passed in model.conditions if not passed)
-        raise TNFRValueError(
-            f"P2 half-Reception REMESH proof failed: {failed}"
-        )
+        raise TNFRValueError(f"P2 half-Reception REMESH proof failed: {failed}")
     value = P2HalfReceptionRemeshStabilityCertificate(
         remesh_class_certificate=remesh_class_certificate,
         node_order=model.node_order,
         exact_normalized_metric=model.exact_normalized_metric,
-        mutual_singleton_neighbor_indices=(
-            model.mutual_singleton_neighbor_indices
-        ),
+        mutual_singleton_neighbor_indices=(model.mutual_singleton_neighbor_indices),
         operator_name=model.operator_name,
         operator_glyph=model.operator_glyph,
         stage_schedule=model.stage_schedule,
@@ -674,16 +657,12 @@ def certify_p2_half_reception_remesh_stability(
         exact_effective_head_energy_gain_upper_bound=(
             model.exact_effective_head_energy_gain_upper_bound
         ),
-        active_history_extinction_horizon=(
-            model.active_history_extinction_horizon
-        ),
+        active_history_extinction_horizon=(model.active_history_extinction_horizon),
         policy_certificate=model.policy_certificate,
         relative_defect_certificate=model.relative_defect_certificate,
         conditions=model.conditions,
     )
     sealed = _seal(value)
     if not sealed._proof_fields_are_intact_after_dependencies_validation():
-        raise RuntimeError(
-            "constructed P2 half-Reception REMESH proof is inconsistent"
-        )
+        raise RuntimeError("constructed P2 half-Reception REMESH proof is inconsistent")
     return sealed

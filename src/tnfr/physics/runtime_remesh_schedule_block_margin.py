@@ -24,9 +24,7 @@ from fractions import Fraction
 from typing import Any
 
 from ..errors import TNFRValueError
-from ..operators.event_remesh_causal_runtime import (
-    ExecutedEventRemeshCycleSequence,
-)
+from ..operators.event_remesh_causal_runtime import ExecutedEventRemeshCycleSequence
 from ..utils._structural_signature import proof_stamps_are_identical
 from .runtime_remesh_schedule_stability import (
     RuntimeRemeshScheduleBoundaryObservation,
@@ -81,8 +79,7 @@ def _execution_is_intact(value: Any) -> bool:
         return False
     try:
         return bool(
-            ExecutedEventRemeshCycleSequence._proof_fields_are_intact(value)
-            is True
+            ExecutedEventRemeshCycleSequence._proof_fields_are_intact(value) is True
         )
     except BaseException:
         return False
@@ -123,12 +120,14 @@ def _proof_stamp_from_values(values: dict[str, Any]) -> tuple[Any, ...]:
         ("source-execution", id(source), _raw_proof_stamp(source)),
         values["start_boundary"],
         values["boundary_count"],
-        tuple(
-            ("runtime-telescope-boundary", id(item), _raw_proof_stamp(item))
-            for item in boundaries
-        )
-        if type(boundaries) is tuple
-        else ("invalid-boundary-container",),
+        (
+            tuple(
+                ("runtime-telescope-boundary", id(item), _raw_proof_stamp(item))
+                for item in boundaries
+            )
+            if type(boundaries) is tuple
+            else ("invalid-boundary-container",)
+        ),
         values["exact_augmented_energy_before"],
         values["exact_augmented_energy_after"],
         values["exact_gain_based_energy_drop_lower_bound"],
@@ -172,9 +171,7 @@ def _derive_values(
     source_already_validated: bool = False,
 ) -> dict[str, Any]:
     if type(source) is not ExecutedEventRemeshCycleSequence:
-        raise TypeError(
-            "execution must be an ExecutedEventRemeshCycleSequence"
-        )
+        raise TypeError("execution must be an ExecutedEventRemeshCycleSequence")
     if not source_already_validated and not _execution_is_intact(source):
         raise TNFRValueError(
             "executed cycle sequence is unsealed, tampered, or inconsistent"
@@ -186,9 +183,7 @@ def _derive_values(
     # and all its boundaries. Reuse that result within this call; validation
     # trust is never retained between calls.
     if type(telescope) is not RuntimeRemeshScheduleSequenceObservation:
-        raise TNFRValueError(
-            "executed cycle sequence has no intact runtime telescope"
-        )
+        raise TNFRValueError("executed cycle sequence has no intact runtime telescope")
     if telescope.source_sequence is not observed_sequence:
         raise TNFRValueError(
             "runtime telescope is not identity-bound to the executed sequence"
@@ -225,14 +220,11 @@ def _derive_values(
     selected_boundaries_intact = bool(
         selected
         and all(
-            type(item) is RuntimeRemeshScheduleBoundaryObservation
-            for item in selected
+            type(item) is RuntimeRemeshScheduleBoundaryObservation for item in selected
         )
     )
     if not selected_boundaries_intact:
-        raise TNFRValueError(
-            "selected runtime telescope boundary proof is not intact"
-        )
+        raise TNFRValueError("selected runtime telescope boundary proof is not intact")
 
     scalar_names = (
         "exact_augmented_energy_before",
@@ -251,17 +243,11 @@ def _derive_values(
     before = selected[0].exact_augmented_energy_before
     after = selected[-1].exact_augmented_energy_after
     lower_bound = sum(
-        (
-            item.exact_gain_based_energy_drop_lower_bound
-            for item in selected
-        ),
+        (item.exact_gain_based_energy_drop_lower_bound for item in selected),
         Fraction(0),
     )
     slack = sum(
-        (
-            item.exact_schedule_augmented_energy_gain_slack
-            for item in selected
-        ),
+        (item.exact_schedule_augmented_energy_gain_slack for item in selected),
         Fraction(0),
     )
     drop = sum(
@@ -269,8 +255,7 @@ def _derive_values(
         Fraction(0),
     )
     continuous = all(
-        left.exact_augmented_energy_after
-        == right.exact_augmented_energy_before
+        left.exact_augmented_energy_after == right.exact_augmented_energy_before
         for left, right in zip(selected, selected[1:])
     )
     nonnegative_energies = bool(
@@ -283,8 +268,7 @@ def _derive_values(
         )
     )
     nonnegative_slacks = all(
-        item.exact_schedule_augmented_energy_gain_slack >= 0
-        for item in selected
+        item.exact_schedule_augmented_energy_gain_slack >= 0 for item in selected
     )
 
     if before == 0:
@@ -299,12 +283,9 @@ def _derive_values(
         endpoint_gain_upper_bound = Fraction(1) - lower_fraction
         normalized_consistent = bool(
             observed_fraction == Fraction(1) - after / before
-            and endpoint_gain_upper_bound
-            == Fraction(1) - lower_bound / before
+            and endpoint_gain_upper_bound == Fraction(1) - lower_bound / before
         )
-        endpoint_bound_satisfied = bool(
-            after / before <= endpoint_gain_upper_bound
-        )
+        endpoint_bound_satisfied = bool(after / before <= endpoint_gain_upper_bound)
 
     conditions = (
         ("source_execution_intact", True),
@@ -319,9 +300,7 @@ def _derive_values(
         ),
         (
             "nonempty_contiguous_boundary_block",
-            count > 0
-            and stop <= len(all_boundaries)
-            and len(selected) == count,
+            count > 0 and stop <= len(all_boundaries) and len(selected) == count,
         ),
         (
             "selected_boundaries_bound_by_identity",
@@ -482,9 +461,7 @@ class RuntimeRemeshScheduleBlockMarginObservation:
 
     @property
     def energy_nonincrease_observed(self) -> bool:
-        return bool(
-            self._proof_fields_are_intact() and self.exact_energy_drop >= 0
-        )
+        return bool(self._proof_fields_are_intact() and self.exact_energy_drop >= 0)
 
     @property
     def energy_nonincrease_sufficiently_certified(self) -> bool:
@@ -508,8 +485,7 @@ class RuntimeRemeshScheduleBlockMarginObservation:
     def strict_energy_contraction_observed(self) -> bool:
         return bool(
             self._proof_fields_are_intact()
-            and self.exact_augmented_energy_after
-            < self.exact_augmented_energy_before
+            and self.exact_augmented_energy_after < self.exact_augmented_energy_before
         )
 
     @property
@@ -591,9 +567,7 @@ def observe_executed_event_remesh_block_margin(
     """Derive an exact margin for a contiguous causal execution block."""
 
     if type(execution) is not ExecutedEventRemeshCycleSequence:
-        raise TypeError(
-            "execution must be an ExecutedEventRemeshCycleSequence"
-        )
+        raise TypeError("execution must be an ExecutedEventRemeshCycleSequence")
     if not _execution_is_intact(execution):
         raise TNFRValueError(
             "executed cycle sequence is unsealed, tampered, or inconsistent"

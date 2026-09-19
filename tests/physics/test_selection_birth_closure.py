@@ -5,7 +5,10 @@ from fractions import Fraction
 import pytest
 
 from benchmarks.selection_birth_closure import (
-    SELECTORS, run_dispatch_case, run_selector_case, run_study,
+    SELECTORS,
+    run_dispatch_case,
+    run_selector_case,
+    run_study,
 )
 from benchmarks.thol_birth_transport import prepare_birth_selection_source
 from benchmarks.thol_pressure_feedback import _state
@@ -18,12 +21,19 @@ def study():
 
 
 def _control(study, dispatch, refresh):
-    return next(row for row in study["dispatch_controls"]
-                if row["dispatch"] == dispatch and row["refresh_before_flow"] == refresh)
+    return next(
+        row
+        for row in study["dispatch_controls"]
+        if row["dispatch"] == dispatch and row["refresh_before_flow"] == refresh
+    )
 
 
 def test_all_branches_replay_the_same_causal_source_without_synthetic_history(study):
-    branches = (*study["selectors"], *study["dispatch_controls"], *study["transport_controls"])
+    branches = (
+        *study["selectors"],
+        *study["dispatch_controls"],
+        *study["transport_controls"],
+    )
     source = branches[0]["preparation"]["before_birth"]
     assert len(source["nodes"]) == 8
     assert source["glyph_history"] == {0: ("IL", "OZ"), **{i: () for i in range(1, 8)}}
@@ -43,8 +53,10 @@ def test_actual_builtin_choices_and_commits_are_coherence_despite_trigger(study,
     row = study["selectors"][index]
     assert len(row["selection_contexts"]) == len(row["integration"]) == 1
     context = row["selection_contexts"][0]
-    assert all(si > row["policy"]["resolved_selector_thresholds"]["si_hi"]
-               for si in context["sense_index"])
+    assert all(
+        si > row["policy"]["resolved_selector_thresholds"]["si_hi"]
+        for si in context["sense_index"]
+    )
     assert row["actual_selector_proposals"] == {i: "IL" for i in range(8)}
     assert context["preselection"]["base_choices"] == row["actual_selector_proposals"]
     assert len(row["endpoint"]["nodes"]) == 8
@@ -61,8 +73,11 @@ def test_actual_builtin_choices_and_commits_are_coherence_despite_trigger(study,
 @pytest.mark.parametrize("name", tuple(SELECTORS))
 def test_recording_delegate_preserves_unwrapped_runtime_endpoint(study, name):
     graph, _ = prepare_birth_selection_source()
-    graph.graph.update(glyph_selector=SELECTORS[name](), GLYPH_SELECTOR_N_JOBS=1,
-                       INTEGRATOR_METHOD="euler")
+    graph.graph.update(
+        glyph_selector=SELECTORS[name](),
+        GLYPH_SELECTOR_N_JOBS=1,
+        INTEGRATOR_METHOD="euler",
+    )
     step(graph, dt=0.25, use_Si=True, apply_glyphs=True)
     observed = next(row for row in study["selectors"] if row["selector"] == name)
     assert _state(graph) == observed["endpoint"]
@@ -81,13 +96,15 @@ def test_primitive_and_public_thol_share_pressure_but_only_public_creates_child(
     for field in ("epi", "capacity", "phase", "pressure"):
         assert primitive["raw_after_dispatch"][field] == raw[field][:8]
     assert raw["glyph_history"][0] == ("IL", "OZ", "THOL")
-    acceleration = Fraction.from_float(public["preparation"]["physical_acceleration"][
-        "observed_acceleration"
-    ])
-    factor = Fraction.from_float(public["policy"]["resolved_thol_factors"]["THOL_accel"])
-    actual = Fraction.from_float(raw["pressure"][0]) - Fraction.from_float(public["before"][
-        "pressure"
-    ][0])
+    acceleration = Fraction.from_float(
+        public["preparation"]["physical_acceleration"]["observed_acceleration"]
+    )
+    factor = Fraction.from_float(
+        public["policy"]["resolved_thol_factors"]["THOL_accel"]
+    )
+    actual = Fraction.from_float(raw["pressure"][0]) - Fraction.from_float(
+        public["before"]["pressure"][0]
+    )
     assert actual > 0
     assert abs(actual - factor * acceleration) < Fraction(1, 10**16)
 
@@ -98,15 +115,32 @@ def test_only_held_pressure_retains_thol_increment_in_the_nodal_step(study, disp
     held = _control(study, dispatch, False)
     refreshed = _control(study, dispatch, True)
     assert held["raw_after_dispatch"] == refreshed["raw_after_dispatch"]
-    assert held["integration"]["before"]["pressure"] == held["raw_after_dispatch"]["pressure"]
-    assert refreshed["integration"]["before"]["pressure"][:8] == baseline["before"]["pressure"]
-    assert refreshed["integration"]["after"]["epi"][:8] == baseline["integration"]["after"]["epi"]
-    assert held["integration"]["after"]["epi"][0] > baseline["integration"]["after"]["epi"][0]
+    assert (
+        held["integration"]["before"]["pressure"]
+        == held["raw_after_dispatch"]["pressure"]
+    )
+    assert (
+        refreshed["integration"]["before"]["pressure"][:8]
+        == baseline["before"]["pressure"]
+    )
+    assert (
+        refreshed["integration"]["after"]["epi"][:8]
+        == baseline["integration"]["after"]["epi"]
+    )
+    assert (
+        held["integration"]["after"]["epi"][0]
+        > baseline["integration"]["after"]["epi"][0]
+    )
     for row in (held, refreshed):
-        assert max(map(abs, row["integration"]["exact_held_input_euler_residual"])) < 2e-16
+        assert (
+            max(map(abs, row["integration"]["exact_held_input_euler_residual"])) < 2e-16
+        )
         assert row["integration"]["held_proposals_strictly_inside_hard_bounds"]
         if dispatch == "public":
-            assert row["integration"]["after"]["epi"][-1] == row["raw_after_dispatch"]["epi"][-1]
+            assert (
+                row["integration"]["after"]["epi"][-1]
+                == row["raw_after_dispatch"]["epi"][-1]
+            )
 
 
 def test_positive_transport_control_requires_real_edge_and_candidate_inventory(study):
@@ -134,7 +168,10 @@ def test_exact_symmetry_examples_do_not_promote_marked_runtime_to_unmarked_case(
     assert uniform["fixed_candidates"] == ()
     marked = examples["marked_parent"]
     assert not marked["unique_equivariant_selection_obstructed"]
-    assert marked["fixed_candidates"] == (0, 4)  # Absence of obstruction is not uniqueness.
+    assert marked["fixed_candidates"] == (
+        0,
+        4,
+    )  # Absence of obstruction is not uniqueness.
     assert len(marked["stabilizer_permutations"]) == 2
 
 

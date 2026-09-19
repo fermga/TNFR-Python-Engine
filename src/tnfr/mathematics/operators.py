@@ -42,9 +42,7 @@ __all__ = [
     "DEFAULT_C_MIN",
 ]
 
-DEFAULT_SPECTRAL_EXPECTATION_FLOOR: float = (
-    MATH_SPECTRAL_EXPECTATION_FLOOR_DEFAULT
-)
+DEFAULT_SPECTRAL_EXPECTATION_FLOOR: float = MATH_SPECTRAL_EXPECTATION_FLOOR_DEFAULT
 # Compatibility alias for the historical spectral API.  This value has never
 # been a canonical C(t) threshold.
 DEFAULT_C_MIN: float = DEFAULT_SPECTRAL_EXPECTATION_FLOOR
@@ -173,9 +171,7 @@ class SpectralExpectationOperator:
         self.eigenvalues = ensure_numpy(eigenvalues_backend, backend=resolved_backend)
         derived_c_min = float(np.min(self.eigenvalues.real))
         requested_floor = (
-            expectation_floor
-            if expectation_floor is not _C_MIN_UNSET
-            else c_min
+            expectation_floor if expectation_floor is not _C_MIN_UNSET else c_min
         )
         if requested_floor is _C_MIN_UNSET:
             self.c_min = derived_c_min

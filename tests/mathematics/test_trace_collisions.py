@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from math import gcd
 
-from tnfr.mathematics.finite_fields import FiniteField
 from tnfr.mathematics import trace_collisions as tc
+from tnfr.mathematics.finite_fields import FiniteField
 from tnfr.mathematics.trace_collisions import (
     certify_trace_collisions,
     character_formula_residual,
@@ -49,8 +49,9 @@ def test_character_formula_matches_exact_counts():
         field = FiniteField(p, f)
         for k in (2, 3):
             h = power_image(field, k)
-            assert trace_fiber_counts_via_characters(field, h) == \
-                trace_fiber_counts(field, h)
+            assert trace_fiber_counts_via_characters(field, h) == trace_fiber_counts(
+                field, h
+            )
             assert character_formula_residual(field, h) < 1e-9
 
 
@@ -91,7 +92,7 @@ def test_extension_field_collapses_information():
 def test_incomplete_support_when_observed_less_than_p():
     field = FiniteField(5, 2)
     cert = certify_trace_collisions(field, 2)
-    assert cert.observed_values < field.p     # some residue is never a square-trace
+    assert cert.observed_values < field.p  # some residue is never a square-trace
     assert not cert.full_support
     assert cert.has_collisions
 
@@ -105,22 +106,29 @@ def test_certificate_fields_consistent():
     assert cert.character_formula_residual < 1e-9
     assert cert.galois_invariant
     assert cert.min_fiber <= cert.max_fiber
-    assert "NT-P05c" in cert.claim_status      # type detector NOT claimed
+    assert "NT-P05c" in cert.claim_status  # type detector NOT claimed
 
 
 def test_observed_values_helper_matches_certificate():
     field = FiniteField(5, 2)
     h = power_image(field, 3)
-    assert observed_trace_values(field, h) == \
-        certify_trace_collisions(field, 3).observed_values
+    assert (
+        observed_trace_values(field, h)
+        == certify_trace_collisions(field, 3).observed_values
+    )
 
 
 def test_module_exports_complete():
     expected = {
-        "power_image", "trace_fiber_counts", "observed_trace_values",
-        "character_sum", "trace_fiber_counts_via_characters",
-        "character_formula_residual", "trace_is_galois_invariant",
-        "uniform_deviation", "TraceCollisionCertificate",
+        "power_image",
+        "trace_fiber_counts",
+        "observed_trace_values",
+        "character_sum",
+        "trace_fiber_counts_via_characters",
+        "character_formula_residual",
+        "trace_is_galois_invariant",
+        "uniform_deviation",
+        "TraceCollisionCertificate",
         "certify_trace_collisions",
     }
     assert expected <= set(tc.__all__)

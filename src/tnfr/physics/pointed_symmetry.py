@@ -61,8 +61,7 @@ def stabilizer_permutations(G, v, *, weight=None, cap: int = 2000):
     composition and inverse (the fixing condition ``g(v) = v`` is preserved).
     """
     return [
-        g for g in automorphism_permutations(G, weight=weight, cap=cap)
-        if g[v] == v
+        g for g in automorphism_permutations(G, weight=weight, cap=cap) if g[v] == v
     ]
 
 
@@ -101,8 +100,7 @@ def _inverse(g: dict) -> dict:
     return {dst: src for src, dst in g.items()}
 
 
-def conjugate_stabilizer_holds(G, v, g: dict, *, weight=None,
-                               cap: int = 2000) -> bool:
+def conjugate_stabilizer_holds(G, v, g: dict, *, weight=None, cap: int = 2000) -> bool:
     r"""Whether ``Γ_{g(v)} = g Γ_v g⁻¹`` for an automorphism ``g`` (MEASURED).
 
     The pointed structures at ``v`` and ``g(v)`` are conjugate, so origins in one
@@ -112,10 +110,7 @@ def conjugate_stabilizer_holds(G, v, g: dict, *, weight=None,
     stab_v = stabilizer_permutations(G, v, weight=weight, cap=cap)
     stab_w = stabilizer_permutations(G, w, weight=weight, cap=cap)
     ginv = _inverse(g)
-    conj = {
-        tuple(sorted(_compose(g, _compose(h, ginv)).items()))
-        for h in stab_v
-    }
+    conj = {tuple(sorted(_compose(g, _compose(h, ginv)).items())) for h in stab_v}
     target = {tuple(sorted(h.items())) for h in stab_w}
     return conj == target
 
@@ -125,16 +120,17 @@ class PointedSymmetryContext:
     r"""The residual symmetry of a pointed graph ``(G, v)``."""
 
     origin: object
-    full_order: int            # |Aut(G)|
-    stabilizer_order: int      # |Γ_v|
-    origin_orbit_size: int     # |orbit(v)| = |Aut(G)| / |Γ_v|
-    aut_orbit_count: int       # dim Fix(Aut(G))
+    full_order: int  # |Aut(G)|
+    stabilizer_order: int  # |Γ_v|
+    origin_orbit_size: int  # |orbit(v)| = |Aut(G)| / |Γ_v|
+    aut_orbit_count: int  # dim Fix(Aut(G))
     residual_orbit_count: int  # dim Fix(Γ_v) >= aut_orbit_count
     orbit_stabilizer_holds: bool
 
 
-def pointed_symmetry_context(G, v, *, weight=None,
-                             cap: int = 2000) -> PointedSymmetryContext:
+def pointed_symmetry_context(
+    G, v, *, weight=None, cap: int = 2000
+) -> PointedSymmetryContext:
     r"""Build the :class:`PointedSymmetryContext` for origin ``v``."""
     perms = automorphism_permutations(G, weight=weight, cap=cap)
     stab = [g for g in perms if g[v] == v]
@@ -157,14 +153,15 @@ class PointedBreakResult:
     r"""How a pointed operator breaks ``Aut(G)`` down to ``Γ_v``."""
 
     origin: object
-    break_magnitude: float       # ‖Fix(Aut)^⊥ component‖ after O@v
-    stabilizer_residual: float   # ‖Fix(Γ_v)^⊥ component‖ after O@v
-    broke_full_symmetry: bool    # left Fix(Aut(G))
-    preserves_stabilizer: bool   # stayed in Fix(Γ_v)
+    break_magnitude: float  # ‖Fix(Aut)^⊥ component‖ after O@v
+    stabilizer_residual: float  # ‖Fix(Γ_v)^⊥ component‖ after O@v
+    broke_full_symmetry: bool  # left Fix(Aut(G))
+    preserves_stabilizer: bool  # stayed in Fix(Γ_v)
 
 
-def pointed_break_residuals(op, G, v, *, channels=None,
-                            tol: float = 1e-6) -> PointedBreakResult:
+def pointed_break_residuals(
+    op, G, v, *, channels=None, tol: float = 1e-6
+) -> PointedBreakResult:
     r"""Apply ``op@v`` to the seed and split the result by ``Aut(G)`` and ``Γ_v``.
 
     A genuine pointed action leaves ``Fix(Aut(G))`` (``break_magnitude > tol``)
@@ -189,8 +186,8 @@ def pointed_break_residuals(op, G, v, *, channels=None,
         field = {nd: float(get_attr(H.nodes[nd], ch, 0.0)) for nd in H.nodes()}
         _, perp_full = decompose_state(G, field, permutations=perms)
         _, perp_stab = decompose_state(G, field, permutations=stab)
-        break_mag = max(break_mag, float((perp_full ** 2).sum() ** 0.5))
-        stab_res = max(stab_res, float((perp_stab ** 2).sum() ** 0.5))
+        break_mag = max(break_mag, float((perp_full**2).sum() ** 0.5))
+        stab_res = max(stab_res, float((perp_stab**2).sum() ** 0.5))
     return PointedBreakResult(
         origin=v,
         break_magnitude=break_mag,

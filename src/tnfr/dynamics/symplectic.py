@@ -87,4 +87,6 @@ class TNFRSymplecticIntegrator:
         w1 = 1.0 / (2.0 - root_two)
         w0 = -root_two * w1
         for coefficient in (w1, w0, w1):
-            TNFRSymplecticIntegrator.velocity_verlet(node, coefficient * dt, force_evaluator)
+            TNFRSymplecticIntegrator.velocity_verlet(
+                node, coefficient * dt, force_evaluator
+            )

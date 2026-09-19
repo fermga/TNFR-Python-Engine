@@ -9,9 +9,9 @@ future stability.
 
 from __future__ import annotations
 
+import json
 from collections import deque
 from fractions import Fraction
-import json
 from typing import Any
 
 import networkx as nx
@@ -104,9 +104,7 @@ def build_report(result: Any) -> dict[str, Any]:
         "same_graph_execution_provenance_certified": (
             result.same_graph_execution_provenance_certified
         ),
-        "whole_sequence_graph_state_atomic": (
-            result.whole_sequence_graph_state_atomic
-        ),
+        "whole_sequence_graph_state_atomic": (result.whole_sequence_graph_state_atomic),
         "exact_recorded_boundary_continuity_certified": (
             result.exact_recorded_boundary_continuity_certified
         ),
@@ -122,20 +120,17 @@ def build_report(result: Any) -> dict[str, Any]:
                 "binding_certified": receipt.receipt_binding_certified,
                 "spec_schedule_identity": receipt.spec.schedule is receipt.schedule,
                 "executed_schedule_identity": (
-                    receipt.cycle_result.event_execution.schedule
-                    is receipt.schedule
+                    receipt.cycle_result.event_execution.schedule is receipt.schedule
                 ),
             }
             for receipt in result.receipts
         ],
         "nested_offline_scope": {
             "cycle_sequence_shared_graph_provenance": (
-                result.observed_sequence
-                .shared_graph_execution_provenance_certified
+                result.observed_sequence.shared_graph_execution_provenance_certified
             ),
             "runtime_telescope_shared_graph_provenance": (
-                result.runtime_telescope
-                .shared_graph_execution_provenance_certified
+                result.runtime_telescope.shared_graph_execution_provenance_certified
             ),
             "runtime_telescope_whole_sequence_atomicity": (
                 result.runtime_telescope.whole_sequence_atomicity_certified
@@ -144,9 +139,7 @@ def build_report(result: Any) -> dict[str, Any]:
         "scope": {
             "runtime_global_gain": result.runtime_global_gain_certified,
             "uniform_repeated_margin": False,
-            "repeated_runtime_stability": (
-                result.repeated_runtime_stability_certified
-            ),
+            "repeated_runtime_stability": (result.repeated_runtime_stability_certified),
             "future_stability": result.future_stability_certified,
             "solver_accuracy": result.solver_accuracy_certified,
             "solver_order": result.solver_order_certified,

@@ -159,15 +159,12 @@ def test_directional_and_convex_boundaries_are_explicit(key, value):
 )
 def test_title_case_display_names_are_valid_contexts(display_name, glyph):
     defaults = canonical_glyph_factor_defaults()
-    key = next(
-        key
-        for key in GLYPH_FACTORS_BY_GLYPH[glyph]
-        if key in defaults
-    )
+    key = next(key for key in GLYPH_FACTORS_BY_GLYPH[glyph] if key in defaults)
 
-    assert validate_glyph_factors(
-        {key: defaults[key]}, glyph=display_name
-    )[key] == defaults[key]
+    assert (
+        validate_glyph_factors({key: defaults[key]}, glyph=display_name)[key]
+        == defaults[key]
+    )
 
 
 def test_unknown_extension_factors_are_preserved_without_coercion():

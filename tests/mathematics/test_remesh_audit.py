@@ -82,18 +82,24 @@ def test_temporal_echo_present_in_recurrence_and_absent_in_lift():
     past_local = np.ones(size)
     past_global = np.ones(size)
 
-    assert temporal_echo_residual(
-        remesh_recurrence_update(alpha=0.5),
-        now,
-        past_local,
-        past_global,
-    ) > 1e-6
-    assert temporal_echo_residual(
-        scale_projection_update(3, 1),
-        now,
-        past_local,
-        past_global,
-    ) < 1e-9
+    assert (
+        temporal_echo_residual(
+            remesh_recurrence_update(alpha=0.5),
+            now,
+            past_local,
+            past_global,
+        )
+        > 1e-6
+    )
+    assert (
+        temporal_echo_residual(
+            scale_projection_update(3, 1),
+            now,
+            past_local,
+            past_global,
+        )
+        < 1e-9
+    )
 
 
 def test_field_uniformity_is_finite_safe_and_explicitly_noncanonical():

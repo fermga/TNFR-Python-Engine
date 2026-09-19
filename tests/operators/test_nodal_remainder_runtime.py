@@ -2,25 +2,25 @@
 
 from __future__ import annotations
 
+import math
+import sys
 from dataclasses import replace
 from fractions import Fraction
-import math
 from random import Random
-import sys
 
 import networkx as nx
 import pytest
 
 from tnfr.constants import inject_defaults
-from tnfr.constants.aliases import ALIAS_DEPI, ALIAS_D2EPI, ALIAS_EPI, ALIAS_THETA
+from tnfr.constants.aliases import ALIAS_D2EPI, ALIAS_DEPI, ALIAS_EPI, ALIAS_THETA
 from tnfr.dynamics.dnfr import default_compute_delta_nfr
+from tnfr.operators import nodal_remainder_runtime as runtime
 from tnfr.operators._mutation_gate import mutation_threshold_sample
 from tnfr.operators.event_timing import (
-    build_operator_event_schedule, build_physical_flow_partition,
+    build_operator_event_schedule,
+    build_physical_flow_partition,
 )
-from tnfr.operators import nodal_remainder_runtime as runtime
 from tnfr.utils._structural_signature import structural_proof_signature
-
 
 SLOT = "_nodal_remainder_runtime_state"
 
@@ -29,15 +29,24 @@ def _graph(epi=(0.5, 0.75)):
     graph = nx.path_graph(2)
     inject_defaults(graph)
     graph.graph.update(
-        _t=0.0, RANDOM_SEED=17, DT_MIN=0.0, GAMMA={"type": "none"},
-        EPI_MIN=0.05, EPI_MAX=1.0,
+        _t=0.0,
+        RANDOM_SEED=17,
+        DT_MIN=0.0,
+        GAMMA={"type": "none"},
+        EPI_MIN=0.05,
+        EPI_MAX=1.0,
         compute_delta_nfr=default_compute_delta_nfr,
         DNFR_WEIGHTS={"phase": 0.0, "epi": 1.0, "vf": 0.0, "topo": 0.0},
     )
     for node, value in zip(graph, epi, strict=True):
         graph.nodes[node].update(
-            EPI=value, epi_kind="test", nu_f=1.0, theta=0.0,
-            delta_nfr=0.0, dEPI=0.0, glyph_history=[],
+            EPI=value,
+            epi_kind="test",
+            nu_f=1.0,
+            theta=0.0,
+            delta_nfr=0.0,
+            dEPI=0.0,
+            glyph_history=[],
         )
     graph.edges[0, 1].update(weight=1.0, length=1.0)
     return graph
@@ -45,14 +54,18 @@ def _graph(epi=(0.5, 0.75)):
 
 def _schedule(graph, names=(), durations=None):
     return build_operator_event_schedule(
-        names, start_time=graph.graph["_t"],
-        flow_durations=durations if durations is not None else (0.0,) * (len(names) + 1),
+        names,
+        start_time=graph.graph["_t"],
+        flow_durations=(
+            durations if durations is not None else (0.0,) * (len(names) + 1)
+        ),
     )
 
 
 def _run(graph, duration=0.1):
     return runtime.execute_nodal_remainder_event_schedule(
-        graph, _schedule(graph, durations=(duration,)),
+        graph,
+        _schedule(graph, durations=(duration,)),
     )
 
 
@@ -70,7 +83,9 @@ def test_pressure_is_recomputed_from_each_visible_endpoint():
     partition = build_physical_flow_partition(schedule.intervals[0], (0.25, 0.25))
 
     result = runtime.execute_nodal_remainder_event_schedule(
-        graph, schedule, physical_flow_partitions=(partition,),
+        graph,
+        schedule,
+        physical_flow_partitions=(partition,),
     )
 
     assert _epi(graph) == (0.59375, 0.65625)
@@ -86,7 +101,9 @@ def test_pressure_is_recomputed_from_each_visible_endpoint():
     assert result.runtime_provenance_certified
     for i in graph:
         assert tuple(graph.nodes[i]["epi_time_history"]) == (
-            (0.0, (0.5, 0.75)[i]), (0.25, first.after.epi[i]), (0.5, second.after.epi[i]),
+            (0.0, (0.5, 0.75)[i]),
+            (0.25, first.after.epi[i]),
+            (0.5, second.after.epi[i]),
         )
 
 
@@ -120,10 +137,14 @@ def test_zero_duration_and_positive_continuation_use_existing_carry():
     assert second.initial_binding.state == stationary.final_binding.state
     step = second.flows[0].step
     for i in graph:
-        expected = first.final_binding.state.exact_epi[i] + Fraction(0.1) * Fraction(step.pressure[i])
+        expected = first.final_binding.state.exact_epi[i] + Fraction(0.1) * Fraction(
+            step.pressure[i]
+        )
         assert step.after.exact_epi[i] == expected
     assert second.final_binding.time == 0.2
-    assert first.runtime_provenance_certified  # Historical evidence survives later evolution.
+    assert (
+        first.runtime_provenance_certified
+    )  # Historical evidence survives later evolution.
     assert stationary.runtime_provenance_certified
 
 
@@ -147,7 +168,9 @@ def test_actual_um_il_sha_preserve_nonzero_carry_and_visible_epi():
     initial = initial_flow.final_binding.state
     assert any(initial.remainder)
     names = ("coupling", "coherence", "silence")
-    result = runtime.execute_nodal_remainder_event_schedule(graph, _schedule(graph, names))
+    result = runtime.execute_nodal_remainder_event_schedule(
+        graph, _schedule(graph, names)
+    )
     assert len(result.events) == 3
     for item, name in zip(result.events, names, strict=True):
         assert item.event.operator_name == name
@@ -174,7 +197,8 @@ def test_actual_um_il_sha_preserve_nonzero_carry_and_visible_epi():
     assert step.capacity == capacity
     for i in graph:
         assert step.after.exact_epi[i] == (
-            initial.exact_epi[i] + Fraction(0.125) * Fraction(capacity[i]) * Fraction(step.pressure[i])
+            initial.exact_epi[i]
+            + Fraction(0.125) * Fraction(capacity[i]) * Fraction(step.pressure[i])
         )
 
 
@@ -212,15 +236,22 @@ def test_stale_persistent_binding_is_rejected_without_reset(change):
         kwargs["epi_lower"] = 0.1
     before = _signature(graph)
     with pytest.raises((ValueError, TypeError, RuntimeError)):
-        runtime.execute_nodal_remainder_event_schedule(graph, _schedule(graph), **kwargs)
+        runtime.execute_nodal_remainder_event_schedule(
+            graph, _schedule(graph), **kwargs
+        )
     assert _signature(graph) == before
     assert graph.graph[SLOT] is binding
 
 
-@pytest.mark.parametrize("names", (
-    ("reception", "silence"), ("emission", "silence"),
-    ("recursivity", "silence"), ("coupling", "coupling", "silence"),
-))
+@pytest.mark.parametrize(
+    "names",
+    (
+        ("reception", "silence"),
+        ("emission", "silence"),
+        ("recursivity", "silence"),
+        ("coupling", "coupling", "silence"),
+    ),
+)
 def test_unsupported_or_grammar_refused_word_does_not_attach_carry(names):
     graph = _graph()
     schedule = _schedule(graph, names)
@@ -231,10 +262,14 @@ def test_unsupported_or_grammar_refused_word_does_not_attach_carry(names):
     assert SLOT not in graph.graph
 
 
-@pytest.mark.parametrize("field,value", (
-    ("GAMMA", {"type": "constant", "value": 0.1}),
-    ("CLIP_MODE", "soft"), ("INTEGRATOR_METHOD", "rk4"),
-))
+@pytest.mark.parametrize(
+    "field,value",
+    (
+        ("GAMMA", {"type": "constant", "value": 0.1}),
+        ("CLIP_MODE", "soft"),
+        ("INTEGRATOR_METHOD", "rk4"),
+    ),
+)
 def test_unsupported_solver_configuration_is_rejected_before_attachment(field, value):
     graph = _graph()
     graph.graph[field] = value
@@ -295,7 +330,9 @@ def test_first_present_alias_precedence_matches_the_shared_scalar_owner():
         assert graph.nodes[i][ALIAS_DEPI[0]] == (0.25, -0.25)[i]
         assert graph.nodes[i][ALIAS_D2EPI[0]] == (1.0, -1.0)[i]
         assert all(graph.nodes[i][key] == (0.5, 0.75)[i] for key in ALIAS_EPI[1:])
-        assert all(graph.nodes[i][key] == 0.0 for key in (*ALIAS_DEPI[1:], *ALIAS_D2EPI[1:]))
+        assert all(
+            graph.nodes[i][key] == 0.0 for key in (*ALIAS_DEPI[1:], *ALIAS_D2EPI[1:])
+        )
 
 
 def test_late_exact_band_failure_rolls_back_history_carry_and_aliases():
@@ -310,7 +347,9 @@ def test_late_exact_band_failure_rolls_back_history_carry_and_aliases():
     partition = build_physical_flow_partition(schedule.intervals[0], (0.125, 5.0))
     with pytest.raises((ValueError, TypeError, RuntimeError)):
         runtime.execute_nodal_remainder_event_schedule(
-            graph, schedule, physical_flow_partitions=(partition,),
+            graph,
+            schedule,
+            physical_flow_partitions=(partition,),
         )
     assert _signature(graph) == before
     assert graph.graph[SLOT] is binding
@@ -328,17 +367,25 @@ def test_result_copy_cannot_recreate_executor_provenance():
     assert detached.runtime_provenance_certified is False
 
 
-@pytest.mark.parametrize("target,field", (
-    ("result", "execution_identity"), ("result", "initial_binding"),
-    ("binding", "state"), ("binding", "binding_identity"),
-    ("flow", "step"), ("refresh", "after_snapshot"),
-))
+@pytest.mark.parametrize(
+    "target,field",
+    (
+        ("result", "execution_identity"),
+        ("result", "initial_binding"),
+        ("binding", "state"),
+        ("binding", "binding_identity"),
+        ("flow", "step"),
+        ("refresh", "after_snapshot"),
+    ),
+)
 def test_missing_evidence_slots_fail_closed(target, field):
     graph = _graph()
     result = _run(graph)
     owner = {
-        "result": result, "binding": result.final_binding,
-        "flow": result.flows[0], "refresh": result.refresh_records[0],
+        "result": result,
+        "binding": result.final_binding,
+        "flow": result.flows[0],
+        "refresh": result.refresh_records[0],
     }[target]
     object.__delattr__(owner, field)
     assert result.runtime_provenance_certified is False
@@ -358,52 +405,82 @@ def test_phase_observations_bind_two_live_c6_cycles_to_the_existing_projection()
 
     phase = tuple(i * math.pi / 3 for i in range(6))
     expected_first = observe_c6_coupling_coherence_phase_step(phase=phase)
-    expected_second = observe_c6_coupling_coherence_phase_step(phase=expected_first.phase_after_coherence)
+    expected_second = observe_c6_coupling_coherence_phase_step(
+        phase=expected_first.phase_after_coherence
+    )
     graph = nx.cycle_graph(6)
     inject_defaults(graph)
-    graph.graph.update(_t=0.0, RANDOM_SEED=17, compute_delta_nfr=default_compute_delta_nfr)
+    graph.graph.update(
+        _t=0.0, RANDOM_SEED=17, compute_delta_nfr=default_compute_delta_nfr
+    )
     for node in graph:
-        graph.nodes[node].update(EPI=.5, nu_f=1., theta=phase[node], delta_nfr=0.,
-                                 dEPI=0., SI=.5, glyph_history=[])
+        graph.nodes[node].update(
+            EPI=0.5,
+            nu_f=1.0,
+            theta=phase[node],
+            delta_nfr=0.0,
+            dEPI=0.0,
+            SI=0.5,
+            glyph_history=[],
+        )
     for edge in graph.edges:
-        graph.edges[edge].update(weight=1., length=1.)
+        graph.edges[edge].update(weight=1.0, length=1.0)
     names = ("coupling", "coherence") * 2 + ("silence",)
-    schedule = _schedule(graph, names, (0., 0., .25, 0., .25, 0.))
-    partitions = tuple(build_physical_flow_partition(interval, (.0625,) * 4)
-                       for interval in schedule.intervals if interval.duration > 0)
+    schedule = _schedule(graph, names, (0.0, 0.0, 0.25, 0.0, 0.25, 0.0))
+    partitions = tuple(
+        build_physical_flow_partition(interval, (0.0625,) * 4)
+        for interval in schedule.intervals
+        if interval.duration > 0
+    )
     result = runtime.execute_nodal_remainder_event_schedule(
-        graph, schedule, physical_flow_partitions=partitions, epi_lower=.375, epi_upper=.625,
+        graph,
+        schedule,
+        physical_flow_partitions=partitions,
+        epi_lower=0.375,
+        epi_upper=0.625,
     )
     for cycle, expected in enumerate((expected_first, expected_second)):
-        um, il = result.events[2 * cycle:2 * cycle + 2]
+        um, il = result.events[2 * cycle : 2 * cycle + 2]
         assert um.phase_before == expected.phase_before
         assert um.phase_after == il.phase_before == expected.phase_after_coupling
         assert il.phase_after == expected.phase_after_coherence
-        for flow in result.flows[4 * cycle:4 * cycle + 4]:
+        for flow in result.flows[4 * cycle : 4 * cycle + 4]:
             assert flow.phase_before == flow.phase_after == il.phase_after
-            assert flow.step.capacity == (1.,) * 6
+            assert flow.step.capacity == (1.0,) * 6
     terminal = result.events[-1]
-    assert terminal.phase_before == terminal.phase_after == expected_second.phase_after_coherence
+    assert (
+        terminal.phase_before
+        == terminal.phase_after
+        == expected_second.phase_after_coherence
+    )
     assert terminal.phase_after == tuple(graph.nodes[i]["theta"] for i in graph)
-    assert terminal.before_snapshot.nu_f == (1.,) * 6
-    assert all(value < 1. for value in terminal.after_snapshot.nu_f)
+    assert terminal.before_snapshot.nu_f == (1.0,) * 6
+    assert all(value < 1.0 for value in terminal.after_snapshot.nu_f)
     assert result.runtime_provenance_certified
 
 
-@pytest.mark.parametrize("location,field", (
-    ("flow", "phase_before"), ("flow", "phase_after"),
-    ("event", "phase_before"), ("event", "phase_after"),
-))
+@pytest.mark.parametrize(
+    "location,field",
+    (
+        ("flow", "phase_before"),
+        ("flow", "phase_after"),
+        ("event", "phase_before"),
+        ("event", "phase_after"),
+    ),
+)
 def test_phase_evidence_tampering_invalidates_its_executor_seal(location, field):
     graph = _graph()
     names = ("coupling", "coherence", "silence")
     result = runtime.execute_nodal_remainder_event_schedule(
-        graph, _schedule(graph, names, (0.125, 0., 0., 0.)),
+        graph,
+        _schedule(graph, names, (0.125, 0.0, 0.0, 0.0)),
     )
     assert result.runtime_provenance_certified
     record = result.flows[0] if location == "flow" else result.events[0]
     values = getattr(record, field)
-    object.__setattr__(record, field, (math.nextafter(values[0], math.inf),) + values[1:])
+    object.__setattr__(
+        record, field, (math.nextafter(values[0], math.inf),) + values[1:]
+    )
     assert result.runtime_provenance_certified is False
 
 
@@ -412,19 +489,29 @@ def test_flow_phase_capture_preserves_the_stored_signed_zero():
     graph.nodes[0]["theta"] = -0.0
     result = _run(graph)
     flow = result.flows[0]
-    assert tuple(value.hex() for value in flow.phase_before) == ("-0x0.0p+0", "0x0.0p+0")
-    assert tuple(value.hex() for value in flow.phase_after) == tuple(value.hex() for value in flow.phase_before)
+    assert tuple(value.hex() for value in flow.phase_before) == (
+        "-0x0.0p+0",
+        "0x0.0p+0",
+    )
+    assert tuple(value.hex() for value in flow.phase_after) == tuple(
+        value.hex() for value in flow.phase_before
+    )
     assert result.runtime_provenance_certified
 
 
-@pytest.mark.parametrize("values,default,expected", (
-    ({"theta": .25, "phase": .75}, 0., .25),
-    ({"phase": .75}, 0., .75),
-    ({}, 0., 0.),
-    ({}, .125, .125),
-    ({"theta": -0.}, 0., -0.),
-))
-def test_scalar_capture_preserves_alias_priority_without_virtual_mapping_reads(values, default, expected):
+@pytest.mark.parametrize(
+    "values,default,expected",
+    (
+        ({"theta": 0.25, "phase": 0.75}, 0.0, 0.25),
+        ({"phase": 0.75}, 0.0, 0.75),
+        ({}, 0.0, 0.0),
+        ({}, 0.125, 0.125),
+        ({"theta": -0.0}, 0.0, -0.0),
+    ),
+)
+def test_scalar_capture_preserves_alias_priority_without_virtual_mapping_reads(
+    values, default, expected
+):
     class ReadTrap(dict):
         def __contains__(self, key):
             raise AssertionError("scalar capture dispatched virtual membership")
@@ -436,10 +523,14 @@ def test_scalar_capture_preserves_alias_priority_without_virtual_mapping_reads(v
     assert type(observed) is float and observed.hex() == expected.hex()
 
 
-@pytest.mark.parametrize("invalid", (True, 0, Fraction(1, 2), float("nan"), float("inf"), -float("inf")))
-def test_scalar_capture_rejects_invalid_preferred_alias_instead_of_using_fallback(invalid):
+@pytest.mark.parametrize(
+    "invalid", (True, 0, Fraction(1, 2), float("nan"), float("inf"), -float("inf"))
+)
+def test_scalar_capture_rejects_invalid_preferred_alias_instead_of_using_fallback(
+    invalid,
+):
     with pytest.raises(ValueError, match="actual finite scalar float"):
-        runtime._scalar({"theta": invalid, "phase": .75}, ALIAS_THETA, "phase")
+        runtime._scalar({"theta": invalid, "phase": 0.75}, ALIAS_THETA, "phase")
 
 
 @pytest.mark.parametrize("alias", ("theta", "phase"))
@@ -454,9 +545,12 @@ def test_string_subclass_core_alias_cannot_silently_become_a_default_phase(alias
             raise AssertionError("capture dispatched virtual string conversion")
 
     with pytest.raises(ValueError, match="exact string keys"):
-        runtime._scalar({CoreKey(alias): .25}, ALIAS_THETA, "phase")
+        runtime._scalar({CoreKey(alias): 0.25}, ALIAS_THETA, "phase")
     # A non-core auxiliary string key has no alias semantics and is not read.
-    assert runtime._scalar({CoreKey("auxiliary"): 7, "phase": .75}, ALIAS_THETA, "phase") == .75
+    assert (
+        runtime._scalar({CoreKey("auxiliary"): 7, "phase": 0.75}, ALIAS_THETA, "phase")
+        == 0.75
+    )
 
 
 @pytest.mark.parametrize("hook", ("contains", "getitem"))
@@ -484,15 +578,17 @@ def test_phase_capture_cannot_mutate_auxiliary_graph_state_via_mapping_hooks(hoo
             return dict.__getitem__(self, key)
 
     graph._node[0] = PhaseReadMutation(graph._node[0])
-    result = _run(graph, .125)
+    result = _run(graph, 0.125)
     assert result.runtime_provenance_certified
     assert graph.graph["phase_capture_side_effect"] == 0
-    assert result.flows[0].phase_before == result.flows[0].phase_after == (0., 0.)
-    assert result.final_binding.state.epi == (.53125, .71875)
+    assert result.flows[0].phase_before == result.flows[0].phase_after == (0.0, 0.0)
+    assert result.final_binding.state.epi == (0.53125, 0.71875)
 
 
 @pytest.mark.parametrize("change", ("epi", "kind", "support", "carry", "carry_payload"))
-def test_actual_event_with_forbidden_side_effect_restores_the_complete_graph(monkeypatch, change):
+def test_actual_event_with_forbidden_side_effect_restores_the_complete_graph(
+    monkeypatch, change
+):
     graph = _graph()
     _run(graph)
     binding = graph.graph[SLOT]
@@ -519,7 +615,8 @@ def test_actual_event_with_forbidden_side_effect_restores_the_complete_graph(mon
     monkeypatch.setattr(runtime, "execute_network_operator_stage", faulty_stage)
     with pytest.raises((ValueError, TypeError, RuntimeError)):
         runtime.execute_nodal_remainder_event_schedule(
-            graph, _schedule(graph, ("coupling", "coherence", "silence")),
+            graph,
+            _schedule(graph, ("coupling", "coherence", "silence")),
         )
     assert len(reached) == 1
     assert _signature(graph) == before

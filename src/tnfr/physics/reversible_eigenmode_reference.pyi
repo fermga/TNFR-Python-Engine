@@ -10,7 +10,6 @@ ExactMatrix = tuple[ExactVector, ...]
 ExactPartition = tuple[Fraction, ...]
 ExactPartitionFamily = tuple[ExactPartition, ...]
 
-
 @dataclass(frozen=True, slots=True)
 class ReversibleSingleEigenmodeEulerReferenceCertificate:
     exact_conductance: ExactMatrix
@@ -90,7 +89,6 @@ class ReversibleSingleEigenmodeEulerReferenceCertificate:
     @property
     def full_tnfr_stability_certified(self) -> bool: ...
 
-
 def certify_reversible_single_eigenmode_euler_reference(
     conductance: Iterable[Iterable[Fraction]],
     *,
@@ -98,6 +96,5 @@ def certify_reversible_single_eigenmode_euler_reference(
     initial_epi: Iterable[Fraction],
     partitions: Iterable[Iterable[Fraction]],
 ) -> ReversibleSingleEigenmodeEulerReferenceCertificate: ...
-
 
 __all__: tuple[str, ...]

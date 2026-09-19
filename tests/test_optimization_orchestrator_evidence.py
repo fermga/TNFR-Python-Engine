@@ -195,9 +195,7 @@ class _AdelicTrace:
 
     def compute_geometric_trace(self, time):
         weights = self.nu_f / np.sqrt(self.primes)
-        return float(
-            abs(np.sum(weights * np.exp(1j * float(time) * self.nu_f)))
-        )
+        return float(abs(np.sum(weights * np.exp(1j * float(time) * self.nu_f))))
 
 
 def test_adelic_route_measures_grid_storage_and_verifies_against_formula() -> None:

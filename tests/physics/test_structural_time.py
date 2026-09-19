@@ -45,12 +45,12 @@ def test_consensus_projection_properties():
     W = NON_NORMAL_SC
     Q = consensus_projection(W)
     L = directed_rw_laplacian(W)
-    assert np.allclose(Q @ Q, Q)                 # idempotent
-    assert np.allclose(Q @ np.ones(len(W)), 0)   # annihilates consensus
-    assert np.allclose(L @ Q, L)                 # LQ = L (Q commutes with L)
-    assert np.allclose(Q @ L, L)                 # QL = L
+    assert np.allclose(Q @ Q, Q)  # idempotent
+    assert np.allclose(Q @ np.ones(len(W)), 0)  # annihilates consensus
+    assert np.allclose(L @ Q, L)  # LQ = L (Q commutes with L)
+    assert np.allclose(Q @ L, L)  # QL = L
     pi = stationary_distribution(W)
-    assert np.allclose(pi @ Q, 0)                # pi^T Q = 0
+    assert np.allclose(pi @ Q, 0)  # pi^T Q = 0
 
 
 def test_structural_time_is_cumulative_integral():
@@ -80,10 +80,8 @@ def test_scalar_vf_structural_time_reparameterization():
 
 
 def test_clock_change_residual_shrinks_with_refinement():
-    coarse = clock_change_residual(NON_NORMAL_SC, X0, _vf,
-                                   np.linspace(0.0, 8.0, 400))
-    fine = clock_change_residual(NON_NORMAL_SC, X0, _vf,
-                                 np.linspace(0.0, 8.0, 3200))
+    coarse = clock_change_residual(NON_NORMAL_SC, X0, _vf, np.linspace(0.0, 8.0, 400))
+    fine = clock_change_residual(NON_NORMAL_SC, X0, _vf, np.linspace(0.0, 8.0, 3200))
     assert fine < coarse  # RK4 is convergent
 
 
@@ -122,7 +120,27 @@ def test_transient_bound_dominates_measured_reorganization():
 def test_structural_time_certificate_reports_supplied_finite_window():
     t = np.linspace(0.0, 8.0, 120)
     cert = certify_structural_time(NON_NORMAL_SC, X0, _vf, t)
-    assert cert.observation_window_structural == pytest.approx(8.0)
+    assert cert.observation_window_structural == pytest.approx(
+        structural_time(_vf, t)[-1]
+    )
+    assert cert.observation_window_structural != pytest.approx(t[-1])
+    assert cert.tail_status == "UNASSESSED_FINITE_WINDOW"
+
+
+@pytest.mark.parametrize("capacity, origin", [(0.0, 5.0), (2.0, 0.0), (2.0, 5.0)])
+def test_certificate_reorganization_uses_exposure_not_grid_endpoint(capacity, origin):
+    adjacency = np.array([[0.0, 1.0], [1.0, 0.0]])
+    initial = np.array([1.0, -1.0])
+    t = np.linspace(origin, origin + 1.0, 65)
+    cert = certify_structural_time(adjacency, initial, lambda _t: capacity, t)
+    assert cert.observation_window_structural == pytest.approx(capacity)
+    # L(1,-1)=2(1,-1): integrating ||L exp(-sL)x0|| from zero to s
+    # gives sqrt(2)*(1-exp(-2s)), independently of the external grid origin.
+    exact_variation = np.sqrt(2.0) * (-np.expm1(-2.0 * capacity))
+    assert cert.total_reorganization == pytest.approx(exact_variation, rel=4e-4)
+    if capacity == 0.0:
+        assert cert.total_reorganization == 0.0
+        assert cert.clock_change_residual == 0.0
     assert cert.tail_status == "UNASSESSED_FINITE_WINDOW"
 
 
@@ -133,12 +151,8 @@ def test_total_variation_bound_rejects_degenerate_scan(kwargs):
 
 
 def test_total_variation_bound_does_not_claim_infinite_horizon():
-    short = total_variation_bound(
-        NON_NORMAL_SC, X0, t_max=2.0, samples=40
-    )
-    long = total_variation_bound(
-        NON_NORMAL_SC, X0, t_max=20.0, samples=400
-    )
+    short = total_variation_bound(NON_NORMAL_SC, X0, t_max=2.0, samples=40)
+    long = total_variation_bound(NON_NORMAL_SC, X0, t_max=20.0, samples=400)
     assert short[0] <= long[0] + 1e-9
 
 
@@ -152,11 +166,17 @@ def test_analytic_dissipative_envelope_bounds_normal_control():
 
 
 def test_analytic_envelope_is_inconclusive_for_weighted_counterexample():
-    weights = np.array([
-        [0, 1, 0, 0, 0, 12], [0, 0, 1, 0, 0, 0],
-        [0, 0, 0, 15, 0, 0], [0, 9, 0, 0, 1, 0],
-        [0, 0, 0, 0, 0, 10], [1, 0, 0, 0, 0, 0],
-    ], dtype=float)
+    weights = np.array(
+        [
+            [0, 1, 0, 0, 0, 12],
+            [0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 15, 0, 0],
+            [0, 9, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 10],
+            [1, 0, 0, 0, 0, 0],
+        ],
+        dtype=float,
+    )
     assert np.isinf(dissipative_envelope_bound(weights, np.ones(6)))
 
 
@@ -192,12 +212,13 @@ def test_certificate_relabel_invariant():
     Wp = P @ NON_NORMAL_SC @ P.T
     x0p = P @ X0
     relabelled = certify_structural_time(Wp, x0p, _vf, t)
-    assert relabelled.sustained_gain == pytest.approx(base.sustained_gain,
-                                                      abs=1e-6)
+    assert relabelled.sustained_gain == pytest.approx(base.sustained_gain, abs=1e-6)
     assert relabelled.nonconsensus_abscissa == pytest.approx(
-        base.nonconsensus_abscissa, abs=1e-6)
+        base.nonconsensus_abscissa, abs=1e-6
+    )
     assert relabelled.total_reorganization == pytest.approx(
-        base.total_reorganization, abs=1e-4)
+        base.total_reorganization, abs=1e-4
+    )
     assert relabelled.bound_holds == base.bound_holds
 
 
@@ -211,9 +232,14 @@ def test_certificate_bundle_fields():
 
 def test_module_exports_complete():
     expected = {
-        "consensus_projection", "nonconsensus_abscissa", "sustained_gain",
-        "structural_time", "clock_change_residual",
-        "reorganization_time_invariance_residual", "total_variation_bound",
-        "StructuralTimeCertificate", "certify_structural_time",
+        "consensus_projection",
+        "nonconsensus_abscissa",
+        "sustained_gain",
+        "structural_time",
+        "clock_change_residual",
+        "reorganization_time_invariance_residual",
+        "total_variation_bound",
+        "StructuralTimeCertificate",
+        "certify_structural_time",
     }
     assert expected <= set(dd.__all__)

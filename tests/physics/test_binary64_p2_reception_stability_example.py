@@ -5,15 +5,14 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
 import tnfr.physics as physics
 import tnfr.physics.binary64_p2_reception_stability as p2_module
-
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE_PATH = (
@@ -48,9 +47,7 @@ def test_module_stub_and_facade_expose_the_narrow_api() -> None:
         "certify_p2_half_reception_remesh_stability",
     }
     assert set(p2_module.__all__) == expected
-    stub = Path(p2_module.__file__).with_suffix(".pyi").read_text(
-        encoding="utf-8"
-    )
+    stub = Path(p2_module.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
     assert "class P2HalfReceptionRemeshStabilityCertificate" in stub
     assert "def certify_p2_half_reception_remesh_stability" in stub
     assert expected <= set(physics.__all__)

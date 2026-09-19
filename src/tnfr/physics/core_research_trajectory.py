@@ -28,9 +28,9 @@ meshes is not a convergence or order-of-accuracy theorem.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from fractions import Fraction
-import math
 from typing import Any, Iterable, Sequence
 
 import networkx as nx
@@ -210,9 +210,7 @@ def _validated_relative_tolerance(value: Any, name: str = "tolerance") -> float:
             f"{name} must be a finite real in the open interval (0, 1)"
         ) from exc
     if not 0.0 < result < 1.0:
-        raise ValueError(
-            f"{name} must be a finite real in the open interval (0, 1)"
-        )
+        raise ValueError(f"{name} must be a finite real in the open interval (0, 1)")
     return result
 
 
@@ -220,9 +218,7 @@ def _validated_time_tolerance(value: Any) -> float:
     try:
         result = finite_real_scalar(value, "time_tolerance")
     except ValueError as exc:
-        raise ValueError(
-            "time_tolerance must be a finite nonnegative real"
-        ) from exc
+        raise ValueError("time_tolerance must be a finite nonnegative real") from exc
     if result < 0.0:
         raise ValueError("time_tolerance must be a finite nonnegative real")
     return result
@@ -398,15 +394,11 @@ def _forward_euler_residuals(
     )
 
 
-def _transport_operator(
-    graph: nx.Graph, reference_nodes: Sequence[Any]
-) -> np.ndarray:
+def _transport_operator(graph: nx.Graph, reference_nodes: Sequence[Any]) -> np.ndarray:
     local_nodes, laplacian = structural_diffusion_operator(graph)
     frequency = np.asarray(
         [
-            _required_channel(
-                graph, node, ALIAS_VF, "structural frequency"
-            )
+            _required_channel(graph, node, ALIAS_VF, "structural frequency")
             for node in local_nodes
         ],
         dtype=float,
@@ -480,15 +472,16 @@ def _observed_common_lyapunov(
     exact_values: list[Fraction] = []
     for snapshot in snapshots:
         fields = tuple(
-            Fraction.from_float(
-                _required_channel(snapshot, node, ALIAS_EPI, "EPI")
-            )
+            Fraction.from_float(_required_channel(snapshot, node, ALIAS_EPI, "EPI"))
             for node in nodes
         )
-        equilibrium = sum(
-            (weight * epi for weight, epi in zip(weights, fields)),
-            Fraction(),
-        ) / weight_total
+        equilibrium = (
+            sum(
+                (weight * epi for weight, epi in zip(weights, fields)),
+                Fraction(),
+            )
+            / weight_total
+        )
         value = Fraction()
         for epi, weight in zip(fields, weights):
             centered = epi - equilibrium
@@ -514,14 +507,10 @@ def _observed_common_lyapunov(
             for value in exact_values
         ),
         tuple(
-            _finite_fraction(
-                increment, "scaled observed common Lyapunov increment"
-            )
+            _finite_fraction(increment, "scaled observed common Lyapunov increment")
             for increment in exact_scaled_increments
         ),
-        _finite_fraction(
-            maximum_increase, "maximum scaled common Lyapunov increase"
-        ),
+        _finite_fraction(maximum_increase, "maximum scaled common Lyapunov increase"),
         _finite_fraction(
             cumulative_positive_variation,
             "cumulative scaled common Lyapunov positive variation",
@@ -584,9 +573,7 @@ def certify_core_research_trajectory(
         raise TypeError("scales must be a StructuralChannelScales instance")
     rule = _validated_integration_rule(integration_rule)
     states = _materialize_snapshots(snapshots, name="snapshots")
-    sample_times = _materialize_times(
-        times, expected_length=len(states), name="times"
-    )
+    sample_times = _materialize_times(times, expected_length=len(states), name="times")
     blocks = _materialize_partition(partition)
     node_labels = _attribute_names(node_label_attributes, "node_label_attributes")
     edge_labels = _attribute_names(edge_label_attributes, "edge_label_attributes")
@@ -654,9 +641,7 @@ def certify_core_research_trajectory(
         cumulative_lyapunov_positive_variation,
         exact_maximum_lyapunov_increase,
         exact_cumulative_lyapunov_positive_variation,
-    ) = _observed_common_lyapunov(
-        states, nodes, switching, float(scales.epi)
-    )
+    ) = _observed_common_lyapunov(states, nodes, switching, float(scales.epi))
     all_intervals_pass = all(
         interval.interval_conditions_pass for interval in intervals
     )
@@ -672,8 +657,7 @@ def certify_core_research_trajectory(
         ),
         (
             "cumulative_common_lyapunov_positive_variation",
-            exact_cumulative_lyapunov_positive_variation
-            <= exact_relative_tolerance,
+            exact_cumulative_lyapunov_positive_variation <= exact_relative_tolerance,
         ),
     )
     joint_pass = all(passed for _, passed in conditions)
@@ -765,9 +749,7 @@ def _direct_epi_errors(
                 Fraction.from_float(coarse_epi) - Fraction.from_float(fine_epi),
             )
         )
-    maximum = max(
-        (abs(value) for _, value in exact_differences), default=Fraction()
-    )
+    maximum = max((abs(value) for _, value in exact_differences), default=Fraction())
     scaled_maximum = maximum / Fraction.from_float(epi_scale)
     differences = tuple(
         (node, _finite_fraction(value, "direct persistent-id EPI difference"))
@@ -776,9 +758,7 @@ def _direct_epi_errors(
     return (
         differences,
         _finite_fraction(maximum, "direct persistent-id EPI error"),
-        _finite_fraction(
-            scaled_maximum, "scaled direct persistent-id EPI error"
-        ),
+        _finite_fraction(scaled_maximum, "scaled direct persistent-id EPI error"),
     )
 
 
@@ -836,9 +816,7 @@ def compare_core_research_trajectory_refinement(
         raise TypeError("same_dynamics_declared must be a boolean")
     if not isinstance(scales, StructuralChannelScales):
         raise TypeError("scales must be a StructuralChannelScales instance")
-    coarse_states = _materialize_snapshots(
-        coarse_snapshots, name="coarse_snapshots"
-    )
+    coarse_states = _materialize_snapshots(coarse_snapshots, name="coarse_snapshots")
     fine_states = _materialize_snapshots(fine_snapshots, name="fine_snapshots")
     coarse_sample_times = _materialize_times(
         coarse_times,
@@ -864,9 +842,7 @@ def compare_core_research_trajectory_refinement(
             "coarse and fine trajectories require the same bare edge support"
         )
     if not (
-        _times_match(
-            coarse_sample_times[0], fine_sample_times[0], matching_tolerance
-        )
+        _times_match(coarse_sample_times[0], fine_sample_times[0], matching_tolerance)
         and _times_match(
             coarse_sample_times[-1], fine_sample_times[-1], matching_tolerance
         )
@@ -876,13 +852,16 @@ def compare_core_research_trajectory_refinement(
     matches = _common_time_indices(
         coarse_sample_times, fine_sample_times, matching_tolerance
     )
-    if not matches or matches[0] != (0, 0) or matches[-1] != (
-        len(coarse_states) - 1,
-        len(fine_states) - 1,
-    ):
-        raise ValueError(
-            "coarse and fine interval endpoints must match unambiguously"
+    if (
+        not matches
+        or matches[0] != (0, 0)
+        or matches[-1]
+        != (
+            len(coarse_states) - 1,
+            len(fine_states) - 1,
         )
+    ):
+        raise ValueError("coarse and fine interval endpoints must match unambiguously")
 
     coarse_trajectory = certify_core_research_trajectory(
         coarse_states,
@@ -949,17 +928,14 @@ def compare_core_research_trajectory_refinement(
         for left, right in zip(coarse_sample_times, coarse_sample_times[1:])
     )
     maximum_fine_step = max(
-        right - left
-        for left, right in zip(fine_sample_times, fine_sample_times[1:])
+        right - left for left, right in zip(fine_sample_times, fine_sample_times[1:])
     )
     strict_refinement = bool(
         all_coarse_matched
         and len(fine_states) > len(coarse_states)
         and maximum_fine_step < maximum_coarse_step
     )
-    common_agreement = all(
-        sample.direct_epi_within_tolerance for sample in samples
-    )
+    common_agreement = all(sample.direct_epi_within_tolerance for sample in samples)
     conditions = (
         ("same_dynamics_declared", same_dynamics_declared),
         (

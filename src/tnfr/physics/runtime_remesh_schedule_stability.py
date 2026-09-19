@@ -179,9 +179,7 @@ def _stamp_from_values(
 ) -> tuple[Any, ...]:
     return (
         version,
-        tuple(
-            (name, _compact_proof_value(values[name])) for name in field_names
-        ),
+        tuple((name, _compact_proof_value(values[name])) for name in field_names),
     )
 
 
@@ -199,10 +197,7 @@ def _source_sequence_is_intact(value: Any) -> bool:
     if type(value) is not ObservedEventRemeshCycleSequence:
         return False
     try:
-        return (
-            ObservedEventRemeshCycleSequence._proof_fields_are_intact(value)
-            is True
-        )
+        return ObservedEventRemeshCycleSequence._proof_fields_are_intact(value) is True
     except BaseException:
         return False
 
@@ -212,9 +207,7 @@ def _composition_is_intact(value: Any) -> bool:
         return False
     try:
         return (
-            ObservedRepresentedEPIScheduleComposition._proof_fields_are_intact(
-                value
-            )
+            ObservedRepresentedEPIScheduleComposition._proof_fields_are_intact(value)
             is True
         )
     except BaseException:
@@ -228,15 +221,9 @@ class RuntimeRemeshScheduleBoundaryObservation:
     source_sequence: ObservedEventRemeshCycleSequence = field(repr=False)
     boundary_index: int
     runtime_bridge: RuntimeRemeshHistoryBridgeObservation = field(repr=False)
-    exact_transition: UniformRemeshHistoryTransitionObservation = field(
-        repr=False
-    )
-    schedule_composition: ObservedRepresentedEPIScheduleComposition = field(
-        repr=False
-    )
-    schedule_balance: RemeshScheduleHistoryStabilityObservation = field(
-        repr=False
-    )
+    exact_transition: UniformRemeshHistoryTransitionObservation = field(repr=False)
+    schedule_composition: ObservedRepresentedEPIScheduleComposition = field(repr=False)
+    schedule_balance: RemeshScheduleHistoryStabilityObservation = field(repr=False)
     exact_common_normalized_metric: ExactVector
     exact_schedule_input_head: ExactVector
     exact_scheduled_head: ExactVector
@@ -335,10 +322,7 @@ def _boundary_proof_fields_are_intact(
         if (
             type(source) is not ObservedEventRemeshCycleSequence
             or type(index) is not int
-            or (
-                not source_already_validated
-                and not _source_sequence_is_intact(source)
-            )
+            or (not source_already_validated and not _source_sequence_is_intact(source))
         ):
             return False
         expected = _derive_boundary_values(
@@ -376,12 +360,8 @@ def _derive_boundary_values(
     index: int,
     *,
     runtime_bridge_override: RuntimeRemeshHistoryBridgeObservation | None = None,
-    exact_transition_override: (
-        UniformRemeshHistoryTransitionObservation | None
-    ) = None,
-    schedule_balance_override: (
-        RemeshScheduleHistoryStabilityObservation | None
-    ) = None,
+    exact_transition_override: UniformRemeshHistoryTransitionObservation | None = None,
+    schedule_balance_override: RemeshScheduleHistoryStabilityObservation | None = None,
     source_already_validated: bool = False,
 ) -> dict[str, Any]:
     if not source_already_validated and not _source_sequence_is_intact(source):
@@ -446,10 +426,7 @@ def _derive_boundary_values(
         )
     else:
         exact_transition = exact_transition_override
-        if (
-            type(exact_transition)
-            is not UniformRemeshHistoryTransitionObservation
-        ):
+        if type(exact_transition) is not UniformRemeshHistoryTransitionObservation:
             raise TNFRValueError(
                 "stored normalized companion has the wrong result type"
             )
@@ -739,8 +716,7 @@ class RuntimeRemeshScheduleSequenceObservation:
         return bool(
             self._proof_fields_are_intact()
             and all(
-                boundary.energy_nonincrease_observed
-                for boundary in self.boundaries
+                boundary.energy_nonincrease_observed for boundary in self.boundaries
             )
         )
 
@@ -826,10 +802,7 @@ def _derive_sequence_values(
         Fraction(0),
     )
     total_lower_bound = sum(
-        (
-            boundary.exact_gain_based_energy_drop_lower_bound
-            for boundary in boundaries
-        ),
+        (boundary.exact_gain_based_energy_drop_lower_bound for boundary in boundaries),
         Fraction(0),
     )
     total_slack = sum(
@@ -851,8 +824,7 @@ def _derive_sequence_values(
         ),
         (
             "every_adjacent_boundary_intact",
-            boundaries_were_built
-            or all(boundary_integrity),
+            boundaries_were_built or all(boundary_integrity),
         ),
         (
             "exact_intermediate_augmented_energies_continuous",

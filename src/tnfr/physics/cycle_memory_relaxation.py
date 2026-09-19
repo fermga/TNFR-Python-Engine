@@ -116,9 +116,7 @@ def certify_cycle_memory_relaxation(
         raise ValueError("each h*epi_weight*capacity must be at most 1/2")
     local = _integer(tau_local, "tau_local", 1)
     global_ = _integer(tau_global, "tau_global", 1)
-    alpha_q = _rational(
-        DEFAULTS["REMESH_ALPHA"] if alpha is None else alpha, "alpha"
-    )
+    alpha_q = _rational(DEFAULTS["REMESH_ALPHA"] if alpha is None else alpha, "alpha")
     history = certify_uniform_remesh_history_stability(
         alpha=alpha_q, tau_local=local, tau_global=global_
     )
@@ -133,6 +131,16 @@ def certify_cycle_memory_relaxation(
         history, continuous_gain
     )
     return CycleMemoryRelaxationReference(
-        count, nu, e, steps, horizon, gap, coefficients, euler_gain,
-        continuous_gain, history, euler, continuous,
+        count,
+        nu,
+        e,
+        steps,
+        horizon,
+        gap,
+        coefficients,
+        euler_gain,
+        continuous_gain,
+        history,
+        euler,
+        continuous,
     )

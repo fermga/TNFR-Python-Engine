@@ -1,38 +1,66 @@
 # TNFR theory and research index
 
-This directory contains mathematical scope, derivations and research programs
-for the TNFR Python Engine. [AGENTS.md](../AGENTS.md) is the synthesized canonical
-reference. Source code and tests decide implemented behavior; a theory document
-must state whether a result is exact, conditional, empirical or open.
+This is the document ownership and status index. Read
+[AGENTS.md](../AGENTS.md) for working conventions, the
+[portfolio](../TNFR_lineas_de_investigacion.txt) for research branches, and the
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) for the sole
+active queue. [Strategy](NODAL_RESEARCH_STRATEGY.md) explains that queue's rationale.
+
+**Current scope:** exact and finite results support specified nodal models;
+autonomous maintained pattern generation and physical identification remain open.
+The current G3 gate concerns controlled omission of decaying hidden form, with
+field-error bounds and xi branch provenance. The P1-P5 measurement bridge is
+supporting work. C6, prepared-ring response, polyhedral, public-data search and
+Millennium campaigns are parked unless the plan explicitly reopens them.
+
+| Label | Meaning |
+| --- | --- |
+| Definition/contract | Chosen model or implemented interface; not uniquely derived from the nodal identity |
+| Exact/conditional | Mathematical result under explicit hypotheses and representation conventions |
+| Finite evidence | Recorded cases or tests; no unobserved-future guarantee |
+| Auxiliary model | Added dynamics or construction with its own assumptions and bridge obligations |
+| Open | Required derivation or adequate evidence is absent |
+| Historical/parked | Retained results or proposals; not current instructions or an active campaign |
+
+The categories may coexist in one document. A theorem's hypotheses and a
+counterexample take precedence over a historical title containing "canonical",
+"conservation", "emergent" or "unification".
 
 ## Core framework
 
 | Document | Scope |
 | --- | --- |
 | [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) | Nodal equation, structural triad and framework overview |
-| [NODAL_PARAMETER_FOUNDATIONS.md](NODAL_PARAMETER_FOUNDATIONS.md) | Parameter families, units, covariance, conditional diffusion, joint response and phase/capacity compatibility |
+| [NODAL_PARAMETER_FOUNDATIONS.md](NODAL_PARAMETER_FOUNDATIONS.md) | Parameter families, units, covariance, conditional diffusion, joint response, phase/capacity compatibility and directed phase/form exchange |
 | [DIAGNOSTIC_AND_GRAMMAR_SCOPE.md](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) | Exact hypotheses, finite-graph witnesses and limits of current claims |
 | [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) | Navigation between state, closure, parameter and diagnostic owners; no duplicate derivation ledger |
 | [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) | Four diagnostic channels and the open minimal-state question |
 | [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) | Operator semantics and channel effects |
-| [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) | U1-U6 grammar and its operational derivations |
+| [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) | U1-U6 contracts, conditional motivation and configured policies |
 | [GLOSSARY.md](GLOSSARY.md) | Shared terminology and status of constants and thresholds |
 
 Field APIs and bounds are centralized in
 [Structural Fields](../docs/STRUCTURAL_FIELDS_TETRAD.md); executable operator
 contracts are centralized in [API Contracts](../docs/API_CONTRACTS.md).
 
+Definitions belong to the foundation/parameter references; grammar premises
+to the scope/specification pair; implementation effects to operator contracts.
+The [scale bridge](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) owns current effective
+geometry, shared realization, P5 reflection invariants and xi boundaries.
+The phase/form and primitive-phase studies remain in the parameter reference;
+they do not derive an autonomous source by imposing a rotating input.
+
 ## Dynamics and geometry
 
 | Document | Scope |
 | --- | --- |
 | [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) | Conservation diagnostics, residuals and Lyapunov candidates |
-| [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) | Variational models and their stated bridge conditions |
-| [DISSIPATIVE_AND_OPEN_SYSTEMS.md](DISSIPATIVE_AND_OPEN_SYSTEMS.md) | Open-system and dissipative extensions |
+| [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) | Auxiliary Hamiltonian/variational models and restricted exact diffusion bridges |
+| [DISSIPATIVE_AND_OPEN_SYSTEMS.md](DISSIPATIVE_AND_OPEN_SYSTEMS.md) | Auxiliary dissipative/open-system models, with declared forcing and neutral-mode boundaries |
 | [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md) | Stability diagnostics and invariant monitoring |
 | [TNFR_DIFFUSION_STABILITY_THEOREM.md](TNFR_DIFFUSION_STABILITY_THEOREM.md) | Fixed/time-varying and exact-common-metric EPI diffusion, exact reversible single-eigenmode Euler theorem, finite executor binding with full-matrix defect propagation, directed transient criterion, and conditional affine hybrid bounds |
-| [TNFR_SCALE_GEOMETRY_AND_BRIDGE.md](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) | Pure-EPI quotient, coherence geometry, decoupled metriplectic bridge, and restricted S16 endpoint/path certificates |
-| [DERIVED_EPI_MEMORY.md](DERIVED_EPI_MEMORY.md) | Exact projected memory, affine closure, minimal linear realizations, full-EPI Euler prediction and conditional common-IL response; P5 finite-history bounds/minimal quotient and REMESH comparison |
+| [TNFR_SCALE_GEOMETRY_AND_BRIDGE.md](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) | Pure-EPI and counted-support quotients, joint EPI/potential realization, tetrad dependencies, constrained reflection invariants and xi continuity boundary, decoupled metriplectic bridge, and restricted S16 certificates |
+| [DERIVED_EPI_MEMORY.md](DERIVED_EPI_MEMORY.md) | Exact projected memory, affine closure, shared minimal realization of affine outputs, full-EPI Euler prediction and conditional common-IL response; P5 finite-history bounds/minimal quotient and REMESH comparison |
 | [COUPLING_WINDING_PERSISTENCE.md](COUPLING_WINDING_PERSISTENCE.md) | Restricted canonical Coupling gap diffusion, winding protection, loss under Transition, and finite runtime boundaries |
 | [CAPACITY_LOCALIZATION_BALANCE.md](CAPACITY_LOCALIZATION_BALANCE.md) | Shifted EPI/capacity diffusion, conditional nonuniform equilibria, operator release and finite-mobility retention controls |
 | [CYCLE_SUPPORT_DYNAMICS.md](CYCLE_SUPPORT_DYNAMICS.md) | Joint phase/capacity/EPI balance, operator reset and nodal-flow energy budgets, and retained contrast under a finite reorganization clock |
@@ -42,8 +70,8 @@ contracts are centralized in [API Contracts](../docs/API_CONTRACTS.md).
 | [FORCED_SUPPORT_BALANCE.md](FORCED_SUPPORT_BALANCE.md) | Exact frozen-support compatibility, drifting relative profiles and nonlinear forcing/step-defect observations |
 | [CHILD_COUPLING_FEEDBACK.md](CHILD_COUPLING_FEEDBACK.md) | Child-target Coupling, exact changes of reference and a fixed original-profile comparison |
 | [PHYSICAL_REGIME_CORRESPONDENCES.md](PHYSICAL_REGIME_CORRESPONDENCES.md) | Scoped comparisons with diffusive, inertial and modal regimes |
-| [GAUGE_SYMMETRY_AND_UNIFICATION.md](GAUGE_SYMMETRY_AND_UNIFICATION.md) | Gauge and polarization models |
-| [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) | Derived field quantities |
+| [GAUGE_SYMMETRY_AND_UNIFICATION.md](GAUGE_SYMMETRY_AND_UNIFICATION.md) | Auxiliary gauge and classical polarization constructions; no engine-wide symmetry or particle unification theorem |
+| [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) | Diagnostic algebraic contractions; measured dynamics require a separate law |
 | [EMERGENT_ONTOLOGY.md](EMERGENT_ONTOLOGY.md) | NFR formation reuse map (Section 1.1), scoped structural results and auxiliary comparisons; physical emergence remains open |
 
 ## Arithmetic structure
@@ -87,62 +115,28 @@ problems. Supporting maps include
 [NUCLEUS_A_PRIME_LADDER_ATLAS.md](NUCLEUS_A_PRIME_LADDER_ATLAS.md), and
 [NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md](NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md).
 
-## Catalog studies
+## Catalog and application references
 
-- [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) separates the
-  clipped runtime, finite cyclic filter and finite companion recurrence; it
-  derives the cyclic projector and the restricted augmented-history stability
-  theorem. It also records the one-transition binary64 residual bridge and the
-  exact finite telescope that binds each applied REMESH result to the next
-  represented schedule and recorded history head. Its effective-P2 reference
-  family specializes the general reversible eigenmode theorem from
-  [TNFR_DIFFUSION_STABILITY_THEOREM.md](TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem),
-  then adds exact ideal REMESH error scaling and an explicit runtime residual
-  bound. The general pure kernel proves conditional exact-real partition
-  convergence. Its finite offline runtime adapter now binds individually
-  executor-certified reversible exact-mode partitions, separates pressure and
-  held-input defects, and propagates them with the full Euler matrices. A
-  separate graph-owned executor now gives one finite schedule/REMESH cycle
-  sequence same-invocation causal provenance and atomicity while retaining the
-  offline observers' narrower contracts. A sealed observer derives exact
-  normalized lower margins on its contiguous finite blocks; the public
-  witnesses give `kappa=139/256` and zero. Equilibrium and scaling obstruct a
-  uniform positive absolute drop. A separate conditional exact policy theorem
-  gives prefix gain upper bound one, uniform normalized block margin `1-q` and repeated
-  geometric spatial-disagreement decay for fixed-companion schedule families
-  with one common exact gain `q<1`. Its robust extension absorbs any declared
-  signed head-energy defect `delta<=eta*J` through
-  `q_eff=q*(1+eta)`, and a causal adapter verifies that bound, the represented
-  gains and the full history-energy envelope on one recorded finite block. An
-  exact pairwise reduction exposes a normal-valued `alpha=1/2` obstruction with
-  `eta=2^210-1/4` over the unrestricted bounded box. The first useful restricted
-  `0<alpha<1` class is now closed on antisymmetric P2 histories at `alpha=1/2`:
-  an analytic IEEE tail plus an exact 6,615/3,890 finite-core enumeration proves
-  the sharp uniform bound `eta=135/124`, REMESH-only forward invariance and the
-  strict schedule threshold `q<124/259`. The `q=4/9` example gives
-  `q_eff=259/279`; equality at the threshold has zero margin. The `alpha=1`
-  hard-clip REMESH class separately has uniform `eta=0`. On P2, the configured
-  binary64 half-Reception Jacobi EPI kernel has
-  global gain `q=0`, so the restricted repeated composition extinguishes active-
-  history spatial disagreement after `tau_global+1` cycles. One sealed
-  graph-owned event now binds the kernel to its grammar-admitted two-phase EN
-  EPI stage and captured endpoints. A finite same-invocation adapter also binds
-  every selected EN stage and same-cycle `alpha=1` REMESH, checks the active
-  history suffix, and records post-horizon spatial extinction on one
-  executor-owned graph. A reusable policy entry point now performs the strict
-  P2/REMESH preflight and finite post-certification inside one outer transaction
-  on every call; two calls therefore yield two independently validated traces,
-  without turning either trace into a future guarantee. Auditing all auxiliary
-  Reception state, extending the half-alpha result beyond antisymmetric P2 or
-  binding it to repeated complete-runtime execution, mesh convergence, full
-  runtime stability and the runtime infinity limit remain open.
-- [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) records
-  tested catalog extensions and their classification.
-- [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) links selected
-  theory to executable analyses.
+| Document | Scope/status |
+| --- | --- |
+| [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) | Current conditional mathematics: cyclic filters, history companion, finite runtime defects and restricted repeated policies; no unrestricted runtime-infinity theorem |
+| [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) | Historical audit outcome and current implementation owners; no active queue or complete catalog theorem |
+| [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) | Experimental factorization pipeline; structural confidence versus arithmetic verification, fallbacks and evaluation scope |
+| [C6_RESEARCH_MECHANISM_AUDIT.md](C6_RESEARCH_MECHANISM_AUDIT.md) | Parked B71-B75 audit/evidence; 41/56 first-exit labels excluded, 15 open; C6 global stability remains open |
+| [TNFR_DIRECTED_NONNORMAL_DYNAMICS.md](TNFR_DIRECTED_NONNORMAL_DYNAMICS.md) | Conditional directed-transport results; eigenvalue decay and transient amplification are distinct |
+
+## Historical material and maintenance
+
+The [archive](research/archive/README.md) preserves superseded notebooks,
+publication proposals and delivery ledgers byte for byte. Historical instructions
+and assertions are not current authority. Dates inside retained derivation
+notebooks identify evidence/supersession; the active queue remains the plan.
+Do not append the same result to every index: update its mathematical owner,
+then adjust the portfolio or plan only when status or priority changes.
 
 ## Reproducibility rule
 
-Every empirical claim must identify inputs, seed, operator sequence, telemetry
-and executable code. A green test suite verifies implemented contracts; it does
-not prove an open mathematical statement.
+A numerical claim identifies model, inputs, source/configuration, seed where used,
+execution path, precision and evidence. Exact mathematics states assumptions and
+proof; finite tests check implementations and witnesses. An audit correction is
+not a new experimental validation, and no archive move closes an open theorem.

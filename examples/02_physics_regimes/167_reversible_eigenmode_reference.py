@@ -12,15 +12,14 @@ and does not certify binary64 execution, glyphs, REMESH or mixed-mode data.
 
 from __future__ import annotations
 
-from fractions import Fraction
 import json
+from fractions import Fraction
 from typing import Any
 
 from tnfr.physics import (
     ReversibleSingleEigenmodeEulerReferenceCertificate,
     certify_reversible_single_eigenmode_euler_reference,
 )
-
 
 F = Fraction
 P3_CONDUCTANCE = (
@@ -85,8 +84,7 @@ def build_report(
                     certificate.reference_certificate_certified
                 ),
                 "initial_epi": [
-                    _fraction_text(value)
-                    for value in certificate.exact_initial_epi
+                    _fraction_text(value) for value in certificate.exact_initial_epi
                 ],
                 "reversible_metric": [
                     _fraction_text(value)
@@ -98,14 +96,11 @@ def build_report(
                     float(certificate.exact_continuous_factor_upper_bound),
                 ],
                 "euler_factors": [
-                    _fraction_text(value)
-                    for value in certificate.exact_euler_factors
+                    _fraction_text(value) for value in certificate.exact_euler_factors
                 ],
                 "linf_quadratic_error_bounds": [
                     _fraction_text(value)
-                    for value in (
-                        certificate.exact_linf_quadratic_error_upper_bounds
-                    )
+                    for value in (certificate.exact_linf_quadratic_error_upper_bounds)
                 ],
                 "h_energy_quadratic_error_bounds": [
                     _fraction_text(value)
@@ -118,19 +113,16 @@ def build_report(
                 ),
                 "scope": {
                     "conditional_exact_real_partition_convergence": (
-                        certificate
-                        .conditional_exact_real_partition_convergence_certified
+                        certificate.conditional_exact_real_partition_convergence_certified
                     ),
                     "binary64_asymptotic_convergence": (
                         certificate.binary64_asymptotic_convergence_certified
                     ),
                     "arbitrary_or_mixed_mode_initial_data": (
-                        certificate
-                        .arbitrary_or_mixed_mode_initial_data_certified
+                        certificate.arbitrary_or_mixed_mode_initial_data_certified
                     ),
                     "directed_or_nonreversible_generator": (
-                        certificate
-                        .directed_or_nonreversible_generator_certified
+                        certificate.directed_or_nonreversible_generator_certified
                     ),
                     "changing_generator_or_metric": (
                         certificate.changing_generator_or_metric_certified
@@ -139,9 +131,7 @@ def build_report(
                         certificate.glyph_or_remesh_dynamics_certified
                     ),
                     "solver_order": certificate.solver_order_certified,
-                    "full_tnfr_stability": (
-                        certificate.full_tnfr_stability_certified
-                    ),
+                    "full_tnfr_stability": (certificate.full_tnfr_stability_certified),
                 },
             }
             for name, certificate in protocol

@@ -299,7 +299,7 @@ class CacheManager:
         decoder: Callable[[Any], Any] | None = None,
     ) -> None:
         """Register `
-ame`` with ``factory`` and optional lifecycle hooks."""
+        ame`` with ``factory`` and optional lifecycle hooks."""
 
         if lock_factory is None:
             lock_factory = threading.RLock
@@ -371,7 +371,7 @@ ame`` with ``factory`` and optional lifecycle hooks."""
         use_default: bool = True,
     ) -> int | None:
         """Return capacity for `
-ame`` considering overrides and defaults."""
+        ame`` considering overrides and defaults."""
 
         with self._registry_lock:
             override = self._capacity_overrides.get(name, self._MISSING)
@@ -393,14 +393,14 @@ ame`` considering overrides and defaults."""
 
     def has_override(self, name: str) -> bool:
         """Return ``True`` if `
-ame`` has an explicit capacity override."""
+        ame`` has an explicit capacity override."""
 
         with self._registry_lock:
             return name in self._capacity_overrides
 
     def get_lock(self, name: str) -> threading.Lock | threading.RLock:
         """Return the lock guarding cache `
-ame`` for external coordination."""
+        ame`` for external coordination."""
 
         entry = self._entries.get(name)
         if entry is None:
@@ -415,7 +415,7 @@ ame`` for external coordination."""
 
     def get(self, name: str, *, create: bool = True) -> Any:
         """Return cache `
-ame`` creating it on demand when ``create`` is true."""
+        ame`` creating it on demand when ``create`` is true."""
 
         entry = self._entries.get(name)
         if entry is None:
@@ -429,7 +429,7 @@ ame`` creating it on demand when ``create`` is true."""
 
     def peek(self, name: str) -> Any:
         """Return cache `
-ame`` without creating a missing entry."""
+        ame`` without creating a missing entry."""
 
         entry = self._entries.get(name)
         if entry is None:
@@ -439,7 +439,7 @@ ame`` without creating a missing entry."""
 
     def store(self, name: str, value: Any) -> None:
         """Replace the stored value for cache `
-ame`` with ``value``."""
+        ame`` with ``value``."""
 
         entry = self._entries.get(name)
         if entry is None:
@@ -455,7 +455,7 @@ ame`` with ``value``."""
         create: bool = True,
     ) -> Any:
         """Apply ``updater`` to cache `
-ame`` storing the resulting value."""
+        ame`` storing the resulting value."""
 
         entry = self._entries.get(name)
         if entry is None:
@@ -610,7 +610,7 @@ ame`` storing the resulting value."""
         duration: float | None = None,
     ) -> None:
         """Increase cache hit counters for `
-ame`` (optionally logging latency)."""
+        ame`` (optionally logging latency)."""
 
         metrics = self._ensure_metrics(name)
         with metrics.lock:
@@ -627,7 +627,7 @@ ame`` (optionally logging latency)."""
         duration: float | None = None,
     ) -> None:
         """Increase cache miss counters for `
-ame`` (optionally logging latency)."""
+        ame`` (optionally logging latency)."""
 
         metrics = self._ensure_metrics(name)
         with metrics.lock:
@@ -638,7 +638,7 @@ ame`` (optionally logging latency)."""
 
     def increment_eviction(self, name: str, *, amount: int = 1) -> None:
         """Increase eviction count for cache `
-ame``."""
+        ame``."""
 
         metrics = self._ensure_metrics(name)
         with metrics.lock:
@@ -646,7 +646,7 @@ ame``."""
 
     def record_timing(self, name: str, duration: float) -> None:
         """Accumulate ``duration`` into latency telemetry for `
-ame``."""
+        ame``."""
 
         metrics = self._ensure_metrics(name)
         with metrics.lock:
@@ -656,7 +656,7 @@ ame``."""
     @contextmanager
     def timer(self, name: str) -> TimingContext:
         """Context manager recording execution time for `
-ame``."""
+        ame``."""
 
         start = perf_counter()
         try:
@@ -666,7 +666,7 @@ ame``."""
 
     def get_metrics(self, name: str) -> CacheStatistics:
         """Return a snapshot of telemetry collected for cache `
-ame``."""
+        ame``."""
 
         metrics = self._metrics.get(name)
         if metrics is None:
@@ -1462,8 +1462,10 @@ def node_set_checksum(
     snapshot = tuple(nodes)
     cached = graph.get(NODE_SET_CHECKSUM_KEY)
     if (
-        isinstance(cached, tuple) and len(cached) == 4
-        and _same_node_snapshot(cached[2], snapshot) and cached[3] is bool(presorted)
+        isinstance(cached, tuple)
+        and len(cached) == 4
+        and _same_node_snapshot(cached[2], snapshot)
+        and cached[3] is bool(presorted)
     ):
         checksum = cached[1]
     else:
@@ -1474,7 +1476,12 @@ def node_set_checksum(
     if store:
         # Replace legacy two/three-field entries even when the digest is the
         # same. Otherwise every later lookup would rebuild all node digests.
-        graph[NODE_SET_CHECKSUM_KEY] = (checksum[:16], checksum, snapshot, bool(presorted))
+        graph[NODE_SET_CHECKSUM_KEY] = (
+            checksum[:16],
+            checksum,
+            snapshot,
+            bool(presorted),
+        )
     else:
         graph.pop(NODE_SET_CHECKSUM_KEY, None)
     return checksum
@@ -1489,14 +1496,21 @@ class NodeCache:
     sorted_nodes: tuple[Any, ...] | None = None
     idx: dict[Any, int] | None = None
     offset: dict[Any, int] | None = None
-    owner: weakref.ReferenceType[Any] | None = field(default=None, repr=False, compare=False)
+    owner: weakref.ReferenceType[Any] | None = field(
+        default=None, repr=False, compare=False
+    )
     offset_sorted: bool | None = None
 
     def __reduce__(self) -> tuple[Any, tuple[Any, ...]]:
         """Preserve legacy picklability while rebuilding runtime ownership."""
         return type(self), (
-            self.checksum, self.nodes, self.sorted_nodes, self.idx, self.offset,
-            None, getattr(self, "offset_sorted", None),
+            self.checksum,
+            self.nodes,
+            self.sorted_nodes,
+            self.idx,
+            self.offset,
+            None,
+            getattr(self, "offset_sorted", None),
         )
 
     @property
@@ -1514,7 +1528,7 @@ def _update_node_cache(
     owner: weakref.ReferenceType[Any] | None = None,
 ) -> None:
     """Store `
-odes`` and ``checksum`` in ``graph`` under ``key``."""
+    odes`` and ``checksum`` in ``graph`` under ``key``."""
 
     graph[f"{key}_cache"] = NodeCache(
         checksum=checksum, nodes=nodes, sorted_nodes=sorted_nodes, owner=owner
@@ -1563,8 +1577,11 @@ def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
     dirty = bool(graph.pop("_node_list_dirty", False))
     sort_nodes = bool(graph.get("SORT_NODES", False))
     if (
-        cache is None or getattr(cache, "owner", None) is None or cache.owner() is not G
-        or not _same_node_snapshot(cache.nodes, snapshot) or dirty
+        cache is None
+        or getattr(cache, "owner", None) is None
+        or cache.owner() is not G
+        or not _same_node_snapshot(cache.nodes, snapshot)
+        or dirty
     ):
         return _refresh_node_list_cache(
             G, graph, sort_nodes=sort_nodes, current_n=current_n, nodes=snapshot
@@ -1595,8 +1612,10 @@ def _ensure_node_map(
     cache: NodeCache = graph["_node_list_cache"]
 
     missing = [
-        attr for attr in attrs
-        if getattr(cache, attr) is None or (attr == "offset" and cache.offset_sorted is not sort)
+        attr
+        for attr in attrs
+        if getattr(cache, attr) is None
+        or (attr == "offset" and cache.offset_sorted is not sort)
     ]
     if missing:
         if sort:
@@ -1656,14 +1675,14 @@ class _NodeOffsetScope:
     def check(self, *, complete: bool = False) -> None:
         G = self.graph
         changed = (
-            G._node is not self.storage or G.graph is not self.metadata
+            G._node is not self.storage
+            or G.graph is not self.metadata
             or len(G._node) != len(self.nodes)
             or bool(G.graph.get("SORT_NODES", False)) is not self.sort
         )
         if complete and not changed:
-            changed = (
-                not _same_node_snapshot(self.nodes, tuple(G.nodes()))
-                or any(G._node[node] is not data for node, data in self.node_data.items())
+            changed = not _same_node_snapshot(self.nodes, tuple(G.nodes())) or any(
+                G._node[node] is not data for node, data in self.node_data.items()
             )
         if changed:
             raise RuntimeError(
@@ -1681,7 +1700,8 @@ def _scoped_node_offset(G: nx.Graph, node: NodeId) -> int | None:
     """Read an opted-in offset; unrelated/expired execution uses normal lookup."""
     for scope in reversed(_NODE_OFFSET_SCOPES.get()):
         if (
-            scope.graph is not G or not scope.active
+            scope.graph is not G
+            or not scope.active
             or scope.owner != _offset_scope_owner()
         ):
             continue
@@ -1690,7 +1710,9 @@ def _scoped_node_offset(G: nx.Graph, node: NodeId) -> int | None:
         # the complete boundary check. Other same-size mutations are checked
         # at scope exit, under the caller's explicit stable-order contract.
         if node not in scope.offsets or G._node.get(node) is not scope.node_data[node]:
-            raise RuntimeError("stable_node_offsets: target node changed during the scope")
+            raise RuntimeError(
+                "stable_node_offsets: target node changed during the scope"
+            )
         return scope.offsets[node]
     return None
 
@@ -1729,9 +1751,8 @@ def stable_node_offsets(G: nx.Graph) -> Iterator[tuple[NodeId, ...]]:
             for node_id in nodes:
                 value = random_jitter(NodeNX.from_graph(graph, node_id), 0.1)
     """
-    if (
-        type(G) not in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
-        or hasattr(G, "_graph")
+    if type(G) not in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph) or hasattr(
+        G, "_graph"
     ):
         raise TypeError(
             "stable_node_offsets requires an ordinary NetworkX graph, not a view/subclass"
@@ -1744,8 +1765,14 @@ def stable_node_offsets(G: nx.Graph) -> Iterator[tuple[NodeId, ...]]:
     offsets = dict(ensure_node_offset_map(G))
     nodes = G.graph["_node_list_cache"].nodes
     scope = _NodeOffsetScope(
-        G, nodes, offsets, {node: G._node[node] for node in nodes}, G._node,
-        G.graph, bool(G.graph.get("SORT_NODES", False)), owner,
+        G,
+        nodes,
+        offsets,
+        {node: G._node[node] for node in nodes},
+        G._node,
+        G.graph,
+        bool(G.graph.get("SORT_NODES", False)),
+        owner,
     )
     token = _NODE_OFFSET_SCOPES.set((*previous, scope))
     try:
@@ -1780,13 +1807,24 @@ DNFR_PREP_STATE_KEY = "_dnfr_prep_state"
 # Rebuildable state owned by this cache/metrics infrastructure. Configuration
 # (_cache_config, _tnfr_cache_config, _tnfr_cache_layers) is deliberately absent.
 # Graph-state copies can omit these keys before copying persistent user data.
-GRAPH_RUNTIME_CACHE_KEYS = frozenset({
-    _GRAPH_CACHE_MANAGER_KEY, "_edge_cache_manager", DNFR_PREP_STATE_KEY,
-    "_dnfr_prep_cache", "_tnfr_change_tracker", "_trig_version",
-    "_node_cache", "_node_cache_weak",
-    "_node_list_cache", "_node_list_checksum", "_node_list_len",
-    "_node_list_dirty", NODE_SET_CHECKSUM_KEY, "_dnfr_nodes_checksum",
-})
+GRAPH_RUNTIME_CACHE_KEYS = frozenset(
+    {
+        _GRAPH_CACHE_MANAGER_KEY,
+        "_edge_cache_manager",
+        DNFR_PREP_STATE_KEY,
+        "_dnfr_prep_cache",
+        "_tnfr_change_tracker",
+        "_trig_version",
+        "_node_cache",
+        "_node_cache_weak",
+        "_node_list_cache",
+        "_node_list_checksum",
+        "_node_list_len",
+        "_node_list_dirty",
+        NODE_SET_CHECKSUM_KEY,
+        "_dnfr_nodes_checksum",
+    }
+)
 
 # Ephemeral graph cache management:
 # ----------------------------------
@@ -1874,7 +1912,10 @@ def _graph_cache_manager(graph: MutableMapping[str, Any]) -> CacheManager:
     manager = graph.get(_GRAPH_CACHE_MANAGER_KEY)
     # NetworkX copies graph metadata shallowly. Rebinding only the outer
     # EdgeCacheManager still shares the inner buffers and reset hooks.
-    if not isinstance(manager, CacheManager) or getattr(manager, "_graph_owner", None) is not graph:
+    if (
+        not isinstance(manager, CacheManager)
+        or getattr(manager, "_graph_owner", None) is not graph
+    ):
         manager = build_cache_manager(graph=graph, default_capacity=128)
         manager._graph_owner = graph
         graph[_GRAPH_CACHE_MANAGER_KEY] = manager
@@ -2160,12 +2201,12 @@ def cached_nodes_and_A(
 ) -> tuple[tuple[Any, ...], Any]:
     """Return cached nodes tuple and adjacency matrix for ``G``.
 
-    When ``prefer_sparse`` is true the adjacency matrix construction is skipped
-    unless a caller later requests it explicitly.  This lets ΔNFR reuse the
-    edge-index buffers stored on :class:`~tnfr.dynamics.dnfr.DnfrCache` without
-    paying for `
-x.to_numpy_array`` on sparse graphs while keeping the
-    canonical cache interface unchanged.
+        When ``prefer_sparse`` is true the adjacency matrix construction is skipped
+        unless a caller later requests it explicitly.  This lets ΔNFR reuse the
+        edge-index buffers stored on :class:`~tnfr.dynamics.dnfr.DnfrCache` without
+        paying for `
+    x.to_numpy_array`` on sparse graphs while keeping the
+        canonical cache interface unchanged.
     """
 
     if nodes is None:
@@ -3220,15 +3261,15 @@ _DEP_HASH_MISSING = object()
 
 def _dependency_alias_keys(dep: str) -> tuple[str, ...]:
     """Map a `
-ode_*`` cache dependency to its canonical alias keys.
+    ode_*`` cache dependency to its canonical alias keys.
 
-    The canonical field writer (:func:`tnfr.alias.set_attr`) stores each
-    field under the FIRST alias of its tuple, which is the Greek/canonical
-    key (e.g. ``'ΔNFR'``, ``'νf'``, ``'EPI'``) — NOT the English dependency
-    token.  The cache-key dependency hash MUST therefore resolve through the
-    alias tuple; reading a hardcoded English name (``data='delta_nfr'``)
-    silently yields ``None`` for every node, making the key blind to the
-    field and returning stale results (the bug this maps around).
+        The canonical field writer (:func:`tnfr.alias.set_attr`) stores each
+        field under the FIRST alias of its tuple, which is the Greek/canonical
+        key (e.g. ``'ΔNFR'``, ``'νf'``, ``'EPI'``) — NOT the English dependency
+        token.  The cache-key dependency hash MUST therefore resolve through the
+        alias tuple; reading a hardcoded English name (``data='delta_nfr'``)
+        silently yields ``None`` for every node, making the key blind to the
+        field and returning stale results (the bug this maps around).
     """
     try:
         from ..constants.aliases import (
@@ -3338,11 +3379,13 @@ def _compute_dependency_hash(graph: Any, dependencies: set[str]) -> str:
                     (data[key] for key in alias_keys if key in data),
                     _DEP_HASH_MISSING,
                 )
-                items.append((
-                    _node_repr(node),
-                    value is not _DEP_HASH_MISSING,
-                    repr(value) if value is not _DEP_HASH_MISSING else "",
-                ))
+                items.append(
+                    (
+                        _node_repr(node),
+                        value is not _DEP_HASH_MISSING,
+                        repr(value) if value is not _DEP_HASH_MISSING else "",
+                    )
+                )
             update_record((dep, sorted(items)))
         except Exception:
             # If graph doesn't support this, skip
@@ -3591,12 +3634,22 @@ class GraphChangeTracker:
                         self._on_topology_change()
                         # clear() removes graph metadata, but not these hooks.
                         graph.graph["_tnfr_change_tracker"] = self
+
             return tracked
 
         for name in (
-            "add_node", "add_nodes_from", "remove_node", "remove_nodes_from",
-            "add_edge", "add_edges_from", "add_weighted_edges_from",
-            "remove_edge", "remove_edges_from", "clear", "clear_edges", "update",
+            "add_node",
+            "add_nodes_from",
+            "remove_node",
+            "remove_nodes_from",
+            "add_edge",
+            "add_edges_from",
+            "add_weighted_edges_from",
+            "remove_edge",
+            "remove_edges_from",
+            "clear",
+            "clear_edges",
+            "update",
         ):
             original = getattr(graph, name, None)
             if callable(original):
@@ -3648,10 +3701,16 @@ class GraphChangeTracker:
             "node_dnfr",
             "node_depi",
         ):
-            if property_name in _dependency_alias_keys(dependency) or property_name == dependency[5:]:
+            if (
+                property_name in _dependency_alias_keys(dependency)
+                or property_name == dependency[5:]
+            ):
                 canonical_property = dependency[5:]
-                for name in (dependency, f"node_{canonical_property}_{node_id}",
-                             f"all_node_{canonical_property}"):
+                for name in (
+                    dependency,
+                    f"node_{canonical_property}_{node_id}",
+                    f"all_node_{canonical_property}",
+                ):
                     self._cache.invalidate_by_dependency(name)
         self._cache.invalidate_by_dependency("node_data")
 

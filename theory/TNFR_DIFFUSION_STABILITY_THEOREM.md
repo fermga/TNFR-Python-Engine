@@ -242,8 +242,10 @@ The fixed-graph theorem above does not cover:
 - explicit finite-step stability;
 - convergence of every grammar-compliant operator word.
 
-These exclusions define the next stability research steps rather than implicit
-extensions of this theorem.
+These exclusions are limitations and possible research extensions, not
+implicit consequences or assigned next steps. The
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns current scientific priority.
 
 ## Time-varying heterogeneous capacities
 

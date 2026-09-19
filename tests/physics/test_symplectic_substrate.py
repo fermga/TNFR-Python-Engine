@@ -526,7 +526,7 @@ class TestMarsdenWeinstein:
     def test_zero_level_is_a_point_not_a_regular_reduction(self) -> None:
         graph = nx.path_graph(2)
         for node in graph:
-            graph.nodes[node].update(EPI=0., nu_f=0., theta=0., delta_nfr=0.)
+            graph.nodes[node].update(EPI=0.0, nu_f=0.0, theta=0.0, delta_nfr=0.0)
         cert = verify_symplectic_reduction(graph)
         assert cert.moment_map_value == 0.0
         assert cert.reduced_dimension == 0
@@ -542,8 +542,14 @@ class TestMarsdenWeinstein:
         self, monkeypatch, scale
     ):
         # The first pair has zero action, so its angle cannot be a reference.
-        point = PhaseSpacePoint((0,), np.array([0.]), np.array([0.]),
-                                np.array([scale]), np.array([0.]), np.array([0.]))
+        point = PhaseSpacePoint(
+            (0,),
+            np.array([0.0]),
+            np.array([0.0]),
+            np.array([scale]),
+            np.array([0.0]),
+            np.array([0.0]),
+        )
         monkeypatch.setattr(
             "tnfr.physics.symplectic_substrate.extract_phase_space_point",
             lambda graph: point,
@@ -556,8 +562,14 @@ class TestMarsdenWeinstein:
         assert cert.reduced_form_determinant == pytest.approx(1.0)
 
     def test_relative_phase_comparison_respects_the_angle_wrap(self, monkeypatch):
-        point = PhaseSpacePoint((0,), np.array([1.]), np.array([0.]),
-                                np.array([-1.]), np.array([1e-16]), np.array([0.]))
+        point = PhaseSpacePoint(
+            (0,),
+            np.array([1.0]),
+            np.array([0.0]),
+            np.array([-1.0]),
+            np.array([1e-16]),
+            np.array([0.0]),
+        )
         monkeypatch.setattr(
             "tnfr.physics.symplectic_substrate.extract_phase_space_point",
             lambda graph: point,

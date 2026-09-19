@@ -1,7 +1,7 @@
 """Shared signed THOL pressure proposal, without hierarchy or flow effects."""
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
 
 from ..constants.aliases import ALIAS_DNFR
 from ..errors import TNFRValueError
@@ -23,14 +23,20 @@ def propose_thol_pressure(dnfr, d2_epi, gain) -> TholPressureProposal:
     pressure = finite_real(dnfr, operator=_OPERATOR, label="THOL DeltaNFR state")
     acceleration = finite_real(d2_epi, operator=_OPERATOR, label="THOL d2EPI state")
     factor = finite_real(
-        gain, operator=_OPERATOR, label="THOL_accel",
+        gain,
+        operator=_OPERATOR,
+        label="THOL_accel",
         lower=math.nextafter(0.0, math.inf),
     )
     contribution = finite_real(
-        factor * acceleration, operator=_OPERATOR, label="THOL DeltaNFR contribution",
+        factor * acceleration,
+        operator=_OPERATOR,
+        label="THOL DeltaNFR contribution",
     )
     result = finite_real(
-        pressure + contribution, operator=_OPERATOR, label="THOL DeltaNFR proposal",
+        pressure + contribution,
+        operator=_OPERATOR,
+        label="THOL DeltaNFR proposal",
     )
     return TholPressureProposal(acceleration, result)
 
@@ -42,8 +48,11 @@ def prepare_graph_thol_pressure(graph, node, gain) -> TholPressureProposal:
 
     try:
         pressure = finite_node_real(
-            graph.nodes[node], ALIAS_DNFR, 0.0,
-            operator=_OPERATOR, label="THOL DeltaNFR state",
+            graph.nodes[node],
+            ALIAS_DNFR,
+            0.0,
+            operator=_OPERATOR,
+            label="THOL DeltaNFR state",
         )
         acceleration = compute_d2epi_dt2(graph, node, store=False)
         return propose_thol_pressure(pressure, acceleration, gain)

@@ -115,9 +115,7 @@ def analyze_phase_finite_size_scaling(
 
     xi = None
     if coherence_length is not None:
-        xi = _as_replicated_array(
-            "coherence_length", coherence_length, expected_prefix
-        )
+        xi = _as_replicated_array("coherence_length", coherence_length, expected_prefix)
         if xi.shape != order.shape:
             raise ValueError(
                 "coherence_length must use the same replicate count as the other arrays"
@@ -158,9 +156,7 @@ def analyze_phase_finite_size_scaling(
             xi_by_replicate = _stable_nonnegative_mean(
                 xi[size_index, index_array, :], axis=0
             )
-            xi_at_peak.append(
-                float(_stable_nonnegative_mean(xi_by_replicate, axis=0))
-            )
+            xi_at_peak.append(float(_stable_nonnegative_mean(xi_by_replicate, axis=0)))
             assert xi_sem is not None
             xi_sem.append(_standard_error(xi_by_replicate))
 
@@ -255,14 +251,10 @@ def analyze_phase_finite_size_scaling(
         all_peaks_interior=not any(boundary_flags),
         peak_susceptibility=tuple(peak_susceptibility),
         order_at_peak=tuple(order_at_peak),
-        coherence_length_at_peak=(
-            None if xi_at_peak is None else tuple(xi_at_peak)
-        ),
+        coherence_length_at_peak=(None if xi_at_peak is None else tuple(xi_at_peak)),
         peak_susceptibility_sem=tuple(susceptibility_sem),
         order_at_peak_sem=tuple(order_sem),
-        coherence_length_at_peak_sem=(
-            None if xi_sem is None else tuple(xi_sem)
-        ),
+        coherence_length_at_peak_sem=(None if xi_sem is None else tuple(xi_sem)),
         susceptibility_size_fit=susceptibility_fit,
         order_size_fit=order_fit,
         coherence_length_size_fit=xi_fit,
@@ -291,9 +283,7 @@ def _validate_controls(control_values: Sequence[float]) -> list[float]:
     try:
         raw_controls = tuple(control_values)
     except TypeError as exc:
-        raise ValueError(
-            "control_values must contain finite real coordinates"
-        ) from exc
+        raise ValueError("control_values must contain finite real coordinates") from exc
     if any(
         isinstance(value, (bool, np.bool_)) or not isinstance(value, Real)
         for value in raw_controls
@@ -302,9 +292,7 @@ def _validate_controls(control_values: Sequence[float]) -> list[float]:
     try:
         controls = [float(value) for value in raw_controls]
     except (TypeError, ValueError, OverflowError) as exc:
-        raise ValueError(
-            "control_values must contain finite real coordinates"
-        ) from exc
+        raise ValueError("control_values must contain finite real coordinates") from exc
     if len(controls) < 2:
         raise ValueError("at least two control values are required")
     if not all(math.isfinite(value) for value in controls):
@@ -406,8 +394,10 @@ def _fit_positive_size_power_law(
     residual = log_y - predicted
     ss_res = float(np.sum(residual**2))
     ss_tot = float(np.sum((log_y - np.mean(log_y)) ** 2))
-    r_squared = 1.0 if ss_tot == 0.0 and ss_res == 0.0 else (
-        0.0 if ss_tot == 0.0 else 1.0 - ss_res / ss_tot
+    r_squared = (
+        1.0
+        if ss_tot == 0.0 and ss_res == 0.0
+        else (0.0 if ss_tot == 0.0 else 1.0 - ss_res / ss_tot)
     )
 
     point_count = len(log_x)

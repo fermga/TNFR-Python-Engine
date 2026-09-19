@@ -44,10 +44,7 @@ __all__ = [
 
 # Import cache utilities for performance optimization
 from ..mathematics.unified_cache import CacheLevel, cache_tnfr_computation
-from ._diagnostic_scores import (
-    finite_real,
-    sum_nonnegative_magnitudes,
-)
+from ._diagnostic_scores import finite_real, sum_nonnegative_magnitudes
 
 _CACHING_AVAILABLE = True
 
@@ -159,9 +156,7 @@ def detect_cascade(G: TNFRGraph) -> dict[str, Any]:
     # Cascade = affects ≥ cascade_min_nodes
     is_cascade = len(affected_nodes) >= cascade_min_nodes
 
-    mean_edge_magnitude = _mean_internal_edge_weight_magnitude(
-        G, affected_nodes
-    )
+    mean_edge_magnitude = _mean_internal_edge_weight_magnitude(G, affected_nodes)
     return {
         "is_cascade": is_cascade,
         "affected_nodes": affected_nodes,

@@ -2,41 +2,45 @@
 
 ## Status
 
-Active.  This document describes a completed, reproducible TNFR programme for
-**structural-interface analysis** on real graph and time-series data.  It
-consolidates the earlier planning work and reports the validated results,
-including the cases where classical baselines win.
+Implemented diagnostic interfaces for graph and time-series observations.
+The historical numerical summaries below are reported results, not a completed
+validation of the nodal law or a reproducibility certificate. Their data/run
+provenance and current physical-admission boundary are centralized in
+[the empirical record](EMPIRICAL_CONFRONTATION_EEG.md); the research execution
+plan owns further validation, rather than this guide maintaining another queue.
 
 This is an **operational framework**, not a new fundamental physical law.  It
 reuses the existing TNFR Structural Field Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) and the
-13 canonical operators; it adds no new operator and mutates no graph state
-during validation.
+13 canonical operators; it adds no new operator. Recommendations do not execute
+operators. Graph construction and phase encoding are explicit preparation
+steps, while field readers may populate internal caches; the entire interface
+is not a transaction that leaves every graph attribute untouched.
 
 ## Executive summary
 
 A **structural interface** is a graph-local region where neighbouring nodes are
 close under the graph relation but differ sharply in phase, state, label,
 measurement band, or regime.  Structural Interface Theory ranks such regions
-from TNFR phase telemetry and expresses the diagnosis as a grammar-valid
-operator prescription:
+from TNFR phase telemetry and expresses the diagnosis as a configured operator
+recommendation for an already-active state:
 
 ```text
 real system -> graph / proximity construction -> phase or state field
             -> local interface stress (tetrad telemetry)
-            -> grammar-valid operator prescription
+            -> contextual operator recommendation (not live admission)
 ```
 
-The framework is evaluated in three settings, each with its own module, honest
-verdict, and failure cases:
+The framework supplies three observational settings. Historical comparisons
+are scoped to their reported preparations and targets:
 
 | Setting | Module | Native field role | Honest verdict |
 | --- | --- | --- | --- |
-| Static spatial | [structural_interface.py](../src/tnfr/validation/structural_interface.py) | Phase encodes an injected label | Competitive with local classical baselines; the strongest global baseline (label-propagation residual) wins on hard data |
-| Temporal single-series | [temporal_interface.py](../src/tnfr/validation/temporal_interface.py) | Phase is **measured** (Hilbert) | Classical critical-slowing-down indicators are the right tool for a single scalar series |
-| Multi-channel | [multichannel_interface.py](../src/tnfr/validation/multichannel_interface.py) | Phase is **measured** per channel | ξ_C and K_φ are genuinely distinct from the Kuramoto order parameter; ξ_C is competitive on real EEG |
+| Static spatial | [structural_interface.py](../src/tnfr/validation/structural_interface.py) | Phase encodes an injected label | Reported rankings vary by dataset; label-propagation residual is an essential comparator |
+| Temporal single-series | [temporal_interface.py](../src/tnfr/validation/temporal_interface.py) | Phase is estimated from an analytic signal | Compare against variance and autocorrelation with the same information and split |
+| Multi-channel | [multichannel_interface.py](../src/tnfr/validation/multichannel_interface.py) | Per-channel phase estimates on a PLV observation graph | Local phase fields and pressure-product diagnostics have different inputs; predictive independence must be tested |
 
 The distinctive TNFR contribution is the combination
-`local interface detection + tetrad telemetry + grammar-valid prescription`,
+`local interface detection + tetrad telemetry + contextual recommendation`,
 not a claim of universal superiority over classical graph metrics.
 
 ## Core concept
@@ -53,31 +57,43 @@ Examples of structural interfaces:
 
 ### TNFR observables
 
-All interface observables derive from existing canonical fields (see
+The interface combines canonical field read-outs with separate phase gates and
+recommendation policies (see
 [STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md)):
 
 - edge phase-gate compliance (U3 resonant-coupling condition
   `|wrap(φᵢ − φⱼ)| ≤ Δφ_max`);
 - phase-gradient stress `|∇φ|` (local desynchronisation);
-- phase-curvature stress `|K_φ|` (geometric phase torsion);
+- phase-curvature stress `|K_φ|` (local circular-mean mismatch);
 - structural potential `Φ_s` (global pressure, reported as telemetry, not folded
   into the ranking);
-- coherence length `ξ_C` (spatial correlation scale), where meaningful;
+- coherence length `ξ_C` with its product-fit, spectral-fallback or unavailable
+  provenance; only the fit branch has path-length units;
 - incident gate-violation pressure;
-- a grammar-valid operator prescription.
+- a configured operator recommendation with declared grammar rationale.
 
 ### Operator prescription
 
-Prescriptions are **read-only recommendations**.  Every prescribed sequence
-passes the repository's sequence validators
-(`tnfr.operators.grammar_patterns` and `tnfr.operators.grammar_dynamics`).  The
-three validated patterns are:
+Prescriptions are **read-only recommendations for an already-active state**.
+The producer in [phase_gate.py](../src/tnfr/validation/phase_gate.py) selects
+tuples and records a grammar rationale; it does not run a sequence validator
+or execute those tuples. The
+[phase-gate tests](../tests/test_phase_gate_api.py) and
+[interface tests](../tests/test_structural_interface_api.py) check representative
+patterns using explicit `initial_epi_nonzero=True` context and initialized
+graphs. The principal nonempty-support network patterns are:
 
 | Interface state | Sequence | Meaning |
 | --- | --- | --- |
 | Fully phase-compatible | `UM → RA → SHA` | couple, propagate resonance, close |
 | Mostly compatible with local hotspots | `IL → UM → SHA` | stabilize, then guarded coupling |
 | Failed interface / boundary hotspot | `IL → OZ → THOL → SHA` | stabilize, open controlled reorganization, self-organize, close |
+
+Additional branches return `SHA` for an edgeless graph or `IL → SHA` for
+selected node guidance. None of these recommendations is a standalone
+initiation certificate. Validate the actual word/history context and refresh
+state-dependent U3 admission before execution. The selection does not prove
+causal efficacy, future stress reduction or an autonomous intervention law.
 
 ## Setting 1 — static spatial interfaces
 
@@ -97,7 +113,7 @@ independent target through `evaluate_interface_scores`.
 
 ### Fair benchmark design
 
-Every static benchmark compares TNFR against the full classical baseline suite
+The static benchmark entry point computes the shared classical baseline suite
 ([interface_baselines.py](../src/tnfr/validation/interface_baselines.py)):
 
 1. local k-NN disagreement (closest classical analogue);
@@ -116,8 +132,10 @@ perturbation sensitivity, or an explicit classical-interface target.
 
 ### Results (held-out model-error target)
 
-Ranking power (ROC-AUC) of each score against held-out classifier errors.  These
-are the **non-circular** numbers; the circular "local-disagreement" target gives
+Historically reported ranking power (ROC-AUC) against classifier errors. The
+reported target differs from local disagreement; independent replay must still
+verify the split, label availability, graph construction and preprocessing.
+The circular "local-disagreement" target gives
 ≈ 1.0 for all local scores and is used only as a localization sanity check.
 
 | Dataset | TNFR | local disagreement | graph TV | local entropy | label-prop residual | errors / N |
@@ -127,15 +145,11 @@ are the **non-circular** numbers; the circular "local-disagreement" target gives
 | Digits | 0.6984 | 0.6962 | 0.6962 | 0.6980 | **0.8200** | 146 / 1797 |
 | Wine quality (red) | 0.8739 | 0.8623 | — | — | **0.9423** | — |
 
-**Honest reading.**  TNFR's interface stress edges the *simpler* local baselines
-(local disagreement, graph total variation, local entropy) on clean datasets,
-and on WDBC and Iris it also edges the label-propagation residual.  It does
-**not** dominate that strongest global baseline in general: the
-**label-propagation residual beats TNFR on the harder, noisier datasets**
-(digits 0.820 vs 0.698; wine red 0.942 vs 0.874).  On Wine red the remaining
-baselines are weak (graph cut 0.845; mean neighbour distance 0.472; degree
-0.531; feature deviation 0.409; random ≈ 0.5), confirming the target is a real
-boundary signal and not noise.
+The reported rankings include stronger label-propagation performance on
+digits and wine red. Small differences on WDBC and Iris lack an uncertainty
+statement here, and the low error counts matter. These summaries establish
+neither superiority nor a non-noise mechanism without a pinned replay and
+appropriate uncertainty analysis.
 
 ## Setting 2 — temporal single-series interfaces
 
@@ -147,20 +161,22 @@ real time series -> Hilbert instantaneous phase -> delay-embedding proximity gra
                  -> comparison vs classical early-warning signals
 ```
 
-Here the phase is **measured**, not injected.  The classical baselines are the
+Here phase is estimated through the selected Hilbert transform, rather than
+assigned from a class label. This signal coordinate is not automatically the
+primitive TNFR phase. The classical baselines are the
 standard early-warning signals (EWS) for critical slowing down: rolling variance
 and lag-1 autocorrelation (Scheffer et al. 2009; Dakos et al. 2012).
 
 ### Result (grid-frequency real data)
 
-On real power-grid frequency data the classical variance trend (Kendall-τ ≈
+The historical power-grid report gives a classical variance trend (Kendall-τ ≈
 0.255) slightly **beats** the strongest TNFR channel (Φ_s, τ ≈ 0.184), and both
-are weak (< 0.26).  Grid frequency is a fast stochastic signal rather than a
-slow bifurcation, so neither approach has a strong pre-transition trend.
+are weak (< 0.26). Those statistics do not establish the physical mechanism
+behind the signal or a general limit of either method.
 
-**Honest reading.**  For a single scalar series, classical critical-slowing-down
-indicators are the appropriate tool.  TNFR's added value appears in the
-multi-channel setting, where a coherence *length* and a phase *curvature* exist.
+Variance and autocorrelation are necessary comparators for this preparation.
+Multichannel data permit additional graph-local observations; their availability
+does not itself establish added predictive value.
 
 ## Setting 3 — multi-channel coupled oscillators
 
@@ -173,25 +189,30 @@ multi-channel signals -> per-channel Hilbert phase + amplitude
                       -> synchrony discrimination vs Kuramoto order parameter R
 ```
 
-This is the tetrad's native setting.  The gold-standard baseline is the
-Kuramoto order parameter `R`; secondary baselines are mean phase-locking value
-(PLV) and phase dispersion.
+The supplied observation graph permits spatial field read-outs. Relevant
+comparators include the Kuramoto order parameter `R`, mean phase-locking value
+(PLV) and phase dispersion. PLV construction is an observational choice, not
+measured canonical wiring or a complete nodal state map.
 
 ### Honest redundancy caveat
 
-The phase-gradient field `|∇φ|` is **partially redundant** with `1 − R`: both
-measure global desynchronisation.  The genuinely distinct fields are:
+The phase-gradient field `|∇φ|` measures local neighbor mismatch, whereas `R`
+uses a global phasor sum. They can correlate, but neither generally determines
+the other on an arbitrary graph. Two further read-outs are:
 
-- **ξ_C** — a coherence *length* (spatial correlation scale), which has no
-  order-parameter analogue;
+- **ξ_C** — a static pressure-coherence product fit, or the separately
+  identified spectral fallback;
 - **K_φ** — phase curvature.
 
-Because the structural pressure ΔNFR is derived from the amplitude envelope
-(phase-independent), Φ_s and ξ_C are not trivial reproductions of `|∇φ|`.
+The amplitude-envelope pressure proxy and Hilbert phase are different functions
+of the same signals. Different formulas do not prove statistical independence,
+causal relevance or additional predictive information. Their dependence and
+the fit/fallback branch must be measured on the retained evaluation data.
 
 ### Result (EEG Eye State real data)
 
-Discrimination (ROC-AUC) of the eyes-open vs eyes-closed regime:
+Historically reported discrimination (ROC-AUC) of eyes-open versus eyes-closed
+labels; the table does not supply a pinned replay or uncertainty interval:
 
 | Indicator | AUC |
 | --- | --- |
@@ -200,17 +221,18 @@ Discrimination (ROC-AUC) of the eyes-open vs eyes-closed regime:
 | Kuramoto R (baseline) | 0.559 |
 | mean PLV (baseline) | 0.530 |
 
-**Honest reading.**  ξ_C (0.615) beats the Kuramoto order parameter (0.559) and
-mean PLV (0.530); phase dispersion (0.641) edges ξ_C.  The gap between the best
-TNFR field and the best baseline is ≈ 0.026, which the framework reports as
-**comparable** rather than as a TNFR win.  The point is that ξ_C and K_φ carry
-information the global order parameter cannot express, not that TNFR dominates.
+These reported AUCs order the selected scores in this preparation. The gap
+of about 0.026 between phase dispersion and ξ_C does not establish statistical
+equivalence or superiority. Neither this ranking nor the formulas alone prove
+that ξ_C adds information after controlling for the other observables.
 
 ## How to run
 
-All benchmarks have offline defaults (synthetic fixtures or bundled scikit-learn
-data) and skip gracefully when an online dataset is unreachable.  Set
-`PYTHONPATH` to `./src` first.
+Install the working repository as described in [TESTING.md](../TESTING.md).
+Use explicit dataset/source flags for an offline run: the static CLI defaults
+to `--dataset all`, the temporal CLI to `--source grid`, and the multichannel
+CLI to `--source eeg`. Those defaults can request network data. Static bundled
+datasets additionally require scikit-learn; it is not a core TNFR dependency.
 
 ### Try it (offline, deterministic)
 
@@ -220,31 +242,29 @@ python examples/10_applications/93_structural_interface_demo.py
 
 [examples/10_applications/93_structural_interface_demo.py](../examples/10_applications/93_structural_interface_demo.py)
 runs the static-spatial pipeline on a synthetic two-cluster graph and a
-synthetic multi-channel regime switch, printing the honest baseline comparison
-and a grammar-valid prescription.
+synthetic multi-channel regime switch, printing a baseline comparison and
+contextual operator recommendations.
 
-### Benchmarks (Windows make targets)
+### Benchmark entry points
 
-| Target | Setting | Data |
-| --- | --- | --- |
-| `structural-interface-offline` | static spatial | bundled scikit-learn (offline) |
-| `structural-interface-all` | static spatial | WDBC + Wine + Iris + Digits |
-| `structural-interface-wdbc` | static spatial | WDBC |
-| `structural-interface-wine` | static spatial | UCI Wine Quality (online) |
-| `structural-interface-model-error` | static spatial | held-out model-error target |
-| `temporal-interface-benchmark` | temporal | synthetic fixture (offline) |
-| `temporal-interface-grid` | temporal | real grid frequency (online, cached) |
-| `multichannel-interface-benchmark` | multi-channel | synthetic Kuramoto (offline) |
-| `multichannel-interface-eeg` | multi-channel | real EEG Eye State (online, cached) |
-
-Example:
+The historical `make.cmd` wrapper is absent. Run the maintained Python CLIs
+from the repository root, selecting the intended inputs explicitly:
 
 ```bash
-.\make.cmd structural-interface-offline
-.\make.cmd multichannel-interface-benchmark
+python benchmarks/structural_interface_benchmark.py --dataset offline --target model_error
+python benchmarks/temporal_interface_benchmark.py --source synthetic
+python benchmarks/multichannel_interface_benchmark.py --source synthetic
 ```
 
-Reports are written to `results/reports/` as JSON, Markdown, and HTML.
+Inspect each script's `--help` for optional real-data sources and limits. The
+static default target is `circular`, a localization check, so the example above
+selects the separate model-error target explicitly. Its information/split
+limitations still require review before a predictive claim.
+
+All three CLIs default to `results/reports/` and accept `--output`. The static
+suite writes per-dataset JSON/Markdown/HTML and a JSON summary; temporal and
+multichannel CLIs write JSON. Inspect returned status and skip reasons: missing
+data or dependencies can yield skipped reports, which are not validation passes.
 
 ## API reference
 
@@ -387,14 +407,14 @@ mapping and results are owned by the same P2 annex.
 - No clinical diagnosis, food-quality certification, or physical-law claims.
 - No superiority claim where the target is identical to local disagreement
   (those cases are reported as localization sanity checks at ≈ 1.0 AUC).
-- The label-propagation residual is a strong global baseline that **beats TNFR
-  on hard static datasets** (digits, wine red); this is reported, not hidden.
-- For a single scalar time series, classical critical-slowing-down indicators
-  are preferred; TNFR's value is multi-channel.
-- In the multi-channel setting `|∇φ|` is partially redundant with `1 − R`; only
-  ξ_C and K_φ are genuinely distinct.
-- No new TNFR operator is introduced; no graph state is mutated during
-  validation (prescriptions are read-only).
+- Historical rankings and small numerical gaps require pinned replay, an
+  information-matched evaluation and uncertainty before generalization.
+- Single-series and multichannel settings need appropriate comparators;
+  graph-local field availability is not a predictive advantage by itself.
+- Different field formulas do not certify independent information. Preserve
+  ξ_C estimator provenance and distinguish a pressure proxy from nodal pressure.
+- No new TNFR operator is introduced. Recommendations do not execute operators;
+  preparation writes and internal field caches are distinct from that promise.
 
 ## References
 

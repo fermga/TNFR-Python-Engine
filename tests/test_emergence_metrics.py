@@ -5,10 +5,7 @@ from __future__ import annotations
 import networkx as nx
 import pytest
 
-from tnfr.metrics.emergence import (
-    compute_bifurcation_rate,
-    compute_emergence_index,
-)
+from tnfr.metrics.emergence import compute_bifurcation_rate, compute_emergence_index
 
 
 def _node(
@@ -25,10 +22,7 @@ def _node(
         EPI=epi,
         epi_initial=initial_epi,
         glyph_history=history,
-        sub_epis=[
-            {"timestamp": len(history)}
-            for _ in range(sub_epi_count)
-        ],
+        sub_epis=[{"timestamp": len(history)} for _ in range(sub_epi_count)],
     )
     return graph
 
@@ -61,6 +55,7 @@ def test_bifurcation_rate_rejects_invalid_windows(window: object) -> None:
 
     with pytest.raises(ValueError, match="positive integer"):
         compute_bifurcation_rate(graph, 0, window=window)
+
 
 def test_bifurcation_rate_uses_monotonic_step_after_trace_eviction() -> None:
     graph = _node(epi=0.9, initial_epi=0.1, sub_epi_count=0, thol_count=2)

@@ -1,7 +1,7 @@
 """Adversarial engineering checks, not laboratory TNFR validation."""
 
-from dataclasses import FrozenInstanceError, asdict, replace
 import json
+from dataclasses import FrozenInstanceError, asdict, replace
 
 import networkx as nx
 import numpy as np
@@ -15,31 +15,43 @@ def _run(run_id="calibration", *, mean=1.0, amplitude=0.7, rate=0.4, times=None)
     # Independent two-node Euler eigenmode formula; synthetic fixture only.
     factors = np.r_[1.0, np.cumprod(1 - 2 * rate * np.diff(times))]
     return p.NodalMeasurementRun(
-        run_id, ("left", "right"), times,
-        [mean + amplitude*factors, mean - amplitude*factors],
-        "fixture_units", "s", "acquisition-" + run_id,
+        run_id,
+        ("left", "right"),
+        times,
+        [mean + amplitude * factors, mean - amplitude * factors],
+        "fixture_units",
+        "s",
+        "acquisition-" + run_id,
     )
 
 
 def _calibrate(run=None, graph=None, **kwargs):
     graph = nx.Graph([("left", "right")]) if graph is None else graph
     return p.calibrate_nodal_prediction(
-        [_run() if run is None else run], graph=graph,
-        offsets=kwargs.pop("offsets", (0.0, 0.0)), scales=(1.0, 1.0),
+        [_run() if run is None else run],
+        graph=graph,
+        offsets=kwargs.pop("offsets", (0.0, 0.0)),
+        scales=(1.0, 1.0),
         structural_time_per_unit=kwargs.pop("structural_time_per_unit", 1.0),
         support_provenance="independently declared fixture edge",
-        measurement_provenance="synthetic unit map, not instrument calibration", **kwargs)
+        measurement_provenance="synthetic unit map, not instrument calibration",
+        **kwargs,
+    )
 
 
 def _forecast(calibration, run=None, **kwargs):
     run = _run("reserved", mean=2.0, amplitude=-0.5) if run is None else run
     return p.forecast_nodal_response(
-        calibration, evaluation_run_id=run.run_id,
+        calibration,
+        evaluation_run_id=run.run_id,
         evaluation_acquisition_id=run.acquisition_id,
-        initial_measurement=[row[0] for row in run.samples], timestamps=run.timestamps,
+        initial_measurement=[row[0] for row in run.samples],
+        timestamps=run.timestamps,
         absolute_error_bound=kwargs.pop("absolute_error_bound", 1e-12),
         max_structural_step=kwargs.pop("max_structural_step", 0.125),
-        max_steps=kwargs.pop("max_steps", 16), **kwargs)
+        max_steps=kwargs.pop("max_steps", 16),
+        **kwargs,
+    )
 
 
 def test_calibration_then_reserved_forecast_recovers_independent_eigenmode(monkeypatch):
@@ -55,7 +67,8 @@ def test_calibration_then_reserved_forecast_recovers_independent_eigenmode(monke
     held_out = _run("reserved", mean=2.0, amplitude=-0.5)
     forecast = _forecast(calibration, held_out)
     result = p.score_nodal_forecast(
-        forecast, calibration, held_out, expected_forecast_hash=forecast.content_hash)
+        forecast, calibration, held_out, expected_forecast_hash=forecast.content_hash
+    )
     assert calibration.capacity == pytest.approx(0.4)
     assert len(calls) == forecast.steps_executed == 8
     assert np.asarray(forecast.epi).mean(axis=0) == pytest.approx(2.0)
@@ -91,15 +104,17 @@ def test_held_out_suffix_changes_score_but_never_the_issued_forecast(tmp_path):
     samples[:, 4:] += 10
     changed = replace(observation, samples=samples)
     assert not p.score_nodal_forecast(
-        forecast, calibration, changed,
-        expected_forecast_hash=forecast.content_hash).meets_declared_error_bound
+        forecast, calibration, changed, expected_forecast_hash=forecast.content_hash
+    ).meets_declared_error_bound
     assert _forecast(calibration, changed) == forecast
     assert path.read_bytes() == before
     with pytest.raises(FileExistsError):
         p.write_nodal_forecast(forecast, path)
 
 
-@pytest.mark.parametrize("rate,reason", [(-0.4, "negative_capacity"), (0, "inactive_capacity")])
+@pytest.mark.parametrize(
+    "rate,reason", [(-0.4, "negative_capacity"), (0, "inactive_capacity")]
+)
 def test_invalid_capacity_is_not_clipped_or_reinterpreted(rate, reason):
     with pytest.raises(p.NodalCalibrationError) as failure:
         _calibrate(_run(rate=rate))
@@ -118,23 +133,31 @@ def test_irregular_timestamps_are_used_not_renumbered():
     forecast = _forecast(calibration, observation, max_structural_step=0.5)
     assert calibration.capacity == pytest.approx(0.4)
     assert p.score_nodal_forecast(
-        forecast, calibration, observation,
-        expected_forecast_hash=forecast.content_hash).meets_declared_error_bound
+        forecast, calibration, observation, expected_forecast_hash=forecast.content_hash
+    ).meets_declared_error_bound
 
 
-@pytest.mark.parametrize("override", [
-    {"run_id": "calibration"}, {"value_unit": "other"},
-    {"time_unit": "ms"}, {"channel_ids": ("right", "left")},
-    {"timestamps": tuple(np.arange(9)/4)},
-])
+@pytest.mark.parametrize(
+    "override",
+    [
+        {"run_id": "calibration"},
+        {"value_unit": "other"},
+        {"time_unit": "ms"},
+        {"channel_ids": ("right", "left")},
+        {"timestamps": tuple(np.arange(9) / 4)},
+    ],
+)
 def test_scoring_rejects_overlap_or_coordinate_mismatch(override):
     calibration = _calibrate()
     observation = _run("reserved", mean=2, amplitude=-0.5)
     forecast = _forecast(calibration, observation)
     with pytest.raises(ValueError):
         p.score_nodal_forecast(
-            forecast, calibration, replace(observation, **override),
-            expected_forecast_hash=forecast.content_hash)
+            forecast,
+            calibration,
+            replace(observation, **override),
+            expected_forecast_hash=forecast.content_hash,
+        )
 
 
 def test_renaming_calibration_data_does_not_make_it_held_out():
@@ -143,7 +166,8 @@ def test_renaming_calibration_data_does_not_make_it_held_out():
     forecast = _forecast(calibration, renamed)
     with pytest.raises(ValueError, match="overlap"):
         p.score_nodal_forecast(
-            forecast, calibration, renamed, expected_forecast_hash=forecast.content_hash)
+            forecast, calibration, renamed, expected_forecast_hash=forecast.content_hash
+        )
 
 
 @pytest.mark.parametrize("value", [float("nan"), float("inf"), True, 0.0, -1.0])
@@ -177,23 +201,31 @@ def test_budget_and_fitted_model_mismatch_are_not_silent():
     forecast = _forecast(calibration)
     with pytest.raises(ValueError, match="hash mismatch"):
         p.score_nodal_forecast(
-            forecast, replace(calibration, capacity=0.9), _run("reserved"),
-            expected_forecast_hash=forecast.content_hash)
+            forecast,
+            replace(calibration, capacity=0.9),
+            _run("reserved"),
+            expected_forecast_hash=forecast.content_hash,
+        )
 
 
 def test_shared_clock_scaling_changes_capacity_not_forecast():
     ordinary = _calibrate()
     rescaled = _calibrate(structural_time_per_unit=2)
     assert rescaled.capacity == pytest.approx(ordinary.capacity / 2)
-    assert np.asarray(_forecast(rescaled, max_structural_step=0.25).epi) == pytest.approx(
-        np.asarray(_forecast(ordinary).epi))
+    assert np.asarray(
+        _forecast(rescaled, max_structural_step=0.25).epi
+    ) == pytest.approx(np.asarray(_forecast(ordinary).epi))
 
 
 def test_renamed_window_from_same_acquisition_is_not_independent():
     calibration = _calibrate()
     run = _run()
-    cropped = replace(run, run_id="new-window", timestamps=run.timestamps[:5],
-                      samples=tuple(row[:5] for row in run.samples))
+    cropped = replace(
+        run,
+        run_id="new-window",
+        timestamps=run.timestamps[:5],
+        samples=tuple(row[:5] for row in run.samples),
+    )
     with pytest.raises(ValueError, match="acquisition overlaps"):
         _forecast(calibration, cropped)
 
@@ -206,4 +238,5 @@ def test_prediction_and_acceptance_budget_cannot_change_after_issue():
     replaced = replace(forecast, epi=observation.samples, absolute_error_bound=0)
     with pytest.raises(ValueError, match="issued forecast hash"):
         p.score_nodal_forecast(
-            replaced, calibration, observation, expected_forecast_hash=retained)
+            replaced, calibration, observation, expected_forecast_hash=retained
+        )

@@ -2,16 +2,15 @@
 
 from __future__ import annotations
 
-from fractions import Fraction
 import importlib.util
 import json
+from fractions import Fraction
 from pathlib import Path
 
 import pytest
 
 import tnfr.physics as physics
 import tnfr.physics.event_remesh_reference as reference_module
-
 
 EXAMPLE_PATH = (
     Path(__file__).resolve().parents[2]
@@ -47,8 +46,8 @@ def test_module_and_stub_expose_the_reference_api() -> None:
     }
 
     assert set(reference_module.__all__) == expected
-    stub = Path(reference_module.__file__).with_suffix(".pyi").read_text(
-        encoding="utf-8"
+    stub = (
+        Path(reference_module.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
     )
     assert "class P2EventRemeshMeshReferenceObservation" in stub
     assert "class P2EventRemeshReferenceFamilyObservation" in stub
@@ -75,9 +74,11 @@ def test_example_executes_the_expected_two_four_eight_meshes(
     reference = protocol["reference"]
 
     assert all(passed for _, passed in reference.conditions)
-    assert tuple(
-        len(mesh.exact_segment_durations) for mesh in reference.meshes
-    ) == (2, 4, 8)
+    assert tuple(len(mesh.exact_segment_durations) for mesh in reference.meshes) == (
+        2,
+        4,
+        8,
+    )
     assert reference.exact_euler_factors == (
         Fraction(1, 4),
         Fraction(81, 256),
@@ -100,9 +101,7 @@ def test_report_separates_the_finite_result_from_open_claims(
     assert report["reference_family_certified"]
     assert [item["segment_count"] for item in report["meshes"]] == [2, 4, 8]
     assert report["strict_proper_subdivision_improvement"]
-    assert all(
-        item["runtime_residual_linf"] == "0/1" for item in report["meshes"]
-    )
+    assert all(item["runtime_residual_linf"] == "0/1" for item in report["meshes"])
     assert report["scope"] == {
         "compatible_finite_p2_problem": True,
         "binary64_asymptotic_convergence": False,

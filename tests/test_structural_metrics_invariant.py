@@ -5,10 +5,7 @@ from __future__ import annotations
 import networkx as nx
 import pytest
 
-from tnfr.validation.invariants import (
-    Invariant9_StructuralMetrics,
-    InvariantSeverity,
-)
+from tnfr.validation.invariants import Invariant9_StructuralMetrics, InvariantSeverity
 
 
 def _graph(*, exposed: object, si: object = 1.2) -> nx.Graph:

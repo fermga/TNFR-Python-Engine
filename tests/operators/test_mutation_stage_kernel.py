@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
-from dataclasses import FrozenInstanceError
 import logging
 import math
+from copy import deepcopy
+from dataclasses import FrozenInstanceError
 
 import networkx as nx
 import pytest
@@ -62,9 +62,9 @@ def test_dynamic_proposal_matches_handler_and_complete_telemetry(
 
     assert node.theta == proposal.theta_after
     assert node.storage["glyph_history"] == history_before
-    assert {
-        key: node.storage[key] for key, _ in proposal.telemetry_items
-    } == dict(proposal.telemetry_items)
+    assert {key: node.storage[key] for key, _ in proposal.telemetry_items} == dict(
+        proposal.telemetry_items
+    )
     assert tuple(key for key, _ in proposal.telemetry_items) == (
         "_zhir_theta_shift",
         "_zhir_theta_before",
@@ -113,7 +113,6 @@ def test_mutation_proposal_is_frozen_replayable_and_rng_free() -> None:
         first.theta_after = 0.0  # type: ignore[misc]
 
 
-
 def test_network_proposal_defers_context_log_until_postcommit_publish(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
@@ -129,9 +128,7 @@ def test_network_proposal_defers_context_log_until_postcommit_publish(
         glyph_history=["IL", "OZ"],
     )
     before = deepcopy((dict(graph.nodes[0]), dict(graph.graph)))
-    caplog.set_level(
-        logging.INFO, logger="tnfr.operators.preconditions.mutation"
-    )
+    caplog.set_level(logging.INFO, logger="tnfr.operators.preconditions.mutation")
 
     proposal = propose_mutation_network_stage(
         graph,
@@ -163,6 +160,7 @@ def test_network_proposal_defers_context_log_until_postcommit_publish(
     ]
     assert len(context_logs) == 1
     assert "distance 1" in context_logs[0].getMessage()
+
 
 @pytest.mark.parametrize(
     ("kwargs", "message"),

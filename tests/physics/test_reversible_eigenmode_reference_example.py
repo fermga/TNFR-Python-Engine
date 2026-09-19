@@ -2,16 +2,15 @@
 
 from __future__ import annotations
 
-from fractions import Fraction
 import importlib.util
 import json
+from fractions import Fraction
 from pathlib import Path
 
 import pytest
 
 import tnfr.physics as physics
 import tnfr.physics.reversible_eigenmode_reference as reference_module
-
 
 EXAMPLE_PATH = (
     Path(__file__).resolve().parents[2]
@@ -46,8 +45,8 @@ def test_module_stub_and_facade_expose_the_general_reference_api() -> None:
     }
 
     assert set(reference_module.__all__) == expected
-    stub = Path(reference_module.__file__).with_suffix(".pyi").read_text(
-        encoding="utf-8"
+    stub = (
+        Path(reference_module.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
     )
     assert "class ReversibleSingleEigenmodeEulerReferenceCertificate" in stub
     assert "def certify_reversible_single_eigenmode_euler_reference" in stub
@@ -70,14 +69,12 @@ def test_example_certifies_both_nonregular_p3_modes(
 
     assert tuple(by_name) == ("antisymmetric", "alternating")
     assert all(
-        certificate.reference_certificate_certified
-        for certificate in by_name.values()
+        certificate.reference_certificate_certified for certificate in by_name.values()
     )
     assert by_name["antisymmetric"].exact_mode_eigenvalue == 1
     assert by_name["alternating"].exact_mode_eigenvalue == 2
     assert all(
-        certificate.exact_degrees
-        == (Fraction(1), Fraction(2), Fraction(1))
+        certificate.exact_degrees == (Fraction(1), Fraction(2), Fraction(1))
         for certificate in by_name.values()
     )
     assert by_name["antisymmetric"].exact_euler_factors == (

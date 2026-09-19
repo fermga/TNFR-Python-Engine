@@ -80,9 +80,7 @@ class TestU6ConfinementSweep:
             assert point.metadata["finite_scope"] == ("Y2_empirical_finite_graph_only")
             assert not point.metadata["u6_drift_assessed"]
             assert point.metadata["legacy_u6_fields_are_magnitude_proxies"]
-            assert point.metadata["u6_aggregation"] == (
-                "mean_absolute_nodewise_drift"
-            )
+            assert point.metadata["u6_aggregation"] == ("mean_absolute_nodewise_drift")
             assert point.metadata["u6_definition"] == (
                 "mean_i |Phi_s_after(i)-Phi_s_before(i)| < threshold"
             )

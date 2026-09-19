@@ -20,7 +20,7 @@ from .._spectral_expectation import (
 )
 from ..alias import _bepi_to_float, get_attr
 from ..config.operator_names import BIFURCATION_WINDOW
-from ..constants import get_graph_param, get_param
+from ..constants import get_graph_param
 from ..errors import TNFRValueError
 from ..glyph_history import ensure_history
 from ..metrics.sense_index import compute_Si

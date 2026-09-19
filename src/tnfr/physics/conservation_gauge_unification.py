@@ -37,10 +37,9 @@ from dataclasses import dataclass
 from numbers import Real
 from typing import Any
 
-from ..mathematics.unified_numerical import np
-
 from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
 from ..constants.canonical import DELTA_PHI_MAX, U6_STRUCTURAL_POTENTIAL_LIMIT
+from ..mathematics.unified_numerical import np
 
 # Canonical fields
 from .canonical import (
@@ -107,15 +106,14 @@ def _as_finite_real(value: Any) -> float | None:
     return scalar if math.isfinite(scalar) else None
 
 
-def _finite_node_field_issue(
-    G: Any, aliases: tuple[str, ...], field_name: str
-) -> str:
+def _finite_node_field_issue(G: Any, aliases: tuple[str, ...], field_name: str) -> str:
     """Return why a required per-node scalar field is unavailable."""
     for node, data in G.nodes(data=True):
         alias = next((key for key in aliases if key in data), None)
         if alias is None or _as_finite_real(data[alias]) is None:
             return f"finite {field_name} is required at node {node!r}"
     return ""
+
 
 # ---------------------------------------------------------------------------
 # Data structures
@@ -507,17 +505,13 @@ def compute_grammar_symmetry_mapping(
     if not u3_issue:
         if parsed_delta_phi is None or parsed_delta_phi < 0.0:
             u3_issue = "delta_phi_max must be a finite nonnegative real number"
-    delta_phi_max = (
-        parsed_delta_phi if not u3_issue else float(DELTA_PHI_MAX)
-    )
+    delta_phi_max = parsed_delta_phi if not u3_issue else float(DELTA_PHI_MAX)
 
     max_phase_diff = 0.0
     for u, v in edge_list if not u3_issue else ():
         phi_u = phase_values[u]
         phi_v = phase_values[v]
-        diff = abs(
-            (phi_u - phi_v + math.pi) % (2 * math.pi) - math.pi
-        )
+        diff = abs((phi_u - phi_v + math.pi) % (2 * math.pi) - math.pi)
         max_phase_diff = max(max_phase_diff, diff)
 
     # U6 requires a reference field because the policy concerns drift, not
@@ -531,8 +525,7 @@ def compute_grammar_symmetry_mapping(
     if reference_snapshot is not None and not u6_issue:
         candidate_reference = reference_snapshot.phi_s
         if not candidate_reference or any(
-            _as_finite_real(value) is None
-            for value in candidate_reference.values()
+            _as_finite_real(value) is None for value in candidate_reference.values()
         ):
             u6_issue = "reference snapshot requires a nonempty finite phi_s field"
         else:
@@ -635,14 +628,12 @@ def compute_grammar_symmetry_mapping(
             variational_role="Historical gauge-connection correspondence",
             is_satisfied=u3_sat,
             diagnostic_value=(
-                max(0.0, max_phase_diff - delta_phi_max)
-                if u3_applicable
-                else 0.0
+                max(0.0, max_phase_diff - delta_phi_max) if u3_applicable else 0.0
             ),
             is_applicable=u3_applicable,
             assessment_status=(
-                "pass" if u3_sat else "fail"
-            ) if u3_applicable else "not_assessed",
+                ("pass" if u3_sat else "fail") if u3_applicable else "not_assessed"
+            ),
             assessment_scope=(
                 "current_graph_edge_phase_compatibility"
                 if u3_applicable
@@ -707,7 +698,8 @@ def compute_grammar_symmetry_mapping(
                 else "phi_s_reference_required"
             ),
             required_evidence=(
-                "" if u6_applicable
+                ""
+                if u6_applicable
                 else u6_issue or "matching reference graph or conservation snapshot"
             ),
         )
@@ -1120,9 +1112,7 @@ def run_conservation_gauge_unification(
         "noether_charge_Q": noether_gauge.noether_charge,
         "gauge_invariant_energy": noether_gauge.gauge_invariant_energy,
         "mean_cycle_closure_residual": noether_gauge.mean_cycle_closure_residual,
-        "squared_cycle_closure_penalty": (
-            noether_gauge.squared_cycle_closure_penalty
-        ),
+        "squared_cycle_closure_penalty": (noether_gauge.squared_cycle_closure_penalty),
         "covariant_difference_energy": noether_gauge.covariant_difference_energy,
         "energy_density_uniformity_score": (
             noether_gauge.energy_density_uniformity_score
@@ -1145,15 +1135,9 @@ def run_conservation_gauge_unification(
         "poisson_bracket_pot": symp_gauge.potential_poisson,
         "geometric_snapshot_product": symp_gauge.geometric_snapshot_product,
         "potential_snapshot_product": symp_gauge.potential_snapshot_product,
-        "geometric_normalized_covariance": (
-            symp_gauge.geometric_normalized_covariance
-        ),
-        "potential_normalized_covariance": (
-            symp_gauge.potential_normalized_covariance
-        ),
-        "global_oscillator_symplectic_residual": (
-            symp_gauge.gauge_volume_invariance
-        ),
+        "geometric_normalized_covariance": (symp_gauge.geometric_normalized_covariance),
+        "potential_normalized_covariance": (symp_gauge.potential_normalized_covariance),
+        "global_oscillator_symplectic_residual": (symp_gauge.gauge_volume_invariance),
         "global_oscillator_snapshot_product_change": (
             symp_gauge.snapshot_product_change
         ),

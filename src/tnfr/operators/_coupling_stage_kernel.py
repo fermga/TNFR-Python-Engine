@@ -20,13 +20,7 @@ from typing import Any
 
 from ..alias import get_attr
 from ..constants import DEFAULTS
-from ..constants.aliases import (
-    ALIAS_DNFR,
-    ALIAS_EPI,
-    ALIAS_SI,
-    ALIAS_THETA,
-    ALIAS_VF,
-)
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_THETA, ALIAS_VF
 from ..constants.canonical import UM_COMPAT_THRESHOLD as _UM_COMPAT_CANONICAL
 from ..errors import TNFRValueError
 from ..metrics.phase_compatibility import compute_phase_coupling_strength
@@ -40,7 +34,9 @@ _EPI_SIMILARITY_EPSILON = 1e-9
 
 
 def coupling_capacity_blend(
-    capacity: float, neighbors: tuple[float, ...], factor: float,
+    capacity: float,
+    neighbors: tuple[float, ...],
+    factor: float,
 ) -> float:
     """Evaluate the shared UM capacity arithmetic in its production order.
 
@@ -279,9 +275,7 @@ def _selected_candidate_ids(
                     abs(
                         angle_diff(
                             _finite_real(
-                                _raw_alias(
-                                    snapshot, candidate, ALIAS_THETA, None
-                                ),
+                                _raw_alias(snapshot, candidate, ALIAS_THETA, None),
                                 "candidate phase",
                             ),
                             target_phase,
@@ -354,26 +348,18 @@ def propose_coupling_target(
             source=node,
             node=node,
             theta_before=selection.target_phase,
-            theta_proposed=_finite_real(
-                proposed_target_phase, "target phase proposal"
-            ),
+            theta_proposed=_finite_real(proposed_target_phase, "target phase proposal"),
         )
     ]
     if bidirectional:
-        for neighbor, phase in zip(
-            selection.neighbors, selection.phases, strict=True
-        ):
-            proposed = (
-                phase + theta_push * angle_diff(consensus, phase)
-            ) % math.tau
+        for neighbor, phase in zip(selection.neighbors, selection.phases, strict=True):
+            proposed = (phase + theta_push * angle_diff(consensus, phase)) % math.tau
             phase_proposals.append(
                 CouplingPhaseProposal(
                     source=node,
                     node=neighbor,
                     theta_before=phase,
-                    theta_proposed=_finite_real(
-                        proposed, "neighbor phase proposal"
-                    ),
+                    theta_proposed=_finite_real(proposed, "neighbor phase proposal"),
                 )
             )
 
@@ -411,9 +397,7 @@ def propose_coupling_target(
         dnfr_reduction = 0.0
         dnfr_before = 0.0
 
-    functional_links = bool(
-        snapshot.graph.get("UM_FUNCTIONAL_LINKS", True)
-    )
+    functional_links = bool(snapshot.graph.get("UM_FUNCTIONAL_LINKS", True))
     threshold = float(_UM_COMPAT_CANONICAL)
     link_candidates: list[CouplingLinkCandidate] = []
     if functional_links:
@@ -428,12 +412,8 @@ def propose_coupling_target(
             raise RuntimeError(
                 "Coupling functional-link proposal lacks seed or node offset"
             )
-        limit = _candidate_count(
-            snapshot.graph.get("UM_CANDIDATE_COUNT", 0)
-        )
-        mode = str(
-            snapshot.graph.get("UM_CANDIDATE_MODE", "sample")
-        ).lower()
+        limit = _candidate_count(snapshot.graph.get("UM_CANDIDATE_COUNT", 0))
+        mode = str(snapshot.graph.get("UM_CANDIDATE_MODE", "sample")).lower()
         epi_source = _scalar_epi(snapshot, node, "target EPI")
         si_source = _nonnegative_real(
             _raw_alias(snapshot, node, ALIAS_SI), "target sense index"
@@ -453,9 +433,7 @@ def propose_coupling_target(
                     source=node,
                     target=candidate,
                     epi_source=epi_source,
-                    epi_target=_scalar_epi(
-                        snapshot, candidate, "candidate EPI"
-                    ),
+                    epi_target=_scalar_epi(snapshot, candidate, "candidate EPI"),
                     si_source=si_source,
                     si_target=_nonnegative_real(
                         _raw_alias(snapshot, candidate, ALIAS_SI),
@@ -502,8 +480,7 @@ def _link_weight(
         _EPI_SIMILARITY_EPSILON,
     )
     epi_distance = abs(
-        candidate.epi_source / epi_scale
-        - candidate.epi_target / epi_scale
+        candidate.epi_source / epi_scale - candidate.epi_target / epi_scale
     )
     epi_normalizer = (
         abs(candidate.epi_source) / epi_scale
@@ -511,13 +488,9 @@ def _link_weight(
         + _EPI_SIMILARITY_EPSILON / epi_scale
     )
     epi_similarity = 1.0 - epi_distance / epi_normalizer
-    si_similarity = 1.0 - abs(
-        candidate.si_source - candidate.si_target
-    )
+    si_similarity = 1.0 - abs(candidate.si_source - candidate.si_target)
     return _finite_real(
-        0.5 * phase_strength
-        + 0.25 * epi_similarity
-        + 0.25 * si_similarity,
+        0.5 * phase_strength + 0.25 * epi_similarity + 0.25 * si_similarity,
         "functional-link compatibility",
     )
 
@@ -569,9 +542,7 @@ def propose_coupling_stage(
         for phase_proposal in proposal.phase_proposals:
             if phase_proposal.source != proposal.node:
                 raise RuntimeError("Coupling phase proposal source changed")
-            if phase_proposal.theta_before != snapshot_phase[
-                phase_proposal.node
-            ]:
+            if phase_proposal.theta_before != snapshot_phase[phase_proposal.node]:
                 raise RuntimeError("Coupling phase proposal snapshot changed")
             contributions[phase_proposal.node].append(phase_proposal)
 
@@ -580,9 +551,7 @@ def propose_coupling_stage(
         ordered = contributions[node]
         ordered.sort(key=lambda proposal: rank[proposal.source])
         displacement = math.fsum(
-            angle_diff(
-                proposal.theta_proposed, proposal.theta_before
-            )
+            angle_diff(proposal.theta_proposed, proposal.theta_before)
             for proposal in ordered
         ) / len(ordered)
         merged_phase[node] = _finite_real(
@@ -600,9 +569,7 @@ def propose_coupling_stage(
     for proposal in target_proposals:
         for neighbor in proposal.compatible_neighbors:
             separation = abs(
-                angle_diff(
-                    final_phase[proposal.node], final_phase[neighbor]
-                )
+                angle_diff(final_phase[proposal.node], final_phase[neighbor])
             )
             if separation > proposal.effective_phase_limit:
                 raise TNFRValueError(
@@ -634,13 +601,9 @@ def propose_coupling_stage(
                 for neighbor in proposal.compatible_neighbors
             )
             alignment = math.fsum(strengths) / len(strengths)
-            multiplier = 1.0 - (
-                proposal.dnfr_reduction_factor * alignment
-            )
+            multiplier = 1.0 - (proposal.dnfr_reduction_factor * alignment)
             if not 0.0 <= multiplier <= 1.0:
-                raise RuntimeError(
-                    "Coupling DeltaNFR reduction left the unit interval"
-                )
+                raise RuntimeError("Coupling DeltaNFR reduction left the unit interval")
             update["dnfr"] = _finite_real(
                 proposal.dnfr_before * multiplier,
                 "merged DeltaNFR proposal",

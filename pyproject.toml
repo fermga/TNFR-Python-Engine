@@ -1,6 +1,6 @@
 [project]
 name = "tnfr"
-version = "0.0.3.5"
+version = "0.0.3.6"
 description = "TNFR (Resonant Fractal Nature Theory): a mathematical framework for modeling coherent patterns in complex systems through resonance-based dynamics on networks."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -61,18 +61,9 @@ yaml = ["pyyaml>=6.0,<7.0"]
 orjson = ["orjson>=3,<4"]
 viz = ["matplotlib>=3.7,<4.0"]
 docs = [
-  "sphinx>=7.2",
-  "sphinx-autodoc-typehints>=1.25",
-  "myst-parser>=2.0",
-  "nbsphinx>=0.9",
-  "sphinx-rtd-theme>=1.3",
-  "sphinxcontrib-mermaid>=0.9",
-  "ipykernel>=6",
-  "nbconvert>=7.16",
-  "pypandoc-binary>=1.14",
-  "mkdocs>=1.5",
-  "mkdocs-material>=9.4",
-  "mkdocs-jupyter>=0.24",
+  "mkdocs>=1.6,<2",
+  "mkdocs-material>=9.4,<10",
+  "pymdown-extensions>=10,<11",
 ]
 # Testing - modular groups
 test-unit = [
@@ -166,10 +157,8 @@ dev-full = [
 
 # Release tooling
 release = [
-  "python-semantic-release>=10.4,<11",
-  "setuptools-scm>=8,<10",
   "build>=1,<2",
-  "towncrier>=23,<26",
+  "twine>=6,<8",
 ]
 
 # Security tooling used by the Makefile security target.
@@ -190,7 +179,7 @@ Citation = "https://doi.org/10.5281/zenodo.17602860"
 Zenodo = "https://zenodo.org/records/17602860"
 Issues = "https://github.com/fermga/TNFR-Python-Engine/issues"
 Documentation = "https://fermga.github.io/TNFR-Python-Engine/"
-GPT = "https://chatgpt.com/g/g-67abc78885a88191b2d67f94fd60dc97-tnfr-resonant-fractal-nature-theory"
+Releases = "https://github.com/fermga/TNFR-Python-Engine/releases"
 
 [tool.setuptools.package-data]
 tnfr = ["py.typed", "schemas/*.json"]
@@ -201,39 +190,7 @@ tnfr = ["py.typed", "schemas/*.json"]
 where = ["src"]
 include = ["tnfr", "tnfr.*"]
 
-[tool.setuptools_scm]
-tag_regex = '^v(?P<version>[0-9]+\.[0-9]+\.[0-9]+)$'
-local_scheme = "no-local-version"
-write_to = "src/tnfr/_generated_version.py"
-fallback_version = "0.0.1"
-
-[tool.semantic_release]
-version_source = "tag"
-commit_parser = "conventional"
-allow_zero_version = false
-major_on_zero = false
-tag_format = "v{version}"
-
-[tool.semantic_release.branches.main]
-match = "^main$"
-prerelease = false
-
-[tool.semantic_release.changelog]
-template_dir = "meta/semantic_release/templates"
-mode = "update"
-
-[tool.semantic_release.changelog.default_templates]
-mask_initial_release = true
-changelog_file = ""
-
-[tool.semantic_release.commit_parser_options]
-minor_tags = ["feat", "structure"]
-patch_tags = ["fix", "perf", "refactor", "docs", "test", "build", "ci", "style", "chore"]
-other_allowed_tags = ["revert", "docs", "test", "build", "ci", "style", "refactor", "perf", "chore"]
-allowed_tags = ["feat", "fix", "perf", "refactor", "docs", "test", "build", "ci", "style", "chore", "structure", "revert"]
-default_bump_level = 0
-parse_squash_commits = true
-ignore_merge_commits = true
+# Release versions are declared in [project]; publish the explicitly reviewed tag.
 
 [tool.black]
 line-length = 88

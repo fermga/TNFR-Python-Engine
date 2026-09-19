@@ -24,9 +24,7 @@ def finite_spectral_real(value: Any, *, label: str) -> float:
     try:
         result = float(value)
     except (OverflowError, TypeError, ValueError) as exc:
-        raise TNFRValueError(
-            f"{label} must be a finite real scalar"
-        ) from exc
+        raise TNFRValueError(f"{label} must be a finite real scalar") from exc
     if not math.isfinite(result):
         raise TNFRValueError(f"{label} must be finite")
     return result
@@ -54,9 +52,7 @@ def validate_spectral_operator(
     from .mathematics.operators import SpectralExpectationOperator
 
     if not isinstance(operator, SpectralExpectationOperator):
-        raise TNFRValueError(
-            f"{label} must be a SpectralExpectationOperator"
-        )
+        raise TNFRValueError(f"{label} must be a SpectralExpectationOperator")
 
     matrix_shape = tuple(getattr(operator.matrix, "shape", ()))
     if len(matrix_shape) != 2 or matrix_shape[0] != matrix_shape[1]:
@@ -146,9 +142,7 @@ def spectral_expectation_payload(
     """Build the canonical payload for one spectral-threshold observation."""
 
     payload: dict[str, Any] = {
-        "value": finite_spectral_real(
-            value, label="spectral operator expectation"
-        ),
+        "value": finite_spectral_real(value, label="spectral operator expectation"),
         "threshold": finite_spectral_real(
             threshold, label="spectral expectation threshold"
         ),

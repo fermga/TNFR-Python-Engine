@@ -2,7 +2,8 @@
 
 **Status**: Canonical reference
 **Version**: 0.0.3.5
-**Date**: March 2026
+**Origin**: March 2026
+**Scope review**: September 19, 2026
 
 ---
 
@@ -33,9 +34,9 @@ where:
 
 | Symbol | Definition | Units |
 |--------|-----------|-------|
-| EPI | Primary Information Structure — coherent state vector | — |
+| EPI | Primary Information Structure — structural configuration in a declared chart | Declared form unit X |
 | $\nu_f$ | Structural frequency — reorganization capacity | Hz_str |
-| $\Delta\mathrm{NFR}$ | Nodal field response — local structural pressure | — |
+| $\Delta\mathrm{NFR}$ | Nodal field response — directed structural pressure | X when capacity has inverse-time units |
 
 ### 2.2 Structural Triad
 
@@ -61,8 +62,11 @@ $$
 $$
 
 Boundedness only requires bounded partial integrals and does not imply (3) or
-convergence to a limit. Local integrability suffices for finite-horizon
-trajectories. U2 prescribes stabilization and a two-unit prefix-debt policy;
+convergence to a limit. Local integrability of a supplied time-dependent
+velocity defines its finite-horizon accumulated change; it does not prove
+existence or uniqueness for an unspecified state-dependent law. See the
+[integrability distinctions](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#1-existence-boundedness-and-convergence).
+U2 prescribes stabilization and a two-unit prefix-debt policy;
 it motivates control of accumulated change but does not independently prove
 an infinite-horizon estimate. Its numerical calibration and the three-operation
 U4b window use a mean-rate surrogate, not every graph mode's decay time.
@@ -115,6 +119,12 @@ Its regularity functional is not the canonical coherence or a Banach norm.
 See [epi.py](../src/tnfr/mathematics/epi.py),
 [spaces.py](../src/tnfr/mathematics/spaces.py) and
 [the shared chart boundary](../src/tnfr/types.py).
+
+Scalar numerical solvers use that same finite signed reader: uniform-real
+BEPI is supported, while nonuniform or complex live/serialized forms are
+rejected before solver-owned writes instead of being projected to a magnitude.
+This is a representation contract, not a derivation of rich-EPI dynamics.
+See [solver boundary controls](../tests/test_nodal_solver_epi_scope.py).
 
 Consequently neither the existence of BEPI storage nor the use of floats
 proves the physically necessary EPI type. Temporal spectral entropy of a
@@ -220,6 +230,92 @@ and graph symmetry supply further restrictions rather than following from
 the nodal product alone. Numeric defaults and telemetry remain distinct from
 autonomous constitutive laws.
 
+### 2.8 Representation dimension does not select a maintaining mechanism
+
+Scalar-EPI exclusion results must retain their scalar-chart hypotheses.
+They do not rule out every manifold-valued TNFR realization. However, merely
+adding components to the same reciprocal diffusive pressure does not remove
+its dissipation. On a common finite-dimensional real inner-product fiber,
+let the rows of `X` be nodal forms, `B=D-W` for fixed symmetric nonnegative
+conductance, and `M=diag(nu_i/d_i)` with zero mobility at isolates. The
+componentwise extension of the declared pure-EPI model gives
+
+\[
+\dot X=-MBX,\qquad
+E_D=\tfrac12\operatorname{tr}(X^TBX)
+=\tfrac14\sum_{ij}W_{ij}\|X_i-X_j\|^2,
+\]
+\[
+\dot E_D=-\operatorname{tr}((BX)^TM(BX))\le0.
+\]
+
+This follows by differentiating the quadratic and using symmetry of `B`;
+it needs no assumption about the number of components. It is a conditional
+mathematical extension, not an implemented rich-EPI engine law. A faithful
+smooth chart change transports an existing Lyapunov function by composition
+with its inverse. Consequently a richer chart alone cannot convert those
+same dissipative trajectories into recurrent ones. A new connection,
+nonlinear response, internal generator or coupled channel would be new
+dynamics whose origin must be justified separately. Rich storage and
+auxiliary Hilbert operators do not provide that justification by themselves.
+
+### 2.9 Assumed substrate and emergence between scales
+
+A primitive of one description is not thereby external to TNFR or fundamental
+at every scale. The present engine takes a nodal state and its admitted laws
+as inputs. A coarser nodal state could instead be an observation of finer TNFR
+structure. The restricted [EPI quotient](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#1-pure-epi-coarse-graining)
+already derives macro form, conductance and capacity from that structure.
+This does not derive the existence of the fine substrate or the selection of
+the observed partition. Conversely, taking a fine substrate as a premise does
+not assert a substance outside the framework. Structural scale is not an
+assertion of an earlier physical time.
+
+For a declared fine state `Z` with a complete law `Z_dot=F(Z)`, let `Y=Pi(Z)`
+be a proposed effective nodal description. On a smooth fixed-support domain,
+an autonomous effective law `Y_dot=G(Y)` requires
+
+\[
+D\Pi(Z)F(Z)=G(\Pi(Z)).
+\]
+
+Thus two admitted fine states with the same `Y` must give the same observed
+derivative. A time-dependent observation additionally contributes
+`partial_t Pi`; an admitted event map `J` requires the separate relation
+`Pi_after(J(Z))=J_bar(Pi_before(Z))`. Neither event occurrence nor a moving
+partition follows from the continuous identity. Memory-dependent models must
+retain the required history, not silently claim instantaneous closure.
+
+Writing `Y_dot=nu_bar*p_bar` by defining pressure from the observed derivative
+would not pass this test. The effective pressure, capacity, phase, support
+and their laws must be constructed independently from the fine structure.
+The [scale bridge](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) owns the restricted
+positive result and the phase, topology and field-inheritance obstructions;
+[derived memory](DERIVED_EPI_MEMORY.md) supplies exact lost-state accounting
+in its declared linear domain. A failed reduction can require an inherited
+coordinate or memory rather than a new force. It does not, by itself, prove
+that TNFR needs a different underlying theory. A claimed emergent NFR must
+also establish formation and identity: closure of an analyst-selected
+partition alone is insufficient.
+
+The hypothesis that the present nodal description is an effective part of a
+more complete TNFR formulation is therefore open and mathematically
+testable in scoped models. It is not a demonstrated identification of all
+physical entities with one substrate. Repeating a nodal description at a
+finer scale also leaves that finer state/law as premises; it is not an
+explanation of existence from no assumptions.
+
+**Initial activity is not a sustained pulse.** Positive capacity with zero
+pressure gives zero EPI rate. Nonzero `nu_i*p_i` at an initial state gives
+activity, but need not give oscillation: pure-EPI diffusion provides active
+relaxation. An auxiliary wave spectrum or a configured phase clock supplies
+a different claim. The [pulse audit](NODAL_RESEARCH_STRATEGY.md#resonant-persistence-and-pulse-audit)
+and [clock controls](../tests/physics/test_structural_clock_scope.py) keep these
+distinctions executable. An assumed initial state, even an active one, does
+not select the missing phase/capacity/support evolution or provide permanent
+renewal. “Primordial pulse” is not an additional model variable or a proved
+mechanism here.
+
 ## 3. Structural Field Tetrad
 
 TNFR exposes four canonical diagnostic channels. They complement the structural
@@ -234,16 +330,20 @@ $$
 
 Aggregates surrounding pressure using the selected inverse-square kernel.
 Explicit edge `length` defines distance; absent length, `weight` is the
-compatibility fallback. U6 monitors its change under a declared policy; the
+compatibility fallback, then unit length. The sum includes only reachable
+distinct nodes at strictly positive finite distance; zero-distance pairs are
+omitted under the shared read-out convention. U6 monitors its change under a declared policy; the
 aggregation alone does not prove stability.
 
 ### 3.2 Phase Gradient ($|\nabla\phi|$)
 
 $$
-|\nabla\phi|(i) = \frac{1}{|\mathcal{N}(i)|}\sum_{j\in\mathcal{N}(i)} \big|\mathrm{wrap}(\theta_j - \theta_i)\big| \tag{5}
+\lvert\nabla\phi\rvert(i) = \frac{1}{|\mathcal{N}(i)|}\sum_{j\in\mathcal{N}(i)} \big|\mathrm{wrap}(\theta_j - \theta_i)\big| \tag{5}
 $$
 
-Quantifies local desynchronization between a node and its neighborhood. Detects stress regions that may require coherence operators.
+Quantifies local desynchronization between a node and its neighborhood;
+isolates return zero. A large value is a diagnostic observation, not a law
+selecting a Coherence event.
 
 ### 3.3 Phase Curvature ($K_\phi$)
 
@@ -257,7 +357,7 @@ now distinguishes nonzero represented direction from exact represented
 cancellation, with explicit unavailable evidence or a numeric API error; it
 does not invent an arithmetic phase direction. Exact sums of retained phasor
 components do not certify exact trigonometry. Curvature alone does not certify
-a bifurcation. See the [API domain](../docs/STRUCTURAL_FIELDS_TETRAD.md#23-circular-phase-curvature-k_φ).
+a bifurcation. See the [API domain](../docs/STRUCTURAL_FIELDS_TETRAD.md#phase-curvature).
 
 ### 3.4 Coherence Length ($\xi_C$)
 
@@ -292,13 +392,13 @@ or establish completeness of the field representation.
 The following algebraic read-outs combine the fields. Their conventional names
 do not prove conservation, quantization or physical dimensional compatibility:
 
-| Invariant | Definition | Physical role |
+| Conventional diagnostic name | Definition | Supported interpretation |
 |-----------|-----------|--------------|
-| Energy density $\mathcal{E}$ | $\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\mathrm{NFR}}^2$ | Nonnegative diagnostic functional; decay needs evidence |
-| Topological charge $\mathcal{Q}$ | $|\nabla\phi| \cdot J_\phi - K_\phi \cdot J_{\Delta\mathrm{NFR}}$ | Bilinear diagnostic; no general integer or conserved-charge theorem |
-| Chirality $\chi$ | $|\nabla\phi| \cdot K_\phi - J_\phi \cdot J_{\Delta\mathrm{NFR}}$ | Handedness detection |
-| Symmetry breaking $\mathcal{S}$ | $(|\nabla\phi|^2 - K_\phi^2) + (J_\phi^2 - J_{\Delta\mathrm{NFR}}^2)$ | Channel contrast; transition interpretation needs a protocol |
-| Coherence coupling $\mathcal{C}$ | $\Phi_s \cdot |\Psi|$ | Multi-scale connector |
+| Energy density $\mathcal{E}$ | $\Phi_s^2 + \lvert\nabla\phi\rvert^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\mathrm{NFR}}^2$ | Nonnegative diagnostic functional; decay needs evidence |
+| Topological charge $\mathcal{Q}$ | $\lvert\nabla\phi\rvert \cdot J_\phi - K_\phi \cdot J_{\Delta\mathrm{NFR}}$ | Bilinear diagnostic; no general integer or conserved-charge theorem |
+| Chirality $\chi$ | $\lvert\nabla\phi\rvert \cdot K_\phi - J_\phi \cdot J_{\Delta\mathrm{NFR}}$ | Signed channel contrast; geometric handedness needs an explicit symmetry action |
+| Symmetry breaking $\mathcal{S}$ | $(\lvert\nabla\phi\rvert^2 - K_\phi^2) + (J_\phi^2 - J_{\Delta\mathrm{NFR}}^2)$ | Channel contrast; transition interpretation needs a protocol |
+| Coherence coupling $\mathcal{C}$ | $\Phi_s \cdot \lvert\Psi\rvert$ | Product of potential and geometric-field magnitude; no cross-scale closure theorem |
 
 ---
 
@@ -344,28 +444,18 @@ The tetrad groups four selected diagnostic channels by their construction:
 
 ### 4.3 Derivation Outline
 
-1. **$\Phi_s$ (aggregation)**: At fixed graph kernel $B_G$, potential is linear
-   in pressure and satisfies $\|\Phi_s\|_\infty\le
-   \|B_G\|_\infty\|\Delta\mathrm{NFR}\|_\infty$. Unit pressure on $K_4$ gives
-   potential 3 even at zero phase. Thus $\pi/4$ and $\pi/2$ are selected policies,
-   not phase-wrap bounds. Chain summability does not uniquely select exponent
-   2: absolute sums converge for every $\alpha>1$ and independent-pressure
-   variance sums for every $\alpha>1/2$. The inverse-square kernel remains the
-   canonical modeling choice.
+The detailed arguments have one owner in
+[Minimal Structural Degrees, section 4](MINIMAL_STRUCTURAL_DEGREES.md#4-field-scales-and-selected-thresholds):
 
-2. **Phase gradient (local mismatch)**: The mean absolute wrapped difference
-   has exact maximum π. The current warning value is π/16 ≈ 0.19635;
-   synchronization onset is protocol dependent. The local field identifies
-   spatial stress that a global aggregate does not locate. Canonical C(t) is
-   amplitude sensitive; only the separate normalized dispersion statistic is
-   invariant under positive pressure scaling when its denominator is nonzero.
+| Field | Established fact | Remaining distinction |
+| --- | --- | --- |
+| Potential | Fixed-kernel linearity and norm bound | Neither a universal pi-fraction bound nor unique selection of exponent 2 |
+| Phase gradient | Mean absolute wrapped mismatch is at most pi | Warning margin and measured synchronization onset are separate |
+| Phase curvature | Wrapped bound where the circular mean is available | Represented cancellation is an availability condition, not invented zero curvature |
+| Coherence length | A static product fit with a separately identified spectral fallback | No universal decay law or criticality follows from either estimate |
 
-3. **$K_\phi$ (2nd order)**: Where defined, wrapped phase curvature has magnitude at most $\pi$. A zero represented resultant is reported as unavailable, not as zero curvature. The operational threshold is the selected margin $0.9\pi \approx 2.8274$.
-
-4. **$\xi_C$ (correlation)**: Exponential decay is a fitting assumption.
-   The fallback selects the smallest positive graph eigenvalue; on a connected
-   undirected graph it gives $1/\sqrt{\lambda_2}$. Diameter and mean-distance
-   comparisons are telemetry policies, not universal criticality theorems.
+This summary does not replace the linked graph, distance, representation and
+estimator hypotheses.
 
 ### 4.4 Grammar Integration
 
@@ -410,10 +500,19 @@ procedure. A derivation must state the assumptions at each step:
 
 ### 6.1 Reduction Procedure
 
-1. **Decomposition**: Split $\Delta\mathrm{NFR}$ into diffusive (stabilizing) and solenoidal (transport) components.
-2. **Averaging**: Apply spatial/temporal coarse-graining to obtain effective PDEs.
-3. **Operator mapping**: Associate TNFR operators with PDE source terms (AL $\to$ generation, IL $\to$ damping).
-4. **Telemetry projection**: Express resulting fields in terms of $\Phi_s$, $|\nabla\phi|$, $K_\phi$, $\xi_C$.
+1. **Declare the fine law**: Specify form coordinates, pressure dependencies,
+   capacity, phase, support and time. A diffusive or solenoidal decomposition
+   requires its own operator, metric and domain assumptions.
+2. **Specify the observation**: Choose the coarse variables and prove that
+   equal observations have equal projected rates, or retain the required
+   hidden coordinates and memory. A graph quotient is not automatically a PDE.
+3. **Separate flows and events**: Derive the actual effect of each supplied
+   operator map. An EPI jump or stored-pressure edit is not automatically a
+   continuous source or damping term.
+4. **Define the read-outs**: Compute the tetrad where available and state which
+   information it discards. Use the
+   [scale and geometry contracts](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and
+   [derived memory](DERIVED_EPI_MEMORY.md) rather than assuming tetrad closure.
 
 ### 6.2 Regime Summary
 
@@ -422,18 +521,21 @@ Model comparisons and research applications (each retains its own assumptions):
 | Domain | Regime condition | Telemetry priorities | Governing reduction | Verification |
 |--------|-----------------|---------------------|-------------------|-------------|
 | Overdamped drift | Specified restoring pressure and frequency | Structural velocity and pressure | First-order mobility law; frequency is not inverse mass | Requires the stated pressure law |
-| Nodal equilibrium | $\Delta\mathrm{NFR}=0$ | Structural velocity | Zero EPI derivative at finite frequency | Direct nodal identity |
+| Instantaneous EPI stationarity | $\Delta\mathrm{NFR}=0$ | Structural velocity | Zero unforced EPI derivative; full equilibrium also needs the other state laws | Direct nodal identity |
 | Discrete-mode analogy | Bounded graph with specified boundary conditions | Graph spectrum | Standing graph modes; no quantum-state identification | Spectral calculations |
-| Spectral factorization | Stationary modes on Paley graphs | $\Phi_s$, $|\nabla\phi|$, $K_\phi$, $\xi_C$ | Partitioned periodicity detection | 10 test modules |
+| Spectral factorization | Specified Paley/residue graph construction | Graph-spectral and available field diagnostics | Partitioned periodicity detection under that construction | [Number-theory scope](TNFR_NUMBER_THEORY.md) |
 
 ### 6.3 Tetrad Requirements per Domain
 
-Every domain study must quantify the four structural fields:
+Every domain study must report the four structural-field channels, including
+explicit unavailability when its state or estimator does not support one:
 
 - **$\Phi_s$**: Report distributions and gradients; compare against the selected $\pi/2 \approx 1.571$ drift policy with its baseline and aggregation.
 - **$|\nabla\phi|$**: Monitor the heuristic early-warning level ($\approx \pi/16 \approx 0.196$; not derived — the kinematic bound is $\pi$).
-- **$K_\phi$**: Flag mutation-prone regions ($|K_\phi| \geq 2.8274$).
-- **$\xi_C$**: Track multi-scale integration; check critical scaling ratios.
+- **$K_\phi$**: Report available curvature and the selected $0.9\pi$ warning;
+  a crossing neither selects Mutation nor proves a transition.
+- **$\xi_C$**: Report fit quality, path units and estimator/fallback provenance;
+  a critical-scaling interpretation requires a separate finite-size protocol.
 
 ---
 
@@ -522,9 +624,17 @@ A test count measures tested behavior; it does not establish an open theorem.
 ---
 ## 9. Practical Guidance
 
-1. **Monitoring**: Export $\Phi_s$, $|\nabla\phi|$, $K_\phi$, $\xi_C$ after every operator batch; treat threshold crossings as actionable events.
-2. **Operator design**: When introducing new operators, specify their expected effect on each field to maintain grammar compliance.
-3. **Model calibration**: Prefer dimensionless ratios ($\Phi_s/(\pi/2)$, $|\nabla\phi|/\pi$, $|K_\phi|/(0.9\pi)$) to compare scenarios across scales.
+1. **Monitoring**: Export available tetrad fields and explicit failures after
+   each operator batch. Threshold crossings are policy flags; any resulting
+   action needs its own declared controller and grammar admission.
+2. **Operator design**: Specify a proposed map's state changes, domain and
+   postconditions, then verify its field response. A field interpretation does
+   not establish a new canonical operator or its autonomous selection.
+3. **Model calibration**: Compare like units and declared observation scales.
+   Phase ratios such as $|\nabla\phi|/\pi$ are dimensionless; dividing
+   dimensional $\Phi_s$ by the number $\pi/2$ alone is not. A potential ratio
+   requires a reference with the same pressure/path units. See the
+   [parameter foundations](NODAL_PARAMETER_FOUNDATIONS.md#3-joint-changes-of-form-and-time-units).
 4. **Correlation diagnostics**: A large $\xi_C$ warrants checking fit quality,
    spectral fallback, and finite-size effects before interpreting a critical
    regime. Any subsequent operators must satisfy their grammar and contracts.
@@ -536,8 +646,8 @@ A test count measures tested behavior; it does not establish an open theorem.
 | Component | Location |
 |-----------|----------|
 | Structural field computation | `src/tnfr/physics/fields.py` |
-| Grammar validation (U1–U6) | `src/tnfr/operators/grammar.py` |
-| Conservation laws | `src/tnfr/physics/conservation.py` |
+| Grammar validation (U1–U5 context; U6 is a separate observer) | `src/tnfr/operators/grammar.py` |
+| Structural balance diagnostics | `src/tnfr/physics/conservation.py` |
 | Integrity monitor | `src/tnfr/physics/integrity.py` |
 | Canonical constants | `src/tnfr/constants/canonical.py` |
 | SDK access (tetrad, conservation) | `src/tnfr/sdk/simple.py` |
@@ -554,7 +664,7 @@ A test count measures tested behavior; it does not establish an open theorem.
 ```python
 from tnfr.sdk import TNFR
 
-net = TNFR.create(20).ring().evolve(5)    # Nodal equation dynamics
+net = TNFR.create(20).ring().evolve(5)    # Configured engine evolution
 tetrad = net.tetrad()                      # Structural Field Tetrad
 telem = net.telemetry()                    # C(t), Si, phase, νf
 analysis = TNFR.analyze(net)               # Comprehensive analysis

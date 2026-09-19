@@ -7,7 +7,6 @@ from pathlib import Path
 
 import pytest
 
-
 EXAMPLE_PATH = (
     Path(__file__).resolve().parents[2]
     / "examples"
@@ -48,13 +47,9 @@ def test_example_builds_two_stable_identity_aligned_meshes(example_and_protocol)
     assert comparison.fine_grid_is_strict_refinement
     assert comparison.maximum_fine_step < comparison.maximum_coarse_step
     assert 0.0 < comparison.maximum_scaled_direct_epi_error
-    assert (
-        comparison.maximum_scaled_direct_epi_error
-        <= comparison.agreement_tolerance
-    )
+    assert comparison.maximum_scaled_direct_epi_error <= comparison.agreement_tolerance
     assert all(
-        tuple(node for node, _ in sample.direct_epi_differences)
-        == example.NODES
+        tuple(node for node, _ in sample.direct_epi_differences) == example.NODES
         for sample in comparison.samples
     )
     assert all(
@@ -68,9 +63,7 @@ def test_example_builds_two_stable_identity_aligned_meshes(example_and_protocol)
         for certificate in (coarse, fine)
         for interval in certificate.intervals
     )
-    assert exact_reference[
-        "fine_strictly_closer_at_every_noninitial_common_time"
-    ]
+    assert exact_reference["fine_strictly_closer_at_every_noninitial_common_time"]
     assert (
         exact_reference["maximum_fine_error_to_exact_linf"]
         < exact_reference["maximum_coarse_error_to_exact_linf"]
@@ -81,20 +74,17 @@ def test_every_example_snapshot_has_exact_pure_epi_telemetry(
     example_and_protocol,
 ):
     example, protocol = example_and_protocol
-    snapshots = (
-        protocol["coarse_snapshots"] + protocol["fine_snapshots"]
-    )
+    snapshots = protocol["coarse_snapshots"] + protocol["fine_snapshots"]
 
     assert protocol["maximum_pressure_residual"] == pytest.approx(0.0)
     assert protocol["maximum_nodal_residual"] == pytest.approx(0.0)
-    assert example.exact_pure_epi_state(
-        protocol["initial"], 0.0
-    ) == pytest.approx(example.INITIAL_EPI)
+    assert example.exact_pure_epi_state(protocol["initial"], 0.0) == pytest.approx(
+        example.INITIAL_EPI
+    )
     for snapshot in snapshots:
         assert tuple(snapshot) == example.NODES
         assert all(
-            "delta_nfr" in snapshot.nodes[node]
-            and "dEPI_dt" in snapshot.nodes[node]
+            "delta_nfr" in snapshot.nodes[node] and "dEPI_dt" in snapshot.nodes[node]
             for node in snapshot
         )
 

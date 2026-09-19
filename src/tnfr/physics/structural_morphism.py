@@ -1,65 +1,29 @@
-r"""Structural morphisms: nodal-flow transports between networks.
+r"""Linear flow intertwiners for declared fixed EPI transport models.
 
-The operator-contract boundary rejects four arithmetic maps *as operators*
-— CRT projection (a relabeling), the affine map (an automorphism), the power map
-(an endomorphism) and the p-adic lift (a transport map) — while the p-adic tower
-supplies exact projection/lift **intertwiners**.  Those rejections and that
-transport are the same thing seen twice: they are **morphisms of the structural
-category**, not nodal reorganizations.
+For xdot=-nu*L_src*x and ydot=-nu*L_tgt*y with the same fixed positive capacity,
+a linear M transports every source solution to the target iff
+M*L_src=L_tgt*M. Necessity follows by differentiating at zero; sufficiency
+follows by the matrix exponential or ODE uniqueness. These are consequences of
+the specified diffusion generators, not of the nodal identity alone.
 
-A canonical operator changes nodal state through the nodal equation
-``∂EPI/∂t = ν_f · ΔNFR`` (a NODE- or NETWORK-scale reorganization).  A structural
-morphism is a linear map ``M`` **between** two networks that transports the
-diffusion generator, ``M L_src = L_tgt M`` (an intertwiner); it relabels,
-aggregates or prolongs structure but performs no reorganization.  This module
-classifies such maps and issues a certificate — sharpening the 13-operator
-boundary without inventing a fourteenth operator.
+The intertwining residual measures a generator defect. A finite-time defect
+needs the separate semigroup bound; its numerical magnitude is not generally
+the same. The helper classifies selected maps using dimension, rank and other
+matrix predicates. Those labels do not uniquely determine every map or prove
+joint pressure/phase/capacity/support and tetrad closure.
 
-**Emergence from the nodal equation.**  These morphisms are **not** an imposed
-category: they emerge directly from ``∂EPI/∂t = ν_f · ΔNFR``.  For the EPI channel
-with a common ``ν_f`` the nodal equation is ``dEPI/dt = −ν_f L · EPI`` with flow
-``EPI(t) = e^{−ν_f t L} EPI(0)``.  A map ``M`` carries **every** source solution to
-a target solution,
-
-    ``M e^{−s L_src} EPI₀ = e^{−s L_tgt} M EPI₀``  for all ``s, EPI₀``,
-
-**iff** ``M L_src = L_tgt M`` (differentiate at ``s = 0`` for ⇒; for ⇐ both sides
-solve the same ODE ``d/ds(·) = −L_tgt(·)`` with equal initial data).  So the
-intertwining defect *is* the nodal-flow-preservation defect, and the
-structure-preserving morphisms are exactly the maps that commute with the
-nodal-equation semigroup.  The taxonomy below is the classification of these
-nodal-flow transports by their dimension change and rank; a folding
-``ENDOMORPHISM`` generally fails the intertwining test, so it does **not** emerge
-as a nodal transport.
-
-**Taxonomy.**
-
-- ``RELABELING`` — bijection to a **re-labelled** graph (``L_src ≠ L_tgt``);
-  ``AUTOMORPHISM`` is the sub-case onto the **same** graph (``L_src = L_tgt``,
-    the symmetry of one NFR).
-- ``INTERTWINER`` — full-rank same-dimension transport that is not a permutation
-  (a change of coordinates conjugating isospectral generators).
-- ``PROJECTION`` — an idempotent onto an ``L``-invariant sector: either
-  dimension-dropping (a non-partition surjection) or same-dimension (the ambient
-    Reynolds sector projector ``Q_Γ``); ``COARSE_GRAINING`` is the sub-case that
-    is a fiber **partition average** (a U5-compatible quotient).
-- ``LIFT`` — dimension-raising injection (prolongation, a U5-compatible lift).
-- ``ENDOMORPHISM`` — a rank-deficient **folding** self-map that does **not**
-    intertwine, so it does **not** emerge from the nodal flow.
-
-The genus is the intertwiner; the species are the cells of the (dimension change)
-× (rank type) grid, with ``AUTOMORPHISM ⊆ RELABELING`` and
-``COARSE_GRAINING ⊆ PROJECTION`` as canonical refinements.  The
-``INTERTWINER`` property (``M L_src = L_tgt M``) is orthogonal to the kind: a
-lift, a coarse-graining and an automorphism are all intertwiners; the kind is
-fixed by the dimension change and the injectivity/surjectivity of ``M``.
-"""
+The distinction between named operators and these linear maps is not a
+universal within-network/between-network dichotomy: a projector may act on one
+space and a canonical support-changing operation can alter a network. The
+arithmetic certificate helpers are synthetic comparisons, not full executed
+operator-equivalence proofs. Compatibility labels containing U5 remain scoped
+to the separately checked finite transport/hierarchy conditions."""
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from enum import Enum
-import math
 
 import numpy as np
 
@@ -169,17 +133,11 @@ def _intertwining_diagnostics(
     defect = _finite_difference(
         source_transport, target_transport, "intertwining residual"
     )
-    residual = _finite_norm(
-        defect, matrix=True, name="intertwining residual"
-    )
+    residual = _finite_norm(defect, matrix=True, name="intertwining residual")
     scale = max(
         1.0,
-        _finite_norm(
-            source_transport, matrix=True, name="source intertwining scale"
-        ),
-        _finite_norm(
-            target_transport, matrix=True, name="target intertwining scale"
-        ),
+        _finite_norm(source_transport, matrix=True, name="source intertwining scale"),
+        _finite_norm(target_transport, matrix=True, name="target intertwining scale"),
     )
     return residual, scale
 
@@ -250,17 +208,14 @@ def is_idempotent(matrix, *, tol: float = 1e-9) -> bool:
 
 
 def intertwining_residual(morphism, laplacian_src, laplacian_tgt) -> float:
-    r"""``‖M L_src − L_tgt M‖₂`` — the transport defect of the morphism.
+    r"""Return the numerical spectral norm of M*L_src-L_tgt*M.
 
-    Zero means ``M`` conjugates the source diffusion generator into the target
-    one (an intertwiner), so coarse modes survive: ``spec(L_src)`` relates to
-    ``spec(L_tgt)`` through ``M``.  By the emergence theorem this defect equals
-    the nodal-flow-preservation defect (the ``s = 0`` derivative of
-    :func:`nodal_flow_preservation_residual`).
-    """
-    m, ls, lt = _validated_morphism_system(
-        morphism, laplacian_src, laplacian_tgt
-    )
+    Exact zero is the all-state linear-generator intertwining condition.
+    For a source eigenvector v, only a nonzero image Mv transfers its eigenvalue
+    to the target. Similarity/conjugacy additionally requires invertible M.
+    This generator defect differs from a sampled trajectory defect; see
+    nodal_flow_preservation_residual and finite_time_intertwining_bound."""
+    m, ls, lt = _validated_morphism_system(morphism, laplacian_src, laplacian_tgt)
     residual, _ = _intertwining_diagnostics(m, ls, lt)
     return residual
 
@@ -281,9 +236,7 @@ def finite_time_intertwining_bound(
     _reject_boolean_numeric(structural_time, "structural_time")
     if not np.isfinite(structural_time) or structural_time < 0.0:
         raise ValueError("structural_time must be finite and nonnegative")
-    m, ls, lt = _validated_morphism_system(
-        morphism, laplacian_src, laplacian_tgt
-    )
+    m, ls, lt = _validated_morphism_system(morphism, laplacian_src, laplacian_tgt)
     state = _as_float(x0)
     if m.shape != (lt.shape[0], ls.shape[0]) or state.shape != (ls.shape[0],):
         raise ValueError(
@@ -303,8 +256,13 @@ def finite_time_intertwining_bound(
 
 
 def nodal_flow_preservation_residual(
-    morphism, laplacian_src, laplacian_tgt, x0=None, *,
-    s_max: float = 6.0, samples: int = 60
+    morphism,
+    laplacian_src,
+    laplacian_tgt,
+    x0=None,
+    *,
+    s_max: float = 6.0,
+    samples: int = 60,
 ) -> float:
     r"""``max_s ‖M e^{−s L_src} x₀ − e^{−s L_tgt} M x₀‖`` — the direct nodal test.
 
@@ -318,9 +276,7 @@ def nodal_flow_preservation_residual(
     """
     _reject_boolean_numeric(s_max, "s_max")
     _reject_boolean_numeric(samples, "samples")
-    m, ls, lt = _validated_morphism_system(
-        morphism, laplacian_src, laplacian_tgt
-    )
+    m, ls, lt = _validated_morphism_system(morphism, laplacian_src, laplacian_tgt)
     ls = _as_float(laplacian_src)
     lt = _as_float(laplacian_tgt)
     n_src = m.shape[1]
@@ -343,8 +299,7 @@ def nodal_flow_preservation_residual(
             raise ValueError(
                 "sampled nodal flow exceeds finite floating-point range"
             ) from exc
-        if (not np.all(np.isfinite(source_flow))
-                or not np.all(np.isfinite(target_flow))):
+        if not np.all(np.isfinite(source_flow)) or not np.all(np.isfinite(target_flow)):
             raise ValueError("sampled nodal flow exceeds finite floating-point range")
         source_state = _finite_product(source_flow, x0, "sampled source flow")
         lhs = _finite_product(m, source_state, "transported source flow")
@@ -353,9 +308,7 @@ def nodal_flow_preservation_residual(
         defect = _finite_difference(lhs, rhs, "sampled nodal-flow residual")
         resid = max(
             resid,
-            _finite_norm(
-                defect, matrix=False, name="sampled nodal-flow residual"
-            ),
+            _finite_norm(defect, matrix=False, name="sampled nodal-flow residual"),
         )
     return resid
 
@@ -366,9 +319,7 @@ def classify_morphism(
     r"""Classify ``M : (V_src, L_src) → (V_tgt, L_tgt)`` into its structural kind."""
     if tol is not None:
         _reject_boolean_numeric(tol, "tol")
-    m, ls, lt = _validated_morphism_system(
-        morphism, laplacian_src, laplacian_tgt
-    )
+    m, ls, lt = _validated_morphism_system(morphism, laplacian_src, laplacian_tgt)
     n_tgt, n_src = m.shape
     if tol is None:
         tol = _relative_tolerance(m)
@@ -392,9 +343,10 @@ def classify_morphism(
             _finite_norm(ls, matrix=True, name="source generator scale"),
             _finite_norm(lt, matrix=True, name="target generator scale"),
         )
-        same = _finite_norm(
-            same_defect, matrix=True, name="generator equality residual"
-        ) <= float(tol) * same_scale
+        same = (
+            _finite_norm(same_defect, matrix=True, name="generator equality residual")
+            <= float(tol) * same_scale
+        )
         # A permutation of one graph is an automorphism only when it preserves
         # that graph's nodal generator.  A non-commuting vertex permutation is
         # merely a relabeling and the certificate records that it is not an
@@ -486,7 +438,11 @@ class EpiCoarseGrainingCertificate:
 
 
 def certify_morphism(
-    morphism, laplacian_src, laplacian_tgt, *, tol: float | None = None,
+    morphism,
+    laplacian_src,
+    laplacian_tgt,
+    *,
+    tol: float | None = None,
     flow_probe=None,
 ) -> StructuralMorphismCertificate:
     r"""Bundle the classification and structure diagnostics for a morphism.
@@ -501,9 +457,7 @@ def certify_morphism(
     """
     if tol is not None:
         _reject_boolean_numeric(tol, "tol")
-    m, ls, lt = _validated_morphism_system(
-        morphism, laplacian_src, laplacian_tgt
-    )
+    m, ls, lt = _validated_morphism_system(morphism, laplacian_src, laplacian_tgt)
     n_tgt, n_src = m.shape
     if tol is None:
         tol = _relative_tolerance(m)
@@ -512,9 +466,7 @@ def certify_morphism(
     rank = _scale_invariant_rank(m, float(tol))
     resid, residual_scale = _intertwining_diagnostics(m, ls, lt)
     relative_residual = resid / residual_scale
-    flow = nodal_flow_preservation_residual(
-        m, ls, lt, flow_probe
-    )
+    flow = nodal_flow_preservation_residual(m, ls, lt, flow_probe)
     kind = classify_morphism(m, ls, lt, tol=tol)
     inj = rank == n_src
     surj = rank == n_tgt
@@ -605,9 +557,7 @@ def _build_reversible_partition_geometry(
         try:
             return float(raw)
         except (TypeError, ValueError, OverflowError) as exc:
-            raise ValueError(
-                f"{label} requires scalar capacity"
-            ) from exc
+            raise ValueError(f"{label} requires scalar capacity") from exc
 
     frequency = np.array([read_capacity(node) for node in nodes], dtype=float)
     if not np.all(np.isfinite(frequency)) or np.any(frequency <= 0.0):
@@ -624,17 +574,12 @@ def _build_reversible_partition_geometry(
             metric = strength / frequency
             if not np.all(np.isfinite(metric)) or np.any(metric <= 0.0):
                 raise ValueError(
-                    f"{label} metric exceeds floating-point "
-                    "dynamic range"
+                    f"{label} metric exceeds floating-point " "dynamic range"
                 )
             macro_metric = lift.T @ metric
-            if (
-                not np.all(np.isfinite(macro_metric))
-                or np.any(macro_metric <= 0.0)
-            ):
+            if not np.all(np.isfinite(macro_metric)) or np.any(macro_metric <= 0.0):
                 raise ValueError(
-                    f"{label} macro metric exceeds finite "
-                    "floating-point range"
+                    f"{label} macro metric exceeds finite " "floating-point range"
                 )
             projection = (lift.T * metric[None, :]) / macro_metric[:, None]
             micro_laplacian = np.diag(strength) - adjacency
@@ -643,9 +588,7 @@ def _build_reversible_partition_geometry(
             np.fill_diagonal(macro_conductance, 0.0)
             macro_strength = np.sum(macro_conductance, axis=1)
             if np.any(macro_strength <= 0.0):
-                raise ValueError(
-                    f"{label} requires positive macro capacity"
-                )
+                raise ValueError(f"{label} requires positive macro capacity")
             support = macro_conductance > 0.0
             reached = {0}
             frontier = [0]
@@ -657,20 +600,14 @@ def _build_reversible_partition_geometry(
                         reached.add(index)
                         frontier.append(index)
             if len(reached) != len(blocks):
-                raise ValueError(
-                    f"{label} requires a connected macro quotient"
-                )
+                raise ValueError(f"{label} requires a connected macro quotient")
             macro_laplacian = np.diag(macro_strength) - macro_conductance
             macro_generator = macro_laplacian / macro_metric[:, None]
             macro_frequency = macro_strength / macro_metric
             if np.any(macro_frequency <= 0.0):
-                raise ValueError(
-                    f"{label} requires positive macro capacity"
-                )
+                raise ValueError(f"{label} requires positive macro capacity")
     except FloatingPointError as exc:
-        raise ValueError(
-            f"{label} exceeds finite floating-point range"
-        ) from exc
+        raise ValueError(f"{label} exceeds finite floating-point range") from exc
 
     for name, value in (
         ("projection", projection),
@@ -680,9 +617,7 @@ def _build_reversible_partition_geometry(
         ("macro frequency", macro_frequency),
     ):
         if not np.all(np.isfinite(value)):
-            raise ValueError(
-                f"{label} {name} exceeds finite floating-point range"
-            )
+            raise ValueError(f"{label} {name} exceeds finite floating-point range")
 
     projected_micro = _finite_product(
         projection, micro_generator, "coarse projection transport"
@@ -690,32 +625,22 @@ def _build_reversible_partition_geometry(
     macro_projection = _finite_product(
         macro_generator, projection, "coarse macro transport"
     )
-    micro_lift = _finite_product(
-        micro_generator, lift, "coarse lifted micro transport"
-    )
+    micro_lift = _finite_product(micro_generator, lift, "coarse lifted micro transport")
     lifted_macro = _finite_product(
         lift, macro_generator, "coarse lifted macro transport"
     )
     projection_defect = _finite_difference(
         projected_micro, macro_projection, "coarse projection residual"
     )
-    lift_defect = _finite_difference(
-        micro_lift, lifted_macro, "coarse lift residual"
-    )
+    lift_defect = _finite_difference(micro_lift, lifted_macro, "coarse lift residual")
     projection_residual = _finite_norm(
         projection_defect, matrix=True, name="coarse projection residual"
     )
-    lift_residual = _finite_norm(
-        lift_defect, matrix=True, name="coarse lift residual"
-    )
+    lift_residual = _finite_norm(lift_defect, matrix=True, name="coarse lift residual")
     projection_scale = max(
         1.0,
-        _finite_norm(
-            projected_micro, matrix=True, name="coarse projection scale"
-        ),
-        _finite_norm(
-            macro_projection, matrix=True, name="coarse projection scale"
-        ),
+        _finite_norm(projected_micro, matrix=True, name="coarse projection scale"),
+        _finite_norm(macro_projection, matrix=True, name="coarse projection scale"),
     )
     lift_scale = max(
         1.0,
@@ -749,7 +674,10 @@ def _build_reversible_partition_geometry(
 
 
 def certify_epi_coarse_graining(
-    graph, partition, *, tolerance: float = 1e-10,
+    graph,
+    partition,
+    *,
+    tolerance: float = 1e-10,
 ) -> EpiCoarseGrainingCertificate:
     r"""Construct and test the canonical reversible quotient of EPI diffusion.
 
@@ -773,9 +701,12 @@ def certify_epi_coarse_graining(
     graph node exactly once and reduce dimension.  This certificate concerns
     the fixed symmetric pure-EPI channel; it does not coarse-grain phase,
     changing topology, nonlinear operators or REMESH's temporal echo.
+    EPI must be a finite signed scalar or its uniform-real BEPI embedding;
+    richer BEPI values are not replaced by their component magnitudes.
     """
     from ..alias import get_attr
     from ..constants.aliases import ALIAS_EPI
+    from ..types import require_finite_real_scalar_epi
 
     geometry = _build_reversible_partition_geometry(
         graph,
@@ -792,12 +723,7 @@ def certify_epi_coarse_graining(
             strict=True,
         )
         _reject_boolean_numeric(raw, f"EPI at node {node!r}")
-        try:
-            return float(raw)
-        except (TypeError, ValueError, OverflowError) as exc:
-            raise ValueError(
-                "EPI coarse-graining requires scalar EPI"
-            ) from exc
+        return require_finite_real_scalar_epi(raw, f"EPI at node {node!r}")
 
     field = np.array([read_epi(node) for node in geometry.nodes], dtype=float)
     if not np.all(np.isfinite(field)):
@@ -827,12 +753,8 @@ def certify_epi_coarse_graining(
         macro_epi=macro_epi,
         projection_residual=geometry.projection_residual,
         lift_residual=geometry.lift_residual,
-        information_loss_dimension=(
-            len(geometry.nodes) - len(geometry.blocks)
-        ),
-        nodal_closure_within_tolerance=(
-            geometry.nodal_closure_within_tolerance
-        ),
+        information_loss_dimension=(len(geometry.nodes) - len(geometry.blocks)),
+        nodal_closure_within_tolerance=(geometry.nodal_closure_within_tolerance),
         morphism=morphism,
         scope="fixed symmetric positive-capacity pure-EPI partition quotient",
         projection_residual_scale=geometry.projection_residual_scale,
@@ -843,12 +765,11 @@ def certify_epi_coarse_graining(
 
 
 def audit_structural_morphisms() -> list[tuple[str, StructuralMorphismCertificate]]:
-    r"""Certify one canonical example of each morphism kind.
+    r"""Compare supplied finite examples of the helper's morphism labels.
 
-    Six kinds emerge from the nodal equation (intertwiners: automorphism,
-    relabeling, coarse-graining, lift, conjugation-intertwiner, and the Reynolds
-    sector projector); the folding endomorphism does **not**.
-    """
+    Selected intertwiners have small generator/flow residuals; the chosen
+    folding power-map control fails. These cases do not classify every map of
+    a given shape or derive joint nodal emergence, U5 or a new operator."""
     import networkx as nx
 
     from ..mathematics.padic_tower import (
@@ -882,25 +803,35 @@ def audit_structural_morphisms() -> list[tuple[str, StructuralMorphismCertificat
     base = frozenset({1, 2})
     l_hi = frac(padic_laplacian(3, 2, compatible_connection_set(3, 2, base)))
     l_lo = frac(padic_laplacian(3, 1, compatible_connection_set(3, 1, base)))
-    out.append(("coarse_graining",
-                certify_morphism(frac(projective_scale_map(3, 1)), l_hi, l_lo)))
-    out.append(("lift",
-                certify_morphism(frac(padic_lift_map(3, 1)), l_lo, l_hi)))
+    out.append(
+        (
+            "coarse_graining",
+            certify_morphism(frac(projective_scale_map(3, 1)), l_hi, l_lo),
+        )
+    )
+    out.append(("lift", certify_morphism(frac(padic_lift_map(3, 1)), l_lo, l_hi)))
 
     # INTERTWINER: a non-permutation change of coordinates conjugating L
     ls = lap(nx.cycle_graph(4))
-    shear = np.array([[1, 0.3, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0.2], [0, 0, 0, 1]],
-                     dtype=float)
-    out.append(("intertwiner",
-                certify_morphism(shear, ls, shear @ ls @ np.linalg.inv(shear))))
+    shear = np.array(
+        [[1, 0.3, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0.2], [0, 0, 0, 1]], dtype=float
+    )
+    out.append(
+        ("intertwiner", certify_morphism(shear, ls, shear @ ls @ np.linalg.inv(shear)))
+    )
 
     # PROJECTION: the Reynolds sector projector Q_Γ — the emergent case that
     # a rank test alone would miss
     star = nx.star_graph(4)
     l_star = lap(star)
-    out.append(("projection",
-                certify_morphism(reynolds_projector(star, nodes=list(range(5))),
-                                 l_star, l_star)))
+    out.append(
+        (
+            "projection",
+            certify_morphism(
+                reynolds_projector(star, nodes=list(range(5))), l_star, l_star
+            ),
+        )
+    )
 
     # ENDOMORPHISM: the folding power map x -> x^2 (mod 7) — does NOT emerge
     p = 7

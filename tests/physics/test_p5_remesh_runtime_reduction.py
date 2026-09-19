@@ -54,9 +54,7 @@ def _graph(current, local, older, *, alpha=0.5, bounds=(-10.0, 10.0)):
         CLIP_MODE="hard",
     )
     for node, value in enumerate(current):
-        graph.nodes[node].update(
-            EPI=float(value), nu_f=1.0, theta=0.0, delta_nfr=0.0
-        )
+        graph.nodes[node].update(EPI=float(value), nu_f=1.0, theta=0.0, delta_nfr=0.0)
     graph.graph["_epi_hist"] = deque(
         [dict(enumerate(row)) for row in (older, local, current)], maxlen=8
     )
@@ -131,10 +129,13 @@ def test_dyadic_unclipped_remesh_commutes_with_reflection_projection(alpha):
         assert result.plan.required_history_length == 3
         assert result.plan.history_length == 3
         assert list(graph.graph["_epi_hist"]) == list(history)
-        assert tuple(
-            (data["nu_f"], data["theta"], data["delta_nfr"])
-            for _, data in graph.nodes(data=True)
-        ) == before
+        assert (
+            tuple(
+                (data["nu_f"], data["theta"], data["delta_nfr"])
+                for _, data in graph.nodes(data=True)
+            )
+            == before
+        )
         assert result.evidence.max_raw_affine_rounding_residual == 0.0
         assert not result.plan.any_clipping_intervention
         assert result.epi_time_boundary_recorded
@@ -196,9 +197,13 @@ def test_causal_diffusion_history_echo_is_not_a_forward_diffusion_step():
     older = (8.0, 4.0, 0.0, 4.0, 8.0)
     fine, coarse = _pair(current, local, older, bounds=(0.0, 8.0))
     default_compute_delta_nfr(fine)
-    assert _exact(
-        get_attr(fine.nodes[node], ALIAS_DNFR, None) for node in fine
-    ) == (-1, 0, 1, 0, -1)
+    assert _exact(get_attr(fine.nodes[node], ALIAS_DNFR, None) for node in fine) == (
+        -1,
+        0,
+        1,
+        0,
+        -1,
+    )
     fine_result, coarse_result = _apply(fine), _apply(coarse)
     assert _assert_signed_defect_identity(fine_result, coarse_result)[0] == (0, 0, 0)
     output = _exact(proposal.bounded_epi for proposal in fine_result.proposals)

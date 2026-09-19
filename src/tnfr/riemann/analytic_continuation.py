@@ -1,87 +1,23 @@
-r"""P13: TNFR analytic continuation of the prime-ladder von Mangoldt zeta.
+r"""Classical meromorphic continuation and finite prime-ladder comparisons (P13).
 
-The prime-ladder Dirichlet trace built in :mod:`tnfr.riemann.von_mangoldt`,
+For Re(s)>1, the infinite von Mangoldt series equals -zeta'(s)/zeta(s).
+This module evaluates its established meromorphic continuation using mpmath;
+a finite prime/ladder truncation is a different object. The continuation has
+residue +1 at s=1, residue -m_rho at any zero rho of multiplicity m_rho, and
+residue -1 at the trivial simple zeros. Writing every nontrivial zero as
+1/2+i*t would assume RH; critical-line scans here compare selected supplied
+or known ordinates only.
 
-.. math::
+The prime labels, logarithmic frequencies, zero oracle and analytic evaluator
+are declared inputs. Terms such as resonance and REMESH in historical program
+labels do not establish an executed nodal history, an autonomous phase law,
+an operator resolvent with the zero spectrum or a physical particle mechanism.
+The explicit-formula reconstruction is a finite numerical comparison with
+its cutoff and endpoint conventions, not a universal remainder theorem.
 
-    Z_{\mathrm{vM}}(s) \;=\; \sum_{p,k} \log(p)\, e^{-s\,k\log p}
-                       \;=\; \sum_{n\ge 1} \Lambda(n)\, n^{-s}
-                       \;=\; -\frac{\zeta'(s)}{\zeta(s)},
-                       \qquad \mathrm{Re}(s) > 1,
-
-converges only on the right half-plane :math:`\mathrm{Re}(s) > 1`.  Its
-classical analytic continuation is the meromorphic function
-:math:`-\zeta'(s)/\zeta(s)` on :math:`\mathbb{C}\setminus\{1\}\cup
-\{\rho\}\cup\{-2k\}`, whose pole structure is, via the Hadamard product:
-
-* a simple pole at :math:`s=1` with residue :math:`+1`
-  (Chebyshev / Mertens dominant term),
-* a simple pole at each non-trivial zero
-  :math:`\rho = 1/2 + i\,t_n` of :math:`\zeta` with residue equal to
-  :math:`-m_\rho` (multiplicity of :math:`\rho`),
-* a simple pole at each trivial zero :math:`s=-2k`, :math:`k\ge 1`,
-  with residue :math:`-1`.
-
-TNFR interpretation
--------------------
-In the TNFR prime-ladder reading of :mod:`tnfr.riemann.von_mangoldt`,
-each prime :math:`p` contributes a REMESH echo ladder
-:math:`\mu_{p,k} = k\log p`.  Continuing :math:`Z_{\mathrm{vM}}` to
-:math:`\mathrm{Re}(s) \le 1` exposes a discrete set of
-**resonance poles** which carry the entire arithmetic content:
-
-* The :math:`s=1` pole encodes the linear envelope
-  :math:`\psi(x) \sim x` (prime number theorem leading term).
-* Each pole at :math:`\rho = 1/2 + it_n` acts as a coherent
-  **resonant frequency** of the prime-ladder REMESH spectrum:
-  the explicit formula
-
-  .. math::
-
-      \psi_0(x) \;=\; x \;-\; \sum_\rho \frac{x^\rho}{\rho}
-                          \;-\; \log(2\pi)
-                          \;-\; \tfrac{1}{2}\log\!\bigl(1 - x^{-2}\bigr)
-
-  decomposes :math:`\psi(x) = \sum_{n\le x}\Lambda(n)` into a smooth
-  Chebyshev background :math:`x` plus oscillatory contributions
-  :math:`x^\rho/\rho` whose frequencies :math:`t_n` and amplitudes
-  :math:`|\rho|^{-1}` are entirely determined by the resonance poles.
-
-Honesty disclaimer
-------------------
-This module does **not** prove the Riemann Hypothesis.  It does not
-construct a new continuation either: the continuation
-:math:`-\zeta'(s)/\zeta(s)` is the unique meromorphic extension and is
-implemented here via :mod:`mpmath`.  What is new is the **operational
-TNFR reading**: every analytic feature of :math:`-\zeta'/\zeta` is
-labelled by a structural mechanism of the prime-ladder REMESH spectrum
-(Chebyshev envelope, resonance frequencies, trivial-zero curvature).
-
-The module exposes four tools:
-
-#. :func:`von_mangoldt_zeta_continued` — high-precision evaluation of
-   the continuation for arbitrary :math:`s\in\mathbb{C}`.
-#. :func:`verify_continuation_agreement` — numerical certificate that
-   the prime-ladder series agrees with the continuation on a chosen
-   subset of :math:`\mathrm{Re}(s) > 1`.
-#. :func:`scan_critical_line_for_poles` — detects the resonance
-   frequencies :math:`t_n` along :math:`\mathrm{Re}(s) = 1/2` and
-   matches them against the known Riemann zeros.
-#. :func:`reconstruct_psi_via_explicit_formula` — rebuilds
-   :math:`\psi(x)` from a truncated sum over resonance poles to
-   quantify how each new zero refines the prime-ladder envelope.
-
-Status: EXPERIMENTAL -- Research prototype for TNFR-Riemann P13 program.
-
-References
-----------
-- :mod:`tnfr.riemann.von_mangoldt` -- prime-ladder Dirichlet trace (P12).
-- :mod:`tnfr.riemann.spectral_zeta` -- Mellin bridge for the graph
-  spectral zeta :math:`\zeta_H` (P5).
-- :mod:`tnfr.riemann.complex_extension` -- non-Hermitian
-  :math:`H(s)` and ``KNOWN_RIEMANN_ZEROS`` (P4).
-- theory/TNFR_RIEMANN_RESEARCH_NOTES.md sec. 9.
-"""
+No new analytic continuation or RH result is claimed. Current scope and the
+preserved historical notebook are documented in
+ theory/TNFR_RIEMANN_RESEARCH_NOTES.md."""
 
 from __future__ import annotations
 

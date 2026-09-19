@@ -42,9 +42,15 @@ def laplacian_matrix(count: int) -> Matrix:
         raise ValueError("a simple cycle requires at least three coordinates")
     return tuple(
         tuple(
-            Fraction(1) if i == j else
-            Fraction(-1, 2) if (j - i) % count in (1, count - 1) else
-            Fraction(0)
+            (
+                Fraction(1)
+                if i == j
+                else (
+                    Fraction(-1, 2)
+                    if (j - i) % count in (1, count - 1)
+                    else Fraction(0)
+                )
+            )
             for j in range(count)
         )
         for i in range(count)
@@ -67,8 +73,10 @@ def dirichlet_energy(values: Vector) -> Fraction:
     count = len(values)
     if count < 3:
         raise ValueError("a simple cycle requires at least three coordinates")
-    return sum(
-        ((values[(i + 1) % count] - value) ** 2
-         for i, value in enumerate(values)),
-        Fraction(0),
-    ) / 2
+    return (
+        sum(
+            ((values[(i + 1) % count] - value) ** 2 for i, value in enumerate(values)),
+            Fraction(0),
+        )
+        / 2
+    )

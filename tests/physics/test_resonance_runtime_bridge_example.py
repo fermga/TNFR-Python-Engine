@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 
-
 EXAMPLE_PATH = (
     Path(__file__).resolve().parents[2]
     / "examples"
@@ -61,6 +60,4 @@ def test_example_report_is_finite_and_scoped(example_and_result):
     assert len(encoded) < 5000
     assert report["runtime"]["identity_gate_passed"]
     assert report["transport"]["post_flow_certified"]
-    assert not report["hybrid_boundary"][
-        "global_binary64_runtime_affinity_certified"
-    ]
+    assert not report["hybrid_boundary"]["global_binary64_runtime_affinity_certified"]

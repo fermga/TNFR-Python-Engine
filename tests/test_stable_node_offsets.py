@@ -1,9 +1,9 @@
 """Explicit offset batching preserves nodal replay and has bounded lifetime."""
 
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import nullcontext
 from contextvars import copy_context
-from concurrent.futures import ThreadPoolExecutor
 
 import networkx as nx
 import pytest
@@ -21,15 +21,21 @@ def _graph(graph_type=nx.Graph, sort=False):
     return graph
 
 
-@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
 @pytest.mark.parametrize("sort", [False, True])
 def test_scoped_draws_and_progress_match_ordinary_offsets_exactly(graph_type, sort):
     ordinary, batched = _graph(graph_type, sort), _graph(graph_type, sort)
     for _ in range(3):
-        expected = [random_jitter(NodeNX.from_graph(ordinary, node), 0.1) for node in ordinary]
+        expected = [
+            random_jitter(NodeNX.from_graph(ordinary, node), 0.1) for node in ordinary
+        ]
         with stable_node_offsets(batched) as nodes:
             assert nodes == tuple(batched)
-            actual = [random_jitter(NodeNX.from_graph(batched, node), 0.1) for node in nodes]
+            actual = [
+                random_jitter(NodeNX.from_graph(batched, node), 0.1) for node in nodes
+            ]
         assert actual == expected
         assert [d["_rng_jitter_progress"] for _, d in batched.nodes(data=True)] == [
             d["_rng_jitter_progress"] for _, d in ordinary.nodes(data=True)
@@ -170,7 +176,10 @@ def test_copied_execution_context_does_not_grant_other_thread_fast_access():
     with stable_node_offsets(graph):
         inherited = copy_context()
         with ThreadPoolExecutor(max_workers=1) as pool:
-            assert pool.submit(inherited.run, cache._scoped_node_offset, graph, 2).result() is None
+            assert (
+                pool.submit(inherited.run, cache._scoped_node_offset, graph, 2).result()
+                is None
+            )
 
 
 def test_child_async_task_does_not_inherit_parent_fast_access():
@@ -197,8 +206,10 @@ def test_dynamic_views_and_graph_subclasses_keep_full_lookup_contract(kind):
     elif kind == "filtered":
         unsupported = nx.subgraph_view(graph, filter_node=lambda node: node != 1)
     else:
+
         class CustomGraph(nx.Graph):
             pass
+
         unsupported = CustomGraph(graph)
     with pytest.raises(TypeError, match="view/subclass"):
         with stable_node_offsets(unsupported):
@@ -222,33 +233,56 @@ def test_custom_node_offset_semantics_are_not_overridden():
 
 def _canonical_records(scoped):
     from tnfr.alias import get_attr
-    from tnfr.constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR
+    from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
     from tnfr.initialization import init_node_attrs
     from tnfr.metrics.common import compute_coherence
     from tnfr.metrics.sense_index import compute_Si
     from tnfr.sdk.simple import _run_network_sequence
 
     graph = nx.cycle_graph(12)
-    graph.graph.update(RANDOM_SEED=7, INIT_RANDOM_PHASE=False, INIT_EPI_VALUE=0.0,
-                       INIT_VF_MODE="uniform", INIT_VF_MIN=0.4, INIT_VF_MAX=0.7,
-                       OZ_NOISE_MODE=True, OZ_SIGMA=0.1, GLYPH_HYSTERESIS_WINDOW=20)
+    graph.graph.update(
+        RANDOM_SEED=7,
+        INIT_RANDOM_PHASE=False,
+        INIT_EPI_VALUE=0.0,
+        INIT_VF_MODE="uniform",
+        INIT_VF_MIN=0.4,
+        INIT_VF_MAX=0.7,
+        OZ_NOISE_MODE=True,
+        OZ_SIGMA=0.1,
+        GLYPH_HYSTERESIS_WINDOW=20,
+    )
     init_node_attrs(graph)
     records = []
 
     def record(operator):
         sense = compute_Si(graph, inplace=False)
-        records.append((operator, compute_coherence(graph), [
-            (node, *(get_attr(data, alias, 0.0)
-                     for alias in (ALIAS_EPI, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR)),
-             sense[node], tuple(data.get("glyph_history", [])))
-            for node, data in graph.nodes(data=True)
-        ]))
+        records.append(
+            (
+                operator,
+                compute_coherence(graph),
+                [
+                    (
+                        node,
+                        *(
+                            get_attr(data, alias, 0.0)
+                            for alias in (ALIAS_EPI, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR)
+                        ),
+                        sense[node],
+                        tuple(data.get("glyph_history", [])),
+                    )
+                    for node, data in graph.nodes(data=True)
+                ],
+            )
+        )
 
     record("initial")
     with stable_node_offsets(graph) if scoped else nullcontext():
         _run_network_sequence(
-            graph, ["emission", "coherence", "dissonance", "coherence", "silence"],
-            cycles=3, validate=True, on_step=record,
+            graph,
+            ["emission", "coherence", "dissonance", "coherence", "silence"],
+            cycles=3,
+            validate=True,
+            on_step=record,
         )
     return records
 
@@ -273,6 +307,8 @@ def test_callback_membership_change_is_rejected_at_scope_exit_without_rollback()
 
     with pytest.raises(RuntimeError, match="not rolled back"):
         with stable_node_offsets(graph):
-            _run_network_sequence(graph, ["emission", "coherence", "silence"], on_step=callback)
+            _run_network_sequence(
+                graph, ["emission", "coherence", "silence"], on_step=callback
+            )
     assert 99 in graph
     assert list(graph.nodes[0]["glyph_history"]) == ["AL", "IL", "SHA"]

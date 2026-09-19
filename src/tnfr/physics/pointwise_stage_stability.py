@@ -30,11 +30,11 @@ reconstruction from an already mutated graph.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from datetime import datetime
 from fractions import Fraction
-import math
 from typing import Any
 
 import networkx as nx
@@ -162,8 +162,7 @@ def _well_typed_fraction_vector(value: Any) -> bool:
     """Reject integer and Boolean aliases for exact rational vector fields."""
 
     return bool(
-        type(value) is tuple
-        and all(type(entry) is Fraction for entry in value)
+        type(value) is tuple and all(type(entry) is Fraction for entry in value)
     )
 
 
@@ -173,10 +172,7 @@ def _well_typed_fraction_matrix(value: Any) -> bool:
     if type(value) is not tuple:
         return False
     width = len(value)
-    return all(
-        _well_typed_fraction_vector(row) and len(row) == width
-        for row in value
-    )
+    return all(_well_typed_fraction_vector(row) and len(row) == width for row in value)
 
 
 def _well_typed_optional_fraction_vector(value: Any) -> bool:
@@ -268,10 +264,7 @@ def _logical_copy(graph: Any) -> nx.Graph:
 
     if tuple(rebuilt.nodes) != nodes:
         raise RuntimeError("logical graph reconstruction changed node order")
-    if (
-        rebuilt.is_directed() != directed
-        or rebuilt.is_multigraph() != multigraph
-    ):
+    if rebuilt.is_directed() != directed or rebuilt.is_multigraph() != multigraph:
         raise RuntimeError("logical graph reconstruction changed graph kind")
     if rebuilt.number_of_edges() != graph.number_of_edges():
         raise RuntimeError("logical graph reconstruction changed edge support")
@@ -311,9 +304,10 @@ def _flow_certificate(
     graph: Any, tolerance: float
 ) -> tuple[HeterogeneousDiffusionStabilityCertificate | None, str | None]:
     try:
-        return verify_heterogeneous_diffusion_stability(
-            graph, tolerance=tolerance
-        ), None
+        return (
+            verify_heterogeneous_diffusion_stability(graph, tolerance=tolerance),
+            None,
+        )
     except (
         ArithmeticError,
         nx.NetworkXException,
@@ -598,12 +592,8 @@ def _certificate_stamp(
         proposal_builder_replayed,
         proposal_replay_abstention_reason,
         logical_copy_verified,
-        _nested_proof_stamp(
-            pre_flow, HeterogeneousDiffusionStabilityCertificate
-        ),
-        _nested_proof_stamp(
-            post_flow, HeterogeneousDiffusionStabilityCertificate
-        ),
+        _nested_proof_stamp(pre_flow, HeterogeneousDiffusionStabilityCertificate),
+        _nested_proof_stamp(post_flow, HeterogeneousDiffusionStabilityCertificate),
         pre_flow_node_order_matches,
         post_flow_node_order_matches,
         metric_abstention_reason,
@@ -675,9 +665,7 @@ class PointwiseEPIJumpRealizationCertificate:
     exact_post_to_pre_metric_scale: Fraction | None
     exact_nul_stored_pressure_map_residual: tuple[Fraction, ...] | None
     exact_nul_nodal_drive_residual: tuple[Fraction, ...] | None
-    exact_nul_stored_pressure_minus_pure_epi_pressure: (
-        tuple[Fraction, ...] | None
-    )
+    exact_nul_stored_pressure_minus_pure_epi_pressure: tuple[Fraction, ...] | None
     nul_stored_pressure_defect_norm: float | None
     nul_pressure_diagnostic_abstention_reason: str | None
     runtime_epi_realization_conditions: tuple[tuple[str, bool], ...]
@@ -761,12 +749,8 @@ class PointwiseEPIJumpRealizationCertificate:
                 value is not None and type(value) is not str
                 for value in optional_strings
             )
-            or not _well_typed_fraction_matrix(
-                self.exact_represented_linear_map
-            )
-            or not _well_typed_fraction_vector(
-                self.exact_represented_offset
-            )
+            or not _well_typed_fraction_matrix(self.exact_represented_linear_map)
+            or not _well_typed_fraction_vector(self.exact_represented_offset)
             or not _well_typed_fraction_vector(
                 self.exact_runtime_minus_represented_affine
             )
@@ -788,9 +772,7 @@ class PointwiseEPIJumpRealizationCertificate:
                 self.nul_stored_pressure_defect_norm is not None
                 and type(self.nul_stored_pressure_defect_norm) is not float
             )
-            or not all(
-                _well_typed_conditions(value) for value in condition_vectors
-            )
+            or not all(_well_typed_conditions(value) for value in condition_vectors)
         ):
             return False
         try:
@@ -829,41 +811,23 @@ class PointwiseEPIJumpRealizationCertificate:
                 post_flow=self.post_diffusion_certificate,
                 pre_flow_node_order_matches=self.pre_flow_node_order_matches,
                 post_flow_node_order_matches=self.post_flow_node_order_matches,
-                metric_abstention_reason=(
-                    self.diffusion_metric_abstention_reason
-                ),
-                flows_certified=(
-                    self.pre_and_post_diffusion_flows_certified
-                ),
-                metrics_proportional=(
-                    self.pre_post_metric_exactly_proportional
-                ),
-                exact_post_to_pre_metric_scale=(
-                    self.exact_post_to_pre_metric_scale
-                ),
+                metric_abstention_reason=(self.diffusion_metric_abstention_reason),
+                flows_certified=(self.pre_and_post_diffusion_flows_certified),
+                metrics_proportional=(self.pre_post_metric_exactly_proportional),
+                exact_post_to_pre_metric_scale=(self.exact_post_to_pre_metric_scale),
                 runtime_conditions=self.runtime_epi_realization_conditions,
                 pre_gain_conditions=self.pre_metric_affine_gain_conditions,
-                bridge_conditions=(
-                    self.pre_post_common_metric_bridge_conditions
-                ),
-                operational_conditions=(
-                    self.operational_affine_gain_conditions
-                ),
-                runtime_realization_certified=(
-                    self.runtime_epi_realization_certified
-                ),
-                pre_metric_gain_certified=(
-                    self.pre_metric_affine_gain_certified
-                ),
+                bridge_conditions=(self.pre_post_common_metric_bridge_conditions),
+                operational_conditions=(self.operational_affine_gain_conditions),
+                runtime_realization_certified=(self.runtime_epi_realization_certified),
+                pre_metric_gain_certified=(self.pre_metric_affine_gain_certified),
                 common_metric_bridge_certified=(
                     self.pre_post_common_metric_bridge_certified
                 ),
                 operational_affine_gain_available=(
                     self.operational_affine_gain_available
                 ),
-                exact_energy_gain_bound=(
-                    self.exact_common_metric_energy_gain_bound
-                ),
+                exact_energy_gain_bound=(self.exact_common_metric_energy_gain_bound),
                 exact_nul_pressure_residual=(
                     self.exact_nul_stored_pressure_map_residual
                 ),
@@ -925,8 +889,7 @@ class PointwiseEPIJumpRealizationCertificate:
                     and tuple(nested.nodes) == self.nodes
                     and _exact_matrix(nested.linear_map)
                     == self.exact_represented_linear_map
-                    and _exact_vector(nested.offset)
-                    == self.exact_represented_offset
+                    and _exact_vector(nested.offset) == self.exact_represented_offset
                     and pre_flow is not None
                     and _exact_vector(nested.metric_weights)
                     == _exact_vector(pre_flow.metric_weights)
@@ -976,9 +939,8 @@ class PointwiseEPIJumpRealizationCertificate:
     def failed_pre_metric_affine_gain_conditions(self) -> tuple[str, ...]:
         """Failed level A/B hypotheses for the pre-metric gain."""
 
-        return (
-            self._failed(self.runtime_epi_realization_conditions)
-            + self._failed(self.pre_metric_affine_gain_conditions)
+        return self._failed(self.runtime_epi_realization_conditions) + self._failed(
+            self.pre_metric_affine_gain_conditions
         )
 
     @property
@@ -1051,12 +1013,9 @@ def certify_pointwise_epi_jump_realization(
     if not proposal_tuple:
         raise ValueError("pointwise realization requires at least one proposal")
     if any(
-        not isinstance(proposal, PointwiseStageProposal)
-        for proposal in proposal_tuple
+        not isinstance(proposal, PointwiseStageProposal) for proposal in proposal_tuple
     ):
-        raise TypeError(
-            "proposals must contain frozen PointwiseStageProposal values"
-        )
+        raise TypeError("proposals must contain frozen PointwiseStageProposal values")
     glyph = proposal_tuple[0].glyph
     if glyph not in _SUPPORTED_GLYPHS:
         raise ValueError(
@@ -1157,28 +1116,22 @@ def certify_pointwise_epi_jump_realization(
                 clip_mode = _effective_clip_mode(graph)
                 if float(payload.raw_epi_after) != float(payload.epi_after):
                     clip_nodes.append(node)
-                if (
-                    payload.edge_aware_adapted
-                    or Fraction.from_float(float(payload.effective_epi_scale))
-                    != Fraction.from_float(float(payload.requested_scale))
-                ):
+                if payload.edge_aware_adapted or Fraction.from_float(
+                    float(payload.effective_epi_scale)
+                ) != Fraction.from_float(float(payload.requested_scale)):
                     adaptation_nodes.append(node)
             if glyph is Glyph.NUL:
                 if (
                     exact_nul_pressure_residual is None
                     or exact_nul_drive_residual is None
                 ):
-                    raise ValueError(
-                        "NUL residual storage was not initialized"
-                    )
+                    raise ValueError("NUL residual storage was not initialized")
                 if (
                     payload.dnfr_before is None
                     or payload.dnfr_after is None
                     or payload.densification_factor is None
                 ):
-                    raise ValueError(
-                        "NUL proposal lacks its required pressure fields"
-                    )
+                    raise ValueError("NUL proposal lacks its required pressure fields")
                 stored_before = _finite_node_value(
                     graph, node, ALIAS_DNFR, "NUL stored DeltaNFR"
                 )
@@ -1186,12 +1139,8 @@ def certify_pointwise_epi_jump_realization(
                     raise ValueError("NUL proposal pressure snapshot is inconsistent")
                 before_q = Fraction.from_float(float(payload.dnfr_before))
                 after_q = Fraction.from_float(float(payload.dnfr_after))
-                inverse_q = Fraction.from_float(
-                    float(payload.densification_factor)
-                )
-                exact_nul_pressure_residual[index] = (
-                    after_q - before_q * inverse_q
-                )
+                inverse_q = Fraction.from_float(float(payload.densification_factor))
+                exact_nul_pressure_residual[index] = after_q - before_q * inverse_q
                 exact_nul_drive_residual[index] = (
                     Fraction.from_float(float(payload.vf_after)) * after_q
                     - Fraction.from_float(float(payload.vf_before)) * before_q
@@ -1218,12 +1167,9 @@ def certify_pointwise_epi_jump_realization(
     exact_offset = _exact_vector(represented_offset)
     exact_before = _exact_vector(state_before)
     exact_after = _exact_vector(state_after)
-    exact_model_after = _exact_matrix_vector(
-        exact_map, exact_before, exact_offset
-    )
+    exact_model_after = _exact_matrix_vector(exact_map, exact_before, exact_offset)
     exact_residual = tuple(
-        runtime - model
-        for runtime, model in zip(exact_after, exact_model_after)
+        runtime - model for runtime, model in zip(exact_after, exact_model_after)
     )
     exact_runtime_match = all(value == 0 for value in exact_residual)
     residual_norm = _finite_residual_norm(exact_residual)
@@ -1261,12 +1207,8 @@ def certify_pointwise_epi_jump_realization(
 
     pre_flow, pre_reason = _flow_certificate(graph, tol)
     post_flow, post_reason = _flow_certificate(post_graph, tol)
-    pre_order_matches = bool(
-        pre_flow is not None and tuple(pre_flow.nodes) == nodes
-    )
-    post_order_matches = bool(
-        post_flow is not None and tuple(post_flow.nodes) == nodes
-    )
+    pre_order_matches = bool(pre_flow is not None and tuple(pre_flow.nodes) == nodes)
+    post_order_matches = bool(post_flow is not None and tuple(post_flow.nodes) == nodes)
     pre_flow_certified = bool(
         pre_flow is not None
         and pre_order_matches
@@ -1279,14 +1221,10 @@ def certify_pointwise_epi_jump_realization(
         and post_flow.is_certified
         and post_flow._proof_fields_are_intact()
     )
-    flows_certified = bool(
-        pre_flow_certified and post_flow_certified
-    )
+    flows_certified = bool(pre_flow_certified and post_flow_certified)
     metrics_proportional = bool(
         flows_certified
-        and _exactly_proportional(
-            pre_flow.metric_weights, post_flow.metric_weights
-        )
+        and _exactly_proportional(pre_flow.metric_weights, post_flow.metric_weights)
     )
     exact_metric_scale: Fraction | None = None
     if metrics_proportional:
@@ -1319,9 +1257,7 @@ def certify_pointwise_epi_jump_realization(
         )
 
     zero_post_capacity = tuple(
-        node
-        for node, value in zip(nodes, vf_after_values)
-        if value <= 0.0
+        node for node, value in zip(nodes, vf_after_values) if value <= 0.0
     )
 
     exact_pressure_manifold_defect: tuple[Fraction, ...] | None = None
@@ -1339,14 +1275,10 @@ def certify_pointwise_epi_jump_realization(
                 exact_after,
                 exact_zero,
             )
-            exact_pure_pressure = tuple(
-                -value for value in exact_laplacian_state
-            )
+            exact_pure_pressure = tuple(-value for value in exact_laplacian_state)
             exact_stored_pressure = tuple(
                 Fraction.from_float(
-                    _finite_node_value(
-                        post_graph, node, ALIAS_DNFR, "stored DeltaNFR"
-                    )
+                    _finite_node_value(post_graph, node, ALIAS_DNFR, "stored DeltaNFR")
                 )
                 for node in nodes
             )
@@ -1358,9 +1290,7 @@ def certify_pointwise_epi_jump_realization(
                     strict=True,
                 )
             )
-            pressure_defect_norm = _finite_residual_norm(
-                exact_pressure_manifold_defect
-            )
+            pressure_defect_norm = _finite_residual_norm(exact_pressure_manifold_defect)
         except (
             ArithmeticError,
             nx.NetworkXException,
@@ -1408,9 +1338,7 @@ def certify_pointwise_epi_jump_realization(
         if affine_jump is None
         else affine_jump.exact_quotient_energy_gain_upper_bound
     )
-    exact_gain_available = bool(
-        isinstance(exact_gain, Fraction) and exact_gain >= 0
-    )
+    exact_gain_available = bool(isinstance(exact_gain, Fraction) and exact_gain >= 0)
     pre_gain_conditions = (
         ("at_least_two_nodes", len(nodes) >= 2),
         ("pre_flow_node_order_matches", pre_order_matches),
@@ -1430,8 +1358,7 @@ def certify_pointwise_epi_jump_realization(
         ("pre_post_metric_exactly_proportional", metrics_proportional),
     )
     common_metric_bridge_certified = bool(
-        pre_metric_gain_certified
-        and all(passed for _, passed in bridge_conditions)
+        pre_metric_gain_certified and all(passed for _, passed in bridge_conditions)
     )
     operational_conditions = (
         ("finite_binary64_affine_gain_display", operational_gain),
@@ -1442,9 +1369,7 @@ def certify_pointwise_epi_jump_realization(
         else tuple(exact_nul_pressure_residual)
     )
     nul_drive_tuple = (
-        None
-        if exact_nul_drive_residual is None
-        else tuple(exact_nul_drive_residual)
+        None if exact_nul_drive_residual is None else tuple(exact_nul_drive_residual)
     )
     proof_stamp = _certificate_stamp(
         operator_name=contract.english_name,
@@ -1542,9 +1467,7 @@ def certify_pointwise_epi_jump_realization(
         operational_affine_gain_available=operational_gain,
         runtime_epi_realization_certified=runtime_certified,
         pre_metric_affine_gain_certified=pre_metric_gain_certified,
-        pre_post_common_metric_bridge_certified=(
-            common_metric_bridge_certified
-        ),
+        pre_post_common_metric_bridge_certified=(common_metric_bridge_certified),
         tolerance=tol,
         scope=_SCOPE,
         _proof_stamp=proof_stamp,

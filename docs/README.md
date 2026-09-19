@@ -1,45 +1,73 @@
-# TNFR Documentation Hub
+# Documentation ownership and navigation
 
-Specialized technical documentation for TNFR theory and implementation. The
-primary reference is always [AGENTS.md](../AGENTS.md) (complete theory,
-operators, grammar, fields); the files here are focused supplements.
+This is the repository-wide map of maintained documentation. A topic has one
+primary owner; summaries, examples and translations point to that owner rather
+than introduce their own definitions. [The theory index](../theory/README.md)
+provides the detailed scientific-document inventory and status.
 
-All content derives from the nodal equation `∂EPI/∂t = νf · ΔNFR(t)`, the 13
-canonical operators, grammar U1–U6, and the structural field tetrad
-`(Φ_s, |∇φ|, K_φ, ξ_C)`.
+## One owner for each responsibility
 
----
+| Responsibility | Maintained owner | Source or evidence boundary |
+| --- | --- | --- |
+| Installation and first use | [Root README](../README.md) | Version/dependencies in `pyproject.toml`; executable example checked by documentation gate |
+| Working conventions and invariants | [AGENTS](../AGENTS.md) | Exact mirror at `.github/agents/my-agent.md`; synthesis, not a duplicate research ledger |
+| Package boundaries and execution paths | [Architecture](../ARCHITECTURE.md) | Actual modules and dispatch paths |
+| Test selection and local verification | [Testing](../TESTING.md) | `pyproject.toml`, test configuration and executable test paths |
+| Contributor process | [Contributing](../CONTRIBUTING.md) | Uses Testing; does not define a second test/dependency matrix |
+| CI and publication behavior | [Workflows](../.github/WORKFLOWS.md) | YAML owns triggers, permissions and commands; prose is descriptive |
+| Security reporting | [Security](../SECURITY.md) | Reporting procedure, not a guarantee of vulnerability absence |
+| Documentation commands and staging | [Scripts](../scripts/README.md) | `check_documentation.py`, `verify_internal_references.py`, `prepare_docs.py`, `mkdocs.yml` |
+| Nodal definitions and mathematical types | [Fundamentals](../theory/FUNDAMENTAL_THEORY.md) | Declared chart, units, inputs and nodal row |
+| Constitutive and parameter dependencies | [Parameter foundations](../theory/NODAL_PARAMETER_FOUNDATIONS.md) | Explicit model assumptions and exact/finite scope |
+| Operator metadata and execution contracts | [API contracts](API_CONTRACTS.md) | Generated registry table plus execution-path boundaries |
+| Operator interpretation | [Structural operators](../theory/STRUCTURAL_OPERATORS.md) | Explains the implemented contracts; no second registry |
+| Grammar rules and policy premises | [Grammar](../theory/UNIFIED_GRAMMAR_RULES.md) | `grammar_canon.py`; [scope/counterexamples](../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) and [verification map](grammar/PHYSICS_VERIFICATION.md) |
+| Field definitions and estimator behavior | [Structural tetrad](STRUCTURAL_FIELDS_TETRAD.md) | Shared field readers, availability, units and fit/fallback provenance |
+| Research branches | [Portfolio](../TNFR_lineas_de_investigacion.txt) | Main, supporting and parked lines |
+| Scientific rationale | [Strategy](../theory/NODAL_RESEARCH_STRATEGY.md) | Explains choices; does not create tasks |
+| Active research tasks and gates | [Execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md) | Sole active queue |
+| Examples | [Example index](../examples/README.md) | Tutorial/model scope; not a theorem or performance inventory |
+| Benchmarks and research instruments | [Benchmark index](../benchmarks/README.md) | Record input, path, seed, hardware and scope for each actual run |
+| Factorization usage and configuration | [Factorization lab](../factorization-lab/README.md) | Candidate heuristics, arithmetic checks and fallback provenance |
+| Arithmetic primality utility | [Primality guide](../primality-test/README.md) | Supplied divisor statistics; no physical generation or complexity theorem |
+| Optional Torch backend | [Torch scope](TORCH_BACKEND.md) | Backend operations versus graph-pressure execution and measured acceleration |
+| Structural application interfaces | [Interface guide](STRUCTURAL_INTERFACE_THEORY.md) | Engineering protocol; independent validation required |
+| EEG correspondence report | [EEG report](EMPIRICAL_CONFRONTATION_EEG.md) | External report, not admission of the repository measurement model |
+| Spanish educational manuscript | [Manual index](../manual/INDEX.md) | Editorial draft subordinate to technical owners; language retained by user request |
+| Historical release notes | [Changelog](../CHANGELOG.md) | Statements about past versions, not current guarantees |
+| Research history | [Historical archive](../theory/research/archive/README.md) | Frozen source context and explicit supersession |
 
-## Documents
+## Update rules
 
-| Document | Status | Purpose |
-|----------|--------|---------|
-| [AGENTS.md](../AGENTS.md) | **CANONICAL** | Primary reference — complete TNFR theory |
-| [STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md) | **CANONICAL** | Formal field definitions (Φ_s, \|∇φ\|, K_φ, ξ_C) |
-| [grammar/PHYSICS_VERIFICATION.md](grammar/PHYSICS_VERIFICATION.md) | Active | U1–U6 physics, implementation, tests, and mathematical-scope map |
-| [API_CONTRACTS.md](API_CONTRACTS.md) | Active | Pre/post-condition contracts for the 13 operators |
-| [SINGLE_FILE_MODULES.md](SINGLE_FILE_MODULES.md) | Active | Responsibilities of public modules implemented as single files |
-| [STRUCTURAL_INTERFACE_THEORY.md](STRUCTURAL_INTERFACE_THEORY.md) | Active | Structural-interface programme: pipelines, fair benchmarks, validated results, limitations |
-| [EMPIRICAL_CONFRONTATION_EEG.md](EMPIRICAL_CONFRONTATION_EEG.md) | Active | Empirical confrontation of canonical magnitudes with real signals (validation record) |
-| [TORCH_BACKEND.md](TORCH_BACKEND.md) | Active | Supported Torch backend scope and validation requirements |
+Change the primary implementation/definition and its owner together. Update a
+summary only where the result or navigation changes. Do not copy long theorem
+proofs, dated delivery lists, configuration defaults or workflow matrices into
+entry-point documents. The registry-generated table in API Contracts is checked
+for exact agreement; use `python scripts/check_documentation.py --write-generated`
+when its source metadata changes. This command does not prove mathematical claims.
 
----
+The agent mirror is the only intentionally exact prose duplicate. Templates
+provide structure and links; they do not define extra grammar or acceptance laws.
+The manual may use analogies, but an analogy cannot override a technical contract
+or become evidence of physical emergence.
 
-## Navigation
+## Historical and generated material
 
-**Newcomers** → [AGENTS.md](../AGENTS.md) → [examples/](../examples/) (see
-[examples/README.md](../examples/README.md) for the thematic index) → the
-Simple SDK ([src/tnfr/sdk/simple.py](../src/tnfr/sdk/simple.py)).
+`artifacts/` contains local run receipts and pre-edit snapshots. Its preserved
+paths can refer to an earlier source context; it is not another documentation
+site or task queue. Archived notebooks retain their original outputs and are
+not current runnable tutorials. `build/docs-source/` and `site/` are regenerated
+from maintained files. Never edit generated output to change the authoritative
+content.
 
-**Developers** → [API_CONTRACTS.md](API_CONTRACTS.md) (operator specs) →
-[STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md) (field math) →
-[grammar/PHYSICS_VERIFICATION.md](grammar/PHYSICS_VERIFICATION.md) (verification and scope map).
+A removed guide's useful material belongs in the corresponding owner above.
+Retire dead tools only after checking callers and replacement coverage. Keep
+historical observations unchanged when they carry evidence; mark their domain
+and replacement explicitly rather than silently rewriting the past.
 
-**Theory** → the `theory/` folder holds the research programmes (Riemann,
-Navier–Stokes, Yang–Mills, P-vs-NP, BSD, Hodge, number theory, the variational
-principle, and the structural conservation theorem).
+Ignored local `output/`, `outputs/` and `results/` directories also contain older
+generated reports and briefs. They retain their original context and are not
+current guides, published site inputs or evidence of a new validation run.
 
-**Factorization** → the spectral Paley factorization entry point
-(`tnfr.factorization.factorize`) lives in the main package; see
-[factorization-lab/README.md](../factorization-lab/README.md) for the lab,
-CLI usage, and certificate formats.
+The [retirement manifest](../theory/research/archive/DOCUMENTATION_SECOND_CLEANUP_MANIFEST_2026-09-19.json)
+records the second cleanup's removed paths, replacements and preserved archive hashes.

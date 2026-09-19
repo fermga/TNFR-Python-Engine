@@ -8,14 +8,14 @@ semantics by accident.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-from dataclasses import dataclass
 import hashlib
 import math
-from numbers import Integral, Real
-from pathlib import Path
 import re
 import subprocess
+from collections.abc import Mapping
+from dataclasses import dataclass
+from numbers import Integral, Real
+from pathlib import Path
 from types import MappingProxyType
 from typing import Any, Iterable
 
@@ -60,8 +60,7 @@ def current_git_source_provenance(
     if not source_paths or any(not path.strip() for path in source_paths):
         raise ValueError("paths must contain at least one non-empty source path")
     if any(
-        Path(path).is_absolute() or ".." in Path(path).parts
-        for path in source_paths
+        Path(path).is_absolute() or ".." in Path(path).parts for path in source_paths
     ):
         raise ValueError("source paths must be relative to repository")
 
@@ -113,13 +112,9 @@ def _string_sequence(value: Any, name: str) -> tuple[str, ...]:
     try:
         items = tuple(value)
     except TypeError as exc:
-        raise ManifestValidationError(
-            f"{name} must be a sequence of strings"
-        ) from exc
+        raise ManifestValidationError(f"{name} must be a sequence of strings") from exc
     if any(not isinstance(item, str) or not item.strip() for item in items):
-        raise ManifestValidationError(
-            f"{name} must contain only non-empty strings"
-        )
+        raise ManifestValidationError(f"{name} must contain only non-empty strings")
     return items
 
 
@@ -176,14 +171,10 @@ class CoreExperimentManifest:
             raise ManifestValidationError("seed must be an integer or None")
         if self.seed is not None:
             object.__setattr__(self, "seed", int(self.seed))
-        if self.source_dirty is not None and not isinstance(
-            self.source_dirty, bool
-        ):
+        if self.source_dirty is not None and not isinstance(self.source_dirty, bool):
             raise ManifestValidationError("source_dirty must be boolean or None")
         if self.dirty_source_hash is not None:
-            dirty_hash = _required_text(
-                self.dirty_source_hash, "dirty_source_hash"
-            )
+            dirty_hash = _required_text(self.dirty_source_hash, "dirty_source_hash")
             if not re.fullmatch(r"sha256:[0-9a-fA-F]{64}", dirty_hash):
                 raise ManifestValidationError(
                     "dirty_source_hash must be a sha256 digest"
@@ -191,9 +182,7 @@ class CoreExperimentManifest:
             object.__setattr__(self, "dirty_source_hash", dirty_hash)
         if self.timestep is not None:
             if isinstance(self.timestep, bool) or not isinstance(self.timestep, Real):
-                raise ManifestValidationError(
-                    "timestep must be finite and positive"
-                )
+                raise ManifestValidationError("timestep must be finite and positive")
             try:
                 timestep = float(self.timestep)
             except (TypeError, ValueError, OverflowError) as exc:
@@ -201,22 +190,16 @@ class CoreExperimentManifest:
                     "timestep must be finite and positive"
                 ) from exc
             if not math.isfinite(timestep) or timestep <= 0.0:
-                raise ManifestValidationError(
-                    "timestep must be finite and positive"
-                )
+                raise ManifestValidationError("timestep must be finite and positive")
             object.__setattr__(self, "timestep", timestep)
         try:
             status = ClaimStatus(self.result_status)
         except (TypeError, ValueError) as exc:
             raise ManifestValidationError("result_status must be canonical") from exc
         object.__setattr__(self, "result_status", status)
-        object.__setattr__(
-            self, "versions", MappingProxyType(normalized_versions)
-        )
+        object.__setattr__(self, "versions", MappingProxyType(normalized_versions))
         for name in ("operator_sequence", "telemetry", "controls", "artifacts"):
-            object.__setattr__(
-                self, name, _string_sequence(getattr(self, name), name)
-            )
+            object.__setattr__(self, name, _string_sequence(getattr(self, name), name))
 
     def validate_for_admission(self) -> None:
         """Require the evidence needed to reproduce a public result."""

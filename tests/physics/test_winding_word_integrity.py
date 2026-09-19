@@ -1,7 +1,7 @@
 """Live admission, configured gates and support identity in winding words."""
 
-from copy import deepcopy
 import math
+from copy import deepcopy
 
 import networkx as nx
 import pytest
@@ -55,9 +55,7 @@ def test_non_generator_word_cannot_invent_initial_epi_admission(missing):
     before = deepcopy(list(graph.nodes(data=True)))
 
     with pytest.raises(ValueError, match="U1a"):
-        observe_winding_word(
-            graph, range(8), 0, [Coherence(), Silence()]
-        )
+        observe_winding_word(graph, range(8), 0, [Coherence(), Silence()])
 
     assert list(graph.nodes(data=True)) == before
     assert all(graph.nodes[node]["EPI"] != 0.0 for node in range(1, 8))
@@ -70,9 +68,7 @@ def test_live_nonzero_primary_epi_admits_non_generator_start(initial):
     # A retained generator also satisfies the separate incremental live gate.
     graph.nodes[0]["glyph_history"] = ["AL"]
 
-    result = observe_winding_word(
-        graph, range(8), 0, [Coherence(), Silence()]
-    )
+    result = observe_winding_word(graph, range(8), 0, [Coherence(), Silence()])
 
     assert result.history_preserved
     assert result.actual_history == ("IL", "SHA")
@@ -163,9 +159,7 @@ def test_invalid_graph_gate_rejects_before_the_first_operator():
     graph.graph["DELTA_PHI_MAX"] = math.pi
 
     with pytest.raises(ValueError, match="canonical interval"):
-        observe_winding_word(
-            graph, range(8), 0, [Emission(), Coherence(), Silence()]
-        )
+        observe_winding_word(graph, range(8), 0, [Emission(), Coherence(), Silence()])
 
     assert graph.nodes[0]["glyph_history"] == []
 
@@ -175,9 +169,7 @@ def test_later_coupling_failure_keeps_the_executed_prefix():
     graph.graph["DELTA_PHI_MAX"] = math.pi / 8.0
 
     with pytest.raises(OperatorPreconditionError, match="U3 phase gate"):
-        observe_winding_word(
-            graph, range(8), 0, [Emission(), Coupling(), Silence()]
-        )
+        observe_winding_word(graph, range(8), 0, [Emission(), Coupling(), Silence()])
 
     assert tuple(graph.nodes[0]["glyph_history"]) == ("AL",)
 

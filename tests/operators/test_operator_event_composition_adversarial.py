@@ -20,7 +20,7 @@ from tnfr.operators.event_timing import (
     OperatorEventSchedule,
     build_operator_event_schedule,
 )
-from tnfr.operators.network_stage import NetworkStageResult, TWO_PHASE_JACOBI
+from tnfr.operators.network_stage import TWO_PHASE_JACOBI, NetworkStageResult
 
 
 def _graph() -> nx.Graph:
@@ -121,9 +121,7 @@ def test_result_rejects_foreign_flow_and_composition_evidence() -> None:
     with pytest.raises(ValueError, match="proof fields"):
         replace(
             result,
-            flow_interval_evidence=tuple(
-                reversed(result.flow_interval_evidence)
-            ),
+            flow_interval_evidence=tuple(reversed(result.flow_interval_evidence)),
         )
 
 

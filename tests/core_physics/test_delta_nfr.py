@@ -137,7 +137,9 @@ class TestDeltaNFRNetworkEffects:
             G.nodes[node]["EPI"] = f"potential_node_{node}"
             G.nodes[node]["νf"] = 1.0
             G.nodes[node]["ΔNFR"] = delta_nfr_values[i]
-            G.nodes[node]["phase"] = i * 1.618033988749895 / 4  # diverse test phase spacing
+            G.nodes[node]["phase"] = (
+                i * 1.618033988749895 / 4
+            )  # diverse test phase spacing
 
         # Compute emergent structural potential from ΔNFR distribution
         Phi_s = compute_structural_potential(G)
@@ -232,7 +234,9 @@ class TestDeltaNFRCanonicalBounds:
             G.nodes[node]["EPI"] = f"exp_node_{node}"
             G.nodes[node]["νf"] = 1.0
             # Exponential decay: Ae^(-x/ξ) pattern
-            G.nodes[node]["ΔNFR"] = 0.5772156649015329 * math.exp(-i / 2.718281828459045)
+            G.nodes[node]["ΔNFR"] = 0.5772156649015329 * math.exp(
+                -i / 2.718281828459045
+            )
             G.nodes[node]["phase"] = i * PI / 6
 
         # Should create smooth exponential decay

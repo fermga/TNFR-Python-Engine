@@ -12,7 +12,8 @@ from tnfr.constants.aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from tnfr.errors import TNFRValueError
 from tnfr.operators.mutation import Mutation
 from tnfr.operators.nodal_equation import (
-    compute_d2epi_dt2, observe_structural_acceleration,
+    compute_d2epi_dt2,
+    observe_structural_acceleration,
 )
 
 
@@ -119,12 +120,14 @@ def test_store_switch_requires_a_real_boolean(store):
 
 @pytest.mark.parametrize("count", (0, 1, 2))
 def test_observation_distinguishes_short_physical_history_from_zero(count):
-    graph = _graph(**{
-        ALIAS_EPI[0]: 2.0,
-        ALIAS_D2EPI[0]: 99.0,
-        "epi_time_history": [(float(i), float(i)) for i in range(count)],
-        "epi_history": [0.0, 0.0, 0.0],
-    })
+    graph = _graph(
+        **{
+            ALIAS_EPI[0]: 2.0,
+            ALIAS_D2EPI[0]: 99.0,
+            "epi_time_history": [(float(i), float(i)) for i in range(count)],
+            "epi_history": [0.0, 0.0, 0.0],
+        }
+    )
     before = deepcopy(dict(graph.nodes["n"]))
     observation = observe_structural_acceleration(graph, "n")
     assert observation.source == "epi_time_history"
@@ -154,10 +157,12 @@ def test_missing_history_has_no_source_or_time_basis():
 
 
 def test_valid_zero_has_complete_evidence_and_is_stored_only_by_wrapper():
-    graph = _graph(**{
-        ALIAS_EPI[0]: 7.0,
-        "epi_time_history": [(0.0, 1.0), (1.0, 3.0), (3.0, 7.0)],
-    })
+    graph = _graph(
+        **{
+            ALIAS_EPI[0]: 7.0,
+            "epi_time_history": [(0.0, 1.0), (1.0, 3.0), (3.0, 7.0)],
+        }
+    )
     before = deepcopy(dict(graph.nodes["n"]))
     observation = observe_structural_acceleration(graph, "n")
     assert observation.available is True
@@ -186,11 +191,13 @@ def test_observation_detaches_samples_and_preserves_nonuniform_quadratic_value()
 
 
 def test_legacy_observation_keeps_unit_basis_and_unspecified_endpoint_provenance():
-    graph = _graph(**{
-        ALIAS_EPI[0]: 999.0,
-        "epi_history": ["unassessed older prefix", 0.0, 3.0, 4.0],
-        "_epi_history": [0.0, 1.0, 4.0],
-    })
+    graph = _graph(
+        **{
+            ALIAS_EPI[0]: 999.0,
+            "epi_history": ["unassessed older prefix", 0.0, 3.0, 4.0],
+            "_epi_history": [0.0, 1.0, 4.0],
+        }
+    )
     observation = observe_structural_acceleration(graph, "n")
     assert observation.source == "epi_history"
     assert observation.history_length == 4
@@ -200,20 +207,25 @@ def test_legacy_observation_keeps_unit_basis_and_unspecified_endpoint_provenance
     assert observation.current_endpoint_matches_state is None
 
 
-@pytest.mark.parametrize("history, message", (
-    ([(-1e308, 0.0), (1e308, 1.0), (1.1e308, 2.0)], "intervals"),
-    ([(-1.1e308, 0.0), (-1e308, 1.0), (1e308, 2.0)], "intervals"),
-    # Exact represented-coordinate acceleration is nonzero (~1e-308).
-    ([(-1e308, 0.0), (0.0, 0.0), (1e308, 1e308)], "total span"),
-    ([(0.0, 0.0), (5e-324, 1.0), (1.0, 2.0)], "secant rates"),
-    ([(0.0, -1e308), (1.0, 1e308), (2.0, 0.0)], "secant rates"),
-))
+@pytest.mark.parametrize(
+    "history, message",
+    (
+        ([(-1e308, 0.0), (1e308, 1.0), (1.1e308, 2.0)], "intervals"),
+        ([(-1.1e308, 0.0), (-1e308, 1.0), (1e308, 2.0)], "intervals"),
+        # Exact represented-coordinate acceleration is nonzero (~1e-308).
+        ([(-1e308, 0.0), (0.0, 0.0), (1e308, 1e308)], "total span"),
+        ([(0.0, 0.0), (5e-324, 1.0), (1.0, 2.0)], "secant rates"),
+        ([(0.0, -1e308), (1.0, 1e308), (2.0, 0.0)], "secant rates"),
+    ),
+)
 def test_nonfinite_derived_time_or_rate_rejects_before_any_write(history, message):
-    graph = _graph(**{
-        ALIAS_EPI[0]: history[-1][1],
-        ALIAS_D2EPI[0]: 99.0,
-        "epi_time_history": history,
-    })
+    graph = _graph(
+        **{
+            ALIAS_EPI[0]: history[-1][1],
+            ALIAS_D2EPI[0]: 99.0,
+            "epi_time_history": history,
+        }
+    )
     before = deepcopy(dict(graph.nodes["n"]))
     for read in (observe_structural_acceleration, compute_d2epi_dt2):
         with pytest.raises(TNFRValueError, match=message):
@@ -226,7 +238,10 @@ def test_two_sample_mutation_rate_can_be_valid_with_unavailable_acceleration():
 
     history = [(0.0, 0.0), (1.0, 1.0)]
     trigger = certify_mutation_trigger(
-        current_epi=1.0, nu_f=1.0, delta_nfr=1.0, epi_time_history=history,
+        current_epi=1.0,
+        nu_f=1.0,
+        delta_nfr=1.0,
+        epi_time_history=history,
     )
     graph = _graph(**{ALIAS_EPI[0]: 1.0, "epi_time_history": history})
     acceleration = observe_structural_acceleration(graph, "n")
@@ -242,11 +257,15 @@ def test_thol_gate_uses_one_history_selection_for_value_and_length(monkeypatch):
         validate_self_organization_strict,
     )
 
-    graph = _graph(**{
-        ALIAS_EPI[0]: 1.0, ALIAS_DNFR[0]: 0.2, ALIAS_VF[0]: 1.0,
-        "epi_time_history": [(0.0, 0.0), (1.0, 0.1), (3.0, 1.0)],
-        "epi_history": [0.0, 0.0, 0.0],
-    })
+    graph = _graph(
+        **{
+            ALIAS_EPI[0]: 1.0,
+            ALIAS_DNFR[0]: 0.2,
+            ALIAS_VF[0]: 1.0,
+            "epi_time_history": [(0.0, 0.0), (1.0, 0.1), (3.0, 1.0)],
+            "epi_history": [0.0, 0.0, 0.0],
+        }
+    )
     graph.add_edge("n", "neighbor")
     graph.graph["THOL_METABOLIC_ENABLED"] = False
     original = nodal_equation._select_acceleration_history
@@ -266,9 +285,13 @@ def test_thol_gate_uses_one_history_selection_for_value_and_length(monkeypatch):
 def test_integrator_rhs_acceleration_is_distinct_from_clipped_epi_observation():
     from tnfr.dynamics.integrators import update_epi_via_nodal_equation
 
-    graph = _graph(**{
-        ALIAS_EPI[0]: 1.0, ALIAS_DNFR[0]: 2.0, ALIAS_VF[0]: 1.0,
-    })
+    graph = _graph(
+        **{
+            ALIAS_EPI[0]: 1.0,
+            ALIAS_DNFR[0]: 2.0,
+            ALIAS_VF[0]: 1.0,
+        }
+    )
     graph.graph.update(EPI_MIN=0.0, EPI_MAX=1.0, CLIP_MODE="hard", DT_MIN=1.0)
     update_epi_via_nodal_equation(graph, dt=1.0, t=0.0, method="euler")
     assert graph.nodes["n"][ALIAS_EPI[0]] == 1.0

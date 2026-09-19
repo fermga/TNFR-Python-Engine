@@ -285,8 +285,7 @@ def test_external_colour_model():
         f"max ||[f(A,L)(x)I, I(x)U]|| = {g_worst:.2e}  (8 sampled U)"
     )
     print(
-        f"  (b) selected U(1) products commute     : "
-        f"||[H_P, H_Q]|| = {u1_comm:.2e}"
+        f"  (b) selected U(1) products commute     : " f"||[H_P, H_Q]|| = {u1_comm:.2e}"
     )
     print(
         f"  (c) SU(2) holonomies do NOT commute   : " f"||[H_P, H_Q]|| = {su2_comm:.3f}"

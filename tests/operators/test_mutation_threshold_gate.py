@@ -10,13 +10,13 @@ import pytest
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from tnfr.node import NodeNX
 from tnfr.operators import apply_glyph, apply_glyph_obj
-from tnfr.operators.definitions import Mutation
 from tnfr.operators._mutation_gate import (
     mutation_threshold_sample,
     validate_mutation_capacity,
     validate_mutation_runtime_gate,
     validate_mutation_threshold,
 )
+from tnfr.operators.definitions import Mutation
 from tnfr.operators.factor_contracts import GlyphFactorValidationError
 from tnfr.operators.metrics_structural import mutation_metrics
 from tnfr.operators.preconditions import OperatorPreconditionError
@@ -249,9 +249,7 @@ def test_public_mutation_strict_preflight_and_late_factor_rejection_are_read_onl
     node_before = deepcopy(dict(graph.nodes[0]))
     graph_before = deepcopy(dict(graph.graph))
 
-    with pytest.raises(
-        GlyphFactorValidationError, match="ZHIR_theta_shift_factor"
-    ):
+    with pytest.raises(GlyphFactorValidationError, match="ZHIR_theta_shift_factor"):
         Mutation()(graph, 0)
 
     assert dict(graph.nodes[0]) == node_before

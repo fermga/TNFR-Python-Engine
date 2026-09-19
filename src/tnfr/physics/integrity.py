@@ -453,17 +453,13 @@ def _postcond_emission(
     dnfr_before = before.get("dnfr", 0.0)
     dnfr_after = after.get("dnfr", 0.0)
     if abs(dnfr_after - dnfr_before) > 1e-9:
-        return (
-            "ΔNFR changed during Emission: "
-            f"{dnfr_before:.6f} → {dnfr_after:.6f}"
-        )
+        return "ΔNFR changed during Emission: " f"{dnfr_before:.6f} → {dnfr_after:.6f}"
 
     theta_before = before.get("theta", 0.0)
     theta_after = after.get("theta", 0.0)
     if abs(angle_diff(theta_after, theta_before)) > 1e-9:
         return (
-            "Phase changed during Emission: "
-            f"{theta_before:.6f} → {theta_after:.6f}"
+            "Phase changed during Emission: " f"{theta_before:.6f} → {theta_after:.6f}"
         )
     return None
 
@@ -736,9 +732,7 @@ class StructuralIntegrityMonitor:
         if not math.isfinite(lyapunov_tolerance) or lyapunov_tolerance < 0.0:
             raise ValueError("lyapunov_tolerance must be finite and non-negative")
         if not math.isfinite(charge_drift_threshold) or charge_drift_threshold < 0.0:
-            raise ValueError(
-                "charge_drift_threshold must be finite and non-negative"
-            )
+            raise ValueError("charge_drift_threshold must be finite and non-negative")
         self.mode = mode
         self.conservation_threshold = conservation_threshold
         self.lyapunov_tolerance = lyapunov_tolerance
@@ -942,9 +936,7 @@ class StructuralIntegrityMonitor:
                     "conservation_quality": report.conservation_quality,
                     "balance_quality": report.balance_quality,
                     "energy_derivative": report.energy_derivative,
-                    "candidate_energy_derivative": (
-                        report.candidate_energy_derivative
-                    ),
+                    "candidate_energy_derivative": (report.candidate_energy_derivative),
                     "candidate_energy_nonincreasing": (
                         report.candidate_energy_nonincreasing
                     ),
@@ -1223,8 +1215,8 @@ def audit_operator_contracts(
         Silence,
         Transition,
     )
-    from ..operators.operator_contracts import OPERATOR_CONTRACTS, iter_contracts
     from ..operators.grammar_types import glyph_function_name
+    from ..operators.operator_contracts import OPERATOR_CONTRACTS, iter_contracts
 
     _classes = {
         "emission": Emission,
@@ -1261,7 +1253,9 @@ def audit_operator_contracts(
             history = G.nodes[node].get("glyph_history", ())
             actual = history[-1] if history else None
             if glyph_function_name(actual) != name:
-                execution_errors.append(f"node {node}: requested {glyph}, executed {actual}")
+                execution_errors.append(
+                    f"node {node}: requested {glyph}, executed {actual}"
+                )
 
         with _warnings.catch_warnings():
             _warnings.simplefilter("ignore")

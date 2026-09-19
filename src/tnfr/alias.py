@@ -223,7 +223,8 @@ def get_attr(
 
 
 def _nodes_iter_and_size(
-    G: "networkx.Graph", nodes: Iterable[NodeId],
+    G: "networkx.Graph",
+    nodes: Iterable[NodeId],
 ) -> tuple[Iterable[NodeId], int]:
     """Resolve a node iterable once for both scalar collection entry points."""
     if nodes is G.nodes:

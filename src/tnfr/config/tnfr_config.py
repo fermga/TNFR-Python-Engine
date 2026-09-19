@@ -353,13 +353,16 @@ class TNFRConfig:
         dt = config.get("DT")
         _validate_finite_real(dt, "DT")
         if dt is not None and dt < 0:
-            raise TNFRConfigError(
-                f"DT (time step) must be >= 0, got {dt}"
-            )
+            raise TNFRConfigError(f"DT (time step) must be >= 0, got {dt}")
 
         for key in (
-            "INIT_VF_MIN", "INIT_VF_MAX", "INIT_VF_MEAN", "INIT_VF_STD",
-            "INIT_SI_MIN", "INIT_SI_MAX", "INIT_EPI_VALUE",
+            "INIT_VF_MIN",
+            "INIT_VF_MAX",
+            "INIT_VF_MEAN",
+            "INIT_VF_STD",
+            "INIT_SI_MIN",
+            "INIT_SI_MAX",
+            "INIT_EPI_VALUE",
         ):
             _validate_finite_real(config.get(key), key)
         vf_std = config.get("INIT_VF_STD")

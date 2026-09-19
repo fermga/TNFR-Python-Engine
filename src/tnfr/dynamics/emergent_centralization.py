@@ -121,9 +121,7 @@ def _node_real_channel(
         ) from exc
     if not math.isfinite(value) or (nonnegative and value < 0.0):
         qualifier = "nonnegative finite" if nonnegative else "finite"
-        raise TNFRValueError(
-            f"node {node!r} {label} must be a {qualifier} real scalar"
-        )
+        raise TNFRValueError(f"node {node!r} {label} must be a {qualifier} real scalar")
     return value
 
 
@@ -210,9 +208,7 @@ class TNFREmergentCentralizationEngine:
         self.coordination_threshold = (
             EMERGENT_COORDINATION_THRESHOLD_CANONICAL  # ≈ 0.5550
         )
-        self.stability_threshold = (
-            EMERGENT_STABILITY_THRESHOLD_CANONICAL  # ≈ 0.5903
-        )
+        self.stability_threshold = EMERGENT_STABILITY_THRESHOLD_CANONICAL  # ≈ 0.5903
 
         # Performance tracking
         self.centralization_attempts = 0
@@ -279,7 +275,12 @@ class TNFREmergentCentralizationEngine:
                         degree = G.degree(node)
                         epi_value = _node_scalar_epi(G, node)
                         vf_value = _node_real_channel(
-                            G, node, ALIAS_VF, 1.0, "structural frequency", nonnegative=True
+                            G,
+                            node,
+                            ALIAS_VF,
+                            1.0,
+                            "structural frequency",
+                            nonnegative=True,
                         )
 
                         # Mathematical signature for this coordination node
@@ -540,8 +541,7 @@ class TNFREmergentCentralizationEngine:
                 )
 
                 if (
-                    phase_distance_affinity
-                    > EMERGENT_CENTRALITY_THRESHOLD_CANONICAL
+                    phase_distance_affinity > EMERGENT_CENTRALITY_THRESHOLD_CANONICAL
                     and coordination_capacity > self.coordination_threshold
                 ):  # ≈ 0.737
                     signature = {
@@ -609,9 +609,7 @@ class TNFREmergentCentralizationEngine:
 
             if coordination_nodes:
                 # Calculate pattern metrics
-                capacities = [
-                    node.coordination_capacity for node in coordination_nodes
-                ]
+                capacities = [node.coordination_capacity for node in coordination_nodes]
                 capacity_scale = max(capacities, default=0.0)
                 scaled_capacity_total = (
                     math.fsum(value / capacity_scale for value in capacities)
@@ -653,9 +651,7 @@ class TNFREmergentCentralizationEngine:
                 # Load distribution across coordination nodes
                 if scaled_capacity_total > 0.0:
                     load_distribution = {
-                        node.node_id: (
-                            node.coordination_capacity / capacity_scale
-                        )
+                        node.node_id: (node.coordination_capacity / capacity_scale)
                         / scaled_capacity_total
                         for node in coordination_nodes
                     }
@@ -731,9 +727,9 @@ class TNFREmergentCentralizationEngine:
         load_uniformity_score = (
             float(1.0 - np.var(load_values)) if load_values else None
         )
-        coordination_redundancy_fraction = len(
-            best_pattern.coordination_nodes
-        ) / max(1, len(G.nodes()))
+        coordination_redundancy_fraction = len(best_pattern.coordination_nodes) / max(
+            1, len(G.nodes())
+        )
         diagnostic_scores = {
             "coordination_coverage_score": float(best_pattern.efficiency_gain),
             "centrality_stability_score": float(best_pattern.stability_measure),

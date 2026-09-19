@@ -39,12 +39,10 @@ def test_generator_transport_does_not_imply_all_observer_transport():
     target_generator = capacity_target[:, None] * target_laplacian
     initial = np.array([1.0, -0.5, 0.25, 0.2, 1.5, -1.0])
     structural_time = 0.4
-    source_state = matrix_exponential(
-        -structural_time * source_generator
-    ) @ initial
-    target_state = matrix_exponential(
-        -structural_time * target_generator
-    ) @ (mapping @ initial)
+    source_state = matrix_exponential(-structural_time * source_generator) @ initial
+    target_state = matrix_exponential(-structural_time * target_generator) @ (
+        mapping @ initial
+    )
     source_phase = np.array([0.0, 0.2, 0.4, 0.1, 0.3, 0.5])
     target_phase = mapping @ source_phase
 
@@ -73,9 +71,7 @@ def test_generator_transport_does_not_imply_all_observer_transport():
 
 
 def test_kron_reduction_preserves_resistance_not_arbitrary_dynamics():
-    laplacian = np.array(
-        [[1.0, -1.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 1.0]]
-    )
+    laplacian = np.array([[1.0, -1.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 1.0]])
     certificate = kron_reduction_certificate(
         laplacian, boundary_indices=(0, 2), state=[1.0, 2.0, -1.0]
     )
@@ -154,9 +150,6 @@ def test_composed_reductions_bound_transport_and_observer_error():
         target_observer=observer,
     )
     assert measured.first_residual > 0.0
-    assert (
-        measured.composed_residual
-        <= measured.residual_composition_bound + 1e-12
-    )
+    assert measured.composed_residual <= measured.residual_composition_bound + 1e-12
     assert measured.trajectory_defect <= measured.trajectory_bound + 1e-12
     assert measured.observer_defect <= measured.observer_bound + 1e-12

@@ -33,8 +33,7 @@ def _solid_ball(n_shells: int = 4, base: int = 16, k: int = 8) -> nx.Graph:
         ring = np.sqrt(np.clip(1.0 - z * z, 0.0, 1.0))
         th = golden * idx
         pts.extend(
-            np.stack([s * ring * np.cos(th), s * ring * np.sin(th), s * z],
-                     axis=1)
+            np.stack([s * ring * np.cos(th), s * ring * np.sin(th), s * z], axis=1)
         )
     P = np.asarray(pts)
     G = nx.Graph()
@@ -56,19 +55,15 @@ class TestAngularDegeneracyEmerges:
     """Finite spectral clustering on the constructed sphere graph."""
 
     def test_sphere_low_modes_are_2l_plus_1(self):
-        shells = structural_eigenmodes(fibonacci_sphere_graph(162, 6),
-                                       max_modes=16)
+        shells = structural_eigenmodes(fibonacci_sphere_graph(162, 6), max_modes=16)
         assert [sh.multiplicity for sh in shells[:4]] == [1, 3, 5, 7]
 
     def test_angular_index_inferred_from_multiplicity(self):
-        shells = structural_eigenmodes(fibonacci_sphere_graph(162, 6),
-                                       max_modes=16)
+        shells = structural_eigenmodes(fibonacci_sphere_graph(162, 6), max_modes=16)
         assert [sh.angular_index for sh in shells[:4]] == [0, 1, 2, 3]
 
     def test_even_cluster_has_no_invented_angular_index(self):
-        shells = structural_eigenmodes(
-            nx.path_graph(4), max_modes=4, gap_factor=1000.0
-        )
+        shells = structural_eigenmodes(nx.path_graph(4), max_modes=4, gap_factor=1000.0)
         assert len(shells) == 1
         assert shells[0].multiplicity == 4
         assert shells[0].angular_index is None
@@ -107,8 +102,7 @@ class TestAufbauIsPostulated:
         # lambda_ang(l)+lambda_rad(nu); its closed-shell counts do NOT match
         # the atomic noble gases -- screening is absent, so (n+l) is not
         # spectral. The second closure is never the Ne-like 10.
-        prod = nx.cartesian_product(fibonacci_sphere_graph(80, 6),
-                                    nx.path_graph(6))
+        prod = nx.cartesian_product(fibonacci_sphere_graph(80, 6), nx.path_graph(6))
         shells = structural_eigenmodes(prod, max_modes=30, gap_factor=4.0)
         cum, total = [], 0
         for sh in shells:
@@ -172,12 +166,10 @@ class TestNucleusTopologyEmerges:
     canonical structural-potential geometry, not a postulated hub."""
 
     def test_star_is_radial(self):
-        assert classify_nodal_topology(nx.star_graph(30))["topology"] \
-            == "radial"
+        assert classify_nodal_topology(nx.star_graph(30))["topology"] == "radial"
 
     def test_ring_is_annular(self):
-        assert classify_nodal_topology(nx.cycle_graph(30))["topology"] \
-            == "annular"
+        assert classify_nodal_topology(nx.cycle_graph(30))["topology"] == "annular"
 
     def test_sphere_has_no_nucleus(self):
         topo = classify_nodal_topology(fibonacci_sphere_graph(120, 6))

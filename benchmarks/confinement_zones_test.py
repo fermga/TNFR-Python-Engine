@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
-"""
-K_φ Confinement Zone Mapping Investigation
+"""Finite overlap of selected curvature zones and pressure magnitudes.
 
-Test Task 2: Identify high |K_φ| zones as confinement regions and measure
-ΔNFR localization dynamics during operator sequences.
+The script retains historical thresholds, several above the exact wrapped bound
+|K_phi|<=pi. Such zones are empty in the current canonical read-out; this is a
+domain limit, not negative evidence about a physical confinement mechanism.
+The in-range controls describe conditional co-location on prepared runs.
+Capture fractions do not prove causality, a strong interaction or field
+canonicity. Operator calls and thresholds are declared experiment inputs.
+See docs/STRUCTURAL_FIELDS_TETRAD.md for current bounds and field provenance.
 """
 
 import argparse
@@ -352,10 +356,12 @@ def confinement_zone_investigation(
         )
 
         if strong_evidence_rate > 0.2:  # 20% of cases show strong confinement
-            print("   ✅ CONFINEMENT MECHANISM DETECTED")
-            print("      - High |K_φ| zones successfully localize ΔNFR")
-            print("      - Strong-like interaction regime validated")
-            print("      - Supports canonical promotion pathway")
+            print("   ✅ SELECTED PRESSURE/CURVATURE OVERLAP OBSERVED")
+            print("      - Selected high-curvature zones overlap pressure magnitudes")
+            print("      - No physical force or causal localization law established")
+            print(
+                "      - Read-out canonicity is separate from these overlap statistics"
+            )
         elif strong_evidence_rate > 0.05:
             print("   ⚠️ WEAK CONFINEMENT EVIDENCE")
             print("      - Some localization observed but inconsistent")
@@ -364,7 +370,7 @@ def confinement_zone_investigation(
         else:
             print("   ❌ NO CLEAR CONFINEMENT MECHANISM")
             print("      - ΔNFR remains distributed despite high |K_φ|")
-            print("      - May not function as strong-like interaction")
+            print("      - No physical interaction is tested by this statistic")
             print("      - Consider alternative interpretations")
 
 

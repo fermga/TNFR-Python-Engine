@@ -13,13 +13,12 @@ coefficient nor projects pressures onto a prescribed conservation law.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from fractions import Fraction
 from functools import lru_cache
-import math
 
 from .._binary64 import uses_ieee_binary64_rounding
-
 
 __all__ = ("CertifiedTwoNeighborPhase", "certified_two_neighbor_phase")
 
@@ -38,10 +37,19 @@ def _atan_reciprocal_bounds(denominator: int, terms: int) -> tuple[Fraction, Fra
     if type(denominator) is not int or type(terms) is not int:
         raise TypeError("the reciprocal denominator and term count must be integers")
     if denominator <= 1 or terms < 1:
-        raise ValueError("the reciprocal denominator must exceed one and terms must be positive")
-    partial = sum((Fraction((-1)**index, (2 * index + 1) * denominator**(2 * index + 1))
-                   for index in range(terms)), Fraction(0))
-    next_term = Fraction((-1)**terms, (2 * terms + 1) * denominator**(2 * terms + 1))
+        raise ValueError(
+            "the reciprocal denominator must exceed one and terms must be positive"
+        )
+    partial = sum(
+        (
+            Fraction((-1) ** index, (2 * index + 1) * denominator ** (2 * index + 1))
+            for index in range(terms)
+        ),
+        Fraction(0),
+    )
+    next_term = Fraction(
+        (-1) ** terms, (2 * terms + 1) * denominator ** (2 * terms + 1)
+    )
     return min(partial, partial + next_term), max(partial, partial + next_term)
 
 
@@ -67,7 +75,9 @@ def _pi_bounds() -> tuple[Fraction, Fraction]:
     return Fraction(lower_index, scale), Fraction(upper_index, scale)
 
 
-def _affine_interval(rational: Fraction, coefficient, pi_bounds) -> tuple[Fraction, Fraction]:
+def _affine_interval(
+    rational: Fraction, coefficient, pi_bounds
+) -> tuple[Fraction, Fraction]:
     """Enclose rational+coefficient*pi, retaining an exact rational branch."""
     lower, upper = pi_bounds
     if coefficient >= 0:
@@ -80,7 +90,9 @@ def _positive(rational: Fraction, coefficient, pi_bounds) -> bool:
 
 
 def _nonnegative(rational: Fraction, coefficient, pi_bounds) -> bool:
-    return (rational == 0 and coefficient == 0) or _positive(rational, coefficient, pi_bounds)
+    return (rational == 0 and coefficient == 0) or _positive(
+        rational, coefficient, pi_bounds
+    )
 
 
 def _oriented_turn(difference: Fraction, pi_bounds) -> int | None:
@@ -90,19 +102,23 @@ def _oriented_turn(difference: Fraction, pi_bounds) -> int | None:
     # A positive raw difference can only need a negative full turn, and
     # conversely. The other sign moves farther from the half-pi interval.
     turn = -1 if difference > 0 else 1
-    if (_positive(difference, 2 * turn + Fraction(1, 2), pi_bounds)
-            and _positive(-difference, Fraction(1, 2) - 2 * turn, pi_bounds)):
+    if _positive(difference, 2 * turn + Fraction(1, 2), pi_bounds) and _positive(
+        -difference, Fraction(1, 2) - 2 * turn, pi_bounds
+    ):
         return turn
     return None
 
 
-def _canonical_mean_coefficient(rational: Fraction, coefficient: int, pi_bounds) -> int | None:
+def _canonical_mean_coefficient(
+    rational: Fraction, coefficient: int, pi_bounds
+) -> int | None:
     """Select the mathematical [0,2pi) branch before any float conversion."""
     # The translated half-open intervals are disjoint, so one certified
     # branch is sufficient. Most normalized inputs need no mean turn.
     for turn in (0, -1, 1):
-        if (_nonnegative(rational, coefficient - 2 * turn, pi_bounds)
-                and _positive(-rational, 2 - coefficient + 2 * turn, pi_bounds)):
+        if _nonnegative(rational, coefficient - 2 * turn, pi_bounds) and _positive(
+            -rational, 2 - coefficient + 2 * turn, pi_bounds
+        ):
             return coefficient - 2 * turn
     return None
 
@@ -147,7 +163,9 @@ class CertifiedTwoNeighborPhase:
 
 
 def certified_two_neighbor_phase(
-    center: float, first: float, second: float,
+    center: float,
+    first: float,
+    second: float,
 ) -> CertifiedTwoNeighborPhase | None:
     """Certify the true-circle two-neighbor midpoint, or request fallback.
 
@@ -170,12 +188,18 @@ def certified_two_neighbor_phase(
     general phasor calculation. No universal fast-path coverage or global
     conservation, equivariance or complete-runtime invariant is inferred.
     """
-    if any(type(value) is not float or not math.isfinite(value) or not 0.0 <= value < math.tau
-           for value in (center, first, second)):
+    if any(
+        type(value) is not float
+        or not math.isfinite(value)
+        or not 0.0 <= value < math.tau
+        for value in (center, first, second)
+    ):
         return None
     if not uses_ieee_binary64_rounding():
         return None
-    exact_center, exact_first, exact_second = (Fraction.from_float(value) for value in (center, first, second))
+    exact_center, exact_first, exact_second = (
+        Fraction.from_float(value) for value in (center, first, second)
+    )
     pi_bounds = _pi_bounds()
     first_turn = _oriented_turn(exact_first - exact_center, pi_bounds)
     second_turn = _oriented_turn(exact_second - exact_center, pi_bounds)
@@ -184,7 +208,9 @@ def certified_two_neighbor_phase(
     coefficient = first_turn + second_turn
     mean_rational = (exact_first + exact_second) / 2
     delta_rational = mean_rational - exact_center
-    canonical_coefficient = _canonical_mean_coefficient(mean_rational, coefficient, pi_bounds)
+    canonical_coefficient = _canonical_mean_coefficient(
+        mean_rational, coefficient, pi_bounds
+    )
     if canonical_coefficient is None:
         return None
     rounded_delta = _rounded_affine(delta_rational, coefficient, pi_bounds)
@@ -194,6 +220,13 @@ def certified_two_neighbor_phase(
     delta, delta_enclosure = rounded_delta
     mean, mean_enclosure = rounded_mean
     return CertifiedTwoNeighborPhase(
-        delta, mean, "exact_two_neighbor_midpoint", delta_rational, coefficient,
-        mean_rational, canonical_coefficient, delta_enclosure, mean_enclosure,
+        delta,
+        mean,
+        "exact_two_neighbor_midpoint",
+        delta_rational,
+        coefficient,
+        mean_rational,
+        canonical_coefficient,
+        delta_enclosure,
+        mean_enclosure,
     )

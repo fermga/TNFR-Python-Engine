@@ -15,7 +15,6 @@ from tnfr.physics.cycle_support_dynamics import (
 )
 from tnfr.utils import normalize_weights
 
-
 F = Fraction
 
 
@@ -27,16 +26,17 @@ def _laplace(values):
 
 
 def _energy(values):
-    return sum(
-        (value - values[i - 1]) ** 2 for i, value in enumerate(values)
-    ) / 2
+    return sum((value - values[i - 1]) ** 2 for i, value in enumerate(values)) / 2
 
 
 def _sample():
     return observe_cycle_support_balance(
         (F(3, 4), F(1, 2), F(1, 4), F(1, 2)),
-        (F(1, 2), 1, 2, 1), (F(1, 8), 0, F(-1, 8), 0),
-        epi_weight=F(1, 2), vf_weight=F(1, 4), phase_weight=F(1, 4),
+        (F(1, 2), 1, 2, 1),
+        (F(1, 8), 0, F(-1, 8), 0),
+        epi_weight=F(1, 2),
+        vf_weight=F(1, 4),
+        phase_weight=F(1, 4),
     )
 
 
@@ -78,8 +78,12 @@ def test_joint_zero_pressure_balance_can_have_nonuniform_epi():
     phase = (F(1, 8), 0, F(-1, 8), 0)
     x = tuple(F(2) - v / 2 - a / 2 for v, a in zip(nu, phase))
     before = observe_cycle_support_balance(
-        x, nu, phase, epi_weight=F(1, 2),
-        vf_weight=F(1, 4), phase_weight=F(1, 4),
+        x,
+        nu,
+        phase,
+        epi_weight=F(1, 2),
+        vf_weight=F(1, 4),
+        phase_weight=F(1, 4),
     )
     assert before.shifted_epi == (2,) * 4
     assert before.pressure == before.epi_rate == (0,) * 4
@@ -97,13 +101,15 @@ def test_reset_pressure_formula_and_energy_are_exact_independent_expansions():
         for nu, phase in zip(original.capacity, original.phase_offset_over_pi)
     )
     before = observe_cycle_support_balance(
-        x, original.capacity, original.phase_offset_over_pi,
-        epi_weight=F(1, 2), vf_weight=F(1, 4), phase_weight=F(1, 4),
+        x,
+        original.capacity,
+        original.phase_offset_over_pi,
+        epi_weight=F(1, 2),
+        vf_weight=F(1, 4),
+        phase_weight=F(1, 4),
     )
     eta, s, q = F(1, 3), F(1, 4), F(3, 4)
-    result = observe_cycle_support_reset(
-        before, eta=eta, vf_sync=s, silence_factor=q
-    )
+    result = observe_cycle_support_reset(before, eta=eta, vf_sync=s, silence_factor=q)
     ln = _laplace(before.capacity)
     lln, lla = _laplace(ln), _laplace(_laplace(before.phase_offset_over_pi))
     expected = tuple(
@@ -121,8 +127,12 @@ def test_correlated_phase_and_capacity_can_cancel_the_reset_pressure():
     phase = tuple(-3 * v / 16 for v in mode)
     x = tuple(2 - v / 2 - a / 2 for v, a in zip(nu, phase))
     before = observe_cycle_support_balance(
-        x, nu, phase, epi_weight=F(1, 2),
-        vf_weight=F(1, 4), phase_weight=F(1, 4),
+        x,
+        nu,
+        phase,
+        epi_weight=F(1, 2),
+        vf_weight=F(1, 4),
+        phase_weight=F(1, 4),
     )
     reset = observe_cycle_support_reset(
         before, eta=F(1, 2), vf_sync=F(1, 2), silence_factor=F(1, 2)
@@ -135,8 +145,12 @@ def test_correlated_phase_and_capacity_can_cancel_the_reset_pressure():
 
 def test_reset_energy_change_is_signed_and_not_a_dissipation_claim():
     before = observe_cycle_support_balance(
-        (0,) * 4, (1,) * 4, (1, -1, 1, -1),
-        epi_weight=1, vf_weight=0, phase_weight=1,
+        (0,) * 4,
+        (1,) * 4,
+        (1, -1, 1, -1),
+        epi_weight=1,
+        vf_weight=0,
+        phase_weight=1,
     )
     reset = observe_cycle_support_reset(
         before, eta=F(1, 2), vf_sync=0, silence_factor=1
@@ -149,8 +163,12 @@ def test_reset_energy_change_is_signed_and_not_a_dissipation_claim():
 
 def test_zero_capacity_keeps_the_budget_but_not_pressure_rate_equivalence():
     before = observe_cycle_support_balance(
-        (1, 0, -1, 0), (0,) * 4, (0,) * 4,
-        epi_weight=1, vf_weight=0, phase_weight=0,
+        (1, 0, -1, 0),
+        (0,) * 4,
+        (0,) * 4,
+        epi_weight=1,
+        vf_weight=0,
+        phase_weight=0,
     )
     assert any(before.pressure)
     assert before.epi_rate == (0,) * 4
@@ -166,8 +184,12 @@ def test_zero_capacity_keeps_the_budget_but_not_pressure_rate_equivalence():
 
 def test_euler_budget_records_the_positive_remainder_and_stability_boundary():
     before = observe_cycle_support_balance(
-        (1, -1, 1, -1), (1,) * 4, (0,) * 4,
-        epi_weight=1, vf_weight=0, phase_weight=0,
+        (1, -1, 1, -1),
+        (1,) * 4,
+        (0,) * 4,
+        epi_weight=1,
+        vf_weight=0,
+        phase_weight=0,
     )
     midpoint = observe_cycle_support_euler(before, dt=F(1, 2))
     assert midpoint.after.epi == (0,) * 4
@@ -202,8 +224,11 @@ def test_adjacent_exact_reset_and_euler_steps_have_a_finite_budget():
 def test_public_cached_fields_are_recomputed_before_a_transition():
     original = _sample()
     tampered = replace(
-        original, pressure=(F(0),) * 4, epi_rate=(F(0),) * 4,
-        shifted_epi=(F(100),) * 4, dirichlet_energy=F(-100),
+        original,
+        pressure=(F(0),) * 4,
+        epi_rate=(F(0),) * 4,
+        shifted_epi=(F(100),) * 4,
+        dirichlet_energy=F(-100),
         dirichlet_derivative=F(99),
     )
     assert observe_cycle_support_reset(tampered) == (
@@ -229,11 +254,16 @@ def test_exact_reader_detachment_and_immutability():
 
 @pytest.mark.parametrize(
     "epi,nu,phase",
-    [((), (), ()), ((0, 0), (1, 1), (0, 0)),
-     ((0,) * 3, (1,) * 2, (0,) * 3), ((0,) * 3, (1,) * 3, (0,) * 2),
-     ((0,) * 3, (-1, 1, 1), (0,) * 3), ((True, 0, 0), (1,) * 3, (0,) * 3),
-     ((0,) * 3, (1,) * 3, (float("nan"), 0, 0)),
-     ((0,) * 3, (1,) * 3, {0, 1, 2})],
+    [
+        ((), (), ()),
+        ((0, 0), (1, 1), (0, 0)),
+        ((0,) * 3, (1,) * 2, (0,) * 3),
+        ((0,) * 3, (1,) * 3, (0,) * 2),
+        ((0,) * 3, (-1, 1, 1), (0,) * 3),
+        ((True, 0, 0), (1,) * 3, (0,) * 3),
+        ((0,) * 3, (1,) * 3, (float("nan"), 0, 0)),
+        ((0,) * 3, (1,) * 3, {0, 1, 2}),
+    ],
 )
 def test_invalid_coordinates_are_rejected(epi, nu, phase):
     with pytest.raises((TypeError, ValueError)):
@@ -241,8 +271,14 @@ def test_invalid_coordinates_are_rejected(epi, nu, phase):
 
 
 @pytest.mark.parametrize(
-    "kwargs", [{"epi_weight": 0}, {"phase_weight": -1}, {"vf_weight": -1},
-               {"phase_weight": True}, {"epi_weight": float("inf")}],
+    "kwargs",
+    [
+        {"epi_weight": 0},
+        {"phase_weight": -1},
+        {"vf_weight": -1},
+        {"phase_weight": True},
+        {"epi_weight": float("inf")},
+    ],
 )
 def test_invalid_coefficients_are_rejected(kwargs):
     with pytest.raises((TypeError, ValueError)):

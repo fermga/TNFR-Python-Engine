@@ -38,24 +38,27 @@ from ..constants.aliases import (
     ALIAS_THETA,
     ALIAS_VF,
 )
-from ..dynamics.integrators import (
-    DefaultIntegrator as _CanonicalDefaultIntegrator,
-)
+from ..dynamics.integrators import DefaultIntegrator as _CanonicalDefaultIntegrator
 from ..dynamics.integrators import (
     prepare_integration_params as _canonical_prepare_integration_params,
 )
 from ..errors import TNFRValueError
 from ..physics._exact_metric import (
     normalized_positive_binary64_metric as _normalized_exact_metric,
+)
+from ..physics._exact_metric import (
     normalized_positive_fraction_metric as _normalized_fraction_metric,
 )
 from ..types import Glyph
 from ..utils._structural_signature import (
     binary64_vectors_are_identical as _binary64_vectors_are_identical,
+)
+from ..utils._structural_signature import (
     proof_stamps_are_identical,
     structural_object_state_signature,
     structural_proof_signature,
 )
+from ._reception_kernel import RECEPTION_NO_SOURCES_WARNING_PATTERN
 from .event_timing import (
     OperatorEventSchedule,
     PhysicalFlowPartition,
@@ -64,14 +67,13 @@ from .event_timing import (
     build_physical_flow_partition,
     diagnose_operator_event_runtime_clock,
 )
-from ._reception_kernel import RECEPTION_NO_SOURCES_WARNING_PATTERN
 from .network_stage import (
+    _NETWORKX_GRAPH_INTERNAL_ATTRIBUTES,
     TWO_PHASE_JACOBI,
     GraphTransactionSnapshot,
     MutationStageDecisionObservation,
     NetworkStageResult,
     ReceptionStageObservation,
-    _NETWORKX_GRAPH_INTERNAL_ATTRIBUTES,
     _graph_factory_items,
     _graph_factory_state_signature,
     _graph_transaction_protected_values,
@@ -88,9 +90,7 @@ from .network_stage import (
 )
 
 if TYPE_CHECKING:
-    from ..physics.network_stage_stability import (
-        AllTargetNeighborStageCertificate,
-    )
+    from ..physics.network_stage_stability import AllTargetNeighborStageCertificate
     from ..physics.pointwise_stage_stability import (
         PointwiseEPIJumpRealizationCertificate,
     )
@@ -101,9 +101,7 @@ if TYPE_CHECKING:
 
 
 _HYBRID_EVENT_LOG = "hybrid_event_log"
-_FLOW_PROVENANCE = (
-    "tnfr.operators.event_runtime.execute_operator_event_schedule"
-)
+_FLOW_PROVENANCE = "tnfr.operators.event_runtime.execute_operator_event_schedule"
 _NODAL_FLOW_INPUTS = "live_nu_f_and_delta_nfr_at_each_interval_start"
 _CANONICAL_DEFAULT_INTEGRATE = _CanonicalDefaultIntegrator.integrate
 _FLOW_SCOPE = (
@@ -127,16 +125,12 @@ _PRESSURE_REFRESHED_PARTITION_SCOPE = (
     "per-segment frozen modal diagnostics only; it does not prove solver order, "
     "mesh convergence, future behavior or adaptive U2/U4 policy"
 )
-_PRESSURE_REFRESH_BOUNDARY_PROOF_VERSION = (
-    "pressure_refresh_boundary_observation_v2"
-)
+_PRESSURE_REFRESH_BOUNDARY_PROOF_VERSION = "pressure_refresh_boundary_observation_v2"
 _PRESSURE_REFRESHED_PARTITION_PROOF_VERSION = (
     "executed_pressure_refreshed_flow_partition_v1"
 )
 _EXECUTED_OPERATOR_EVENT_PROOF_VERSION = "executed_operator_event_v1"
-_OPERATOR_EVENT_EXECUTION_RESULT_PROOF_VERSION = (
-    "operator_event_execution_result_v1"
-)
+_OPERATOR_EVENT_EXECUTION_RESULT_PROOF_VERSION = "operator_event_execution_result_v1"
 _STAGE_SCOPE = (
     "one executed zero-duration glyph stage bound to its captured EPI endpoints "
     "and immediately adjacent observed flow intervals; unsupported glyphs and "
@@ -292,8 +286,7 @@ class ExecutedOperatorEvent:
             raise ValueError("event stage_schedule must be two_phase_jacobi")
         if (
             object.__getattribute__(self, "zero_duration") is not True
-            or object.__getattribute__(self, "history_channel")
-            != _HYBRID_EVENT_LOG
+            or object.__getattribute__(self, "history_channel") != _HYBRID_EVENT_LOG
             or object.__getattribute__(self, "feeds_epi_time_history") is not False
         ):
             raise ValueError("executed event contract fields are inconsistent")
@@ -375,9 +368,7 @@ def _executed_flow_interval_stamp(value: Any) -> tuple[Any, ...]:
         _EXECUTED_FLOW_PROOF_VERSION,
         structural_proof_signature(interval),
         structural_proof_signature(
-            None
-            if certificate is None
-            else _raw_proof_stamp_or_none(certificate)
+            None if certificate is None else _raw_proof_stamp_or_none(certificate)
         ),
         structural_proof_signature(
             (
@@ -816,9 +807,7 @@ class PhysicalEulerModalObservation:
                 or self.spectral_zero_threshold is None
                 or self.spectral_zero_threshold <= 0.0
                 or any(
-                    type(value) is not float
-                    or not math.isfinite(value)
-                    or value <= 0.0
+                    type(value) is not float or not math.isfinite(value) or value <= 0.0
                     for value in self.decay_rates
                 )
                 or any(
@@ -828,22 +817,15 @@ class PhysicalEulerModalObservation:
                 or tuple(sorted(self.decay_rates)) != self.decay_rates
                 or self.slowest_decay_rate != self.decay_rates[0]
                 or self.fastest_decay_rate != self.decay_rates[-1]
-                or self.euler_stability_limit
-                != 2.0 / self.fastest_decay_rate
+                or self.euler_stability_limit != 2.0 / self.fastest_decay_rate
                 or self.maximum_modal_factor
                 != max(abs(value) for value in self.modal_multipliers)
-                or self.is_euler_stable
-                != (self.maximum_modal_factor < 1.0)
-                or tuple(
-                    1.0 - self.dt * rate for rate in self.decay_rates
-                )
+                or self.is_euler_stable != (self.maximum_modal_factor < 1.0)
+                or tuple(1.0 - self.dt * rate for rate in self.decay_rates)
                 != self.modal_multipliers
                 or (
                     self.modal_steps is not None
-                    and (
-                        type(self.modal_steps) is not int
-                        or self.modal_steps < 1
-                    )
+                    and (type(self.modal_steps) is not int or self.modal_steps < 1)
                 )
                 or (self.is_euler_stable and self.modal_steps is None)
                 or (not self.is_euler_stable and self.modal_steps is not None)
@@ -888,9 +870,7 @@ class PhysicalEulerModalObservation:
 def _nodal_flow_snapshots_are_identical(left: Any, right: Any) -> bool:
     """Compare canonical flow snapshots by sealed value, not object identity."""
 
-    from ..physics.runtime_flow_stability import (
-        _nodal_flow_snapshot_proof_signature,
-    )
+    from ..physics.runtime_flow_stability import _nodal_flow_snapshot_proof_signature
 
     try:
         return bool(
@@ -1016,15 +996,12 @@ def _pressure_refreshed_partition_fields_are_valid(value: Any) -> bool:
         ):
             return False
         certificate = flow.certificate
-        if (
-            not _nodal_flow_snapshots_are_identical(
-                boundaries[index].after,
-                certificate.left,
-            )
-            or not _nodal_flow_snapshots_are_identical(
-                boundaries[index + 1].before,
-                certificate.right,
-            )
+        if not _nodal_flow_snapshots_are_identical(
+            boundaries[index].after,
+            certificate.left,
+        ) or not _nodal_flow_snapshots_are_identical(
+            boundaries[index + 1].before,
+            certificate.right,
         ):
             return False
 
@@ -1186,8 +1163,7 @@ class ExecutedPressureRefreshedFlowPartition:
         return bool(
             self._proof_fields_are_intact()
             and all(
-                item.modal_diagnostic_established
-                for item in self.modal_observations
+                item.modal_diagnostic_established for item in self.modal_observations
             )
         )
 
@@ -1246,9 +1222,9 @@ class ExecutedGlyphStage:
     post_flow_endpoint_continuous: bool | None = None
     pre_flow_metric_compatible: bool | None = None
     post_flow_metric_compatible: bool | None = None
-    mutation_decision_observations: tuple[
-        MutationStageDecisionObservation, ...
-    ] = field(default=(), repr=False)
+    mutation_decision_observations: tuple[MutationStageDecisionObservation, ...] = (
+        field(default=(), repr=False)
+    )
     reception_observations: tuple[ReceptionStageObservation, ...] = field(
         default=(),
         repr=False,
@@ -1358,8 +1334,7 @@ def _reception_observation_matches_neighbor_step(
         neighbor_indices = tuple(local.runtime_neighbor_indices)
         state_before = tuple(float(item) for item in local.state_before)
         neighbor_values = tuple(
-            state_before[neighbor_index]
-            for neighbor_index in neighbor_indices
+            state_before[neighbor_index] for neighbor_index in neighbor_indices
         )
         accepted_after = float(step.runtime_accepted_state_after[index])
     except (AttributeError, IndexError, TypeError, ValueError, OverflowError):
@@ -1474,26 +1449,24 @@ def _executed_glyph_stage_fields_are_valid(value: Any) -> bool:
         return False
     if not expected_gain_claim and value.exact_energy_gain_upper_bound is not None:
         return False
-    if value.pre_flow_evidence is not None and type(
-        value.pre_flow_evidence
-    ) is not ExecutedNodalFlowInterval:
+    if (
+        value.pre_flow_evidence is not None
+        and type(value.pre_flow_evidence) is not ExecutedNodalFlowInterval
+    ):
         return False
     if (
         value.pre_flow_evidence is not None
-        and not _executed_flow_wrapper_seal_is_intact(
-            value.pre_flow_evidence
-        )
+        and not _executed_flow_wrapper_seal_is_intact(value.pre_flow_evidence)
     ):
-        return False
-    if value.post_flow_evidence is not None and type(
-        value.post_flow_evidence
-    ) is not ExecutedNodalFlowInterval:
         return False
     if (
         value.post_flow_evidence is not None
-        and not _executed_flow_wrapper_seal_is_intact(
-            value.post_flow_evidence
-        )
+        and type(value.post_flow_evidence) is not ExecutedNodalFlowInterval
+    ):
+        return False
+    if (
+        value.post_flow_evidence is not None
+        and not _executed_flow_wrapper_seal_is_intact(value.post_flow_evidence)
     ):
         return False
 
@@ -1571,9 +1544,7 @@ def _executed_glyph_stage_fields_are_valid(value: Any) -> bool:
             ):
                 return False
             try:
-                neighbor_step = _validate_bridge_stage_certificate(
-                    certificate
-                ).step
+                neighbor_step = _validate_bridge_stage_certificate(certificate).step
             except (AttributeError, TypeError, ValueError, OverflowError):
                 return False
         for index, observation in enumerate(reception_observations):
@@ -1615,7 +1586,6 @@ def _executed_glyph_stage_fields_are_valid(value: Any) -> bool:
     elif reception_observations:
         return False
     return True
-
 
 
 _REPRESENTED_OPERATION_PROOF_VERSION = "represented_epi_schedule_operation_v1"
@@ -1708,8 +1678,7 @@ def _validate_represented_operation_fields(
     if (
         type(ineligibility_reasons) is not tuple
         or any(
-            type(reason) is not str or not reason
-            for reason in ineligibility_reasons
+            type(reason) is not str or not reason for reason in ineligibility_reasons
         )
         or len(set(ineligibility_reasons)) != len(ineligibility_reasons)
     ):
@@ -1792,10 +1761,7 @@ class RepresentedEPIScheduleOperation:
     def represented_affine_gain_certified(self) -> bool:
         """Whether this operation retains complete represented-map evidence."""
 
-        return bool(
-            self._proof_fields_are_intact()
-            and not self.ineligibility_reasons
-        )
+        return bool(self._proof_fields_are_intact() and not self.ineligibility_reasons)
 
     def _proof_fields_are_intact(self) -> bool:
         try:
@@ -1870,23 +1836,18 @@ def _represented_composition_conditions(
     )
     all_flows = all(item.represented_affine_gain_certified for item in flow_operations)
     all_glyphs = all(
-        item.represented_affine_gain_certified
-        for item in glyph_operations
+        item.represented_affine_gain_certified for item in glyph_operations
     )
     all_operations = bool(
         operations
-        and all(
-            item.represented_affine_gain_certified
-            for item in operations
-        )
+        and all(item.represented_affine_gain_certified for item in operations)
     )
     nodes_match = bool(operations and all(item.nodes == nodes for item in operations))
     support_continuity = bool(
         operations
         and all(item.nodes is not None for item in operations)
         and all(
-            left.nodes == right.nodes
-            for left, right in zip(operations, operations[1:])
+            left.nodes == right.nodes for left, right in zip(operations, operations[1:])
         )
     )
     endpoints_complete = bool(
@@ -1950,9 +1911,7 @@ def _represented_composition_stamp(
     for operation in tuple.__iter__(operations):
         if type(operation) is not RepresentedEPIScheduleOperation:
             raise TypeError("composition operation must have the canonical type")
-        operation_stamps.append(
-            _raw_proof_stamp_or_none(operation)
-        )
+        operation_stamps.append(_raw_proof_stamp_or_none(operation))
     return (
         _REPRESENTED_COMPOSITION_PROOF_VERSION,
         structural_proof_signature(nodes),
@@ -2058,10 +2017,7 @@ class ObservedRepresentedEPIScheduleComposition:
         ):
             raise ValueError("represented composition proof fields are inconsistent")
 
-        if (
-            object.__getattribute__(self, "scope")
-            != _REPRESENTED_COMPOSITION_SCOPE
-        ):
+        if object.__getattribute__(self, "scope") != _REPRESENTED_COMPOSITION_SCOPE:
             raise ValueError("represented composition scope is inconsistent")
         if type(self.nodes) is not tuple:
             raise TypeError("composition nodes must be a tuple")
@@ -2076,8 +2032,7 @@ class ObservedRepresentedEPIScheduleComposition:
         if (
             type(self.positive_flow_interval_indices) is not tuple
             or any(
-                type(index) is not int
-                for index in self.positive_flow_interval_indices
+                type(index) is not int for index in self.positive_flow_interval_indices
             )
             or self.positive_flow_interval_indices
             != tuple(sorted(set(self.positive_flow_interval_indices)))
@@ -2089,13 +2044,10 @@ class ObservedRepresentedEPIScheduleComposition:
             raise ValueError(
                 "positive flow indices must be sorted, unique and in range"
             )
-        if (
-            type(self.operations) is not tuple
-            or any(
-                type(operation) is not RepresentedEPIScheduleOperation
-                or not operation._proof_fields_are_intact()
-                for operation in self.operations
-            )
+        if type(self.operations) is not tuple or any(
+            type(operation) is not RepresentedEPIScheduleOperation
+            or not operation._proof_fields_are_intact()
+            for operation in self.operations
         ):
             raise ValueError("composition operations must contain intact proof records")
         if (
@@ -2129,18 +2081,14 @@ class ObservedRepresentedEPIScheduleComposition:
                 "composition factors do not match complete operation evidence"
             )
         expected_metric = (
-            self.operations[0].exact_metric_ray_before
-            if certified
-            else None
+            self.operations[0].exact_metric_ray_before if certified else None
         )
         if self.exact_normalized_metric != expected_metric:
             raise ValueError(
                 "composition metric does not match complete operation evidence"
             )
         expected_gain = (
-            math.prod(expected_factors, start=Fraction(1))
-            if certified
-            else None
+            math.prod(expected_factors, start=Fraction(1)) if certified else None
         )
         if self.exact_energy_gain_upper_bound != expected_gain:
             raise ValueError("composition gain does not match its exact factors")
@@ -2301,14 +2249,10 @@ class OperatorEventExecutionResult:
             if interval.exact_duration > 0
         )
         if self.positive_flow_interval_indices != expected_positive_indices:
-            raise ValueError(
-                "positive flow interval indices do not match the schedule"
-            )
-        if (
-            type(self.final_time) is not float
-            or structural_proof_signature(self.final_time)
-            != structural_proof_signature(self.schedule.end_time)
-        ):
+            raise ValueError("positive flow interval indices do not match the schedule")
+        if type(self.final_time) is not float or structural_proof_signature(
+            self.final_time
+        ) != structural_proof_signature(self.schedule.end_time):
             raise ValueError("final_time does not match the schedule endpoint")
         if type(self.events) is not tuple:
             raise TypeError("events must be a tuple")
@@ -2372,9 +2316,7 @@ class OperatorEventExecutionResult:
                     "flow_interval_evidence must contain canonical runtime records"
                 )
             if not _executed_flow_wrapper_seal_is_intact(evidence):
-                raise ValueError(
-                    "flow interval evidence proof fields are not intact"
-                )
+                raise ValueError("flow interval evidence proof fields are not intact")
             interval = evidence.interval
             if (
                 type(interval) is not StructuralFlowInterval
@@ -2416,9 +2358,7 @@ class OperatorEventExecutionResult:
                 "physical partition indices do not match execution evidence"
             )
         if physical_indices != tuple(sorted(set(physical_indices))):
-            raise ValueError(
-                "physical partition indices must be sorted and unique"
-            )
+            raise ValueError("physical partition indices must be sorted and unique")
         for evidence in self.physical_flow_partition_evidence:
             parent = evidence.partition.parent_interval
             if (
@@ -2521,13 +2461,9 @@ class OperatorEventExecutionResult:
             try:
                 event_matches = _same_structural_value(stage.event, event)
             except Exception as exc:
-                raise ValueError(
-                    "stage evidence event identity is unreadable"
-                ) from exc
+                raise ValueError("stage evidence event identity is unreadable") from exc
             if not event_matches:
-                raise ValueError(
-                    "stage evidence does not match committed event order"
-                )
+                raise ValueError("stage evidence does not match committed event order")
             if event.nodes_processed != len(self.target_nodes):
                 raise ValueError(
                     "committed event target count does not match execution"
@@ -2552,8 +2488,7 @@ class OperatorEventExecutionResult:
                     )
             if event.glyph is Glyph.EN:
                 observation_nodes = tuple(
-                    observation.node
-                    for observation in stage.reception_observations
+                    observation.node for observation in stage.reception_observations
                 )
                 try:
                     reception_targets_match = _same_structural_value(
@@ -2653,9 +2588,7 @@ class OperatorEventExecutionResult:
             return False
         if not self.flow_certification_requested:
             return None
-        regular = {
-            item.interval.index: item for item in self.flow_interval_evidence
-        }
+        regular = {item.interval.index: item for item in self.flow_interval_evidence}
         physical = {
             item.partition.parent_interval.index: item
             for item in self.physical_flow_partition_evidence
@@ -2679,9 +2612,11 @@ class OperatorEventExecutionResult:
             ),
         }[attribute]
         return all(
-            bool(getattr(regular[index], attribute))
-            if index in regular
-            else bool(getattr(physical[index], physical_attribute))
+            (
+                bool(getattr(regular[index], attribute))
+                if index in regular
+                else bool(getattr(physical[index], physical_attribute))
+            )
             for index in self.positive_flow_interval_indices
         )
 
@@ -2761,8 +2696,7 @@ class OperatorEventExecutionResult:
             except Exception:
                 return False
             if (
-                not evidence
-                .represented_affine_gain_bound_at_observed_endpoint_certified
+                not evidence.represented_affine_gain_bound_at_observed_endpoint_certified
             ):
                 return False
         return True
@@ -2922,9 +2856,7 @@ def _prepare_word(
     from .grammar_execution import ValidatedSequence
     from .registry import get_operator_class
 
-    operators = tuple(
-        get_operator_class(name)() for name in schedule.operator_names
-    )
+    operators = tuple(get_operator_class(name)() for name in schedule.operator_names)
     outcome = validate_sequence(
         list(schedule.operator_names),
         context=context,
@@ -3104,8 +3036,7 @@ def _flow_runtime_metadata(
         and "integrate" not in instance_attributes
         and bound_receiver is integrator
         and bound_function is _CANONICAL_DEFAULT_INTEGRATE
-        and _CanonicalDefaultIntegrator.integrate
-        is _CANONICAL_DEFAULT_INTEGRATE
+        and _CanonicalDefaultIntegrator.integrate is _CANONICAL_DEFAULT_INTEGRATE
     )
     graph_mapping = _runtime_graph_mapping(graph)
     extended_entries = _selected_mapping_entries(
@@ -3132,8 +3063,7 @@ def _flow_runtime_metadata(
     )
     gamma_spec = _get_gamma_spec(metadata_graph)
     gamma_is_none = bool(
-        isinstance(gamma_spec, Mapping)
-        and gamma_spec.get("type", "none") == "none"
+        isinstance(gamma_spec, Mapping) and gamma_spec.get("type", "none") == "none"
     )
     return _FlowRuntimeMetadata(
         integrator_name=integrator_name,
@@ -3206,9 +3136,7 @@ def _nodal_flow_capture_graph(
             source, target, data = edge
             key = None
         weight_entries = _selected_mapping_entries(data, ("weight",))
-        attributes = (
-            {"weight": weight_entries[0][1]} if weight_entries else {}
-        )
+        attributes = {"weight": weight_entries[0][1]} if weight_entries else {}
         if layout.multigraph:
             add_edge(
                 capture_graph,
@@ -3383,9 +3311,7 @@ _PRESSURE_REFRESH_DERIVED_GRAPH_KEYS = frozenset(
     }
 )
 
-_INTEGRATOR_MUTABLE_NODE_KEYS = frozenset(
-    (*ALIAS_EPI, *ALIAS_DEPI, *ALIAS_D2EPI)
-)
+_INTEGRATOR_MUTABLE_NODE_KEYS = frozenset((*ALIAS_EPI, *ALIAS_DEPI, *ALIAS_D2EPI))
 _INTEGRATOR_RUNTIME_GRAPH_KEYS = frozenset(
     {
         "_t",
@@ -3483,9 +3409,7 @@ def _edge_state_signature(
 ) -> tuple[Any, ...]:
     """Capture topology and every edge attribute without invoking equality."""
 
-    runtime_layout = (
-        _networkx_runtime_layout(graph) if layout is None else layout
-    )
+    runtime_layout = _networkx_runtime_layout(graph) if layout is None else layout
     if runtime_layout.multigraph:
         edges = tuple(
             (
@@ -3623,9 +3547,7 @@ def _protected_graph_identity_signature(
 ) -> tuple[Any, ...]:
     """Seal protected graph values and their cross-domain alias topology."""
 
-    runtime_layout = (
-        _networkx_runtime_layout(graph) if layout is None else layout
-    )
+    runtime_layout = _networkx_runtime_layout(graph) if layout is None else layout
     cached_view_items = _networkx_cached_view_items(
         graph,
         transient_views=transient_networkx_cached_views,
@@ -3652,9 +3574,7 @@ def _protected_graph_identity_signature(
             tuple(
                 (signature(key), signature(value))
                 for key, value in _runtime_mapping_items(data)
-                if not (
-                    type(key) is str and key in excluded_node_keys
-                )
+                if not (type(key) is str and key in excluded_node_keys)
             ),
         )
         for node, data in runtime_layout.node_data
@@ -3713,8 +3633,7 @@ def _protected_graph_identity_signature(
         or label[4] == "_last_operator_applied"
     )
     factory_records = tuple(
-        (name, signature(value))
-        for name, value in _graph_factory_items(graph)
+        (name, signature(value)) for name, value in _graph_factory_items(graph)
     )
     internal_mapping_records = tuple(
         (structural_proof_signature(label), object_state(value))
@@ -3759,10 +3678,7 @@ def _protected_graph_identity_signature(
         *(data for _node, data in runtime_layout.node_data),
         *(mapping for _node, mapping in runtime_layout.adjacency_inner),
         *(mapping for _node, mapping in runtime_layout.predecessor_inner),
-        *(
-            mapping
-            for _node, _neighbor, mapping in runtime_layout.adjacency_edge_keys
-        ),
+        *(mapping for _node, _neighbor, mapping in runtime_layout.adjacency_edge_keys),
         *(
             mapping
             for _node, _neighbor, mapping in runtime_layout.predecessor_edge_keys
@@ -3870,9 +3786,7 @@ def _run_readonly_graph_observation(
             opaque_references=(graph,),
         )
         if before != after:
-            raise TNFRValueError(
-                f"Event-schedule {label} changed graph state."
-            )
+            raise TNFRValueError(f"Event-schedule {label} changed graph state.")
         return result
     finally:
         _remove_transient_networkx_cached_views(graph, transient_views)
@@ -3889,22 +3803,12 @@ def _canonical_graph_storage_references(
         layout.graph_mapping,
         layout.node_outer,
         layout.adjacency_outer,
-        *(
-            ()
-            if layout.predecessor_outer is None
-            else (layout.predecessor_outer,)
-        ),
+        *(() if layout.predecessor_outer is None else (layout.predecessor_outer,)),
         *(data for _node, data in layout.node_data),
         *(mapping for _node, mapping in layout.adjacency_inner),
         *(mapping for _node, mapping in layout.predecessor_inner),
-        *(
-            mapping
-            for _node, _neighbor, mapping in layout.adjacency_edge_keys
-        ),
-        *(
-            mapping
-            for _node, _neighbor, mapping in layout.predecessor_edge_keys
-        ),
+        *(mapping for _node, _neighbor, mapping in layout.adjacency_edge_keys),
+        *(mapping for _node, _neighbor, mapping in layout.predecessor_edge_keys),
         *(edge[-1] for edge in layout.edges),
     )
 
@@ -3950,11 +3854,7 @@ def _record_guarded_mutation_flow_boundary(graph: nx.Graph) -> None:
     finally:
         _remove_transient_networkx_cached_views(
             graph,
-            tuple(
-                (name, value)
-                for name, value in transient_views
-                if name != "nodes"
-            ),
+            tuple((name, value) for name, value in transient_views if name != "nodes"),
         )
 
 
@@ -4092,9 +3992,7 @@ def _capture_integrator_flow_state(
                 retained_references=retained,
                 opaque_references=(graph, integrator),
                 layout=layout,
-                transient_networkx_cached_views=(
-                    transient_networkx_cached_views
-                ),
+                transient_networkx_cached_views=(transient_networkx_cached_views),
             ),
             "integrator_binding": _integrator_binding_signature(
                 graph,
@@ -4129,21 +4027,17 @@ def _require_integrator_flow_contract(
         )
 
     checks = {
-        "node_support_preserved": before["node_support"]
-        == after["node_support"],
+        "node_support_preserved": before["node_support"] == after["node_support"],
         "capacity_preserved": before["capacity"] == after["capacity"],
         "pressure_preserved": before["pressure"] == after["pressure"],
         "phase_preserved": before["phase"] == after["phase"],
-        "epi_metadata_preserved": before["epi_metadata"]
-        == after["epi_metadata"],
+        "epi_metadata_preserved": before["epi_metadata"] == after["epi_metadata"],
         "protected_nodal_state_preserved": (
-            before["protected_nodal_state"]
-            == after["protected_nodal_state"]
+            before["protected_nodal_state"] == after["protected_nodal_state"]
         ),
         "edge_state_preserved": before["edges"] == after["edges"],
         "graph_configuration_preserved": (
-            before["graph_configuration"]
-            == after["graph_configuration"]
+            before["graph_configuration"] == after["graph_configuration"]
         ),
         "protected_identity_preserved": (
             before["protected_identity"] == after["protected_identity"]
@@ -4173,9 +4067,7 @@ _TYPE_QUALNAME_DESCRIPTOR = type.__dict__["__qualname__"]
 _FUNCTION_MODULE_DESCRIPTOR = FunctionType.__dict__["__module__"]
 _FUNCTION_QUALNAME_DESCRIPTOR = FunctionType.__dict__["__qualname__"]
 _BUILTIN_FUNCTION_MODULE_DESCRIPTOR = BuiltinFunctionType.__dict__["__module__"]
-_BUILTIN_FUNCTION_QUALNAME_DESCRIPTOR = BuiltinFunctionType.__dict__[
-    "__qualname__"
-]
+_BUILTIN_FUNCTION_QUALNAME_DESCRIPTOR = BuiltinFunctionType.__dict__["__qualname__"]
 _METHOD_FUNCTION_DESCRIPTOR = MethodType.__dict__["__func__"]
 _METHOD_RECEIVER_DESCRIPTOR = MethodType.__dict__["__self__"]
 _BUILTIN_METHOD_RECEIVER_DESCRIPTOR = BuiltinMethodType.__dict__["__self__"]
@@ -4538,10 +4430,7 @@ def _pressure_callback_binding_matches(
     callback = entries[0][1] if entries else None
     return bool(
         present is expected_present
-        and (
-            not expected_present
-            or callback is expected_callback
-        )
+        and (not expected_present or callback is expected_callback)
     )
 
 
@@ -4654,8 +4543,7 @@ def _invoke_restricted_pressure_refresh(
             not require_callback_state_preserved
             or callback_state_before == callback_state_after
         ),
-        "node_support_preserved": before["node_support"]
-        == after["node_support"],
+        "node_support_preserved": before["node_support"] == after["node_support"],
         "epi_preserved": before["epi"] == after["epi"],
         "capacity_preserved": before["capacity"] == after["capacity"],
         "edge_state_preserved": before["edges"] == after["edges"],
@@ -4667,12 +4555,10 @@ def _invoke_restricted_pressure_refresh(
             weights_preserved_or_initialized
         ),
         "phase_preserved": before["phase"] == after["phase"],
-        "epi_derivatives_preserved": before["derivatives"]
-        == after["derivatives"],
+        "epi_derivatives_preserved": before["derivatives"] == after["derivatives"],
         "mutation_history_preserved": before["mutation_history"]
         == after["mutation_history"],
-        "glyph_history_preserved": before["glyph_history"]
-        == after["glyph_history"],
+        "glyph_history_preserved": before["glyph_history"] == after["glyph_history"],
         "other_nodal_state_preserved": before["other"] == after["other"],
         "runtime_clock_preserved": before["clock"] == after["clock"],
     }
@@ -4710,9 +4596,7 @@ def _refresh_pressure_boundary(
         boundary_index if boundary_index < segment_count else segment_count - 1
     ]
     boundary_time = (
-        segment.start_time
-        if boundary_index < segment_count
-        else segment.end_time
+        segment.start_time if boundary_index < segment_count else segment.end_time
     )
     exact_time = (
         segment.exact_start_time
@@ -4720,9 +4604,7 @@ def _refresh_pressure_boundary(
         else segment.exact_end_time
     )
     offset = (
-        segment.start_offset
-        if boundary_index < segment_count
-        else segment.end_offset
+        segment.start_offset if boundary_index < segment_count else segment.end_offset
     )
     _require_runtime_clock(
         graph,
@@ -4785,9 +4667,7 @@ def _refresh_pressure_boundary(
         ),
         conductance_preserved=before.conductance == after.conductance,
         edge_state_preserved=checks["edge_state_preserved"],
-        graph_configuration_preserved=checks[
-            "graph_configuration_preserved"
-        ],
+        graph_configuration_preserved=checks["graph_configuration_preserved"],
         dnfr_weights_preserved_or_canonically_initialized=(
             checks["dnfr_weights_preserved_or_canonically_initialized"]
         ),
@@ -4848,9 +4728,7 @@ def _physical_modal_observation(
     if not available:
         reason = "refreshed_pressure_is_not_binary64_pure_epi_diffusion"
     else:
-        from ..physics.structural_diffusion import (
-            diagnose_euler_relaxation_window,
-        )
+        from ..physics.structural_diffusion import diagnose_euler_relaxation_window
 
         try:
             diagnostic = diagnose_euler_relaxation_window(
@@ -4870,13 +4748,9 @@ def _physical_modal_observation(
         dt=segment.duration,
         available=available,
         abstention_reason=reason,
-        target_fraction=(
-            None if diagnostic is None else diagnostic.target_fraction
-        ),
+        target_fraction=(None if diagnostic is None else diagnostic.target_fraction),
         spectral_relative_tolerance=(
-            None
-            if diagnostic is None
-            else diagnostic.spectral_relative_tolerance
+            None if diagnostic is None else diagnostic.spectral_relative_tolerance
         ),
         spectral_zero_threshold=(
             None if diagnostic is None else diagnostic.spectral_zero_threshold
@@ -4905,9 +4779,7 @@ def _physical_modal_observation(
         ),
         modal_steps=None if diagnostic is None else diagnostic.modal_steps,
         policy_window=None if diagnostic is None else diagnostic.policy_window,
-        is_euler_stable=(
-            None if diagnostic is None else diagnostic.is_euler_stable
-        ),
+        is_euler_stable=(None if diagnostic is None else diagnostic.is_euler_stable),
         scope=None if diagnostic is None else diagnostic.scope,
     )
     sealed = replace(
@@ -5042,8 +4914,7 @@ def _require_nested_certificate_identity(
         failures.append("certificate_family")
     if failures:
         raise RuntimeError(
-            "executor-owned EPI certificate identity mismatch: "
-            + ",".join(failures)
+            "executor-owned EPI certificate identity mismatch: " + ",".join(failures)
         )
 
 
@@ -5091,9 +4962,7 @@ def _glyph_certificate_facts(
             pre_flow = certificate.pre_diffusion_certificate
             post_flow = certificate.post_diffusion_certificate
             before = _exact_binary64_vector(certificate.state_before)
-            after = _exact_binary64_vector(
-                certificate.runtime_proposed_state_after
-            )
+            after = _exact_binary64_vector(certificate.runtime_proposed_state_after)
             pre_metric = (
                 None
                 if pre_flow is None
@@ -5110,11 +4979,7 @@ def _glyph_certificate_facts(
                 reason = "pointwise_exact_common_metric_gain_not_certified"
                 if failures:
                     reason += ":" + ",".join(failures)
-            gain = (
-                certificate.exact_common_metric_energy_gain_bound
-                if bridge
-                else None
-            )
+            gain = certificate.exact_common_metric_energy_gain_bound if bridge else None
             return _GlyphCertificateFacts(
                 certificate_kind=kind,
                 certificate=certificate,
@@ -5177,9 +5042,7 @@ def _glyph_certificate_facts(
                     ),
                     intrinsic_common_metric_bridge=bridge,
                     exact_energy_gain_upper_bound=(
-                        jump.exact_quotient_energy_gain_upper_bound
-                        if bridge
-                        else None
+                        jump.exact_quotient_energy_gain_upper_bound if bridge else None
                     ),
                 )
     else:
@@ -5235,9 +5098,7 @@ def _adjacent_flow_checks(
     )
     flow_metric = _normalized_fraction_metric(certificate.exact_metric_weights)
     metric_compatible = bool(
-        flow_metric is not None
-        and metric_ray is not None
-        and flow_metric == metric_ray
+        flow_metric is not None and metric_ray is not None and flow_metric == metric_ray
     )
     return endpoint_continuous, metric_compatible
 
@@ -5300,9 +5161,7 @@ def _finalize_glyph_stage(
     if facts.certificate is not None and not common_metric:
         abstention_reasons.append("glyph_exact_common_metric_bridge_not_certified")
     abstention_reason = (
-        ";".join(dict.fromkeys(abstention_reasons))
-        if abstention_reasons
-        else None
+        ";".join(dict.fromkeys(abstention_reasons)) if abstention_reasons else None
     )
 
     event_index = pending.event.event_index
@@ -5310,12 +5169,8 @@ def _finalize_glyph_stage(
     post_interval = schedule.intervals[event_index + 1]
     pre_positive = pre_interval.exact_duration > 0
     post_positive = post_interval.exact_duration > 0
-    pre_flow = (
-        pre_flow_index.get(pre_interval.index) if pre_positive else None
-    )
-    post_flow = (
-        post_flow_index.get(post_interval.index) if post_positive else None
-    )
+    pre_flow = pre_flow_index.get(pre_interval.index) if pre_positive else None
+    post_flow = post_flow_index.get(post_interval.index) if post_positive else None
     pre_endpoint, pre_metric = _adjacent_flow_checks(
         pre_flow,
         left,
@@ -5361,9 +5216,7 @@ def _finalize_glyph_stage(
         post_flow_endpoint_continuous=post_endpoint,
         pre_flow_metric_compatible=pre_metric,
         post_flow_metric_compatible=post_metric,
-        mutation_decision_observations=(
-            pending.result.mutation_decision_observations
-        ),
+        mutation_decision_observations=(pending.result.mutation_decision_observations),
         reception_observations=pending.result.reception_observations,
     )
     return replace(
@@ -5579,8 +5432,7 @@ def _glyph_composition_operation(
         reasons.append("glyph_event_identity_mismatch")
     if evidence.certificate_abstention_reason is not None:
         reasons.append(
-            "glyph_certificate_abstained:"
-            + evidence.certificate_abstention_reason
+            "glyph_certificate_abstained:" + evidence.certificate_abstention_reason
         )
     if not evidence.endpoint_capture_complete:
         reasons.append("glyph_endpoint_capture_incomplete")
@@ -5642,8 +5494,7 @@ def _compose_observed_represented_epi_schedule(
 
     flow_index = _flow_by_interval(flows)
     physical_index = {
-        item.partition.parent_interval.index: item
-        for item in physical_partitions
+        item.partition.parent_interval.index: item for item in physical_partitions
     }
     if len(physical_index) != len(physical_partitions):
         raise RuntimeError("duplicate physical partition evidence")
@@ -5651,9 +5502,7 @@ def _compose_observed_represented_epi_schedule(
     if len(stage_index) != len(stages):
         raise RuntimeError("duplicate runtime glyph-stage evidence")
     positive_indices = tuple(
-        interval.index
-        for interval in schedule.intervals
-        if interval.exact_duration > 0
+        interval.index for interval in schedule.intervals if interval.exact_duration > 0
     )
     if any(index not in positive_indices for index in flow_index):
         raise RuntimeError("unexpected runtime flow interval evidence")
@@ -5706,9 +5555,7 @@ def _compose_observed_represented_epi_schedule(
     )
     certified = all(passed for _, passed in conditions)
     factors = (
-        _complete_represented_operation_factors(operation_tuple)
-        if certified
-        else ()
+        _complete_represented_operation_factors(operation_tuple) if certified else ()
     )
     metric = operation_tuple[0].exact_metric_ray_before if certified else None
     gain = math.prod(factors, start=Fraction(1)) if certified else None
@@ -5850,9 +5697,7 @@ def _execute_flow_interval(
         integrator,
         integrator_state_before,
         interval_index=interval.index,
-        transient_networkx_cached_views=tuple(
-            transient_networkx_cached_views
-        ),
+        transient_networkx_cached_views=tuple(transient_networkx_cached_views),
     )
     if capture_endpoints:
         right, right_captured = _capture_interval_endpoint(graph)
@@ -5881,9 +5726,7 @@ def _execute_flow_interval(
             substeps=metadata.resolved_substeps,
             gamma_is_none=metadata.gamma_is_none,
             clipping_applied=None,
-            extended_dynamics_requested=(
-                metadata.extended_dynamics_requested
-            ),
+            extended_dynamics_requested=(metadata.extended_dynamics_requested),
         )
         if not residual.exact_nodal_equation_realized:
             raise TNFRValueError(
@@ -5891,9 +5734,7 @@ def _execute_flow_interval(
                 "held-input nodal equation over each flow interval.",
                 context={
                     "interval_index": interval.index,
-                    "nodal_residual": (
-                        residual.exact_nodal_equation_residual
-                    ),
+                    "nodal_residual": (residual.exact_nodal_equation_residual),
                 },
             )
     _record_guarded_mutation_flow_boundary(graph)
@@ -5912,16 +5753,12 @@ def _execute_flow_interval(
             certificate=None,
             abstention_reason=reason,
             integrator_name=metadata.integrator_name,
-            integrator_provenance_certified=(
-                metadata.integrator_provenance_certified
-            ),
+            integrator_provenance_certified=(metadata.integrator_provenance_certified),
             resolved_method=metadata.resolved_method,
             resolved_substeps=metadata.resolved_substeps,
             gamma_is_none=metadata.gamma_is_none,
             clipping_applied=None,
-            extended_dynamics_requested=(
-                metadata.extended_dynamics_requested
-            ),
+            extended_dynamics_requested=(metadata.extended_dynamics_requested),
         )
         return replace(
             evidence,
@@ -5940,9 +5777,7 @@ def _execute_flow_interval(
         interval,
         metadata,
     )
-    from ..physics.runtime_flow_stability import (
-        certify_observed_nodal_flow_interval,
-    )
+    from ..physics.runtime_flow_stability import certify_observed_nodal_flow_interval
 
     certificate = certify_observed_nodal_flow_interval(
         left,
@@ -5957,18 +5792,14 @@ def _execute_flow_interval(
         substeps=metadata.resolved_substeps,
         gamma_is_none=metadata.gamma_is_none,
         clipping_applied=clipping_applied,
-        extended_dynamics_requested=(
-            metadata.extended_dynamics_requested
-        ),
+        extended_dynamics_requested=(metadata.extended_dynamics_requested),
     )
     evidence = ExecutedNodalFlowInterval(
         interval=interval,
         certificate=certificate,
         abstention_reason=None,
         integrator_name=metadata.integrator_name,
-        integrator_provenance_certified=(
-            metadata.integrator_provenance_certified
-        ),
+        integrator_provenance_certified=(metadata.integrator_provenance_certified),
         resolved_method=metadata.resolved_method,
         resolved_substeps=metadata.resolved_substeps,
         gamma_is_none=metadata.gamma_is_none,
@@ -6171,16 +6002,12 @@ def execute_operator_event_schedule(
             materialized_context,
         )
         if preparation_state != _schedule_preparation_state_signature(graph):
-            raise TNFRValueError(
-                "Schedule input materialization changed graph state."
-            )
+            raise TNFRValueError("Schedule input materialization changed graph state.")
     except BaseException as failure:
         transaction.restore_after_failure(graph, failure)
         raise
     try:
-        partition_index = {
-            item.parent_interval.index: item for item in partitions
-        }
+        partition_index = {item.parent_interval.index: item for item in partitions}
         _require_runtime_clock(
             graph,
             schedule.start_time,
@@ -6223,14 +6050,10 @@ def execute_operator_event_schedule(
             compute_delta_nfr = None
         events_committed: list[ExecutedOperatorEvent] = []
         flow_interval_evidence: list[ExecutedNodalFlowInterval] = []
-        physical_partition_evidence: list[
-            ExecutedPressureRefreshedFlowPartition
-        ] = []
+        physical_partition_evidence: list[ExecutedPressureRefreshedFlowPartition] = []
         pending_glyph_stages: list[_PendingGlyphStage] = []
         effective_flow_certification = bool(
-            include_flow_certificates
-            or include_stage_certificates
-            or partitions
+            include_flow_certificates or include_stage_certificates or partitions
         )
         positive_intervals = tuple(
             interval.index
@@ -6245,11 +6068,9 @@ def execute_operator_event_schedule(
     try:
         if positive_intervals:
             integrator_resolution_references: list[Any] = []
-            integrator_resolution_state = (
-                _schedule_preparation_state_signature(
-                    graph,
-                    retained_references=integrator_resolution_references,
-                )
+            integrator_resolution_state = _schedule_preparation_state_signature(
+                graph,
+                retained_references=integrator_resolution_references,
             )
             integrator = _resolve_schedule_integrator_instance(
                 graph,
@@ -6288,9 +6109,7 @@ def execute_operator_event_schedule(
                                 partition,
                                 integrator,
                                 target_nodes=targets,
-                                expected_callback_present=(
-                                    configured_callback_present
-                                ),
+                                expected_callback_present=(configured_callback_present),
                                 expected_callback=configured_compute_delta_nfr,
                                 method=method,
                                 n_jobs=n_jobs,
@@ -6304,9 +6123,7 @@ def execute_operator_event_schedule(
                             target_nodes=targets,
                             method=method,
                             n_jobs=n_jobs,
-                            include_flow_certificate=(
-                                effective_flow_certification
-                            ),
+                            include_flow_certificate=(effective_flow_certification),
                         )
                         if evidence is not None:
                             flow_interval_evidence.append(evidence)
@@ -6339,9 +6156,7 @@ def execute_operator_event_schedule(
                     else execution_word.step(event.word_position)
                 )
                 if include_stage_certificates:
-                    stage_left, stage_left_captured = _capture_interval_endpoint(
-                        graph
-                    )
+                    stage_left, stage_left_captured = _capture_interval_endpoint(graph)
                 else:
                     stage_left, stage_left_captured = None, False
                 stage_kwargs = {
@@ -6462,8 +6277,7 @@ def execute_operator_event_schedule(
             physical_flow_partition_indices=tuple(partition_index),
             physical_flow_partition_evidence=physical_tuple,
             physical_pressure_refresh_callback_invocations=sum(
-                item.pressure_refresh_callback_invocations
-                for item in physical_tuple
+                item.pressure_refresh_callback_invocations for item in physical_tuple
             ),
             stage_pressure_refresh_callback_invocations=(
                 stage_pressure_refresh_callback_invocations

@@ -8,8 +8,8 @@ from types import SimpleNamespace
 
 import networkx as nx
 import pytest
-import tnfr.physics.event_remesh_refinement as refinement_module
 
+import tnfr.physics.event_remesh_refinement as refinement_module
 from tnfr.operators.event_remesh_runtime import execute_event_remesh_cycle
 from tnfr.operators.event_timing import (
     build_operator_event_schedule,
@@ -20,7 +20,6 @@ from tnfr.physics.event_remesh_refinement import (
     observe_event_remesh_three_mesh_refinement,
 )
 from tnfr.types import scalarize_epi
-
 
 _ZHIR_WORD = (
     "emission",
@@ -55,11 +54,14 @@ def _refresh_pure_epi_pressure(graph: nx.Graph) -> None:
                 float(graph.edges[node, neighbour].get("weight", 1.0))
                 for neighbour in neighbours
             )
-            mean = sum(
-                float(graph.edges[node, neighbour].get("weight", 1.0))
-                * scalarize_epi(graph.nodes[neighbour]["EPI"])
-                for neighbour in neighbours
-            ) / total_weight
+            mean = (
+                sum(
+                    float(graph.edges[node, neighbour].get("weight", 1.0))
+                    * scalarize_epi(graph.nodes[neighbour]["EPI"])
+                    for neighbour in neighbours
+                )
+                / total_weight
+            )
             pressure = mean - scalarize_epi(graph.nodes[node]["EPI"])
         graph.nodes[node]["delta_nfr"] = pressure
 
@@ -224,9 +226,7 @@ def test_three_mesh_observation_keeps_finite_claim_boundaries(base_cycles) -> No
     assert modal.common_generator_modal_factors_observed
     assert modal.common_decay_rates == pytest.approx((2.0,))
     assert modal.coarse_composed_modal_factors == pytest.approx((0.25,))
-    assert modal.intermediate_composed_modal_factors == pytest.approx(
-        (0.75**4,)
-    )
+    assert modal.intermediate_composed_modal_factors == pytest.approx((0.75**4,))
     assert modal.fine_composed_modal_factors == pytest.approx((0.875**8,))
     assert modal.coarse_segment_stability_decisions == (True, True)
     assert modal.intermediate_segment_stability_decisions == (True,) * 4
@@ -281,8 +281,7 @@ def test_each_zhir_is_selected_by_event_index_with_multiple_events(
     monkeypatch,
 ) -> None:
     flow_durations = tuple(
-        0.5 if index in (3, 7) else 0.0
-        for index in range(len(_TWO_ZHIR_WORD) + 1)
+        0.5 if index in (3, 7) else 0.0 for index in range(len(_TWO_ZHIR_WORD) + 1)
     )
     schedule = build_operator_event_schedule(
         _TWO_ZHIR_WORD,
@@ -514,9 +513,7 @@ def test_common_integrator_policy_allows_mesh_dependent_resolved_substeps() -> N
     resolved = tuple(
         tuple(
             flow.resolved_substeps
-            for evidence in (
-                cycle.event_execution.physical_flow_partition_evidence
-            )
+            for evidence in (cycle.event_execution.physical_flow_partition_evidence)
             for flow in evidence.segment_flow_evidence
         )
         for cycle in (coarse, intermediate, fine)

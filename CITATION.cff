@@ -2,15 +2,15 @@ cff-version: 1.2.0
 title: "TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation"
 message: "If you use this software, please cite it as below."
 type: software
-version: "0.0.3.5"
-date-released: "2026-06-24"
+version: "0.0.3.6"
+date-released: "2026-09-19"
 authors:
-  - given-names: "F. F. Martinez Gamo"
-    family-names: ""
-    affiliation: ""
+  - given-names: "F. F."
+    family-names: "Martinez Gamo"
     orcid: "https://orcid.org/0009-0007-6116-0613"
 repository-code: "https://github.com/fermga/TNFR-Python-Engine"
-url: "https://pypi.org/project/tnfr/"
+url: "https://github.com/fermga/TNFR-Python-Engine/releases/tag/v0.0.3.6"
+# Project concept DOI (all versions); the URL above identifies this release.
 doi: "10.5281/zenodo.17602860"
 license: "MIT"
 keywords:
@@ -26,8 +26,10 @@ keywords:
   - "nodal equation"
   - "phase synchronization"
 abstract: >-
-  Canonical computational implementation of TNFR - a paradigm shift from 
-  modeling 'things' to modeling coherent patterns that persist through resonance. 
-  This Python package provides the complete TNFR physics engine including the 
-  13 structural operators, unified grammar validation (U1-U6), and the four 
-  canonical structural fields (Φ_s, |∇φ|, K_φ, ξ_C).
+  Python framework for coherent-pattern analysis on graph-coupled networks.
+  The engine implements a nodal evolution interface, 13 registered structural
+  operators, grammar validation and four structural diagnostic fields.
+  Mathematical results have explicit model and representation assumptions;
+  auxiliary constructions and finite tests do not establish physical emergence
+  or a general stability theorem. This release integrates audited nodal research,
+  corrected documentation and reproducible validation tools.

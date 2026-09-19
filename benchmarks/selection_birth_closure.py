@@ -26,10 +26,16 @@ import networkx as nx  # noqa: E402
 import numpy as np  # noqa: E402
 
 from benchmarks.thol_birth_transport import (  # noqa: E402
-    CASES, prepare_birth_selection_source, run_birth_transport_case,
+    CASES,
+    prepare_birth_selection_source,
+    run_birth_transport_case,
 )
 from benchmarks.thol_pressure_feedback import (  # noqa: E402
-    NEXT_STEP, _RecordingIntegrator, _integration_record, _payload, _state,
+    NEXT_STEP,
+    _RecordingIntegrator,
+    _integration_record,
+    _payload,
+    _state,
 )
 from tnfr.alias import get_attr  # noqa: E402
 from tnfr.constants.aliases import ALIAS_DSI, ALIAS_SI  # noqa: E402
@@ -37,16 +43,21 @@ from tnfr.dynamics.dnfr import default_compute_delta_nfr  # noqa: E402
 from tnfr.dynamics.integrators import update_epi_via_nodal_equation  # noqa: E402
 from tnfr.dynamics.runtime import step  # noqa: E402
 from tnfr.dynamics.selectors import (  # noqa: E402
-    AbstractSelector, DefaultGlyphSelector, ParametricGlyphSelector,
+    AbstractSelector,
+    DefaultGlyphSelector,
+    ParametricGlyphSelector,
 )
 from tnfr.operators import apply_glyph  # noqa: E402
 from tnfr.operators.definitions import SelfOrganization  # noqa: E402
-from tnfr.operators.factor_contracts import resolve_runtime_operator_factors  # noqa: E402
+from tnfr.operators.factor_contracts import (
+    resolve_runtime_operator_factors,
+)  # noqa: E402
 from tnfr.operators.grammar_dynamics import validate_candidate  # noqa: E402
 from tnfr.physics.selector_symmetry import derive_selector_symmetry  # noqa: E402
 from tnfr.research.claims import ClaimStatus  # noqa: E402
 from tnfr.research.core_manifests import (  # noqa: E402
-    CoreExperimentManifest, current_git_source_provenance,
+    CoreExperimentManifest,
+    current_git_source_provenance,
 )
 from tnfr.selector import _selector_thresholds  # noqa: E402
 from tnfr.types import Glyph  # noqa: E402
@@ -58,25 +69,47 @@ DISPATCHES = ("none", "primitive", "public")
 
 def _policy(graph, *, preparation=None):
     prefixes = ("SELECTOR_", "GLYPH_", "GRAMMAR_", "THOL_", "UM_", "PHASE_", "VF_")
-    names = ("RANDOM_SEED", "EPI_MIN", "EPI_MAX", "CLIP_MODE", "SORT_NODES",
-             "GRAMMAR", "AL_MAX_LAG", "EN_MAX_LAG", "SI_WEIGHTS",
-             "VALIDATE_OPERATOR_PRECONDITIONS", "GAMMA", "_gamma_spec",
-             "use_extended_dynamics", "INTEGRATOR_METHOD", "DT", "DT_MIN", "DT_MAX",
-             "EPS_DNFR_STABLE")
+    names = (
+        "RANDOM_SEED",
+        "EPI_MIN",
+        "EPI_MAX",
+        "CLIP_MODE",
+        "SORT_NODES",
+        "GRAMMAR",
+        "AL_MAX_LAG",
+        "EN_MAX_LAG",
+        "SI_WEIGHTS",
+        "VALIDATE_OPERATOR_PRECONDITIONS",
+        "GAMMA",
+        "_gamma_spec",
+        "use_extended_dynamics",
+        "INTEGRATOR_METHOD",
+        "DT",
+        "DT_MIN",
+        "DT_MAX",
+        "EPS_DNFR_STABLE",
+    )
     targets = (0,) if preparation is None else preparation["prep_targets"]
-    prefix = ("IL", "OZ") if preparation is None else tuple(
-        row["glyph"] for row in preparation["actual_prefix"]
+    prefix = (
+        ("IL", "OZ")
+        if preparation is None
+        else tuple(row["glyph"] for row in preparation["actual_prefix"])
     )
     return {
         "declared_graph_settings": {
-            key: deepcopy(value) for key, value in graph.graph.items()
+            key: deepcopy(value)
+            for key, value in graph.graph.items()
             if key.startswith(prefixes) or key in names
         },
         "resolved_selector_thresholds": dict(_selector_thresholds(graph)),
         "normalized_pressure_weights": dict(graph.graph["_dnfr_weights"]),
-        "resolved_thol_factors": dict(resolve_runtime_operator_factors(
-            graph.graph.get("GLYPH_FACTORS"), Glyph.THOL, graph.graph,
-        )),
+        "resolved_thol_factors": dict(
+            resolve_runtime_operator_factors(
+                graph.graph.get("GLYPH_FACTORS"),
+                Glyph.THOL,
+                graph.graph,
+            )
+        ),
         "external_target": targets[0] if len(targets) == 1 else None,
         "external_targets": targets,
         "external_prefix": prefix,
@@ -105,17 +138,22 @@ class _RecordingSelector(AbstractSelector):
     def prepare(self, graph, nodes):
         self.delegate.prepare(graph, nodes)
         preselection = self.delegate._preselection
-        self.preparations.append({
-            "state": _state(graph), "nodes": tuple(nodes),
-            "decision_history_before_lag_increment": _decision_history(graph),
-            "sense_index": tuple(float(get_attr(graph.nodes[n], ALIAS_SI, 0.5))
-                                 for n in nodes),
-            "sense_delta": tuple(float(get_attr(graph.nodes[n], ALIAS_DSI, 0.0))
-                                 for n in nodes),
-            "preselection": asdict(preselection),
-            "normalization": dict(graph.graph["_sel_norms"]),
-            "selector_weights": dict(graph.graph.get("_selector_weights", {})),
-        })
+        self.preparations.append(
+            {
+                "state": _state(graph),
+                "nodes": tuple(nodes),
+                "decision_history_before_lag_increment": _decision_history(graph),
+                "sense_index": tuple(
+                    float(get_attr(graph.nodes[n], ALIAS_SI, 0.5)) for n in nodes
+                ),
+                "sense_delta": tuple(
+                    float(get_attr(graph.nodes[n], ALIAS_DSI, 0.0)) for n in nodes
+                ),
+                "preselection": asdict(preselection),
+                "normalization": dict(graph.graph["_sel_norms"]),
+                "selector_weights": dict(graph.graph.get("_selector_weights", {})),
+            }
+        )
 
     def select(self, graph, node):
         result = self.delegate.select(graph, node)
@@ -139,12 +177,16 @@ def _run_prepared_selector(graph, preparation, name):
     selector = _RecordingSelector(SELECTORS[name]())
     integrator = _RecordingIntegrator()
     graph.graph.update(
-        glyph_selector=selector, integrator=integrator, INTEGRATOR_METHOD="euler",
+        glyph_selector=selector,
+        integrator=integrator,
+        INTEGRATOR_METHOD="euler",
     )
     policy = _policy(graph, preparation=preparation)
     step(graph, dt=NEXT_STEP, use_Si=True, apply_glyphs=True)
     return {
-        "selector": name, "preparation": preparation, "policy": policy,
+        "selector": name,
+        "preparation": preparation,
+        "policy": policy,
         "selection_contexts": selector.preparations,
         "actual_selector_proposals": selector.decisions,
         "integration": integrator.records,
@@ -179,10 +221,13 @@ def run_dispatch_case(dispatch, *, refresh):
     consumed = _state(graph)
     update_epi_via_nodal_equation(graph, dt=NEXT_STEP, method="euler")
     return {
-        "dispatch": dispatch, "refresh_before_flow": refresh,
-        "preparation": preparation, "policy": policy,
+        "dispatch": dispatch,
+        "refresh_before_flow": refresh,
+        "preparation": preparation,
+        "policy": policy,
         "admission_allowed": admission.allowed,
-        "before": before, "raw_after_dispatch": raw,
+        "before": before,
+        "raw_after_dispatch": raw,
         "integration": _integration_record(consumed, _state(graph), graph),
         "scope": (
             "Explicit parent intervention and one held-input shared Euler "
@@ -194,20 +239,29 @@ def run_dispatch_case(dispatch, *, refresh):
 def symmetry_examples():
     """Exact necessary-condition examples, not symmetry of the runtime C8."""
     count = 8
-    group = tuple(tuple((offset + sign * i) % count for i in range(count))
-                  for sign in (1, -1) for offset in range(count))
-    support = tuple(tuple((i - j) % count in (1, count - 1)
-                          for j in range(count)) for i in range(count))
+    group = tuple(
+        tuple((offset + sign * i) % count for i in range(count))
+        for sign in (1, -1)
+        for offset in range(count)
+    )
+    support = tuple(
+        tuple((i - j) % count in (1, count - 1) for j in range(count))
+        for i in range(count)
+    )
     # Full state of this abstract example: uniform triad, empty history, no marks.
     # It has no runtime sampling order, hidden phase gauge or selector adapter.
     uniform = ((Fraction(1), Fraction(1), Fraction(0), (), None),) * count
-    marked = tuple((*label[:-1], "prepared-parent" if i == 0 else None)
-                   for i, label in enumerate(uniform))
+    marked = tuple(
+        (*label[:-1], "prepared-parent" if i == 0 else None)
+        for i, label in enumerate(uniform)
+    )
     results = {}
     for name, labels in (("uniform_unmarked", uniform), ("marked_parent", marked)):
         result = derive_selector_symmetry(
-            state_labels=labels, relation_labels=support,
-            permutations=group, candidates=tuple(range(count)),
+            state_labels=labels,
+            relation_labels=support,
+            permutations=group,
+            candidates=tuple(range(count)),
         )
         results[name] = {
             **asdict(result),
@@ -222,8 +276,11 @@ def symmetry_examples():
 def run_study():
     return {
         "selectors": [run_selector_case(name) for name in SELECTORS],
-        "dispatch_controls": [run_dispatch_case(dispatch, refresh=refresh)
-                              for dispatch in DISPATCHES for refresh in (False, True)],
+        "dispatch_controls": [
+            run_dispatch_case(dispatch, refresh=refresh)
+            for dispatch in DISPATCHES
+            for refresh in (False, True)
+        ],
         "transport_controls": [run_birth_transport_case(case) for case in CASES],
         "detached_symmetry_examples": symmetry_examples(),
         "limitations": (
@@ -238,30 +295,51 @@ def run_study():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=(
-        ROOT / "artifacts/research/selection_birth_closure_2026_09_18.json"
-    ))
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=(ROOT / "artifacts/research/selection_birth_closure_2026_09_18.json"),
+    )
     args = parser.parse_args()
     scope = (
-        "src/tnfr", "benchmarks/selection_birth_closure.py",
-        "benchmarks/thol_birth_transport.py", "benchmarks/thol_pressure_feedback.py",
+        "src/tnfr",
+        "benchmarks/selection_birth_closure.py",
+        "benchmarks/thol_birth_transport.py",
+        "benchmarks/thol_pressure_feedback.py",
         "benchmarks/capacity_localization.py",
     )
     provenance = current_git_source_provenance(ROOT, scope)
     sha, dirty, digest = provenance
     manifest = CoreExperimentManifest(
-        claim_id="O1.b-O3.a-selection-birth-closure-audit", git_sha=sha,
-        source_dirty=dirty, dirty_source_hash=digest,
-        versions={"python": platform.python_version(), "networkx": nx.__version__,
-                  "numpy": np.__version__},
+        claim_id="O1.b-O3.a-selection-birth-closure-audit",
+        git_sha=sha,
+        source_dirty=dirty,
+        dirty_source_hash=digest,
+        versions={
+            "python": platform.python_version(),
+            "networkx": nx.__version__,
+            "numpy": np.__version__,
+        },
         graph_construction="Existing marked causal C8 checkerboard preparation",
         capacity_specification="Unit preparation; unchanged operator factors",
         solver="Shared Euler; recorded held or refreshed pressure",
-        timestep=NEXT_STEP, seed=17, result_status=ClaimStatus.MEASURED,
+        timestep=NEXT_STEP,
+        seed=17,
+        result_status=ClaimStatus.MEASURED,
         operator_sequence=("IL", "OZ", "branch-specific recorded continuation"),
-        telemetry=("actual proposals and commits", "birth/link support", "consumed pressure"),
-        controls=("no THOL", "primitive versus public", "held versus refreshed",
-                  "disabled links", "stale sample"), artifacts=(str(args.output),),
+        telemetry=(
+            "actual proposals and commits",
+            "birth/link support",
+            "consumed pressure",
+        ),
+        controls=(
+            "no THOL",
+            "primitive versus public",
+            "held versus refreshed",
+            "disabled links",
+            "stale sample",
+        ),
+        artifacts=(str(args.output),),
     )
     manifest.validate_for_admission()
     report = {"manifest": manifest.to_dict(), "source_scope": scope, **run_study()}

@@ -46,18 +46,23 @@ except ImportError:  # pragma: no cover - handled upstream
     HAS_SPECTRAL = False
 
 try:
-    from ..utils.cache import CacheLevel, _compute_dependency_hash, cache_tnfr_computation
+    from ..utils.cache import (
+        CacheLevel,
+        _compute_dependency_hash,
+        cache_tnfr_computation,
+    )
 
     _CORE_CACHE_AVAILABLE = True
 except ImportError:  # pragma: no cover - cache infra optional in some builds
     _CORE_CACHE_AVAILABLE = False
+
+from ..constants.canonical import PI  # π ≈ 3.1416 (structural scale)
 
 # Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
 from ..constants.operational import (
     FFT_OPT_SEQUENTIAL_IMPROVEMENT_CANONICAL,
     OPT_ORCH_ARITHMETIC_BOOST_CANONICAL,
 )
-from ..constants.canonical import PI  # π ≈ 3.1416 (structural scale)
 
 try:
     from .multi_modal_cache import (
@@ -316,9 +321,11 @@ class FFTCacheCoordinator:
             return self._unified_cache.compute_graph_signature(G)
         graph_state = (
             tuple(G.nodes(data=True)),
-            tuple(G.edges(keys=True, data=True))
-            if G.is_multigraph()
-            else tuple(G.edges(data=True)),
+            (
+                tuple(G.edges(keys=True, data=True))
+                if G.is_multigraph()
+                else tuple(G.edges(data=True))
+            ),
             dict(G.graph),
         )
         return cache_signature_digest(graph_state)

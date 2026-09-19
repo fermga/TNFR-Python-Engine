@@ -12,9 +12,7 @@ from tnfr.node import NodeNX
 from tnfr.operators import _op_EN, get_glyph_factors
 from tnfr.operators.definitions import Reception
 from tnfr.operators.network_stage import execute_neighbor_stage
-from tnfr.physics.reception_realization import (
-    certify_reception_epi_realization,
-)
+from tnfr.physics.reception_realization import certify_reception_epi_realization
 from tnfr.types import serialize_bepi
 
 
@@ -25,9 +23,7 @@ def _state(graph, epi, frequency=1.0):
     else:
         frequencies = {node: frequency for node in graph}
     for node in graph:
-        graph.nodes[node].update(
-            EPI=values[node], nu_f=frequencies[node], theta=0.0
-        )
+        graph.nodes[node].update(EPI=values[node], nu_f=frequencies[node], theta=0.0)
     return graph
 
 
@@ -517,14 +513,10 @@ def test_empty_neighbor_and_directed_support_are_rejected():
     isolated = nx.Graph()
     isolated.add_node("only", EPI=0.0, nu_f=1.0, theta=0.0)
     with pytest.raises(ValueError, match="at least two nodes|connected"):
-        certify_reception_epi_realization(
-            isolated, "only", fixed_support_declared=True
-        )
+        certify_reception_epi_realization(isolated, "only", fixed_support_declared=True)
 
     directed = nx.DiGraph()
     directed.add_edge("a", "b", weight=1.0)
     _state(directed, {"a": 0.0, "b": 1.0})
     with pytest.raises(ValueError, match="undirected"):
-        certify_reception_epi_realization(
-            directed, "a", fixed_support_declared=True
-        )
+        certify_reception_epi_realization(directed, "a", fixed_support_declared=True)

@@ -38,7 +38,11 @@ def _fake_runner_summary() -> Dict[str, Any]:
                 "success": True,
                 "partition_id": "p0",
                 "telemetry": {"delta_c": 0.15, "delta_phi_s": -0.02, "delta_si": 0.04},
-                "telemetry_deltas": {"delta_c": 0.15, "delta_phi_s": -0.02, "delta_si": 0.04},
+                "telemetry_deltas": {
+                    "delta_c": 0.15,
+                    "delta_phi_s": -0.02,
+                    "delta_si": 0.04,
+                },
                 "engine": {
                     "validation": {
                         "passed": True,

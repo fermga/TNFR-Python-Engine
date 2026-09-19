@@ -26,7 +26,7 @@ explicitly set requested node attributes.
 
 References
 ----------
-- ``docs/STRUCTURAL_INTERFACE_THEORY_PLAN.md`` — roadmap and acceptance criteria
+- ``theory/research/FIVE_STAGE_EXECUTION_PLAN.md`` — roadmap and acceptance criteria
 - ``src/tnfr/validation/phase_gate.py`` — low-level U3/tetrad diagnostics
 - AGENTS.md §"Telemetry & Structural Field Tetrad"
 """

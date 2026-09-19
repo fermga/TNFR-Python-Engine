@@ -64,8 +64,10 @@ def main() -> int:
     print()
     print(f"  all primes match: {all_ok}")
     print(f"  claim status    : {ClaimStatus.DERIVED.value} + measured")
-    print(f"  circularity     : {audit.verdict.value} "
-          f"(discovery-claim permitted: {audit.permits_discovery_claim})")
+    print(
+        f"  circularity     : {audit.verdict.value} "
+        f"(discovery-claim permitted: {audit.permits_discovery_claim})"
+    )
     print(f"  input bits (max): {manifest.input_bits} (poly(p) = exp(log2 p))")
     return 0 if all_ok else 1
 

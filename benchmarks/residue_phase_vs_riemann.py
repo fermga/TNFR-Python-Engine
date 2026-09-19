@@ -115,9 +115,23 @@ def main() -> None:
     if _HAVE_MP:
         gamma = [float(mp.zetazero(n + 1).imag) for n in range(len(primes))]
     else:
-        gamma = [14.1347, 21.0220, 25.0109, 30.4249, 32.9351, 37.5862, 40.9187,
-                 43.3271, 48.0052, 49.7738, 52.9703, 56.4462, 59.3470, 60.8318,
-                 65.1125][: len(primes)]
+        gamma = [
+            14.1347,
+            21.0220,
+            25.0109,
+            30.4249,
+            32.9351,
+            37.5862,
+            40.9187,
+            43.3271,
+            48.0052,
+            49.7738,
+            52.9703,
+            56.4462,
+            59.3470,
+            60.8318,
+            65.1125,
+        ][: len(primes)]
 
     r_align = float(np.corrcoef(max_im, gamma)[0, 1])
     im_decreasing = all(max_im[i] > max_im[i + 1] for i in range(len(max_im) - 1))
@@ -125,10 +139,14 @@ def main() -> None:
 
     print()
     print(f"F-GAUSS  : max|Im| == sqrt(p)/(p-1) for all p ?  {f_gauss}")
-    print(f"F-TREND  : residue content decreasing {im_decreasing} | "
-          f"gamma_n increasing {gamma_increasing}  (OPPOSITE)")
-    print(f"F-ALIGN  : Pearson(max|Im|(p_n), gamma_n) = {r_align:+.4f}  "
-          f"(need > +0.5 for Riemann)")
+    print(
+        f"F-TREND  : residue content decreasing {im_decreasing} | "
+        f"gamma_n increasing {gamma_increasing}  (OPPOSITE)"
+    )
+    print(
+        f"F-ALIGN  : Pearson(max|Im|(p_n), gamma_n) = {r_align:+.4f}  "
+        f"(need > +0.5 for Riemann)"
+    )
     print()
 
     if f_gauss and r_align < 0.5 and im_decreasing and gamma_increasing:

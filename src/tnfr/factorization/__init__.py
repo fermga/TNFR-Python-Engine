@@ -1,14 +1,13 @@
-"""TNFR canonical factorization entry points.
+"""Optional entry points for the experimental spectral factorization lab.
 
-This module exposes ``factorize`` as the supported interface for Paley-based
-spectral factorizations. It wraps :class:`tnfr_factorization.spectral_paley.SpectralPaleyFactorizer`
-so that downstream code always benefits from the official grammar validator and
-self-optimization engines wired in the factorization lab.
+The wrapper returns lab candidates, arithmetic telemetry and configured
+acceptance reports. These are not a general factorization theorem or evidence
+that factors emerge autonomously from the nodal equation. Grammar validation
+of a proposed word does not verify its execution or arithmetic divisibility.
 
-The ``tnfr_factorization`` external package is an **optional** dependency.
-Importing this module always succeeds; errors are deferred until a function
-is actually called without the dependency installed.
-"""
+The ``tnfr_factorization`` package is optional; a source checkout can load the
+sibling ``factorization-lab`` directory. Missing dependencies are reported when
+the factorizer is first requested."""
 
 from __future__ import annotations
 
@@ -82,27 +81,33 @@ def factorize(
     trace_certificates: bool = False,
     certificate_dir: Path | None = None,
 ) -> Any:
-    """Run canonical Paley spectral factorization.
+    """Run the experimental lab analysis and return its full result.
 
     Parameters
     ----------
     n:
-        Composite candidate. Must be ``> 1``.
+        Integer candidate greater than one.
     modulus:
-        Optional Paley modulus override. When omitted the factorizer derives
-        the closest admissible modulus automatically.
+        Optional graph modulus. The automatic route chooses an integer at least
+        n and 5 that is 1 modulo 4; it does not require a prime modulus.
     trace_certificates:
-        If ``True`` the factorizer emits operator certificates that already
-        include U1-U6 grammar validation metadata.
+        Emit analysis records with proposed operator words and grammar metadata.
+        These records alone certify neither operator execution nor factors.
     certificate_dir:
-        Optional directory for certificate emission.
+        Optional directory for the analysis records.
 
     Returns
     -------
     SpectralAnalysisResult
-        Complete spectral telemetry together with candidate factors and
-        optimization metadata.
-    """
+        Spectral proxies, arithmetic telemetry, candidates and heuristic reports.
+        Check ``1 < d < n and n % d == 0`` for every claimed proper factor.
+
+    Notes
+    -----
+    This wrapper reuses one factorizer with its class default node cap. It has
+    ``trace_certificates`` rather than the lab wrapper's ``trace`` argument and
+    no ``pure`` argument. ``TNFR_PURE_MODE`` selects a partial heuristic policy,
+    not an arithmetic-free execution; see ``factorization-lab/README.md``."""
 
     factorizer = _get_factorizer()
     return factorizer.analyze(

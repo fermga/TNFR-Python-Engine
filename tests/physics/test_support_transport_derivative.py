@@ -115,3 +115,70 @@ def test_rates_are_explicit_ordered_coefficients_not_a_claim_dictionary():
         observe_support_transport_derivative(
             observe_support_transport(_graph()), conductance_rates={"certified": True}
         )
+
+
+def test_reordering_edges_and_rates_together_preserves_the_complete_derivative():
+    source = observe_support_transport(_graph())
+    rates = (Q(1, 2), Q(1, 2), Q(-1, 4), Q(-1, 4))
+    expected = observe_support_transport_derivative(source, conductance_rates=rates)
+    reordered = replace(
+        source,
+        conductance=tuple(reversed(source.conductance)),
+        rate=(0, 0, 0),
+        epi_gradient=(0, 0, 0),
+        energy_rate=0,
+    )
+    actual = observe_support_transport_derivative(
+        reordered, conductance_rates=tuple(reversed(rates))
+    )
+    assert actual == expected
+    assert actual.source == source and actual.conductance_rates == rates
+    assert actual.geometry_gradient_rate != (0, 0, 0)
+    assert actual.nodal_work == source.energy_rate
+
+
+def test_authoritative_iterables_and_edge_entries_are_materialized_once():
+    source = observe_support_transport(_graph())
+    rates = (Q(1, 2), Q(1, 2), Q(-1, 4), Q(-1, 4))
+    expected = observe_support_transport_derivative(source, conductance_rates=rates)
+    iterable_snapshot = replace(
+        source,
+        nodes=iter(source.nodes),
+        conductance=(iter(edge) for edge in reversed(source.conductance)),
+        support_neighbors=(iter(row) for row in source.support_neighbors),
+        epi=iter(source.epi),
+        capacity=iter(source.capacity),
+        stored_pressure=iter(source.stored_pressure),
+    )
+    assert (
+        observe_support_transport_derivative(
+            iterable_snapshot, conductance_rates=iter(reversed(rates))
+        )
+        == expected
+    )
+
+
+def test_omitted_edge_rates_preserve_the_explicit_zero_derivative():
+    source = observe_support_transport(_graph())
+    expected = observe_support_transport_derivative(
+        source, conductance_rates=(0,) * len(source.conductance)
+    )
+    iterable_snapshot = replace(
+        source, conductance=(iter(edge) for edge in reversed(source.conductance))
+    )
+    assert observe_support_transport_derivative(iterable_snapshot) == expected
+    assert expected.geometry_gradient_rate == (0, 0, 0)
+    assert expected.conductance_work == 0
+
+
+@pytest.mark.parametrize("container", [set, frozenset, dict.fromkeys])
+def test_unordered_edges_cannot_define_positional_rate_association(container):
+    source = observe_support_transport(_graph())
+    unordered = replace(source, conductance=container(source.conductance))
+    with pytest.raises(TypeError, match="conductance must be an ordered iterable"):
+        observe_support_transport_derivative(unordered, conductance_rates=(0,) * 4)
+
+
+def test_invalid_snapshot_retains_the_explicit_type_contract():
+    with pytest.raises(TypeError, match="state must be a SupportTransportSnapshot"):
+        observe_support_transport_derivative(None)

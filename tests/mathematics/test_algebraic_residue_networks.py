@@ -56,8 +56,9 @@ def test_i_squared_is_minus_one(p):
 
 @pytest.mark.parametrize("p", [3, 5, 7, 11, 13])
 def test_unit_count_matches_norm_criterion(p):
-    units = [e for e in arn.gaussian_elements(p)
-             if e != (0, 0) and gaussian_is_unit(e, p)]
+    units = [
+        e for e in arn.gaussian_elements(p) if e != (0, 0) and gaussian_is_unit(e, p)
+    ]
     if decomposition_type(p) == "inert":
         # Z[i]/(p) is the field F_{p^2}: every non-zero element is a unit
         assert len(units) == p * p - 1
@@ -105,10 +106,8 @@ def test_separation_is_k_sensitive(k):
 
 def test_inert_matches_finite_field_f_p_squared():
     # an inert p gives Z[i]/(p) = F_{p^2}: its k=2 count equals the F_{p^2} one
-    from tnfr.mathematics.finite_fields import (
-        FiniteField,
-        distinct_period_count,
-    )
+    from tnfr.mathematics.finite_fields import FiniteField, distinct_period_count
+
     for p in (3, 7, 11):
         field_count = distinct_period_count(FiniteField(p, 2), 2)
         gaussian_count = gaussian_cayley_spectrum_count(p, 2, units_only=True)

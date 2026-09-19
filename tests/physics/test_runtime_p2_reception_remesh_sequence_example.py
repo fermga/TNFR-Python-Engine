@@ -11,7 +11,6 @@ import pytest
 import tnfr.physics as physics
 import tnfr.physics.runtime_p2_reception_remesh_sequence as sequence_module
 
-
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE_PATH = (
     REPOSITORY_ROOT
@@ -45,8 +44,8 @@ def test_module_stub_and_facade_expose_the_sequence_api() -> None:
         "certify_executed_p2_half_reception_remesh_sequence",
     }
     assert set(sequence_module.__all__) == expected
-    stub = Path(sequence_module.__file__).with_suffix(".pyi").read_text(
-        encoding="utf-8"
+    stub = (
+        Path(sequence_module.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
     )
     assert "class ExecutedP2HalfReceptionRemeshSequenceCertificate" in stub
     assert "def certify_executed_p2_half_reception_remesh_sequence" in stub

@@ -1,17 +1,33 @@
 """Exact and failed partition closure for the pure EPI nodal channel."""
 
+import pickle
+
 import networkx as nx
 import numpy as np
 import pytest
 
+from tnfr.mathematics.epi import BEPIElement
 from tnfr.physics import certify_epi_coarse_graining
 from tnfr.physics.spectral_projectors import matrix_exponential
+from tnfr.types import ensure_bepi, serialize_bepi
 
 
 def _state(graph, epi, frequency):
     for node, value, nu_f in zip(graph, epi, frequency):
         graph.nodes[node].update(EPI=float(value), nu_f=float(nu_f), theta=0.0)
     return graph
+
+
+def _graph_state_bytes(graph):
+    """Capture state and ordering independently of lazy NetworkX view caches."""
+    return pickle.dumps(
+        (
+            graph.graph,
+            tuple(graph.nodes(data=True)),
+            tuple(graph.edges(data=True)),
+            tuple((node, tuple(graph.neighbors(node))) for node in graph),
+        )
+    )
 
 
 def test_equitable_path_partition_closes_the_nodal_equation_numerically():
@@ -67,9 +83,7 @@ def test_coarse_and_nested_morphism_use_one_relative_tolerance_semantics():
             )
     graph = _state(graph, np.arange(4.0), [1e6] * 4)
 
-    result = certify_epi_coarse_graining(
-        graph, [(0, 1), (2, 3)], tolerance=1e-3
-    )
+    result = certify_epi_coarse_graining(graph, [(0, 1), (2, 3)], tolerance=1e-3)
 
     # Absolute defects scale with the global nodal rate and exceed 1e-3, but
     # both identities have relative defects below the declared tolerance.
@@ -110,16 +124,12 @@ def test_partition_validation_rejects_nonquotients(partition, message):
         certify_epi_coarse_graining(graph, partition)
 
 
-@pytest.mark.parametrize(
-    "boolean", [True, False, np.bool_(True), np.bool_(False)]
-)
+@pytest.mark.parametrize("boolean", [True, False, np.bool_(True), np.bool_(False)])
 def test_coarse_graining_rejects_boolean_tolerance(boolean):
     graph = _state(nx.path_graph(4), np.arange(4.0), [1.0] * 4)
 
     with pytest.raises(ValueError, match="tolerance.*not boolean"):
-        certify_epi_coarse_graining(
-            graph, [(0, 3), (1, 2)], tolerance=boolean
-        )
+        certify_epi_coarse_graining(graph, [(0, 3), (1, 2)], tolerance=boolean)
 
 
 @pytest.mark.parametrize("attribute", ["EPI", "nu_f"])
@@ -149,3 +159,43 @@ def test_coarse_graining_rejects_disconnected_macro_quotient():
             graph,
             [(0, 2), (1, 3), (4, 6), (5, 7)],
         )
+
+
+@pytest.mark.parametrize("serialized", [False, True])
+def test_uniform_real_bepi_preserves_signed_quotient_and_graph(serialized):
+    graph = _state(nx.cycle_graph(4), [-2.0, 1.0, -4.0, 3.0], [1.0] * 4)
+    partition = ((0, 2), (1, 3))
+    scalar_result = certify_epi_coarse_graining(graph, partition)
+    for node in graph:
+        embedded = ensure_bepi(graph.nodes[node]["EPI"])
+        graph.nodes[node]["EPI"] = serialize_bepi(embedded) if serialized else embedded
+    before = _graph_state_bytes(graph)
+
+    result = certify_epi_coarse_graining(graph, partition)
+
+    np.testing.assert_array_equal(result.macro_epi, [-3.0, 2.0])
+    np.testing.assert_array_equal(result.macro_epi, scalar_result.macro_epi)
+    np.testing.assert_array_equal(result.micro_generator, scalar_result.micro_generator)
+    assert result.nodal_closure_within_tolerance
+    assert _graph_state_bytes(graph) == before
+
+
+@pytest.mark.parametrize("serialized", [False, True])
+@pytest.mark.parametrize(
+    "continuous,discrete",
+    [([1j, 1j], [1j]), ([-1.0, 1.0], [-1.0]), ([-1.0, -1.0], [1.0])],
+)
+def test_scalar_quotient_rejects_richer_bepi_without_magnitude_projection(
+    continuous, discrete, serialized
+):
+    graph = _state(nx.cycle_graph(4), [0.0] * 4, [1.0] * 4)
+    value = BEPIElement(continuous, discrete, [0.0, 1.0])
+    # Each richer form has the same legacy magnitude but no signed scalar.
+    assert float(value) == 1.0 and value.real_scalar_embedding() is None
+    graph.nodes[0]["EPI"] = serialize_bepi(value) if serialized else value
+    before = _graph_state_bytes(graph)
+
+    with pytest.raises(ValueError, match="finite uniform-real EPI"):
+        certify_epi_coarse_graining(graph, ((0, 2), (1, 3)))
+
+    assert _graph_state_bytes(graph) == before

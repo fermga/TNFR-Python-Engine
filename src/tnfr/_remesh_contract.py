@@ -75,9 +75,7 @@ def remesh_history_maxlen(
     )
     delay = max(global_delay, local_delay)
     if delay > (sys.maxsize - 5) // 2:
-        raise TNFRValueError(
-            "REMESH delays exceed the materializable history capacity"
-        )
+        raise TNFRValueError("REMESH delays exceed the materializable history capacity")
     return max(2 * delay + 5, 64)
 
 
@@ -134,13 +132,10 @@ def materialize_positive_diagonal_metric(
             support = frozenset(keys)
             node_support = frozenset(node_order)
         except (TypeError, ValueError) as exc:
-            raise TNFRValueError(
-                "metric_weights must have hashable node keys"
-            ) from exc
+            raise TNFRValueError("metric_weights must have hashable node keys") from exc
         if len(keys) != len(node_order) or support != node_support:
             raise TNFRValueError(
-                "metric_weights support must equal the current graph node "
-                "support"
+                "metric_weights support must equal the current graph node " "support"
             )
         values = tuple(raw[node] for node in node_order)
     elif isinstance(raw, Sequence) and not isinstance(

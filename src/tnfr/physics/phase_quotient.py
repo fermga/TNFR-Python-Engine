@@ -40,10 +40,7 @@ import numpy as np
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_THETA, ALIAS_VF
 from ..utils import angle_diff
-from .operator_quotient import (
-    OperatorQuotientCertificate,
-    certify_operator_quotient,
-)
+from .operator_quotient import OperatorQuotientCertificate, certify_operator_quotient
 from .structural_morphism import _build_reversible_partition_geometry
 
 __all__ = [
@@ -63,6 +60,14 @@ class PhaseNodalCoarseGrainingCertificate:
     ``macro_conductance`` belongs to the weighted pairwise quotient;
     ``macro_neighbor_support`` lists the block indices used by the canonical
     unweighted circular quotient.
+
+    ``block_constant_capacity`` requires exact equality of the represented
+    capacities within each fiber. Matching the separately rounded macro
+    capacity is a numerical check, exposed by ``macro_capacity_*`` fields.
+    Pairwise matrix and sampled callable decisions retain their declared
+    tolerance; they are not exact arithmetic certificates. The legacy
+    ``circular_means_defined`` field means that all measured resultants exceed
+    the numerical margin, not that a smaller nonzero resultant is undefined.
     """
 
     nodes: tuple[Any, ...]
@@ -101,6 +106,9 @@ class PhaseNodalCoarseGrainingCertificate:
     no_internal_fiber_edges: bool
     uniform_active_macro_multiplicity: bool
     block_constant_capacity: bool
+    macro_capacity_residual: float
+    relative_macro_capacity_residual: float
+    macro_capacity_within_tolerance: bool
     canonical_lift_hypotheses_satisfied: bool
     canonical_lift_residual: float
     relative_canonical_lift_residual: float
@@ -153,9 +161,7 @@ def _finite_product(left: np.ndarray, right: np.ndarray, name: str) -> np.ndarra
     return result
 
 
-def _finite_difference(
-    left: np.ndarray, right: np.ndarray, name: str
-) -> np.ndarray:
+def _finite_difference(left: np.ndarray, right: np.ndarray, name: str) -> np.ndarray:
     """Subtract finite arrays or reject an unrepresentable result."""
     try:
         with np.errstate(over="raise", invalid="raise"):
@@ -279,6 +285,12 @@ def certify_phase_nodal_coarse_graining(
     refute global projected autonomy.  A zero sampled residual never promotes
     the nonlinear canonical map to a global theorem.
 
+    The capacity premise uses exact represented equality within each block;
+    numerical tolerance cannot replace it. Macro-capacity and phase-rate
+    residuals are reported separately as floating-point checks. A small
+    nonzero phasor resultant may fail the declared numerical margin without
+    being a mathematical circular-mean singularity.
+
     The graph must have fixed symmetric nonnegative conductance, positive
     capacity, and a strict reducing partition.  The reversible projection uses
     the conductance metric ``d_i / nu_f_i``.  The canonical phasor mean instead
@@ -357,9 +369,7 @@ def certify_phase_nodal_coarse_graining(
         for node in nodes
     )
     blocks = quotient.blocks
-    block_indices = tuple(
-        tuple(node_index[node] for node in block) for block in blocks
-    )
+    block_indices = tuple(tuple(node_index[node] for node in block) for block in blocks)
     block_of_list = [0] * len(nodes)
     for block_index, indices in enumerate(block_indices):
         for index in indices:
@@ -377,10 +387,7 @@ def certify_phase_nodal_coarse_graining(
     # pairwise conductance but remains a canonical phase neighbor.  Parallel
     # edges contribute one neighbor, matching ``graph.neighbors``.
     macro_support = tuple(
-        tuple(
-            int(target)
-            for target in np.flatnonzero(multiplicity[source] > 0.0)
-        )
+        tuple(int(target) for target in np.flatnonzero(multiplicity[source] > 0.0))
         for source in range(len(blocks))
     )
 
@@ -477,13 +484,11 @@ def certify_phase_nodal_coarse_graining(
         micro_rate,
         "canonical phase rate projection",
     )
-    sampled_projection_residual, relative_sampled_projection = (
-        _relative_diagnostic(
-            projected_micro_rate,
-            macro_rate,
-            matrix=False,
-            name="canonical sampled projection residual",
-        )
+    sampled_projection_residual, relative_sampled_projection = _relative_diagnostic(
+        projected_micro_rate,
+        macro_rate,
+        matrix=False,
+        name="canonical sampled projection residual",
     )
     lifted_macro_rate = _finite_product(
         lift,
@@ -520,25 +525,29 @@ def certify_phase_nodal_coarse_graining(
     )
 
     block_constant_capacity = True
+    macro_capacity_residual = 0.0
+    relative_macro_capacity_residual = 0.0
     macro_frequency = np.asarray(quotient.macro_frequency, dtype=float)
     for block_index, indices in enumerate(block_indices):
         block_frequency = frequencies[np.asarray(indices, dtype=int)]
+        # The lifted-subspace theorem requires an algebraic premise. A small
+        # within-fiber capacity difference still produces unequal fine rates.
+        block_constant_capacity = block_constant_capacity and bool(
+            np.all(block_frequency == block_frequency[0])
+        )
         scale = max(
             1.0,
             abs(float(macro_frequency[block_index])),
             float(np.max(np.abs(block_frequency))),
         )
-        if (
-            float(
-                np.max(
-                    np.abs(block_frequency - macro_frequency[block_index])
-                )
-            )
-            / scale
-            > tolerance_value
-        ):
-            block_constant_capacity = False
-            break
+        residual = float(np.max(np.abs(block_frequency - macro_frequency[block_index])))
+        macro_capacity_residual = max(macro_capacity_residual, residual)
+        relative_macro_capacity_residual = max(
+            relative_macro_capacity_residual, residual / scale
+        )
+    macro_capacity_within_tolerance = (
+        relative_macro_capacity_residual <= tolerance_value
+    )
 
     lift_hypotheses = bool(
         fixed_branch
@@ -548,10 +557,9 @@ def certify_phase_nodal_coarse_graining(
         and no_internal
         and uniform_active
         and block_constant_capacity
+        and macro_capacity_within_tolerance
     )
-    lift_certified = bool(
-        lift_hypotheses and relative_lift_residual <= tolerance_value
-    )
+    lift_certified = bool(lift_hypotheses and relative_lift_residual <= tolerance_value)
     sampled_projected = (
         relative_sampled_projection <= tolerance_value
         if circular_means_defined
@@ -572,10 +580,11 @@ def certify_phase_nodal_coarse_graining(
             "semicircle, so a fixed-wrap quotient is not certified"
         )
     elif not circular_means_defined:
-        support_status = "abstained_circular_singularity"
+        support_status = "abstained_circular_margin"
         claim_status = (
-            "ABSTAINED: at least one neighbor phasor resultant is numerically "
-            "zero, where the circular mean has no differentiable direction"
+            "ABSTAINED: at least one neighbor phasor resultant does not exceed "
+            "the declared numerical margin; this does not prove a circular-mean "
+            "singularity"
         )
     elif lift_certified and counterexample:
         support_status = "lift_closed_with_global_counterexample"
@@ -647,6 +656,9 @@ def certify_phase_nodal_coarse_graining(
         no_internal_fiber_edges=no_internal,
         uniform_active_macro_multiplicity=uniform_active,
         block_constant_capacity=block_constant_capacity,
+        macro_capacity_residual=macro_capacity_residual,
+        relative_macro_capacity_residual=relative_macro_capacity_residual,
+        macro_capacity_within_tolerance=macro_capacity_within_tolerance,
         canonical_lift_hypotheses_satisfied=lift_hypotheses,
         canonical_lift_residual=lift_residual,
         relative_canonical_lift_residual=relative_lift_residual,

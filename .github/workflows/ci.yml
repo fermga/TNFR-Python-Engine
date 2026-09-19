@@ -76,8 +76,7 @@ jobs:
         run: python -m pydocstyle src/tnfr
 
       - name: Run mypy
-        # Advisory: large pre-existing type-annotation backlog (1200+ findings),
-        # tracked separately. Runs and reports, but does not block CI.
+        # Advisory analysis: reports findings without blocking CI.
         continue-on-error: true
         run: python -m mypy src/tnfr
 
@@ -88,22 +87,6 @@ jobs:
       - name: Run vulture
         run: python -m vulture --min-confidence 80 src tests
         continue-on-error: true
-
-  changelog:
-    name: Changelog fragments
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Fetch base branch
-        run: git fetch origin ${{ github.event.pull_request.base.ref }} --depth=1
-
-      - name: Enforce changelog fragments
-        run: python3 scripts/check_changelog.py --base origin/${{ github.event.pull_request.base.ref }}
 
   tests:
     name: Python ${{ matrix.python-version }} tests

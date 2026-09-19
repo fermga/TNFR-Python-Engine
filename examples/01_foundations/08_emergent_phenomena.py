@@ -1,9 +1,9 @@
-"""08 - Emergent Phenomena: TNFR Collective Behaviors
+"""Finite collective-pattern demonstrations with prescribed preparations.
 
-Exploration of emergent collective behaviors arising from TNFR nodal dynamics.
-
-PHYSICS: Demonstrates how individual nodal equations create system-level phenomena.
-LEARNING: Understanding emergence, collective intelligence, and macro-scale patterns.
+The examples initialize graphs and apply explicitly selected updates or operator
+schedules. Their pattern statistics are finite observations, not a derivation
+of spontaneous scheduling, intelligence or autonomous maintained NFR identity.
+Changing phase, support or capacity requires the stated supplied rules.
 """
 
 import networkx as nx
@@ -171,9 +171,9 @@ def evolve_network_step(G, dt=0.1):
 
 
 def swarm_intelligence_demo():
-    """Demonstrate swarm intelligence emergence from individual agents."""
+    """Demonstrate prescribed leader/follower graph updates."""
 
-    print("🐝 SWARM INTELLIGENCE EMERGENCE")
+    print("🐝 PRESCRIBED LEADER/FOLLOWER COORDINATION")
     print("━" * 50)
 
     # Create swarm network (small-world for local + global connections)
@@ -382,9 +382,9 @@ def consensus_formation_demo():
 
 
 def self_organization_demo():
-    """Demonstrate spontaneous self-organization."""
+    """Demonstrate organization under the supplied update schedule."""
 
-    print("\n🌱 SPONTANEOUS SELF-ORGANIZATION")
+    print("\n🌱 ORGANIZATION UNDER A SUPPLIED SCHEDULE")
     print("━" * 50)
 
     # Start with random network
@@ -510,7 +510,7 @@ def emergent_phenomena_demo():
     print("• Follower adaptation through phase coupling")
     print("• Exploration via periodic leader direction changes")
     print("• Exploitation through coherence amplification")
-    print("• Collective decision-making from individual interactions")
+    print("• Selected coordination statistics from the supplied interactions")
 
     print("\n🗳️ CONSENSUS FORMATION DYNAMICS:")
     print("━" * 60)
@@ -522,11 +522,11 @@ def emergent_phenomena_demo():
 
     print("\n🌱 SELF-ORGANIZATION FEATURES:")
     print("━" * 60)
-    print("• Spontaneous order from maximum initial disorder")
+    print("• Observed ordering from the chosen random preparation and update rules")
     print("• Adaptive frequency tuning based on local organization")
     print("• Integration of information across network scales")
     print("• Complexity balance between order and diversity")
-    print("• Persistent organization through structural stability")
+    print("• Finite organization observed under the supplied updates")
 
     print("\n🔬 EMERGENCE METRICS:")
     print("━" * 60)
@@ -541,8 +541,8 @@ def emergent_phenomena_demo():
     print("• Multi-level emergence across hierarchical scales")
     print("• Adaptive emergence with environmental feedback")
     print("• Emergence-guided network evolution")
-    print("• Quantum-coherent collective states")
-    print("• Consciousness emergence from neural TNFR networks")
+    print("• Observation closure for jointly evolving form and phase")
+    print("• Validated response predictions under reserved perturbations")
 
 
 if __name__ == "__main__":

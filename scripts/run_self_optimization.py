@@ -23,8 +23,8 @@ if (
 ):  # Ensure tnfr_factorization is importable without installation
     sys.path.insert(0, str(FACTOR_LAB_ROOT))
 
-from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine  # noqa: E402
 from tnfr.engines.manifest import decode_graph  # noqa: E402
+from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine  # noqa: E402
 
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "results" / "self_optimization"
 DEFAULT_OPERATION = "paley_partition"
@@ -48,7 +48,8 @@ class PaleyGraphCache:
 
     def get(self, modulus: int) -> nx.Graph:
         from tnfr_factorization.spectral_paley import (
-            _annotate_graph_for_fft, _build_paley_graph,
+            _annotate_graph_for_fft,
+            _build_paley_graph,
         )
 
         with self._lock:
@@ -83,7 +84,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
         "--max-partitions", type=int, help="Maximum number of partitions to process"
     )
     parser.add_argument(
-        "--seed", type=int,
+        "--seed",
+        type=int,
         help="Recorded seed label plus original entry index; does not reseed engine execution",
     )
     parser.add_argument(
@@ -129,7 +131,9 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 def run(args: argparse.Namespace) -> Dict[str, Any]:
     start = time.perf_counter()
     manifest = _load_json(args.manifest)
-    args.operation_type = args.operation_type or manifest.get("operation_type") or DEFAULT_OPERATION
+    args.operation_type = (
+        args.operation_type or manifest.get("operation_type") or DEFAULT_OPERATION
+    )
     manifest_summary = (
         _load_json(args.manifest_summary) if args.manifest_summary else None
     )
@@ -230,16 +234,22 @@ class PartitionProcessor:
             else:
                 modulus_value = partition_payload.get("modulus")
                 if modulus_value is None:
-                    raise ValueError("Partition file requires a graph payload or Paley modulus")
+                    raise ValueError(
+                        "Partition file requires a graph payload or Paley modulus"
+                    )
                 node_indices = partition_data.get("node_indices") or []
                 if not node_indices:
                     raise ValueError("Partition file is missing node indices")
                 base_graph = self._graph_cache.get(int(modulus_value))
                 if any(node not in base_graph for node in node_indices):
-                    raise ValueError("Partition node indices are outside the Paley graph")
+                    raise ValueError(
+                        "Partition node indices are outside the Paley graph"
+                    )
                 subgraph = base_graph.subgraph(node_indices).copy()
             operator_sequence = _extract_operator_sequence(partition_data)
-            seed_value = None if self._args.seed is None else self._args.seed + item.source_index
+            seed_value = (
+                None if self._args.seed is None else self._args.seed + item.source_index
+            )
             dry_run = not bool(self._args.apply)
             capture_snapshots = self._args.capture_snapshots or dry_run
             result = self._run_optimizer(
@@ -321,7 +331,8 @@ def _collect_partition_entries(
         raise ValueError("Manifest JSON is missing 'entries'")
     manifest_dir = manifest_path.resolve().parent
     partition_dir = (
-        override_partition_dir.resolve() if override_partition_dir is not None
+        override_partition_dir.resolve()
+        if override_partition_dir is not None
         else manifest_dir / manifest.get("partition_directory", "")
     )
     resolved_items: List[PartitionWorkItem] = []
@@ -351,7 +362,9 @@ def _collect_partition_entries(
             )
         resolved_items.append(
             PartitionWorkItem(
-                partition_id=partition_id, path=partition_path, manifest_entry=entry,
+                partition_id=partition_id,
+                path=partition_path,
+                manifest_entry=entry,
                 source_index=source_index,
             )
         )
@@ -469,13 +482,16 @@ def _compute_telemetry_deltas(
     # Archived-source drift is not an optimization gain. A dry run has the
     # same before/after snapshot and must report zero actual improvement.
     for field, value in (
-        ("phi_s", snapshot_phi), ("coherence", snapshot_coherence),
+        ("phi_s", snapshot_phi),
+        ("coherence", snapshot_coherence),
         ("sense_index", snapshot_si),
     ):
         baseline = telemetry.get(field)
         if (
-            value is not None and isinstance(baseline, (int, float))
-            and math.isfinite(baseline) and math.isfinite(value)
+            value is not None
+            and isinstance(baseline, (int, float))
+            and math.isfinite(baseline)
+            and math.isfinite(value)
         ):
             deltas[f"manifest_{field}_drift"] = value - float(baseline)
 

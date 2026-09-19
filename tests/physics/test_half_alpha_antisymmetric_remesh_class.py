@@ -66,16 +66,9 @@ def test_direct_module_and_stub_expose_the_half_alpha_class_api() -> None:
 
     assert expected <= set(boundary_module.__all__)
     package = Path(boundary_module.__file__).parent
-    stub = (package / "binary64_remesh_relative_defect.pyi").read_text(
-        encoding="utf-8"
-    )
-    assert (
-        "class UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate"
-        in stub
-    )
-    assert (
-        "def certify_half_alpha_antisymmetric_hard_clip_remesh_class" in stub
-    )
+    stub = (package / "binary64_remesh_relative_defect.pyi").read_text(encoding="utf-8")
+    assert "class UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate" in stub
+    assert "def certify_half_alpha_antisymmetric_hard_clip_remesh_class" in stub
     assert "def certify_schedule_relative_defect_stability" in stub
 
 
@@ -103,30 +96,21 @@ def test_half_alpha_class_materializes_the_exact_uniform_contract() -> None:
     assert certificate.remesh_certificate.beta == Fraction(1, 4)
     assert certificate.remesh_certificate.gamma == Fraction(1, 4)
     assert certificate.remesh_certificate.delta == Fraction(1, 2)
-    assert certificate.exact_uniform_relative_defect_upper_bound == Fraction(
-        135, 124
-    )
-    assert certificate.exact_strict_schedule_gain_threshold == Fraction(
-        124, 259
-    )
+    assert certificate.exact_uniform_relative_defect_upper_bound == Fraction(135, 124)
+    assert certificate.exact_strict_schedule_gain_threshold == Fraction(124, 259)
     assert certificate.sharpness_witness.pair_relative_defect_observation_certified
     assert (
-        certificate.sharpness_witness
-        .exact_minimum_nonnegative_relative_defect_bound
+        certificate.sharpness_witness.exact_minimum_nonnegative_relative_defect_bound
         == Fraction(135, 124)
     )
     assert certificate.example_schedule_energy_gain_upper_bound == Fraction(4, 9)
-    assert (
-        certificate.exact_example_effective_head_energy_gain_upper_bound
-        == Fraction(259, 279)
+    assert certificate.exact_example_effective_head_energy_gain_upper_bound == Fraction(
+        259, 279
     )
-    assert (
-        certificate.exact_example_normalized_block_margin_lower_bound
-        == Fraction(20, 279)
+    assert certificate.exact_example_normalized_block_margin_lower_bound == Fraction(
+        20, 279
     )
-    assert (
-        certificate.half_alpha_antisymmetric_hard_clip_class_certificate_certified
-    )
+    assert certificate.half_alpha_antisymmetric_hard_clip_class_certificate_certified
     assert certificate.binary64_antisymmetry_preserved_certified
     assert certificate.hard_clip_preserves_antisymmetric_interval_certified
     assert certificate.uniform_binary64_relative_defect_bound_certified
@@ -148,19 +132,13 @@ def test_global_bound_uses_an_exact_tail_and_exhaustive_finite_core() -> None:
     certificate = _certificate()
     unit_roundoff = Fraction(1, 2**53)
     linear = Fraction(3, 2) * unit_roundoff + unit_roundoff**2 / 2
-    absolute = (
-        Fraction(9, 4)
-        + Fraction(9, 4) * unit_roundoff
-        + unit_roundoff**2 / 2
-    )
+    absolute = Fraction(9, 4) + Fraction(9, 4) * unit_roundoff + unit_roundoff**2 / 2
     ratio_at_eleven = linear + absolute / 11
     tail_bound = 4 * (ratio_at_eleven + ratio_at_eleven**2)
 
     assert certificate.exact_tail_error_linear_coefficient == linear
     assert certificate.exact_tail_error_absolute_coefficient == absolute
-    assert certificate.exact_tail_error_ratio_at_eleven_subnormals == (
-        ratio_at_eleven
-    )
+    assert certificate.exact_tail_error_ratio_at_eleven_subnormals == (ratio_at_eleven)
     assert certificate.exact_tail_relative_defect_upper_bound == tail_bound
     assert tail_bound < Fraction(135, 124)
     assert certificate.finite_core_candidate_count == 6615
@@ -178,21 +156,15 @@ def test_global_bound_uses_an_exact_tail_and_exhaustive_finite_core() -> None:
 
 def test_exact_gain_threshold_distinguishes_strict_boundary_and_failure() -> None:
     certificate = _certificate()
-    strict = certificate.certify_schedule_relative_defect_stability(
-        Fraction(4, 9)
-    )
+    strict = certificate.certify_schedule_relative_defect_stability(Fraction(4, 9))
     boundary = certificate.certify_schedule_relative_defect_stability(
         Fraction(124, 259)
     )
 
-    assert strict.pre_schedule_relative_energy_defect_upper_bound == Fraction(
-        135, 124
-    )
+    assert strict.pre_schedule_relative_energy_defect_upper_bound == Fraction(135, 124)
     assert strict.schedule_energy_gain_upper_bound == Fraction(4, 9)
     assert strict.exact_effective_head_energy_gain_upper_bound == Fraction(259, 279)
-    assert strict.exact_uniform_normalized_block_margin_lower_bound == Fraction(
-        20, 279
-    )
+    assert strict.exact_uniform_normalized_block_margin_lower_bound == Fraction(20, 279)
     assert strict.uniform_positive_normalized_block_margin_certified
     assert strict.geometric_spatial_disagreement_convergence_certified
 
@@ -204,9 +176,7 @@ def test_exact_gain_threshold_distinguishes_strict_boundary_and_failure() -> Non
 
     with pytest.raises(TNFRValueError, match="effective|q_eff|gain"):
         certificate.certify_schedule_relative_defect_stability(Fraction(9, 16))
-    assert Fraction(9, 16) * (1 + Fraction(135, 124)) == Fraction(
-        2331, 1984
-    )
+    assert Fraction(9, 16) * (1 + Fraction(135, 124)) == Fraction(2331, 1984)
 
 
 def test_subnormal_witness_attains_the_uniform_bound_sharply() -> None:
@@ -233,18 +203,12 @@ def test_subnormal_witness_attains_the_uniform_bound_sharply() -> None:
         4 * smallest,
     )
     assert observation.runtime_bounded_pair == observation.runtime_raw_pair
-    centered_jensen_energy = (
-        observation.exact_input_pairwise_jensen_denominator / 4
-    )
+    centered_jensen_energy = observation.exact_input_pairwise_jensen_denominator / 4
     centered_energy_defect = (
         observation.exact_total_signed_squared_separation_defect / 4
     )
-    assert centered_jensen_energy == (
-        Fraction(31, 4) * unit * unit
-    )
-    assert centered_energy_defect == (
-        Fraction(135, 16) * unit * unit
-    )
+    assert centered_jensen_energy == (Fraction(31, 4) * unit * unit)
+    assert centered_energy_defect == (Fraction(135, 16) * unit * unit)
     assert observation.exact_minimum_nonnegative_relative_defect_bound == (
         Fraction(135, 124)
     )
@@ -409,18 +373,14 @@ def test_class_is_frozen_unsealed_construction_fails_and_tampering_closes() -> N
         for item in fields(type(certificate))
         if item.name != "_proof_stamp"
     }
-    unsealed = UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate(
-        **payload
-    )
+    unsealed = UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate(**payload)
     object.__setattr__(
         certificate,
         "exact_uniform_relative_defect_upper_bound",
         Fraction(1),
     )
 
-    assert not (
-        unsealed.half_alpha_antisymmetric_hard_clip_class_certificate_certified
-    )
+    assert not (unsealed.half_alpha_antisymmetric_hard_clip_class_certificate_certified)
     assert not (
         certificate.half_alpha_antisymmetric_hard_clip_class_certificate_certified
     )
@@ -477,9 +437,7 @@ def test_general_metric_centering_is_not_a_forward_invariant_claim() -> None:
         Fraction(0),
         Fraction(0),
     )
-    assert _weighted_center(observation.runtime_bounded_pair) == -Fraction(
-        1, 2**84
-    )
+    assert _weighted_center(observation.runtime_bounded_pair) == -Fraction(1, 2**84)
     assert not _certificate(
         metric_weights=(1.0, 3.0)
     ).represented_history_belongs_to_class((current, local, global_, current))

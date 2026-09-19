@@ -34,7 +34,10 @@ def test_executor_calls_preserve_scope_and_live_continuity(cases, name):
             assert state["strict_semicircle_margin"] > 0.0
             assert state["edge_attributes"] == case["initial"]["edge_attributes"]
             assert set(state["normalized_channel_weights"]) == {
-                "epi", "vf", "phase", "topo",
+                "epi",
+                "vf",
+                "phase",
+                "topo",
             }
         for boundary in cycle["boundaries"]:
             assert boundary["pressure_only_refresh"]
@@ -95,7 +98,8 @@ def test_actual_um_sha_resets_change_both_support_channels_before_epi_flow(cases
         assert coupling["operator"] == "coupling"
         assert silence["operator"] == "silence"
         assert (
-            coupling["left"]["epi"] == coupling["right"]["epi"]
+            coupling["left"]["epi"]
+            == coupling["right"]["epi"]
             == silence["right"]["epi"]
         )
         assert coupling["left"]["capacity"] != coupling["right"]["capacity"]
@@ -108,7 +112,8 @@ def test_actual_um_sha_resets_change_both_support_channels_before_epi_flow(cases
         phase_error = reset["exact_phase_coordinate_residual"]
         assert max(map(abs, phase_error)) < Fraction(1, 10**13)
         assert (
-            reset["actual_energy_change"] == reset["reference"]["energy_change"]
+            reset["actual_energy_change"]
+            == reset["reference"]["energy_change"]
             + reset["exact_energy_realization_residual"]
         )
     expected = ("UM", "SHA") * 4
@@ -151,10 +156,13 @@ def test_uniform_capacity_bump_dissipates_with_a_shorter_reorganization_clock(ca
     assert 0 < case["node_reorganization_clocks"][0] < 2
     for cycle in case["cycles"]:
         assert len(set(cycle["after"]["capacity"])) == 1
-        assert max(
-            abs(angle_diff(a, b))
-            for a, b in zip(cycle["before"]["phase"], cycle["after"]["phase"])
-        ) < 1e-13
+        assert (
+            max(
+                abs(angle_diff(a, b))
+                for a, b in zip(cycle["before"]["phase"], cycle["after"]["phase"])
+            )
+            < 1e-13
+        )
 
 
 def test_unknown_preparation_is_rejected_before_execution():

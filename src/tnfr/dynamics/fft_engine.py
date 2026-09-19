@@ -63,9 +63,7 @@ except ImportError:
     HAS_FFT_CACHE = False
 
 # Operational engine-tuning knob (not TNFR physics) → tnfr.constants.operational
-from ..constants.operational import (
-    FFT_ENGINE_COUPLING_CANONICAL,
-)
+from ..constants.operational import FFT_ENGINE_COUPLING_CANONICAL
 
 
 @dataclass
@@ -112,9 +110,7 @@ def _finite_epi(value: Any, name: str) -> float:
     try:
         result = real_scalar_epi(value)
     except (KeyError, OverflowError, TypeError, ValueError) as exc:
-        raise TNFRValueError(
-            f"{name} must be a finite scalar EPI embedding."
-        ) from exc
+        raise TNFRValueError(f"{name} must be a finite scalar EPI embedding.") from exc
     if result is None or not math.isfinite(float(result)):
         raise TNFRValueError(f"{name} must be a finite scalar EPI embedding.")
     return float(result)
@@ -137,7 +133,9 @@ def _eigenbasis_digest(eigenvalues: Any, eigenvectors: Any) -> str:
     return digest.hexdigest()
 
 
-def _readonly_basis(eigenvalues: Any, eigenvectors: Any) -> tuple[np.ndarray, np.ndarray]:
+def _readonly_basis(
+    eigenvalues: Any, eigenvectors: Any
+) -> tuple[np.ndarray, np.ndarray]:
     """Detach cached basis arrays and make cache poisoning fail immediately."""
 
     values = np.array(eigenvalues, copy=True)
@@ -557,9 +555,7 @@ class FFTDynamicsEngine:
         phase_spatial = np.real_if_close(
             igft(fft_state.spectral_phase, fft_state.eigenvectors)
         )
-        vf_spatial = np.real_if_close(
-            igft(vf_spectral, fft_state.eigenvectors)
-        )
+        vf_spatial = np.real_if_close(igft(vf_spectral, fft_state.eigenvectors))
         new_phase_spatial = propose_u3_gated_phase_step(
             G,
             fft_state.node_order or tuple(G.nodes()),
@@ -746,9 +742,7 @@ class FFTDynamicsEngine:
         # Run simulation steps
         for step in range(steps):
             fft_state = self.fft_accelerated_step(G, fft_state, dt_value)
-            max_nodal_residual = max(
-                max_nodal_residual, fft_state.nodal_residual
-            )
+            max_nodal_residual = max(max_nodal_residual, fft_state.nodal_residual)
 
             completed_steps = step + 1
             if return_trajectory and (
@@ -779,16 +773,12 @@ class FFTDynamicsEngine:
             "total_steps": steps,
             "fft_operations": self.fft_operations - operation_start,
             "cache_hits": self.cache_hits - cache_hit_start,
-            "steps_per_second": (
-                steps / simulation_time if simulation_time > 0 else 0
-            ),
+            "steps_per_second": (steps / simulation_time if simulation_time > 0 else 0),
             "final_time": fft_state.time,
             "final_coherence": self._compute_spectral_coherence(G, fft_state),
             "final_phase_sync": self._compute_phase_sync(fft_state),
             "max_nodal_residual": max_nodal_residual,
-            "integration_method": (
-                fft_state.integration_method if steps else None
-            ),
+            "integration_method": (fft_state.integration_method if steps else None),
             "stability_not_certified": bool(
                 steps and fft_state.stability_not_certified
             ),
@@ -804,9 +794,7 @@ class FFTDynamicsEngine:
 
         return results
 
-    def _compute_spectral_coherence(
-        self, G: Any, fft_state: FFTDynamicsState
-    ) -> float:
+    def _compute_spectral_coherence(self, G: Any, fft_state: FFTDynamicsState) -> float:
         """Compute canonical C(t) for the state's EPI-diffusion realization."""
         if len(fft_state.spectral_epi) == 0:
             return 0.0
@@ -839,9 +827,7 @@ class FFTDynamicsEngine:
                 return 0.0
             return scale * float(np.mean(magnitudes / scale))
 
-        return float(
-            structural_coherence(mean_absolute(pressure), mean_absolute(rate))
-        )
+        return float(structural_coherence(mean_absolute(pressure), mean_absolute(rate)))
 
     @staticmethod
     def _compute_phase_sync(fft_state: FFTDynamicsState) -> float:

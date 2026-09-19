@@ -42,12 +42,16 @@ X0_7 = np.array([1.0, -1.0, 0.5, -0.5, 0.3, -0.2, -0.1])
 
 CASES = [
     ("circulant C7{1,2} (normal)", directed_cayley_adjacency(7, {1, 2}), X0_7),
-    ("asymmetric 4-cycle (SC, non-normal)",
-     np.array([[0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 1], [1, 0, 0, 0]],
-              dtype=float), X0),
-    ("weighted ring+chord (SC, non-normal)",
-     np.array([[0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2], [2, 0, 1, 0]],
-              dtype=float), X0),
+    (
+        "asymmetric 4-cycle (SC, non-normal)",
+        np.array([[0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 1], [1, 0, 0, 0]], dtype=float),
+        X0,
+    ),
+    (
+        "weighted ring+chord (SC, non-normal)",
+        np.array([[0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2], [2, 0, 1, 0]], dtype=float),
+        X0,
+    ),
 ]
 
 
@@ -58,8 +62,10 @@ def _vf(t):
 def main() -> int:
     print("N04 structural time: nu_f(t) as a clock change, x(t) = exp(-s(t)L)x0")
     tg = np.linspace(0.0, 12.0, 2000)
-    header = (f"  {'graph':<38} {'M':>7} {'omega':>7} {'clock':>9} "
-              f"{'invar':>9} {'J':>7} {'bound':>7} {'J<=b':>5}")
+    header = (
+        f"  {'graph':<38} {'M':>7} {'omega':>7} {'clock':>9} "
+        f"{'invar':>9} {'J':>7} {'bound':>7} {'J<=b':>5}"
+    )
     print(header)
     normal_unit = True
     nonnormal_gt1 = True
@@ -74,26 +80,31 @@ def main() -> int:
             nonnormal_gt1 &= c.sustained_gain > 1.0
         all_clock &= c.clock_change_residual < 1e-4
         all_bound &= c.bound_holds
-        print(f"  {label:<38} {c.sustained_gain:>7.4f} "
-              f"{c.nonconsensus_abscissa:>7.4f} {c.clock_change_residual:>9.1e} "
-              f"{c.reorganization_invariance_residual:>9.1e} "
-              f"{c.total_reorganization:>7.4f} "
-              f"{c.total_reorganization_bound:>7.4f} "
-              f"{str(c.bound_holds):>5}")
+        print(
+            f"  {label:<38} {c.sustained_gain:>7.4f} "
+            f"{c.nonconsensus_abscissa:>7.4f} {c.clock_change_residual:>9.1e} "
+            f"{c.reorganization_invariance_residual:>9.1e} "
+            f"{c.total_reorganization:>7.4f} "
+            f"{c.total_reorganization_bound:>7.4f} "
+            f"{str(c.bound_holds):>5}"
+        )
 
     audit = CircularityAudit()  # pure spectral / semigroup dynamics
     _ = ExperimentManifest(
         claim_id="NT-P09c",
         git_sha="local",
-        versions={"python": platform.python_version(),
-                  "numpy": np.__version__},
+        versions={"python": platform.python_version(), "numpy": np.__version__},
         seed=None,
         operator_sequence=(),
         uses_known_factors=False,
         input_bits=input_bit_length(max(len(W) for _, W, _ in CASES)),
-        controls=("normal_unit_gain", "nonnormal_transient_cost",
-                  "clock_change_rk4", "reorganization_invariance",
-                  "finite_reorganization_bound"),
+        controls=(
+            "normal_unit_gain",
+            "nonnormal_transient_cost",
+            "clock_change_rk4",
+            "reorganization_invariance",
+            "finite_reorganization_bound",
+        ),
         artifacts=(),
     )
     print()
@@ -102,8 +113,10 @@ def main() -> int:
     print(f"  RK4 == reparam semigroup : {all_clock}")
     print(f"  J <= bound (all)         : {all_bound}")
     print(f"  clock-change theorem     : {ClaimStatus.DERIVED.value} + measured")
-    print(f"  canonical U2 metric      : {ClaimStatus.CONJECTURAL.value} / OPEN "
-          "(NT-P09c; U2 not modified)")
+    print(
+        f"  canonical U2 metric      : {ClaimStatus.CONJECTURAL.value} / OPEN "
+        "(NT-P09c; U2 not modified)"
+    )
     print(f"  circularity              : {audit.verdict.value}")
     ok = normal_unit and nonnormal_gt1 and all_clock and all_bound
     return 0 if ok else 1

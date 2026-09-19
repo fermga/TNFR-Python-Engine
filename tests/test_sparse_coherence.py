@@ -72,9 +72,7 @@ def test_sparse_coherence_aggregates_channel_magnitudes_through_shared_kernel():
     )
 
     assert result == (structural_coherence(3.0, 2.0), 3.0, 2.0)
-    scalar = graph._compute_coherence(
-        dnfr_values=[-2.0, 4.0], depi_values=[-1.0, 3.0]
-    )
+    scalar = graph._compute_coherence(dnfr_values=[-2.0, 4.0], depi_values=[-1.0, 3.0])
     assert scalar == structural_coherence(3.0, 2.0)
     assert type(scalar) is float
 
@@ -132,6 +130,7 @@ def test_sparse_pressure_cache_is_invalidated_by_owned_topology_and_phase_change
 
     graph.node_attributes.set_theta(1, 0.0)
     np.testing.assert_array_equal(graph.compute_dnfr_sparse(), [0.0, 0.0])
+
 
 @pytest.mark.parametrize("node_count", [True, np.bool_(False), 1.0, 0, -1])
 def test_sparse_graph_rejects_invalid_node_counts(node_count):
@@ -213,8 +212,10 @@ def test_compact_store_rejects_values_outside_float32_storage_domain(value):
 
 @pytest.mark.parametrize(
     ("setter", "value", "message"),
-    [("set_vf", -0.1, "vf must be nonnegative"),
-     ("set_si", -0.1, "si must be nonnegative")],
+    [
+        ("set_vf", -0.1, "vf must be nonnegative"),
+        ("set_si", -0.1, "si must be nonnegative"),
+    ],
 )
 def test_compact_store_rejects_negative_nonnegative_channels(
     setter,

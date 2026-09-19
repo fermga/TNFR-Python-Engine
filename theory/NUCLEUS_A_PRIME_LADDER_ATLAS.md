@@ -1,30 +1,42 @@
 # Nucleus A — Prime-Ladder Atlas (Internal Reproducibility Reference)
 
-**Status**: Internal reference document. Consolidates P12–P15 + P28 + P30 as a self-contained, machine-verified computational platform.
+**Status**: Internal reproduction atlas for declared arithmetic constructions and finite numerical comparisons. Reported tolerances are historical observations, not universal certificates.
 **Scope of value**: Pedagogical / reproducibility / internal audit. **NOT** a claim of new mathematical results in classical analytic number theory.
-**Date**: May 27, 2026.
-**Authority**: Subordinate to [TNFR_RIEMANN_RESEARCH_NOTES.md §§8–13nonies](TNFR_RIEMANN_RESEARCH_NOTES.md); supersedes nothing.
+**Review**: 2026-09-19; historical results originally recorded May 27, 2026.
+**Authority**: Subordinate to the [current Riemann scope memo](TNFR_RIEMANN_RESEARCH_NOTES.md). The full chronological derivations and superseded claims remain in its archive.
 
 ---
 
 ## 1. Why this document exists
 
-The §13sexagesima-{quarta..novena} CCET closure marathon (May 2026) reduced the §13septies trichotomy on `G_P14` to the residual {nine LOW envelopes, B3}. In that process, the **Nucleus A** machinery (P12–P15 + P28/P30) emerged as the most stable, reproducible, and externally legible piece of the TNFR-Riemann program.
+This atlas collects finite prime-ladder, analytic-function and rescaling
+entry points. The former assertion that the CCET campaign exhausted the
+canonical routes is withdrawn; its conditional algebra and finite controls
+are scoped in [Nucleus B](NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md).
 
-Honest external assessment (this conversation, May 27): Nucleus A does **not** contain a new theorem in analytic number theory. Its components are:
+Nucleus A makes no claim of a new theorem in analytic number theory. Its
+retained components are:
 
 - **P12** (TNFR vM ζ on $\operatorname{Re}(s) > 1$): reorganisation of the classical identity $-\zeta'(s)/\zeta(s) = \sum_n \Lambda(n) n^{-s}$ via the prime-ladder spectrum $\{k \log p\}$.
 - **P13** (analytic continuation): standard analytic-number-theory content (Titchmarsh, Ivić).
 - **P14** (self-adjoint Hamiltonian with spectrum $\{k \log p\}$): ad-hoc diagonal operator; not a geometric/dynamical realisation in the Berry–Keating / Connes sense.
 - **P15** (Weil–Guinand verification to $\le 10^{-15}$): numerical control of a 1952 identity (Weil).
-- **P28/P30** (smooth/oscillatory split of the admissible rescaling $\mathcal{F}$): formally folklore (Titchmarsh, Ivić), but the explicit operator-level packaging via `range`/`kernel` of an admissible rescaling map has not been audited against Meyer / Burnol / Bombieri–Lagarias.
+- **P28/P30**: classical smooth-counting targets and a finite congruence
+  that installs a supplied positive target spectrum. No analytic
+  smooth/oscillatory range/kernel decomposition is established.
 
-**Internal value**, on the other hand, is high:
+Its internal uses are:
 
-1. **Reproducibility**: every milestone has a script under [src/tnfr/riemann/](../src/tnfr/riemann/) and a demo under [examples/](../examples/), all of which run end-to-end on a clean checkout.
-2. **Audit surface**: numerical controls (Weil–Guinand residual, Li–Keiper positivity, prime-ladder eigenvalue match) provide a sanity-check baseline for any future extension.
-3. **Pedagogy**: a single internal document that walks from $-\zeta'/\zeta$ to T-HP is the shortest on-ramp for new collaborators.
-4. **Boundary marker**: makes explicit *where* the canonical machinery stops (oscillatory residue $S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$, RH-equivalent).
+1. **Reproduction entry points**: source and demos are listed below. They
+   were not all rerun during this documentation audit; each current run must
+   report its actual environment, inputs and residuals.
+2. **Audit surface**: finite explicit-formula residuals, truncated zero sums
+   and prime-ladder eigenvalue comparisons record separate construction checks.
+3. **Pedagogy**: the current memo distinguishes the supplied arithmetic
+   inputs, classical identities and unresolved analytic bridge.
+4. **Boundary marker**: separates a declared spectral construction from an
+   unproved analytic bridge. The argument term $S(T)$ is not itself an
+   RH-equivalent proposition without a precise additional quantified claim.
 
 ---
 
@@ -32,34 +44,38 @@ Honest external assessment (this conversation, May 27): Nucleus A does **not** c
 
 | Milestone | Module | Demo | Result | Status |
 |-----------|--------|------|--------|--------|
-| **P12** TNFR vM ζ on $\operatorname{Re}(s) > 1$ | [src/tnfr/riemann/von_mangoldt.py](../src/tnfr/riemann/von_mangoldt.py) | [examples/41_*.py](../examples/) | Matches $-\zeta'/\zeta$ to machine precision on test grid | CLOSED operationally |
-| **P13** Analytic continuation to $\mathbb{C}$ | [src/tnfr/riemann/analytic_continuation.py](../src/tnfr/riemann/analytic_continuation.py) | [examples/42_*.py](../examples/) | Riemann zeros realised as resonance poles on $\operatorname{Re}(s) = 1/2$ | CLOSED operationally |
-| **P14** Prime-ladder Hamiltonian (gap G1) | [src/tnfr/riemann/prime_ladder_hamiltonian.py](../src/tnfr/riemann/prime_ladder_hamiltonian.py) | [examples/43_*.py](../examples/) | Self-adjoint, spectrum $\{k\log p\}$ to $10^{-14}$ | CLOSED operationally |
-| **P15** Weil–Guinand verification (gap G3) | [src/tnfr/riemann/weil_explicit_formula.py](../src/tnfr/riemann/weil_explicit_formula.py) | [examples/44_*.py](../examples/) | Residual $\le 10^{-15}$ for $\sigma \in [3,18]$ | CLOSED operationally |
-| **P16** Li–Keiper positivity (RH-equivalent diagnostic) | [src/tnfr/riemann/li_keiper.py](../src/tnfr/riemann/li_keiper.py) | [examples/45_*.py](../examples/) | $\lambda_n > 0$ verified for tested range; does NOT prove RH | Diagnostic |
-| **P28** Smooth zero density (density level) | [src/tnfr/riemann/structural_zero_density.py](../src/tnfr/riemann/structural_zero_density.py) | examples/58 | Smooth half of T-HP closed at density level | CLOSED operationally |
-| **P30** Admissible rescaling operator (operator level) | [src/tnfr/riemann/admissible_rescaling.py](../src/tnfr/riemann/admissible_rescaling.py) | examples/58 (variant) | Smooth half of T-HP lifted to operator level | CLOSED operationally |
+| **P12** TNFR vM ζ on $\operatorname{Re}(s) > 1$ | [src/tnfr/riemann/von_mangoldt.py](../src/tnfr/riemann/von_mangoldt.py) | [examples/41_*.py](../examples/README.md) | Matches $-\zeta'/\zeta$ to machine precision on test grid | CLOSED operationally |
+| **P13** Analytic continuation | [src/tnfr/riemann/analytic_continuation.py](../src/tnfr/riemann/analytic_continuation.py) | [examples/42_*.py](../examples/README.md) | Uses classical meromorphic $-\zeta'/\zeta$; selected critical-line pole comparisons | Implemented comparison |
+| **P14** Prime-ladder Hamiltonian (gap G1) | [src/tnfr/riemann/prime_ladder_hamiltonian.py](../src/tnfr/riemann/prime_ladder_hamiltonian.py) | [examples/43_*.py](../examples/README.md) | Self-adjoint, spectrum $\{k\log p\}$ to $10^{-14}$ | CLOSED operationally |
+| **P15** Weil–Guinand verification (gap G3) | [src/tnfr/riemann/weil_explicit_formula.py](../src/tnfr/riemann/weil_explicit_formula.py) | [examples/44_*.py](../examples/README.md) | Residual $\le 10^{-15}$ for $\sigma \in [3,18]$ | CLOSED operationally |
+| **P16** Truncated Li–Keiper sums | [src/tnfr/riemann/li_keiper.py](../src/tnfr/riemann/li_keiper.py) | [example 45](../examples/03_riemann_zeta/45_li_keiper_demo.py) | Finite sums from supplied critical-line zeros or line-restricted peak coordinates; no certified tail | Descriptive sign check |
+| **P28** Smooth counting targets | [src/tnfr/riemann/structural_zero_density.py](../src/tnfr/riemann/structural_zero_density.py) | examples/57 | Scalar inversion of classical theta counting function | Implemented target construction |
+| **P30** Finite spectral rescaling | [src/tnfr/riemann/admissible_rescaling.py](../src/tnfr/riemann/admissible_rescaling.py) | examples/57 | Congruence installs supplied positive target spectrum | Conditional finite identity |
 
 ---
 
 ## 3. The smooth/oscillatory boundary
 
-The structural payoff of Nucleus A is the **explicit decomposition** it provides for the T-HP rescaling operator $\mathcal{F}$:
+P28 uses $\overline N(T)=\theta(T)/\pi+1$ from the classical
+Riemann–Siegel theta function. The leading expression
+$(T/2\pi)\log(T/(2\pi e))$ is an asymptotic term, not that exact function.
+P30 then forms $F=U\operatorname{diag}(\sqrt{\mu_i/\lambda_i})U^*$
+so that $FHF^*=U\operatorname{diag}(\mu_i)U^*$ on the retained subspace.
+This is a congruence with supplied targets; it does not independently predict
+them. With a proper retained subspace, $F$ has a kernel on its complement.
 
-$$\mathcal{F} \;=\; \mathcal{F}_{\text{smooth}} \;\oplus\; \mathcal{F}_{\text{osc}}$$
-
-- $\mathcal{F}_{\text{smooth}}$: closed at density level by **P28** and lifted to operator level by **P30**. Reproduces the smooth zero-counting term $N_{\text{smooth}}(T) = (T/2\pi)\log(T/2\pi e)$ exactly.
-- $\mathcal{F}_{\text{osc}}$: corresponds to the oscillatory residue $S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$, which is **RH-equivalent** and **unreachable from the canonical 13-operator catalog on `G_P14`** (proven by CCET / Tetrad-Fix($S_n$) / Line-Graph Equivariance / Lifted-Bundle Dichotomy lemmas of §13sexagesima-{tertia..novena}).
-
-This is the **precise structural location** of gap G4 = RH inside the TNFR formalism. Nucleus A does not close G4; it localises it.
-
-Cross-reference: [TNFR_RIEMANN_RESEARCH_NOTES.md §13septies–§13nonies](TNFR_RIEMANN_RESEARCH_NOTES.md).
+No direct-sum decomposition of an analytic Hilbert–Pólya rescaling into
+smooth and oscillatory parts, placement of $S(T)$ in a REMESH kernel, or
+unreachability theorem for the full catalog is proved. The detailed current
+scope is centralized in [the Riemann memo](TNFR_RIEMANN_RESEARCH_NOTES.md).
 
 ---
 
 ## 4. Reproducing each milestone
 
-All commands assume the repo root and an activated virtual environment (`.venv312` on Windows).
+All commands assume the repo root and an activated compatible environment.
+The expectations below record earlier finite runs; they are not newly
+verified guarantees for every environment or parameter choice.
 
 ### 4.1 P12 — TNFR vM ζ on $\operatorname{Re}(s) > 1$
 
@@ -75,7 +91,8 @@ Expected: residual $|\,\text{TNFR\_vM}(s) - (-\zeta'(s)/\zeta(s))\,| \le 10^{-12
 python examples/03_riemann_zeta/42_riemann_zeros_as_resonances.py
 ```
 
-Expected: Riemann zeros recovered as resonance poles on $\operatorname{Re}(s) = 1/2$ to mpmath precision.
+Expected: selected known critical-line zeros compared with poles of the
+classical evaluator. This does not locate every nontrivial zero.
 
 ### 4.3 P14 — Prime-ladder Hamiltonian
 
@@ -99,15 +116,24 @@ Expected: residual $\le 10^{-15}$ for $\sigma \in \{3, 5, 8, 12, 18\}$ with the 
 python examples/03_riemann_zeta/45_li_keiper_demo.py
 ```
 
-Expected: $\lambda_n > 0$ for $n \in \{1, \ldots, N\}$ using `mpmath.zetazero` as the zero source.
+Historical runs reported positive truncated sums for the selected indices,
+using `mpmath.zetazero` as the zero source. This does not certify the signs of
+the complete Li coefficients. For any supplied $\rho=1/2+it$, the factor
+$1-1/\rho$ has modulus one, so each conjugate-pair contribution is
+$2[1-\cos(n\arg(1-1/\rho))]\geq0$ in exact arithmetic. The optional P13 path
+also places every detected ordinate on this line before evaluating the sum.
+Its nonnegativity therefore cannot independently validate zero location.
+See the [current truncation boundary](TNFR_RIEMANN_RESEARCH_NOTES.md#finite-zero-sums-and-the-li-criterion).
 
-### 4.6 P28 / P30 — Smooth half of T-HP
+### 4.6 P28 / P30 — Supplied smooth targets and finite congruence
 
 ```powershell
 python examples/03_riemann_zeta/57_admissible_rescaling_demo.py
 ```
 
-Expected: smooth zero-counting term reproduced; oscillatory residual flagged explicitly as unresolved.
+Expected: supplied smooth-counting targets and the finite congruence residual
+are reported. Their discrepancy from known zeros is descriptive, not a derived
+decomposition of the analytic oscillatory term.
 
 ---
 
@@ -115,7 +141,8 @@ Expected: smooth zero-counting term reproduced; oscillatory residual flagged exp
 
 This section exists to prevent later overclaiming.
 
-1. **Nucleus A is not a proof of RH**. The oscillatory half of $\mathcal{F}$ is RH-equivalent and remains open (gap G4).
+1. **Nucleus A is not a proof of RH**. No derived nodal Hilbert–Pólya
+   operator or analytic smooth/oscillatory decomposition has been supplied.
 2. **Nucleus A is not a new Hamiltonian for the Riemann zeros**. P14 carries the *prime-ladder* spectrum, not the spectrum of zeros. The Berry–Keating / Connes program seeks a Hamiltonian whose spectrum *is* $\{\gamma_n\}$; P14 is the dual object (primes side), and bridging the two is precisely the open T-HP problem.
 3. **P15 is a numerical verification of a 1952 identity**. It is high-quality QA, not a theorem.
 4. **P28/P30 likely overlap with existing literature**. A formal audit against Titchmarsh ch. 9, Ivić ch. 1, Meyer, Burnol, and Bombieri–Lagarias is required before any external publication claims novelty for the operator-level rescaling map.
@@ -128,9 +155,15 @@ This section exists to prevent later overclaiming.
 Even with the modest external-novelty assessment, Nucleus A provides:
 
 - **A regression test surface**: any future TNFR-Riemann extension can run P12/P14/P15 as integration checks.
-- **A teaching corridor**: §§8–13 of the research notes + this atlas + examples 41–58 form a complete on-ramp.
-- **A boundary marker for B3 discussions**: when arguing that no TNFR closure of G4 exists at the current scope, Nucleus A *is* the maximal canonical-machinery construction that has been shipped. Anything proposed beyond it (B0★-α canonical graphs, B0★-β envelope promotion, B2 new operators) must explain why it goes beyond P28/P30.
-- **A diff target for Nucleus B**: the equivariance no-go lemmas of §13sexagesima-{tertia..novena} are best understood as obstructions to *extending Nucleus A* to cover the oscillatory half. Without Nucleus A there is nothing concrete to obstruct.
+- **A teaching reference**: the current Riemann memo and examples 41–58
+  separate construction inputs from analytic conclusions; older derivations
+  remain in the explicitly historical notebook.
+- **A comparison baseline**: candidates can be compared with the same
+  supplied arithmetic data and finite diagnostics. This inventory is not a
+  proof of maximality or exhaustion of canonical constructions.
+- **A concrete symmetry example**: Nucleus B states the conditional
+  hypotheses needed to infer observation loss; it does not close all
+  extensions of this atlas.
 
 ---
 
@@ -138,18 +171,17 @@ Even with the modest external-novelty assessment, Nucleus A provides:
 
 If at some point an external write-up is desired, the **honest framing** is:
 
-> *"A reproducible computational platform for the Weil–Guinand explicit formula via a prime-ladder Hamiltonian, with explicit smooth/oscillatory decomposition of the admissible rescaling operator."*
+> *"Finite arithmetic trace comparisons, a declared prime-ladder Hamiltonian,
+> and target-driven spectral congruence with explicit input provenance."*
 
-Target venue (if pursued): *Experimental Mathematics*, *LMS Journal of Computation and Mathematics*, or as a software / dataset paper for *Mathematics of Computation*. **Not** a research paper in analytic number theory.
-
-This is explicitly **not** the recommended priority. See [NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md](NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md) for the higher-novelty path.
+No publication priority, venue recommendation or novelty claim is active.
+The [single execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md) owns priorities.
 
 ---
 
 ## 8. Cross-references
 
-- [TNFR_RIEMANN_RESEARCH_NOTES.md §§8–13nonies](TNFR_RIEMANN_RESEARCH_NOTES.md) — full P12–P30 derivations
-- [TNFR_RIEMANN_RESEARCH_NOTES.md §13decies–§13vicies-octavo](TNFR_RIEMANN_RESEARCH_NOTES.md) — P31 + P32–P49 (χ-twisted L-track parity)
-- [TNFR_RIEMANN_RESEARCH_NOTES.md §13sexagesima-{tertia..novena}](TNFR_RIEMANN_RESEARCH_NOTES.md) — CCET closure rounds (basis for Nucleus B)
-- [NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md](NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md) — equivariance no-go lemmas, organisation plan for external publication
+- [Current Riemann memo](TNFR_RIEMANN_RESEARCH_NOTES.md) — construction inputs, exact finite identities and unresolved analytic targets
+- [Historical notebook](research/archive/RIEMANN_NOTEBOOK_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt) — former P12–P49 derivations and CCET chronology; superseded universal claims and instructions are not current results
+- [Conditional symmetry obstructions](NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md) — valid algebraic premises and limitations of the withdrawn universal no-go argument; no publication queue
 - [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) — exact fixed-delay surrogate result and the unresolved status of any literal $\tau_g\to\infty$ operator or identification with $S(T)$

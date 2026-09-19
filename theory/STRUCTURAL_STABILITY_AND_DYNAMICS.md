@@ -10,6 +10,16 @@ models are identified separately.
 **Status**: Mixed — exact restricted diffusion results, operational operator
 classifications and measured diagnostics are identified separately.
 
+**Ownership.** This is a capability and scope reference, not a research queue.
+The exact diffusion and REMESH derivations are owned by
+[the diffusion stability theorem](TNFR_DIFFUSION_STABILITY_THEOREM.md);
+sections 1.4-1.6 retain the implementation bridges and their finite evidence.
+The field-energy balance belongs to
+[the conservation note](STRUCTURAL_CONSERVATION_THEOREM.md), and phase/telemetry
+interpretations to [parameter foundations](NODAL_PARAMETER_FOUNDATIONS.md).
+Current research priorities belong to the
+[single execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md).
+
 ---
 
 ## 1. Lyapunov Stability Analysis
@@ -738,8 +748,8 @@ the endpoint factor `q_eff^floor(N/L)`. At `J=0` the inequality is tested
 directly and its ratio is undefined. This recorded block does not prove a
 uniform runtime class or forward invariance. Extending the restricted
 half-alpha class below to broader represented states, or promoting the finite
-P2 observation to future complete-runtime execution, remains the next
-repeated-runtime boundary.
+P2 observation to future complete-runtime execution, remains an unproved
+repeated-runtime extension, rather than an assigned next research task.
 
 The represented-number analysis now resolves two narrower boundaries. The
 exact pairwise identity lifts a scalar REMESH defect ratio to arbitrary finite
@@ -1146,8 +1156,9 @@ $W$ is the matrix returned by `coherence_matrix`. The constructor default is
 $C_0=-1$, so the coherence term is $-W$; writing an additional leading minus
 sign reverses the implemented sign. The default coupling is $J_0=0.1$, and the
 builder writes both matrix directions for every graph edge. The constructor
-checks every component and their sum for Hermiticity and raises when the check
-fails.
+checks every component and their sum with an absolute Hermiticity residual
+tolerance of `1e-10` and raises when that numerical check fails. Acceptance is
+not an exact algebraic Hermiticity certificate.
 
 This matrix supplies an auxiliary linear model. The repository does not derive
 the general engine trajectory or the canonical graph $\Delta\mathrm{NFR}$ from
@@ -1155,20 +1166,22 @@ it.
 
 ### 5.2 Unitary flow and eigenmodes
 
-For a constructor-accepted Hermitian matrix, `time_evolution_operator` computes
+For an exactly Hermitian matrix and real nonzero declared
+$\hbar_{\mathrm{str}}$, the ideal evolution is unitary:
 
 $$
 U(t)=\exp\left(-\frac{iH_{\mathrm{int}}t}{\hbar_{\mathrm{str}}}\right).
 $$
 
-`get_spectrum` uses a Hermitian eigensolver and returns ascending real
-eigenvalues and eigenvectors satisfying
+`time_evolution_operator` numerically evaluates this exponential and applies
+an `allclose` unitarity check. `get_spectrum` uses a Hermitian eigensolver;
+its returned ascending eigenvalues and eigenvectors numerically approximate
 
 $$
 H_{\mathrm{int}}|\phi_n\rangle=E_n|\phi_n\rangle.
 $$
 
-An eigenvector evolves only by the phase
+For the exact Hermitian model, an eigenvector evolves only by the phase
 $e^{-iE_nt/\hbar_{\mathrm{str}}}$ in this auxiliary unitary flow. That makes it
 a stationary ray of this model; it does not make it a maximally stable TNFR
 configuration or establish dissipative attraction.

@@ -1,19 +1,23 @@
 """Runtime endpoints of a scoped Coupling policy, with canonical controls."""
 
-from fractions import Fraction
 import math
+from fractions import Fraction
 
 import pytest
 
 from benchmarks.canonical_winding_persistence import (
-    build_ring, phase_gaps, run_coupling_case, run_transition_counterexample,
+    build_ring,
+    phase_gaps,
+    run_coupling_case,
+    run_transition_counterexample,
 )
-from tnfr.constants.aliases import ALIAS_THETA
 from tnfr.alias import get_attr
+from tnfr.constants.aliases import ALIAS_THETA
 from tnfr.operators.definitions import Coupling, Silence
 from tnfr.physics.coupling_winding import observe_coupling_gap_step
 from tnfr.physics.winding_certificates import (
-    certify_phase_winding, observe_winding_word,
+    certify_phase_winding,
+    observe_winding_word,
 )
 
 
@@ -25,10 +29,7 @@ def test_all_target_policy_preserves_finite_winding_and_reduces_gap_spread(
     result = run_coupling_case(count, winding)
     assert result["endpoint_winding_preserved"]
     assert result["observed_endpoint_lifetime_stages"] == 16
-    assert all(
-        history == ("UM", "SHA") * 8
-        for history in result["actual_histories"]
-    )
+    assert all(history == ("UM", "SHA") * 8 for history in result["actual_histories"])
     rows = result["observations"]
     previous_capacity = 1.0
     for row in rows:
@@ -71,9 +72,7 @@ def test_single_target_actual_word_matches_the_distinct_local_gap_map(winding):
     graph = build_ring(8, winding)
     phases = tuple(get_attr(graph.nodes[node], ALIAS_THETA, None) for node in graph)
     reference = observe_coupling_gap_step(phase_gaps(phases), target=1)
-    observed = observe_winding_word(
-        graph, range(8), 1, [Coupling(), Silence()]
-    )
+    observed = observe_winding_word(graph, range(8), 1, [Coupling(), Silence()])
     after = tuple(get_attr(graph.nodes[node], ALIAS_THETA, None) for node in graph)
     gaps = phase_gaps(after)
     assert observed.history_preserved

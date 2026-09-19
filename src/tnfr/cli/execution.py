@@ -33,9 +33,9 @@ from ..glyph_history import ensure_history
 from ..mathematics import (
     BasicStateProjector,
     FrequencyOperator,
-    SpectralExpectationOperator,
     HilbertSpace,
     MathematicalDynamicsEngine,
+    SpectralExpectationOperator,
     make_frequency_operator,
     make_spectral_expectation_operator,
 )
@@ -192,9 +192,7 @@ def _resolve_math_dimension(args: argparse.Namespace, fallback: int) -> int:
         getattr(args, "math_generator_diagonal", None),
     )
     candidate_lengths = [
-        len(sequence)
-        for sequence in candidate_sequences
-        if sequence is not None
+        len(sequence) for sequence in candidate_sequences if sequence is not None
     ]
     if dimension is None:
         if candidate_lengths:
@@ -216,9 +214,7 @@ def _resolve_math_dimension(args: argparse.Namespace, fallback: int) -> int:
                     "Math engine sequence lengths must match the requested dimension"
                 )
         dimension = resolved_requested
-    return positive_spectral_dimension(
-        dimension, label="Hilbert space dimension"
-    )
+    return positive_spectral_dimension(dimension, label="Hilbert space dimension")
 
 
 def _build_math_engine_config(
@@ -261,9 +257,7 @@ def _build_math_engine_config(
         legacy_attr="math_coherence_c_min",
     )
     expectation_floor = (
-        finite_spectral_real(
-            floor_raw, label="spectral expectation floor"
-        )
+        finite_spectral_real(floor_raw, label="spectral expectation floor")
         if floor_raw is not None
         else None
     )
@@ -312,9 +306,11 @@ def _build_math_engine_config(
         legacy_attr="math_coherence_threshold",
     )
     spectral_threshold = finite_spectral_real(
-        threshold_raw
-        if threshold_raw is not None
-        else spectral_operator.expectation_floor,
+        (
+            threshold_raw
+            if threshold_raw is not None
+            else spectral_operator.expectation_floor
+        ),
         label="spectral expectation threshold",
     )
 
@@ -683,19 +679,14 @@ def _log_math_engine_summary(G: "nx.Graph") -> None:
         if not isinstance(expectation_summary, Mapping):
             expectation_summary = summary.get("coherence")
         if isinstance(expectation_summary, Mapping):
-            expectation_flags.append(
-                bool(expectation_summary.get("passed", False))
-            )
+            expectation_flags.append(bool(expectation_summary.get("passed", False)))
             expectation_values.append(
                 finite_spectral_real(
                     expectation_summary.get("value", 0.0),
                     label="spectral operator expectation",
                 )
             )
-            if (
-                expectation_threshold is None
-                and "threshold" in expectation_summary
-            ):
+            if expectation_threshold is None and "threshold" in expectation_summary:
                 expectation_threshold = finite_spectral_real(
                     expectation_summary.get("threshold", 0.0),
                     label="spectral expectation threshold",
@@ -985,9 +976,7 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
     if check_phase:
         edges = list(_iter_graph_edges(graph))
         if edges:
-            phase_gate = float(
-                graph.graph.get("DELTA_PHI_MAX", DELTA_PHI_MAX)
-            )
+            phase_gate = float(graph.graph.get("DELTA_PHI_MAX", DELTA_PHI_MAX))
             phase_violations = []
             for u, v in edges:
                 theta_u = float(get_attr(graph.nodes[u], THETA_ALIAS_KEYS, 0.0))

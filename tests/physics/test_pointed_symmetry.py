@@ -29,8 +29,12 @@ from tnfr.physics.symmetry_sectors import automorphism_permutations
 
 def _star():
     star = nx.star_graph(4)
-    _seed(star, lambda n: 0.1 if n == 0 else 0.3,
-          lambda n: 0.5 if n == 0 else 0.3, lambda n: 1.0)
+    _seed(
+        star,
+        lambda n: 0.1 if n == 0 else 0.3,
+        lambda n: 0.5 if n == 0 else 0.3,
+        lambda n: 1.0,
+    )
     return star
 
 
@@ -47,7 +51,7 @@ def test_stabilizer_fixes_origin_and_contains_identity():
     star = _star()
     stab = stabilizer_permutations(star, 1)
     assert all(g[1] == 1 for g in stab)
-    assert {i: i for i in star.nodes()} in stab   # identity
+    assert {i: i for i in star.nodes()} in stab  # identity
 
 
 def test_stabilizer_is_closed_under_composition():
@@ -57,11 +61,11 @@ def test_stabilizer_is_closed_under_composition():
     for g in stab:
         for h in stab:
             comp = tuple(sorted({x: g[h[x]] for x in h}.items()))
-            assert comp in stab_set        # subgroup closure
+            assert comp in stab_set  # subgroup closure
 
 
 def test_orbit_stabilizer_theorem():
-    assert orbit_stabilizer_holds(_star(), 1)   # 24 = 6 * 4
+    assert orbit_stabilizer_holds(_star(), 1)  # 24 = 6 * 4
     assert orbit_stabilizer_holds(_cycle(), 0)  # 12 = 2 * 6
 
 
@@ -72,13 +76,13 @@ def test_residual_orbits_refine_aut_orbits():
     ctx = pointed_symmetry_context(_star(), 1)
     assert isinstance(ctx, PointedSymmetryContext)
     assert ctx.residual_orbit_count >= ctx.aut_orbit_count
-    assert ctx.residual_orbit_count == 3   # {0}, {1}, {2,3,4}
-    assert ctx.aut_orbit_count == 2        # {0}, {1,2,3,4}
+    assert ctx.residual_orbit_count == 3  # {0}, {1}, {2,3,4}
+    assert ctx.aut_orbit_count == 2  # {0}, {1,2,3,4}
 
 
 def test_stabilizer_isolates_origin_as_singleton_orbit():
     orbits = stabilizer_orbits(_star(), 1)
-    assert (1,) in orbits                  # origin is its own orbit
+    assert (1,) in orbits  # origin is its own orbit
 
 
 # --------------------------------------------------------------------------- #
@@ -88,8 +92,8 @@ def test_pointed_action_breaks_aut_but_preserves_stabilizer():
     for G, v in [(_star(), 1), (_cycle(), 0)]:
         res = pointed_break_residuals(Emission(), G, v)
         assert isinstance(res, PointedBreakResult)
-        assert res.broke_full_symmetry              # left Fix(Aut(G))
-        assert res.preserves_stabilizer             # stayed in Fix(Γ_v)
+        assert res.broke_full_symmetry  # left Fix(Aut(G))
+        assert res.preserves_stabilizer  # stayed in Fix(Γ_v)
         assert res.stabilizer_residual < 1e-6
         assert res.break_magnitude > 1e-6
 
@@ -110,7 +114,7 @@ def test_singleton_orbit_origin_does_not_break_aut():
 def test_stabilizers_of_orbit_mates_are_conjugate():
     star = _star()
     g = next(p for p in automorphism_permutations(star) if p[1] == 3)
-    assert conjugate_stabilizer_holds(star, 1, g)   # Γ_3 = g Γ_1 g^{-1}
+    assert conjugate_stabilizer_holds(star, 1, g)  # Γ_3 = g Γ_1 g^{-1}
 
 
 def test_conjugate_origins_have_equal_stabilizer_order():
@@ -135,10 +139,15 @@ def test_audit_pointed_symmetry_reports_both_cases():
 
 def test_module_exports_complete():
     expected = {
-        "stabilizer_permutations", "stabilizer_orbits", "orbit_of",
-        "orbit_stabilizer_holds", "conjugate_stabilizer_holds",
-        "PointedSymmetryContext", "pointed_symmetry_context",
-        "PointedBreakResult", "pointed_break_residuals",
+        "stabilizer_permutations",
+        "stabilizer_orbits",
+        "orbit_of",
+        "orbit_stabilizer_holds",
+        "conjugate_stabilizer_holds",
+        "PointedSymmetryContext",
+        "pointed_symmetry_context",
+        "PointedBreakResult",
+        "pointed_break_residuals",
         "audit_pointed_symmetry",
     }
     assert expected <= set(ps.__all__)

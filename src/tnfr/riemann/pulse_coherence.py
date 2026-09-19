@@ -107,9 +107,7 @@ def coherence_defect(t: float, sigma: float = 0.5) -> float:
     return abs(z.imag) / (abs(z) + 1e-30)
 
 
-def prime_side_fluctuation(
-    t: float, n_primes: int = 60, max_k: int = 6
-) -> float:
+def prime_side_fluctuation(t: float, n_primes: int = 60, max_k: int = 6) -> float:
     r"""The prime-side series for ``S(T)`` -- ``(1/π) Σ_{p,k}(1/k)p^{-k/2}sin(kT log p)``.
 
     WARNING: this series has abscissa of convergence ``Re(s)=1``, so on the
@@ -135,7 +133,11 @@ class PulseCoherenceCertificate:
     coherence_axis_is_minimal: bool
 
     def summary(self) -> str:
-        status = "PASS" if (self.zero_count_matches and self.coherence_axis_is_minimal) else "PARTIAL"
+        status = (
+            "PASS"
+            if (self.zero_count_matches and self.coherence_axis_is_minimal)
+            else "PARTIAL"
+        )
         return (
             f"PulseCoherenceCertificate[{status}]: {self.n_heights} heights; "
             f"max|ΔS|={self.max_abs_s_error:.3f} (off zeros); "
@@ -165,6 +167,7 @@ def verify_pulse_coherence(
             return float(mp.arg(mp.zeta(mp.mpf("0.5") + 1j * t)) / mp.pi)
 
     except ImportError:  # pragma: no cover
+
         def _true_s(t: float) -> float:
             return argument_fluctuation(t)
 
@@ -179,7 +182,9 @@ def verify_pulse_coherence(
     axis_minimal = True
     for t in heights:
         d_half = coherence_defect(t, 0.5)
-        axis_minimal &= d_half <= coherence_defect(t, 0.6) and d_half <= coherence_defect(t, 0.7)
+        axis_minimal &= d_half <= coherence_defect(
+            t, 0.6
+        ) and d_half <= coherence_defect(t, 0.7)
 
     return PulseCoherenceCertificate(
         n_heights=len(heights),

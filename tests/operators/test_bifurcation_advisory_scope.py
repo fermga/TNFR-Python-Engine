@@ -17,14 +17,16 @@ def _prepared_graph():
     graph = nx.path_graph(3)
     graph.graph.update(VALIDATE_OPERATOR_PRECONDITIONS=True, RANDOM_SEED=17)
     for node in graph:
-        graph.nodes[node].update({
-            ALIAS_EPI[0]: 0.6,
-            ALIAS_VF[0]: 1.0,
-            ALIAS_DNFR[0]: 0.2,
-            ALIAS_THETA[0]: 0.0,
-            "epi_history": [0.0, 0.1, 0.6],
-            "glyph_history": ["IL", "OZ"],
-        })
+        graph.nodes[node].update(
+            {
+                ALIAS_EPI[0]: 0.6,
+                ALIAS_VF[0]: 1.0,
+                ALIAS_DNFR[0]: 0.2,
+                ALIAS_THETA[0]: 0.0,
+                "epi_history": [0.0, 0.1, 0.6],
+                "glyph_history": ["IL", "OZ"],
+            }
+        )
     return graph
 
 
@@ -54,7 +56,11 @@ def test_missing_readiness_flag_is_not_recomputed_from_current_acceleration():
 
 def test_score_can_exceed_half_without_any_acceleration():
     score = compute_bifurcation_score(
-        d2epi=0.0, dnfr=1.0, vf=2.0, epi=0.9, tau=0.25,
+        d2epi=0.0,
+        dnfr=1.0,
+        vf=2.0,
+        epi=0.9,
+        tau=0.25,
     )
     assert score == pytest.approx(0.54)
     assert score > 0.5
@@ -63,7 +69,11 @@ def test_score_can_exceed_half_without_any_acceleration():
 @pytest.mark.parametrize("acceleration", (0.25, 0.5, -0.5))
 def test_score_can_stay_below_half_at_or_above_its_acceleration_scale(acceleration):
     score = compute_bifurcation_score(
-        d2epi=acceleration, dnfr=0.0, vf=0.0, epi=0.0, tau=0.25,
+        d2epi=acceleration,
+        dnfr=0.0,
+        vf=0.0,
+        epi=0.0,
+        tau=0.25,
     )
     assert abs(acceleration) >= 0.25
     assert score == pytest.approx(0.46)

@@ -2,20 +2,19 @@
 
 from __future__ import annotations
 
-from fractions import Fraction
 import importlib.util
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from fractions import Fraction
+from pathlib import Path
 
 import pytest
 
 import tnfr.physics as physics
 import tnfr.physics.remesh_schedule_relative_defect_stability as pure_module
 import tnfr.physics.runtime_remesh_schedule_relative_defect as runtime_module
-
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE_PATH = (
@@ -63,11 +62,11 @@ def test_modules_stubs_and_facade_expose_both_apis() -> None:
         assert getattr(physics, name) is getattr(runtime_module, name)
     assert EXAMPLE_PATH.is_file()
 
-    pure_stub = Path(pure_module.__file__).with_suffix(".pyi").read_text(
-        encoding="utf-8"
+    pure_stub = (
+        Path(pure_module.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
     )
-    runtime_stub = Path(runtime_module.__file__).with_suffix(".pyi").read_text(
-        encoding="utf-8"
+    runtime_stub = (
+        Path(runtime_module.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
     )
     assert "class UniformRemeshScheduleRelativeDefect" in pure_stub
     assert "class RuntimeRemeshScheduleRelativeDefect" in runtime_stub

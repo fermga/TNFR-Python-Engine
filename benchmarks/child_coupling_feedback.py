@@ -23,13 +23,15 @@ import networkx as nx  # noqa: E402
 import numpy as np  # noqa: E402
 
 from benchmarks.forced_support_balance import (  # noqa: E402
-    _same_frozen_inputs, prepare_forced_support_endpoint,
+    _same_frozen_inputs,
+    prepare_forced_support_endpoint,
 )
 from benchmarks.thol_pressure_feedback import _payload, _state  # noqa: E402
 from tnfr.dynamics.dnfr import default_compute_delta_nfr  # noqa: E402
 from tnfr.dynamics.sampling import update_node_sample  # noqa: E402
 from tnfr.operators import (  # noqa: E402
-    build_operator_event_schedule, execute_operator_event_schedule,
+    build_operator_event_schedule,
+    execute_operator_event_schedule,
 )
 from tnfr.operators._coupling_stage_kernel import (  # noqa: E402
     propose_coupling_stage,
@@ -41,14 +43,17 @@ from tnfr.operators.factor_contracts import (  # noqa: E402
 from tnfr.operators.grammar_dynamics import validate_candidate  # noqa: E402
 from tnfr.operators.grammar_execution import ValidatedSequence  # noqa: E402
 from tnfr.physics.forced_support import (  # noqa: E402
-    derive_forced_support_balance, observe_forced_support_pattern,
-    observe_forced_support_reset, observe_forced_support_state,
+    derive_forced_support_balance,
+    observe_forced_support_pattern,
+    observe_forced_support_reset,
+    observe_forced_support_state,
     observe_forced_support_step,
 )
 from tnfr.physics.forcing_realization import capture_non_epi_forcing  # noqa: E402
 from tnfr.research.claims import ClaimStatus  # noqa: E402
 from tnfr.research.core_manifests import (  # noqa: E402
-    CoreExperimentManifest, current_git_source_provenance,
+    CoreExperimentManifest,
+    current_git_source_provenance,
 )
 from tnfr.rng import base_seed  # noqa: E402
 from tnfr.types import Glyph  # noqa: E402
@@ -71,7 +76,9 @@ def _apply_live(graph, node, operator):
 
 def _pattern(reference, capture):
     return observe_forced_support_pattern(
-        reference, nodes=capture.snapshot.nodes, epi=capture.snapshot.epi,
+        reference,
+        nodes=capture.snapshot.nodes,
+        epi=capture.snapshot.epi,
     )
 
 
@@ -83,7 +90,8 @@ def _compatibility_channels(reference, capture):
         "topo": capture.snapshot.topology_gradient,
     }
     result = {
-        key: weights[key] * sum(
+        key: weights[key]
+        * sum(
             (d * value for d, value in zip(reference.strengths, values, strict=True)),
             Fraction(0),
         )
@@ -106,8 +114,10 @@ def _executor_record(evidence, before, raw):
 
     def endpoint(value):
         return {
-            "nodes": value.nodes, "epi": value.epi,
-            "capacity": value.nu_f, "pressure": value.delta_nfr,
+            "nodes": value.nodes,
+            "epi": value.epi,
+            "capacity": value.nu_f,
+            "pressure": value.delta_nfr,
         }
 
     left, right = endpoint(certificate.left), endpoint(certificate.right)
@@ -120,7 +130,8 @@ def _executor_record(evidence, before, raw):
         "extended_dynamics_requested": evidence.extended_dynamics_requested,
         "clipping_applied": evidence.clipping_applied,
         "duration": certificate.duration,
-        "captured_left": left, "captured_right": right,
+        "captured_left": left,
+        "captured_right": right,
         "left_binding": {key: value == before[key] for key, value in left.items()},
         "right_binding": {key: value == raw[key] for key, value in right.items()},
         "scope": (
@@ -134,7 +145,8 @@ def _checkpoint_record(record):
     return {
         "helper": "benchmarks.forced_support_balance.prepare_forced_support_endpoint",
         "source_case": record["case"],
-        "initial": record["initial"], "retained_endpoint": record["final"],
+        "initial": record["initial"],
+        "retained_endpoint": record["final"],
         "executed_prefix_segment_count": len(record["segments"]),
         "prefix_elapsed_time": record["physical_elapsed_time"],
         "prefix_reference": record["reference"],
@@ -151,16 +163,27 @@ def _checkpoint_record(record):
 
 
 def _advance_forced_support_interval(
-    graph, original_reference, reference, current, frozen_capture, *, duration,
+    graph,
+    original_reference,
+    reference,
+    current,
+    frozen_capture,
+    *,
+    duration,
 ):
     """Run one shared held Euler interval with exact budgets and endpoint bindings."""
     left = _state(graph)
     original_before = _pattern(original_reference, current)
     schedule = build_operator_event_schedule(
-        (), start_time=left["time"], flow_durations=(duration,),
+        (),
+        start_time=left["time"],
+        flow_durations=(duration,),
     )
     execution = execute_operator_event_schedule(
-        graph, schedule, method="euler", include_flow_certificates=True,
+        graph,
+        schedule,
+        method="euler",
+        include_flow_certificates=True,
     )
     evidence = execution.flow_interval_evidence[0]
     raw_endpoint = _state(graph)
@@ -170,15 +193,21 @@ def _advance_forced_support_interval(
     if not all(frozen.values()):
         raise RuntimeError("a postevent frozen input changed during flow")
     step = observe_forced_support_step(
-        reference, current.snapshot, following.snapshot, dt=duration,
+        reference,
+        current.snapshot,
+        following.snapshot,
+        dt=duration,
     )
     step_payload = asdict(step)
     step_payload.pop("reference")
     return following, {
-        "before": left, "raw_after_integrator": raw_endpoint,
-        "after_refresh": _state(graph), "duration": duration,
+        "before": left,
+        "raw_after_integrator": raw_endpoint,
+        "after_refresh": _state(graph),
+        "duration": duration,
         "executor_evidence": _executor_record(evidence, left, raw_endpoint),
-        "forcing_capture": asdict(following), "frozen_input_checks": frozen,
+        "forcing_capture": asdict(following),
+        "frozen_input_checks": frozen,
         "original_pattern_before": asdict(original_before),
         "original_pattern_after": asdict(_pattern(original_reference, following)),
         "regime_step_budget": step_payload,
@@ -198,7 +227,8 @@ def prepare_child_feedback_endpoint(case="child_coupling"):
     before = _state(graph)
     old_capture = capture_non_epi_forcing(graph)
     old_reference = derive_forced_support_balance(
-        old_capture.snapshot, epi_weight=old_capture.epi_weight,
+        old_capture.snapshot,
+        epi_weight=old_capture.epi_weight,
         forcing=old_capture.forcing,
     )
     child_index = before["nodes"].index(child)
@@ -213,10 +243,15 @@ def prepare_child_feedback_endpoint(case="child_coupling"):
     admission = None
     if case == "child_coupling":
         factors = resolve_runtime_operator_factors(
-            graph.graph.get("GLYPH_FACTORS"), Glyph.UM, graph.graph,
+            graph.graph.get("GLYPH_FACTORS"),
+            Glyph.UM,
+            graph.graph,
         )
         proposal = propose_coupling_stage(
-            graph, (child,), factors, resolved_seed=base_seed(graph),
+            graph,
+            (child,),
+            factors,
+            resolved_seed=base_seed(graph),
             node_offsets=dict(ensure_node_offset_map(graph)),
         )
         admission = _apply_live(graph, child, Coupling())
@@ -225,24 +260,34 @@ def prepare_child_feedback_endpoint(case="child_coupling"):
     after_event = _state(graph)
     current = capture_non_epi_forcing(graph)
     reference = derive_forced_support_balance(
-        current.snapshot, epi_weight=current.epi_weight, forcing=current.forcing,
+        current.snapshot,
+        epi_weight=current.epi_weight,
+        forcing=current.forcing,
     )
     reset = observe_forced_support_reset(
-        old_reference, reference, old_capture.snapshot, current.snapshot,
+        old_reference,
+        reference,
+        old_capture.snapshot,
+        current.snapshot,
     )
     reset_payload = asdict(reset)
     reset_payload.pop("before_reference")
     reset_payload.pop("after_reference")
     old_edges = {frozenset((u, v)) for u, v, _ in before["edges"]}
     actual_edges = tuple(
-        (u, v, dict(data)) for u, v, data in graph.edges(data=True)
+        (u, v, dict(data))
+        for u, v, data in graph.edges(data=True)
         if frozenset((u, v)) not in old_edges
     )
     phases = dict(zip(raw["nodes"], raw["phase"], strict=True))
     event = {
-        "before": before, "raw_after_event": raw, "after_refresh": after_event,
-        "target": child, "actual_admission": admission,
-        "child_word": CHILD_WORD, "initialized_child_context": child_context,
+        "before": before,
+        "raw_after_event": raw,
+        "after_refresh": after_event,
+        "target": child,
+        "actual_admission": admission,
+        "child_word": CHILD_WORD,
+        "initialized_child_context": child_context,
         "child_word_both_validators_passed": True,
         "child_word_executed_prefix": ("UM",) if admission else (),
         "sample_before": sample_before,
@@ -255,7 +300,8 @@ def prepare_child_feedback_endpoint(case="child_coupling"):
         "before_forcing_capture": asdict(old_capture),
         "after_forcing_capture": asdict(current),
         "before_compatibility_channels": _compatibility_channels(
-            old_reference, old_capture,
+            old_reference,
+            old_capture,
         ),
         "after_compatibility_channels": _compatibility_channels(reference, current),
         "original_pattern_before": asdict(_pattern(old_reference, old_capture)),
@@ -271,17 +317,25 @@ def prepare_child_feedback_endpoint(case="child_coupling"):
     segments = []
     for _ in range(SEGMENT_COUNT):
         current, segment = _advance_forced_support_interval(
-            graph, old_reference, reference, current, frozen_capture, duration=STEP,
+            graph,
+            old_reference,
+            reference,
+            current,
+            frozen_capture,
+            duration=STEP,
         )
         segments.append(segment)
     final = _state(graph)
     final_pattern = _pattern(old_reference, current)
     final_regime = observe_forced_support_state(reference, current.snapshot)
     return graph, {
-        "case": case, "checkpoint": _checkpoint_record(checkpoint),
+        "case": case,
+        "checkpoint": _checkpoint_record(checkpoint),
         "original_reference": asdict(old_reference),
         "postevent_reference": asdict(reference),
-        "event": event, "segments": segments, "final_before_closure": final,
+        "event": event,
+        "segments": segments,
+        "final_before_closure": final,
         "final_original_pattern": asdict(final_pattern),
         "final_regime_state": asdict(final_regime),
         "postevent_elapsed_time": final["time"] - after_event["time"],
@@ -301,13 +355,18 @@ def run_child_feedback_case(case):
     graph, record = prepare_child_feedback_endpoint(case)
     closures = []
     if case == "child_coupling":
-        closures.append({
-            "admission": _apply_live(graph, record["event"]["target"], Silence()),
+        closures.append(
+            {
+                "admission": _apply_live(graph, record["event"]["target"], Silence()),
+                "after": _state(graph),
+            }
+        )
+    closures.append(
+        {
+            "admission": _apply_live(graph, 0, Silence()),
             "after": _state(graph),
-        })
-    closures.append({
-        "admission": _apply_live(graph, 0, Silence()), "after": _state(graph),
-    })
+        }
+    )
     record["closures_after_measurement"] = closures
     return record
 
@@ -315,41 +374,53 @@ def run_child_feedback_case(case):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--output", type=Path,
+        "--output",
+        type=Path,
         default=ROOT / "artifacts/research/child_coupling_feedback.json",
     )
     args = parser.parse_args()
     scope = (
-        "src/tnfr", "benchmarks/capacity_localization.py",
-        "benchmarks/thol_pressure_feedback.py", "benchmarks/thol_birth_transport.py",
-        "benchmarks/forced_support_balance.py", "benchmarks/child_coupling_feedback.py",
+        "src/tnfr",
+        "benchmarks/capacity_localization.py",
+        "benchmarks/thol_pressure_feedback.py",
+        "benchmarks/thol_birth_transport.py",
+        "benchmarks/forced_support_balance.py",
+        "benchmarks/child_coupling_feedback.py",
     )
     provenance = current_git_source_provenance(ROOT, scope)
     sha, dirty, digest = provenance
     manifest = CoreExperimentManifest(
         claim_id="O3.a-retained-child-coupling-reference-reset",
-        git_sha=sha, source_dirty=dirty, dirty_source_hash=digest,
+        git_sha=sha,
+        source_dirty=dirty,
+        dirty_source_hash=digest,
         versions={
             "python": platform.python_version(),
-            "networkx": nx.__version__, "numpy": np.__version__,
+            "networkx": nx.__version__,
+            "numpy": np.__version__,
         },
         graph_construction="Actual retained C8+child after 24 held Euler intervals",
         capacity_specification=(
             "Actual child UM capacity change; held during measured flow"
         ),
         solver="Existing default nodal Euler intervals; explicit canonical refresh",
-        timestep=STEP, seed=17, result_status=ClaimStatus.MEASURED,
+        timestep=STEP,
+        seed=17,
+        result_status=ClaimStatus.MEASURED,
         operator_sequence=("parent IL OZ THOL UM", "child UM", "separate final SHA"),
         telemetry=(
-            "actual functional links and auxiliary writes", "fixed original pattern",
-            "reference/metric reset budgets", "pressure/Euler defects and mean drift",
+            "actual functional links and auxiliary writes",
+            "fixed original pattern",
+            "reference/metric reset budgets",
+            "pressure/Euler defects and mean drift",
         ),
         controls=("independent no-extra-event continuation",),
         artifacts=(str(args.output),),
     )
     manifest.validate_for_admission()
     report = {
-        "manifest": manifest.to_dict(), "source_scope": scope,
+        "manifest": manifest.to_dict(),
+        "source_scope": scope,
         "cases": [run_child_feedback_case(case) for case in CASES],
         "experimental_status": "No empirical correspondence tested",
     }

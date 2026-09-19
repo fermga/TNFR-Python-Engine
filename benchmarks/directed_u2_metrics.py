@@ -40,12 +40,14 @@ from tnfr.research import (  # noqa: E402
 
 CASES = [
     ("circulant C7{1,2} (normal)", directed_cayley_adjacency(7, {1, 2})),
-    ("asymmetric 4-cycle (SC, non-normal)",
-     np.array([[0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 1], [1, 0, 0, 0]],
-              dtype=float)),
-    ("weighted ring+chord (SC, non-normal)",
-     np.array([[0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2], [2, 0, 1, 0]],
-              dtype=float)),
+    (
+        "asymmetric 4-cycle (SC, non-normal)",
+        np.array([[0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 1], [1, 0, 0, 0]], dtype=float),
+    ),
+    (
+        "weighted ring+chord (SC, non-normal)",
+        np.array([[0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2], [2, 0, 1, 0]], dtype=float),
+    ),
 ]
 
 
@@ -72,32 +74,40 @@ def main() -> int:
     for kind in (NormKind.EUCLIDEAN, NormKind.STATIONARY):
         r = u2_integral_readings(W, x0, kind=kind)
         net_le_total &= r.net_le_total
-        print(f"    {r.norm_kind:11s} net={r.net:.4f} total={r.total:.4f} "
-              f"net<=total={r.net_le_total}")
+        print(
+            f"    {r.norm_kind:11s} net={r.net:.4f} total={r.total:.4f} "
+            f"net<=total={r.net_le_total}"
+        )
 
     audit = CircularityAudit()  # pure spectral/metric dynamics
     manifest = ExperimentManifest(
         claim_id="NT-P09b",
         git_sha="local",
-        versions={"python": platform.python_version(),
-                  "numpy": np.__version__},
+        versions={"python": platform.python_version(), "numpy": np.__version__},
         seed=None,
         operator_sequence=(),
         uses_known_factors=False,
         input_bits=input_bit_length(max(len(W) for _, W in CASES)),
-        controls=("normal_circulant", "euclidean_vs_stationary",
-                  "net_vs_total_integral"),
+        controls=(
+            "normal_circulant",
+            "euclidean_vs_stationary",
+            "net_vs_total_integral",
+        ),
         artifacts=(),
     )
     print()
     print(f"  stationary contraction (all): {all_contract}")
-    print(f"  Euclidean/stationary metrics disagree (non-normal): "
-          f"{metric_disagrees}")
+    print(
+        f"  Euclidean/stationary metrics disagree (non-normal): " f"{metric_disagrees}"
+    )
     print(f"  net <= total (all): {net_le_total}")
-    print(f"  stationary contraction : {ClaimStatus.DERIVED.value} + measured "
-          "(Jensen)")
-    print(f"  canonical U2 metric    : {ClaimStatus.CONJECTURAL.value} / OPEN "
-          "(NT-P09b; U2 not modified)")
+    print(
+        f"  stationary contraction : {ClaimStatus.DERIVED.value} + measured " "(Jensen)"
+    )
+    print(
+        f"  canonical U2 metric    : {ClaimStatus.CONJECTURAL.value} / OPEN "
+        "(NT-P09b; U2 not modified)"
+    )
     print(f"  circularity            : {audit.verdict.value}")
     ok = all_contract and metric_disagrees and net_le_total
     return 0 if ok else 1

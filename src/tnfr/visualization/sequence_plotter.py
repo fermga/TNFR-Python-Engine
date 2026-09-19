@@ -28,6 +28,7 @@ _LINE_WIDTH = 2.5
 _BAR_WIDTH = 0.35
 _LIGHT_ALPHA = 0.2
 _PATTERN_ALPHA = 0.76
+_PATTERN_BOX_PADDING = 0.04
 _TIMELINE_ALPHA = 0.59
 
 # Selected rubric targets and display bands for bounded sequence-health scores.
@@ -586,7 +587,7 @@ class SequenceVisualizer:
                 (x_positions[i] - 0.03, y_base - 0.08),
                 0.06,
                 0.16,
-                boxstyle=f"round,pad={_EXP_NEG_PI}",  # box padding (operational)
+                boxstyle=f"round,pad={_PATTERN_BOX_PADDING}",  # box padding (operational)
                 facecolor=color,
                 edgecolor="black",
                 linewidth=2,

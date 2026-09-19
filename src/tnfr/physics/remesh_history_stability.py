@@ -141,9 +141,7 @@ def _exact_scalar(value: Any, label: str) -> Fraction:
     if not math.isfinite(floating):
         raise TNFRValueError(f"{label} must be finite")
     if floating == 0.0 and source_nonzero:
-        raise TNFRValueError(
-            f"{label} contains a nonzero value below binary64 range"
-        )
+        raise TNFRValueError(f"{label} contains a nonzero value below binary64 range")
     return Fraction.from_float(floating)
 
 
@@ -170,8 +168,7 @@ def _exact_vector(value: Any, label: str) -> ExactVector:
     if not items:
         raise TNFRValueError(f"{label} must be nonempty")
     return tuple(
-        _exact_scalar(item, f"{label}[{index}]")
-        for index, item in enumerate(items)
+        _exact_scalar(item, f"{label}[{index}]") for index, item in enumerate(items)
     )
 
 
@@ -267,9 +264,7 @@ def _temporal_model(
         )
         for row in range(1, dimension)
     )
-    denominator = (
-        Fraction(1) + gamma * tau_local + delta * tau_global
-    )
+    denominator = Fraction(1) + gamma * tau_local + delta * tau_global
     stationary = (Fraction(1, 1) / denominator,) + tuple(
         (
             (gamma if index <= tau_local else Fraction(0))
@@ -279,13 +274,10 @@ def _temporal_model(
         for index in range(1, dimension)
     )
     row_stochastic = all(
-        all(entry >= 0 for entry in row)
-        and sum(row, Fraction(0)) == 1
+        all(entry >= 0 for entry in row) and sum(row, Fraction(0)) == 1
         for row in companion
     )
-    stationary_invariant = (
-        _left_matrix_vector(stationary, companion) == stationary
-    )
+    stationary_invariant = _left_matrix_vector(stationary, companion) == stationary
     strict_mixing = Fraction(0) < alpha < Fraction(1)
     conditions = (
         ("canonical_coefficient_partition", beta + gamma + delta == 1),
@@ -301,8 +293,7 @@ def _temporal_model(
             "active_delay_support_exact",
             bool(combined)
             and all(coefficient > 0 for _, coefficient in combined)
-            and sum((coefficient for _, coefficient in combined), Fraction(0))
-            == 1,
+            and sum((coefficient for _, coefficient in combined), Fraction(0)) == 1,
         ),
         ("temporal_companion_row_stochastic", row_stochastic),
         (
@@ -315,24 +306,16 @@ def _temporal_model(
         (
             "strict_mixing_companion_primitive",
             not strict_mixing
-            or (
-                beta > 0
-                and maximum > 0
-                and coefficients[maximum] > 0
-            ),
+            or (beta > 0 and maximum > 0 and coefficients[maximum] > 0),
         ),
         (
             "alpha_zero_identity_map",
-            alpha != 0
-            or (combined == ((0, Fraction(1)),) and maximum == 0),
+            alpha != 0 or (combined == ((0, Fraction(1)),) and maximum == 0),
         ),
         (
             "alpha_one_pure_delay_map",
             alpha != 1
-            or (
-                combined == ((tau_global, Fraction(1)),)
-                and maximum == tau_global
-            ),
+            or (combined == ((tau_global, Fraction(1)),) and maximum == tau_global),
         ),
     )
     return _TemporalModel(
@@ -658,21 +641,24 @@ def _centered_energy(
     metric: ExactVector,
 ) -> tuple[ExactVector, Fraction]:
     total = sum(metric, Fraction(0))
-    mean = sum(
-        (
-            weight * value
-            for weight, value in zip(metric, field_value, strict=True)
-        ),
-        Fraction(0),
-    ) / total
+    mean = (
+        sum(
+            (weight * value for weight, value in zip(metric, field_value, strict=True)),
+            Fraction(0),
+        )
+        / total
+    )
     centered = tuple(value - mean for value in field_value)
-    energy = sum(
-        (
-            weight * value * value
-            for weight, value in zip(metric, centered, strict=True)
-        ),
-        Fraction(0),
-    ) / 2
+    energy = (
+        sum(
+            (
+                weight * value * value
+                for weight, value in zip(metric, centered, strict=True)
+            ),
+            Fraction(0),
+        )
+        / 2
+    )
     return centered, energy
 
 
@@ -742,9 +728,7 @@ def _derive_transition_model(
         )
         for coordinate in range(width)
     )
-    centered_and_energy = tuple(
-        _centered_energy(row, metric) for row in exact_history
-    )
+    centered_and_energy = tuple(_centered_energy(row, metric) for row in exact_history)
     centered_history = tuple(item[0] for item in centered_and_energy)
     history_energies = tuple(item[1] for item in centered_and_energy)
     next_centered, next_energy = _centered_energy(next_field, metric)
@@ -772,9 +756,7 @@ def _derive_transition_model(
         ),
         Fraction(0),
     )
-    active = tuple(
-        (delay, centered_history[delay]) for delay, _ in coefficients
-    )
+    active = tuple((delay, centered_history[delay]) for delay, _ in coefficients)
     dissipation = Fraction(0)
     pi_zero = temporal_weights[0]
     for left_index, (left_delay, left_coefficient) in enumerate(coefficients):
@@ -794,11 +776,7 @@ def _derive_transition_model(
                 Fraction(0),
             )
             dissipation += (
-                pi_zero
-                * left_coefficient
-                * right_coefficient
-                * squared_distance
-                / 2
+                pi_zero * left_coefficient * right_coefficient * squared_distance / 2
             )
     drop = before - after
     active_equal = _pairwise_active_fields_equal(active)
@@ -809,9 +787,7 @@ def _derive_transition_model(
     post_history = (next_field,) + exact_history[:-1]
     post_barycenter = _weighted_history_field(temporal_weights, post_history)
     strict_limit = (
-        stationary_barycenter
-        if Fraction(0) < certificate.alpha < Fraction(1)
-        else None
+        stationary_barycenter if Fraction(0) < certificate.alpha < Fraction(1) else None
     )
     weighted_centered_next = tuple(
         sum(
@@ -920,15 +896,11 @@ def observe_uniform_remesh_history_transition(
         ),
         lyapunov_nonincreasing=model.lyapunov_nonincreasing,
         lyapunov_equality=model.lyapunov_equality,
-        exact_stationary_history_barycenter=(
-            model.exact_stationary_history_barycenter
-        ),
+        exact_stationary_history_barycenter=(model.exact_stationary_history_barycenter),
         exact_post_transition_stationary_history_barycenter=(
             model.exact_post_transition_stationary_history_barycenter
         ),
-        exact_strict_mixing_temporal_limit=(
-            model.exact_strict_mixing_temporal_limit
-        ),
+        exact_strict_mixing_temporal_limit=(model.exact_strict_mixing_temporal_limit),
         conditions=model.conditions,
     )
     result = _seal(

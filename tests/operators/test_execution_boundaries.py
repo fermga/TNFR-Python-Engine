@@ -8,7 +8,12 @@ import pytest
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from tnfr.operators import apply_glyph
 from tnfr.operators.definitions import (
-    Dissonance, Emission, Reception, SelfOrganization, Silence, Transition,
+    Dissonance,
+    Emission,
+    Reception,
+    SelfOrganization,
+    Silence,
+    Transition,
 )
 from tnfr.operators.grammar_debt import PRIOR_COHERENCE_KEY, U2_DEBT_KEY
 from tnfr.operators.preconditions import OperatorPreconditionError
@@ -16,17 +21,26 @@ from tnfr.operators.preconditions import OperatorPreconditionError
 
 def _graph():
     graph = nx.Graph()
-    graph.add_node(0, **{
-        ALIAS_EPI[0]: 0.5, ALIAS_VF[0]: 1.0,
-        ALIAS_DNFR[0]: 0.2, ALIAS_THETA[0]: 0.0,
-        "glyph_history": ["AL"], U2_DEBT_KEY: 0, PRIOR_COHERENCE_KEY: False,
-    })
+    graph.add_node(
+        0,
+        **{
+            ALIAS_EPI[0]: 0.5,
+            ALIAS_VF[0]: 1.0,
+            ALIAS_DNFR[0]: 0.2,
+            ALIAS_THETA[0]: 0.0,
+            "glyph_history": ["AL"],
+            U2_DEBT_KEY: 0,
+            PRIOR_COHERENCE_KEY: False,
+        },
+    )
     return graph
 
 
 @pytest.mark.parametrize("window", [-1, 1.5, True])
 @pytest.mark.parametrize("use_operator", [False, True])
-def test_invalid_window_rejected_before_state_history_metadata_or_cache_changes(window, use_operator):
+def test_invalid_window_rejected_before_state_history_metadata_or_cache_changes(
+    window, use_operator
+):
     graph = _graph()
     before_node = deepcopy(graph.nodes[0])
     before_graph = deepcopy(graph.graph)
@@ -79,7 +93,9 @@ def test_self_organization_fallback_cannot_create_unrecorded_sub_structure():
     assert graph.graph["operator_metrics"][-1]["operator"] == "Coherence"
 
 
-def test_contract_audit_cannot_certify_a_fallback_as_the_requested_operator(monkeypatch):
+def test_contract_audit_cannot_certify_a_fallback_as_the_requested_operator(
+    monkeypatch,
+):
     from tnfr.operators.definitions import Coherence
     from tnfr.physics.integrity import audit_operator_contracts
 
@@ -95,8 +111,15 @@ def test_contract_audit_cannot_certify_a_fallback_as_the_requested_operator(monk
 
 def test_dissonance_fallback_does_not_propagate_stabilization_as_dissonance():
     graph = _graph()
-    graph.add_node(1, **{ALIAS_DNFR[0]: 0.1, ALIAS_EPI[0]: 0.5,
-                        ALIAS_THETA[0]: 0.0, ALIAS_VF[0]: 1.0})
+    graph.add_node(
+        1,
+        **{
+            ALIAS_DNFR[0]: 0.1,
+            ALIAS_EPI[0]: 0.5,
+            ALIAS_THETA[0]: 0.0,
+            ALIAS_VF[0]: 1.0,
+        },
+    )
     graph.add_edge(0, 1)
     graph.nodes[0]["glyph_history"] = ["VAL", "VAL"]
     graph.nodes[0][U2_DEBT_KEY] = 2
@@ -135,8 +158,8 @@ def test_low_level_dispatch_uses_the_shared_canonical_name_mapping(name):
 
 
 def test_accepted_operator_runs_grammar_selection_once(monkeypatch):
-    from tnfr.operators.definitions import Coherence
     from tnfr.operators import grammar_application
+    from tnfr.operators.definitions import Coherence
 
     original = grammar_application.enforce_canonical_grammar
     calls = []

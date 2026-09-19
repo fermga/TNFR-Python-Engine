@@ -118,12 +118,8 @@ def test_resonance_diagnostic_uses_the_same_canonical_u3_default() -> None:
 def test_structural_identity_rejects_antiphase_multiturn_representative() -> None:
     identity = StructuralIdentity(1.0, (0.5, 1.5), phase_pattern=0.0)
 
-    assert identity.matches(
-        {"EPI": 1.0, "nu_f": 1.0, "theta": 4.0 * math.pi + 0.01}
-    )
-    assert not identity.matches(
-        {"EPI": 1.0, "nu_f": 1.0, "theta": 3.0 * math.pi}
-    )
+    assert identity.matches({"EPI": 1.0, "nu_f": 1.0, "theta": 4.0 * math.pi + 0.01})
+    assert not identity.matches({"EPI": 1.0, "nu_f": 1.0, "theta": 3.0 * math.pi})
 
 
 def test_mutation_postcondition_treats_complete_turn_as_same_phase() -> None:
@@ -137,18 +133,12 @@ def test_mutation_postcondition_treats_complete_turn_as_same_phase() -> None:
 def test_membrane_flux_uses_shortest_arc_gate() -> None:
     compatible = nx.Graph([(0, 1)])
     compatible.nodes[0].update(EPI=0.1, theta=0.01, nu_f=1.0, delta_nfr=0.0)
-    compatible.nodes[1].update(
-        EPI=0.8, theta=math.tau - 0.01, nu_f=1.0, delta_nfr=0.0
-    )
+    compatible.nodes[1].update(EPI=0.8, theta=math.tau - 0.01, nu_f=1.0, delta_nfr=0.0)
     apply_membrane_flux(compatible, [1], [0], phase_threshold=0.1)
 
     incompatible = nx.Graph([(0, 1)])
-    incompatible.nodes[0].update(
-        EPI=0.1, theta=4.0 * math.pi, nu_f=1.0, delta_nfr=0.0
-    )
-    incompatible.nodes[1].update(
-        EPI=0.8, theta=math.pi, nu_f=1.0, delta_nfr=0.0
-    )
+    incompatible.nodes[0].update(EPI=0.1, theta=4.0 * math.pi, nu_f=1.0, delta_nfr=0.0)
+    incompatible.nodes[1].update(EPI=0.8, theta=math.pi, nu_f=1.0, delta_nfr=0.0)
     apply_membrane_flux(incompatible, [1], [0], phase_threshold=0.1)
 
     assert compatible.nodes[0]["EPI"] > 0.1

@@ -1,18 +1,17 @@
 """Exact fixtures and scope controls for the paired pure-EPI C6 class."""
 
+import math
 from dataclasses import FrozenInstanceError
 from fractions import Fraction
-import math
 
 import pytest
 
-from tnfr.constants.canonical import CHANNEL_WEIGHT_SECONDARY
 import tnfr.physics.binary64_nodal_flow as owner
+from tnfr.constants.canonical import CHANNEL_WEIGHT_SECONDARY
 from tnfr.physics.binary64_nodal_flow import (
     observe_binary64_paired_c6_diffusion,
     observe_binary64_unit_quarter_flow,
 )
-
 
 SOURCE = (13 / 16, 3 / 4, 11 / 16, 11 / 16, 3 / 4, 13 / 16)
 GRADIENT = (Fraction(-1, 32), 0, Fraction(1, 32), Fraction(1, 32), 0, Fraction(-1, 32))
@@ -24,8 +23,14 @@ def _observe(epi=SOURCE, epi_weight=CHANNEL_WEIGHT_SECONDARY):
 
 def test_unit_coefficient_has_independent_exact_quarter_endpoint():
     result = _observe(epi_weight=1.0)
-    expected = (Fraction(103, 128), Fraction(3, 4), Fraction(89, 128),
-                Fraction(89, 128), Fraction(3, 4), Fraction(103, 128))
+    expected = (
+        Fraction(103, 128),
+        Fraction(3, 4),
+        Fraction(89, 128),
+        Fraction(89, 128),
+        Fraction(3, 4),
+        Fraction(103, 128),
+    )
     assert result.ideal_pressure == GRADIENT
     assert result.pressure == result.vector_pressure == tuple(map(float, GRADIENT))
     assert result.flow.exact_endpoint == expected
@@ -51,8 +56,14 @@ def test_actual_default_coefficient_preserves_pairs_without_substitution():
     expected_pressure = tuple(weight * value for value in GRADIENT)
     assert result.epi_weight == CHANNEL_WEIGHT_SECONDARY
     assert result.ideal_pressure == expected_pressure
-    assert result.pressure == result.vector_pressure == tuple(map(float, expected_pressure))
-    assert result.pressure_binding_residual == result.pressure_rounding_defect == (0,) * 6
+    assert (
+        result.pressure
+        == result.vector_pressure
+        == tuple(map(float, expected_pressure))
+    )
+    assert (
+        result.pressure_binding_residual == result.pressure_rounding_defect == (0,) * 6
+    )
     assert result.flow.mean_before == result.flow.mean_after == Fraction(3, 4)
     assert result.flow.mean_endpoint_defect == result.mean_drift == 0
     assert result.endpoint_interval[0] > result.source_interval[0]
@@ -65,11 +76,16 @@ def test_mixed_sign_rows_bind_both_pressure_reducers_to_the_exact_model():
     result = _observe(epi=source)
     exact = tuple(map(Fraction, source))
     independently_derived = tuple(
-        Fraction(CHANNEL_WEIGHT_SECONDARY) * ((exact[i - 1] + exact[(i + 1) % 6]) / 2 - exact[i])
+        Fraction(CHANNEL_WEIGHT_SECONDARY)
+        * ((exact[i - 1] + exact[(i + 1) % 6]) / 2 - exact[i])
         for i in range(6)
     )
     assert result.ideal_pressure == independently_derived
-    assert result.pressure == result.vector_pressure == tuple(map(float, independently_derived))
+    assert (
+        result.pressure
+        == result.vector_pressure
+        == tuple(map(float, independently_derived))
+    )
     assert result.pressure_pair_sums == (0,) * 3
     assert result.endpoint_pair_sums == result.source_pair_sums
 
@@ -100,7 +116,9 @@ def test_subnormal_coefficient_rounding_remains_sign_symmetric():
     result = _observe(epi_weight=math.ulp(0.0))
     assert any(result.ideal_pressure)
     assert not any(result.pressure)
-    assert result.pressure_rounding_defect == tuple(-value for value in result.ideal_pressure)
+    assert result.pressure_rounding_defect == tuple(
+        -value for value in result.ideal_pressure
+    )
     assert result.flow.endpoint == SOURCE
     assert result.nonuniform_plateau
     assert result.mean_drift == 0
@@ -108,7 +126,9 @@ def test_subnormal_coefficient_rounding_remains_sign_symmetric():
 
 @pytest.mark.parametrize("binade", [0.0625, 0.125, 0.25, 0.5])
 @pytest.mark.parametrize("weight", [CHANNEL_WEIGHT_SECONDARY, 1.0])
-def test_extreme_interior_lattice_states_remain_inside_the_original_interval(binade, weight):
+def test_extreme_interior_lattice_states_remain_inside_the_original_interval(
+    binade, weight
+):
     spacing = math.ulp(binade)
     lower, upper, center = binade + spacing, 2 * binade - spacing, 1.5 * binade
     source = (upper, lower, center, lower, upper, center)
@@ -116,8 +136,12 @@ def test_extreme_interior_lattice_states_remain_inside_the_original_interval(bin
     assert result.binade_lower == Fraction(binade)
     for step in result.flow.substeps:
         assert all(lower <= value <= upper for value in step.after)
-        assert tuple(Fraction(step.after[i]) + Fraction(step.after[i + 3])
-                     for i in range(3)) == (2 * Fraction(center),) * 3
+        assert (
+            tuple(
+                Fraction(step.after[i]) + Fraction(step.after[i + 3]) for i in range(3)
+            )
+            == (2 * Fraction(center),) * 3
+        )
     assert result.interval_preserved and result.mean_preserved
 
 
@@ -148,7 +172,8 @@ def test_common_half_lattice_center_is_rejected_and_has_a_real_tie_obstruction()
     with pytest.raises(ValueError, match="half-grid"):
         _observe(epi=source)
     held = observe_binary64_unit_quarter_flow(
-        epi=source, pressure=(2.0**-50,) * 3 + (-2.0**-50,) * 3,
+        epi=source,
+        pressure=(2.0**-50,) * 3 + (-(2.0**-50),) * 3,
     )
     assert held.endpoint == (0.75,) * 6
     assert held.mean_pressure == 0
@@ -157,11 +182,14 @@ def test_common_half_lattice_center_is_rejected_and_has_a_real_tie_obstruction()
     assert all(cell.lower_tie for cell in held.substeps[0].source_cells[3:])
 
 
-@pytest.mark.parametrize("source", [
-    (0.5,) * 6,
-    (1.0,) * 6,
-    (0.5 + 2.0**-53,) * 3 + (0.5 - 2.0**-53,) * 3,
-])
+@pytest.mark.parametrize(
+    "source",
+    [
+        (0.5,) * 6,
+        (1.0,) * 6,
+        (0.5 + 2.0**-53,) * 3 + (0.5 - 2.0**-53,) * 3,
+    ],
+)
 def test_inherited_half_epi_or_cross_binade_states_are_outside_the_class(source):
     with pytest.raises(ValueError, match="common normal binade"):
         _observe(epi=source)
@@ -191,16 +219,19 @@ def test_coefficient_requires_finite_unit_interval(weight):
         _observe(epi_weight=weight)
 
 
-@pytest.mark.parametrize("source,error", [
-    (list(SOURCE), TypeError),
-    ((), ValueError),
-    ((1,) * 6, TypeError),
-    ((Fraction(3, 4),) * 6, TypeError),
-    ((math.nan,) * 6, ValueError),
-    ((math.inf,) * 6, ValueError),
-    ((0.01,) * 6, ValueError),
-    ((1.5,) * 6, ValueError),
-])
+@pytest.mark.parametrize(
+    "source,error",
+    [
+        (list(SOURCE), TypeError),
+        ((), ValueError),
+        ((1,) * 6, TypeError),
+        ((Fraction(3, 4),) * 6, TypeError),
+        ((math.nan,) * 6, ValueError),
+        ((math.inf,) * 6, ValueError),
+        ((0.01,) * 6, ValueError),
+        ((1.5,) * 6, ValueError),
+    ],
+)
 def test_source_types_and_declared_epi_band_are_validated(source, error):
     with pytest.raises(error):
         _observe(epi=source)
@@ -260,4 +291,6 @@ def test_public_result_is_frozen_and_has_no_caller_supplied_reference_cache():
     with pytest.raises(FrozenInstanceError):
         result.pressure = (0.0,) * 6
     with pytest.raises(TypeError):
-        observe_binary64_paired_c6_diffusion(epi=SOURCE, epi_weight=1.0, reference=result)
+        observe_binary64_paired_c6_diffusion(
+            epi=SOURCE, epi_weight=1.0, reference=result
+        )

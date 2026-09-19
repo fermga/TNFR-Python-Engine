@@ -1,9 +1,9 @@
 """Finite canonical P2 words, runtime defects and the binary64 gap obstruction."""
 
-from dataclasses import replace
-from fractions import Fraction
 import json
 import math
+from dataclasses import replace
+from fractions import Fraction
 
 import pytest
 
@@ -55,7 +55,10 @@ def test_actual_events_keep_default_factors_and_record_every_admission(cases):
         assert event["sequence_index"] == 2 + 2 * index
         assert separator["sequence_index"] == 3 + 2 * index
         assert event["resolved_factors"]["UM_vf_sync"] == defaults["UM_vf_sync"]
-        assert separator["resolved_factors"]["IL_dnfr_factor"] == defaults["IL_dnfr_factor"]
+        assert (
+            separator["resolved_factors"]["IL_dnfr_factor"]
+            == defaults["IL_dnfr_factor"]
+        )
         before = event["before"]["state"]
         after = event["after_refresh"]["state"]
         assert after["capacity"][1] == before["capacity"][1] == 1
@@ -63,8 +66,10 @@ def test_actual_events_keep_default_factors_and_record_every_admission(cases):
         assert after["epi"] == before["epi"]
         assert after["phase"] == before["phase"] == (0, 0)
         assert after["edges"] == before["edges"]
-    assert all(cycle["event"] is cycle["separator"] is None
-               for cycle in cases["held_capacity"]["cycles"])
+    assert all(
+        cycle["event"] is cycle["separator"] is None
+        for cycle in cases["held_capacity"]["cycles"]
+    )
 
 
 def test_il_separator_has_a_raw_pressure_effect_but_no_refreshed_primary_effect(cases):
@@ -88,7 +93,9 @@ def test_finite_domain_and_execution_evidence_are_checked_at_each_boundary(cases
             assert all(all(checks.values()) for checks in cycle["family_checks"])
             for key in ("domain_before", "domain_after_event", "domain_after_flow"):
                 assert cycle[key]["inside"]
-                assert min(cycle[key]["lower_margins"] + cycle[key]["upper_margins"]) >= 0
+                assert (
+                    min(cycle[key]["lower_margins"] + cycle[key]["upper_margins"]) >= 0
+                )
             evidence = cycle["flow"]["executor_evidence"]
             assert evidence["integrator_provenance_certified"]
             assert evidence["resolved_method"] == "euler"
@@ -104,16 +111,22 @@ def test_finite_domain_and_execution_evidence_are_checked_at_each_boundary(cases
             assert cycle["flow"]["regime_step_budget"]["convex_step_admissible"]
 
 
-def test_three_error_sources_reconstruct_actual_endpoints_without_zeroing_rounding(cases):
+def test_three_error_sources_reconstruct_actual_endpoints_without_zeroing_rounding(
+    cases,
+):
     nonzero = {"capacity": False, "pressure": False, "execution": False}
     for cycle in cases["coupled"]["cycles"]:
         defect = cycle["defects"]
         assert defect["identity_residual"] == (0, 0)
         for i in range(2):
-            assert defect["epi_defect"][i] == sum(defect[name][i] for name in (
-                "capacity_transition_epi_effect", "pressure_realization_epi_effect",
-                "execution_epi_effect",
-            ))
+            assert defect["epi_defect"][i] == sum(
+                defect[name][i]
+                for name in (
+                    "capacity_transition_epi_effect",
+                    "pressure_realization_epi_effect",
+                    "execution_epi_effect",
+                )
+            )
             actual = F(cycle["flow"]["after_refresh"]["epi"][i])
             assert actual == defect["ideal_epi"][i] + defect["epi_defect"][i]
         nonzero["capacity"] |= defect["capacity_gap_defect"] != 0
@@ -121,18 +134,24 @@ def test_three_error_sources_reconstruct_actual_endpoints_without_zeroing_roundi
         nonzero["execution"] |= any(defect["execution_epi_effect"])
         mean = defect["mean_budget"]
         assert mean["mean_model_change"] == mean["mean_identity_residual"] == 0
-        assert mean["mean_change"] == mean["mean_pressure_defect"] + mean["mean_step_defect"]
+        assert (
+            mean["mean_change"]
+            == mean["mean_pressure_defect"] + mean["mean_step_defect"]
+        )
     assert all(nonzero.values())
 
 
 def test_fixed_uniform_target_and_frozen_profile_floor_are_separate(cases):
     coupled, held = (cases[key] for key in campaign.CASES)
-    assert (0 < coupled["final_original_pattern"]["error_variance"]
-            < held["final_original_pattern"]["error_variance"])
+    assert (
+        0
+        < coupled["final_original_pattern"]["error_variance"]
+        < held["final_original_pattern"]["error_variance"]
+    )
     for record in cases.values():
         snapshot = record["final_capture"]["snapshot"]
         x0, x1 = snapshot["epi"]
-        assert record["final_original_pattern"]["error_variance"] == (x0 - x1)**2 / 4
+        assert record["final_original_pattern"]["error_variance"] == (x0 - x1) ** 2 / 4
         gap = snapshot["capacity"][0] - snapshot["capacity"][1]
         k = record["coupled_model"]["forcing_ratio"]
         assert record["conditional_frozen_limit"]["error_variance"] == k**2 * gap**2 / 4
@@ -143,8 +162,10 @@ def test_fixed_uniform_target_and_frozen_profile_floor_are_separate(cases):
     assert held["model_bound"] is None
     # A better final response is not a monotone original-target trajectory.
     last = coupled["cycles"][-1]["flow"]
-    assert (last["original_pattern_after"]["error_variance"]
-            > last["original_pattern_before"]["error_variance"])
+    assert (
+        last["original_pattern_after"]["error_variance"]
+        > last["original_pattern_before"]["error_variance"]
+    )
 
 
 def test_sha_is_admitted_after_measurement_and_outside_the_cycle_reference(cases):
@@ -165,7 +186,9 @@ def test_production_default_um_has_a_nonzero_binary64_capacity_gap_fixed_point()
     target = campaign._reference(before)
     ops = (Coupling(), Silence())
     word, _ = campaign._word(ops, initialized=True)
-    after, event = campaign._event(graph, 0, ops[0], word.step(0), target, before, refresh=True)
+    after, event = campaign._event(
+        graph, 0, ops[0], word.step(0), target, before, refresh=True
+    )
     gamma = F(event["resolved_factors"]["UM_vf_sync"])
     gap = before.snapshot.capacity[0] - 1
     assert 0 < gamma < F(1, 4)
@@ -175,15 +198,23 @@ def test_production_default_um_has_a_nonzero_binary64_capacity_gap_fixed_point()
     assert after.snapshot.epi == before.snapshot.epi
     assert gap - (1 - gamma) * gap == gamma * gap > 0
     assert campaign._reference(after).relative_profile != (0, 0)
-    _, closure = campaign._event(graph, 0, ops[1], word.step(1), target, after, refresh=True)
+    _, closure = campaign._event(
+        graph, 0, ops[1], word.step(1), target, after, refresh=True
+    )
     assert closure["status"] == "executed"
 
 
-@pytest.mark.parametrize("field,value", (
-    ("phase", (F(0), F(1))),
-    ("stored_pressure_residual", (F(1), F(0))),
-    ("normalized_weights", (("phase", F(1)), ("epi", F(1)), ("vf", F(1)), ("topo", F(1)))),
-))
+@pytest.mark.parametrize(
+    "field,value",
+    (
+        ("phase", (F(0), F(1))),
+        ("stored_pressure_residual", (F(1), F(0))),
+        (
+            "normalized_weights",
+            (("phase", F(1)), ("epi", F(1)), ("vf", F(1)), ("topo", F(1))),
+        ),
+    ),
+)
 def test_changed_runtime_hypotheses_cannot_reuse_the_family(field, value):
     capture = capture_non_epi_forcing(campaign.prepare_p2())
     with pytest.raises(ValueError, match="hypotheses failed"):
@@ -201,9 +232,14 @@ def test_strict_artifact_preserves_the_infinite_closure_metric(cases):
     decoded = json.loads(encoded)
     raw = cases["coupled"]["closure_after_measurement"]["actual_operator_metrics"][0]
     assert raw["time_to_collapse"] == math.inf
-    metric = decoded["cases"][0]["closure_after_measurement"]["actual_operator_metrics"][0]
+    metric = decoded["cases"][0]["closure_after_measurement"][
+        "actual_operator_metrics"
+    ][0]
     assert metric["time_to_collapse"] == {"numeric_kind": "positive_infinity"}
-    assert decoded["cases"][0]["cycles"][0]["defects"]["identity_residual"] == ["0", "0"]
+    assert decoded["cases"][0]["cycles"][0]["defects"]["identity_residual"] == [
+        "0",
+        "0",
+    ]
 
 
 def test_artifact_does_not_hide_nonfinite_structural_state(cases):

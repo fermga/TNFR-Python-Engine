@@ -39,10 +39,13 @@ def test_emission_runtime_and_metrics_are_epi_only() -> None:
     Emission()(graph, 0)
 
     assert get_attr(graph.nodes[0], ALIAS_EPI) > 0.0
-    assert tuple(
-        get_attr(graph.nodes[0], aliases)
-        for aliases in (ALIAS_VF, ALIAS_DNFR, ALIAS_THETA)
-    ) == before
+    assert (
+        tuple(
+            get_attr(graph.nodes[0], aliases)
+            for aliases in (ALIAS_VF, ALIAS_DNFR, ALIAS_THETA)
+        )
+        == before
+    )
     metrics = graph.graph["operator_metrics"][-1]
     assert metrics["emission_quality"] == "valid"
     assert metrics["emission_effective"] is True
@@ -70,9 +73,7 @@ def test_emission_contract_declares_channel_purity() -> None:
     contract = contract_for("emission")
 
     assert contract.primary_channel is StateChannel.EPI
-    assert contract.postcondition == (
-        "EPI not decreased; νf, phase and ΔNFR unchanged"
-    )
+    assert contract.postcondition == ("EPI not decreased; νf, phase and ΔNFR unchanged")
 
 
 def test_frequency_advice_never_claims_emission_raises_capacity() -> None:

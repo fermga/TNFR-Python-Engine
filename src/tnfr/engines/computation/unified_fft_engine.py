@@ -238,10 +238,7 @@ class TNFRUnifiedFFTEngine:
         return None
 
     def _store_cache(self, cache_key: str, result: UnifiedFFTResult) -> None:
-        if (
-            not self.config.cache_spectral_decompositions
-            or self._max_cache_bytes <= 0
-        ):
+        if not self.config.cache_spectral_decompositions or self._max_cache_bytes <= 0:
             return
 
         stored = deepcopy(result)
@@ -267,6 +264,7 @@ class TNFRUnifiedFFTEngine:
             self._spectral_cache[cache_key] = stored
             self._cache_sizes[cache_key] = size
             self._cache_bytes += size
+
     def _select_backend(self, data_shape: tuple[int, ...], operation: str) -> str:
         """Select only a backend that implements the sequence protocol."""
 
@@ -286,9 +284,7 @@ class TNFRUnifiedFFTEngine:
 
         if candidate == "basic":
             return candidate
-        method = (
-            "compute_fft" if operation == "fft" else "compute_spectral_convolution"
-        )
+        method = "compute_fft" if operation == "fft" else "compute_spectral_convolution"
         engine = self._get_backend_engine(candidate)
         return candidate if callable(getattr(engine, method, None)) else "basic"
 
@@ -325,9 +321,7 @@ class TNFRUnifiedFFTEngine:
         spectral_precision: str,
     ) -> tuple[UnifiedFFTBackend, str, str | None]:
         candidate = self._get_backend_engine(requested_backend, spectral_precision)
-        method = (
-            "compute_fft" if operation == "fft" else "compute_spectral_convolution"
-        )
+        method = "compute_fft" if operation == "fft" else "compute_spectral_convolution"
         if callable(getattr(candidate, method, None)):
             return candidate, requested_backend, None
         fallback = self._get_backend_engine("basic", spectral_precision)
@@ -444,9 +438,7 @@ class TNFRUnifiedFFTEngine:
         options = dict(kwargs)
         forced_backend = options.pop("backend", None)
         precision = self._effective_precision(signal1, signal2)
-        requested = forced_backend or self._select_backend(
-            signal1.shape, "convolution"
-        )
+        requested = forced_backend or self._select_backend(signal1.shape, "convolution")
         cache_key = self._get_cache_key(
             (signal1, signal2),
             "convolution",
@@ -560,9 +552,7 @@ class TNFRUnifiedFFTEngine:
         }
 
     @staticmethod
-    def _compute_coherence_matrix(
-        fft1: np.ndarray, fft2: np.ndarray
-    ) -> np.ndarray:
+    def _compute_coherence_matrix(fft1: np.ndarray, fft2: np.ndarray) -> np.ndarray:
         """Compute scale-invariant normalized cross-power at every FFT bin."""
 
         first_nonzero = np.abs(fft1) > 0.0
@@ -597,6 +587,7 @@ class TNFRUnifiedFFTEngine:
                 "oversize_skips": 0,
             }
         logger.info("Cleared unified FFT cache")
+
     def get_backend_info(self) -> dict[str, Any]:
         backends: dict[str, Any] = {}
         for name in ("advanced", "distributed", "basic"):
@@ -673,9 +664,7 @@ class _BasicNumpyFFTBackend:
                 context={"spectral_precision": self.precision},
                 suggestion="Use float64 precision or reduce the input magnitude.",
             )
-        frequencies = np.asarray(
-            np.fft.fftfreq(len(working)), dtype=self.real_dtype
-        )
+        frequencies = np.asarray(np.fft.fftfreq(len(working)), dtype=self.real_dtype)
         elapsed = (time.perf_counter() - started) * 1000.0
         payload_mb = (spectral.nbytes + frequencies.nbytes) / (1024 * 1024)
         return UnifiedFFTResult(
@@ -715,9 +704,7 @@ class _BasicNumpyFFTBackend:
                 context={"spectral_precision": self.precision},
                 suggestion="Use float64 precision or reduce the input magnitude.",
             )
-        frequencies = np.asarray(
-            np.fft.fftfreq(len(first)), dtype=self.real_dtype
-        )
+        frequencies = np.asarray(np.fft.fftfreq(len(first)), dtype=self.real_dtype)
         elapsed = (time.perf_counter() - started) * 1000.0
         payload_mb = (convolution.nbytes + frequencies.nbytes) / (1024 * 1024)
         return UnifiedFFTResult(

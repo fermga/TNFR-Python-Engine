@@ -106,15 +106,12 @@ def test_automorphism_vs_relabeling_split_on_generator():
     assert classify_morphism(rot, lc, lc) is StructuralMorphismKind.AUTOMORPHISM
     lp = _lap(nx.path_graph(4))
     q = permutation_matrix({0: 2, 1: 0, 2: 3, 3: 1}, list(range(4)))
-    assert classify_morphism(q, lp, q @ lp @ q.T) is \
-        StructuralMorphismKind.RELABELING
+    assert classify_morphism(q, lp, q @ lp @ q.T) is StructuralMorphismKind.RELABELING
 
 
 def test_noncommuting_permutation_is_not_an_automorphism():
     lap = _lap(nx.path_graph(3))
-    swaps_centre_and_endpoint = permutation_matrix(
-        {0: 1, 1: 0, 2: 2}, list(range(3))
-    )
+    swaps_centre_and_endpoint = permutation_matrix({0: 1, 1: 0, 2: 2}, list(range(3)))
 
     certificate = certify_morphism(swaps_centre_and_endpoint, lap, lap)
 
@@ -126,8 +123,7 @@ def test_full_rank_intertwiner_classification_is_scale_invariant():
     lap = _lap(nx.path_graph(2))
 
     certificates = [
-        certify_morphism(scale * np.eye(2), lap, lap)
-        for scale in (1e-20, 1e20)
+        certify_morphism(scale * np.eye(2), lap, lap) for scale in (1e-20, 1e20)
     ]
 
     assert all(
@@ -136,10 +132,7 @@ def test_full_rank_intertwiner_classification_is_scale_invariant():
     )
     assert all(certificate.rank == 2 for certificate in certificates)
     assert all(certificate.is_bijection for certificate in certificates)
-    assert all(
-        certificate.intertwines_within_tolerance
-        for certificate in certificates
-    )
+    assert all(certificate.intertwines_within_tolerance for certificate in certificates)
     assert all(
         classify_morphism(scale * np.eye(2), lap, lap)
         is StructuralMorphismKind.INTERTWINER
@@ -153,8 +146,7 @@ def test_padic_scale_maps_are_coarse_graining_and_lift():
     l_lo = _frac(padic_laplacian(3, 1, compatible_connection_set(3, 1, base)))
     r = _frac(projective_scale_map(3, 1))
     lift = _frac(padic_lift_map(3, 1))
-    assert classify_morphism(r, l_hi, l_lo) is \
-        StructuralMorphismKind.COARSE_GRAINING
+    assert classify_morphism(r, l_hi, l_lo) is StructuralMorphismKind.COARSE_GRAINING
     assert classify_morphism(lift, l_lo, l_hi) is StructuralMorphismKind.LIFT
 
 
@@ -175,8 +167,7 @@ def test_folding_power_map_is_endomorphism():
     for x in range(p):
         fold[(x * x) % p, x] = 1.0
     lap = _lap(nx.cycle_graph(7))
-    assert classify_morphism(fold, lap, lap) is \
-        StructuralMorphismKind.ENDOMORPHISM
+    assert classify_morphism(fold, lap, lap) is StructuralMorphismKind.ENDOMORPHISM
 
 
 def test_nonpermutation_conjugation_is_intertwiner():
@@ -185,8 +176,7 @@ def test_nonpermutation_conjugation_is_intertwiner():
         [[1, 0.3, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0.2], [0, 0, 0, 1]], dtype=float
     )
     lt = shear @ ls @ np.linalg.inv(shear)
-    assert classify_morphism(shear, ls, lt) is \
-        StructuralMorphismKind.INTERTWINER
+    assert classify_morphism(shear, ls, lt) is StructuralMorphismKind.INTERTWINER
 
 
 # --------------------------------------------------------------------------- #
@@ -197,15 +187,13 @@ def test_predicates():
     assert is_permutation_matrix(perm)
     assert not is_permutation_matrix(np.array([[0.5, 0.5], [0.5, 0.5]]))
     r = _frac(projective_scale_map(3, 1))
-    assert is_partition_average(r)                 # fiber quotient
-    assert not is_partition_average(np.eye(3))     # not dimension-dropping
+    assert is_partition_average(r)  # fiber quotient
+    assert not is_partition_average(np.eye(3))  # not dimension-dropping
     assert is_idempotent(np.array([[1.0, 0.0], [0.0, 0.0]]))
     assert not is_idempotent(np.array([[0.0, 1.0], [1.0, 0.0]]))
 
 
-@pytest.mark.parametrize(
-    "boolean", [True, False, np.bool_(True), np.bool_(False)]
-)
+@pytest.mark.parametrize("boolean", [True, False, np.bool_(True), np.bool_(False)])
 def test_public_morphism_numeric_controls_reject_booleans(boolean):
     identity = np.eye(2)
     state = np.array([1.0, -1.0])
@@ -238,8 +226,8 @@ def test_certificate_marks_morphism_not_operator():
     lc = _lap(nx.cycle_graph(6))
     rot = permutation_matrix({i: (i + 1) % 6 for i in range(6)}, list(range(6)))
     cert = certify_morphism(rot, lc, lc)
-    assert cert.is_operator is False           # not one of the 13 operators
-    assert cert.emerges_from_nodal_equation    # but it is a nodal-flow transport
+    assert cert.is_operator is False  # not one of the 13 operators
+    assert cert.emerges_from_nodal_equation  # but it is a nodal-flow transport
     assert cert.is_intertwiner
 
 
@@ -282,9 +270,7 @@ def test_constant_probe_cannot_certify_nonintertwining_map():
     """A consensus probe can hide a generator-level transport defect."""
     source = np.array([[1.0, -1.0], [-1.0, 1.0]])
     target = 0.5 * source
-    cert = certify_morphism(
-        np.eye(2), source, target, flow_probe=np.ones(2)
-    )
+    cert = certify_morphism(np.eye(2), source, target, flow_probe=np.ones(2))
     assert cert.nodal_flow_residual < 1e-9
     assert cert.intertwining_residual > 1e-3
     assert not cert.is_intertwiner
@@ -317,9 +303,7 @@ def test_one_sampled_trajectory_can_hide_a_nonintertwining_direction():
 )
 def test_sampled_flow_residual_rejects_vacuous_sampling(kwargs, message):
     with pytest.raises(ValueError, match=message):
-        nodal_flow_preservation_residual(
-            np.eye(2), np.eye(2), np.eye(2), **kwargs
-        )
+        nodal_flow_preservation_residual(np.eye(2), np.eye(2), np.eye(2), **kwargs)
 
 
 @pytest.mark.parametrize(
@@ -342,8 +326,8 @@ def test_audit_six_emerge_one_boundary():
     assert len(results) == 7
     emerging = [c for _, c in results if c.emerges_from_nodal_equation]
     boundary = [c for _, c in results if not c.emerges_from_nodal_equation]
-    assert len(emerging) == 6                  # the intertwiners
-    assert len(boundary) == 1                  # the folding endomorphism
+    assert len(emerging) == 6  # the intertwiners
+    assert len(boundary) == 1  # the folding endomorphism
     assert boundary[0].kind is StructuralMorphismKind.ENDOMORPHISM
     assert all(not c.is_operator for _, c in results)
 
@@ -355,16 +339,21 @@ def test_kinds_are_relabel_invariant():
     sigma = permutation_matrix({i: (i + 2) % 6 for i in range(6)}, list(range(6)))
     relabelled = sigma @ rot @ sigma.T
     lc2 = sigma @ lc @ sigma.T
-    assert classify_morphism(relabelled, lc2, lc2) is \
-        classify_morphism(rot, lc, lc)
+    assert classify_morphism(relabelled, lc2, lc2) is classify_morphism(rot, lc, lc)
 
 
 def test_module_exports_complete():
     expected = {
-        "StructuralMorphismKind", "is_permutation_matrix", "is_partition_average",
-        "is_idempotent", "intertwining_residual", "finite_time_intertwining_bound",
-        "nodal_flow_preservation_residual", "classify_morphism",
-        "StructuralMorphismCertificate", "certify_morphism",
+        "StructuralMorphismKind",
+        "is_permutation_matrix",
+        "is_partition_average",
+        "is_idempotent",
+        "intertwining_residual",
+        "finite_time_intertwining_bound",
+        "nodal_flow_preservation_residual",
+        "classify_morphism",
+        "StructuralMorphismCertificate",
+        "certify_morphism",
         "audit_structural_morphisms",
     }
     assert expected <= set(sm.__all__)

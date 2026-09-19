@@ -65,10 +65,7 @@ from ..metrics.sense_index import compute_Si
 from ..operators import apply_glyph
 from ..types import GlyphCode
 from . import canonical, coordination, dnfr, integrators, metabolism
-from .adaptation import (
-    adapt_vf_after_structural_stability,
-    adapt_vf_by_coherence,
-)
+from .adaptation import adapt_vf_after_structural_stability, adapt_vf_by_coherence
 from .adaptive_sequences import AdaptiveSequenceSelector
 from .aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_DSI, ALIAS_EPI, ALIAS_SI, ALIAS_VF
 from .bifurcation import compute_bifurcation_score, get_bifurcation_paths

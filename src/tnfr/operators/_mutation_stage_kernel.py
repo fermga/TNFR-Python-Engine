@@ -206,9 +206,7 @@ def propose_mutation_network_stage(
     from .nodal_equation import compute_d2epi_dt2
     from .preconditions.mutation import record_destabilizer_context
 
-    structural_acceleration = float(
-        compute_d2epi_dt2(graph, node, store=False)
-    )
+    structural_acceleration = float(compute_d2epi_dt2(graph, node, store=False))
     acceleration_magnitude = abs(structural_acceleration)
     tau_raw = tau
     if tau_raw is None:
@@ -299,9 +297,7 @@ def commit_mutation_lifecycle(
     data["_zhir_gate_depi_dt"] = proposal.runtime_gate.threshold.depi_dt
     data["_zhir_gate_xi"] = proposal.runtime_gate.threshold.xi
     data["_zhir_gate_history_key"] = proposal.runtime_gate.threshold.history_key
-    data["_zhir_gate_sample_interval"] = (
-        proposal.runtime_gate.threshold.sample_interval
-    )
+    data["_zhir_gate_sample_interval"] = proposal.runtime_gate.threshold.sample_interval
     commit_mutation_bifurcation_event(graph, proposal)
 
 

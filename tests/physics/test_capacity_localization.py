@@ -10,23 +10,24 @@ from tnfr.constants import DEFAULTS
 from tnfr.physics.capacity_localization import observe_cycle_capacity_balance
 from tnfr.utils import normalize_weights
 
-
 F = Fraction
 
 
 def _cycle_gradient(values):
     return tuple(
-        (values[(i - 1) % len(values)] + values[(i + 1) % len(values)]) / 2
-        - value
+        (values[(i - 1) % len(values)] + values[(i + 1) % len(values)]) / 2 - value
         for i, value in enumerate(values)
     )
 
 
 def _dirichlet(values):
-    return sum(
-        (values[(i + 1) % len(values)] - value) ** 2
-        for i, value in enumerate(values)
-    ) / 2
+    return (
+        sum(
+            (values[(i + 1) % len(values)] - value) ** 2
+            for i, value in enumerate(values)
+        )
+        / 2
+    )
 
 
 def test_prepared_capacity_dip_produces_a_quantified_equilibrium_peak():
@@ -78,7 +79,8 @@ def test_epi_gradient_energy_can_rise_while_derived_balances_decrease():
     result = observe_cycle_capacity_balance(
         (F(3, 4), F(1, 2), F(1, 2), F(1, 2)),
         (F(1, 2), 1, 1, 1),
-        epi_weight=F(1, 2), vf_weight=F(1, 2),
+        epi_weight=F(1, 2),
+        vf_weight=F(1, 2),
     )
     assert result.epi_dirichlet_derivative == F(1, 16)
     assert result.shifted_dirichlet_derivative == F(-1, 16)
@@ -174,11 +176,18 @@ def test_results_are_detached_and_immutable():
 
 @pytest.mark.parametrize(
     "epi,nu",
-    [((), ()), ((0, 0), (1, 1)), ((0, 0, 0), (1, 1)),
-     ((0, 0, 0), (0, 1, 1)), ((0, 0, 0), (-1, 1, 1)),
-     ((0, 0, 0), (True, 1, 1)), ((True, 0, 0), (1, 1, 1)),
-     ((float("inf"), 0, 0), (1, 1, 1)), ("000", (1, 1, 1)),
-     ((0, 0, 0), {1, 2, 3})],
+    [
+        ((), ()),
+        ((0, 0), (1, 1)),
+        ((0, 0, 0), (1, 1)),
+        ((0, 0, 0), (0, 1, 1)),
+        ((0, 0, 0), (-1, 1, 1)),
+        ((0, 0, 0), (True, 1, 1)),
+        ((True, 0, 0), (1, 1, 1)),
+        ((float("inf"), 0, 0), (1, 1, 1)),
+        ("000", (1, 1, 1)),
+        ((0, 0, 0), {1, 2, 3}),
+    ],
 )
 def test_invalid_cycle_coordinates_are_rejected(epi, nu):
     with pytest.raises((TypeError, ValueError)):
@@ -187,8 +196,14 @@ def test_invalid_cycle_coordinates_are_rejected(epi, nu):
 
 @pytest.mark.parametrize(
     "kwargs",
-    [{"epi_weight": 0}, {"epi_weight": -1}, {"vf_weight": -1},
-     {"epi_weight": True}, {"vf_weight": "0.5"}, {"vf_weight": float("nan")}],
+    [
+        {"epi_weight": 0},
+        {"epi_weight": -1},
+        {"vf_weight": -1},
+        {"epi_weight": True},
+        {"vf_weight": "0.5"},
+        {"vf_weight": float("nan")},
+    ],
 )
 def test_invalid_channel_coefficients_are_rejected(kwargs):
     with pytest.raises((TypeError, ValueError)):

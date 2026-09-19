@@ -32,23 +32,32 @@ separate stage contract.
 
 ## Canonical contracts
 
-| Operator | Glyph | Primary channel | Scale | Direct postcondition |
-| --- | --- | --- | --- | --- |
-| Emission | AL | EPI | node | EPI does not decrease; frequency, pressure and phase stay unchanged |
-| Reception | EN | EPI | node | Immediate operator-local C(t), pressure and change rate stay unchanged |
-| Resonance | RA | EPI | node | EPI structural identity is preserved |
-| Silence | SHA | structural frequency | node | Structural frequency does not increase |
-| Expansion | VAL | structural frequency | node | Structural frequency does not decrease |
-| Contraction | NUL | structural frequency | node | Structural frequency does not increase |
-| Coupling | UM | phase | node | Pressure magnitude does not increase under mutual stabilization |
-| Mutation | ZHIR | phase | node | Phase is transformed when mutation preconditions hold |
-| Coherence | IL | pressure | node | Pressure magnitude and coherence do not worsen |
-| Dissonance | OZ | pressure | node | Pressure magnitude does not decrease |
-| Self-organization | THOL | pressure | node | Global form is preserved without catastrophic coherence loss |
-| Transition | NAV | pressure | node | At least one controlled state channel changes |
-| Recursivity | REMESH | EPI | network | EPI mixes with two delayed per-node snapshots |
+This table is generated from the registry, including its declared measurement
+context. Refresh it with `python scripts/check_documentation.py --write-generated`;
+the normal documentation gate checks exact agreement. It specifies metadata and
+contracts, not a proof that every execution path satisfies a global theorem.
 
-The REMESH row describes the separately invoked network operation
+<!-- BEGIN GENERATED OPERATOR CONTRACTS -->
+
+| Operator | Token | Glyph | Primary channel | Scale | Context | Registered postcondition |
+| --- | --- | --- | --- | --- | --- | --- |
+| Emission | emission | AL | EPI | node | network | EPI not decreased; νf, phase and ΔNFR unchanged |
+| Reception | reception | EN | EPI | node | network | Immediate operator-local C(t) unchanged; ΔNFR and dEPI unchanged |
+| Resonance | resonance | RA | EPI | node | identity | EPI structural identity (sign/kind) preserved |
+| Silence | silence | SHA | nu_f | node | network | νf not increased; EPI, ΔNFR and phase unchanged during SHA |
+| Expansion | expansion | VAL | nu_f | node | network | νf not decreased (capacity added) |
+| Contraction | contraction | NUL | nu_f | node | network | νf not increased (capacity removed) |
+| Coupling | coupling | UM | theta | node | network | &#124;ΔNFR&#124; not increased (mutual stabilization) |
+| Mutation | mutation | ZHIR | theta | node | phase | θ transformed (θ → θ') |
+| Coherence | coherence | IL | delta_nfr | node | network | &#124;ΔNFR&#124; not increased and C(t) not decreased |
+| Dissonance | dissonance | OZ | delta_nfr | node | node | &#124;ΔNFR&#124; not decreased |
+| Self-organization | self_organization | THOL | delta_nfr | node | network | parent EPI, nu_f and phase fixed; DeltaNFR follows signed acceleration; nested child creation preserves parent identity |
+| Transition | transition | NAV | delta_nfr | node | state | state changed (νf, θ, or ΔNFR) |
+| Recursivity | recursivity | REMESH | EPI | network | advisory | node-level advisory; network effect = EPI mixed toward temporal/multi-scale history |
+
+<!-- END GENERATED OPERATOR CONTRACTS -->
+
+The REMESH row distinguishes the advisory glyph from the separately invoked network operation
 apply_network_remesh. Its public planner, plan_network_remesh, returns an
 immutable all-node proposal. Insufficient history or empty live support is an
 explicit no-op; after the history guard passes, each selected temporal snapshot
@@ -73,17 +82,9 @@ For exact wording and measured context, inspect
 
 ## Six global invariants
 
-The canonical invariant list is owned by
-[AGENTS.md](../AGENTS.md#8-canonical-invariants):
-
-1. nodal-equation integrity;
-2. phase-coherent coupling;
-3. multi-scale fractality;
-4. grammar compliance;
-5. structural metrology;
-6. reproducible dynamics.
-
-This document does not define a parallel invariant list.
+The single working definition is [AGENTS.md, canonical invariants](../AGENTS.md#8-canonical-invariants).
+This API reference states path-specific preconditions, effects and evidence;
+it does not maintain a second list or strengthen those invariants.
 
 ## Valid execution example
 

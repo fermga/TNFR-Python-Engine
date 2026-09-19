@@ -13,7 +13,6 @@ import networkx as nx
 import pytest
 
 import tnfr.operators as operators
-
 from tnfr.dynamics.integrators import AbstractIntegrator
 from tnfr.dynamics.runtime import _resolve_integrator_instance
 from tnfr.errors import TNFRValueError
@@ -35,7 +34,6 @@ from tnfr.operators.network_stage import (
     GraphTransactionSnapshot,
     NetworkStageResult,
 )
-
 
 _WORD = ("emission", "coupling", "coherence", "silence")
 
@@ -77,10 +75,7 @@ def _plain_state(graph: nx.Graph) -> tuple[Any, ...]:
         if key not in {"integrator", "_integrator_cache"}
     }
     return (
-        tuple(
-            (node, deepcopy(dict(data)))
-            for node, data in graph.nodes(data=True)
-        ),
+        tuple((node, deepcopy(dict(data))) for node, data in graph.nodes(data=True)),
         tuple(
             (left, right, deepcopy(dict(data)))
             for left, right, data in graph.edges(data=True)
@@ -132,9 +127,7 @@ class HeldInputIntegrator(AbstractIntegrator):
             data["EPI"] = float(data["EPI"]) + float(dt) * (
                 float(data["nu_f"]) * float(data["delta_nfr"])
             )
-            data["dEPI_dt"] = float(data["nu_f"]) * float(
-                data["delta_nfr"]
-            )
+            data["dEPI_dt"] = float(data["nu_f"]) * float(data["delta_nfr"])
             data["d2EPI_dt2"] = 0.0
         graph.graph["_t"] = float(t) + float(dt)
 
@@ -265,12 +258,9 @@ def test_runtime_evidence_preserves_historical_dataclass_contract_schema() -> No
             {
                 "runtime_clock_checked": True,
                 "flow_provenance": (
-                    "tnfr.operators.event_runtime."
-                    "execute_operator_event_schedule"
+                    "tnfr.operators.event_runtime." "execute_operator_event_schedule"
                 ),
-                "nodal_flow_inputs": (
-                    "live_nu_f_and_delta_nfr_at_each_interval_start"
-                ),
+                "nodal_flow_inputs": ("live_nu_f_and_delta_nfr_at_each_interval_start"),
                 "whole_schedule_graph_state_atomic": True,
                 "operator_jumps_have_zero_duration": True,
                 "solver_accuracy_certified": False,
@@ -311,9 +301,7 @@ def test_runtime_evidence_preserves_historical_dataclass_contract_schema() -> No
         "glyph_stage_evidence",
         "represented_epi_schedule_composition",
     )
-    current_init_fields = tuple(
-        item.name for item in fields(result) if item.init
-    )
+    current_init_fields = tuple(item.name for item in fields(result) if item.init)
     assert current_init_fields[: len(historical_result_init_fields)] == (
         historical_result_init_fields
     )
@@ -712,9 +700,10 @@ def test_integrator_cannot_rebind_one_side_of_a_protected_alias() -> None:
     with pytest.raises(TNFRValueError, match="may update only EPI") as failure:
         execute_operator_event_schedule(graph, schedule)
 
-    assert "protected_identity_preserved" in failure.value.context[
-        "failed_preservation_checks"
-    ]
+    assert (
+        "protected_identity_preserved"
+        in failure.value.context["failed_preservation_checks"]
+    )
     assert graph.graph["shared_payload"] is graph.nodes[0]["payload"]
     assert graph.graph["shared_payload"] == shared_payload
     assert integrator.calls == 0
@@ -745,9 +734,10 @@ def test_integrator_cannot_break_undirected_edge_storage_alias() -> None:
     with pytest.raises(TNFRValueError, match="may update only EPI") as failure:
         execute_operator_event_schedule(graph, schedule)
 
-    assert "protected_identity_preserved" in failure.value.context[
-        "failed_preservation_checks"
-    ]
+    assert (
+        "protected_identity_preserved"
+        in failure.value.context["failed_preservation_checks"]
+    )
     assert graph._adj[0][1] is graph._adj[1][0]
     assert graph._adj[0][1] is original_edge_storage
 
@@ -779,9 +769,10 @@ def test_integrator_cannot_break_directed_root_adjacency_alias() -> None:
     with pytest.raises(TNFRValueError, match="may update only EPI") as failure:
         execute_operator_event_schedule(graph, schedule)
 
-    assert "protected_identity_preserved" in failure.value.context[
-        "failed_preservation_checks"
-    ]
+    assert (
+        "protected_identity_preserved"
+        in failure.value.context["failed_preservation_checks"]
+    )
     assert graph._adj is graph._succ
     assert graph._adj is original_adjacency
 
@@ -876,10 +867,9 @@ def test_empty_schedule_avoids_virtual_graph_attribute_access(
         touches = 0
 
         def __getattribute__(self, name):
-            if (
-                name == object.__getattribute__(self, "hostile_attribute")
-                and object.__getattribute__(self, "armed")
-            ):
+            if name == object.__getattribute__(
+                self, "hostile_attribute"
+            ) and object.__getattribute__(self, "armed"):
                 namespace = object.__getattribute__(self, "__dict__")
                 graph_mapping = dict.__getitem__(namespace, "graph")
                 dict.pop(graph_mapping, "marker", None)
@@ -919,11 +909,7 @@ def test_empty_schedule_avoids_virtual_graph_attribute_access(
 def test_certificate_capture_uses_complete_stored_node_support() -> None:
     class FilteringGraph(nx.Graph):
         def __iter__(self):
-            return (
-                node
-                for node in nx.Graph.__iter__(self)
-                if node != "marker"
-            )
+            return (node for node in nx.Graph.__iter__(self) if node != "marker")
 
     graph = FilteringGraph()
     graph.add_edges_from(((0, 1), (1, "marker")))
@@ -1296,13 +1282,9 @@ def test_physical_history_subclass_iteration_is_not_dispatched() -> None:
     execute_operator_event_schedule(graph, schedule)
 
     assert "history_side_effect" not in graph.graph
+    assert all(tuple(list.__iter__(history)) == ((0.0, 0.0),) for history in histories)
     assert all(
-        tuple(list.__iter__(history)) == ((0.0, 0.0),)
-        for history in histories
-    )
-    assert all(
-        tuple(graph.nodes[node]["epi_time_history"])
-        == ((0.0, 0.0), (0.25, 0.05))
+        tuple(graph.nodes[node]["epi_time_history"]) == ((0.0, 0.0), (0.25, 0.05))
         for node in graph
     )
 
@@ -1600,9 +1582,7 @@ def test_zhir_duration_mismatch_is_rejected_before_writes() -> None:
     with pytest.raises(TNFRValueError, match="cannot bind") as error:
         execute_operator_event_schedule(graph, schedule)
 
-    assert error.value.context[
-        "zhir_event_indices_with_duration_mismatch"
-    ] == (0,)
+    assert error.value.context["zhir_event_indices_with_duration_mismatch"] == (0,)
     assert _plain_state(graph) == before
     assert graph.graph["_t"] == float(2**52)
     assert "hybrid_event_log" not in graph.graph
@@ -1628,9 +1608,7 @@ def test_nonadditive_positive_interval_is_rejected_before_writes() -> None:
     with pytest.raises(TNFRValueError, match="cannot bind") as error:
         execute_operator_event_schedule(graph, schedule)
 
-    assert error.value.context[
-        "nonadditive_positive_interval_indices"
-    ] == (5,)
+    assert error.value.context["nonadditive_positive_interval_indices"] == (5,)
     assert _plain_state(graph) == before
     assert graph.graph["_t"] == 0.0
     assert "hybrid_event_log" not in graph.graph
@@ -1648,10 +1626,7 @@ def test_nonlist_hybrid_event_sink_is_rejected_before_writes() -> None:
 
 
 def test_runtime_schedule_executor_is_public() -> None:
-    assert (
-        operators.execute_operator_event_schedule
-        is execute_operator_event_schedule
-    )
+    assert operators.execute_operator_event_schedule is execute_operator_event_schedule
     assert operators.OperatorEventExecutionResult is OperatorEventExecutionResult
     assert operators.ExecutedNodalFlowInterval is ExecutedNodalFlowInterval
     assert operators.ExecutedGlyphStage is ExecutedGlyphStage
@@ -1659,10 +1634,7 @@ def test_runtime_schedule_executor_is_public() -> None:
         operators.ObservedRepresentedEPIScheduleComposition
         is ObservedRepresentedEPIScheduleComposition
     )
-    assert (
-        operators.RepresentedEPIScheduleOperation
-        is RepresentedEPIScheduleOperation
-    )
+    assert operators.RepresentedEPIScheduleOperation is RepresentedEPIScheduleOperation
 
 
 @pytest.mark.parametrize(

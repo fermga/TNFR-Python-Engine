@@ -79,20 +79,17 @@ def test_certificate_composes_the_global_q_zero_and_eta_zero_results() -> None:
     assert certificate.exact_effective_head_energy_gain_upper_bound == 0
     assert certificate.policy_certificate.policy_stability_certificate_certified
     assert (
-        certificate.relative_defect_certificate
-        .relative_defect_stability_certificate_certified
+        certificate.relative_defect_certificate.relative_defect_stability_certificate_certified
     )
     assert (
-        certificate.relative_defect_certificate
-        .q_zero_preschedule_defect_absorption_certified
+        certificate.relative_defect_certificate.q_zero_preschedule_defect_absorption_certified
     )
     assert certificate.p2_half_reception_remesh_stability_certificate_certified
     assert certificate.global_binary64_epi_kernel_family_certified
     assert certificate.numeric_consensus_projection_certified
     assert certificate.restricted_epi_kernel_interval_forward_invariant_certified
     assert (
-        certificate
-        .restricted_kernel_support_metric_configuration_preservation_certified
+        certificate.restricted_kernel_support_metric_configuration_preservation_certified
     )
     assert certificate.arbitrary_finite_binary64_kernel_repetition_certified
     assert certificate.active_history_exact_extinction_certified
@@ -103,10 +100,7 @@ def test_q_zero_extinguishes_the_active_history_at_tau_global_plus_one() -> None
     certificate = _certificate(tau_local=9, tau_global=2)
 
     assert certificate.remesh_class_certificate.required_history_length == 10
-    assert (
-        certificate.remesh_class_certificate.remesh_certificate.active_max_delay
-        == 2
-    )
+    assert certificate.remesh_class_certificate.remesh_certificate.active_max_delay == 2
     assert certificate.active_history_extinction_horizon == 3
     assert certificate.exact_cycle_energy_gain_upper_bound(0) == 1
     assert certificate.exact_cycle_energy_gain_upper_bound(1) == 1
@@ -237,8 +231,8 @@ def test_canonical_default_en_mix_has_an_exact_energy_gain_four_witness() -> Non
         EN_MIX_FACTOR,
     )
     input_separation = Fraction.from_float(right) - Fraction.from_float(left)
-    output_separation = (
-        Fraction.from_float(right_output) - Fraction.from_float(left_output)
+    output_separation = Fraction.from_float(right_output) - Fraction.from_float(
+        left_output
     )
 
     assert EN_MIX_FACTOR.hex() == "0x1.ee7eea04ddca0p-3"

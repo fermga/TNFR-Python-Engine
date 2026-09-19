@@ -12,7 +12,6 @@ from tnfr.physics.runtime_flow_stability import (
     certify_observed_nodal_flow_interval,
 )
 
-
 _RUNTIME = {
     "integrator_name": "DefaultIntegrator",
     "method": "euler",
@@ -138,9 +137,7 @@ def test_stale_pressure_passes_nodal_balance_but_blocks_diffusion():
     assert result.binary64_runtime_interval_identified
     assert not result.explicit_euler_map_identified
     assert result.exact_quotient_energy_gain_upper_bound is None
-    assert "exact_pure_epi_pressure_realized" in (
-        result.euler_map_abstention_reasons
-    )
+    assert "exact_pure_epi_pressure_realized" in (result.euler_map_abstention_reasons)
 
 
 def test_large_euler_step_is_realized_but_not_contracting():

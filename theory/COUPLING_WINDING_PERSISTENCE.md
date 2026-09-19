@@ -1,5 +1,13 @@
 # Canonical Coupling preserves winding in a restricted cycle regime
 
+**Status: retained conditional derivations and finite evidence; C6 campaign
+parked.** The B75 boundary remains 41 of 56 first-exit labels excluded and 15
+open; global C6 stability is not proved. Dated priorities below record earlier
+research steps. Only the [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md)
+owns current work; the [mechanism audit](C6_RESEARCH_MECHANISM_AUDIT.md) records
+verification fixes and supersession. Mathematical claims retain their local
+hypotheses and source-bound evidence.
+
 **Status:** Exact target-only UM gap transport; default all-target C6 local
 phase response, nonlinear contraction, joint nodal reserves and additive
 defect bounds; local binary64 nodal rounding cells, finite production checks
@@ -7283,12 +7291,12 @@ separately versioned feasibility-only point LP: one 20-second attempt, 6,370 fre
 coefficients, zero objective and the same 7,178 point constraints. Finite
 feasibility is equivalent, with no guarantee of faster solving. Full exact
 acceptance and coefficient limits remain unchanged. The checkpoint is
-[b72_final_validation.json](../artifacts/research/b72_final_validation.json):
+b72_final_validation.json (`artifacts/research/b72_final_validation.json`, local evidence):
 **41/56 excluded, 15 pending**, with indefinite C6 boundedness open.
 
 ## 67. B73: feasibility-only control and equivalent proof coordinates
 
-The [B73 result and next-gate note](../artifacts/research/c6_b73_result_and_next_gate.md)
+The B73 result and next-gate note (`artifacts/research/c6_b73_result_and_next_gate.md`, local evidence)
 owns the complete outcome. The zero-objective LP retains all 7,178 point
 rows with 6,370 free coefficients and 100,288 nonzeros. It reaches the
 20-second solver limit without a primal candidate; no exact scan, oracle
@@ -7307,12 +7315,12 @@ slots; new cuts require a new active-column audit. B74 below completes
 binary64 materialization/scaling and inverse original-coordinate preflight
 before one separately versioned 20-second translated proposal. No further LP ran
 in B73. The checkpoint is
-[b73_final_validation.json](../artifacts/research/b73_final_validation.json):
+b73_final_validation.json (`artifacts/research/b73_final_validation.json`, local evidence):
 **41/56 excluded, 15 pending**, with indefinite C6 boundedness open.
 
 ## 68. B74: scaled proposal, full guarded rejection and retained witnesses
 
-The [B74 result](../artifacts/research/c6_b74_result_and_next_gate.md) retains
+The B74 result (`artifacts/research/c6_b74_result_and_next_gate.md`, local evidence) retains
 all 7,178 sampled conditions in a 3,916-column proposal. Exact positive
 scaling of 22 rows prevents loading losses in the installed solver; all
 59,682 entries, bounds and the objective are checked byte for byte.
@@ -7335,12 +7343,12 @@ New points require recomputing active columns and scaling before another
 single, separately versioned 20-second proposal and complete exact scan.
 No further LP or new cut was executed in B74. The current candidate does not
 refute the full affine family. Source and coverage remain unchanged; the
-checkpoint is [b74_final_validation.json](../artifacts/research/b74_final_validation.json):
+checkpoint is b74_final_validation.json (`artifacts/research/b74_final_validation.json`, local evidence):
 **41/56 excluded, 15 pending**, with indefinite C6 boundedness open.
 
 ## 69. B75: verified witness refinement and inconclusive bounded search
 
-The [B75 result](../artifacts/research/c6_b75_result_and_next_gate.md) implements
+The B75 result (`artifacts/research/c6_b75_result_and_next_gate.md`, local evidence) implements
 the preceding refinement: all 7,178 initial rows plus 256 verified B74
 witnesses, including every target identity. New points reactivate 134 columns;
 independent preflight checks the resulting 7,434-by-4,050 matrix and all
@@ -7360,5 +7368,5 @@ is one separately versioned 20-second comparison on the frozen B75 matrix,
 after independent preflight. No further cuts or history are added; any
 candidate retains the same reconstruction, root/cap and exact full-guard
 requirements. Algorithm choice guarantees no speed or feasibility gain.
-The checkpoint is [b75_final_validation.json](../artifacts/research/b75_final_validation.json):
+The checkpoint is b75_final_validation.json (`artifacts/research/b75_final_validation.json`, local evidence):
 **41/56 excluded, 15 pending**, with indefinite C6 boundedness open.

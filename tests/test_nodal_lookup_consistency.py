@@ -39,13 +39,19 @@ def test_warm_offset_sweep_does_not_rehash_unchanged_nodes(monkeypatch):
 
 
 @pytest.mark.parametrize("seed_record", ["explicit", "legacy_pair", "legacy_set"])
-def test_checksum_snapshot_is_reused_after_explicit_or_legacy_population(monkeypatch, seed_record):
+def test_checksum_snapshot_is_reused_after_explicit_or_legacy_population(
+    monkeypatch, seed_record
+):
     graph = nx.path_graph(5)
     expected = cache.node_set_checksum(graph, tuple(graph))
     if seed_record == "legacy_pair":
         graph.graph[cache.NODE_SET_CHECKSUM_KEY] = (expected[:16], expected)
     elif seed_record == "legacy_set":
-        graph.graph[cache.NODE_SET_CHECKSUM_KEY] = (expected[:16], expected, frozenset(graph))
+        graph.graph[cache.NODE_SET_CHECKSUM_KEY] = (
+            expected[:16],
+            expected,
+            frozenset(graph),
+        )
     assert cache.node_set_checksum(graph) == expected
 
     def reject_rehash(*args, **kwargs):
@@ -56,7 +62,9 @@ def test_checksum_snapshot_is_reused_after_explicit_or_legacy_population(monkeyp
     assert cache.node_set_checksum(graph, iter(graph)) == expected
 
 
-@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
 def test_remove_reinsert_updates_order_and_offsets_without_size_change(graph_type):
     graph = graph_type()
     graph.add_nodes_from([0, 1, 2])
@@ -96,7 +104,9 @@ def test_equal_cross_type_replacement_returns_actual_label_and_checksum(replacem
     assert current == cache.node_set_checksum(fresh)
 
 
-@pytest.mark.parametrize("first,second", [(True, 1.0), (1.0, True), (1, True), (1, 1.0)])
+@pytest.mark.parametrize(
+    "first,second", [(True, 1.0), (1.0, True), (1, True), (1, 1.0)]
+)
 def test_digest_cache_does_not_mix_equal_cross_type_labels(first, second):
     cache.clear_node_repr_cache()
     first_repr, first_digest = cache._node_repr_digest(first)
@@ -105,8 +115,9 @@ def test_digest_cache_does_not_mix_equal_cross_type_labels(first, second):
     assert first_digest != second_digest
 
 
-@pytest.mark.parametrize("first,second", [((True,), (1.0,)),
-                                         ((1, (True,)), (1.0, (1.0,)))])
+@pytest.mark.parametrize(
+    "first,second", [((True,), (1.0,)), ((1, (True,)), (1.0, (1.0,)))]
+)
 def test_equal_nested_tuple_labels_keep_distinct_serialization(first, second):
     assert first == second
     cache.clear_node_repr_cache()
@@ -145,7 +156,10 @@ def test_identity_digest_cache_retains_bounded_diagnostics_interfaces():
     for number in range(1030):
         cache._node_repr_digest(EqualImmutableLabel(number, str(number)))
     assert cache._node_repr_digest.cache_info().currsize == 1024
-    assert cache._node_repr_digest.cache_parameters() == {"maxsize": 1024, "typed": True}
+    assert cache._node_repr_digest.cache_parameters() == {
+        "maxsize": 1024,
+        "typed": True,
+    }
     cache._node_repr_digest.cache_clear()
     assert cache._node_repr_digest.cache_info().currsize == 0
 
@@ -175,7 +189,11 @@ class SameRepresentation:
 
 
 def test_distinct_equal_representation_nodes_do_not_hide_replacement():
-    first, second, replacement = SameRepresentation(), SameRepresentation(), SameRepresentation()
+    first, second, replacement = (
+        SameRepresentation(),
+        SameRepresentation(),
+        SameRepresentation(),
+    )
     graph = nx.Graph()
     graph.add_nodes_from([first, second])
     cache.ensure_node_offset_map(graph)
@@ -185,16 +203,19 @@ def test_distinct_equal_representation_nodes_do_not_hide_replacement():
     assert cache.ensure_node_offset_map(graph) == {second: 0, replacement: 1}
 
 
-@pytest.mark.parametrize("nodes,sorted_nodes", [([2, 0, 1], [0, 1, 2]),
-                                               ([10, 2, 1], [1, 10, 2]),
-                                               ([2, "a", 1], ["a", 1, 2])])
+@pytest.mark.parametrize(
+    "nodes,sorted_nodes",
+    [([2, 0, 1], [0, 1, 2]), ([10, 2, 1], [1, 10, 2]), ([2, "a", 1], ["a", 1, 2])],
+)
 def test_sort_policy_toggle_rebuilds_offsets_only(nodes, sorted_nodes):
     graph = nx.Graph()
     graph.add_nodes_from(nodes)
     original_idx = cache.ensure_node_index_map(graph)
     for sort, order in [(False, nodes), (True, sorted_nodes), (False, nodes)]:
         graph.graph["SORT_NODES"] = sort
-        assert cache.ensure_node_offset_map(graph) == dict(zip(order, range(len(order))))
+        assert cache.ensure_node_offset_map(graph) == dict(
+            zip(order, range(len(order)))
+        )
         assert cache.cached_node_list(graph) == tuple(nodes)
         assert cache.ensure_node_index_map(graph) is original_idx
 
@@ -253,11 +274,17 @@ def test_checksum_mode_and_order_are_part_of_cache_identity(initial_presorted):
     graph = nx.Graph()
     graph.add_nodes_from([2, 0, 1])
     cache.node_set_checksum(graph, presorted=initial_presorted)
-    assert cache.node_set_checksum(graph, presorted=False) == _integer_checksum([0, 1, 2])
-    assert cache.node_set_checksum(graph, presorted=True) == _integer_checksum([2, 0, 1])
+    assert cache.node_set_checksum(graph, presorted=False) == _integer_checksum(
+        [0, 1, 2]
+    )
+    assert cache.node_set_checksum(graph, presorted=True) == _integer_checksum(
+        [2, 0, 1]
+    )
     graph.remove_node(2)
     graph.add_node(2)
-    assert cache.node_set_checksum(graph, presorted=True) == _integer_checksum([0, 1, 2])
+    assert cache.node_set_checksum(graph, presorted=True) == _integer_checksum(
+        [0, 1, 2]
+    )
 
 
 def test_explicit_subset_checksum_cannot_replace_full_graph_checksum():
@@ -307,4 +334,6 @@ def test_jitter_reordered_graph_matches_fresh_current_order(sort):
     fresh = nx.Graph(RANDOM_SEED=7, SORT_NODES=sort)
     fresh.add_nodes_from(graph)
     for node in graph:
-        assert random_jitter(NodeNX(graph, node), 0.1) == random_jitter(NodeNX(fresh, node), 0.1)
+        assert random_jitter(NodeNX(graph, node), 0.1) == random_jitter(
+            NodeNX(fresh, node), 0.1
+        )

@@ -6,27 +6,42 @@ Only the finite initial visit can then require shared-kernel replay. The
 coordinate is a certificate, not a new pressure or a physical parameter.
 """
 
+import math
 from dataclasses import dataclass
 from fractions import Fraction as F
-import math
 
 import networkx as nx
 
 from ..dynamics._euler_kernel import (
-    NodalRemainderState, NodalRemainderStep, _binary64_tuple,
-    _validate_nodal_remainder_state, advance_nodal_remainder,
+    NodalRemainderState,
+    NodalRemainderStep,
+    _binary64_tuple,
+    _validate_nodal_remainder_state,
+    advance_nodal_remainder,
 )
 from .c6_carried_viability import (
-    C6CarriedForwardZone, _GRID, _dbm_close, _dbm_contains_origin,
-    _dbm_intersection, _dbm_subset, _positive_integer, _predecessor_domain,
+    _GRID,
+    C6CarriedForwardZone,
+    _dbm_close,
+    _dbm_contains_origin,
+    _dbm_intersection,
+    _dbm_subset,
+    _positive_integer,
+    _predecessor_domain,
     _prepare_carried_family,
 )
-from .c6_pressure_lattice import C6PressureLatticeReference, _observe_rebuilt_c6_pressure_lattice
+from .c6_pressure_lattice import (
+    C6PressureLatticeReference,
+    _observe_rebuilt_c6_pressure_lattice,
+)
 
 __all__ = [
-    "C6CarriedLinearExtremum", "C6CarriedExcursionIngress",
-    "C6CarriedExcursionExclusion", "derive_c6_carried_excursion_exclusion",
-    "C6CarriedExcursionTransition", "C6CarriedModeExcursionExclusion",
+    "C6CarriedLinearExtremum",
+    "C6CarriedExcursionIngress",
+    "C6CarriedExcursionExclusion",
+    "derive_c6_carried_excursion_exclusion",
+    "C6CarriedExcursionTransition",
+    "C6CarriedModeExcursionExclusion",
     "derive_c6_carried_mode_excursion_exclusion",
 ]
 
@@ -103,8 +118,12 @@ class C6CarriedExcursionExclusion:
     @property
     def origin_path_within_domain_excluded(self) -> bool:
         return self.status in (
-            "initially_inactive", "initially_above_targets", "initial_visit_ended",
-            "cleared_initial_budget", "prefix_left_domain", "prefix_band_exit",
+            "initially_inactive",
+            "initially_above_targets",
+            "initial_visit_ended",
+            "cleared_initial_budget",
+            "prefix_left_domain",
+            "prefix_band_exit",
         )
 
     @property
@@ -179,10 +198,16 @@ def _linear_extremum(zone, weights, sense):
     for i, source in enumerate(signed):
         for j, sink in enumerate(signed):
             if source > 0 > sink:
-                graph.add_edge(i, j, weight=zone.bounds[i][j], capacity=min(source, -sink))
+                graph.add_edge(
+                    i, j, weight=zone.bounds[i][j], capacity=min(source, -sink)
+                )
     allocation = nx.min_cost_flow(graph) if graph else {}
-    flow = tuple((i, j, amount) for i, row in sorted(allocation.items())
-                 for j, amount in sorted(row.items()) if amount)
+    flow = tuple(
+        (i, j, amount)
+        for i, row in sorted(allocation.items())
+        for j, amount in sorted(row.items())
+        if amount
+    )
     balance = [0] * 7
     cost = 0
     tight = [list(row) for row in zone.bounds]
@@ -209,21 +234,31 @@ def _linear_extremum(zone, weights, sense):
 
 def _translated_zone(bounds, shift):
     extended = shift + (0,)
-    return tuple(tuple(bounds[i][j] + extended[i] - extended[j] for j in range(7)) for i in range(7))
+    return tuple(
+        tuple(bounds[i][j] + extended[i] - extended[j] for j in range(7))
+        for i in range(7)
+    )
 
 
 def _contains_coordinates(bounds, coordinates):
     values = coordinates + (0,)
-    return all(values[i] - values[j] <= bounds[i][j] for i in range(7) for j in range(7))
+    return all(
+        values[i] - values[j] <= bounds[i][j] for i in range(7) for j in range(7)
+    )
 
 
 def derive_c6_carried_excursion_exclusion(
-    reference: C6PressureLatticeReference, *, state: NodalRemainderState,
-    epi_states: tuple[tuple[float, ...], ...], timestep: float,
-    active_epi_states: tuple[tuple[float, ...], ...], weights: tuple[int, ...],
+    reference: C6PressureLatticeReference,
+    *,
+    state: NodalRemainderState,
+    epi_states: tuple[tuple[float, ...], ...],
+    timestep: float,
+    active_epi_states: tuple[tuple[float, ...], ...],
+    weights: tuple[int, ...],
     target_regions: tuple[C6CarriedForwardZone, ...],
     domain_zones: tuple[C6CarriedForwardZone, ...] | None = None,
-    max_prefix_steps: int = 4096, max_cells: int = 4096,
+    max_prefix_steps: int = 4096,
+    max_cells: int = 4096,
 ) -> C6CarriedExcursionExclusion:
     """Exclude targets using positive drift during each visit to active cells.
 
@@ -240,21 +275,34 @@ def derive_c6_carried_excursion_exclusion(
     Proof weights change neither the physical source nor the actual nodal map.
     """
     return _derive_excursion(
-        reference, state=state, epi_states=epi_states, timestep=timestep,
-        active_epi_states=active_epi_states, weights=weights, target_regions=target_regions,
-        domain_zones=domain_zones, max_prefix_steps=max_prefix_steps, max_cells=max_cells,
-        mode_dependent=False, cell_offsets=None,
+        reference,
+        state=state,
+        epi_states=epi_states,
+        timestep=timestep,
+        active_epi_states=active_epi_states,
+        weights=weights,
+        target_regions=target_regions,
+        domain_zones=domain_zones,
+        max_prefix_steps=max_prefix_steps,
+        max_cells=max_cells,
+        mode_dependent=False,
+        cell_offsets=None,
     )
 
 
 def derive_c6_carried_mode_excursion_exclusion(
-    reference: C6PressureLatticeReference, *, state: NodalRemainderState,
-    epi_states: tuple[tuple[float, ...], ...], timestep: float,
-    active_epi_states: tuple[tuple[float, ...], ...], weights: tuple[int, ...],
+    reference: C6PressureLatticeReference,
+    *,
+    state: NodalRemainderState,
+    epi_states: tuple[tuple[float, ...], ...],
+    timestep: float,
+    active_epi_states: tuple[tuple[float, ...], ...],
+    weights: tuple[int, ...],
     target_regions: tuple[C6CarriedForwardZone, ...],
     cell_offsets: tuple[tuple[tuple[float, ...], int], ...] | None = None,
     domain_zones: tuple[C6CarriedForwardZone, ...] | None = None,
-    max_prefix_steps: int = 4096, max_cells: int = 4096,
+    max_prefix_steps: int = 4096,
+    max_cells: int = 4096,
 ) -> C6CarriedModeExcursionExclusion:
     """Verify a common-gradient, cell-offset excursion exclusion.
 
@@ -270,27 +318,60 @@ def derive_c6_carried_mode_excursion_exclusion(
     With no internal edges an initial visit needs at most one checked step.
     """
     return _derive_excursion(
-        reference, state=state, epi_states=epi_states, timestep=timestep,
-        active_epi_states=active_epi_states, weights=weights, target_regions=target_regions,
-        domain_zones=domain_zones, max_prefix_steps=max_prefix_steps, max_cells=max_cells,
-        mode_dependent=True, cell_offsets=cell_offsets,
+        reference,
+        state=state,
+        epi_states=epi_states,
+        timestep=timestep,
+        active_epi_states=active_epi_states,
+        weights=weights,
+        target_regions=target_regions,
+        domain_zones=domain_zones,
+        max_prefix_steps=max_prefix_steps,
+        max_cells=max_cells,
+        mode_dependent=True,
+        cell_offsets=cell_offsets,
     )
 
 
 def _derive_excursion(
-    reference, *, state, epi_states, timestep, active_epi_states, weights,
-    target_regions, domain_zones, max_prefix_steps, max_cells, mode_dependent, cell_offsets,
+    reference,
+    *,
+    state,
+    epi_states,
+    timestep,
+    active_epi_states,
+    weights,
+    target_regions,
+    domain_zones,
+    max_prefix_steps,
+    max_cells,
+    mode_dependent,
+    cell_offsets,
 ):
     maximum = _positive_integer(max_prefix_steps, "max_prefix_steps")
     cell_limit = _positive_integer(max_cells, "max_cells")
-    if type(weights) is not tuple or len(weights) != 6 or any(type(value) is not int for value in weights):
+    if (
+        type(weights) is not tuple
+        or len(weights) != 6
+        or any(type(value) is not int for value in weights)
+    ):
         raise TypeError("weights must be a six-tuple of exact integers")
     ref, origin, h, rows, pressures, areas, complete = _prepare_carried_family(
-        reference, state=state, epi_states=epi_states, timestep=timestep,
-        row_limit=cell_limit, row_limit_label="max_cells",
+        reference,
+        state=state,
+        epi_states=epi_states,
+        timestep=timestep,
+        row_limit=cell_limit,
+        row_limit_label="max_cells",
     )
     denominator = math.lcm(*(value.denominator for row in areas for value in row))
-    grid = F(math.gcd(*(int(value * denominator) for row in areas for value in row)), denominator) or _GRID
+    grid = (
+        F(
+            math.gcd(*(int(value * denominator) for row in areas for value in row)),
+            denominator,
+        )
+        or _GRID
+    )
     exact_shifts = tuple(tuple(value / grid for value in row) for row in areas)
     if any(value.denominator != 1 for row in exact_shifts for value in row):
         raise RuntimeError("the excursion source lost its exact increment lattice")
@@ -298,8 +379,14 @@ def _derive_excursion(
     domain = _predecessor_domain(rows, complete, origin, grid, domain_zones)
     by_row = {zone.epi: zone for zone in domain}
     if state.epi not in by_row or not _dbm_contains_origin(by_row[state.epi].bounds):
-        raise ValueError("the declared excursion domain must contain the unchanged supplied origin")
-    if type(active_epi_states) is not tuple or not active_epi_states or len(active_epi_states) > cell_limit:
+        raise ValueError(
+            "the declared excursion domain must contain the unchanged supplied origin"
+        )
+    if (
+        type(active_epi_states) is not tuple
+        or not active_epi_states
+        or len(active_epi_states) > cell_limit
+    ):
         raise ValueError("active_epi_states must be a nonempty tuple within max_cells")
     active = tuple(_binary64_tuple(row, "active epi row") for row in active_epi_states)
     if len(set(active)) != len(active) or any(row not in by_row for row in active):
@@ -307,11 +394,15 @@ def _derive_excursion(
     offset_by_row = {row: 0 for row in active}
     if mode_dependent and cell_offsets is not None:
         if type(cell_offsets) is not tuple or len(cell_offsets) != len(active):
-            raise ValueError("cell_offsets must be a tuple covering every active row exactly once")
+            raise ValueError(
+                "cell_offsets must be a tuple covering every active row exactly once"
+            )
         seen = set()
         for item in cell_offsets:
             if type(item) is not tuple or len(item) != 2 or type(item[1]) is not int:
-                raise TypeError("each cell offset must pair an exact epi tuple and an exact integer")
+                raise TypeError(
+                    "each cell offset must pair an exact epi tuple and an exact integer"
+                )
             row = _binary64_tuple(item[0], "cell offset epi row")
             if row not in offset_by_row or row in seen:
                 raise ValueError("cell_offsets must identify distinct active rows")
@@ -320,7 +411,10 @@ def _derive_excursion(
     if target_regions is None:
         raise TypeError("target_regions must be an explicit nonempty tuple of zones")
     targets = _predecessor_domain(rows, complete, origin, grid, target_regions)
-    if any(zone.epi not in active or not _dbm_subset(zone.bounds, by_row[zone.epi].bounds) for zone in targets):
+    if any(
+        zone.epi not in active or not _dbm_subset(zone.bounds, by_row[zone.epi].bounds)
+        for zone in targets
+    ):
         raise ValueError("every target region must stay within one active domain zone")
     position = {row: index for index, row in enumerate(rows)}
     transitions = []
@@ -329,22 +423,42 @@ def _derive_excursion(
             image = _translated_zone(by_row[source].bounds, shifts[position[source]])
             for target in active:
                 cell = by_row[target].bounds
-                if any(image[i][6] < -cell[6][i] or cell[i][6] < -image[6][i] for i in range(6)):
+                if any(
+                    image[i][6] < -cell[6][i] or cell[i][6] < -image[6][i]
+                    for i in range(6)
+                ):
                     continue
                 piece = _dbm_intersection(image, cell)
                 if piece is not None:
-                    change = (sum(w * a for w, a in zip(weights, shifts[position[source]]))
-                              + offset_by_row[target] - offset_by_row[source])
-                    transitions.append(C6CarriedExcursionTransition(
-                        source, target, C6CarriedForwardZone(target, piece), change,
-                    ))
+                    change = (
+                        sum(w * a for w, a in zip(weights, shifts[position[source]]))
+                        + offset_by_row[target]
+                        - offset_by_row[source]
+                    )
+                    transitions.append(
+                        C6CarriedExcursionTransition(
+                            source,
+                            target,
+                            C6CarriedForwardZone(target, piece),
+                            change,
+                        )
+                    )
         drift = min((item.potential_increment for item in transitions), default=None)
     else:
-        drift = min(sum(w * a for w, a in zip(weights, shifts[position[row]])) for row in active)
-    domain_extrema = tuple((_linear_extremum(by_row[row], weights, "lower"),
-                            _linear_extremum(by_row[row], weights, "upper")) for row in active)
+        drift = min(
+            sum(w * a for w, a in zip(weights, shifts[position[row]])) for row in active
+        )
+    domain_extrema = tuple(
+        (
+            _linear_extremum(by_row[row], weights, "lower"),
+            _linear_extremum(by_row[row], weights, "upper"),
+        )
+        for row in active
+    )
     target_extrema = tuple(_linear_extremum(zone, weights, "upper") for zone in targets)
-    target_upper = max(item.value + offset_by_row[item.zone.epi] for item in target_extrema)
+    target_upper = max(
+        item.value + offset_by_row[item.zone.epi] for item in target_extrema
+    )
     ingress = []
     for source in domain:
         if source.epi in active:
@@ -352,16 +466,26 @@ def _derive_excursion(
         image = _translated_zone(source.bounds, shifts[position[source.epi]])
         for row in active:
             cell = by_row[row].bounds
-            if any(image[i][6] < -cell[6][i] or cell[i][6] < -image[6][i] for i in range(6)):
+            if any(
+                image[i][6] < -cell[6][i] or cell[i][6] < -image[6][i] for i in range(6)
+            ):
                 continue
             piece = _dbm_intersection(image, cell)
             if piece is not None:
                 zone = C6CarriedForwardZone(row, piece)
-                ingress.append(C6CarriedExcursionIngress(
-                    source.epi, row, zone, _linear_extremum(zone, weights, "lower"),
-                ))
+                ingress.append(
+                    C6CarriedExcursionIngress(
+                        source.epi,
+                        row,
+                        zone,
+                        _linear_extremum(zone, weights, "lower"),
+                    )
+                )
     ingress = tuple(ingress)
-    ingress_lower = min((item.lower.value + offset_by_row[item.target_epi] for item in ingress), default=None)
+    ingress_lower = min(
+        (item.lower.value + offset_by_row[item.target_epi] for item in ingress),
+        default=None,
+    )
     initial_potential = offset_by_row.get(state.epi)
     if drift is not None and drift <= 0:
         deadline = None
@@ -375,33 +499,71 @@ def _derive_excursion(
 
     def coordinates(value):
         exact = _validate_nodal_remainder_state(value)
-        result = tuple((x - start) / grid for x, start in zip(exact, origin, strict=True))
+        result = tuple(
+            (x - start) / grid for x, start in zip(exact, origin, strict=True)
+        )
         if any(item.denominator != 1 for item in result):
-            raise RuntimeError("a carried excursion prefix left its exact increment coset")
+            raise RuntimeError(
+                "a carried excursion prefix left its exact increment coset"
+            )
         return tuple(map(int, result))
 
     def finish(status):
         endpoint_coordinates = coordinates(current)
-        residual = tuple(x - start - area for x, start, area in zip(current.exact_epi, origin, total, strict=True))
+        residual = tuple(
+            x - start - area
+            for x, start, area in zip(current.exact_epi, origin, total, strict=True)
+        )
         if any(residual):
             raise RuntimeError("the excursion prefix lost its complete nodal telescope")
         endpoint_value = sum(w * x for w, x in zip(weights, endpoint_coordinates))
         if mode_dependent:
-            endpoint_value = endpoint_value + offset_by_row[current.epi] if current.epi in active else None
+            endpoint_value = (
+                endpoint_value + offset_by_row[current.epi]
+                if current.epi in active
+                else None
+            )
         arguments = (
-            ref, state, h, rows, pressures, grid, origin, active, weights, domain, targets,
-            drift, target_upper, ingress_lower, ingress, domain_extrema, target_extrema,
-            deadline, maximum, cell_limit, tuple(steps), current,
-            endpoint_value, terminal, total, residual, status,
+            ref,
+            state,
+            h,
+            rows,
+            pressures,
+            grid,
+            origin,
+            active,
+            weights,
+            domain,
+            targets,
+            drift,
+            target_upper,
+            ingress_lower,
+            ingress,
+            domain_extrema,
+            target_extrema,
+            deadline,
+            maximum,
+            cell_limit,
+            tuple(steps),
+            current,
+            endpoint_value,
+            terminal,
+            total,
+            residual,
+            status,
         )
         if mode_dependent:
             return C6CarriedModeExcursionExclusion(
-                *arguments, cell_offsets=tuple((row, offset_by_row[row]) for row in active),
-                initial_potential=initial_potential, active_transitions=tuple(transitions),
+                *arguments,
+                cell_offsets=tuple((row, offset_by_row[row]) for row in active),
+                initial_potential=initial_potential,
+                active_transitions=tuple(transitions),
             )
         return C6CarriedExcursionExclusion(*arguments)
 
-    if any(zone.epi == state.epi and _dbm_contains_origin(zone.bounds) for zone in targets):
+    if any(
+        zone.epi == state.epi and _dbm_contains_origin(zone.bounds) for zone in targets
+    ):
         return finish("target_reached")
     if drift is not None and drift <= 0:
         return finish("nonpositive_drift")
@@ -413,41 +575,69 @@ def _derive_excursion(
         return finish("initially_above_targets")
     while True:
         point = coordinates(current)
-        if current.epi not in by_row or not _contains_coordinates(by_row[current.epi].bounds, point):
+        if current.epi not in by_row or not _contains_coordinates(
+            by_row[current.epi].bounds, point
+        ):
             return finish("prefix_left_domain")
-        if any(zone.epi == current.epi and _contains_coordinates(zone.bounds, point) for zone in targets):
+        if any(
+            zone.epi == current.epi and _contains_coordinates(zone.bounds, point)
+            for zone in targets
+        ):
             return finish("target_reached")
         if current.epi not in active:
             return finish("initial_visit_ended")
-        potential = sum(w * x for w, x in zip(weights, point)) + offset_by_row[current.epi]
+        potential = (
+            sum(w * x for w, x in zip(weights, point)) + offset_by_row[current.epi]
+        )
         if potential > target_upper:
             return finish("cleared_initial_budget")
         if len(steps) >= deadline:
-            raise RuntimeError("the excursion prefix contradicted its strict drift deadline")
+            raise RuntimeError(
+                "the excursion prefix contradicted its strict drift deadline"
+            )
         if len(steps) == maximum:
             return finish("prefix_resource_limit")
         pressure = _observe_rebuilt_c6_pressure_lattice(ref, current.epi).pressure
         index = position[current.epi]
         if pressure != pressures[index]:
-            raise RuntimeError("a refreshed excursion pressure differs from its declared canonical row")
+            raise RuntimeError(
+                "a refreshed excursion pressure differs from its declared canonical row"
+            )
         added = tuple(F(h) * F(value) for value in pressure)
-        candidate = tuple(x + area for x, area in zip(current.exact_epi, added, strict=True))
+        candidate = tuple(
+            x + area for x, area in zip(current.exact_epi, added, strict=True)
+        )
         if any(not F(state.epi_lower) <= x <= F(state.epi_upper) for x in candidate):
             terminal = candidate
             return finish("prefix_band_exit")
-        step = advance_nodal_remainder(current, timestep=h, capacity=(1.,) * 6, pressure=pressure)
-        if step.after.exact_epi != candidate or step.exact_increment != added or any(step.nodal_balance_residual):
+        step = advance_nodal_remainder(
+            current, timestep=h, capacity=(1.0,) * 6, pressure=pressure
+        )
+        if (
+            step.after.exact_epi != candidate
+            or step.exact_increment != added
+            or any(step.nodal_balance_residual)
+        ):
             raise RuntimeError("the shared excursion step lost its exact nodal area")
         next_point = coordinates(step.after)
         next_row = step.after.epi
         if mode_dependent:
-            if next_row in active and _contains_coordinates(by_row[next_row].bounds, next_point):
-                change = (sum(w * (y - x) for w, x, y in zip(weights, point, next_point))
-                          + offset_by_row[next_row] - offset_by_row[current.epi])
+            if next_row in active and _contains_coordinates(
+                by_row[next_row].bounds, next_point
+            ):
+                change = (
+                    sum(w * (y - x) for w, x, y in zip(weights, point, next_point))
+                    + offset_by_row[next_row]
+                    - offset_by_row[current.epi]
+                )
                 if drift is None or change < drift:
-                    raise RuntimeError("an active excursion transition violated its derived edge drift")
+                    raise RuntimeError(
+                        "an active excursion transition violated its derived edge drift"
+                    )
         elif sum(w * (y - x) for w, x, y in zip(weights, point, next_point)) < drift:
-            raise RuntimeError("an actual excursion step violated its derived minimum drift")
+            raise RuntimeError(
+                "an actual excursion step violated its derived minimum drift"
+            )
         steps.append(step)
         total = tuple(old + area for old, area in zip(total, added, strict=True))
         current = step.after

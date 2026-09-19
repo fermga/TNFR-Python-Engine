@@ -7,6 +7,13 @@ docs_dir: build/docs-source
 site_dir: site
 strict: true
 
+# These repository-owned guides/configurations are intentionally staged. Keep
+# their paths so relative links work in both GitHub and the generated site.
+exclude_docs: |
+  !.github/
+  !.github/**
+  !.pre-commit-config.yaml
+
 theme:
   name: material
   language: en
@@ -20,10 +27,20 @@ plugins:
 
 markdown_extensions:
   - attr_list
-  - fenced_code
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - tables
+  - pymdownx.arithmatex:
+      generic: true
   - toc:
       permalink: true
+
+extra_javascript:
+  - docs/assets/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js
 
 nav:
   - Home: index.md
@@ -33,12 +50,15 @@ nav:
   - Technical documentation:
       - Hub: docs/README.md
       - Operator contracts: docs/API_CONTRACTS.md
-      - Single-file modules: docs/SINGLE_FILE_MODULES.md
       - Structural fields: docs/STRUCTURAL_FIELDS_TETRAD.md
       - Grammar verification: docs/grammar/PHYSICS_VERIFICATION.md
       - Interface theory: docs/STRUCTURAL_INTERFACE_THEORY.md
   - Theory and research:
       - Index: theory/README.md
+      - Foundations: theory/FUNDAMENTAL_THEORY.md
+      - Parameter foundations: theory/NODAL_PARAMETER_FOUNDATIONS.md
+      - Research strategy: theory/NODAL_RESEARCH_STRATEGY.md
+      - Active execution plan: theory/research/FIVE_STAGE_EXECUTION_PLAN.md
       - Grammar scope: theory/UNIFIED_GRAMMAR_RULES.md
       - Diagnostic scope: theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md
       - Minimal structural degrees: theory/MINIMAL_STRUCTURAL_DEGREES.md
@@ -46,11 +66,18 @@ nav:
       - Core dynamics program: theory/CORE_RESEARCH_PROGRAM.md
       - Heterogeneous diffusion stability: theory/TNFR_DIFFUSION_STABILITY_THEOREM.md
       - Scale, geometry and bridge: theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md
+      - Derived memory: theory/DERIVED_EPI_MEMORY.md
+      - Historical archive: theory/research/archive/README.md
       - Structural research program: theory/STRUCTURAL_RESEARCH_PROGRAM.md
   - Examples: examples/README.md
+  - Benchmarks: benchmarks/README.md
+  - Applications:
+      - Factorization lab: factorization-lab/README.md
+      - Primality: primality-test/README.md
+  - Manual en español (borrador): manual/INDEX.md
   - Development:
       - Testing: TESTING.md
       - Contributing: CONTRIBUTING.md
       - Security: SECURITY.md
-      - Workflows: WORKFLOWS.md
+      - Workflows: .github/WORKFLOWS.md
       - Repository scripts: scripts/README.md

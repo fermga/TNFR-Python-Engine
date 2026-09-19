@@ -1,0 +1,131 @@
+# Audit — Chapters 1 to 4 against `STYLE_GUIDE.md`
+
+Date: 2026-08-02  
+Scope: `chapter-01` to `chapter-04`  
+Standard source: `manual/STYLE_GUIDE.md`
+
+---
+
+## Summary verdict
+
+All four chapters are now **publishable drafts** under the current rubric after the final compliance pass.
+
+- Chapter 1: **11/12**
+- Chapter 2: **11/12**
+- Chapter 3: **12/12**
+- Chapter 4: **12/12**
+
+Global status: **PASS** (with minor style watchpoints for long-run consistency)
+
+---
+
+## Rubric scoring (0–2 each)
+
+Criteria:
+1. Question-seeded concept introduction
+2. Standalone essay quality
+3. Intuition-before-formalism discipline
+4. Wonder authenticity
+5. Intellectual honesty clarity
+6. Bridge-to-next inevitability
+
+### Chapter 1 — `chapter-01-what-stays-when-everything-changes.md`
+
+- 1) 2
+- 2) 2
+- 3) 2
+- 4) 2
+- 5) 1
+- 6) 2
+
+Total: **11/12**
+
+Notes:
+- Strong observation runway and paradigm shift.
+- Intellectual honesty is present implicitly; can be made even sharper in future chapters with one explicit unresolved limit sentence.
+
+### Chapter 2 — `chapter-02-identity-without-fixed-matter.md`
+
+- 1) 2
+- 2) 2
+- 3) 2
+- 4) 2
+- 5) 1
+- 6) 2
+
+Total: **11/12**
+
+Notes:
+- Excellent continuity from Chapter 1 and strong identity argument.
+- As in Chapter 1, honesty is present but could be made even more explicit with one compact “what remains open” sentence pattern.
+
+### Chapter 3 — `chapter-03-organization-versus-substance.md`
+
+- 1) 2
+- 2) 2
+- 3) 2
+- 4) 2
+- 5) 2
+- 6) 2
+
+Total: **12/12**
+
+Notes:
+- Best balance of composition vs organization and very clean explanatory control.
+
+### Chapter 4 — `chapter-04-tension-between-stability-and-change.md`
+
+- 1) 2
+- 2) 2
+- 3) 2
+- 4) 2
+- 5) 2
+- 6) 2
+
+Total: **12/12**
+
+Notes:
+- Protagonist phenomenon (bicycle) is memorable and structurally effective.
+- Terminology continuity is now optimal (“cambio que mantiene organizado”).
+
+---
+
+## Compliance checks (pass/fail)
+
+### Required checks
+
+- Narrative cadence loop appears at least twice: **PASS** (all chapters)
+- Chapter opens with observation/question, not recap: **PASS** (all chapters)
+- Exactly one memorable line clearly identifiable: **PASS (operational)**
+- At least one reflective pause exists: **PASS** (all chapters)
+- Abstract claims tied to concrete scenes: **PASS** (all chapters)
+- Wonder Density target (1/3/5/1): **PASS** (all chapters; chapter 3 and 4 strongest)
+- O/E/R pacing approximately 50/30/20: **PASS** (all chapters; chapter 1 slightly reflection-heavy, still acceptable)
+- One protagonist phenomenon anchors chapter: **PASS** (flame / melody / wave / bicycle)
+- Final takeaway sentence (`La idea que nos llevamos`): **PASS** (all chapters)
+- `Why this forces the next step` section present: **PASS** (all chapters)
+
+### Non-negotiable fail conditions
+
+- Formalism before need: **PASS**
+- No wonder moment: **PASS**
+- Missing next-step bridge section: **PASS**
+- Non-standalone chapter: **PASS**
+- Honesty requirement violated: **PASS**
+
+---
+
+## Long-run watchpoints (quality maintenance)
+
+1. Keep opening variation active (scene/question/micro-story/paradox/observation test), as already defined in style guide.
+2. Preserve one symbolic triad per chapter (phenomenon + planned illustration + protagonist sentence) in planning.
+3. Apply the ruthless editor test at every draft close:
+   - If removing one third keeps the same clarity, simplify further.
+
+---
+
+## Final editorial recommendation
+
+Proceed to Chapter 5 with the current system unchanged.
+
+The architecture is stable; priority now is **consistency across scale** (30–40 chapters) rather than reinvention of method.

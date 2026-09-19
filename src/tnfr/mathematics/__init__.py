@@ -31,9 +31,9 @@ from .cayley import (
 )
 from .dynamics import ContractiveDynamicsEngine, MathematicalDynamicsEngine
 from .epi import (
-    BEPIElement,
     COMPOSITE_EPI_REGULARITY_KIND,
     COMPOSITE_EPI_REGULARITY_PROVENANCE,
+    BEPIElement,
     CoherenceEvaluation,
     CompositeEPIRegularityEvaluation,
     evaluate_coherence_transform,

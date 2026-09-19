@@ -1,29 +1,22 @@
-r"""Arithmetic pulse recurrence on pointed residue networks (R2).
+r"""Arithmetic pulse recurrence on declared pointed residue networks (R2).
 
-The **static** cyclotomy law (``TNFR_NUMBER_THEORY.md``) says the k-th power
-residue Cayley operator ``L_rw`` on ``ℤ/pℤ`` (``p`` prime) has exactly
-``s_k(p) = gcd(k, p−1) + 1`` distinct eigenvalues.  This module gives that rank a
-**dynamic** reading through the *pointed* network ``(G_{p,k}, 0)`` seeded at the
-additive identity ``e₀ = (1,0,…,0)ᵀ`` (the point is the neutral element, so it is
-chosen without using any factor):
+The caller supplies the arithmetic carrier, power-residue connection set and
+localized seed e_0. For the resulting circulant L_rw, the scalar moments
+mu_m=e_0^T L_rw^m e_0 have nonzero spectral weights m_lambda/n on every distinct
+eigenvalue. Hence their Hankel rank equals the reachable Krylov dimension and
+the distinct-eigenvalue count. At a prime p, classical cyclotomy gives the
+count gcd(k,p-1)+1; composite constructions are controls, not a general converse.
 
-* the pulse moments ``μ_m = e₀ᵀ L_rw^m e₀`` obey a linear recurrence;
-* its order is the **Krylov dimension** ``dim span{e₀, L e₀, L² e₀, …}`` =
-  (Kronecker) the **Hankel rank** ``rank[μ_{i+j}]``;
-* because ``L_rw`` is a circulant, ``e₀`` excites every Fourier mode, so that
-  dimension equals the number of distinct eigenvalues.
+Hankel rank need not equal Krylov dimension for an arbitrary square matrix:
+the selected output can miss reachable modes. The circulant input/output
+participation is an essential hypothesis here. Rank computations use exact
+rational arithmetic; a numerical eigencount is a separate comparison.
 
-Hence, on the stated domain,
-
-    Hankel rank = Krylov dimension = #distinct eigenvalues = gcd(k, p−1) + 1,
-
-converting the static spectral rank into the order of the temporal pulse
-``h(t) = e₀ᵀ e^{−ν_f L t} e₀ = Σ_j a_j e^{−ν_f λ_j t}``.  Everything here is exact
-rational linear algebra (:mod:`tnfr.mathematics.krylov`); composites are controls
-outside the theorem.  Honest scope: this is a **recurrence-order** identity, not a
-fast primality test — building the ``p``-node network is exponential in the input
-size ``log₂ p``.
-"""
+The optional interpretation h(t)=e_0^T exp(-nu_f*L*t)e_0 is a declared fixed
+linear response. It derives neither autonomous AL occurrence nor a phase law,
+sustained oscillation or an arithmetic substrate from the nodal identity.
+Building an n-node network is exponential in the bit length of n, so this
+construction supplies no factoring or primality speedup."""
 
 from __future__ import annotations
 

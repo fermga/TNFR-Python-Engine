@@ -21,9 +21,7 @@ from tnfr.operators.event_remesh_causal_runtime import (
     ExecutedEventRemeshCycleSequence,
     execute_event_remesh_cycle_sequence,
 )
-from tnfr.operators.event_remesh_sequence import (
-    compose_event_remesh_cycle_observations,
-)
+from tnfr.operators.event_remesh_sequence import compose_event_remesh_cycle_observations
 from tnfr.operators.event_timing import (
     build_operator_event_schedule,
     build_physical_flow_partition,
@@ -51,8 +49,7 @@ def _set_pure_epi_pressure(graph: nx.Graph) -> None:
     for node in graph:
         neighbours = tuple(graph.neighbors(node))
         graph.nodes[node]["delta_nfr"] = (
-            sum(values[item] for item in neighbours) / len(neighbours)
-            - values[node]
+            sum(values[item] for item in neighbours) / len(neighbours) - values[node]
         )
 
 
@@ -174,8 +171,7 @@ def test_two_cycles_receive_same_invocation_provenance_and_telescope() -> None:
         receipt.spec is specs[index]
         and receipt.schedule is specs[index].schedule
         and receipt.cycle_result is result.cycles[index]
-        and receipt.cycle_result.event_execution.schedule
-        is specs[index].schedule
+        and receipt.cycle_result.event_execution.schedule is specs[index].schedule
         for index, receipt in enumerate(result.receipts)
     )
     assert result.observed_sequence.cycles[0] is result.cycles[0]
@@ -334,8 +330,7 @@ def test_causal_runtime_stub_exposes_optional_telescope_contract() -> None:
     annotations = {
         node.target.id: ast.unparse(node.annotation)
         for node in sequence_class.body
-        if isinstance(node, ast.AnnAssign)
-        and isinstance(node.target, ast.Name)
+        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)
     }
     assert annotations["runtime_telescope_required"] == "bool"
     assert annotations["runtime_telescope"] == (

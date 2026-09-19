@@ -1,8 +1,8 @@
 """Fixed original-profile accounting for one finite distributed UM response."""
 
-from fractions import Fraction
 import hashlib
 import json
+from fractions import Fraction
 from unittest.mock import patch
 
 import pytest
@@ -22,7 +22,9 @@ def execution():
         graphs.append(graph)
         return graph, prefix
 
-    with patch.object(benchmark, "prepare_distributed_transport_support", record_fresh_source):
+    with patch.object(
+        benchmark, "prepare_distributed_transport_support", record_fresh_source
+    ):
         study = benchmark.run_study()
     return study, graphs
 
@@ -49,8 +51,13 @@ def _laplacian(edges, values):
 
 
 def _energy(edges, values):
-    return sum((weight * (values[i] - values[j])**2
-                for i, j, weight in edges), Fraction(0)) / 4
+    return (
+        sum(
+            (weight * (values[i] - values[j]) ** 2 for i, j, weight in edges),
+            Fraction(0),
+        )
+        / 4
+    )
 
 
 def _project(metric, values):
@@ -72,11 +79,19 @@ def _assert_reference(reference):
     assert reference["compatibility_residual"] == _dot(strengths, reference["forcing"])
     z = reference["relative_profile"]
     assert _dot(metric, z) == reference["profile_center_residual"] == 0
-    left = tuple(reference["epi_weight"] * value
-                 for value in _laplacian(source["conductance"], z))
-    right = tuple(d * f - drift * h for d, f, h in zip(
-        strengths, reference["forcing"], metric, strict=True,
-    ))
+    left = tuple(
+        reference["epi_weight"] * value
+        for value in _laplacian(source["conductance"], z)
+    )
+    right = tuple(
+        d * f - drift * h
+        for d, f, h in zip(
+            strengths,
+            reference["forcing"],
+            metric,
+            strict=True,
+        )
+    )
     assert left == right
     assert reference["profile_residual"] == (Fraction(0),) * len(z)
     assert reference["has_zero_pressure_equilibrium"] == (drift == 0)
@@ -95,13 +110,23 @@ def _assert_pattern(reference, pattern):
     metric = reference["metric_weights"]
     x = pattern["epi"]
     mean = _dot(metric, x) / sum(metric, Fraction(0))
-    error = tuple(value - mean - z for value, z in zip(
-        x, reference["relative_profile"], strict=True,
-    ))
+    error = tuple(
+        value - mean - z
+        for value, z in zip(
+            x,
+            reference["relative_profile"],
+            strict=True,
+        )
+    )
     assert pattern["mean"] == mean
     assert pattern["relative_error"] == error
-    assert pattern["error_variance"] == _dot(metric, tuple(value**2 for value in error)) / 2
-    assert pattern["error_dirichlet_energy"] == _energy(reference["source"]["conductance"], error)
+    assert (
+        pattern["error_variance"]
+        == _dot(metric, tuple(value**2 for value in error)) / 2
+    )
+    assert pattern["error_dirichlet_energy"] == _energy(
+        reference["source"]["conductance"], error
+    )
 
 
 def _assert_target(target, original):
@@ -117,55 +142,132 @@ def _assert_target(target, original):
     nu, d = source["capacity"], current["strengths"]
 
     def action(values):
-        return tuple(current["epi_weight"] * capacity * gradient / strength
-                     for capacity, gradient, strength in zip(
-                         nu, _laplacian(source["conductance"], values), d, strict=True))
+        return tuple(
+            current["epi_weight"] * capacity * gradient / strength
+            for capacity, gradient, strength in zip(
+                nu, _laplacian(source["conductance"], values), d, strict=True
+            )
+        )
 
     az = action(original["relative_profile"])
-    target_rate = tuple(capacity * f - value for capacity, f, value in zip(
-        nu, current["forcing"], az, strict=True,
-    ))
+    target_rate = tuple(
+        capacity * f - value
+        for capacity, f, value in zip(
+            nu,
+            current["forcing"],
+            az,
+            strict=True,
+        )
+    )
     residual = _project(metric, target_rate)
     assert target["target_rate"] == target_rate
     assert target["compatibility_residual"] == residual
     assert target["target_compatible"] == (not any(residual))
     assert target["profile_identity_residual"] == (0,) * len(residual)
-    assert _project(metric, action(target["limiting_pattern"]["relative_error"])) == residual
+    assert (
+        _project(metric, action(target["limiting_pattern"]["relative_error"]))
+        == residual
+    )
     pressure_channels = dict(target["pressure_channels"])
     assert tuple(pressure_channels) == ("epi", "phase", "vf", "topo")
-    assert pressure_channels["epi"] == tuple(-value / capacity for value, capacity in zip(
-        az, nu, strict=True,
-    ))
-    assert tuple(sum((pressure_channels[name][i] for name in ("phase", "vf", "topo")), Fraction(0))
-                 for i in range(len(nu))) == current["forcing"]
-    projected = tuple((name, _project(metric, tuple(capacity * p for capacity, p in zip(
-        nu, values, strict=True,
-    )))) for name, values in pressure_channels.items())
+    assert pressure_channels["epi"] == tuple(
+        -value / capacity
+        for value, capacity in zip(
+            az,
+            nu,
+            strict=True,
+        )
+    )
+    assert (
+        tuple(
+            sum(
+                (pressure_channels[name][i] for name in ("phase", "vf", "topo")),
+                Fraction(0),
+            )
+            for i in range(len(nu))
+        )
+        == current["forcing"]
+    )
+    projected = tuple(
+        (
+            name,
+            _project(
+                metric,
+                tuple(
+                    capacity * p
+                    for capacity, p in zip(
+                        nu,
+                        values,
+                        strict=True,
+                    )
+                ),
+            ),
+        )
+        for name, values in pressure_channels.items()
+    )
     assert target["projected_rate_channels"] == projected
-    gram = tuple(tuple(_dot(metric, tuple(a * b for a, b in zip(left, right, strict=True)))
-                       for _, right in projected) for _, left in projected)
+    gram = tuple(
+        tuple(
+            _dot(metric, tuple(a * b for a, b in zip(left, right, strict=True)))
+            for _, right in projected
+        )
+        for _, left in projected
+    )
     assert target["channel_gram"] == gram
     energy = _dot(metric, tuple(value**2 for value in residual)) / 2
     assert target["compatibility_energy"] == energy
     assert energy == sum((sum(row, Fraction(0)) for row in gram), Fraction(0)) / 2
     assert target["channel_energy_identity_residual"] == 0
     error = target["pattern"]["relative_error"]
-    homogeneous = -_dot(metric, tuple(value * rate for value, rate in zip(
-        error, action(error), strict=True,
-    )))
-    source_rate = _dot(metric, tuple(value * rate for value, rate in zip(error, residual, strict=True)))
+    homogeneous = -_dot(
+        metric,
+        tuple(
+            value * rate
+            for value, rate in zip(
+                error,
+                action(error),
+                strict=True,
+            )
+        ),
+    )
+    source_rate = _dot(
+        metric, tuple(value * rate for value, rate in zip(error, residual, strict=True))
+    )
     state = target["state"]
     x = state["snapshot"]["epi"]
-    model = tuple(capacity * f - drift for capacity, f, drift in zip(
-        nu, current["forcing"], action(x), strict=True,
-    ))
-    model_energy_rate = _dot(metric, tuple(value * rate for value, rate in zip(error, model, strict=True)))
-    pressure_defect = tuple(p - rate / capacity for p, rate, capacity in zip(
-        state["snapshot"]["stored_pressure"], model, nu, strict=True,
-    ))
-    defect_rate = _dot(metric, tuple(value * capacity * defect for value, capacity, defect in zip(
-        error, nu, pressure_defect, strict=True,
-    )))
+    model = tuple(
+        capacity * f - drift
+        for capacity, f, drift in zip(
+            nu,
+            current["forcing"],
+            action(x),
+            strict=True,
+        )
+    )
+    model_energy_rate = _dot(
+        metric, tuple(value * rate for value, rate in zip(error, model, strict=True))
+    )
+    pressure_defect = tuple(
+        p - rate / capacity
+        for p, rate, capacity in zip(
+            state["snapshot"]["stored_pressure"],
+            model,
+            nu,
+            strict=True,
+        )
+    )
+    defect_rate = _dot(
+        metric,
+        tuple(
+            value * capacity * defect
+            for value, capacity, defect in zip(
+                error,
+                nu,
+                pressure_defect,
+                strict=True,
+            )
+        ),
+    )
     assert target["model_rate"] == model
     assert state["pressure_defect"] == pressure_defect
     assert target["homogeneous_energy_rate"] == homogeneous
@@ -192,22 +294,44 @@ def _assert_step(step):
         assert snapshot["conductance"] == reference["source"]["conductance"]
         assert snapshot["capacity"] == nu
         mean = _dot(metric, snapshot["epi"]) / mass
-        error = tuple(value - mean - target for value, target in zip(
-            snapshot["epi"], reference["relative_profile"], strict=True,
-        ))
-        modeled = tuple(-reference["epi_weight"] * gradient / d + f for gradient, d, f in zip(
-            _laplacian(snapshot["conductance"], snapshot["epi"]),
-            reference["strengths"], reference["forcing"], strict=True,
-        ))
+        error = tuple(
+            value - mean - target
+            for value, target in zip(
+                snapshot["epi"],
+                reference["relative_profile"],
+                strict=True,
+            )
+        )
+        modeled = tuple(
+            -reference["epi_weight"] * gradient / d + f
+            for gradient, d, f in zip(
+                _laplacian(snapshot["conductance"], snapshot["epi"]),
+                reference["strengths"],
+                reference["forcing"],
+                strict=True,
+            )
+        )
         assert state["mean"] == mean
         assert state["relative_error"] == error
         assert state["modeled_pressure"] == modeled
-        assert state["pressure_defect"] == tuple(p - q for p, q in zip(
-            snapshot["stored_pressure"], modeled, strict=True,
-        ))
-    defect = tuple(final - initial - h * capacity * p
-                   for final, initial, capacity, p in zip(y, x, nu, pressure, strict=True))
-    measured = _dot(metric, tuple(final - initial for final, initial in zip(y, x, strict=True))) / mass
+        assert state["pressure_defect"] == tuple(
+            p - q
+            for p, q in zip(
+                snapshot["stored_pressure"],
+                modeled,
+                strict=True,
+            )
+        )
+    defect = tuple(
+        final - initial - h * capacity * p
+        for final, initial, capacity, p in zip(y, x, nu, pressure, strict=True)
+    )
+    measured = (
+        _dot(
+            metric, tuple(final - initial for final, initial in zip(y, x, strict=True))
+        )
+        / mass
+    )
     model = h * reference["mean_drift"]
     pressure_term = h * _dot(reference["strengths"], before["pressure_defect"]) / mass
     rounding = _dot(metric, defect) / mass
@@ -215,11 +339,21 @@ def _assert_step(step):
     assert step["mean_model_change"] == model
     assert step["mean_pressure_defect"] == pressure_term
     assert step["mean_step_defect"] == rounding
-    assert step["mean_identity_residual"] == measured - model - pressure_term - rounding == 0
+    assert (
+        step["mean_identity_residual"]
+        == measured - model - pressure_term - rounding
+        == 0
+    )
     assert step["support_budget"]["state_defect"] == defect
-    combined = tuple(h * capacity * p + residual for capacity, p, residual in zip(
-        nu, before["pressure_defect"], defect, strict=True,
-    ))
+    combined = tuple(
+        h * capacity * p + residual
+        for capacity, p, residual in zip(
+            nu,
+            before["pressure_defect"],
+            defect,
+            strict=True,
+        )
+    )
     centered = _project(metric, combined)
     assert step["relative_energy_budget"]["state_defect"] == centered
     assert step["relative_recurrence_residual"] == (0,) * len(x)
@@ -231,21 +365,33 @@ def _assert_step(step):
         )
 
 
-def test_branches_replay_independent_graphs_and_the_identical_causal_baseline(execution, branches):
+def test_branches_replay_independent_graphs_and_the_identical_causal_baseline(
+    execution, branches
+):
     study, graphs = execution
     assert len(graphs) == 2 and graphs[0] is not graphs[1]
     assert tuple(branches) == ("no_event", "all_node_um")
     assert study["common_causal_baseline_reproduced"]
     left, right = branches.values()
-    for key in ("prefix", "original_reference", "initial_target", "baseline_flow",
-                "baseline_target", "baseline_steps", "before_optional_event", "common_source"):
+    for key in (
+        "prefix",
+        "original_reference",
+        "initial_target",
+        "baseline_flow",
+        "baseline_target",
+        "baseline_steps",
+        "before_optional_event",
+        "common_source",
+    ):
         assert left[key] == right[key]
     assert left["before_optional_event"]["time"] == 1.0
     assert len(left["before_optional_event"]["nodes"]) == 16
 
 
 @pytest.mark.parametrize("name", ("no_event", "all_node_um"))
-def test_original_reference_is_frozen_at_the_first_refreshed_postgrowth_source(branches, name):
+def test_original_reference_is_frozen_at_the_first_refreshed_postgrowth_source(
+    branches, name
+):
     branch = branches[name]
     original = branch["original_reference"]
     source = branch["prefix"]["coupling"]["refreshed_forcing"]["observation"]
@@ -255,20 +401,34 @@ def test_original_reference_is_frozen_at_the_first_refreshed_postgrowth_source(b
     assert branch["original_reference_frozen_time"] == 0.5
     assert branch["original_reference_frozen_before_baseline_flow"]
     _assert_reference(original)
-    encoded = json.dumps(_payload(original), sort_keys=True,
-                         separators=(",", ":"), allow_nan=False).encode()
+    encoded = json.dumps(
+        _payload(original), sort_keys=True, separators=(",", ":"), allow_nan=False
+    ).encode()
     digest = hashlib.sha256(encoded).hexdigest()
     assert branch["original_reference_sha256"] == digest
     assert branch["initial_target"]["pattern"]["epi"] == original["source"]["epi"]
     assert branch["initial_target"]["state"]["snapshot"] == source["snapshot"]
-    assert branch["baseline_target"]["state"]["snapshot"] == branch["baseline_flow"]["after_forcing"]["observation"]["snapshot"]
-    assert branch["endpoint_target"]["state"]["snapshot"] == branch["continuation_flow"]["after_forcing"]["observation"]["snapshot"]
-    for key in ("initial_target", "baseline_target", "post_event_target", "endpoint_target"):
+    assert (
+        branch["baseline_target"]["state"]["snapshot"]
+        == branch["baseline_flow"]["after_forcing"]["observation"]["snapshot"]
+    )
+    assert (
+        branch["endpoint_target"]["state"]["snapshot"]
+        == branch["continuation_flow"]["after_forcing"]["observation"]["snapshot"]
+    )
+    for key in (
+        "initial_target",
+        "baseline_target",
+        "post_event_target",
+        "endpoint_target",
+    ):
         _assert_target(branch[key], original)
 
 
 @pytest.mark.parametrize("name", ("no_event", "all_node_um"))
-def test_both_finite_partitions_keep_declared_current_models_and_exact_mean_defect_budgets(branches, name):
+def test_both_finite_partitions_keep_declared_current_models_and_exact_mean_defect_budgets(
+    branches, name
+):
     branch = branches[name]
     for flow_key, step_key, start in (
         ("baseline_flow", "baseline_steps", 0.5),
@@ -280,12 +440,16 @@ def test_both_finite_partitions_keep_declared_current_models_and_exact_mean_defe
         assert flow["after"]["time"] == start + 0.5
         assert flow["partition"]["segment_durations"] == (0.25, 0.25)
         assert tuple(boundary["time"] for boundary in flow["boundaries"]) == (
-            start, start + 0.25, start + 0.5,
+            start,
+            start + 0.25,
+            start + 0.5,
         )
         assert len(steps) == len(flow["segments"]) == 2
         assert flow["all_segment_binary64_replays_identified"]
-        current = branch["original_reference"] if flow_key == "baseline_flow" else (
-            branch["post_event_target"]["reference"]
+        current = (
+            branch["original_reference"]
+            if flow_key == "baseline_flow"
+            else (branch["post_event_target"]["reference"])
         )
         for segment, step in zip(flow["segments"], steps, strict=True):
             assert step["before"]["snapshot"] == segment["before_support"]
@@ -305,7 +469,12 @@ def test_no_event_control_preserves_the_actual_common_endpoint_and_model(branche
     assert branch["before_optional_event"] == branch["after_optional_event"]
     assert branch["baseline_target"] == branch["post_event_target"]
     assert branch["endpoint_target"]["reference"] == branch["original_reference"]
-    for key in ("initial_target", "baseline_target", "post_event_target", "endpoint_target"):
+    for key in (
+        "initial_target",
+        "baseline_target",
+        "post_event_target",
+        "endpoint_target",
+    ):
         assert branch[key]["target_compatible"]
         assert branch[key]["compatibility_energy"] == 0
 
@@ -323,41 +492,64 @@ def test_all_current_nodes_receive_one_actual_admitted_default_um_stage(branches
     assert coupling["stage_result"]["schedule"] == "two_phase_jacobi"
     assert coupling["stage_result"]["nodes_processed"] == 16
     assert tuple(row["node"] for row in coupling["admissions"]) == source["nodes"]
-    assert all(row["allowed"] and row["candidate"] == "UM" for row in coupling["admissions"])
+    assert all(
+        row["allowed"] and row["candidate"] == "UM" for row in coupling["admissions"]
+    )
     assert coupling["after_raw"]["nodes"] == source["nodes"]
     assert coupling["after_raw"]["epi"] == source["epi"]
     assert coupling["after_raw"]["time"] == source["time"] == 1.0
     proposal = coupling["kernel_proposal"]
     assert proposal["targets"] == source["nodes"]
     assert len(proposal["target_proposals"]) == 16
-    expected = {field: list(source[field]) for field in ("phase", "capacity", "pressure")}
+    expected = {
+        field: list(source[field]) for field in ("phase", "capacity", "pressure")
+    }
     for update in proposal["node_updates"]:
         index = source["nodes"].index(update["node"])
-        for key, field in (("theta_after", "phase"), ("vf_after", "capacity"), ("dnfr_after", "pressure")):
+        for key, field in (
+            ("theta_after", "phase"),
+            ("vf_after", "capacity"),
+            ("dnfr_after", "pressure"),
+        ):
             if update[key] is not None:
                 expected[field][index] = update[key]
     for field, values in expected.items():
         assert coupling["after_raw"][field] == tuple(values)
-    assert {frozenset((u, v)): data["weight"] for u, v, data in coupling["new_edges"]} == {
-        frozenset((edge["left"], edge["right"])): edge["weight"] for edge in proposal["edges"]
+    assert {
+        frozenset((u, v)): data["weight"] for u, v, data in coupling["new_edges"]
+    } == {
+        frozenset((edge["left"], edge["right"])): edge["weight"]
+        for edge in proposal["edges"]
     }
     assert len(coupling["new_edges"]) == 8
     assert len(coupling["after_raw"]["edges"]) == 32
     assert coupling["support_inventory"]["directed_unique_support_entries"] == 64
     for node in source["nodes"]:
-        assert coupling["after_raw"]["glyph_history"][node] == source["glyph_history"][node] + ("UM",)
+        assert coupling["after_raw"]["glyph_history"][node] == source["glyph_history"][
+            node
+        ] + ("UM",)
 
 
-def test_zero_epi_event_cannot_be_counted_as_instantaneous_old_target_recovery(branches):
+def test_zero_epi_event_cannot_be_counted_as_instantaneous_old_target_recovery(
+    branches,
+):
     branch = branches["all_node_um"]
     event = branch["event"]["exact_forced_event"]
     assert event["before_reference"] == branch["original_reference"]
     assert event["after_reference"] == branch["post_event_target"]["reference"]
-    assert event["before"]["snapshot"] == branch["baseline_flow"]["after_forcing"]["observation"]["snapshot"]
-    assert event["after"]["snapshot"] == branch["event"]["coupling"]["refreshed_forcing"]["observation"]["snapshot"]
+    assert (
+        event["before"]["snapshot"]
+        == branch["baseline_flow"]["after_forcing"]["observation"]["snapshot"]
+    )
+    assert (
+        event["after"]["snapshot"]
+        == branch["event"]["coupling"]["refreshed_forcing"]["observation"]["snapshot"]
+    )
     assert event["epi_jump"] == event["centered_epi_jump"] == (0,) * 16
     assert event["mean_epi_jump"] == 0
-    assert branch["post_event_target"]["pattern"] == branch["baseline_target"]["pattern"]
+    assert (
+        branch["post_event_target"]["pattern"] == branch["baseline_target"]["pattern"]
+    )
     assert event["midpoint_pattern"] == branch["baseline_target"]["pattern"]
     for field in ("variance_jump_budget", "dirichlet_jump_budget"):
         assert all(value == 0 for value in event[field].values())
@@ -367,18 +559,34 @@ def test_zero_epi_event_cannot_be_counted_as_instantaneous_old_target_recovery(b
     shift = tuple(new - old for old, new in zip(u0, u1, strict=True))
     h0, h1 = first["metric_weights"], second["metric_weights"]
     variance = event["variance_reset_budget"]
-    assert variance["metric_term"] == _dot(tuple(new - old for old, new in zip(h0, h1, strict=True)),
-                                           tuple(value**2 for value in u0)) / 2
-    assert variance["reference_cross_term"] == _dot(h1, tuple(a * b for a, b in zip(u0, shift, strict=True)))
-    assert variance["reference_quadratic_term"] == _dot(h1, tuple(value**2 for value in shift)) / 2
-    old_edges, new_edges = first["source"]["conductance"], second["source"]["conductance"]
+    assert (
+        variance["metric_term"]
+        == _dot(
+            tuple(new - old for old, new in zip(h0, h1, strict=True)),
+            tuple(value**2 for value in u0),
+        )
+        / 2
+    )
+    assert variance["reference_cross_term"] == _dot(
+        h1, tuple(a * b for a, b in zip(u0, shift, strict=True))
+    )
+    assert (
+        variance["reference_quadratic_term"]
+        == _dot(h1, tuple(value**2 for value in shift)) / 2
+    )
+    old_edges, new_edges = (
+        first["source"]["conductance"],
+        second["source"]["conductance"],
+    )
     dirichlet = event["dirichlet_reset_budget"]
     assert dirichlet["metric_term"] == _energy(new_edges, u0) - _energy(old_edges, u0)
     assert dirichlet["reference_cross_term"] == _dot(_laplacian(new_edges, u0), shift)
     assert dirichlet["reference_quadratic_term"] == _energy(new_edges, shift)
     for budget in (variance, dirichlet):
         assert budget["energy_change"] == (
-            budget["metric_term"] + budget["reference_cross_term"] + budget["reference_quadratic_term"]
+            budget["metric_term"]
+            + budget["reference_cross_term"]
+            + budget["reference_quadratic_term"]
         )
         assert budget["identity_residual"] == 0
     assert event["mean_reweighting"] == after["mean"] - before["mean"]
@@ -387,20 +595,46 @@ def test_zero_epi_event_cannot_be_counted_as_instantaneous_old_target_recovery(b
     assert event["error_identity_residual"] == (0,) * 16
     assert event["variance_change"] == variance["energy_change"]
     assert event["dirichlet_change"] == dirichlet["energy_change"]
-    assert event["variance_identity_residual"] == event["dirichlet_identity_residual"] == 0
+    assert (
+        event["variance_identity_residual"] == event["dirichlet_identity_residual"] == 0
+    )
 
 
-def test_signed_channel_allocation_keeps_cross_terms_and_the_same_target_metric(branches):
+def test_signed_channel_allocation_keeps_cross_terms_and_the_same_target_metric(
+    branches,
+):
     branch = branches["all_node_um"]
     before, after = branch["baseline_target"], branch["post_event_target"]
-    old, new = dict(before["projected_rate_channels"]), dict(after["projected_rate_channels"])
+    old, new = dict(before["projected_rate_channels"]), dict(
+        after["projected_rate_channels"]
+    )
     metric = branch["original_reference"]["metric_weights"]
-    midpoint = tuple((a + b) / 2 for a, b in zip(
-        before["compatibility_residual"], after["compatibility_residual"], strict=True,
-    ))
-    expected = tuple((name, _dot(metric, tuple(mid * (b - a) for mid, a, b in zip(
-        midpoint, old[name], new[name], strict=True,
-    )))) for name in old)
+    midpoint = tuple(
+        (a + b) / 2
+        for a, b in zip(
+            before["compatibility_residual"],
+            after["compatibility_residual"],
+            strict=True,
+        )
+    )
+    expected = tuple(
+        (
+            name,
+            _dot(
+                metric,
+                tuple(
+                    mid * (b - a)
+                    for mid, a, b in zip(
+                        midpoint,
+                        old[name],
+                        new[name],
+                        strict=True,
+                    )
+                ),
+            ),
+        )
+        for name in old
+    )
     allocation = branch["event"]["signed_target_channel_change"]
     assert allocation["channel_contributions"] == expected
     change = after["compatibility_energy"] - before["compatibility_energy"]
@@ -410,7 +644,9 @@ def test_signed_channel_allocation_keeps_cross_terms_and_the_same_target_metric(
     assert "not separately executed ablations" in allocation["scope"]
 
 
-def test_same_state_rate_change_keeps_generator_target_and_realization_terms_separate(branches):
+def test_same_state_rate_change_keeps_generator_target_and_realization_terms_separate(
+    branches,
+):
     branch = branches["all_node_um"]
     before, after = branch["baseline_target"], branch["post_event_target"]
     assert before["pattern"] == after["pattern"]
@@ -419,17 +655,32 @@ def test_same_state_rate_change_keeps_generator_target_and_realization_terms_sep
 
     def actual_rate(target):
         snapshot = target["state"]["snapshot"]
-        return _dot(metric, tuple(u * nu * p for u, nu, p in zip(
-            error, snapshot["capacity"], snapshot["stored_pressure"], strict=True,
-        )))
+        return _dot(
+            metric,
+            tuple(
+                u * nu * p
+                for u, nu, p in zip(
+                    error,
+                    snapshot["capacity"],
+                    snapshot["stored_pressure"],
+                    strict=True,
+                )
+            ),
+        )
 
     total = actual_rate(after) - actual_rate(before)
-    changes = {field: after[field] - before[field] for field in (
-        "homogeneous_energy_rate", "target_source_energy_rate",
-        "stored_pressure_energy_rate_defect",
-    )}
+    changes = {
+        field: after[field] - before[field]
+        for field in (
+            "homogeneous_energy_rate",
+            "target_source_energy_rate",
+            "stored_pressure_energy_rate_defect",
+        )
+    }
     assert total == sum(changes.values(), Fraction(0))
-    assert total == after["stored_nodal_energy_rate"] - before["stored_nodal_energy_rate"]
+    assert (
+        total == after["stored_nodal_energy_rate"] - before["stored_nodal_energy_rate"]
+    )
     retained = branch["event"]["same_state_rate_change"]
     assert retained["before_stored_nodal_energy_rate"] == actual_rate(before)
     assert retained["after_stored_nodal_energy_rate"] == actual_rate(after)
@@ -440,38 +691,81 @@ def test_same_state_rate_change_keeps_generator_target_and_realization_terms_sep
 
 
 @pytest.mark.parametrize("name", ("no_event", "all_node_um"))
-def test_forcing_is_captured_from_channels_and_stays_distinct_from_stored_pressure(branches, name):
+def test_forcing_is_captured_from_channels_and_stays_distinct_from_stored_pressure(
+    branches, name
+):
     branch = branches[name]
     pairs = [
-        (branch["prefix"]["coupling"]["raw_forcing"], branch["prefix"]["coupling"]["refreshed_forcing"]),
+        (
+            branch["prefix"]["coupling"]["raw_forcing"],
+            branch["prefix"]["coupling"]["refreshed_forcing"],
+        ),
     ]
     if branch["event"] is not None:
         coupling = branch["event"]["coupling"]
         pairs.append((coupling["raw_forcing"], coupling["refreshed_forcing"]))
     for raw, fresh in pairs:
         first, second = raw["observation"], fresh["observation"]
-        for field in ("forcing", "phase", "phase_gradient", "epi_weight", "normalized_weights",
-                      "full_kernel_pressure", "kernel_pressure_defect"):
+        for field in (
+            "forcing",
+            "phase",
+            "phase_gradient",
+            "epi_weight",
+            "normalized_weights",
+            "full_kernel_pressure",
+            "kernel_pressure_defect",
+        ):
             assert first[field] == second[field]
-        assert first["snapshot"]["stored_pressure"] != second["snapshot"]["stored_pressure"]
+        assert (
+            first["snapshot"]["stored_pressure"]
+            != second["snapshot"]["stored_pressure"]
+        )
         for record in (raw, fresh):
             observation = record["observation"]
-            assert tuple(sum((vector[i] for _, vector in record["components"]), Fraction(0))
-                         for i in range(16)) == observation["forcing"]
-            modeled = tuple(observation["epi_weight"] * gradient + force
-                            for gradient, force in zip(observation["snapshot"]["epi_gradient"],
-                                                       observation["forcing"], strict=True))
-            assert tuple(actual - expected for actual, expected in zip(
-                observation["full_kernel_pressure"], modeled, strict=True,
-            )) == observation["kernel_pressure_defect"]
-            assert tuple(actual - kernel for actual, kernel in zip(
-                observation["snapshot"]["stored_pressure"], observation["full_kernel_pressure"], strict=True,
-            )) == observation["stored_pressure_residual"]
+            assert (
+                tuple(
+                    sum((vector[i] for _, vector in record["components"]), Fraction(0))
+                    for i in range(16)
+                )
+                == observation["forcing"]
+            )
+            modeled = tuple(
+                observation["epi_weight"] * gradient + force
+                for gradient, force in zip(
+                    observation["snapshot"]["epi_gradient"],
+                    observation["forcing"],
+                    strict=True,
+                )
+            )
+            assert (
+                tuple(
+                    actual - expected
+                    for actual, expected in zip(
+                        observation["full_kernel_pressure"],
+                        modeled,
+                        strict=True,
+                    )
+                )
+                == observation["kernel_pressure_defect"]
+            )
+            assert (
+                tuple(
+                    actual - kernel
+                    for actual, kernel in zip(
+                        observation["snapshot"]["stored_pressure"],
+                        observation["full_kernel_pressure"],
+                        strict=True,
+                    )
+                )
+                == observation["stored_pressure_residual"]
+            )
     for key in ("baseline_capture_checks", "continuation_capture_checks"):
         assert all(value for field, value in branch[key].items() if field != "scope")
 
 
-def test_observed_short_term_error_decrease_does_not_erase_new_target_incompatibility(branches):
+def test_observed_short_term_error_decrease_does_not_erase_new_target_incompatibility(
+    branches,
+):
     baseline = branches["no_event"]
     changed = branches["all_node_um"]
     initial = baseline["initial_target"]["pattern"]["error_variance"]
@@ -484,8 +778,13 @@ def test_observed_short_term_error_decrease_does_not_erase_new_target_incompatib
     assert not changed["post_event_target"]["target_compatible"]
     assert not changed["endpoint_target"]["target_compatible"]
     assert changed["endpoint_target"]["compatibility_energy"] > 0
-    assert changed["post_event_target"]["reference"]["relative_profile"] != changed["original_reference"]["relative_profile"]
-    assert changed["endpoint_target"]["target_reference"] == baseline["original_reference"]
+    assert (
+        changed["post_event_target"]["reference"]["relative_profile"]
+        != changed["original_reference"]["relative_profile"]
+    )
+    assert (
+        changed["endpoint_target"]["target_reference"] == baseline["original_reference"]
+    )
     for branch in branches.values():
         comparison = branch["comparison"]
         assert comparison["baseline_fixed_target_variance_change"] == common - initial
@@ -494,7 +793,8 @@ def test_observed_short_term_error_decrease_does_not_erase_new_target_incompatib
             - branch["post_event_target"]["pattern"]["error_variance"]
         )
         assert comparison["original_metric_mean_change"] == (
-            branch["endpoint_target"]["pattern"]["mean"] - branch["initial_target"]["pattern"]["mean"]
+            branch["endpoint_target"]["pattern"]["mean"]
+            - branch["initial_target"]["pattern"]["mean"]
         )
 
 

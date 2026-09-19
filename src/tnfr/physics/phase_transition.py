@@ -108,7 +108,9 @@ class PhaseTransitionTelemetry:
     breaking transition: order parameter, chirality, susceptibility, coherence
     length, and a finite time-series exponent fit.
 
-    All quantities derive from the nodal equation via unified fields.
+    These defined diagnostics reuse the shared structural fields. Their
+    selection and finite-series estimators are not consequences of the
+    nodal equation alone, nor do they supply an evolution law.
 
     Attributes
     ----------

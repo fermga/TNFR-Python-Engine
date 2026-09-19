@@ -85,9 +85,7 @@ class Mutation(Operator):
 
         emit_mutation_lifecycle_log(proposal)
 
-    def _after_glyph_application(
-        self, G: TNFRGraph, node: Any, **kw: Any
-    ) -> None:
+    def _after_glyph_application(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Merge proposal-bound evidence after phase and history commit."""
 
         from ._mutation_stage_kernel import (

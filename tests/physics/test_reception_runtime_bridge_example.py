@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from fractions import Fraction
 import importlib.util
 import json
+from fractions import Fraction
 from pathlib import Path
 
 import pytest
-
 
 EXAMPLE_PATH = (
     Path(__file__).resolve().parents[2]
@@ -75,9 +74,7 @@ def test_example_recovery_uses_the_exact_hybrid_decision(example_and_protocol):
     assert not recovered.hybrid_certificate.initial_weighted_mean_preserved
 
 
-def test_example_report_is_finite_and_declares_scope(
-    example_and_protocol, monkeypatch
-):
+def test_example_report_is_finite_and_declares_scope(example_and_protocol, monkeypatch):
     example, protocol = example_and_protocol
     monkeypatch.setattr(
         example,
@@ -91,18 +88,12 @@ def test_example_report_is_finite_and_declares_scope(
     assert len(encoded) < 5000
     assert report["manifest"]["result_status"] == "derived"
     assert report["runtime"]["unweighted_neighbor_mean"] == pytest.approx(0.5)
-    assert report["runtime"]["conductance_weighted_neighbor_mean"] == pytest.approx(
-        0.9
-    )
+    assert report["runtime"]["conductance_weighted_neighbor_mean"] == pytest.approx(0.9)
     assert report["affine_boundary"]["exact_quotient_gain_upper_bound"] == "1/1"
     assert report["consensus_and_pressure"]["pressure_refresh_required"]
     assert report["recovery"]["exact_hybrid_contraction_decision"]
     assert report["scope"]["uniform_real_scalar_embedding"]
-    assert report["affine_boundary"][
-        "ideal_real_hard_clipping_inactive_by_convexity"
-    ]
-    assert report["affine_boundary"][
-        "runtime_hard_clipping_inactive_at_snapshot"
-    ]
+    assert report["affine_boundary"]["ideal_real_hard_clipping_inactive_by_convexity"]
+    assert report["affine_boundary"]["runtime_hard_clipping_inactive_at_snapshot"]
     assert report["scope"]["ideal_hard_clipping_controlled_by_convexity"]
     assert report["scope"]["runtime_clip_observation_is_snapshot_only"]

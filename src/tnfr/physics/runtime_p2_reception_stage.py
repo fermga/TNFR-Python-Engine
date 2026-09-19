@@ -27,10 +27,7 @@ from fractions import Fraction
 from typing import Any, Literal
 
 from ..errors import TNFRValueError
-from ..operators.event_runtime import (
-    ExecutedGlyphStage,
-    OperatorEventExecutionResult,
-)
+from ..operators.event_runtime import ExecutedGlyphStage, OperatorEventExecutionResult
 from ..types import Glyph
 from ..utils._structural_signature import (
     binary64_vectors_are_identical,
@@ -186,9 +183,7 @@ def _binary64_pair_from_stage_vector(value: Any, *, label: str) -> Binary64Pair:
         materialized = tuple(float(item) for item in value)
     except (TypeError, ValueError, OverflowError) as exc:
         raise TNFRValueError(f"{label} is not a finite binary64 pair") from exc
-    if len(materialized) != 2 or not all(
-        math.isfinite(item) for item in materialized
-    ):
+    if len(materialized) != 2 or not all(math.isfinite(item) for item in materialized):
         raise TNFRValueError(f"{label} is not a finite binary64 pair")
     return materialized[0], materialized[1]
 
@@ -199,11 +194,7 @@ def _exact_conductance(snapshot: NodalFlowStateSnapshot) -> tuple[ExactPair, Exa
         type(value) is not tuple
         or len(value) != 2
         or any(type(row) is not tuple or len(row) != 2 for row in value)
-        or any(
-            type(entry) is not Fraction
-            for row in value
-            for entry in row
-        )
+        or any(type(entry) is not Fraction for row in value for entry in row)
     ):
         raise TNFRValueError("captured conductance must be an exact 2x2 matrix")
     return (value[0][0], value[0][1]), (value[1][0], value[1][1])
@@ -223,9 +214,7 @@ def _exact_capacities(snapshot: NodalFlowStateSnapshot) -> ExactPair:
         or len(value) != 2
         or any(type(item) is not Fraction or item <= 0 for item in value)
     ):
-        raise TNFRValueError(
-            "captured capacities must be two positive binary64 values"
-        )
+        raise TNFRValueError("captured capacities must be two positive binary64 values")
     if value != tuple(Fraction.from_float(item) for item in represented):
         raise TNFRValueError("captured exact capacities do not match binary64")
     return value[0], value[1]
@@ -248,8 +237,7 @@ def _metric_ray(
     if any(value <= 0 for value in degrees):
         raise TNFRValueError("captured support must have positive row strengths")
     weights = tuple(
-        degree / capacity
-        for degree, capacity in zip(degrees, capacities, strict=True)
+        degree / capacity for degree, capacity in zip(degrees, capacities, strict=True)
     )
     total = sum(weights, Fraction(0))
     return weights[0] / total, weights[1] / total
@@ -271,19 +259,19 @@ def _normalized_binary64_metric(value: Any, *, label: str) -> ExactPair:
 
 def _centered_energy(values: ExactPair, metric: ExactPair) -> Fraction:
     center = sum(
-        (
-            weight * value
-            for weight, value in zip(metric, values, strict=True)
-        ),
+        (weight * value for weight, value in zip(metric, values, strict=True)),
         Fraction(0),
     )
-    return sum(
-        (
-            weight * (value - center) ** 2
-            for weight, value in zip(metric, values, strict=True)
-        ),
-        Fraction(0),
-    ) / 2
+    return (
+        sum(
+            (
+                weight * (value - center) ** 2
+                for weight, value in zip(metric, values, strict=True)
+            ),
+            Fraction(0),
+        )
+        / 2
+    )
 
 
 def _runtime_neighbor_indices(
@@ -376,8 +364,7 @@ def _model_from_validated_dependencies(
     ):
         raise TNFRValueError("selected event must be zero-duration Reception/EN")
     if (
-        object.__getattribute__(execution, "stage_certification_requested")
-        is not True
+        object.__getattribute__(execution, "stage_certification_requested") is not True
         or object.__getattribute__(stage, "endpoint_capture_complete") is not True
         or object.__getattribute__(stage, "exact_runtime_endpoint_bound") is not True
     ):
@@ -446,9 +433,7 @@ def _model_from_validated_dependencies(
         or event.stage_schedule != "two_phase_jacobi"
         or event.nodes_processed != 2
     ):
-        raise TNFRValueError(
-            "Reception event is not an admissible two-phase P2 stage"
-        )
+        raise TNFRValueError("Reception event is not an admissible two-phase P2 stage")
 
     neighbor_indices = _runtime_neighbor_indices(step, nodes)
     if (
@@ -460,9 +445,7 @@ def _model_from_validated_dependencies(
         or step.exact_mix_factor != Fraction(1, 2)
         or step.exact_mix_factor != kernel.exact_mix_factor
     ):
-        raise TNFRValueError(
-            "Reception runtime mix must be exact binary64 one half"
-        )
+        raise TNFRValueError("Reception runtime mix must be exact binary64 one half")
 
     source = object.__getattribute__(kernel, "remesh_class_certificate")
     configuration = object.__getattribute__(source, "configuration")
@@ -578,8 +561,7 @@ def _model_from_validated_dependencies(
         and step.pre_metric_affine_jump_certificate.supports_global_gain_theorem
     )
     expected_affine_gain = (
-        step.pre_metric_affine_jump_certificate
-        .exact_quotient_energy_gain_upper_bound
+        step.pre_metric_affine_jump_certificate.exact_quotient_energy_gain_upper_bound
         if derived_affine_bridge
         else None
     )
@@ -611,8 +593,7 @@ def _model_from_validated_dependencies(
         raise TNFRValueError("executor affine-bridge observation is invalid")
 
     atomic = (
-        object.__getattribute__(execution, "whole_schedule_graph_state_atomic")
-        is True
+        object.__getattribute__(execution, "whole_schedule_graph_state_atomic") is True
     )
     if not atomic:
         raise TNFRValueError("execution lacks whole-schedule graph atomicity")
@@ -646,9 +627,7 @@ def _model_from_validated_dependencies(
 class ExecutedP2HalfReceptionStageCertificate:
     """Sealed finite adapter from one runtime EN stage to the global P2 kernel."""
 
-    kernel_certificate: P2HalfReceptionRemeshStabilityCertificate = field(
-        repr=False
-    )
+    kernel_certificate: P2HalfReceptionRemeshStabilityCertificate = field(repr=False)
     execution_result: OperatorEventExecutionResult = field(repr=False)
     executed_stage: ExecutedGlyphStage = field(repr=False)
     event_index: int
@@ -849,9 +828,7 @@ def certify_executed_p2_half_reception_stage(
             "execution_result must be an exact operator-event execution result"
         )
     if not execution_result._proof_fields_are_intact():
-        raise TNFRValueError(
-            "execution_result is unsealed, tampered, or inconsistent"
-        )
+        raise TNFRValueError("execution_result is unsealed, tampered, or inconsistent")
     selected_index = _select_reception_event_index(execution_result, event_index)
     stage = execution_result.glyph_stage_evidence[selected_index]
     model = _model_from_validated_dependencies(

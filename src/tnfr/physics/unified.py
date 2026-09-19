@@ -80,15 +80,19 @@ def _complex_geometric_field(
 
 
 def _chirality_field(
-    grad_phi: dict[Any, float], k_phi: dict[Any, float],
-    j_phi: dict[Any, float], j_dnfr: dict[Any, float],
+    grad_phi: dict[Any, float],
+    k_phi: dict[Any, float],
+    j_phi: dict[Any, float],
+    j_dnfr: dict[Any, float],
 ) -> dict[Any, float]:
     return {n: grad_phi[n] * k_phi[n] - j_phi[n] * j_dnfr[n] for n in grad_phi}
 
 
 def _symmetry_breaking_field(
-    grad_phi: dict[Any, float], k_phi: dict[Any, float],
-    j_phi: dict[Any, float], j_dnfr: dict[Any, float],
+    grad_phi: dict[Any, float],
+    k_phi: dict[Any, float],
+    j_phi: dict[Any, float],
+    j_dnfr: dict[Any, float],
 ) -> dict[Any, float]:
     return {
         n: (grad_phi[n] ** 2 - k_phi[n] ** 2) + (j_phi[n] ** 2 - j_dnfr[n] ** 2)
@@ -103,22 +107,31 @@ def _coherence_coupling_field(
 
 
 def _energy_density_from_fields(
-    phi_s: dict[Any, float], grad_phi: dict[Any, float], k_phi: dict[Any, float],
-    j_phi: dict[Any, float], j_dnfr: dict[Any, float],
+    phi_s: dict[Any, float],
+    grad_phi: dict[Any, float],
+    k_phi: dict[Any, float],
+    j_phi: dict[Any, float],
+    j_dnfr: dict[Any, float],
 ) -> dict[Any, float]:
     """The shared raw quadratic form for live and captured field readouts."""
     return {
         n: (
-            phi_s[n] ** 2 + grad_phi[n] ** 2 + k_phi[n] ** 2
-            + j_phi[n] ** 2 + j_dnfr[n] ** 2
+            phi_s[n] ** 2
+            + grad_phi[n] ** 2
+            + k_phi[n] ** 2
+            + j_phi[n] ** 2
+            + j_dnfr[n] ** 2
         )
         for n in phi_s
     }
 
 
 def _action_density_from_fields(
-    phi_s: dict[Any, float], grad_phi: dict[Any, float], k_phi: dict[Any, float],
-    j_phi: dict[Any, float], j_dnfr: dict[Any, float],
+    phi_s: dict[Any, float],
+    grad_phi: dict[Any, float],
+    k_phi: dict[Any, float],
+    j_phi: dict[Any, float],
+    j_dnfr: dict[Any, float],
 ) -> dict[Any, float]:
     """The shared bilinear interaction, without another graph read."""
     return {
@@ -128,10 +141,13 @@ def _action_density_from_fields(
 
 
 def _topological_charge(
-    grad_phi: dict[Any, float], k_phi: dict[Any, float],
-    j_phi: dict[Any, float], j_dnfr: dict[Any, float],
+    grad_phi: dict[Any, float],
+    k_phi: dict[Any, float],
+    j_phi: dict[Any, float],
+    j_dnfr: dict[Any, float],
 ) -> dict[Any, float]:
     return {n: grad_phi[n] * j_phi[n] - k_phi[n] * j_dnfr[n] for n in grad_phi}
+
 
 # ============================================================================
 # COMPLEX GEOMETRIC FIELD  Ψ = K_φ + i·J_φ
@@ -398,9 +414,7 @@ def analyze_field_correlations(
     Pearson correlation is undefined there.
     """
     fields: dict[str, Any] = {}
-    first_field = next(
-        (v for v in results.values() if isinstance(v, dict) and v), None
-    )
+    first_field = next((v for v in results.values() if isinstance(v, dict) and v), None)
     if first_field is None:
         return {}
     sample_nodes = list(first_field.keys())

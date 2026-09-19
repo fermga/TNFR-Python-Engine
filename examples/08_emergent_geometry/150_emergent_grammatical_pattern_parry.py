@@ -19,7 +19,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import networkx as nx
 import numpy as np
-
 from _flat_grammar_model import (
     ALPHA,
     SHORT,
@@ -119,9 +118,7 @@ def experiment_1_maximum_entropy_policy(matrix, transition, stationary, radius):
     print("=" * 72)
     print("M1: SELECTED MAXIMUM-ENTROPY POLICY ON THE DOMINANT SCC")
     print("=" * 72)
-    state_entropy, choice_entropy = _entropy_components(
-        matrix, transition, stationary
-    )
+    state_entropy, choice_entropy = _entropy_components(matrix, transition, stationary)
     parry_entropy = state_entropy + choice_entropy
 
     # Comparison policy: choose every outgoing labelled edge uniformly.
@@ -146,9 +143,7 @@ def experiment_2_capacity_split(matrix, transition, stationary, radius):
     print("\n" + "=" * 72)
     print("M2: STATE-TARGET ENTROPY + PARALLEL-LABEL CHOICE ENTROPY")
     print("=" * 72)
-    state_entropy, choice_entropy = _entropy_components(
-        matrix, transition, stationary
-    )
+    state_entropy, choice_entropy = _entropy_components(matrix, transition, stationary)
     total = state_entropy + choice_entropy
     print(f"  H(next state | current state) = {state_entropy:.10f} nats/op")
     print(f"  H(label | state transition)   = {choice_entropy:.10f} nats/op")
@@ -178,8 +173,7 @@ def experiment_3_relative_entropy(transition, stationary):
     for step in (0, 1, 2, 5, 10, 20, 40):
         print(f"  t={step:>2}: D(p_t || pi) = {divergences[step]:.10f}")
     monotone = all(
-        right <= left + 1e-11
-        for left, right in zip(divergences, divergences[1:])
+        right <= left + 1e-11 for left, right in zip(divergences, divergences[1:])
     )
     print(f"  non-increasing over sampled steps: {monotone}")
     assert monotone
@@ -193,8 +187,7 @@ def experiment_4_operator_frequencies(component, transition, stationary, labels)
     print("M4: LABEL FREQUENCIES UNDER THE SELECTED POLICY")
     print("=" * 72)
     local = {
-        global_index: local_index
-        for local_index, global_index in enumerate(component)
+        global_index: local_index for local_index, global_index in enumerate(component)
     }
     frequencies = {symbol: 0.0 for symbol in ALPHA}
     for global_i in component:

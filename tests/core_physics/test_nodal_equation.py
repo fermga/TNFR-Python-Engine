@@ -152,7 +152,9 @@ class TestNetworkDynamics:
             G.nodes[node]["EPI"] = f"node_{node}"
             G.nodes[node]["νf"] = 1.0
             G.nodes[node]["ΔNFR"] = 0.5772156649015329 / (i + 1)  # Decreasing pressure
-            G.nodes[node]["phase"] = i * 1.618033988749895 / 4  # diverse test phase spacing
+            G.nodes[node]["phase"] = (
+                i * 1.618033988749895 / 4
+            )  # diverse test phase spacing
 
         # Compute emergent structural potential
         Phi_s = compute_structural_potential(G)
@@ -179,7 +181,13 @@ class TestCanonicalParameterRespect:
         G.nodes[0]["ΔNFR"] = 1.0
 
         # Test diverse frequency values
-        phi_harmonics = [1.0, 1.618033988749895, 1.618033988749895**2, 1 / 1.618033988749895, 1 / (1.618033988749895**2)]
+        phi_harmonics = [
+            1.0,
+            1.618033988749895,
+            1.618033988749895**2,
+            1 / 1.618033988749895,
+            1 / (1.618033988749895**2),
+        ]
 
         for freq in phi_harmonics:
             G.nodes[0]["νf"] = freq
@@ -197,7 +205,12 @@ class TestCanonicalParameterRespect:
         G.nodes[0]["νf"] = 1.0
 
         # Test diverse pressure values
-        gamma_values = [0.5772156649015329 / 10, 0.5772156649015329 / 2, 0.5772156649015329, 2 * 0.5772156649015329]
+        gamma_values = [
+            0.5772156649015329 / 10,
+            0.5772156649015329 / 2,
+            0.5772156649015329,
+            2 * 0.5772156649015329,
+        ]
 
         for pressure in gamma_values:
             G.nodes[0]["ΔNFR"] = pressure

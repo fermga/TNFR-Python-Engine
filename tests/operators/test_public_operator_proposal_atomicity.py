@@ -170,6 +170,7 @@ def test_nav_rejects_invalid_active_configuration_atomically(key, value) -> None
             "silence duration",
         ),
     ],
+    ids=["malformed-time", "missing-offset", "future-time"],
 )
 def test_nav_rejects_invalid_latency_time_without_clearing_state(
     timestamp, match

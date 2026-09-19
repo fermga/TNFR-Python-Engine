@@ -12,7 +12,6 @@ import pytest
 
 from tnfr.physics import compose_hybrid_epi_stability
 
-
 EXAMPLE_PATH = (
     Path(__file__).resolve().parents[2]
     / "examples"

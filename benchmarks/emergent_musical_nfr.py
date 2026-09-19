@@ -1,59 +1,17 @@
-"""Emergent Musical NFR: music as a lens on the structural-frequency spectrum.
+"""Musical analogies for supplied graph spectra and phase observations.
 
-THE PARADIGM (user, theory creator): music is used as a LENS, not as audio --
-everything is STRUCTURAL FREQUENCY (nu_f, omega_k = sqrt(lambda_k), in Hz_str);
-the goal is to read what happens STRUCTURALLY in TNFR, not to make sound. The
-conservative face of the nodal equation IS a vibrating system ("nodal" = the
-Chladni wave-node), so musical knowledge reads its spectrum. This benchmark
-measures which musical mechanisms genuinely emerge, and -- honestly -- where
-they STOP: the same Fix(G)^perp wall as everything else.
+The script compares sqrt(lambda) ratios using an auxiliary graph-wave clock.
+These angular frequencies are distinct from reorganization capacity nu_f; a
+physical Hz conversion needs declared time units and a factor 2*pi.
+Approximate harmonic spacing applies to selected low path modes and boundaries,
+not every one-dimensional graph. Dimension alone does not determine consonance.
+Two-phasor agreement and the U3 compatibility threshold are not auditory laws.
+The prime ladder uses known primes as construction inputs. Isospectral pairs
+show that this spectral observation can lose shape information, but this does
+not identify the loss with every Fix(G)^perp or arithmetic obstruction.
 
-THE STRUCTURAL FACTS (all from L's spectrum + the canonical operators):
-  - pitch = omega_k = sqrt(lambda_k); chord = the distinct tones; timbre = the
-    eigenvalue multiplicities; beats = omega_j - omega_k; nodes = the dNFR=0
-    NFRs;
-  - the dynamical regime FOLLOWS the dimension: a 1D chain (a string) is
-    HARMONIC -- the just consonances (octave/fifth/fourth) emerge in its Hz_str
-    ratios; a 2D+ form (a drum / Chladni plate) is INHARMONIC -- there
-    consonance is PHASE coherence (the U3 gate Dphi <= pi/2), not a freq ratio;
-  - the pulse hears the symmetry TYPE (it can even predict unseen tones,
-    inverse_spectrum_to_symmetry.py) but NOT the IDENTITY: isospectral NFRs
-    sound the same (Kac) -- the wall.
-
-WHAT EMERGES (measured):
-  - M1 REGIME FOLLOWS DIMENSION: omega_k/omega_1 is ~integer (harmonic) for the
-    1D path (a string -- the just consonances emerge); the 2D grid (a drum) and
-    the ring are INHARMONIC; K_n is one rigid tone (a bell).
-  - M2 CONSONANCE HAS TWO FACES: the frequency-ratio consonances are the 1D
-    harmonic face (M1); the other face is PHASE -- R = cos(Dphi/2) is consonant
-    inside the U3 gate Dphi <= pi/2, destructive antiphase beyond.
-  - M3 POLYPHONY = PRIMES: the decoupled prime-ladder splits into exactly one
-    component per prime -- distinct primes are INDEPENDENT VOICES (the Euler
-    product at the operator level), a polyphony that never interferes.
-  - M4 YOU CANNOT HEAR THE SHAPE OF THE DRUM (Kac = the wall): isospectral
-    non-isomorphic NFRs share the pulse (same sound, different shape), and the
-    arithmetic rho(pq) = 9 is one chord for every semiprime -- the pulse hears
-    the TYPE, not the identity. The unhearable residue is the Fix(G)^perp wall.
-
-So the music of the NFR is real AND it closes on the same wall: you hear the
-type / symmetry (pitch, chord, timbre, polyphony), never the full identity.
-
-HONEST SCOPE: all frequencies are STRUCTURAL (Hz_str) -- this reads TNFR
-through music, NOT audio. pitch/timbre/beats/nodes are the standing-wave
-spectrum re-read; polyphony=primes is the Euler product (ex 147/148); the Kac
-wall is the inverse spectral problem = Fix(G)^perp. The harmonic series and the
-just consonances ARE emergent (on a 1D thread, M1); only EQUAL TEMPERAMENT and
-the chosen scale are imposed. Derives no new physics; closes no open problem.
-R and pi assumed.
-
-Run:
-    python benchmarks/emergent_musical_nfr.py
-
-Theoretical anchor: EMERGENT_ONTOLOGY.md section 5.5 (the pulse); theory/
-TNFR_NUMBER_THEORY.md (9.13 the arithmetic pulse, 9.7 the wall);
-src/tnfr/physics/structural_diffusion.py (compute_emergent_pulse);
-benchmarks/emergent_rhythm.py + inverse_spectrum_to_symmetry.py.
-Status: RESEARCH.
+Status: auxiliary or finite evidence. See theory/EMERGENT_ONTOLOGY.md and
+theory/NODAL_PARAMETER_FOUNDATIONS.md for model and physical-bridge limits.
 """
 
 import os
@@ -107,7 +65,7 @@ def main() -> None:
     print("=" * 72)
 
     # M1 -- inharmonic: drum (2D) vs string (1D path) vs bell (complete)
-    print("\nM1 -- regime follows dimension: omega_k/omega_1 (Hz_str ratios):")
+    print("\nM1 -- selected graph-wave ratios: omega_k/omega_1 (dimensionless):")
     cases = [
         ("path P16 (1D string)", nx.path_graph(16)),
         ("ring C16 (1D loop)", nx.cycle_graph(16)),
@@ -122,14 +80,15 @@ def main() -> None:
     # the just consonances DO emerge on the 1D string (structural frequency)
     pw = compute_emergent_pulse(nx.path_graph(64), n_modes=4)
     w = pw["resonant_spectrum"]
-    print(f"   string consonances: octave {w[1]/w[0]:.4f} (2.000), "
-          f"fifth {w[2]/w[1]:.4f} (1.500), fourth {w[3]/w[2]:.4f} (1.333)")
-    print("   => 1D harmonic (just consonances emerge); 2D+ inharmonic")
+    print(
+        f"   string consonances: octave {w[1]/w[0]:.4f} (2.000), "
+        f"fifth {w[2]/w[1]:.4f} (1.500), fourth {w[3]/w[2]:.4f} (1.333)"
+    )
+    print("   => these selected low path modes are near harmonic; other graphs differ")
 
     # M2 -- the phase face of consonance (the U3 gate); the frequency-ratio
     # face is the 1D harmonic regime (M1)
-    print("\nM2 -- phase consonance R, the U3 gate "
-          f"Dphi <= {DELTA_PHI_MAX:.3f}:")
+    print("\nM2 -- phase consonance R, the U3 gate " f"Dphi <= {DELTA_PHI_MAX:.3f}:")
     for dphi in [0.0, np.pi / 6, np.pi / 3, np.pi / 2, 2 * np.pi / 3, np.pi]:
         r = abs(np.mean([1.0, np.exp(1j * dphi)]))
         gate = "consonant" if dphi <= DELTA_PHI_MAX + 1e-9 else "dissonant"
@@ -144,8 +103,10 @@ def main() -> None:
         voices.add_edges_from(bundle.graph.edges())
         comps = nx.number_connected_components(voices)
         ok = "OK" if comps == n_primes else "MISMATCH"
-        print(f"   {n_primes} primes (coupling=0): {comps} voices "
-              f"(disconnected ladders) [{ok}]")
+        print(
+            f"   {n_primes} primes (coupling=0): {comps} voices "
+            f"(disconnected ladders) [{ok}]"
+        )
 
     # M4 -- Kac: you cannot hear the shape of the drum (= the wall)
     print("\nM4 -- you cannot hear the shape of the drum (Kac = the wall):")
@@ -168,9 +129,7 @@ def main() -> None:
 
     print("\n" + "=" * 72)
     print(
-        "VERDICT: the music of the NFR is real (pitch, chord, timbre, beats,\n"
-        "consonance=phase, polyphony=primes) AND it closes on the same wall:\n"
-        "you hear the type, never the full identity (Kac = Fix(G)^perp)."
+        "FINITE SPECTRAL ANALOGIES: low path-mode ratios, phase agreement and\nprepared prime-ladder components are separate observations. Isospectral\ngraphs can share these spectral read-outs without sharing graph shape.\nCapacity, wave frequency, musical perception and physical identity remain distinct."
     )
     print("=" * 72)
 

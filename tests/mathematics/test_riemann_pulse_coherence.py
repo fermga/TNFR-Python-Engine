@@ -50,7 +50,9 @@ def test_prime_side_series_does_not_converge_on_the_line():
     # abscissa of convergence Re(s)=1, so on the line adding primes does NOT
     # converge to S(T). This is the obstruction made explicit, not an estimator.
     t = 41.0
-    errs = [abs(prime_side_fluctuation(t, npr, 6) - _true_s(t)) for npr in (10, 40, 160)]
+    errs = [
+        abs(prime_side_fluctuation(t, npr, 6) - _true_s(t)) for npr in (10, 40, 160)
+    ]
     assert min(errs) > 0.2  # never gets close; no convergence
 
 

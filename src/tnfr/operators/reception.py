@@ -18,7 +18,7 @@ from ._reception_kernel import (
     capture_reception_read_snapshot,
     reception_no_sources_warning,
 )
-from .definitions_base import Operator, _PREPARED_OPERATOR_STATE_KEY
+from .definitions_base import _PREPARED_OPERATOR_STATE_KEY, Operator
 
 
 class Reception(Operator):

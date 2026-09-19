@@ -1,30 +1,16 @@
-r"""Word-composition equivariance (R1, composition-closure stage).
+r"""Conditional composition algebra and finite pointed-word probes (R1).
 
-The diffusion base case (:mod:`tnfr.physics.equivariance`) proves ``L_rw`` is
-Γ-equivariant, and the per-operator audit
-(:mod:`tnfr.physics.operator_equivariance`) measures each of the 13 canonical
-operators equivariant on ``Fix(Γ)`` seeds.  The symmetry-sector theorem for full
-TNFR *words* needs the **composition closure**: a grammar word
-``W = O_k ∘ … ∘ O_1`` built from equivariant operators is itself equivariant.
+If every map O_i is equivariant on its complete compatible domain, their
+composition W is equivariant: W P_sigma=P_sigma W follows by induction.
+An invariant input then stays in the fixed set. Grammar admission alone does
+not supply these hypotheses, and finite pointed per-operator residuals do not
+prove them for all intermediate states, selectors or histories.
 
-**Theorem (composition closure).**  If ``O_i ∘ ρ(g) = ρ(g) ∘ O_i`` for every
-automorphism ``g`` and each factor ``O_i``, then
-``W ∘ ρ(g) = ρ(g) ∘ W``.  *Proof (induction on word length).*  Length 1 is the
-per-operator base case.  Inductive step: for ``W' = O ∘ W`` with ``W, O``
-equivariant,
-``W' ρ(g) = O (W ρ(g)) = O (ρ(g) W) = (O ρ(g)) W = ρ(g) (O W) = ρ(g) W'``.  ∎
-
-**Corollary (``Fix(Γ)`` preservation).**  An equivariant ``W`` maps ``Fix(Γ)`` into
-``Fix(Γ)``: if ``ρ(g)x = x`` for all ``g`` then
-``ρ(g) W(x) = W(ρ(g)x) = W(x)``.  So a symmetric configuration cannot be pushed
-into the antisymmetric complement ``Fix(Γ)^⊥`` by a grammar word — the wall of
-examples 117–122 and the Riemann residual.
-
-The inductive step is **DERIVED** (the algebra above); the base case is the
-per-operator **MEASURED** equivariance.  This module measures the composed
-residual for canonical words (confirming the closure numerically) and the
-``Fix(Γ)`` preservation of a Γ-symmetric application.
-"""
+This module independently compares selected words and prefixes at corresponding
+selected nodes on invariant fixtures. It reads the audited scalar channels on
+original nodes. Its booleans describe those finite probes; no catalog-wide
+symmetry theorem, arbitrary error accumulation bound or placement of analytic
+Riemann S(T) in a finite symmetry complement follows."""
 
 from __future__ import annotations
 
@@ -32,11 +18,7 @@ import warnings
 from dataclasses import dataclass
 
 from ..alias import get_attr
-from .operator_equivariance import (
-    _CHANNELS,
-    _isolate_graph_caches,
-    _test_cases,
-)
+from .operator_equivariance import _CHANNELS, _isolate_graph_caches, _test_cases
 from .symmetry_sectors import is_orbit_constant
 
 __all__ = [
@@ -88,13 +70,11 @@ def word_equivariance_residual(word, G, sigma: dict, node, *, channels=None):
 
 
 def composition_closure_holds(word, G, sigma: dict, node, *, tol: float = 1e-6):
-    r"""``(word_residual, worst_prefix_residual, holds)`` — the closure witness.
+    r"""Return the word residual, worst prefix residual and finite tolerance verdict.
 
-    Measures the residual of every prefix ``O_1, O_1O_2, …`` and of the full
-    word.  ``holds`` is ``True`` when all prefixes (hence the whole word) stay
-    within ``tol`` — the numeric image of the induction: equivariant factors
-    compose to an equivariant word, the residual never escaping the tolerance.
-    """
+    Every selected prefix is probed independently. Passing them is numerical
+    evidence for this supplied word/fixture, not a proof of the all-state
+    premise of the exact composition theorem."""
     worst_prefix = 0.0
     for k in range(1, len(word) + 1):
         r = word_equivariance_residual(word[:k], G, sigma, node)
@@ -162,8 +142,11 @@ def canonical_words():
 
     return [
         ("Bootstrap", ("AL", "UM", "IL"), [Emission, Coupling, Coherence]),
-        ("Bootstrap+close", ("AL", "UM", "IL", "SHA"),
-         [Emission, Coupling, Coherence, Silence]),
+        (
+            "Bootstrap+close",
+            ("AL", "UM", "IL", "SHA"),
+            [Emission, Coupling, Coherence, Silence],
+        ),
         ("Stabilize", ("IL", "SHA"), [Coherence, Silence]),
         ("Propagate", ("RA", "UM"), [Resonance, Coupling]),
         ("Explore", ("OZ", "ZHIR", "IL"), [Dissonance, Mutation, Coherence]),
@@ -186,7 +169,5 @@ def audit_word_equivariance(*, tol: float = 1e-6):
             except Exception:
                 r = float("inf")
             worst = max(worst, r)
-        results.append(
-            WordEquivarianceResult(label, glyphs, worst, worst < tol)
-        )
+        results.append(WordEquivarianceResult(label, glyphs, worst, worst < tol))
     return results

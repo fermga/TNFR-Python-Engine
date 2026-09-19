@@ -6,15 +6,21 @@ It does not execute a graph, establish that
 the supplied phases are reachable, or exclude correlated invariant sets.
 """
 
+import math
 from dataclasses import dataclass
 from fractions import Fraction
-import math
 
 from ..dynamics import fused_dnfr
 from ..dynamics._euler_kernel import (
-    NodalRemainderState, _binary64_tuple, _finite_binary64, _validate_nodal_remainder_state,
+    NodalRemainderState,
+    _binary64_tuple,
+    _finite_binary64,
+    _validate_nodal_remainder_state,
 )
-from ..mathematics._neighbor_differences import edge_mean_differences, mean_neighbor_difference
+from ..mathematics._neighbor_differences import (
+    edge_mean_differences,
+    mean_neighbor_difference,
+)
 from ._cycle_algebra import Vector, laplacian_action
 from .binary64_nodal_flow import Binary64AdditionCell
 from .binary64_pressure_equilibrium import (
@@ -26,11 +32,17 @@ from .nodal_remainder import derive_nodal_remainder_cell_horizon
 from .nodal_remainder_pressure import observe_finite_nodal_pressure_drift
 
 __all__ = [
-    "C6PressureLatticeRow", "C6PressureLatticeReference", "C6PressureLatticeObservation",
-    "derive_c6_pressure_lattice", "observe_c6_pressure_lattice",
-    "C6PressureSignSector", "C6PressureSectorExit",
-    "derive_c6_pressure_sign_sector", "observe_c6_pressure_sector_exit",
-    "C6FrozenPressureStencil", "observe_c6_frozen_pressure_stencil",
+    "C6PressureLatticeRow",
+    "C6PressureLatticeReference",
+    "C6PressureLatticeObservation",
+    "derive_c6_pressure_lattice",
+    "observe_c6_pressure_lattice",
+    "C6PressureSignSector",
+    "C6PressureSectorExit",
+    "derive_c6_pressure_sign_sector",
+    "observe_c6_pressure_sector_exit",
+    "C6FrozenPressureStencil",
+    "observe_c6_frozen_pressure_stencil",
 ]
 
 
@@ -83,8 +95,12 @@ class C6PressureLatticeReference:
 
 
 def derive_c6_pressure_lattice(
-    *, phase: tuple[float, ...], epi_weight: float, phase_weight: float,
-    epi_lower: float = .375, epi_upper: float = .625,
+    *,
+    phase: tuple[float, ...],
+    epi_weight: float,
+    phase_weight: float,
+    epi_lower: float = 0.375,
+    epi_upper: float = 0.625,
 ) -> C6PressureLatticeReference:
     """Derive joint sign constraints from exact cycle-gradient compatibility.
 
@@ -118,14 +134,17 @@ def derive_c6_pressure_lattice(
     """
     lower = _finite_binary64(epi_lower, "epi_lower")
     upper = _finite_binary64(epi_upper, "epi_upper")
-    if not .05 <= lower <= upper <= 1.0:
+    if not 0.05 <= lower <= upper <= 1.0:
         raise ValueError("the EPI slab must be a subinterval of [.05,1]")
     delta = Fraction.from_float(math.ulp(lower))
     if Fraction.from_float(upper) - Fraction.from_float(lower) > 2**52 * delta:
         raise ValueError("the EPI slab width must not exceed 2^52*ulp(epi_lower)")
     source = derive_binary64_c6_pressure_equilibrium_obstruction(
-        phase=phase, epi_weight=epi_weight, phase_weight=phase_weight,
-        epi_lower=lower, epi_upper=upper,
+        phase=phase,
+        epi_weight=epi_weight,
+        phase_weight=phase_weight,
+        epi_lower=lower,
+        epi_upper=upper,
     )
     quantum = delta / 2
     rows = []
@@ -144,8 +163,15 @@ def derive_c6_pressure_lattice(
     last_sum = sum(row.nonpositive_max_index for row in result_rows)
     positive, negative = last_sum < 0, first_sum > 0
     return C6PressureLatticeReference(
-        source, tuple(row.phase_contribution for row in source.rows),
-        delta, quantum, result_rows, first_sum, last_sum, positive, negative,
+        source,
+        tuple(row.phase_contribution for row in source.rows),
+        delta,
+        quantum,
+        result_rows,
+        first_sum,
+        last_sum,
+        positive,
+        negative,
         positive or negative,
     )
 
@@ -163,7 +189,9 @@ def _represented_source_weight(value: Fraction, label: str) -> float:
     return result
 
 
-def _rebuild_lattice(reference: C6PressureLatticeReference) -> C6PressureLatticeReference:
+def _rebuild_lattice(
+    reference: C6PressureLatticeReference,
+) -> C6PressureLatticeReference:
     if not isinstance(reference, C6PressureLatticeReference):
         raise TypeError("reference must be a C6PressureLatticeReference")
     source = reference.source
@@ -173,7 +201,8 @@ def _rebuild_lattice(reference: C6PressureLatticeReference) -> C6PressureLattice
         phase=source.phase,
         epi_weight=_represented_source_weight(source.epi_weight, "epi_weight"),
         phase_weight=_represented_source_weight(source.phase_weight, "phase_weight"),
-        epi_lower=source.epi_lower, epi_upper=source.epi_upper,
+        epi_lower=source.epi_lower,
+        epi_upper=source.epi_upper,
     )
 
 
@@ -208,7 +237,9 @@ class C6PressureLatticeObservation:
 
 
 def observe_c6_pressure_lattice(
-    reference: C6PressureLatticeReference, *, epi: tuple[float, ...],
+    reference: C6PressureLatticeReference,
+    *,
+    epi: tuple[float, ...],
 ) -> C6PressureLatticeObservation:
     """Bind a static local EPI reading to both reducers and the CPU assembly.
 
@@ -229,7 +260,9 @@ def _pressure_at_gradient_index(reference, node, index):
     Keep the product rounding and source assembly in their canonical order.
     """
     if type(node) is not int or not 0 <= node < 6 or type(index) is not int:
-        raise ValueError("a C6 row requires a node index in 0..5 and an integer gradient")
+        raise ValueError(
+            "a C6 row requires a node index in 0..5 and an integer gradient"
+        )
     product = float(reference.source.epi_weight * reference.gradient_quantum * index)
     return _finite_binary64(reference.sources[node] + product, "indexed C6 pressure")
 
@@ -256,45 +289,99 @@ def _observe_rebuilt_c6_pressure_lattice(reference, epi):
         raise RuntimeError("the cycle gradient lost its exact integer compatibility")
     e = float(source.epi_weight)
     expected_epi = tuple(float(source.epi_weight * value) for value in gradients)
-    scalar = tuple(mean_neighbor_difference(
-        values[i], (values[i - 1], values[(i + 1) % 6]), coefficient=e,
-    ) for i in range(6))
+    scalar = tuple(
+        mean_neighbor_difference(
+            values[i],
+            (values[i - 1], values[(i + 1) % 6]),
+            coefficient=e,
+        )
+        for i in range(6)
+    )
     np = fused_dnfr.np
     edge_src = np.asarray(tuple(i for i in range(6) for _ in range(2)), dtype=np.intp)
-    edge_dst = np.asarray(tuple(j for i in range(6) for j in ((i - 1) % 6, (i + 1) % 6)), dtype=np.intp)
+    edge_dst = np.asarray(
+        tuple(j for i in range(6) for j in ((i - 1) % 6, (i + 1) % 6)), dtype=np.intp
+    )
     array = np.asarray(values, dtype=float)
-    vector = _binary64_tuple(tuple(float(value) for value in edge_mean_differences(
-        array, edge_src, edge_dst, coefficient=e,
-    )), "vector EPI contribution")
+    vector = _binary64_tuple(
+        tuple(
+            float(value)
+            for value in edge_mean_differences(
+                array,
+                edge_src,
+                edge_dst,
+                coefficient=e,
+            )
+        ),
+        "vector EPI contribution",
+    )
     if scalar != expected_epi or vector != expected_epi:
-        raise RuntimeError("a shared EPI reducer differs from the exact local lattice product")
-    pressure = _binary64_tuple(tuple(float(value) for value in fused_dnfr.compute_fused_gradients_symmetric(
-        edge_src=edge_src, edge_dst=edge_dst, phase=np.asarray(source.phase, dtype=float),
-        epi=array, vf=np.ones(6, dtype=float),
-        weights={"w_epi": e, "w_phase": float(source.phase_weight)},
-        edge_weight=np.ones(12, dtype=float), accumulate_both_directions=False, use_jit=False,
-    )), "assembled pressure")
-    expected_pressure = tuple(_pressure_at_gradient_index(reference, i, m)
-                              for i, m in enumerate(integer_gradients))
+        raise RuntimeError(
+            "a shared EPI reducer differs from the exact local lattice product"
+        )
+    pressure = _binary64_tuple(
+        tuple(
+            float(value)
+            for value in fused_dnfr.compute_fused_gradients_symmetric(
+                edge_src=edge_src,
+                edge_dst=edge_dst,
+                phase=np.asarray(source.phase, dtype=float),
+                epi=array,
+                vf=np.ones(6, dtype=float),
+                weights={"w_epi": e, "w_phase": float(source.phase_weight)},
+                edge_weight=np.ones(12, dtype=float),
+                accumulate_both_directions=False,
+                use_jit=False,
+            )
+        ),
+        "assembled pressure",
+    )
+    expected_pressure = tuple(
+        _pressure_at_gradient_index(reference, i, m)
+        for i, m in enumerate(integer_gradients)
+    )
     if pressure != expected_pressure:
-        raise RuntimeError("the shared pressure assembly differs from its exact source-plus-EPI binding")
+        raise RuntimeError(
+            "the shared pressure assembly differs from its exact source-plus-EPI binding"
+        )
     exact_sources = tuple(Fraction.from_float(value) for value in reference.sources)
     exact_epi = tuple(Fraction.from_float(value) for value in expected_epi)
     exact_pressure = tuple(Fraction.from_float(value) for value in pressure)
-    reduction_error = tuple(g - source.epi_weight * q for g, q in zip(exact_epi, gradients, strict=True))
-    assembly_error = tuple(p - a - g for p, a, g in zip(exact_pressure, exact_sources, exact_epi, strict=True))
+    reduction_error = tuple(
+        g - source.epi_weight * q for g, q in zip(exact_epi, gradients, strict=True)
+    )
+    assembly_error = tuple(
+        p - a - g
+        for p, a, g in zip(exact_pressure, exact_sources, exact_epi, strict=True)
+    )
     phase_mean = sum(exact_sources, Fraction(0)) / 6
     reduction_mean = sum(reduction_error, Fraction(0)) / 6
     assembly_mean = sum(assembly_error, Fraction(0)) / 6
     pressure_mean = sum(exact_pressure, Fraction(0)) / 6
     residual = pressure_mean - phase_mean - reduction_mean - assembly_mean
     if residual != 0:
-        raise RuntimeError("the local pressure mean decomposition lost its exact identity")
+        raise RuntimeError(
+            "the local pressure mean decomposition lost its exact identity"
+        )
     return C6PressureLatticeObservation(
-        reference, values, integer_indices, integer_gradients, index_sum,
-        gradients, expected_epi, pressure, reduction_error, assembly_error,
-        phase_mean, reduction_mean, assembly_mean, pressure_mean, residual,
-        True, True, True,
+        reference,
+        values,
+        integer_indices,
+        integer_gradients,
+        index_sum,
+        gradients,
+        expected_epi,
+        pressure,
+        reduction_error,
+        assembly_error,
+        phase_mean,
+        reduction_mean,
+        assembly_mean,
+        pressure_mean,
+        residual,
+        True,
+        True,
+        True,
     )
 
 
@@ -338,7 +425,9 @@ def _derive_rebuilt_sign_sector(reference, node, sign):
     if sign not in (-1, 1):
         raise ValueError("sign must be -1 or +1")
     source = reference.source
-    width = (Fraction(source.epi_upper) - Fraction(source.epi_lower)) / reference.epi_quantum
+    width = (
+        Fraction(source.epi_upper) - Fraction(source.epi_lower)
+    ) / reference.epi_quantum
     if width.denominator != 1:
         raise RuntimeError("the declared slab endpoints lost their integer EPI lattice")
     minimum, maximum = -2 * width.numerator, 2 * width.numerator
@@ -353,19 +442,38 @@ def _derive_rebuilt_sign_sector(reference, node, sign):
     boundary = pressure = margin = None
     if not empty:
         boundary = sector_max if sign < 0 else sector_min
-        weighted_gradient = float(source.epi_weight * reference.gradient_quantum * boundary)
-        pressure = _finite_binary64(reference.sources[node] + weighted_gradient, "sector pressure bound")
+        weighted_gradient = float(
+            source.epi_weight * reference.gradient_quantum * boundary
+        )
+        pressure = _finite_binary64(
+            reference.sources[node] + weighted_gradient, "sector pressure bound"
+        )
         margin = sign * Fraction(pressure)
         if margin <= 0:
-            raise RuntimeError("the strict pressure sector lost its positive signed margin")
+            raise RuntimeError(
+                "the strict pressure sector lost its positive signed margin"
+            )
     return C6PressureSignSector(
-        reference, node, sign, minimum, maximum, cut, sector_min, sector_max,
-        empty, boundary, pressure, margin,
+        reference,
+        node,
+        sign,
+        minimum,
+        maximum,
+        cut,
+        sector_min,
+        sector_max,
+        empty,
+        boundary,
+        pressure,
+        margin,
     )
 
 
 def derive_c6_pressure_sign_sector(
-    reference: C6PressureLatticeReference, *, node: int, sign: int,
+    reference: C6PressureLatticeReference,
+    *,
+    node: int,
+    sign: int,
 ) -> C6PressureSignSector:
     """Derive a uniform signed pressure bound over a local integer sector.
 
@@ -422,8 +530,12 @@ class C6PressureSectorExit:
 
 
 def observe_c6_pressure_sector_exit(
-    reference: C6PressureLatticeReference, *, state: NodalRemainderState,
-    node: int, sign: int, timestep: float,
+    reference: C6PressureLatticeReference,
+    *,
+    state: NodalRemainderState,
+    node: int,
+    sign: int,
+    timestep: float,
 ) -> C6PressureSectorExit:
     """Bound strict-sign residence from a validated incoming carried state.
 
@@ -447,25 +559,45 @@ def observe_c6_pressure_sector_exit(
     exact = _validate_nodal_remainder_state(state)
     h = _finite_binary64(timestep, "timestep")
     if h <= 0:
-        raise ValueError("the sector residence bound requires a strictly positive timestep")
+        raise ValueError(
+            "the sector residence bound requires a strictly positive timestep"
+        )
     source = reference.source
     if not source.epi_lower <= state.epi_lower <= state.epi_upper <= source.epi_upper:
-        raise ValueError("the numerical state band must be contained in the reference slab")
+        raise ValueError(
+            "the numerical state band must be contained in the reference slab"
+        )
     observation = _observe_rebuilt_c6_pressure_lattice(reference, state.epi)
     initial_index = observation.gradient_indices[node]
-    inside = not sector.empty and sector.sector_min_index <= initial_index <= sector.sector_max_index
-    distance = (exact[node] - Fraction(state.epi_lower) if sign < 0
-                else Fraction(state.epi_upper) - exact[node])
+    inside = (
+        not sector.empty
+        and sector.sector_min_index <= initial_index <= sector.sector_max_index
+    )
+    distance = (
+        exact[node] - Fraction(state.epi_lower)
+        if sign < 0
+        else Fraction(state.epi_upper) - exact[node]
+    )
     margin = maximum = bound = None
     if inside:
         if sign * Fraction(observation.pressure[node]) < sector.signed_pressure_margin:
-            raise RuntimeError("the actual initial pressure violates its strict-sector lower bound")
+            raise RuntimeError(
+                "the actual initial pressure violates its strict-sector lower bound"
+            )
         margin = Fraction(h) * sector.signed_pressure_margin
         ratio = distance / margin
         maximum = ratio.numerator // ratio.denominator
         bound = maximum + 1
     return C6PressureSectorExit(
-        sector, state, h, observation, inside, distance, margin, maximum, bound,
+        sector,
+        state,
+        h,
+        observation,
+        inside,
+        distance,
+        margin,
+        maximum,
+        bound,
     )
 
 
@@ -520,8 +652,11 @@ class C6FrozenPressureStencil:
 
 
 def observe_c6_frozen_pressure_stencil(
-    reference: C6PressureLatticeReference, *, state: NodalRemainderState,
-    node: int, timestep: float,
+    reference: C6PressureLatticeReference,
+    *,
+    state: NodalRemainderState,
+    node: int,
+    timestep: float,
 ) -> C6FrozenPressureStencil:
     """Bind one local pressure row and bound its frozen-stencil residence.
 
@@ -552,28 +687,51 @@ def observe_c6_frozen_pressure_stencil(
     _validate_nodal_remainder_state(state)
     h = _finite_binary64(timestep, "timestep")
     if h <= 0:
-        raise ValueError("a frozen-stencil residence bound requires a strictly positive timestep")
+        raise ValueError(
+            "a frozen-stencil residence bound requires a strictly positive timestep"
+        )
     source = reference.source
     if not source.epi_lower <= state.epi_lower <= state.epi_upper <= source.epi_upper:
-        raise ValueError("the numerical state band must be contained in the reference slab")
+        raise ValueError(
+            "the numerical state band must be contained in the reference slab"
+        )
     observation = _observe_rebuilt_c6_pressure_lattice(reference, state.epi)
     pressure = observation.pressure[node]
     horizon = derive_nodal_remainder_cell_horizon(
-        state=state, timestep=h, capacity=(1.,) * 6, pressure=observation.pressure,
+        state=state,
+        timestep=h,
+        capacity=(1.0,) * 6,
+        pressure=observation.pressure,
     )
     initial_maximum = horizon.coordinate_step_limits[node]
     projected = observe_finite_nodal_pressure_drift(
-        epi_states=((state.epi[node],),), pressure_vectors=((pressure,),),
-        functional=(Fraction(-1 if pressure < 0 else 1),), timestep=h,
-        epi_lower=state.epi_lower, epi_upper=state.epi_upper,
+        epi_states=((state.epi[node],),),
+        pressure_vectors=((pressure,),),
+        functional=(Fraction(-1 if pressure < 0 else 1),),
+        timestep=h,
+        epi_lower=state.epi_lower,
+        epi_upper=state.epi_upper,
     )
     if initial_maximum is not None and initial_maximum > projected.max_confined_steps:
-        raise RuntimeError("the actual-carry stencil bound exceeds its uniform cell-width enclosure")
+        raise RuntimeError(
+            "the actual-carry stencil bound exceeds its uniform cell-width enclosure"
+        )
     stencil = ((node - 1) % 6, node, (node + 1) % 6)
     return C6FrozenPressureStencil(
-        reference, state, node, h, stencil, tuple(state.epi[index] for index in stencil),
-        observation.gradient_indices[node], pressure, horizon.exact_increment[node],
-        observation, horizon.source_cells[node], projected.width, initial_maximum,
+        reference,
+        state,
+        node,
+        h,
+        stencil,
+        tuple(state.epi[index] for index in stencil),
+        observation.gradient_indices[node],
+        pressure,
+        horizon.exact_increment[node],
+        observation,
+        horizon.source_cells[node],
+        projected.width,
+        initial_maximum,
         initial_maximum + 1 if initial_maximum is not None else None,
-        projected.max_confined_steps, projected.escape_step_bound,
+        projected.max_confined_steps,
+        projected.escape_step_bound,
     )

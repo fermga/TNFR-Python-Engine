@@ -244,9 +244,7 @@ class SpectralSectorDecomposition:
 # ---------------------------------------------------------------------------
 
 # Five fields used for the structural snapshot-energy candidate.
-_STRUCTURAL_ENERGY_FIELDS: list[str] = [
-    "phi_s", "grad_phi", "k_phi", "j_phi", "j_dnfr"
-]
+_STRUCTURAL_ENERGY_FIELDS: list[str] = ["phi_s", "grad_phi", "k_phi", "j_phi", "j_dnfr"]
 
 
 def _snapshot_to_vectors(

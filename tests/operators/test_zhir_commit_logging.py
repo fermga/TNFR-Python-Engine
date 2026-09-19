@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
 import logging
+from copy import deepcopy
 
 import networkx as nx
 
@@ -48,9 +48,7 @@ def _mutation_graph() -> nx.Graph:
 
 def test_failing_log_handler_cannot_rollback_or_interrupt_accepted_targets() -> None:
     graph = _mutation_graph()
-    theta_before = {
-        node: float(graph.nodes[node][ALIAS_THETA[0]]) for node in graph
-    }
+    theta_before = {node: float(graph.nodes[node][ALIAS_THETA[0]]) for node in graph}
     logger = logging.getLogger("tnfr.operators.preconditions.mutation")
     handler = _FailingHandler()
     old_level = logger.level
@@ -74,9 +72,10 @@ def test_failing_log_handler_cannot_rollback_or_interrupt_accepted_targets() -> 
     for node in graph:
         assert graph.nodes[node][ALIAS_THETA[0]] != theta_before[node]
         assert graph.nodes[node]["glyph_history"][-1] == "ZHIR"
-        assert graph.nodes[node]["_mutation_context"][
-            "destabilizer_operator"
-        ] == "dissonance"
+        assert (
+            graph.nodes[node]["_mutation_context"]["destabilizer_operator"]
+            == "dissonance"
+        )
 
 
 def test_readiness_diagnostic_is_observationally_pure() -> None:
@@ -103,6 +102,4 @@ def test_readiness_diagnostic_is_observationally_pure() -> None:
     assert report["ready"] is True
     assert handler.calls == 0
     assert graph.graph == graph_before
-    assert {
-        node: dict(attrs) for node, attrs in graph.nodes(data=True)
-    } == nodes_before
+    assert {node: dict(attrs) for node, attrs in graph.nodes(data=True)} == nodes_before

@@ -33,8 +33,7 @@ def _set_pure_epi_pressure(graph: nx.Graph) -> None:
     for node in graph:
         neighbours = tuple(graph.neighbors(node))
         graph.nodes[node]["delta_nfr"] = (
-            sum(values[item] for item in neighbours) / len(neighbours)
-            - values[node]
+            sum(values[item] for item in neighbours) / len(neighbours) - values[node]
         )
 
 
@@ -128,9 +127,7 @@ def test_direct_module_and_stub_expose_block_margin_api() -> None:
 def test_single_boundary_has_exact_positive_block_margin(
     two_cycle_execution: ExecutedEventRemeshCycleSequence,
 ) -> None:
-    observation = observe_executed_event_remesh_block_margin(
-        two_cycle_execution
-    )
+    observation = observe_executed_event_remesh_block_margin(two_cycle_execution)
 
     assert type(observation) is RuntimeRemeshScheduleBlockMarginObservation
     assert observation.source_execution is two_cycle_execution
@@ -147,9 +144,8 @@ def test_single_boundary_has_exact_positive_block_margin(
     )
     assert observation.exact_schedule_augmented_energy_gain_slack == 0
     assert observation.exact_energy_drop == Fraction(417, 2048)
-    assert (
-        observation.exact_gain_based_energy_drop_fraction_lower_bound
-        == Fraction(139, 256)
+    assert observation.exact_gain_based_energy_drop_fraction_lower_bound == Fraction(
+        139, 256
     )
     assert observation.exact_observed_energy_drop_fraction == Fraction(139, 256)
     assert observation.exact_endpoint_energy_gain_upper_bound == Fraction(
@@ -191,8 +187,7 @@ def test_contiguous_subblock_reuses_authoritative_boundary_identities(
     assert whole.boundary_count == 2
     assert whole.boundaries == execution.runtime_telescope.boundaries
     assert whole.exact_energy_drop == (
-        whole.exact_augmented_energy_before
-        - whole.exact_augmented_energy_after
+        whole.exact_augmented_energy_before - whole.exact_augmented_energy_after
     )
     assert whole.exact_energy_drop == (
         whole.exact_gain_based_energy_drop_lower_bound
@@ -275,9 +270,7 @@ def test_nested_boundary_private_reseal_cannot_promote_changed_energy() -> None:
 def test_private_outer_reseal_cannot_promote_changed_margin(
     two_cycle_execution: ExecutedEventRemeshCycleSequence,
 ) -> None:
-    observation = observe_executed_event_remesh_block_margin(
-        two_cycle_execution
-    )
+    observation = observe_executed_event_remesh_block_margin(two_cycle_execution)
     forged = replace(
         observation,
         exact_gain_based_energy_drop_lower_bound=Fraction(0),
@@ -299,9 +292,7 @@ def test_private_outer_reseal_cannot_promote_changed_margin(
 def test_private_reseal_cannot_replace_a_boundary_by_equal_value(
     two_cycle_execution: ExecutedEventRemeshCycleSequence,
 ) -> None:
-    observation = observe_executed_event_remesh_block_margin(
-        two_cycle_execution
-    )
+    observation = observe_executed_event_remesh_block_margin(two_cycle_execution)
     copied_boundary = replace(observation.boundaries[0])
     assert copied_boundary.boundary_observation_certified
     forged = replace(

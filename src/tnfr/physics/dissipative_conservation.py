@@ -142,12 +142,9 @@ class DissipativeTimeSeries:
     def is_contractive(self) -> bool:
         """Whether every evaluated trace-distance ratio is at most one."""
 
-        evaluated = [
-            gap for gap in self.contractivity_gap if not math.isnan(gap)
-        ]
+        evaluated = [gap for gap in self.contractivity_gap if not math.isnan(gap)]
         return bool(evaluated) and all(
-            math.isfinite(gap) and gap <= 1.0 + _DEFAULT_ATOL
-            for gap in evaluated
+            math.isfinite(gap) and gap <= 1.0 + _DEFAULT_ATOL for gap in evaluated
         )
 
     @property
@@ -235,9 +232,7 @@ def _validate_density_matrix(
         raise ValueError("density trace must be finite.")
     if abs(float(trace_value.imag)) > atol:
         raise ValueError("density must have a real trace.")
-    if not math.isclose(
-        float(trace_value.real), 1.0, abs_tol=atol, rel_tol=0.0
-    ):
+    if not math.isclose(float(trace_value.real), 1.0, abs_tol=atol, rel_tol=0.0):
         raise ValueError("density must have unit trace within tolerance.")
     eigenvalues = np.linalg.eigvalsh(rho)
     if not np.all(np.isfinite(eigenvalues)):
@@ -274,9 +269,8 @@ def _validate_collapse_operators(
                 f"{(dimension, dimension)}."
             )
         spectral_norm = float(np.linalg.norm(array, ord=2))
-        if (
-            not math.isfinite(spectral_norm)
-            or spectral_norm > math.sqrt(np.finfo(float).max)
+        if not math.isfinite(spectral_norm) or spectral_norm > math.sqrt(
+            np.finfo(float).max
         ):
             raise ValueError(
                 f"collapse operator[{index}] is too large for finite products."
@@ -289,9 +283,7 @@ def _collapse_operator_norms_sq(collapse_operators: Sequence[Any]) -> float:
     """Return ``sum_k ||L_k||_2^2`` using spectral operator norms."""
 
     operators = _validate_collapse_operators(collapse_operators)
-    return sum(
-        float(np.linalg.norm(operator, ord=2) ** 2) for operator in operators
-    )
+    return sum(float(np.linalg.norm(operator, ord=2) ** 2) for operator in operators)
 
 
 def capture_dissipative_snapshot(
@@ -353,9 +345,7 @@ def compute_dissipation_bound(
         raise ValueError("purity must be finite and lie in [0, 1].")
     purity_value = min(1.0, max(0.0, purity_value))
     return (
-        2.0
-        * _collapse_operator_norms_sq(collapse_operators)
-        * math.sqrt(purity_value)
+        2.0 * _collapse_operator_norms_sq(collapse_operators) * math.sqrt(purity_value)
     )
 
 
@@ -404,9 +394,7 @@ def is_unital_dissipator(
     for operator in operators:
         residual += operator @ operator.conj().T - operator.conj().T @ operator
         scale += float(np.linalg.norm(operator, ord=2) ** 2)
-    return bool(
-        np.linalg.norm(residual, ord="fro") <= tolerance_value * scale
-    )
+    return bool(np.linalg.norm(residual, ord="fro") <= tolerance_value * scale)
 
 
 def _trace_distance(left: np.ndarray, right: np.ndarray) -> float:
@@ -467,9 +455,7 @@ def verify_dissipative_balance(
         action_norm = float(np.linalg.norm(action, ord="fro"))
         bound = compute_dissipation_bound(operators, before_checked.purity)
         bound_satisfied = action_norm <= bound + _DEFAULT_ATOL * max(1.0, bound)
-        instantaneous_purity_rate = float(
-            2.0 * np.trace(rho_before @ action).real
-        )
+        instantaneous_purity_rate = float(2.0 * np.trace(rho_before @ action).real)
         unital = is_unital_dissipator(operators)
 
     if steady_state is None:
@@ -485,9 +471,7 @@ def verify_dissipative_balance(
         if distance_before > _DEFAULT_ATOL:
             contractivity_gap = distance_after / distance_before
         else:
-            contractivity_gap = (
-                0.0 if distance_after <= _DEFAULT_ATOL else float("inf")
-            )
+            contractivity_gap = 0.0 if distance_after <= _DEFAULT_ATOL else float("inf")
         contractivity_evaluated = True
         contractive = contractivity_gap <= 1.0 + _DEFAULT_ATOL
 
@@ -570,9 +554,7 @@ def _steady_state_from_generator(generator: Any, dim: int) -> np.ndarray:
     if abs(trace_value) <= _DEFAULT_ATOL:
         raise ValueError("generator did not yield a trace-one stationary candidate.")
     rho = rho / trace_value
-    residual = float(
-        np.linalg.norm(matrix @ rho.reshape(dim * dim, order="F"))
-    )
+    residual = float(np.linalg.norm(matrix @ rho.reshape(dim * dim, order="F")))
     if residual > 100.0 * _DEFAULT_ATOL * generator_scale:
         raise ValueError("generator has no numerically resolved stationary state.")
     try:
@@ -609,9 +591,9 @@ class DissipativeConservationTracker:
             if steady_state is not None
             else None
         )
-        if (
-            self._steady_state is not None
-            and self._steady_state.shape != (dimension, dimension)
+        if self._steady_state is not None and self._steady_state.shape != (
+            dimension,
+            dimension,
         ):
             raise ValueError(
                 "steady_state must match the engine Hilbert-space dimension."
@@ -645,14 +627,10 @@ class DissipativeConservationTracker:
             raise ValueError("t must be finite.")
         if self._snapshots and timestamp <= self._snapshots[-1][0]:
             raise ValueError("snapshot times must be strictly increasing.")
-        snapshot = capture_dissipative_snapshot(
-            density, atol=100.0 * _DEFAULT_ATOL
-        )
+        snapshot = capture_dissipative_snapshot(density, atol=100.0 * _DEFAULT_ATOL)
         expected = int(self._engine.hilbert_space.dimension)
         if snapshot.density.shape != (expected, expected):
-            raise ValueError(
-                "density must match the engine Hilbert-space dimension."
-            )
+            raise ValueError("density must match the engine Hilbert-space dimension.")
         self._snapshots.append((timestamp, snapshot))
 
         if len(self._snapshots) == 1:
@@ -660,9 +638,7 @@ class DissipativeConservationTracker:
             purity_rate = 0.0
             entropy_rate = 0.0
             bound = (
-                compute_dissipation_bound(
-                    self._collapse_operators, snapshot.purity
-                )
+                compute_dissipation_bound(self._collapse_operators, snapshot.purity)
                 if self._collapse_operators
                 else float("nan")
             )
@@ -795,9 +771,7 @@ def predict_amplitude_damping_purity(
             DeprecationWarning,
             stacklevel=2,
         )
-        return 1.0 - (1.0 - initial_purity) * math.exp(
-            -decay_rate * elapsed
-        )
+        return 1.0 - (1.0 - initial_purity) * math.exp(-decay_rate * elapsed)
     if dim != 2:
         raise ValueError(
             "this analytical amplitude-damping model is defined for dim=2."
@@ -839,9 +813,7 @@ def predict_dephasing_purity(
     diagonal_purity = float(np.sum(np.abs(np.diag(rho)) ** 2))
     total_purity = float(np.trace(rho @ rho).real)
     off_diagonal_purity = max(0.0, total_purity - diagonal_purity)
-    return diagonal_purity + off_diagonal_purity * math.exp(
-        -2.0 * decay_rate * elapsed
-    )
+    return diagonal_purity + off_diagonal_purity * math.exp(-2.0 * decay_rate * elapsed)
 
 
 def analyze_dissipation_rates(generator: Any, dim: int) -> dict[str, Any]:
@@ -859,12 +831,8 @@ def analyze_dissipation_rates(generator: Any, dim: int) -> dict[str, Any]:
         if len(decay_rates) and not bool(np.any(neutral_mask))
         else 0.0
     )
-    relaxation_time = (
-        1.0 / spectral_gap if spectral_gap > 0.0 else float("inf")
-    )
-    identity_vector = np.eye(dim, dtype=np.complex128).reshape(
-        dim * dim, order="F"
-    )
+    relaxation_time = 1.0 / spectral_gap if spectral_gap > 0.0 else float("inf")
+    identity_vector = np.eye(dim, dtype=np.complex128).reshape(dim * dim, order="F")
     trace_residual = float(np.linalg.norm(identity_vector.conj().T @ matrix))
     max_real_part = float(np.max(eigenvalues.real))
     return {
@@ -874,9 +842,7 @@ def analyze_dissipation_rates(generator: Any, dim: int) -> dict[str, Any]:
         "spectral_gap": spectral_gap,
         "relaxation_time": relaxation_time,
         "n_steady_modes": int(np.sum(steady_mask)),
-        "n_oscillating_modes": int(
-            np.sum(np.abs(eigenvalues.imag) > 1e-6)
-        ),
+        "n_oscillating_modes": int(np.sum(np.abs(eigenvalues.imag) > 1e-6)),
         "n_neutral_nonstationary_modes": int(np.sum(neutral_mask)),
         "has_neutral_nonstationary_modes": bool(np.any(neutral_mask)),
         "max_real_part": max_real_part,
@@ -899,9 +865,7 @@ def classify_dissipative_regime(balance: DissipativeBalance) -> dict[str, Any]:
     Legacy return keys remain available.
     """
 
-    magnitude = max(
-        abs(balance.purity_change_rate), abs(balance.entropy_change_rate)
-    )
+    magnitude = max(abs(balance.purity_change_rate), abs(balance.entropy_change_rate))
     if magnitude < _WEAK_CHANGE_RATE_THRESHOLD:
         tier, legacy_regime = "weak", "weak_dissipation"
     elif magnitude < _MODERATE_CHANGE_RATE_THRESHOLD:
@@ -917,16 +881,20 @@ def classify_dissipative_regime(balance: DissipativeBalance) -> dict[str, Any]:
     purity_direction = (
         "increasing"
         if balance.purity_change_rate > _DEFAULT_ATOL
-        else "decreasing"
-        if balance.purity_change_rate < -_DEFAULT_ATOL
-        else "stationary"
+        else (
+            "decreasing"
+            if balance.purity_change_rate < -_DEFAULT_ATOL
+            else "stationary"
+        )
     )
     entropy_direction = (
         "increasing"
         if balance.entropy_change_rate > _DEFAULT_ATOL
-        else "decreasing"
-        if balance.entropy_change_rate < -_DEFAULT_ATOL
-        else "stationary"
+        else (
+            "decreasing"
+            if balance.entropy_change_rate < -_DEFAULT_ATOL
+            else "stationary"
+        )
     )
     return {
         "change_tier": tier,

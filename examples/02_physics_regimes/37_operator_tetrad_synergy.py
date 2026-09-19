@@ -131,8 +131,7 @@ def _history_codes(G: nx.Graph, node: int) -> tuple[str, ...]:
     """Return the normalized runtime glyph history without changing it."""
     history = G.nodes[node].get("glyph_history") or ()
     return tuple(
-        str(getattr(item, "value", item)).rsplit(".", 1)[-1].upper()
-        for item in history
+        str(getattr(item, "value", item)).rsplit(".", 1)[-1].upper() for item in history
     )
 
 
@@ -227,9 +226,7 @@ def experiment_operator_fingerprints():
             after_value = after[field]
             # Relative change (percent); avoid division by zero.
             if abs(before_value) > 1e-12:
-                deltas[field] = (
-                    (after_value - before_value) / abs(before_value) * 100.0
-                )
+                deltas[field] = (after_value - before_value) / abs(before_value) * 100.0
             else:
                 deltas[field] = (after_value - before_value) * 100.0
         results[glyph] = {"name": name, "deltas": deltas, **trace}
@@ -272,10 +269,7 @@ def experiment_operator_fingerprints():
             response = "no sampled change"
         else:
             response = f"{d[dominant]:+.2f}%"
-        print(
-            f"  {glyph:7s} -> {str(r['actual']):7s}: "
-            f"{dominant} ({response})"
-        )
+        print(f"  {glyph:7s} -> {str(r['actual']):7s}: " f"{dominant} ({response})")
 
     return results
 
@@ -388,19 +382,13 @@ def experiment_tetrad_safety():
 
     def print_row(step, requested, actual, snapshot):
         phi_status = (
-            "OK"
-            if snapshot["Phi_s_max"] < PHI_S_VON_KOCH_THRESHOLD
-            else "WARN"
+            "OK" if snapshot["Phi_s_max"] < PHI_S_VON_KOCH_THRESHOLD else "WARN"
         )
         grad_status = (
-            "OK"
-            if snapshot["grad_phi_max"] < GRAD_PHI_CANONICAL_THRESHOLD
-            else "WARN"
+            "OK" if snapshot["grad_phi_max"] < GRAD_PHI_CANONICAL_THRESHOLD else "WARN"
         )
         curvature_status = (
-            "OK"
-            if snapshot["K_phi_max"] < K_PHI_CANONICAL_THRESHOLD
-            else "WARN"
+            "OK" if snapshot["K_phi_max"] < K_PHI_CANONICAL_THRESHOLD else "WARN"
         )
         print(
             f"  {step:>4} {requested:>5s} {actual:>5s}"
@@ -450,9 +438,7 @@ def experiment_tetrad_safety():
         "  All selected policy margins satisfied: "
         f'{"YES" if all_selected_ok else "NO"}'
     )
-    print(
-        f"    |Phi_s| policy = {PHI_S_VON_KOCH_THRESHOLD:.4f} (pi/4)"
-    )
+    print(f"    |Phi_s| policy = {PHI_S_VON_KOCH_THRESHOLD:.4f} (pi/4)")
     print(
         f"    |grad_phi| alert = {GRAD_PHI_CANONICAL_THRESHOLD:.4f} (pi/16); "
         f"exact bound = {PI:.4f}"

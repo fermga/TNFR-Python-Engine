@@ -89,9 +89,7 @@ def _proof_stamp(value: Any) -> tuple[Any, ...]:
         raise TypeError("proof value must have its canonical result type")
     payload = tuple(
         (item.name, object.__getattribute__(value, item.name))
-        for item in fields(
-            UniformRemeshScheduleRelativeDefectStabilityCertificate
-        )
+        for item in fields(UniformRemeshScheduleRelativeDefectStabilityCertificate)
         if item.name != "_proof_stamp"
     )
     return (_PROOF_VERSION, structural_proof_signature(payload))
@@ -146,17 +144,13 @@ def _exact_nonnegative_relative_defect(value: Any) -> Fraction:
         try:
             result = Fraction(value)
         except (OverflowError, TypeError, ValueError, ZeroDivisionError) as exc:
-            raise TNFRValueError(
-                f"{argument} must be a finite real scalar"
-            ) from exc
+            raise TNFRValueError(f"{argument} must be a finite real scalar") from exc
     else:
         try:
             source_nonzero = bool(value != 0)
             floating = float(value)
         except (OverflowError, TypeError, ValueError, ZeroDivisionError) as exc:
-            raise TNFRValueError(
-                f"{argument} must be a finite real scalar"
-            ) from exc
+            raise TNFRValueError(f"{argument} must be a finite real scalar") from exc
         if not math.isfinite(floating):
             raise TNFRValueError(f"{argument} must be finite")
         if floating == 0.0 and source_nonzero:
@@ -185,9 +179,7 @@ def _derive_relative_defect_model(
     q = policy.schedule_energy_gain_upper_bound
     q_eff = q * (Fraction(1) + eta)
     if q_eff > 1:
-        raise TNFRValueError(
-            "effective head energy gain q*(1+eta) must be at most 1"
-        )
+        raise TNFRValueError("effective head energy gain q*(1+eta) must be at most 1")
     envelope = certify_uniform_remesh_schedule_policy_stability(
         policy.remesh_certificate,
         q_eff,
@@ -229,8 +221,7 @@ def _derive_relative_defect_model(
         ),
         (
             "effective_intrablock_prefix_bound_is_one",
-            envelope.exact_intrablock_prefix_energy_gain_upper_bound
-            == Fraction(1),
+            envelope.exact_intrablock_prefix_energy_gain_upper_bound == Fraction(1),
         ),
     )
     return _RelativeDefectModel(
@@ -276,8 +267,7 @@ class UniformRemeshScheduleRelativeDefectStabilityCertificate:
                 type(policy) is not UniformRemeshSchedulePolicyStabilityCertificate
                 or type(eta) is not Fraction
                 or type(q_eff) is not Fraction
-                or type(envelope)
-                is not UniformRemeshSchedulePolicyStabilityCertificate
+                or type(envelope) is not UniformRemeshSchedulePolicyStabilityCertificate
                 or eta < 0
                 or not Fraction(0) <= q_eff <= Fraction(1)
                 or not policy.policy_stability_certificate_certified
@@ -287,8 +277,7 @@ class UniformRemeshScheduleRelativeDefectStabilityCertificate:
                 return False
             expected = _derive_relative_defect_model(policy, eta)
             return bool(
-                q_eff
-                == expected.exact_effective_head_energy_gain_upper_bound
+                q_eff == expected.exact_effective_head_energy_gain_upper_bound
                 and proof_stamps_are_identical(
                     object.__getattribute__(envelope, "_proof_stamp"),
                     object.__getattribute__(
@@ -310,8 +299,7 @@ class UniformRemeshScheduleRelativeDefectStabilityCertificate:
         return bool(
             self._proof_fields_are_intact()
             and type(self.conditions) is tuple
-            and tuple(name for name, _passed in self.conditions)
-            == _CONDITION_NAMES
+            and tuple(name for name, _passed in self.conditions) == _CONDITION_NAMES
             and all(type(passed) is bool and passed for _, passed in self.conditions)
         )
 
@@ -343,9 +331,7 @@ class UniformRemeshScheduleRelativeDefectStabilityCertificate:
 
     @property
     def universal_block_horizon(self) -> int:
-        return (
-            self.effective_head_gain_envelope_certificate.universal_block_horizon
-        )
+        return self.effective_head_gain_envelope_certificate.universal_block_horizon
 
     @property
     def remesh_companion_matrix(self) -> ExactSquareMatrix:
@@ -356,8 +342,7 @@ class UniformRemeshScheduleRelativeDefectStabilityCertificate:
         """Return ``diag(q_eff, 1, ..., 1) P`` as an energy envelope."""
 
         return (
-            self.effective_head_gain_envelope_certificate
-            .schedule_energy_domination_matrix
+            self.effective_head_gain_envelope_certificate.schedule_energy_domination_matrix
         )
 
     @property
@@ -367,29 +352,25 @@ class UniformRemeshScheduleRelativeDefectStabilityCertificate:
     @property
     def effective_head_block_domination_power(self) -> ExactSquareMatrix:
         return (
-            self.effective_head_gain_envelope_certificate
-            .schedule_block_domination_power
+            self.effective_head_gain_envelope_certificate.schedule_block_domination_power
         )
 
     @property
     def exact_uniform_normalized_block_margin_lower_bound(self) -> Fraction:
         return (
-            self.effective_head_gain_envelope_certificate
-            .exact_uniform_normalized_block_margin_lower_bound
+            self.effective_head_gain_envelope_certificate.exact_uniform_normalized_block_margin_lower_bound
         )
 
     @property
     def exact_uniform_block_energy_gain_upper_bound(self) -> Fraction:
         return (
-            self.effective_head_gain_envelope_certificate
-            .exact_uniform_block_energy_gain_upper_bound
+            self.effective_head_gain_envelope_certificate.exact_uniform_block_energy_gain_upper_bound
         )
 
     @property
     def exact_intrablock_prefix_energy_gain_upper_bound(self) -> Fraction:
         return (
-            self.effective_head_gain_envelope_certificate
-            .exact_intrablock_prefix_energy_gain_upper_bound
+            self.effective_head_gain_envelope_certificate.exact_intrablock_prefix_energy_gain_upper_bound
         )
 
     @property
@@ -443,9 +424,8 @@ class UniformRemeshScheduleRelativeDefectStabilityCertificate:
                 "REMESH/schedule relative-defect certificate is unsealed or "
                 "inconsistent"
             )
-        return (
-            self.effective_head_gain_envelope_certificate
-            .exact_cycle_energy_gain_upper_bound(cycle_count)
+        return self.effective_head_gain_envelope_certificate.exact_cycle_energy_gain_upper_bound(
+            cycle_count
         )
 
     @property
@@ -499,8 +479,7 @@ def certify_uniform_remesh_schedule_relative_defect_stability(
 
     if type(policy_certificate) is not UniformRemeshSchedulePolicyStabilityCertificate:
         raise TNFRValueError(
-            "policy_certificate must be an exact REMESH/schedule policy "
-            "certificate"
+            "policy_certificate must be an exact REMESH/schedule policy " "certificate"
         )
     if not policy_certificate.policy_stability_certificate_certified:
         raise TNFRValueError(

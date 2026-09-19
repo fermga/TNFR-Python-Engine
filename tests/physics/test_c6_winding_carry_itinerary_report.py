@@ -1,15 +1,18 @@
 """Inherited carry, exact itinerary feasibility and generated source reversals."""
 
+import json
 from copy import deepcopy
 from fractions import Fraction as F
-import json
 from pathlib import Path
 
 import pytest
 
 from benchmarks import c6_winding_carry_itinerary as campaign
 
-INPUT = Path(__file__).resolve().parents[2] / "artifacts/research/c6_winding_pressure_lattice.json"
+INPUT = (
+    Path(__file__).resolve().parents[2]
+    / "artifacts/research/c6_winding_pressure_lattice.json"
+)
 
 
 @pytest.fixture(scope="module")
@@ -38,13 +41,35 @@ def test_retained_carry_is_preserved_and_two_boundaries_are_derived(report, pare
     first, second = report["boundaries"]
     assert first["initial"] == initial and second["initial"] == first["endpoint"]
     assert _offsets(initial) == (-1, 0, 0, 0, 0, -1)
-    assert (first["horizon"]["max_unchanged_steps"], first["horizon"]["first_exit_step"]) == (2, 3)
-    assert (second["horizon"]["max_unchanged_steps"], second["horizon"]["first_exit_step"]) == (11, 12)
-    assert first["horizon"]["first_exit_leaves_cell"] == (False, False, False, True, True, False)
-    assert second["horizon"]["first_exit_leaves_cell"] == (False, False, False, False, False, True)
+    assert (
+        first["horizon"]["max_unchanged_steps"],
+        first["horizon"]["first_exit_step"],
+    ) == (2, 3)
+    assert (
+        second["horizon"]["max_unchanged_steps"],
+        second["horizon"]["first_exit_step"],
+    ) == (11, 12)
+    assert first["horizon"]["first_exit_leaves_cell"] == (
+        False,
+        False,
+        False,
+        True,
+        True,
+        False,
+    )
+    assert second["horizon"]["first_exit_leaves_cell"] == (
+        False,
+        False,
+        False,
+        False,
+        False,
+        True,
+    )
     assert _offsets(first["endpoint"]) == (-1, 0, 0, -1, 2, -1)
     assert _offsets(second["endpoint"]) == (-1, 0, 0, -1, 2, -2)
-    assert all(not boundary["endpoint_in_original_stencil"] for boundary in (first, second))
+    assert all(
+        not boundary["endpoint_in_original_stencil"] for boundary in (first, second)
+    )
 
 
 def test_generated_pressure_sign_changes_do_not_hide_the_exact_nodal_areas(report):
@@ -57,7 +82,11 @@ def test_generated_pressure_sign_changes_do_not_hide_the_exact_nodal_areas(repor
     assert second["prefix_balances"][-1]["mean_nodal_area"] == F(3, 2**112)
     continuation = report["continuation"]
     assert continuation["step_count"] == 15
-    assert continuation["mean_nodal_area"] == continuation["mean_reconstructed_change"] == F(11, 2**114)
+    assert (
+        continuation["mean_nodal_area"]
+        == continuation["mean_reconstructed_change"]
+        == F(11, 2**114)
+    )
     previous = report["source"]["inherited_state"]
     area = [F(0)] * 6
     for step in continuation["steps"]:
@@ -65,7 +94,10 @@ def test_generated_pressure_sign_changes_do_not_hide_the_exact_nodal_areas(repor
         assert step["capacity"] == (1.0,) * 6 and step["timestep"] == 1 / 16
         assert step["exact_increment"] == tuple(F(p) / 16 for p in step["pressure"])
         assert step["nodal_balance_residual"] == (0,) * 6
-        area = [total + value for total, value in zip(area, step["exact_increment"], strict=True)]
+        area = [
+            total + value
+            for total, value in zip(area, step["exact_increment"], strict=True)
+        ]
         previous = step["after"]
     assert tuple(area) == continuation["itinerary"]["total_nodal_area"]
     assert sum(area) / 6 == F(11, 2**114)
@@ -86,7 +118,9 @@ def test_inverse_itinerary_accepts_inherited_carry_but_refuses_zero_reset(report
     assert continuation["supplied_initial_carry_feasible"] is True
     assert continuation["supplied_initial_carry_coordinate_membership"] == (True,) * 6
     initial = report["source"]["inherited_state"]
-    exact = tuple(F(x) + r for x, r in zip(initial["epi"], initial["remainder"], strict=True))
+    exact = tuple(
+        F(x) + r for x, r in zip(initial["epi"], initial["remainder"], strict=True)
+    )
     for value, cell in zip(exact, itinerary["coordinates"], strict=True):
         assert cell["lower"] <= value <= cell["upper"]
         assert value > cell["lower"] or cell["lower_closed"]
@@ -105,14 +139,18 @@ def test_inverse_itinerary_accepts_inherited_carry_but_refuses_zero_reset(report
 def test_twelve_visible_self_loops_are_feasible_but_thirteen_are_not(report):
     twelve, thirteen = report["balanced_visible_self_loops"]
     assert (twelve["length"], thirteen["length"]) == (12, 13)
-    assert twelve["epi"] == thirteen["epi"] and twelve["pressure"] == thirteen["pressure"]
+    assert (
+        twelve["epi"] == thirteen["epi"] and twelve["pressure"] == thirteen["pressure"]
+    )
     for control in (twelve, thirteen):
         itinerary = control["itinerary"]
         assert control["pressure_mean"] == 0
         assert itinerary["visible_closed"] is True
         assert itinerary["conditional_carried_cycle"] is False
         assert itinerary["zero_initial_carry_feasible"] is False
-        expected = tuple(F(control["length"], 16) * F(value) for value in control["pressure"])
+        expected = tuple(
+            F(control["length"], 16) * F(value) for value in control["pressure"]
+        )
         assert itinerary["total_nodal_area"] == expected
         assert sum(expected) == 0 and any(expected)
     assert twelve["itinerary"]["feasible"] is True
@@ -124,7 +162,9 @@ def test_twelve_visible_self_loops_are_feasible_but_thirteen_are_not(report):
     assert any(not cell["feasible"] for cell in thirteen["itinerary"]["coordinates"])
 
 
-def test_four_state_axis_separator_excludes_return_despite_pressure_mean_reversal(report):
+def test_four_state_axis_separator_excludes_return_despite_pressure_mean_reversal(
+    report,
+):
     certificate = report["four_state_drift"]
     assert certificate["status"] == "axis_separator"
     assert (certificate["node"], certificate["sign"]) == (1, -1)
@@ -132,15 +172,22 @@ def test_four_state_axis_separator_excludes_return_despite_pressure_mean_reversa
     assert observation["functional"] == (0, -1, 0, 0, 0, 0)
     pressure = tuple(record[1] for record in observation["pressure_vectors"])
     assert len(set(pressure)) == 1 and pressure[0] < 0
-    assert observation["functional_projections"] == tuple(-F(value) for value in pressure)
+    assert observation["functional_projections"] == tuple(
+        -F(value) for value in pressure
+    )
     assert observation["width"] == F(3, 2**55)
-    assert (observation["max_confined_steps"], observation["escape_step_bound"]) == (842, 843)
+    assert (observation["max_confined_steps"], observation["escape_step_bound"]) == (
+        842,
+        843,
+    )
     assert certificate["conditional_class_escape_certified"] is True
     assert certificate["pressure_provenance_certified"] is False
     assert certificate["positive_band_exit_certified"] is False
 
 
-def test_generated_pressure_is_reused_between_boundaries_without_live_execution(parent, monkeypatch):
+def test_generated_pressure_is_reused_between_boundaries_without_live_execution(
+    parent, monkeypatch
+):
     from tnfr.operators import event_runtime, nodal_remainder_runtime
     from tnfr.physics import c6_pressure_lattice as owner
 
@@ -148,7 +195,9 @@ def test_generated_pressure_is_reused_between_boundaries_without_live_execution(
         raise AssertionError("the finite itinerary must not execute a graph word")
 
     monkeypatch.setattr(event_runtime, "execute_operator_event_schedule", forbidden)
-    monkeypatch.setattr(nodal_remainder_runtime, "execute_nodal_remainder_event_schedule", forbidden)
+    monkeypatch.setattr(
+        nodal_remainder_runtime, "execute_nodal_remainder_event_schedule", forbidden
+    )
     actual, points = owner.fused_dnfr.compute_fused_gradients_symmetric, []
 
     def tracked(**kwargs):
@@ -164,7 +213,21 @@ def test_generated_pressure_is_reused_between_boundaries_without_live_execution(
     assert len(points) == len(set(points)) == 4
 
 
-@pytest.mark.parametrize("change", ("claim", "scope", "balanced_bool", "carry_reset", "carry_change", "pressure", "horizon", "prefix", "weights", "cached_lattice"))
+@pytest.mark.parametrize(
+    "change",
+    (
+        "claim",
+        "scope",
+        "balanced_bool",
+        "carry_reset",
+        "carry_change",
+        "pressure",
+        "horizon",
+        "prefix",
+        "weights",
+        "cached_lattice",
+    ),
+)
 def test_parent_pressure_carry_or_scope_corruption_fails_closed(parent, change):
     changed = deepcopy(parent)
     boundary = changed["balanced_boundary"]
@@ -192,11 +255,21 @@ def test_parent_pressure_carry_or_scope_corruption_fails_closed(parent, change):
         campaign.analyze_c6_winding_carry_itinerary(changed)
 
 
-def test_itinerary_report_keeps_detached_scope_and_compact_alternative_witnesses(report):
-    for flag in ("runtime_executed", "live_provenance_certified", "original_tail_reachability_certified",
-                 "future_compensation_cycle_certified", "positive_band_exit_certified"):
+def test_itinerary_report_keeps_detached_scope_and_compact_alternative_witnesses(
+    report,
+):
+    for flag in (
+        "runtime_executed",
+        "live_provenance_certified",
+        "original_tail_reachability_certified",
+        "future_compensation_cycle_certified",
+        "positive_band_exit_certified",
+    ):
         assert report[flag] is False
     assert report["new_graph_trajectories"] == 0
     assert "witness_sequence" not in report["continuation"]["itinerary"]
-    assert all("witness_sequence" not in control["itinerary"] for control in report["balanced_visible_self_loops"])
+    assert all(
+        "witness_sequence" not in control["itinerary"]
+        for control in report["balanced_visible_self_loops"]
+    )
     json.dumps(campaign._payload(report), allow_nan=False)

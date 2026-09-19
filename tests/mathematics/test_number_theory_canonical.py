@@ -95,16 +95,12 @@ def test_nfr_equilibrium_set_is_exactly_the_primes():
     n_primes = sum(1 for n in range(2, 61) if _is_prime(n))
     assert r["equilibrium_fraction"] == pytest.approx(n_primes / 59)
     assert r["topology"] in {"radial", "annular", "multinodal"}
-    pressures = [
-        abs(float(net.graph.nodes[node]["delta_nfr"])) for node in net.graph
-    ]
+    pressures = [abs(float(net.graph.nodes[node]["delta_nfr"])) for node in net.graph]
     mean_pressure = sum(pressures) / len(pressures)
     mean_local = sum(structural_coherence(value, 0.0) for value in pressures) / len(
         pressures
     )
-    assert r["coherence"] == pytest.approx(
-        structural_coherence(mean_pressure, 0.0)
-    )
+    assert r["coherence"] == pytest.approx(structural_coherence(mean_pressure, 0.0))
     assert r["mean_abs_dnfr"] == pytest.approx(mean_pressure)
     assert r["mean_local_coherence"] == pytest.approx(mean_local)
     assert r["mean_local_coherence"] > r["coherence"]

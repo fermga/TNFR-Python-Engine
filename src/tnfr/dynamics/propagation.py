@@ -43,9 +43,7 @@ __all__ = [
 ]
 
 
-_PROPAGATION_MODES = frozenset(
-    {"phase_weighted", "uniform", "frequency_weighted"}
-)
+_PROPAGATION_MODES = frozenset({"phase_weighted", "uniform", "frequency_weighted"})
 _PROPAGATION_EVENTS_KEY = "_oz_propagation"
 _MISSING = object()
 
@@ -218,9 +216,7 @@ def _prepare_dissonance_propagation(
     seen: set[NodeId] = set()
     for neighbor in neighbors:
         if neighbor in seen:
-            raise TNFRValueError(
-                f"OZ outgoing neighborhood repeats node {neighbor!r}"
-            )
+            raise TNFRValueError(f"OZ outgoing neighborhood repeats node {neighbor!r}")
         seen.add(neighbor)
 
         neighbor_data = G.nodes[neighbor]
@@ -311,8 +307,7 @@ def _prepare_dissonance_propagation(
             events_length_before = len(events)
         else:
             raise TNFRValueError(
-                f"{_PROPAGATION_EVENTS_KEY} for neighbor {neighbor!r} "
-                "must be a list"
+                f"{_PROPAGATION_EVENTS_KEY} for neighbor {neighbor!r} " "must be a list"
             )
 
         had_primary_dnfr = ALIAS_DNFR[0] in neighbor_data
@@ -584,8 +579,10 @@ def detect_bifurcation_cascade(
         if not isinstance(events, list):
             raise TNFRValueError(f"{_PROPAGATION_EVENTS_KEY} must be a list")
         matching = [
-            event for event in events
-            if isinstance(event, Mapping) and event.get("from_node", _MISSING) == source_node
+            event
+            for event in events
+            if isinstance(event, Mapping)
+            and event.get("from_node", _MISSING) == source_node
         ]
         magnitudes = [
             _finite_nonnegative(event.get("magnitude"), "Recorded OZ magnitude")

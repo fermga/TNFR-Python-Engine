@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from fractions import Fraction
 import math
+from fractions import Fraction
 from numbers import Real
 from typing import Any
 
@@ -56,10 +56,7 @@ def exact_ideal_neighbor_blend_map(
     mix: Fraction,
 ) -> tuple[tuple[Fraction, ...], ...]:
     matrix = [
-        [
-            Fraction(1) if row == column else Fraction(0)
-            for column in range(dimension)
-        ]
+        [Fraction(1) if row == column else Fraction(0) for column in range(dimension)]
         for row in range(dimension)
     ]
     matrix[target_index] = [Fraction(0) for _ in range(dimension)]
@@ -137,19 +134,13 @@ def optional_flow_duration(value: Any) -> float | None:
         raise ValueError("recovery_flow_duration must be nonnegative")
     duration = finite_real_scalar(value, "recovery_flow_duration")
     if source_is_nonzero and duration == 0.0:
-        raise ValueError(
-            "recovery_flow_duration is below nonzero floating-point range"
-        )
+        raise ValueError("recovery_flow_duration is below nonzero floating-point range")
     return duration
 
 
-def require_explicit_epi(
-    G: Any, nodes: tuple[Any, ...], *, operator: str
-) -> None:
+def require_explicit_epi(G: Any, nodes: tuple[Any, ...], *, operator: str) -> None:
     missing = tuple(
-        node
-        for node in nodes
-        if not any(alias in G.nodes[node] for alias in ALIAS_EPI)
+        node for node in nodes if not any(alias in G.nodes[node] for alias in ALIAS_EPI)
     )
     if missing:
         raise ValueError(f"{operator} realization requires explicit EPI on every node")

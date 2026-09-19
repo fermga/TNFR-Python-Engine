@@ -1,18 +1,17 @@
-r"""Operator-by-operator equivariance audit (R1, non-linear stage).
+r"""Finite pointed-operator covariance probes (R1).
 
-The diffusion base case (:mod:`tnfr.physics.equivariance`) proves ``L_rw`` is
-equivariant.  The symmetry-sector theorem for full TNFR *words* additionally
-needs each operator ``O`` to be equivariant: ``O(P_σ x) = P_σ O(x)`` for every
-automorphism ``σ``.  The testable consequence is that an equivariant operator
-maps a symmetric (``Fix(Γ)``) state to a symmetric state — applying it at a node
-``v`` and at ``σ(v)`` on a σ-invariant seed yields σ-related results.
+The measured family relation is O_(sigma v)(P_sigma x)=P_sigma O_v(x) on
+selected sigma-invariant seeds. This differs from commutation of one map O_v
+with a fixed node selector. A localized emission can break seed symmetry while
+obeying the family covariance identity.
 
-This module measures that residual per operator.  A non-zero residual does not
-break the framework: it *localizes* where symmetry breaking enters (a label- or
-selection-dependent action), which is the falsification clause of the programme
-(report §8.1.7).  A localized single-node **emission** is pointed by choice of
-origin; here we audit the operator's per-node *action*, not the choice of origin.
-"""
+The probes compare selected scalar channels on original nodes after refreshing
+pressure. They do not prove all-state equivariance, compare every created node,
+changed edge, history or attribute, or certify arbitrary operator words.
+Cache isolation prevents the specific inherited-cache contamination addressed
+by these fixtures; finite small residuals retain their sampled scope.
+For exact fixed-graph diffusion and conditional composition results, see
+theory/TNFR_STRUCTURAL_OBSERVABILITY.md."""
 
 from __future__ import annotations
 
@@ -38,7 +37,11 @@ _CHANNELS = (ALIAS_EPI, ALIAS_THETA, ALIAS_VF, ALIAS_DNFR)
 # independent experiment with a clean, private cache; config keys
 # (``_dnfr_weights``, ``_DNFR_META``, ``_dnfr_hook_name``) are preserved.
 _GRAPH_CACHE_HINTS = (
-    "cache", "checksum", "dirty", "_node_list", "_node_set",
+    "cache",
+    "checksum",
+    "dirty",
+    "_node_list",
+    "_node_set",
 )
 
 
@@ -49,8 +52,7 @@ def _isolate_graph_caches(H) -> None:
     (cross-experiment) engine cache cannot leak an isomorphic sibling's value.
     """
     stale = [
-        key for key in list(H.graph)
-        if any(hint in key for hint in _GRAPH_CACHE_HINTS)
+        key for key in list(H.graph) if any(hint in key for hint in _GRAPH_CACHE_HINTS)
     ]
     for key in stale:
         H.graph.pop(key, None)
@@ -142,11 +144,11 @@ def _test_cases():
 
 
 def audit_operator_equivariance(*, tol: float = 1e-6):
-    r"""Audit all 13 canonical operators for Fix(Γ)-preserving equivariance.
+    r"""Return finite pointed covariance verdicts for the 13 operators on two fixtures.
 
-    Returns one :class:`OperatorEquivarianceResult` per operator, reporting the
-    worst residual over the test cases and whether it is within ``tol``.
-    """
+    The is_equivariant field reports whether the measured original-node scalar
+    channel residual is within tol; it is not a universal fixed-selector or
+    whole-state equivariance certificate."""
     from ..operators.definitions import (
         Coherence,
         Contraction,
@@ -189,7 +191,5 @@ def audit_operator_equivariance(*, tol: float = 1e-6):
             except Exception:
                 r = float("inf")
             worst = max(worst, r)
-        results.append(
-            OperatorEquivarianceResult(name, glyph, worst, worst < tol)
-        )
+        results.append(OperatorEquivarianceResult(name, glyph, worst, worst < tol))
     return results

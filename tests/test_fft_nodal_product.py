@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import math
 from collections import deque
 from copy import deepcopy
+from fractions import Fraction
 from types import SimpleNamespace
 
 import networkx as nx
@@ -19,6 +21,7 @@ from tnfr.constants.aliases import (
     ALIAS_VF,
 )
 from tnfr.dynamics.fft_engine import FFTDynamicsEngine
+from tnfr.dynamics.phase_evolution import propose_u3_gated_phase_step
 from tnfr.errors import TNFRValueError
 from tnfr.mathematics.spectral import gft, igft
 from tnfr.metrics.common import compute_coherence
@@ -76,9 +79,7 @@ def test_fft_step_is_exact_transform_of_the_pointwise_nodal_product(
     # Regression counterexample: modewise multiplication is a different
     # operation and does not satisfy the physical-space nodal equation.
     pressure_hat = gft(pressure, state.eigenvectors)
-    broken_rate_hat = gft(
-        np.asarray(frequencies), state.eigenvectors
-    ) * pressure_hat
+    broken_rate_hat = gft(np.asarray(frequencies), state.eigenvectors) * pressure_hat
     broken_epi = epi_before + dt * igft(broken_rate_hat, state.eigenvectors)
     assert not np.allclose(broken_epi, expected_epi, atol=1e-8, rtol=1e-8)
 
@@ -185,7 +186,9 @@ class _CountingCoordinator:
         return self._basis
 
 
-def test_basis_cache_ignores_nodal_state_and_mutating_runs_are_never_result_cached() -> None:
+def test_basis_cache_ignores_nodal_state_and_mutating_runs_are_never_result_cached() -> (
+    None
+):
     graph = _graph([0.5, 0.75, 1.0, 1.25])
     coordinator = _CountingCoordinator()
     engine = FFTDynamicsEngine(enable_caching=True, cache_coordinator=coordinator)
@@ -235,9 +238,10 @@ def test_repeated_runs_are_reproducible_in_state_trajectory_and_residual() -> No
     assert first["max_nodal_residual"] == second["max_nodal_residual"]
     assert first["trajectory"][-1]["time"] == pytest.approx(first["final_time"])
     assert second["trajectory"][-1]["time"] == pytest.approx(second["final_time"])
-    assert sum(
-        sample["time"] == first["final_time"] for sample in first["trajectory"]
-    ) == 1
+    assert (
+        sum(sample["time"] == first["final_time"] for sample in first["trajectory"])
+        == 1
+    )
 
 
 def test_fixed_basis_rejects_topology_changes_before_telemetry_moves() -> None:
@@ -256,7 +260,10 @@ def test_fixed_basis_rejects_topology_changes_before_telemetry_moves() -> None:
 def _graph_surface(graph: nx.Graph) -> tuple[object, object, object, object]:
     return (
         tuple((node, deepcopy(dict(graph.nodes[node]))) for node in graph.nodes),
-        tuple((left, right, deepcopy(dict(data))) for left, right, data in graph.edges(data=True)),
+        tuple(
+            (left, right, deepcopy(dict(data)))
+            for left, right, data in graph.edges(data=True)
+        ),
         deepcopy(dict(graph.graph)),
         getattr(graph, "_last_operator_applied", None),
     )
@@ -314,6 +321,86 @@ def test_fft_phase_step_respects_live_u3_gate() -> None:
     assert get_attr(graph.nodes[1], ALIAS_THETA) == pytest.approx(0.5, abs=1e-14)
 
 
+@pytest.mark.parametrize("channel", ("phase", "capacity"))
+@pytest.mark.parametrize(
+    "invalid",
+    (
+        True,
+        np.bool_(False),
+        "0.0",
+        complex(0, 1),
+        complex(0, 0),
+        math.nan,
+        math.inf,
+        Fraction(1, 2**1075),
+    ),
+)
+def test_phase_proposal_validates_original_scalar_types(channel, invalid) -> None:
+    graph = nx.path_graph(2)
+    phases = [invalid, 0.0] if channel == "phase" else [0.0, 0.0]
+    capacities = [invalid, 1.0] if channel == "capacity" else [1.0, 1.0]
+    before = _graph_surface(graph)
+
+    with pytest.raises(TNFRValueError, match="finite|underflows"):
+        propose_u3_gated_phase_step(
+            graph, (0, 1), phases, capacities, dt=0.25, coupling_strength=0.1
+        )
+
+    assert _graph_surface(graph) == before
+
+
+@pytest.mark.parametrize("representation", ("python", "numpy", "mixed_rational"))
+def test_real_phase_vectors_keep_the_same_free_advance_and_gated_sine_law(
+    representation,
+) -> None:
+    graph = nx.path_graph(3)
+    graph.graph["DELTA_PHI_MAX"] = 0.25
+    phases = [-0.25, 0.0, 0.5]
+    capacities = [0.0, 0.5, 1.0]
+    if representation == "numpy":
+        phases, capacities = np.array(phases), np.array(capacities)
+    elif representation == "mixed_rational":
+        phases = [Fraction(-1, 4), np.float32(0), Fraction(1, 2)]
+        capacities = [np.int64(0), Fraction(1, 2), np.float64(1)]
+    original_phases, original_capacities = deepcopy(phases), deepcopy(capacities)
+    before = _graph_surface(graph)
+
+    proposal = propose_u3_gated_phase_step(
+        graph,
+        (0, 1, 2),
+        phases,
+        capacities,
+        dt=Fraction(1, 4),
+        coupling_strength=np.float64(0.125),
+    )
+
+    expected = np.mod(
+        [-0.25 + math.sin(0.25) / 32, 0.125 - math.sin(0.25) / 32, 0.75],
+        2 * math.pi,
+    )
+    np.testing.assert_array_equal(proposal, expected)
+    np.testing.assert_array_equal(phases, original_phases)
+    np.testing.assert_array_equal(capacities, original_capacities)
+    assert _graph_surface(graph) == before
+
+
+def test_fft_genuinely_complex_phase_cannot_be_silently_projected_to_real() -> None:
+    graph = _graph([1.0] * 4)
+    engine = FFTDynamicsEngine(enable_caching=False)
+    state = engine.create_fft_state(graph)
+    state.spectral_phase = state.spectral_phase.astype(complex) + 1j
+    assert np.max(np.abs(igft(state.spectral_phase, state.eigenvectors).imag)) > 0.1
+    before = _graph_surface(graph)
+    saved_phase = state.spectral_phase.copy()
+
+    with pytest.raises(TNFRValueError, match="phase.*finite real"):
+        engine.fft_accelerated_step(graph, state, 0.25)
+
+    assert engine.total_operations == engine.fft_operations == 0
+    np.testing.assert_array_equal(state.spectral_phase, saved_phase)
+    assert _graph_surface(graph) == before
+
+
 def test_fft_basis_cache_invalidates_when_edge_weight_changes() -> None:
     from tnfr.dynamics.fft_cache_coordinator import FFTCacheCoordinator
 
@@ -328,6 +415,7 @@ def test_fft_basis_cache_invalidates_when_edge_weight_changes() -> None:
     assert second is not first
     assert second.signature != first.signature
     assert not np.array_equal(second.eigenvectors, first.eigenvectors)
+
 
 def test_fft_state_rejects_replaced_eigenbasis() -> None:
     graph = _graph([0.4, 0.8, 1.2, 1.6])
@@ -352,21 +440,21 @@ def test_cached_fft_basis_is_readonly_and_cannot_poison_later_states() -> None:
     assert np.array_equal(second.eigenvectors, baseline)
     assert second.eigenbasis_digest == first.eigenbasis_digest
 
+
 def test_fft_reports_canonical_coherence_separately_from_phase_sync() -> None:
     graph = _graph([4.0, 4.0, 4.0, 4.0])
     for node in graph:
         set_attr(graph.nodes[node], ALIAS_THETA, 0.0)
     engine = FFTDynamicsEngine(enable_caching=False)
 
-    result = engine.run_fft_simulation(
-        graph, 1, dt=0.01, return_trajectory=True
-    )
+    result = engine.run_fft_simulation(graph, 1, dt=0.01, return_trajectory=True)
 
     assert result["final_phase_sync"] == pytest.approx(1.0, abs=1e-14)
     assert result["final_coherence"] < 1.0
     assert result["final_coherence"] == pytest.approx(compute_coherence(graph))
     assert result["trajectory"][0]["phase_sync"] == pytest.approx(1.0)
     assert result["trajectory"][0]["coherence"] < 1.0
+
 
 def test_fft_coordinator_basis_is_readonly_and_cache_safe() -> None:
     from tnfr.dynamics.fft_cache_coordinator import FFTCacheCoordinator

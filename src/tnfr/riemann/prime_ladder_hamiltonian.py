@@ -1,87 +1,22 @@
-r"""TNFR prime-ladder Hamiltonian (P14 program — Gap G1 closure).
+r"""Declared finite prime-ladder Hamiltonian and weighted trace comparisons (P14).
 
-Goal
-----
-Instantiate the canonical TNFR internal Hamiltonian
+The constructor supplies prime labels and frequencies nu_(p,k)=k*log(p),
+then instantiates the selected InternalHamiltonian coefficients. In the
+decoupled frequency-only limit its real diagonal spectrum is exactly those
+supplied values. The diagonal weight log(p) gives the matching finite trace
+sum_(p,k) log(p)*exp(-s*k*log(p)). The corresponding infinite arithmetic series
+equals -zeta'(s)/zeta(s) only on Re(s)>1 before classical continuation.
 
-.. math::
+Reading supplied diagonal frequencies back as eigenvalues is a construction
+identity and a numerical implementation check, not independent emergence of
+prime arithmetic. Ladder edges are not an executed REMESH history. The finite
+prime-ladder spectrum is not the Riemann-zero spectrum, and poles of a separate
+analytic zeta evaluator are not poles of this finite Hamiltonian's resolvent.
 
-    \hat{H}_{\mathrm{int}} = \hat{H}_{\mathrm{coh}} + \hat{H}_{\mathrm{freq}}
-                            + \hat{H}_{\mathrm{coupling}}
-
-(see :class:`tnfr.operators.hamiltonian.InternalHamiltonian`) on the
-**prime-ladder graph** introduced by the P12 program
-(:mod:`tnfr.riemann.von_mangoldt`).  This provides an explicit,
-self-adjoint, finite-dimensional operator whose:
-
-1. **Spectrum** (in the decoupled limit :math:`J_0 = 0`,
-   :math:`C_0 = 0`) reproduces exactly the prime-ladder spectrum
-   :math:`\{k\log p\}_{p\in\mathcal{P},\,k=1,\dots,K}`.
-
-2. **Weighted spectral trace**
-   :math:`\mathrm{Tr}(\hat W e^{-s\hat H_{\mathrm{freq}}})`, with the
-   diagonal weight operator
-   :math:`\hat W = \sum_{p,k}\log(p)\,|p,k\rangle\langle p,k|`,
-   reproduces exactly the TNFR weighted Dirichlet trace
-   :math:`Z_{\mathrm{vM}}(s)` of P12, which in turn converges to
-   :math:`-\zeta'(s)/\zeta(s)` for :math:`\mathrm{Re}(s) > 1`.
-
-TNFR interpretation
--------------------
-Each prime :math:`p` contributes a **REMESH echo ladder** — a chain of
-nodes :math:`(p,1), (p,2), \dots, (p,K)` linked by ladder edges
-(operator #13, recursivity).  The structural frequency assigned to
-each node is
-
-.. math::
-
-    \nu_{f,(p,k)} = k \log p,
-
-which equals its diagonal entry in
-:math:`\hat H_{\mathrm{freq}}` (per the canonical construction in
-:mod:`tnfr.operators.hamiltonian`).  No inter-prime coupling is
-introduced: distinct prime ladders are structurally orthogonal, which
-encodes the **multiplicativity of the Euler product** at the
-operator level (different primes correspond to independent invariant
-subspaces of :math:`\hat H`).
-
-Closing Gap G1 (operationally)
-------------------------------
-The Hilbert-Pólya programme asks for a self-adjoint operator whose
-spectrum encodes the prime data driving :math:`\zeta(s)`.  In this
-module:
-
-* **Self-adjointness** is automatic — :class:`InternalHamiltonian`
-  verifies Hermiticity of every component at construction
-  (:meth:`InternalHamiltonian._verify_hermitian`), and a diagonal
-  real matrix is trivially self-adjoint.
-
-* **Spectrum** matches the prime-ladder data by construction (proved
-  here as a numerical certificate, exact to machine precision).
-
-* **Connection to** :math:`\zeta(s)` is realised via the weighted
-  trace, which equals :math:`Z_{\mathrm{vM}}(s)` of P12 and is
-  analytically continued to all of :math:`\mathbb{C}` by P13
-  (:mod:`tnfr.riemann.analytic_continuation`).
-
-What this module does NOT do
-----------------------------
-* It does **not** prove that the non-trivial Riemann zeros are forced
-  onto :math:`\mathrm{Re}(s) = 1/2` (that is gap G4 — the substance
-  of RH itself).  It only exposes them as resonance poles of the
-  resolvent of the analytic continuation, matching the picture of P13.
-
-* It does **not** introduce any coupling between distinct primes.
-  Doing so would break the Euler product structure
-  :math:`\zeta(s) = \prod_p (1 - p^{-s})^{-1}` at the operator level
-  unless the coupling is chosen with extreme care.  Non-zero coupling
-  is exposed as an optional parameter for **perturbative studies
-  only**, and the certificate API explicitly verifies the decoupled
-  limit.
-
-Status: EXPERIMENTAL — Research prototype for TNFR-Riemann P14 program
-(gap G1 closure, May 2026).
-"""
+No autonomous joint nodal law, universal catalog symmetry, physical particle
+mechanism or Hilbert-Polya/RH result is derived. Optional coupling coefficients
+specify a different finite model and must be reported with their provenance.
+See theory/TNFR_RIEMANN_RESEARCH_NOTES.md for the current scope."""
 
 from __future__ import annotations
 
@@ -123,54 +58,17 @@ def build_prime_ladder_graph(
     coupling: float = 0.0,
     primes: Sequence[int] | None = None,
 ) -> nx.Graph:
-    r"""Construct the TNFR prime-ladder graph.
+    r"""Construct a declared graph of supplied prime labels and finite ladder indices.
 
-    Nodes are labelled by pairs ``(p, k)`` for each prime
-    :math:`p \in \mathcal{P}` and each echo index
-    :math:`k = 1, \dots, K`.  Each node carries the canonical TNFR
-    structural attributes:
+    Each node (p,k), 1<=k<=max_power, receives nu_f=k*log(p), phase=0, EPI=1,
+    Si=1 and dnfr=0 as assigned attributes. Edges join consecutive indices on
+    one ladder; they do not execute REMESH. Disconnected prime ladders are a
+    construction choice, not a derived autonomous factorization mechanism.
 
-    * ``nu_f = k * log(p)`` (structural frequency, energy in
-      :math:`\hat H_{\mathrm{freq}}`),
-    * ``phase = 0``, ``EPI = 1.0``, ``Si = 1.0``, ``dnfr = 0.0``
-      (neutral structural state; coherence and pressure components
-      do not enter the decoupled Hamiltonian).
-
-    REMESH echo edges link consecutive nodes on the same prime ladder
-    :math:`(p, k) \leftrightarrow (p, k+1)`.  No edges connect
-    distinct primes — the Euler-product orthogonality is enforced at
-    the graph level.
-
-    Parameters
-    ----------
-    n_primes : int
-        Number of primes in :math:`\mathcal{P}` (ignored if ``primes``
-        is provided).
-    max_power : int, default 8
-        REMESH echo cap :math:`K`.  Must satisfy ``max_power >= 1``.
-    coupling : float, default 0.0
-        Strength of the inter-node ladder coupling
-        :math:`J_0` in :math:`\hat H_{\mathrm{coupling}}`.  Default
-        ``0.0`` yields a purely diagonal Hamiltonian whose spectrum
-        equals the prime-ladder spectrum exactly.  Non-zero values are
-        perturbative and break exact spectrum reproduction; intended
-        for stability / dependence studies only.
-    primes : sequence of int, optional
-        Explicit prime list.  If given, ``n_primes`` is ignored.
-
-    Returns
-    -------
-    networkx.Graph
-        Prime-ladder graph with structural attributes and Hamiltonian
-        configuration (``H_COH_STRENGTH = 0``, ``H_COUPLING_STRENGTH =
-        coupling``) attached to ``graph.graph``.
-
-    Raises
-    ------
-    ValueError
-        If ``max_power < 1`` or ``n_primes < 1`` (when ``primes`` not
-        provided).
-    """
+    n_primes selects the generated prime list unless primes is supplied.
+    max_power is the finite ladder depth; coupling is the configured ladder
+    coefficient. The graph is used by a separate selected Hamiltonian, whose
+    decoupled frequency-only spectrum reads back the assigned k*log(p) values."""
     if max_power < 1:
         raise ValueError("max_power must be >= 1")
 
@@ -282,31 +180,12 @@ def build_prime_ladder_hamiltonian(
     coupling: float = 0.0,
     primes: Sequence[int] | None = None,
 ) -> PrimeLadderHamiltonian:
-    r"""Instantiate the canonical TNFR Hamiltonian on the prime-ladder graph.
+    r"""Instantiate the selected InternalHamiltonian on a declared finite prime ladder.
 
-    This is the **operational closure** of gap G1: a self-adjoint
-    finite-dimensional operator whose decoupled (``coupling = 0``)
-    spectrum equals the prime-ladder spectrum and whose weighted
-    spectral trace reproduces :math:`Z_{\mathrm{vM}}(s)`.
-
-    Parameters
-    ----------
-    n_primes : int
-        Number of primes (ignored if ``primes`` provided).
-    max_power : int, default 8
-        REMESH echo cap.
-    coupling : float, default 0.0
-        Ladder coupling strength.  ``0.0`` gives the exact diagonal
-        spectrum; non-zero values produce perturbed spectra.
-    primes : sequence of int, optional
-        Explicit prime list.
-
-    Returns
-    -------
-    PrimeLadderHamiltonian
-        Bundle containing the graph, the Hamiltonian, the weight
-        operator, the reference spectrum, and the coupling value.
-    """
+    n_primes/primes specify arithmetic labels, max_power the ladder depth,
+    and the coefficient arguments the chosen finite matrix. The decoupled
+    frequency-only case reproduces assigned k*log(p) entries. No REMESH history,
+    autonomous graph formation or Riemann-zero Hamiltonian is certified."""
     G = build_prime_ladder_graph(
         n_primes,
         max_power=max_power,

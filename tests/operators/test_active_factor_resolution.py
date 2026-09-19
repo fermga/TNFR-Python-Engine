@@ -19,7 +19,12 @@ from tnfr.types import Glyph
 @pytest.mark.parametrize(
     ("glyph", "graph_data", "overrides", "inactive_key"),
     [
-        (Glyph.OZ, {"OZ_NOISE_MODE": True}, {"OZ_dnfr_factor": "unused"}, "OZ_dnfr_factor"),
+        (
+            Glyph.OZ,
+            {"OZ_NOISE_MODE": True},
+            {"OZ_dnfr_factor": "unused"},
+            "OZ_dnfr_factor",
+        ),
         (
             Glyph.ZHIR,
             {},
@@ -86,9 +91,7 @@ def _public_graph(factors) -> nx.Graph:
         (Transition(), {"NAV_jitter": -0.1}),
     ],
 )
-def test_public_operator_factor_preflight_precedes_subclass_metadata(
-    operator, factor
-):
+def test_public_operator_factor_preflight_precedes_subclass_metadata(operator, factor):
     graph = _public_graph(factor)
     node_before = deepcopy(graph.nodes[0])
     graph_before = deepcopy(graph.graph)

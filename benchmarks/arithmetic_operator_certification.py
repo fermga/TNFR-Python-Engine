@@ -45,8 +45,10 @@ def main() -> int:
         all_ok &= ok
         target = cert.canonical_operator if cert.certified else "REJECTED"
         print(f"  [{target:>9}] {cert.transformation}")
-        print(f"      channel={cert.state_channel}  scale={cert.scale}  "
-              f"grammar_valid={cert.grammar_valid}  verify={ok}")
+        print(
+            f"      channel={cert.state_channel}  scale={cert.scale}  "
+            f"grammar_valid={cert.grammar_valid}  verify={ok}"
+        )
         res = {k: round(v, 4) for k, v in cert.residuals.items()}
         print(f"      residuals={res}")
         if cert.rejected:
@@ -58,24 +60,26 @@ def main() -> int:
     manifest = ExperimentManifest(
         claim_id="NT-P08",
         git_sha="local",
-        versions={"python": platform.python_version(),
-                  "numpy": np.__version__},
+        versions={"python": platform.python_version(), "numpy": np.__version__},
         seed=None,
-        operator_sequence=tuple(
-            op for c in certified for op in c.grammar_word
-        ),
+        operator_sequence=tuple(op for c in certified for op in c.grammar_word),
         uses_known_factors=False,
         input_bits=input_bit_length(15),
-        controls=("grammar_word_validation", "contract_residuals",
-                  "negative_mapping_cases"),
+        controls=(
+            "grammar_word_validation",
+            "contract_residuals",
+            "negative_mapping_cases",
+        ),
         artifacts=(),
     )
     print()
     print(f"  certified: {[c.canonical_operator for c in certified]}")
     print(f"  rejected : {len(rejected)} candidates (boundary result)")
     print(f"  all certificates verify: {all_ok}")
-    print(f"  claim status : {ClaimStatus.MEASURED.value} (certificates) / "
-          f"NT-P08 open")
+    print(
+        f"  claim status : {ClaimStatus.MEASURED.value} (certificates) / "
+        f"NT-P08 open"
+    )
     print(f"  circularity  : {audit.verdict.value}")
     print(f"  manifest ops : {len(manifest.operator_sequence)} glyphs")
     return 0 if (all_ok and len(certified) == 2 and len(rejected) == 4) else 1

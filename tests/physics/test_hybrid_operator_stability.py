@@ -1,9 +1,9 @@
 """Rigorous affine-jump and hybrid pure-EPI stability certificates."""
 
-from dataclasses import replace
-from fractions import Fraction
 import math
 import sys
+from dataclasses import replace
+from fractions import Fraction
 
 import networkx as nx
 import numpy as np
@@ -114,9 +114,7 @@ def test_tolerance_cannot_promote_a_near_consensus_identity():
 def test_declared_bounds_are_metadata_and_never_change_internal_proof_bound():
     flow = _path_flow()
     internal = _local_reception(flow)
-    too_small = _local_reception(
-        flow, declared=Fraction(41, 32) - Fraction(1, 10**12)
-    )
+    too_small = _local_reception(flow, declared=Fraction(41, 32) - Fraction(1, 10**12))
     looser = _local_reception(flow, declared=2)
 
     assert too_small.declared_bound_within_tolerance
@@ -168,10 +166,7 @@ def test_identity_and_consensus_projection_have_exact_unit_quotient_gain():
     total = sum(weights, Fraction(0))
     projection = np.asarray(
         [
-            [
-                float(Fraction(i == j) - weights[j] / total)
-                for j in range(len(weights))
-            ]
+            [float(Fraction(i == j) - weights[j] / total) for j in range(len(weights))]
             for i in range(len(weights))
         ]
     )
@@ -235,9 +230,7 @@ def test_affine_proof_stamp_rejects_hostile_equality_without_dispatch():
 
 def test_exact_gain_survives_ill_conditioned_positive_metric():
     tiny = sys.float_info.min
-    result = certify_affine_epi_jump_gain(
-        "Reception", np.eye(2), [tiny, 1.0]
-    )
+    result = certify_affine_epi_jump_gain("Reception", np.eye(2), [tiny, 1.0])
 
     assert result.exact_quotient_energy_gain_upper_bound == 1
     assert result.energy_gain_bound_for_composition == 1.0
@@ -365,9 +358,7 @@ def test_composition_gain_quantization_has_exact_relative_inflation_bound():
     precise_product = math.prod(precise_gains, start=Fraction(1))
     composition_product = math.prod(composition_factors, start=Fraction(1))
     assert precise_product <= composition_product
-    assert composition_product < precise_product * relative_limit ** len(
-        precise_gains
-    )
+    assert composition_product < precise_product * relative_limit ** len(precise_gains)
 
 
 def test_hybrid_log_composition_bounds_transcendental_input_complexity(
@@ -377,13 +368,14 @@ def test_hybrid_log_composition_bounds_transcendental_input_complexity(
     jump = _local_reception(flow)
     precise_gain = jump.exact_quotient_energy_gain_upper_bound
     binary64_bits = sys.float_info.mant_dig
-    assert max(
-        precise_gain.numerator.bit_length(),
-        precise_gain.denominator.bit_length(),
-    ) > binary64_bits
-    composition_factor = hybrid_stability._bounded_composition_gain_factor(
-        precise_gain
+    assert (
+        max(
+            precise_gain.numerator.bit_length(),
+            precise_gain.denominator.bit_length(),
+        )
+        > binary64_bits
     )
+    composition_factor = hybrid_stability._bounded_composition_gain_factor(precise_gain)
     assert composition_factor >= precise_gain
 
     observed_log_bit_lengths = []
@@ -392,9 +384,7 @@ def test_hybrid_log_composition_bounds_transcendental_input_complexity(
     exact_exp_series = exact_time.exp_unit_bounds
 
     def bounded_log_series(value):
-        bit_length = max(
-            value.numerator.bit_length(), value.denominator.bit_length()
-        )
+        bit_length = max(value.numerator.bit_length(), value.denominator.bit_length())
         observed_log_bit_lengths.append(bit_length)
         assert bit_length <= hybrid_stability._COMPOSITION_GAIN_SIGNIFICAND_BITS
         return exact_log_series(value)
@@ -480,9 +470,7 @@ def test_hybrid_rejects_reordered_nodes_and_near_but_distinct_metric():
     with pytest.raises(ValueError, match="node order"):
         compose_hybrid_epi_stability(flow, [reordered], [0.0, 1.0])
     with pytest.raises(ValueError, match="not exactly proportional"):
-        compose_hybrid_epi_stability(
-            flow, [near], [0.0, 1.0], tolerance=0.5
-        )
+        compose_hybrid_epi_stability(flow, [near], [0.0, 1.0], tolerance=0.5)
 
 
 def test_infinite_gain_jump_prevents_hybrid_certificate():
@@ -536,9 +524,7 @@ def test_near_zero_log_budget_is_decided_by_the_exact_log_enclosure():
 
 def test_extreme_finite_coefficients_do_not_produce_an_unsafe_finite_bound():
     huge = np.finfo(float).max
-    result = certify_affine_epi_jump_gain(
-        "Expansion", huge * np.eye(2), [1.0, 1.0]
-    )
+    result = certify_affine_epi_jump_gain("Expansion", huge * np.eye(2), [1.0, 1.0])
 
     assert result.exact_consensus_subspace_preservation
     assert result.exact_quotient_energy_gain_upper_bound == (
@@ -652,9 +638,7 @@ def test_invalid_switching_flow_cannot_claim_initial_mean_preservation():
     cycle = _set_state(nx.cycle_graph(3), [1.0, 0.0, -1.0], [1.0] * 3)
     flow = verify_switching_diffusion_stability([path, cycle])
 
-    result = compose_hybrid_epi_stability(
-        flow, [], [1.0], repeat_schedule=True
-    )
+    result = compose_hybrid_epi_stability(flow, [], [1.0], repeat_schedule=True)
 
     assert not result.flow_hypotheses_pass
     assert not result.initial_weighted_mean_preserved

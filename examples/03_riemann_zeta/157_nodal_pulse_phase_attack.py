@@ -99,8 +99,7 @@ def _pulse_with_prime_logs(t: float, n_terms: int, prime_logs: list[float]) -> c
 def _generalized_pulse(sigma: float, t: float, n_terms: int) -> complex:
     """Truncated Dirichlet partial sum at s = sigma + i t (off-axis probe)."""
     return sum(
-        n ** (-sigma) * cmath.exp(-1j * t * math.log(n))
-        for n in range(1, n_terms + 1)
+        n ** (-sigma) * cmath.exp(-1j * t * math.log(n)) for n in range(1, n_terms + 1)
     )
 
 
@@ -128,7 +127,9 @@ def demo_m2_phase_counts_zeros() -> None:
     print("\n" + "=" * 70)
     print("  M2  N(T) = theta(T)/pi + 1 + S(T) counts the zeros")
     print("=" * 70)
-    print(f"\n  {'T':>6}  {'theta/pi+1':>11}  {'S(T)':>7}  {'N_est':>7}  {'#zeros<T':>9}")
+    print(
+        f"\n  {'T':>6}  {'theta/pi+1':>11}  {'S(T)':>7}  {'N_est':>7}  {'#zeros<T':>9}"
+    )
     print("  " + "-" * 46)
     ok = True
     for t in (15.0, 22.0, 26.0, 31.0, 34.0, 38.0):
@@ -154,8 +155,12 @@ def demo_m3_pulse_accesses_arithmetic() -> None:
     p_true = _pulse_with_prime_logs(t, n, true_logs)
     p_swap = _pulse_with_prime_logs(t, n, swapped)
     print(f"\n  at the first zero T = {t:.4f}:")
-    print(f"    true arithmetic : |P|={abs(p_true):.4f}  arg={cmath.phase(p_true):+.4f}")
-    print(f"    log2<->log3 swap: |P|={abs(p_swap):.4f}  arg={cmath.phase(p_swap):+.4f}")
+    print(
+        f"    true arithmetic : |P|={abs(p_true):.4f}  arg={cmath.phase(p_true):+.4f}"
+    )
+    print(
+        f"    log2<->log3 swap: |P|={abs(p_swap):.4f}  arg={cmath.phase(p_swap):+.4f}"
+    )
     print("\n  The self-adjoint spectrum (eliminated combinatorial operator) was")
     print("  S_n-invariant -> blind to this. The pulse is not.")
     assert abs(p_true - p_swap) > 1e-3
@@ -173,7 +178,9 @@ def demo_m4_critical_line_is_coherence_axis() -> None:
         vals = []
         for t in (18.0, 24.0, 30.0):
             n = _n_terms(t)
-            z = cmath.exp(1j * riemann_siegel_theta(t)) * _generalized_pulse(sigma, t, n)
+            z = cmath.exp(1j * riemann_siegel_theta(t)) * _generalized_pulse(
+                sigma, t, n
+            )
             vals.append(abs(z.imag) / (abs(z) + 1e-12))
         scores[sigma] = sum(vals) / len(vals)
         print(f"  {sigma:7.2f}  {scores[sigma]:16.4f}")

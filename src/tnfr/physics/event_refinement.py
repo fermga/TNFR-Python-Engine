@@ -31,6 +31,8 @@ from ..operators.network_stage import MutationStageDecisionObservation
 from ..types import Glyph
 from ..utils._structural_signature import (
     binary64_vectors_are_identical as _binary64_vectors_are_identical,
+)
+from ..utils._structural_signature import (
     proof_stamps_are_identical,
     structural_proof_signature,
 )
@@ -61,9 +63,7 @@ __all__ = (
 
 _OBSERVATION_PROOF_VERSION = "event_local_zhir_prejump_observation_v4"
 _COMPARISON_PROOF_VERSION = "event_local_zhir_held_pressure_comparison_v5"
-_PHYSICAL_OBSERVATION_PROOF_VERSION = (
-    "event_local_zhir_physical_prejump_observation_v2"
-)
+_PHYSICAL_OBSERVATION_PROOF_VERSION = "event_local_zhir_physical_prejump_observation_v2"
 _EXECUTED_PHYSICAL_OBSERVATION_PROOF_VERSION = (
     "executed_event_local_zhir_physical_prejump_observation_v1"
 )
@@ -145,9 +145,7 @@ def _observation_stamp(value: Any) -> tuple[Any, ...]:
         tuple(
             (
                 item.name,
-                structural_proof_signature(
-                    object.__getattribute__(value, item.name)
-                ),
+                structural_proof_signature(object.__getattribute__(value, item.name)),
             )
             for item in fields(EventLocalZHIRPrejumpObservation)
             if item.name != "_proof_stamp"
@@ -283,10 +281,9 @@ def observe_event_local_zhir_prejump(
         and event.exact_event_time == interval.exact_end_time
         and event.event_offset == interval.end_offset
     )
-    binary64_jump_placement = (
-        structural_proof_signature(event.event_time)
-        == structural_proof_signature(interval.end_time)
-    )
+    binary64_jump_placement = structural_proof_signature(
+        event.event_time
+    ) == structural_proof_signature(interval.end_time)
     if not exact_jump_placement or not binary64_jump_placement:
         raise ValueError("scheduled ZHIR is not immediately after the flow endpoint")
 
@@ -399,9 +396,7 @@ def _comparison_stamp(value: Any) -> tuple[Any, ...]:
         tuple(
             (
                 item.name,
-                structural_proof_signature(
-                    object.__getattribute__(value, item.name)
-                ),
+                structural_proof_signature(object.__getattribute__(value, item.name)),
             )
             for item in fields(EventLocalZHIRHeldPressureComparison)
             if item.name != "_proof_stamp"
@@ -663,12 +658,8 @@ def compare_event_local_zhir_held_pressure_subdivision(
             candidate.exact_rational_physical_secants
         ),
         exact_rational_physical_secant_differences=rational_secant_differences,
-        baseline_binary64_observed_gate_rates=(
-            baseline.binary64_observed_gate_rates
-        ),
-        candidate_binary64_observed_gate_rates=(
-            candidate.binary64_observed_gate_rates
-        ),
+        baseline_binary64_observed_gate_rates=(baseline.binary64_observed_gate_rates),
+        candidate_binary64_observed_gate_rates=(candidate.binary64_observed_gate_rates),
         baseline_exact_binary64_observed_gate_rates=(
             baseline.exact_binary64_observed_gate_rates
         ),
@@ -850,8 +841,7 @@ class EventLocalZHIRPhysicalPrejumpObservation:
         if not proof_stamps_are_identical(observed, expected):
             return False
         return bool(
-            type(self.partition_evidence)
-            is ExecutedPressureRefreshedFlowPartition
+            type(self.partition_evidence) is ExecutedPressureRefreshedFlowPartition
             and self.partition_evidence._proof_fields_are_intact()
         )
 
@@ -949,11 +939,10 @@ def observe_event_local_zhir_physical_prejump(
     terminal_left = last_certificate.left
     if not initial.nodes:
         raise ValueError("physical pre-ZHIR partition must contain at least one node")
-    if (
-        structural_proof_signature(initial.nodes)
-        != structural_proof_signature(terminal.nodes)
-        or structural_proof_signature(initial.nodes)
-        != structural_proof_signature(terminal_left.nodes)
+    if structural_proof_signature(initial.nodes) != structural_proof_signature(
+        terminal.nodes
+    ) or structural_proof_signature(initial.nodes) != structural_proof_signature(
+        terminal_left.nodes
     ):
         raise ValueError("physical pre-ZHIR partition changed ordered node support")
 
@@ -1117,8 +1106,7 @@ def observe_event_local_zhir_physical_prejump(
             certificate.capacity_active for certificate in trigger_certificates
         ),
         terminal_observed_strict_gate_decisions=tuple(
-            certificate.threshold_gate_satisfied
-            for certificate in trigger_certificates
+            certificate.threshold_gate_satisfied for certificate in trigger_certificates
         ),
         whole_parent_sample_interval=whole_interval,
         exact_whole_parent_sample_interval=exact_whole_interval,
@@ -1228,8 +1216,7 @@ def _single_partition_match(
         )
     if len(matches) != 1:
         raise ValueError(
-            "ZHIR event has duplicate immediately preceding physical flow "
-            "partitions"
+            "ZHIR event has duplicate immediately preceding physical flow " "partitions"
         )
     return matches[0]
 
@@ -1240,11 +1227,7 @@ def _single_stage_match(
 ) -> ExecutedGlyphStage:
     """Select exactly one executor-owned stage for the requested event."""
 
-    matches = tuple(
-        value
-        for value in values
-        if value.event.event_index == event_index
-    )
+    matches = tuple(value for value in values if value.event.event_index == event_index)
     if not matches:
         raise ValueError(f"execution has no glyph stage for event_index={event_index}")
     if len(matches) != 1:
@@ -1340,9 +1323,7 @@ def _executed_physical_observation_links_are_intact(value: Any) -> bool:
         stage = object.__getattribute__(value, "glyph_stage")
         physical = object.__getattribute__(value, "physical_observation")
         nodes = object.__getattribute__(value, "nodes")
-        decisions = object.__getattribute__(
-            value, "mutation_decision_observations"
-        )
+        decisions = object.__getattribute__(value, "mutation_decision_observations")
         certificates = object.__getattribute__(value, "trigger_certificates")
         if (
             type(execution) is not OperatorEventExecutionResult
@@ -1397,8 +1378,7 @@ def _executed_physical_observation_links_are_intact(value: Any) -> bool:
             or physical.parent_interval_index != event_index
             or stage.pre_interval_index != event_index
             or not partition.segment_flow_evidence
-            or stage.pre_flow_evidence
-            is not partition.segment_flow_evidence[-1]
+            or stage.pre_flow_evidence is not partition.segment_flow_evidence[-1]
             or stage.pre_flow_endpoint_continuous is not True
             or len(nodes) == 0
             or len(decisions) != len(nodes)
@@ -1460,16 +1440,12 @@ class ExecutedEventLocalZHIRPhysicalPrejumpObservation:
     executed_event: ExecutedOperatorEvent = field(repr=False)
     partition_evidence: ExecutedPressureRefreshedFlowPartition = field(repr=False)
     glyph_stage: ExecutedGlyphStage = field(repr=False)
-    physical_observation: EventLocalZHIRPhysicalPrejumpObservation = field(
-        repr=False
-    )
+    physical_observation: EventLocalZHIRPhysicalPrejumpObservation = field(repr=False)
     nodes: tuple[Any, ...]
-    mutation_decision_observations: tuple[
-        MutationStageDecisionObservation, ...
-    ] = field(repr=False)
-    trigger_certificates: tuple[MutationTriggerCertificate, ...] = field(
-        repr=False
+    mutation_decision_observations: tuple[MutationStageDecisionObservation, ...] = (
+        field(repr=False)
     )
+    trigger_certificates: tuple[MutationTriggerCertificate, ...] = field(repr=False)
     _proof_stamp: tuple[Any, ...] = field(default=(), repr=False, compare=False)
 
     def _proof_fields_are_intact(self) -> bool:
@@ -1542,9 +1518,7 @@ def observe_executed_event_local_zhir_physical_prejump(
     """Bind terminal physical ZHIR evidence to one actual schedule execution."""
 
     if type(execution_result) is not OperatorEventExecutionResult:
-        raise TypeError(
-            "execution_result must be an OperatorEventExecutionResult"
-        )
+        raise TypeError("execution_result must be an OperatorEventExecutionResult")
     if type(event_index) is not int:
         raise TypeError("event_index must be an int")
     if event_index < 0:
@@ -1583,9 +1557,7 @@ def observe_executed_event_local_zhir_physical_prejump(
     decisions = stage.mutation_decision_observations
     if not decisions:
         raise ValueError("ZHIR stage lacks Mutation decision observations")
-    trigger_certificates = tuple(
-        decision.trigger_certificate for decision in decisions
-    )
+    trigger_certificates = tuple(decision.trigger_certificate for decision in decisions)
     xi = trigger_certificates[0].xi
     physical = observe_event_local_zhir_physical_prejump(
         partition,
@@ -1701,12 +1673,9 @@ def _modal_comparison_facts(
     partition_evidence = physical.partition_evidence
     candidate_observations = partition_evidence.modal_observations
     if not partition_evidence.all_segment_modal_diagnostics_applicable:
-        return _modal_abstention(
-            "physical_segment_modal_diagnostics_unavailable"
-        )
+        return _modal_abstention("physical_segment_modal_diagnostics_unavailable")
     candidate_decisions = tuple(
-        bool(observation.is_euler_stable)
-        for observation in candidate_observations
+        bool(observation.is_euler_stable) for observation in candidate_observations
     )
     if not _physical_segments_share_baseline_generator(baseline, physical):
         return _modal_abstention(
@@ -1884,9 +1853,7 @@ class EventLocalZHIRPhysicalRefinementComparison:
     """
 
     baseline_observation: EventLocalZHIRPrejumpObservation = field(repr=False)
-    physical_observation: EventLocalZHIRPhysicalPrejumpObservation = field(
-        repr=False
-    )
+    physical_observation: EventLocalZHIRPhysicalPrejumpObservation = field(repr=False)
     comparison_kind: str
     event_identity: tuple[int, int, int, str, str]
     nodes: tuple[Any, ...]
@@ -1945,8 +1912,7 @@ class EventLocalZHIRPhysicalRefinementComparison:
             return False
         try:
             return bool(
-                type(self.baseline_observation)
-                is EventLocalZHIRPrejumpObservation
+                type(self.baseline_observation) is EventLocalZHIRPrejumpObservation
                 and self.baseline_observation._proof_fields_are_intact()
                 and type(self.physical_observation)
                 is EventLocalZHIRPhysicalPrejumpObservation
@@ -2040,9 +2006,7 @@ def _require_physical_comparison_inputs(
     if not baseline._proof_fields_are_intact():
         raise ValueError("baseline observation is tampered or stale")
     if type(physical) is not EventLocalZHIRPhysicalPrejumpObservation:
-        raise TypeError(
-            "physical must be an EventLocalZHIRPhysicalPrejumpObservation"
-        )
+        raise TypeError("physical must be an EventLocalZHIRPhysicalPrejumpObservation")
     if not physical._proof_fields_are_intact():
         raise ValueError("physical observation is tampered or stale")
 
@@ -2054,8 +2018,7 @@ def _require_physical_comparison_inputs(
         ),
         (
             "exact_interval_start_time",
-            baseline.exact_interval_start_time
-            == physical.exact_interval_start_time,
+            baseline.exact_interval_start_time == physical.exact_interval_start_time,
         ),
         (
             "exact_interval_end_time",
@@ -2145,8 +2108,7 @@ def compare_event_local_zhir_physical_refinement(
     )
     whole_bounds = tuple(abs(value) for value in whole_differences)
     margins = tuple(
-        rate - baseline.exact_xi
-        for rate in baseline.exact_binary64_observed_gate_rates
+        rate - baseline.exact_xi for rate in baseline.exact_binary64_observed_gate_rates
     )
     distances = tuple(abs(value) for value in margins)
     whole_agreements = tuple(
@@ -2194,9 +2156,7 @@ def compare_event_local_zhir_physical_refinement(
         and structural_proof_signature(baseline.binary64_sample_interval)
         == structural_proof_signature(physical.terminal_sample_interval)
     )
-    actual_claim = bool(
-        windows_equal and terminal_agreement and terminal_separation
-    )
+    actual_claim = bool(windows_equal and terminal_agreement and terminal_separation)
 
     modal = _modal_comparison_facts(baseline, physical)
     comparison = EventLocalZHIRPhysicalRefinementComparison(
@@ -2270,9 +2230,7 @@ def compare_event_local_zhir_physical_refinement(
         physical_refined_composite_binary64_maximum_modal_factor=(
             modal.refined_composite_maximum_factor
         ),
-        physical_refined_composite_modal_stable=(
-            modal.refined_composite_stable
-        ),
+        physical_refined_composite_modal_stable=(modal.refined_composite_stable),
         modal_stability_decisions_agree=modal.stability_decisions_agree,
     )
     return replace(

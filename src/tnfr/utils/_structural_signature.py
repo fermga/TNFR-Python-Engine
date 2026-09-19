@@ -219,9 +219,7 @@ def _slot_state(
                         identity_sensitive=identity_sensitive,
                     ),
                 )
-            state.append(
-                (_class_identity(owner), declared, slot_value)
-            )
+            state.append((_class_identity(owner), declared, slot_value))
     return tuple(state)
 
 
@@ -311,9 +309,7 @@ def _canonical_bytes(value: Any) -> bytes:
 
     if type(value) is tuple:
         encoded = tuple(_canonical_bytes(item) for item in value)
-        return b"t" + b"".join(
-            len(item).to_bytes(8, "big") + item for item in encoded
-        )
+        return b"t" + b"".join(len(item).to_bytes(8, "big") + item for item in encoded)
     if type(value) is bool:
         return b"b1" if value else b"b0"
     if type(value) is int:
@@ -1040,9 +1036,7 @@ def _freeze(
             opaque_ids=opaque_ids,
             identity_sensitive=identity_sensitive,
         )
-        mapped_by_identity = {
-            id(key): mapped for key, mapped in pairs
-        }
+        mapped_by_identity = {id(key): mapped for key, mapped in pairs}
         occurrences: dict[bytes, int] = {}
         for canonical, _identity, _key, _token in ordered_keys:
             occurrences[canonical] = occurrences.get(canonical, 0) + 1
@@ -1162,17 +1156,19 @@ def _freeze(
             "object-state",
             *_type_identity(value),
             identity,
-            ("no-namespace",)
-            if namespace is None
-            else (
-                "namespace",
-                id(namespace),
-                _freeze(
-                    namespace,
-                    seen=seen,
-                    opaque_ids=opaque_ids,
-                    identity_sensitive=identity_sensitive,
-                ),
+            (
+                ("no-namespace",)
+                if namespace is None
+                else (
+                    "namespace",
+                    id(namespace),
+                    _freeze(
+                        namespace,
+                        seen=seen,
+                        opaque_ids=opaque_ids,
+                        identity_sensitive=identity_sensitive,
+                    ),
+                )
             ),
             slots,
         )
@@ -1273,11 +1269,9 @@ def proof_stamps_are_identical(observed: Any, expected: Any) -> bool:
                 if struct.pack(">d", left) != struct.pack(">d", right):
                     return False
             elif kind is complex:
-                if (
-                    struct.pack(">d", left.real) != struct.pack(">d", right.real)
-                    or struct.pack(">d", left.imag)
-                    != struct.pack(">d", right.imag)
-                ):
+                if struct.pack(">d", left.real) != struct.pack(
+                    ">d", right.real
+                ) or struct.pack(">d", left.imag) != struct.pack(">d", right.imag):
                     return False
             elif kind is Fraction:
                 if (

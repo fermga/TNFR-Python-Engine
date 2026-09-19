@@ -872,9 +872,7 @@ def analyze_operator_policy_context(
     spectral = analyze_spectral_gap(G)
     multiplier = bound.policy_multiplier
     policy_half_steps = (
-        math.log(0.5) / math.log(multiplier)
-        if 0.0 < multiplier < 1.0
-        else float("inf")
+        math.log(0.5) / math.log(multiplier) if 0.0 < multiplier < 1.0 else float("inf")
     )
 
     return LyapunovSpectralSummary(

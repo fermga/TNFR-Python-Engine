@@ -864,7 +864,9 @@ class TNFRValidator:
                     "expected_value": (
                         str(v.expected_value) if v.expected_value is not None else None
                     ),
-                    "actual_value": str(v.actual_value) if v.actual_value is not None else None,
+                    "actual_value": (
+                        str(v.actual_value) if v.actual_value is not None else None
+                    ),
                     "suggestion": v.suggestion,
                 }
             )

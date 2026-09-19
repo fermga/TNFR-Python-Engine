@@ -76,8 +76,12 @@ def main() -> None:
     )
     print("  - INDETERMINATE               : in between")
     print("  - CONTINUOUS_KERNEL_NECESSARY : legacy threshold-bin label only")
-    print("                                  -> flags a continuous-kernel hypothesis for study;")
-    print("                                     neither bin proves necessity or sufficiency")
+    print(
+        "                                  -> flags a continuous-kernel hypothesis for study;"
+    )
+    print(
+        "                                     neither bin proves necessity or sufficiency"
+    )
     print()
     print("Verdicts at the two resolutions:")
     print(f"  res 1 (24/16/4-8/8):  {cert1.verdict}")

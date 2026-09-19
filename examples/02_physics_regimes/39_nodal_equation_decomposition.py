@@ -550,9 +550,7 @@ def experiment_tetrad_response():
             vals = [r[key] for r in responses]
             if float(np.ptp(vals)) > 1e-10:
                 corr = abs(np.corrcoef(dnfrs, vals)[0, 1])
-                print(
-                    f"\n    {field_name} finite-scan |correlation| = {corr:.4f}"
-                )
+                print(f"\n    {field_name} finite-scan |correlation| = {corr:.4f}")
             else:
                 print(
                     f"\n    {field_name} is constant in this scan; "

@@ -22,28 +22,34 @@ import networkx as nx  # noqa: E402
 import numpy as np  # noqa: E402
 
 from benchmarks.thol_birth_transport import (  # noqa: E402
-    _admitted_apply, prepare_birth_transport_support,
+    _admitted_apply,
+    prepare_birth_transport_support,
 )
 from benchmarks.thol_pressure_feedback import _payload, _state  # noqa: E402
 from tnfr.config import inject_defaults  # noqa: E402
 from tnfr.dynamics.dnfr import default_compute_delta_nfr  # noqa: E402
 from tnfr.operators import (  # noqa: E402
-    build_operator_event_schedule, execute_operator_event_schedule,
+    build_operator_event_schedule,
+    execute_operator_event_schedule,
 )
 from tnfr.operators.definitions import Silence  # noqa: E402
 from tnfr.physics.forced_support import (  # noqa: E402
-    derive_forced_support_balance, observe_forced_support_state,
+    derive_forced_support_balance,
+    observe_forced_support_state,
     observe_forced_support_step,
 )
 from tnfr.physics.forcing_realization import capture_non_epi_forcing  # noqa: E402
 from tnfr.research.claims import ClaimStatus  # noqa: E402
 from tnfr.research.core_manifests import (  # noqa: E402
-    CoreExperimentManifest, current_git_source_provenance,
+    CoreExperimentManifest,
+    current_git_source_provenance,
 )
 
 CASES = ("causal_attached", "prepared_compatible", "prepared_clipping")
 SEGMENT_COUNTS = {
-    "causal_attached": 24, "prepared_compatible": 12, "prepared_clipping": 2,
+    "causal_attached": 24,
+    "prepared_compatible": 12,
+    "prepared_clipping": 2,
 }
 STEP = 0.25
 
@@ -58,14 +64,21 @@ def _prepared_control(source, *, clipping):
             EPI=3.99 if clipping else captured["epi"][index],
             nu_f=captured["capacity"][index] if clipping else 1.0,
             theta=captured["phase"][index] if clipping else 0.0,
-            delta_nfr=0.0, glyph_history=[],
+            delta_nfr=0.0,
+            glyph_history=[],
         )
     graph.add_edges_from(captured["edges"])
     graph.graph.update(
-        _t=0.0, RANDOM_SEED=17, GLYPH_HYSTERESIS_WINDOW=64,
-        _gamma_spec={"type": "none"}, GAMMA={"type": "none"},
-        use_extended_dynamics=False, DT_MIN=0.0,
-        EPI_MIN=-4.0, EPI_MAX=4.0, CLIP_MODE="hard",
+        _t=0.0,
+        RANDOM_SEED=17,
+        GLYPH_HYSTERESIS_WINDOW=64,
+        _gamma_spec={"type": "none"},
+        GAMMA={"type": "none"},
+        use_extended_dynamics=False,
+        DT_MIN=0.0,
+        EPI_MIN=-4.0,
+        EPI_MAX=4.0,
+        CLIP_MODE="hard",
         compute_delta_nfr=default_compute_delta_nfr,
     )
     inject_defaults(graph)
@@ -112,7 +125,9 @@ def prepare_forced_support_endpoint(case="causal_attached"):
     initial_graph = _state(graph)
     captured = capture_non_epi_forcing(graph)
     reference = derive_forced_support_balance(
-        captured.snapshot, epi_weight=captured.epi_weight, forcing=captured.forcing,
+        captured.snapshot,
+        epi_weight=captured.epi_weight,
+        forcing=captured.forcing,
     )
     initial_state = observe_forced_support_state(reference, captured.snapshot)
     current = captured
@@ -120,10 +135,15 @@ def prepare_forced_support_endpoint(case="causal_attached"):
     for _ in range(SEGMENT_COUNTS[case]):
         before = _state(graph)
         schedule = build_operator_event_schedule(
-            (), start_time=before["time"], flow_durations=(STEP,),
+            (),
+            start_time=before["time"],
+            flow_durations=(STEP,),
         )
         execution = execute_operator_event_schedule(
-            graph, schedule, method="euler", include_flow_certificates=True,
+            graph,
+            schedule,
+            method="euler",
+            include_flow_certificates=True,
         )
         evidence = execution.flow_interval_evidence[0]
         raw = _state(graph)
@@ -133,29 +153,40 @@ def prepare_forced_support_endpoint(case="causal_attached"):
         if not all(frozen.values()):
             raise RuntimeError("a declared frozen input changed during the campaign")
         observation = observe_forced_support_step(
-            reference, current.snapshot, following.snapshot, dt=STEP,
+            reference,
+            current.snapshot,
+            following.snapshot,
+            dt=STEP,
         )
         step_payload = asdict(observation)
         # One common model is serialized at case level, not once per segment.
         step_payload.pop("reference")
-        segments.append({
-            "before": before, "raw_after_integrator": raw,
-            "after_refresh": _state(graph), "duration": STEP,
-            "method": evidence.resolved_method,
-            "clipping_applied": evidence.clipping_applied,
-            "frozen_input_checks": frozen,
-            "forcing_capture": asdict(following),
-            "exact_step_observation": step_payload,
-        })
+        segments.append(
+            {
+                "before": before,
+                "raw_after_integrator": raw,
+                "after_refresh": _state(graph),
+                "duration": STEP,
+                "method": evidence.resolved_method,
+                "clipping_applied": evidence.clipping_applied,
+                "frozen_input_checks": frozen,
+                "forcing_capture": asdict(following),
+                "exact_step_observation": step_payload,
+            }
+        )
         current = following
     final_graph = _state(graph)
     final_state = observe_forced_support_state(reference, current.snapshot)
     return graph, {
-        "case": case, "source_preparation": preparation,
+        "case": case,
+        "source_preparation": preparation,
         "preparation_scope": preparation_scope,
-        "initial": initial_graph, "initial_forcing_capture": asdict(captured),
-        "reference": asdict(reference), "initial_relative_state": asdict(initial_state),
-        "segments": segments, "final": final_graph,
+        "initial": initial_graph,
+        "initial_forcing_capture": asdict(captured),
+        "reference": asdict(reference),
+        "initial_relative_state": asdict(initial_state),
+        "segments": segments,
+        "final": final_graph,
         "final_relative_state": asdict(final_state),
         "physical_elapsed_time": final_graph["time"] - initial_graph["time"],
         "scope": (
@@ -185,41 +216,52 @@ def run_forced_support_case(case):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--output", type=Path,
+        "--output",
+        type=Path,
         default=ROOT / "artifacts/research/forced_support_balance.json",
     )
     args = parser.parse_args()
     scope = (
-        "src/tnfr", "benchmarks/capacity_localization.py",
-        "benchmarks/thol_pressure_feedback.py", "benchmarks/thol_birth_transport.py",
+        "src/tnfr",
+        "benchmarks/capacity_localization.py",
+        "benchmarks/thol_pressure_feedback.py",
+        "benchmarks/thol_birth_transport.py",
         "benchmarks/forced_support_balance.py",
     )
     provenance = current_git_source_provenance(ROOT, scope)
     sha, dirty, digest = provenance
     manifest = CoreExperimentManifest(
         claim_id="O3.a-frozen-born-support-profile-and-mean-drift",
-        git_sha=sha, source_dirty=dirty, dirty_source_hash=digest,
+        git_sha=sha,
+        source_dirty=dirty,
+        dirty_source_hash=digest,
         versions={
             "python": platform.python_version(),
-            "networkx": nx.__version__, "numpy": np.__version__,
+            "networkx": nx.__version__,
+            "numpy": np.__version__,
         },
         graph_construction=(
             "Actual attached C8+child; separate prepared support controls"
         ),
         capacity_specification="Held actual positive capacity; unit-capacity control",
         solver="Shared nodal Euler through existing event intervals; explicit refresh",
-        timestep=STEP, seed=17, result_status=ClaimStatus.MEASURED,
+        timestep=STEP,
+        seed=17,
+        result_status=ClaimStatus.MEASURED,
         operator_sequence=("actual IL OZ THOL UM", "held-input flow", "terminal SHA"),
         telemetry=(
-            "non-EPI forcing realization", "relative profile and metric mean",
-            "pressure and Euler defects", "hard clipping and energy balances",
+            "non-EPI forcing realization",
+            "relative profile and metric mean",
+            "pressure and Euler defects",
+            "hard clipping and energy balances",
         ),
         controls=("prepared zero forcing", "prepared upper-bound clipping"),
         artifacts=(str(args.output),),
     )
     manifest.validate_for_admission()
     report = {
-        "manifest": manifest.to_dict(), "source_scope": scope,
+        "manifest": manifest.to_dict(),
+        "source_scope": scope,
         "cases": [run_forced_support_case(case) for case in CASES],
         "experimental_status": "No empirical correspondence tested",
     }

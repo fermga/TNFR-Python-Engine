@@ -13,15 +13,14 @@ identify an operator gain, certify a runtime integration, or adapt U2/U4.
 
 from __future__ import annotations
 
-from fractions import Fraction
 import json
+from fractions import Fraction
 from typing import Any
 
 import networkx as nx
 
 from tnfr.operators import build_operator_event_schedule
 from tnfr.physics import diagnose_continuous_relaxation_duration
-
 
 OPERATOR_WORD = ("emission", "silence")
 START_TIME = float(2**52)
@@ -129,12 +128,8 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
             "certified_rate_display": (
                 relaxation.certified_energy_decay_rate_lower_bound
             ),
-            "spectral_rate_estimate": (
-                relaxation.spectral_energy_decay_rate_estimate
-            ),
-            "spectral_estimate_provenance": (
-                relaxation.spectral_estimate_provenance
-            ),
+            "spectral_rate_estimate": (relaxation.spectral_energy_decay_rate_estimate),
+            "spectral_estimate_provenance": (relaxation.spectral_estimate_provenance),
             "spectral_estimate_is_proof_input": (
                 relaxation.spectral_estimate_is_proof_input
             ),
@@ -145,9 +140,7 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
                 relaxation.exact_required_flow_duration_upper_bound
             ),
             "required_duration_display": relaxation.required_flow_duration,
-            "required_duration_estimate": (
-                relaxation.required_flow_duration_estimate
-            ),
+            "required_duration_estimate": (relaxation.required_flow_duration_estimate),
             "certified_decay_factor_upper_bound": (
                 relaxation.certified_decay_factor_upper_bound
             ),
@@ -158,9 +151,7 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
             "operator_events_executed": False,
             "runtime_integration_certified": False,
             "adaptive_u2_u4_policy": False,
-            "flow_model": (
-                "frozen connected symmetric positive-capacity pure-EPI"
-            ),
+            "flow_model": ("frozen connected symmetric positive-capacity pure-EPI"),
         },
     }
 

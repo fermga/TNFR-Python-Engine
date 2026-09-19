@@ -64,3 +64,8 @@ global-exclude *.pyo
 global-exclude __pycache__
 global-exclude .pytest_cache
 global-exclude *.egg-info
+# Distribution metadata must survive the broad development-file exclusions above.
+include README.md
+include LICENSE.md
+include CITATION.cff
+include CHANGELOG.md

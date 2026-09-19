@@ -106,7 +106,9 @@ def test_summary_structure_is_valid(sample_network):
 
 
 def test_sdk_wrapper_accepts_fractal_partition_manifests(sample_network, monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[2] / "factorization-lab"))
+    monkeypatch.syspath_prepend(
+        str(Path(__file__).resolve().parents[2] / "factorization-lab")
+    )
     """Test that SDK wrapper can process fractal partition manifests."""
     partitioner = FractalPartitioner(max_partition_size=10)
 
@@ -134,7 +136,6 @@ def test_sdk_wrapper_accepts_fractal_partition_manifests(sample_network, monkeyp
         assert opt_result["promotable"] == {}
         for entry in runner["partition_results"]:
             assert entry["telemetry_deltas"]["delta_c"] == 0.0
-
 
 
 def test_manifest_telemetry_includes_coherence(sample_network):

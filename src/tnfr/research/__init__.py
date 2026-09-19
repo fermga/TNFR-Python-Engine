@@ -19,11 +19,7 @@ from .claims import (
 )
 from .core_manifests import CoreExperimentManifest, current_git_source_provenance
 from .evidence_sidecar import EvidenceAdmissionError, EvidenceSidecar
-from .manifests import (
-    ExperimentManifest,
-    ManifestValidationError,
-    input_bit_length,
-)
+from .manifests import ExperimentManifest, ManifestValidationError, input_bit_length
 
 __all__ = [
     "Claim",

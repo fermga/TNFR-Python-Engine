@@ -111,9 +111,7 @@ def _two_certified_cycles(
 def test_two_committed_cycles_bind_every_recorded_exact_boundary() -> None:
     left, right = _two_certified_cycles()
 
-    sequence = compose_event_remesh_cycle_observations(
-        cycle for cycle in (left, right)
-    )
+    sequence = compose_event_remesh_cycle_observations(cycle for cycle in (left, right))
 
     assert isinstance(sequence, ObservedEventRemeshCycleSequence)
     assert sequence.cycles == (left, right)
@@ -209,13 +207,9 @@ def test_changed_remesh_requires_completed_refresh_before_next_cycle() -> None:
     sequence = compose_event_remesh_cycle_observations((left, right))
     boundary = sequence.boundaries[0]
 
-    assert boundary.exact_left_pre_remesh_epi != (
-        boundary.exact_left_post_remesh_epi
-    )
+    assert boundary.exact_left_pre_remesh_epi != (boundary.exact_left_post_remesh_epi)
     assert not boundary.left_post_remesh_pressure_refresh_requested
-    assert (
-        boundary.left_post_remesh_pressure_refresh_callback_invocations == 0
-    )
+    assert boundary.left_post_remesh_pressure_refresh_callback_invocations == 0
     assert not boundary.exact_recorded_state_continuity_certified
     assert boundary.failed_conditions == (
         "changed_applied_remesh_has_completed_pressure_refresh",
@@ -257,17 +251,9 @@ def test_full_history_mismatch_is_reported_at_the_exact_boundary() -> None:
     sequence = compose_event_remesh_cycle_observations((left, right))
     boundary = sequence.boundaries[0]
 
-    assert (
-        boundary.exact_left_post_remesh_epi
-        == boundary.exact_right_pre_schedule_epi
-    )
-    assert (
-        boundary.left_outgoing_exact_history
-        != boundary.right_incoming_exact_history
-    )
-    assert boundary.failed_conditions == (
-        "full_exact_remesh_history_continuous",
-    )
+    assert boundary.exact_left_post_remesh_epi == boundary.exact_right_pre_schedule_epi
+    assert boundary.left_outgoing_exact_history != boundary.right_incoming_exact_history
+    assert boundary.failed_conditions == ("full_exact_remesh_history_continuous",)
     assert not sequence.exact_recorded_boundary_continuity_certified
 
 
@@ -289,9 +275,7 @@ def test_proof_seals_fail_closed_after_boundary_or_cycle_tampering() -> None:
     assert sequence.failed_conditions == ("sequence_proof_fields_intact",)
 
     clean_left, clean_right = _two_certified_cycles()
-    clean = compose_event_remesh_cycle_observations(
-        (clean_left, clean_right)
-    )
+    clean = compose_event_remesh_cycle_observations((clean_left, clean_right))
     with pytest.raises(ValueError, match="diagnostics"):
         replace(clean, raw_metric_weights_equal=False)
     with pytest.raises(AttributeError):
@@ -388,10 +372,7 @@ class _ExplodingEqualityNode:
     def __eq__(self, other: object) -> bool:
         if type(self).explode:
             raise RuntimeError("node equality must not be invoked")
-        return (
-            type(other) is _ExplodingEqualityNode
-            and self.label == other.label
-        )
+        return type(other) is _ExplodingEqualityNode and self.label == other.label
 
 
 @dataclass(eq=False, frozen=True, slots=True)
@@ -409,10 +390,7 @@ def _graph_with_nodes(
     graph = _graph(current=current)
     nx.relabel_nodes(graph, {0: nodes[0], 1: nodes[1]}, copy=False)
     graph.graph["_epi_hist"] = deque(
-        [
-            {nodes[index]: row[index] for index in range(2)}
-            for row in history
-        ],
+        [{nodes[index]: row[index] for index in range(2)} for row in history],
         maxlen=64,
     )
     _set_pure_epi_pressure(graph)
@@ -422,9 +400,7 @@ def _graph_with_nodes(
 def test_input_iterable_equality_is_never_consulted() -> None:
     left, right = _two_certified_cycles()
 
-    sequence = compose_event_remesh_cycle_observations(
-        _EqIterable((left, right))
-    )
+    sequence = compose_event_remesh_cycle_observations(_EqIterable((left, right)))
 
     assert sequence.exact_common_metric_cycle_sequence_certified
 
@@ -501,9 +477,7 @@ def test_scope_is_sealed_for_boundaries_and_sequences() -> None:
     assert not boundary.exact_recorded_state_continuity_certified
 
     clean_left, clean_right = _two_certified_cycles()
-    clean = compose_event_remesh_cycle_observations(
-        (clean_left, clean_right)
-    )
+    clean = compose_event_remesh_cycle_observations((clean_left, clean_right))
     object.__setattr__(clean, "scope", "forged causal sequence theorem")
     assert not clean._proof_fields_are_intact()
     assert not clean.exact_common_metric_cycle_sequence_certified

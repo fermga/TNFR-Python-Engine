@@ -24,13 +24,10 @@ def test_catalogue_contains_only_standalone_grammar_words():
     selector = AdaptiveSequenceSelector(_graph(), "node")
 
     verdicts = {
-        name: validate_sequence(word)
-        for name, word in selector.sequences.items()
+        name: validate_sequence(word) for name, word in selector.sequences.items()
     }
     assert all(verdict.passed for verdict in verdicts.values()), {
-        name: verdict.error
-        for name, verdict in verdicts.items()
-        if not verdict.passed
+        name: verdict.error for name, verdict in verdicts.items() if not verdict.passed
     }
 
 
@@ -44,9 +41,7 @@ def test_graph_seed_drives_a_reproducible_local_stream():
     ]
 
     assert first.seed == second.seed == 23
-    assert [
-        first.select_sequence(context) for context in contexts
-    ] == [
+    assert [first.select_sequence(context) for context in contexts] == [
         second.select_sequence(context) for context in contexts
     ]
 
@@ -56,10 +51,7 @@ def test_selected_word_is_detached_from_the_internal_catalogue():
     selected = selector.select_sequence({"goal": "stability"})
     selected.append("dissonance")
 
-    assert all(
-        word[-1] != "dissonance"
-        for word in selector.sequences.values()
-    )
+    assert all(word[-1] != "dissonance" for word in selector.sequences.values())
 
 
 def test_performance_score_name_and_legacy_alias_share_one_history():
@@ -113,6 +105,7 @@ def test_performance_history_retains_the_last_twenty_scores():
 def test_explicit_seed_uses_the_shared_strict_domain(seed):
     with pytest.raises(ValueError, match="RANDOM_SEED"):
         AdaptiveSequenceSelector(_graph(), "node", seed=seed)
+
 
 @pytest.mark.parametrize(
     "normalization",

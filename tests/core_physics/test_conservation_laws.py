@@ -576,10 +576,7 @@ class TestWardIdentity:
         assert "total_energy_change" in result
         assert "sequence_conserved" in result
         assert isinstance(result["operator_summary"], dict)
-        assert (
-            result["sequence_conserved"]
-            == result["aggregate_balance_within_alert"]
-        )
+        assert result["sequence_conserved"] == result["aggregate_balance_within_alert"]
         assert result["thresholds_are_proven_bounds"] is False
         assert result["grammar_validation_applicable"] is False
         assert result["grammar_validated"] is False

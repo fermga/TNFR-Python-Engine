@@ -87,9 +87,7 @@ def demonstrate_torch_compatibility() -> None:
     )
     print("NumPy agreement checks passed.")
 
-    pressure = get_unified_gpu_system().compute_delta_nfr_from_graph(
-        _pressure_graph()
-    )
+    pressure = get_unified_gpu_system().compute_delta_nfr_from_graph(_pressure_graph())
     print(f"Canonical graph-pressure backend: {pressure.backend_used}")
     print(f"Compatibility fallback used: {pressure.fallback_used}")
     print(f"Pressure values: {dict(pressure)}")

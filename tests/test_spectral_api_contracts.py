@@ -16,20 +16,13 @@ from tnfr.engines.computation.unified_fft_engine import (
     UnifiedFFTConfig,
 )
 from tnfr.errors import TNFRValueError
-from tnfr.mathematics.spectral import (
-    get_laplacian_spectrum,
-    gft,
-    heat_diffusion,
-    igft,
-)
+from tnfr.mathematics.spectral import get_laplacian_spectrum, gft, heat_diffusion, igft
 from tnfr.physics.structural_diffusion import structural_diffusion_operator
 
 
 def _irregular_weighted_graph() -> nx.Graph:
     graph = nx.Graph()
-    graph.add_weighted_edges_from(
-        ((0, 1, 2.0), (1, 2, 0.5), (1, 3, 3.0), (3, 4, 0.75))
-    )
+    graph.add_weighted_edges_from(((0, 1, 2.0), (1, 2, 0.5), (1, 3, 3.0), (3, 4, 0.75)))
     for node, epi in enumerate((1.2, -0.3, 0.8, -1.1, 0.4)):
         graph.nodes[node]["EPI"] = epi
         graph.nodes[node]["nu_f"] = 0.5 + 0.1 * node
@@ -38,9 +31,7 @@ def _irregular_weighted_graph() -> nx.Graph:
 
 def test_random_walk_gft_uses_biorthogonal_inverse() -> None:
     graph = _irregular_weighted_graph()
-    eigenvalues, right_basis = get_laplacian_spectrum(
-        graph, operator="random_walk"
-    )
+    eigenvalues, right_basis = get_laplacian_spectrum(graph, operator="random_walk")
     signal = np.array((1.2, -0.3, 0.8, -1.1, 0.4))
     _, laplacian = structural_diffusion_operator(graph)
 
@@ -129,8 +120,7 @@ def test_advanced_spectral_state_refreshes_live_epi_coefficients() -> None:
     first = engine.get_spectral_state(graph)
     assert first.spectral_parameter_kind == "laplacian_eigenvalue"
     assert (
-        first.coherence_length_semantics
-        == "inverse_root_spectral_centroid_heuristic"
+        first.coherence_length_semantics == "inverse_root_spectral_centroid_heuristic"
     )
     graph.nodes[0]["EPI"] = -4.0
 
@@ -172,9 +162,7 @@ def test_sequence_convolution_has_circular_semantics_and_honest_backend() -> Non
     first = np.array((1.0, 2.0, 0.0, 0.0))
     second = np.array((1.0, -1.0, 0.0, 0.0))
 
-    result = engine.compute_spectral_convolution(
-        first, second, backend="distributed"
-    )
+    result = engine.compute_spectral_convolution(first, second, backend="distributed")
     expected = np.real_if_close(np.fft.ifft(np.fft.fft(first) * np.fft.fft(second)))
 
     assert np.allclose(result.spectral_data, expected)
@@ -266,9 +254,7 @@ def test_sequence_fft_cache_preserves_result_provenance_and_keys_dtype() -> None
         UnifiedFFTConfig(enable_gpu_acceleration=False, log_backend_selection=False)
     )
     float_data = np.array((1.0,), dtype=np.float64)
-    same_bytes_as_integer = np.array(
-        (float_data.view(np.int64)[0],), dtype=np.int64
-    )
+    same_bytes_as_integer = np.array((float_data.view(np.int64)[0],), dtype=np.int64)
 
     first = engine.compute_fft(float_data, backend="basic")
     second = engine.compute_fft(float_data, backend="basic")
@@ -293,9 +279,7 @@ def test_highpass_and_notch_responses_preserve_the_named_bands() -> None:
     assert notch[0] > 0.99
     assert notch[-1] > 0.99
     assert engine._calculate_attenuation_db(np.ones(3)) == pytest.approx(0.0)
-    assert engine._calculate_attenuation_db(np.array((1.0, 0.1))) == pytest.approx(
-        20.0
-    )
+    assert engine._calculate_attenuation_db(np.array((1.0, 0.1))) == pytest.approx(20.0)
 
 
 class _CapturingCacheOptimizer:

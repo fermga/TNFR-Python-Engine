@@ -50,9 +50,7 @@ def test_regular_gradient_norm_follows_the_exact_kernel_derivative():
     assert result.regular_gradient_norm == pytest.approx(math.sqrt(2.0) * coherence**2)
 
 
-@pytest.mark.parametrize(
-    "value", [0.0, -0.1, 1.1, float("nan"), float("inf"), True]
-)
+@pytest.mark.parametrize("value", [0.0, -0.1, 1.1, float("nan"), float("inf"), True])
 def test_nonfinite_state_levels_are_rejected(value):
     with pytest.raises(ValueError, match=r"\(0, 1\]"):
         coherence_level_set_geometry(value)
@@ -126,9 +124,7 @@ def test_fixed_capacity_slice_enforces_the_nodal_equation_geometry():
     assert result.nodal_slice_dimension == 2
     assert result.weighted_pressure_radius == pytest.approx(2.0)
     assert result.pressure_axis_vertex_magnitudes == pytest.approx((2.0, 1.0))
-    assert result.embedded_axis_vertex_radii == pytest.approx(
-        (2.0, math.sqrt(2.0))
-    )
+    assert result.embedded_axis_vertex_radii == pytest.approx((2.0, math.sqrt(2.0)))
     assert result.euclidean_radius_minimum == pytest.approx(2.0 / math.sqrt(3.0))
     assert result.euclidean_radius_maximum == pytest.approx(2.0)
     assert result.regular_gradient_norm == pytest.approx(math.sqrt(3.0) / 8.0)
@@ -148,12 +144,8 @@ def test_fixed_capacity_slice_points_reproduce_network_coherence():
     )
     graph = nx.Graph()
     graph.add_nodes_from(range(2))
-    for node, pressure, rate in zip(
-        graph, pressures, rates, strict=True
-    ):
-        graph.nodes[node].update(
-            {DNFR_PRIMARY: pressure, dEPI_PRIMARY: rate}
-        )
+    for node, pressure, rate in zip(graph, pressures, rates, strict=True):
+        graph.nodes[node].update({DNFR_PRIMARY: pressure, dEPI_PRIMARY: rate})
 
     certificate = fixed_capacity_coherence_level_set_geometry(
         compute_coherence(graph), capacities
@@ -164,9 +156,7 @@ def test_fixed_capacity_slice_points_reproduce_network_coherence():
     assert certificate.weighted_pressure_radius == pytest.approx(
         sum(
             (1.0 + capacity) * abs(pressure)
-            for capacity, pressure in zip(
-                capacities, pressures, strict=True
-            )
+            for capacity, pressure in zip(capacities, pressures, strict=True)
         )
     )
 

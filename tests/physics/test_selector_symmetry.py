@@ -11,7 +11,10 @@ from tnfr.physics.selector_symmetry import derive_selector_symmetry
 
 def _derive(labels=(0, 0), group=((0, 1), (1, 0)), candidates=(0, 1), **kwargs):
     return derive_selector_symmetry(
-        state_labels=labels, permutations=group, candidates=candidates, **kwargs,
+        state_labels=labels,
+        permutations=group,
+        candidates=candidates,
+        **kwargs,
     )
 
 
@@ -23,7 +26,9 @@ def _push(permutation, labels):
 
 
 def test_symmetric_orbit_cannot_supply_a_unique_equivariant_parent():
-    rotations = tuple(tuple((i + shift) % 8 for i in range(8)) for shift in (0, 2, 4, 6))
+    rotations = tuple(
+        tuple((i + shift) % 8 for i in range(8)) for shift in (0, 2, 4, 6)
+    )
     result = _derive(("high", "low") * 4, rotations, (0, 2, 4, 6))
     assert result.candidate_orbits == ((0, 2, 4, 6),)
     assert result.fixed_candidates == ()
@@ -84,7 +89,9 @@ def test_fixed_candidates_equal_consistent_selector_extensions_on_every_small_st
                     admissible_choices.append(candidate)
             result = _derive(labels, group, candidates)
             assert result.fixed_candidates == tuple(admissible_choices)
-            assert result.unique_equivariant_selection_obstructed == (not admissible_choices)
+            assert result.unique_equivariant_selection_obstructed == (
+                not admissible_choices
+            )
             checked += 1
     assert checked == 20
 
@@ -93,7 +100,9 @@ def test_subgroup_absence_of_obstruction_does_not_promote_to_full_group():
     labels = (0, 0, 0)
     subgroup = ((0, 1, 2), (1, 0, 2))
     assert _derive(labels, subgroup, (0, 1, 2)).fixed_candidates == (2,)
-    assert _derive(labels, tuple(permutations(range(3))), (0, 1, 2)).fixed_candidates == ()
+    assert (
+        _derive(labels, tuple(permutations(range(3))), (0, 1, 2)).fixed_candidates == ()
+    )
 
 
 def test_exact_numeric_colors_and_tagged_type_distinctions():
@@ -101,7 +110,9 @@ def test_exact_numeric_colors_and_tagged_type_distinctions():
     assert _derive((True, 1)).unique_equivariant_selection_obstructed
     result = _derive((("integer", 1), ("boolean", True)))
     assert result.fixed_candidates == (0, 1)
-    assert _derive((Fraction(1, 3), Fraction(1, 3))).unique_equivariant_selection_obstructed
+    assert _derive(
+        (Fraction(1, 3), Fraction(1, 3))
+    ).unique_equivariant_selection_obstructed
 
 
 def test_input_order_is_not_a_symmetry_breaking_selector():
@@ -116,8 +127,12 @@ def test_relabeling_transports_fixed_candidates_and_all_candidate_orbits():
     relabel = (2, 0, 1)
     before = _derive(labels, group, (0, 1, 2))
     after = _derive(_push(relabel, labels), group, (0, 1, 2))
-    assert after.fixed_candidates == tuple(sorted(relabel[i] for i in before.fixed_candidates))
-    expected = {frozenset(relabel[i] for i in orbit) for orbit in before.candidate_orbits}
+    assert after.fixed_candidates == tuple(
+        sorted(relabel[i] for i in before.fixed_candidates)
+    )
+    expected = {
+        frozenset(relabel[i] for i in orbit) for orbit in before.candidate_orbits
+    }
     assert {frozenset(orbit) for orbit in after.candidate_orbits} == expected
 
 
@@ -138,18 +153,21 @@ def test_input_containers_are_detached_and_result_is_frozen():
         result.candidates = (0,)
 
 
-@pytest.mark.parametrize("group, message", [
-    ((), "identity"),
-    (((1, 0),), "identity"),
-    (((0, 1), (0, 1)), "duplicate"),
-    (((0, 0),), "bijection"),
-    (((0,),), "bijection"),
-    (((0, 1, 2),), "size limit"),
-    (((0, True),), "bijection"),
-    (((0, 1.0),), "bijection"),
-    (((0, -1),), "bijection"),
-    (((0, []),), "bijection"),
-])
+@pytest.mark.parametrize(
+    "group, message",
+    [
+        ((), "identity"),
+        (((1, 0),), "identity"),
+        (((0, 1), (0, 1)), "duplicate"),
+        (((0, 0),), "bijection"),
+        (((0,),), "bijection"),
+        (((0, 1, 2),), "size limit"),
+        (((0, True),), "bijection"),
+        (((0, 1.0),), "bijection"),
+        (((0, -1),), "bijection"),
+        (((0, []),), "bijection"),
+    ],
+)
 def test_malformed_permutation_actions_fail_closed(group, message):
     with pytest.raises(ValueError, match=message):
         _derive(group=group)
@@ -160,20 +178,38 @@ def test_truncated_cycle_action_is_not_silently_used_as_a_group():
         _derive((0, 0, 0), ((0, 1, 2), (1, 2, 0)), (0, 1, 2))
 
 
-@pytest.mark.parametrize("candidates, message", [
-    ((), "nonempty"), ((0, 0), "duplicate"), ((0,), "invariant"),
-    ((True,), "valid vertex"), ((1.0,), "valid vertex"), ((-1,), "valid vertex"),
-    ((2,), "valid vertex"), ({0, 1}, "ordered"),
-])
+@pytest.mark.parametrize(
+    "candidates, message",
+    [
+        ((), "nonempty"),
+        ((0, 0), "duplicate"),
+        ((0,), "invariant"),
+        ((True,), "valid vertex"),
+        ((1.0,), "valid vertex"),
+        ((-1,), "valid vertex"),
+        ((2,), "valid vertex"),
+        ({0, 1}, "ordered"),
+    ],
+)
 def test_invalid_or_asymmetrically_undeclared_candidates_fail(candidates, message):
     with pytest.raises(ValueError, match=message):
         _derive(candidates=candidates)
 
 
-@pytest.mark.parametrize("labels", [
-    (), (0.0, 0.0), (float("nan"), 0), (float("inf"), 0),
-    (object(), object()), ([1], [1]), ({"a": 1}, {"a": 1}), {0, 1}, "ab",
-])
+@pytest.mark.parametrize(
+    "labels",
+    [
+        (),
+        (0.0, 0.0),
+        (float("nan"), 0),
+        (float("inf"), 0),
+        (object(), object()),
+        ([1], [1]),
+        ({"a": 1}, {"a": 1}),
+        {0, 1},
+        "ab",
+    ],
+)
 def test_nonexact_mutable_or_empty_labels_fail(labels):
     with pytest.raises(ValueError):
         _derive(labels=labels)
@@ -191,11 +227,18 @@ def test_label_nesting_and_infinite_input_materialization_are_bounded():
         _derive(group=repeat((0, 1)), max_permutations=2)
 
 
-@pytest.mark.parametrize("kwargs", [
-    {"max_nodes": 0}, {"max_nodes": True}, {"max_nodes": 2.0},
-    {"max_permutations": 0}, {"max_permutations": False},
-    {"max_validation_work": 0}, {"max_validation_work": 1.0},
-])
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"max_nodes": 0},
+        {"max_nodes": True},
+        {"max_nodes": 2.0},
+        {"max_permutations": 0},
+        {"max_permutations": False},
+        {"max_validation_work": 0},
+        {"max_validation_work": 1.0},
+    ],
+)
 def test_resource_limits_are_strict_positive_integers(kwargs):
     with pytest.raises(ValueError, match="positive integer"):
         _derive(**kwargs)
@@ -231,8 +274,9 @@ def test_support_and_weight_marks_define_stabilizer_without_live_graph_claim():
         (present, absent, present),
         (absent, present, absent),
     )
-    result = _derive((0, 0, 0), tuple(permutations(range(3))), (0, 1, 2),
-                     relation_labels=relations)
+    result = _derive(
+        (0, 0, 0), tuple(permutations(range(3))), (0, 1, 2), relation_labels=relations
+    )
     assert result.stabilizer_permutations == ((0, 1, 2), (2, 1, 0))
     assert result.fixed_candidates == (1,)
     assert result.candidate_orbits == ((0, 2), (1,))
@@ -242,7 +286,9 @@ def test_absent_and_zero_weight_edges_are_distinct_when_declared():
     absent, zero_edge = (False, 0), (True, 0)
     result = _derive(relation_labels=((absent, zero_edge), (absent, absent)))
     assert result.fixed_candidates == (0, 1)
-    assert _derive(relation_labels=((0, 0), (0, 0))).unique_equivariant_selection_obstructed
+    assert _derive(
+        relation_labels=((0, 0), (0, 0))
+    ).unique_equivariant_selection_obstructed
 
 
 def test_relations_are_deeply_detached_and_share_the_work_budget():
@@ -252,14 +298,24 @@ def test_relations_are_deeply_detached_and_share_the_work_budget():
     assert result.relation_labels == ((0, 1), (1, 0))
     assert result.unique_equivariant_selection_obstructed
     with pytest.raises(ValueError, match="max_validation_work"):
-        _derive(relation_labels=result.relation_labels,
-                max_validation_work=result.validation_work - 1)
+        _derive(
+            relation_labels=result.relation_labels,
+            max_validation_work=result.validation_work - 1,
+        )
 
 
-@pytest.mark.parametrize("relations", [
-    (), ((0, 1),), ((0,), (0, 1)), ((0, 1, 2), (0, 1)),
-    ((0.0, 1), (1, 0)), "abcd", ((object(), 1), (1, 0)),
-])
+@pytest.mark.parametrize(
+    "relations",
+    [
+        (),
+        ((0, 1),),
+        ((0,), (0, 1)),
+        ((0, 1, 2), (0, 1)),
+        ((0.0, 1), (1, 0)),
+        "abcd",
+        ((object(), 1), (1, 0)),
+    ],
+)
 def test_incomplete_or_inexact_relation_matrices_fail_closed(relations):
     with pytest.raises(ValueError):
         _derive(relation_labels=relations)

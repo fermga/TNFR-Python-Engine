@@ -4,6 +4,10 @@
 derivation of the full fluid model and no Clay proof or counterexample.
 **Scope review:** 2026-09-18; documentation correction, no new numerical run.
 
+**Role:** secondary comparison reference. The finite fluid results do not
+create an active continuum-proof queue; priorities remain in the
+[single execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md).
+
 The [official Clay statement by Fefferman](https://www.claymath.org/wp-content/uploads/2022/06/navierstokes.pdf)
 poses global existence/smoothness or breakdown alternatives for three-dimensional
 incompressible flow at positive viscosity, with specified smooth data on

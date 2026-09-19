@@ -5,7 +5,11 @@ from fractions import Fraction
 import pytest
 
 from benchmarks.child_coupling_feedback import (
-    CASES, CHILD_WORD, SEGMENT_COUNT, STEP, run_child_feedback_case,
+    CASES,
+    CHILD_WORD,
+    SEGMENT_COUNT,
+    STEP,
+    run_child_feedback_case,
 )
 from tnfr.constants.canonical import COUPLING_GENTLE
 
@@ -27,15 +31,22 @@ def test_both_cases_continue_the_same_retained_pre_sha_state(cases):
         assert checkpoint["prefix_mean_identity_residuals"] == (0,) * 24
         assert checkpoint["retained_endpoint"]["time"] == 6.5
         for field in (
-            "strengths", "metric_weights", "relative_profile", "forcing",
+            "strengths",
+            "metric_weights",
+            "relative_profile",
+            "forcing",
             "epi_weight",
         ):
-            assert case["original_reference"][field] == checkpoint[
-                "prefix_reference"
-            ][field]
+            assert (
+                case["original_reference"][field]
+                == checkpoint["prefix_reference"][field]
+            )
         assert case["event"]["before"] == checkpoint["retained_endpoint"]
         assert case["event"]["before"]["glyph_history"][0] == (
-            "IL", "OZ", "THOL", "UM",
+            "IL",
+            "OZ",
+            "THOL",
+            "UM",
         )
         assert case["event"]["before"]["glyph_history"]["0_sub_0"] == ()
         assert case["postevent_elapsed_time"] == 3.0
@@ -47,7 +58,9 @@ def test_child_live_gate_and_own_word_admit_real_auxiliary_writes(cases):
     assert event["child_word"] == CHILD_WORD == ("coupling", "silence")
     assert event["child_word_both_validators_passed"]
     assert event["actual_admission"] == {
-        "target": "0_sub_0", "candidate": "UM", "allowed": True,
+        "target": "0_sub_0",
+        "candidate": "UM",
+        "allowed": True,
     }
     assert event["actual_candidate_sample"] == event["before"]["nodes"]
     before, raw = event["before"], event["raw_after_event"]
@@ -71,20 +84,26 @@ def test_actual_child_commit_matches_pure_kernel_edges_and_node_channels(cases):
     )
     assert event["actual_new_edges"] == expected_edges
     assert tuple((u, v) for u, v, _ in expected_edges) == (
-        (1, "0_sub_0"), (7, "0_sub_0"),
+        (1, "0_sub_0"),
+        (7, "0_sub_0"),
     )
     assert expected_edges[0][2]["weight"] != expected_edges[1][2]["weight"]
     target = proposal["target_proposals"][0]
-    assert all(data["weight"] >= target["compatibility_threshold"]
-               for _, _, data in expected_edges)
-    assert all(value <= target["effective_phase_limit"]
-               for value in event["new_edge_phase_separations"])
+    assert all(
+        data["weight"] >= target["compatibility_threshold"]
+        for _, _, data in expected_edges
+    )
+    assert all(
+        value <= target["effective_phase_limit"]
+        for value in event["new_edge_phase_separations"]
+    )
     before, raw = event["before"], event["raw_after_event"]
     index = {node: i for i, node in enumerate(before["nodes"])}
     expected = {key: list(before[key]) for key in ("phase", "capacity", "pressure")}
     for update in proposal["node_updates"]:
         for field, key in (
-            ("theta_after", "phase"), ("vf_after", "capacity"),
+            ("theta_after", "phase"),
+            ("vf_after", "capacity"),
             ("dnfr_after", "pressure"),
         ):
             if update[field] is not None:
@@ -105,7 +124,8 @@ def test_reference_reset_does_not_change_fixed_original_pattern_error(cases):
         budget = reset[name]
         assert budget["identity_residual"] == 0
         assert budget["energy_change"] == (
-            budget["metric_term"] + budget["reference_cross_term"]
+            budget["metric_term"]
+            + budget["reference_cross_term"]
             + budget["reference_quadratic_term"]
         )
     assert reset["raw_support_reset"]["identity_residual"] == 0
@@ -133,9 +153,10 @@ def test_compatibility_channels_explain_the_measured_drift_change(cases):
     before = event["before_compatibility_channels"]
     after = event["after_compatibility_channels"]
     assert before["exact_sum_residual"] == after["exact_sum_residual"] == 0
-    assert after["weighted_forcing_by_channel"]["vf"] < before[
-        "weighted_forcing_by_channel"
-    ]["vf"]
+    assert (
+        after["weighted_forcing_by_channel"]["vf"]
+        < before["weighted_forcing_by_channel"]["vf"]
+    )
     assert after["weighted_forcing_by_channel"]["phase"] > 0
     assert after["weighted_forcing_by_channel"]["topo"] == 0
     old = case["original_reference"]["mean_drift"]
@@ -194,28 +215,30 @@ def test_original_pattern_uses_the_fixed_old_metric_and_profile(cases, name):
     reference = case["original_reference"]
     pattern = case["final_original_pattern"]
     metric = reference["metric_weights"]
-    epi = tuple(Fraction.from_float(value) for value in case[
-        "final_before_closure"
-    ]["epi"])
+    epi = tuple(
+        Fraction.from_float(value) for value in case["final_before_closure"]["epi"]
+    )
     mean = sum(h * x for h, x in zip(metric, epi)) / sum(metric)
     error = tuple(x - mean - z for x, z in zip(epi, reference["relative_profile"]))
     assert pattern["mean"] == mean
     assert pattern["relative_error"] == error
-    assert pattern["error_variance"] == sum(
-        h * value**2 for h, value in zip(metric, error)
-    ) / 2
-    assert case["final_regime_state"]["error_variance"] < case[
-        "event"
-    ]["same_epi_reference_reset"]["after"]["error_variance"]
+    assert (
+        pattern["error_variance"]
+        == sum(h * value**2 for h, value in zip(metric, error)) / 2
+    )
+    assert (
+        case["final_regime_state"]["error_variance"]
+        < case["event"]["same_epi_reference_reset"]["after"]["error_variance"]
+    )
 
 
 def test_both_pending_words_close_only_after_measured_flow(cases):
     for name, case in cases.items():
         closures = case["closures_after_measurement"]
         expected_targets = ("0_sub_0", 0) if name == "child_coupling" else (0,)
-        assert tuple(
-            item["admission"]["target"] for item in closures
-        ) == expected_targets
+        assert (
+            tuple(item["admission"]["target"] for item in closures) == expected_targets
+        )
         for item in closures:
             assert item["admission"]["allowed"]
             assert item["after"]["epi"] == case["final_before_closure"]["epi"]

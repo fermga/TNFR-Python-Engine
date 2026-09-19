@@ -180,6 +180,7 @@ The saved protocol hash and result must retain `within_single_acquisition`,
 `physical_status=not_admitted` and `measurement_verdict=not_assessed`.
 The original byte-only inspection remains unchanged as historical evidence.
 
+<a id="volts-exploratory-record"></a>
 ### Completed exploratory record — 2026-09-18
 
 The [bounded reader](../../benchmarks/volts_data.py) and

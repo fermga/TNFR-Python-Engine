@@ -35,11 +35,17 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
-
 _COMPONENT_SEEDS = (
-    "node_initialization", "coupling_dynamics", "phase_evolution",
-    "operator_sequence", "global_network", "partition_level", "node_level",
-    "spectral_analysis", "clustering", "threshold_jitter",
+    "node_initialization",
+    "coupling_dynamics",
+    "phase_evolution",
+    "operator_sequence",
+    "global_network",
+    "partition_level",
+    "node_level",
+    "spectral_analysis",
+    "clustering",
+    "threshold_jitter",
 )
 
 
@@ -160,7 +166,9 @@ class TNFRSeedManager:
     def __init__(self, master_seed: Optional[int] = None):
         """Initialize seed manager with optional master seed."""
 
-        self.master_seed = self._generate_master_seed() if master_seed is None else master_seed
+        self.master_seed = (
+            self._generate_master_seed() if master_seed is None else master_seed
+        )
         self.seed_history = []
         self.current_experiment_id = None
 
@@ -255,7 +263,9 @@ class TNFRSeedManager:
             master_seed = state_data["master_seed"]
             if master_seed != seed_state["master_seed"]:
                 raise ValueError("master_seed disagrees with captured seed state")
-            seeds = {name + "_seed": seed_state[name + "_seed"] for name in _COMPONENT_SEEDS}
+            seeds = {
+                name + "_seed": seed_state[name + "_seed"] for name in _COMPONENT_SEEDS
+            }
             for value in (master_seed, *seeds.values()):
                 if isinstance(value, bool) or not isinstance(value, Integral):
                     raise ValueError("captured seeds must be integers")
@@ -264,7 +274,9 @@ class TNFRSeedManager:
             python_probe = random.Random()
             python_probe.setstate((version, tuple(internal), gaussian))
             numpy_probe = np.random.RandomState()
-            numpy_probe.set_state(self._numpy_state_tuple(seed_state["numpy_random_state"]))
+            numpy_probe.set_state(
+                self._numpy_state_tuple(seed_state["numpy_random_state"])
+            )
 
         except (KeyError, TypeError, ValueError, OverflowError) as e:
             print(f"Failed to restore state: {e}")
@@ -382,7 +394,10 @@ class TNFRSeedManager:
         for i in range(test_iterations):
             # Restore state
             if not self.restore_complete_state(context_data["reproducibility_state"]):
-                return {"valid": False, "error": "Captured RNG state restoration failed"}
+                return {
+                    "valid": False,
+                    "error": "Captured RNG state restoration failed",
+                }
 
             # Run mock experiment (would be actual factorization in practice)
             result = self._run_reproducibility_test(params)

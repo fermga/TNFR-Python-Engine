@@ -1,6 +1,6 @@
 # TNFR Number Theory: Arithmetic Constructions and Structural Read-outs
 
-**Status**: Canonical theoretical reference
+**Status**: Arithmetic construction reference; exact restricted identities and finite diagnostics, not a derived physical or autonomous nodal model
 **Version**: 0.0.3.5
 **Date**: March 2026
 
@@ -31,7 +31,7 @@
 10. [Prime Path Graphs and the TNFR-Riemann Connection](#10-prime-path-graphs-and-the-tnfr-riemann-connection)
 11. [Worked Examples](#11-worked-examples)
 12. [Implementation Map](#12-implementation-map)
-13. [Open Questions and Research Directions](#13-open-questions-and-research-directions)
+13. [Reference Questions and Research Boundaries](#13-reference-questions-and-research-boundaries)
 14. [References](#14-references)
 
 ---
@@ -48,7 +48,7 @@ nodes and edges alone supplies a static state, not a trajectory. In the
 construction studied here:
 
 - **Primes are the arithmetic pressure zero set**: $\Delta\mathrm{NFR}(p) = 0$ for all primes $p$.
-- **Composites carry structural pressure**: $\Delta\mathrm{NFR}(n) > 0$ whenever $n$ is composite, with magnitude proportional to factorization complexity.
+- **Composites carry structural pressure**: $\Delta\mathrm{NFR}(n) > 0$ whenever $n$ is composite, with a magnitude determined by the three selected arithmetic descriptors.
 - **Factorization as spectral decoding**: discovering the factors of a composite can be framed as resolving the coherent sub-modes of its structural pressure field.
 
 This document formalizes these observations, expresses the arithmetic constants as canonical units (only $\pi$ is a genuine structural scale), and maps the theory to its implementations in the repository.
@@ -95,9 +95,16 @@ From the LPF array, factorization of any $n \leq N$ is $O(\log n)$, enabling com
 
 ### 2.3 Phase Assignment
 
-Each node receives a phase derived from its position in the arithmetic structure:
+Phase is a declared read-out policy. `ArithmeticTNFRNetwork.compute_phase`
+defaults to the angle of a two-dimensional spectral layout, falling back to
+`logn`; it also supports capacity normalization (`nuf`). The `logn` policy is
 
-$$\phi_n = 2\pi \cdot \frac{n}{N} \pmod{2\pi}$$
+$$\phi_n=2\pi\,\operatorname{frac}\!\left(\frac{\log n}{\log(N+1)}\right).$$
+
+The conservation/substrate adapters default to `logn`. A spectral-layout
+orientation is not an independently derived physical phase, and none of these
+static assignments supplies a phase evolution law. The former linear `n/N`
+formula did not describe this implementation.
 
 Coupling operations must separately check the wrapped U3 condition
 $|\operatorname{wrap}(\phi_i-\phi_j)|\leq\Delta\phi_{\max}$. The arithmetic
@@ -226,11 +233,11 @@ scale; the structural content lives in $(\Omega, \tau, \sigma, n)$.
 
 $$\boxed{\zeta = \eta = \theta = 1}$$
 
-The three pressure channels weigh equally: the factorization excess $\Omega - 1$, the divisor excess $\tau - 2$ and the abundance excess $\sigma/n - (1 + 1/n)$ each contribute on the same unit scale. This is the canonical, parameter-free convention. Section 4.2 proves that the zero set does not depend on the choice of positive coefficients; it does **not** prove uniqueness of the unit convention.
+The three pressure channels weigh equally: the factorization excess $\Omega - 1$, the divisor excess $\tau - 2$ and the abundance excess $\sigma/n - (1 + 1/n)$ each contribute on the same unit scale. This is the configured unit-weight convention. Section 4.2 proves that the zero set does not depend on the choice of positive coefficients; it does **not** prove uniqueness of the unit convention.
 
 ### 5.3 EPI Parameters
 
-| Parameter | Value | Physical meaning |
+| Parameter | Value | Model meaning |
 |-----------|-------|-----------------|
 | $\alpha$ | $1$ | Factorization complexity weight |
 | $\beta$ | $1$ | Divisor logarithmic weight |
@@ -238,7 +245,7 @@ The three pressure channels weigh equally: the factorization excess $\Omega - 1$
 
 ### 5.4 Frequency Parameters
 
-| Parameter | Value | Physical meaning |
+| Parameter | Value | Model meaning |
 |-----------|-------|-----------------|
 | $\nu_0$ | $1$ | Base structural frequency |
 | $\delta$ | $1$ | Divisor density modulation |
@@ -323,7 +330,10 @@ When the arithmetic network $G$ is constructed, the structural field tetrad ($\P
 
 $$\Phi_s(n) = \sum_{m \neq n} \frac{\Delta\mathrm{NFR}(m)}{d(n, m)^2}$$
 
-where $d(n, m)$ is the graph distance in the arithmetic network. A prime
+where $d(n,m)$ uses the graph supplied to the field adapter and its declared
+path-length policy. Self, unreachable and zero-distance pairs contribute zero
+under the shared kernel convention. Explicit edge length, transport weight
+fallback and unit fallback must not be conflated. A prime
 contributes zero as a pressure **source**, but its potential value still
 aggregates pressure from other nodes. This static field does not make primes
 dynamical sinks or attractors.
@@ -332,9 +342,11 @@ dynamical sinks or attractors.
 
 ### 7.2 Phase Gradient: $|\nabla\phi|$
 
-$$|\nabla\phi|(n) = \frac{1}{|\mathcal{N}(n)|} \sum_{m \in \mathcal{N}(n)} |\phi_n - \phi_m|$$
+$$|\nabla\phi|(n) = \frac{1}{|\mathcal{N}(n)|} \sum_{m \in \mathcal{N}(n)} |\operatorname{wrap}(\phi_n - \phi_m)|$$
 
-where $\mathcal{N}(n)$ are the neighbors of $n$ in the arithmetic network. High phase gradient indicates local desynchronization — composites with many diverse factors show elevated gradients.
+where $\mathcal{N}(n)$ is the neighborhood used by the field adapter, with zero
+at isolates. It measures the supplied phase differences; an arithmetic class
+interpretation requires evidence under that phase policy.
 
 **Scale**: $|\nabla\phi| \leq \pi$ is the exact wrapped-angle bound. Any
 early-warning level is experiment-dependent; the measured synchronization
@@ -344,7 +356,10 @@ onset near $0.29$ is not a universal stability threshold.
 
 $$K_\phi(n) = \text{wrap\_angle}\!\left(\phi_n - \overline{\phi}_{\mathcal{N}(n)}\right)$$
 
-where $\overline{\phi}_{\mathcal{N}(n)}$ is the circular mean of neighbor phases. Elevated curvature flags numbers at structural boundaries — e.g., the transition between prime-rich and composite-rich regions.
+where $\overline{\phi}_{\mathcal{N}(n)}$ is the circular neighbor mean when
+available. Exact represented phasor cancellation gives unavailable curvature;
+the strict numeric owner raises rather than inventing a value. No generic
+prime/composite boundary interpretation follows from this definition.
 
 **Threshold**: $|K_\phi| < 0.9\pi \approx 2.827$; this is an operational margin inside the exact wrapped bound.
 
@@ -365,9 +380,9 @@ warning policies as any TNFR network:
 | Field | Threshold | Source |
 |-------|-----------|--------|
 | $\Phi_s$ | π/4 ≈ 0.785 (per-node), π/2 ≈ 1.571 (drift), both selected policies | `PHI_S_VON_KOCH_THRESHOLD`, `U6_STRUCTURAL_POTENTIAL_LIMIT` |
-| $|\nabla\phi|$ | ≤ π (phase wrap); measured onset ≈0.29 is experiment-dependent | canonical wrapping / measured protocol |
+| $\lvert\nabla\phi\rvert$ | ≤ π (phase wrap); measured onset ≈0.29 is experiment-dependent | canonical wrapping / measured protocol |
 | $K_\phi$ | < 0.9·π ≈ 2.827 (phase-wrap safety) | `K_PHI_CANONICAL_THRESHOLD` |
-| $\xi_C$ | state-dependent correlation fit, with a `1/√λ₂` graph-spectral fallback under its stated hypotheses | Computed per network |
+| $\xi_C$ | path-unit static coherence-product fit; separate dimensionless spectral fallback from the smallest computed eigenvalue above `1e-9` | Estimator provenance required; selected value need not be the true `λ₂` |
 
 An earlier "arithmetic recalibration" introduced topology-specific thresholds
 expressed as φ/γ/e combinations (e.g. a $K_\phi$ threshold of 3.2275 that
@@ -395,11 +410,13 @@ self-similarity or persistent identity under an autonomous evolution:
   independent of EPI, so this identifies the arithmetic zero set, not full-state
   fixed points, restoring attractors or basins. An empty domain reports these aggregates
   as unavailable rather than assigning it zero coherence.
-- **Geometric.** The nodal topology (radial / annular / multinodal), read by
-  `classify_nodal_topology` from the structural-potential geometry, is
-  **multinodal** — its centers are the highly-composite / abundant numbers
-  (6, 12, 24, 30, 36, …), the hubs of the divisibility lattice.
-- **Fractal.** The coherence length $\xi_C$ sets the region scale.
+- **Geometric.** `classify_nodal_topology` assigns a radial, annular or
+  multinodal diagnostic from the constructed potential. Its result depends
+  on the graph, pressure and classification policy; no universal arithmetic
+  center classification is established here.
+- **Scale read-out.** The available $\xi_C$ estimate is a correlation or
+  spectral statistic with recorded provenance, not proof of fractality or a
+  uniquely determined NFR region size.
 
 The arithmetic network exposes structural read-outs through `conservation()`
 and initializes the separate auxiliary harmonic model through
@@ -419,9 +436,9 @@ nodal dynamics generates a symplectic geometry:
   harmonic substrate model; they do not prove that the arithmetic graph
   trajectory remains in its realizable image.
 
-The emergent geometry is thus **potential-dominated**: the arithmetic structure
-(factorization pressure) drives the structural-potential geometry, while phase is
-the secondary size grading.
+The pressure contributes to potential and the chosen phase contributes to the
+phase sector. Relative numerical magnitudes depend on input scales and policy;
+no universal potential-dominance theorem follows.
 
 ---
 
@@ -504,29 +521,34 @@ The implementation uses Paley graphs — algebraic constructions from quadratic 
 
 A factor candidate is TNFR-certified when $\geq 4$ of 8 criteria hold and $\geq 50\%$ of partition endorsements are positive:
 
-| Criterion | Threshold | Physical basis |
+| Criterion | Threshold | Configured feature interpretation |
 |-----------|-----------|---------------|
-| $\Delta\mathrm{NFR}$ gain | $\geq 0.15$ drop | Nodal equation convergence |
+| $\Delta\mathrm{NFR}$ gain | $\geq 0.15$ drop | Selected heuristic drop, not a convergence theorem |
 | Coherence ratio | $0.72 \leq r \leq 1.38$ | Structural similarity |
 | $\Phi_s$ delta | $\leq 0.35$ | Selected factor-certification feature; not the canonical U6 $\pi/2$ drift policy |
 | Gradient delta | $\leq 0.40$ | Phase desynchronization limit |
 | Curvature delta | $\leq 0.45$ | Geometric stability |
 | Periodicity confidence | $\geq 0.55$ | Structural mode certainty |
-| Stabilized fraction | $\geq 0.30$ | Multi-scale coherence (U5) |
+| Stabilized fraction | $\geq 0.30$ | Selected heuristic fraction; not a U5 proof |
 | Coverage fraction | $\geq 0.15$ | Spatial completeness |
 
 ### 9.4 Pure Mode
 
-Setting `TNFR_PURE_MODE=1` restricts factor certification to structural confidence ($\geq 0.6$) without arithmetic divisibility checks, isolating the TNFR-specific signal from classical shortcuts.
+Setting `TNFR_PURE_MODE=1` requests the factorizer's structural-confidence policy. A positive heuristic label without arithmetic divisibility verification is not a mathematical factor certificate or proof of a TNFR-specific mechanism.
 
 ### 9.5 Three Sectors of Primality (Unification — MEASURED)
 
-The factorization machinery (§9.1–9.4), the arithmetic primality criterion (§4), and the emergent-geometry program are **one structure read in three sectors**, not independent projects. Example [117_emergent_geometry_residue_graph.py](../examples/08_emergent_geometry/117_emergent_geometry_residue_graph.py) measures all three with the **emergent geometry used for everything** (the structural-diffusion operator $L_{rw} = I - D^{-1}W$ is *exactly* the canonical ΔNFR EPI channel), and `benchmarks/primes_as_consequence.py` (Camino 11) frames the trichotomy:
+The factorization machinery (§9.1–9.4), arithmetic pressure criterion (§4) and
+residue-graph diagnostics reuse selected arithmetic structures, but they have
+different inputs and observations. Example
+[117_emergent_geometry_residue_graph.py](../examples/08_emergent_geometry/117_emergent_geometry_residue_graph.py)
+and `benchmarks/primes_as_consequence.py` compare them. Using the same
+`L_rw` owner does not identify their full dynamics or prove one common carrier:
 
 | Sector | Method | Input | Emergent? |
 |--------|--------|-------|-----------|
 | **A — Arithmetic** | $\Delta\mathrm{NFR}(n)=0$ (§4) | $\Omega, \tau, \sigma$ (the factorization) | **re-expression** (primes-IN; exact but circular as a derivation) |
-| **B — Spectral** | $g(n)=\lvert\lambda_2(\text{residue circulant}) - \tfrac{n-\sqrt n}{2}\rvert = 0$ | prescribed modular arithmetic and residue graph | Spectral diagnostic without factorization input; scope and prime-power controls in §§9.6–9.7 |
+| **B — Spectral** | Paley eigenvalue comparison with explicit normalization: $d\lambda_2(L_{rw})$ versus $(n-\sqrt n)/2$ on the regular self-adjoint prime case | prescribed modular arithmetic and residue graph | Spectral diagnostic without factorization input; scope and prime-power controls in §§9.6–9.7 |
 | **C — Representation** | irreducibility (Schur $\langle\chi,\chi\rangle=1$) | a finite group | **refuted** (the dim-4 mode of $K_5$ is irreducible yet $4=2\cdot 2$) |
 
 **The unification, stated honestly:**
@@ -577,7 +599,10 @@ complete emergent geometry. The arithmetic input is $x^2\bmod n$.
 
 **Measured (all reproducible in example 119):**
 
-1. **Unified primality.** "The directed emergent operator has exactly **3 distinct (complex) eigenvalues**" $\iff n$ is an odd prime — **58/58 correct** over odd $n\in[5,119]$, zero mismatches. This extends Reading B from $n\equiv 1\pmod 4$ to **all odd primes** via the phase sector.
+1. **Finite primality comparison.** A three-distinct-eigenvalue rule matches
+   the prime labels in **58/58** tested odd integers in `[5,119]`. The
+   forward odd-prime count follows from §9.11; the finite comparison does
+   not prove the converse for all composite integers.
 
 2. **Prime powers resolved.** The directed operator gives **4+** distinct eigenvalues for $9=3^2$, $25=5^2$, $49=7^2$, $121=11^2$ — it **separates** primes from prime powers, which the real symmetric operator of example 117 could **not** ($49$ was rigid there, the honest §9.5 caveat). The phase channel removes that caveat.
 
@@ -624,23 +649,36 @@ inputs by vertex transitivity. It does not prove that every per-node observer or
 perturbed state is blind, does not identify the Riemann obstruction with this
 finite graph result, and closes no open problem.
 
-### 9.8 Can a Canonical Symmetry-Break Cross the Wall? — The B2-P2 Lever, Measured (NEGATIVE)
+### 9.8 Symmetry-breaking controls on the declared residue fixtures
 
-§9.7 located the wall at vertex-transitivity. The obvious next move is to **break** that symmetry canonically — the TNFR-Riemann program calls this candidate **B2-P2 (NodeIndexedCouplingWeights)**. The analytical verdict is on record: AGENTS.md "B0★-β-P2 FAILS" (§13sexagesima-sexta) closes P2 at the **slot level** — the nodal equation $\partial\mathrm{EPI}/\partial t=\nu_f\cdot\Delta\mathrm{NFR}$ has no per-node-weight slot; weights enter only as graph-level **channel** scalars ($\texttt{DNFR\_WEIGHTS}=\{\text{phase},\text{epi},\text{vf},\text{topo}\}$), so any per-node law needs an external rule-selection axiom not derivable from the catalog. Example [121_canonical_symmetry_break_negative.py](../examples/08_emergent_geometry/121_canonical_symmetry_break_negative.py) **measures** this closure at the number-theory level.
+Example [121](../examples/08_emergent_geometry/121_canonical_symmetry_break_negative.py)
+compares a symmetric seed, capacities assigned from selected graph invariants,
+and an arithmetic capacity assignment with a shuffled control. It is a finite
+comparison on the chosen vertex-transitive residue graphs.
 
-**The code fact (the missing slot).** `tnfr.dynamics.dnfr._configure_dnfr_weights` produces ONE graph-level dict of channel weights, normalized once and reused for every node. There is no per-node weight in the canonical machinery; the only per-node levers are (a) the initial seed and (b) the per-node $\nu_f$. Both are tested.
+The channel-weight dictionary is graph-level configuration. This does not mean
+the nodal equation has no local dependence: capacity, phase, EPI and edge
+conductance are node/edge data, and the pressure depends on them. A missing
+configuration slot is an implementation fact, not a physical impossibility
+theorem or proof that every possible local law needs an external axiom.
 
-**The three levers (measured).**
-
-| Lever | Result | Reading |
+| Lever | Historical observation | Scope |
 |---|---|---|
-| **D1** symmetric seed | $\sigma(\Phi_s)\sim 10^{-32}$ (machine zero), prime & composite alike | the canonical dynamics ALONE makes zero per-node structure ($\Delta\mathrm{NFR}=0$ on a uniform field); all of §9.7's variation came from the random seed |
-| **D2** structure-derived $\nu_f$ | in/out-degree, triangle counts: $\sigma=0$ exactly | every per-node structural invariant is constant on the vertex-transitive graph → any canonical structure-derived $\nu_f$ is uniform → no break |
-| **D3** arithmetic-injected $\nu_f$ | $\sigma_{\mathrm{arith}}/\sigma_{\mathrm{shuffled}}\approx 1$ (0.96–1.05) | injecting $\nu_f=1+[\,i\in\mathrm{QR}\,]$ does break uniformity, but a shuffled control with the same $\nu_f$ multiset (QR labels destroyed) gives identical dispersion → the substrate echoes the injected **multiset**, not the arithmetic (§9.5/ex 116 mechanism), and is circular |
+| Symmetric seed | Potential dispersion near numerical zero | Consistent with an invariant state and equivariant read-out |
+| Degree/triangle-derived capacity | Uniform capacity on these graphs | A function of invariant bare-graph data is orbit-constant |
+| Arithmetic capacity and shuffle | Dispersion ratio about 0.96–1.05 | The selected statistic did not separate those assignments in this sample |
 
-**Conclusion.** There is **no canonical (non-circular) per-node lever** that breaks vertex-transitivity: the nodal equation has no per-node weight slot (code fact); structure-derived levers are uniform (D2); the symmetric dynamics makes no structure (D1); and the only lever that does break uniformity is an external arithmetic injection that the shuffled control reveals as echo (D3). This is the **empirical, number-theory-level confirmation** of the analytical B2-P2 closure. The wall of §9.7 is **structural**, not an artefact of which canonical knob was turned.
+The exact symmetry statement is conditional: a deterministic equivariant
+evolution with invariant full initial state cannot select a non-invariant state
+while its uniqueness/domain assumptions hold. It does not exclude symmetry
+breaking from an admitted non-invariant state, instability under perturbations,
+support changes, a different observable or a finer TNFR description. A uniform
+EPI field alone is not sufficient for zero multichannel pressure if phase,
+capacity or topology contributions differ.
 
-**Honest scope.** A clean **measured negative**: it confirms the analytical closure, it does **not** break the wall, and it closes no open problem. It is a re-expression of two known structural facts — no canonical per-node observable exists on a homogeneous (vertex-transitive) graph, and the nodal equation carries no per-node weight slot — measured here in TNFR's own substrate.
+The previous universal conclusion “no canonical per-node lever exists” is
+withdrawn. These controls do not settle every endogenous selection mechanism
+and do not identify the Riemann obstruction with a finite fixed-sector result.
 
 ### 9.9 Phase-Sector Periodicity — a Basis-Invariant Read of the CRT Factor Coset (MEASURED)
 
@@ -652,11 +690,17 @@ finite graph result, and closes no open problem.
 
 **The canonical, basis-invariant observable + certificate.** Let $C_d$ be the subspace of vectors constant on classes $(i\bmod d)$ with the constant direction removed, $P_d$ its projector, and $\Pi_\lambda$ the spectral projector of a (possibly degenerate) eigen-cluster. The score
 $$\mathrm{score}(d,\lambda)=\lVert P_d\,\Pi_\lambda\rVert_2^2$$
-depends only on the two subspaces, hence is invariant under $Q_\lambda\to Q_\lambda U$. The **decision** is not a threshold but an exact-invariant-subspace certificate: $d$ is a genuine period iff
+depends only on the two subspaces, hence is invariant under
+$Q_\lambda\to Q_\lambda U$. The exact algebraic condition is
+`r(d)=0` if and only if the chosen subspace is invariant under `L`.
+The implementation instead accepts the **numerical** tolerance test
 $$r(d)=\lVert (I-P_d)\,L\,Q_d\rVert_2 < \tau,\qquad \tau=\sqrt{\varepsilon}\,\lVert L\rVert_2$$
-(machine precision $\times$ operator norm — a **derived** tolerance, not a hand-picked constant).
+(a selected square-root-machine-epsilon scale times the operator norm).
+This is approximate invariant-subspace evidence. It is not an exact rational
+certificate or a universal equivalence between small residual and an integer
+being a divisor. A separate arithmetic check is needed for an actual factor.
 
-**Measured (seed-free; exact linear algebra).**
+**Measured (seed-free; floating linear algebra).**
 
 | $n$ | true $p$ | false $d$ | $\mathrm{score}(p)$ | $\mathrm{score}(d)$ | $r(p)$ | $r(d)$ |
 |---|---|---|---|---|---|---|
@@ -695,7 +739,11 @@ where $\mathrm{Fix}(G)=\{\text{functions constant on the orbits of }\mathrm{Aut}
   substrate satisfies $P_{\mathrm{triv}}v=v$ for the symmetric seed
   (orbit-constant); vertex-transitive $\Rightarrow$ $\sigma(\Phi_s)=0$ in this
   declared construction.
-- **M5**: only the constant eigenmode has $\lVert P_{\mathrm{triv}}v\rVert=1$ (it **is** $\mathrm{Fix}(G)$); every node-separating mode has $\lVert P_{\mathrm{triv}}v\rVert=0$ ($\mathrm{Fix}(G)^\perp$).
+- **M5**: on vertex-transitive cases, the fixed sector consists only of
+  constants. On the star and path it has several dimensions, so nonconstant
+  orbit-constant modes also belong to that sector. Commuting projectors permit
+  a sector-adapted eigenbasis; an arbitrary basis in a degenerate eigenspace
+  need not consist of pure-sector vectors.
 
 **The comparison.** Residue-graph symmetry, the measured substrate limitation,
 spectral primality and the Riemann programme can each be organized using a
@@ -727,7 +775,17 @@ $$\lambda(t)=\sum_{r\in H}\zeta^{tr}.$$
 
 **Reading of the law.** $s_k(p)-1=\gcd(k,p-1)=[(\mathbb{Z}/p\mathbb{Z})^\times:H]=$ the number of $k$-th power classes $=[K_d:\mathbb{Q}]$, the degree of the cyclotomic subfield carrying the periods. The maximal rank $k+1$ is attained $\iff d=k\iff k\mid p-1\iff p\equiv 1\pmod k\iff p$ splits completely in $\mathbb{Q}(\zeta_k)$. The quadratic case is $k=2$ ($\gcd(2,p-1)=2$ for every odd $p$ $\Rightarrow$ the **uniform rank 3** of §9.6); the extreme $d=p-1$ ($R_k=\{1\}$) is the directed $p$-cycle, all $p$ characters distinct, $s=p=(p-1)+1$.
 
-**The even-modulus boundary (PROVED).** The proof uses cyclicity of $(\mathbb{Z}/p\mathbb{Z})^\times$ at exactly one point — that the $k$-th powers form a single index-$d$ subgroup. This holds at every **odd** prime power $p^e$ (where $(\mathbb{Z}/p^e\mathbb{Z})^\times$ is cyclic), giving the local quadratic factor $f(e)=e+\lceil e/2\rceil+1$ and the conductor-annotated product theorem over odd moduli. It **fails at the prime $2$**: $(\mathbb{Z}/2^e\mathbb{Z})^\times$ is **non-cyclic** for $e\ge 3$ ($\cong\mathbb{Z}/2\times\mathbb{Z}/2^{e-2}$), so the squares form an index-$4$ (not index-$2$) subgroup and the Gauss-sum stratification differs; already $2^1$ is degenerate (the sole unit is $1$). Measured (example 154 machinery): the conductor-annotated count at $2^e$ is $2,4,8,10,14,16,20$ for $e=1,\dots,7$ versus $f(e)=3,4,6,7,9,10,12$ — agreeing only at $e=2$ by coincidence, while every odd prime power matches $f(e)$ exactly. Hence the conductor-annotated product theorem and the cyclotomy law are genuinely **odd-only**, and $A(2^e)$ is the arithmetic continuation, not a spectral count.
+**Prime versus prime-power scope.** The prime-field proof above also works
+at `p=2`: the nonzero power-residue set is `{1}`, the two-node Laplacian
+has eigenvalues `0,2`, and `gcd(k,1)+1=2`. It is therefore not an odd-only
+prime theorem. The separate conductor-annotated quadratic product formula
+over odd prime powers requires its own arithmetic stratification; cyclicity
+of the unit group alone does not extend the prime-field independence proof
+to higher powers. At `2^e`, the unit group is noncyclic for `e>=3` and the
+quadratic strata differ. The recorded annotated counts `2,4,8,10,14,16,20`
+for `e=1,...,7` do not follow the odd-prime-power expression
+`e+ceil(e/2)+1`. That distinguishes the annotated prime-power formula from
+the prime-field cyclotomy theorem; it does not invalidate the latter at two.
 
 **Honest scope.** The cyclotomy law is classical Gauss-period / cyclotomy theory (the $k$-th power Cayley eigenvalues are Gauss periods of degree $\gcd(k,p-1)$); the contribution is the **TNFR structural-diffusion framing** and the closed-form `power_residue_rank` — now a **proved** canonical fact, not a measured pattern. Verified computationally for $k\le 40$ across the primes $p<64$ (680 cases, 0 failures) and proved for all $k$. It detects primality/cyclotomy structurally; it does not factor, does not reach the continuous arg-$\zeta$ phase, and closes no open problem.
 
@@ -770,57 +828,37 @@ graph products and observation rules are supplied. No common obstruction
 identifies these information losses with analytic $\arg\zeta$, and no
 physical particles have been generated or identified by these diagnostics.
 
-### 9.13 The Arithmetic Pulse — the Cyclotomy Law as the Prime's Chord (MEASURED)
+### 9.13 The Arithmetic Pulse — two declared linear responses
 
-The *pulse* read-out of the **auxiliary conservative graph-wave model**
-([EMERGENT_ONTOLOGY.md §5.5](EMERGENT_ONTOLOGY.md)) reads the resonant spectrum
-$\omega_k=\sqrt{\lambda_k}$ of the canonical $L_{rw}$. Applied to the arithmetic
-NFR — the residue Cayley network $\mathrm{Cay}(\mathbb{Z}/n,R_k)$ — its **tone
-structure is exactly the PROVED cyclotomy law** of §9.11.
-[benchmarks/emergent_arithmetic_pulse.py](../benchmarks/emergent_arithmetic_pulse.py)
-measures it. Its second-order conservative evolution is not derived from the
-first-order pure-EPI diffusion law. The latter has factors
-$e^{-\nu_f\lambda_k t}$; the separately declared wave uses frequencies
-$\sqrt{\lambda_k}$ on its admitted nonnegative self-adjoint domain. Complex
-directed spectra do not automatically provide real conservative frequencies.
+The same finite residue operator supports different **declared** models.
+The pure-EPI heat response is
+$h(t)=e_o^*e^{-\nu_f L t}e_o$. On pointed circulants its visible recurrence
+order equals the number of distinct eigenvalues because every spectral
+projector has weight $m_\lambda/n$. This exact scope is developed in
+[TNFR_ARITHMETIC_DYNAMICS.md](TNFR_ARITHMETIC_DYNAMICS.md).
 
-**The pulse tone-count is the cyclotomy law.** The number of *distinct* resonant
-tones of the residue-NFR pulse is `structural_frequency_rank` (the distinct
-eigenvalues of $L_{rw}$), and on a prime this is
+The separately chosen conservative graph wave uses $\omega_k=\sqrt{\lambda_k}$
+only on its nonnegative self-adjoint domain. Its second-order law is not
+derived from the first-order diffusion identity. A directed complex spectrum
+does not supply a set of real conservative frequencies.
 
-$$\#\{\text{distinct tones}\} = s_k(p) = \gcd(k,p-1)+1 \quad (\text{§9.11, PROVED}).$$
+For quadratic residues at an odd prime $p\equiv1\pmod4$, the real Paley operator
+has one zero eigenvalue and two distinct positive eigenvalues, each nonzero
+one with multiplicity $(p-1)/2$. The wave consequently has a stationary mode
+and two nonzero frequencies. The zero mode must be distinguished from an
+oscillatory tone. The general prime cyclotomy count in §9.11 is a spectral
+count even when no conservative-wave interpretation is admitted.
 
-Measured exactly for $k=2,3,4,5$ across the primes (0 mismatches): the **arithmetic
-pulse IS the cyclotomy law** — the harmonic structure of a number's vibration is
-its cyclotomy degree.
+[emergent_arithmetic_pulse.py](../benchmarks/emergent_arithmetic_pulse.py)
+records finite comparisons; its historical name does not derive an
+autonomous arithmetic oscillator. Composite counts and collisions in §9.12
+remain fixture-dependent diagnostics, not a complete factorization-type
+decoder or a proof that primes minimize every possible spectrum complexity.
 
-**A prime is the most degenerate chord.** For $p\equiv1\pmod4$ the real Paley-NFR
-pulse is the **silent mode** ($\lambda=0$) plus exactly **two resonant tones**
-$(\omega_-,\omega_+)$, each with multiplicity $(p-1)/2$ — the pulse's own
-`spectral_multiplicity` field reads $(p-1)/2$ exactly. A prime vibrates in the
-simplest chord the arithmetic NFR allows, at any size; **composites split the
-chord into more tones, multiplicatively** ($15\to9=3\times3$, $45\to12=4\times3$),
-so the tone-count distinguishes the listed **factorization types**. The
-collisions and annotated/unannotated distinction in §9.12 still apply; this
-is not a complete factorization-type decoder.
+The graph, arithmetic carrier, initial excitation and chosen evolution are
+supplied. These results do not derive their occurrence, sustained maintenance,
+particle identity or an analytic zeta bridge.
 
-**Observation depends on the seed and readout.** For the symmetric-seed
-fixtures, vertex-transitivity makes equivariant per-node readouts constant
-over the orbit. Other states may excite nonuniform sectors. The collective
-spectral rank carries cyclotomic information but is a scalar invariant, not
-a vector in $\mathrm{Fix}(G)^\perp$. The directed complex-spectrum extension
-in §9.6 remains a different diagnostic from the real conservative wave.
-
-**Honest scope.** The tone-count *is* `structural_frequency_rank` (already the
-documented cyclotomy diagnostic), and $s_k(p)=\gcd(k,p-1)+1$ is the PROVED
-classical Gauss-period fact of §9.11. The contribution is the conservative-**pulse**
-reading — those distinct eigenvalues are the distinct resonant **tones** of the
-arithmetic vibration, so a prime is a maximally-degenerate chord and the
-factorization type is the chord size. It detects primality / factorization
-**type** structurally; it does **not** factor, does **not** reach the prime
-**identities** or the continuous $\arg\zeta$ phase. No common
-$\mathrm{Fix}(S_n)^\perp$ representation has been established (§10), and no
-open problem is closed.
 
 ---
 
@@ -965,7 +1003,7 @@ $$\Omega(8) = 3, \quad \tau(8) = 4, \quad \sigma(8) = 15$$
 
 Using $\Omega$ (with multiplicity) rather than $\omega$ (distinct primes) gives prime powers a strong pressure signal: $2^3$ registers $\Omega = 3$, not $\omega = 1$.
 
-### 11.4 Highly Composite: $n = 30 = 2 \times 3 \times 5$
+### 11.4 Squarefree Composite: $n = 30 = 2 \times 3 \times 5$
 
 $$\Omega(30) = 3, \quad \tau(30) = 8, \quad \sigma(30) = 72$$
 
@@ -1015,8 +1053,8 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 | [102_nodal_flow_primes_equilibria.py](../examples/07_number_theory/102_nodal_flow_primes_equilibria.py) | The actual nodal flow $\partial\mathrm{EPI}/\partial t=\nu_f\Delta\mathrm{NFR}$ on numbers: primes are EXACTLY the equilibria (§4 theorem in motion, frozen) while composites drift $\Omega$-graded; refines §7.1 — primes are static low-$\Phi_s$ sinks but NOT dynamical attractors (diffusion flow pulls primes UP toward the composite bulk) |
 | [146_primality_grammatical_inertness.py](../examples/07_number_theory/146_primality_grammatical_inertness.py) | Tests the restricted scalar flow $\mathrm{EPI}_{k+1}=\mathrm{EPI}_k+dt\,\nu_f\Delta\mathrm{NFR}_{\rm arith}$ with arithmetic pressure held fixed. It verifies prime $\iff\Delta\mathrm{NFR}_{\rm arith}=0\iff C=1$, zero prime drift for sampled positive capacities, and exact capacity scaling of composite drift. Because no canonical graph operator or grammar history is applied, it does not prove grammatical inertness. Fixed positive composite pressure also gives an unbounded infinite-time integral, so the fixture is not a U2-convergence result or attraction toward primality. |
 | [147_numbers_as_free_monoid_words.py](../examples/07_number_theory/147_numbers_as_free_monoid_words.py) | Compares the classical free commutative monoid on the primes with the unit-coefficient arithmetic pressure. The exact content is the additive law for $\Omega$, the coprime multiplicative laws for $\tau$ and $\sigma$, and $\Omega(n)=1\iff n$ prime for $n\ge2$. Count $\Omega$ and log-size give a declared analogy with pressure and capacity; integers are not operator-grammar words, and prime multiplication is not a canonical destabilizer. |
-| [148_capacity_arm_carries_von_mangoldt.py](../examples/07_number_theory/148_capacity_arm_carries_von_mangoldt.py) | Answers which dual-lever arm carries the Riemann difficulty (and why the substrate is blind). The CAPACITY arm $\log n = \sum_{d\mid n}\Lambda(d)$ exactly (Möbius-inverse $\Lambda=\mu*\log$), so von Mangoldt — and $\psi(x)=\sum\Lambda$, the Chebyshev staircase carrying $S(T)$ (ex 96) — sits on the capacity ($\nu_f$, ex 147) arm. The Riemann ZEROS are the POLES of the capacity Dirichlet series $-\zeta'/\zeta(s)=\sum\Lambda(n)n^{-s}$ (P12; measured simple pole residue 1 at $\rho_1=\tfrac12+14.1347i$), while $\sum\Omega(n)n^{-s}=\zeta(s)P(s)$ has $\zeta$ in the numerator (zeros invisible to the PRESSURE arm). The pressure arm $\Omega$ is smooth (Erdős–Kac Gaussian CLT); the per-node substrate encodes pressure ($\Phi_s\leftarrow\Delta\mathrm{NFR}\leftarrow\Omega$), so it is structurally BLIND to the capacity/von-Mangoldt arm where the zeros live — the $\mathrm{Fix}(G)^\perp$ blindness of ex 103/116/120, now located on the dual-lever axis. Classical identities read through the lens; does not advance RH (G4 open, program paused at T-HP) (honest scope) |
-| [149_p14_is_the_capacity_arm_operator.py](../examples/07_number_theory/149_p14_is_the_capacity_arm_operator.py) | Identifies the canonical TNFR-Riemann Hamiltonian P14 as EXACTLY the capacity-arm operator of the dual-lever — the structural reason it sees the primes while the pressure substrate is blind (closes the loop of ex 148). Every P14 node $(p,k)$ carries $\nu_f = k\log p$ (CAPACITY, 20/20 exact) and $\Delta\mathrm{NFR}=0$ (PRESSURE neutral), so P14 puts all structural information on the capacity lever — the axis (log $=\nu_f$) carrying von Mangoldt + the zeros (ex 148). Inter-prime orthogonality (disconnected ladders, independent invariant subspaces) IS the Euler product at the operator level $=$ the free-monoid freedom (ex 147). The weighted trace reproduces $Z_{vM}(s)=-\zeta'/\zeta(s)$ to machine precision (certificate $\mathrm{overall\_ok}$), and the zeros are its poles. Unifies physics $\nu_f$-capacity $\leftrightarrow$ free-monoid size-grading $\leftrightarrow$ the prime-ladder Hamiltonian; no new operator, does not advance RH (G4 open, program paused at T-HP) (honest scope) |
+| [148_capacity_arm_carries_von_mangoldt.py](../examples/07_number_theory/148_capacity_arm_carries_von_mangoldt.py) | Uses the classical identities `log n = sum_(d divides n) Lambda(d)` and Mobius inversion. Assigned logarithmic capacity is an arithmetic coordinate. The continued `-zeta_prime/zeta` has residue minus the multiplicity at a zeta zero; no global pressure-versus-capacity observability dichotomy or analytic symmetry-complement result follows. |
+| [149_p14_is_the_capacity_arm_operator.py](../examples/07_number_theory/149_p14_is_the_capacity_arm_operator.py) | Reads back supplied `nu_f=k*log(p)` entries in the decoupled P14 matrix. Its weighted finite trace agrees with the matching finite von Mangoldt sum; convergence to the classical infinite identity has domain `Re(s)>1`. This is a declared arithmetic construction, not a derivation of prime labels, REMESH occurrence or a zero-spectrum Hamiltonian. |
 | [153_structural_frequency_rank_cyclotomy.py](../examples/07_number_theory/153_structural_frequency_rank_cyclotomy.py) | Applies the structural-diffusion spectrum to power-residue Cayley graphs. The exact cyclotomy law $s_k(p)=\gcd(k,p-1)+1$ is proved for the declared odd-prime construction from classical Gauss-period theory and checked on a finite grid. Other correlations and squarefree grading observations in the example remain finite measurements; no restoring primality dynamics or open-problem result follows. |
 
 ### 12.3 Test Coverage
@@ -1031,7 +1069,11 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 
 ---
 
-## 13. Open Questions and Research Directions
+## 13. Reference questions and research boundaries
+
+These questions are a secondary inventory, not an active task queue. The
+[FIVE_STAGE_EXECUTION_PLAN.md](research/FIVE_STAGE_EXECUTION_PLAN.md) owns priorities;
+arithmetic reuse does not replace the current joint nodal emergence objective.
 
 ### 13.1 Computational
 
@@ -1052,7 +1094,13 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 
 - **Special prime families** (PARTIALLY ADDRESSED — [100_prime_families_orbits.py](../examples/07_number_theory/100_prime_families_orbits.py)): twin, cousin, sexy, Sophie Germain, safe, Cunningham, Mersenne, and constellation families are organized as **structured subsets of the zero-pressure fixed-point set** $Z=\{n\ge 2:\Delta\mathrm{NFR}(n)=0\}$ (the primes), carved out by three classes of arithmetic map: additive-gap level-sets ($S_g(p)=p+g$), affine-recurrence orbits ($T(p)=2p+1$: Sophie Germain, safe, Cunningham chains), and exponential-form images ($M(p)=2^p-1$: Mersenne). Detection/generation is exact via the verified $\Delta\mathrm{NFR}=0$ theorem; **infinitude conjectures** (twin-prime, Sophie Germain, Mersenne) remain OPEN — the same honest stance as Goldbach (§13.2). The witness pressure signatures (e.g. the twin witness $p+1$ divisible by 6) are faithful TNFR restatements of classical divisibility facts.
 - **Arithmetic network as a coupled system** (MEASURED — [101_numbers_as_coupled_network.py](../examples/07_number_theory/101_numbers_as_coupled_network.py)): on the divisibility/GCD network the prime-factor count $\Omega(n)$ is a **common structural coordinate** that grades both the per-node arithmetic pressure $\Delta\mathrm{NFR}$ ($r(\Omega,\Delta\mathrm{NFR})\approx 0.94$) and the network-transport centrality ($r(\Omega,\deg)\approx 0.75$), so the two pictures are linked ($r(\Delta\mathrm{NFR},\deg)\approx 0.81$). Primes ($\Omega{=}1$, $\Delta\mathrm{NFR}{=}0$) form the **transport periphery** (≈ 0.18× the composite stationary mass, ≈ 2.4× effective resistance, and large primes $p>N/2$ are literally isolated). Honest scope: a **correspondence through $\Omega$, not a dynamical identity** — the per-node $\Delta\mathrm{NFR}$ is not the graph-diffusion Laplacian; the network is **not scale-free**; "primes peripheral" restates the classical $\gcd(p,m)>1\iff p\mid m$ in transport language.
-- **The nodal flow on numbers** (MEASURED — [102_nodal_flow_primes_equilibria.py](../examples/07_number_theory/102_nodal_flow_primes_equilibria.py)): running the actual nodal equation $\partial\mathrm{EPI}/\partial t=\nu_f\Delta\mathrm{NFR}$ settles the §7.1 "primes attract composites" question. **Positive result**: primes are EXACTLY the equilibria of the arithmetic flow (the §4 theorem in motion — $\Delta\mathrm{NFR}{=}0\iff\partial\mathrm{EPI}/\partial t{=}0$; 34/34 primes frozen, composite drift is $\Omega$-graded $r\approx 0.93$). **Refinement of §7.1**: those equilibria are NOT attractors — they are marginal (no restoring force, $\Delta\mathrm{NFR}_{\mathrm{arith}}$ independent of EPI), and the canonical diffusion flow instead relaxes to the degree-weighted (composite) bulk, pulling primes UP toward composites (the opposite of "attract"). The §7.1 STATIC half (primes at low $\Phi_s$) is correct; the DYNAMICAL "attract" half is not realized — a dynamical extension of the Example 101 inversion.
+- **Held arithmetic-pressure flow** ([example 102](../examples/07_number_theory/102_nodal_flow_primes_equilibria.py)):
+  positive fixed capacity and the assigned arithmetic pressure give zero EPI
+  rate at primes and constant positive drift at composites. There is no
+  restoring response because that pressure does not depend on evolving EPI.
+  A separate fixed-graph diffusion comparison relaxes toward its weighted
+  mean under its own hypotheses. Neither model proves that primes are
+  universal potential minima, attractors, or stable full-state NFRs.
 - **Higher-order pressure**: Are there fourth or fifth pressure components (beyond $\Omega$, $\tau$, $\sigma$) that provide additional structural information?
 - **Algebraic number fields**: Extension of the arithmetic triad to Gaussian integers, Eisenstein integers, or general number fields.
 - **p-adic structure**: Connection between the arithmetic tetrad and p-adic analysis.

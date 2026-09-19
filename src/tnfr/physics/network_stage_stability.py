@@ -43,24 +43,22 @@ fixed-map theorem.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from fractions import Fraction
-import math
 from numbers import Real
 from operator import index as integer_index
 from typing import Any
 
 from ..alias import set_attr, set_attr_generic, set_attr_str
-from ..constants.aliases import (
-    ALIAS_EPI,
-    ALIAS_EPI_KIND,
-    ALIAS_THETA,
-    ALIAS_VF,
-)
+from ..constants.aliases import ALIAS_EPI, ALIAS_EPI_KIND, ALIAS_THETA, ALIAS_VF
 from ..mathematics.unified_numerical import np
 from ..operators._resonance_identity import resonance_identity_failures
 from ..operators.operator_contracts import contract_for
 from ..types import Glyph, serialize_bepi
+from ._exact_metric import (
+    binary64_vectors_exactly_proportional as _exactly_proportional,
+)
 from ._neighbor_epi_realization import (
     exact_binary64_matrix,
     exact_ideal_neighbor_blend_map,
@@ -68,9 +66,6 @@ from ._neighbor_epi_realization import (
     readonly_float_array,
     represented_neighbor_blend_map,
     validate_certificate_tolerance,
-)
-from ._exact_metric import (
-    binary64_vectors_exactly_proportional as _exactly_proportional,
 )
 from .hybrid_operator_stability import (
     AffineEPIJumpGainCertificate,
@@ -219,9 +214,7 @@ def _fraction_upper_float(value: Fraction) -> float:
     return result
 
 
-def _exact_weighted_mean(
-    weights: Any, state: Any
-) -> Fraction:
+def _exact_weighted_mean(weights: Any, state: Any) -> Fraction:
     exact_weights = tuple(Fraction.from_float(float(value)) for value in weights)
     exact_state = tuple(Fraction.from_float(float(value)) for value in state)
     return sum(
@@ -326,9 +319,7 @@ class AllTargetNeighborStageCertificate:
     represented_repeated_energy_gain_bound: float | None
     represented_finite_repetition_disagreement_contraction_certified: bool | None
     represented_asymptotic_disagreement_convergence_certified: bool | None
-    exact_observed_runtime_minus_represented_repeated_state: (
-        tuple[Fraction, ...] | None
-    )
+    exact_observed_runtime_minus_represented_repeated_state: tuple[Fraction, ...] | None
     observed_runtime_matches_represented_repeated_state_exactly: bool | None
     global_binary64_runtime_repetition_certified: bool
     tolerance: float
@@ -391,9 +382,7 @@ class NeighborStageDiffusionBridgeCertificate:
     def failed_conditions(self) -> tuple[str, ...]:
         """Return unmet hypotheses of the represented one-stage bridge."""
 
-        return tuple(
-            name for name, passed in self.bridge_conditions if not passed
-        )
+        return tuple(name for name, passed in self.bridge_conditions if not passed)
 
 
 @dataclass(frozen=True, slots=True)
@@ -700,8 +689,7 @@ def _validate_bridge_stage_certificate(
             local.ideal_real_affine_regime != ideal_regime
             or local.ideal_real_hard_clipping_inactive_by_convexity
             != (hard_clip and convex_mix and state_in_bounds)
-            or local.runtime_hard_clipping_inactive_at_snapshot
-            != clipping_inactive
+            or local.runtime_hard_clipping_inactive_at_snapshot != clipping_inactive
         ):
             raise ValueError("stage local affine-regime summary is inconsistent")
 
@@ -847,9 +835,7 @@ def _validate_bridge_stage_certificate(
             ):
                 raise ValueError("RA local frequency result is inconsistent")
             expected_identity_target = (
-                local_proposed
-                if identity_passed
-                else float(local_state[target_index])
+                local_proposed if identity_passed else float(local_state[target_index])
             )
             if float(local.runtime_target_value) != expected_identity_target:
                 raise ValueError("RA local identity-gated EPI result is inconsistent")
@@ -948,9 +934,7 @@ def _validate_bridge_stage_certificate(
         )
         if not np.array_equal(local_pressure_defect, current_pressure - post_pressure):
             raise ValueError("stage local pure-EPI pressure defect is inconsistent")
-        local_defect_norm = float(
-            np.max(np.abs(local_pressure_defect), initial=0.0)
-        )
+        local_defect_norm = float(np.max(np.abs(local_pressure_defect), initial=0.0))
         if (
             local.post_reset_pressure_manifold_defect_norm != local_defect_norm
             or local.pressure_refresh_detected_at_snapshot
@@ -977,16 +961,12 @@ def _validate_bridge_stage_certificate(
         # one coordinate from the common snapshot, so summing its detached
         # pressure defects yields the simultaneous all-target defect.  This is
         # a binary64 snapshot diagnostic, not the local exact iff theorem.
-        pressure_defect = np.sum(
-            np.vstack(local_pressure_defects), axis=0, dtype=float
-        )
+        pressure_defect = np.sum(np.vstack(local_pressure_defects), axis=0, dtype=float)
     else:
         pressure_defect = np.zeros(dimension, dtype=float)
     if not np.all(np.isfinite(pressure_defect)):
         raise ValueError("all-target pure-EPI pressure defect exceeds binary64 range")
-    pressure_defect_norm = float(
-        np.max(np.abs(pressure_defect), initial=0.0)
-    )
+    pressure_defect_norm = float(np.max(np.abs(pressure_defect), initial=0.0))
     pressure_defect_detected = bool(np.any(pressure_defect != 0.0))
     epi_state_changed = not np.array_equal(accepted, state_before)
     pressure_refresh_required = bool(
@@ -1240,15 +1220,11 @@ def _one_step(
         np.all(state_before >= first.epi_lower_bound)
         and np.all(state_before <= first.epi_upper_bound)
     )
-    ideal_clip_inactive = bool(
-        first.clip_mode == "hard" and convex and state_in_bounds
-    )
+    ideal_clip_inactive = bool(first.clip_mode == "hard" and convex and state_in_bounds)
 
     post_graph = _logical_copy(graph)
     if admissible:
-        for node, certificate, epi_after in zip(
-            nodes, local_certificates, accepted
-        ):
+        for node, certificate, epi_after in zip(nodes, local_certificates, accepted):
             mapping = post_graph.nodes[node]
             _set_epi(mapping, float(epi_after))
             set_attr_str(
@@ -1475,9 +1451,7 @@ def certify_all_target_neighbor_stage(
     represented_fixed = all(passed for _, passed in represented_conditions)
 
     ideal_power = (
-        _exact_matrix_power(first.ideal_real_stage_map, count)
-        if ideal_fixed
-        else None
+        _exact_matrix_power(first.ideal_real_stage_map, count) if ideal_fixed else None
     )
     represented_power = (
         _exact_matrix_power(first.exact_represented_stage_map, count)
@@ -1485,9 +1459,7 @@ def certify_all_target_neighbor_stage(
         else None
     )
     if represented_fixed:
-        stage_gain = _composition_exact_gain(
-            first.pre_metric_affine_jump_certificate
-        )
+        stage_gain = _composition_exact_gain(first.pre_metric_affine_jump_certificate)
         repeated_gain = stage_gain**count
         repeated_gain_float = _fraction_upper_float(repeated_gain)
         finite_contraction: bool | None = repeated_gain < 1
@@ -1521,9 +1493,7 @@ def certify_all_target_neighbor_stage(
         nodes=nodes,
         repetitions_requested=count,
         repetitions_observed=len(steps),
-        repetitions_completed=sum(
-            step.runtime_stage_admissible for step in steps
-        ),
+        repetitions_completed=sum(step.runtime_stage_admissible for step in steps),
         fixed_support_declared=fixed_support_declared,
         fixed_phase_neighbor_sets_declared=fixed_phase_neighbor_sets_declared,
         steps=tuple(steps),
@@ -1554,9 +1524,7 @@ def certify_all_target_neighbor_stage(
         represented_asymptotic_disagreement_convergence_certified=(
             asymptotic_convergence
         ),
-        exact_observed_runtime_minus_represented_repeated_state=(
-            repeated_residual
-        ),
+        exact_observed_runtime_minus_represented_repeated_state=(repeated_residual),
         observed_runtime_matches_represented_repeated_state_exactly=(
             repeated_runtime_match
         ),
@@ -1626,12 +1594,8 @@ def compose_neighbor_stage_diffusion_stability(
                 "eligible neighbour-stage bridge failed hybrid recomposition"
             )
 
-    represented_mean_preserved = bool(
-        post_jump.exact_weighted_mean_preservation
-    )
-    runtime_mean_preserved = (
-        validated.exact_runtime_post_metric_mean_shift == 0
-    )
+    represented_mean_preserved = bool(post_jump.exact_weighted_mean_preservation)
+    runtime_mean_preserved = validated.exact_runtime_post_metric_mean_shift == 0
     return NeighborStageDiffusionBridgeCertificate(
         operator_name=stage_certificate.operator_name,
         glyph=stage_certificate.glyph,
@@ -1645,8 +1609,7 @@ def compose_neighbor_stage_diffusion_stability(
         bridge_conditions=conditions,
         represented_model_bridge_certified=bool(hybrid is not None),
         finite_horizon_disagreement_bound_certified=bool(
-            hybrid is not None
-            and hybrid.finite_horizon_disagreement_bound_certified
+            hybrid is not None and hybrid.finite_horizon_disagreement_bound_certified
         ),
         disagreement_contracts_over_declared_horizon=(
             None
@@ -1659,15 +1622,11 @@ def compose_neighbor_stage_diffusion_stability(
         exact_runtime_post_metric_weighted_mean_shift=(
             validated.exact_runtime_post_metric_mean_shift
         ),
-        runtime_post_metric_weighted_mean_preserved_exactly=(
-            runtime_mean_preserved
-        ),
+        runtime_post_metric_weighted_mean_preserved_exactly=(runtime_mean_preserved),
         hybrid_preserves_initial_weighted_mean=(
             None if hybrid is None else hybrid.initial_weighted_mean_preserved
         ),
-        pre_post_metric_values_identical=(
-            validated.pre_post_metric_values_identical
-        ),
+        pre_post_metric_values_identical=(validated.pre_post_metric_values_identical),
         pre_post_metric_exactly_proportional=(
             validated.pre_post_metric_exactly_proportional
         ),
@@ -1677,9 +1636,7 @@ def compose_neighbor_stage_diffusion_stability(
         runtime_proposal_matches_represented_stage_within_tolerance=(
             validated.runtime_match_within_tolerance
         ),
-        runtime_pure_epi_pressure_defect=(
-            validated.runtime_pure_epi_pressure_defect
-        ),
+        runtime_pure_epi_pressure_defect=(validated.runtime_pure_epi_pressure_defect),
         runtime_pure_epi_pressure_defect_norm=(
             validated.runtime_pure_epi_pressure_defect_norm
         ),

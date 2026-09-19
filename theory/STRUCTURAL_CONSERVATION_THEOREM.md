@@ -77,13 +77,15 @@ of those conversions; a small numeric residual cannot establish them. See
 
 ### 2.1 Nodal Equation
 
-Every node $i$ in a TNFR network evolves according to:
+The unforced form channel at node $i$ obeys
 
 $$\frac{\partial \text{EPI}_i}{\partial t} = \nu_{f,i} \cdot \Delta\text{NFR}_i(t) \quad \text{(NE)}$$
 
 where:
 - $\text{EPI}_i$ is the Primary Information Structure at node $i$
-- $\nu_{f,i} \in \mathbb{R}^+$ is the structural frequency (Hz_str)
+- $\nu_{f,i} \geq 0$ is the structural reorganization capacity (Hz_str);
+  strictly positive capacity is an additional hypothesis of the reversible
+  diffusion metric below
 - $\Delta\text{NFR}_i(t)$ is the nodal reorganization pressure
 
 ### 2.2 Phase Dynamics
@@ -101,11 +103,11 @@ its assumptions and do not automatically apply to every operator trajectory.
 
 ### 2.3 Grammar Constraints
 
-The evolution is restricted to operator sequences satisfying U1–U6:
+Canonical operator histories are admitted through the U1–U6 contracts:
 
 - **U2** (stabilization/debt policy): destabilizers require stabilizers within
   the configured finite-history policy
-- **U3** (Coupling): $|\phi_i - \phi_j| \leq \Delta\phi_{\max}$ for interactions
+- **U3** (Coupling): $|\operatorname{wrap}(\phi_i - \phi_j)| \leq \Delta\phi_{\max}$ for admitted coupling/resonance actions
 - **U6** (Confinement): monitor $\Delta\Phi_s < \pi/2 \approx 1.571$ relative
   to a declared reference
 
@@ -146,10 +148,10 @@ $$\mathbf{J}(i, t) = \big(J_\phi(i, t),\; J_{\Delta\text{NFR}}(i, t)\big)$$
 
 where:
 
-**Phase Current** (transport of phase coherence):
+**Phase Current** (signed phase-neighbor statistic):
 $$J_\phi(i) = \frac{1}{|\mathcal{N}(i)|} \sum_{j \in \mathcal{N}(i)} \sin(\phi_j - \phi_i)$$
 
-**Reorganization Flux** (transport of structural pressure):
+**Reorganization Flux** (signed pressure-neighbor statistic):
 $$J_{\Delta\text{NFR}}(i) = \frac{1}{|\mathcal{N}(i)|} \sum_{j \in \mathcal{N}(i)} \big(\Delta\text{NFR}_j - \Delta\text{NFR}_i\big)$$
 
 The selected current readout contains two types of structural information:
@@ -478,7 +480,7 @@ $E \geq 0$ always (sum of squares).
 
 ### 8.2 Lyapunov candidate for observed evolution
 
-For a trajectory whose measured energy is non-increasing,
+For a specified differentiable trajectory, the inequality to establish is
 
 $$\frac{dE}{dt} \leq 0$$
 
@@ -486,16 +488,20 @@ The following is a motivation, not a proof:
 
 1. Coherence (IL) has a pressure-reducing contract, but cancellation in
   $\Phi_s$ means this does not fix the sign of every energy term.
-2. Self-organization (THOL) preserves global form while producing sub-EPIs;
-  its tetrad-energy change remains trajectory-dependent.
+2. Self-organization (THOL) applies its declared form/child map; a changing
+  node domain or support requires explicit event accounting, and its
+  tetrad-energy change remains trajectory-dependent.
 3. U2 requires stabilizer coverage for destabilizer debt; it does not quantify
   absorption of tetrad energy.
 4. The net energy change must therefore be computed from actual snapshots.
 
-Therefore $E$ is a **candidate Lyapunov function**. Grammar validity alone does
-not fix the sign of its finite-step change. A complete formal proof of
-asymptotic stability would require analytic bounds on the nonlinear operator
-interactions; §8.4 records only an operational multiplier model.
+Therefore $E$ is a **candidate Lyapunov function**. Finite sampled decreases
+do not establish the displayed derivative inequality between samples or on
+other states. Grammar validity alone does not fix the sign of its finite-step
+change. Asymptotic stability additionally needs a specified complete dynamics,
+an invariant domain and a condition excluding nonstationary invariant motion
+at zero dissipation; nonincrease alone is insufficient. Section 8.4 records
+only an operational multiplier model.
 
 **Refinement (Grammar-Energy Landscape)**: The nominal multiplier indicator
 ($\Pi < 1$) is neither a necessary nor a general sufficient theorem for energy
@@ -509,7 +515,7 @@ suggested, because operators interacted nonlinearly on that graph state.
 
 ### 8.3 Energy Dissipation Rate
 
-The dissipation rate $\dot{E}$ has physical meaning:
+The negative part of the measured candidate-energy rate defines
 
 $$\mathcal{D}[G] = \max\!\left(0,-\frac{dE}{dt}\right) \geq 0$$
 
@@ -620,8 +626,14 @@ terms in
 $E = \tfrac12\sum(\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\mathrm{NFR}}^2)$.
 Those terms require model-specific evolution identities and bounds on their
 operator-dependent sources. U2 supplies neither automatically. The exact EPI
-sector therefore isolates one proved component without solving the open
+sector therefore supplies a separate proved functional without solving the open
 monotonicity and asymptotic-stability questions for $E$.
+
+In particular, $F$ is not an additive component of the displayed $E$.
+The proof of $\dot F\le0$ cannot be subtracted from an unproved $\dot E\le0$
+claim to leave only a phase-sector remainder. The shared
+[Dirichlet balance](TNFR_VARIATIONAL_PRINCIPLE.md#35-exact-restricted-dirichlet-balance)
+is the authoritative formula and normalization.
 
 A separate Parry/Markov model is explored in
 `examples/08_emergent_geometry/150_emergent_grammatical_pattern_parry.py`.
@@ -868,7 +880,7 @@ identify an operator outside that finite model and state family.
 | `compute_charge_density(G)` | $\rho(i) = \Phi_s(i) + K_\phi(i)$ |
 | `compute_current_divergence(G)` | $\nabla \cdot \mathbf{J}$ |
 | `compute_noether_charge(G)` | Historical name for charge candidate $Q = \sum_i \rho(i)$ |
-| `compute_energy_functional(G)` | Candidate $E = \frac{1}{2}\sum(\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\text{NFR}}^2)$ |
+| `compute_energy_functional(G)` | Candidate $E = \frac{1}{2}\sum(\Phi_s^2 + \vert \nabla\phi\vert ^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\text{NFR}}^2)$ |
 | `verify_conservation_balance(...)` | Two-snapshot trapezoidal balance residual |
 | `decompose_conservation_residual(...)` | Sector decomposition (Crank-Nicolson) |
 | `analyze_sector_coupling(...)` | Cross-sector correlation |

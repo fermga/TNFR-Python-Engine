@@ -43,8 +43,10 @@ from tnfr.research import (  # noqa: E402
 
 def main() -> int:
     print("N08 structural morphisms: every kind emerges from the nodal equation")
-    header = (f"  {'label':<16} {'kind':<16} {'dom->cod':>10} "
-              f"{'intertw':>9} {'nodal_flow':>11} {'emerges':>8} {'operator':>9}")
+    header = (
+        f"  {'label':<16} {'kind':<16} {'dom->cod':>10} "
+        f"{'intertw':>9} {'nodal_flow':>11} {'emerges':>8} {'operator':>9}"
+    )
     print(header)
     results = audit_structural_morphisms()
     all_ok = True
@@ -53,15 +55,16 @@ def main() -> int:
         emerges = c.emerges_from_nodal_equation
         n_emerge += int(emerges)
         # the intertwiner defect and the nodal-flow defect must agree
-        agree = (c.is_intertwiner == emerges)
+        agree = c.is_intertwiner == emerges
         all_ok &= agree and (not c.is_operator)
-        print(f"  {label:<16} {c.kind.value:<16} "
-              f"{f'{c.domain_dim}->{c.codomain_dim}':>10} "
-              f"{c.intertwining_residual:>9.1e} {c.nodal_flow_residual:>11.1e} "
-              f"{str(emerges):>8} {str(c.is_operator):>9}")
+        print(
+            f"  {label:<16} {c.kind.value:<16} "
+            f"{f'{c.domain_dim}->{c.codomain_dim}':>10} "
+            f"{c.intertwining_residual:>9.1e} {c.nodal_flow_residual:>11.1e} "
+            f"{str(emerges):>8} {str(c.is_operator):>9}"
+        )
 
-    boundary = [c for _, c in results
-                if c.kind is StructuralMorphismKind.ENDOMORPHISM]
+    boundary = [c for _, c in results if c.kind is StructuralMorphismKind.ENDOMORPHISM]
     six_emerge = n_emerge == 6
     one_boundary = len(boundary) == 1 and not boundary[0].emerges_from_nodal_equation
 
@@ -69,24 +72,31 @@ def main() -> int:
     _ = ExperimentManifest(
         claim_id="NT-P08",
         git_sha="local",
-        versions={"python": platform.python_version(),
-                  "numpy": np.__version__},
+        versions={"python": platform.python_version(), "numpy": np.__version__},
         seed=None,
         operator_sequence=(),
         uses_known_factors=False,
         input_bits=input_bit_length(9),
-        controls=("intertwiner_equals_nodal_flow", "reynolds_is_projection",
-                  "folding_endomorphism_boundary", "no_operator_match",
-                  "relabel_invariant"),
+        controls=(
+            "intertwiner_equals_nodal_flow",
+            "reynolds_is_projection",
+            "folding_endomorphism_boundary",
+            "no_operator_match",
+            "relabel_invariant",
+        ),
         artifacts=(),
     )
     print()
     print(f"  intertwiner == nodal-flow (all)  : {all_ok}")
     print(f"  six kinds emerge, one boundary   : {six_emerge and one_boundary}")
-    print(f"  taxonomy from nodal equation     : {ClaimStatus.DERIVED.value} "
-          "(intertwiner = nodal-flow transport)")
-    print(f"  operator vs morphism boundary    : {ClaimStatus.MEASURED.value} "
-          "(R8; no 14th operator)")
+    print(
+        f"  taxonomy from nodal equation     : {ClaimStatus.DERIVED.value} "
+        "(intertwiner = nodal-flow transport)"
+    )
+    print(
+        f"  operator vs morphism boundary    : {ClaimStatus.MEASURED.value} "
+        "(R8; no 14th operator)"
+    )
     print(f"  circularity                      : {audit.verdict.value}")
     ok = all_ok and six_emerge and one_boundary
     return 0 if ok else 1

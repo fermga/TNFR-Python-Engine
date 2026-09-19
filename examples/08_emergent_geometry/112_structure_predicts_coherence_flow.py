@@ -1,58 +1,17 @@
 #!/usr/bin/env python3
-"""
-Example 112 — Where Does the Coherence Flow Go? Structure Predicts the Flow
-==========================================================================
+"""Spectral prediction for held pure-EPI diffusion on reciprocal graphs.
 
-The nodal equation gives the INSTANTANEOUS rate of coherence change,
-
-    dEPI/dt = nu_f * dNFR,
-
-but does the STRUCTURE already tell us WHERE the flow is heading, before we
-integrate anything? For the EPI channel the answer is yes, exactly: the
-canonical dNFR is the random-walk graph Laplacian acting on EPI,
-
-    dNFR = neighbour-mean - self = -L_rw * EPI   (structural_diffusion.py),
-
-so the flow is a linear gradient descent whose entire future is fixed by the
-eigendecomposition of the PURELY STRUCTURAL operator L_rw:
-
-    EPI(t) = sum_k c_k * exp(-nu_f * lambda_k * t) * u_k,   L_rw u_k = lambda_k u_k.
-
-The structure therefore contains a complete ROADMAP of the coherence flow,
-readable without running the dynamics:
-
-  - nu_f (structural frequency)  = the CLOCK    -> sets the timescale.
-  - dNFR = -L_rw*EPI (pressure)  = the DIRECTION -> the steepest-descent heading now.
-  - the spectrum {lambda_k}       = the ROUTE    -> modes dissolve fast->slow by lambda.
-  - lambda_1 = 0 (uniform mode)   = the DESTINATION -> degree-weighted mean (conserved).
-  - lambda_2 (spectral gap)       = the CLOCK HAND  -> relaxation time 1/(nu_f*lambda_2).
-  - u_2 (Fiedler eigenvector)     = the FINAL HEADING -> the last surviving direction.
-
-This example PREDICTS the destination, the relaxation time, and the final
-heading from structure alone, then VALIDATES each against the actual
-integrated nodal flow.
-
-Honest scope
-------------
-- Exact for the EPI channel (dNFR = -L_rw*EPI). The full canonical dNFR is
-  multi-channel (phase / nu_f / topology add their own relaxation); the EPI
-  channel is the clean exact statement (the channels are approximately
-  independent, |Pearson r| ~ 0.12).
-- The single-vector Fiedler heading is sharp only when the spectral gap is
-  ISOLATED (lambda_2 well below lambda_3). Under near-degeneracy lambda_2 ~ lambda_3
-  the slowest "direction" is a 2D subspace and the single-vector alignment
-  softens (honest: see the lambda_2/lambda_3 ratio per graph below). The
-  decay-RATE prediction nu_f*lambda_2 stays robust regardless.
-- This is a CHARACTERIZATION of the nodal flow (linear gradient descent on a
-  structural Laplacian), not new physics. It reuses the canonical
-  structural_diffusion operators.
-
-References
-----------
-- src/tnfr/physics/structural_diffusion.py (L_rw, relaxation spectrum, Fiedler)
-- examples/08_emergent_geometry/99_structural_diffusion.py (the transport layer this builds on)
-- src/tnfr/physics/variational.py (nodal equation as gradient flow)
-- AGENTS.md section "Transport Content of the Nodal Equation"
+For fixed connected reciprocal nonnegative conductance and common positive
+capacity nu, the selected law x_dot=-nu*L_rw*x conserves the degree-weighted
+mean. The full initial field and generator determine its future; topology alone
+does not determine amplitudes, destination or the supplied capacity clock.
+The slowest excited nonuniform eigenspace determines late relative decay.
+A Fiedler direction requires a nonzero initial projection; a repeated gap allows
+multiple slow directions. Proximity of eigenvalues affects finite-time separation.
+This is a weighted gradient flow of the Dirichlet functional, not generally
+Euclidean steepest descent. Phase, capacity and support are held; small sample
+correlations between diagnostics do not prove channel independence or closure.
+See theory/TNFR_DIFFUSION_STABILITY_THEOREM.md for exact scope.
 """
 
 import os
@@ -182,12 +141,14 @@ def main():
     print("The coherence flow of the nodal equation does NOT need to be run to")
     print("know where it goes: for the EPI channel it is linear gradient")
     print("descent on the structural Laplacian L_rw, so the structure contains")
-    print("the flow's whole roadmap. nu_f is the clock; dNFR=-L_rw*EPI is the")
+    print(
+        "the held generator. Initial state and nu_f are also required; pressure is the"
+    )
     print("instantaneous direction; the spectrum {lambda_k} is the route (modes")
     print("dissolve fast->slow); the destination is the degree-weighted mean")
     print("(the lambda_1=0 conserved mode); the relaxation time is")
-    print("1/(nu_f*lambda_2); and the final heading is the Fiedler eigenvector")
-    print("u_2 -- all read from structure alone and validated against the")
+    print("1/(nu_f*lambda_2) when that mode is excited; late heading is in the")
+    print("slowest excited eigenspace -- conditional predictions checked against the")
     print("actual integrated flow. Characterization of the nodal dynamics,")
     print("not new physics.")
     print()

@@ -122,9 +122,7 @@ def neighbor_epi_blend_value(
     kernel; their magnitude projection is outside the affine domain.
     """
 
-    return float(
-        (1.0 - mix_factor) * current_epi + mix_factor * neighbor_mean
-    )
+    return float((1.0 - mix_factor) * current_epi + mix_factor * neighbor_mean)
 
 
 def neighbor_epi_represented_affine_row(

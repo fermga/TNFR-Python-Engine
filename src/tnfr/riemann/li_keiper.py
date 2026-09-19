@@ -1,4 +1,4 @@
-r"""P16: Li-Keiper criterion verified via the TNFR resonance spectrum.
+r"""P16: finite Li-Keiper zero-sum comparisons with explicit truncation.
 
 Li's criterion (Xian-Jin Li, 1997)
 ----------------------------------
@@ -12,9 +12,9 @@ Define, for every integer :math:`n \ge 1`,
                   \frac{d^{\,n}}{ds^{\,n}}
                   \Bigl[\, s^{\,n-1}\,\log \xi(s)\,\Bigr]_{s=1},
 
-where the sum ranges over all non-trivial zeros :math:`\rho` of
-:math:`\zeta(s)` (counted with multiplicity, with the implicit
-:math:`\rho \leftrightarrow \bar\rho` pairing).  Li proved the
+where the full sum ranges over all non-trivial zeros :math:`\rho` of
+:math:`\zeta(s)` with multiplicity and the prescribed symmetric limiting
+convention. The classical criterion gives the
 equivalence
 
 .. math::
@@ -25,44 +25,33 @@ equivalence
 Li's criterion is therefore strictly equivalent to the Riemann
 Hypothesis, restated as a positivity condition on a real sequence.
 
-TNFR reading
-------------
-In the TNFR-Riemann program the non-trivial zeros appear as
-**resonance poles** of the prime-ladder von Mangoldt zeta after
-analytic continuation (module :mod:`tnfr.riemann.analytic_continuation`,
-P13).  Computing :math:`\lambda_n` from those resonance poles and
-comparing against the classical evaluation from
-:func:`mpmath.zetazero` does two things:
+Implemented comparison and its boundary
+--------------------------------------
+This module evaluates only a finite conjugate-paired sum. It supplies no
+certified omitted-zero tail or numerical error enclosure, so its sign flags
+are not certified signs of the complete coefficients, even at one index.
+The classical zero list comes from :func:`mpmath.zetazero`; the optional
+P13 branch evaluates a classical meromorphic function along the critical
+line and places every detected ordinate at real part 1/2.
 
-1. **Validates** the P13 resonance-pole finder against a strict
-   number-theoretic test: every detected pole must lie on the
-   critical line to a precision sufficient to keep :math:`\lambda_n`
-   positive for every :math:`n` up to the test horizon.
-2. **Recasts** the Riemann Hypothesis as a TNFR-internal positivity
-   diagnostic on the resonance spectrum.  Each :math:`\lambda_n`
-   becomes a structural integrity check: a single negative
-   :math:`\lambda_n` would falsify RH; the absence of one (up to the
-   test horizon) is consistent with it.
+For any supplied :math:`\rho=1/2+it`, the factor
+:math:`b=1-1/\rho` has modulus one. Its exact paired contribution is
+:math:`2[1-\cos(n\arg b)]\geq0`, whether or not :math:`t` is a zero.
+Nonnegative sums of these terms therefore do not independently validate
+zero location, pole detection or a nodal resonance mechanism. A negative
+numerical sum requires examination of inputs and arithmetic; it is not a
+refutation of RH. The public certificate/field names are retained for
+compatibility and describe finite observations, not analytic certificates.
 
-Honesty disclaimer
-------------------
-This module **does not prove** the Riemann Hypothesis.  Li's
-criterion is RH-equivalent: a finite verification of
-:math:`\lambda_n > 0` for :math:`n = 1\ldots N` proves RH only in the
-limit :math:`N \to \infty` with rigorous control of the truncation
-error in the zero-sum.  The numerical evidence produced here matches
-the well-documented positivity of the first :math:`\sim 10^5`
-Li-Keiper coefficients (Voros 2003, Bombieri-Lagarias 1999) and is
-offered as a TNFR-native witness, not as a proof.
+Current scope is centralized in ``theory/TNFR_RIEMANN_RESEARCH_NOTES.md``.
 
 Public API
 ----------
-``li_coefficients_from_zeros``      Compute :math:`\lambda_1, \ldots,
-                                     \lambda_{n_{\max}}` from a list of
-                                     non-trivial zeros (upper half-plane).
+``li_coefficients_from_zeros``      Compute finite conjugate-paired sums
+                                     from supplied upper-half-plane data.
 ``LiKeiperCertificate``             Frozen result with positivity flags,
                                      classical/TNFR comparison and summary.
-``verify_li_keiper_criterion``      End-to-end verification: fetch
+``verify_li_keiper_criterion``      Finite comparison: fetch
                                      classical zeros, optionally compare
                                      against P13 detected resonance peaks,
                                      return certificate.
@@ -90,20 +79,23 @@ def li_coefficients_from_zeros(
     *,
     dps: int = 50,
 ) -> np.ndarray:
-    r"""Compute :math:`\lambda_1, \ldots, \lambda_{n_{\max}}` from a finite
-    truncation of the zero list.
+    r"""Compute truncated Li-type sums from a finite supplied zero list.
 
     Implementation uses the explicit form
 
     .. math::
 
-        \lambda_n \;=\; \sum_{k=1}^{K} 2\,\Re\!\Bigl[
+        \lambda_n^{(K)} \;=\; \sum_{k=1}^{K} 2\,\Re\!\Bigl[
                        1 - \bigl(1 - \tfrac{1}{\rho_k}\bigr)^n \Bigr],
         \qquad \rho_k = \tfrac{1}{2} + i\, t_k,
 
     paired with :math:`\bar\rho_k`.  Computation is performed at
     arbitrary precision via :mod:`mpmath` to absorb cancellation
     between :math:`1` and :math:`(1-1/\rho)^n` as :math:`n` grows.
+    Inputs first pass through binary64 real and imaginary parts; higher
+    working precision does not restore digits discarded by that conversion.
+    No omitted-zero or rounding bound is returned. The function does not
+    establish that supplied coordinates are zeros.
 
     Parameters
     ----------
@@ -120,7 +112,7 @@ def li_coefficients_from_zeros(
     -------
     np.ndarray
         Shape ``(n_max,)`` real array with
-        ``arr[n-1] = float(lambda_n)``.
+        ``arr[n-1] = float(lambda_n_truncated)``.
     """
     if n_max < 1:
         raise ValueError("n_max must be >= 1")
@@ -150,7 +142,7 @@ def li_coefficients_from_zeros(
 
 @dataclass(frozen=True)
 class LiKeiperCertificate:
-    r"""Result of a Li-Keiper positivity check.
+    r"""Compatibility-named record of finite zero-sum sign comparisons.
 
     Attributes
     ----------
@@ -160,15 +152,15 @@ class LiKeiperCertificate:
         Number of zeros from :func:`mpmath.zetazero` used in the
         classical evaluation.
     lambda_classical
-        Array of shape ``(n_max,)`` with classical Li coefficients.
+        Array of shape ``(n_max,)`` with truncated known-zero sums.
     lambda_tnfr
-        Array of shape ``(n_max,)`` with TNFR-computed Li
-        coefficients from P13 resonance peaks (``None`` if not
+        Array of shape ``(n_max,)`` with truncated sums from
+        line-restricted P13 peak coordinates (``None`` if not
         requested).
     positivity_classical
-        ``True`` iff every classical :math:`\lambda_n > 0`.
+        ``True`` iff every materialized known-zero sum is positive.
     positivity_tnfr
-        Same for the TNFR-derived values (``None`` if not requested).
+        Same for the peak-coordinate sums (``None`` if not requested).
     max_abs_difference
         :math:`\max_n |\lambda_n^{\mathrm{classical}} -
         \lambda_n^{\mathrm{TNFR}}|` (``None`` if not requested).
@@ -227,19 +219,18 @@ def verify_li_keiper_criterion(
     tnfr_t_max: float = 80.0,
     tnfr_n_samples: int = 4001,
 ) -> LiKeiperCertificate:
-    r"""Verify Li's positivity criterion up to index ``n_max``.
+    r"""Compare signs of truncated zero sums up to index ``n_max``.
 
     Steps
     -----
     1. Fetch ``n_zeros`` non-trivial zeros via :func:`mpmath.zetazero`
        (classical reference).
-    2. Compute :math:`\lambda_n` for :math:`n = 1, \ldots, n_{\max}`
+    2. Compute finite sums for :math:`n = 1, \ldots, n_{\max}`
        via :func:`li_coefficients_from_zeros`.
-    3. Check positivity of every coefficient.
+    3. Check positivity of every computed sum.
     4. Optionally repeat with zeros detected by the P13 critical-line
        scan (:func:`scan_critical_line_for_poles`) and report the
-       maximum absolute difference between classical and TNFR
-       coefficients.
+       maximum absolute difference between the two truncated arrays.
 
     Returns
     -------
@@ -247,11 +238,11 @@ def verify_li_keiper_criterion(
 
     Notes
     -----
-    The truncation error in :math:`\lambda_n` is bounded by the tail
-    of the zero density; with :math:`n_{\mathrm{zeros}} = 200` and
-    :math:`n_{\max} = 50` the dominant tail term is at the
-    :math:`10^{-3}` level relative to :math:`\lambda_n`, sufficient
-    to preserve the sign of every coefficient (Voros 2003).
+    No certified tail bound is computed for the selected cutoff or indices.
+    Both branches use real part 1/2, which makes every exact paired term
+    nonnegative independently of zero membership. Positivity flags therefore
+    do not verify the full Li criterion or validate the scan independently.
+    Differences also reflect the distinct zero windows and truncations.
     """
     if n_max < 1:
         raise ValueError("n_max must be >= 1")

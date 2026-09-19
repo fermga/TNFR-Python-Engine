@@ -1110,29 +1110,37 @@ actual generated-family application is owned by
 
 The failure of instantaneous closure does not specify how much additional
 information is needed. For the same fixed affine nodal model `x'=-A*x+b`
-and partition observation `y=R*x`, define the increasing row spaces
+and declared affine observation `y=O*x+o0`, define the increasing row spaces
 
 $$
-\mathcal O_k=\operatorname{rowspan}(R,RA,\ldots,RA^k).
+\mathcal O_k=\operatorname{rowspan}(O,OA,\ldots,OA^k).
 $$
 
 Every coefficient comes from the retained nodal generator and observation;
 these are derived observations, not added physical channels. The forcing `b`
-is known and fixed. It affects the reduced affine source but not these spaces.
+and output offset `o0` are known and fixed. They affect the reduced source and
+decoder, respectively, but not these spaces. Partition means are the special
+case `O=R,o0=0`. Stacking means and linear field observations uses this same
+construction; repeated, dependent and zero output rows are allowed.
 
 ### 11.1 Complete-level stabilization and minimality
 
 If `O_k=O_(k-1)`, right multiplication by `A` maps every generating row of
 `O_(k-1)` into `O_k`, so the stabilized space is invariant. No later power
-adds a direction. The check must process an entire level `R*A^k`; a dependent
+adds a direction. The check must process an entire level `O*A^k`; a dependent
 first row does not imply that the remaining rows are dependent. Finite
-dimension ensures stabilization, with rank at most the microscopic dimension.
+dimension ensures stabilization, with rank at most the microscopic dimension
+`n`. For initial rank `r0>0`, a complete no-growth level occurs by power
+`n-r0+1`. A rank-one observation can therefore require all `n+1` levels,
+including power `n`; partition means have at least two independent rows and
+retain their earlier bound. Rank zero is the constant-output case and is
+checked through power one without an inverse.
 
 Choose independent rows of the stabilized space to form `C`, with rank `r`.
 Consider any competing all-state linear observation `s_tilde=L*x` that retains
 the output and admits closed affine dynamics. Its identities must satisfy
-`R=D_tilde*L` and `L*A=G_tilde*L`; its constant source is `L*b`.
-Consequently its row space contains `R` and all `R*A^k`. Thus
+`O=D_tilde*L` and `L*A=G_tilde*L`; its constant source is `L*b`.
+Consequently its row space contains `O` and all `O*A^k`. Thus
 `rank(L)>=r`. Constructing a closed observation of dimension `r` attains this
 bound. This extends the [P5 argument](#93-minimality-of-the-retained-linear-state)
 to the admitted held references without a single-seed or scalar-moment proxy.
@@ -1143,23 +1151,25 @@ Select `r` independent columns `J` of `C`. Let `I_J` embed the corresponding
 coordinate vectors into the microscopic state space and define
 
 $$
-T=I_J(C_J)^{-1},\qquad G=CAT,\qquad D=RT.
+T=I_J(C_J)^{-1},\qquad G=CAT,\qquad D=OT.
 $$
 
 Then `C*T=I`. Row-space invariance and output inclusion give the full identities
-`C*A=G*C` and `R=D*C`. Therefore
+`C*A=G*C` and `O=D*C`. Therefore
 
 $$
-s=Cx,\qquad \dot s=-Gs+Cb,\qquad y=Ds.
+s=Cx,\qquad \dot s=-Gs+Cb,\qquad y=Ds+o0.
 $$
 
 This realization is exact for all scalar initial states in the held model.
-The known source needs no extra fitted coefficient or added constant state.
+The known source and offset need no extra fitted coefficient or added constant
+state. For `r=0`, `s` is empty and `y=o0` for every fine trajectory; the
+displayed inverse construction is unnecessary.
 If `r` equals the microscopic dimension, `C` is invertible: the realization
 is a change of coordinates, with no state compression. Otherwise, different
 microscopic states can share `s` while having identical output evolution.
 
-Rows selected from `R*A^k` can contain signed, nonlocal coefficients and
+Rows selected from `O*A^k` can contain signed, nonlocal coefficients and
 different powers of the existing structural rate. They must not be read as
 ordinary new NFRs with an independently established phase/capacity triad.
 In particular, the pivot right inverse `T` is an algebraic section, not an
@@ -1167,11 +1177,15 @@ automatically admissible graph state or an H-orthogonal nodal lift.
 
 ### 11.3 Scope and implementation
 
-`observe_forced_support_realization` in
-[`epi_memory.py`](../src/tnfr/physics/epi_memory.py) first reuses the exact
-forced-support closure observer. It selects independent rows in deterministic
-power/row order, tests complete-level stabilization, selects pivot columns,
-and verifies the full realization identities. The shared
+`observe_affine_nodal_realization` in
+[`epi_memory.py`](../src/tnfr/physics/epi_memory.py) accepts finite exact or
+represented observation rows and known offsets for a rebuilt held nodal
+reference. It selects independent rows in deterministic power/row order,
+tests complete-level stabilization, selects pivot columns, and verifies the
+full realization identities. `observe_forced_support_realization` reuses
+the partition closure owner and delegates its means to the same algorithm;
+its public result fields, row ordering and resource accounting are preserved.
+The held generator/source assembly also has one owner. The shared
 [`exact_rank`](../src/tnfr/mathematics/krylov.py), rectangular matrix product
 and rational inverse supply the arithmetic. Numerical rank is not a fallback.
 
@@ -1182,12 +1196,21 @@ bit sizes describe the calculation; they do not bound every intermediate
 allocation or the cost inside rational elimination.
 
 Full rank excludes proper all-state linear compression preserving this exact
-`R` on this fixed model. It does not exclude approximate observations, restricted
+`O` on this fixed model. It does not exclude approximate observations, restricted
 reachable-state descriptions, nonlinear reductions or a history representation.
 Nor does exact invertibility certify a well-conditioned numerical reconstruction.
 Changes of support, capacity or source need new model admission and separate
 event accounting. Autonomous maintenance and physical identification remain
 outside this theorem.
+
+[Independent affine-output controls](../tests/physics/test_affine_observation_realization.py)
+cover offsets with nonzero forcing, redundant/zero rows, exact tiny independent
+rows, rank-one stabilization and the partition API. The
+[joint geometry adapter](../src/tnfr/physics/geometry_realization.py) derives
+its rows and offsets from the nodal pressure and inherited distance kernel;
+[the scale bridge](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#joint-epipotential-realization-and-field-provenance)
+owns that physical observation and its numerical boundary. The generic API
+does not make a caller-declared observation canonical by itself.
 
 ### 11.4 Full-EPI Euler prediction in the sufficient coordinates
 

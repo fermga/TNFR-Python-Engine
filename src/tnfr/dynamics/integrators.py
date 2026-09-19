@@ -21,6 +21,10 @@ during each call. For the built-in time-only forcing at fixed phases, ``rk4``
 is fourth-order quadrature. It does not reevaluate a state-dependent pressure
 law at Runge-Kutta stages. Optional clipping can alter the unconstrained ODE
 trajectory, so the order claim applies while clipping is inactive.
+
+These solvers evolve the signed real scalar EPI chart, including its exact
+uniform-real BEPI embedding. Richer BEPI values require their own dynamics;
+their magnitude read-out must not silently replace the evolved state.
 """
 
 from __future__ import annotations
@@ -51,17 +55,14 @@ from ..constants.aliases import (
 from ..constants.canonical import (
     INTEGRATORS_CLIP_SOFT_K_CANONICAL,
     INTEGRATORS_DNFR_BOUNDS_CANONICAL,
-    INTEGRATORS_FLUX_FALLBACK_CANONICAL,
     INTEGRATORS_HALF_STEP_CANONICAL,
-    INTEGRATORS_J_PHI_SCALE_CANONICAL,
     INTEGRATORS_RK4_SIXTH_CANONICAL,
     INTEGRATORS_SIGMOID_OFFSET_CANONICAL,
-    INTEGRATORS_SYNTHETIC_DIV_CANONICAL,
 )
 from ..errors.contextual import NetworkConfigError, TNFRUserError, TNFRValueError
 from ..gamma import _get_gamma_spec, eval_gamma, eval_gamma_vectorized
 from ..mathematics.unified_numerical import np
-from ..types import NodeId, TNFRGraph
+from ..types import NodeId, TNFRGraph, require_finite_real_scalar_epi
 from ..utils import resolve_chunk_size
 from ._euler_kernel import euler_update
 from .structural_clip import structural_clip, structural_clip_array
@@ -86,6 +87,20 @@ IntegratorMethod: TypeAlias = Literal["euler", "rk4"]
 """Supported explicit integration schemes for nodal updates."""
 
 _PARALLEL_GRAPH: TNFRGraph | None = None
+
+
+def _read_scalar_epi(nd: dict[str, Any]) -> float:
+    """Read the authoritative scalar chart without a magnitude projection."""
+    return cast(
+        float,
+        get_attr(
+            nd,
+            ALIAS_EPI,
+            0.0,
+            strict=True,
+            conv=require_finite_real_scalar_epi,
+        ),
+    )
 
 
 def _gamma_worker_init(graph: TNFRGraph) -> None:
@@ -588,7 +603,11 @@ def _integrate_vectorized_step(
     # 1. Extract state into arrays
     vf = cast(Any, collect_attr(G, nodes, ALIAS_VF, 0.0))
     dnfr = cast(Any, collect_attr(G, nodes, ALIAS_DNFR, 0.0))
-    epi = cast(Any, collect_attr(G, nodes, ALIAS_EPI, 0.0))
+    epi = np.fromiter(
+        (_read_scalar_epi(G.nodes[node]) for node in nodes),
+        dtype=float,
+        count=n_nodes,
+    )
     dEPI = cast(Any, collect_attr(G, nodes, ALIAS_DEPI, 0.0))
 
     # For gamma, we need theta
@@ -719,6 +738,10 @@ class DefaultIntegrator(AbstractIntegrator):
             graph.graph["_t"] = t_final
             return
 
+        # Validate the complete input before Gamma can populate graph caches.
+        for nd in graph.nodes.values():
+            _read_scalar_epi(nd)
+
         t_local = t0
         for _ in range(steps):
             if resolved_method == "rk4":
@@ -748,7 +771,7 @@ class DefaultIntegrator(AbstractIntegrator):
                     graph.graph.get("CLIP_SOFT_K", INTEGRATORS_CLIP_SOFT_K_CANONICAL)
                 )
 
-                epi_previous = float(get_attr(nd, ALIAS_EPI, 0.0))
+                epi_previous = _read_scalar_epi(nd)
                 epi_clipped = (
                     epi_previous
                     if epi == epi_previous
@@ -794,11 +817,14 @@ def update_epi_via_nodal_equation(
     **Extended**: Coupled system with flux fields (when use_extended_dynamics=True)
       - ∂EPI/∂t = νf · ΔNFR(t) [Classical equation unchanged]
       - ∂θ/∂t = f(νf, ΔNFR, J_φ) [Phase evolution with transport]
-      - ∂ΔNFR/∂t = g(∇·J_ΔNFR) [ΔNFR conservation dynamics]
+      - ∂ΔNFR/∂t = g(∇·J_ΔNFR) [Configured independent pressure response]
 
-    The extended system includes canonical flux fields J_φ (phase current)
-    and J_ΔNFR (reorganization flux) that enable directed transport and
-    conservation dynamics while preserving all TNFR invariants.
+    The extended system consumes the shared diagnostic fields J_φ and
+    J_ΔNFR through additional configured laws. It does not certify conservation,
+    all invariants, or agreement with freshly recomputed canonical pressure.
+    On regular undirected support its pressure block has a positive squared-
+    Laplacian generator; it is not pressure diffusion. See the constitutive
+    audit in theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md, section 14.
 
     Args:
         G: TNFR graph with nodes containing structural attributes
@@ -808,9 +834,11 @@ def update_epi_via_nodal_equation(
         n_jobs: Number of parallel jobs for integration
 
     Notes:
-        - Use G.graph['use_extended_dynamics'] = True to enable extended system
+        - This wrapper selects the extension when use_extended_dynamics is True
+        - Ordinary runtime dispatches its integrator directly; this flag alone
+          does not replace that integrator or its later coordination substep
         - Extended dynamics require J_φ and J_ΔNFR fields (from physics module)
-        - Classical limit: when J_φ = J_ΔNFR = 0, recovers original behavior
+        - Zero flux leaves the EPI product but can leave a nonzero phase response
         - Extended system preserves backward compatibility (default: False)
 
     Examples:
@@ -859,13 +887,13 @@ def _node_state(nd: dict[str, Any]) -> tuple[float, float, float, float]:
     Notes:
         - vf alias maps to VF, frequency, or structural_frequency
         - dnfr alias maps to DNFR, delta_nfr, or reorganization_gradient
-        - All values are coerced to float for numerical stability
+        - EPI must belong to the finite signed scalar chart; rich BEPI is rejected
     """
 
     vf = get_attr(nd, ALIAS_VF, 0.0)
     dnfr = get_attr(nd, ALIAS_DNFR, 0.0)
     dEPI_dt_prev = get_attr(nd, ALIAS_DEPI, 0.0)
-    epi_i = get_attr(nd, ALIAS_EPI, 0.0)
+    epi_i = _read_scalar_epi(nd)
     return vf, dnfr, dEPI_dt_prev, epi_i
 
 
@@ -883,6 +911,8 @@ def _update_extended_nodal_system(
     same graph state before writing any updates. This optional coupled system
     currently supports Euler only; unsupported methods are rejected explicitly.
     Clipping is a boundary policy, not a proof of numerical stability.
+    Pressure is independently evolved, not refreshed from EPI/phase/capacity;
+    consistency with that constitutive map requires a separate chain-rule test.
     """
     from ..physics.extended import compute_dnfr_flux, compute_phase_current
     from .canonical import compute_extended_nodal_system
@@ -898,6 +928,10 @@ def _update_extended_nodal_system(
         )
     if dt_step == 0.0:
         return
+
+    # Reject unsupported EPI before the field readers populate graph caches.
+    for nd in G.nodes.values():
+        _read_scalar_epi(nd)
 
     epi_min = float(G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
     epi_max = float(G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
@@ -965,8 +999,9 @@ def _compute_flux_divergence_centralized(
     """
     Compute flux divergence using centralized finite difference method.
 
-    Uses vectorized neighbor access and proper conservation physics.
-    Replaces ad-hoc approximations with systematic approach.
+    This scalar neighbor contrast is the fallback for the shared reader below.
+    It is not an incidence divergence of oriented edge fluxes and carries no
+    general conservation guarantee.
     """
     if G.degree(node) == 0:
         return 0.0
@@ -997,6 +1032,9 @@ def compute_flux_divergence_vectorized(
     Neighbors are outgoing successors on directed graphs; parallel edges and
     self-loops follow G.neighbors semantics. Edge weights are not metric spacing
     in this diagnostic. Nodes without outgoing neighbors have zero divergence.
+    Applied to the shared pressure contrast J=-L_U*p, it gives
+    -diag(sqrt(k))*L_U**2*p. The optional pressure response negates this again,
+    producing a positive squared-Laplacian generator, not pressure diffusion.
     """
     if np is None:
         return {
@@ -1019,107 +1057,16 @@ def compute_flux_divergence_vectorized(
     return {node: float(divergence[i]) for i, node in enumerate(nodes)}
 
 
-def _compute_synthetic_phase_current(G: TNFRGraph, node: NodeId) -> float:
-    """Compute synthetic J_φ based on phase gradients with neighbors."""
-    if G.degree(node) == 0:
-        return 0.0
-
-    node_theta = get_attr(G.nodes[node], ALIAS_THETA, 0.0)
-
-    # Compute phase differences with neighbors
-    phase_diffs = []
-    for neighbor in G.neighbors(node):
-        neighbor_theta = get_attr(G.nodes[neighbor], ALIAS_THETA, 0.0)
-        # Use circular difference for phases
-        diff = neighbor_theta - node_theta
-        # Normalize to [-π, π]
-        diff = (diff + math.pi) % (2 * math.pi) - math.pi
-        phase_diffs.append(diff)
-
-    if not phase_diffs:
-        return 0.0
-
-    # Mean phase gradient (synthetic J_φ)
-    mean_gradient = sum(phase_diffs) / len(phase_diffs)
-
-    # Scale by coupling strength and local network properties
-    coupling = _estimate_local_coupling_strength(G, node)
-    synthetic_j_phi = (
-        INTEGRATORS_J_PHI_SCALE_CANONICAL * mean_gradient * coupling
-    )  # Scale factor for realism
-
-    return synthetic_j_phi
-
-
-def _compute_synthetic_dnfr_divergence(G: TNFRGraph, node: NodeId) -> float:
-    """Compute synthetic ∇·J_ΔNFR based on ΔNFR gradients."""
-    if G.degree(node) == 0:
-        return 0.0
-
-    node_dnfr = get_attr(G.nodes[node], ALIAS_DNFR, 0.0)
-
-    # Compute ΔNFR differences with neighbors
-    dnfr_diffs = []
-    for neighbor in G.neighbors(node):
-        neighbor_dnfr = get_attr(G.nodes[neighbor], ALIAS_DNFR, 0.0)
-        diff = neighbor_dnfr - node_dnfr
-        dnfr_diffs.append(diff)
-
-    if not dnfr_diffs:
-        return 0.0
-
-    # Mean ΔNFR gradient approximates flux divergence
-    mean_gradient = sum(dnfr_diffs) / len(dnfr_diffs)
-
-    # Synthetic divergence with conservation physics
-    # Positive gradient (neighbors higher) → convergent flow → negative divergence
-    synthetic_div = (
-        INTEGRATORS_SYNTHETIC_DIV_CANONICAL * mean_gradient
-    )  # Conservation coefficient
-
-    return synthetic_div
-
-
-def _approximate_flux_divergence(
-    G: TNFRGraph, node: NodeId, central_flux: float
-) -> float:
-    """Approximate ∇·J using finite differences with neighbors."""
-    if G.degree(node) == 0:
-        return 0.0
-
-    # Collect neighbor fluxes (simplified: assume same flux type)
-    neighbor_fluxes = []
-    for neighbor in G.neighbors(node):
-        # Simplified: use same flux value for neighbors
-        # In full implementation, would compute flux for each neighbor
-        neighbor_flux = G.nodes[neighbor].get(
-            "j_flux_cache", central_flux * INTEGRATORS_FLUX_FALLBACK_CANONICAL
-        )
-        neighbor_fluxes.append(neighbor_flux)
-
-    if not neighbor_fluxes:
-        return 0.0
-
-    mean_neighbor_flux = sum(neighbor_fluxes) / len(neighbor_fluxes)
-
-    # Finite difference approximation: (central - mean_neighbors) / spacing
-    spacing = 1.0 / math.sqrt(G.degree(node))  # Topology-dependent spacing
-    divergence = (central_flux - mean_neighbor_flux) / spacing
-
-    return divergence
-
-
 def _estimate_local_coupling_strength(G: TNFRGraph, node: NodeId) -> float:
-    """Estimate coupling strength from local network topology."""
+    """Evaluate the selected degree-sigmoid transport coefficient."""
     degree = G.degree(node)
     if degree == 0:
         return 0.0
 
     # Sigmoid coupling: stronger for well-connected nodes
     normalized_degree = min(degree / 10.0, 1.0)  # Saturation at degree 10
-    # Import canonical coupling factor
-
-    coupling_factor = 4.5  # π + e/2 ≈ 4.501 (sensitivity)
+    # Configured sensitivity, not a coefficient derived from the nodal law.
+    coupling_factor = 4.5
     coupling = 1.0 / (
         1.0
         + math.exp(

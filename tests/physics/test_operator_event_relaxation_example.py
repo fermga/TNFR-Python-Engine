@@ -2,16 +2,15 @@
 
 from __future__ import annotations
 
-from fractions import Fraction
 import importlib.util
 import json
+from fractions import Fraction
 from pathlib import Path
 
 import pytest
 
 import tnfr.physics as physics
 import tnfr.physics.event_duration as event_duration
-
 
 EXAMPLE_PATH = (
     Path(__file__).resolve().parents[2]
@@ -58,13 +57,9 @@ def test_schedule_uses_m_plus_one_exact_flow_intervals(
     assert schedule.event_count == 2
     assert len(schedule.intervals) == schedule.event_count + 1
     assert schedule.flow_durations[1:] == (0.0, 0.0)
-    assert schedule.exact_total_flow_duration == (
-        schedule.intervals[0].exact_duration
-    )
+    assert schedule.exact_total_flow_duration == (schedule.intervals[0].exact_duration)
     assert [event.event_index for event in schedule.events] == [0, 1]
-    assert schedule.events[0].exact_event_time == (
-        schedule.events[1].exact_event_time
-    )
+    assert schedule.events[0].exact_event_time == (schedule.events[1].exact_event_time)
     assert schedule.events[0].event_time == schedule.events[1].event_time
     assert schedule.event_history_channel == "hybrid_event_log"
     assert schedule.coincident_event_order == "event_index"
@@ -86,8 +81,7 @@ def test_relaxation_uses_exact_duration_instead_of_timestamp_delta(
     assert result.exact_energy_decay_rate_lower_bound is not None
     assert result.exact_log_target_upper_bound is not None
     assert (
-        result.exact_energy_decay_rate_lower_bound
-        * result.exact_flow_duration
+        result.exact_energy_decay_rate_lower_bound * result.exact_flow_duration
         >= result.exact_log_target_upper_bound
     )
     assert result.duration_reaches_target is True
@@ -103,12 +97,8 @@ def test_report(example_and_protocol) -> None:
 
     assert len(encoded) < 7000
     assert report["schedule"]["m_plus_one_flow_intervals"]
-    assert report["schedule"]["timestamp_role"] == (
-        "binary64_representation_only"
-    )
-    assert not report["schedule"][
-        "event_timestamps_feed_epi_time_history"
-    ]
+    assert report["schedule"]["timestamp_role"] == ("binary64_representation_only")
+    assert not report["schedule"]["event_timestamps_feed_epi_time_history"]
     assert report["relaxation"]["duration_reaches_target"]
     assert not report["relaxation"]["spectral_estimate_is_proof_input"]
     assert not report["scope"]["operator_events_executed"]

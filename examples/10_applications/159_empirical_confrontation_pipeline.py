@@ -53,9 +53,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import numpy as np  # noqa: E402
 
-from tnfr.physics.fields import (  # noqa: E402
-    estimate_coherence_length_with_provenance,
-)
+from tnfr.physics.fields import estimate_coherence_length_with_provenance  # noqa: E402
 from tnfr.validation import (  # noqa: E402
     P2MeasurementBounds,
     build_coupling_graph,
@@ -79,16 +77,18 @@ K_NEIGHBOURS = 4
 
 
 def coupled_oscillators(
-    *, n_channels: int = 12, n_samples: int = 2048, fs: float = 64.0,
-    spread: float = 0.05, seed: int = 0,
+    *,
+    n_channels: int = 12,
+    n_samples: int = 2048,
+    fs: float = 64.0,
+    spread: float = 0.05,
+    seed: int = 0,
 ) -> np.ndarray:
     """Synthetic phase-offset sinusoids, not a TNFR trajectory or real data."""
     rng = np.random.default_rng(seed)
     t = np.arange(n_samples) / fs
     base = 2.0 * np.pi * 6.0 * t
-    return np.array(
-        [np.sin(base + rng.normal(0.0, spread)) for _ in range(n_channels)]
-    )
+    return np.array([np.sin(base + rng.normal(0.0, spread)) for _ in range(n_channels)])
 
 
 def load_signal() -> tuple[np.ndarray, str]:
@@ -119,22 +119,31 @@ def demonstrate_reserved_prediction() -> None:
     calibration_run = NodalMeasurementRun(
         run_id="synthetic-calibration",
         acquisition_id="synthetic-calibration-preparation",
-        channel_ids=("left", "right"), timestamps=times,
+        channel_ids=("left", "right"),
+        timestamps=times,
         samples=(1 + training_amplitude, 1 - training_amplitude),
-        value_unit="fixture_units", time_unit="fixture_seconds",
+        value_unit="fixture_units",
+        time_unit="fixture_seconds",
     )
     calibration = calibrate_nodal_prediction(
-        [calibration_run], graph=nx.Graph([("left", "right")]),
-        offsets=(0.0, 0.0), scales=(1.0, 1.0), structural_time_per_unit=1.0,
+        [calibration_run],
+        graph=nx.Graph([("left", "right")]),
+        offsets=(0.0, 0.0),
+        scales=(1.0, 1.0),
+        structural_time_per_unit=1.0,
         support_provenance="independently declared synthetic P2 edge",
         measurement_provenance="software unit map; no physical instrument",
     )
     # Only the reserved initialization and schedule are available at issuance.
     forecast = forecast_nodal_response(
-        calibration, evaluation_run_id="synthetic-reserved",
+        calibration,
+        evaluation_run_id="synthetic-reserved",
         evaluation_acquisition_id="synthetic-reserved-preparation",
-        initial_measurement=(1.5, 2.5), timestamps=times,
-        absolute_error_bound=1e-12, max_structural_step=0.125, max_steps=8,
+        initial_measurement=(1.5, 2.5),
+        timestamps=times,
+        absolute_error_bound=1e-12,
+        max_structural_step=0.125,
+        max_steps=8,
     )
     issued_hash = forecast.content_hash
     with TemporaryDirectory(prefix="tnfr-forecast-demo-") as directory:
@@ -144,12 +153,16 @@ def demonstrate_reserved_prediction() -> None:
         observation = NodalMeasurementRun(
             run_id="synthetic-reserved",
             acquisition_id="synthetic-reserved-preparation",
-            channel_ids=("left", "right"), timestamps=times,
+            channel_ids=("left", "right"),
+            timestamps=times,
             samples=(2 + reserved_amplitude, 2 - reserved_amplitude),
-            value_unit="fixture_units", time_unit="fixture_seconds",
+            value_unit="fixture_units",
+            time_unit="fixture_seconds",
         )
         score = score_nodal_forecast(
-            forecast, calibration, observation,
+            forecast,
+            calibration,
+            observation,
             expected_forecast_hash=issued_hash,
         )
     print("\nSeparate synthetic P2 forecast-boundary demonstration:")
@@ -175,35 +188,45 @@ def demonstrate_continuous_p2_intervals() -> None:
             context.prec = 90
             rate = Decimal("0.4")
             center, initial = Decimal(mean), Decimal(amplitude)
-            contrasts = [initial * (-2 * rate * Decimal.from_float(time)).exp()
-                         for time in times]
-            return (tuple(float(center + value) for value in contrasts),
-                    tuple(float(center - value) for value in contrasts))
+            contrasts = [
+                initial * (-2 * rate * Decimal.from_float(time)).exp() for time in times
+            ]
+            return (
+                tuple(float(center + value) for value in contrasts),
+                tuple(float(center - value) for value in contrasts),
+            )
 
     calibration_times = (0.0, 1.0)
     calibration_run = NodalMeasurementRun(
         run_id="continuous-calibration",
         acquisition_id="continuous-calibration-preparation",
-        channel_ids=("left", "right"), timestamps=calibration_times,
+        channel_ids=("left", "right"),
+        timestamps=calibration_times,
         samples=continuous_samples("1", "0.7", calibration_times),
-        value_unit="fixture_units", time_unit="fixture_seconds",
+        value_unit="fixture_units",
+        time_unit="fixture_seconds",
     )
     measurement = P2MeasurementBounds(
-        offsets=(0, 0), scales=(1, 1),
+        offsets=(0, 0),
+        scales=(1, 1),
         epi_error=(Fraction(1, 10**10), Fraction(1, 10**10)),
-        timestamp_error=0, structural_time_per_unit=(1, 1),
+        timestamp_error=0,
+        structural_time_per_unit=(1, 1),
         provenance="declared Decimal/binary64 software fixture bounds only",
     )
     calibration = calibrate_p2_transport(
-        [calibration_run], graph=nx.Graph([("left", "right")]),
+        [calibration_run],
+        graph=nx.Graph([("left", "right")]),
         measurement=measurement,
         support_provenance="independently declared synthetic P2 edge",
     )
     times = tuple(float(i / 8) for i in range(9))
     forecast = forecast_p2_transport(
-        calibration, evaluation_run_id="continuous-reserved",
+        calibration,
+        evaluation_run_id="continuous-reserved",
         evaluation_acquisition_id="continuous-reserved-preparation",
-        initial_measurement=(1.5, 2.5), timestamps=times,
+        initial_measurement=(1.5, 2.5),
+        timestamps=times,
     )
     issued_hash = forecast.content_hash
     with TemporaryDirectory(prefix="tnfr-continuous-p2-demo-") as directory:
@@ -212,12 +235,16 @@ def demonstrate_continuous_p2_intervals() -> None:
         observation = NodalMeasurementRun(
             run_id="continuous-reserved",
             acquisition_id="continuous-reserved-preparation",
-            channel_ids=("left", "right"), timestamps=times,
+            channel_ids=("left", "right"),
+            timestamps=times,
             samples=continuous_samples("2", "-0.5", times),
-            value_unit="fixture_units", time_unit="fixture_seconds",
+            value_unit="fixture_units",
+            time_unit="fixture_seconds",
         )
         comparison = score_p2_transport(
-            forecast, calibration, observation,
+            forecast,
+            calibration,
+            observation,
             expected_forecast_hash=issued_hash,
         )
     lower, upper = (float(value) for value in calibration.capacity)
@@ -235,23 +262,22 @@ def main() -> None:
     print("EMPIRICAL CONFRONTATION -- canonical multichannel read-outs")
     print("=" * 72)
     signals, source = load_signal()
-    print(f"\nsource: {source}  "
-          f"(shape {signals.shape[0]}ch x {signals.shape[1]})")
+    print(f"\nsource: {source}  " f"(shape {signals.shape[0]}ch x {signals.shape[1]})")
 
     # The confrontation report includes the emergent geometry and its spectral
     # xi_C comparison. Rebuild the deterministic coupling graph to request the
     # primary decay-fit estimator together with explicit provenance.
     rep = confront_signal(signals, k_neighbours=K_NEIGHBOURS)
     phase, amplitude = phase_amplitude_matrices(signals)
-    coupling_graph = build_coupling_graph(
-        phase, amplitude, k_neighbours=K_NEIGHBOURS
-    )
+    coupling_graph = build_coupling_graph(phase, amplitude, k_neighbours=K_NEIGHBOURS)
     xi_estimate = estimate_coherence_length_with_provenance(coupling_graph)
 
     print("\nScoped read-outs of the emergent coupling graph:")
     print(f"   Kuramoto R           = {rep.kuramoto_R:.3f}")
-    print(f"   static coherence C₀ = {rep.coherence:.3f}  "
-          f"(mean |ΔNFR| within tolerance: {rep.at_equilibrium}; dEPI=0)")
+    print(
+        f"   static coherence C₀ = {rep.coherence:.3f}  "
+        f"(mean |ΔNFR| within tolerance: {rep.at_equilibrium}; dEPI=0)"
+    )
     print(
         f"   tetrad |∇φ|,|K_φ|    = {rep.grad_phi:.3f}, {rep.k_phi:.3f}  "
         "(local phase-field summaries)"
@@ -266,23 +292,30 @@ def main() -> None:
         f"   ξ_C spectral compare = {rep.xi_c:.3f}  "
         "(1/sqrt(lambda_2) on the same coupling graph)"
     )
-    print(f"   pulse ω₀, beat, E    = {rep.pulse_fundamental:.3f}, "
-          f"{rep.dominant_beat:.3f}, {rep.vibration_energy:.3f}")
+    print(
+        f"   pulse ω₀, beat, E    = {rep.pulse_fundamental:.3f}, "
+        f"{rep.dominant_beat:.3f}, {rep.vibration_energy:.3f}"
+    )
     modal = rep.modal_diagnostic
     if modal is None:
         print("   modal roots           = unresolved (missing provenance)")
     else:
-        print(f"   modal roots           = {modal.status}: "
-              f"{modal.root_classification}; fitted stability={modal.stability}")
+        print(
+            f"   modal roots           = {modal.status}: "
+            f"{modal.root_classification}; fitted stability={modal.stability}"
+        )
         print(f"                          {modal.reason}")
-    fraction = ("unavailable" if rep.wave_fraction is None
-                else f"{rep.wave_fraction:.2f}")
+    fraction = (
+        "unavailable" if rep.wave_fraction is None else f"{rep.wave_fraction:.2f}"
+    )
     print(f"   complex-root fraction = {fraction}, Q={rep.quality_factor:.2f}")
     print("                          (descriptive; no physical regime certificate)")
 
     dyn = nodal_prediction_skill(signals)
-    print(f"   same-window fit       = {dyn.nodal_skill:+.3f} vs AR-1 "
-          f"{dyn.ar1_skill:+.3f}; c={dyn.diffusivity:+.3f}")
+    print(
+        f"   same-window fit       = {dyn.nodal_skill:+.3f} vs AR-1 "
+        f"{dyn.ar1_skill:+.3f}; c={dyn.diffusivity:+.3f}"
+    )
     print("                          (fit and score share data; no held-out evidence)")
     print(f"   fitted capacity sign  = {dyn.capacity_domain}")
 

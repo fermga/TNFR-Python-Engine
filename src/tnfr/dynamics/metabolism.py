@@ -232,9 +232,7 @@ class StructuralMetabolism:
         policy neither derives tau from the nodal equation nor guarantees a
         birth; THOL retains its history, hierarchy and numerical checks.
         """
-        threshold = _effective_tau(
-            _configured_tau(self.G, tau), self.metabolic_rate
-        )
+        threshold = _effective_tau(_configured_tau(self.G, tau), self.metabolic_rate)
         _execute_atomic_word(
             self.G,
             self.node,
@@ -334,9 +332,7 @@ class StructuralMetabolism:
         )
 
 
-def digest_stimulus(
-    G: TNFRGraph, node: NodeId, tau: float | None = None
-) -> None:
+def digest_stimulus(G: TNFRGraph, node: NodeId, tau: float | None = None) -> None:
     """Functional interface for single metabolic cycle.
 
     Equivalent to `StructuralMetabolism(G, node).digest(tau)`.

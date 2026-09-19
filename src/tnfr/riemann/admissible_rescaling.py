@@ -1,73 +1,24 @@
-r"""TNFR-Riemann P30 — Candidate admissible spectral-rescaling operator.
+r"""Finite target-driven spectral congruence comparisons (P30).
 
-Sub-problem (1) of Conjecture T-HP (§13septies of
-``theory/TNFR_RIEMANN_RESEARCH_NOTES.md``): construct an explicit
-operator-level candidate :math:`\mathcal{F}_{\mathrm{cand}}` built
-**only** from canonical TNFR ingredients
+For retained orthonormal eigenvectors U with positive source eigenvalues
+lambda_i and supplied positive targets mu_i, set
+F=U*diag(sqrt(mu_i/lambda_i))*U^*. Then
+F*H*F^*=U*diag(mu_i)*U^* on that retained range. This is a congruence, not a
+similarity transformation. F is invertible there; if U omits source directions,
+F is zero on the orthogonal complement and is not invertible on the full space.
+The algebra requires the declared eigenvector relation/orthonormality; the
+constructor's shape and positivity checks do not certify all those premises.
 
-* the P14 prime-ladder Hamiltonian :math:`H_{P14}` (canonical;
-  spectrum :math:`\{k\log p\}`, self-adjoint on
-  :math:`\mathcal{H}_{\mathrm{tet}}`),
-* the P28 smooth zero positions
-  :math:`\widetilde\gamma_n = \overline N^{-1}(n)` derived from the
-  Riemann-Siegel theta function (archimedean kernel of the
-  Weil-Guinand identity; no ``mpmath.zetazero`` on construction side),
-* the canonical constants :math:`(\varphi, \gamma, \pi, e)`,
+P28 supplies classical theta-derived smooth targets. Installing any supplied
+target list does not independently predict it or derive a nodal Hamiltonian.
+Finite comparison against known zero ordinates is an evaluation, not closure
+of a percentage or a smooth subtheorem of RH. The optional irrational probe
+frequencies are configured choices, not uniquely derived TNFR constants.
 
-such that :math:`T^{\mathrm{tet}}_{\mathrm{HP}} :=
-\mathcal{F}_{\mathrm{cand}}\,H_{P14}\,\mathcal{F}_{\mathrm{cand}}^{*}`
-is self-adjoint with a target spectrum.  We measure
-:math:`W_1(\sigma(T^{\mathrm{tet}}_{\mathrm{HP}}), \{\gamma_n\})`
-against the true Riemann zeros (benchmark only; the true zeros are
-NOT used in the construction of :math:`\mathcal{F}_{\mathrm{cand}}`).
-
-What this closes (P30; operator-level lift of P28)
---------------------------------------------------
-1. The smooth half of :math:`\mathcal{F}` exists as an EXPLICIT
-   operator (not only as a density): in the P14 eigenbasis it is the
-   diagonal positive square-root rescaling
-   :math:`\mathcal{F}_{\mathrm{smooth}} = U_{P14}\,
-   \operatorname{diag}\!\bigl(\sqrt{\widetilde\gamma_i/\lambda_i}\bigr)\,
-   U_{P14}^{*}`,
-   built from canonical ingredients only.
-2. :math:`\mathcal{F}_{\mathrm{smooth}}` is bounded, invertible, and
-   conjugates the P14 self-adjoint operator into a self-adjoint
-   operator whose spectrum is exactly the P28 smooth targets
-   :math:`\{\widetilde\gamma_i\}`.
-3. The W_1 gap to the true zeros equals the P28 residual gap, which
-   reduces the P27 baseline by ~97× at N=80 (Phase B audit, §13octies
-   row L7).
-4. ONE canonical oscillatory enrichment is tested
-   (:func:`oscillatory_correction_canonical`): a φ-modulated
-   diagonal perturbation built from
-   :math:`(\varphi, \gamma, \pi, e)` only.  The W_1 gap to the true
-   zeros is recomputed and the improvement (or regression) is
-   reported as honest empirical evidence.
-
-What this does NOT close (G4 stays OPEN)
-----------------------------------------
-* The oscillatory residual :math:`r_n = \gamma_n - \widetilde\gamma_n`
-  encodes :math:`S(T) = \tfrac{1}{\pi}\arg\zeta(\tfrac12+iT)`, which
-  is RH-equivalent.  No closed-form canonical perturbation built from
-  :math:`(\varphi, \gamma, \pi, e)` is expected to cancel it; the P30
-  enrichment experiment quantifies *how much* of the gap can be
-  recovered by canonical oscillatory ingredients alone.
-* P30 closes sub-problem (1) of T-HP **only for the smooth half**.
-  Sub-problem (2) (canonicity) requires deriving
-  :math:`\mathcal{F}_{\mathrm{smooth}}` from the nodal equation via
-  Noether correspondence; sub-problem (3) (positivity coincidence
-  with the Weil quadratic form) is independent.  Both remain open.
-* The honest empirical statement after P30 is: the smooth half of
-  T-HP is a constructive operator-level object; the oscillatory
-  half is **NOT** reachable by closed-form canonical constants.
-  Sharper enrichments require either a new canonical operator
-  (branch B2 of §13octies) or an obstruction proof inside the
-  current catalog (branch B1).
-
-Status: EXPERIMENTAL — TNFR-Riemann P30 (May 2026).  Lifts P28 from
-density level to operator level; tests one canonical oscillatory
-enrichment honestly.  **Does NOT close G4 = RH.**
-"""
+No analytic smooth/oscillatory direct-sum decomposition, REMESH-infinity kernel,
+S(T) symmetry-complement location, exhaustive enrichment obstruction or need
+for an additional canonical operator is established here. See the current
+scope in theory/TNFR_RIEMANN_RESEARCH_NOTES.md."""
 
 from __future__ import annotations
 
@@ -146,52 +97,18 @@ def build_smooth_rescaling_operator(
     eigvecs: np.ndarray,
     targets: np.ndarray,
 ) -> np.ndarray:
-    r"""Construct the smooth canonical rescaling operator.
+    r"""Build F=U*diag(sqrt(mu_i/lambda_i))*U^* from supplied positive spectra.
 
-    In the P14 eigenbasis :math:`U`, the operator is
+    With retained orthonormal source eigenvectors U, the congruence F*H*F^*
+    has target values mu_i on their range and zero on the complement. F is
+    positive/invertible on that range; it is globally invertible only when U
+    spans the entire source space. This is not a similarity transformation or
+    an independent prediction of the targets.
 
-    .. math::
-
-        \mathcal{F}_{\mathrm{smooth}}
-            = U \,
-              \operatorname{diag}\!\bigl(
-                  \sqrt{\mu_i / \lambda_i}
-              \bigr) \,
-              U^{*},
-
-    where :math:`\lambda_i` are the source eigenvalues (P14
-    prime-ladder, :math:`\{k\log p\}`) and :math:`\mu_i` are the
-    canonical TNFR targets (P28 smooth zero positions
-    :math:`\{\widetilde\gamma_i\}` from the archimedean kernel).
-
-    Properties (proved at the operator level):
-
-    * :math:`\mathcal{F}_{\mathrm{smooth}}` is self-adjoint (positive
-      diagonal in an orthonormal basis).
-    * :math:`\mathcal{F}_{\mathrm{smooth}}` is bounded invertible
-      whenever all :math:`\mu_i/\lambda_i > 0`.
-    * Conjugation
-      :math:`\mathcal{F}_{\mathrm{smooth}}\,H_{P14}\,
-      \mathcal{F}_{\mathrm{smooth}}^{*}` has spectrum
-      :math:`\{\mu_i\}` exactly (by direct computation in the
-      eigenbasis).
-
-    Parameters
-    ----------
-    eigvals : np.ndarray
-        Source positive eigenvalues, sorted ascending, length ``N``.
-    eigvecs : np.ndarray
-        Source eigenvectors as columns, shape ``(d, N)``.
-    targets : np.ndarray
-        Target canonical eigenvalues, sorted ascending, length ``N``.
-
-    Returns
-    -------
-    np.ndarray
-        Square matrix of shape ``(d, d)`` if ``eigvecs`` spans the
-        full source space, else the ``(d, d)`` rank-N operator (the
-        kernel is null-padded outside the kept subspace).
-    """
+    Parameters are source eigvals of length N, eigvec columns of shape (d,N),
+    and targets of length N. The result has shape (d,d), rank N under the stated
+    orthonormality/positivity premises. The code checks matching spectrum shapes
+    and positivity but does not independently certify the full eigensystem."""
     eigvals = np.asarray(eigvals, dtype=float)
     targets = np.asarray(targets, dtype=float)
     eigvecs = np.asarray(eigvecs)
@@ -295,53 +212,18 @@ def oscillatory_correction_canonical(
     amplitude: float = 0.0,
     mode: str = "phi_log",
 ) -> np.ndarray:
-    r"""Apply a canonical-constant oscillatory perturbation to the targets.
+    r"""Perturb supplied targets with one of three configured probe families.
 
-    Three closed-form perturbations built from
-    :math:`(\varphi, \gamma, \pi, e)` only.  All preserve
-    :math:`\mu_i > 0` for small ``amplitude``.
+    phi_log multiplies by 1+a*sin(phi*log(target)); gamma_e multiplies by
+    1+a*cos(gamma*target/e). pi_density adds a*sin(2*pi*i/N) divided by the
+    floored leading-order density log(max(target/(2*pi),1.001))/(2*pi), using
+    a further 1e-6 floor. These are selected numerical formulas, not derived
+    U6 or tetrad laws; the density appears reciprocally, not multiplicatively.
 
-    * ``"phi_log"`` —
-      :math:`\mu_i \to \mu_i\,
-      (1 + a\sin(\varphi\log\widetilde\gamma_i))`.
-      Golden-ratio frequency in log-scale, matching the structural
-      potential confinement (U6).
-    * ``"gamma_e"`` —
-      :math:`\mu_i \to \mu_i\,
-      (1 + a\cos(\gamma\widetilde\gamma_i / \mathrm{e}))`.
-      Euler-constant frequency rescaled by Napier's e, matching the
-      local/correlational tetrad axis.
-    * ``"pi_density"`` —
-      :math:`\mu_i \to \mu_i + a\sin(2\pi i / N)\cdot\overline N'(\mu_i)`.
-      Geometric (π) modulation weighted by the smooth zero density;
-      attempt at canonical structural rescaling.
-
-    Parameters
-    ----------
-    smooth_targets : np.ndarray
-        Canonical smooth targets (P28 :math:`\widetilde\gamma_i`).
-    amplitude : float, default 0.0
-        Perturbation amplitude ``a``.  Zero recovers the smooth
-        operator exactly.
-    mode : str, default ``"phi_log"``
-        Perturbation family.
-
-    Returns
-    -------
-    np.ndarray
-        Perturbed targets, sorted ascending.
-
-    Notes
-    -----
-    NO canonical closed-form built from
-    :math:`(\varphi, \gamma, \pi, e)` is expected to reproduce
-    :math:`S(T) = \tfrac{1}{\pi}\arg\zeta(\tfrac12+iT)`, because
-    :math:`S(T)` carries arithmetic information beyond the canonical
-    constants.  These perturbations are *negative-knowledge probes*:
-    their non-improvement is structural evidence that the oscillatory
-    half of :math:`\mathcal{F}` is NOT canonically closed-form
-    (branch B2 of §13octies: a new canonical operator is required).
-    """
+    Zero amplitude returns a copy. Other results are checked for positive values
+    and sorted. Failure of a finite probe to improve its target score proves
+    neither absence of every closed form nor necessity of a new canonical
+    operator. Compatibility name canonical does not confer that status."""
     targets = np.asarray(smooth_targets, dtype=float)
     if amplitude == 0.0:
         return targets.copy()
@@ -373,50 +255,19 @@ def oscillatory_correction_canonical(
 
 @dataclass(frozen=True)
 class AdmissibleRescalingCertificate:
-    r"""Certificate of admissible spectral-rescaling candidate (P30).
+    r"""Finite supplied-spectrum comparison record (P30).
 
-    Attributes
-    ----------
-    n_targets
-        Number of eigenvalues retained from P14 / smooth targets.
-    smooth_self_adjoint
-        :math:`\mathcal{F}_{\mathrm{smooth}}\,H_{P14}\,
-        \mathcal{F}_{\mathrm{smooth}}^{*}` is self-adjoint at
-        machine precision.
-    smooth_spectrum_matches_targets
-        Spectrum of the conjugated operator equals
-        :math:`\{\widetilde\gamma_i\}` exactly (within ``1e-8``).
-    smooth_max_spec_diff
-        Maximum :math:`|\sigma_i(T^{\mathrm{tet}}_{\mathrm{HP}}) -
-        \widetilde\gamma_i|`.
-    w1_smooth_vs_true
-        :math:`W_1(\{\widetilde\gamma_i\}, \{\gamma_i\})`.  Equals
-        the P28 residual gap by construction; reported here at the
-        operator level.
-    w1_p14_vs_true
-        :math:`W_1(\{\lambda_i\}, \{\gamma_i\})` baseline (P27 gap).
-    smooth_improvement_ratio
-        ``w1_p14_vs_true / w1_smooth_vs_true`` — operator-level
-        manifestation of P28 closure (typical: ~30-100× at N=40-80).
-    oscillatory_mode
-        Name of the canonical perturbation tested.
-    oscillatory_amplitude
-        Amplitude swept; best (minimal-W1) value retained.
-    w1_oscillatory_vs_true
-        :math:`W_1(\{\mu_i^{\mathrm{osc}}\}, \{\gamma_i\})` at the
-        best amplitude.
-    oscillatory_improvement_over_smooth
-        ``(w1_smooth - w1_osc) / w1_smooth``.  Positive means the
-        canonical oscillation reduced the residual; non-positive
-        means it failed (expected — branch B2).
-    structurally_derived
-        ``True``: :math:`\mathcal{F}_{\mathrm{smooth}}` and the
-        oscillatory probes use only canonical TNFR ingredients
-        (P14 + P28 + :math:`\varphi, \gamma, \pi, e`).  No
-        ``mpmath.zetazero`` on the construction side.
-    notes
-        Honest-scope remarks.
-    """
+    smooth_self_adjoint and smooth_spectrum_matches_targets are tolerance-based
+    matrix checks; smooth_max_spec_diff retains the actual residual. w1 fields
+    compare supplied finite spectra with known zero ordinates. The improvement
+    ratio reports that comparison, not a fraction of RH or T-HP proved.
+
+    oscillatory_amplitude is selected by minimizing W1 against those same known
+    ordinates, so w1_oscillatory_vs_true is an in-sample calibration score.
+    structurally_derived is a legacy flag, not a derivability certificate: the
+    smooth targets use a classical theta function and probe frequencies are
+    configured constants. Field names and flags remain for compatibility.
+    notes report this scope; no autonomous nodal or analytic-zero theorem follows."""
 
     n_targets: int
     smooth_self_adjoint: bool
@@ -473,35 +324,18 @@ def compute_admissible_rescaling_certificate(
     oscillatory_mode: str = "phi_log",
     oscillatory_amplitudes: Sequence[float] | None = None,
 ) -> AdmissibleRescalingCertificate:
-    r"""Compute the P30 admissible-rescaling certificate.
+    r"""Compute a finite P14/P28 target comparison and calibrate an oscillatory probe.
 
-    Pipeline:
+    Build a supplied prime-ladder eigensystem, construct smooth theta-derived
+    targets, and check the congruence numerically. Compare their W1 discrepancy
+    with known zero ordinates, then select the best amplitude from the given
+    sequence using that same W1 score. There is no held-out target evaluation.
 
-    1. Build P14 Hamiltonian and extract the lowest ``n_targets``
-       positive eigenpairs.
-    2. Build P28 smooth targets :math:`\widetilde\gamma_i`.
-    3. Construct :math:`\mathcal{F}_{\mathrm{smooth}}` and verify
-       self-adjointness + exact spectrum match.
-    4. Compute W_1 gap to true Riemann zeros (benchmark only).
-    5. Sweep the canonical oscillatory amplitude; keep the best.
-    6. Report honest improvement ratio (likely small or negative).
-
-    Parameters
-    ----------
-    n_targets : int, default 40
-        Length of the spectral truncation.
-    p14_n_primes, p14_max_power
-        P14 graph parameters.  Defaults give an ambient space of
-        ``50 * 8 = 400`` eigenvalues, plenty above ``n_targets``.
-    dps : int, default 30
-        mpmath precision for the Riemann-Siegel theta function and
-        benchmark zeros.
-    oscillatory_mode : str, default ``"phi_log"``
-        Canonical perturbation family.
-    oscillatory_amplitudes : sequence of float, optional
-        Amplitudes to sweep.  Default ``[0, 1e-3, 5e-3, 1e-2, 5e-2,
-        1e-1]`` (small to keep targets positive).
-    """
+    n_targets fixes the finite retained dimension; p14_n_primes and p14_max_power
+    set the source graph. dps sets classical theta/zero evaluation precision.
+    oscillatory_mode and oscillatory_amplitudes configure the probe and search.
+    The returned schema and legacy structurally_derived flag do not certify
+    physical derivability, a solved smooth part of RH or an exhaustive no-go."""
     if n_targets < 4:
         raise ValueError("n_targets must be >= 4")
     if oscillatory_amplitudes is None:
@@ -566,20 +400,19 @@ def compute_admissible_rescaling_certificate(
     rel_improvement_osc = (w1_smooth - best_w1) / w1_smooth if w1_smooth > 0.0 else 0.0
 
     notes = (
-        "F_smooth is constructed ONLY from P14 eigendata and P28 "
-        "smooth targets; no mpmath.zetazero on construction side.",
-        "Spectrum of F·H·F* equals P28 smooth targets exactly: "
-        "operator-level lift of the density-level closure of §13sexies.",
-        "Residual W_1 to true zeros = oscillatory part S(T) — "
-        "RH-equivalent, NOT canonical.",
-        f"Canonical oscillation '{oscillatory_mode}' tested; best "
+        "F_smooth uses supplied P14 eigendata and classical P28 smooth "
+        "targets; no zero oracle is called to construct the smooth targets.",
+        "Under the retained eigensystem premises, F*H*F_adjoint installs the "
+        "supplied targets; implementation checks use numerical tolerances.",
+        "The reported W1 is a finite discrepancy to known zero ordinates, "
+        "not an RH-equivalent proposition or an analytic S(T) identity.",
+        f"Configured oscillation '{oscillatory_mode}' calibrated; best "
         f"amplitude {best_amp:.2e} gives "
-        f"{rel_improvement_osc*100:+.2f}% over smooth baseline.",
-        "Negative or near-zero canonical-oscillation improvement is "
-        "structural evidence for §13octies branch B2 (new canonical "
-        "operator needed).",
-        "P30 closes sub-problem (1) of Conjecture T-HP for the "
-        "smooth half only.  G4 = RH remains OPEN.",
+        f"{rel_improvement_osc*100:+.2f}% over the same-target smooth baseline.",
+        "The best amplitude was selected against those same known ordinates; "
+        "this score is not held-out evaluation or a universal obstruction.",
+        "No nodal Hilbert-Polya mechanism or need for a new operator is proved. "
+        "The structurally_derived flag is legacy metadata; RH remains open.",
     )
 
     return AdmissibleRescalingCertificate(

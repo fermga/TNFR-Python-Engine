@@ -44,21 +44,15 @@ def _hierarchy() -> nx.Graph:
             "parent_node": "parent",
         },
     )
-    graph.add_edges_from(
-        [("parent", "child-a"), ("parent", "child-b")]
-    )
+    graph.add_edges_from([("parent", "child-a"), ("parent", "child-b")])
     return graph
 
 
 def test_u5_target_uses_canonical_parent_and_child_coherence() -> None:
     graph = _hierarchy()
 
-    passing = assess_u5_parent_child_coherence(
-        graph, "parent", alpha=0.2
-    )
-    failing = assess_u5_parent_child_coherence(
-        graph, "parent", alpha=0.3
-    )
+    passing = assess_u5_parent_child_coherence(graph, "parent", alpha=0.2)
+    failing = assess_u5_parent_child_coherence(graph, "parent", alpha=0.3)
 
     assert passing.parent_coherence == pytest.approx(0.5)
     assert passing.tolerance == pytest.approx(0.0)
@@ -116,9 +110,7 @@ def test_u5_target_rejects_inconsistent_hierarchy() -> None:
     graph.nodes["child-b"]["parent_node"] = "other"
 
     with pytest.raises(ValueError, match="declares parent"):
-        assess_u5_parent_child_coherence(
-            graph, "parent", alpha=0.2
-        )
+        assess_u5_parent_child_coherence(graph, "parent", alpha=0.2)
 
 
 def test_amplitude_alignment_is_not_reported_as_u5_coherence() -> None:
@@ -127,9 +119,9 @@ def test_amplitude_alignment_is_not_reported_as_u5_coherence() -> None:
     alignment = compute_subepi_amplitude_alignment(graph, "parent")
 
     assert alignment == pytest.approx(0.8)
-    assert compute_subepi_collective_coherence(
-        graph, "parent"
-    ) == pytest.approx(alignment)
+    assert compute_subepi_collective_coherence(graph, "parent") == pytest.approx(
+        alignment
+    )
     assert alignment != pytest.approx(0.5)
 
 

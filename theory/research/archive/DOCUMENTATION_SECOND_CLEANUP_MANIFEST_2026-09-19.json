@@ -1,0 +1,112 @@
+{
+  "scope": "Second documentation cleanup; no new scientific result or equivalent replacement coverage implied.",
+  "date": "2026-09-19",
+  "documentation_owner": "docs/README.md",
+  "retirements": [
+    {
+      "original_path": "docs/SINGLE_FILE_MODULES.md",
+      "action": "merged",
+      "current_owner_or_archive": "ARCHITECTURE.md",
+      "reason": "Public-facade inventory is owned by architecture, not a second module guide.",
+      "original_bytes": 1170,
+      "original_sha256": "5940e953193ec5d6bd19bd611ab6fcfdacc828aeff97dd4ced85c57272294821"
+    },
+    {
+      "original_path": ".github/EXTENSION_TEMPLATE.md",
+      "action": "merged",
+      "current_owner_or_archive": "CONTRIBUTING.md",
+      "reason": "Useful proposal fields moved to the contributor guide/domain-extension form; obsolete extension class and score policy removed.",
+      "original_bytes": 11441,
+      "original_sha256": "a409105c7694278800be9201fb16604e4f18de91333126415c67f90863a22052"
+    },
+    {
+      "original_path": ".github/workflows/release.yml",
+      "action": "removed",
+      "current_owner_or_archive": ".github/WORKFLOWS.md",
+      "reason": "Missing release tools and duplicate publication route; existing pypi-zenodo workflow retained.",
+      "original_bytes": 7811,
+      "original_sha256": "22ef1192d85cb93177362d683ed31fea720a89fb1fbe15dfab5092f1bdab3520"
+    },
+    {
+      "original_path": ".github/workflows/performance-regression.yml",
+      "action": "removed",
+      "current_owner_or_archive": ".github/WORKFLOWS.md",
+      "reason": "Referenced absent tests/performance; equivalent performance coverage is not claimed.",
+      "original_bytes": 922,
+      "original_sha256": "c7fc7114904dd5bf10e4544fe8ae82b8eb685a4d824fa81e793fa05ecf3d46e0"
+    },
+    {
+      "original_path": ".github/workflows/regression-smoke.yml",
+      "action": "removed",
+      "current_owner_or_archive": ".github/WORKFLOWS.md",
+      "reason": "Referenced absent run_tetrad_regression tool; no replacement experiment claimed.",
+      "original_bytes": 1959,
+      "original_sha256": "e60035d65d94ef002c4b21b2e92c468e0c0122a13dbebd15136615682312c810"
+    },
+    {
+      "original_path": ".github/workflows/reproducibility.yml",
+      "action": "removed",
+      "current_owner_or_archive": ".github/WORKFLOWS.md",
+      "reason": "Referenced absent compare_manifests and cache-profiler programs.",
+      "original_bytes": 2194,
+      "original_sha256": "125e262f0ab0dcf8a4aa79ff7a8f41628648d3e216b9a77a280f29e14f99eb3a"
+    },
+    {
+      "original_path": "scripts/run_reproducible_benchmarks.py",
+      "action": "removed",
+      "current_owner_or_archive": "scripts/README.md",
+      "reason": "All four registered profiler programs are absent; no current workload remained.",
+      "original_bytes": 11703,
+      "original_sha256": "13a2e6d89331fdb2775dd5f535d49a5341b9aad13eb391be2722cea2164da4d2"
+    },
+    {
+      "original_path": "benchmarks/emergent_epi_latent_charge.py",
+      "action": "removed",
+      "current_owner_or_archive": "benchmarks/README.md",
+      "reason": "Complex BEPI values violate current real-scalar pressure admission; old magnitude-only latent-charge claim invalid.",
+      "original_bytes": 13858,
+      "original_sha256": "e80f19399e98dde7855664a9ea082ce14a56f2fab65d27dccdf14310b239acaf"
+    },
+    {
+      "original_path": "benchmarks/phase_curvature_investigation.py",
+      "action": "removed",
+      "current_owner_or_archive": "benchmarks/README.md",
+      "reason": "Target/threshold values exceed the exact wrapped-curvature bound pi.",
+      "original_bytes": 16675,
+      "original_sha256": "4a8c2f23aa74603ccf9d2776e65516672744dd46536be6966a739c9a106f87b7"
+    },
+    {
+      "original_path": "factorization-lab/notebooks/spectral_history.ipynb",
+      "action": "archived",
+      "current_owner_or_archive": "factorization-lab/notebooks/archive/spectral_history_legacy_2026_09_19.ipynb",
+      "reason": "Removed private API and invalid notebook __file__ assumptions; original outputs retained as history.",
+      "original_bytes": 37107,
+      "original_sha256": "1b67bb2a7fdbd9b26fb9a96082f7519111a2287dab974e94436cf2f6dea6dfe5",
+      "archive_sha256": "1b67bb2a7fdbd9b26fb9a96082f7519111a2287dab974e94436cf2f6dea6dfe5"
+    },
+    {
+      "original_path": "manual/AUDIT_CHAPTERS_01_04.md",
+      "action": "archived",
+      "current_owner_or_archive": "manual/archive/EDITORIAL_AUDIT_2026-08-02.txt",
+      "reason": "Old subjective four-chapter editorial verdict is not current 26-chapter or reader-pilot evidence.",
+      "original_bytes": 3732,
+      "original_sha256": "9f5afeebbaa2f0e76660b260e0ff95bf5e217b8bc26bdd77fb2d0da3219b2734",
+      "archive_sha256": "9f5afeebbaa2f0e76660b260e0ff95bf5e217b8bc26bdd77fb2d0da3219b2734"
+    }
+  ],
+  "local_originals": "artifacts/research/documentation_second_cleanup_originals_2026_09_19",
+  "language": "Technical documentation English; educational manuscript Spanish by explicit user authorization.",
+  "numerical_scope": "Retained scientific computations unchanged; docs tooling/workflow configuration deliberately corrected; listed obsolete entry points removed.",
+  "local_validation": "artifacts/research/documentation_second_cleanup_validation_2026_09_19.json",
+  "documentation_build_dependencies": {
+    "owner": "pyproject.toml:project.optional-dependencies.docs",
+    "requirements": [
+      "mkdocs>=1.6,<2",
+      "mkdocs-material>=9.4,<10",
+      "pymdown-extensions>=10,<11"
+    ],
+    "retired": "Unused Sphinx, notebook-execution and Pandoc dependencies from the docs extra",
+    "primality_compatibility": "primality-test/setup.py retains docs=[]; build from repository root",
+    "runtime_dependencies_and_entrypoints_unchanged": true
+  }
+}

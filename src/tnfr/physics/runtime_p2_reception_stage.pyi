@@ -3,18 +3,14 @@ from fractions import Fraction
 from typing import Any, Literal
 
 from ..operators.event_runtime import ExecutedGlyphStage, OperatorEventExecutionResult
-from .binary64_p2_reception_stability import (
-    P2HalfReceptionRemeshStabilityCertificate,
-)
+from .binary64_p2_reception_stability import P2HalfReceptionRemeshStabilityCertificate
 
 Binary64Pair = tuple[float, float]
 ExactPair = tuple[Fraction, Fraction]
 
 @dataclass(frozen=True, slots=True)
 class ExecutedP2HalfReceptionStageCertificate:
-    kernel_certificate: P2HalfReceptionRemeshStabilityCertificate = field(
-        repr=False
-    )
+    kernel_certificate: P2HalfReceptionRemeshStabilityCertificate = field(repr=False)
     execution_result: OperatorEventExecutionResult = field(repr=False)
     executed_stage: ExecutedGlyphStage = field(repr=False)
     event_index: int

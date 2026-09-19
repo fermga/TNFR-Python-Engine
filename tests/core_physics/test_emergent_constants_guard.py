@@ -79,21 +79,15 @@ class TestCoherenceBandEmergent:
     """The coherence band is the single pi-derived quantity 1/(pi+1)."""
 
     def test_band_edges_are_pi_derived(self) -> None:
-        assert math.isclose(
-            FRAGMENTATION_THRESHOLD, 1.0 / (PI + 1.0), rel_tol=1e-12
-        )
-        assert math.isclose(
-            HIGH_COHERENCE_THRESHOLD, PI / (PI + 1.0), rel_tol=1e-12
-        )
+        assert math.isclose(FRAGMENTATION_THRESHOLD, 1.0 / (PI + 1.0), rel_tol=1e-12)
+        assert math.isclose(HIGH_COHERENCE_THRESHOLD, PI / (PI + 1.0), rel_tol=1e-12)
 
 
 class TestChannelWeightsEmergent:
     """DNFR_WEIGHTS / SI_WEIGHTS use the exact-normalising pi-band hierarchy."""
 
     def test_channel_weights_are_the_pi_band_hierarchy(self) -> None:
-        assert math.isclose(
-            CHANNEL_WEIGHT_PRIMARY, PI / (PI + 1.0), rel_tol=1e-12
-        )
+        assert math.isclose(CHANNEL_WEIGHT_PRIMARY, PI / (PI + 1.0), rel_tol=1e-12)
         assert math.isclose(
             CHANNEL_WEIGHT_SECONDARY, PI / (PI + 1.0) ** 2, rel_tol=1e-12
         )
@@ -103,9 +97,7 @@ class TestChannelWeightsEmergent:
 
     def test_channel_weights_normalise_exactly_to_one(self) -> None:
         total = (
-            CHANNEL_WEIGHT_PRIMARY
-            + CHANNEL_WEIGHT_SECONDARY
-            + CHANNEL_WEIGHT_TERTIARY
+            CHANNEL_WEIGHT_PRIMARY + CHANNEL_WEIGHT_SECONDARY + CHANNEL_WEIGHT_TERTIARY
         )
         assert math.isclose(total, 1.0, abs_tol=1e-12)
 
@@ -114,12 +106,8 @@ class TestOperatorGainsEmergent:
     """The pressure-lever gains are the coherence-band step and its reciprocal."""
 
     def test_pressure_lever_is_band_reciprocal(self) -> None:
-        assert math.isclose(
-            COHERENCE_RETENTION, PI / (PI + 1.0), rel_tol=1e-12
-        )
-        assert math.isclose(
-            DISSONANCE_AMPLIFICATION, (PI + 1.0) / PI, rel_tol=1e-12
-        )
+        assert math.isclose(COHERENCE_RETENTION, PI / (PI + 1.0), rel_tol=1e-12)
+        assert math.isclose(DISSONANCE_AMPLIFICATION, (PI + 1.0) / PI, rel_tol=1e-12)
 
     def test_balanced_il_oz_is_exactly_isometric(self) -> None:
         # pi/(pi+1) * (pi+1)/pi == 1 (a balanced IL.OZ preserves the norm).
@@ -139,9 +127,7 @@ class TestNoFrozenPhiGammaEDecimal:
     """No nodal-physics constant may equal a removed frozen phi/gamma/e decimal."""
 
     @pytest.mark.parametrize("name,value", sorted(PHYSICS_CONSTANTS.items()))
-    def test_constant_is_not_a_frozen_decimal(
-        self, name: str, value: float
-    ) -> None:
+    def test_constant_is_not_a_frozen_decimal(self, name: str, value: float) -> None:
         for frozen in FROZEN_PHI_GAMMA_E_DECIMALS:
             assert not math.isclose(value, frozen, abs_tol=1e-5), (
                 f"{name}={value!r} regressed to the frozen phi/gamma/e decimal "

@@ -1,85 +1,23 @@
-r"""TNFR-Riemann P28 — Structural derivation of the smooth zero density.
+r"""Classical smooth-counting targets and finite zero comparisons (P28).
 
-Motivation
-----------
-P27 (:mod:`tnfr.riemann.hilbert_polya`) constructed the abstract
-Hilbert-Polya operator :math:`T_{\mathrm{HP}} = \operatorname{diag}(\gamma_n)`
-by **inputting** the zeros from :func:`mpmath.zetazero`.  The
-Wasserstein-1 gap to the P14 prime-ladder spectrum,
-:math:`W_1(\sigma(P14),\sigma(T_{\mathrm{HP}})) \approx 115.24`, was
-the operator-level manifestation of gap G4 (= RH).
+The source of the targets is the classical Riemann-Siegel theta function
+ theta(T)=Im log Gamma(1/4+i*T/2)-(T/2)*log(pi),
+with smooth count Nbar(T)=theta(T)/pi+1 under the implemented branch convention.
+The code numerically inverts this function to prescribe a finite target list.
+It does not derive theta, its gamma factor or target selection from the nodal
+identity. A diagonal matrix containing those targets has them as eigenvalues
+by construction.
 
-This module attacks the **structural origin** of that gap.  We do
-*not* attempt to prove RH (G4 remains the only open milestone in
-§13.2 of AGENTS.md).  We do, however, derive a TNFR-canonical
-operator
+Known zero ordinates are used separately for finite error comparisons. A smaller
+Wasserstein discrepancy than the prime-ladder baseline is a comparison of
+chosen targets, not a percentage of RH proved. The analytic argument term S(T)
+is not itself an RH-equivalent proposition without a precise quantified
+statement and proof. Local density-based residual estimates need their own
+branch, derivative and domain assumptions; a finite fit is not a universal
+bound. No nodal Hilbert-Polya bridge or all-zero location theorem follows.
 
-.. math::
-
-    \widetilde T_{\mathrm{HP}}
-       := \operatorname{diag}(\widetilde\gamma_1,\dots,\widetilde\gamma_N)
-
-whose eigenvalues are the **smooth Riemann zero positions** obtained
-*entirely from the archimedean side* of the Weil-Guinand identity
-(P15) — i.e., from the Riemann-Siegel theta function
-
-.. math::
-
-    \theta(T) = \operatorname{Im}\log\Gamma\!\bigl(\tfrac14 + \tfrac{iT}{2}\bigr)
-                - \tfrac{T}{2}\log\pi.
-
-Backlund's formula gives the smooth counting function
-
-.. math::
-
-    \overline N(T) = \frac{\theta(T)}{\pi} + 1,
-
-and :math:`\widetilde\gamma_n` is defined as the unique solution of
-:math:`\overline N(\widetilde\gamma_n) = n`.  No call to
-:func:`mpmath.zetazero` is made on the derivation side.
-
-What this closes (P28)
-----------------------
-1. The **smooth eigenvalue density** of :math:`T_{\mathrm{HP}}` is a
-   TNFR-derivable object: it falls out of the gamma factor of the
-   completed zeta function :math:`\xi(s) = \pi^{-s/2}\Gamma(s/2)\zeta(s)`,
-   and the gamma factor is exactly the archimedean kernel of the
-   Weil-Guinand explicit formula computed in P15 via
-   :func:`tnfr.riemann.weil_explicit_formula.weil_archimedean_integral`.
-
-2. The Wasserstein-1 gap
-   :math:`W_1(\sigma(\widetilde T_{\mathrm{HP}}),\sigma(T_{\mathrm{HP}}))`
-   is dramatically smaller than the P27 gap
-   :math:`W_1(\sigma(P14),\sigma(T_{\mathrm{HP}}))`.  The reduction
-   ratio quantifies how much of G4 is *structural* (smooth density,
-   TNFR-derivable) and how much is *arithmetic fluctuation*
-   (oscillating part :math:`S(T) = \tfrac{1}{\pi}\arg\zeta(\tfrac12+iT)`,
-   genuinely RH-equivalent).
-
-3. The residuals :math:`r_n := \gamma_n - \widetilde\gamma_n` satisfy
-   :math:`|r_n| \lesssim |S(\gamma_n)| / \overline N'(\gamma_n)`,
-   so the per-zero residual is bounded by the absolute value of the
-   argument of zeta on the critical line divided by the smooth
-   density.  Confirming this scaling numerically is part of the
-   certificate.
-
-What this does NOT close (G4 stays OPEN)
-----------------------------------------
-* The residuals :math:`r_n` ARE the RH content.  Showing
-  :math:`r_n \to 0` or even :math:`|r_n| \le C` uniformly in :math:`n`
-  is equivalent to RH-style control on :math:`S(T)` — that remains
-  the genuine arithmetic gap.
-
-* The exact eigenvalue match
-  :math:`\sigma(\widetilde T_{\mathrm{HP}}) = \sigma(T_{\mathrm{HP}})`
-  is impossible: the smooth approximation cannot reproduce the
-  fluctuating zero positions.  What is possible is the **density
-  match** in W_1 modulo a TNFR-quantifiable error.
-
-Status: EXPERIMENTAL — TNFR-Riemann P28 (May 2026).  Derives the
-smooth zero density from TNFR archimedean ingredients; quantifies
-the residual RH-content explicitly.
-"""
+Current interpretation and historical records are maintained in
+ theory/TNFR_RIEMANN_RESEARCH_NOTES.md."""
 
 from __future__ import annotations
 
@@ -109,20 +47,11 @@ __all__ = [
 
 
 def riemann_siegel_theta(T: float, *, dps: int = 30) -> float:
-    r"""Return the Riemann-Siegel theta function.
+    r"""Evaluate the classical Riemann-Siegel theta function at the requested precision.
 
-    .. math::
-
-        \theta(T) = \operatorname{Im}\log\Gamma\!\bigl(\tfrac14 + \tfrac{iT}{2}\bigr)
-                    - \tfrac{T}{2}\log\pi.
-
-    This is the phase of the archimedean factor
-    :math:`\pi^{-s/2}\Gamma(s/2)` of the completed zeta function
-    evaluated at :math:`s = 1/2 + iT`.  It is the TNFR-canonical
-    object: the very same gamma factor is the kernel of the
-    archimedean side of the Weil-Guinand explicit formula
-    (:func:`tnfr.riemann.weil_explicit_formula.weil_archimedean_integral`).
-    """
+    This reads Im(loggamma(1/4+i*T/2))-(T/2)*log(pi) with the library's continued
+    log-gamma convention. The special function is an arithmetic input, not a
+    nodal-law derivation."""
     if T <= 0.0:
         raise ValueError("T must be strictly positive")
     with mpmath.workdps(dps):
@@ -147,12 +76,11 @@ def smooth_zero_count(T: float, *, dps: int = 30) -> float:
 
 
 def smooth_zero_density(T: float) -> float:
-    r"""Smooth zero density :math:`\overline N'(T) = \tfrac{1}{2\pi}\log(T/2\pi)`.
+    r"""Return a floored leading-order approximation log(T/(2*pi))/(2*pi).
 
-    Exact asymptotic derivative of :math:`\overline N(T)`.  Positive
-    for :math:`T > 2\pi`; we add a floor to guarantee a sensible
-    Newton step for very small ``T``.
-    """
+    This is not the exact derivative of theta(T)/pi+1. For T<=2*pi the
+    implementation returns 1/(2*pi), a numerical Newton-step policy; that floor
+    is not a derived physical constant or analytic lower-bound theorem."""
     arg = T / (2.0 * math.pi)
     if arg <= 1.0:
         # below 2π the asymptotic formula breaks down; use a
@@ -210,13 +138,11 @@ def build_structural_t_hp(
     *,
     dps: int = 30,
 ) -> np.ndarray:
-    r"""Build :math:`\widetilde T_{\mathrm{HP}} = \operatorname{diag}(\widetilde\gamma_n)_{n=1}^{N}`.
+    r"""Return N supplied smooth targets obtained by numerically inverting theta counting.
 
-    Returns the sorted array
-    :math:`(\widetilde\gamma_1, \dots, \widetilde\gamma_N)` of smooth
-    zero positions derived ONLY from the archimedean Riemann-Siegel
-    theta function.  No call to :func:`mpmath.zetazero` is made.
-    """
+    No zero oracle is called to construct this array. That independence does
+    not derive its classical theta function or a Hilbert-Polya mechanism from
+    the nodal equation."""
     if N < 1:
         raise ValueError("N must be >= 1")
     out = np.empty(N, dtype=float)
@@ -232,38 +158,18 @@ def build_structural_t_hp(
 
 @dataclass(frozen=True)
 class StructuralZeroDensityCertificate:
-    r"""Certificate of structurally-derived zero density (P28).
+    r"""Finite comparison of classical smooth targets with supplied zero ordinates.
 
-    Attributes
-    ----------
-    n_zeros
-        Number of zeros / smooth positions compared.
-    structural_gammas
-        :math:`(\widetilde\gamma_1, \dots, \widetilde\gamma_N)` derived
-        from the archimedean Riemann-Siegel theta function.
-    actual_gammas
-        :math:`(\gamma_1, \dots, \gamma_N)` from
-        :func:`mpmath.zetazero` (benchmark only).
-    residuals
-        :math:`r_n = \gamma_n - \widetilde\gamma_n` — the
-        oscillating part :math:`S(\gamma_n) / \overline N'(\gamma_n)`.
-    max_residual, mean_residual, rms_residual
-        Aggregate residual statistics.
-    w1_structural_vs_actual
-        :math:`W_1(\sigma(\widetilde T_{\mathrm{HP}}), \sigma(T_{\mathrm{HP}}))`.
-    w1_p14_vs_actual
-        :math:`W_1(\sigma(P14)|_{\le N}, \sigma(T_{\mathrm{HP}}))`.
-    improvement_ratio
-        :math:`w_1^{P14}/w_1^{\mathrm{structural}}`.
-    bound_estimate, bound_satisfied
-        Empirical check that
-        :math:`\max_n|r_n| \le C \log\gamma_n / \overline N'(\gamma_n)`
-        for a small constant ``C`` (typical: ``C ≤ 2``).
-    structurally_derived
-        ``True`` since the derivation never calls ``mpmath.zetazero``.
-    notes
-        Honest-scope remarks.
-    """
+    structural_gammas are numerically inverted theta-counting targets;
+    actual_gammas use mpmath.zetazero. residuals are their differences, not an
+    exact equality with S(gamma)/Nbar_prime(gamma). The W1 and aggregate fields
+    report the finite comparison. bound_satisfied checks the maximum residual
+    against the maximum chosen envelope value, not a pointwise bound at every
+    index or an analytic all-height theorem.
+
+    structurally_derived is a legacy flag meaning the smooth target construction
+    does not call the zero oracle; it does not derive the targets from nodal
+    physics. The returned notes clarify this compatibility interpretation."""
 
     n_zeros: int
     structural_gammas: tuple
@@ -385,13 +291,15 @@ def compute_structural_zero_density_certificate(
     bound_satisfied = bool(np.max(abs_res) <= bound_estimate)
 
     notes = (
-        "ñ_n derived from θ(T) = Im log Γ(1/4 + iT/2) − (T/2) log π.",
-        "No mpmath.zetazero used on the DERIVATION side "
-        "(only for benchmark on the right-hand side).",
-        "Residuals r_n = γ_n − ñ_n encode the oscillating part "
-        "S(γ_n) = (1/π) arg ζ(1/2 + iγ_n).",
-        "Does NOT close G4 = RH: bounding S(T) is the open arithmetic "
-        "problem.  Closes the structural origin of the smooth density.",
+        "Smooth targets invert the supplied classical theta counting function "
+        "theta(T)/pi+1; they are not derived from a nodal evolution.",
+        "No zero oracle is used for the smooth target construction; known "
+        "ordinates are used separately for this finite comparison.",
+        "Residuals are differences between known ordinates and smooth targets. "
+        "They are not exactly S(gamma)/Nbar_prime(gamma) or an RH criterion.",
+        "The legacy structurally_derived flag records construction provenance. "
+        "The envelope check compares two finite maxima, not pointwise or "
+        "all-height bounds. No nodal bridge or RH result is established.",
     )
 
     return StructuralZeroDensityCertificate(

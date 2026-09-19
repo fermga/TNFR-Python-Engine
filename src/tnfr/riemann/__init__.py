@@ -525,13 +525,6 @@ from .lyapunov_spectral_positivity import (  # P26: Lyapunov-spectral positivity
     resolvent_schatten_norms,
     verify_unitary_flow,
 )
-from .nodeaware_gauge_sweep import (  # P20: node-aware gauge sweep (nu_f + node weight)
-    DEFAULT_NODEAWARE_GAUGES,
-    NodeAwareGaugeFn,
-    NodeAwareGaugeSweepCertificate,
-    build_test_state_nodeaware,
-    sweep_alpha_nodeaware,
-)
 from .nodal_pulse import (  # Canonical foundation: prime-NFR nodal pulse (re-founded)
     KNOWN_RIEMANN_ZEROS,
     NodalPulseCertificate,
@@ -543,15 +536,12 @@ from .nodal_pulse import (  # Canonical foundation: prime-NFR nodal pulse (re-fo
     prime_structural_frequencies,
     verify_nodal_pulse,
 )
-from .pulse_coherence import (  # Pulse-phase / coherence attack-surface tooling
-    PulseCoherenceCertificate,
-    argument_fluctuation,
-    coherence_defect,
-    generalized_pulse,
-    prime_side_fluctuation,
-    rectified_pulse,
-    verify_pulse_coherence,
-    zero_count,
+from .nodeaware_gauge_sweep import (  # P20: node-aware gauge sweep (nu_f + node weight)
+    DEFAULT_NODEAWARE_GAUGES,
+    NodeAwareGaugeFn,
+    NodeAwareGaugeSweepCertificate,
+    build_test_state_nodeaware,
+    sweep_alpha_nodeaware,
 )
 from .nuf_type_signature import (  # §13triginta-prima: νf-Type Signature diagnostic (foundational sub-question)
     NufTypeSignatureCertificate,
@@ -587,6 +577,16 @@ from .prime_ladder_hamiltonian import (  # Graph + weight operator (P14); Hamilt
     build_prime_ladder_weight_operator,
     verify_hamiltonian_reproduces_prime_ladder,
     weighted_spectral_trace,
+)
+from .pulse_coherence import (  # Pulse-phase / coherence attack-surface tooling
+    PulseCoherenceCertificate,
+    argument_fluctuation,
+    coherence_defect,
+    generalized_pulse,
+    prime_side_fluctuation,
+    rectified_pulse,
+    verify_pulse_coherence,
+    zero_count,
 )
 from .remesh_infinity_residue_split import (  # P50: legacy names; finite fixed-delay DFT split
     ResidueSplitCertificate,

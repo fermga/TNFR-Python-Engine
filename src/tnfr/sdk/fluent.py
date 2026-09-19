@@ -26,9 +26,9 @@ Chain operations for rapid prototyping:
 
 from __future__ import annotations
 
+import math
 from copy import deepcopy
 from dataclasses import dataclass
-import math
 from pathlib import Path
 from typing import Any
 
@@ -36,17 +36,15 @@ import networkx as nx
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ..constants.canonical import FRAGMENTATION_THRESHOLD as COHERENCE_FRAGMENTATION
 from ..constants.canonical import HIGH_COHERENCE_THRESHOLD as COHERENCE_STRONG
 from ..constants.canonical import PI as _PI
 from ..constants.canonical import ZHIR_THRESHOLD_XI_CANONICAL
-from ..constants.canonical import (
-    FRAGMENTATION_THRESHOLD as COHERENCE_FRAGMENTATION,
-)
+from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import NUMPY_AVAILABLE as _HAS_NUMPY
 from ..mathematics.unified_numerical import compute_circular_mean, np
 from ..metrics.coherence import compute_coherence
 from ..metrics.sense_index import compute_Si
-from ..errors import TNFRValueError
 from ..structural import create_nfr, run_sequence
 from ._state import copy_graph_state
 from ._topology import nonnegative_integer, probability, ring_edges, small_world_edges
@@ -291,8 +289,7 @@ def _mutation_observation_reports(graph: nx.Graph) -> list[dict[str, Any]]:
             {
                 "node": node,
                 "gate_satisfied": (
-                    certificate.threshold_gate_satisfied
-                    and certificate.capacity_active
+                    certificate.threshold_gate_satisfied and certificate.capacity_active
                 ),
                 "capacity_active": certificate.capacity_active,
                 "evidence_available": certificate.evidence_available,
@@ -430,7 +427,11 @@ class NetworkResults:
                 pass
 
         def measured_average(value: float | None, unit: str) -> str:
-            return "not measured or undefined" if value is None else f"{value:.3f} {unit} (computed)"
+            return (
+                "not measured or undefined"
+                if value is None
+                else f"{value:.3f} {unit} (computed)"
+            )
 
         mutation_summary = ""
         if self.mutation_workflows:
@@ -578,7 +579,11 @@ class TNFRNetwork:
 
         >>> network = TNFRNetwork().add_nodes(10, vf_range=(0.5, 2.0))
         """
-        from ..validation.input_validation import ValidationError, validate_epi_value, validate_vf_value
+        from ..validation.input_validation import (
+            ValidationError,
+            validate_epi_value,
+            validate_vf_value,
+        )
 
         count = nonnegative_integer(count, "count")
         if vf_range is None:
@@ -594,7 +599,9 @@ class TNFRNetwork:
             except ValidationError as exc:
                 raise ValueError(f"Invalid {name}: {exc}") from exc
             if low > high:
-                raise ValueError(f"{name} lower endpoint must not exceed upper endpoint")
+                raise ValueError(
+                    f"{name} lower endpoint must not exceed upper endpoint"
+                )
             return low, high
 
         vf_range = checked_range(vf_range, "vf_range", validate_vf_value)
@@ -607,6 +614,7 @@ class TNFRNetwork:
                 rng = np.random.RandomState(random_seed)
             else:
                 import random
+
                 rng = random.Random(random_seed)
         if self._graph is None:
             self._graph = nx.Graph()
@@ -619,7 +627,11 @@ class TNFRNetwork:
             phase = rng.uniform(*phase_range)
             epi = rng.uniform(*epi_range)
             self._graph, _ = create_nfr(
-                node_id, graph=self._graph, vf=vf, theta=phase, epi=epi,
+                node_id,
+                graph=self._graph,
+                vf=vf,
+                theta=phase,
+                epi=epi,
             )
             self._node_counter += 1
 
@@ -683,8 +695,12 @@ class TNFRNetwork:
         connection_probability = probability(connection_probability)
         nodes = list(self._graph)
         if connection_pattern == "random":
-            edges = [(u, v) for index, u in enumerate(nodes) for v in nodes[index + 1:]
-                     if self._rng.random() < connection_probability]
+            edges = [
+                (u, v)
+                for index, u in enumerate(nodes)
+                for v in nodes[index + 1 :]
+                if self._rng.random() < connection_probability
+            ]
         elif connection_pattern == "ring":
             edges = ring_edges(nodes)
         else:
@@ -1102,7 +1118,8 @@ class TNFRNetwork:
         # Unit-circle contributions carry floating-point rounding error. A
         # vanishing resultant defines no direction, including antipodal pairs.
         avg_phase = (
-            None if abs(phase_resultant) <= node_count * math.ulp(1.0)
+            None
+            if abs(phase_resultant) <= node_count * math.ulp(1.0)
             else float(compute_circular_mean(phases)) % (2.0 * _PI)
         )
 

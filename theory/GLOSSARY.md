@@ -2,7 +2,7 @@
 
 **Purpose**: Operational quick reference for the Resonant Fractal Nature Theory (TNFR)
 **Status**: Operational reference; mathematical scope follows the current foundation audit
-**Version**: 0.0.3.5 (June 2026)
+**Version**: 0.0.3.5
 **Authority**: Mathematical premises and executable contracts, indexed by [AGENTS.md](../AGENTS.md); historical source discrepancies are documented in the foundation audit
 
 **Scope**: API-focused definitions for developers implementing TNFR networks — the
@@ -64,7 +64,8 @@ richer elements rather than silently discarding their component structure.
 **Units:** Hz_str (structural hertz)
 **Range:** Nonnegative reals; zero suppresses continuous EPI flow and does not
 by itself erase the stored form.
-**What:** Rate of structural reorganization
+**What:** Capacity multiplying pressure in the EPI rate. It is not the
+actual form derivative or an angular frequency without a separate law.
 **API:** `adapt_vf_after_structural_stability()`; the historical
 `adapt_vf_by_coherence()` name remains a compatibility alias; operators
 **Math:** [FUNDAMENTAL_THEORY.md §2 (Governing Dynamics)](FUNDAMENTAL_THEORY.md)
@@ -74,7 +75,14 @@ by itself erase the stored form.
 **Code:** `G.nodes[n]['dnfr']`, `ALIAS_DNFR`
 **Symbol:** \(\Delta\text{NFR}\)
 **What:** Structural reorganization **pressure** — the gradient driving evolution.
-**Four gradient channels:** \(\Delta\text{NFR} = w_\phi\,\partial\phi + w_E\,\partial\text{EPI} + w_{\nu}\,\partial\nu_f + w_\tau\,\partial\text{topo}\) (phase desync, EPI gradient, νf gradient, topology). Operational default weights (tunable, free parameters) `DNFR_WEIGHTS = {phase ≈ 0.737, epi ≈ 0.155, vf ≈ 0.090, topo = 0.0}` in [config/defaults_core.py](../src/tnfr/config/defaults_core.py); normalized and applied by `_configure_dnfr_weights` in [dynamics/dnfr.py](../src/tnfr/dynamics/dnfr.py).
+**Four gradient channels:** \(\Delta\text{NFR} = w_\phi\,\partial\phi + w_E\,\partial\text{EPI} + w_{\nu}\,\partial\nu_f + w_\tau\,\partial\text{topo}\)
+(phase mismatch, EPI transport, capacity and topology). Configured defaults
+and their numeric hierarchy belong to
+[`DNFR_WEIGHTS`](../src/tnfr/config/defaults_core.py), normalized and applied
+by `_configure_dnfr_weights` in
+[dynamics/dnfr.py](../src/tnfr/dynamics/dnfr.py). These coefficients are
+supplied model choices, not uniquely derived constants; a stored configured
+mixture may differ from a later pressure refresh.
 **EPI channel = graph diffusion (KEY):** the EPI channel is exactly the
 random-walk graph Laplacian,
 \(\Delta\text{NFR}_\text{epi}= -L_\text{rw}\,\text{EPI}\), hence
@@ -102,7 +110,9 @@ audited in [the foundations](FUNDAMENTAL_THEORY.md#25-dimensional-consistency-an
 **Symbol:** \(\theta\) or \(\phi\)
 **Range:** \([0, 2\pi)\) or \([-\pi, \pi)\) radians
 **What:** Network synchrony parameter (relative timing)
-**Phase difference:** \(\Delta\theta = \theta_i - \theta_j\)
+**Phase difference:** Oriented wrapped separation
+\(\Delta\theta=\operatorname{wrap}(\theta_i-\theta_j)\); an unwrapped chart
+difference needs its own branch convention.
 **API:** Phase adaptation in dynamics
 **Math:** [FUNDAMENTAL_THEORY.md §2.2 (Structural Triad — phase)](FUNDAMENTAL_THEORY.md)
 
@@ -150,9 +160,13 @@ of \(C(t)\); with the default unit diagonal it is identically one.
 **Code:** `G.nodes[n]['Si']`, `ALIAS_SI`, `compute_Si_node()`
 **Symbol:** \(\text{Si}\) (global) or \(S_i\) (node i)
 **Formula:** \(\text{Si} = \alpha \cdot \nu_{f,\text{norm}} + \beta \cdot (1 - \text{disp}_\theta) + \gamma \cdot (1 - |\Delta\text{NFR}|_{\text{norm}})\)
-**Range:** \([0, 1^+]\) typically under the configured normalization; higher means a larger diagnostic score, not a proved stability margin.
+**Range:** \([0,1]\) after the implemented clipping; a higher score is not a
+proved stability margin.
 **What:** Si is a **heuristic composite** (weighted νf, phase sync, \(|\Delta\text{NFR}|\)), not constitutive of NFR-hood. Any score bands or use in adaptation are declared policies; prediction of stability or bifurcation requires separate validation.
-**Weights:** operational defaults \(\alpha \approx 0.737\), \(\beta \approx 0.155\), \(\gamma_w \approx 0.114\) (`SI_WEIGHTS` in `config/defaults_core.py`; free parameters, sum \(\approx 1\))
+**Weights:** configured `SI_WEIGHTS` in
+[defaults_core.py](../src/tnfr/config/defaults_core.py). The metric owner
+normalizes its live inputs and applies the configured combination; the
+weights are not independently derived physical constants.
 **Math:** [Mathematical Foundations - Metrics](MATHEMATICAL_DYNAMICS_BASIS.md)
 
 ### Phase Gradient (|∇φ|) - CANONICAL
@@ -264,8 +278,10 @@ scope explicitly.
 | Relaxation window | min{n : qⁿ < 1/(π+1)} | scalar-surrogate calibration of the **U4b / repeat-avoidance policy** = 3 operator positions; not a graph-modal solver-step bound | `derive_bifurcation_window_from_physics()` |
 | Debt capacity | ⌊1/(1−q)⌋ | scalar-surrogate calibration used by the selected U2 debt policy (=2); not a graph-modal capacity theorem | `derive_u2_debt_capacity_from_physics()` |
 
-- **Pulse and policy calibration.** The auxiliary substrate has frequencies
-  $\omega_k=\sqrt{\lambda_k}$. Separately, the U4b window (=3 positions) and U2
+- **Pulse and policy calibration.** The auxiliary graph wave has frequencies
+  $\omega_k=\sqrt{\lambda_k}$ for its declared unit stiffness/time convention.
+  The isotropic symplectic substrate instead has identity stiffness; these
+  are different auxiliary models. Separately, the U4b window (=3 positions) and U2
   debt (=2) use a scalar relaxation surrogate
   `q=1−νf·dt·ρ` with the selected defaults. They count operator positions/debt,
   not physical modal time. The graph-specific Euler diagnostic must be used for
@@ -293,14 +309,14 @@ The quantities that govern TNFR dynamics, with their canonical status.
 
 | Parameter | Symbol | Default / value | Role | Status |
 | --- | --- | --- | --- | --- |
-| Structural frequency | νf | ℝ⁺ (Hz_str) | reorganization capacity = diffusivity/**mobility**; νf→0 inactivates | state |
+| Structural frequency | νf | Nonnegative (Hz_str) | Capacity multiplier; zero suppresses the unforced EPI row | state |
 | Reorganization pressure | ΔNFR | ℝ | drive (4 channels); zero pressure gives instantaneous unforced EPI balance | state |
 | Phase | φ, θ | [0, 2π) | synchronization | state |
-| Phase-coupling tolerance | Δφ_max | π/2 ≈ 1.5708 rad (90°) | U3 admissible coupling \|φᵢ−φⱼ\| ≤ Δφ_max | canonical policy |
+| Phase-coupling tolerance | Δφ_max | π/2 ≈ 1.5708 rad (90°) | U3 admissible coupling \|wrap(φᵢ−φⱼ)\| ≤ Δφ_max | canonical policy |
 | Mutation threshold | ξ | `ZHIR_THRESHOLD_XI = 0.1` | Non-disableable ZHIR admission gate: a valid observed signed secant, timestamped in physical time or interpreted as a legacy unit-operator-step difference, must satisfy `observed dEPI/dt > ξ` | operational calibration |
-| Equilibrium tolerance | eps_dnfr / eps_depi | EPS_DNFR_STABLE = 1e-3 | `is_structural_equilibrium` cut (1e-12 for exact arithmetic) | numerical scale |
+| Equilibrium tolerance | eps_dnfr / eps_depi | EPS_DNFR_STABLE = 1e-3 | Numeric pressure/rate tolerance; exact identities require exact equality | numerical scale |
 | Spectral gap | λ₂ | graph-dependent | slowest homogeneous-diffusion relaxation; supplies the `1/√λ₂` comparison/fallback for ξ_C; r_c = νf·λ₂ in the stated linear instability model | structural |
-| Phase scale | π | exact | the **one genuine structural constant**: bounds \|∇φ\| and \|K_φ\| | genuine |
+| Phase scale | π | exact in radians | Bounds the defined wrapped phase read-outs \|∇φ\| and \|K_φ\| | kinematic identity |
 | Non-structural parameters | — | free / derived | operator gains, clamps, dt, coupling rates — derived from the dynamics or free operational parameters | operational |
 
 **π is the exact phase-wrap bound in the radian chart.** It is not a
@@ -320,24 +336,26 @@ Declared numerical solvers separately evolve EPI through the shared nodal
 integrator with explicit pressure and provenance. Operator completeness and
 autonomous event selection remain open; contracts do not derive every gain.
 
-For complete specifications with physics derivations, contracts, and usage examples, see **[AGENTS.md § The 13 Canonical Operators](../AGENTS.md#5-the-13-canonical-operators)**.
+For the concise operator synthesis, see [AGENTS.md](../AGENTS.md#5-the-13-canonical-operators).
+Detailed semantics belong to [Structural Operators](STRUCTURAL_OPERATORS.md);
+execution boundaries belong to [API Contracts](../docs/API_CONTRACTS.md).
 
 ### Quick Reference
 
 | Symbol | Name | Physics | Grammar Sets | When to Use |
 |--------|------|---------|-------------|-------------|
-| **AL** | Emission | Creates EPI from vacuum via resonant emission | Generator (U1a) | Starting new patterns, initializing from EPI=0 |
+| **AL** | Emission | Adds a configured positive EPI increment on an existing node | Generator (U1a) | Declared activation |
 | **EN** | Reception | Captures and integrates incoming resonance | - | Information gathering, listening phase |
 | **IL** | Coherence | Stabilizes form through negative feedback | Stabilizer (U2) | After changes, consolidation |
 | **OZ** | Dissonance | Introduces controlled instability | Destabilizer (U2), Bifurcation trigger (U4a), Closure (U1b) | Breaking local optima, exploration |
 | **UM** | Coupling | Creates structural links via phase synchronization | Requires phase verification (U3) | Network formation, connecting nodes |
 | **RA** | Resonance | Amplifies and propagates patterns coherently | Requires phase verification (U3) | Pattern reinforcement, spreading coherence |
-| **SHA** | Silence | Freezes evolution temporarily (νf → 0) | Closure (U1b) | Observation windows, pause for synchronization |
-| **VAL** | Expansion | Increases structural complexity (dim ↑) | Destabilizer (U2) | Adding degrees of freedom |
-| **NUL** | Contraction | Reduces structural complexity (dim ↓) | - | Simplification, dimensionality reduction |
-| **THOL** | Self-organization | Spontaneous autopoietic pattern formation | Stabilizer (U2), Handler (U4a), Transformer (U4b) | Emergent organization, fractal structuring |
+| **SHA** | Silence | Attenuates capacity while preserving EPI at the event | Closure (U1b) | Declared latency operation; finite attenuation need not freeze later flow |
+| **VAL** | Expansion | Increases capacity, not state-space dimension | Destabilizer (U2) | Raising the response to supplied pressure |
+| **NUL** | Contraction | Attenuates capacity and rescales stored pressure | - | Declared capacity/pressure adjustment |
+| **THOL** | Self-organization | Signed pressure reorganization and conditional nested child creation | Stabilizer (U2), Handler (U4a), Transformer (U4b) | Explicit hierarchy operation; autonomous occurrence remains unproved |
 | **ZHIR** | Mutation | Phase transformation at threshold | Bifurcation trigger (U4a), Transformer (U4b) | Qualitative state changes |
-| **NAV** | Transition | Regime shift, activates latent EPI | Generator (U1a), Closure (U1b) | Switching between attractor states |
+| **NAV** | Transition | Configured channel adjustments selected by operational state labels | Generator (U1a), Closure (U1b) | Declared regime adjustment; no attractor theorem |
 | **REMESH** | Recursivity | Echoes structure across scales | Generator (U1a), Closure (U1b) | Multi-scale operations, memory |
 
 ### Operator Composition
@@ -406,14 +424,20 @@ record). A successful ZHIR preserves `epi_kind` and records `ZHIR` in
 
 ## Canonical Invariants (Optimized Set)
 
-From [AGENTS.md](../AGENTS.md) - Optimized from 10 to 6 invariants based on mathematical derivation:
+This is an engineering contract checklist summarized from
+[AGENTS.md](../AGENTS.md), not a proof that six independent mathematical
+invariants are necessary or sufficient:
 
-1. **Nodal Equation Integrity**: EPI evolution only via ∂EPI/∂t = νf · ΔNFR(t)
+1. **Nodal Equation Integrity**: Declared continuous EPI flow obeys
+   ∂EPI/∂t = νf · ΔNFR(t); EPI-writing events contribute separate jumps.
 2. **Phase-Coherent Coupling**: |wrap(φᵢ - φⱼ)| ≤ Δφ_max required for resonant operations
-3. **Multi-Scale Fractality**: Operational fractality and nested EPIs maintained
-4. **Grammar Compliance**: All operator sequences must satisfy U1-U6 validation
+3. **Multi-Scale Fractality**: Specify the hierarchy and verify the applicable
+   nested-state and operator contracts; nesting alone does not prove scale closure.
+4. **Grammar Compliance**: Apply U1-U5 sequence/context checks and the separate
+   U6 before/after field observation.
 5. **Structural Metrology**: Units consistency (νf in Hz_str) and telemetry exposure
-6. **Reproducible Dynamics**: Deterministic evolution with seed-based control
+6. **Reproducible Dynamics**: Record the state, law, word, seed, numerical
+   configuration and actual execution; a seed alone does not specify them.
 
 ---
 
@@ -428,7 +452,7 @@ From [AGENTS.md](../AGENTS.md) - Optimized from 10 to 6 invariants based on math
 | \(\Delta\text{NFR}\) | Reorganization pressure | `'dnfr'` | X when capacity has inverse-time units | \(\mathbb{R}\) in the scalar chart | Tangent response |
 | \(\theta\), \(\phi\) | Phase angle | `'theta'` | radians | \([0, 2\pi)\) | Network synchrony |
 | \(C(t)\) | Total coherence | `compute_coherence()` | dimensionless in declared input scales | \([0, 1]\) | Reciprocal pressure/rate diagnostic |
-| \(\text{Si}\) | Sense Index | `'Si'` | dimensionless in configured scales | \([0, 1^+]\) | Heuristic composite |
+| \(\text{Si}\) | Sense Index | `'Si'` | dimensionless in configured scales | \([0, 1]\) after clipping | Heuristic composite |
 
 ### Common API Patterns
 
@@ -574,11 +598,13 @@ ever require another rule.
 
 ### Generator Operator
 
-Operator that can create EPI from null/dormant states.
+Operator assigned a supported initiation role for a declared word.
 
 **Set:** GENERATORS = {emission, transition, recursivity}
 
-**Physics:** Only these operators can initialize when EPI=0
+**Scope:** U1a is an initialization/context contract. The nodal equation is
+defined at EPI=0 and can have a nonzero derivative there; the generator set
+does not follow from an EPI singularity or prove autonomous creation.
 
 **Grammar Rule:** U1a (STRUCTURAL INITIATION)
 
@@ -676,27 +702,25 @@ derived under stated hypotheses or operational.
 
 ### Flux Fields & the Emergent Symplectic Substrate
 
-The tetrad has two **conjugate flux fields** that embed selected static fields in the
-auxiliary symplectic substrate. They are the *currents* paired with those fields;
-adding them does not establish complete state observability.
+Two graph-current read-outs supply initial coordinates for an auxiliary
+symplectic model. That model assigns them conjugate partners; their graph
+definitions alone do not derive a Poisson bracket or complete state
+observability.
 
-- **Phase current J_φ** — geometric, phase-driven transport; conjugate to curvature K_φ.
+- **Phase current J_φ** — phase-driven graph read-out; paired with K_φ in the auxiliary model.
   Compute: `compute_phase_current(G)`.
-- **ΔNFR flux J_ΔNFR** — potential-driven reorganization transport; conjugate to the
-  potential Φ_s. Compute: `compute_dnfr_flux(G)`.
+- **ΔNFR flux J_ΔNFR** — pressure-difference graph read-out; paired with Φ_s in
+  the auxiliary model. Compute: `compute_dnfr_flux(G)`.
 - **API:** `tnfr.physics.extended` (`compute_phase_current`, `compute_dnfr_flux`).
 
-**Auxiliary symplectic substrate.** A graph-field snapshot initializes an ambient
-symplectic phase space \\(\\mathbb{R}^{4N}\\) with two assigned coordinate pairs per node — **geometric**
-\\((K_\\phi, J_\\phi)\\) and **potential** \\((\\Phi_s, J_{\\Delta\\text{NFR}})\\) — with brackets
-\\(\\{K_\\phi, J_\\phi\\} = \\{\\Phi_s, J_{\\Delta\\text{NFR}}\\} = 1\\) and Hamiltonian
-\\(H_\\text{sub} = \\tfrac{1}{2}\\sum(K_\\phi^2 + J_\\phi^2 + \\Phi_s^2 + J_{\\Delta\\text{NFR}}^2)\\).
-The model's exact harmonic flow is a **symplectomorphism** (Liouville: phase volume
-preserved). This does not certify any engine operator as symplectic. The complex coordinate
-\\(\\Psi = K_\\phi + i\\,J_\\phi\\) carries a **U(1)** gauge symmetry; the substrate further
-carries a **U(2)** polarization symmetry (per-node Poincaré sphere, classical Stokes
-texture — **not** a quantum state). A separate damped graph wave has a restricted
-pure-EPI diffusion limit; the full nodal equation is not derived from this isotropic flow.
+**Auxiliary symplectic substrate.** The specified ambient model assigns
+pairs `(K_phi,J_phi)` and `(Phi_s,J_DeltaNFR)`, canonical brackets and an
+isotropic quadratic Hamiltonian. Its exact harmonic flow preserves its
+symplectic form and has the stated U(1)/U(2) symmetries. These are properties
+of that auxiliary model, not proofs about induced engine maps, quantum states
+or the full nodal equation. The complete assumptions and the distinction
+from the damped graph wave are centralized in
+[Fundamental Theory, sections 7.2-7.3](FUNDAMENTAL_THEORY.md#72-auxiliary-symplectic-substrate).
 
 **API:** `tnfr.physics.symplectic_substrate`, `Network.symplectic_substrate()`.
 **Documentation:** [AGENTS.md §4 (Emergent geometry)](../AGENTS.md), [src/tnfr/physics/symplectic_substrate.py](../src/tnfr/physics/symplectic_substrate.py)
@@ -730,7 +754,8 @@ Operators that manage structural reorganization during bifurcations.
 
 **Set:** BIFURCATION_HANDLERS = {self_organization, coherence}
 
-**Physics:** Provide stability during phase transitions
+**Scope:** U4a assigns handler context. IL pressure attenuation and THOL signed
+reorganization do not jointly prove stability through an arbitrary transition.
 
 **Grammar Rule:** U4a (BIFURCATION DYNAMICS)
 
@@ -740,12 +765,14 @@ Operators that manage structural reorganization during bifurcations.
 
 ### Transformer Operator
 
-Operators that perform threshold-crossing structural phase transitions.
+Operators whose execution requires the declared U4b transformation context.
 
 **Set:** TRANSFORMERS = {mutation, self_organization}
 
-**Physics:** Require recent destabilizer context; ZHIR separately requires a
-prior IL and valid observed temporal evidence
+**Scope:** Require recent destabilizer context; ZHIR separately requires a
+prior IL and valid observed temporal evidence. THOL can execute its pressure
+action without crossing a child-creation threshold. Neither role proves a
+continuous-model phase transition.
 
 **Grammar Rule:** U4b (requires context + prior IL for ZHIR)
 
@@ -774,7 +801,7 @@ prior IL and valid observed temporal evidence
 - [Examples](../examples/README.md) - Runnable scenarios across domains
 
 ### Grammar & Migration
-- [docs/grammar/](../docs/grammar/) - Grammar documentation directory (U6, fundamental concepts, etc.)
+- [docs/grammar/](https://github.com/fermga/TNFR-Python-Engine/tree/main/docs/grammar) - Grammar documentation directory (U6, fundamental concepts, etc.)
 
 ### Testing & Development
 - [TESTING.md](../TESTING.md) - Test conventions and invariant verification
@@ -795,8 +822,8 @@ prior IL and valid observed temporal evidence
 - **[docs/grammar/PHYSICS_VERIFICATION.md](../docs/grammar/PHYSICS_VERIFICATION.md)** - Grammar physics verification
 
 **Development Resources:**
-- **[src/tnfr/sdk/](../src/tnfr/sdk/)** - Simplified & Fluent API
-- **[examples/](../examples/)** - Complete tutorial suite
+- **[src/tnfr/sdk/](https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/sdk)** - Simplified & Fluent API
+- **[examples/](../examples/README.md)** - Complete tutorial suite
 - **[ARCHITECTURE.md](../ARCHITECTURE.md)** - System design patterns
 
 ---
@@ -898,9 +925,9 @@ The independent graph-field probe API is implemented in
 
 ### Emergent Fields
 
-**Chirality (χ):** `χ = |∇φ|·K_φ - J_φ·J_ΔNFR` - signed handedness diagnostic
+**Chirality (χ):** `χ = |∇φ|·K_φ - J_φ·J_ΔNFR` - signed channel contrast; handedness requires a declared symmetry action
 **Symmetry Breaking (𝒮):** candidate transition indicator requiring a declared finite-size protocol
-**Coherence Coupling (𝒞):** Multi-scale connector field
+**Coherence Coupling (𝒞):** `Φ_s*|Ψ|`, a product diagnostic rather than a cross-scale closure law
 **API:** `compute_emergent_fields(G)`
 
 ### Tensor diagnostics
@@ -923,9 +950,11 @@ Reference: [STRUCTURAL_OPERATORS.md §17](STRUCTURAL_OPERATORS.md), examples 37-
 
 ### Dual-Lever Structure (channel partition)
 
-**What:** Each operator's primary effect lands on exactly **one nodal channel** — the
-partition is simultaneously the dual-lever (capacity νf vs pressure ΔNFR), the tetrad
-driver and the number-theory grading (AGENTS.md §5):
+**What:** The contract registry assigns each operator one **primary nodal
+channel**. This is a classification of declared effects, not a proof that
+all secondary writes vanish or that operators can be selected from the
+tetrad. Capacity and pressure form the two factors of the nodal product;
+direct EPI and phase edits remain distinct channels:
 - **νf (capacity):** Silence (SHA), Expansion (VAL), Contraction (NUL).
 - **ΔNFR (pressure):** Coherence (IL), Dissonance (OZ), Self-organization (THOL), Transition (NAV).
 - **θ (phase):** Coupling (UM), Mutation (ZHIR).
@@ -983,7 +1012,7 @@ and a proof.
 **Current:** 𝐉 = (J_φ, J_ΔNFR) (transport channels)
 **Balance:** ∂ρ/∂t + ∇·𝐉 = S for the chosen fields and discretization; the measured source/residual must be reported
 **Two Sectors:** Potential (Φ_s ↔ J_ΔNFR) and Geometric (K_φ ↔ J_φ), coupled through Ψ = K_φ + i·J_φ
-**Lyapunov:** E = ½Σ(Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²) ≥ 0 is a candidate; each trajectory must establish the sign of dE/dt, while a theorem exists only for the restricted diffusion model
+**Lyapunov:** E = ½Σ(Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²) ≥ 0 is a candidate whose decay needs evidence. The restricted pure-EPI diffusion theorem uses a different, explicitly declared Dirichlet or weighted-disagreement energy; it does not prove decay of this five-field diagnostic.
 **Validation:** finite tests report their seeds, discretization and measured balance residuals; no fixed count or universal drift bound is part of the theorem
 **API:** `tnfr.physics.conservation` — Noether charge Q, energy functional E, Ward identities, spectral decomposition
 **Documentation:** [theory/STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md)
@@ -1040,11 +1069,13 @@ support restricted comparisons. They are not two empirically established
 physical regimes derived from the bare nodal product.
 
 ### Smooth-Trajectory / Overdamped-Drift Regime (High Coherence)
-**Condition:** C(t) → 1, |∇φ| → 0
-**Correspondence:** first order in time, `q̇ = νf·F` — drift velocity ∝ force, so **νf is
-mobility** (Stokes/Einstein), **not** inverse mass; `F = ΔNFR` (force ↔ structural
-pressure). The inertial (second-order) regime lives in the conservative symplectic
-substrate, not here.
+**Condition:** a declared first-order pressure law and fixed representation;
+large C(t) or small phase mismatch alone does not derive it.
+**Correspondence:** `q̇ = νf·F` has a mobility-form analogy when pressure is
+identified with a specified force-like response. This does not give physical
+force units, an inverse mass, or a derivation from the independent conservative
+substrate. An overdamped limit additionally requires the declared graph-wave
+model and its scaling assumptions.
 **API:** `tnfr.physics.structural_diffusion`, `tnfr.physics.classical_mechanics`
 
 ### Discrete-Mode Comparison

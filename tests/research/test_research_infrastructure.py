@@ -2,8 +2,8 @@ r"""Tests for research claims, manifests, certificates, and circularity."""
 
 from __future__ import annotations
 
-from types import SimpleNamespace
 import hashlib
+from types import SimpleNamespace
 
 import pytest
 
@@ -13,23 +13,21 @@ from tnfr.research import (
     Claim,
     ClaimRegistry,
     ClaimStatus,
-    CoreExperimentManifest,
-    current_git_source_provenance,
     ClaimTransitionError,
-    ExperimentManifest,
+    CoreExperimentManifest,
     EvidenceAdmissionError,
     EvidenceSidecar,
+    ExperimentManifest,
     ManifestValidationError,
     NumericalCertificate,
     certify_within_tolerance,
+    current_git_source_provenance,
     input_bit_length,
     is_valid_transition,
 )
 
 
-def test_git_source_provenance_is_scoped_and_content_addressed(
-    tmp_path, monkeypatch
-):
+def test_git_source_provenance_is_scoped_and_content_addressed(tmp_path, monkeypatch):
     source = tmp_path / "src" / "model.py"
     source.parent.mkdir()
     source.write_text("version = 1\n", encoding="utf-8")
@@ -293,24 +291,27 @@ def test_numerical_certificate_pass_and_fail():
     ok = certify_within_tolerance("residual", 1e-15, 1e-8)
     bad = certify_within_tolerance("residual", 5e-2, 1e-8)
     assert ok.passed and not bad.passed
-    assert NumericalCertificate(**{
-        k: v for k, v in ok.to_dict().items()
-    }) == ok
+    assert NumericalCertificate(**{k: v for k, v in ok.to_dict().items()}) == ok
 
 
 def test_strict_numerical_admission_requires_error_context():
     with pytest.raises(ValueError):
         certify_within_tolerance("residual", 1e-15, 1e-8).validate_for_admission()
     cert = certify_within_tolerance(
-        "residual", 1e-15, 1e-8,
+        "residual",
+        1e-15,
+        1e-8,
         backward_error=1e-15,
         condition_number=2.0,
     )
     cert.validate_for_admission()
     with pytest.raises(ValueError):
         certify_within_tolerance(
-            "residual", 1e-15, 1e-8,
-            backward_error=1e-15, condition_number=2.0,
+            "residual",
+            1e-15,
+            1e-8,
+            backward_error=1e-15,
+            condition_number=2.0,
             precision="magic128",
         ).validate_for_admission()
 
@@ -351,7 +352,9 @@ def _sidecar(**overrides):
 def test_evidence_sidecar_requires_complete_context_and_serializes():
     sidecar = _sidecar(
         certificate=certify_within_tolerance(
-            "residual", 1e-15, 1e-8,
+            "residual",
+            1e-15,
+            1e-8,
             backward_error=1e-15,
             condition_number=2.0,
         ),

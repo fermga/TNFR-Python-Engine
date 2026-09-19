@@ -222,9 +222,7 @@ class CausalEventRemeshCycleReceipt:
             type(item) is not PhysicalFlowPartition
             for item in self.physical_flow_partitions
         ):
-            raise TypeError(
-                "physical_flow_partitions must be an exact partition tuple"
-            )
+            raise TypeError("physical_flow_partitions must be an exact partition tuple")
         if not cycle_already_validated and not _cycle_is_intact(self.cycle_result):
             raise ValueError("cycle_result proof fields are not intact")
         if self.cycle_result.event_execution.schedule is not self.schedule:
@@ -376,8 +374,7 @@ def _conditions_for(
             )
 
             telescope_bound = bool(
-                type(runtime_telescope)
-                is RuntimeRemeshScheduleSequenceObservation
+                type(runtime_telescope) is RuntimeRemeshScheduleSequenceObservation
                 and runtime_telescope.sequence_observation_certified
                 and runtime_telescope.source_sequence is observed_sequence
                 and len(runtime_telescope.boundaries) == len(cycles) - 1
@@ -457,9 +454,7 @@ def _sequence_stamp(
     cycle_indices: tuple[int, ...],
     specs: tuple[EventRemeshCycleExecutionSpec, ...],
     schedules: tuple[OperatorEventSchedule, ...],
-    physical_flow_partitions_by_cycle: tuple[
-        tuple[PhysicalFlowPartition, ...], ...
-    ],
+    physical_flow_partitions_by_cycle: tuple[tuple[PhysicalFlowPartition, ...], ...],
     receipts: tuple[CausalEventRemeshCycleReceipt, ...],
     cycles: tuple[EventRemeshCycleResult, ...],
     target_nodes: tuple[Hashable, ...],
@@ -481,9 +476,7 @@ def _sequence_stamp(
             tuple(("physical-partition", id(item)) for item in row)
             for row in physical_flow_partitions_by_cycle
         ),
-        tuple(
-            ("receipt", id(item), _raw_proof_stamp(item)) for item in receipts
-        ),
+        tuple(("receipt", id(item), _raw_proof_stamp(item)) for item in receipts),
         tuple(("cycle", id(item), _raw_proof_stamp(item)) for item in cycles),
         structural_proof_signature(target_nodes, identity_sensitive=True),
         exact_start_time,
@@ -518,9 +511,9 @@ class ExecutedEventRemeshCycleSequence:
         repr=False,
         compare=False,
     )
-    physical_flow_partitions_by_cycle: tuple[
-        tuple[PhysicalFlowPartition, ...], ...
-    ] = field(repr=False, compare=False)
+    physical_flow_partitions_by_cycle: tuple[tuple[PhysicalFlowPartition, ...], ...] = (
+        field(repr=False, compare=False)
+    )
     receipts: tuple[CausalEventRemeshCycleReceipt, ...]
     cycles: tuple[EventRemeshCycleResult, ...] = field(repr=False, compare=False)
     target_nodes: tuple[Hashable, ...]
@@ -565,15 +558,12 @@ class ExecutedEventRemeshCycleSequence:
             raise ValueError(
                 "executed sequence fields must describe at least two cycles"
             )
-        if any(
-            type(item) is not EventRemeshCycleExecutionSpec for item in self.specs
-        ):
+        if any(type(item) is not EventRemeshCycleExecutionSpec for item in self.specs):
             raise TypeError("specs must contain exact execution specs")
         if any(type(item) is not OperatorEventSchedule for item in self.schedules):
             raise TypeError("schedules must contain exact operator-event schedules")
         if any(
-            type(item) is not CausalEventRemeshCycleReceipt
-            for item in self.receipts
+            type(item) is not CausalEventRemeshCycleReceipt for item in self.receipts
         ):
             raise TypeError("receipts must contain exact causal receipts")
         if any(type(item) is not EventRemeshCycleResult for item in self.cycles):
@@ -633,9 +623,7 @@ class ExecutedEventRemeshCycleSequence:
             cycle_indices=self.cycle_indices,
             specs=self.specs,
             schedules=self.schedules,
-            physical_flow_partitions_by_cycle=(
-                self.physical_flow_partitions_by_cycle
-            ),
+            physical_flow_partitions_by_cycle=(self.physical_flow_partitions_by_cycle),
             receipts=self.receipts,
             cycles=self.cycles,
             target_nodes=self.target_nodes,
@@ -752,9 +740,7 @@ def _sealed_sequence(
     *,
     specs: tuple[EventRemeshCycleExecutionSpec, ...],
     schedules: tuple[OperatorEventSchedule, ...],
-    physical_flow_partitions_by_cycle: tuple[
-        tuple[PhysicalFlowPartition, ...], ...
-    ],
+    physical_flow_partitions_by_cycle: tuple[tuple[PhysicalFlowPartition, ...], ...],
     receipts: tuple[CausalEventRemeshCycleReceipt, ...],
     cycles: tuple[EventRemeshCycleResult, ...],
     target_nodes: tuple[Hashable, ...],
@@ -953,9 +939,7 @@ def execute_event_remesh_cycle_sequence(
                 cycle_index=index,
                 spec=spec,
                 schedule=schedule,
-                physical_flow_partition_source=(
-                    spec.physical_flow_partitions
-                ),
+                physical_flow_partition_source=(spec.physical_flow_partitions),
                 physical_flow_partitions=partitions,
                 cycle_result=cycle,
                 target_nodes=target_nodes,

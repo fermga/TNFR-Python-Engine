@@ -153,18 +153,14 @@ class TNFRNavierStokes:
         u = a * np.sin(x) * np.cos(y) * np.cos(z)
         v = -a * np.cos(x) * np.sin(y) * np.cos(z)
         w = np.zeros_like(u)
-        self.u_hat = np.stack(
-            [np.fft.fftn(u), np.fft.fftn(v), np.fft.fftn(w)]
-        )
+        self.u_hat = np.stack([np.fft.fftn(u), np.fft.fftn(v), np.fft.fftn(w)])
         self._project()
 
     # -- incompressibility ---------------------------------------------------
     def _project(self) -> None:
         """Exact spectral Leray-Helmholtz projection onto div-free fields."""
         div = (
-            self.u_hat[0] * self.kx
-            + self.u_hat[1] * self.ky
-            + self.u_hat[2] * self.kz
+            self.u_hat[0] * self.kx + self.u_hat[1] * self.ky + self.u_hat[2] * self.kz
         )
         self.u_hat[0] -= self.kx * div / self._k2nz
         self.u_hat[1] -= self.ky * div / self._k2nz
@@ -185,13 +181,9 @@ class TNFRNavierStokes:
         nx_ = u[1] * w[2] - u[2] * w[1]
         ny_ = u[2] * w[0] - u[0] * w[2]
         nz_ = u[0] * w[1] - u[1] * w[0]
-        n_hat = np.stack(
-            [np.fft.fftn(nx_), np.fft.fftn(ny_), np.fft.fftn(nz_)]
-        )
+        n_hat = np.stack([np.fft.fftn(nx_), np.fft.fftn(ny_), np.fft.fftn(nz_)])
         n_hat *= self._mask
-        div = (
-            n_hat[0] * self.kx + n_hat[1] * self.ky + n_hat[2] * self.kz
-        )
+        div = n_hat[0] * self.kx + n_hat[1] * self.ky + n_hat[2] * self.kz
         n_hat[0] -= self.kx * div / self._k2nz
         n_hat[1] -= self.ky * div / self._k2nz
         n_hat[2] -= self.kz * div / self._k2nz
@@ -230,9 +222,7 @@ class TNFRNavierStokes:
     def divergence_sup(self) -> float:
         """Max |div u| (should stay at round-off after projection)."""
         div_hat = (
-            self.u_hat[0] * self.kx
-            + self.u_hat[1] * self.ky
-            + self.u_hat[2] * self.kz
+            self.u_hat[0] * self.kx + self.u_hat[1] * self.ky + self.u_hat[2] * self.kz
         ) * 1j
         return float(np.max(np.abs(np.fft.ifftn(div_hat).real)))
 

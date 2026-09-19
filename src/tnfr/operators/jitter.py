@@ -391,9 +391,7 @@ def random_jitter(
         seed_root = resolve_graph_seed(node)
         from ..node import NodeNX
 
-        offset = (
-            _scoped_node_offset(node.G, node.n) if type(node) is NodeNX else None
-        )
+        offset = _scoped_node_offset(node.G, node.n) if type(node) is NodeNX else None
         if offset is None:
             offset = node.offset()
         if isinstance(offset, bool) or not isinstance(offset, Integral) or offset < 0:

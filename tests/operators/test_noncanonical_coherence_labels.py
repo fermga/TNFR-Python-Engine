@@ -11,14 +11,9 @@ from tnfr.errors import TNFRValueError
 from tnfr.mathematics.epi import BEPIElement
 from tnfr.operators.cascade import detect_cascade
 from tnfr.operators.cycle_detection import CycleAnalysis, CycleDetector
-from tnfr.operators.health_analyzer import (
-    SequenceHealthAnalyzer,
-    SequenceHealthMetrics,
-)
+from tnfr.operators.health_analyzer import SequenceHealthAnalyzer, SequenceHealthMetrics
 from tnfr.operators.metrics_basic import reception_metrics
-from tnfr.operators.network_analysis.source_detection import (
-    detect_emission_sources,
-)
+from tnfr.operators.network_analysis.source_detection import detect_emission_sources
 
 
 def test_source_detection_separates_bounded_phase_score_from_activity() -> None:
@@ -27,9 +22,7 @@ def test_source_detection_separates_bounded_phase_score_from_activity() -> None:
     graph.add_node(1, EPI=2.0, nu_f=3.0, theta=0.25)
     graph.add_edge(0, 1)
 
-    [(source, phase_score, emission_activity)] = detect_emission_sources(
-        graph, 0
-    )
+    [(source, phase_score, emission_activity)] = detect_emission_sources(graph, 0)
 
     assert source == 1
     assert 0.0 <= phase_score <= 1.0
@@ -48,9 +41,7 @@ def test_source_activity_accepts_only_the_uniform_real_bepi_embedding() -> None:
 
     assert detect_emission_sources(graph, 0)[0][2] == pytest.approx(6.0)
 
-    graph.nodes[1]["EPI"] = BEPIElement(
-        (2.0, 1.0), (2.0, 2.0), (0.0, 1.0)
-    )
+    graph.nodes[1]["EPI"] = BEPIElement((2.0, 1.0), (2.0, 2.0), (0.0, 1.0))
     with pytest.raises(TNFRValueError, match="uniform-real BEPI"):
         detect_emission_sources(graph, 0)
 
@@ -119,9 +110,7 @@ def test_cascade_reports_unbounded_directed_multiedge_magnitude() -> None:
 
     analysis = detect_cascade(graph)
 
-    assert analysis["mean_internal_edge_weight_magnitude"] == pytest.approx(
-        14.0 / 3.0
-    )
+    assert analysis["mean_internal_edge_weight_magnitude"] == pytest.approx(14.0 / 3.0)
     assert analysis["mean_internal_edge_weight_magnitude"] > 1.0
     assert analysis["cascade_coherence"] == (
         analysis["mean_internal_edge_weight_magnitude"]
@@ -184,12 +173,8 @@ def test_cycle_analysis_stores_integrity_score_and_keeps_read_alias() -> None:
         2,
     )
 
-    assert "cycle_integrity_score" in {
-        field.name for field in fields(CycleAnalysis)
-    }
-    assert "coherence_score" not in {
-        field.name for field in fields(CycleAnalysis)
-    }
+    assert "cycle_integrity_score" in {field.name for field in fields(CycleAnalysis)}
+    assert "coherence_score" not in {field.name for field in fields(CycleAnalysis)}
     assert 0.0 <= result.cycle_integrity_score <= 1.0
     assert result.coherence_score == result.cycle_integrity_score
 

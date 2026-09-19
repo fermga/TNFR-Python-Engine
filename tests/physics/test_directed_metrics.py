@@ -28,10 +28,8 @@ from tnfr.physics.directed_diffusion import (
 
 # Strongly connected, non-normal digraphs with Euclidean transient gain > 1.
 NON_NORMAL_SC = [
-    np.array([[0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 1], [1, 0, 0, 0]],
-             dtype=float),
-    np.array([[0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2], [2, 0, 1, 0]],
-             dtype=float),
+    np.array([[0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 1], [1, 0, 0, 0]], dtype=float),
+    np.array([[0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2], [2, 0, 1, 0]], dtype=float),
 ]
 
 
@@ -130,10 +128,16 @@ def test_induced_norm_stationary_requires_pi():
 
 def test_module_exports_complete():
     expected = {
-        "NormKind", "stationary_distribution", "state_norm",
-        "induced_operator_norm", "transient_gain_in_norm",
-        "stationary_transient_gain", "is_stationary_contraction",
-        "net_reorganization", "total_reorganization",
-        "U2IntegralReadings", "u2_integral_readings",
+        "NormKind",
+        "stationary_distribution",
+        "state_norm",
+        "induced_operator_norm",
+        "transient_gain_in_norm",
+        "stationary_transient_gain",
+        "is_stationary_contraction",
+        "net_reorganization",
+        "total_reorganization",
+        "U2IntegralReadings",
+        "u2_integral_readings",
     }
     assert expected <= set(dd.__all__)

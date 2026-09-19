@@ -168,9 +168,7 @@ def _node_identifiers_match(left: Hashable, right: Hashable) -> bool:
     except Exception:
         return False
     return bool(
-        equality_holds
-        and hashes_match
-        and _proof_value(left) == _proof_value(right)
+        equality_holds and hashes_match and _proof_value(left) == _proof_value(right)
     )
 
 
@@ -275,9 +273,7 @@ class EventRemeshMeshObservation:
     cycle_result: EventRemeshCycleResult = field(repr=False)
     nodes: tuple[Hashable, ...]
     physical_partition_interval_indices: tuple[int, ...]
-    exact_partition_boundary_times: tuple[
-        tuple[int, tuple[Fraction, ...]], ...
-    ]
+    exact_partition_boundary_times: tuple[tuple[int, tuple[Fraction, ...]], ...]
     checkpoints: tuple[EventRemeshEPICheckpointObservation, ...]
     schedule_composition: ObservedRepresentedEPIScheduleComposition | None = field(
         repr=False
@@ -536,10 +532,7 @@ class EventRemeshThreeMeshRefinementObservation:
         if not self._proof_fields_are_intact():
             return None
         return max(
-            (
-                item.exact_epi_error_linf
-                for item in self.coarse_intermediate_epi_errors
-            ),
+            (item.exact_epi_error_linf for item in self.coarse_intermediate_epi_errors),
             default=None,
         )
 
@@ -548,10 +541,7 @@ class EventRemeshThreeMeshRefinementObservation:
         if not self._proof_fields_are_intact():
             return None
         return max(
-            (
-                item.exact_epi_error_linf
-                for item in self.intermediate_fine_epi_errors
-            ),
+            (item.exact_epi_error_linf for item in self.intermediate_fine_epi_errors),
             default=None,
         )
 
@@ -637,9 +627,7 @@ def _validate_cycle(value: Any, mesh_name: str) -> EventRemeshCycleResult:
         raise ValueError(f"{mesh_name} cycle result is unsealed, tampered, or stale")
     execution = value.event_execution
     if not execution.physical_pressure_reevaluated_partitions_established:
-        raise ValueError(
-            f"{mesh_name} cycle lacks intact physical partition evidence"
-        )
+        raise ValueError(f"{mesh_name} cycle lacks intact physical partition evidence")
     if (
         execution.positive_flow_interval_indices
         != execution.physical_flow_partition_indices
@@ -708,9 +696,7 @@ def _mesh_observation(
         ):
             raise ValueError(f"{mesh_name} contains invalid physical evidence")
         parent_index = evidence.partition.parent_interval.index
-        boundary_rows.append(
-            (parent_index, evidence.partition.exact_boundary_times)
-        )
+        boundary_rows.append((parent_index, evidence.partition.exact_boundary_times))
         for boundary in evidence.boundary_observations:
             snapshot = boundary.after
             checkpoints.append(
@@ -763,9 +749,7 @@ def _mesh_observation(
         mesh_name=mesh_name,
         cycle_result=cycle,
         nodes=cycle.target_nodes,
-        physical_partition_interval_indices=(
-            execution.physical_flow_partition_indices
-        ),
+        physical_partition_interval_indices=(execution.physical_flow_partition_indices),
         exact_partition_boundary_times=tuple(boundary_rows),
         checkpoints=tuple(checkpoints),
         schedule_composition=execution.represented_epi_schedule_composition,
@@ -820,9 +804,7 @@ def _pairwise_errors(
     for left_checkpoint in left.checkpoints:
         right_checkpoint = right_by_key.get(left_checkpoint.key)
         if right_checkpoint is None:
-            raise ValueError(
-                f"{right.mesh_name} omits a {left.mesh_name} checkpoint"
-            )
+            raise ValueError(f"{right.mesh_name} omits a {left.mesh_name} checkpoint")
         left_values = _projected_checkpoint(left_checkpoint, persistent_tokens)
         right_values = _projected_checkpoint(right_checkpoint, persistent_tokens)
         errors = tuple(
@@ -888,9 +870,7 @@ def _zhir_observation(
     persistent_tokens: tuple[tuple[Any, ...], ...],
     expected_xi: float | None,
 ) -> EventRemeshThreeMeshZHIRObservation:
-    physical = tuple(
-        item.physical_observation for item in (coarse, intermediate, fine)
-    )
+    physical = tuple(item.physical_observation for item in (coarse, intermediate, fine))
     if not (
         physical[0].event_identity
         == physical[1].event_identity
@@ -900,10 +880,7 @@ def _zhir_observation(
     exact_xi = tuple(item.exact_xi for item in physical)
     if not exact_xi[0] == exact_xi[1] == exact_xi[2]:
         raise ValueError("executed ZHIR thresholds differ across physical meshes")
-    if (
-        expected_xi is not None
-        and exact_xi[0] != Fraction.from_float(expected_xi)
-    ):
+    if expected_xi is not None and exact_xi[0] != Fraction.from_float(expected_xi):
         raise ValueError("zhir_xi does not match the executed Mutation threshold")
 
     terminal_rates = tuple(
@@ -994,10 +971,7 @@ def _partition_by_index(
     mesh: EventRemeshMeshObservation,
 ) -> dict[int, ExecutedPressureRefreshedFlowPartition]:
     evidence = mesh.cycle_result.event_execution.physical_flow_partition_evidence
-    return {
-        item.partition.parent_interval.index: item
-        for item in evidence
-    }
+    return {item.partition.parent_interval.index: item for item in evidence}
 
 
 def _physical_zhir_observations(
@@ -1016,8 +990,7 @@ def _physical_zhir_observations(
     if not events:
         return (), "schedule_has_no_zhir_event"
     executions = tuple(
-        mesh.cycle_result.event_execution
-        for mesh in (coarse, intermediate, fine)
+        mesh.cycle_result.event_execution for mesh in (coarse, intermediate, fine)
     )
     if not all(execution.stage_certification_requested for execution in executions):
         return (), "zhir_stage_certificates_not_available_for_all_meshes"
@@ -1081,10 +1054,13 @@ def _generator_signature(
 
 def _modal_rows(
     evidence: ExecutedPressureRefreshedFlowPartition,
-) -> tuple[
-    tuple[float, ...],
-    tuple[tuple[float, ...], ...],
-] | None:
+) -> (
+    tuple[
+        tuple[float, ...],
+        tuple[tuple[float, ...], ...],
+    ]
+    | None
+):
     observations = evidence.modal_observations
     if not observations:
         return None
@@ -1116,8 +1092,7 @@ def _composed_modal_factors(
     if not rows:
         return None
     factors = tuple(
-        math.prod(row[index] for row in rows)
-        for index in range(len(rows[0]))
+        math.prod(row[index] for row in rows) for index in range(len(rows[0]))
     )
     if any(not math.isfinite(value) for value in factors):
         return None
@@ -1440,9 +1415,7 @@ def _require_common_reference_problem(
     )
     if not _same_binary64_vectors(initial_capacity):
         raise ValueError("initial capacity differs across physical meshes")
-    initial_phase = tuple(
-        mesh.cycle_result.phase_before_schedule for mesh in meshes
-    )
+    initial_phase = tuple(mesh.cycle_result.phase_before_schedule for mesh in meshes)
     if not _same_binary64_vectors(initial_phase):
         raise ValueError("initial phase differs across physical meshes")
     initial_pressure = tuple(

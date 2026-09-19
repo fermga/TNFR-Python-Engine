@@ -244,7 +244,9 @@ def load_redis_config(validate_url: bool = True) -> dict[str, Any]:
         return {
             "host": parsed.hostname or "localhost",
             "port": 6379 if parsed.port is None else parsed.port,
-            "password": unquote(parsed.password) if parsed.password is not None else None,
+            "password": (
+                unquote(parsed.password) if parsed.password is not None else None
+            ),
             "db": _parse_redis_database(parsed.path.lstrip("/") or "0"),
             "ssl": parsed.scheme == "rediss",
             "url": redis_url,

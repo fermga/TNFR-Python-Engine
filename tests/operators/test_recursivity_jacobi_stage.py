@@ -92,13 +92,16 @@ def test_stage_is_target_order_invariant_and_deduplicates_advisory() -> None:
             ["REMESH"],
             ["REMESH"],
         ]
-        assert [
-            graph.nodes[node]["source_glyph"] for node in graph
-        ] == ["REMESH", "REMESH", "REMESH"]
+        assert [graph.nodes[node]["source_glyph"] for node in graph] == [
+            "REMESH",
+            "REMESH",
+            "REMESH",
+        ]
         assert graph.graph[STAGE_SCHEDULE_KEY]["schedule"] == TWO_PHASE_JACOBI
-        assert graph.graph[STAGE_CONTRACT_KEY][
-            "executed_two_phase_contract_complete"
-        ] is True
+        assert (
+            graph.graph[STAGE_CONTRACT_KEY]["executed_two_phase_contract_complete"]
+            is True
+        )
 
 
 def test_repeated_stage_emits_once_per_telemetry_step() -> None:
@@ -163,9 +166,7 @@ def test_metrics_and_monitor_lifecycle_commit_in_target_order() -> None:
         def before_operator(self, _graph: nx.Graph, node: int) -> None:
             self.before.append(node)
 
-        def after_operator(
-            self, _graph: nx.Graph, node: int, operator: str
-        ) -> None:
+        def after_operator(self, _graph: nx.Graph, node: int, operator: str) -> None:
             self.after.append((node, operator))
 
     monitor = Monitor()
@@ -205,9 +206,7 @@ def test_late_pressure_refresh_failure_restores_complete_stage() -> None:
 
     assert dict(graph.nodes(data=True)) == nodes_before
     assert {
-        key: value
-        for key, value in graph.graph.items()
-        if key != "compute_delta_nfr"
+        key: value for key, value in graph.graph.items() if key != "compute_delta_nfr"
     } == graph_before
     assert graph.graph["compute_delta_nfr"] is failed_refresh
 
@@ -232,9 +231,7 @@ def test_overridden_recursivity_execution_uses_transactional_fallback(
 
     def overridden(self, live_graph, node, **kwargs):
         live_graph.graph.setdefault("ordered_override", []).append(node)
-        live_graph.nodes[node]["EPI"] += len(
-            live_graph.graph["ordered_override"]
-        )
+        live_graph.nodes[node]["EPI"] += len(live_graph.graph["ordered_override"])
 
     monkeypatch.setattr(Recursivity, "_execute", overridden)
 
@@ -246,9 +243,9 @@ def test_overridden_recursivity_execution_uses_transactional_fallback(
 
     assert result.schedule == OPERATOR_MAJOR_GAUSS_SEIDEL
     assert graph.graph["ordered_override"] == [2, 0, 1]
-    assert graph.graph[STAGE_CONTRACT_KEY][
-        "executed_two_phase_contract_complete"
-    ] is False
+    assert (
+        graph.graph[STAGE_CONTRACT_KEY]["executed_two_phase_contract_complete"] is False
+    )
 
 
 def test_grammar_replacement_uses_transactional_fallback(
@@ -273,10 +270,5 @@ def test_grammar_replacement_uses_transactional_fallback(
     )
 
     assert result.schedule == OPERATOR_MAJOR_GAUSS_SEIDEL
-    assert all(
-        list(graph.nodes[node]["glyph_history"]) == ["IL"]
-        for node in graph
-    )
-    assert graph.graph[STAGE_CONTRACT_KEY][
-        "schedule_matches_contract"
-    ] is False
+    assert all(list(graph.nodes[node]["glyph_history"]) == ["IL"] for node in graph)
+    assert graph.graph[STAGE_CONTRACT_KEY]["schedule_matches_contract"] is False

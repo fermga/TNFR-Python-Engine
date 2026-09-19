@@ -180,8 +180,19 @@ def certify_phase_winding(
         )
     if not cycle_exists:
         return WindingCertificate(
-            "undefined", None, None, None, None, nodes, False, "declared",
-            convention, None, None, None, "declared oriented cycle is absent",
+            "undefined",
+            None,
+            None,
+            None,
+            None,
+            nodes,
+            False,
+            "declared",
+            convention,
+            None,
+            None,
+            None,
+            "declared oriented cycle is absent",
         )
 
     phases: dict[Any, float] = {}
@@ -216,8 +227,18 @@ def certify_phase_winding(
     gate_admissible = gate_margin >= 0.0
     if branch_margin <= branch_tolerance:
         return WindingCertificate(
-            "undefined", None, None, None, None, nodes, True, "declared",
-            convention, branch_margin, gate_margin, gate_admissible,
+            "undefined",
+            None,
+            None,
+            None,
+            None,
+            nodes,
+            True,
+            "declared",
+            convention,
+            branch_margin,
+            gate_margin,
+            gate_admissible,
             "a phase difference lies on the wrap branch boundary",
         )
 
@@ -225,8 +246,18 @@ def certify_phase_winding(
     winding = int(round(raw))
     residual = abs(raw - winding)
     return WindingCertificate(
-        "defined", winding, abs(winding), raw, residual, nodes, True,
-        "declared", convention, branch_margin, gate_margin, gate_admissible,
+        "defined",
+        winding,
+        abs(winding),
+        raw,
+        residual,
+        nodes,
+        True,
+        "declared",
+        convention,
+        branch_margin,
+        gate_margin,
+        gate_admissible,
         "winding is defined on the declared non-ambiguous cycle",
     )
 
@@ -256,9 +287,7 @@ def observe_winding_word(
     from ..validation import validate_sequence
 
     word = tuple(operators)
-    context = {
-        "initial_epi_nonzero": bool(graph.nodes[node].get(EPI_PRIMARY, 0.0))
-    }
+    context = {"initial_epi_nonzero": bool(graph.nodes[node].get(EPI_PRIMARY, 0.0))}
     validated = ValidatedSequence(word, context=context)
     outcome = validate_sequence(validated.names, context=context)
     if not outcome.passed:
@@ -268,9 +297,7 @@ def observe_winding_word(
             context={"sequence": validated.names, "outcome": outcome.summary},
         )
     cycle = tuple(cycle_nodes)
-    initial = certify_phase_winding(
-        graph, cycle, phase_gate=_runtime_phase_gate(graph)
-    )
+    initial = certify_phase_winding(graph, cycle, phase_gate=_runtime_phase_gate(graph))
     if not initial.is_defined:
         raise ValueError(
             "winding word requires a defined initial cycle: " + initial.reason
@@ -281,17 +308,13 @@ def observe_winding_word(
     compute = graph.graph.get("compute_delta_nfr")
     steps = []
     for index, operator in enumerate(word):
-        phases_before = {
-            item: _required_phase(graph, item) for item in graph.nodes()
-        }
+        phases_before = {item: _required_phase(graph, item) for item in graph.nodes()}
         edges_before = graph.number_of_edges()
         topology_before = _topology_state(graph)
         operator(graph, node, sequence_context=validated.step(index))
         if callable(compute):
             compute(graph)
-        phases_after = {
-            item: _required_phase(graph, item) for item in graph.nodes()
-        }
+        phases_after = {item: _required_phase(graph, item) for item in graph.nodes()}
         phase_changes = tuple(
             (item, float(angle_diff(phases_after[item], phases_before[item])))
             for item in phases_after
@@ -315,7 +338,7 @@ def observe_winding_word(
         )
     requested = tuple(operator.glyph.value for operator in word)
     actual = tuple(graph.nodes[node].get("glyph_history", ()))
-    actual = actual[len(history_before):]
+    actual = actual[len(history_before) :]
     return WindingWordObservation(
         initial, tuple(steps), requested, actual, requested == actual
     )

@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import copy
-from fractions import Fraction
 import math
+from fractions import Fraction
 
 import networkx as nx
 import numpy as np
@@ -20,7 +20,6 @@ from tnfr.physics.core_research_trajectory import (
 )
 from tnfr.physics.structural_diffusion import structural_diffusion_operator
 from tnfr.physics.structural_state_distance import StructuralChannelScales
-
 
 SCALES = StructuralChannelScales(
     epi=1.0,
@@ -59,19 +58,14 @@ def _state(
     pressure = -(laplacian @ field)
     for node, value in zip(nodes, pressure):
         graph.nodes[node]["delta_nfr"] = float(value)
-        graph.nodes[node]["dEPI_dt"] = float(
-            graph.nodes[node]["nu_f"] * value
-        )
+        graph.nodes[node]["dEPI_dt"] = float(graph.nodes[node]["nu_f"] * value)
     return graph
 
 
 def _advance(left: nx.Graph, dt: float, **next_state_kwargs) -> nx.Graph:
     epi = np.asarray([left.nodes[node]["EPI"] for node in left], dtype=float)
     rate = np.asarray(
-        [
-            left.nodes[node]["nu_f"] * left.nodes[node]["delta_nfr"]
-            for node in left
-        ],
+        [left.nodes[node]["nu_f"] * left.nodes[node]["delta_nfr"] for node in left],
         dtype=float,
     )
     return _state(epi + dt * rate, **next_state_kwargs)
@@ -141,8 +135,7 @@ def test_forward_euler_trajectory_passes_all_temporal_conditions():
     assert len(result.common_lyapunov_scaled_increments) == len(snapshots) - 1
     assert result.maximum_scaled_common_lyapunov_increase <= result.tolerance
     assert (
-        result.cumulative_scaled_common_lyapunov_positive_variation
-        <= result.tolerance
+        result.cumulative_scaled_common_lyapunov_positive_variation <= result.tolerance
     )
     assert all(
         increment <= result.tolerance
@@ -156,8 +149,7 @@ def test_forward_euler_trajectory_passes_all_temporal_conditions():
     assert all(
         interval.euler_relaxation.spectral_zero_threshold
         == pytest.approx(
-            result.spectral_tolerance
-            * interval.euler_relaxation.fastest_decay_rate
+            result.spectral_tolerance * interval.euler_relaxation.fastest_decay_rate
         )
         for interval in result.intervals
     )
@@ -250,10 +242,13 @@ def test_common_lyapunov_uses_exactly_normalized_proved_reference_metric():
         for value in result.switching_stability.normalized_metric_weights
     )
     rounded_total = sum(rounded, Fraction())
-    rounded_center = sum(
-        (weight * value for weight, value in zip(rounded, field)),
-        Fraction(),
-    ) / rounded_total
+    rounded_center = (
+        sum(
+            (weight * value for weight, value in zip(rounded, field)),
+            Fraction(),
+        )
+        / rounded_total
+    )
     old_nearby_value = sum(
         (
             weight * (value - rounded_center) ** 2 / 2
@@ -291,14 +286,9 @@ def test_common_lyapunov_boundary_is_decided_before_float_rounding():
     total = sum(reference, Fraction())
     weights = tuple(weight / total for weight in reference)
     field = tuple(Fraction.from_float(value) for value in second_epi)
-    center = sum(
-        (weight * value for weight, value in zip(weights, field)), Fraction()
-    )
+    center = sum((weight * value for weight, value in zip(weights, field)), Fraction())
     exact_increase = sum(
-        (
-            weight * (value - center) ** 2 / 2
-            for weight, value in zip(weights, field)
-        ),
+        (weight * (value - center) ** 2 / 2 for weight, value in zip(weights, field)),
         Fraction(),
     )
     tolerance = float(exact_increase)
@@ -334,9 +324,7 @@ def test_spectral_resolution_is_relative_under_global_frequency_scaling():
 
     diagnostic = result.intervals[0].euler_relaxation
     assert result.joint_temporal_conditions_pass
-    assert diagnostic.slowest_decay_rate == pytest.approx(
-        1e-12 * 0.18384038305065373
-    )
+    assert diagnostic.slowest_decay_rate == pytest.approx(1e-12 * 0.18384038305065373)
     assert diagnostic.spectral_relative_tolerance == pytest.approx(1e-12)
     assert diagnostic.spectral_zero_threshold == pytest.approx(
         1e-12 * diagnostic.fastest_decay_rate

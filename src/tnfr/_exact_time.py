@@ -11,8 +11,8 @@ operators/physics import cycle.
 
 from __future__ import annotations
 
-from fractions import Fraction
 import math
+from fractions import Fraction
 from numbers import Rational, Real
 from typing import Any, Iterable
 
@@ -73,9 +73,7 @@ def exact_or_represented_real(value: Any, label: str) -> Fraction:
     return finite_represented_real(value, label)[1]
 
 
-def nonnegative_represented_time(
-    value: Any, label: str
-) -> tuple[float, Fraction]:
+def nonnegative_represented_time(value: Any, label: str) -> tuple[float, Fraction]:
     """Return a canonical nonnegative represented time and exact rational."""
 
     if isinstance(value, bool) or not isinstance(value, Real):
@@ -102,9 +100,7 @@ def materialize_nonnegative_time_sequence(
     try:
         raw = tuple(values)
     except TypeError as exc:
-        raise TypeError(
-            f"{label} must be an iterable of nonnegative times"
-        ) from exc
+        raise TypeError(f"{label} must be an iterable of nonnegative times") from exc
     materialized = tuple(
         nonnegative_represented_time(value, f"{label}[{index}]")
         for index, value in enumerate(raw)
@@ -164,16 +160,10 @@ def fraction_upper_signed_float(value: Fraction) -> float:
         rounded = float(value)
     except OverflowError:
         return (
-            float("inf")
-            if value > 0
-            else math.nextafter(float("-inf"), float("inf"))
+            float("inf") if value > 0 else math.nextafter(float("-inf"), float("inf"))
         )
     if math.isinf(rounded):
-        return (
-            rounded
-            if rounded > 0
-            else math.nextafter(rounded, float("inf"))
-        )
+        return rounded if rounded > 0 else math.nextafter(rounded, float("inf"))
     if Fraction.from_float(rounded) < value:
         rounded = math.nextafter(rounded, float("inf"))
     return 0.0 if rounded == 0.0 else rounded
@@ -211,9 +201,7 @@ def atanh_log_bounds(value: Fraction) -> tuple[Fraction, Fraction]:
     lower = 2 * partial
     if term == 0:
         return lower, lower
-    remainder = 2 * term / (
-        (2 * term_count + 1) * (1 - ratio_squared)
-    )
+    remainder = 2 * term / ((2 * term_count + 1) * (1 - ratio_squared))
     return lower, lower + remainder
 
 
@@ -223,11 +211,7 @@ def exact_log_bounds(value: Fraction) -> tuple[Fraction, Fraction]:
     if value <= 0:
         raise ValueError("logarithm input must be positive")
     exponent = value.numerator.bit_length() - value.denominator.bit_length()
-    power = (
-        Fraction(1 << exponent)
-        if exponent >= 0
-        else Fraction(1, 1 << -exponent)
-    )
+    power = Fraction(1 << exponent) if exponent >= 0 else Fraction(1, 1 << -exponent)
     if value < power:
         exponent -= 1
         power /= 2
@@ -291,6 +275,4 @@ def exp_upper_float(exponent: Fraction) -> float:
     remainder = magnitude - integer
     e_lower, _ = exp_unit_bounds(Fraction(1))
     remainder_lower, _ = exp_unit_bounds(remainder)
-    return fraction_upper_float(
-        Fraction(1) / (e_lower**integer * remainder_lower)
-    )
+    return fraction_upper_float(Fraction(1) / (e_lower**integer * remainder_lower))

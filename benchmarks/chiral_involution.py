@@ -296,8 +296,7 @@ def test_two_z2_actions_contrast():
     P = next(
         M
         for M in mats
-        if np.linalg.norm(M - eye) > 1e-9
-        and np.linalg.norm(M @ M - eye) < TOL
+        if np.linalg.norm(M - eye) > 1e-9 and np.linalg.norm(M @ M - eye) < TOL
     )
     p_is_perm = bool(
         np.allclose(P.sum(axis=0), 1)

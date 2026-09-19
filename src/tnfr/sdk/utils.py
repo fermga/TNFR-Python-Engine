@@ -175,7 +175,9 @@ def export_to_json(
     # Serialize before opening a destination, then reuse the shared atomic
     # writer. Failed serialization cannot truncate an existing report.
     payload = json_dumps(
-        data, indent=indent, ensure_ascii=False,
+        data,
+        indent=indent,
+        ensure_ascii=False,
         separators=(",", ": ") if indent is not None else (", ", ": "),
     )
     safe_write(filepath, lambda stream: stream.write(payload))

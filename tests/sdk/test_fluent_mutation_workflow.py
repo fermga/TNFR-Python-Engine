@@ -45,7 +45,10 @@ def test_high_level_workflow_abstains_into_exploration_without_history() -> None
     assert decision["cycles"] == 2
     assert all(report["source"] is None for report in decision["observations"])
     assert all(report["time_basis"] is None for report in decision["observations"])
-    assert all("ZHIR" not in data["glyph_history"] for _, data in network.graph.nodes(data=True))
+    assert all(
+        "ZHIR" not in data["glyph_history"]
+        for _, data in network.graph.nodes(data=True)
+    )
     assert all(
         key not in data
         for _, data in network.graph.nodes(data=True)
@@ -60,9 +63,7 @@ def test_legacy_evidence_is_labeled_when_it_explicitly_allows_mutation() -> None
     for _, data in network.graph.nodes(data=True):
         data["epi_history"] = [0.0, 0.2]
 
-    decision = (
-        network.apply_evidence_gated_mutation().measure().mutation_workflows[0]
-    )
+    decision = network.apply_evidence_gated_mutation().measure().mutation_workflows[0]
 
     assert decision["status"] == "mutation_applied"
     assert decision["reason"] is None
@@ -71,10 +72,11 @@ def test_legacy_evidence_is_labeled_when_it_explicitly_allows_mutation() -> None
         for report in decision["observations"]
     )
     assert all(
-        report["physical_time_resolved"] is False
-        for report in decision["observations"]
+        report["physical_time_resolved"] is False for report in decision["observations"]
     )
-    assert all("ZHIR" in data["glyph_history"] for _, data in network.graph.nodes(data=True))
+    assert all(
+        "ZHIR" in data["glyph_history"] for _, data in network.graph.nodes(data=True)
+    )
 
 
 def test_physical_crossing_abstains_when_prefix_would_stale_it() -> None:
@@ -82,9 +84,7 @@ def test_physical_crossing_abstains_when_prefix_would_stale_it() -> None:
     for _, data in network.graph.nodes(data=True):
         data["epi_time_history"] = [(0.0, 0.0), (1.0, 0.2)]
 
-    decision = (
-        network.apply_evidence_gated_mutation().measure().mutation_workflows[0]
-    )
+    decision = network.apply_evidence_gated_mutation().measure().mutation_workflows[0]
 
     assert decision["status"] == "mutation_abstained"
     assert decision["reason"] == "physical_mutation_evidence_would_be_stale"
@@ -94,7 +94,10 @@ def test_physical_crossing_abstains_when_prefix_would_stale_it() -> None:
         and report["physical_time_resolved"]
         for report in decision["observations"]
     )
-    assert all("ZHIR" not in data["glyph_history"] for _, data in network.graph.nodes(data=True))
+    assert all(
+        "ZHIR" not in data["glyph_history"]
+        for _, data in network.graph.nodes(data=True)
+    )
 
 
 def test_malformed_physical_history_is_an_error_not_an_abstention() -> None:

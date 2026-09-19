@@ -23,10 +23,7 @@ from ..config.operator_names import (
     SILENCE,
     TRANSITION,
 )
-from ..constants.canonical import (
-    CYCLE_OPTIMAL_BALANCE_CANONICAL,
-    PI,
-)
+from ..constants.canonical import CYCLE_OPTIMAL_BALANCE_CANONICAL, PI
 from ..constants.operational import (
     CYCLE_BALANCE_MULTIPLIER_CANONICAL,
     CYCLE_BALANCE_RANGE_HIGH_CANONICAL,
@@ -92,9 +89,7 @@ class CycleAnalysis:
 
     @coherence_score.setter
     def coherence_score(self, value: float) -> None:
-        self.cycle_integrity_score = unit_score(
-            value, label="cycle integrity"
-        )
+        self.cycle_integrity_score = unit_score(value, label="cycle integrity")
 
 
 class CycleDetector:
@@ -380,9 +375,7 @@ class CycleDetector:
             if sequence[0] in _STABILIZERS_SET and sequence[-1] in _STABILIZERS_SET:
                 score += 0.17  # operational: closure bonus
 
-        return unit_score(
-            min(1.0, score), label="cycle integrity"
-        )
+        return unit_score(min(1.0, score), label="cycle integrity")
 
     def _determine_cycle_type(self, regenerator: str) -> CycleType:
         """Determine cycle type based on dominant regenerator."""

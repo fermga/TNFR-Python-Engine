@@ -34,7 +34,9 @@ def _request(graph: nx.Graph, **parameters: object) -> UnifiedComputationRequest
     )
 
 
-def test_default_nodal_backend_never_substitutes_epi_diffusion_for_live_pressure() -> None:
+def test_default_nodal_backend_never_substitutes_epi_diffusion_for_live_pressure() -> (
+    None
+):
     graph = _uniform_graph()
     backend = TNFRUnifiedBackend()
 
@@ -87,6 +89,7 @@ def test_optimizer_resolves_u2_roles_from_canonical_grammar_sets() -> None:
     assert "stabilizer_destabilizer_fusion" not in result["optimizations"]
     assert result["caching_opportunities"] == 1
 
+
 def test_large_stored_pressure_trajectory_never_routes_to_epi_diffusion() -> None:
     graph = nx.path_graph(21)
     for node in graph:
@@ -107,6 +110,7 @@ def test_large_stored_pressure_trajectory_never_routes_to_epi_diffusion() -> Non
 
     assert result["pressure_model"] == "stored_delta_nfr"
     assert graph.nodes[0][ALIAS_EPI[0]] == pytest.approx(0.54)
+
 
 def test_execute_computation_propagates_invalid_state_without_fallback() -> None:
     graph = _uniform_graph()
@@ -136,9 +140,7 @@ def test_spectral_cache_key_tracks_live_weighted_topology() -> None:
     second = backend.execute_computation(request).results
 
     assert len(backend._spectral_cache) == 2
-    assert not all(
-        first["eigenvectors"].flat == second["eigenvectors"].flat
-    )
+    assert not all(first["eigenvectors"].flat == second["eigenvectors"].flat)
 
 
 def test_field_cache_tracks_pressure_and_returns_defensive_results() -> None:
@@ -219,7 +221,9 @@ def test_facade_reports_actual_route_and_cache_evidence() -> None:
     assert first.cache_misses == 1
     assert second.cache_hits == 1
     assert second.cache_misses == 0
-    assert backend.get_performance_statistics()["mathematical_backend_dispatch"] is False
+    assert (
+        backend.get_performance_statistics()["mathematical_backend_dispatch"] is False
+    )
 
 
 def test_field_route_returns_the_complete_structural_tetrad() -> None:

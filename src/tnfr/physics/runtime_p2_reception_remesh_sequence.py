@@ -20,18 +20,14 @@ from fractions import Fraction
 from typing import Any
 
 from ..errors import TNFRValueError
-from ..operators.event_remesh_causal_runtime import (
-    ExecutedEventRemeshCycleSequence,
-)
+from ..operators.event_remesh_causal_runtime import ExecutedEventRemeshCycleSequence
 from ..operators.event_remesh_runtime import EventRemeshCycleResult
 from ..utils._structural_signature import (
     binary64_vectors_are_identical,
     proof_stamps_are_identical,
     structural_proof_signature,
 )
-from .binary64_p2_reception_stability import (
-    P2HalfReceptionRemeshStabilityCertificate,
-)
+from .binary64_p2_reception_stability import P2HalfReceptionRemeshStabilityCertificate
 from .runtime_p2_reception_stage import (
     ExecutedP2HalfReceptionStageCertificate,
     certify_executed_p2_half_reception_stage,
@@ -178,8 +174,7 @@ def _active_history_suffix_is_admissible(
             type(row) is tuple
             and len(row) == 2
             and all(
-                type(value) is Fraction and lower <= value <= upper
-                for value in row
+                type(value) is Fraction and lower <= value <= upper for value in row
             )
             for row in history[-active_length:]
         )
@@ -191,9 +186,7 @@ def _normalize_metric(value: Any) -> ExactPair:
         type(value) is not tuple
         or len(value) != 2
         or any(
-            type(item) is not float
-            or not math.isfinite(item)
-            or item <= 0.0
+            type(item) is not float or not math.isfinite(item) or item <= 0.0
             for item in value
         )
     ):
@@ -217,8 +210,7 @@ def _normalize_exact_metric(value: Any) -> ExactPair:
 def _centered_energy(value: ExactPair, metric: ExactPair) -> Fraction:
     center = metric[0] * value[0] + metric[1] * value[1]
     return (
-        metric[0] * (value[0] - center) ** 2
-        + metric[1] * (value[1] - center) ** 2
+        metric[0] * (value[0] - center) ** 2 + metric[1] * (value[1] - center) ** 2
     ) / 2
 
 
@@ -263,12 +255,8 @@ def _remesh_configuration_matches_source(
 class _SequenceModel:
     cycle_indices: tuple[int, ...]
     reception_event_indices: tuple[int, ...]
-    reception_stage_certificates: tuple[
-        ExecutedP2HalfReceptionStageCertificate, ...
-    ]
-    remesh_history_bridges: tuple[
-        RuntimeRemeshHistoryBridgeObservation, ...
-    ]
+    reception_stage_certificates: tuple[ExecutedP2HalfReceptionStageCertificate, ...]
+    remesh_history_bridges: tuple[RuntimeRemeshHistoryBridgeObservation, ...]
     node_order: tuple[Any, Any]
     exact_normalized_metric: ExactPair
     cycle_count: int
@@ -287,12 +275,8 @@ def _derive_model(
     execution: ExecutedEventRemeshCycleSequence,
     reception_event_indices: tuple[int, ...],
     *,
-    stage_evidence: tuple[
-        ExecutedP2HalfReceptionStageCertificate, ...
-    ] | None = None,
-    bridge_evidence: tuple[
-        RuntimeRemeshHistoryBridgeObservation, ...
-    ] | None = None,
+    stage_evidence: tuple[ExecutedP2HalfReceptionStageCertificate, ...] | None = None,
+    bridge_evidence: tuple[RuntimeRemeshHistoryBridgeObservation, ...] | None = None,
 ) -> _SequenceModel:
     cycles = object.__getattribute__(execution, "cycles")
     cycle_count = len(cycles)
@@ -680,18 +664,16 @@ def _matches_model(
 class ExecutedP2HalfReceptionRemeshSequenceCertificate:
     """Sealed finite causal certificate for executed P2 EN/REMESH cycles."""
 
-    kernel_certificate: P2HalfReceptionRemeshStabilityCertificate = field(
-        repr=False
-    )
+    kernel_certificate: P2HalfReceptionRemeshStabilityCertificate = field(repr=False)
     execution: ExecutedEventRemeshCycleSequence = field(repr=False)
     cycle_indices: tuple[int, ...]
     reception_event_indices: tuple[int, ...]
     reception_stage_certificates: tuple[
         ExecutedP2HalfReceptionStageCertificate, ...
     ] = field(repr=False)
-    remesh_history_bridges: tuple[
-        RuntimeRemeshHistoryBridgeObservation, ...
-    ] = field(repr=False)
+    remesh_history_bridges: tuple[RuntimeRemeshHistoryBridgeObservation, ...] = field(
+        repr=False
+    )
     node_order: tuple[Any, Any]
     exact_normalized_metric: ExactPair
     cycle_count: int
@@ -756,9 +738,7 @@ class ExecutedP2HalfReceptionRemeshSequenceCertificate:
 
     @property
     def finite_causal_extinction_certified(self) -> bool:
-        return (
-            self.executed_p2_half_reception_remesh_sequence_certificate_certified
-        )
+        return self.executed_p2_half_reception_remesh_sequence_certificate_certified
 
     @property
     def same_invocation_causal_provenance_certified(self) -> bool:
@@ -828,8 +808,10 @@ def _materialize_event_indices(
                 )
             result.append(indices[0])
         return tuple(result)
-    if type(value) is not tuple or len(value) != count or any(
-        type(item) is not int or item < 0 for item in value
+    if (
+        type(value) is not tuple
+        or len(value) != count
+        or any(type(item) is not int or item < 0 for item in value)
     ):
         raise TNFRValueError(
             "reception_event_indices must be a nonnegative integer tuple with "
@@ -874,12 +856,8 @@ def certify_executed_p2_half_reception_remesh_sequence(
         node_order=model.node_order,
         exact_normalized_metric=model.exact_normalized_metric,
         cycle_count=model.cycle_count,
-        active_history_extinction_horizon=(
-            model.active_history_extinction_horizon
-        ),
-        guaranteed_extinction_cycle_index=(
-            model.guaranteed_extinction_cycle_index
-        ),
+        active_history_extinction_horizon=(model.active_history_extinction_horizon),
+        guaranteed_extinction_cycle_index=(model.guaranteed_extinction_cycle_index),
         exact_schedule_input_energies=model.exact_schedule_input_energies,
         exact_post_reception_energies=model.exact_post_reception_energies,
         exact_post_remesh_energies=model.exact_post_remesh_energies,

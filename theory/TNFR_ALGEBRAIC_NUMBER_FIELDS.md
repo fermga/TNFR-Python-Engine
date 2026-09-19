@@ -1,7 +1,7 @@
 # TNFR Algebraic Number Fields — Finite Fields & Gaussian Signatures (R5)
 
 **Status**: prime-field regression **DERIVED** (R2 recovered) + extension
-behaviour **MEASURED** (exact counts; trace collisions); Gaussian decomposition
+behaviour **MEASURED** (exact trace-fiber counts; tolerance-based spectral counts); Gaussian decomposition
 detection **CONJECTURAL** (`NT-P05`), a *descriptive* study using the classical
 type as a ground-truth label. No factoring, complexity, cryptographic, or
 Millennium claim; no external field package required.
@@ -23,13 +23,16 @@ $$\psi_a(x) = \exp\!\Big(\tfrac{2\pi i}{p}\,
 \operatorname{Tr}_{F_q/F_p}(a x)\Big),\qquad
 \operatorname{Tr}(y) = y + y^p + \cdots + y^{p^{f-1}} \in F_p.$$
 
-The eigenvalues of the additive Cayley graph `Cay(F_q, S)` with `S = ` the
-non-zero k-th powers are exactly the **normalised Gauss periods**
+The eigenvalues of the normalized transition matrix of `Cay(F_q, S)`, with
+`S` the non-zero k-th powers, are the **normalised Gauss periods**
 
 $$\eta_a = \frac1{|S|}\sum_{s\in S}\psi_a(s),$$
 
-constant on cosets of the k-th power subgroup `H` (since `\psi_{ah}=\psi_a` for
-`h\in H`). There are `gcd(k, q−1)` such cosets plus `\eta_0 = 1`, so the distinct
+constant on cosets of the k-th power subgroup `H`: multiplication by `h in H`
+permutes `S`, hence `eta_(ah)=eta_a`. The characters themselves are not equal
+pointwise. The adjacency eigenvalues are `|S|*eta_a`, and the random-walk
+Laplacian eigenvalues are `1-eta_a`. There are `gcd(k, q−1)` such cosets plus
+`\eta_0 = 1`, so the distinct
 count is **at most** `gcd(k, q−1) + 1`.
 
 ## 2. Prime regression and extension collisions (DERIVED + MEASURED)
@@ -41,7 +44,8 @@ $$\#\{\eta_a\} = \gcd(k, p-1) + 1 \qquad (`prime_field_matches_cyclotomy`).$$
 
 **Extensions (`f ≥ 2`, MEASURED).** Here the trace is `p^{f−1}`-to-one, so distinct
 cosets of `H` can share a period value and the bound is **not** tight. Measured
-distinct counts (exact, and cross-checked against the explicit graph spectrum):
+distinct counts (computed from numerical character sums and cross-checked
+against the explicit graph spectrum, with the implementation's tolerance):
 
 | field | `q` | `k` | `gcd(k,q−1)+1` | distinct | |
 |-------|-----|-----|----------------|----------|---|
@@ -53,7 +57,9 @@ distinct counts (exact, and cross-checked against the explicit graph spectrum):
 
 So the prime-field independence argument (distinct cosets ⇒ distinct periods)
 does **not** transfer to extensions: `distinct = gcd(k, q−1) + 1` becomes an
-**upper bound**, strict whenever the trace identifies cosets. The trace-character
+**upper bound**; equal coset character sums can make it strict. Elementwise
+trace collisions alone are not a sufficient criterion for period degeneracy.
+The trace-character
 count and the explicit additive Cayley spectrum agree in every case
 (`period_and_explicit_spectrum_agree`), an internal consistency control.
 
@@ -65,11 +71,12 @@ read through observability
 `k`-th powers `H = { a^k : a ∈ F_q^* }` the trace `Tr : F_q → F_p` collapses `H`
 onto the `p` residues; the **fiber counts** `N_a = #{ h ∈ H : Tr(h) = a }` are the
 collision structure and `#{ a : N_a > 0 }` is the number of trace values that stay
-**observable**. This is the observation map `y_m = c^* P^m b` of §12.3: R2
-(`b = c = e_0`) sees every mode, the trace is an observation that identifies
-states and can only reduce the visible order.
+**distinguishable by that static trace**. This is not itself the dynamical
+observation `y_m = c^* P^m b`: no such input/output pair or Hankel-rank equality
+is built by `trace_collisions.py`. R2's pointed circulant sees every distinct
+spectral mode; a static count of trace values is a different quantity.
 
-Two exact facts make the histogram canonical:
+Two algebraic facts determine the histogram for the supplied finite field:
 
 - **Character formula (DERIVED, exact).** Fourier inversion on `F_p` gives
   `N_a = (1/p) Σ_{u∈F_p} ψ(−ua) Σ_{h∈H} ψ(u·Tr(h))` with `ψ(t) = e^{2πi t/p}`.
@@ -122,17 +129,19 @@ measured evidence.
 | Claim | Basis | Status |
 |-------|-------|--------|
 | `F_p`: `#{η_a} = gcd(k, p−1) + 1` | trace = identity (R2) | **DERIVED** + MEASURED |
-| `F_q`: `#{η_a} ≤ gcd(k, q−1) + 1`, strict for some | trace many-to-one | **MEASURED** (exact counts) |
+| `F_q`: `#{η_a} ≤ gcd(k, q−1) + 1`, strict in some examples | coset character sums | **DERIVED upper bound**; numerical collision examples |
 | trace-character count = explicit spectrum | character theory | **MEASURED** (agree) |
 | `N_a` via character formula = exact fiber count | Fourier inversion on `F_p` (N10) | **DERIVED** + MEASURED (`~1e-16`) |
 | trace collision histogram is representation-free | `Tr(h^p) = Tr(h)` (N10) | **MEASURED** (Galois-invariant) |
-| `#{a : N_a>0}` = visible order under the trace | observation map `y = c^* P^m b` (N10) | **MEASURED** (`F_p` full, extensions collapse) |
+| `#{a : N_a>0}` = number of attained static trace values | direct fiber counts (N10) | **EXACT COUNT**; not a proved dynamical realization order |
 | `k=2` count separates ramified/inert/split | Cayley spectrum | **MEASURED** (small `p`) |
 | pulse detects decomposition type | — | **CONJECTURAL** (`NT-P05`; k-sensitive, descriptive) |
 
-**Bottom line.** R5 carries the arithmetic pulse from prime fields to finite
+R5 carries the declared arithmetic construction from prime fields to finite
 fields and Gaussian quotients. It recovers R2 exactly on `F_p`, quantifies the
 trace collisions that break the formula on extensions, and exhibits a `k = 2`
 spectral signature that separates the three Gaussian decomposition types. The
 decomposition detector is a descriptive, k-sensitive, small-`p` observation — not
-a proof and not an algorithm.
+a proof and not an algorithm. The field, polynomial representation and residue
+connection set are supplied inputs. These identities do not derive a physical
+carrier, autonomous NFR formation, or a full joint nodal evolution.

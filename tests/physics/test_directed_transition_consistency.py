@@ -10,15 +10,18 @@ from tnfr.physics.directed_diffusion import (
 
 
 @pytest.mark.parametrize("reader", [directed_rw_laplacian, stationary_distribution])
-@pytest.mark.parametrize("adjacency", [
-    1.0,
-    [1.0, 2.0],
-    [[0.0, 1.0, 0.0], [1.0, 0.0, 0.0]],
-    [[0.0, -1.0], [1.0, 0.0]],
-    [[0.0, float("nan")], [1.0, 0.0]],
-    [[0.0, float("inf")], [1.0, 0.0]],
-    [[0.0, 1.0j], [1.0, 0.0]],
-])
+@pytest.mark.parametrize(
+    "adjacency",
+    [
+        1.0,
+        [1.0, 2.0],
+        [[0.0, 1.0, 0.0], [1.0, 0.0, 0.0]],
+        [[0.0, -1.0], [1.0, 0.0]],
+        [[0.0, float("nan")], [1.0, 0.0]],
+        [[0.0, float("inf")], [1.0, 0.0]],
+        [[0.0, 1.0j], [1.0, 0.0]],
+    ],
+)
 def test_matrix_readers_reject_invalid_conductance(reader, adjacency):
     with pytest.raises(ValueError, match="square|finite nonnegative"):
         reader(adjacency)
@@ -26,12 +29,10 @@ def test_matrix_readers_reject_invalid_conductance(reader, adjacency):
 
 @pytest.mark.parametrize("scale", [np.nextafter(0.0, 1.0), 1e-310, 1.0, 1e307])
 def test_positive_row_scaling_preserves_walk_and_stationary_measure(scale):
-    adjacency = scale * np.array([[0.0, 2.0, 1.0],
-                                  [1.0, 0.0, 1.0],
-                                  [1.0, 3.0, 0.0]])
-    expected_transition = np.array([[0.0, 2 / 3, 1 / 3],
-                                    [1 / 2, 0.0, 1 / 2],
-                                    [1 / 4, 3 / 4, 0.0]])
+    adjacency = scale * np.array([[0.0, 2.0, 1.0], [1.0, 0.0, 1.0], [1.0, 3.0, 0.0]])
+    expected_transition = np.array(
+        [[0.0, 2 / 3, 1 / 3], [1 / 2, 0.0, 1 / 2], [1 / 4, 3 / 4, 0.0]]
+    )
     before = adjacency.copy()
     with np.errstate(all="raise"):
         laplacian = directed_rw_laplacian(adjacency)
@@ -86,9 +87,7 @@ def test_stationary_tolerance_cannot_disable_validation(tol):
 
 
 def test_undirected_random_walk_uses_degree_similarity_not_raw_symmetry():
-    adjacency = np.array([[0.0, 1.0, 0.0],
-                          [1.0, 0.0, 1.0],
-                          [0.0, 1.0, 0.0]])
+    adjacency = np.array([[0.0, 1.0, 0.0], [1.0, 0.0, 1.0], [0.0, 1.0, 0.0]])
     laplacian = directed_rw_laplacian(adjacency)
     root_degree = np.sqrt(adjacency.sum(axis=1))
     symmetric_representation = root_degree[:, None] * laplacian / root_degree[None, :]

@@ -1,7 +1,7 @@
 """Three canonical pressure channels share a derived strict cycle coordinate."""
 
-from fractions import Fraction
 import math
+from fractions import Fraction
 
 import pytest
 
@@ -14,7 +14,6 @@ from tnfr.physics.cycle_support_dynamics import observe_cycle_support_balance
 from tnfr.physics.emergent_particles import winding_ring
 from tnfr.physics.winding_certificates import certify_phase_winding
 
-
 F = Fraction
 
 
@@ -22,7 +21,8 @@ def _prepared_joint_balance(winding, vectorized):
     graph = winding_ring(8, winding)
     graph.graph.update(
         vectorized_dnfr=vectorized,
-        UM_BIDIRECTIONAL=False, UM_FUNCTIONAL_LINKS=False,
+        UM_BIDIRECTIONAL=False,
+        UM_FUNCTIONAL_LINKS=False,
         compute_delta_nfr=default_compute_delta_nfr,
     )
     weights = merge_and_normalize_weights(
@@ -37,8 +37,11 @@ def _prepared_joint_balance(winding, vectorized):
         set_theta(graph, node, phase)
         set_attr(graph.nodes[node], ALIAS_VF, float(capacity[node]))
         # A declared balanced initial condition, not a solver update.
-        set_attr(graph.nodes[node], ALIAS_EPI,
-                 float(1 - r * capacity[node] - t * offsets[node]))
+        set_attr(
+            graph.nodes[node],
+            ALIAS_EPI,
+            float(1 - r * capacity[node] - t * offsets[node]),
+        )
     default_compute_delta_nfr(graph)
     return graph, offsets, weights
 
@@ -52,8 +55,11 @@ def _values(graph, alias):
 def test_phase_capacity_and_epi_cancel_in_the_same_strict_chart(winding, vectorized):
     graph, offsets, weights = _prepared_joint_balance(winding, vectorized)
     observed = observe_cycle_support_balance(
-        _values(graph, ALIAS_EPI), _values(graph, ALIAS_VF), offsets,
-        epi_weight=weights["epi"], vf_weight=weights["vf"],
+        _values(graph, ALIAS_EPI),
+        _values(graph, ALIAS_VF),
+        offsets,
+        epi_weight=weights["epi"],
+        vf_weight=weights["vf"],
         phase_weight=weights["phase"],
     )
     certificate = certify_phase_winding(graph, tuple(graph))
@@ -74,7 +80,8 @@ def test_admitted_capacity_and_phase_updates_release_a_joint_preparation(winding
     before_phase = tuple(graph.nodes[n]["theta"] for n in graph)
     before_capacity = _values(graph, ALIAS_VF)
     run_network_sequence(
-        graph, ["coupling", "silence"],
+        graph,
+        ["coupling", "silence"],
         context={"initial_epi_nonzero": all(before_epi)},
     )
     assert _values(graph, ALIAS_EPI) == before_epi
@@ -82,5 +89,6 @@ def test_admitted_capacity_and_phase_updates_release_a_joint_preparation(winding
     assert tuple(graph.nodes[n]["theta"] for n in graph) != before_phase
     assert max(map(abs, _values(graph, ALIAS_DNFR))) > 1e-4
     assert certify_phase_winding(graph, tuple(graph)).winding == winding
-    assert all(tuple(graph.nodes[n]["glyph_history"])[-2:] == ("UM", "SHA")
-               for n in graph)
+    assert all(
+        tuple(graph.nodes[n]["glyph_history"])[-2:] == ("UM", "SHA") for n in graph
+    )

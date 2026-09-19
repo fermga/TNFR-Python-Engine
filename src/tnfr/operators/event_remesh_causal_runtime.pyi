@@ -12,7 +12,6 @@ from .event_remesh_runtime import EventRemeshCycleResult
 from .event_remesh_sequence import ObservedEventRemeshCycleSequence
 from .event_timing import OperatorEventSchedule, PhysicalFlowPartition
 
-
 class EventRemeshCycleExecutionSpec:
     schedule: OperatorEventSchedule
     physical_flow_partitions: Iterable[PhysicalFlowPartition]
@@ -21,7 +20,6 @@ class EventRemeshCycleExecutionSpec:
         schedule: OperatorEventSchedule,
         physical_flow_partitions: Iterable[PhysicalFlowPartition] = ...,
     ) -> None: ...
-
 
 class CausalEventRemeshCycleReceipt:
     cycle_index: int
@@ -35,14 +33,11 @@ class CausalEventRemeshCycleReceipt:
     @property
     def receipt_binding_certified(self) -> bool: ...
 
-
 class ExecutedEventRemeshCycleSequence:
     cycle_indices: tuple[int, ...]
     specs: tuple[EventRemeshCycleExecutionSpec, ...]
     schedules: tuple[OperatorEventSchedule, ...]
-    physical_flow_partitions_by_cycle: tuple[
-        tuple[PhysicalFlowPartition, ...], ...
-    ]
+    physical_flow_partitions_by_cycle: tuple[tuple[PhysicalFlowPartition, ...], ...]
     receipts: tuple[CausalEventRemeshCycleReceipt, ...]
     cycles: tuple[EventRemeshCycleResult, ...]
     target_nodes: tuple[Hashable, ...]
@@ -92,7 +87,6 @@ class ExecutedEventRemeshCycleSequence:
     @property
     def external_side_effects_rolled_back(self) -> bool: ...
 
-
 def execute_event_remesh_cycle_sequence(
     graph: nx.Graph,
     specs: Iterable[EventRemeshCycleExecutionSpec],
@@ -104,6 +98,5 @@ def execute_event_remesh_cycle_sequence(
     suppress_birth_warnings: bool = ...,
     require_runtime_telescope: bool = ...,
 ) -> ExecutedEventRemeshCycleSequence: ...
-
 
 __all__: tuple[str, ...]

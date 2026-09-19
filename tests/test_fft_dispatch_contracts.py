@@ -251,9 +251,7 @@ def test_hub_does_not_republish_unmeasured_fft_speedup_or_memory() -> None:
             )
 
     hub = object.__new__(TNFRComputationalHub)
-    hub._engines = {
-        EngineType.OPTIMIZATION_ORCHESTRATOR: _FFTOrchestrator()
-    }
+    hub._engines = {EngineType.OPTIMIZATION_ORCHESTRATOR: _FFTOrchestrator()}
     request = ComputationRequest(
         engine_type=EngineType.OPTIMIZATION_ORCHESTRATOR,
         operation="epi_diffusion",
@@ -308,9 +306,7 @@ def test_hub_marks_failed_optimization_result_as_failure() -> None:
             )
 
     hub = object.__new__(TNFRComputationalHub)
-    hub._engines = {
-        EngineType.OPTIMIZATION_ORCHESTRATOR: FailedOrchestrator()
-    }
+    hub._engines = {EngineType.OPTIMIZATION_ORCHESTRATOR: FailedOrchestrator()}
     hub._engine_performance = {kind: [] for kind in EngineType}
     request = ComputationRequest(
         engine_type=EngineType.OPTIMIZATION_ORCHESTRATOR,

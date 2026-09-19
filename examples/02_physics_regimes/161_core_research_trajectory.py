@@ -46,7 +46,6 @@ from tnfr.research import (
     current_git_source_provenance,
 )
 
-
 NODES = (0, 1, 2, 3)
 EDGE_WEIGHTS = (2.0, 0.75, 2.0)
 INITIAL_EPI = (2.0, -1.0, 3.0, 0.5)
@@ -165,9 +164,7 @@ def integrate_forward_euler(
         raise ValueError("dt must be finite and positive")
 
     nodes = tuple(initial)
-    state = np.asarray(
-        [initial.nodes[node]["EPI"] for node in nodes], dtype=float
-    )
+    state = np.asarray([initial.nodes[node]["EPI"] for node in nodes], dtype=float)
     snapshots: list[nx.Graph] = []
     times: list[float] = []
     for step in range(step_count + 1):
@@ -225,24 +222,18 @@ def exact_pure_epi_state(initial: nx.Graph, time: float) -> tuple[float, ...]:
     if isinstance(time, bool) or not math.isfinite(time) or time < 0.0:
         raise ValueError("time must be finite and nonnegative")
     nodes = tuple(initial)
-    adjacency = nx.to_numpy_array(
-        initial, nodelist=nodes, weight="weight", dtype=float
-    )
+    adjacency = nx.to_numpy_array(initial, nodelist=nodes, weight="weight", dtype=float)
     if not np.array_equal(adjacency, adjacency.T):
         raise ValueError("the exact reference requires symmetric conductance")
     strength = adjacency.sum(axis=1)
-    frequency = np.asarray(
-        [initial.nodes[node]["nu_f"] for node in nodes], dtype=float
-    )
+    frequency = np.asarray([initial.nodes[node]["nu_f"] for node in nodes], dtype=float)
     if np.any(strength <= 0.0) or np.any(frequency <= 0.0):
         raise ValueError("the exact reference requires positive degree and nu_f")
 
     mobility_root = np.sqrt(frequency / strength)
     combinatorial_laplacian = np.diag(strength) - adjacency
     symmetric_generator = (
-        mobility_root[:, None]
-        * combinatorial_laplacian
-        * mobility_root[None, :]
+        mobility_root[:, None] * combinatorial_laplacian * mobility_root[None, :]
     )
     rates, modes = np.linalg.eigh(symmetric_generator)
     rates = np.maximum(rates, 0.0)
@@ -273,22 +264,14 @@ def exact_reference_diagnostics(
             exact_pure_epi_state(initial, float(match.coarse_time)), dtype=float
         )
         coarse_epi = np.asarray(
-            [
-                coarse_snapshots[match.coarse_index].nodes[node]["EPI"]
-                for node in nodes
-            ],
+            [coarse_snapshots[match.coarse_index].nodes[node]["EPI"] for node in nodes],
             dtype=float,
         )
         fine_epi = np.asarray(
-            [
-                fine_snapshots[match.fine_index].nodes[node]["EPI"]
-                for node in nodes
-            ],
+            [fine_snapshots[match.fine_index].nodes[node]["EPI"] for node in nodes],
             dtype=float,
         )
-        coarse_error = float(
-            np.max(np.abs(coarse_epi - reference), initial=0.0)
-        )
+        coarse_error = float(np.max(np.abs(coarse_epi - reference), initial=0.0))
         fine_error = float(np.max(np.abs(fine_epi - reference), initial=0.0))
         is_initial = match.coarse_index == 0
         samples.append(
@@ -298,9 +281,9 @@ def exact_reference_diagnostics(
                 "fine_error_to_exact_linf": fine_error,
                 "scaled_coarse_error_to_exact_linf": coarse_error / SCALES.epi,
                 "scaled_fine_error_to_exact_linf": fine_error / SCALES.epi,
-                "fine_strictly_closer": None
-                if is_initial
-                else fine_error < coarse_error,
+                "fine_strictly_closer": (
+                    None if is_initial else fine_error < coarse_error
+                ),
             }
         )
 
@@ -309,9 +292,7 @@ def exact_reference_diagnostics(
     maximum_coarse_error = max(
         sample["coarse_error_to_exact_linf"] for sample in samples
     )
-    maximum_fine_error = max(
-        sample["fine_error_to_exact_linf"] for sample in samples
-    )
+    maximum_fine_error = max(sample["fine_error_to_exact_linf"] for sample in samples)
     representative_indices = sorted({0, len(samples) // 2, len(samples) - 1})
     return {
         "method": (
@@ -331,9 +312,7 @@ def exact_reference_diagnostics(
         ),
         "common_time_sample_count": len(samples),
         "full_error_series_digest": _content_digest(samples),
-        "representative_samples": [
-            samples[index] for index in representative_indices
-        ],
+        "representative_samples": [samples[index] for index in representative_indices],
         "scope": (
             "floating-point evaluation of the exact semigroup formula for this "
             "fixed symmetric linear pure-EPI generator"
@@ -353,22 +332,15 @@ def _snapshot_record(snapshot: nx.Graph, time: float) -> dict[str, Any]:
         "EPI": [float(snapshot.nodes[node]["EPI"]) for node in nodes],
         "nu_f": [float(snapshot.nodes[node]["nu_f"]) for node in nodes],
         "phase": [float(snapshot.nodes[node]["theta"]) for node in nodes],
-        "DeltaNFR": [
-            float(snapshot.nodes[node]["delta_nfr"]) for node in nodes
-        ],
-        "dEPI_dt": [
-            float(snapshot.nodes[node]["dEPI_dt"]) for node in nodes
-        ],
+        "DeltaNFR": [float(snapshot.nodes[node]["delta_nfr"]) for node in nodes],
+        "dEPI_dt": [float(snapshot.nodes[node]["dEPI_dt"]) for node in nodes],
     }
 
 
-def _trajectory_digest(
-    snapshots: Sequence[nx.Graph], times: Sequence[float]
-) -> str:
+def _trajectory_digest(snapshots: Sequence[nx.Graph], times: Sequence[float]) -> str:
     """Content-address the complete in-memory trajectory telemetry."""
     records = [
-        _snapshot_record(snapshot, time)
-        for snapshot, time in zip(snapshots, times)
+        _snapshot_record(snapshot, time) for snapshot, time in zip(snapshots, times)
     ]
     return _content_digest(records)
 
@@ -406,29 +378,21 @@ def _trajectory_summary(certificate: Any) -> dict[str, Any]:
             certificate.maximum_transport_operator_entry_difference
         ),
         "conditions": {
-            name: bool(passed)
-            for name, passed in certificate.numerical_conditions
+            name: bool(passed) for name, passed in certificate.numerical_conditions
         },
         "failed_conditions": list(certificate.failed_conditions),
         "all_intervals_euler_stable": all(
-            interval.euler_relaxation.is_euler_stable
-            for interval in intervals
+            interval.euler_relaxation.is_euler_stable for interval in intervals
         ),
         "maximum_interval_dt_over_euler_limit": max(
             (
-                float(
-                    interval.dt
-                    / interval.euler_relaxation.euler_stability_limit
-                )
+                float(interval.dt / interval.euler_relaxation.euler_stability_limit)
                 for interval in intervals
             ),
             default=0.0,
         ),
         "maximum_scaled_epi_update_residual": max(
-            (
-                float(interval.scaled_epi_update_residual_linf)
-                for interval in intervals
-            ),
+            (float(interval.scaled_epi_update_residual_linf) for interval in intervals),
             default=0.0,
         ),
         "common_lyapunov_initial": float(certificate.common_lyapunov_values[0]),
@@ -452,15 +416,9 @@ def _trajectory_summary(certificate: Any) -> dict[str, Any]:
         ],
         "switching_stability": {
             "regime_count": int(switching.regime_count),
-            "shares_exact_common_metric": bool(
-                switching.shares_exact_common_metric
-            ),
-            "common_metric_residual": float(
-                switching.common_metric_residual
-            ),
-            "uniform_exponential_rate": float(
-                switching.uniform_exponential_rate
-            ),
+            "shares_exact_common_metric": bool(switching.shares_exact_common_metric),
+            "common_metric_residual": float(switching.common_metric_residual),
+            "uniform_exponential_rate": float(switching.uniform_exponential_rate),
             "supports_exact_switching_theorem": bool(
                 switching.supports_exact_switching_theorem
             ),
@@ -530,8 +488,7 @@ def _refinement_summary(comparison: Any) -> dict[str, Any]:
         ),
         "same_dynamics_declared": bool(comparison.same_dynamics_declared),
         "conditions": {
-            name: bool(passed)
-            for name, passed in comparison.numerical_conditions
+            name: bool(passed) for name, passed in comparison.numerical_conditions
         },
         "joint_refinement_conditions_pass": bool(
             comparison.joint_refinement_conditions_pass
@@ -542,9 +499,7 @@ def _refinement_summary(comparison: Any) -> dict[str, Any]:
         "agreement_tolerance": float(comparison.agreement_tolerance),
         "time_tolerance": float(comparison.time_tolerance),
         "full_direct_error_series_digest": _content_digest(samples),
-        "representative_samples": [
-            samples[index] for index in representative_indices
-        ],
+        "representative_samples": [samples[index] for index in representative_indices],
         "scope": comparison.scope,
     }
 
@@ -633,9 +588,7 @@ def run_protocol() -> dict[str, Any]:
         (
             "fine_closer_to_exact_at_noninitial_common_times",
             bool(
-                exact_reference[
-                    "fine_strictly_closer_at_every_noninitial_common_time"
-                ]
+                exact_reference["fine_strictly_closer_at_every_noninitial_common_time"]
             ),
         ),
     )
@@ -737,9 +690,7 @@ def build_report(protocol: Mapping[str, Any]) -> dict[str, Any]:
             "initial_epi": list(INITIAL_EPI),
             "nu_f_hz_str": list(FREQUENCY),
             "fixed_phase": list(PHASE),
-            "reversible_reflection_partition": [
-                list(block) for block in PARTITION
-            ],
+            "reversible_reflection_partition": [list(block) for block in PARTITION],
             "node_alignment_policy": (
                 "direct persistent ids at every common time; no relabeling or "
                 "time-dependent quotient minimizer"
@@ -759,16 +710,11 @@ def build_report(protocol: Mapping[str, Any]) -> dict[str, Any]:
         "euler_diagnostics": {
             "coarse": {
                 "dt": float(coarse_diagnostic.dt),
-                "stability_limit": float(
-                    coarse_diagnostic.euler_stability_limit
-                ),
+                "stability_limit": float(coarse_diagnostic.euler_stability_limit),
                 "dt_over_stability_limit": float(
-                    coarse_diagnostic.dt
-                    / coarse_diagnostic.euler_stability_limit
+                    coarse_diagnostic.dt / coarse_diagnostic.euler_stability_limit
                 ),
-                "maximum_modal_factor": float(
-                    coarse_diagnostic.maximum_modal_factor
-                ),
+                "maximum_modal_factor": float(coarse_diagnostic.maximum_modal_factor),
                 "spectral_relative_tolerance": float(
                     coarse_diagnostic.spectral_relative_tolerance
                 ),
@@ -786,9 +732,7 @@ def build_report(protocol: Mapping[str, Any]) -> dict[str, Any]:
                 "dt_over_stability_limit": float(
                     fine_diagnostic.dt / fine_diagnostic.euler_stability_limit
                 ),
-                "maximum_modal_factor": float(
-                    fine_diagnostic.maximum_modal_factor
-                ),
+                "maximum_modal_factor": float(fine_diagnostic.maximum_modal_factor),
                 "spectral_relative_tolerance": float(
                     fine_diagnostic.spectral_relative_tolerance
                 ),
@@ -821,9 +765,7 @@ def build_report(protocol: Mapping[str, Any]) -> dict[str, Any]:
                 fine_snapshots, fine_times
             ),
         },
-        "coarse_trajectory": _trajectory_summary(
-            protocol["coarse_certificate"]
-        ),
+        "coarse_trajectory": _trajectory_summary(protocol["coarse_certificate"]),
         "fine_trajectory": _trajectory_summary(protocol["fine_certificate"]),
         "refinement": _refinement_summary(protocol["comparison"]),
         "exact_linear_reference": protocol["exact_reference"],

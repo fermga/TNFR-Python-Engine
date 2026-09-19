@@ -8,7 +8,7 @@ repos:
     rev: 5.13.2
     hooks:
       - id: isort
-        args: ["--settings-path=pyproject.toml"]
+        args: ["--filter-files", "--settings-path=pyproject.toml"]
   - repo: https://github.com/PyCQA/pydocstyle
     rev: 6.3.0
     hooks:

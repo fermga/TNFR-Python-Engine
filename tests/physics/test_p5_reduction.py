@@ -22,12 +22,11 @@ from tnfr.physics.p5_reduction import (
 )
 from tnfr.physics.structural_morphism import certify_epi_coarse_graining
 
-
 F = Fraction
 
 
 def test_numpy_integral_states_use_unbounded_rational_components():
-    values = np.array([2**62, -2**62, 3, -2**62, 2**62], dtype=np.int64)
+    values = np.array([2**62, -(2**62), 3, -(2**62), 2**62], dtype=np.int64)
     observed = reduce_p5_state(values)
     expected = reduce_p5_state([int(value) for value in values])
     assert observed == expected
@@ -37,19 +36,13 @@ def test_numpy_integral_states_use_unbounded_rational_components():
 
 def _matmul(left, right):
     return tuple(
-        tuple(
-            sum((a * b for a, b in zip(row, column)), F(0))
-            for column in zip(*right)
-        )
+        tuple(sum((a * b for a, b in zip(row, column)), F(0)) for column in zip(*right))
         for row in left
     )
 
 
 def _matvec(matrix, vector):
-    return tuple(
-        sum((a * b for a, b in zip(row, vector)), F(0))
-        for row in matrix
-    )
+    return tuple(sum((a * b for a, b in zip(row, vector)), F(0)) for row in matrix)
 
 
 def _diagonal(values):
@@ -67,10 +60,7 @@ def _energy(values, metric):
 def _path_generator(capacity):
     neighbors = ((1,), (0, 2), (1, 3), (2, 4), (3,))
     return tuple(
-        tuple(
-            capacity * (F(i == j) - F(j in row, len(row)))
-            for j in range(5)
-        )
+        tuple(capacity * (F(i == j) - F(j in row, len(row))) for j in range(5))
         for i, row in enumerate(neighbors)
     )
 
@@ -84,8 +74,11 @@ def test_physics_facade_exposes_the_fixed_model_observer():
     import tnfr.physics as physics
 
     names = (
-        "P5ReducedState", "P5ReductionGeometry", "P5RemeshReduction",
-        "reduce_p5_state", "p5_reduction_geometry",
+        "P5ReducedState",
+        "P5ReductionGeometry",
+        "P5RemeshReduction",
+        "reduce_p5_state",
+        "p5_reduction_geometry",
         "observe_p5_remesh_reduction",
     )
     assert set(names) <= set(physics.__all__)
@@ -103,7 +96,9 @@ def test_exact_orbit_generator_is_derived_from_path_adjacency(capacity):
         F(degree) / capacity for degree in (1, 2, 2, 2, 1)
     )
     assert _matmul(geometry.orbit_projection, geometry.orbit_lift) == (
-        (1, 0, 0), (0, 1, 0), (0, 0, 1)
+        (1, 0, 0),
+        (0, 1, 0),
+        (0, 0, 1),
     )
     assert _matmul(geometry.orbit_projection, geometry.micro_generator) == (
         _matmul(geometry.orbit_generator, geometry.orbit_projection)
@@ -111,9 +106,7 @@ def test_exact_orbit_generator_is_derived_from_path_adjacency(capacity):
     assert _matmul(geometry.micro_generator, geometry.orbit_lift) == (
         _matmul(geometry.orbit_lift, geometry.orbit_generator)
     )
-    assert geometry.orbit_metric == tuple(
-        F(degree) / capacity for degree in (2, 4, 2)
-    )
+    assert geometry.orbit_metric == tuple(F(degree) / capacity for degree in (2, 4, 2))
 
 
 def test_orbit_quotient_matches_existing_graph_coarse_graining():
@@ -131,8 +124,10 @@ def test_orbit_quotient_matches_existing_graph_coarse_graining():
         ("orbit_metric", existing.macro_metric_weights),
     ):
         np.testing.assert_allclose(
-            np.asarray(getattr(exact, name), dtype=float), observed,
-            rtol=1e-15, atol=0,
+            np.asarray(getattr(exact, name), dtype=float),
+            observed,
+            rtol=1e-15,
+            atol=0,
         )
     np.testing.assert_array_equal(
         existing.macro_conductance, ((0, 2, 0), (2, 0, 2), (0, 2, 0))
@@ -144,15 +139,13 @@ def test_nested_visible_observer_loses_exactly_the_required_coordinate():
     geometry = p5_reduction_geometry()
     merge = ((1, 0, 0), (0, F(2, 3), F(1, 3)))
     transform = ((1, 0, 0), (0, F(2, 3), F(1, 3)), (0, -1, 1))
-    assert _matmul(merge, geometry.orbit_projection) == (
-        geometry.visible_projection
-    )
-    assert _matmul(transform, geometry.orbit_projection) == (
-        geometry.memory_projection
-    )
+    assert _matmul(merge, geometry.orbit_projection) == (geometry.visible_projection)
+    assert _matmul(transform, geometry.orbit_projection) == (geometry.memory_projection)
     assert geometry.memory_projection[:2] == geometry.visible_projection
     assert _matmul(geometry.memory_projection, geometry.memory_lift) == (
-        (1, 0, 0), (0, 1, 0), (0, 0, 1)
+        (1, 0, 0),
+        (0, 1, 0),
+        (0, 0, 1),
     )
     assert _matmul(geometry.memory_projection, geometry.micro_generator) == (
         _matmul(geometry.memory_generator, geometry.memory_projection)
@@ -211,8 +204,7 @@ def test_state_reconstruction_and_centered_energy_split(epi):
     a, b, u = state.memory_epi
     assert state.conserved_mean == (a + 3 * b) / 4
     assert _energy(state.orbit_epi, geometry.orbit_metric) == (
-        3 * (a - b) ** 2 / (4 * geometry.capacity)
-        + 2 * u ** 2 / (3 * geometry.capacity)
+        3 * (a - b) ** 2 / (4 * geometry.capacity) + 2 * u**2 / (3 * geometry.capacity)
     )
 
 
@@ -254,7 +246,10 @@ def test_uniform_remesh_commutes_and_splits_augmented_history_energy(
     alpha, local, global_delay, history
 ):
     result = observe_p5_remesh_reduction(
-        history, alpha=alpha, tau_local=local, tau_global=global_delay,
+        history,
+        alpha=alpha,
+        tau_local=local,
+        tau_global=global_delay,
         capacity=F(3, 2),
     )
     assert type(result) is P5RemeshReduction
@@ -274,7 +269,8 @@ def test_uniform_remesh_commutes_and_splits_augmented_history_energy(
     )
     assert result.fine.exact_next_field == expected
     for name in (
-        "exact_augmented_energy_before", "exact_augmented_energy_after",
+        "exact_augmented_energy_before",
+        "exact_augmented_energy_after",
         "exact_energy_drop",
     ):
         assert getattr(result.fine, name) == (
@@ -344,9 +340,18 @@ def test_results_detach_caller_state_and_remain_immutable():
 
 @pytest.mark.parametrize(
     "epi",
-    [(), (1, 2, 3, 4), (1, 2, 3, 4, 5, 6), "12345", {i: i for i in range(5)},
-     (True, 0, 0, 0, 0), (1j, 0, 0, 0, 0), ("1", 0, 0, 0, 0),
-     (float("nan"), 0, 0, 0, 0), (float("inf"), 0, 0, 0, 0)],
+    [
+        (),
+        (1, 2, 3, 4),
+        (1, 2, 3, 4, 5, 6),
+        "12345",
+        {i: i for i in range(5)},
+        (True, 0, 0, 0, 0),
+        (1j, 0, 0, 0, 0),
+        ("1", 0, 0, 0, 0),
+        (float("nan"), 0, 0, 0, 0),
+        (float("inf"), 0, 0, 0, 0),
+    ],
 )
 def test_invalid_initial_coordinates_are_rejected(epi):
     with pytest.raises((TypeError, ValueError)):
@@ -368,9 +373,7 @@ def test_remesh_requires_the_declared_positive_coefficient_class(alpha):
 @pytest.mark.parametrize("delay", [0, -1, F(3, 2), True, "1"])
 def test_remesh_requires_positive_integer_delays(delay):
     with pytest.raises(ValueError):
-        observe_p5_remesh_reduction(
-            ((0,) * 5,) * 3, alpha=F(1, 2), tau_local=delay
-        )
+        observe_p5_remesh_reduction(((0,) * 5,) * 3, alpha=F(1, 2), tau_local=delay)
 
 
 @pytest.mark.parametrize(

@@ -97,9 +97,7 @@ def _exact_payload(value):
 
 
 def _truncation_case(initial, window, times):
-    result = bound_p5_memory_truncation(
-        initial, memory_window=window, times=times
-    )
+    result = bound_p5_memory_truncation(initial, memory_window=window, times=times)
     payload = _exact_payload(result)
     for row, sample in zip(payload["samples"], result.samples, strict=True):
         low, high = sample.macro_error_enclosure
@@ -119,21 +117,26 @@ def _truncation_case(initial, window, times):
 def _reduction_case(history):
     result = observe_p5_remesh_reduction(history, alpha=Fraction(1, 2))
     names = (
-        "exact_next_field", "exact_next_energy", "exact_history_energies",
-        "exact_augmented_energy_before", "exact_augmented_energy_after",
+        "exact_next_field",
+        "exact_next_energy",
+        "exact_history_energies",
+        "exact_augmented_energy_before",
+        "exact_augmented_energy_after",
         "exact_energy_drop",
     )
-    return _exact_payload({
-        "history_newest_first": tuple(tuple(row) for row in history),
-        "geometry": result.geometry,
-        "alpha": result.certificate.alpha,
-        "delays": (result.certificate.tau_local, result.certificate.tau_global),
-        "fine": {name: getattr(result.fine, name) for name in names},
-        "orbit": {name: getattr(result.orbit, name) for name in names},
-        "discarded": {name: getattr(result.discarded, name) for name in names},
-        "commutation_residual": result.commutation_residual,
-        "energy_split_residual": result.augmented_energy_split_residual,
-    })
+    return _exact_payload(
+        {
+            "history_newest_first": tuple(tuple(row) for row in history),
+            "geometry": result.geometry,
+            "alpha": result.certificate.alpha,
+            "delays": (result.certificate.tau_local, result.certificate.tau_global),
+            "fine": {name: getattr(result.fine, name) for name in names},
+            "orbit": {name: getattr(result.orbit, name) for name in names},
+            "discarded": {name: getattr(result.discarded, name) for name in names},
+            "commutation_residual": result.commutation_residual,
+            "energy_split_residual": result.augmented_energy_split_residual,
+        }
+    )
 
 
 def _runtime_causal_echo(history):
@@ -142,31 +145,37 @@ def _runtime_causal_echo(history):
     for node, value in enumerate(history[0]):
         graph.nodes[node].update(EPI=float(value), nu_f=1.0, theta=0.0)
     graph.graph.update(
-        REMESH_ALPHA_HARD=True, REMESH_ALPHA=0.5,
-        REMESH_TAU_LOCAL=1, REMESH_TAU_GLOBAL=2,
-        EPI_MIN=0.0, EPI_MAX=8.0, CLIP_MODE="hard", REMESH_LOG_EVENTS=False,
-        _epi_hist=deque(
-            [dict(enumerate(row)) for row in reversed(history)], maxlen=8
-        ),
+        REMESH_ALPHA_HARD=True,
+        REMESH_ALPHA=0.5,
+        REMESH_TAU_LOCAL=1,
+        REMESH_TAU_GLOBAL=2,
+        EPI_MIN=0.0,
+        EPI_MAX=8.0,
+        CLIP_MODE="hard",
+        REMESH_LOG_EVENTS=False,
+        _epi_hist=deque([dict(enumerate(row)) for row in reversed(history)], maxlen=8),
     )
     result = apply_network_remesh(
         graph, include_stability_evidence=True, metric_weights=(1, 2, 2, 2, 1)
     )
     output = tuple(Fraction.from_float(p.bounded_epi) for p in result.proposals)
-    return _exact_payload({
-        "output_epi": output,
-        "output_orbits": reduce_p5_state(output).orbit_epi,
-        "observed_mode_amplitude": (output[0] - output[2]) / 2,
-        "clipping_intervened": result.plan.any_clipping_intervention,
-        "rounding_residual_max": result.evidence.max_raw_affine_rounding_residual,
-        "scope": "One direct map; supplied history is not executor provenance",
-    })
+    return _exact_payload(
+        {
+            "output_epi": output,
+            "output_orbits": reduce_p5_state(output).orbit_epi,
+            "observed_mode_amplitude": (output[0] - output[2]) / 2,
+            "clipping_intervened": result.plan.any_clipping_intervention,
+            "rounding_residual_max": result.evidence.max_raw_affine_rounding_residual,
+            "scope": "One direct map; supplied history is not executor provenance",
+        }
+    )
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--output", type=Path,
+        "--output",
+        type=Path,
         default=ROOT / "artifacts/research/derived_epi_memory.json",
     )
     args = parser.parse_args()
@@ -188,12 +197,15 @@ def main():
         solver="Offline shared matrix exponential; no runtime solver or timestep",
         result_status=ClaimStatus.MEASURED,
         telemetry=(
-            "kernel and hidden-state source", "memory convolution",
-            "projected and omission-control trajectories", "rate identity residual",
+            "kernel and hidden-state source",
+            "memory convolution",
+            "projected and omission-control trajectories",
+            "rate identity residual",
             "generator and stochastic semigroup residuals",
         ),
         controls=(
-            "P4 exact quotient", "P5 same macrostate with different hidden state",
+            "P4 exact quotient",
+            "P5 same macrostate with different hidden state",
             "P5 initially zero hidden source with subsequently induced memory",
         ),
         artifacts=(str(args.output),),
@@ -250,11 +262,13 @@ def main():
         solver="Exact rational projection and existing REMESH history theorem",
         telemetry=(
             "generator intertwining and minimal linear dimension",
-            "fine/orbit/discarded augmented energy split", "REMESH commutation",
+            "fine/orbit/discarded augmented energy split",
+            "REMESH commutation",
         ),
         controls=(
             "causal decaying-mode echo obstruction",
-            "invisible antisymmetric state", "arbitrary asymmetric history",
+            "invisible antisymmetric state",
+            "arbitrary asymmetric history",
         ),
     )
     reduction_manifest.validate_for_admission()
@@ -279,7 +293,8 @@ def main():
         },
         "causal_decay_obstruction": {
             "source_sampling": "nu=1, h=log(2), current/local/global times 0,-h,-2h",
-            "forward_amplitude": "1/2", "echo_amplitude": "11/4",
+            "forward_amplitude": "1/2",
+            "echo_amplitude": "11/4",
             "runtime_manifest": runtime_manifest.to_dict(),
             "runtime": _runtime_causal_echo(causal),
         },

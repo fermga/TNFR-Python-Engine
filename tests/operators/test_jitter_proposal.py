@@ -19,7 +19,6 @@ from tnfr.operators.jitter import (
     random_jitter,
 )
 
-
 _PROGRESS_KEY = "_rng_jitter_progress"
 _MASK64 = (1 << 64) - 1
 

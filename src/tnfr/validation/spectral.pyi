@@ -18,7 +18,6 @@ class NFRValidator(Validator[np.ndarray]):
     def spectral_operator(self) -> CoherenceOperator: ...
     @property
     def spectral_expectation_threshold(self) -> float: ...
-
     def __init__(
         self,
         hilbert_space: HilbertSpace,

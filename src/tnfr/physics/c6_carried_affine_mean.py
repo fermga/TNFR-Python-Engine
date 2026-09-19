@@ -10,20 +10,25 @@ from fractions import Fraction as F
 from math import gcd, lcm
 
 from ..dynamics._euler_kernel import (
-    NodalRemainderState, NodalRemainderStep, _validate_nodal_remainder_state,
+    NodalRemainderState,
+    NodalRemainderStep,
+    _validate_nodal_remainder_state,
     advance_nodal_remainder,
 )
 from ._cycle_algebra import Vector
 from .c6_carried_balance import _point
 from .c6_carried_closure import C6CarriedClosure
 from .c6_carried_mean_cylinder import (
-    C6CarriedMeanCylinderObstruction, derive_c6_carried_mean_cylinder_obstruction,
+    C6CarriedMeanCylinderObstruction,
+    derive_c6_carried_mean_cylinder_obstruction,
 )
 from .c6_pressure_lattice import _pressure_at_gradient_index
 
 __all__ = [
-    "C6CarriedAffineMeanObstruction", "derive_c6_carried_affine_mean_obstruction",
-    "C6CarriedAffineMeanBoundary", "C6CarriedAffineMeanEscape",
+    "C6CarriedAffineMeanObstruction",
+    "derive_c6_carried_affine_mean_obstruction",
+    "C6CarriedAffineMeanBoundary",
+    "C6CarriedAffineMeanEscape",
     "observe_c6_carried_affine_mean_escape",
 ]
 
@@ -34,7 +39,9 @@ def _mean(values):
 
 def _rational_gcd(values):
     denominator = lcm(*(value.denominator for value in values))
-    numerator = gcd(*(abs(value.numerator) * (denominator // value.denominator) for value in values))
+    numerator = gcd(
+        *(abs(value.numerator) * (denominator // value.denominator) for value in values)
+    )
     return F(numerator, denominator)
 
 
@@ -84,8 +91,11 @@ class C6CarriedAffineMeanObstruction:
 
 
 def derive_c6_carried_affine_mean_obstruction(
-    closure: C6CarriedClosure, *, positive_state: NodalRemainderState,
-    negative_state: NodalRemainderState, max_gradient_values: int = 4096,
+    closure: C6CarriedClosure,
+    *,
+    positive_state: NodalRemainderState,
+    negative_state: NodalRemainderState,
+    max_gradient_values: int = 4096,
 ) -> C6CarriedAffineMeanObstruction:
     """Derive an affine-coset lift from the canonical represented pressure law.
 
@@ -110,52 +120,107 @@ def derive_c6_carried_affine_mean_obstruction(
     if type(max_gradient_values) is not int or max_gradient_values <= 0:
         raise ValueError("max_gradient_values must be a positive exact integer")
     base = derive_c6_carried_mean_cylinder_obstruction(
-        closure, positive_state=positive_state, negative_state=negative_state,
+        closure,
+        positive_state=positive_state,
+        negative_state=negative_state,
     )
     bound = base.closure
-    count = sum(upper - lower + 1 for lower, upper in zip(
-        bound.gradient_index_lower, bound.gradient_index_upper, strict=True,
-    ))
+    count = sum(
+        upper - lower + 1
+        for lower, upper in zip(
+            bound.gradient_index_lower,
+            bound.gradient_index_upper,
+            strict=True,
+        )
+    )
     if count > max_gradient_values:
-        raise ValueError("the necessary gradient enumeration exceeds max_gradient_values")
+        raise ValueError(
+            "the necessary gradient enumeration exceeds max_gradient_values"
+        )
     h = F(bound.base_tube.contraction.timestep)
     reference = bound.base_tube.contraction.profile.lattice
-    spacings = tuple(_rational_gcd(tuple(
-        h * F(_pressure_at_gradient_index(reference, node, index))
-        for index in range(lower, upper + 1)
-    )) for node, (lower, upper) in enumerate(zip(
-        bound.gradient_index_lower, bound.gradient_index_upper, strict=True,
-    )))
+    spacings = tuple(
+        _rational_gcd(
+            tuple(
+                h * F(_pressure_at_gradient_index(reference, node, index))
+                for index in range(lower, upper + 1)
+            )
+        )
+        for node, (lower, upper) in enumerate(
+            zip(
+                bound.gradient_index_lower,
+                bound.gradient_index_upper,
+                strict=True,
+            )
+        )
+    )
     if any(value <= 0 for value in spacings):
-        raise ValueError("the affine lift requires six positive coordinate increment spacings")
+        raise ValueError(
+            "the affine lift requires six positive coordinate increment spacings"
+        )
     common = _rational_gcd(spacings)
     if common not in spacings:
-        raise ValueError("the affine lift requires a coordinate attaining the global increment gcd")
+        raise ValueError(
+            "the affine lift requires a coordinate attaining the global increment gcd"
+        )
     if any((value / common).denominator != 1 for value in spacings):
         raise RuntimeError("the derived coordinate spacings lost their common divisor")
     if (common / base.grid_quantum).denominator != 1:
-        raise RuntimeError("the derived nodal increment gcd left the shared encoding grid")
+        raise RuntimeError(
+            "the derived nodal increment gcd left the shared encoding grid"
+        )
     pivot = spacings.index(common)
     exact_origin = _validate_nodal_remainder_state(bound.base_tube.state)
-    residues = tuple(value % spacing for value, spacing in zip(exact_origin, spacings, strict=True))
+    residues = tuple(
+        value % spacing for value, spacing in zip(exact_origin, spacings, strict=True)
+    )
     points = (base.positive_point, base.negative_point)
-    if any(any(value != point.state.remainder[0] for value in point.state.remainder) for point in points):
-        raise ValueError("the affine lift requires uniform carry in each static template")
+    if any(
+        any(value != point.state.remainder[0] for value in point.state.remainder)
+        for point in points
+    ):
+        raise ValueError(
+            "the affine lift requires uniform carry in each static template"
+        )
     quantum = common / 6
-    if not base.positive_mean_increment > quantum or not base.negative_mean_increment < -quantum:
-        raise ValueError("the canonical mean increments must be greater than q and less than -q")
-    other_spacings = tuple(value for node, value in enumerate(spacings) if node != pivot)
+    if (
+        not base.positive_mean_increment > quantum
+        or not base.negative_mean_increment < -quantum
+    ):
+        raise ValueError(
+            "the canonical mean increments must be greater than q and less than -q"
+        )
+    other_spacings = tuple(
+        value for node, value in enumerate(spacings) if node != pivot
+    )
     lower_slack, upper_slack = max(other_spacings), sum(other_spacings, F(0))
     error = upper_slack**2 + sum((value**2 for value in other_spacings), F(0))
     energies = tuple(2 * point.energy + 2 * error for point in points)
     if any(value > bound.energy_bound for value in energies):
-        raise ValueError("the lifted template energy bounds exceed the rebuilt spatial envelope")
+        raise ValueError(
+            "the lifted template energy bounds exceed the rebuilt spatial envelope"
+        )
     lower, upper = base.mean_lower + lower_slack, base.mean_upper - upper_slack
     if not lower <= bound.base_tube.initial_mean <= upper:
-        raise ValueError("the shrunken rounding-cell window must contain the origin mean")
+        raise ValueError(
+            "the shrunken rounding-cell window must contain the origin mean"
+        )
     return C6CarriedAffineMeanObstruction(
-        base, max_gradient_values, count, spacings, residues, common, pivot, quantum,
-        lower_slack, upper_slack, error, energies[0], energies[1], lower, upper,
+        base,
+        max_gradient_values,
+        count,
+        spacings,
+        residues,
+        common,
+        pivot,
+        quantum,
+        lower_slack,
+        upper_slack,
+        error,
+        energies[0],
+        energies[1],
+        lower,
+        upper,
     )
 
 
@@ -224,64 +289,132 @@ def _boundary(bound, point, *, direction, lower, upper):
             # Residues describe reconstructed coordinates, so subtract the
             # represented visible coordinate before flooring the carry.
             offset = bound.coordinate_residues[node] - F(source.epi[node])
-            carry[node] = offset + spacing * ((common_carry - offset) / spacing).__floor__()
+            carry[node] = (
+                offset + spacing * ((common_carry - offset) / spacing).__floor__()
+            )
     carry[bound.pivot] = 6 * common_carry - sum(carry, F(0))
-    state = NodalRemainderState(source.epi, tuple(carry), source.epi_lower, source.epi_upper)
+    state = NodalRemainderState(
+        source.epi, tuple(carry), source.epi_lower, source.epi_upper
+    )
     lifted = _point(closure, state)
     exact = _validate_nodal_remainder_state(lifted.state)
     origin = _validate_nodal_remainder_state(closure.base_tube.state)
-    if any(((value - initial) / spacing).denominator != 1 for value, initial, spacing in zip(
-        exact, origin, bound.coordinate_spacings, strict=True,
-    )):
+    if any(
+        ((value - initial) / spacing).denominator != 1
+        for value, initial, spacing in zip(
+            exact,
+            origin,
+            bound.coordinate_spacings,
+            strict=True,
+        )
+    ):
         raise RuntimeError("the lifted state left an origin coordinate coset")
     before = _mean(exact)
-    if (lifted.observation.pressure != point.observation.pressure
-            or before != origin_mean + shift or not lower <= before <= upper):
-        raise RuntimeError("the affine lift lost its pressure, exact target mean or interval membership")
+    if (
+        lifted.observation.pressure != point.observation.pressure
+        or before != origin_mean + shift
+        or not lower <= before <= upper
+    ):
+        raise RuntimeError(
+            "the affine lift lost its pressure, exact target mean or interval membership"
+        )
     errors = tuple(value - common_carry for value in carry)
-    energy_bound = bound.positive_energy_bound if direction == "upper" else bound.negative_energy_bound
-    if (sum(errors, F(0)) != 0
-            or sum((value**2 for value in errors), F(0)) > bound.lift_error_squared_bound
-            or lifted.energy > energy_bound):
+    energy_bound = (
+        bound.positive_energy_bound
+        if direction == "upper"
+        else bound.negative_energy_bound
+    )
+    if (
+        sum(errors, F(0)) != 0
+        or sum((value**2 for value in errors), F(0)) > bound.lift_error_squared_bound
+        or lifted.energy > energy_bound
+    ):
         raise RuntimeError("the affine lift failed its centered-error or energy bound")
     gap = upper - before if direction == "upper" else before - lower
     if not 0 <= gap < quantum:
-        raise RuntimeError("the chosen affine mean is not within one quantum of its boundary")
-    if any(not first <= value <= last for value, first, last in zip(
-        lifted.observation.gradient_indices, closure.gradient_index_lower,
-        closure.gradient_index_upper, strict=True,
-    )):
-        raise RuntimeError("the lifted pressure left the enumerated necessary gradient intervals")
+        raise RuntimeError(
+            "the chosen affine mean is not within one quantum of its boundary"
+        )
+    if any(
+        not first <= value <= last
+        for value, first, last in zip(
+            lifted.observation.gradient_indices,
+            closure.gradient_index_lower,
+            closure.gradient_index_upper,
+            strict=True,
+        )
+    ):
+        raise RuntimeError(
+            "the lifted pressure left the enumerated necessary gradient intervals"
+        )
     pressure = tuple(map(F, lifted.observation.pressure))
     h = F(closure.base_tube.contraction.timestep)
     added = tuple(h * value for value in pressure)
-    if any((value / spacing).denominator != 1 for value, spacing in zip(
-        added, bound.coordinate_spacings, strict=True,
-    )):
-        raise RuntimeError("the canonical nodal increment left its derived coordinate spacing")
-    candidate = tuple(value + increment for value, increment in zip(exact, added, strict=True))
+    if any(
+        (value / spacing).denominator != 1
+        for value, spacing in zip(
+            added,
+            bound.coordinate_spacings,
+            strict=True,
+        )
+    ):
+        raise RuntimeError(
+            "the canonical nodal increment left its derived coordinate spacing"
+        )
+    candidate = tuple(
+        value + increment for value, increment in zip(exact, added, strict=True)
+    )
     after = _mean(candidate)
-    if (direction == "upper" and not after > upper) or (direction == "lower" and not after < lower):
-        raise RuntimeError("the canonical mean increment failed its strict outward crossing")
-    failure = any(not F(state.epi_lower) <= value <= F(state.epi_upper) for value in candidate)
+    if (direction == "upper" and not after > upper) or (
+        direction == "lower" and not after < lower
+    ):
+        raise RuntimeError(
+            "the canonical mean increment failed its strict outward crossing"
+        )
+    failure = any(
+        not F(state.epi_lower) <= value <= F(state.epi_upper) for value in candidate
+    )
     step = None
     if not failure:
         step = advance_nodal_remainder(
-            lifted.state, timestep=closure.base_tube.contraction.timestep,
-            capacity=(1.,) * 6, pressure=lifted.observation.pressure,
+            lifted.state,
+            timestep=closure.base_tube.contraction.timestep,
+            capacity=(1.0,) * 6,
+            pressure=lifted.observation.pressure,
         )
-        if (_validate_nodal_remainder_state(step.after) != candidate or step.exact_increment != added
-                or any(step.nodal_balance_residual)):
-            raise RuntimeError("the outward candidate differs from its canonical carried replay")
-    adjustment = tuple(value - initial for value, initial in zip(carry, source.remainder, strict=True))
+        if (
+            _validate_nodal_remainder_state(step.after) != candidate
+            or step.exact_increment != added
+            or any(step.nodal_balance_residual)
+        ):
+            raise RuntimeError(
+                "the outward candidate differs from its canonical carried replay"
+            )
+    adjustment = tuple(
+        value - initial for value, initial in zip(carry, source.remainder, strict=True)
+    )
     return C6CarriedAffineMeanBoundary(
-        direction, index, shift, adjustment, lifted.state, lifted.energy,
-        _mean(pressure), before, after, added, candidate, failure, step,
+        direction,
+        index,
+        shift,
+        adjustment,
+        lifted.state,
+        lifted.energy,
+        _mean(pressure),
+        before,
+        after,
+        added,
+        candidate,
+        failure,
+        step,
     )
 
 
 def observe_c6_carried_affine_mean_escape(
-    obstruction: C6CarriedAffineMeanObstruction, *, mean_lower: F, mean_upper: F,
+    obstruction: C6CarriedAffineMeanObstruction,
+    *,
+    mean_lower: F,
+    mean_upper: F,
 ) -> C6CarriedAffineMeanEscape:
     """Rebuild the certificate and lift two outward points at exact mean boundaries.
 
@@ -300,14 +433,34 @@ def observe_c6_carried_affine_mean_escape(
     if type(base) is not C6CarriedMeanCylinderObstruction:
         raise TypeError("base_obstruction must be a C6CarriedMeanCylinderObstruction")
     bound = derive_c6_carried_affine_mean_obstruction(
-        base.closure, positive_state=base.positive_point.state, negative_state=base.negative_point.state,
+        base.closure,
+        positive_state=base.positive_point.state,
+        negative_state=base.negative_point.state,
         max_gradient_values=obstruction.max_gradient_values,
     )
     origin_mean = bound.base_obstruction.closure.base_tube.initial_mean
-    if not bound.mean_lower <= mean_lower <= origin_mean <= mean_upper <= bound.mean_upper:
-        raise ValueError("the mean interval must contain the origin mean and lie inside the rebuilt window")
-    positive = _boundary(bound, bound.base_obstruction.positive_point,
-                         direction="upper", lower=mean_lower, upper=mean_upper)
-    negative = _boundary(bound, bound.base_obstruction.negative_point,
-                         direction="lower", lower=mean_lower, upper=mean_upper)
+    if (
+        not bound.mean_lower
+        <= mean_lower
+        <= origin_mean
+        <= mean_upper
+        <= bound.mean_upper
+    ):
+        raise ValueError(
+            "the mean interval must contain the origin mean and lie inside the rebuilt window"
+        )
+    positive = _boundary(
+        bound,
+        bound.base_obstruction.positive_point,
+        direction="upper",
+        lower=mean_lower,
+        upper=mean_upper,
+    )
+    negative = _boundary(
+        bound,
+        bound.base_obstruction.negative_point,
+        direction="lower",
+        lower=mean_lower,
+        upper=mean_upper,
+    )
     return C6CarriedAffineMeanEscape(bound, mean_lower, mean_upper, positive, negative)

@@ -86,9 +86,7 @@ def _canonical_graph(n: int = 60, seed: int = 11) -> nx.Graph:
         ),
         (
             "n_time_samples",
-            lambda graph: verify_overdamped_projection(
-                graph, n_time_samples=True
-            ),
+            lambda graph: verify_overdamped_projection(graph, n_time_samples=True),
         ),
         (
             "projection tolerance",
@@ -818,9 +816,7 @@ class TestNodalPulse:
     def _pulsing_ring(n, vf, phases):
         G = nx.cycle_graph(n)
         for i, k in enumerate(G.nodes()):
-            G.nodes[k].update(
-                nu_f=float(vf[i]), theta=float(phases[i]), EPI=0.0
-            )
+            G.nodes[k].update(nu_f=float(vf[i]), theta=float(phases[i]), EPI=0.0)
         return G
 
     def test_phase_locked_pulses_have_unit_coherence(self) -> None:
@@ -872,15 +868,13 @@ class TestNodalPulse:
         graph = self._pulsing_ring(6, [1.0] * 6, [0.0] * 6)
         history = ensure_history(graph)
         before = {
-            key: list(history.get(key, ()))
-            for key in ("W_sparse", "W_i", "W_stats")
+            key: list(history.get(key, ())) for key in ("W_sparse", "W_i", "W_stats")
         }
 
         compute_nodal_pulse(graph)
 
         after = {
-            key: list(history.get(key, ()))
-            for key in ("W_sparse", "W_i", "W_stats")
+            key: list(history.get(key, ())) for key in ("W_sparse", "W_i", "W_stats")
         }
         assert after == before
 

@@ -32,17 +32,17 @@ from .nodal_prediction import (
     score_nodal_forecast,
     write_nodal_forecast,
 )
-from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr
 from .p2_transport import (
-    P2MeasurementBounds,
     P2IntervalCalibration,
-    P2IntervalForecast,
     P2IntervalComparison,
+    P2IntervalForecast,
+    P2MeasurementBounds,
     calibrate_p2_transport,
     forecast_p2_transport,
     score_p2_transport,
     write_p2_transport_forecast,
 )
+from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr
 from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon
 from .signal_confrontation import (
     ModalRootDiagnostic,
@@ -71,20 +71,17 @@ from .window import validate_window
 
 SubjectT = TypeVar("SubjectT")
 
-
 class ValidationOutcome(Generic[SubjectT]):
     subject: SubjectT
     passed: bool
     summary: Mapping[str, Any]
     artifacts: Mapping[str, Any] | None
 
-
 class Validator(Protocol[SubjectT]):
     def validate(
         self, subject: SubjectT, /, **kwargs: Any
     ) -> ValidationOutcome[SubjectT]: ...
     def report(self, outcome: ValidationOutcome[SubjectT]) -> str: ...
-
 
 __all__ = (
     "validate_sequence",

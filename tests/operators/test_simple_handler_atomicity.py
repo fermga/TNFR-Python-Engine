@@ -17,11 +17,7 @@ from tnfr.constants.aliases import (
     ALIAS_VF,
 )
 from tnfr.errors import TNFRValueError
-from tnfr.operators import (
-    GLYPH_OPERATIONS,
-    apply_glyph,
-    get_glyph_factors,
-)
+from tnfr.operators import GLYPH_OPERATIONS, apply_glyph, get_glyph_factors
 from tnfr.types import Glyph, real_scalar_epi
 
 
@@ -147,9 +143,7 @@ def test_runtime_branches_do_not_read_inactive_factors():
     apply_glyph(nav, 0, "NAV")
     assert nav.nodes[0][ALIAS_DNFR[0]] == pytest.approx(2.1)
 
-    zhir = _graph(
-        factors={"ZHIR_theta_shift": 0.2, "ZHIR_theta_shift_factor": 0.0}
-    )
+    zhir = _graph(factors={"ZHIR_theta_shift": 0.2, "ZHIR_theta_shift_factor": 0.0})
     apply_glyph(zhir, 0, "ZHIR")
     assert zhir.nodes[0][ALIAS_THETA[0]] == pytest.approx(0.3)
 
@@ -167,9 +161,7 @@ def test_fixed_zhir_shift_is_finite_and_normalized_before_telemetry():
 
 
 def test_nav_noop_rejects_before_state_history_or_jitter_progress():
-    graph = _graph(
-        factors={"NAV_eta": 0.0, "NAV_jitter": 0.0}, NAV_RANDOM=False
-    )
+    graph = _graph(factors={"NAV_eta": 0.0, "NAV_jitter": 0.0}, NAV_RANDOM=False)
     graph.nodes[0][ALIAS_DNFR[0]] = 0.0
     node_before = deepcopy(graph.nodes[0])
 

@@ -2,19 +2,18 @@
 
 from __future__ import annotations
 
-from fractions import Fraction
 import importlib.util
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from fractions import Fraction
+from pathlib import Path
 
 import pytest
 
 import tnfr.physics as physics
 import tnfr.physics.remesh_schedule_policy_stability as policy_module
-
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE_PATH = (
@@ -49,9 +48,7 @@ def test_module_stub_and_facade_expose_policy_api() -> None:
         "certify_uniform_remesh_schedule_policy_stability",
     }
     assert set(policy_module.__all__) == expected
-    stub = Path(policy_module.__file__).with_suffix(".pyi").read_text(
-        encoding="utf-8"
-    )
+    stub = Path(policy_module.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
     assert "class UniformRemeshSchedulePolicyStabilityCertificate" in stub
     assert "def certify_uniform_remesh_schedule_policy_stability" in stub
     assert expected <= set(physics.__all__)
@@ -127,8 +124,7 @@ def test_main_emits_finite_json(
     example.main()
     decoded = json.loads(capsys.readouterr().out)
     assert decoded["claim"] == (
-        "conditional uniform exact REMESH/schedule spatial-disagreement "
-        "stability"
+        "conditional uniform exact REMESH/schedule spatial-disagreement " "stability"
     )
     assert decoded["mixed_delay_strict"]["cycle_gain_upper_bound"] == "1/16"
     assert decoded["q_one_boundary"]["uniform_margin"] == "0/1"

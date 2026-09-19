@@ -12,7 +12,6 @@ from .remesh import DelayedRemeshResult
 ExactVector: TypeAlias = tuple[Fraction, ...]
 ExactHistory: TypeAlias = tuple[ExactVector, ...]
 
-
 @dataclass(frozen=True, slots=True)
 class EventRemeshCycleBoundaryObservation:
     boundary_index: int
@@ -49,15 +48,12 @@ class EventRemeshCycleBoundaryObservation:
     @property
     def failed_conditions(self) -> tuple[str, ...]: ...
 
-
 @dataclass(frozen=True, slots=True)
 class ObservedEventRemeshCycleSequence:
     cycle_indices: tuple[int, ...]
     cycles: tuple[EventRemeshCycleResult, ...]
     boundaries: tuple[EventRemeshCycleBoundaryObservation, ...]
-    schedule_compositions: tuple[
-        ObservedRepresentedEPIScheduleComposition | None, ...
-    ]
+    schedule_compositions: tuple[ObservedRepresentedEPIScheduleComposition | None, ...]
     remesh_results: tuple[DelayedRemeshResult, ...]
     cycle_exact_metric_weights: tuple[ExactVector, ...]
     cycle_exact_normalized_metric_rays: tuple[ExactVector, ...]
@@ -98,7 +94,6 @@ class ObservedEventRemeshCycleSequence:
     def grammar_history_continuity_certified(self) -> bool: ...
     @property
     def shared_graph_execution_provenance_certified(self) -> bool: ...
-
 
 def compose_event_remesh_cycle_observations(
     cycles: Iterable[EventRemeshCycleResult],

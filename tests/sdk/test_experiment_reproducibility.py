@@ -22,25 +22,32 @@ from tnfr.utils.cache import GRAPH_RUNTIME_CACHE_KEYS
 def _template(name):
     def run(**kwargs):
         from tnfr.sdk.templates import TNFRTemplates
+
         return getattr(TNFRTemplates, name)(**kwargs)
+
     return run
 
 
 def _triad(graph):
-    return [tuple(get_attr(data, alias) for alias in (ALIAS_EPI, ALIAS_VF, ALIAS_THETA))
-            for _, data in graph.nodes(data=True)]
+    return [
+        tuple(get_attr(data, alias) for alias in (ALIAS_EPI, ALIAS_VF, ALIAS_THETA))
+        for _, data in graph.nodes(data=True)
+    ]
 
 
-@pytest.mark.parametrize("factory,kwargs", [
-    (Builders.small_world_study, {"nodes": 6, "steps": 0}),
-    (Builders.synchronization_study, {"nodes": 6, "steps": 0}),
-    (Builders.creativity_emergence, {"nodes": 6, "steps": 0}),
-    (_template("social_network_simulation"), {"people": 6, "simulation_steps": 0}),
-    (_template("neural_network_model"), {"neurons": 6, "activation_cycles": 0}),
-    (_template("ecosystem_dynamics"), {"species": 6, "evolution_steps": 0}),
-    (_template("creative_process_model"), {"ideas": 6, "development_cycles": 0}),
-    (_template("organizational_network"), {"agents": 6, "coordination_steps": 0}),
-])
+@pytest.mark.parametrize(
+    "factory,kwargs",
+    [
+        (Builders.small_world_study, {"nodes": 6, "steps": 0}),
+        (Builders.synchronization_study, {"nodes": 6, "steps": 0}),
+        (Builders.creativity_emergence, {"nodes": 6, "steps": 0}),
+        (_template("social_network_simulation"), {"people": 6, "simulation_steps": 0}),
+        (_template("neural_network_model"), {"neurons": 6, "activation_cycles": 0}),
+        (_template("ecosystem_dynamics"), {"species": 6, "evolution_steps": 0}),
+        (_template("creative_process_model"), {"ideas": 6, "development_cycles": 0}),
+        (_template("organizational_network"), {"agents": 6, "coordination_steps": 0}),
+    ],
+)
 def test_builder_seed_controls_actual_triad_and_topology(factory, kwargs):
     first = factory(**kwargs, random_seed=0)
     second = factory(**kwargs, random_seed=0)
@@ -72,8 +79,7 @@ def test_creativity_builder_reports_fresh_network_mutation_abstention(monkeypatc
     assert result.mutation_workflows[0]["status"] == "mutation_abstained"
     assert result.mutation_workflows[0]["reason"] == "missing_history"
     assert all(
-        "ZHIR" not in data["glyph_history"]
-        for _, data in result.graph.nodes(data=True)
+        "ZHIR" not in data["glyph_history"] for _, data in result.graph.nodes(data=True)
     )
 
 
@@ -85,7 +91,10 @@ def test_topology_comparison_starts_with_identical_nodes():
 
 def test_coupling_comparison_starts_with_identical_nodes():
     results = Builders.phase_transition_study(
-        nodes=6, steps_per_level=0, coupling_levels=3, random_seed=5,
+        nodes=6,
+        steps_per_level=0,
+        coupling_levels=3,
+        random_seed=5,
     )
     triads = [_triad(result.graph) for result in results.values()]
     assert triads[0] == triads[1] == triads[2]
@@ -275,11 +284,16 @@ def test_clone_preserves_opaque_node_identity():
     assert network.graph.nodes[node]["values"] == [1]
 
 
-@pytest.mark.parametrize("kwargs", [
-    {"count": -1}, {"count": 1.5}, {"count": True},
-    {"count": 2, "epi_range": (float("nan"), 1)},
-    {"count": 2, "vf_range": (2, 1)},
-])
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"count": -1},
+        {"count": 1.5},
+        {"count": True},
+        {"count": 2, "epi_range": (float("nan"), 1)},
+        {"count": 2, "vf_range": (2, 1)},
+    ],
+)
 def test_invalid_node_generation_leaves_existing_state_and_rng_unchanged(kwargs):
     network = TNFRNetwork(config=NetworkConfig(random_seed=7)).add_nodes(2)
     before = deepcopy(dict(network.graph.nodes(data=True)))

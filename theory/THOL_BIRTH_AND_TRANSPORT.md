@@ -1123,6 +1123,88 @@ cases after the shared refactor, and 81 shared coupling/event/target cases:
 **130 distinct focused tests pass**. Validation metadata is recorded in
 `artifacts/research/thol_lineage_coordination_validation_2026_09_18.json`.
 
+### 13.1 Full-triad identity and boundary exchange on the retained child ring
+
+The [read-only cohort audit](../benchmarks/thol_child_ring_identity_audit.py)
+reuses Section 13's child-only UM branch and its authenticated no-event
+control. Their complete pre-event state at `t=1` agrees. It runs no producer,
+operator, pressure-generation kernel, phase evolution or new trajectory.
+The historical manifests retain their original source identities.
+
+Exact record admission is centralized in
+[recorded_support.py](../src/tnfr/research/recorded_support.py). It rebuilds
+support, forcing and held references through the existing physics owners and
+checks every archived field. The earlier family/regional readers use
+compatibility wrappers, so historical and new audits share those checks.
+Raw represented triad values are distinct from exact rational coefficient
+records: booleans, nonfinite values and textual raw phase coercion are refused.
+A separate detached graph view supplies the current winding and tetrad
+read-outs. The historical record did not contain a complete tetrad: these
+are explicitly offline observations, including correlation-fit/fallback
+provenance and neighbor order reconstructed from saved edges.
+
+| Observation | Immediately after child UM, `t=1` | Retained endpoint, `t=1.5` |
+| --- | --- | --- |
+| Numerical child-cycle winding | `+1` | `+1` |
+| Child capacity | `0.9539788735772974` | Same represented value |
+| Child H-weighted mean EPI in the post-event metric | Approximately `0.43906174` | Approximately `0.46065218` |
+| Child centered variance in the fixed post-event full-graph metric | Approximately `0.00065625348` | Approximately `0.00410622688` |
+| Projection on the actual post-event centered form, in the common pre-event metric | `1` | Approximately `2.50141449` |
+
+The phase pattern is inherited and its cycle is newly connected. Before UM,
+child-cycle winding is undefined, not zero. UM immediately leaves EPI
+unchanged, raises child capacity from `0.95`, and adds eight internal child
+edges. The subsequent form is nearly proportional to the post-event child
+shape, but not exactly: the squared orthogonal residual divided by the
+squared form norm in that common metric is approximately `4.19086e-30`. Exact represented arithmetic
+retains that positive residual. This projection is a descriptive amplitude
+measurement, not a selected dynamical gain, acceptance threshold or proof of
+an NFR identity. Actual form drift from the first attached preparation remains
+separate from error relative to the original solved profile `z0`.
+
+The existing full-graph regional owner explains the increase. At the two
+Euler segment starts, its variance-rate terms are approximately:
+
+| Start | Internal dissipation, subtracted | Parent-boundary contribution | Explicit non-EPI source | Stored nodal variance rate |
+| --- | --- | --- | --- | --- |
+| `1` | `0.00024351903` | `+0.00436140411` | `+0.00006485451` | `+0.00418273959` |
+| `1.25` | `0.00078611839` | `+0.00731692546` | `+0.00011652462` | `+0.00664733169` |
+
+Represented-pressure discrepancies remain separate, of order `1e-19` in
+these rates. Both exact finite regional mass/variance balances close with
+zero residual. The two-step child variance increase is approximately
+`0.00344997340`, while full-graph Dirichlet energy decreases approximately
+`1.60652170`. Thus global relaxation and increasing regional contrast coexist:
+the parent boundary supplies variation while internal child edges dissipate
+it. Finite Euler terms are held-step accounting, not exact continuous-time
+integrated fluxes. The fixed-metric assumption applies after the event;
+the UM metric/support reset is retained separately.
+
+The no-event comparison also nearly preserves its normalized centered shape
+direction, while its amplitude changes. Its final
+original-model target error is about `4.89243788`, compared with `5.00309767`
+for child UM. Neither number measures recovery of the born pattern. The audit
+compares actual form using one common frozen regional metric, rather than
+comparing the unequal post-event metrics as if they were the same score.
+Against the actual initial attached form, the ring's centered-error measure
+is smaller instead: which branch is closer depends on the reference and
+quantity being compared. Neither comparison establishes restoration.
+The distinctive topological evidence is created cyclic support carrying
+inherited winding. A matched damage/recovery
+trial is absent for this ring-connected branch; later regional-restoration
+records have different support/history and cannot fill that gap.
+
+Evidence: `artifacts/research/thol_child_ring_identity_2026_09_19.json`.
+Integration validation: **341 passing tests in 11 modules, including 98 new
+controls**; two optional pinned-history tests were explicitly excluded.
+The shared-reader, exact shape, record-mismatch and regional-continuity
+controls are portable and do not require ignored research artifacts.
+Checkpoint: `artifacts/research/cohort_identity_integration_validation_2026_09_19.json`.
+The [single G3 gate](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns any prospective finite-identity protocol. This result supplies no new
+force or autonomous phase/event law, and establishes neither future
+maintenance nor physical-particle correspondence.
+
 ## 14. State sufficiency of actual parent-child families
 
 The completed analytical comparison uses the four retained held references: the

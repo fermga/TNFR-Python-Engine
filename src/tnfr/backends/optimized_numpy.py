@@ -56,7 +56,10 @@ class OptimizedNumPyBackend(NumPyBackend):
     ) -> None:
         """Compute pressure through the canonical pipeline for every graph size."""
         super().compute_delta_nfr(
-            graph, cache_size=cache_size, n_jobs=n_jobs, profile=profile,
+            graph,
+            cache_size=cache_size,
+            n_jobs=n_jobs,
+            profile=profile,
         )
         if profile is not None:
             profile["dnfr_optimization"] = "shared_canonical"
@@ -72,7 +75,10 @@ class OptimizedNumPyBackend(NumPyBackend):
     ) -> dict[Any, float] | Any:
         """Compute Si through the shared normalization and phase pipeline."""
         result = super().compute_si(
-            graph, inplace=inplace, n_jobs=n_jobs, chunk_size=chunk_size,
+            graph,
+            inplace=inplace,
+            n_jobs=n_jobs,
+            chunk_size=chunk_size,
             profile=profile,
         )
         if profile is not None:
@@ -89,7 +95,10 @@ class OptimizedNumPyBackend(NumPyBackend):
     ) -> None:
         """Compatibility entry point using the shared kernel dispatcher."""
         self.compute_delta_nfr(
-            graph, cache_size=cache_size, n_jobs=n_jobs, profile=profile,
+            graph,
+            cache_size=cache_size,
+            n_jobs=n_jobs,
+            profile=profile,
         )
 
     def clear_cache(self) -> None:

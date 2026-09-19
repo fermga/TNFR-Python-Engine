@@ -113,9 +113,7 @@ def _mean_absolute_channel(
     try:
         return finite_mean_absolute(raw, name=name)
     except (TypeError, ValueError) as exc:
-        raise TNFRValueError(
-            f"{name} must contain only finite real values"
-        ) from exc
+        raise TNFRValueError(f"{name} must contain only finite real values") from exc
 
 
 @dataclass
@@ -311,9 +309,7 @@ class CompactAttributeStore:
         # zero is its equivalent canonical circular representative.
         if float(stored) >= math.tau:
             stored = np.float32(0.0)
-        previous = np.float32(
-            self._theta_sparse.get(node, self.default_theta)
-        )
+        previous = np.float32(self._theta_sparse.get(node, self.default_theta))
         self._assign(
             self._theta_sparse,
             node,
@@ -589,13 +585,9 @@ class SparseTNFRGraph:
             if not bool(np.all(np.isfinite(adj_csr.data))) or bool(
                 np.any(adj_csr.data <= 0.0)
             ):
-                raise TNFRValueError(
-                    "adjacency weights must be positive finite values"
-                )
+                raise TNFRValueError("adjacency weights must be positive finite values")
 
-            all_phases = self.node_attributes.get_thetas(
-                range(self.node_count)
-            )
+            all_phases = self.node_attributes.get_thetas(range(self.node_count))
             for index, node_id in zip(
                 uncached_indices,
                 uncached_ids,
@@ -611,10 +603,9 @@ class SparseTNFRGraph:
                     phase_differences = np.sin(
                         float(all_phases[node_id]) - neighbor_phases
                     )
-                    weighted_differences = (
-                        neighbor_weights.astype(np.float64)
-                        * phase_differences.astype(np.float64)
-                    )
+                    weighted_differences = neighbor_weights.astype(
+                        np.float64
+                    ) * phase_differences.astype(np.float64)
                     pressure = float(
                         np.sum(weighted_differences, dtype=np.float64)
                         / len(neighbor_indices)
@@ -654,9 +645,7 @@ class SparseTNFRGraph:
             measured last-step nodal rate from the static zero-rate convention
             used when ``steps=0``.
         """
-        if isinstance(steps, (bool, np.bool_)) or not isinstance(
-            steps, Integral
-        ):
+        if isinstance(steps, (bool, np.bool_)) or not isinstance(steps, Integral):
             raise TNFRValueError("steps must be a nonnegative integer")
         steps_value = int(steps)
         if steps_value < 0:
@@ -671,12 +660,8 @@ class SparseTNFRGraph:
 
         for _ in range(steps_value):
             dnfr_values = self.compute_dnfr_sparse(all_node_ids)
-            vf_values = self.node_attributes.get_vfs(all_node_ids).astype(
-                np.float64
-            )
-            epi_values = self.node_attributes.get_epis(all_node_ids).astype(
-                np.float64
-            )
+            vf_values = self.node_attributes.get_vfs(all_node_ids).astype(np.float64)
+            epi_values = self.node_attributes.get_epis(all_node_ids).astype(np.float64)
 
             # Compute the declared nodal step in binary64, then preflight every
             # compact float32 result before committing any node in this step.
@@ -688,8 +673,7 @@ class SparseTNFRGraph:
             ):
                 raise TNFRValueError("nodal update must remain finite")
             stored_epis = tuple(
-                _float32_value(value, name="updated epi")
-                for value in new_epis
+                _float32_value(value, name="updated epi") for value in new_epis
             )
 
             for node_id, stored_epi, dnfr in zip(

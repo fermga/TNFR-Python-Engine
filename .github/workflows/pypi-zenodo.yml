@@ -1,4 +1,4 @@
-name: PyPI and Zenodo Integration
+name: Package Publication
 
 on:
   release:
@@ -31,8 +31,25 @@ jobs:
     - name: Install build dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install build setuptools-scm[toml] twine
+        pip install "build>=1,<2" "twine>=6,<8"
     
+    - name: Verify publication metadata and release tag
+      env:
+        RELEASE_TAG: ${{ github.event.release.tag_name }}
+      run: |
+        python - <<'PY'
+        import os
+        import tomllib
+        from pathlib import Path
+        from scripts.check_documentation import check_publication_metadata
+
+        check_publication_metadata()
+        version = tomllib.loads(Path("pyproject.toml").read_text())["project"]["version"]
+        tag = os.environ.get("RELEASE_TAG")
+        if tag and tag != f"v{version}":
+            raise SystemExit(f"Release tag {tag!r} does not match package version {version!r}")
+        PY
+
     - name: Build distribution
       run: python -m build
     
@@ -45,8 +62,8 @@ jobs:
       with:
         verbose: true
     
-    - name: Upload to Zenodo
+    - name: External Zenodo integration reminder
       if: github.event_name == 'release'
       run: |
-        echo "Zenodo integration will be triggered automatically via GitHub-Zenodo webhook"
-        echo "Make sure Zenodo webhook is configured at https://zenodo.org/account/settings/github/"
+        echo "This workflow does not upload to or verify Zenodo."
+        echo "A separately configured GitHub-Zenodo integration may archive this release."

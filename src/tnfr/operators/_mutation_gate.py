@@ -84,9 +84,7 @@ def _certificate(
         # values.  Timestamped evidence, by contrast, must be fresh against an
         # actual current EPI endpoint.
         if physical_history is not None:
-            _reject(
-                "ZHIR timestamped evidence requires an explicit current EPI value"
-            )
+            _reject("ZHIR timestamped evidence requires an explicit current EPI value")
         current_epi = 0.0
 
     serialized_bepi = isinstance(current_epi, Mapping) and {
@@ -108,9 +106,7 @@ def _certificate(
             current_epi=current_epi,
             nu_f=_first_alias(node_data, ALIAS_VF, 0.0),
             delta_nfr=_first_alias(node_data, ALIAS_DNFR, 0.0),
-            xi=graph_data.get(
-                "ZHIR_THRESHOLD_XI", ZHIR_THRESHOLD_XI_CANONICAL
-            ),
+            xi=graph_data.get("ZHIR_THRESHOLD_XI", ZHIR_THRESHOLD_XI_CANONICAL),
             epi_time_history=physical_history,
             epi_history=node_data.get("epi_history"),
             legacy_epi_history=node_data.get("_epi_history"),
@@ -149,8 +145,7 @@ def mutation_threshold_sample(
         }:
             _reject(f"{source} must contain finite replayable scalar samples")
         _reject(
-            "ZHIR threshold cannot be verified from current EPI evidence: "
-            f"{reason}"
+            "ZHIR threshold cannot be verified from current EPI evidence: " f"{reason}"
         )
     if evidence.observed_depi_dt is None or evidence.sample_interval is None:
         _reject("ZHIR threshold evidence has no finite observed rate")
@@ -203,10 +198,7 @@ def validate_mutation_capacity(
             xi=0.0,
         )
     except MutationTriggerInputError as exc:
-        _reject(
-            "ZHIR structural frequency nu_f "
-            f"{exc.reason}; got {exc.value!r}"
-        )
+        _reject("ZHIR structural frequency nu_f " f"{exc.reason}; got {exc.value!r}")
     try:
         minimum_certificate = certify_mutation_trigger(
             current_epi=0.0,

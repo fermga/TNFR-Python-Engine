@@ -39,10 +39,10 @@ except Exception:
     get_unified_gpu_system = None
 
 from ...alias import get_attr
-from ...constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ...constants.aliases import ALIAS_VF
 from ..network_stage import (
-    GraphTransactionSnapshot,
     TWO_PHASE_JACOBI,
+    GraphTransactionSnapshot,
     execute_neighbor_stage,
     execute_pointwise_stage,
 )
@@ -54,7 +54,6 @@ from .strategy import (
     StrategyContext,
     StrategyRegistry,
 )
-
 
 _CONTEXT_FACTOR_OVERRIDE_KEYS = frozenset(
     {"GLYPH_FACTORS", "glyph_factors", "operator_factors"}
@@ -115,9 +114,7 @@ def _compute_auxiliary_gpu_preview(
         for node in graph.nodes:
             value = raw[node]
             if isinstance(value, bool) or not isinstance(value, Real):
-                raise TypeError(
-                    f"Auxiliary GPU preview for node {node!r} must be real"
-                )
+                raise TypeError(f"Auxiliary GPU preview for node {node!r} must be real")
             resolved = float(value)
             if not math.isfinite(resolved):
                 raise ValueError(
@@ -132,9 +129,7 @@ def _compute_auxiliary_gpu_preview(
             mean=mean,
             warning=None,
             backend_used=(str(backend_used) if backend_used is not None else None),
-            fallback_used=(
-                bool(fallback_used) if fallback_used is not None else None
-            ),
+            fallback_used=(bool(fallback_used) if fallback_used is not None else None),
         )
     except Exception as exc:
         return _AuxiliaryGPUPreview(
@@ -236,9 +231,7 @@ def _preview_telemetry(preview: _AuxiliaryGPUPreview) -> dict[str, Any]:
         "auxiliary_gpu_preview": preview.available,
         "auxiliary_gpu_preview_backend": preview.backend_used,
         "auxiliary_gpu_preview_fallback_used": preview.fallback_used,
-        "auxiliary_gpu_preview_mean": (
-            preview.mean if preview.available else None
-        ),
+        "auxiliary_gpu_preview_mean": (preview.mean if preview.available else None),
     }
 
 

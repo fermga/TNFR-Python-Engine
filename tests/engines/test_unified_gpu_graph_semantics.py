@@ -298,9 +298,7 @@ def test_module_fallback_wrapper_uses_the_configured_system_policy(
     ],
 )
 def test_gpu_utilization_requires_valid_backend_evidence(raw, expected) -> None:
-    observed = TNFRUnifiedGPUSystem._read_gpu_utilization(
-        {"utilization_percent": raw}
-    )
+    observed = TNFRUnifiedGPUSystem._read_gpu_utilization({"utilization_percent": raw})
 
     if expected is None:
         assert observed is None
@@ -340,9 +338,7 @@ def test_current_gpu_utilization_is_none_without_observation() -> None:
         ("512.5", 512.5),
     ],
 )
-def test_gpu_memory_requires_finite_nonnegative_backend_evidence(
-    raw, expected
-) -> None:
+def test_gpu_memory_requires_finite_nonnegative_backend_evidence(raw, expected) -> None:
     observed = TNFRUnifiedGPUSystem._read_gpu_memory_mb(
         {"free_memory_mb": raw}, "free_memory_mb"
     )
@@ -375,9 +371,7 @@ def test_gpu_feasibility_abstains_when_free_memory_is_unknown() -> None:
 
     assert engine._can_handle_gpu_operation(np.zeros(0)) is False
 
-    observed_zero = GPUDeviceInfo(
-        1, "observed-zero", "test", 0.0, 0.0, None
-    )
+    observed_zero = GPUDeviceInfo(1, "observed-zero", "test", 0.0, 0.0, None)
     engine._available_devices = [observed_zero]
     engine._current_device = observed_zero
     assert engine._can_handle_gpu_operation(np.zeros(0)) is True

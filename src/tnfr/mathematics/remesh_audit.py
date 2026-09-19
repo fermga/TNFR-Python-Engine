@@ -24,11 +24,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 from ..types import NodeId
-from .padic_tower import (
-    RemeshContractAudit,
-    padic_lift_map,
-    projective_scale_map,
-)
+from .padic_tower import RemeshContractAudit, padic_lift_map, projective_scale_map
 
 if TYPE_CHECKING:
     from ..physics.multiscale_coherence import U5CoherenceAssessment
@@ -158,9 +154,7 @@ def scale_projection_update(p: int, e: int):
 
     The projection ignores delayed inputs and therefore has no temporal echo.
     """
-    projection = _frac(padic_lift_map(p, e)) @ _frac(
-        projective_scale_map(p, e)
-    )
+    projection = _frac(padic_lift_map(p, e)) @ _frac(projective_scale_map(p, e))
 
     def update(now: Any, past_local: Any, past_global: Any) -> np.ndarray:
         del past_local, past_global
@@ -217,9 +211,7 @@ class RemeshU5Evidence:
 
     def assess(self) -> U5CoherenceAssessment:
         """Evaluate this declaration through the canonical U5 implementation."""
-        from ..physics.multiscale_coherence import (
-            assess_u5_parent_child_coherence,
-        )
+        from ..physics.multiscale_coherence import assess_u5_parent_child_coherence
 
         return assess_u5_parent_child_coherence(
             self.post_update_graph,
@@ -301,9 +293,7 @@ def audit_remesh_candidate(
     uniformity_preserved = uniformity_after >= uniformity_before - tolerance
 
     assessment = None if u5_evidence is None else u5_evidence.assess()
-    u5_verified = bool(
-        assessment is not None and assessment.satisfies_target
-    )
+    u5_verified = bool(assessment is not None and assessment.satisfies_target)
 
     return RemeshCandidateAudit(
         epi_recursion_verified=epi_recursion,

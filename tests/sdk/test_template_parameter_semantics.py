@@ -7,10 +7,16 @@ from tnfr.sdk.fluent import NAMED_SEQUENCES, TNFRNetwork
 from tnfr.sdk.templates import TNFRTemplates as Templates
 
 
-@pytest.mark.parametrize("people,degree", [(1, 0), (2, 1), (12, 0), (12, 2), (12, 5), (12, 8), (6, 5), (9, 4)])
+@pytest.mark.parametrize(
+    "people,degree",
+    [(1, 0), (2, 1), (12, 0), (12, 2), (12, 5), (12, 8), (6, 5), (9, 4)],
+)
 def test_social_contact_parameter_sets_realized_mean_degree(people, degree):
     graph = Templates.social_network_simulation(
-        people=people, connections_per_person=degree, simulation_steps=0, random_seed=7,
+        people=people,
+        connections_per_person=degree,
+        simulation_steps=0,
+        random_seed=7,
     ).graph
     assert graph.number_of_nodes() == people
     assert 2 * graph.number_of_edges() == people * degree
@@ -18,7 +24,9 @@ def test_social_contact_parameter_sets_realized_mean_degree(people, degree):
 
 
 def test_social_contact_scaffold_is_repeatable():
-    kwargs = dict(people=12, connections_per_person=5, simulation_steps=0, random_seed=7)
+    kwargs = dict(
+        people=12, connections_per_person=5, simulation_steps=0, random_seed=7
+    )
     first = Templates.social_network_simulation(**kwargs).graph
     second = Templates.social_network_simulation(**kwargs).graph
     assert set(first.edges()) == set(second.edges())
@@ -40,7 +48,10 @@ def test_inspiration_controls_rewiring_without_changing_node_initialization():
 @pytest.mark.parametrize("size,depth", [(1, 1), (12, 1), (12, 2), (12, 4), (12, 12)])
 def test_hierarchy_depth_constructs_connected_nonempty_levels(size, depth):
     graph = Templates.organizational_network(
-        agents=size, hierarchy_depth=depth, coordination_steps=0, random_seed=7,
+        agents=size,
+        hierarchy_depth=depth,
+        coordination_steps=0,
+        random_seed=7,
     ).graph
     levels = nx.get_node_attributes(graph, "hierarchy_level")
     assert set(levels) == set(graph)
@@ -79,26 +90,31 @@ def test_ecosystem_budget_counts_canonical_word_applications(monkeypatch, budget
     assert scheduled == [words[index % 3] for index in range(budget)]
 
 
-@pytest.mark.parametrize("method,kwargs", [
-    ("social_network_simulation", {"people": 0}),
-    ("social_network_simulation", {"people": 9, "connections_per_person": 3}),
-    ("social_network_simulation", {"people": 6, "connections_per_person": 6}),
-    ("social_network_simulation", {"connections_per_person": -1}),
-    ("social_network_simulation", {"simulation_steps": -1}),
-    ("creative_process_model", {"ideas": 0}),
-    ("creative_process_model", {"inspiration_level": -0.1}),
-    ("creative_process_model", {"inspiration_level": 1.1}),
-    ("creative_process_model", {"inspiration_level": float("nan")}),
-    ("creative_process_model", {"development_cycles": 1.5}),
-    ("organizational_network", {"agents": 0}),
-    ("organizational_network", {"agents": 6, "hierarchy_depth": 7}),
-    ("organizational_network", {"hierarchy_depth": 0}),
-    ("organizational_network", {"hierarchy_depth": True}),
-    ("ecosystem_dynamics", {"species": 0}),
-    ("ecosystem_dynamics", {"evolution_steps": -1}),
-    ("ecosystem_dynamics", {"evolution_steps": True}),
-])
-def test_invalid_template_controls_fail_before_node_creation(monkeypatch, method, kwargs):
+@pytest.mark.parametrize(
+    "method,kwargs",
+    [
+        ("social_network_simulation", {"people": 0}),
+        ("social_network_simulation", {"people": 9, "connections_per_person": 3}),
+        ("social_network_simulation", {"people": 6, "connections_per_person": 6}),
+        ("social_network_simulation", {"connections_per_person": -1}),
+        ("social_network_simulation", {"simulation_steps": -1}),
+        ("creative_process_model", {"ideas": 0}),
+        ("creative_process_model", {"inspiration_level": -0.1}),
+        ("creative_process_model", {"inspiration_level": 1.1}),
+        ("creative_process_model", {"inspiration_level": float("nan")}),
+        ("creative_process_model", {"development_cycles": 1.5}),
+        ("organizational_network", {"agents": 0}),
+        ("organizational_network", {"agents": 6, "hierarchy_depth": 7}),
+        ("organizational_network", {"hierarchy_depth": 0}),
+        ("organizational_network", {"hierarchy_depth": True}),
+        ("ecosystem_dynamics", {"species": 0}),
+        ("ecosystem_dynamics", {"evolution_steps": -1}),
+        ("ecosystem_dynamics", {"evolution_steps": True}),
+    ],
+)
+def test_invalid_template_controls_fail_before_node_creation(
+    monkeypatch, method, kwargs
+):
     created = []
     original = TNFRNetwork.add_nodes
 
@@ -114,7 +130,9 @@ def test_invalid_template_controls_fail_before_node_creation(monkeypatch, method
 
 @pytest.mark.parametrize("method", ["social", "ecosystem", "creative", "organization"])
 @pytest.mark.parametrize("budget", [1, 2, 3])
-def test_real_template_cycles_follow_exact_words_and_repeat(monkeypatch, method, budget):
+def test_real_template_cycles_follow_exact_words_and_repeat(
+    monkeypatch, method, budget
+):
     from tnfr.operators import word_execution
     from tnfr.operators.network_stage import STAGE_SCHEDULE_KEY
     from tnfr.operators.registry import get_operator_class
@@ -160,8 +178,11 @@ def test_real_template_cycles_follow_exact_words_and_repeat(monkeypatch, method,
         factory = Templates.social_network_simulation
         kwargs = {"people": 6, "connections_per_person": 5, "simulation_steps": budget}
         third = budget // 3
-        words = (["basic_activation"] * third + ["network_sync"] * third
-                 + ["consolidation"] * (budget - 2 * third))
+        words = (
+            ["basic_activation"] * third
+            + ["network_sync"] * third
+            + ["consolidation"] * (budget - 2 * third)
+        )
     elif method == "ecosystem":
         factory = Templates.ecosystem_dynamics
         kwargs = {"species": 6, "interaction_strength": 1.0, "evolution_steps": budget}
@@ -171,17 +192,18 @@ def test_real_template_cycles_follow_exact_words_and_repeat(monkeypatch, method,
         factory = Templates.creative_process_model
         kwargs = {"ideas": 6, "inspiration_level": 0.4, "development_cycles": budget}
         third = budget // 3
-        words = (["exploration"] * third + ["exploration"] * third
-                 + ["network_sync"] * (budget - 2 * third))
+        words = (
+            ["exploration"] * third
+            + ["exploration"] * third
+            + ["network_sync"] * (budget - 2 * third)
+        )
     else:
         factory = Templates.organizational_network
         kwargs = {"agents": 6, "hierarchy_depth": 3, "coordination_steps": budget}
         half = budget // 2
         words = ["network_sync"] * half + ["consolidation"] * (budget - half)
 
-    expected_operators = [
-        name for word in words for name in NAMED_SEQUENCES[word]
-    ]
+    expected_operators = [name for word in words for name in NAMED_SEQUENCES[word]]
     expected_glyphs = [
         get_operator_class(name)().glyph.value for name in expected_operators
     ]
@@ -217,7 +239,9 @@ def test_real_template_cycles_follow_exact_words_and_repeat(monkeypatch, method,
     assert first.sense_indices == second.sense_indices
     assert set(first.graph.edges()) == set(second.graph.edges())
     for node in first.graph:
-        assert list(first.graph.nodes[node]["glyph_history"]) == list(second.graph.nodes[node]["glyph_history"])
+        assert list(first.graph.nodes[node]["glyph_history"]) == list(
+            second.graph.nodes[node]["glyph_history"]
+        )
 
 
 def test_sampled_template_phases_still_require_the_live_u3_gate():
@@ -256,9 +280,7 @@ def test_sampled_template_phases_still_require_the_live_u3_gate():
         return {
             "nodes": deepcopy(dict(graph.nodes(data=True))),
             "edges": deepcopy(tuple(graph.edges(data=True))),
-            "graph": tuple(
-                (key, repr(value)) for key, value in graph.graph.items()
-            ),
+            "graph": tuple((key, repr(value)) for key, value in graph.graph.items()),
             "last_operator": (
                 hasattr(graph, "_last_operator_applied"),
                 getattr(graph, "_last_operator_applied", None),

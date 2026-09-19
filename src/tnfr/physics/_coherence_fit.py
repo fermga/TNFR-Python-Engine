@@ -3,6 +3,12 @@
 This fits uncentered products C_i C_j, not connected covariance or a dynamical
 correlation theorem. Its pair counts, distance bins and correlation floor are
 estimation policies. Neither backend may select a different geometry.
+
+Graph paths use floating accumulation of materialized edge lengths. The
+provenance phrase "exact represented distance" means equality of the float
+distance keys used for binning, not exact rational path sums or unrounded
+physical distances. This estimator does not substitute the exact path model
+used by the separate geometry-realization observer.
 """
 
 import math
@@ -145,6 +151,8 @@ def fit_coherence_length(
     Invalid edge metrics raise instead of invoking the spectral fallback.
     Supplied matrices must satisfy the numeric distance domain and symmetry on
     undirected graphs; they are caller-declared, not authenticated shortest paths.
+    Both graph-derived and supplied distances are binned by equality of their
+    materialized float values. Rational path accumulation is a different model.
     """
     from ..metrics.common import structural_coherence
 

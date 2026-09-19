@@ -11,9 +11,9 @@ from tnfr.physics.structural_diffusion import (
     compute_diffusion_energy,
     current_divergence,
     degree_weighted_total,
+    stationary_distribution,
     structural_current,
     structural_diffusion_operator,
-    stationary_distribution,
     symmetric_normalized_laplacian,
 )
 
@@ -21,7 +21,9 @@ from tnfr.physics.structural_diffusion import (
 def _fixture(kind):
     graph = kind()
     graph.add_nodes_from(["left", 2, ("right", 0), "isolated"])
-    graph.add_weighted_edges_from([("left", 2, 2.0), (2, ("right", 0), 0.5), (2, 2, 3.0)])
+    graph.add_weighted_edges_from(
+        [("left", 2, 2.0), (2, ("right", 0), 0.5), (2, 2, 3.0)]
+    )
     if graph.is_multigraph():
         graph.add_edge("left", 2, weight=0.75)
     if graph.is_directed():
@@ -34,7 +36,9 @@ def _fixture(kind):
 
 
 @pytest.mark.parametrize("kind", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
-def test_current_divergence_gradient_and_nodal_rate_share_one_conductance_convention(kind):
+def test_current_divergence_gradient_and_nodal_rate_share_one_conductance_convention(
+    kind,
+):
     graph = _fixture(kind)
     before = copy.deepcopy(graph)
     nodes, current = structural_current(graph)
@@ -66,12 +70,19 @@ def test_disconnected_extreme_finite_fields_have_zero_flux_without_nan(zero_edge
     with np.errstate(all="raise"):
         np.testing.assert_array_equal(structural_current(graph)[1], np.zeros((2, 2)))
         np.testing.assert_array_equal(current_divergence(graph)[1], [0.0, 0.0])
-        np.testing.assert_array_equal(compute_diffusion_energy(graph).gradient, [0.0, 0.0])
+        np.testing.assert_array_equal(
+            compute_diffusion_energy(graph).gradient, [0.0, 0.0]
+        )
 
 
-@pytest.mark.parametrize("reader", [
-    structural_current, current_divergence, compute_diffusion_energy,
-])
+@pytest.mark.parametrize(
+    "reader",
+    [
+        structural_current,
+        current_divergence,
+        compute_diffusion_energy,
+    ],
+)
 def test_underflowed_conductance_flux_does_not_report_false_equilibrium(reader):
     graph = nx.path_graph(2)
     small = 2.0**-600
@@ -93,8 +104,9 @@ def test_exact_minimum_subnormal_flux_remains_capacity_and_pressure_independent(
     graph.nodes[0].update(EPI=small, nu_f=float("nan"))
     graph.nodes[1].update(EPI=0.0, nu_f=float("nan"))
     flux = 2.0**-1074
-    np.testing.assert_array_equal(structural_current(graph)[1],
-                                  [[0.0, flux], [-flux, 0.0]])
+    np.testing.assert_array_equal(
+        structural_current(graph)[1], [[0.0, flux], [-flux, 0.0]]
+    )
     np.testing.assert_array_equal(current_divergence(graph)[1], [flux, -flux])
 
 
@@ -106,10 +118,13 @@ def test_zero_weight_directed_arc_and_cancelled_parallel_conductance():
     graph.add_edge(1, 0, weight=1.0)
     graph.add_edge(2, 0, weight=0.0)
     nx.set_node_attributes(graph, {0: 2.0, 1: 0.0, 2: 7.0}, "EPI")
-    np.testing.assert_array_equal(structural_current(graph)[1],
-                                  [[0.0, 2.0, 0.0], [-2.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
-    np.testing.assert_array_equal(read_conductance(graph, symmetric=True).dense(),
-                                  nx.to_numpy_array(graph))
+    np.testing.assert_array_equal(
+        structural_current(graph)[1],
+        [[0.0, 2.0, 0.0], [-2.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
+    )
+    np.testing.assert_array_equal(
+        read_conductance(graph, symmetric=True).dense(), nx.to_numpy_array(graph)
+    )
 
 
 @pytest.mark.parametrize("sign", [1, -1])
@@ -140,7 +155,9 @@ def test_sparse_vector_readouts_never_materialize_a_dense_matrix(monkeypatch):
     graph = nx.path_graph(5000)
     nx.set_node_attributes(graph, 1.0, "nu_f")
     nx.set_node_attributes(graph, {node: node % 2 for node in graph}, "EPI")
-    monkeypatch.setattr(ConductanceSnapshot, "dense", lambda *args: pytest.fail("dense allocation"))
+    monkeypatch.setattr(
+        ConductanceSnapshot, "dense", lambda *args: pytest.fail("dense allocation")
+    )
     _, divergence = current_divergence(graph)
     balance = compute_diffusion_energy(graph)
     np.testing.assert_array_equal(divergence, balance.gradient)
@@ -154,7 +171,9 @@ def test_induced_node_order_matches_the_matrix_api_and_rejects_invalid_lists():
     nodes = [("right", 0), 2, "left"]
     snapshot = read_conductance(graph, nodes)
     assert snapshot.nodes == nodes
-    np.testing.assert_array_equal(snapshot.dense(), nx.to_numpy_array(graph, nodelist=nodes))
+    np.testing.assert_array_equal(
+        snapshot.dense(), nx.to_numpy_array(graph, nodelist=nodes)
+    )
     reordered, lap = symmetric_normalized_laplacian(graph, nodes)
     assert reordered == nodes
     assert lap.shape == (3, 3)
@@ -176,7 +195,9 @@ def test_fresh_readouts_track_weight_and_epi_changes_without_cache_invalidation(
     assert np.any(current_divergence(graph)[1])
 
 
-@pytest.mark.parametrize("reader", [structural_current, current_divergence, compute_diffusion_energy])
+@pytest.mark.parametrize(
+    "reader", [structural_current, current_divergence, compute_diffusion_energy]
+)
 def test_invalid_epi_and_overflow_cannot_produce_valid_readouts(reader):
     graph = nx.path_graph(2)
     nx.set_node_attributes(graph, 1.0, "nu_f")

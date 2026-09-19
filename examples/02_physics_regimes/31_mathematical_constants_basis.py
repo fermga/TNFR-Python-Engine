@@ -117,11 +117,17 @@ def demo_pi_phase_sector() -> None:
     print("  " + "-" * 42)
     for angle in test_angles:
         wrapped = math.atan2(math.sin(angle), math.cos(angle))
-        print(f"  {angle:10.4f}  {wrapped:12.4f}  {abs(wrapped) <= math.pi + 1e-12!s:>16}")
+        print(
+            f"  {angle:10.4f}  {wrapped:12.4f}  {abs(wrapped) <= math.pi + 1e-12!s:>16}"
+        )
 
     print("\n  Exact phase bound and selected monitoring policies:")
-    print(f"    |∇φ| early-warning  GRAD_PHI_CANONICAL_THRESHOLD = {GRAD_PHI_CANONICAL_THRESHOLD:.4f}")
-    print(f"    |K_φ| safety        K_PHI_CANONICAL_THRESHOLD    = {K_PHI_CANONICAL_THRESHOLD:.4f}")
+    print(
+        f"    |∇φ| early-warning  GRAD_PHI_CANONICAL_THRESHOLD = {GRAD_PHI_CANONICAL_THRESHOLD:.4f}"
+    )
+    print(
+        f"    |K_φ| safety        K_PHI_CANONICAL_THRESHOLD    = {K_PHI_CANONICAL_THRESHOLD:.4f}"
+    )
     print(f"    Phase-wrap maximum  π                            = {PI:.4f}")
 
     print("\n  Verification on a Watts-Strogatz network (N=30, k=4, p=0.3):")
@@ -129,9 +135,15 @@ def demo_pi_phase_sector() -> None:
     _seed_network(G)
     grad = np.array(list(compute_phase_gradient(G).values()))
     k_phi = np.array(list(compute_phase_curvature(G).values()))
-    print(f"    max |∇φ| = {np.max(np.abs(grad)):.4f}   (≤ π? {bool(np.all(np.abs(grad) <= PI + 1e-9))})")
-    print(f"    max |K_φ| = {np.max(np.abs(k_phi)):.4f}   (≤ π? {bool(np.all(np.abs(k_phi) <= PI + 1e-9))})")
-    print("    Both phase derivatives share the SAME bound — π scales the whole sector.")
+    print(
+        f"    max |∇φ| = {np.max(np.abs(grad)):.4f}   (≤ π? {bool(np.all(np.abs(grad) <= PI + 1e-9))})"
+    )
+    print(
+        f"    max |K_φ| = {np.max(np.abs(k_phi)):.4f}   (≤ π? {bool(np.all(np.abs(k_phi) <= PI + 1e-9))})"
+    )
+    print(
+        "    Both phase derivatives share the SAME bound — π scales the whole sector."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -155,8 +167,12 @@ def demo_derivative_tower_tetrad() -> None:
 
     print(f"\n  {'field':<8}  {'tower order':<26}  {'magnitude':>12}")
     print("  " + "-" * 52)
-    print(f"  {'Φ_s':<8}  {'0th (global aggregation)':<26}  {np.max(np.abs(phi_s)):12.4f}")
-    print(f"  {'|∇φ|':<8}  {'1st (local derivative)':<26}  {np.max(np.abs(grad)):12.4f}")
+    print(
+        f"  {'Φ_s':<8}  {'0th (global aggregation)':<26}  {np.max(np.abs(phi_s)):12.4f}"
+    )
+    print(
+        f"  {'|∇φ|':<8}  {'1st (local derivative)':<26}  {np.max(np.abs(grad)):12.4f}"
+    )
     print(
         f"  {'K_φ':<8}  {'2nd (circular curvature)':<26}"
         f"  {np.max(np.abs(k_phi)):12.4f}"

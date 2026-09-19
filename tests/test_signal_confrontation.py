@@ -24,9 +24,7 @@ def _coherent_signal(n_channels: int = 12, n_samples: int = 1024, seed: int = 0)
     rng = np.random.default_rng(seed)
     t = np.arange(n_samples) / 64.0
     base = 2.0 * np.pi * 6.0 * t
-    return np.array(
-        [np.sin(base + rng.normal(0.0, 0.05)) for _ in range(n_channels)]
-    )
+    return np.array([np.sin(base + rng.normal(0.0, 0.05)) for _ in range(n_channels)])
 
 
 def test_confront_signal_returns_scoped_readouts():
@@ -50,9 +48,7 @@ def test_confront_signal_coherence_is_a_static_pressure_snapshot():
     mean_pressure = float(
         np.mean([abs(float(graph.nodes[node]["dnfr"])) for node in graph])
     )
-    assert report.coherence == pytest.approx(
-        structural_coherence(mean_pressure, 0.0)
-    )
+    assert report.coherence == pytest.approx(structural_coherence(mean_pressure, 0.0))
     assert "C_static=" in report.summary()
 
 
@@ -72,14 +68,10 @@ def test_estimate_coherence_length_robust_on_uniform_field():
     assert xi == xi and xi > 0.0  # finite, positive (not nan)
 
 
-def _relaxational_signal(
-    n_channels: int = 12, n_samples: int = 1024, seed: int = 1
-):
+def _relaxational_signal(n_channels: int = 12, n_samples: int = 1024, seed: int = 1):
     # A random-walk diagnostic control; it is not stable diffusion evidence.
     rng = np.random.default_rng(seed)
-    return np.cumsum(
-        rng.normal(0.0, 1.0, size=(n_channels, n_samples)), axis=1
-    )
+    return np.cumsum(rng.normal(0.0, 1.0, size=(n_channels, n_samples)), axis=1)
 
 
 def test_quality_factor_distinguishes_spectral_peak_shapes():
@@ -91,18 +83,18 @@ def test_quality_factor_distinguishes_spectral_peak_shapes():
     assert q_osc > q_relax  # sharper spectrum than this random-walk control
 
 
-def _travelling_wave(
-    n_channels: int = 12, n_samples: int = 1024, seed: int = 0
-):
+def _travelling_wave(n_channels: int = 12, n_samples: int = 1024, seed: int = 0):
     # spatially-structured oscillation (a phase ramp across channels): the
     # graph modes carry the oscillation. (A rank-1 uniform
     # sinusoid would put all oscillatory energy in the trivial mode.)
     rng = np.random.default_rng(seed)
     t = np.arange(n_samples) / 64.0
-    return np.array([
-        np.sin(2 * np.pi * 6.0 * t + 0.6 * k + rng.normal(0.0, 0.02))
-        for k in range(n_channels)
-    ])
+    return np.array(
+        [
+            np.sin(2 * np.pi * 6.0 * t + 0.6 * k + rng.normal(0.0, 0.02))
+            for k in range(n_channels)
+        ]
+    )
 
 
 def test_confront_signal_complex_modal_roots():
@@ -139,8 +131,9 @@ def _ring_diffusion(n: int = 16, T: int = 2000, c0: float = 0.3, seed: int = 0):
     x = np.zeros((n, T))
     x[:, 0] = rng.normal(0.0, 1.0, n)
     for t in range(1, T):
-        x[:, t] = x[:, t - 1] - c0 * (lrw @ x[:, t - 1]) \
-            + 0.02 * rng.normal(0.0, 1.0, n)
+        x[:, t] = (
+            x[:, t - 1] - c0 * (lrw @ x[:, t - 1]) + 0.02 * rng.normal(0.0, 1.0, n)
+        )
     return x
 
 

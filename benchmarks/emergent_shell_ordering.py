@@ -1,80 +1,17 @@
-"""
-Emergent Atomic Shell Ordering: does the aufbau (n+l) rule emerge from pure
-TNFR structure, or is it postulated?
-=========================================================================
+"""Finite shell-group comparisons on explicitly embedded graph geometries.
 
-QUESTION (the one flagged by the emergent_chemistry audit): the periodic
-table's filling order is encoded in ``aufbau_subshell_order`` as a hard sort by
-(n + l, n) -- the Madelung rule. That rule is POSTULATED, not derived. Does any
-ordering at all emerge from pure TNFR structure + dynamics, and if so, WHICH
-one?
-
-METHOD (pure TNFR only -- no quantum chemistry, no electron-electron screening,
-no Coulomb potential injected):
-
-  1. Build the atom as a bounded structural manifold and nothing more. The
-     canonical multi-scale object (U5 fractality) is a stack of concentric
-     coherence shells: identical angular manifolds (fibonacci spheres) at
-     successive radii, coupled radially. This is exactly the Cartesian product
-
-         atom_manifold  =  S^2_graph  []  P_M   (sphere times radial path)
-
-  2. Take its resonant eigenmodes. The canonical emergent operator is L_rw =
-     I - D^-1 W (the discrete DeltaNFR); the Cartesian-product construction below
-     uses the COMBINATORIAL L = D - A because product-spectrum additivity
-     spec(G [] H) = {lambda_i + mu_j} is a theorem of D - A specifically (L_rw
-     lacks it). On a bounded manifold the spectrum
-     is the discrete set of standing-wave modes (AGENTS.md section 4,
-     discrete-mode regime; Chladni / vibrating-string analogue).
-
-  3. Let the modes order themselves by structural excitation (eigenvalue) and
-     read off the emergent shells, filling order, and closed-shell counts
-     (cumulative mode capacities at the large spectral gaps).
-
-  4. ONLY THEN identify, post hoc, which observed phenomenon the emergent
-     ontology matches -- atomic noble gases, the 3D harmonic oscillator, the
-     infinite spherical well, or the nuclear shell magic numbers.
-
-  5. Then ask whether a confining NUCLEUS itself emerges: classify the
-     structural-potential topology (radial/annular/multinodal) of each
-     manifold with the canonical classify_nodal_topology, and -- if a radial
-     (central-nucleus) manifold emerges -- read off the shell closures it
-     produces.
-
-WHY THIS IS RIGOROUS / FALSIFIABLE: by the Cartesian-product spectral theorem
-(the same '+' already verified in benchmarks/composition_arithmetic.py),
-spec(G [] H) = { lambda_i + mu_j }. So the emergent subshell energies are
-exactly the SUM of an angular mode lambda_ang(l) (degeneracy 2l+1, the rigorous
-Laplace-Beltrami part) and a radial mode lambda_rad(nu). The emergent ordering
-is therefore the ordering of lambda_ang(l) + lambda_rad(nu) -- a fully
-determined structural fact, independent of any chemistry input.
-
-LAPLACIAN CORRECTION (emergent-geometry audit): the Cartesian-product additivity
-spec(G [] H) = {lambda_i + mu_j} that underpins this construction is a theorem of
-the imposed COMBINATORIAL Laplacian D - A ONLY; the canonical EMERGENT operator
-L_rw = I - D^-1 W does NOT have product additivity (MEASURED additive=False). So
-this additive shell-ordering is a property of the imposed graph connectivity, not
-of the emergent nodal dynamics. The canonical EMERGENT atomic shells are derived
-in src/tnfr/physics/emergent_chemistry.py on L_sym read in the standing-wave
-frequency omega=sqrt(lambda) (the emergent pulse), NOT via product additivity.
-
-THE HONEST EXPECTED CRACK (angular weighting): Madelung's primary order is
-itself near-linear -- by (n_r + 2l), i.e. angular weight 2. The free graph
-Laplacian instead gives CONVEX spectra (angular l(l+1), quadratic radial)
-whose spherical-well order weights angular excitation only ~1/2 (Bessel
-asymptotics u_{n,l} ~ (n_r + l/2)pi) -- the OPPOSITE emphasis. So the gap is
-the ANGULAR WEIGHT, and screening is exactly what supplies it (it lowers
-core-penetrating low-l orbitals). The prediction (tested below): aufbau (n+l)
-does NOT emerge from the free manifold; the atomic noble-gas numbers
-(10, 36, 54, 86) need the screening reweighting, foreign to a single manifold.
-
-Run:
-    python benchmarks/emergent_shell_ordering.py
-
-Theoretical anchor: AGENTS.md (nodal equation; discrete-mode regime; structural
-Laplacian as discrete DeltaNFR; Cartesian-product spectrum = '+'). Reuses the
-canonical fibonacci_sphere_graph + structural_eigenmodes from
-tnfr.physics.emergent_chemistry. Status: RESEARCH (falsifier).
+The constructor supplies Fibonacci-sphere coordinates, a radial path or a
+three-dimensional ball, radial weights, graph neighbors and a center point.
+These choices are geometric inputs, not generated THOL or a derived nucleus.
+The Cartesian-product spectrum adds for the combinatorial Laplacian D-A;
+it does not establish the same additive identity for L_rw or the full pressure.
+Finite sphere clusters approximate selected angular-mode multiplicities; they
+are not exact continuum rotational representations. Shell grouping thresholds,
+factor-two mode capacities and comparison sequences are supplied choices.
+A post hoc best sequence match cannot identify a physical atom or show that
+screening is the only absent ingredient. No autonomous maintenance, radiation,
+spin, many-body dynamics or physical units are derived here.
+Current scope: theory/EMERGENT_ONTOLOGY.md and theory/PHYSICAL_REGIME_CORRESPONDENCES.md.
 """
 
 from __future__ import annotations
@@ -134,7 +71,7 @@ def angular_modes(
 def angular_multiplicities(
     n_points: int = 162, k_neighbors: int = 6, n_shells: int = 4
 ) -> list[int]:
-    """Emergent angular degeneracies (should be 1, 3, 5, 7 = 2l+1)."""
+    """Count selected finite angular spectral groups; compare with 1,3,5,7."""
     G = fibonacci_sphere_graph(n_points, k_neighbors)
     shells = structural_eigenmodes(G, max_modes=n_shells**2)
     return [sh.multiplicity for sh in shells[:n_shells]]
@@ -158,12 +95,9 @@ def radial_modes(n_shells: int = 7) -> list[float]:
 def verify_cartesian_sum_is_plus(
     n_points: int = 42, k_neighbors: int = 6, n_shells: int = 4
 ) -> float:
-    """Verify spec(sphere [] path) == outer-sum of factor spectra.
+    """Check finite combinatorial-Laplacian product additivity numerically.
 
-    This is the canonical '+' (composition_arithmetic): the atom manifold's
-    modes are SUMS of an angular and a radial structural mode. Returns the max
-    absolute mismatch (should be ~0).
-    """
+    This identity is not the row-normalized nodal generator identity."""
     sphere = fibonacci_sphere_graph(n_points, k_neighbors)
     path = nx.path_graph(n_shells)
     prod = nx.cartesian_product(sphere, path)
@@ -192,15 +126,10 @@ def concentric_shell_graph(
 def solid_ball_graph(
     n_shells: int = 4, base_points: int = 16, k_neighbors: int = 8
 ) -> nx.Graph:
-    """A solid 3D ball: a center point plus concentric fibonacci shells, all
-    wired by the SAME 3D k-NN rule.
+    """Construct a supplied 3D ball with a center and Fibonacci shells.
 
-    The center node is NOT privileged by construction -- it is connected by the
-    identical nearest-neighbor rule as every other point. Any radial topology
-    it carries is therefore a purely GEOMETRIC, emergent property of the ball
-    (a distinguished center), read out by classify_nodal_topology -- not a
-    postulated high-coupling hub.
-    """
+    Every node uses the same k-nearest-neighbor rule, but the coordinates, radii
+    and central point are explicit geometric inputs."""
     pts: list[np.ndarray] = [np.zeros(3)]  # geometric center
     for s in range(1, n_shells + 1):
         r = float(s)
@@ -210,9 +139,7 @@ def solid_ball_graph(
         z = 1.0 - 2.0 * (idx + 0.5) / npts
         ring = np.sqrt(np.clip(1.0 - z * z, 0.0, 1.0))
         th = golden * idx
-        shell = np.stack(
-            [r * ring * np.cos(th), r * ring * np.sin(th), r * z], axis=1
-        )
+        shell = np.stack([r * ring * np.cos(th), r * ring * np.sin(th), r * z], axis=1)
         pts.extend(shell)
     P = np.asarray(pts)
     G = nx.Graph()
@@ -228,12 +155,7 @@ def solid_ball_graph(
 def ball_closed_shells(
     G: nx.Graph, *, max_modes: int = 40
 ) -> tuple[list[int], list[int]]:
-    """Emergent shell structure of a manifold that has a nucleus.
-
-    Returns (multiplicities, cumulative closed-shell counts): the structural
-    eigenmodes grouped into degenerate shells, and the running sum of mode
-    capacities 2*(2l+1) after each shell -- the emergent closed-shell numbers.
-    """
+    """Group the supplied ball spectrum and accumulate assigned mode capacities."""
     shells = structural_eigenmodes(G, max_modes=max_modes, gap_factor=4.0)
     mults = [sh.multiplicity for sh in shells]
     cum: list[int] = []
@@ -311,11 +233,7 @@ def capacity_order(subshells: list[Subshell]) -> list[int]:
 
 def madelung_capacity_order(max_n: int = 7) -> list[int]:
     """Capacity sequence of the postulated aufbau (n+l, n) order."""
-    pairs = [
-        (n, ell)
-        for n in range(1, max_n + 1)
-        for ell in range(0, min(n, 4))
-    ]
+    pairs = [(n, ell) for n in range(1, max_n + 1) for ell in range(0, min(n, 4))]
     pairs.sort(key=lambda nl: (nl[0] + nl[1], nl[0]))
     return [2 * (2 * ell + 1) for _n, ell in pairs]
 
@@ -353,7 +271,7 @@ def best_resonator_match(magic: list[int]) -> tuple[str, int]:
 
 def main() -> None:
     print("=" * 70)
-    print("EMERGENT ATOMIC SHELL ORDERING (pure TNFR; no screening injected)")
+    print("PRESCRIBED GEOMETRY AND FINITE SHELL-ORDER COMPARISON")
     print("=" * 70)
 
     # -- M1: angular degeneracies emerge (the rigorous part) -----------------
@@ -370,7 +288,7 @@ def main() -> None:
     print(f"     max | spec(prod) - outer_sum(spec) | = {mismatch:.2e}")
     assert mismatch < 1e-9, "Cartesian-product '+' failed"
     print("     -> PASS: energies are sums lambda_ang(l)+lambda_rad(nu)")
-    print("        (the canonical '+', composition_arithmetic).")
+    print("        (combinatorial-Laplacian product additivity).")
 
     ang = angular_modes()
     rad = radial_modes(n_shells=7)
@@ -385,8 +303,7 @@ def main() -> None:
     div = leading_overlap(emergent_caps, madelung_caps)
     magic = magic_numbers(sub)
     print("\n[M3] Emergent filling order at the balanced manifold (rho=1):")
-    print("     first 12 subshells (emergent):",
-          " ".join(s.label for s in sub[:12]))
+    print("     first 12 subshells (emergent):", " ".join(s.label for s in sub[:12]))
     print(f"     emergent capacity order : {emergent_caps[:12]}")
     print(f"     Madelung capacity order : {madelung_caps[:12]}")
     print(f"     orders agree for only the first {div} subshell(s)")
@@ -416,16 +333,12 @@ def main() -> None:
 
     # -- M5: does a confining NUCLEUS emerge? (canonical classifier) ----------
     topo = {
-        "single sphere": classify_nodal_topology(
-            fibonacci_sphere_graph(120, 6)
-        ),
-        "sphere [] path": classify_nodal_topology(
-            concentric_shell_graph(80, 6, 7)
-        ),
+        "single sphere": classify_nodal_topology(fibonacci_sphere_graph(120, 6)),
+        "sphere [] path": classify_nodal_topology(concentric_shell_graph(80, 6, 7)),
         "solid ball": classify_nodal_topology(solid_ball_graph(4, 16, 8)),
         "star (calib)": classify_nodal_topology(nx.star_graph(60)),
     }
-    print("\n[M5] Does a confining nucleus EMERGE? classify_nodal_topology")
+    print("\n[M5] Classify the supplied geometry: classify_nodal_topology")
     print("     (radial = one central nucleus; reads c(i) = sum 1/d^2):")
     for name, t in topo.items():
         print(
@@ -435,7 +348,7 @@ def main() -> None:
     assert topo["solid ball"]["topology"] == "radial", "ball not radial"
     assert topo["sphere [] path"]["topology"] != "radial", "shells radial?!"
     assert topo["star (calib)"]["topology"] == "radial", "star not radial"
-    print("     -> PASS: a nucleus EMERGES for the solid ball (its geometric")
+    print("     -> PASS: the supplied ball has a radial read-out (its geometric")
     print("        center, same wiring rule -- not a postulated hub);")
     print("        sphere and shell-stack have none (annular / multinodal).")
 
@@ -443,7 +356,7 @@ def main() -> None:
     mults, ball_cum = ball_closed_shells(solid_ball_graph(4, 16, 8))
     sw = leading_overlap(ball_cum, SPHERICAL_WELL)
     at = leading_overlap(ball_cum, ATOMIC_NOBLE)
-    print("\n[M6] With the emergent nucleus, the ball's shells (let emerge):")
+    print("\n[M6] Group the supplied ball's low spectrum:")
     print(f"     emergent multiplicities : {mults[:6]}  (= 2l+1)")
     print(f"     closed-shell counts     : {ball_cum[:7]}")
     print(f"     infinite spherical well : {SPHERICAL_WELL[:7]}")
@@ -457,36 +370,10 @@ def main() -> None:
 
     # -- Verdict --------------------------------------------------------------
     print("\n" + "=" * 70)
-    print("VERDICT (emergent ontology -> observed phenomenon)")
+    print("FINITE MODEL-COMPARISON SCOPE")
     print("=" * 70)
     print(
-        "EMERGES (pure TNFR, three nested levels):\n"
-        "  1. ANGULAR (2l+1) degeneracy -- the sphere Laplace-Beltrami\n"
-        "     spectrum (rigorous, numerical).\n"
-        "  2. FILLING ORDER -- atom = sphere [] path, subshell energy\n"
-        "     = lambda_rad(nu) + lambda_ang(l) (the canonical Cartesian\n"
-        "     '+'): a 3D structural-resonator order.\n"
-        "  3. A central NUCLEUS -- a solid-ball coherence manifold is\n"
-        "     classified RADIAL (one emergent geometric center) by the\n"
-        "     canonical classify_nodal_topology, NOT a postulated hub.\n"
-        "     With it, shell CLOSURES emerge: 2, 8, 18, 20, 34, ... =\n"
-        "     the infinite spherical well / independent-particle shell\n"
-        "     model (the basis of the NUCLEAR magic numbers).\n"
-        "DOES NOT EMERGE: the atomic aufbau (n+l) order or the noble-\n"
-        "  gas numbers (10, 36, 54, 86). Even WITH the emergent nucleus\n"
-        "  and its closures, the atomic table needs ONE more ingredient:\n"
-        "  electron-electron SCREENING, which RE-WEIGHTS the angular\n"
-        "  penalty (spherical-well l-weight ~1/2 -> Madelung l-weight 2),\n"
-        "  lowering core-penetrating low-l orbitals. Screening is an\n"
-        "  intrinsically MANY-BODY effect -- foreign to a single coherence\n"
-        "  manifold -- so it is correctly absent.\n"
-        "IDENTIFICATION: the emergent TNFR ontology reaches the\n"
-        "  INDEPENDENT-PARTICLE (spherical-well) atom/nucleus: (2l+1)\n"
-        "  degeneracy + a radial nucleus + 2, 8, 18, 20, 34 closures.\n"
-        "  The residual to the CHEMICAL periodic table is exactly and\n"
-        "  ONLY screening. So aufbau_subshell_order's (n+l) sort is\n"
-        "  CORRECTLY a postulate -- it encodes the single many-body\n"
-        "  effect that one NFR cannot carry, as the audit flagged."
+        "FINITE GEOMETRY COMPARISON:\n  Supplied sphere/path/ball graphs determine the measured spectra.\n  Product additivity applies to the combinatorial Laplacian used here.\n  Approximate angular groups and factor-two capacities are assigned shell comparisons.\n  A central read-out maximum on an explicitly embedded ball is not autonomous nucleus formation.\n  Agreement or disagreement with a finite shell sequence does not identify an atom or its forces.\n  Neither physical dimensions nor a unique missing screening law are derived."
     )
 
 

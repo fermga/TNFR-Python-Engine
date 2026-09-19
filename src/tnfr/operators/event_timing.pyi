@@ -7,7 +7,6 @@ from typing import Iterable
 
 from ..types import Glyph
 
-
 @dataclass(frozen=True, slots=True)
 class StructuralFlowInterval:
     index: int
@@ -26,7 +25,6 @@ class StructuralFlowInterval:
 
     def __post_init__(self) -> None: ...
 
-
 @dataclass(frozen=True, slots=True)
 class PhysicalFlowPartition:
     parent_interval: StructuralFlowInterval
@@ -39,16 +37,12 @@ class PhysicalFlowPartition:
     def boundary_role(self) -> str: ...
     @property
     def numerical_substeps_are_physical_boundaries(self) -> bool: ...
-
     @property
     def segment_count(self) -> int: ...
-
     @property
     def boundary_times(self) -> tuple[float, ...]: ...
-
     @property
     def exact_boundary_times(self) -> tuple[Fraction, ...]: ...
-
 
 @dataclass(frozen=True, slots=True)
 class ScheduledOperatorEvent:
@@ -68,7 +62,6 @@ class ScheduledOperatorEvent:
 
     def __post_init__(self) -> None: ...
 
-
 @dataclass(frozen=True, slots=True)
 class OperatorEventSchedule:
     operator_names: tuple[str, ...]
@@ -84,20 +77,14 @@ class OperatorEventSchedule:
     exact_total_flow_duration: Fraction
     time_basis: str = field(default=..., init=False)
     timestamp_role: str = field(default=..., init=False)
-    duration_and_offsets_are_authoritative: bool = field(
-        default=..., init=False
-    )
-    event_timestamps_feed_epi_time_history: bool = field(
-        default=..., init=False
-    )
+    duration_and_offsets_are_authoritative: bool = field(default=..., init=False)
+    event_timestamps_feed_epi_time_history: bool = field(default=..., init=False)
     event_history_channel: str = field(default=..., init=False)
     coincident_event_order: str = field(default=..., init=False)
 
     def __post_init__(self) -> None: ...
-
     @property
     def event_count(self) -> int: ...
-
 
 @dataclass(frozen=True, slots=True)
 class OperatorEventRuntimeClockDiagnostic:
@@ -105,38 +92,27 @@ class OperatorEventRuntimeClockDiagnostic:
     scope: str = field(default=..., init=False)
 
     def __post_init__(self) -> None: ...
-
     @property
     def collapsed_positive_interval_indices(self) -> tuple[int, ...]: ...
-
     @property
     def nonadditive_positive_interval_indices(self) -> tuple[int, ...]: ...
-
     @property
     def zhir_event_indices_without_positive_preflow(self) -> tuple[int, ...]: ...
-
     @property
     def zhir_event_indices_with_collapsed_preflow(self) -> tuple[int, ...]: ...
-
     @property
     def zhir_event_indices_with_duration_mismatch(self) -> tuple[int, ...]: ...
-
     @property
     def binary64_runtime_clock_compatible(self) -> bool: ...
-
     @property
     def timestamped_zhir_preflow_clock_compatible(self) -> bool: ...
-
     @property
     def clock_binding_ready(self) -> bool: ...
-
 
 def build_physical_flow_partition(
     parent_interval: StructuralFlowInterval,
     segment_durations: Iterable[Real],
 ) -> PhysicalFlowPartition: ...
-
-
 def build_operator_event_schedule(
     operator_names: Iterable[str],
     *,
@@ -144,11 +120,8 @@ def build_operator_event_schedule(
     start_time: Real,
     flow_durations: Iterable[Real],
 ) -> OperatorEventSchedule: ...
-
-
 def diagnose_operator_event_runtime_clock(
     schedule: OperatorEventSchedule,
 ) -> OperatorEventRuntimeClockDiagnostic: ...
-
 
 __all__: tuple[str, ...]

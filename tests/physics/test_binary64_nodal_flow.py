@@ -1,8 +1,8 @@
 """Independent exact fixtures for the restricted held binary64 Euler owner."""
 
+import math
 from dataclasses import FrozenInstanceError
 from fractions import Fraction
-import math
 
 import pytest
 
@@ -20,7 +20,12 @@ def test_exact_normal_inputs_preserve_the_signed_nodal_budget():
     assert result.exact_endpoint == (Fraction(1, 2), Fraction(3, 8))
     assert result.ideal_endpoint == result.exact_endpoint
     assert result.exact_increment == (Fraction(1, 16), Fraction(-1, 32))
-    assert result.endpoint_defect == result.scaling_defect == result.addition_defect == (0, 0)
+    assert (
+        result.endpoint_defect
+        == result.scaling_defect
+        == result.addition_defect
+        == (0, 0)
+    )
     assert result.error_identity_residual == (0, 0)
     assert result.mean_before == Fraction(3, 8)
     assert result.mean_after == Fraction(7, 16)
@@ -33,7 +38,7 @@ def test_exact_normal_inputs_preserve_the_signed_nodal_budget():
         assert not any(cell.lower_tie or cell.upper_tie for cell in step.result_cells)
 
 
-@pytest.mark.parametrize("pressure", [-2.0**-51, 2.0**-50])
+@pytest.mark.parametrize("pressure", [-(2.0**-51), 2.0**-50])
 def test_half_epi_stasis_includes_both_asymmetric_midpoint_ties(pressure):
     result = _flow(pressure=(pressure,))
     assert result.endpoint == (0.5,)
@@ -52,8 +57,12 @@ def test_half_epi_stasis_includes_both_asymmetric_midpoint_ties(pressure):
         assert source.upper_tie == (pressure > 0)
 
 
-@pytest.mark.parametrize("boundary,outward", [(-2.0**-51, -math.inf), (2.0**-50, math.inf)])
-def test_one_represented_pressure_outside_half_cell_changes_the_first_update(boundary, outward):
+@pytest.mark.parametrize(
+    "boundary,outward", [(-(2.0**-51), -math.inf), (2.0**-50, math.inf)]
+)
+def test_one_represented_pressure_outside_half_cell_changes_the_first_update(
+    boundary, outward
+):
     pressure = math.nextafter(boundary, outward)
     result = _flow(pressure=(pressure,))
     assert result.half_epi_pressure_band_membership == result.stasis == (False,)
@@ -63,7 +72,9 @@ def test_one_represented_pressure_outside_half_cell_changes_the_first_update(bou
     assert first.result_cells[0].contains_exact_input
 
 
-@pytest.mark.parametrize("boundary,inward", [(-2.0**-51, math.inf), (2.0**-50, -math.inf)])
+@pytest.mark.parametrize(
+    "boundary,inward", [(-(2.0**-51), math.inf), (2.0**-50, -math.inf)]
+)
 def test_one_represented_pressure_inside_half_cell_has_strict_stasis(boundary, inward):
     result = _flow(pressure=(math.nextafter(boundary, inward),))
     assert result.stasis == (True,)
@@ -87,7 +98,9 @@ def test_upper_one_cell_attains_the_addition_part_of_the_uniform_bound():
     assert result.scaling_defect == (0,)
     assert result.addition_error_bound == Fraction(1, 2**53)
     assert result.scaling_error_bound == Fraction(1, 2**1075)
-    assert result.local_endpoint_error_bound == Fraction(1, 2**51) + Fraction(1, 2**1073)
+    assert result.local_endpoint_error_bound == Fraction(1, 2**51) + Fraction(
+        1, 2**1073
+    )
     for step in result.substeps:
         assert step.addition_error == (Fraction(-1, 2**53),)
         cell = step.result_cells[0]
@@ -100,11 +113,14 @@ def test_upper_one_cell_attains_the_addition_part_of_the_uniform_bound():
     "source,pressure,expected,which_tie",
     [
         (math.nextafter(0.5, math.inf), 2.0**-50, 0.5 + 2.0**-52, "upper_tie"),
-        (math.nextafter(0.5, -math.inf), -2.0**-51, 0.5 - 2.0**-53, "lower_tie"),
+        (math.nextafter(0.5, -math.inf), -(2.0**-51), 0.5 - 2.0**-53, "lower_tie"),
     ],
 )
 def test_odd_significand_excludes_midpoint_and_moves_to_even_neighbor(
-    source, pressure, expected, which_tie,
+    source,
+    pressure,
+    expected,
+    which_tie,
 ):
     result = _flow(epi=(source,), pressure=(pressure,))
     first = result.substeps[0]
@@ -120,12 +136,16 @@ def test_odd_significand_excludes_midpoint_and_moves_to_even_neighbor(
 
 def test_zero_mean_held_pressure_can_create_signed_epi_mean_drift():
     """This is a numeric input fixture, without a pressure-generation claim."""
-    pressure = (2.0**-50, -2.0**-50) * 3
+    pressure = (2.0**-50, -(2.0**-50)) * 3
     result = _flow(epi=(0.5,) * 6, pressure=pressure)
     assert result.endpoint == (0.5, 0.5 - 2.0**-52) * 3
     assert result.mean_pressure == 0
     assert result.mean_after - result.mean_before == Fraction(-1, 2**53)
-    assert result.mean_endpoint_defect == result.mean_addition_defect == Fraction(-1, 2**53)
+    assert (
+        result.mean_endpoint_defect
+        == result.mean_addition_defect
+        == Fraction(-1, 2**53)
+    )
     assert result.mean_scaling_defect == result.mean_identity_residual == 0
     assert result.endpoint_defect == (Fraction(-1, 2**52), Fraction(0)) * 3
     assert result.stasis == (True, False) * 3
@@ -135,13 +155,19 @@ def test_zero_mean_held_pressure_can_create_signed_epi_mean_drift():
         assert abs(total) <= result.local_endpoint_error_bound
 
 
-@pytest.mark.parametrize("pressure_multiplier,increment_multiplier,endpoint_multiplier,error_multiplier", [
-    (1, 0, 1, Fraction(-1, 4)),
-    (8, 0, 1, Fraction(-2)),
-    (24, 2, 9, Fraction(2)),
-])
+@pytest.mark.parametrize(
+    "pressure_multiplier,increment_multiplier,endpoint_multiplier,error_multiplier",
+    [
+        (1, 0, 1, Fraction(-1, 4)),
+        (8, 0, 1, Fraction(-2)),
+        (24, 2, 9, Fraction(2)),
+    ],
+)
 def test_subnormal_scaling_is_retained_as_an_exact_signed_defect(
-    pressure_multiplier, increment_multiplier, endpoint_multiplier, error_multiplier,
+    pressure_multiplier,
+    increment_multiplier,
+    endpoint_multiplier,
+    error_multiplier,
 ):
     tiny = math.ulp(0.0)
     result = _flow(epi=(tiny,), pressure=(pressure_multiplier * tiny,), epi_lower=tiny)
@@ -163,11 +189,18 @@ def test_negative_zero_pressure_has_zero_signed_nodal_budget():
     assert math.copysign(1.0, result.pressure[0]) == -1
     assert math.copysign(1.0, result.rate[0]) == 1
     assert result.endpoint == (0.5,)
-    assert result.endpoint_defect == result.scaling_defect == result.addition_defect == (0,)
+    assert (
+        result.endpoint_defect
+        == result.scaling_defect
+        == result.addition_defect
+        == (0,)
+    )
 
 
 def test_scalar_owner_endpoint_is_verified_against_independent_exact_cell(monkeypatch):
-    monkeypatch.setattr(owner, "euler_update", lambda epi, dt, rate: math.nextafter(epi, math.inf))
+    monkeypatch.setattr(
+        owner, "euler_update", lambda epi, dt, rate: math.nextafter(epi, math.inf)
+    )
     with pytest.raises(RuntimeError, match="nearest-even addition cell"):
         _flow()
 
@@ -218,16 +251,19 @@ def test_dimensions_must_match():
         _flow(epi=(0.5, 0.5))
 
 
-@pytest.mark.parametrize("kwargs,error", [
-    ({"epi_lower": 0}, TypeError),
-    ({"epi_upper": Fraction(1)}, TypeError),
-    ({"epi_lower": math.nan}, ValueError),
-    ({"epi_upper": math.inf}, ValueError),
-    ({"epi_lower": 0.0}, ValueError),
-    ({"epi_lower": -0.1}, ValueError),
-    ({"epi_upper": 1.1}, ValueError),
-    ({"epi_lower": 0.6, "epi_upper": 0.4}, ValueError),
-])
+@pytest.mark.parametrize(
+    "kwargs,error",
+    [
+        ({"epi_lower": 0}, TypeError),
+        ({"epi_upper": Fraction(1)}, TypeError),
+        ({"epi_lower": math.nan}, ValueError),
+        ({"epi_upper": math.inf}, ValueError),
+        ({"epi_lower": 0.0}, ValueError),
+        ({"epi_lower": -0.1}, ValueError),
+        ({"epi_upper": 1.1}, ValueError),
+        ({"epi_lower": 0.6, "epi_upper": 0.4}, ValueError),
+    ],
+)
 def test_declared_band_is_positive_finite_and_ordered(kwargs, error):
     with pytest.raises(error):
         _flow(**kwargs)
@@ -265,7 +301,7 @@ def test_result_and_nested_rounding_records_are_frozen():
 def test_tiny_held_pressure_pair_leakage_can_cause_one_ulp_drift_every_substep():
     """Supplied numeric pressures need not arise from a canonical phase state."""
     positive = math.nextafter(2.0**-50, math.inf)
-    negative = math.nextafter(-2.0**-50, math.inf)
+    negative = math.nextafter(-(2.0**-50), math.inf)
     spacing = Fraction(1, 2**53)
     result = _flow(epi=(0.75, 0.75), pressure=(positive, negative))
     assert Fraction(positive) == Fraction(1, 2**50) + Fraction(1, 2**102)

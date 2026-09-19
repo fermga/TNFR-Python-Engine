@@ -133,9 +133,9 @@ def coupling_metrics(
         import math
 
         mean_neighbor_phase = float(neighbor_phase_mean(G, node))
-        phase_alignment = 1.0 - abs(
-            angle_diff(theta_after, mean_neighbor_phase)
-        ) / math.pi
+        phase_alignment = (
+            1.0 - abs(angle_diff(theta_after, mean_neighbor_phase)) / math.pi
+        )
     else:
         mean_neighbor_phase = theta_after
         phase_alignment = 0.0
@@ -166,9 +166,7 @@ def coupling_metrics(
         magnitude_before = abs(dnfr_before)
         magnitude_after = abs(dnfr_after)
         dnfr_reduction = magnitude_before - magnitude_after
-        dnfr_reduction_pct = (
-            dnfr_reduction / (magnitude_before + 1e-9)
-        ) * 100.0
+        dnfr_reduction_pct = (dnfr_reduction / (magnitude_before + 1e-9)) * 100.0
         dnfr_stabilization = dnfr_reduction
         metrics.update(
             {
@@ -216,9 +214,7 @@ def coupling_metrics(
         edge_data = G.get_edge_data(node, neighbor)
         if not edge_data or not isinstance(edge_data, dict):
             continue
-        records = (
-            edge_data.values() if G.is_multigraph() else (edge_data,)
-        )
+        records = edge_data.values() if G.is_multigraph() else (edge_data,)
         for record in records:
             if not isinstance(record, dict):
                 continue

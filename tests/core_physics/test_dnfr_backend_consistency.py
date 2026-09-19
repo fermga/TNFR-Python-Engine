@@ -42,7 +42,9 @@ def _pressure(graph):
     return np.array([get_attr(graph.nodes[node], ALIAS_DNFR, 0.0) for node in graph])
 
 
-@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
 @pytest.mark.parametrize("frequency", [0.0, 2.0])
 def test_canonical_balanced_and_parallel_weights(graph_type, frequency):
     graph = _weighted_graph(graph_type, 3, frequency)
@@ -50,7 +52,9 @@ def test_canonical_balanced_and_parallel_weights(graph_type, frequency):
     np.testing.assert_allclose(_pressure(graph), _expected_pressure(graph), atol=1e-12)
 
 
-@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
 @pytest.mark.parametrize("size", [3, 100])
 @pytest.mark.parametrize("frequency", [0.0, 2.0])
 def test_optimized_backend_preserves_pressure(graph_type, size, frequency):

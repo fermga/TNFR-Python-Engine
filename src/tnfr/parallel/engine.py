@@ -88,10 +88,14 @@ class TNFRParallelEngine:
             for node in node_set:
                 raw = get_attr(subgraph.nodes[node], ALIAS_VF, 1.0)
                 if isinstance(raw, bool) or not isinstance(raw, Real):
-                    raise ValueError("partition nu_f values must be finite nonnegative reals")
+                    raise ValueError(
+                        "partition nu_f values must be finite nonnegative reals"
+                    )
                 value = float(raw)
                 if not math.isfinite(value) or value < 0.0:
-                    raise ValueError("partition nu_f values must be finite nonnegative reals")
+                    raise ValueError(
+                        "partition nu_f values must be finite nonnegative reals"
+                    )
                 values.append(value)
             return math.fsum(values) / len(values)
 

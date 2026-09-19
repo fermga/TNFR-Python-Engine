@@ -105,9 +105,7 @@ def run_kepler_simulation() -> dict[str, list[float]]:
 
     t = 0.0
     for _ in range(steps):
-        TNFRSymplecticIntegrator.velocity_verlet(
-            node, dt, newtonian_central_force
-        )
+        TNFRSymplecticIntegrator.velocity_verlet(node, dt, newtonian_central_force)
         t += dt
 
         # Record Telemetry

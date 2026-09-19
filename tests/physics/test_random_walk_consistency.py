@@ -18,7 +18,9 @@ from tnfr.physics.structural_diffusion import (
 )
 
 
-@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
 def test_zero_strength_nodes_are_absorbing(graph_type):
     graph = graph_type()
     graph.add_nodes_from(range(3))
@@ -42,9 +44,7 @@ def test_parallel_conductances_match_the_collapsed_weighted_network():
     _, commute = commute_time(graph)
 
     np.testing.assert_allclose(transition[0], [0.0, 5.0 / 6.0, 1.0 / 6.0])
-    expected_resistance = np.array(
-        [[0.0, 0.2, 1.0], [0.2, 0.0, 1.2], [1.0, 1.2, 0.0]]
-    )
+    expected_resistance = np.array([[0.0, 0.2, 1.0], [0.2, 0.0, 1.2], [1.0, 1.2, 0.0]])
     np.testing.assert_allclose(resistance, expected_resistance, atol=1e-12)
     np.testing.assert_allclose(commute, 12.0 * expected_resistance, atol=1e-12)
     assert verify_structural_random_walk(graph).is_valid_random_walk
@@ -105,7 +105,12 @@ def test_self_loop_holding_time_changes_commute_but_not_resistance():
 
 @pytest.mark.parametrize(
     "function",
-    [stationary_distribution, effective_resistance, commute_time, verify_structural_random_walk],
+    [
+        stationary_distribution,
+        effective_resistance,
+        commute_time,
+        verify_structural_random_walk,
+    ],
 )
 def test_undirected_transport_formulas_reject_asymmetric_adjacency(function):
     graph = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
@@ -117,7 +122,9 @@ def test_symmetric_directed_adjacency_retains_undirected_transport():
     graph = nx.path_graph(3).to_directed()
     _, resistance = effective_resistance(graph)
     _, stationary = stationary_distribution(graph)
-    np.testing.assert_allclose(resistance, [[0, 1, 2], [1, 0, 1], [2, 1, 0]], atol=1e-12)
+    np.testing.assert_allclose(
+        resistance, [[0, 1, 2], [1, 0, 1], [2, 1, 0]], atol=1e-12
+    )
     np.testing.assert_allclose(stationary, [0.25, 0.5, 0.25])
     assert verify_structural_random_walk(graph).is_valid_random_walk
 
@@ -152,7 +159,9 @@ def test_unreachable_conductance_scale_does_not_change_local_resistance():
 
 
 @pytest.mark.parametrize("tolerance", [0.0, -1.0, np.nan, np.inf])
-@pytest.mark.parametrize("function", [verify_structural_random_walk, verify_structural_flow])
+@pytest.mark.parametrize(
+    "function", [verify_structural_random_walk, verify_structural_flow]
+)
 def test_certificate_requires_finite_positive_tolerance(tolerance, function):
     with pytest.raises(ValueError, match="tolerance"):
         function(nx.path_graph(2), tolerance=tolerance)
@@ -171,7 +180,9 @@ def test_weighted_current_preserves_kirchhoff_and_nodal_continuity(graph_type):
     _, current = structural_current(graph)
     _, divergence = current_divergence(graph)
     _, laplacian = structural_diffusion_operator(graph)
-    np.testing.assert_allclose(current, [[0.0, 2.0 * conductance], [-2.0 * conductance, 0.0]])
+    np.testing.assert_allclose(
+        current, [[0.0, 2.0 * conductance], [-2.0 * conductance, 0.0]]
+    )
     np.testing.assert_allclose(divergence, [2.0 * conductance, -2.0 * conductance])
     frequency = np.array([1.0, 4.0])
     derivative = -frequency * (laplacian @ np.array([3.0, 1.0]))
@@ -179,7 +190,9 @@ def test_weighted_current_preserves_kirchhoff_and_nodal_continuity(graph_type):
     assert verify_structural_flow(graph).is_valid_flow
 
 
-@pytest.mark.parametrize("function", [structural_current, current_divergence, verify_structural_flow])
+@pytest.mark.parametrize(
+    "function", [structural_current, current_divergence, verify_structural_flow]
+)
 def test_antisymmetric_current_requires_symmetric_conductance(function):
     graph = nx.DiGraph([(0, 1)])
     with pytest.raises(ValueError, match="symmetric"):
@@ -189,7 +202,9 @@ def test_antisymmetric_current_requires_symmetric_conductance(function):
 def test_ohm_certificate_checks_the_injected_current_equation(monkeypatch):
     # A broken inverse makes both its entries and its computed voltage zero;
     # comparing those alone would falsely certify Ohm's law.
-    monkeypatch.setattr(np.linalg, "pinv", lambda matrix, **kwargs: np.zeros_like(matrix))
+    monkeypatch.setattr(
+        np.linalg, "pinv", lambda matrix, **kwargs: np.zeros_like(matrix)
+    )
     certificate = verify_structural_flow(nx.path_graph(2))
     assert not certificate.ohm_law_holds
     assert not certificate.is_valid_flow

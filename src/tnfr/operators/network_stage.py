@@ -29,11 +29,7 @@ import math
 import threading
 import warnings
 from collections import OrderedDict, defaultdict, deque
-from collections.abc import (
-    Mapping,
-    MutableMapping,
-    Sequence,
-)
+from collections.abc import Mapping, MutableMapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass, field, replace
 from datetime import date, datetime, time, timedelta, timezone
@@ -51,8 +47,8 @@ from types import (
     CellType,
     FunctionType,
     GetSetDescriptorType,
-    MemberDescriptorType,
     MappingProxyType,
+    MemberDescriptorType,
     MethodType,
     ModuleType,
 )
@@ -82,12 +78,12 @@ from ..physics.mutation_trigger import (
 from ..rng import resolve_graph_seed, validate_graph_seed
 from ..types import Glyph
 from ..utils import CallbackSpec, angle_diff
-from ..utils.cache import NodeCache
 from ..utils._structural_signature import (
     proof_stamps_are_identical,
     structural_object_state_signature,
     structural_proof_signature,
 )
+from ..utils.cache import NodeCache
 from ._argument_validation import require_list_sink
 from ._epi_domain import require_real_scalar_epi
 from ._neighbor_epi_kernel import (
@@ -114,7 +110,6 @@ from ._resonance_identity import (
 )
 from .factor_contracts import resolve_runtime_operator_factors
 
-
 TWO_PHASE_JACOBI = "two_phase_jacobi"
 OPERATOR_MAJOR_GAUSS_SEIDEL = "operator_major_gauss_seidel"
 POINTWISE_TWO_PHASE_GLYPHS = frozenset(
@@ -137,9 +132,7 @@ _RUNTIME_GRAPH_KEYS = frozenset(
         "_epi_hist",
     }
 )
-_REFERENCE_PRESERVING_RUNTIME_MAPPINGS = frozenset(
-    {"_node_cache", "_node_cache_weak"}
-)
+_REFERENCE_PRESERVING_RUNTIME_MAPPINGS = frozenset({"_node_cache", "_node_cache_weak"})
 _NETWORKX_GRAPH_INTERNAL_ATTRIBUTES = frozenset(
     {
         "graph",
@@ -191,12 +184,9 @@ _TYPE_DICTIONARY_DESCRIPTOR = type.__dict__["__dict__"]
 _TYPE_MRO_DESCRIPTOR = type.__dict__["__mro__"]
 _TYPE_FLAGS_DESCRIPTOR = type.__dict__["__flags__"]
 _TYPE_NAME_DESCRIPTORS = {
-    name: type.__dict__[name]
-    for name in ("__module__", "__qualname__", "__name__")
+    name: type.__dict__[name] for name in ("__module__", "__qualname__", "__name__")
 }
-_FUNCTION_TYPE_PARAMETERS_DESCRIPTOR = FunctionType.__dict__.get(
-    "__type_params__"
-)
+_FUNCTION_TYPE_PARAMETERS_DESCRIPTOR = FunctionType.__dict__.get("__type_params__")
 _DEQUE_MAXLEN_DESCRIPTOR = deque.__dict__["maxlen"]
 _DEFAULTDICT_FACTORY_DESCRIPTOR = defaultdict.__dict__["default_factory"]
 _OBJECT_HASH_DESCRIPTOR = object.__dict__["__hash__"]
@@ -241,12 +231,9 @@ _SAFE_DEEPCOPY_PROTOCOL_OWNERS = frozenset(
     for owner in kind.__mro__
 )
 _CALLBACK_SPEC_PROTOCOL_BINDINGS = tuple(
-    (name, CallbackSpec.__dict__[name])
-    for name in ("__new__", "__getnewargs__")
+    (name, CallbackSpec.__dict__[name]) for name in ("__new__", "__getnewargs__")
 )
-_NODE_CACHE_PROTOCOL_BINDINGS = (
-    ("__reduce__", NodeCache.__dict__["__reduce__"]),
-)
+_NODE_CACHE_PROTOCOL_BINDINGS = (("__reduce__", NodeCache.__dict__["__reduce__"]),)
 _BEPI_ELEMENT_PROTOCOL_BINDINGS = tuple(
     (name, BEPIElement.__dict__[name])
     for name in ("__delattr__", "__getstate__", "__setattr__", "__setstate__")
@@ -425,9 +412,7 @@ def _preflight_runtime_epi_history(
                 type(history),
             )
             if type(shape) is not tuple or len(shape) != 1:
-                raise TNFRValueError(
-                    "_epi_hist NumPy storage must be one-dimensional"
-                )
+                raise TNFRValueError("_epi_hist NumPy storage must be one-dimensional")
             if dtype.hasobject:
                 referents.extend(
                     (id(history), item)
@@ -443,9 +428,7 @@ def _preflight_runtime_epi_history(
 def _is_runtime_graph_key(key: Any) -> bool:
     """Classify runtime keys without invoking user string or hash methods."""
 
-    return type(key) is str and (
-        key in _RUNTIME_GRAPH_KEYS or "cache" in key.lower()
-    )
+    return type(key) is str and (key in _RUNTIME_GRAPH_KEYS or "cache" in key.lower())
 
 
 @dataclass(frozen=True, slots=True)
@@ -532,9 +515,7 @@ class _NetworkXRuntimeLayout:
     adjacency_inner: tuple[tuple[Any, MutableMapping[Any, Any]], ...]
     predecessor_inner: tuple[tuple[Any, MutableMapping[Any, Any]], ...]
     adjacency_edge_keys: tuple[tuple[Any, Any, MutableMapping[Any, Any]], ...]
-    predecessor_edge_keys: tuple[
-        tuple[Any, Any, MutableMapping[Any, Any]], ...
-    ]
+    predecessor_edge_keys: tuple[tuple[Any, Any, MutableMapping[Any, Any]], ...]
     edges: tuple[Any, ...]
 
 
@@ -735,10 +716,7 @@ def _validate_runtime_deepcopy_protocol(
     """Reject hooks that could execute if ``deepcopy`` reached ``value``."""
 
     kind = type(value)
-    if any(
-        registered is kind
-        for registered in dict.__iter__(copyreg.dispatch_table)
-    ):
+    if any(registered is kind for registered in dict.__iter__(copyreg.dispatch_table)):
         raise TNFRValueError(
             "runtime metadata with a registered copyreg reducer cannot be "
             "deep-copied observationally"
@@ -746,9 +724,7 @@ def _validate_runtime_deepcopy_protocol(
     namespace = _runtime_instance_namespace(value)
     if namespace is not None:
         instance_hooks = tuple(
-            name
-            for name in _RUNTIME_DEEPCOPY_PROTOCOL_NAMES
-            if name in namespace
+            name for name in _RUNTIME_DEEPCOPY_PROTOCOL_NAMES if name in namespace
         )
         if instance_hooks:
             raise TNFRValueError(
@@ -773,15 +749,9 @@ def _validate_runtime_deepcopy_protocol(
             for name in _RUNTIME_DEEPCOPY_PROTOCOL_NAMES
             if name in trusted_namespace
         )
-        expected = frozenset(
-            name for name, _binding in trusted_bindings
-        )
-        bindings_are_canonical = (
-            declared == expected
-            and all(
-                trusted_namespace[name] is binding
-                for name, binding in trusted_bindings
-            )
+        expected = frozenset(name for name, _binding in trusted_bindings)
+        bindings_are_canonical = declared == expected and all(
+            trusted_namespace[name] is binding for name, binding in trusted_bindings
         )
         if not bindings_are_canonical:
             raise TNFRValueError(
@@ -791,11 +761,8 @@ def _validate_runtime_deepcopy_protocol(
         return
     for owner in _runtime_class_mro(kind):
         if any(
-            owner is safe_owner
-            for safe_owner in _SAFE_DEEPCOPY_PROTOCOL_OWNERS
-        ) or (
-            np is not None and owner is np.ndarray
-        ):
+            owner is safe_owner for safe_owner in _SAFE_DEEPCOPY_PROTOCOL_OWNERS
+        ) or (np is not None and owner is np.ndarray):
             continue
         if not _runtime_type_is_heap_allocated(owner):
             continue
@@ -804,9 +771,7 @@ def _validate_runtime_deepcopy_protocol(
             name
             for name in _RUNTIME_DEEPCOPY_PROTOCOL_NAMES
             if name in owner_namespace
-            and not (
-                manual_capture and name in _RUNTIME_ATTRIBUTE_PROTOCOL_NAMES
-            )
+            and not (manual_capture and name in _RUNTIME_ATTRIBUTE_PROTOCOL_NAMES)
         )
         if not declared:
             continue
@@ -891,8 +856,7 @@ def _networkx_internal_mapping_items(
         (("adjacency-outer",), layout.adjacency_outer),
     ]
     items.extend(
-        (("adjacency-inner", node), value)
-        for node, value in layout.adjacency_inner
+        (("adjacency-inner", node), value) for node, value in layout.adjacency_inner
     )
     if layout.directed:
         items.append((("predecessor-outer",), layout.predecessor_outer))
@@ -997,13 +961,11 @@ def _known_immutable_runtime_value(value: Any) -> bool:
         return True
     if type(value) is tuple:
         return all(
-            _known_immutable_runtime_value(item)
-            for item in tuple.__iter__(value)
+            _known_immutable_runtime_value(item) for item in tuple.__iter__(value)
         )
     if type(value) is frozenset:
         return all(
-            _known_immutable_runtime_value(item)
-            for item in frozenset.__iter__(value)
+            _known_immutable_runtime_value(item) for item in frozenset.__iter__(value)
         )
     kind = type(value)
     return (
@@ -1093,9 +1055,8 @@ def _validate_runtime_mapping_proxy_references(
 def _runtime_identity_key_has_owned_state(key: Any) -> bool:
     """Return whether a structural key can carry mutable instance state."""
 
-    return (
-        _runtime_instance_namespace_descriptor(key) is not None
-        or bool(_runtime_slot_descriptors(key))
+    return _runtime_instance_namespace_descriptor(key) is not None or bool(
+        _runtime_slot_descriptors(key)
     )
 
 
@@ -1111,10 +1072,8 @@ def _validate_runtime_identity_key(key: Any, *, label: str) -> None:
     if _known_immutable_runtime_value(key):
         return
     if (
-        _runtime_special_method(type(key), "__hash__")
-        is _OBJECT_HASH_DESCRIPTOR
-        and _runtime_special_method(type(key), "__eq__")
-        is _OBJECT_EQUAL_DESCRIPTOR
+        _runtime_special_method(type(key), "__hash__") is _OBJECT_HASH_DESCRIPTOR
+        and _runtime_special_method(type(key), "__eq__") is _OBJECT_EQUAL_DESCRIPTOR
     ):
         return
     raise TNFRValueError(
@@ -1348,12 +1307,8 @@ def _networkx_runtime_layout(graph: Any) -> _NetworkXRuntimeLayout:
             for node in nodes
         )
 
-    adjacency_edge_keys: list[
-        tuple[Any, Any, MutableMapping[Any, Any]]
-    ] = []
-    predecessor_edge_keys: list[
-        tuple[Any, Any, MutableMapping[Any, Any]]
-    ] = []
+    adjacency_edge_keys: list[tuple[Any, Any, MutableMapping[Any, Any]]] = []
+    predecessor_edge_keys: list[tuple[Any, Any, MutableMapping[Any, Any]]] = []
     edges: list[Any] = []
     seen_undirected: set[tuple[int, int]] = set()
     for node, neighbors in adjacency_inner:
@@ -1517,8 +1472,7 @@ def _seed_runtime_resource_memo(
         return
     traversed_container = False
     if any(
-        base in owners
-        for base in (dict, OrderedDict, defaultdict, WeakValueDictionary)
+        base in owners for base in (dict, OrderedDict, defaultdict, WeakValueDictionary)
     ):
         traversed_container = True
         try:
@@ -1674,9 +1628,7 @@ def _validate_runtime_deepcopy_value(
                 seen=seen,
             )
         return
-    if (
-        _known_immutable_runtime_value(value)
-    ):
+    if _known_immutable_runtime_value(value):
         return
     if isinstance(value, MappingProxyType):
         _validate_runtime_mapping_proxy_references(value)
@@ -1687,8 +1639,7 @@ def _validate_runtime_deepcopy_value(
     if isinstance(value, Mapping):
         if not isinstance(value, MutableMapping):
             raise TNFRValueError(
-                "runtime mapping implementation cannot be copied without "
-                "user code"
+                "runtime mapping implementation cannot be copied without " "user code"
             )
         for key, item in _runtime_mapping_items(value):
             _validate_runtime_identity_key(
@@ -1775,9 +1726,7 @@ def _capture_runtime_deepcopy(value: Any, memo: dict[int, Any]) -> Any:
     return deepcopy(value, memo)
 
 
-def _prepare_runtime_copy_memo(
-    key: Any, value: Any, memo: dict[int, Any]
-) -> bool:
+def _prepare_runtime_copy_memo(key: Any, value: Any, memo: dict[int, Any]) -> bool:
     """Seed identities that are resources rather than rollback state."""
 
     is_cache_manager = False
@@ -1856,9 +1805,7 @@ def _capture_runtime_value(
                     memo,
                 ),
             )
-    elif any(
-        base in owners for base in (dict, OrderedDict, WeakValueDictionary)
-    ):
+    elif any(base in owners for base in (dict, OrderedDict, WeakValueDictionary)):
         raw_items = _runtime_mapping_items(value)
         if preserve_mapping_items:
             container_kind = "mapping_reference"
@@ -1996,9 +1943,7 @@ def _capture_runtime_instance_state(
                     slot=slot,
                     present=present,
                     value=(
-                        _capture_runtime_deepcopy(slot_value, memo)
-                        if present
-                        else None
+                        _capture_runtime_deepcopy(slot_value, memo) if present else None
                     ),
                 )
             )
@@ -2139,9 +2084,7 @@ def _restore_runtime_object_state(
             _delete_runtime_slot(value, slot_state.slot)
 
 
-def _restore_runtime_value(
-    snapshot: _RuntimeGraphValue, memo: dict[int, Any]
-) -> Any:
+def _restore_runtime_value(snapshot: _RuntimeGraphValue, memo: dict[int, Any]) -> Any:
     """Restore a runtime value, reconstructing it only when required."""
 
     value = memo.get(id(snapshot.value), snapshot.value)
@@ -2310,8 +2253,7 @@ def _runtime_callable_state_items(
             for base in (dict, OrderedDict, defaultdict, WeakValueDictionary)
         )
         container_kind = any(
-            base in owners
-            for base in (tuple, list, set, frozenset, deque)
+            base in owners for base in (tuple, list, set, frozenset, deque)
         )
         callable_kind = (
             kind in (MethodType, BuiltinMethodType, FunctionType)
@@ -2325,10 +2267,7 @@ def _runtime_callable_state_items(
             or callable_kind
             or (np is not None and np.generic in owners)
         )
-        if (
-            not supported_runtime_kind
-            and _runtime_type_has_unmodeled_c_state(kind)
-        ):
+        if not supported_runtime_kind and _runtime_type_has_unmodeled_c_state(kind):
             if _runtime_special_method(kind, "__deepcopy__") is not None:
                 raise TNFRValueError(
                     "runtime metadata with a custom __deepcopy__ hook cannot "
@@ -2479,9 +2418,7 @@ def _runtime_callable_state_items(
 
     for key, value in runtime_items:
         is_callback_registry = bool(
-            type(key) is tuple
-            and key
-            and key[0] == "graph-callback-registry"
+            type(key) is tuple and key and key[0] == "graph-callback-registry"
         )
         kind = type(value)
         owners = _runtime_class_mro(kind)
@@ -2799,9 +2736,7 @@ class GraphTransactionSnapshot:
             for key, value in graph_mapping_items
             if _is_runtime_graph_key(key)
         )
-        epi_history_object_referents = _preflight_runtime_epi_history(
-            runtime_items
-        )
+        epi_history_object_referents = _preflight_runtime_epi_history(runtime_items)
         epi_history_object_array_ids = frozenset(
             array_id for array_id, _item in epi_history_object_referents
         )
@@ -2827,8 +2762,7 @@ class GraphTransactionSnapshot:
         node_mapping_items = layout.node_data
         raw_edges = layout.edges
         identity_key_items: list[tuple[tuple[str, int], Any]] = [
-            (("node-identity", index), node)
-            for index, node in enumerate(self._nodes)
+            (("node-identity", index), node) for index, node in enumerate(self._nodes)
         ]
         if self._multigraph:
             identity_key_items.extend(
@@ -2846,9 +2780,7 @@ class GraphTransactionSnapshot:
         metadata_key_index = 0
         for mapping in metadata_mappings:
             for key, _value in _runtime_mapping_items(mapping):
-                identity_key_items.append(
-                    (("attribute-key", metadata_key_index), key)
-                )
+                identity_key_items.append((("attribute-key", metadata_key_index), key))
                 metadata_key_index += 1
         unique_identity_keys: dict[int, tuple[tuple[str, int], Any]] = {}
         for label, key in identity_key_items:
@@ -2872,9 +2804,7 @@ class GraphTransactionSnapshot:
         ]
         callable_search_roots.extend(
             (("epi-history-object", index), value)
-            for index, (_array_id, value) in enumerate(
-                epi_history_object_referents
-            )
+            for index, (_array_id, value) in enumerate(epi_history_object_referents)
         )
         callable_search_roots.extend(
             (("graph-attribute", index), value)
@@ -2893,9 +2823,7 @@ class GraphTransactionSnapshot:
         callable_search_roots.extend(
             (("node-metadata", node_index, value_index), value)
             for node_index, (_node, data) in enumerate(node_mapping_items)
-            for value_index, (_key, value) in enumerate(
-                _runtime_mapping_items(data)
-            )
+            for value_index, (_key, value) in enumerate(_runtime_mapping_items(data))
         )
         callable_search_roots.extend(
             (("edge-metadata", edge_index, value_index), value)
@@ -2915,10 +2843,7 @@ class GraphTransactionSnapshot:
                 for index, (key, value) in enumerate(graph_mapping_items)
                 if type(key) is str and key == "callbacks"
             ),
-            *(
-                (("graph-factory", name), value)
-                for name, value in graph_factory_items
-            ),
+            *((("graph-factory", name), value) for name, value in graph_factory_items),
             *reachable_manual_state_items,
         )
         callable_state_items, callable_functions = _runtime_callable_state_items(
@@ -2936,21 +2861,11 @@ class GraphTransactionSnapshot:
         self._predecessor_edge_key_mappings = layout.predecessor_edge_keys
         runtime_memo = {id(graph): graph}
         runtime_memo.update({id(value): value for _key, value in runtime_items})
-        runtime_memo.update(
-            {id(value): value for _key, value in graph_attribute_items}
-        )
-        runtime_memo.update(
-            {id(value): value for _slot, value in graph_slot_items}
-        )
-        runtime_memo.update(
-            {id(value): value for _name, value in graph_factory_items}
-        )
-        runtime_memo.update(
-            {id(value): value for _node, value in node_mapping_items}
-        )
-        runtime_memo.update(
-            {id(edge[-1]): edge[-1] for edge in raw_edges}
-        )
+        runtime_memo.update({id(value): value for _key, value in graph_attribute_items})
+        runtime_memo.update({id(value): value for _slot, value in graph_slot_items})
+        runtime_memo.update({id(value): value for _name, value in graph_factory_items})
+        runtime_memo.update({id(value): value for _node, value in node_mapping_items})
+        runtime_memo.update({id(edge[-1]): edge[-1] for edge in raw_edges})
         runtime_memo.update(
             {id(value): value for _label, value in internal_mapping_items}
         )
@@ -2960,15 +2875,11 @@ class GraphTransactionSnapshot:
         # could invoke an arbitrary user ``__deepcopy__`` hook. Keys with
         # mutable owned state are captured separately below for in-place
         # restoration.
-        runtime_memo.update(
-            {id(value): value for _label, value in identity_key_items}
-        )
+        runtime_memo.update({id(value): value for _label, value in identity_key_items})
         runtime_memo.update(
             {id(value): value for _label, value in unique_identity_keys.values()}
         )
-        runtime_memo.update(
-            {id(value): value for _path, value in callable_state_items}
-        )
+        runtime_memo.update({id(value): value for _path, value in callable_state_items})
         opaque_copy_ids = set(runtime_memo)
         for key, value in graph_mapping_items:
             if not _is_runtime_graph_key(key):
@@ -3058,15 +2969,13 @@ class GraphTransactionSnapshot:
         )
         self._adjacency_order = {
             node: tuple(
-                neighbor
-                for neighbor, _value in _runtime_mapping_items(mapping)
+                neighbor for neighbor, _value in _runtime_mapping_items(mapping)
             )
             for node, mapping in layout.adjacency_inner
         }
         self._predecessor_order = {
             node: tuple(
-                neighbor
-                for neighbor, _value in _runtime_mapping_items(mapping)
+                neighbor for neighbor, _value in _runtime_mapping_items(mapping)
             )
             for node, mapping in layout.predecessor_inner
         }
@@ -3377,10 +3286,7 @@ class GraphTransactionSnapshot:
             }
         )
         runtime_memo.update(
-            {
-                id(snapshot.value): snapshot.value
-                for snapshot in self._graph_attributes
-            }
+            {id(snapshot.value): snapshot.value for snapshot in self._graph_attributes}
         )
         runtime_memo.update(
             {
@@ -3395,10 +3301,7 @@ class GraphTransactionSnapshot:
             }
         )
         runtime_memo.update(
-            {
-                id(snapshot.value): snapshot.value
-                for _node, snapshot in self._node_data
-            }
+            {id(snapshot.value): snapshot.value for _node, snapshot in self._node_data}
         )
         runtime_memo.update(
             {id(edge[-1].value): edge[-1].value for edge in self._edges}
@@ -3520,10 +3423,10 @@ class GraphTransactionSnapshot:
                 restored_value,
             )
         for slot in self._graph_slot_descriptors:
-            if (
-                id(slot.descriptor)
-                not in self._graph_slot_value_descriptor_ids
-                and _runtime_slot_is_present(graph, slot)
+            if id(
+                slot.descriptor
+            ) not in self._graph_slot_value_descriptor_ids and _runtime_slot_is_present(
+                graph, slot
             ):
                 _delete_runtime_slot(graph, slot)
         for slot, _snapshot, restored_value in restored_graph_slots:
@@ -3607,9 +3510,7 @@ def _select_graph_transaction(
             "transaction_snapshot must be an exact GraphTransactionSnapshot"
         )
     if object.__getattribute__(transaction_snapshot, "_graph") is not graph:
-        raise TNFRValueError(
-            "graph transaction snapshot belongs to a different graph"
-        )
+        raise TNFRValueError("graph transaction snapshot belongs to a different graph")
     return transaction_snapshot
 
 
@@ -3796,23 +3697,20 @@ def _validate_reception_stage_observation(
                 or source[2] < 0.0
             ):
                 raise ValueError("Reception post-state source scores are invalid")
-    if (
-        observation.source_tracking_enabled
-        and not _same_reception_value(
-            after_sources,
-            observation.reception_sources,
-        )
+    if observation.source_tracking_enabled and not _same_reception_value(
+        after_sources,
+        observation.reception_sources,
     ):
         raise ValueError("Reception tracked sources did not survive the stage")
-    if (
-        observation.post_state_boundary
-        != _RECEPTION_STAGE_POST_STATE_BOUNDARY
-    ):
+    if observation.post_state_boundary != _RECEPTION_STAGE_POST_STATE_BOUNDARY:
         raise ValueError("Reception post-state boundary changed")
-    if object.__getattribute__(
-        observation,
-        "auxiliary_stability_certified",
-    ) is not False:
+    if (
+        object.__getattribute__(
+            observation,
+            "auxiliary_stability_certified",
+        )
+        is not False
+    ):
         raise ValueError("Reception observations cannot claim stability")
 
 
@@ -3917,10 +3815,7 @@ def _observe_reception_proposal(
         label="committed target EPI state",
     )
     committed_kind = _node_kind(graph, proposal.node)
-    if (
-        committed_epi != proposal.epi_after
-        or committed_kind != proposal.epi_kind_after
-    ):
+    if committed_epi != proposal.epi_after or committed_kind != proposal.epi_kind_after:
         raise RuntimeError("Reception commit diverged from its frozen proposal")
     storage = graph.nodes[proposal.node]
     sources_present_after = "_reception_sources" in storage
@@ -4037,8 +3932,7 @@ def _validate_mutation_trigger_certificate(
     ):
         raise ValueError("Mutation trigger certificate has invalid finite fields")
     if any(
-        value is not None
-        and (type(value) is not float or not math.isfinite(value))
+        value is not None and (type(value) is not float or not math.isfinite(value))
         for value in optional_floats
     ):
         raise ValueError("Mutation trigger certificate has invalid optional rates")
@@ -4052,13 +3946,15 @@ def _validate_mutation_trigger_certificate(
     )
     if any(type(value) is not bool for value in boolean_fields):
         raise TypeError("Mutation trigger certificate has non-Boolean flags")
-    if certificate.observed_crossed is not None and type(
-        certificate.observed_crossed
-    ) is not bool:
+    if (
+        certificate.observed_crossed is not None
+        and type(certificate.observed_crossed) is not bool
+    ):
         raise TypeError("Mutation trigger observed_crossed must be bool or None")
-    if certificate.current_endpoint_matches_state is not None and type(
-        certificate.current_endpoint_matches_state
-    ) is not bool:
+    if (
+        certificate.current_endpoint_matches_state is not None
+        and type(certificate.current_endpoint_matches_state) is not bool
+    ):
         raise TypeError("Mutation trigger endpoint flag must be bool or None")
     for value in (certificate.source, certificate.time_basis, certificate.reason):
         if value is not None and type(value) is not str:
@@ -4078,8 +3974,7 @@ def _validate_mutation_trigger_certificate(
         type(value) is not float or not math.isfinite(value)
         for value in evidence_required_floats
     ) or any(
-        value is not None
-        and (type(value) is not float or not math.isfinite(value))
+        value is not None and (type(value) is not float or not math.isfinite(value))
         for value in evidence_optional_floats
     ):
         raise ValueError("Mutation trigger evidence has invalid finite fields")
@@ -4113,8 +4008,7 @@ def _validate_mutation_trigger_certificate(
         or evidence.observed_depi_dt != certificate.observed_depi_dt
         or evidence.source != certificate.source
         or evidence.time_basis != certificate.time_basis
-        or evidence.physical_time_resolved
-        != certificate.physical_time_resolved
+        or evidence.physical_time_resolved != certificate.physical_time_resolved
         or evidence.current_endpoint_matches_state
         != certificate.current_endpoint_matches_state
         or certificate.reason is not None
@@ -4143,15 +4037,10 @@ def _validate_mutation_decision_fields(
 ) -> None:
     """Validate the complete value-domain contract of one ZHIR observation."""
 
-    if (
-        type(observation.target_index) is not int
-        or observation.target_index < 0
-    ):
+    if type(observation.target_index) is not int or observation.target_index < 0:
         raise ValueError("Mutation observation target_index must be nonnegative")
     if type(observation.trigger_certificate) is not MutationTriggerCertificate:
-        raise TypeError(
-            "Mutation observation requires a MutationTriggerCertificate"
-        )
+        raise TypeError("Mutation observation requires a MutationTriggerCertificate")
     certificate = observation.trigger_certificate
     _validate_mutation_trigger_certificate(certificate)
 
@@ -4166,16 +4055,12 @@ def _validate_mutation_decision_fields(
     )
     for value, label in finite_fields:
         if type(value) is not float or not math.isfinite(value):
-            raise ValueError(
-                f"Mutation observation {label} must be a finite float"
-            )
+            raise ValueError(f"Mutation observation {label} must be a finite float")
     if observation.minimum_nu_f < 0.0:
         raise ValueError("Mutation observation minimum_nu_f must be nonnegative")
     if certificate.nu_f < observation.minimum_nu_f:
         raise ValueError("Mutation observation capacity is below its minimum")
-    if observation.acceleration_magnitude != abs(
-        observation.structural_acceleration
-    ):
+    if observation.acceleration_magnitude != abs(observation.structural_acceleration):
         raise ValueError("Mutation observation acceleration magnitude is inconsistent")
     if observation.tau < 0.0:
         raise ValueError("Mutation observation tau must be nonnegative")
@@ -4227,23 +4112,22 @@ def _validate_mutation_decision_fields(
         type(item) is not str for item in observation.recent_history
     ):
         raise TypeError("Mutation observation recent_history must be a string tuple")
-    if observation.destabilizer_operator is not None and type(
-        observation.destabilizer_operator
-    ) is not str:
+    if (
+        observation.destabilizer_operator is not None
+        and type(observation.destabilizer_operator) is not str
+    ):
         raise TypeError("Mutation observation destabilizer_operator is invalid")
     if observation.destabilizer_distance is not None and (
         type(observation.destabilizer_distance) is not int
         or observation.destabilizer_distance < 0
     ):
         raise ValueError("Mutation observation destabilizer_distance is invalid")
-    if observation.epi_kind_before is not None and type(
-        observation.epi_kind_before
-    ) is not str:
-        raise TypeError("Mutation observation epi_kind_before is invalid")
     if (
-        type(observation.operator_step) is not int
-        or observation.operator_step < 0
+        observation.epi_kind_before is not None
+        and type(observation.epi_kind_before) is not str
     ):
+        raise TypeError("Mutation observation epi_kind_before is invalid")
+    if type(observation.operator_step) is not int or observation.operator_step < 0:
         raise ValueError("Mutation observation operator_step must be nonnegative")
     if observation.glyph is not Glyph.ZHIR:
         raise ValueError("Mutation observation glyph must be ZHIR")
@@ -4274,9 +4158,7 @@ class MutationStageDecisionObservation:
     epi_kind_before: str | None
     operator_step: int
     glyph: Glyph = field(default=Glyph.ZHIR, init=False)
-    _proof_stamp: tuple[Any, ...] = field(
-        default=(), repr=False, compare=False
-    )
+    _proof_stamp: tuple[Any, ...] = field(default=(), repr=False, compare=False)
 
     def __post_init__(self) -> None:
         _validate_mutation_decision_fields(self)
@@ -4363,9 +4245,7 @@ class NetworkStageResult:
         default=None, repr=False, compare=False
     )
     epi_jump_certificate_abstention_reason: str | None = None
-    mutation_decision_observations: tuple[
-        MutationStageDecisionObservation, ...
-    ] = ()
+    mutation_decision_observations: tuple[MutationStageDecisionObservation, ...] = ()
     reception_observations: tuple[ReceptionStageObservation, ...] = ()
 
     def __post_init__(self) -> None:
@@ -4479,9 +4359,7 @@ class _TwoPhasePreflight:
     window: int
     execution_kwargs: dict[str, Any]
     states_before: Mapping[Any, dict[str, Any]]
-    precondition_warnings: Mapping[
-        Any, tuple[tuple[str, type[Warning]], ...]
-    ]
+    precondition_warnings: Mapping[Any, tuple[tuple[str, type[Warning]], ...]]
     exact_stage: bool
 
 
@@ -4518,8 +4396,7 @@ def _restore_detached_neighbor_order(
 
     def reorder(target: MutableMapping[Any, Any], source: Any) -> None:
         target_by_identity = {
-            id(key): (key, value)
-            for key, value in _runtime_mapping_items(target)
+            id(key): (key, value) for key, value in _runtime_mapping_items(target)
         }
         ordered = tuple(
             target_by_identity[id(key)]
@@ -4565,9 +4442,7 @@ def _detached_stage_graph(graph: Any) -> Any:
     detached_search_roots.extend(
         (("edge-metadata", edge_index, value_index), value)
         for edge_index, edge in enumerate(layout.edges)
-        for value_index, (_key, value) in enumerate(
-            _runtime_mapping_items(edge[-1])
-        )
+        for value_index, (_key, value) in enumerate(_runtime_mapping_items(edge[-1]))
     )
     manual_state_items = _discover_runtime_manual_state_items(
         tuple(detached_search_roots),
@@ -4599,8 +4474,7 @@ def _detached_stage_graph(graph: Any) -> Any:
         snapshot.graph["integrity_monitor"] = monitor
 
     snapshot.add_nodes_from(
-        (node, deepcopy(dict(data), copy_memo))
-        for node, data in layout.node_data
+        (node, deepcopy(dict(data), copy_memo)) for node, data in layout.node_data
     )
     if layout.multigraph:
         snapshot.add_edges_from(
@@ -4616,9 +4490,7 @@ def _detached_stage_graph(graph: Any) -> Any:
     return snapshot
 
 
-def _raw_alias(
-    graph: Any, node: Any, aliases: tuple[str, ...], default: Any
-) -> Any:
+def _raw_alias(graph: Any, node: Any, aliases: tuple[str, ...], default: Any) -> Any:
     return get_attr(
         graph.nodes[node],
         aliases,
@@ -4749,9 +4621,7 @@ def _propose_resonance(
     diff = float(factors["RA_epi_diff"])
     vf_boost = float(factors["RA_vf_amplification"])
     phase_coupling = float(factors["RA_phase_coupling"])
-    invalid_factors = validate_resonance_runtime_factors(
-        diff, vf_boost, phase_coupling
-    )
+    invalid_factors = validate_resonance_runtime_factors(diff, vf_boost, phase_coupling)
     if invalid_factors:
         raise TNFRValueError(
             "Resonance factor gate rejected the proposed propagation: "
@@ -4797,9 +4667,7 @@ def _propose_resonance(
                     operator="Resonance",
                     label=f"neighbor EPI for {neighbor!r}",
                 ),
-                normalize_resonance_epi_kind(
-                    _raw_node_kind(snapshot, neighbor)
-                ),
+                normalize_resonance_epi_kind(_raw_node_kind(snapshot, neighbor)),
             )
         )
 
@@ -4855,12 +4723,8 @@ def _propose_resonance(
         label="nu_f state",
     )
     amplification_active = abs(epi_bar) > RA_RUNTIME_AMPLIFICATION_TRIGGER
-    vf_after = (
-        vf_before * (1.0 + vf_boost) if amplification_active else vf_before
-    )
-    vf_after = _finite_scalar(
-        vf_after, operator="Resonance", label="capacity proposal"
-    )
+    vf_after = vf_before * (1.0 + vf_boost) if amplification_active else vf_before
+    vf_after = _finite_scalar(vf_after, operator="Resonance", label="capacity proposal")
     if vf_after < vf_before:
         raise TNFRValueError(
             "Resonance capacity proposal must be nondecreasing",
@@ -4913,27 +4777,22 @@ def _propose_pointwise(
 
         if timestamp is None:
             raise RuntimeError("Emission stage proposal lacks a stage timestamp")
-        payload = propose_emission_stage(
-            snapshot, node, factors, timestamp=timestamp
-        )
+        payload = propose_emission_stage(snapshot, node, factors, timestamp=timestamp)
     elif glyph is Glyph.SHA:
         from .al_sha_stage_proposals import propose_silence_stage
 
         if timestamp is None:
             raise RuntimeError("Silence stage proposal lacks a stage timestamp")
-        payload = propose_silence_stage(
-            snapshot, node, factors, timestamp=timestamp
-        )
+        payload = propose_silence_stage(snapshot, node, factors, timestamp=timestamp)
     elif glyph is Glyph.IL:
         from ._coherence_stage_kernel import (
-            DEFAULT_PHASE_LOCKING_COEFFICIENT, propose_coherence_stage,
+            DEFAULT_PHASE_LOCKING_COEFFICIENT,
+            propose_coherence_stage,
         )
         from .preconditions.coherence import coherence_precondition_warnings
 
         kwargs = dict(execution_kwargs or {})
-        warnings_enabled = bool(
-            kwargs.get("validate_preconditions", True)
-        ) and bool(
+        warnings_enabled = bool(kwargs.get("validate_preconditions", True)) and bool(
             snapshot.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False)
         )
         payload = propose_coherence_stage(
@@ -4965,9 +4824,7 @@ def _propose_pointwise(
         if edge_aware:
             epi_before = require_real_scalar_epi(
                 _raw_alias(snapshot, node, ALIAS_EPI, 0.0),
-                operator=(
-                    "Expansion" if glyph is Glyph.VAL else "Contraction"
-                ),
+                operator=("Expansion" if glyph is Glyph.VAL else "Contraction"),
                 label="target EPI state",
             )
         factor_key = "VAL_scale" if glyph is Glyph.VAL else "NUL_scale"
@@ -4981,18 +4838,12 @@ def _propose_pointwise(
                 else None
             ),
             configured_densification_factor=(
-                factors.get("NUL_densification_factor")
-                if glyph is Glyph.NUL
-                else None
+                factors.get("NUL_densification_factor") if glyph is Glyph.NUL else None
             ),
             edge_aware_enabled=edge_aware,
             epi_before=epi_before,
-            epi_min=snapshot.graph.get(
-                "EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)
-            ),
-            epi_max=snapshot.graph.get(
-                "EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)
-            ),
+            epi_min=snapshot.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)),
+            epi_max=snapshot.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)),
             epsilon=snapshot.graph.get(
                 "EDGE_AWARE_EPSILON",
                 DEFAULTS.get("EDGE_AWARE_EPSILON", 1e-12),
@@ -5020,9 +4871,7 @@ def _propose_pointwise(
             **dict(execution_kwargs or {}),
         )
     else:
-        raise ValueError(
-            f"No pointwise stage proposal is registered for {glyph.value}"
-        )
+        raise ValueError(f"No pointwise stage proposal is registered for {glyph.value}")
     return PointwiseStageProposal(node=node, glyph=glyph, payload=payload)
 
 
@@ -5106,9 +4955,7 @@ def _validate_pointwise_epi_jump_certificate(
             expected_after[node_indices[proposal.node]] = float(payload.epi_after)
         elif proposal.glyph in (Glyph.VAL, Glyph.NUL) and payload.write_epi:
             if payload.epi_after is None:
-                raise RuntimeError(
-                    "Pointwise EPI-writing proposal lost its endpoint"
-                )
+                raise RuntimeError("Pointwise EPI-writing proposal lost its endpoint")
             expected_after[node_indices[proposal.node]] = float(payload.epi_after)
 
     if not np.array_equal(
@@ -5139,9 +4986,7 @@ def _validate_pointwise_epi_jump_certificate(
         tuple(Fraction.from_float(float(value)) for value in row)
         for row in expected_linear
     )
-    exact_offset = tuple(
-        Fraction.from_float(float(value)) for value in expected_offset
-    )
+    exact_offset = tuple(Fraction.from_float(float(value)) for value in expected_offset)
     if (
         not np.array_equal(
             np.asarray(certificate.represented_linear_map, dtype=float),
@@ -5222,9 +5067,7 @@ def _commit_pointwise_structure(
                 raise RuntimeError(
                     f"{proposal.glyph.value} proposal lacks required EPI output"
                 )
-            _set_epi_with_boundary_check(
-                node, payload.epi_after, apply_clip=False
-            )
+            _set_epi_with_boundary_check(node, payload.epi_after, apply_clip=False)
 
 
 def _merge_coherence_stage_telemetry(
@@ -5234,9 +5077,7 @@ def _merge_coherence_stage_telemetry(
     """Merge committed IL telemetry in requested target order."""
 
     coherence_proposals = tuple(
-        proposal
-        for proposal in proposals
-        if proposal.glyph is Glyph.IL
+        proposal for proposal in proposals if proposal.glyph is Glyph.IL
     )
     if not coherence_proposals:
         return
@@ -5283,9 +5124,7 @@ def _merge_pointwise_audit_streams(
             graph.graph.setdefault("nul_densification_log", []).append(
                 nul_densification_event(payload, proposal.node)
             )
-        if proposal.glyph in (Glyph.VAL, Glyph.NUL) and (
-            payload.edge_aware_adapted
-        ):
+        if proposal.glyph in (Glyph.VAL, Glyph.NUL) and (payload.edge_aware_adapted):
             graph.graph.setdefault("edge_aware_interventions", []).append(
                 edge_aware_intervention_event(payload, proposal.node)
             )
@@ -5341,9 +5180,9 @@ def _verify_pointwise_postconditions(
 
     if operator.glyph is not Glyph.ZHIR:
         return
-    validate = bool(
-        execution_kwargs.get("validate_postconditions", False)
-    ) or bool(graph.graph.get("VALIDATE_OPERATOR_POSTCONDITIONS", False))
+    validate = bool(execution_kwargs.get("validate_postconditions", False)) or bool(
+        graph.graph.get("VALIDATE_OPERATOR_POSTCONDITIONS", False)
+    )
     if not validate:
         return
     for proposal in proposals:
@@ -5402,14 +5241,12 @@ def _validate_proposals(
             if (
                 not _same_reception_value(read_snapshot.node, proposal.node)
                 or read_snapshot.target_epi != proposal.epi_before
-                or read_snapshot.target_epi_kind
-                != proposal.epi_kind_before
+                or read_snapshot.target_epi_kind != proposal.epi_kind_before
                 or not _same_reception_value(
                     read_snapshot.neighbors,
                     proposal.neighbors,
                 )
-                or read_snapshot.neighbor_epi_mean
-                != proposal.neighbor_epi_mean
+                or read_snapshot.neighbor_epi_mean != proposal.neighbor_epi_mean
                 or not _same_reception_value(
                     read_snapshot.reception_sources,
                     proposal.reception_sources,
@@ -5458,15 +5295,15 @@ def _certify_neighbor_epi_jump_from_proposals(
     internal error and must abort the surrounding transaction.
     """
 
-    from ..physics.network_stage_stability import (
-        AllTargetNeighborStageCertificate,
-        _validate_bridge_stage_certificate,
-        certify_all_target_neighbor_stage,
-    )
     from ..physics._conductance import read_conductance
     from ..physics._neighbor_epi_realization import (
         exact_binary64_matrix,
         represented_neighbor_blend_map,
+    )
+    from ..physics.network_stage_stability import (
+        AllTargetNeighborStageCertificate,
+        _validate_bridge_stage_certificate,
+        certify_all_target_neighbor_stage,
     )
 
     nodes = tuple(snapshot.nodes())
@@ -5487,8 +5324,7 @@ def _certify_neighbor_epi_jump_from_proposals(
     if any(not proposal.neighbors for proposal in proposals):
         return None, "neighbor_certificate_domain_rejected:nonempty_neighbor_sets"
     if any(
-        not any(alias in snapshot.nodes[node] for alias in ALIAS_EPI)
-        for node in nodes
+        not any(alias in snapshot.nodes[node] for alias in ALIAS_EPI) for node in nodes
     ):
         return None, "neighbor_certificate_domain_rejected:explicit_epi_state"
 
@@ -5498,8 +5334,7 @@ def _certify_neighbor_epi_jump_from_proposals(
     except ValueError as exc:
         return (
             None,
-            "neighbor_certificate_domain_rejected:conductance:"
-            f"{exc}",
+            "neighbor_certificate_domain_rejected:conductance:" f"{exc}",
         )
     if np.any(strength <= 0.0):
         return None, "neighbor_certificate_domain_rejected:positive_row_strength"
@@ -5528,9 +5363,7 @@ def _certify_neighbor_epi_jump_from_proposals(
         if not math.isfinite(capacity) or capacity <= 0.0:
             return None, "neighbor_certificate_domain_rejected:positive_capacity"
         capacities.append(capacity)
-    with np.errstate(
-        over="ignore", divide="ignore", invalid="ignore", under="ignore"
-    ):
+    with np.errstate(over="ignore", divide="ignore", invalid="ignore", under="ignore"):
         metric = strength / np.asarray(capacities, dtype=float)
     if not np.all(np.isfinite(metric)) or np.any(metric <= 0.0):
         return None, "neighbor_certificate_domain_rejected:finite_positive_metric"
@@ -5546,9 +5379,7 @@ def _certify_neighbor_epi_jump_from_proposals(
             {
                 "fixed_phase_neighbor_sets_declared": False,
                 "mix_factor": factors["RA_epi_diff"],
-                "vf_amplification_factor": factors[
-                    "RA_vf_amplification"
-                ],
+                "vf_amplification_factor": factors["RA_vf_amplification"],
                 "phase_coupling_factor": factors["RA_phase_coupling"],
             }
         )
@@ -5563,8 +5394,7 @@ def _certify_neighbor_epi_jump_from_proposals(
             "Neighbor-stage certificate builder returned an unexpected type"
         )
     if (
-        certificate.operator_name
-        != ("Reception" if glyph is Glyph.EN else "Resonance")
+        certificate.operator_name != ("Reception" if glyph is Glyph.EN else "Resonance")
         or certificate.glyph != glyph.value
         or tuple(certificate.nodes) != nodes
         or certificate.repetitions_requested != 1
@@ -5578,14 +5408,9 @@ def _certify_neighbor_epi_jump_from_proposals(
         )
 
     step = certificate.steps[0]
-    resolved_mix = float(
-        factors["EN_mix" if glyph is Glyph.EN else "RA_epi_diff"]
-    )
+    resolved_mix = float(factors["EN_mix" if glyph is Glyph.EN else "RA_epi_diff"])
     exact_resolved_mix = Fraction.from_float(resolved_mix)
-    if (
-        step.mix_factor != resolved_mix
-        or step.exact_mix_factor != exact_resolved_mix
-    ):
+    if step.mix_factor != resolved_mix or step.exact_mix_factor != exact_resolved_mix:
         raise RuntimeError(
             "Neighbor-stage certificate diverged from resolved runtime factors"
         )
@@ -5601,14 +5426,10 @@ def _certify_neighbor_epi_jump_from_proposals(
         )
         expected_rows.append(expected_local_map[index])
     expected_stage_map = np.asarray(expected_rows, dtype=float)
-    if (
-        not np.array_equal(
-            np.asarray(step.represented_stage_map, dtype=float),
-            expected_stage_map,
-        )
-        or step.exact_represented_stage_map
-        != exact_binary64_matrix(expected_stage_map)
-    ):
+    if not np.array_equal(
+        np.asarray(step.represented_stage_map, dtype=float),
+        expected_stage_map,
+    ) or step.exact_represented_stage_map != exact_binary64_matrix(expected_stage_map):
         raise RuntimeError(
             "Neighbor-stage certificate map diverged from frozen stage proposals"
         )
@@ -5667,23 +5488,16 @@ def _certify_neighbor_epi_jump_from_proposals(
                 and not proposal.write_theta
             )
         else:
-            resolved_vf_amplification = float(
-                factors["RA_vf_amplification"]
-            )
+            resolved_vf_amplification = float(factors["RA_vf_amplification"])
             resolved_phase_coupling = float(factors["RA_phase_coupling"])
             channel_matches = bool(
                 proposal.write_epi
                 and proposal.write_theta
-                and float(local.vf_amplification_factor)
-                == resolved_vf_amplification
-                and float(local.phase_coupling_factor)
-                == resolved_phase_coupling
-                and float(local.frequency_before[index])
-                == proposal.vf_before
-                and float(local.frequency_after[index])
-                == proposal.vf_after
-                and bool(local.frequency_amplification_active)
-                is proposal.write_vf
+                and float(local.vf_amplification_factor) == resolved_vf_amplification
+                and float(local.phase_coupling_factor) == resolved_phase_coupling
+                and float(local.frequency_before[index]) == proposal.vf_before
+                and float(local.frequency_after[index]) == proposal.vf_after
+                and bool(local.frequency_amplification_active) is proposal.write_vf
                 and float(local.phase_before) == proposal.theta_before
                 and float(local.phase_after) == proposal.theta_after
             )
@@ -5708,9 +5522,7 @@ def _commit_structural_proposals(
     for proposal in proposals:
         node = NodeNX.from_graph(graph, proposal.node)
         if proposal.write_epi:
-            _set_epi_with_boundary_check(
-                node, proposal.epi_after, apply_clip=False
-            )
+            _set_epi_with_boundary_check(node, proposal.epi_after, apply_clip=False)
         node.epi_kind = proposal.epi_kind_after
         if proposal.write_vf:
             node.vf = proposal.vf_after
@@ -5743,17 +5555,13 @@ def _append_ra_telemetry(
         sink = graph.graph.setdefault("ra_metrics", [])
         for proposal in proposals:
             vf_after = float(get_attr(graph.nodes[proposal.node], ALIAS_VF, 0.0))
-            theta_after = float(
-                get_attr(graph.nodes[proposal.node], ALIAS_THETA, 0.0)
-            )
+            theta_after = float(get_attr(graph.nodes[proposal.node], ALIAS_THETA, 0.0))
             sink.append(
                 {
                     "operator": "RA",
                     "epi_propagated": proposal.neighbor_epi_mean,
                     "vf_amplification": (
-                        vf_after / proposal.vf_before
-                        if proposal.vf_before > 0
-                        else 1.0
+                        vf_after / proposal.vf_before if proposal.vf_before > 0 else 1.0
                     ),
                     "neighbors_influenced": len(proposal.neighbors),
                     "identity_preserved": True,
@@ -5932,9 +5740,7 @@ def _preflight_two_phase_stage(
     from .grammar_debt import require_replayable_history
     from .grammar_types import glyph_function_name
 
-    window = _validated_execution_window(
-        graph, execution_kwargs.get("window")
-    )
+    window = _validated_execution_window(graph, execution_kwargs.get("window"))
     resolved_kwargs = dict(execution_kwargs)
     resolved_kwargs["window"] = window
     validate_graph_seed(graph)
@@ -5947,14 +5753,13 @@ def _preflight_two_phase_stage(
 
     selections: list[Any] = []
     states_before: dict[Any, dict[str, Any]] = {}
-    precondition_warnings: dict[
-        Any, tuple[tuple[str, type[Warning]], ...]
-    ] = {}
-    needs_state_before = bool(
-        resolved_kwargs.get("validate_nodal_equation", False)
-    ) or bool(snapshot.graph.get("VALIDATE_NODAL_EQUATION", False)) or bool(
-        resolved_kwargs.get("collect_metrics", False)
-    ) or bool(snapshot.graph.get("COLLECT_OPERATOR_METRICS", False))
+    precondition_warnings: dict[Any, tuple[tuple[str, type[Warning]], ...]] = {}
+    needs_state_before = (
+        bool(resolved_kwargs.get("validate_nodal_equation", False))
+        or bool(snapshot.graph.get("VALIDATE_NODAL_EQUATION", False))
+        or bool(resolved_kwargs.get("collect_metrics", False))
+        or bool(snapshot.graph.get("COLLECT_OPERATOR_METRICS", False))
+    )
     for node in targets:
         operator._validate_hard_invariants(snapshot, node)
         validation_kwargs = dict(resolved_kwargs)
@@ -5989,18 +5794,17 @@ def _preflight_two_phase_stage(
             states_before[node] = operator._capture_state(snapshot, node)
 
     exact_stage = all(
-        glyph_function_name(selected) == operator.name
-        for selected in selections
+        glyph_function_name(selected) == operator.name for selected in selections
     )
     if exact_stage and operator.glyph is Glyph.IL:
-        from .coherence import Coherence, _CANONICAL_COHERENCE_EXECUTE
+        from .coherence import _CANONICAL_COHERENCE_EXECUTE, Coherence
 
         exact_stage = (
             type(operator) is Coherence
             and type(operator)._execute is _CANONICAL_COHERENCE_EXECUTE
         )
     if exact_stage and operator.glyph is Glyph.OZ:
-        from .dissonance import Dissonance, _CANONICAL_DISSONANCE_EXECUTE
+        from .dissonance import _CANONICAL_DISSONANCE_EXECUTE, Dissonance
 
         exact_stage = (
             type(operator) is Dissonance
@@ -6008,8 +5812,8 @@ def _preflight_two_phase_stage(
         )
     if exact_stage and operator.glyph is Glyph.THOL:
         from .self_organization import (
-            SelfOrganization,
             _CANONICAL_SELF_ORGANIZATION_EXECUTE,
+            SelfOrganization,
         )
 
         exact_stage = (
@@ -6093,13 +5897,9 @@ def _commit_dissonance_target(graph: Any, proposal: Any) -> None:
         has_progress != proposal.had_jitter_progress
         or progress != proposal.jitter_progress_before
     ):
-        raise RuntimeError(
-            f"stale OZ jitter progress for target {proposal.node!r}"
-        )
+        raise RuntimeError(f"stale OZ jitter progress for target {proposal.node!r}")
     if proposal.precondition_context is not None:
-        storage["_oz_precondition_context"] = _copy(
-            proposal.precondition_context
-        )
+        storage["_oz_precondition_context"] = _copy(proposal.precondition_context)
     if (
         proposal.has_jitter_progress_after != proposal.had_jitter_progress
         or proposal.jitter_progress_after != proposal.jitter_progress_before
@@ -6242,16 +6042,12 @@ def execute_dissonance_stage(
 
         preconditions_validated = bool(
             execution_kwargs.get("validate_preconditions", True)
-        ) and bool(
-            snapshot.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False)
-        )
+        ) and bool(snapshot.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False))
         stage = propose_dissonance_stage(
             snapshot,
             targets_tuple,
             propagate=propagate,
-            propagation_mode=execution_kwargs.get(
-                "propagation_mode", "phase_weighted"
-            ),
+            propagation_mode=execution_kwargs.get("propagation_mode", "phase_weighted"),
             preconditions_validated=preconditions_validated,
         )
         if stage.targets != targets_tuple:
@@ -6303,9 +6099,7 @@ def execute_dissonance_stage(
             nodes_processed=len(targets_tuple),
         )
         for node in targets_tuple:
-            for message, category in preflight.precondition_warnings.get(
-                node, ()
-            ):
+            for message, category in preflight.precondition_warnings.get(node, ()):
                 warnings.warn(message, category, stacklevel=3)
         return result
     except BaseException as failure:
@@ -6414,9 +6208,7 @@ def execute_coupling_stage(
             operator=operator.name,
         )
 
-        functional_links = bool(
-            snapshot.graph.get("UM_FUNCTIONAL_LINKS", True)
-        )
+        functional_links = bool(snapshot.graph.get("UM_FUNCTIONAL_LINKS", True))
         configured_seed = validate_graph_seed(snapshot)
         resolved_seed: int | None = None
         node_offsets: Mapping[Any, int] = {}
@@ -6448,9 +6240,7 @@ def execute_coupling_stage(
 
         graph._last_operator_applied = operator.name
         _commit_coupling_structure(graph, stage)
-        _record_histories_and_patterns(
-            graph, stage.target_proposals, window=window
-        )
+        _record_histories_and_patterns(graph, stage.target_proposals, window=window)
         _run_postcommit_checks(
             graph,
             snapshot,
@@ -6480,7 +6270,9 @@ def execute_coupling_stage(
 
 
 def _merge_and_validate_self_organization_stage(
-    snapshot: Any, operator: Any, raw: tuple[Any, ...],
+    snapshot: Any,
+    operator: Any,
+    raw: tuple[Any, ...],
 ) -> tuple[tuple[PointwiseStageProposal, ...], tuple[PointwiseStageProposal, ...]]:
     """Share detached THOL collision allocation and whole-support validation.
 
@@ -6488,7 +6280,9 @@ def _merge_and_validate_self_organization_stage(
     private planning boundary neither invokes monitors nor commits live state.
     """
     require_list_sink(
-        snapshot.graph, "recognized_coherence_patterns", operator=operator.name,
+        snapshot.graph,
+        "recognized_coherence_patterns",
+        operator=operator.name,
     )
     from .self_organization import _merge_stage_execution_proposals
 
@@ -6591,14 +6385,14 @@ def execute_self_organization_stage(
             for node in targets_tuple
         )
         proposals, structural = _merge_and_validate_self_organization_stage(
-            snapshot, operator, raw,
+            snapshot,
+            operator,
+            raw,
         )
 
         graph._last_operator_applied = operator.name
         for proposal in structural:
-            operator._commit_primary_channels(
-                graph, proposal.node, proposal.payload
-            )
+            operator._commit_primary_channels(graph, proposal.node, proposal.payload)
         for proposal in structural:
             operator._commit_support_and_hierarchy(
                 graph, proposal.node, proposal.payload
@@ -6639,9 +6433,7 @@ def execute_self_organization_stage(
         # metric or pressure-refresh failure cannot publish warnings for an
         # aborted stage.
         for proposal in proposals:
-            operator._emit_depth_limit_warning(
-                proposal.node, proposal.payload
-            )
+            operator._emit_depth_limit_warning(proposal.node, proposal.payload)
         return result
     except BaseException as failure:
         _discard_pending_monitor(graph)
@@ -6683,9 +6475,7 @@ def execute_pointwise_stage(
             "Snapshot two-phase stages support AL, IL, SHA, VAL, NUL, ZHIR and NAV only"
         )
     if type(_allow_epi_jump_certificate_abstention) is not bool:
-        raise TypeError(
-            "_allow_epi_jump_certificate_abstention must be a bool"
-        )
+        raise TypeError("_allow_epi_jump_certificate_abstention must be a bool")
     if (
         epi_jump_fixed_support_declared is not None
         and type(epi_jump_fixed_support_declared) is not bool
@@ -6796,9 +6586,7 @@ def execute_pointwise_stage(
         )
         stage_now = transition_now or datetime.now(timezone.utc)
         timestamp = (
-            stage_now.isoformat()
-            if operator.glyph in (Glyph.AL, Glyph.SHA)
-            else None
+            stage_now.isoformat() if operator.glyph in (Glyph.AL, Glyph.SHA) else None
         )
         resolved_seed: int | None = None
         configured_seed: int | None = None
@@ -6835,9 +6623,7 @@ def execute_pointwise_stage(
             )
             for node in targets_tuple
         )
-        _validate_pointwise_proposals(
-            proposals, targets_tuple, operator.glyph
-        )
+        _validate_pointwise_proposals(proposals, targets_tuple, operator.glyph)
         mutation_decision_observations = (
             tuple(
                 _observe_mutation_proposal(
@@ -6934,9 +6720,7 @@ def execute_pointwise_stage(
             glyph=operator.glyph.value,
             schedule=TWO_PHASE_JACOBI,
             nodes_processed=len(targets_tuple),
-            mutation_decision_observations=(
-                mutation_decision_observations
-            ),
+            mutation_decision_observations=(mutation_decision_observations),
             pointwise_epi_jump_certificate=pointwise_certificate,
         )
         # IL precondition warnings are the final transactional effect. A
@@ -6964,8 +6748,7 @@ def _validate_recursivity_proposals(
     if any(proposal.glyph is not Glyph.REMESH for proposal in proposals):
         raise RuntimeError("Recursivity stage proposal glyph changed")
     if proposals and any(
-        proposal.advisory != proposals[0].advisory
-        for proposal in proposals[1:]
+        proposal.advisory != proposals[0].advisory for proposal in proposals[1:]
     ):
         raise RuntimeError("Recursivity stage advisory diverged across targets")
 
@@ -7028,10 +6811,7 @@ def execute_recursivity_stage(
         execution_kwargs = preflight.execution_kwargs
         states_before = preflight.states_before
 
-        from .recursivity import (
-            Recursivity,
-            _CANONICAL_RECURSIVITY_EXECUTE,
-        )
+        from .recursivity import _CANONICAL_RECURSIVITY_EXECUTE, Recursivity
 
         exact_stage = (
             preflight.exact_stage
@@ -7238,8 +7018,7 @@ def execute_neighbor_stage(
             )
         else:
             proposals = tuple(
-                _propose_resonance(snapshot, node, factors)
-                for node in targets_tuple
+                _propose_resonance(snapshot, node, factors) for node in targets_tuple
             )
 
         _validate_proposals(proposals, targets_tuple, operator.glyph)
@@ -7296,9 +7075,7 @@ def execute_neighbor_stage(
             schedule=TWO_PHASE_JACOBI,
             nodes_processed=len(targets_tuple),
             neighbor_epi_jump_certificate=neighbor_certificate,
-            epi_jump_certificate_abstention_reason=(
-                certificate_abstention_reason
-            ),
+            epi_jump_certificate_abstention_reason=(certificate_abstention_reason),
             reception_observations=reception_observations,
         )
 

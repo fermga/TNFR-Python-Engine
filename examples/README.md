@@ -1,9 +1,27 @@
 # TNFR examples
 
-The examples are executable demonstrations organized by subject. Their numbered
-filenames are stable discovery aids, not a progression of proven results.
+Examples demonstrate declared constructions, APIs and conditional results. Their
+numbers and historical filenames are discovery aids, not a ranking of scientific
+validity. The [theory index](../theory/README.md) owns claim status; the
+[execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the active research queue. Running an example does not reopen a parked branch.
 
-Install the repository in editable mode before running them:
+## Start with the intended task
+
+| Directory | Use | Interpretation |
+| --- | --- | --- |
+| `01_foundations` | State, operators, topology and SDK | Supplied preparations and schedules; musical/social analogies are not empirical laws |
+| `02_physics_regimes` | Diffusion, diagnostics, auxiliary models and runtime certificates | Read each model's hypotheses; a diagnostic decrease is not general stability |
+| `03_riemann_zeta` | Finite spectral and zeta instruments | Parked classical-problem comparisons; disclose supplied zeros/primes |
+| `04_riemann_L_twisted` | Character and L-function constructions | Supplied arithmetic data and finite comparisons, not a proof of generalized RH |
+| `05_type_hygiene` | State-space and catalog countercontrols | Conditional type/representation checks; entropy does not determine state dimension |
+| `06_navier_stokes` | Selected PDE correspondences | Added models and unresolved continuum obligations |
+| `07_number_theory` | Arithmetic pressure, residues and prime structure | Disclose factorization, sieves and other construction inputs |
+| `08_emergent_geometry` | Graph spectra, quotients, auxiliary geometry and phase/form response | Separate prescribed geometry, observed structure and autonomous generation |
+| `09_millennium` | Conditional algebraic reformulations | No solution to the named open problems is claimed |
+| `10_applications` | Data adapters and backend demonstrations | Observation model, data split and backend provenance remain required |
+
+Install the repository before running a selected entry point:
 
 ```bash
 python -m pip install -e .
@@ -11,155 +29,51 @@ python examples/01_foundations/01_hello_world.py
 python examples/01_foundations/10_simplified_sdk_showcase.py
 ```
 
-Examples that require optional libraries should report or skip the missing
-backend explicitly.
+Optional dependencies vary by script. Read its imports, module docstring and
+available `--help`; the directory is not an instruction to execute every file.
+Package ownership belongs to [Architecture](../ARCHITECTURE.md), and verification
+requirements to [Testing](../TESTING.md).
 
-## Directory index
+## Diffusion and runtime evidence
 
-| Directory | Scope |
-| --- | --- |
-| `01_foundations` | Nodal state, operators, topology, coherence and public SDK |
-| `02_physics_regimes` | Diffusion, modal models, fields, conservation and grammar diagnostics |
-| `03_riemann_zeta` | Riemann-program instruments for the zeta track |
-| `04_riemann_L_twisted` | Character-twisted and L-function research instruments |
-| `05_type_hygiene` | Catalog-extension counterexamples and type checks |
-| `06_navier_stokes` | Scoped Navier-Stokes correspondences and cascade diagnostics |
-| `07_number_theory` | Arithmetic pressure, residue networks and primality structure |
-| `08_emergent_geometry` | Symplectic, spectral, multiscale and structural-geometry models |
-| `09_millennium` | Explicitly open reformulations of classical research problems |
-| `10_applications` | Data-interface and application demonstrations |
+These examples reuse the
+[diffusion stability owner](../theory/TNFR_DIFFUSION_STABILITY_THEOREM.md).
+The table distinguishes an exact declared model from finite engine evidence.
+Detailed bounds and assumptions remain in that owner instead of being duplicated
+as a second theorem ledger here.
 
-## Interpretation rules
+| Entries in `02_physics_regimes/` | What they demonstrate | Boundary |
+| --- | --- | --- |
+| [160](02_physics_regimes/160_core_research_integration.py), [161](02_physics_regimes/161_core_research_trajectory.py), [162](02_physics_regimes/162_hybrid_epi_stability.py) | Restricted S16 and affine-reset controls | Declared pure-EPI/hybrid models |
+| [163](02_physics_regimes/163_reception_runtime_bridge.py), [164](02_physics_regimes/164_resonance_runtime_bridge.py), [165](02_physics_regimes/165_operator_event_relaxation.py) | Local operator and event-time binding | Captured runtime maps, not arbitrary operators |
+| [166](02_physics_regimes/166_event_remesh_reference_family.py), [167](02_physics_regimes/167_reversible_eigenmode_reference.py), [168](02_physics_regimes/168_runtime_reversible_eigenmode_reference.py) | Modal reference, Euler refinement and finite binary64 defects | Conditional exact-real refinement differs from runtime convergence |
+| [169](02_physics_regimes/169_event_remesh_causal_runtime.py), [170](02_physics_regimes/170_runtime_remesh_block_margin.py) | Causal cycle receipts and finite block margins | One invocation/block does not certify future stability |
+| [171](02_physics_regimes/171_remesh_schedule_policy_stability.py), [172](02_physics_regimes/172_runtime_remesh_relative_defect.py), [173](02_physics_regimes/173_binary64_remesh_relative_defect.py) | Conditional history envelopes and represented-number defects | Required gain/defect hypotheses are separate from their finite measurements |
+| [174](02_physics_regimes/174_binary64_p2_reception_remesh_stability.py), [175](02_physics_regimes/175_runtime_p2_reception_stage.py), [176](02_physics_regimes/176_runtime_p2_reception_remesh_sequence.py), [177](02_physics_regimes/177_runtime_p2_reception_remesh_policy.py) | Restricted P2 half-Reception and alpha-one REMESH composition | Numeric kernels, one stage, finite sequence and revalidated policy have distinct scopes |
+| [178](02_physics_regimes/178_half_alpha_antisymmetric_remesh_class.py) | Restricted antisymmetric binary64 REMESH class | REMESH invariance alone is not complete-runtime invariance |
 
-- Read the module docstring before running an example; it states assumptions and
-  expected outputs.
-- A numerical match applies only to the recorded domain and tolerance.
-- Labels such as `classical`, `quantum-like`, `particle`, `atom` or `cosmology`
-  denote model comparisons or analogies unless a document states and validates a
-  physical identification.
-- Riemann, Navier-Stokes, Yang-Mills, P-versus-NP, BSD and Hodge examples do not
-  claim solutions to those problems.
-- Arithmetic examples must disclose whether known factors enter construction or
-  verification.
+## Geometry and phase/form response
 
-The governing theory and claim status live in [theory/README.md](../theory/README.md).
-Public APIs and package ownership live in [ARCHITECTURE.md](../ARCHITECTURE.md).
-Test requirements live in [TESTING.md](../TESTING.md).
+The [scale bridge](../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) owns effective
+geometry and observation closure. The tetrad is a required diagnostic interface,
+not a proven complete state; reflection equivalence and loss of hidden state are
+separate questions. Auxiliary symplectic/U(2) demonstrations do not establish
+that engine operators are Hamiltonian or generate particles.
 
-Recent executable runtime and refinement examples in `02_physics_regimes` are
-`163_reception_runtime_bridge.py`, `164_resonance_runtime_bridge.py`,
-`165_operator_event_relaxation.py`, and
-`166_event_remesh_reference_family.py`. Example 166 certifies one finite
-event-free effective-P2 runtime family for a fixed nonuniform mode, with
-`2/4/8` pressure-refreshed Euler segments; it is not a generic
-mesh-convergence experiment.
+[Example 179](08_emergent_geometry/179_phase_form_driven_response.py) checks a
+prescribed rotating phase contrast and its derived EPI response on the six-node
+prism. It evaluates detached analytic snapshots rather than a native trajectory.
+The [phase/form owner](../theory/NODAL_PARAMETER_FOUNDATIONS.md#16-phase-and-form-directed-exchange-frames-and-the-moving-mean)
+states the exact assumptions, moving mean and same-input contraction scope.
+The imposed phase clock is not a derived autonomous maintenance mechanism.
 
-`167_reversible_eigenmode_reference.py` is the pure exact-rational extension.
-It certifies both nonuniform eigenmodes of the nonregular three-node path in
-the reversible metric `H=diag(1,2,1)`, including rational exponential
-enclosures, exact Euler products and conditional exact-real refinement scope.
-It does not execute a binary64 solver, glyph or REMESH operation. The complete
-proof is in the
-[diffusion stability theorem](../theory/TNFR_DIFFUSION_STABILITY_THEOREM.md#exact-reversible-single-eigenmode-euler-reference-theorem).
+```bash
+python examples/08_emergent_geometry/179_phase_form_driven_response.py --output-dir docs/assets/phase_form_driven_response
+```
 
-`168_runtime_reversible_eigenmode_reference.py` executes three independent
-`2/4/8`-segment pressure-refreshed partitions of one nonregular-`P3` exact
-mode, then binds their captured binary64 boundaries to that rational reference.
-It reports nonzero pressure (`rho`), held-input (`eta`) and combined local
-(`epsilon`) defects, propagated through the complete Euler matrices. The family
-is a finite offline comparison of individually executor-certified records; it
-does not certify runtime mesh convergence, solver accuracy/order, common causal
-provenance, glyph/REMESH behavior, repetition or future stability.
-
-`169_event_remesh_causal_runtime.py` executes two declared event/REMESH cycle
-specs on one graph in one outer transaction. Its receipts bind each ordinal,
-exact spec, schedule identity and cycle result to the same invocation, while
-the result retains the offline cycle observation and finite schedule/history
-telescope. The lag-one `alpha=1` witness alternates `(2,0) -> (0,2) -> (2,0)`,
-showing that causal provenance and atomicity alone do not prove a global gain,
-uniform normalized class margin, convergence or future stability.
-
-`170_runtime_remesh_block_margin.py` applies the exact block observer to two
-causally executed finite sequences. The contractive block has
-`kappa=139/256` and endpoint gain upper bound `117/256`; the lag-one
-`alpha=1` identity-schedule block has `kappa=0`. Both results are finite
-observations. They do not prove a uniform positive normalized margin over a
-declared forward-invariant runtime class, an intrablock runtime
-prefix-amplification bound,
-repetition or future stability. A positive absolute uniform drop is excluded
-by equilibrium and quadratic amplitude scaling.
-
-`171_remesh_schedule_policy_stability.py` treats the separate exact model class
-in which every schedule preserves spatial consensus and has one common
-fixed-metric disagreement gain bound `q`. It displays the sufficient universal
-horizon `active_max_delay+1`, prefix gain upper bound one, normalized block margin `1-q`
-and the repeated bound `q^floor(n/L)`. Its strict mixed-delay and pure-delay
-witnesses use `q=1/4`; the `q=1` witness has zero certified margin. This example
-does not execute or verify a binary64 schedule, control runtime defects or
-claim stability of spatially uniform temporal means or full TNFR state.
-
-`172_runtime_remesh_relative_defect.py` adds the conditional robust envelope
-`q_eff=q*(1+eta)`, where `eta` bounds the signed pre-schedule centered-energy
-defect relative to the Jensen input energy `J`. Its three-cycle dyadic witness
-has zero defect and spans one complete universal block; its `alpha=0.4`
-witness retains a positive binary64 defect and accepts the exact minimum
-`eta`. The causal observer verifies every selected `J`, defect, schedule gain,
-history-energy vector and finite endpoint bound. It does not establish a
-forward-invariant runtime class, repeated or future binary64 stability, solver
-properties or full TNFR stability.
-
-`173_binary64_remesh_relative_defect.py` isolates the sharp represented-number
-boundary. Its normal-valued `alpha=1/2` pair requires exactly
-`eta=2^210-1/4`, hence strict robust-envelope contraction requires
-`q<4/(2^212+3)`; the bounded interval alone cannot promote the implemented
-`q=9/16` witness policy. Separately, the sufficient-history `alpha=1`
-hard-clip class has uniform `eta=0` and is forward invariant under REMESH alone
-on its fixed support and metric. It does not certify a common schedule family,
-schedule composition, repeated runtime stability or future execution.
-
-`174_binary64_p2_reception_remesh_stability.py` supplies the first restricted
-global numeric EPI-kernel composition. On two mutual singleton neighbors, the
-configured binary64 half-Reception Jacobi kernel maps every finite represented
-pair in a common hard interval to numeric consensus, so `q=0`. With the `alpha=1`,
-`eta=0` REMESH class, active-history spatial disagreement is exactly zero after
-`tau_global+1` cycles of the restricted kernels. The example keeps the complete
-Reception stage, grammar, live graph execution and solver outside scope.
-
-`175_runtime_p2_reception_stage.py` crosses the finite causal stage boundary.
-It executes one grammar-admitted two-phase EN event on a real P2 graph and
-binds the sealed targets, runtime neighbors, exact half mix, hard interval,
-metric ray and captured endpoints to the global `q=0` kernel by bit-exact
-replay. It does not bind REMESH history/configuration to that graph, certify
-all auxiliary Reception state, or establish repeated/future runtime stability.
-
-`176_runtime_p2_reception_remesh_sequence.py` binds the two restricted kernels
-inside one completed graph-owned causal sequence. Each observed cycle retains
-an executor-owned half-Reception EN stage with `q=0` and an applied
-`alpha=1` hard-clipped REMESH global-delay copy with `eta=0`. Once
-`N >= L = tau_global+1`, the active suffix of `L` history rows and the recorded
-post-horizon endpoint have zero spatial disagreement. Older inactive history
-rows may remain outside the source interval. The example does not certify
-future or unobserved repetition, auxiliary state, solver behavior or full TNFR
-stability.
-
-`177_runtime_p2_reception_remesh_policy.py` executes that restricted word
-through the reusable transactional policy twice on the same graph. Before each
-call it revalidates the live P2 support, metric, exact half-Reception factor,
-hard-clipped `alpha=1` REMESH controls, active incoming history and zero-flow
-cycle schedules, and it rederives U1a admission at every cycle start. Execution
-and finite post-certification share one outer graph transaction. The two returned
-certificates have independent finite provenance;
-neither certifies a later invocation, auxiliary-state stability, solver behavior
-or full TNFR stability.
-
-`178_half_alpha_antisymmetric_remesh_class.py` certifies the first useful
-represented REMESH subclass with `0<alpha<1`. On ordered P2 support, fixed
-positive metric and delays, `alpha=1/2`, a symmetric hard interval containing
-`4*2^-1074`, and sufficient antisymmetric rows `(a,-a)`, the production map is
-forward invariant and has sharp uniform `eta=135/124`. The report exposes the
-analytic `sqrt(D)>=11*2^-1074` tail and the exact 6,615-candidate/3,890-admissible
-finite core, whose maximizer is `(-3,-2,-3)`. It then composes `q=4/9` into
-`q_eff=259/279` with margin `20/279`, records the zero-margin boundary
-`q=124/259`, and shows why general metric-centered rows and a fixed unit lattice
-are outside the class. It does not certify a schedule implementation, graph or
-event execution, repeated complete-runtime behavior or future stability.
+Optional plots require the `viz-basic` extra. Retained outputs are the
+[figure](../docs/assets/phase_form_driven_response/phase_form_driven_response.png),
+[JSON](../docs/assets/phase_form_driven_response/phase_form_driven_response.json)
+and [CSV](../docs/assets/phase_form_driven_response/phase_form_driven_response.csv).
+Their recorded residuals and refinements are finite evidence, not autonomous
+formation or a physical identification.
