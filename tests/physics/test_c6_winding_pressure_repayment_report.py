@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 
 from benchmarks import c6_winding_pressure_repayment as campaign
+from tests.c6_lineage_fixtures import write_synthetic_c6_lineage
 
 DIRECTORY = Path(__file__).resolve().parents[2] / "artifacts/research"
 INPUTS = tuple(
@@ -452,9 +453,7 @@ def test_cli_retains_three_source_hashes_and_separate_producer_manifest(
 def test_cli_checks_parent_and_source_byte_lineage_before_analysis(
     tmp_path, monkeypatch, wrong_index
 ):
-    paths = tuple(tmp_path / f"input_{i}.json" for i in range(3))
-    for i, (path, source) in enumerate(zip(paths, INPUTS, strict=True)):
-        path.write_bytes(source.read_bytes() + (b"\n" if i == wrong_index else b""))
+    paths = write_synthetic_c6_lineage(tmp_path, 3)
     output = tmp_path / "result.json"
     monkeypatch.setattr(
         sys,
@@ -476,6 +475,10 @@ def test_cli_checks_parent_and_source_byte_lineage_before_analysis(
         raise AssertionError("lineage failure must precede analysis")
 
     monkeypatch.setattr(campaign, "analyze_c6_winding_pressure_repayment", forbidden)
+    monkeypatch.setattr(campaign, "current_git_source_provenance", lambda *args: None)
+    with pytest.raises(AssertionError, match="lineage failure must precede analysis"):
+        campaign.main()
+    paths[wrong_index].write_bytes(paths[wrong_index].read_bytes() + b"\n")
     with pytest.raises(ValueError, match="lineage hashes"):
         campaign.main()
     assert not output.exists()

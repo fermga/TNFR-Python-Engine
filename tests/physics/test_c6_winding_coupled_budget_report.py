@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from benchmarks import c6_winding_coupled_budget as campaign
+from tests.c6_lineage_fixtures import write_synthetic_c6_lineage
 
 DIRECTORY = Path(__file__).resolve().parents[2] / "artifacts/research"
 INPUTS = tuple(DIRECTORY / name for name in campaign.INPUT_NAMES)
@@ -521,9 +522,7 @@ def test_cli_binds_six_input_hashes_and_output_source_identity(
 def test_cli_validates_all_historical_byte_links_before_analysis(
     tmp_path, monkeypatch, changed_index
 ):
-    paths = tuple(tmp_path / f"source_{i}.json" for i in range(6))
-    for i, (path, source) in enumerate(zip(paths, INPUTS, strict=True)):
-        path.write_bytes(source.read_bytes() + (b"\n" if i == changed_index else b""))
+    paths = write_synthetic_c6_lineage(tmp_path, 6)
     output = tmp_path / "report.json"
     _cli(monkeypatch, paths, output)
 
@@ -531,6 +530,10 @@ def test_cli_validates_all_historical_byte_links_before_analysis(
         raise AssertionError("invalid historical hashes must fail before analysis")
 
     monkeypatch.setattr(campaign, "analyze_c6_winding_coupled_budget", forbidden)
+    monkeypatch.setattr(campaign, "current_git_source_provenance", lambda *args: None)
+    with pytest.raises(AssertionError, match="invalid historical hashes"):
+        campaign.main()
+    paths[changed_index].write_bytes(paths[changed_index].read_bytes() + b"\n")
     with pytest.raises(ValueError, match="lineage hashes"):
         campaign.main()
     assert not output.exists()

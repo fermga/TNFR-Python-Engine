@@ -6,8 +6,10 @@ No graph trajectory, operator, topology update or pressure write is executed.
 
 from copy import deepcopy
 from fractions import Fraction
+from math import ulp
 
 import networkx as nx
+import numpy as np
 import pytest
 
 from tnfr.dynamics.dnfr import default_compute_delta_nfr
@@ -126,7 +128,10 @@ def test_same_initial_support_has_distinct_declared_tangents_and_energy_work():
 
 
 @pytest.mark.parametrize("explicit_lengths", (False, True))
-def test_potential_distinguishes_metric_length_from_conductance(explicit_lengths):
+@pytest.mark.parametrize("triangle", ("L", "U"))
+def test_potential_distinguishes_metric_length_from_conductance(
+    explicit_lengths, triangle, monkeypatch
+):
     first = _graph(explicit_lengths=explicit_lengths)
     second = _graph(2, explicit_lengths=explicit_lengths)
     before = compute_structural_potential(first)
@@ -139,10 +144,20 @@ def test_potential_distinguishes_metric_length_from_conductance(explicit_lengths
     assert compute_phase_curvature(first) == compute_phase_curvature(second)
     # Four nodes cannot supply the correlation fit's ten distinct pairs.
     # This explicitly tests the normalized-spectrum fallback, not every xi fit.
+    eigvalsh = np.linalg.eigvalsh
+    monkeypatch.setattr(
+        np.linalg, "eigvalsh", lambda matrix: eigvalsh(matrix, UPLO=triangle)
+    )
     xi_first = estimate_coherence_length_with_provenance(first)
     xi_second = estimate_coherence_length_with_provenance(second)
     assert xi_first.method == xi_second.method == "spectral_gap"
-    assert xi_first.value == xi_second.value
+    # A positive weighted three-leaf star has exact normalized spectrum
+    # (0, 1, 1, 2), hence xi=1. Square-root normalization and either equivalent
+    # LAPACK triangle route can differ in their last bits under scaling.
+    # This is a numerical test tolerance, not a universal solver error bound.
+    assert (xi_first.value, xi_second.value) == pytest.approx(
+        (1.0, 1.0), rel=0.0, abs=16 * ulp(1.0)
+    )
 
 
 def test_zero_conductance_support_still_changes_non_epi_channels():

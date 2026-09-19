@@ -25,6 +25,10 @@ percentage, prove physical theorems or certify every optional backend. Audit
 coverage excludes optional compute, documentation and deployment environments
 unless their dependencies happen to be installed through the declared groups.
 
+Each Python test job attempts to retain its JUnit report for 14 days, including
+when tests fail. A report from an interrupted run covers only the tests reached;
+its presence does not establish completion or success.
+
 ## Documentation publication
 
 The documentation workflow validates repository sources, stages them through

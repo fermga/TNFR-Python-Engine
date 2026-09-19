@@ -17,7 +17,7 @@ from tnfr.physics.transient_u2 import restricted_generator
 
 
 @pytest.fixture(scope="module")
-def benchmark() -> NonnormalPredictionCertificate:
+def nonnormal_prediction_certificate() -> NonnormalPredictionCertificate:
     return benchmark_nonnormal_prediction(deterministic_directed_family())
 
 
@@ -58,8 +58,10 @@ def test_single_graph_api_exposes_both_prediction_rules():
     assert record.measured_pressure_burst
 
 
-def test_measured_peak_is_attained_by_a_pressure_witness(benchmark):
-    record = benchmark.records[4]
+def test_measured_peak_is_attained_by_a_pressure_witness(
+    nonnormal_prediction_certificate,
+):
+    record = nonnormal_prediction_certificate.records[4]
     assert record.measured_pressure_burst
     laplacian = restricted_generator(deterministic_directed_family()[4])
     propagator = matrix_exponential(-record.peak_time_structural * laplacian)
@@ -69,66 +71,97 @@ def test_measured_peak_is_attained_by_a_pressure_witness(benchmark):
     assert witness_gain == pytest.approx(record.peak_pressure_gain, rel=1e-10)
 
 
-def test_default_family_separates_asymptotic_and_transient_rules(benchmark):
-    assert benchmark.family_size == 16
-    assert benchmark.calibration_size == 8
-    assert benchmark.holdout_size == 8
-    assert benchmark.measured_burst_count == 4
-    assert benchmark.resolved_lognorm_sign_count == benchmark.family_size
-    assert benchmark.unresolved_lognorm_sign_count == 0
-    assert benchmark.all_lognorm_signs_numerically_resolved
+def test_default_family_separates_asymptotic_and_transient_rules(
+    nonnormal_prediction_certificate,
+):
+    assert nonnormal_prediction_certificate.family_size == 16
+    assert nonnormal_prediction_certificate.calibration_size == 8
+    assert nonnormal_prediction_certificate.holdout_size == 8
+    assert nonnormal_prediction_certificate.measured_burst_count == 4
     assert (
-        benchmark.lognorm_verification_status
+        nonnormal_prediction_certificate.resolved_lognorm_sign_count
+        == nonnormal_prediction_certificate.family_size
+    )
+    assert nonnormal_prediction_certificate.unresolved_lognorm_sign_count == 0
+    assert nonnormal_prediction_certificate.all_lognorm_signs_numerically_resolved
+    assert (
+        nonnormal_prediction_certificate.lognorm_verification_status
         == "all_signs_resolved_and_scan_consistent"
     )
-    assert benchmark.all_spectrally_stable
-    assert benchmark.scan_consistent_with_lognorm_theorem
-    assert benchmark.records[0].lognorm_numerical_sign_status == (
-        "resolved_nonpositive"
+    assert nonnormal_prediction_certificate.all_spectrally_stable
+    assert nonnormal_prediction_certificate.scan_consistent_with_lognorm_theorem
+    assert nonnormal_prediction_certificate.records[
+        0
+    ].lognorm_numerical_sign_status == ("resolved_nonpositive")
+    assert (
+        nonnormal_prediction_certificate.records[0].lognorm_rule_predicts_burst is False
     )
-    assert benchmark.records[0].lognorm_rule_predicts_burst is False
 
     # A stable-spectrum-only rule labels all cases safe and misses every burst.
-    assert benchmark.spectral_rule_accuracy == pytest.approx(0.75)
-    assert benchmark.spectral_rule_balanced_accuracy == pytest.approx(0.5)
-    # The logarithmic-norm sign is the exact linear transient criterion.
-    assert benchmark.lognorm_rule_accuracy == pytest.approx(1.0)
-    assert benchmark.lognorm_rule_balanced_accuracy == pytest.approx(1.0)
-
-
-def test_analytic_rule_remains_exact_on_predeclared_holdout(benchmark):
-    assert benchmark.calibration_spectral_accuracy == pytest.approx(0.75)
-    assert benchmark.holdout_spectral_accuracy == pytest.approx(0.75)
-    assert benchmark.calibration_lognorm_accuracy == pytest.approx(1.0)
-    assert benchmark.holdout_lognorm_accuracy == pytest.approx(1.0)
-    assert "no fitted coefficients" in benchmark.split_rule
-
-
-def test_nonnormal_predictors_rank_gain_better_in_this_finite_family(benchmark):
-    assert (
-        benchmark.spearman_numerical_abscissa_vs_gain
-        > benchmark.spearman_spectral_abscissa_vs_gain
+    assert nonnormal_prediction_certificate.spectral_rule_accuracy == pytest.approx(
+        0.75
     )
     assert (
-        benchmark.spearman_kreiss_bound_vs_gain
-        > benchmark.spearman_spectral_abscissa_vs_gain
+        nonnormal_prediction_certificate.spectral_rule_balanced_accuracy
+        == pytest.approx(0.5)
+    )
+    # The logarithmic-norm sign is the exact linear transient criterion.
+    assert nonnormal_prediction_certificate.lognorm_rule_accuracy == pytest.approx(1.0)
+    assert (
+        nonnormal_prediction_certificate.lognorm_rule_balanced_accuracy
+        == pytest.approx(1.0)
+    )
+
+
+def test_analytic_rule_remains_exact_on_predeclared_holdout(
+    nonnormal_prediction_certificate,
+):
+    assert (
+        nonnormal_prediction_certificate.calibration_spectral_accuracy
+        == pytest.approx(0.75)
+    )
+    assert nonnormal_prediction_certificate.holdout_spectral_accuracy == pytest.approx(
+        0.75
+    )
+    assert (
+        nonnormal_prediction_certificate.calibration_lognorm_accuracy
+        == pytest.approx(1.0)
+    )
+    assert nonnormal_prediction_certificate.holdout_lognorm_accuracy == pytest.approx(
+        1.0
+    )
+    assert "no fitted coefficients" in nonnormal_prediction_certificate.split_rule
+
+
+def test_nonnormal_predictors_rank_gain_better_in_this_finite_family(
+    nonnormal_prediction_certificate,
+):
+    assert (
+        nonnormal_prediction_certificate.spearman_numerical_abscissa_vs_gain
+        > nonnormal_prediction_certificate.spearman_spectral_abscissa_vs_gain
+    )
+    assert (
+        nonnormal_prediction_certificate.spearman_kreiss_bound_vs_gain
+        > nonnormal_prediction_certificate.spearman_spectral_abscissa_vs_gain
     )
     # Commutator size detects non-normality but does not order transient risk here.
     assert (
-        benchmark.spearman_numerical_abscissa_vs_gain
-        > benchmark.spearman_normality_residual_vs_gain
+        nonnormal_prediction_certificate.spearman_numerical_abscissa_vs_gain
+        > nonnormal_prediction_certificate.spearman_normality_residual_vs_gain
     )
-    for record in benchmark.records:
+    for record in nonnormal_prediction_certificate.records:
         assert record.kreiss_lower_bound <= (
             record.peak_pressure_gain * (1.0 + 1e-6) + record.tolerance
         )
 
 
-def test_claim_status_keeps_exact_measured_and_open_scopes_separate(benchmark):
-    assert "EXACT" in benchmark.claim_status
-    assert "MEASURED" in benchmark.claim_status
-    assert "OPEN" in benchmark.claim_status
-    assert "p=-L_rw x" in benchmark.pressure_semigroup_identity
+def test_claim_status_keeps_exact_measured_and_open_scopes_separate(
+    nonnormal_prediction_certificate,
+):
+    assert "EXACT" in nonnormal_prediction_certificate.claim_status
+    assert "MEASURED" in nonnormal_prediction_certificate.claim_status
+    assert "OPEN" in nonnormal_prediction_certificate.claim_status
+    assert "p=-L_rw x" in nonnormal_prediction_certificate.pressure_semigroup_identity
 
 
 def test_near_zero_lognorm_sign_abstains_from_exact_numerical_verification():
@@ -255,6 +288,10 @@ def test_single_graph_rejects_boolean_conductance():
         measure_nonnormal_pressure_prediction(np.array([[False, True], [True, False]]))
 
 
-def test_public_records_are_typed_and_indexed(benchmark):
-    assert isinstance(benchmark.records[0], NonnormalPredictorRecord)
-    assert [record.index for record in benchmark.records] == list(range(16))
+def test_public_records_are_typed_and_indexed(nonnormal_prediction_certificate):
+    assert isinstance(
+        nonnormal_prediction_certificate.records[0], NonnormalPredictorRecord
+    )
+    assert [
+        record.index for record in nonnormal_prediction_certificate.records
+    ] == list(range(16))

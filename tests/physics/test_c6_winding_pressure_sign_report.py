@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from benchmarks import c6_winding_pressure_sign as campaign
+from tests.c6_lineage_fixtures import write_synthetic_c6_lineage
 
 ARTIFACTS = Path(__file__).resolve().parents[2] / "artifacts/research"
 PARENT = ARTIFACTS / "c6_winding_carry_itinerary.json"
@@ -461,11 +462,8 @@ def test_cli_binds_both_distinct_input_hashes_and_retains_historical_sources(
 
 
 def test_cli_rejects_wrong_source_bytes_before_replay(tmp_path, monkeypatch):
-    parent_path, source_path, output = (
-        tmp_path / name for name in ("parent.json", "source.json", "output.json")
-    )
-    parent_path.write_bytes(PARENT.read_bytes())
-    source_path.write_bytes(SOURCE.read_bytes() + b"\n")
+    parent_path, source_path = write_synthetic_c6_lineage(tmp_path, 2)
+    output = tmp_path / "output.json"
     monkeypatch.setattr(
         sys,
         "argv",
@@ -484,6 +482,10 @@ def test_cli_rejects_wrong_source_bytes_before_replay(tmp_path, monkeypatch):
         raise AssertionError("the wrong source bytes must fail before replay")
 
     monkeypatch.setattr(campaign, "analyze_c6_winding_pressure_sign", forbidden)
+    monkeypatch.setattr(campaign, "current_git_source_provenance", lambda *args: None)
+    with pytest.raises(AssertionError, match="the wrong source bytes"):
+        campaign.main()
+    source_path.write_bytes(source_path.read_bytes() + b"\n")
     with pytest.raises(ValueError, match="lineage hash"):
         campaign.main()
     assert not output.exists()

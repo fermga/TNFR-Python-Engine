@@ -52,6 +52,10 @@ def test_composite_requests_each_base_field_once(monkeypatch, readout):
     counts = Counter()
     for module in (unified, variational, conservation):
         for name in READERS:
+            # Instrument existing call sites; a module need not re-export every
+            # kernel used by the shared capture in unified.
+            if name not in vars(module):
+                continue
             original = getattr(module, name)
 
             def counted(*args, _name=name, _original=original, **kwargs):

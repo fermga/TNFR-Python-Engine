@@ -119,10 +119,19 @@ jobs:
 
       - name: Run unit tests
         if: matrix.python-version != '3.11'
-        run: python -m pytest
+        run: python -m pytest --junitxml=test-results/pytest.xml
 
       - name: Run unit tests with coverage
         if: matrix.python-version == '3.11'
         run: |
-          python -m coverage run --source=src -m pytest
+          python -m coverage run --source=src -m pytest --junitxml=test-results/pytest.xml
           python -m coverage report -m
+
+      - name: Retain test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-python-${{ matrix.python-version }}
+          path: test-results/pytest.xml
+          if-no-files-found: warn
+          retention-days: 14
