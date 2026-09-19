@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
 from typing import Any
-
-from ..utils import normalize_optional_int
 
 
 def spec(opt: str, /, **kwargs: Any) -> tuple[str, dict[str, Any]]:
@@ -33,19 +30,3 @@ def spec(opt: str, /, **kwargs: Any) -> tuple[str, dict[str, Any]]:
     kwargs.setdefault("dest", opt.lstrip("-").replace("-", "_").replace(".", "_"))
     kwargs.setdefault("default", None)
     return opt, kwargs
-
-
-def _parse_cli_variants(values: Iterable[Any] | None) -> list[int | None]:
-    """Return a stable list of integer/``None`` variants for the CLI options."""
-
-    if values is None:
-        return [None]
-    parsed: list[int | None] = []
-    seen: set[int | None] = set()
-    for raw in values:
-        coerced = normalize_optional_int(raw, strict=True)
-        if coerced in seen:
-            continue
-        seen.add(coerced)
-        parsed.append(coerced)
-    return parsed or [None]

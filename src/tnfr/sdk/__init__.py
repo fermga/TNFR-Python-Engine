@@ -1,42 +1,13 @@
-"""TNFR SDK - API for TNFR Networks.
+"""SDK interfaces for declared TNFR graph construction, execution and observation.
 
-The TNFR SDK provides an intuitive, production-ready interface for creating,
-evolving, and analyzing Resonant Fractal Networks with complete theoretical
-fidelity. Designed for both newcomers and experts.
+``TNFR`` and ``Network`` provide the compact chainable interface;
+``TNFRNetwork`` retains the configurable fluent workflows. ``StudySpec`` and
+``run_study`` share finite operator recipes and JSON reports with the CLI.
+``diagnose_network`` reads detached state with explicit field availability.
+These interfaces reuse implemented model and grammar contracts. Their results
+are not complete state reconstruction, autonomous-law or physical certificates.
 
-**CORE PHILOSOPHY**: Maximum power, minimum complexity.
-
-**QUICK START**:
-```python
-from tnfr.sdk import TNFR
-
-# One-line network creation and evolution
-results = TNFR.create(10).ring().evolve(5).results()
-print(f'Coherence: {results.coherence:.3f}')
-```
-
-**PRIMARY API**:
-----------
-**TNFR**
-    Static factory for instant network creation with method chaining.
-**Network**
-    Core network class with essential TNFR operations.
-**Results**
-    Lightweight results container with key metrics.
-
-**ADVANCED FEATURES**:
----------
-**auto_optimize()**
-    One-line self-optimization using unified field analysis.
-**template(name)**
-    Pre-configured networks for common use cases.
-**compare(*networks)**
-    Multi-network analysis and comparison.
-    Import network data from JSON file.
-format_comparison_table
-    Format network comparison as readable table.
-suggest_sequence_for_goal
-    Suggest operator sequence for a specific goal.
+Usage, report scope and reproducibility: ``docs/CLI_AND_SDK.md``.
 """
 
 from __future__ import annotations
@@ -44,6 +15,12 @@ from __future__ import annotations
 from typing import Any
 
 __all__ = [
+    "StudySpec",
+    "StudyResult",
+    "run_study",
+    "diagnose_network",
+    "list_sequences",
+    "STUDY_TOPOLOGIES",
     # Simplified API (recommended entry point)
     "TNFR",
     "Network",
@@ -80,6 +57,17 @@ __all__ = [
 
 def __getattr__(name: str) -> Any:
     """Lazy load SDK components."""
+    if name in (
+        "StudySpec",
+        "StudyResult",
+        "run_study",
+        "diagnose_network",
+        "list_sequences",
+        "STUDY_TOPOLOGIES",
+    ):
+        from . import study
+
+        return getattr(study, name)
     if name in (
         "TNFR",
         "Network",

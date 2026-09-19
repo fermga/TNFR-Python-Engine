@@ -23,27 +23,19 @@ validate_sequence
     Grammar guard that ensures operator trajectories stay within TNFR
     closure rules before execution.
 
-CRITICAL TECHNICAL NOTE (Context Override for Pre-existing EPI - Nov 2025):
----------------------------------------------------------------------------
-run_sequence() automatically detects when a node has pre-existing EPI (EPI ≠ 0)
-and passes context={'initial_epi_nonzero': True} to validate_sequence().
+Context-sensitive word admission
+-------------------------------
+run_sequence() detects pre-existing nonzero EPI and supplies
+context={'initial_epi_nonzero': True} to validate_sequence(). With zero EPI,
+the configured U1a word policy requires an initiating generator; existing
+nonzero form admits the corresponding contextual exception. Live operator
+preconditions and the other applicable grammar checks still apply.
 
-This bypasses the U1a generator requirement, which states that sequences
-must start with a generator {AL, NAV, REMESH} when EPI=0.
-
-**Physics Rationale**:
-- U1a exists because ∂EPI/∂t is undefined at EPI=0 (no structure to evolve)
-- When EPI already exists, the node has structure that CAN evolve
-- Applying operators like Coherence, Resonance, etc. is physically valid
-- Strict U1a enforcement would prevent legitimate operations on existing nodes
-
-**Implementation**: check_epi_nonzero() examines node EPI attribute:
-  - If EPI ≠ 0: auto-pass context override to grammar validator
-  - If EPI = 0: strict U1a enforcement (must start with generator)
-
-**Canonicity Preserved**: This does NOT weaken grammar. U1a's physical
-basis (undefined evolution at EPI=0) does not apply when structure exists.
-The override is a necessary operational flexibility, not a violation.
+The nodal product is defined at EPI=0 when its capacity and pressure inputs are
+defined. Zero form therefore does not mathematically imply undefined evolution.
+This contextual admission policy is an implemented engine convention, not a
+derivation of U1a or a guarantee of the admitted trajectory's stability. See
+``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md`` for the mathematical boundary.
 
 See: run_sequence() context detection, grammar_patterns._check_start_rule()
 """

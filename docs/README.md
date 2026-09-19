@@ -10,6 +10,7 @@ provides the detailed scientific-document inventory and status.
 | Responsibility | Maintained owner | Source or evidence boundary |
 | --- | --- | --- |
 | Installation and first use | [Root README](../README.md) | Version/dependencies in `pyproject.toml`; executable example checked by documentation gate |
+| CLI and SDK studies | [CLI and SDK guide](CLI_AND_SDK.md) | Shared study declarations, finite execution, diagnostic availability and JSON export |
 | Working conventions and invariants | [AGENTS](../AGENTS.md) | Exact mirror at `.github/agents/my-agent.md`; synthesis, not a duplicate research ledger |
 | Package boundaries and execution paths | [Architecture](../ARCHITECTURE.md) | Actual modules and dispatch paths |
 | Test selection and local verification | [Testing](../TESTING.md) | `pyproject.toml`, test configuration and executable test paths |

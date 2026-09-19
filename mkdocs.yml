@@ -46,6 +46,7 @@ nav:
   - Home: index.md
   - Canonical reference: AGENTS.md
   - Architecture: ARCHITECTURE.md
+  - CLI and SDK: docs/CLI_AND_SDK.md
   - Torch backend: docs/TORCH_BACKEND.md
   - Technical documentation:
       - Hub: docs/README.md

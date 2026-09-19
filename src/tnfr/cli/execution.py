@@ -6,7 +6,6 @@ import argparse
 from collections import deque
 from collections.abc import Iterable, Mapping, Sized
 from copy import deepcopy
-from importlib import import_module
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -47,6 +46,7 @@ from ..metrics import (
 )
 from ..metrics.core import _metrics_step
 from ..ontosim import prepare_network
+from ..sdk._topology import nonnegative_integer
 from ..sense import register_sigma_callback
 from ..trace import register_trace
 from ..types import ProgramTokens
@@ -61,7 +61,6 @@ from ..utils import (
 )
 from ..validation import NFRValidator, validate_canon
 from .arguments import _args_to_dict
-from .utils import _parse_cli_variants
 
 logger = get_logger(__name__)
 
@@ -513,6 +512,8 @@ def resolve_program(
 ) -> ProgramTokens | None:
     """Resolve preset/sequence inputs into program tokens."""
 
+    if getattr(args, "preset", None) and getattr(args, "sequence_file", None):
+        raise ValueError("Cannot use --preset and --sequence-file at the same time")
     if getattr(args, "preset", None):
         try:
             return get_preset(args.preset)
@@ -545,9 +546,7 @@ def run_program(
 
     if program is None:
         steps = getattr(args, "steps", 100)
-        steps = 100 if steps is None else int(steps)
-        if steps < 0:
-            steps = 0
+        steps = 100 if steps is None else nonnegative_integer(steps, "steps")
 
         run_kwargs: dict[str, Any] = {}
         for attr in ("dt", "use_Si", "apply_glyphs"):
@@ -780,9 +779,6 @@ def cmd_run(args: argparse.Namespace) -> int:
 def cmd_sequence(args: argparse.Namespace) -> int:
     """Execute ``tnfr sequence`` returning the exit status."""
 
-    if args.preset and args.sequence_file:
-        logger.error("Cannot use --preset and --sequence-file at the same time")
-        return 1
     code, _ = _run_cli_program(args, default_program=get_preset(CANONICAL_PRESET_NAME))
     return code
 
@@ -803,64 +799,7 @@ def cmd_metrics(args: argparse.Namespace) -> int:
     if args.save:
         _save_json(args.save, out)
     else:
-        logger.info("%s", json_dumps(out))
-    return 0
-
-
-def cmd_profile_si(args: argparse.Namespace) -> int:
-    """Execute ``tnfr profile-si`` returning the exit status."""
-
-    try:
-        profile_module = import_module("benchmarks.compute_si_profile")
-    except ModuleNotFoundError as exc:  # pragma: no cover - optional dependency
-        logger.error("Sense Index profiling helpers unavailable: %s", exc)
-        return 1
-
-    profile_compute_si = getattr(profile_module, "profile_compute_si")
-
-    profile_compute_si(
-        node_count=int(args.nodes),
-        chord_step=int(args.chord_step),
-        loops=int(args.loops),
-        output_dir=Path(args.output_dir),
-        fmt=str(args.format),
-        sort=str(args.sort),
-    )
-    return 0
-
-
-def cmd_profile_pipeline(args: argparse.Namespace) -> int:
-    """Execute ``tnfr profile-pipeline`` returning the exit status."""
-
-    try:
-        profile_module = import_module("benchmarks.full_pipeline_profile")
-    except ModuleNotFoundError as exc:  # pragma: no cover - optional dependency
-        logger.error("Full pipeline profiling helpers unavailable: %s", exc)
-        return 1
-
-    profile_full_pipeline = getattr(profile_module, "profile_full_pipeline")
-
-    try:
-        si_chunk_sizes = _parse_cli_variants(getattr(args, "si_chunk_sizes", None))
-        dnfr_chunk_sizes = _parse_cli_variants(getattr(args, "dnfr_chunk_sizes", None))
-        si_workers = _parse_cli_variants(getattr(args, "si_workers", None))
-        dnfr_workers = _parse_cli_variants(getattr(args, "dnfr_workers", None))
-    except ValueError as exc:
-        logger.error("%s", exc)
-        return 2
-
-    profile_full_pipeline(
-        node_count=int(args.nodes),
-        edge_probability=float(args.edge_probability),
-        loops=int(args.loops),
-        seed=int(args.seed),
-        output_dir=Path(args.output_dir),
-        sort=str(args.sort),
-        si_chunk_sizes=si_chunk_sizes,
-        dnfr_chunk_sizes=dnfr_chunk_sizes,
-        si_workers=si_workers,
-        dnfr_workers=dnfr_workers,
-    )
+        print(json_dumps(out))
     return 0
 
 

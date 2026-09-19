@@ -34,6 +34,16 @@ All notable changes to this project will be documented in this file.
 
 ### Maintenance and compatibility
 
+- Added a shared SDK study API and the `tnfr network`, `operators` and
+  `sequences` commands, also available through `python -m tnfr`. Validated JSON
+  recipes use existing topology builders and operator words; reports retain
+  input state, versions, diagnostic availability and estimator provenance.
+- Added a runnable study example and one CLI/SDK guide. Recipe cycles count
+  operator words, not physical time; recipes are not complete engine checkpoints.
+- Keep CLI logs on stderr without replacing application logging handlers.
+  Structured stdout is portable to Windows code pages, and report files use
+  the shared atomic JSON writer. Reject conflicting inputs and invalid step
+  counts before execution. Remove unavailable legacy profiling commands.
 - Removed dead workflow/profiler entry points and two obsolete benchmarks;
   current owners and original/archive hashes are recorded in the retirement manifests.
 - Reduced documentation dependencies to the active MkDocs toolchain and release

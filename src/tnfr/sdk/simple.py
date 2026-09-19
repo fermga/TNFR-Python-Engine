@@ -1042,8 +1042,9 @@ class Network:
             Network label.
         seed : int, optional
             Seed governing the stochastic topology builders (``random``,
-            ``small_world``, ``scale_free``) so identical seeds reproduce
-            identical trajectories (canonical invariant #6).
+            ``small_world``, ``scale_free``). Runtime operators resolve their
+            separate graph ``RANDOM_SEED`` setting. Use ``run_study`` to supply
+            the same declared seed to topology and runtime owners.
         """
         self.G = graph
         self.name = name
@@ -2564,14 +2565,14 @@ class TNFR:
     def create(
         num_nodes: int, name: str = "network", seed: int | None = None
     ) -> Network:
-        """Create a TNFR network of nodes in structural vacuum.
+        """Create nodes with the supplied baseline EPI=0, nu_f=1, theta=0.
 
-        Each node is anchored via :func:`create_nfr` with the canonical
-        triad initialised to the structural vacuum: EPI = 0, νf = 1 Hz_str,
-        θ = 0. **Form (EPI) is not assigned here** -- it emerges canonically
-        from the Emission generator the first time :meth:`evolve` runs a
-        sequence (invariant #1; grammar U1). The *seed* governs the
-        stochastic topology builders for reproducibility (invariant #6).
+        Each node is initialized through :func:`create_nfr`. This zero-form
+        preparation is an existing nodal substrate, not an absence of state.
+        A later sequence can change form through its admitted operators; AL
+        supplies its configured activation map when that operator executes.
+        Zero cycles make no such change, and this construction does not prove
+        spontaneous substrate creation or autonomous pattern formation.
 
         Parameters
         ----------
@@ -2580,13 +2581,14 @@ class TNFR:
         name : str
             Optional network label.
         seed : int, optional
-            Seed propagated to ``random``/``small_world``/``scale_free`` so
-            identical seeds reproduce identical trajectories.
+            Seed propagated to ``random``/``small_world``/``scale_free`` for
+            topology construction. Runtime operator randomness uses the separate
+            graph ``RANDOM_SEED`` setting; ``run_study`` supplies both seeds.
 
         Returns
         -------
         Network
-            Network of nodes in vacuum, ready for topology and evolution.
+            Prepared zero-form nodes, ready for topology and declared evolution.
 
         Examples
         --------
@@ -2633,6 +2635,7 @@ class TNFR:
 
         def _to_dict(c: Any) -> dict[str, Any]:
             return {
+                "token": c.name,
                 "name": c.english_name,
                 "glyph": c.glyph,
                 "channel": c.primary_channel.value,
@@ -3083,70 +3086,29 @@ class TNFR:
 
     @staticmethod
     def guide() -> str:
-        """Print and return a theory-to-code discovery map.
-
-        Lists every major SDK method alongside the TNFR theory document
-        and example that demonstrates it, enabling quick navigation from
-        code to physics and back.
-
-        Returns:
-            Formatted guide string (also printed to stdout).
-
-        Example:
-            >>> TNFR.guide()
-        """
+        """Print and return the maintained SDK task and documentation map."""
         lines = [
-            "TNFR SDK — Theory-to-Code Guide",
-            "=" * 50,
+            "TNFR SDK — Task Guide",
+            "=" * 45,
+            "Create support: TNFR.create(n).ring() / .path() / .random(p)",
+            "Execute registered words: network.evolve(steps, sequence=name)",
+            "Discover contracts: TNFR.operators() and list_sequences()",
+            "Read stored state: diagnose_network(network)",
+            "Run a declared study: run_study(StudySpec(...))",
+            "Save a recipe/report: export_to_json(value, path)",
             "",
-            "SDK Method                     Theory                                        Example",
-            "-" * 100,
-            "TNFR.create(n).ring()          FUNDAMENTAL_THEORY.md                         01-03, 05-06, 08",
-            ".small_world(k, p)             FUNDAMENTAL_THEORY.md                         31, 34",
-            ".scale_free(m)                 FUNDAMENTAL_THEORY.md                         34",
-            ".grid(rows, cols)              FUNDAMENTAL_THEORY.md                         34",
-            ".path()                        FUNDAMENTAL_THEORY.md                         —",
-            ".tetrad()                      EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md      20, unified_fields_showcase",
-            ".conservation()                STRUCTURAL_CONSERVATION_THEOREM.md             17, 24, 34",
-            ".evolve_grammar_aware(steps)   UNIFIED_GRAMMAR_RULES.md                      04, 07",
-            ".integrity_check()             STRUCTURAL_STABILITY_AND_DYNAMICS.md           29",
-            ".complex_field()               EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md      33",
-            ".j_phi() / .j_dnfr()          EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md      33",
-            ".tensor_invariants()           EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md      20, 33",
-            ".emergent_fields()             EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md      33",
-            ".structural_charge()           STRUCTURAL_CONSERVATION_THEOREM.md             17, 34",
-            ".candidate_energy()            STRUCTURAL_CONSERVATION_THEOREM.md             17, 34",
-            ".noether_charge() [alias]      STRUCTURAL_CONSERVATION_THEOREM.md             34",
-            ".energy() [alias]              STRUCTURAL_CONSERVATION_THEOREM.md             34",
-            ".nodal_state(node)             TNFR.pdf §2.1 (nodal equation)                 04, 05",
-            ".nodal_scan()                  TNFR.pdf §2.1 + U4 bifurcation diagnostics      07",
-            ".nodal_profile(node)           TNFR nodal telemetry bridge                     10",
-            ".nfr()                         TNFR.pdf §1.4.1 (NFR region of coherence)        —",
-            ".balance_alerts()              STRUCTURAL_CONSERVATION_THEOREM.md ss12        17, 36",
-            ".grammar_violations() [alias]  STRUCTURAL_CONSERVATION_THEOREM.md ss12        36",
-            ".telemetry()                   FUNDAMENTAL_THEORY.md                         10",
-            ".auto_optimize()               AGENTS.md § Self-Optimizing Dynamics           30",
-            "TNFR.factorize(n)              TNFR_NUMBER_THEORY.md                          40",
-            "Network.factorize(n)           TNFR_NUMBER_THEORY.md + SDK telemetry bridge   40",
-            "TNFR.primality(n)              TNFR_NUMBER_THEORY.md                          40",
-            "Network.primality(n)           TNFR_NUMBER_THEORY.md + SDK telemetry bridge   40",
-            "TNFR.analyze(net)              APPLIED_STRUCTURAL_ANALYSIS.md                 10",
+            "Cycles count operator words, not physical time.",
+            "Diagnostics retain unavailable fields and estimator provenance.",
+            "Reports are observations, not runnable checkpoints or stability proofs.",
             "",
-            "New theory-experiment links (v0.0.3.2):",
-            "  31 — Structural scale basis (π)",
-            "  32 — Spiral attractors (golden spiral, KAM)",
-            "  33 — Complex field unification (Psi = K_phi + i*J_phi)",
-            "  34 — Conservation protocol suite (Noether, Lyapunov)",
-            "  35 — Tetrad diagnostic complementarity (finite probes)",
-            "  36 — Balance-alert limits and independent grammar validation",
-            "",
-            "Riemann program:               TNFR_RIEMANN_RESEARCH_NOTES.md                16, 18-23, 25",
-            "Classical/Quantum regimes:      PHYSICAL_REGIME_CORRESPONDENCES.md             11-15",
-            "Variational formulation:        TNFR_VARIATIONAL_PRINCIPLE.md                  27",
-            "Dissipative systems:            DISSIPATIVE_AND_OPEN_SYSTEMS.md                28",
-            "Gauge structure:                GAUGE_SYMMETRY_AND_UNIFICATION.md              26",
-            "",
-            "All theory docs: theory/README.md | All examples: examples/README.md",
+            "Usage and reports: docs/CLI_AND_SDK.md",
+            "Execution contracts: docs/API_CONTRACTS.md",
+            "Field definitions: docs/STRUCTURAL_FIELDS_TETRAD.md",
+            "Current examples: examples/README.md",
+            "Foundations: examples/01_foundations/01_hello_world.py",
+            "Operators: examples/01_foundations/04_operator_sequences.py",
+            "Telemetry: examples/01_foundations/10_simplified_sdk_showcase.py",
+            "Research scope and next steps: theory/README.md",
         ]
         text = "\n".join(lines)
         print(text)

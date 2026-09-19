@@ -10,7 +10,7 @@ owns the active research queue. Running an example does not reopen a parked bran
 
 | Directory | Python files | Use and authority | Interpretation |
 | --- | --- | --- | --- |
-| `01_foundations` | 4 | SDK and [grammar scope](../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) | Supplied preparations, words and state ensembles |
+| `01_foundations` | 5 | SDK and [grammar scope](../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) | Supplied preparations, words and state ensembles |
 | `02_physics_regimes` | 37 | [Diffusion certificates](../theory/TNFR_DIFFUSION_STABILITY_THEOREM.md), diagnostics and auxiliary models | Read each model's hypotheses; a diagnostic decrease is not general stability |
 | `03_riemann_zeta` | 19 | Finite instruments in the [Riemann notebook](../theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | Parked comparisons; disclose supplied zeros/primes |
 | `04_riemann_L_twisted` | 18 | Character/L-function instruments in the same [notebook](../theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | Supplied arithmetic data and finite comparisons, not generalized RH |
@@ -21,7 +21,7 @@ owns the active research queue. Running an example does not reopen a parked bran
 | `09_millennium` | 3 | Conditional algebraic comparisons; see the [theory index](../theory/README.md) | No solution to the named open problems is claimed |
 | `10_applications` | 6 | [Measurement protocol](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md), adapters and backend provenance | Data admission and reserved prediction remain separate obligations |
 
-The inventory contains 162 executable demonstrations and one shared support
+The inventory contains 163 executable demonstrations and one shared support
 module, `_flat_grammar_model.py`. Counts describe files, not independent research
 lines. The grammar automaton examples reuse that module; arithmetic and physical
 examples reuse their package owners. A finite fixture may recur as a controlled
@@ -40,6 +40,11 @@ Example 01 is the minimal SDK entry point. Example 04 separates flat grammar
 admission from a deliberately illustrative pressure proxy. Example 10 surveys
 the topology builders and configured SDK operations. Example 07 is a larger
 prepared-state ensemble, not part of this introductory command list.
+
+For a retained declaration and finite execution report, use
+[reproducible_study.py](01_foundations/reproducible_study.py) and the
+[shared CLI/SDK guide](../docs/CLI_AND_SDK.md). The same declaration can be run
+through either interface; its export is not a complete resumable checkpoint.
 
 Optional dependencies vary by script. Plotting examples require `viz-basic`;
 examples 91 and 92 additionally require `scikit-learn`, and 92 downloads and

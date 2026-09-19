@@ -69,6 +69,23 @@ Grammar-aware evolution validates operator composition before applying it:
 net.evolve_grammar_aware(steps=10)
 ```
 
+## Command line and reproducible studies
+
+The CLI and SDK share a declared study runner:
+
+```bash
+tnfr network --nodes 6 --topology ring --seed 42 --steps 1 --export-spec study.json --output report.json
+python -m tnfr network --spec study.json --output replay-report.json
+tnfr sequences basic_activation
+tnfr operators emission
+```
+
+In Python, use `StudySpec`, `run_study` and `diagnose_network` from `tnfr.sdk`.
+The report retains supplied inputs, finite endpoint state and diagnostic
+provenance. Cycles are operator-word passes, not elapsed physical time; a report
+is not a resumable checkpoint. See the [CLI and SDK guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CLI_AND_SDK.md)
+for equivalent Python examples, field availability and reproducibility scope.
+
 ## Canonical structure
 
 The nodal identity organizes the model; it does not uniquely supply the phase,

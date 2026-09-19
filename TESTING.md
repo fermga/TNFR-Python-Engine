@@ -42,6 +42,7 @@ Choose an affected directory, module or test for bounded validation:
 python -m pytest tests/core_physics -q
 python -m pytest tests/operators/test_u3_hard_invariant.py -q
 python -m pytest tests/sdk -q
+python -m pytest tests/cli -q
 python -m pytest tests/sdk --collect-only -q
 ```
 
@@ -61,6 +62,9 @@ the affected API rather than maintaining another inventory of individual tests.
 Core nodal behavior is in [core_physics/](tests/core_physics/), operators in
 [operators/](tests/operators/), specialized certificates in
 [physics/](tests/physics/) and public network usage in [sdk/](tests/sdk/).
+[CLI integration](tests/cli/) checks the same study recipe through Python and
+the module entry point, including malformed input, diagnostic availability,
+output replacement and logging isolation. Catalog checks do not execute a study.
 [conftest.py](tests/conftest.py) and [utils.py](tests/utils.py) own shared helpers.
 The [core scope map](tests/core_physics/README.md) identifies the engine tests
 that replace retired self-contained illustrations.

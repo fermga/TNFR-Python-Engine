@@ -8,6 +8,11 @@ This document is a readable view of the canonical operator contracts. The code
 module above owns channel, scale, direction, postcondition, and source anchors.
 Changes begin in that module and must pass its consistency assertions and tests.
 
+For network creation, execution, diagnostics and reproducible study export, use
+the [shared CLI and SDK guide](CLI_AND_SDK.md). That interface reuses these
+contracts; a serialized declaration or diagnostic report does not bypass live
+preconditions or certify future stability.
+
 ## Contract model
 
 Every canonical operator has:
