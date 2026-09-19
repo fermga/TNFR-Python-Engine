@@ -56,30 +56,38 @@ def main() -> int:
     never_exceeds = True
     for kind in CONTROL_KINDS:
         r = excess_over_fourier(1024, seed=0, n_controls=30, kind=kind)
-        never_exceeds &= (not r.tnfr_exceeds)
-        print(f"  {kind:>8} {r.classical_z:>12.2f} {r.tnfr_z:>8.2f} "
-              f"{str(r.tnfr_exceeds):>8}")
+        never_exceeds &= not r.tnfr_exceeds
+        print(
+            f"  {kind:>8} {r.classical_z:>12.2f} {r.tnfr_z:>8.2f} "
+            f"{str(r.tnfr_exceeds):>8}"
+        )
 
     audit = CircularityAudit()  # phase defined without the target property
     manifest = ExperimentManifest(
         claim_id="NT-P06",
         git_sha="local",
-        versions={"python": platform.python_version(),
-                  "numpy": np.__version__},
+        versions={"python": platform.python_version(), "numpy": np.__version__},
         seed=0,
         operator_sequence=(),
         uses_known_factors=False,
         input_bits=input_bit_length(max(SIZES)),
-        controls=("matched_random", "cramer", "shuffle",
-                  "prime_constellation", "phase_convention"),
+        controls=(
+            "matched_random",
+            "cramer",
+            "shuffle",
+            "prime_constellation",
+            "phase_convention",
+        ),
         artifacts=(),
     )
     print()
     print(f"  exact reduction holds (all sizes): {reduction_ok}")
     print(f"  TNFR never exceeds Fourier (all)  : {never_exceeds}")
     print(f"  reduction claim : {ClaimStatus.DERIVED.value} + measured")
-    print(f"  excess claim    : {ClaimStatus.NEGATIVE.value} "
-          "(NT-P06 OPEN; tested observable shows no excess)")
+    print(
+        f"  excess claim    : {ClaimStatus.NEGATIVE.value} "
+        "(NT-P06 OPEN; tested observable shows no excess)"
+    )
     print(f"  circularity     : {audit.verdict.value}")
     print(f"  input bits (max): {manifest.input_bits}")
     return 0 if (reduction_ok and never_exceeds) else 1

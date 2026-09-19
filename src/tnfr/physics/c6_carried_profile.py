@@ -10,25 +10,33 @@ from dataclasses import dataclass
 from fractions import Fraction
 
 from ..dynamics._euler_kernel import (
-    NodalRemainderStep, _validate_nodal_remainder_state, advance_nodal_remainder,
+    NodalRemainderStep,
+    _validate_nodal_remainder_state,
+    advance_nodal_remainder,
 )
 from ._cycle_algebra import Vector, laplacian_action
 from .c6_pressure_lattice import (
-    C6PressureLatticeReference, C6PressureLatticeObservation,
-    _rebuild_lattice, _observe_rebuilt_c6_pressure_lattice,
+    C6PressureLatticeObservation,
+    C6PressureLatticeReference,
+    _observe_rebuilt_c6_pressure_lattice,
+    _rebuild_lattice,
 )
 from .forced_support import (
-    ForcedSupportBalance, derive_forced_support_balance,
+    ForcedSupportBalance,
+    derive_forced_support_balance,
     observe_forced_support_pattern,
 )
 from .nodal_remainder_pressure import (
-    NodalRemainderPressureReadout, observe_nodal_remainder_pressure_readout,
+    NodalRemainderPressureReadout,
+    observe_nodal_remainder_pressure_readout,
 )
 from .support_transport import _from_data
 
 __all__ = [
-    "C6CarriedProfile", "derive_c6_carried_profile",
-    "C6CarriedProfileStep", "observe_c6_carried_profile_step",
+    "C6CarriedProfile",
+    "derive_c6_carried_profile",
+    "C6CarriedProfileStep",
+    "observe_c6_carried_profile_step",
 ]
 
 
@@ -73,13 +81,21 @@ def derive_c6_carried_profile(lattice: C6PressureLatticeReference) -> C6CarriedP
     edges = tuple((i, j, Fraction(1)) for i, row in enumerate(neighbors) for j in row)
     forcing = tuple(Fraction(value) for value in lattice.sources)
     snapshot = _from_data(
-        tuple(range(6)), edges, neighbors, (Fraction(0),) * 6,
-        (Fraction(1),) * 6, forcing,
+        tuple(range(6)),
+        edges,
+        neighbors,
+        (Fraction(0),) * 6,
+        (Fraction(1),) * 6,
+        forcing,
     )
     balance = derive_forced_support_balance(
-        snapshot, epi_weight=lattice.source.epi_weight, forcing=forcing,
+        snapshot,
+        epi_weight=lattice.source.epi_weight,
+        forcing=forcing,
     )
-    if balance.metric_weights != (Fraction(2),) * 6 or balance.mean_drift != _mean(forcing):
+    if balance.metric_weights != (Fraction(2),) * 6 or balance.mean_drift != _mean(
+        forcing
+    ):
         raise RuntimeError("unit C6 lost its arithmetic-mean forced-profile identity")
     return C6CarriedProfile(lattice, balance)
 
@@ -122,7 +138,9 @@ class C6CarriedProfileStep:
 
 
 def observe_c6_carried_profile_step(
-    profile: C6CarriedProfile, *, step: NodalRemainderStep,
+    profile: C6CarriedProfile,
+    *,
+    step: NodalRemainderStep,
 ) -> C6CarriedProfileStep:
     """Bind exact carried dynamics to refreshed pressure and centered shape.
 
@@ -145,58 +163,128 @@ def observe_c6_carried_profile_step(
     profile = derive_c6_carried_profile(profile.lattice)
     if type(step) is not NodalRemainderStep:
         raise TypeError("step must be a NodalRemainderStep")
-    for name in ("exact_increment", "visible_increment", "carry_transfer", "nodal_balance_residual"):
+    for name in (
+        "exact_increment",
+        "visible_increment",
+        "carry_transfer",
+        "nodal_balance_residual",
+    ):
         values = getattr(step, name)
-        if (type(values) is not tuple or len(values) != 6
-                or any(type(value) is not Fraction for value in values)):
+        if (
+            type(values) is not tuple
+            or len(values) != 6
+            or any(type(value) is not Fraction for value in values)
+        ):
             raise TypeError(f"step.{name} must contain six exact Fraction values")
     before = _validate_nodal_remainder_state(step.before)
     after = _validate_nodal_remainder_state(step.after)
     replay = advance_nodal_remainder(
-        step.before, timestep=step.timestep, capacity=step.capacity, pressure=step.pressure,
+        step.before,
+        timestep=step.timestep,
+        capacity=step.capacity,
+        pressure=step.pressure,
     )
     if replay != step:
-        raise ValueError("the supplied step must match its complete shared-kernel replay")
-    if step.timestep <= 0 or step.capacity != (1.,) * 6:
-        raise ValueError("the C6 profile requires a positive timestep and six unit capacities")
+        raise ValueError(
+            "the supplied step must match its complete shared-kernel replay"
+        )
+    if step.timestep <= 0 or step.capacity != (1.0,) * 6:
+        raise ValueError(
+            "the C6 profile requires a positive timestep and six unit capacities"
+        )
     source = profile.lattice.source
-    if not source.epi_lower <= step.before.epi_lower <= step.before.epi_upper <= source.epi_upper:
-        raise ValueError("the complete carried-state band must lie inside the reference slab")
+    if (
+        not source.epi_lower
+        <= step.before.epi_lower
+        <= step.before.epi_upper
+        <= source.epi_upper
+    ):
+        raise ValueError(
+            "the complete carried-state band must lie inside the reference slab"
+        )
     observation = _observe_rebuilt_c6_pressure_lattice(profile.lattice, step.before.epi)
     if step.pressure != observation.pressure:
-        raise ValueError("the supplied pressure must equal the freshly evaluated C6 CPU pressure")
+        raise ValueError(
+            "the supplied pressure must equal the freshly evaluated C6 CPU pressure"
+        )
     balance = profile.forced_balance
     neighbors = balance.source.support_neighbors
-    conductance = tuple(tuple(Fraction(j in row) for j in range(6)) for row in neighbors)
-    readout = observe_nodal_remainder_pressure_readout(
-        state=step.before, conductance=conductance, capacity=step.capacity,
-        stored_pressure=step.pressure, epi_weight=balance.epi_weight,
+    conductance = tuple(
+        tuple(Fraction(j in row) for j in range(6)) for row in neighbors
     )
-    first = observe_forced_support_pattern(balance, nodes=balance.source.nodes, epi=before)
-    last = observe_forced_support_pattern(balance, nodes=balance.source.nodes, epi=after)
+    readout = observe_nodal_remainder_pressure_readout(
+        state=step.before,
+        conductance=conductance,
+        capacity=step.capacity,
+        stored_pressure=step.pressure,
+        epi_weight=balance.epi_weight,
+    )
+    first = observe_forced_support_pattern(
+        balance, nodes=balance.source.nodes, epi=before
+    )
+    last = observe_forced_support_pattern(
+        balance, nodes=balance.source.nodes, epi=after
+    )
     centered_before, centered_after = _center(before), _center(after)
     error_before, error_after = first.relative_error, last.relative_error
     carry = readout.readout_shift
-    rounding = tuple(a + b for a, b in zip(
-        observation.epi_reduction_error, observation.assembly_error, strict=True,
-    ))
+    rounding = tuple(
+        a + b
+        for a, b in zip(
+            observation.epi_reduction_error,
+            observation.assembly_error,
+            strict=True,
+        )
+    )
     forcing = tuple(a + b for a, b in zip(carry, rounding, strict=True))
     centered_forcing = _center(forcing)
     h, weight = Fraction(step.timestep), balance.epi_weight
-    modeled = tuple(value - h * weight * gradient + h * defect for value, gradient, defect in zip(
-        error_before, laplacian_action(error_before), centered_forcing, strict=True,
-    ))
-    residual = tuple(actual - expected for actual, expected in zip(error_after, modeled, strict=True))
+    modeled = tuple(
+        value - h * weight * gradient + h * defect
+        for value, gradient, defect in zip(
+            error_before,
+            laplacian_action(error_before),
+            centered_forcing,
+            strict=True,
+        )
+    )
+    residual = tuple(
+        actual - expected for actual, expected in zip(error_after, modeled, strict=True)
+    )
     change = last.mean - first.mean
     source_mean = h * balance.mean_drift
     rounding_mean, carry_mean = h * _mean(rounding), h * _mean(carry)
     mean_residual = change - source_mean - rounding_mean - carry_mean
-    readout_expected = tuple(a + b for a, b in zip(balance.forcing, forcing, strict=True))
-    if (any(residual) or mean_residual or carry_mean
-            or readout.stored_minus_reconstructed_reference != readout_expected):
-        raise RuntimeError("the carried C6 profile lost its exact recurrence or mean decomposition")
+    readout_expected = tuple(
+        a + b for a, b in zip(balance.forcing, forcing, strict=True)
+    )
+    if (
+        any(residual)
+        or mean_residual
+        or carry_mean
+        or readout.stored_minus_reconstructed_reference != readout_expected
+    ):
+        raise RuntimeError(
+            "the carried C6 profile lost its exact recurrence or mean decomposition"
+        )
     return C6CarriedProfileStep(
-        profile, step, observation, readout, centered_before, centered_after,
-        error_before, error_after, carry, rounding, forcing, centered_forcing,
-        modeled, residual, change, source_mean, rounding_mean, carry_mean, mean_residual,
+        profile,
+        step,
+        observation,
+        readout,
+        centered_before,
+        centered_after,
+        error_before,
+        error_after,
+        carry,
+        rounding,
+        forcing,
+        centered_forcing,
+        modeled,
+        residual,
+        change,
+        source_mean,
+        rounding_mean,
+        carry_mean,
+        mean_residual,
     )

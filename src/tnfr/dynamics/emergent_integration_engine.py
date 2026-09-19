@@ -506,9 +506,7 @@ class TNFREmergentIntegrationEngine:
                     "performance_evidence": "not_measured",
                 }
 
-            performance_evidence = details.get(
-                "performance_evidence", "not_measured"
-            )
+            performance_evidence = details.get("performance_evidence", "not_measured")
             performance_improvement = self._measured_metric_mapping(
                 details.get("performance_improvement"), performance_evidence
             )
@@ -675,9 +673,7 @@ class TNFREmergentIntegrationEngine:
         }
 
     @staticmethod
-    def _measured_metric_mapping(
-        metrics: Any, evidence: str
-    ) -> dict[str, float]:
+    def _measured_metric_mapping(metrics: Any, evidence: str) -> dict[str, float]:
         """Return only finite numeric metrics backed by measured evidence."""
         if evidence != "measured" or not isinstance(metrics, dict):
             return {}

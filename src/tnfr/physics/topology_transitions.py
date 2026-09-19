@@ -32,18 +32,12 @@ import networkx as nx
 from networkx.algorithms import isomorphism as iso
 
 from ..alias import get_attr
-from ..constants.aliases import (
-    ALIAS_DEPI,
-    ALIAS_DNFR,
-    ALIAS_EPI,
-    ALIAS_THETA,
-    ALIAS_VF,
-)
+from ..constants.aliases import ALIAS_DEPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..metrics.common import compute_coherence
 from ..metrics.sense_index import compute_Si
 from ._edge_semantics import effective_edge_length
 from ._helpers import wrap_angle
-from .fields import classify_nodal_topology, _validate_nodal_topology_alpha
+from .fields import _validate_nodal_topology_alpha, classify_nodal_topology
 from .telemetry import compute_structural_telemetry
 
 __all__ = [
@@ -291,8 +285,7 @@ def _state_channel(
         for node in node_order
     )
     if any(
-        isinstance(value, bool) or not isinstance(value, Real)
-        for value in raw_values
+        isinstance(value, bool) or not isinstance(value, Real) for value in raw_values
     ):
         raise ValueError(f"{name} must contain finite real values")
     values = tuple(float(value) for value in raw_values)
@@ -328,9 +321,7 @@ def capture_nodal_topology_snapshot(
     frequency = _state_channel(
         graph, node_order, ALIAS_VF, "frequency", nonnegative=True
     )
-    phase = _state_channel(
-        graph, node_order, ALIAS_THETA, "phase", circular=True
-    )
+    phase = _state_channel(graph, node_order, ALIAS_THETA, "phase", circular=True)
     dnfr = _state_channel(graph, node_order, ALIAS_DNFR, "DeltaNFR")
     depi = _state_channel(graph, node_order, ALIAS_DEPI, "dEPI")
 
@@ -376,9 +367,7 @@ def capture_nodal_topology_snapshot(
         phase_curvature=_ordered_field(
             telemetry["curv_phi"], node_order, "phase_curvature"
         ),
-        phase_current=_ordered_field(
-            telemetry["j_phi"], node_order, "phase_current"
-        ),
+        phase_current=_ordered_field(telemetry["j_phi"], node_order, "phase_current"),
         dnfr_flux=_ordered_field(telemetry["j_dnfr"], node_order, "dnfr_flux"),
         sense_index=sense_index,
     )
@@ -480,11 +469,7 @@ def _snapshot_graph(
         snapshot.edge_length,
         strict=True,
     ):
-        attributes = (
-            {"conductance": weight, "length": length}
-            if include_state
-            else {}
-        )
+        attributes = {"conductance": weight, "length": length} if include_state else {}
         graph.add_edge(*edge, **attributes)
     return graph
 
@@ -591,9 +576,7 @@ def _compare_edges(
         if source not in mapping or target not in mapping:
             removed.append(edge)
             continue
-        key = _edge_key(
-            after.is_directed, mapping[source], mapping[target]
-        )
+        key = _edge_key(after.is_directed, mapping[source], mapping[target])
         match = after_lookup.get(key)
         if match is None:
             removed.append(edge)
@@ -602,14 +585,10 @@ def _compare_edges(
         used_after.add(key)
         common.append((edge, after_edge))
         conductance_deltas.append(
-            _finite_difference(
-                after_weight, before_weight, "edge-conductance delta"
-            )
+            _finite_difference(after_weight, before_weight, "edge-conductance delta")
         )
         length_deltas.append(
-            _finite_difference(
-                after_length, before_length, "edge-length delta"
-            )
+            _finite_difference(after_length, before_length, "edge-length delta")
         )
 
     added = tuple(
@@ -694,8 +673,7 @@ def _observe_mapping(
     return _MappingObservations(
         mapping=node_mapping,
         centers_changed=(
-            unmapped_before_center
-            or mapped_before_centers != set(after.centers)
+            unmapped_before_center or mapped_before_centers != set(after.centers)
         ),
         common_edges=common_edges,
         added_edges=added_edges,
@@ -728,12 +706,10 @@ def _compare_snapshots(
     candidate_count = len(candidate_mappings)
     ambiguous = candidate_count > 1
     observations = tuple(
-        _observe_mapping(before, after, mapping)
-        for mapping in candidate_mappings
+        _observe_mapping(before, after, mapping) for mapping in candidate_mappings
     )
     identifiable = bool(observations) and all(
-        observation.invariant_fingerprint
-        == observations[0].invariant_fingerprint
+        observation.invariant_fingerprint == observations[0].invariant_fingerprint
         for observation in observations[1:]
     )
 
@@ -755,9 +731,7 @@ def _compare_snapshots(
         added_edges: tuple[tuple[Any, Any], ...] = ()
         removed_edges: tuple[tuple[Any, Any], ...] = ()
         edge_support_changed = False
-        common_edges: tuple[
-            tuple[tuple[Any, Any], tuple[Any, Any]], ...
-        ] = ()
+        common_edges: tuple[tuple[tuple[Any, Any], tuple[Any, Any]], ...] = ()
     else:
         mapped_after_nodes = set(internal_mapping.values())
         added_nodes = tuple(
@@ -776,9 +750,7 @@ def _compare_snapshots(
 
     deltas_available = identifiable
     common_nodes = (
-        tuple(source for source, _ in selected.mapping)
-        if deltas_available
-        else ()
+        tuple(source for source, _ in selected.mapping) if deltas_available else ()
     )
     if deltas_available:
         centers_changed: bool | None = selected.centers_changed
@@ -787,9 +759,7 @@ def _compare_snapshots(
         edge_weight_changed: bool | None = any(
             value != 0.0 for value in conductance_delta
         )
-        edge_length_changed: bool | None = any(
-            value != 0.0 for value in length_delta
-        )
+        edge_length_changed: bool | None = any(value != 0.0 for value in length_delta)
         field_deltas = selected
     else:
         centers_changed = None
@@ -863,13 +833,9 @@ def _compare_snapshots(
         phase_curvature_delta=(
             field_deltas.phase_curvature_delta if field_deltas else ()
         ),
-        phase_current_delta=(
-            field_deltas.phase_current_delta if field_deltas else ()
-        ),
+        phase_current_delta=(field_deltas.phase_current_delta if field_deltas else ()),
         dnfr_flux_delta=(field_deltas.dnfr_flux_delta if field_deltas else ()),
-        sense_index_delta=(
-            field_deltas.sense_index_delta if field_deltas else ()
-        ),
+        sense_index_delta=(field_deltas.sense_index_delta if field_deltas else ()),
     )
 
 

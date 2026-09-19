@@ -1,19 +1,14 @@
 #!/usr/bin/env python3
-"""Conservation Law Validation — Systematic Benchmark.
+"""Finite structural-balance and diagnostic-energy benchmark.
 
-Validates the Structural Conservation Theorem across topologies, sizes,
-and dynamics regimes.  Reports conservation quality, Lyapunov stability,
-sector coupling, and scaling behaviour.
-
-Key predictions verified:
-1. Charge drift < 0.1% across all topologies
-2. Energy monotonically non-increasing (Lyapunov)
-3. Cross-coupling kappa ~ 0.5-0.8 (Psi unification)
-4. Conservation quality q(N) ~ 1 - C/sqrt(N) (scaling)
-
-References:
-    theory/STRUCTURAL_CONSERVATION_THEOREM.md
-    src/tnfr/physics/conservation.py
+Measures charge drift, energy change, sector statistics and size dependence for
+explicit topologies, operator sequences and numerical settings. Historical
+quality bands and correlations are hypotheses or sample summaries, not verified
+universal predictions. Sampled nonincrease is not a Lyapunov theorem, and an
+auxiliary conserved quantity need not be conserved by engine operators.
+The source-owned diagnostics are in src/tnfr/physics/conservation.py; exact
+assumptions and limits are in theory/STRUCTURAL_CONSERVATION_THEOREM.md.
+No physical conservation law or topology-independent convergence is certified.
 """
 from __future__ import annotations
 

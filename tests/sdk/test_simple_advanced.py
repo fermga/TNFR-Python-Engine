@@ -205,13 +205,9 @@ class TestNetworkConservation:
     def test_balance_alerts_are_read_only_and_do_not_validate_grammar(
         self, small_ring: Network
     ):
-        before = {
-            node: dict(data) for node, data in small_ring.G.nodes(data=True)
-        }
+        before = {node: dict(data) for node, data in small_ring.G.nodes(data=True)}
         baseline = small_ring.balance_alerts()
-        after = {
-            node: dict(data) for node, data in small_ring.G.nodes(data=True)
-        }
+        after = {node: dict(data) for node, data in small_ring.G.nodes(data=True)}
         assert before == after
         assert baseline["sample_available"] is False
         assert baseline["grammar_validated"] is False
@@ -755,9 +751,7 @@ class TestStructuralEquilibriumPrimitive:
         for node in graph:
             graph.nodes[node].update(delta_nfr=1.0e308, dEPI_dt=1.0e308)
 
-        coherence, dnfr_mean, depi_mean = compute_coherence(
-            graph, return_means=True
-        )
+        coherence, dnfr_mean, depi_mean = compute_coherence(graph, return_means=True)
         assert dnfr_mean == 1.0e308
         assert depi_mean == 1.0e308
         assert coherence == structural_coherence(dnfr_mean, depi_mean)

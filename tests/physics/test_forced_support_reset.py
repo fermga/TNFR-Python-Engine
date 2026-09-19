@@ -15,7 +15,6 @@ from tnfr.physics.forced_support import (
 )
 from tnfr.physics.support_transport import observe_support_transport
 
-
 F = Fraction
 
 
@@ -23,18 +22,26 @@ def _reference(*, capacity=(1, 2), weight=1, forcing=(F(1, 4), F(1, 2))):
     graph = nx.path_graph(2)
     graph.edges[0, 1]["weight"] = weight
     for node, x, nu in zip(graph, (1, 0), capacity, strict=True):
-        graph.nodes[node].update({
-            ALIAS_EPI[0]: x, ALIAS_VF[0]: nu, ALIAS_DNFR[0]: 0,
-        })
+        graph.nodes[node].update(
+            {
+                ALIAS_EPI[0]: x,
+                ALIAS_VF[0]: nu,
+                ALIAS_DNFR[0]: 0,
+            }
+        )
     return derive_forced_support_balance(
-        observe_support_transport(graph), epi_weight=F(1, 2), forcing=forcing,
+        observe_support_transport(graph),
+        epi_weight=F(1, 2),
+        forcing=forcing,
     )
 
 
 def _reset(before_reference, after_reference):
     return observe_forced_support_reset(
-        before_reference, after_reference,
-        before_reference.source, after_reference.source,
+        before_reference,
+        after_reference,
+        before_reference.source,
+        after_reference.source,
     )
 
 
@@ -147,9 +154,14 @@ def test_forward_and_reverse_reference_reset_telescope_at_fixed_epi():
     forward, reverse = _reset(old, new), _reset(new, old)
     assert forward.mean_reweighting + reverse.mean_reweighting == 0
     for field in ("variance_budget", "dirichlet_budget", "raw_support_reset"):
-        assert getattr(forward, field).energy_change + getattr(
-            reverse, field,
-        ).energy_change == 0
+        assert (
+            getattr(forward, field).energy_change
+            + getattr(
+                reverse,
+                field,
+            ).energy_change
+            == 0
+        )
 
 
 def test_pressure_only_write_does_not_change_either_profile_error():
@@ -196,10 +208,13 @@ def test_public_reference_and_event_caches_are_rebuilt():
     assert reset.dirichlet_budget.energy_change == F(-11, 32)
 
 
-@pytest.mark.parametrize("field,value", (
-    ("epi", (F(2), F(0))),
-    ("nodes", (1, 0)),
-))
+@pytest.mark.parametrize(
+    "field,value",
+    (
+        ("epi", (F(2), F(0))),
+        ("nodes", (1, 0)),
+    ),
+)
 def test_same_epi_and_node_order_are_required(field, value):
     old, new = _reference(), _reference(capacity=(1, 1))
     after = replace(new.source, **{field: value})
@@ -207,10 +222,16 @@ def test_same_epi_and_node_order_are_required(field, value):
         observe_forced_support_reset(old, new, old.source, after)
 
 
-@pytest.mark.parametrize("nodes,epi", (
-    ((1, 0), (1, 0)), ((0, 1), (1,)), ({0, 1}, (1, 0)),
-    ((0, 1), (float("nan"), 0)), ((0, 1), (True, 0)),
-))
+@pytest.mark.parametrize(
+    "nodes,epi",
+    (
+        ((1, 0), (1, 0)),
+        ((0, 1), (1,)),
+        ({0, 1}, (1, 0)),
+        ((0, 1), (float("nan"), 0)),
+        ((0, 1), (True, 0)),
+    ),
+)
 def test_invalid_pattern_coordinates_are_rejected(nodes, epi):
     with pytest.raises((TypeError, ValueError)):
         observe_forced_support_pattern(_reference(), nodes=nodes, epi=epi)

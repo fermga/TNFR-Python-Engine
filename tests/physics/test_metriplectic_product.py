@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 from tnfr.physics import verify_metriplectic_product
+from tnfr.physics.structural_diffusion import compute_diffusion_energy
 
 
 def _state(graph, epi, frequency):
@@ -110,9 +111,18 @@ def test_product_rejects_nonreal_tolerance(tolerance):
 
 
 @pytest.mark.parametrize("attribute", ["EPI", "nu_f", "theta", "delta_nfr"])
-def test_product_rejects_boolean_nodal_channels(attribute):
+def test_product_rejects_boolean_nodal_channels_before_extraction(
+    attribute, monkeypatch
+):
     graph = _state(nx.path_graph(2), [0.0, 1.0], [1.0, 1.0])
-    graph.nodes[0][attribute] = True
+    graph.nodes[1][attribute] = True
+
+    def unexpected_extraction(_graph):
+        raise AssertionError("invalid nodal channels reached field extraction")
+
+    monkeypatch.setattr(
+        "tnfr.physics.metriplectic.extract_phase_space_point", unexpected_extraction
+    )
 
     with pytest.raises(ValueError, match="finite real"):
         verify_metriplectic_product(graph)
@@ -124,3 +134,49 @@ def test_product_rejects_nonrepresentable_finite_intermediates():
 
     with pytest.raises(ValueError, match="floating-point range"):
         verify_metriplectic_product(graph)
+
+
+def test_positive_mobility_underflow_cannot_certify_zero_nodal_velocity():
+    graph = _state(nx.path_graph(2), [1.0, 0.0], [1e-200, 1e-200])
+    graph.edges[0, 1].update(weight=1e200, length=1.0)
+    graph.nodes[0]["delta_nfr"] = -1.0
+    graph.nodes[1]["delta_nfr"] = 1.0
+    # x'=(-1e-200,1e-200) and E_D'=-2 are representable, but the product
+    # tensor's positive mobility 1e-400 cannot be represented in binary64.
+    with pytest.raises(ValueError, match="mobility.*floating-point range"):
+        verify_metriplectic_product(graph)
+
+
+@pytest.mark.parametrize("epi_power,capacity_power", [(-600, 0), (-300, -900)])
+def test_nonzero_diffusion_energy_or_rate_cannot_be_certified_as_zero(
+    epi_power, capacity_power
+):
+    graph = _state(nx.path_graph(2), [2.0**epi_power, 0.0], [2.0**capacity_power] * 2)
+    # E=x^2/2 and x'=(-nu*x,nu*x): the first case loses positive energy;
+    # the second loses a nonzero nodal rate. Both require explicit refusal.
+    with pytest.raises(ValueError, match="floating-point range"):
+        verify_metriplectic_product(graph)
+
+
+@pytest.mark.parametrize("offset", [0.0, 1e12])
+def test_product_inherits_edge_balance_with_explicit_node_alignment(offset):
+    graph = nx.Graph()
+    graph.add_nodes_from([2, 0, 1])
+    graph.add_weighted_edges_from([(2, 0, 2.0), (0, 1, 0.5), (0, 0, 3.0)])
+    _state(graph, [offset + 1.5, offset - 0.25, offset + 0.75], [0.25, 1.0, 2.0])
+    expected = compute_diffusion_energy(graph)
+    result = verify_metriplectic_product(graph)
+
+    assert expected.nodes == [2, 0, 1]
+    assert result.nodes == (0, 1, 2)
+    order = [expected.nodes.index(node) for node in result.nodes]
+    np.testing.assert_array_equal(result.state_velocity[12:], expected.epi_rate[order])
+    np.testing.assert_array_equal(
+        np.diag(result.dissipative_tensor)[12:], expected.mobility[order]
+    )
+    # Independent edge energy: 1*(7/4)^2 + (1/4)*1^2 = 53/16.
+    assert result.dirichlet_functional == expected.energy == 53 / 16
+    assert result.dirichlet_derivative == expected.energy_rate
+    assert result.dirichlet_derivative == pytest.approx(-1915 / 352)
+    np.testing.assert_allclose(result.state_velocity[12:], [8 / 11, -2.0, -7 / 16])
+    assert result.is_decoupled_metriplectic_bridge

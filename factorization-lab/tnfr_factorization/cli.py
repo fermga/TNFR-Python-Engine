@@ -22,8 +22,8 @@ from .spectral_paley import (
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Run TNFR Paley-spectrum factorization using SpectralPaleyFactorizer "
-            "and emit coherence telemetry for each query."
+            "Analyze factor candidates using SpectralPaleyFactorizer "
+            "and emit spectral proxies and arithmetic diagnostics for each query."
         )
     )
     parser.add_argument(
@@ -33,18 +33,18 @@ def _build_parser() -> argparse.ArgumentParser:
         "--modulus",
         type=int,
         default=None,
-        help="Override the Paley modulus (must be odd and 1 mod 4).",
+        help="Override graph modulus (intended domain: odd and 1 mod 4; builder checks only >=5).",
     )
     parser.add_argument(
         "--max-nodes",
         type=int,
         default=None,
-        help="Maximum Paley modulus allowed (defaults to 4,097 when omitted; use 0 for no cap).",
+        help="Maximum graph modulus allowed; omitted or 0 means no cap. Set a positive limit explicitly.",
     )
     parser.add_argument(
         "--json",
         action="store_true",
-        help="Emit JSON (one object per target) instead of a text summary.",
+        help="Emit one JSON list containing an object for each target instead of text summaries.",
     )
     parser.add_argument(
         "--fft-backend",

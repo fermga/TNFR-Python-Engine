@@ -14,6 +14,7 @@ derive gravity, mechanical energy or increasing structural C(t) from TNFR.
 For a different declared auxiliary pair law, see
 :mod:`tnfr.dynamics.nbody_tnfr`.
 """
+
 from __future__ import annotations
 
 import math
@@ -51,15 +52,14 @@ def _integration_schedule(
     if remaining <= 0.0:
         return 0, None
     ratio = remaining / dt
-    if (
-        not math.isfinite(ratio)
-        or ratio >= float(np.iinfo(np.intp).max)
-    ):
+    if not math.isfinite(ratio) or ratio >= float(np.iinfo(np.intp).max):
         raise ValueError("requested integration requires too many time steps")
     full_steps = int(math.floor(ratio))
     remainder = remaining - full_steps * dt
-    roundoff = 16.0 * np.finfo(float).eps * max(
-        1.0, abs(current_time), abs(t_final), abs(full_steps * dt)
+    roundoff = (
+        16.0
+        * np.finfo(float).eps
+        * max(1.0, abs(current_time), abs(t_final), abs(full_steps * dt))
     )
     if remainder <= roundoff:
         return full_steps, None
@@ -79,9 +79,7 @@ def _pair_direction_and_inverse_distance(
     ``extra_dimension`` supplies the softening coordinate when needed.
     """
     with np.errstate(over="ignore", invalid="ignore"):
-        displacement = np.asarray(target, dtype=float) - np.asarray(
-            source, dtype=float
-        )
+        displacement = np.asarray(target, dtype=float) - np.asarray(source, dtype=float)
     distance = math.hypot(
         *(float(value) for value in displacement), float(extra_dimension)
     )
@@ -473,9 +471,7 @@ class NBodySystem:
         self.masses = _finite_real_array(masses, "masses")
 
         if self.masses.ndim != 1 or self.masses.shape != (n_bodies,):
-            raise ValueError(
-                f"masses shape {self.masses.shape} != ({n_bodies},)"
-            )
+            raise ValueError(f"masses shape {self.masses.shape} != ({n_bodies},)")
 
         if np.any(self.masses <= 0):
             raise ValueError("All masses must be finite and positive")
@@ -533,9 +529,7 @@ class NBodySystem:
             # first-order nodal equation νf has mobility semantics.
             nu_f = 1.0 / float(self.masses[i])
             if not math.isfinite(nu_f) or nu_f <= 0.0:
-                raise ValueError(
-                    "inverse-mass adapter frequency is not representable"
-                )
+                raise ValueError("inverse-mass adapter frequency is not representable")
 
             # Create NFR node
             _, _ = create_nfr(
@@ -582,9 +576,7 @@ class NBodySystem:
         if positions.shape != expected_shape:
             raise ValueError(f"positions shape {positions.shape} != {expected_shape}")
         if velocities.shape != expected_shape:
-            raise ValueError(
-                f"velocities shape {velocities.shape} != {expected_shape}"
-            )
+            raise ValueError(f"velocities shape {velocities.shape} != {expected_shape}")
         self.positions = positions.copy()
         self.velocities = velocities.copy()
 
@@ -710,9 +702,7 @@ class NBodySystem:
         )
 
         # Update positions: r(t+dt) = r(t) + v(t)*dt + (1/2)*a(t)*dt²
-        new_positions = (
-            self.positions + self.velocities * dt + 0.5 * accel_t * dt**2
-        )
+        new_positions = self.positions + self.velocities * dt + 0.5 * accel_t * dt**2
 
         # Compute acceleration at new time: a(t+dt)
         accel_t_plus_dt = compute_newtonian_acceleration(
@@ -720,9 +710,7 @@ class NBodySystem:
         )
 
         # Update velocities: v(t+dt) = v(t) + (1/2)*(a(t) + a(t+dt))*dt
-        new_velocities = (
-            self.velocities + 0.5 * (accel_t + accel_t_plus_dt) * dt
-        )
+        new_velocities = self.velocities + 0.5 * (accel_t + accel_t_plus_dt) * dt
         if not np.all(np.isfinite(new_velocities)):
             raise ValueError("time step produced non-finite velocities")
         new_time = self.time + dt
@@ -797,9 +785,7 @@ class NBodySystem:
             raise ValueError(f"t_final {t_final} <= current time {self.time}")
 
         # Pre-allocate storage
-        n_stored = 1 + (n_steps // store_interval) + int(
-            n_steps % store_interval != 0
-        )
+        n_stored = 1 + (n_steps // store_interval) + int(n_steps % store_interval != 0)
         times = np.zeros(n_stored)
         positions_hist = np.zeros((n_stored, self.n_bodies, 3))
         velocities_hist = np.zeros((n_stored, self.n_bodies, 3))
@@ -825,9 +811,7 @@ class NBodySystem:
         # Evolution loop
         for step in range(n_steps):
             step_dt = (
-                final_step
-                if final_step is not None and step + 1 == n_steps
-                else dt
+                final_step if final_step is not None and step + 1 == n_steps else dt
             )
             self.step(step_dt)
 

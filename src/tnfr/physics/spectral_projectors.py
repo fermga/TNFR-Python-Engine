@@ -193,9 +193,7 @@ def spectral_clusters(
     for i in range(len(w)):
         if used[i]:
             continue
-        group = [
-            j for j in range(len(w)) if not used[j] and abs(w[j] - w[i]) <= tol
-        ]
+        group = [j for j in range(len(w)) if not used[j] and abs(w[j] - w[i]) <= tol]
         for j in group:
             used[j] = True
         q, _ = np.linalg.qr(v[:, group])
@@ -232,7 +230,7 @@ def matrix_exponential(matrix, *, terms: int = 18) -> np.ndarray:
     n = a.shape[0]
     norm = float(np.linalg.norm(a, np.inf))
     s = max(0, int(np.ceil(np.log2(norm + 1.0))))
-    b = a / (2 ** s)
+    b = a / (2**s)
     result = np.eye(n)
     term = np.eye(n)
     for k in range(1, terms):
@@ -252,9 +250,7 @@ def spectral_abscissa(matrix) -> float:
     return float(np.max(np.linalg.eigvals(np.asarray(matrix)).real))
 
 
-def transient_gain(
-    matrix, *, t_max: float = 10.0, samples: int = 200
-) -> float:
+def transient_gain(matrix, *, t_max: float = 10.0, samples: int = 200) -> float:
     r"""``max_{t∈[0, t_max]} ‖e^{tA}‖₂`` — the peak transient amplification.
 
     For a **normal** stable ``A`` the semigroup is a contraction (gain ``≤ 1``);

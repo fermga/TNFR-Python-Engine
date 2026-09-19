@@ -204,9 +204,7 @@ class FractalPartitioner:
     def _validate_structural_coordinates(graph: TNFRGraph) -> None:
         """Validate the finite canonical coordinates used by partition scoring."""
         for node in graph:
-            _node_attribute(
-                graph, node, ALIAS_VF, 1.0, label="nu_f", nonnegative=True
-            )
+            _node_attribute(graph, node, ALIAS_VF, 1.0, label="nu_f", nonnegative=True)
             _node_attribute(graph, node, ALIAS_THETA, 0.0, label="phase")
 
     def partition_network(self, graph: TNFRGraph) -> list[tuple[set[Any], TNFRGraph]]:
@@ -262,7 +260,7 @@ class FractalPartitioner:
             # in stable graph order while preserving each induced subgraph.
             ordered = [node for node in graph if node in community]
             for start in range(0, len(ordered), partition_size):
-                chunk = set(ordered[start:start + partition_size])
+                chunk = set(ordered[start : start + partition_size])
                 if len(current_partition) + len(chunk) <= partition_size:
                     current_partition.update(chunk)
                 else:
@@ -379,12 +377,8 @@ class FractalPartitioner:
             dtype=float,
         )
         if frequencies.std() > 0:
-            frequencies = (
-                frequencies - frequencies.mean()
-            ) / frequencies.std()
-        coords = np.column_stack(
-            (frequencies, np.cos(phases), np.sin(phases))
-        )
+            frequencies = (frequencies - frequencies.mean()) / frequencies.std()
+        coords = np.column_stack((frequencies, np.cos(phases), np.sin(phases)))
 
         # Build KDTree
         self._kdtree = KDTree(coords)
@@ -504,9 +498,7 @@ class FractalPartitioner:
             best_affinity = -1.0
 
             for candidate in sorted(candidates, key=node_order.__getitem__):
-                affinity = self._compute_community_affinity(
-                    graph, community, candidate
-                )
+                affinity = self._compute_community_affinity(graph, community, candidate)
                 if affinity > best_affinity:
                     best_affinity = affinity
                     best_candidate = candidate
@@ -537,6 +529,7 @@ class FractalPartitioner:
     ) -> set[Any]:
         """Compatibility alias for affinity-based community growth."""
         return self._grow_affinity_community(graph, seed, available)
+
     def _compute_community_affinity(
         self, graph: TNFRGraph, community: set[Any], candidate: Any
     ) -> float:
@@ -592,11 +585,7 @@ class FractalPartitioner:
             # Weighted combination: prioritize frequency alignment
             affinities.append(0.6 * frequency_proximity + 0.4 * phase_alignment)
 
-        return (
-            math.fsum(affinities) / len(affinities)
-            if affinities
-            else 0.0
-        )
+        return math.fsum(affinities) / len(affinities) if affinities else 0.0
 
     def _compute_community_coherence(
         self, graph: TNFRGraph, community: set[Any], candidate: Any
@@ -644,6 +633,7 @@ class FractalPartitioner:
         """
         from datetime import datetime, timezone
         from pathlib import Path
+
         from ..engines.manifest import collect_manifest_telemetry, write_manifest_bundle
 
         output_dir = Path(output_dir)
@@ -722,6 +712,8 @@ class FractalPartitioner:
                 output_dir,
                 "fractal_partition_manifest.json",
                 "fractal_partition_summary.json",
-                manifest, summary, graph_payloads,
+                manifest,
+                summary,
+                graph_payloads,
             ),
         }

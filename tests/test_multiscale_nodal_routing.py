@@ -51,9 +51,7 @@ def test_multiscale_evolution_uses_the_stored_total_pressure(parallel: bool) -> 
         for node in graph:
             data = graph.nodes[node]
             rate = data["nu_f"] * data["delta_nfr"]
-            assert data["EPI"] == pytest.approx(
-                before[(scale_name, node)] + dt * rate
-            )
+            assert data["EPI"] == pytest.approx(before[(scale_name, node)] + dt * rate)
             assert data["dEPI_dt"] == pytest.approx(rate)
         assert result.scale_results[scale_name]["coherence"] == pytest.approx(
             hierarchy._scale_coherence(graph)
@@ -97,6 +95,7 @@ def test_multiscale_coherence_includes_stored_structural_change_rate() -> None:
     assert hierarchy.compute_total_coherence() == pytest.approx(3.0 / 14.0)
     assert hierarchy.compute_total_coherence() != pytest.approx(5.0 / 18.0)
 
+
 def test_public_cross_scale_direction_matches_source_to_target_contract() -> None:
     hierarchy = _hierarchy(parallel=False)
     hierarchy.networks_by_scale = {
@@ -113,12 +112,12 @@ def test_public_cross_scale_direction_matches_source_to_target_contract() -> Non
     assert hierarchy.compute_multiscale_dnfr(0, "micro") == pytest.approx(1.0)
     assert hierarchy.compute_multiscale_dnfr(0, "macro") == pytest.approx(2.5)
     hierarchy._apply_cross_scale_coupling()
-    assert hierarchy.networks_by_scale["micro"].nodes[0][
-        "delta_nfr"
-    ] == pytest.approx(1.0)
-    assert hierarchy.networks_by_scale["macro"].nodes[0][
-        "delta_nfr"
-    ] == pytest.approx(2.5)
+    assert hierarchy.networks_by_scale["micro"].nodes[0]["delta_nfr"] == pytest.approx(
+        1.0
+    )
+    assert hierarchy.networks_by_scale["macro"].nodes[0]["delta_nfr"] == pytest.approx(
+        2.5
+    )
 
 
 def test_unimplemented_multiscale_operator_request_is_not_silently_ignored() -> None:
@@ -179,6 +178,7 @@ def test_multiscale_evolution_uses_each_scales_registered_pressure_hook() -> Non
     calls: list[str] = []
 
     for scale_name, graph in hierarchy.networks_by_scale.items():
+
         def pressure_hook(target: nx.Graph, *, value: float = len(calls) + 1.0) -> None:
             calls.append(scale_name)
             for node in target:

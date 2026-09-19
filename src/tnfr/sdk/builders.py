@@ -31,16 +31,20 @@ from __future__ import annotations
 
 from ..constants.operational import NODAL_OPT_COUPLING_CANONICAL
 from ..mathematics.unified_numerical import np
-from .fluent import NetworkConfig, NetworkResults, TNFRNetwork
 
 # SDK network-builder parameters (operational defaults for example/demo
 # networks; not TNFR structural physics).
 from ._defaults import (
-    SDK_REWIRING_PROB_DEFAULT, SDK_COUPLING_STRENGTH_WEAK,
-    SDK_COUPLING_STRENGTH_MODERATE, SDK_CONNECTIVITY_DEFAULT,
-    SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_LOW_MAX,
-    SDK_VF_RANGE_MODERATE_MIN, SDK_VF_RANGE_MODERATE_MAX,
+    SDK_CONNECTIVITY_DEFAULT,
+    SDK_COUPLING_STRENGTH_MODERATE,
+    SDK_COUPLING_STRENGTH_WEAK,
+    SDK_REWIRING_PROB_DEFAULT,
+    SDK_VF_RANGE_LOW_MAX,
+    SDK_VF_RANGE_LOW_MIN,
+    SDK_VF_RANGE_MODERATE_MAX,
+    SDK_VF_RANGE_MODERATE_MIN,
 )
+from .fluent import NetworkConfig, NetworkResults, TNFRNetwork
 
 __all__ = ["TNFRExperimentBuilder"]
 
@@ -92,7 +96,9 @@ class TNFRExperimentBuilder:
         ... )
         >>> print(f"Network coherence: {results.coherence:.3f}")
         """
-        network = TNFRNetwork("small_world_study", config=NetworkConfig(random_seed=random_seed))
+        network = TNFRNetwork(
+            "small_world_study", config=NetworkConfig(random_seed=random_seed)
+        )
 
         return (
             network.add_nodes(nodes)
@@ -138,7 +144,9 @@ class TNFRExperimentBuilder:
         >>> avg_si = sum(results.sense_indices.values()) / len(results.sense_indices)
         >>> print(f"Synchronization (avg Si): {avg_si:.3f}")
         """
-        network = TNFRNetwork("sync_study", config=NetworkConfig(random_seed=random_seed))
+        network = TNFRNetwork(
+            "sync_study", config=NetworkConfig(random_seed=random_seed)
+        )
 
         # Similar frequencies promote synchronization (within bounds: 0.6-0.9)
         network.add_nodes(
@@ -206,7 +214,9 @@ class TNFRExperimentBuilder:
         mutation_factor = validate_glyph_factor(
             "ZHIR_theta_shift_factor", mutation_intensity
         )
-        network = TNFRNetwork("creativity_study", config=NetworkConfig(random_seed=random_seed))
+        network = TNFRNetwork(
+            "creativity_study", config=NetworkConfig(random_seed=random_seed)
+        )
 
         network.add_nodes(
             nodes, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_LOW_MAX)
@@ -264,7 +274,10 @@ class TNFRExperimentBuilder:
         results = {}
 
         for topology in topologies:
-            network = TNFRNetwork(f"topology_study_{topology}", config=NetworkConfig(random_seed=random_seed))
+            network = TNFRNetwork(
+                f"topology_study_{topology}",
+                config=NetworkConfig(random_seed=random_seed),
+            )
 
             network.add_nodes(node_count)
             network.connect_nodes(
@@ -322,7 +335,10 @@ class TNFRExperimentBuilder:
         results = {}
 
         for coupling in coupling_values:
-            network = TNFRNetwork(f"phase_study_{coupling:.2f}", config=NetworkConfig(random_seed=random_seed))
+            network = TNFRNetwork(
+                f"phase_study_{coupling:.2f}",
+                config=NetworkConfig(random_seed=random_seed),
+            )
 
             network.add_nodes(nodes)
             network.connect_nodes(float(coupling), "random")
@@ -371,7 +387,9 @@ class TNFRExperimentBuilder:
         >>> recovered_c = resilience['recovered'].coherence
         >>> print(f"Recovery: {recovered_c / initial_c:.1%}")
         """
-        network = TNFRNetwork("resilience_study", config=NetworkConfig(random_seed=random_seed))
+        network = TNFRNetwork(
+            "resilience_study", config=NetworkConfig(random_seed=random_seed)
+        )
 
         results = {}
 

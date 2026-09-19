@@ -32,20 +32,27 @@ from ..dynamics._euler_kernel import euler_update
 from ..mathematics.krylov import exact_rank
 from ._cycle_algebra import Matrix, Vector, dot, ordered_vector
 from ._exact_linear_algebra import exact_matrix_inverse
-from .forced_support import (
-    ForcedSupportBalance, _pattern as _forced_pattern,
-    _reference as _validated_forced_reference,
-)
+from .forced_support import ForcedSupportBalance
+from .forced_support import _pattern as _forced_pattern
+from .forced_support import _reference as _validated_forced_reference
 from .hybrid_operator_stability import _exact_matrix_product
 from .spectral_projectors import matrix_exponential
 from .structural_morphism import _build_reversible_partition_geometry
 
 __all__ = [
-    "EpiMemorySample", "EpiMemoryObservation", "observe_epi_memory",
-    "ForcedSupportClosure", "ForcedSupportClosureWitness", "observe_forced_support_closure",
-    "ForcedSupportRealization", "ForcedSupportRealizationLevel",
+    "EpiMemorySample",
+    "EpiMemoryObservation",
+    "observe_epi_memory",
+    "ForcedSupportClosure",
+    "ForcedSupportClosureWitness",
+    "observe_forced_support_closure",
+    "ForcedSupportRealization",
+    "ForcedSupportRealizationLevel",
     "observe_forced_support_realization",
-    "ForcedSupportEulerFrame", "ForcedSupportEulerPrediction",
+    "AffineNodalRealization",
+    "observe_affine_nodal_realization",
+    "ForcedSupportEulerFrame",
+    "ForcedSupportEulerPrediction",
     "predict_forced_support_realization_euler",
 ]
 
@@ -135,18 +142,44 @@ def _exact_partition(nodes, blocks):
         try:
             values = tuple(block)
         except TypeError as exc:
-            raise TypeError("each block must be an ordered sequence of node IDs") from exc
+            raise TypeError(
+                "each block must be an ordered sequence of node IDs"
+            ) from exc
         if not values:
             raise ValueError("partition blocks must be nonempty")
         result.append(values)
     flattened = tuple(node for block in result for node in block)
-    if (len(flattened) != len(nodes) or len(set(flattened)) != len(nodes)
-            or set(flattened) != set(nodes)):
+    if (
+        len(flattened) != len(nodes)
+        or len(set(flattened)) != len(nodes)
+        or set(flattened) != set(nodes)
+    ):
         raise ValueError("partition must contain each reference node exactly once")
     return tuple(result)
 
 
-def observe_forced_support_closure(reference, blocks, *, epi=None) -> ForcedSupportClosure:
+def _held_affine_nodal_model(reference, epi):
+    """Rebuild the shared held model x'=-A*x+b from primitive source inputs."""
+    ref = _validated_forced_reference(reference)
+    n = len(ref.source.nodes)
+    values = ref.source.epi if epi is None else ordered_vector(epi, "epi")
+    if len(values) != n:
+        raise ValueError("epi must match the reference node order")
+    matrix = [[Fraction(0) for _ in range(n)] for _ in range(n)]
+    for i, j, weight in ref.source.conductance:
+        value = ref.epi_weight * ref.source.capacity[i] * weight / ref.strengths[i]
+        matrix[i][i] += value
+        matrix[i][j] -= value
+    generator = tuple(tuple(row) for row in matrix)
+    source = tuple(
+        nu * force for nu, force in zip(ref.source.capacity, ref.forcing, strict=True)
+    )
+    return ref, generator, source, values
+
+
+def observe_forced_support_closure(
+    reference, blocks, *, epi=None
+) -> ForcedSupportClosure:
     r"""Test exact all-state closure of y=Rx for x'=-Ax+b on held coefficients.
 
     The reference is rebuilt by the forced-support owner, requiring connected
@@ -168,37 +201,39 @@ def observe_forced_support_closure(reference, blocks, *, epi=None) -> ForcedSupp
     for this rebuilt reference and satisfies u'=-Au; no old target is used.
     No exponential, trajectory, fitted source or delay law is constructed.
     """
-    ref = _validated_forced_reference(reference)
+    ref, a, b, values = _held_affine_nodal_model(reference, epi)
     nodes = ref.source.nodes
     partition = _exact_partition(nodes, blocks)
-    values = ref.source.epi if epi is None else ordered_vector(epi, "epi")
-    if len(values) != len(nodes):
-        raise ValueError("epi must match the reference node order")
     n, m = len(nodes), len(partition)
     zero = Fraction(0)
     one = Fraction(1)
     position = {node: index for index, node in enumerate(nodes)}
-    membership = {position[node]: index for index, block in enumerate(partition) for node in block}
+    membership = {
+        position[node]: index for index, block in enumerate(partition) for node in block
+    }
     h = ref.metric_weights
-    hbar = tuple(sum((h[position[node]] for node in block), zero) for block in partition)
-    p = tuple(tuple(one if membership[i] == a else zero for a in range(m)) for i in range(n))
-    r = tuple(tuple(h[i] / hbar[a] if membership[i] == a else zero
-                    for i in range(n)) for a in range(m))
+    hbar = tuple(
+        sum((h[position[node]] for node in block), zero) for block in partition
+    )
+    p = tuple(
+        tuple(one if membership[i] == a else zero for a in range(m)) for i in range(n)
+    )
+    r = tuple(
+        tuple(h[i] / hbar[a] if membership[i] == a else zero for i in range(n))
+        for a in range(m)
+    )
     product = _exact_matrix_product
     pr = product(p, r)
-    q = tuple(tuple((one if i == j else zero) - pr[i][j] for j in range(n)) for i in range(n))
-    matrix = [[zero for _ in range(n)] for _ in range(n)]
-    for i, j, weight in ref.source.conductance:
-        value = ref.epi_weight * ref.source.capacity[i] * weight / ref.strengths[i]
-        matrix[i][i] += value
-        matrix[i][j] -= value
-    a = tuple(tuple(row) for row in matrix)
-    b = tuple(nu * force for nu, force in zip(ref.source.capacity, ref.forcing, strict=True))
+    q = tuple(
+        tuple((one if i == j else zero) - pr[i][j] for j in range(n)) for i in range(n)
+    )
     ap, ra = product(a, p), product(r, a)
     abar = product(r, ap)
     raq, c = product(ra, q), product(q, ap)
     k0 = product(raq, ap)
-    weighted_kernel = tuple(tuple(hbar[i] * value for value in row) for i, row in enumerate(k0))
+    weighted_kernel = tuple(
+        tuple(hbar[i] * value for value in row) for i, row in enumerate(k0)
+    )
     weighted_c = tuple(tuple(h[i] * value for value in row) for i, row in enumerate(c))
     gram = product(tuple(zip(*c, strict=True)), weighted_c)
 
@@ -211,7 +246,9 @@ def observe_forced_support_closure(reference, blocks, *, epi=None) -> ForcedSupp
     identity = tuple(tuple(one if i == j else zero for j in range(m)) for i in range(m))
     h_a = tuple(tuple(h[i] * a[i][j] for j in range(n)) for i in range(n))
     h_q = tuple(tuple(h[i] * q[i][j] for j in range(n)) for i in range(n))
-    weighted_raq = tuple(tuple(hbar[i] * value for value in row) for i, row in enumerate(raq))
+    weighted_raq = tuple(
+        tuple(hbar[i] * value for value in row) for i, row in enumerate(raq)
+    )
     checks = {
         "RP=I": product(r, p) == identity,
         "Q^2=Q": product(q, q) == q,
@@ -229,16 +266,23 @@ def observe_forced_support_closure(reference, blocks, *, epi=None) -> ForcedSupp
     projected, hidden = mv(r, values), mv(q, values)
     rate = tuple(force - drift for force, drift in zip(b, mv(a, values), strict=True))
     projected_rate = mv(r, rate)
-    macro_rate = tuple(force - drift for force, drift in zip(rb, mv(abar, projected), strict=True))
+    macro_rate = tuple(
+        force - drift for force, drift in zip(rb, mv(abar, projected), strict=True)
+    )
     hidden_rate = tuple(-value for value in mv(raq, values))
     checks["projected affine rate identity"] = projected_rate == tuple(
-        left + right for left, right in zip(macro_rate, hidden_rate, strict=True))
+        left + right for left, right in zip(macro_rate, hidden_rate, strict=True)
+    )
     pattern = _forced_pattern(ref, values)
     relative_rate = tuple(-value for value in mv(a, pattern.relative_error))
-    centered_residual = tuple(observed - ref.mean_drift - expected
-                              for observed, expected in zip(rate, relative_rate, strict=True))
+    centered_residual = tuple(
+        observed - ref.mean_drift - expected
+        for observed, expected in zip(rate, relative_rate, strict=True)
+    )
     checks["current-model centered rate identity"] = not any(centered_residual)
-    checks["current-model weighted mean drift"] = dot(h, rate) == sum(h, zero) * ref.mean_drift
+    checks["current-model weighted mean drift"] = (
+        dot(h, rate) == sum(h, zero) * ref.mean_drift
+    )
     failed = tuple(name for name, passed in checks.items() if not passed)
     if failed:
         raise RuntimeError(f"exact forced closure identities failed: {failed}")
@@ -247,30 +291,68 @@ def observe_forced_support_closure(reference, blocks, *, epi=None) -> ForcedSupp
     if not closed:
         column = next(j for j in range(n) if any(row[j] for row in raq))
         delta = tuple(row[column] for row in q)
-        after = tuple(value + change for value, change in zip(values, delta, strict=True))
-        after_rate = mv(r, tuple(force - drift for force, drift in zip(b, mv(a, after), strict=True)))
-        difference = tuple(right - left for left, right in zip(projected_rate, after_rate, strict=True))
-        if (mv(r, after) != projected or mv(q, delta) != delta or not any(difference)
-                or difference != tuple(-row[column] for row in raq)):
+        after = tuple(
+            value + change for value, change in zip(values, delta, strict=True)
+        )
+        after_rate = mv(
+            r,
+            tuple(force - drift for force, drift in zip(b, mv(a, after), strict=True)),
+        )
+        difference = tuple(
+            right - left for left, right in zip(projected_rate, after_rate, strict=True)
+        )
+        if (
+            mv(r, after) != projected
+            or mv(q, delta) != delta
+            or not any(difference)
+            or difference != tuple(-row[column] for row in raq)
+        ):
             raise RuntimeError("exact same-projection different-rate witness failed")
         witness = ForcedSupportClosureWitness(
-            column, delta, values, after, projected, projected_rate, after_rate, difference,
+            column,
+            delta,
+            values,
+            after,
+            projected,
+            projected_rate,
+            after_rate,
+            difference,
         )
     return ForcedSupportClosure(
-        reference=ref, nodes=nodes, blocks=partition, metric_weights=h,
-        macro_metric_weights=hbar, lift=p, projection=r, hidden_projector=q,
-        micro_generator=a, affine_source=b, macro_generator=abar, projected_source=rb,
-        hidden_affine_source=qb, hidden_to_macro=raq, macro_to_hidden=c,
-        instantaneous_kernel=k0, weighted_instantaneous_kernel=weighted_kernel,
-        coupling_gram=gram, all_state_affine_closed=closed,
+        reference=ref,
+        nodes=nodes,
+        blocks=partition,
+        metric_weights=h,
+        macro_metric_weights=hbar,
+        lift=p,
+        projection=r,
+        hidden_projector=q,
+        micro_generator=a,
+        affine_source=b,
+        macro_generator=abar,
+        projected_source=rb,
+        hidden_affine_source=qb,
+        hidden_to_macro=raq,
+        macro_to_hidden=c,
+        instantaneous_kernel=k0,
+        weighted_instantaneous_kernel=weighted_kernel,
+        coupling_gram=gram,
+        all_state_affine_closed=closed,
         lifted_affine_subspace_invariant=closed and not any(qb),
-        epi=values, projected_epi=projected, hidden_epi=hidden,
-        projected_nodal_rate=projected_rate, affine_macro_rate=macro_rate,
-        hidden_rate_contribution=hidden_rate, current_mean=pattern.mean,
-        current_mean_rate=ref.mean_drift, current_relative_error=pattern.relative_error,
+        epi=values,
+        projected_epi=projected,
+        hidden_epi=hidden,
+        projected_nodal_rate=projected_rate,
+        affine_macro_rate=macro_rate,
+        hidden_rate_contribution=hidden_rate,
+        current_mean=pattern.mean,
+        current_mean_rate=ref.mean_drift,
+        current_relative_error=pattern.relative_error,
         projected_relative_error=mv(r, pattern.relative_error),
-        current_relative_rate=relative_rate, centered_rate_residual=centered_residual,
-        witness=witness, exact_identity_checks=tuple(checks),
+        current_relative_rate=relative_rate,
+        centered_rate_residual=centered_residual,
+        witness=witness,
+        exact_identity_checks=tuple(checks),
         scope=(
             "Exact all-state projection test for one rebuilt held affine model on unrestricted "
             "real scalar EPI. H, its current-model relative profile and forcing are fixed. "
@@ -282,7 +364,7 @@ def observe_forced_support_closure(reference, blocks, *, epi=None) -> ForcedSupp
 
 @dataclass(frozen=True)
 class ForcedSupportRealizationLevel:
-    """One completely examined block-Krylov level R*A**power."""
+    """One completely examined output-Krylov level O*A**power."""
 
     power: int
     rank_before: int
@@ -334,37 +416,130 @@ class ForcedSupportRealization:
     scope: str
 
 
-def observe_forced_support_realization(
-    reference, blocks, *, epi=None, max_rank_calls=4096,
-) -> ForcedSupportRealization:
-    r"""Derive the smallest invariant row space containing the family outputs.
+@dataclass(frozen=True)
+class AffineNodalRealization:
+    """Minimal linear state reproducing supplied affine held-model outputs.
 
-    Rebuild the exact closure geometry, then scan rows of complete levels
-    R, RA, RA^2, ... in supplied block order. Keep a row iff exact rational
-    rank increases. A dependent row never terminates its level. The first
-    complete level with no increase certifies invariance; with n coordinates
-    and at least two independent output rows this occurs by power n-1.
-
-    For retained independent rows C, deterministically scan columns to find
-    an invertible minor C_J. Set T=I_J*(C_J)^-1, G=CAT and D=RT and check
-    CT=I, CA=GC and R=DC on full matrices. Since any all-state linear
-    observation retaining R must contain every RA^k in its invariant row
-    space, dimension(C) is minimal in that explicitly restricted class.
-
-    The known affine source Cb is preserved, with no fitted source, appended
-    homogeneous coordinate or implicit centering. ``max_rank_calls`` is a
-    positive non-boolean integer operational limit, not a physical parameter.
-    Exhaustion raises ValueError with no partial result or approximate rank
-    fallback. It bounds rank invocations, not wall time, memory or intermediate
-    elimination bit growth. No graph, trajectory or exponential is created.
+    For x'=-A*x+b and y=O*x+o0, the state s=C*x satisfies
+    s'=-G*s+C*b and y=D*s+o0. O and o0 are declared observations, not
+    derived physical laws. Constant offsets do not require a state coordinate.
+    Minimality concerns all scalar x and autonomous linear state observations;
+    trajectory-restricted, nonlinear and changing-model reductions differ.
+    A rank-zero observation has empty state and constant output o0.
     """
+
+    reference: ForcedSupportBalance
+    output_rows: Matrix
+    output_offset: Vector
+    output_count: int
+    output_rank: int
+    dimension: int
+    full_state_dimension: int
+    extra_coordinates: int
+    rank_progression: tuple[int, ...]
+    level_records: tuple[ForcedSupportRealizationLevel, ...]
+    selected_row_labels: tuple[tuple[int, int], ...]
+    pivot_columns: tuple[int, ...]
+    observation: Matrix
+    right_inverse: Matrix
+    reduced_generator: Matrix
+    output_map: Matrix
+    reduced_source: Vector
+    epi: Vector
+    reduced_state: Vector
+    reduced_rate: Vector
+    output_state: Vector
+    output_rate: Vector
+    reconstructed_output_state: Vector
+    reconstructed_output_rate: Vector
+    exact_identity_checks: tuple[str, ...]
+    rank_calls: int
+    max_rank_calls: int
+    matrix_product_calls: int
+    completed_levels: int
+    stabilization_power: int
+    max_coefficient_bits: int
+    scope: str
+
+
+def _check_realization_rank_budget(max_rank_calls):
     if type(max_rank_calls) is not int:
         raise TypeError("max_rank_calls must be a positive non-boolean integer")
     if max_rank_calls < 1:
         raise ValueError("max_rank_calls must be positive")
-    closure = observe_forced_support_closure(reference, blocks, epi=epi)
-    a, r, b, x = (closure.micro_generator, closure.projection,
-                  closure.affine_source, closure.epi)
+
+
+def observe_affine_nodal_realization(
+    reference,
+    output_rows,
+    *,
+    output_offset=None,
+    epi=None,
+    max_rank_calls=4096,
+) -> AffineNodalRealization:
+    r"""Realize y=O*x+o0 for one rebuilt held nodal model x'=-A*x+b.
+
+    The forced-support owner validates connected symmetric transport and
+    positive capacities/EPI coefficient, rebuilding cached model fields.
+    ``output_rows`` is a nonempty ordered collection of finite exact or
+    represented real rows, each matching the reference node order. Redundant,
+    signed and all-zero rows are permitted. ``output_offset`` has one known
+    constant per row and defaults to zero. No output is inferred from a rate.
+
+    Scan every row of O, OA, OA^2, ... and retain a row exactly when rational
+    rank increases. The first complete level after power zero with no new
+    direction certifies invariance. For initial rank r>0 it occurs by power
+    n-r+1; rank one can require the full n+1 levels through power n. The
+    all-zero case is explicitly checked through power one, without inversion.
+    Dependent or zero rows never terminate their level early.
+
+    Independent retained rows C give T from a deterministic invertible column
+    minor, G=CAT and D=OT. Full identities CT=I, CA=GC and O=DC verify the
+    resulting s=C*x, s'=-G*s+C*b and y=D*s+o0. Every autonomous all-state
+    linear observation retaining O contains all OA^k, proving minimality in
+    that class. Known b and o0 alter neither this rank nor the needed state
+    dimension: neither is appended as a homogeneous coordinate. This is not
+    minimality over nonlinear observations or restricted trajectories.
+
+    ``max_rank_calls`` is a positive non-boolean operational rank-call limit,
+    not a physical parameter or a bound on wall time, memory, intermediate
+    elimination work or coefficient bit growth. Exhaustion returns no partial
+    result or approximate fallback. No graph, trajectory, exponential, phase
+    law, measurement provenance or autonomous partition selection is supplied.
+    """
+    _check_realization_rank_budget(max_rank_calls)
+    ref, a, b, x = _held_affine_nodal_model(reference, epi)
+    if isinstance(output_rows, (str, bytes, bytearray, Mapping, Set)):
+        raise TypeError("output_rows must be an ordered collection of rows")
+    try:
+        rows = tuple(output_rows)
+    except TypeError as exc:
+        raise TypeError("output_rows must be an ordered collection of rows") from exc
+    if not rows:
+        raise ValueError("output_rows must be nonempty")
+    rows = tuple(ordered_vector(row, f"output_rows[{i}]") for i, row in enumerate(rows))
+    if any(len(row) != len(a) for row in rows):
+        raise ValueError("each output row must match the reference node order")
+    offset = (
+        (Fraction(0),) * len(rows)
+        if output_offset is None
+        else ordered_vector(output_offset, "output_offset")
+    )
+    if len(offset) != len(rows):
+        raise ValueError("output_offset must contain one constant per output row")
+    return _affine_nodal_realization_core(
+        ref,
+        a,
+        b,
+        x,
+        rows,
+        offset,
+        max_rank_calls=max_rank_calls,
+    )
+
+
+def _affine_nodal_realization_core(ref, a, b, x, r, offset, *, max_rank_calls):
+    """One invariant-row algorithm for validated generic and partition outputs."""
     n, m = len(a), len(r)
     rank_calls = product_calls = max_bits = 0
 
@@ -372,8 +547,11 @@ def observe_forced_support_realization(
         nonlocal max_bits
         for row in matrix:
             for value in row:
-                max_bits = max(max_bits, abs(value.numerator).bit_length(),
-                               value.denominator.bit_length())
+                max_bits = max(
+                    max_bits,
+                    abs(value.numerator).bit_length(),
+                    value.denominator.bit_length(),
+                )
         return matrix
 
     def rank(matrix):
@@ -395,88 +573,231 @@ def observe_forced_support_realization(
 
     retain(a)
     retain(r)
-    retain((b, x))
+    retain((b, x, offset))
     basis, labels, levels = [], [], []
     level = r
-    for power in range(n):
+    for power in range(n + 1):
         previous_rank = len(basis)
         selected = []
         for row_index, row in enumerate(level):
             observed_rank = rank((*basis, row))
             if observed_rank not in (len(basis), len(basis) + 1):
-                raise RuntimeError("exact independent-row selection lost rank consistency")
+                raise RuntimeError(
+                    "exact independent-row selection lost rank consistency"
+                )
             if observed_rank > len(basis):
                 basis.append(row)
                 labels.append((power, row_index))
                 selected.append(row_index)
-        levels.append(ForcedSupportRealizationLevel(
-            power, previous_rank, len(basis), m, tuple(selected),
-        ))
+        levels.append(
+            ForcedSupportRealizationLevel(
+                power,
+                previous_rank,
+                len(basis),
+                m,
+                tuple(selected),
+            )
+        )
         if power > 0 and len(basis) == previous_rank:
             break
-        if power < n - 1:
+        if power < n:
             level = product(level, a)
     else:
-        raise RuntimeError("exact row-space closure did not stabilize within its dimension bound")
+        raise RuntimeError(
+            "exact row-space closure did not stabilize within its dimension bound"
+        )
     c = tuple(basis)
     dimension = len(c)
+    output_rank = levels[0].rank_after
     columns, chosen = [], []
-    for j in range(n):
-        column = tuple(row[j] for row in c)
-        observed_rank = rank((*columns, column))
-        if observed_rank not in (len(columns), len(columns) + 1):
-            raise RuntimeError("exact pivot-column selection lost rank consistency")
-        if observed_rank > len(columns):
-            columns.append(column)
-            chosen.append(j)
-        if len(columns) == dimension:
-            break
-    if len(columns) != dimension:
-        raise RuntimeError("independent observation rows have no invertible column minor")
-    minor = tuple(tuple(row[j] for j in chosen) for row in c)
-    inverse = retain(exact_matrix_inverse(minor))
-    selected_positions = {j: i for i, j in enumerate(chosen)}
     zero, one = Fraction(0), Fraction(1)
-    t = retain(tuple(inverse[selected_positions[i]] if i in selected_positions
-                     else (zero,) * dimension for i in range(n)))
-    ca = product(c, a)
-    g, d = product(ca, t), product(r, t)
-    identity = tuple(tuple(one if i == j else zero for j in range(dimension))
-                     for i in range(dimension))
+    if dimension:
+        for j in range(n):
+            column = tuple(row[j] for row in c)
+            observed_rank = rank((*columns, column))
+            if observed_rank not in (len(columns), len(columns) + 1):
+                raise RuntimeError("exact pivot-column selection lost rank consistency")
+            if observed_rank > len(columns):
+                columns.append(column)
+                chosen.append(j)
+            if len(columns) == dimension:
+                break
+        if len(columns) != dimension:
+            raise RuntimeError(
+                "independent observation rows have no invertible column minor"
+            )
+        minor = tuple(tuple(row[j] for j in chosen) for row in c)
+        inverse = retain(exact_matrix_inverse(minor))
+        selected_positions = {j: i for i, j in enumerate(chosen)}
+        t = retain(
+            tuple(
+                (
+                    inverse[selected_positions[i]]
+                    if i in selected_positions
+                    else (zero,) * dimension
+                )
+                for i in range(n)
+            )
+        )
+        ca = product(c, a)
+        g, d = product(ca, t), product(r, t)
+    else:
+        # Empty tuples alone lose their column count. Handle the known
+        # 0-by-n, n-by-0, 0-by-0 and m-by-0 shapes explicitly rather than
+        # changing the nonempty shared product/inverse contracts.
+        t = ((),) * n
+        ca, g, d = (), (), ((),) * m
+    identity = tuple(
+        tuple(one if i == j else zero for j in range(dimension))
+        for i in range(dimension)
+    )
     source, state = mv(c, b), mv(c, x)
-    reduced_rate = tuple(force - drift for force, drift in zip(source, mv(g, state), strict=True))
+    reduced_rate = tuple(
+        force - drift for force, drift in zip(source, mv(g, state), strict=True)
+    )
     fine_rate = tuple(force - drift for force, drift in zip(b, mv(a, x), strict=True))
-    output_state, output_rate = mv(d, state), mv(d, reduced_rate)
-    projected_state, projected_rate = mv(r, x), mv(r, fine_rate)
-    retain((reduced_rate, fine_rate))
+    output_state = tuple(
+        value + constant for value, constant in zip(mv(d, state), offset, strict=True)
+    )
+    projected_state = tuple(
+        value + constant for value, constant in zip(mv(r, x), offset, strict=True)
+    )
+    output_rate, projected_rate = mv(d, reduced_rate), mv(r, fine_rate)
+    retain((reduced_rate, fine_rate, output_state, projected_state))
     checks = {
         "rank(C)=dimension": rank(c) == dimension,
-        "C T=I": product(c, t) == identity,
-        "C A=G C": ca == product(g, c),
-        "R=D C": r == product(d, c),
+        "C T=I": (product(c, t) if dimension else ()) == identity,
+        "C A=G C": ca == (product(g, c) if dimension else ()),
+        "O=D C": r == (product(d, c) if dimension else ((zero,) * n,) * m),
         "complete-level stabilization": levels[-1].rank_before == levels[-1].rank_after,
-        "initial output rank retained": levels[0].rank_after == m,
+        "initial output rank retained": output_rank <= dimension,
         "reduced affine nodal rate": reduced_rate == mv(c, fine_rate),
-        "projected state reconstruction": output_state == projected_state == closure.projected_epi,
-        "projected rate reconstruction": output_rate == projected_rate == closure.projected_nodal_rate,
+        "output state reconstruction": output_state == projected_state,
+        "output rate reconstruction": output_rate == projected_rate,
     }
     failed = tuple(name for name, passed in checks.items() if not passed)
     if failed:
         raise RuntimeError(f"exact sufficient-observation identities failed: {failed}")
-    return ForcedSupportRealization(
-        closure=closure, dimension=dimension, full_state_dimension=n,
-        extra_coordinates=dimension - m,
+    return AffineNodalRealization(
+        reference=ref,
+        output_rows=r,
+        output_offset=offset,
+        output_count=m,
+        output_rank=output_rank,
+        dimension=dimension,
+        full_state_dimension=n,
+        extra_coordinates=dimension - output_rank,
         rank_progression=tuple(level.rank_after for level in levels),
-        level_records=tuple(levels), selected_row_labels=tuple(labels),
-        pivot_columns=tuple(chosen), observation=c, right_inverse=t,
-        reduced_generator=g, output_map=d, reduced_source=source, epi=x,
-        reduced_state=state, reduced_rate=reduced_rate,
-        projected_state=projected_state, projected_rate=projected_rate,
-        reconstructed_projected_state=output_state, reconstructed_projected_rate=output_rate,
-        exact_identity_checks=tuple(checks), rank_calls=rank_calls,
-        max_rank_calls=max_rank_calls, matrix_product_calls=product_calls,
-        completed_levels=len(levels), stabilization_power=levels[-1].power,
+        level_records=tuple(levels),
+        selected_row_labels=tuple(labels),
+        pivot_columns=tuple(chosen),
+        observation=c,
+        right_inverse=t,
+        reduced_generator=g,
+        output_map=d,
+        reduced_source=source,
+        epi=x,
+        reduced_state=state,
+        reduced_rate=reduced_rate,
+        output_state=projected_state,
+        output_rate=projected_rate,
+        reconstructed_output_state=output_state,
+        reconstructed_output_rate=output_rate,
+        exact_identity_checks=tuple(checks),
+        rank_calls=rank_calls,
+        max_rank_calls=max_rank_calls,
+        matrix_product_calls=product_calls,
+        completed_levels=len(levels),
+        stabilization_power=levels[-1].power,
         max_coefficient_bits=max_bits,
+        scope=(
+            "Minimal all-state linear observation retaining the declared outputs of one fixed "
+            "exact affine scalar nodal model. Reduced coordinates may be signed/nonlocal and "
+            "are not automatically canonical nodes. Constant output offsets are held data, not "
+            "new dynamic coordinates or measurement-provenance certificates. Full dimension "
+            "excludes only proper linear "
+            "compression in this class; nonlinear/reachable-state reductions remain separate. "
+            "No shared observation across changed models, trajectory, exponential, runtime "
+            "closure, persistence or empirical entity is certified."
+        ),
+    )
+
+
+def observe_forced_support_realization(
+    reference,
+    blocks,
+    *,
+    epi=None,
+    max_rank_calls=4096,
+) -> ForcedSupportRealization:
+    r"""Derive the smallest invariant row space containing the family outputs.
+
+    Rebuild exact partition geometry and delegate R, RA, RA^2, ... to the
+    same invariant-row owner as ``observe_affine_nodal_realization``. The
+    proper partition gives at least two independent rows, so its complete
+    stabilization occurs by power n-1. A dependent row never terminates a
+    level. The existing partition observation and resource fields are retained.
+
+    The shared owner proves CT=I, CA=GC and R=DC for independent state C,
+    with s=C*x, s'=-G*s+C*b and y=D*s. Minimality is among autonomous linear
+    observations retaining R for every scalar x; no constant state, source
+    fit, implicit centering, trajectory or exponential is introduced.
+    ``max_rank_calls`` is a positive non-boolean operational limit on exact
+    rank invocations, not on wall time, memory or elimination bit growth.
+    Exhaustion raises without a partial result or approximate-rank fallback.
+    """
+    _check_realization_rank_budget(max_rank_calls)
+    closure = observe_forced_support_closure(reference, blocks, epi=epi)
+    result = _affine_nodal_realization_core(
+        closure.reference,
+        closure.micro_generator,
+        closure.affine_source,
+        closure.epi,
+        closure.projection,
+        (Fraction(0),) * len(closure.projection),
+        max_rank_calls=max_rank_calls,
+    )
+    if (
+        result.output_rank != len(closure.projection)
+        or result.output_state != closure.projected_epi
+        or result.output_rate != closure.projected_nodal_rate
+    ):
+        raise RuntimeError("partition realization differs from its rebuilt closure")
+    check_names = {
+        "O=D C": "R=D C",
+        "output state reconstruction": "projected state reconstruction",
+        "output rate reconstruction": "projected rate reconstruction",
+    }
+    return ForcedSupportRealization(
+        closure=closure,
+        dimension=result.dimension,
+        full_state_dimension=result.full_state_dimension,
+        extra_coordinates=result.extra_coordinates,
+        rank_progression=result.rank_progression,
+        level_records=result.level_records,
+        selected_row_labels=result.selected_row_labels,
+        pivot_columns=result.pivot_columns,
+        observation=result.observation,
+        right_inverse=result.right_inverse,
+        reduced_generator=result.reduced_generator,
+        output_map=result.output_map,
+        reduced_source=result.reduced_source,
+        epi=result.epi,
+        reduced_state=result.reduced_state,
+        reduced_rate=result.reduced_rate,
+        projected_state=result.output_state,
+        projected_rate=result.output_rate,
+        reconstructed_projected_state=result.reconstructed_output_state,
+        reconstructed_projected_rate=result.reconstructed_output_rate,
+        exact_identity_checks=tuple(
+            check_names.get(name, name) for name in result.exact_identity_checks
+        ),
+        rank_calls=result.rank_calls,
+        max_rank_calls=result.max_rank_calls,
+        matrix_product_calls=result.matrix_product_calls,
+        completed_levels=result.completed_levels,
+        stabilization_power=result.stabilization_power,
+        max_coefficient_bits=result.max_coefficient_bits,
         scope=(
             "Minimal all-state linear observation retaining the declared outputs of one fixed "
             "exact affine scalar nodal model. Reduced coordinates may be signed/nonlocal and "
@@ -528,7 +849,13 @@ class ForcedSupportEulerPrediction:
 
 
 def predict_forced_support_realization_euler(
-    reference, blocks, steps, *, epi=None, max_rank_calls=4096, max_steps=256,
+    reference,
+    blocks,
+    steps,
+    *,
+    epi=None,
+    max_rank_calls=4096,
+    max_steps=256,
 ) -> ForcedSupportEulerPrediction:
     r"""Forecast full microscopic EPI through its rebuilt sufficient state.
 
@@ -570,7 +897,10 @@ def predict_forced_support_realization_euler(
         raise ValueError("steps must be nonempty")
     durations = tuple(durations)
     realization = observe_forced_support_realization(
-        reference, blocks, epi=epi, max_rank_calls=max_rank_calls,
+        reference,
+        blocks,
+        epi=epi,
+        max_rank_calls=max_rank_calls,
     )
     n = realization.full_state_dimension
     if realization.dimension != n:
@@ -601,8 +931,14 @@ def predict_forced_support_realization_euler(
         if any(any(residual) for residual in residuals):
             raise RuntimeError("exact sufficient-state Euler identities failed")
         return ForcedSupportEulerFrame(
-            ordinal, time, state, reduced_rate, decoded, fine_rate,
-            projected, *residuals,
+            ordinal,
+            time,
+            state,
+            reduced_rate,
+            decoded,
+            fine_rate,
+            projected,
+            *residuals,
         )
 
     frames = [frame(0, zero, realization.reduced_state, realization.epi)]
@@ -611,27 +947,42 @@ def predict_forced_support_realization_euler(
         previous = frames[-1]
         next_state = tuple(
             euler_update(value, duration, rate)
-            for value, rate in zip(previous.reduced_state, previous.reduced_rate, strict=True)
+            for value, rate in zip(
+                previous.reduced_state, previous.reduced_rate, strict=True
+            )
         )
-        matrix = tuple(tuple(
-            euler_update(one if i == j else zero, duration, -a[i][j])
-            for j in range(n)
-        ) for i in range(n))
+        matrix = tuple(
+            tuple(
+                euler_update(one if i == j else zero, duration, -a[i][j])
+                for j in range(n)
+            )
+            for i in range(n)
+        )
         expected_epi = tuple(
             euler_update(value, duration, rate)
             for value, rate in zip(previous.epi, previous.fine_rate, strict=True)
         )
-        affine_epi = tuple(euler_update(value, duration, force)
-                           for value, force in zip(mv(matrix, previous.epi), b, strict=True))
+        affine_epi = tuple(
+            euler_update(value, duration, force)
+            for value, force in zip(mv(matrix, previous.epi), b, strict=True)
+        )
         if expected_epi != affine_epi:
-            raise RuntimeError("exact affine Euler matrix lost its nodal update identity")
+            raise RuntimeError(
+                "exact affine Euler matrix lost its nodal update identity"
+            )
         matrices.append(matrix)
-        frames.append(frame(ordinal, previous.time + duration, next_state, expected_epi))
+        frames.append(
+            frame(ordinal, previous.time + duration, next_state, expected_epi)
+        )
     return ForcedSupportEulerPrediction(
-        realization=realization, steps=durations, frames=tuple(frames),
-        fine_euler_matrices=tuple(matrices), elapsed_time=frames[-1].time,
+        realization=realization,
+        steps=durations,
+        frames=tuple(frames),
+        fine_euler_matrices=tuple(matrices),
+        elapsed_time=frames[-1].time,
         convex_step_admissible=tuple(
-            value <= closure.reference.max_convex_step for value in durations),
+            value <= closure.reference.max_convex_step for value in durations
+        ),
         max_steps=max_steps,
         scope=(
             "Exact rational Euler forecast of one rebuilt held affine scalar nodal model, "
@@ -830,9 +1181,7 @@ def observe_epi_memory(
             macro_weights = _stationary_weights(geometry.macro_metric_weights)
             fine_weights = _stationary_weights(r.T @ macro_weights)
             generator_scale = _norm(a)
-            generator_residual = max(
-                _norm(np.sum(a, axis=1)), _norm(fine_weights @ a)
-            )
+            generator_residual = max(_norm(np.sum(a, axis=1)), _norm(fine_weights @ a))
             if generator_scale > 0.0:
                 generator_residual /= generator_scale
             if generator_residual > numeric_tol:
@@ -845,9 +1194,7 @@ def observe_epi_memory(
 
             # The lower block integrates the memory forcing along the fine
             # reference, independently of the projected rate reconstruction.
-            augmented = np.block(
-                [[-a, np.zeros((n, n))], [hidden_drive @ r, -hidden]]
-            )
+            augmented = np.block([[-a, np.zeros((n, n))], [hidden_drive @ r, -hidden]])
             samples = []
             for raw_time in sample_times:
                 time = float(raw_time)
@@ -855,9 +1202,7 @@ def observe_epi_memory(
                 hidden_flow = _exponential(-hidden, time)
                 fine_flow = flow[:n, :n]
                 markov_flow = _exponential(-instantaneous, time)
-                fine_residual = _check_stochastic(
-                    fine_flow, fine_weights, numeric_tol
-                )
+                fine_residual = _check_stochastic(fine_flow, fine_weights, numeric_tol)
                 markov_residual = _check_stochastic(
                     markov_flow, macro_weights, numeric_tol
                 )
@@ -920,6 +1265,4 @@ def observe_epi_memory(
                 ),
             )
     except (FloatingPointError, OverflowError) as exc:
-        raise ValueError(
-            "EPI memory observation exceeds finite numeric range"
-        ) from exc
+        raise ValueError("EPI memory observation exceeds finite numeric range") from exc

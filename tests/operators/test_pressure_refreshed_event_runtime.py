@@ -219,9 +219,7 @@ def test_executed_zhir_reads_the_terminal_physical_segment_secant() -> None:
 
     assert mutation.event.operator_name == "mutation"
     assert all(
-        item.sample_interval == 0.25
-        for item in trigger_evidence
-        if item is not None
+        item.sample_interval == 0.25 for item in trigger_evidence if item is not None
     )
     assert observed == terminal_rates
     assert observed != whole_parent_rates
@@ -296,9 +294,7 @@ def test_callback_nonpressure_mutation_fails_and_rolls_back_graph_state() -> Non
 
     graph.graph["compute_delta_nfr"] = invalid_pressure_callback
     graph_before = deepcopy(dict(graph.graph))
-    nodes_before = {
-        node: deepcopy(dict(data)) for node, data in graph.nodes(data=True)
-    }
+    nodes_before = {node: deepcopy(dict(data)) for node, data in graph.nodes(data=True)}
 
     with pytest.raises(TNFRValueError, match="non-pressure graph state"):
         execute_operator_event_schedule(
@@ -309,9 +305,7 @@ def test_callback_nonpressure_mutation_fails_and_rolls_back_graph_state() -> Non
 
     assert calls == []
     assert dict(graph.graph) == graph_before
-    assert {
-        node: dict(data) for node, data in graph.nodes(data=True)
-    } == nodes_before
+    assert {node: dict(data) for node, data in graph.nodes(data=True)} == nodes_before
 
 
 def test_callback_owned_state_mutation_fails_and_rolls_back() -> None:
@@ -568,9 +562,7 @@ def test_callback_graph_alias_is_opaque_and_preserves_identity(
     assert result.physical_pressure_refresh_callback_invocations == 3
     assert all(
         item.callback_state_preserved
-        for item in result.physical_flow_partition_evidence[
-            0
-        ].boundary_observations
+        for item in result.physical_flow_partition_evidence[0].boundary_observations
     )
 
 
@@ -608,9 +600,7 @@ def test_callback_label_does_not_invoke_instance_attribute_access() -> None:
     assert callback.label_reads == []
     assert all(
         item.callback_name.endswith(".LabelTrap")
-        for item in result.physical_flow_partition_evidence[
-            0
-        ].boundary_observations
+        for item in result.physical_flow_partition_evidence[0].boundary_observations
     )
 
 
@@ -635,9 +625,7 @@ def test_callback_graph_or_edge_mutation_fails_and_rolls_back(
 
     graph.graph["compute_delta_nfr"] = invalid_pressure_callback
     graph_before = deepcopy(dict(graph.graph))
-    nodes_before = {
-        node: deepcopy(dict(data)) for node, data in graph.nodes(data=True)
-    }
+    nodes_before = {node: deepcopy(dict(data)) for node, data in graph.nodes(data=True)}
     edges_before = {
         (source, target): deepcopy(dict(data))
         for source, target, data in graph.edges(data=True)
@@ -652,12 +640,9 @@ def test_callback_graph_or_edge_mutation_fails_and_rolls_back(
 
     assert calls == []
     assert dict(graph.graph) == graph_before
+    assert {node: dict(data) for node, data in graph.nodes(data=True)} == nodes_before
     assert {
-        node: dict(data) for node, data in graph.nodes(data=True)
-    } == nodes_before
-    assert {
-        (source, target): dict(data)
-        for source, target, data in graph.edges(data=True)
+        (source, target): dict(data) for source, target, data in graph.edges(data=True)
     } == edges_before
 
 
@@ -780,9 +765,10 @@ def test_callback_cannot_rebind_one_side_of_a_protected_alias() -> None:
             physical_flow_partitions=(partition,),
         )
 
-    assert "protected_identity_preserved" in failure.value.context[
-        "failed_preservation_checks"
-    ]
+    assert (
+        "protected_identity_preserved"
+        in failure.value.context["failed_preservation_checks"]
+    )
     assert graph.nodes[0]["payload"] is graph.edges[0, 1]["payload"]
     assert graph.nodes[0]["payload"] == shared_payload
 
@@ -809,9 +795,10 @@ def test_callback_cannot_rebind_nested_graph_instance_state() -> None:
             physical_flow_partitions=(partition,),
         )
 
-    assert "protected_identity_preserved" in failure.value.context[
-        "failed_preservation_checks"
-    ]
+    assert (
+        "protected_identity_preserved"
+        in failure.value.context["failed_preservation_checks"]
+    )
     assert graph.custom_payload["nested"] == nested
 
 
@@ -850,9 +837,10 @@ def test_callback_cannot_rebind_nested_graph_factory_state() -> None:
             physical_flow_partitions=(partition,),
         )
 
-    assert "protected_identity_preserved" in failure.value.context[
-        "failed_preservation_checks"
-    ]
+    assert (
+        "protected_identity_preserved"
+        in failure.value.context["failed_preservation_checks"]
+    )
     assert factory.configuration["nested"] == nested
 
 
@@ -885,9 +873,10 @@ def test_callback_cannot_break_networkx_edge_storage_alias(
             physical_flow_partitions=(partition,),
         )
 
-    assert "protected_identity_preserved" in failure.value.context[
-        "failed_preservation_checks"
-    ]
+    assert (
+        "protected_identity_preserved"
+        in failure.value.context["failed_preservation_checks"]
+    )
     if directed:
         assert graph._adj[0][1] is graph._pred[1][0]
     else:
@@ -922,9 +911,10 @@ def test_callback_cannot_break_directed_root_adjacency_alias(
             physical_flow_partitions=(partition,),
         )
 
-    assert "protected_identity_preserved" in failure.value.context[
-        "failed_preservation_checks"
-    ]
+    assert (
+        "protected_identity_preserved"
+        in failure.value.context["failed_preservation_checks"]
+    )
     assert graph._adj is graph._succ
     assert graph._adj is original_adjacency
 
@@ -960,9 +950,10 @@ def test_callback_cannot_corrupt_networkx_cached_surfaces(
             physical_flow_partitions=(partition,),
         )
 
-    assert "protected_identity_preserved" in failure.value.context[
-        "failed_preservation_checks"
-    ]
+    assert (
+        "protected_identity_preserved"
+        in failure.value.context["failed_preservation_checks"]
+    )
     assert graph.__dict__[attribute_name] is original
 
 
@@ -1209,9 +1200,7 @@ def test_snapshot_restores_factory_mapping_identity_for_all_graph_kinds(
     node_mappings = {node: graph._node[node] for node in graph}
     adjacency_inner = {node: graph._adj[node] for node in graph}
     predecessor_inner = (
-        {node: graph._pred[node] for node in graph}
-        if graph.is_directed()
-        else {}
+        {node: graph._pred[node] for node in graph} if graph.is_directed() else {}
     )
     edge_mappings = {
         (source, target, key): data
@@ -1304,9 +1293,7 @@ def test_callback_failure_at_later_boundary_rolls_back_prior_segments() -> None:
         live_graph.nodes[1]["delta_nfr"] = left - right
 
     graph.graph["compute_delta_nfr"] = failing_pressure_callback
-    nodes_before = {
-        node: deepcopy(dict(data)) for node, data in graph.nodes(data=True)
-    }
+    nodes_before = {node: deepcopy(dict(data)) for node, data in graph.nodes(data=True)}
 
     with pytest.raises(RuntimeError, match="boundary refresh failed"):
         execute_operator_event_schedule(
@@ -1316,9 +1303,7 @@ def test_callback_failure_at_later_boundary_rolls_back_prior_segments() -> None:
         )
 
     assert graph.graph["_t"] == 0.0
-    assert {
-        node: dict(data) for node, data in graph.nodes(data=True)
-    } == nodes_before
+    assert {node: dict(data) for node, data in graph.nodes(data=True)} == nodes_before
 
 
 def test_partition_evidence_and_ordered_result_fail_closed_after_tampering() -> None:
@@ -1394,8 +1379,7 @@ def test_tiny_capacity_commits_with_explicit_modal_abstention() -> None:
     assert not evidence.all_segment_modal_diagnostics_applicable
     assert all(not item.available for item in evidence.modal_observations)
     assert all(
-        item.abstention_reason
-        == "frozen_euler_modal_diagnostic_not_representable"
+        item.abstention_reason == "frozen_euler_modal_diagnostic_not_representable"
         for item in evidence.modal_observations
     )
     assert graph.graph["_t"] == 0.5
@@ -1618,6 +1602,7 @@ def test_constant_runtime_evidence_claims_remain_fail_closed() -> None:
         with pytest.raises((AttributeError, TypeError)):
             object.__setattr__(value, name, forged)
 
-    assert tuple(
-        getattr(value, name) for value, name, _forged in property_claims
-    ) == prior_values
+    assert (
+        tuple(getattr(value, name) for value, name, _forged in property_claims)
+        == prior_values
+    )

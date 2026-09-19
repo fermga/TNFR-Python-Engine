@@ -5,7 +5,11 @@ from fractions import Fraction
 import pytest
 
 from benchmarks.thol_birth_transport import (
-    CASES, INITIAL_EPI, STEPS, WORD, run_birth_transport_case,
+    CASES,
+    INITIAL_EPI,
+    STEPS,
+    WORD,
+    run_birth_transport_case,
 )
 from tnfr.constants.canonical import SHA_VF_FACTOR, UM_COMPAT_THRESHOLD
 
@@ -23,14 +27,12 @@ def test_causal_checkerboard_crosses_default_threshold_with_model_residual(cases
     assert preparation["initial"]["capacity"] == (1.0,) * 8
     assert preparation["physical_steps"] == STEPS == (0.25, 0.25)
     assert tuple(time for time, _ in observed["physical_samples"]) == (0, 0.25, 0.5)
-    assert observed["physical_samples"][-1][1] == preparation["before_birth"][
-        "epi"
-    ][0]
+    assert observed["physical_samples"][-1][1] == preparation["before_birth"]["epi"][0]
     assert preparation["segment_methods"] == ("euler", "euler")
     assert preparation["clipping_applied"] == (False, False)
-    assert all(row["pressure_only_refresh"] for row in preparation[
-        "physical_boundaries"
-    ])
+    assert all(
+        row["pressure_only_refresh"] for row in preparation["physical_boundaries"]
+    )
     e = reference["represented_epi_weight"]
     assert reference["exact_model_acceleration"] == 3 * e**2
     assert reference["exact_model_threshold_margin"] > Fraction(6, 10_000)
@@ -39,8 +41,8 @@ def test_causal_checkerboard_crosses_default_threshold_with_model_residual(cases
     assert abs(reference["exact_observed_acceleration_residual"]) < 1e-14
     assert max(map(abs, reference["exact_endpoint_residual"])) < 1e-15
     expected = tuple(
-        Fraction(5, 4) + (1 if i % 2 == 0 else -1) * Fraction(3, 4)
-        * (1 - e / 2)**2 for i in range(8)
+        Fraction(5, 4) + (1 if i % 2 == 0 else -1) * Fraction(3, 4) * (1 - e / 2) ** 2
+        for i in range(8)
     )
     assert reference["exact_model_endpoint"] == expected
 
@@ -104,17 +106,21 @@ def test_public_coupling_commits_the_replayed_kernel_outputs(cases, name):
     for update in proposal["node_updates"]:
         i = index[update["node"]]
         for field, key in (
-            ("theta_after", "phase"), ("vf_after", "capacity"),
+            ("theta_after", "phase"),
+            ("vf_after", "capacity"),
             ("dnfr_after", "pressure"),
         ):
             if update[field] is not None:
                 expected[key][i] = update[field]
     for key, values in expected.items():
         assert raw[key] == tuple(values)
-    assert tuple(
-        (edge["left"], edge["right"], {"weight": edge["weight"]})
-        for edge in proposal["edges"]
-    ) == coupling["actual_new_edges"]
+    assert (
+        tuple(
+            (edge["left"], edge["right"], {"weight": edge["weight"]})
+            for edge in proposal["edges"]
+        )
+        == coupling["actual_new_edges"]
+    )
     assert raw["glyph_history"][0] == ("IL", "OZ", "THOL", "UM")
 
 
@@ -129,9 +135,11 @@ def test_stale_sample_is_a_distinct_no_attachment_control(cases):
     assert child in disabled["actual_candidate_sample"]
     assert stale["actual_new_edges"] == disabled["actual_new_edges"] == ()
     for key in ("epi", "capacity", "phase", "pressure"):
-        assert stale["raw_after_coupling"][key] == disabled[
-            "raw_after_coupling"
-        ][key] == attached["raw_after_coupling"][key]
+        assert (
+            stale["raw_after_coupling"][key]
+            == disabled["raw_after_coupling"][key]
+            == attached["raw_after_coupling"][key]
+        )
     assert stale["after_refresh"] == disabled["after_refresh"]
 
 
@@ -140,7 +148,7 @@ def test_attachment_has_exact_support_energy_cost_before_any_flow(cases):
     budget = attached["support_reset"]
     x = budget["before"]["epi"]
     weight = Fraction.from_float(attached["actual_new_edges"][0][2]["weight"])
-    expected = weight * (x[0] - x[-1])**2 / 2
+    expected = weight * (x[0] - x[-1]) ** 2 / 2
     assert budget["energy_change"] == budget["edge_energy_change"] == expected
     assert expected > 0
     assert budget["identity_residual"] == 0
@@ -154,9 +162,8 @@ def test_child_pressure_uses_singleton_epi_and_unweighted_capacity_channels(case
     support = coupling["after_support"]
     state = support["snapshot"]
     weights = support["normalized_channel_weights"]
-    expected = (
-        weights["epi"] * (state["epi"][0] - state["epi"][-1])
-        + weights["vf"] * (state["capacity"][0] - state["capacity"][-1])
+    expected = weights["epi"] * (state["epi"][0] - state["epi"][-1]) + weights["vf"] * (
+        state["capacity"][0] - state["capacity"][-1]
     )
     assert state["support_neighbors"][-1] == (0,)
     assert support["exact_nonphase_pressure"][-1] == expected

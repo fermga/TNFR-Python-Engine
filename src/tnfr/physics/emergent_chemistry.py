@@ -62,8 +62,10 @@ def _require_integral_count(value: Any, *, name: str, minimum: int = 1) -> int:
 
 def _require_positive_finite(value: Any, *, name: str) -> float:
     """Return a positive finite scalar without accepting truth values."""
-    if isinstance(value, bool) or type(value).__name__ == "bool_" or isinstance(
-        value, (str, bytes)
+    if (
+        isinstance(value, bool)
+        or type(value).__name__ == "bool_"
+        or isinstance(value, (str, bytes))
     ):
         raise TypeError(f"{name} must be a positive finite real scalar")
     try:

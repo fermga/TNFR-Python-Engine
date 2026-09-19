@@ -30,14 +30,10 @@ def test_mask_matches_unit_eigenvalues_of_cyclic_filter() -> None:
     delta = alpha
     omega = 2.0 * np.pi * np.arange(n_samples) / n_samples
     multipliers = (
-        beta
-        + gamma * np.exp(-1j * omega * tau_l)
-        + delta * np.exp(-1j * omega * tau_g)
+        beta + gamma * np.exp(-1j * omega * tau_l) + delta * np.exp(-1j * omega * tau_g)
     )
 
-    mask = build_resonant_bin_mask(
-        n_samples, tau_l=tau_l, tau_g=tau_g
-    )
+    mask = build_resonant_bin_mask(n_samples, tau_l=tau_l, tau_g=tau_g)
 
     assert np.array_equal(mask, np.isclose(multipliers, 1.0, atol=1e-12))
 
@@ -50,15 +46,9 @@ def test_coprime_delays_fix_only_dc_mode() -> None:
 
 def test_projection_is_orthogonal_and_reconstructs_signal() -> None:
     signal = np.random.default_rng(19).normal(size=32)
-    range_part, kernel_part = split_residue_by_remesh_infinity(
-        signal, tau_l=4, tau_g=8
-    )
-    range_twice, _ = split_residue_by_remesh_infinity(
-        range_part, tau_l=4, tau_g=8
-    )
-    kernel_range, _ = split_residue_by_remesh_infinity(
-        kernel_part, tau_l=4, tau_g=8
-    )
+    range_part, kernel_part = split_residue_by_remesh_infinity(signal, tau_l=4, tau_g=8)
+    range_twice, _ = split_residue_by_remesh_infinity(range_part, tau_l=4, tau_g=8)
+    kernel_range, _ = split_residue_by_remesh_infinity(kernel_part, tau_l=4, tau_g=8)
 
     assert np.allclose(range_part + kernel_part, signal)
     assert np.allclose(range_twice, range_part)

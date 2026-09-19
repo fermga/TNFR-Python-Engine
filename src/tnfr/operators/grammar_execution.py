@@ -22,11 +22,14 @@ class ValidatedSequence:
 
     names: tuple[str, ...]
 
-    def __init__(self, operators: Iterable[Any], *, context: Mapping[str, Any] | None = None):
+    def __init__(
+        self, operators: Iterable[Any], *, context: Mapping[str, Any] | None = None
+    ):
         sequence = list(operators)
         initialized = bool(context and context.get("initial_epi_nonzero", False))
         valid, messages = GrammarValidator().validate(
-            sequence, epi_initial=1.0 if initialized else 0.0,
+            sequence,
+            epi_initial=1.0 if initialized else 0.0,
         )
         if not valid:
             raise TNFRValueError(
@@ -56,8 +59,10 @@ class ValidatedSequenceStep:
             or not 0 <= self.index < len(self.sequence.names)
             or glyph_function_name(candidate) != self.sequence.names[self.index]
         ):
-            raise TNFRValueError("Operator does not match its validated sequence context")
+            raise TNFRValueError(
+                "Operator does not match its validated sequence context"
+            )
         return any(
             name in BIFURCATION_HANDLERS
-            for name in self.sequence.names[self.index + 1:]
+            for name in self.sequence.names[self.index + 1 :]
         )

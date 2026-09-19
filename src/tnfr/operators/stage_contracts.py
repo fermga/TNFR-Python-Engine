@@ -111,9 +111,7 @@ class MergeLaw(str, Enum):
     IMMUTABLE_PROPOSAL_COMMIT = "immutable_proposal_commit"
     DISJOINT_STRUCTURAL_UNION = "disjoint_structural_union"
     SNAPSHOT_TARGET_MERGE_REQUIRED = "snapshot_target_merge_required"
-    SNAPSHOT_DELTA_NFR_ADDITIVE_REDUCTION = (
-        "snapshot_DeltaNFR_additive_reduction"
-    )
+    SNAPSHOT_DELTA_NFR_ADDITIVE_REDUCTION = "snapshot_DeltaNFR_additive_reduction"
     SNAPSHOT_PHASE_TOPOLOGY_MERGE = "snapshot_phase_topology_merge"
     SNAPSHOT_SUPPORT_HIERARCHY_MERGE = "snapshot_support_hierarchy_merge"
     SNAPSHOT_ADVISORY_DEDUPLICATION = "snapshot_advisory_deduplication"
@@ -235,9 +233,7 @@ _COMMON_WRITE = frozenset(
 )
 _JACOBI = StageSchedule.TWO_PHASE_JACOBI
 _DISJOINT = StructuralOverlap.DISJOINT_TARGET_WRITES
-_UNPROVED_RELABELING = (
-    "no complete all-target relabeling-equivariance certificate"
-)
+_UNPROVED_RELABELING = "no complete all-target relabeling-equivariance certificate"
 
 _STAGE_SPECS: dict[str, _StageSpec] = {
     "emission": _StageSpec(
@@ -468,10 +464,8 @@ _STAGE_SPECS: dict[str, _StageSpec] = {
         (),
     ),
     "contraction": _StageSpec(
-        _COMMON_READ
-        | {R.TARGET_EPI, R.TARGET_NU_F, R.TARGET_DELTA_NFR},
-        _COMMON_WRITE
-        | {R.TARGET_EPI, R.TARGET_NU_F, R.TARGET_DELTA_NFR},
+        _COMMON_READ | {R.TARGET_EPI, R.TARGET_NU_F, R.TARGET_DELTA_NFR},
+        _COMMON_WRITE | {R.TARGET_EPI, R.TARGET_NU_F, R.TARGET_DELTA_NFR},
         _JACOBI,
         _DISJOINT,
         MergeLaw.IMMUTABLE_PROPOSAL_COMMIT,

@@ -21,13 +21,7 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
-from ..constants.aliases import (
-    ALIAS_DEPI,
-    ALIAS_DNFR,
-    ALIAS_EPI,
-    ALIAS_THETA,
-    ALIAS_VF,
-)
+from ..constants.aliases import ALIAS_DEPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..metrics.common import structural_coherence
 from ..metrics.trig import neighbor_phase_mean
 from ..utils import angle_diff
@@ -165,7 +159,9 @@ def get_lifecycle_state(
     stabilization_dnfr = _get_threshold("stabilization_dnfr", 1.0)
     stabilization_coherence = _get_threshold("stabilization_coherence", 0.8)
     propagation_coupling = _get_threshold("propagation_coupling", 0.7)
-    mutation_dnfr = _get_threshold("mutation_dnfr", 5.0)  # high-dissonance ΔNFR (½ collapse)
+    mutation_dnfr = _get_threshold(
+        "mutation_dnfr", 5.0
+    )  # high-dissonance ΔNFR (½ collapse)
 
     # Get node structural parameters
     vf = _get_node_attr(G, node, ALIAS_VF)

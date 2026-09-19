@@ -20,10 +20,15 @@ from .._exact_time import exact_log_bounds, exact_or_represented_real
 from .reversible_eigenmode_reference import _MAX_RATIONAL_EXPONENT, _negative_exp_bounds
 
 __all__ = [
-    "P2CapacityEnclosure", "P2TransportSample", "P2TransportTube",
-    "bound_p2_capacity", "bound_p2_transport",
-    "FixedReferenceCapacityEnclosure", "FixedReferenceTransportSample",
-    "FixedReferenceTransportTube", "bound_fixed_reference_capacity",
+    "P2CapacityEnclosure",
+    "P2TransportSample",
+    "P2TransportTube",
+    "bound_p2_capacity",
+    "bound_p2_transport",
+    "FixedReferenceCapacityEnclosure",
+    "FixedReferenceTransportSample",
+    "FixedReferenceTransportTube",
+    "bound_fixed_reference_capacity",
     "bound_fixed_reference_transport",
 ]
 
@@ -73,8 +78,9 @@ def _multiply(left: Interval, right: Interval) -> Interval:
     return min(corners), max(corners)
 
 
-def _contrast_capacity(start: Interval, end: Interval, elapsed: Interval,
-                       decay_multiplier: int) -> Interval:
+def _contrast_capacity(
+    start: Interval, end: Interval, elapsed: Interval, decay_multiplier: int
+) -> Interval:
     """Outer rate for either declared nodal contrast law, not a free model fit."""
     if elapsed[0] <= 0:
         raise ValueError("elapsed_time must be strictly positive")
@@ -85,14 +91,15 @@ def _contrast_capacity(start: Interval, end: Interval, elapsed: Interval,
         oriented_end = -end[1], -end[0]
     else:
         raise ValueError("contrast_sign_unresolved_or_changed")
-    ratio = (oriented_end[0] / oriented_start[1],
-             oriented_end[1] / oriented_start[0])
+    ratio = (oriented_end[0] / oriented_start[1], oriented_end[1] / oriented_start[0])
     if ratio[1] >= 1:
         raise ValueError("strict_decay_unresolved")
     low_log, _ = exact_log_bounds(ratio[0])
     _, high_log = exact_log_bounds(ratio[1])
-    capacity = (-high_log / (decay_multiplier * elapsed[1]),
-                -low_log / (decay_multiplier * elapsed[0]))
+    capacity = (
+        -high_log / (decay_multiplier * elapsed[1]),
+        -low_log / (decay_multiplier * elapsed[0]),
+    )
     if capacity[0] <= 0 or capacity[1] < capacity[0]:
         raise ValueError("positive_capacity_enclosure_unresolved")
     return capacity
@@ -114,7 +121,10 @@ class P2CapacityEnclosure:
 
 
 def bound_p2_capacity(
-    initial_epi: Any, final_epi: Any, *, elapsed_time: Any,
+    initial_epi: Any,
+    final_epi: Any,
+    *,
+    elapsed_time: Any,
 ) -> P2CapacityEnclosure:
     """Enclose positive capacity from two sign-resolved contrast boxes.
 
@@ -174,8 +184,9 @@ def _convex_image(first: Interval, second: Interval, weight: Interval) -> Interv
     return min(lower), max(upper)
 
 
-def _decay_samples(capacity: Any, elapsed_times: Iterable[Any], decay_multiplier: int
-                   ) -> tuple[tuple[Interval, Interval], ...]:
+def _decay_samples(
+    capacity: Any, elapsed_times: Iterable[Any], decay_multiplier: int
+) -> tuple[tuple[Interval, Interval], ...]:
     """Validate one finite schedule and reuse rational decay endpoints."""
     rate = _interval(capacity, "capacity")
     if rate[0] <= 0:
@@ -188,11 +199,15 @@ def _decay_samples(capacity: Any, elapsed_times: Iterable[Any], decay_multiplier
     times = tuple(_interval(value, "elapsed_time") for value in times)
     if any(value[0] < 0 for value in times):
         raise ValueError("elapsed_time must be nonnegative")
-    if any(left[0] > right[0] or left[1] > right[1]
-           for left, right in zip(times, times[1:])):
+    if any(
+        left[0] > right[0] or left[1] > right[1]
+        for left, right in zip(times, times[1:])
+    ):
         raise ValueError("elapsed_time intervals must be ordered by both endpoints")
-    if any(decay_multiplier * rate[1] * value[1] > _MAX_RATIONAL_EXPONENT
-           for value in times):
+    if any(
+        decay_multiplier * rate[1] * value[1] > _MAX_RATIONAL_EXPONENT
+        for value in times
+    ):
         raise ValueError("rational exponential enclosure requires exponent <= 4096")
     cache: dict[Fraction, Interval] = {}
 
@@ -210,7 +225,10 @@ def _decay_samples(capacity: Any, elapsed_times: Iterable[Any], decay_multiplier
 
 
 def bound_p2_transport(
-    initial_epi: Any, *, capacity: Any, elapsed_times: Iterable[Any],
+    initial_epi: Any,
+    *,
+    capacity: Any,
+    elapsed_times: Iterable[Any],
 ) -> P2TransportTube:
     """Enclose the exact continuous P2 semigroup at declared elapsed times.
 
@@ -230,12 +248,18 @@ def bound_p2_transport(
     samples = []
     for elapsed, decay in decays:
         weight = (1 + decay[0]) / 2, (1 + decay[1]) / 2
-        samples.append(P2TransportSample(
-            elapsed, decay,
-            (_convex_image(initial[0], initial[1], weight),
-             _convex_image(initial[1], initial[0], weight)),
-            mean, _multiply(contrast, decay),
-        ))
+        samples.append(
+            P2TransportSample(
+                elapsed,
+                decay,
+                (
+                    _convex_image(initial[0], initial[1], weight),
+                    _convex_image(initial[1], initial[0], weight),
+                ),
+                mean,
+                _multiply(contrast, decay),
+            )
+        )
     return P2TransportTube(tuple(samples))
 
 
@@ -255,7 +279,11 @@ class FixedReferenceCapacityEnclosure:
 
 
 def bound_fixed_reference_capacity(
-    initial_epi: Any, final_epi: Any, *, reference: Any, elapsed_time: Any,
+    initial_epi: Any,
+    final_epi: Any,
+    *,
+    reference: Any,
+    elapsed_time: Any,
 ) -> FixedReferenceCapacityEnclosure:
     """Enclose ``nu=-log((x1-r)/(x0-r))/T`` for fixed-reference nodal P2.
 
@@ -298,7 +326,11 @@ class FixedReferenceTransportTube:
 
 
 def bound_fixed_reference_transport(
-    initial_epi: Any, *, reference: Any, capacity: Any, elapsed_times: Iterable[Any],
+    initial_epi: Any,
+    *,
+    reference: Any,
+    capacity: Any,
+    elapsed_times: Iterable[Any],
 ) -> FixedReferenceTransportTube:
     """Enclose ``x(t)=e*x0+(1-e)*r``, ``e=exp(-nu*t)``, for fixed ``r``.
 
@@ -312,8 +344,14 @@ def bound_fixed_reference_transport(
     initial = _interval(initial_epi, "initial_epi")
     fixed = _interval(reference, "reference")
     contrast = _contrast((initial, fixed))
-    samples = tuple(FixedReferenceTransportSample(
-        elapsed, decay, _convex_image(initial, fixed, decay), fixed,
-        _multiply(contrast, decay),
-    ) for elapsed, decay in _decay_samples(capacity, elapsed_times, 1))
+    samples = tuple(
+        FixedReferenceTransportSample(
+            elapsed,
+            decay,
+            _convex_image(initial, fixed, decay),
+            fixed,
+            _multiply(contrast, decay),
+        )
+        for elapsed, decay in _decay_samples(capacity, elapsed_times, 1)
+    )
     return FixedReferenceTransportTube(samples)

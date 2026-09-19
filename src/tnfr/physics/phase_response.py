@@ -5,16 +5,20 @@ angles. These detached coefficients do not identify live phase gates, a
 binary64 derivative, a fixed point or a complete operator trajectory.
 Joint pressure/acceleration identities reuse the transport owner and retain
 the still-supplied capacity and phase velocities as explicit inputs.
+Finite held-source compatibility determines admissible capacity profiles
+without selecting an evolution law or authenticating an oriented phase source.
 """
 
 from collections.abc import Mapping, Set
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from fractions import Fraction
 
 from .._exact_time import exact_or_represented_real
 from ..mathematics.krylov import exact_rank
 from ._cycle_algebra import Matrix, Vector, dot, ordered_vector
+from ._exact_linear_algebra import exact_matrix_inverse
 from .support_transport import (
+    SupportTransportDerivative,
     SupportTransportSnapshot,
     _rebuild,
     _support_gradient,
@@ -28,6 +32,8 @@ __all__ = [
     "observe_phase_source_geometry",
     "JointNodalResponse",
     "derive_joint_nodal_response",
+    "PhaseCapacityBalance",
+    "derive_phase_capacity_balance",
 ]
 
 
@@ -280,9 +286,11 @@ class JointNodalResponse:
     capacity_acceleration: Vector
     pressure_acceleration: Vector
     epi_acceleration: Vector
+    transport: SupportTransportDerivative
     scope: tuple[str, ...] = (
         "conditional_exact_real_smooth_response",
-        "fixed_symmetric_effective_conductance_and_unique_support",
+        "fixed_active_conductance_edges_and_unique_support",
+        "supplied_symmetric_conductance_rates_without_edge_birth_or_removal",
         "fixed_channel_coefficients_without_renormalization",
         "nonempty_support_at_every_node",
         "declared_stored_pressure_p_and_nodal_rate_nu_times_p",
@@ -292,6 +300,25 @@ class JointNodalResponse:
         "fixed_topology_channel_has_zero_derivative",
         "no_binary64_derivative_runtime_or_future_admissibility_claim",
     )
+
+    @property
+    def conductance_rates(self) -> Vector:
+        """Supplied effective-edge rates in the transport owner's order."""
+        return self.transport.conductance_rates
+
+    @property
+    def epi_flow_pressure_rate(self) -> Vector:
+        """EPI-channel change due to the declared nodal form rate."""
+        return tuple(
+            self.epi_weight * value for value in self.transport.flow_gradient_rate
+        )
+
+    @property
+    def epi_geometry_pressure_rate(self) -> Vector:
+        """EPI-channel change due to changing normalized conductance."""
+        return tuple(
+            self.epi_weight * value for value in self.transport.geometry_gradient_rate
+        )
 
 
 def derive_joint_nodal_response(
@@ -303,15 +330,24 @@ def derive_joint_nodal_response(
     capacity_weight,
     phase_rate_over_pi,
     capacity_rate,
+    conductance_rates=None,
 ) -> JointNodalResponse:
     """Differentiate the joint canonical pressure law on declared fixed support.
 
     Let B_W be the weighted neighbor-difference operator, B_U the unweighted
     unique-support operator, and R the circular-mean response. With fixed
-    conductance, support and channel coefficients, the conditional identity is
+    support and channel coefficients, the conditional identity is
 
-        p' = w_E*B_W*(nu*p) + w_phi*(R-I)*(theta'/pi) + w_nu*B_U*nu',
+        p' = w_E*(B_W*(nu*p) + B_W'*x)
+             + w_phi*(R-I)*(theta'/pi) + w_nu*B_U*nu',
         x'' = nu'*p + nu*p'.
+
+    Optional ``conductance_rates`` align with every effective conductance
+    entry, including both directions. The shared transport derivative owns
+    their symmetry and row-normalization terms; omission means zero rates.
+    The active edge set stays fixed: a zero-conductance support edge cannot
+    acquire positive weight through this derivative. Births/removals require
+    reset accounting. The rates are supplied, never inferred or selected.
 
     The topology channel has zero derivative on this fixed support. Loops
     count once, parallel edges aggregate only for EPI, and zero-conductance
@@ -331,7 +367,10 @@ def derive_joint_nodal_response(
     identify a derivative of floating arithmetic. No missing constitutive
     law or offset is supplied, and neither a graph nor a trajectory is changed.
     """
-    source = _rebuild(snapshot)
+    transport = observe_support_transport_derivative(
+        snapshot, conductance_rates=conductance_rates
+    )
+    source = transport.source
     size = len(source.nodes)
     if not size or any(not row for row in source.support_neighbors):
         raise ValueError("joint nodal response requires nonempty support at every node")
@@ -364,10 +403,6 @@ def derive_joint_nodal_response(
             "joint response rate vectors must match the snapshot node order"
         )
 
-    transport = observe_support_transport_derivative(
-        source,
-        conductance_rates=(Fraction(0),) * len(source.conductance),
-    )
     epi_response = tuple(epi_weight * value for value in transport.epi_gradient_rate)
     phase_response = tuple(
         phase_weight * dot(row, phase_rate) for row in geometry.scaled_source_jacobian
@@ -424,4 +459,199 @@ def derive_joint_nodal_response(
         capacity_acceleration,
         pressure_acceleration,
         acceleration,
+        transport,
+    )
+
+
+@dataclass(frozen=True)
+class PhaseCapacityBalance:
+    """Finite capacity solutions for a declared phase source and held forcing.
+
+    A compatible solution is ``centered_capacity + c*1``. Its admissible
+    uniform shifts have the reported lower endpoint (possibly open) and a
+    closed upper endpoint, or no upper bound. An incompatible source has no
+    profile or shift endpoints. An empty band intersection may have a profile
+    but ``has_admissible_capacity=False``. No shift or evolution law is chosen.
+    """
+
+    source: SupportTransportSnapshot
+    phase_gradient: Vector
+    forcing: Vector
+    phase_weight: Fraction
+    capacity_weight: Fraction
+    topology_weight: Fraction
+    support_degrees: Vector
+    source_difference: Vector
+    compatibility_residual: Fraction
+    centered_capacity: Vector | None
+    equation_residual: Vector | None
+    center_residual: Fraction | None
+    capacity_lower: Vector
+    capacity_upper: Vector | None
+    uniform_shift_lower: Fraction | None
+    uniform_shift_lower_inclusive: bool
+    uniform_shift_upper: Fraction | None
+    has_admissible_capacity: bool
+    scope: tuple[str, ...] = (
+        "exact_declared_source_on_connected_reciprocal_unique_support",
+        "positive_capacity_weight_and_fixed_nonnegative_channel_weights",
+        "phase_gradient_is_supplied_not_certified_from_angles_or_gram",
+        "uniform_capacity_freedom_is_not_equivalence_of_nodal_dynamics",
+        "closed_declared_bands_intersect_strict_capacity_positivity",
+        "no_selected_capacity_phase_law_graph_write_or_runtime_certificate",
+        "no_epi_equilibrium_stability_or_future_invariance_claim",
+    )
+
+    @property
+    def source_compatible(self) -> bool:
+        """Whether unrestricted real capacities solve the declared source."""
+        return self.compatibility_residual == 0
+
+
+def derive_phase_capacity_balance(
+    snapshot,
+    *,
+    phase_gradient,
+    forcing,
+    phase_weight,
+    capacity_weight,
+    topology_weight=0,
+    capacity_lower=None,
+    capacity_upper=None,
+) -> PhaseCapacityBalance:
+    """Solve ``f = w_phi*g - v*L_U*nu - w_topo*L_U*d`` exactly.
+
+    ``U`` is the unweighted unique-support neighbor mean, ``L_U=I-U`` and
+    ``d`` its row sizes. Reciprocal connected nonempty support gives
+    ``range(L_U)={r: d.r=0}``. Thus ``r=w_phi*g-w_topo*L_U*d-f`` admits
+    capacities precisely when ``d.r=0``. The positive-weight EPI graph may
+    be disconnected; it is not substituted for this support equation.
+
+    On compatibility, reuse the exact inverse to solve
+    ``(v*B+d*d.T)*z=D*r``, where ``B=D*L_U`` and ``D=diag(d)``. The rank-one
+    term only fixes ``d.z=0``; it is not a physical source. All solutions are
+    ``z+c*1``. Require strict positive capacity and optional closed nodewise
+    nonnegative bounds. A missing lower bound means zero; a missing upper
+    bound means unbounded. No coefficients are normalized or fitted.
+
+    Inputs are exact rationals or finite represented reals. In particular,
+    ``g`` is DECLARED oriented phase-pressure data, not reconstructed from a
+    cosine Gram. Identifying it with canonical phase pressure requires its
+    own regular circular-mean/wrap chart evidence. Rebuild snapshot caches;
+    count loops once and retain zero-weight support edges. No graph changes,
+    missing velocities, automatic clip policy or trajectory are supplied.
+    """
+    if type(snapshot) is not SupportTransportSnapshot:
+        raise TypeError("state must be a SupportTransportSnapshot")
+    # Materialize once, rejecting unordered containers before the shared rebuild.
+    nodes = _ordered(snapshot.nodes, "snapshot nodes")
+    support = tuple(
+        _ordered(row, "support row")
+        for row in _ordered(snapshot.support_neighbors, "support rows")
+    )
+    source = _rebuild(replace(snapshot, nodes=nodes, support_neighbors=support))
+    size = len(nodes)
+    if not size or any(not row for row in support):
+        raise ValueError("capacity balance requires nonempty support at every node")
+    if any(i not in support[j] for i, row in enumerate(support) for j in row):
+        raise ValueError("capacity balance requires reciprocal support")
+    reached, pending = {0}, [0]
+    while pending:
+        for j in support[pending.pop()]:
+            if j not in reached:
+                reached.add(j)
+                pending.append(j)
+    if len(reached) != size:
+        raise ValueError("capacity balance requires connected support")
+
+    w, v, t = (
+        exact_or_represented_real(value, name)
+        for name, value in (
+            ("phase_weight", phase_weight),
+            ("capacity_weight", capacity_weight),
+            ("topology_weight", topology_weight),
+        )
+    )
+    if w < 0 or t < 0 or v <= 0:
+        raise ValueError(
+            "phase/topology weights must be nonnegative and capacity weight positive"
+        )
+    g = ordered_vector(phase_gradient, "phase_gradient")
+    f = ordered_vector(forcing, "forcing")
+    lower = (
+        (Fraction(0),) * size
+        if capacity_lower is None
+        else ordered_vector(capacity_lower, "capacity_lower")
+    )
+    upper = (
+        None
+        if capacity_upper is None
+        else ordered_vector(capacity_upper, "capacity_upper")
+    )
+    if any(len(values) != size for values in (g, f, lower)) or (
+        upper is not None and len(upper) != size
+    ):
+        raise ValueError("capacity balance vectors must match the snapshot node order")
+    if any(value < 0 for value in lower) or (
+        upper is not None and any(a > b for a, b in zip(lower, upper, strict=True))
+    ):
+        raise ValueError("capacity bands must satisfy 0 <= lower <= upper")
+
+    degrees = tuple(Fraction(len(row)) for row in support)
+    difference = tuple(
+        w * g_i + t * h_i - f_i
+        for g_i, h_i, f_i in zip(g, source.topology_gradient, f, strict=True)
+    )
+    compatibility = dot(degrees, difference)
+    profile = residual = center = shift_lower = shift_upper = None
+    inclusive = admissible = False
+    if compatibility == 0:
+        matrix = tuple(
+            tuple(
+                v * (degrees[i] * int(i == j) - int(j in row)) + degrees[i] * degrees[j]
+                for j in range(size)
+            )
+            for i, row in enumerate(support)
+        )
+        rhs = tuple(d * r for d, r in zip(degrees, difference, strict=True))
+        profile = tuple(dot(row, rhs) for row in exact_matrix_inverse(matrix))
+        residual = tuple(
+            -v * value - r
+            for value, r in zip(
+                _support_gradient(support, profile), difference, strict=True
+            )
+        )
+        center = dot(degrees, profile)
+        if any(residual) or center:
+            raise ArithmeticError(
+                "exact capacity equation or centering identity failed"
+            )
+        shift_lower = max(a - z for a, z in zip(lower, profile, strict=True))
+        inclusive = shift_lower > -min(profile)
+        if upper is not None:
+            shift_upper = min(b - z for b, z in zip(upper, profile, strict=True))
+        admissible = (
+            shift_upper is None
+            or shift_lower < shift_upper
+            or (shift_lower == shift_upper and inclusive)
+        )
+    return PhaseCapacityBalance(
+        source,
+        g,
+        f,
+        w,
+        v,
+        t,
+        degrees,
+        difference,
+        compatibility,
+        profile,
+        residual,
+        center,
+        lower,
+        upper,
+        shift_lower,
+        inclusive,
+        shift_upper,
+        admissible,
     )

@@ -10,12 +10,7 @@ import numpy as np
 import pytest
 
 from tnfr.alias import get_attr
-from tnfr.constants.aliases import (
-    ALIAS_EPI,
-    ALIAS_EPI_KIND,
-    ALIAS_THETA,
-    ALIAS_VF,
-)
+from tnfr.constants.aliases import ALIAS_EPI, ALIAS_EPI_KIND, ALIAS_THETA, ALIAS_VF
 from tnfr.errors import TNFRValueError
 from tnfr.operators._neighbor_epi_kernel import neighbor_epi_proposed_kind
 from tnfr.operators._resonance_identity import resonance_proposed_epi_kind
@@ -67,8 +62,7 @@ def _graph(
 
 def _epi_state(graph: nx.Graph) -> tuple[float, ...]:
     return tuple(
-        float(real_scalar_epi(get_attr(graph.nodes[node], ALIAS_EPI)))
-        for node in graph
+        float(real_scalar_epi(get_attr(graph.nodes[node], ALIAS_EPI))) for node in graph
     )
 
 
@@ -329,9 +323,9 @@ def test_ra_identity_failure_is_an_atomic_negative_stage_certificate() -> None:
 def test_shared_kind_kernel_preserves_operator_specific_unlabeled_policy() -> None:
     neighbors = [(0.9, "")]
 
-    assert neighbor_epi_proposed_kind(
-        "seed", neighbors, 0.1, fallback_kind="EN"
-    ) == "seed"
+    assert (
+        neighbor_epi_proposed_kind("seed", neighbors, 0.1, fallback_kind="EN") == "seed"
+    )
     assert resonance_proposed_epi_kind("seed", neighbors, 0.1) == "RA"
 
 

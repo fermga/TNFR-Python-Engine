@@ -38,9 +38,7 @@ def test_u6_observation_declares_reference_kernel_and_finite_coverage():
     )
     assert report.confined is valid
     assert report.mean_absolute_drift == pytest.approx(drift)
-    assert report.kernel == (
-        "canonical_directed_weighted_shortest_path_inverse_square"
-    )
+    assert report.kernel == ("canonical_directed_weighted_shortest_path_inverse_square")
     assert report.reference == "before_operator_word"
     assert report.time_coverage == "two_snapshot_finite_observation"
     assert report.as_dict()["aggregation"] == "mean_absolute_nodewise_drift"
@@ -116,9 +114,7 @@ def test_topology_change_decomposition_requires_aligned_nodes():
 def test_u6_rejects_unaligned_snapshot_keys(before, after):
     graph = nx.path_graph(2)
     with pytest.raises(ValueError, match="exactly the graph nodes"):
-        validate_structural_potential_confinement(
-            graph, before, after, strict=False
-        )
+        validate_structural_potential_confinement(graph, before, after, strict=False)
 
 
 @pytest.mark.parametrize("value", [float("nan"), float("inf"), "invalid", True])
@@ -145,9 +141,7 @@ def test_u6_rejects_invalid_threshold(threshold):
 def test_u6_strict_threshold_is_not_silently_coerced():
     graph = nx.path_graph(1)
     with pytest.raises(TypeError, match="strict"):
-        validate_structural_potential_confinement(
-            graph, {0: 0.0}, {0: 0.0}, strict=1
-        )
+        validate_structural_potential_confinement(graph, {0: 0.0}, {0: 0.0}, strict=1)
 
 
 @pytest.mark.parametrize(

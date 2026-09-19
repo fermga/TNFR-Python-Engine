@@ -44,8 +44,8 @@ References
 
 from __future__ import annotations
 
-import math
 import hashlib
+import math
 from dataclasses import dataclass, field
 from typing import Any, Mapping, Sequence
 
@@ -127,7 +127,13 @@ class TemporalInterfaceConfig:
     step: int = 30
 
     def __post_init__(self) -> None:
-        for name in ("embedding_dim", "embedding_tau", "k_neighbours", "window", "step"):
+        for name in (
+            "embedding_dim",
+            "embedding_tau",
+            "k_neighbours",
+            "window",
+            "step",
+        ):
             if type(getattr(self, name)) is not int:
                 raise TypeError(f"{name} must be an integer, not a boolean")
         if self.embedding_dim < 1:
@@ -176,7 +182,8 @@ class WindowTetradSeries:
             "mode": self.mode,
             "available_at": (
                 [int(v) for v in self.available_at]
-                if self.available_at is not None else None
+                if self.available_at is not None
+                else None
             ),
             "warmup_samples": self.warmup_samples,
             "latency_samples": self.latency_samples,
@@ -380,10 +387,15 @@ def window_tetrad_series(
     cfg = config or TemporalInterfaceConfig()
     x = np.asarray(signal, dtype=float)
     if x.ndim != 1 or not np.all(np.isfinite(x)):
-        raise ValueError("signal must be a finite one-dimensional series; preserve gaps separately")
+        raise ValueError(
+            "signal must be a finite one-dimensional series; preserve gaps separately"
+        )
     if mode not in ("retrospective", "prospective"):
         raise ValueError("mode must be retrospective or prospective")
-    for name, value in (("warmup_samples", warmup_samples), ("latency_samples", latency_samples)):
+    for name, value in (
+        ("warmup_samples", warmup_samples),
+        ("latency_samples", latency_samples),
+    ):
         if type(value) is not int or value < 0:
             raise ValueError(f"{name} must be a nonnegative integer")
     if mode == "retrospective" and (warmup_samples or latency_samples):
@@ -409,11 +421,11 @@ def window_tetrad_series(
     while start + cfg.window + latency_samples <= n:
         stop = start + cfg.window
         if mode == "prospective":
-            context = x[start - warmup_samples:stop + latency_samples]
+            context = x[start - warmup_samples : stop + latency_samples]
             phase = hilbert_instantaneous_phase(context)
             pressure = local_structural_pressure(context)
-            seg_phase = phase[warmup_samples:warmup_samples + cfg.window]
-            seg_press = pressure[warmup_samples:warmup_samples + cfg.window]
+            seg_phase = phase[warmup_samples : warmup_samples + cfg.window]
+            seg_press = pressure[warmup_samples : warmup_samples + cfg.window]
         else:
             seg_phase = phase[start:stop]
             seg_press = pressure[start:stop]
@@ -432,7 +444,9 @@ def window_tetrad_series(
         ac1.append(_lag1_autocorr(seg))
 
         ends.append(stop - 1)
-        availability.append(stop + latency_samples - 1 if mode == "prospective" else n - 1)
+        availability.append(
+            stop + latency_samples - 1 if mode == "prospective" else n - 1
+        )
         start += cfg.step
 
     return WindowTetradSeries(
@@ -711,21 +725,32 @@ def calibrate_temporal_warning(
     run_id = _run_id(calibration_run_id)
     cfg = config or TemporalInterfaceConfig()
     series = window_tetrad_series(
-        signal, config=cfg, mode="prospective", warmup_samples=warmup_samples,
+        signal,
+        config=cfg,
+        mode="prospective",
+        warmup_samples=warmup_samples,
         latency_samples=latency_samples,
     )
 
     def select(channels: tuple[str, ...]) -> str:
-        choices = [(name, _resolved_trend(getattr(series, name))[0]) for name in channels]
+        choices = [
+            (name, _resolved_trend(getattr(series, name))[0]) for name in channels
+        ]
         finite = [(name, value) for name, value in choices if value is not None]
         if not finite:
-            raise ValueError("calibration has no resolved trend in a required channel family")
+            raise ValueError(
+                "calibration has no resolved trend in a required channel family"
+            )
         return max(finite, key=lambda item: item[1])[0]
 
     return TemporalWarningCalibration(
-        config=cfg, warmup_samples=warmup_samples, latency_samples=latency_samples,
-        tnfr_channel=select(_TNFR_CHANNELS), baseline_channel=select(_BASELINE_CHANNELS),
-        calibration_run_id=run_id, calibration_sha256=_signal_digest(np.asarray(signal)),
+        config=cfg,
+        warmup_samples=warmup_samples,
+        latency_samples=latency_samples,
+        tnfr_channel=select(_TNFR_CHANNELS),
+        baseline_channel=select(_BASELINE_CHANNELS),
+        calibration_run_id=run_id,
+        calibration_sha256=_signal_digest(np.asarray(signal)),
         calibration_samples=len(signal),
     )
 
@@ -749,44 +774,65 @@ def evaluate_prospective_warning(
     run_id = _run_id(evaluation_run_id)
     if run_id == calibration.calibration_run_id:
         raise ValueError("calibration and evaluation require different run identities")
-    if (calibration.tnfr_channel not in _TNFR_CHANNELS
-            or calibration.baseline_channel not in _BASELINE_CHANNELS):
+    if (
+        calibration.tnfr_channel not in _TNFR_CHANNELS
+        or calibration.baseline_channel not in _BASELINE_CHANNELS
+    ):
         raise ValueError("calibration contains unknown channels")
     stop = len(signal)
     if transition_index is not None:
         if type(transition_index) is not int or not 0 <= transition_index <= stop:
-            raise ValueError("transition_index must be an integer inside the supplied record")
+            raise ValueError(
+                "transition_index must be an integer inside the supplied record"
+            )
         stop = transition_index
     prefix = np.asarray(signal[:stop], dtype=float)
     if prefix.ndim != 1 or not np.all(np.isfinite(prefix)):
         raise ValueError("evaluation prefix must be finite and one-dimensional")
     if _signal_digest(prefix) == calibration.calibration_sha256:
         raise ValueError("evaluation content repeats the calibration record")
-    required = (calibration.warmup_samples + calibration.config.window
-                + calibration.latency_samples)
+    required = (
+        calibration.warmup_samples
+        + calibration.config.window
+        + calibration.latency_samples
+    )
     if len(prefix) < required:
         series = None
     else:
         series = window_tetrad_series(
-            prefix, config=calibration.config, mode="prospective",
+            prefix,
+            config=calibration.config,
+            mode="prospective",
             warmup_samples=calibration.warmup_samples,
             latency_samples=calibration.latency_samples,
         )
-    tnfr, n_tnfr = (None, 0) if series is None else _resolved_trend(
-        getattr(series, calibration.tnfr_channel)
+    tnfr, n_tnfr = (
+        (None, 0)
+        if series is None
+        else _resolved_trend(getattr(series, calibration.tnfr_channel))
     )
-    baseline, n_baseline = (None, 0) if series is None else _resolved_trend(
-        getattr(series, calibration.baseline_channel)
+    baseline, n_baseline = (
+        (None, 0)
+        if series is None
+        else _resolved_trend(getattr(series, calibration.baseline_channel))
     )
     resolved = tnfr is not None and baseline is not None
     return ProspectiveWarningComparison(
         tnfr_channel=calibration.tnfr_channel,
         baseline_channel=calibration.baseline_channel,
-        tnfr_trend=tnfr, baseline_trend=baseline,
-        tnfr_valid_windows=n_tnfr, baseline_valid_windows=n_baseline,
-        available_at=() if series is None else tuple(int(x) for x in series.available_at),
+        tnfr_trend=tnfr,
+        baseline_trend=baseline,
+        tnfr_valid_windows=n_tnfr,
+        baseline_valid_windows=n_baseline,
+        available_at=(
+            () if series is None else tuple(int(x) for x in series.available_at)
+        ),
         status="descriptive_evaluation" if resolved else "unavailable",
-        reason=("Frozen-channel trends; no event or physical-regime certificate."
-                if resolved else "Insufficient finite windows or a degenerate selected trend."),
-        calibration_run_id=calibration.calibration_run_id, evaluation_run_id=run_id,
+        reason=(
+            "Frozen-channel trends; no event or physical-regime certificate."
+            if resolved
+            else "Insufficient finite windows or a degenerate selected trend."
+        ),
+        calibration_run_id=calibration.calibration_run_id,
+        evaluation_run_id=run_id,
     )

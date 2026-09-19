@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import replace
 from fractions import Fraction
-import math
 
 import networkx as nx
 import pytest
@@ -25,7 +25,6 @@ from tnfr.physics.runtime_eigenmode_reference import (
     ExecutedReversibleSingleEigenmodeEulerReferenceObservation,
     observe_executed_reversible_single_eigenmode_euler_reference,
 )
-
 
 F = Fraction
 
@@ -383,12 +382,8 @@ def test_signed_continuous_intervals_and_norm_bounds_are_propagated(
             strict=True,
         )
     )
-    assert row.exact_runtime_minus_continuous_endpoint_lower_bound == (
-        expected_lower
-    )
-    assert row.exact_runtime_minus_continuous_endpoint_upper_bound == (
-        expected_upper
-    )
+    assert row.exact_runtime_minus_continuous_endpoint_lower_bound == (expected_lower)
+    assert row.exact_runtime_minus_continuous_endpoint_upper_bound == (expected_upper)
 
     coordinate_minima = tuple(
         F(0) if lower <= 0 <= upper else min(abs(lower), abs(upper))
@@ -399,26 +394,30 @@ def test_signed_continuous_intervals_and_norm_bounds_are_propagated(
         for lower, upper in zip(expected_lower, expected_upper, strict=True)
     )
     metric = reference.exact_reversible_metric
-    assert row.exact_runtime_continuous_linf_error_lower_bound == max(
-        coordinate_minima
+    assert row.exact_runtime_continuous_linf_error_lower_bound == max(coordinate_minima)
+    assert row.exact_runtime_continuous_linf_error_upper_bound == max(coordinate_maxima)
+    assert (
+        row.exact_runtime_continuous_h_energy_error_lower_bound
+        == sum(
+            (
+                weight * value * value
+                for weight, value in zip(metric, coordinate_minima, strict=True)
+            ),
+            F(0),
+        )
+        / 2
     )
-    assert row.exact_runtime_continuous_linf_error_upper_bound == max(
-        coordinate_maxima
+    assert (
+        row.exact_runtime_continuous_h_energy_error_upper_bound
+        == sum(
+            (
+                weight * value * value
+                for weight, value in zip(metric, coordinate_maxima, strict=True)
+            ),
+            F(0),
+        )
+        / 2
     )
-    assert row.exact_runtime_continuous_h_energy_error_lower_bound == sum(
-        (
-            weight * value * value
-            for weight, value in zip(metric, coordinate_minima, strict=True)
-        ),
-        F(0),
-    ) / 2
-    assert row.exact_runtime_continuous_h_energy_error_upper_bound == sum(
-        (
-            weight * value * value
-            for weight, value in zip(metric, coordinate_maxima, strict=True)
-        ),
-        F(0),
-    ) / 2
     assert row.exact_runtime_defect_decomposition_certified
     assert row.exact_continuous_error_enclosure_certified
     assert observation.exact_runtime_defect_decomposition_certified
@@ -624,9 +623,7 @@ def test_derived_row_reference_and_order_tampering_fail_closed(
     )
     reordered = replace(
         observation,
-        partition_observations=tuple(
-            reversed(observation.partition_observations)
-        ),
+        partition_observations=tuple(reversed(observation.partition_observations)),
     )
 
     assert not altered_row.runtime_partition_binding_certified

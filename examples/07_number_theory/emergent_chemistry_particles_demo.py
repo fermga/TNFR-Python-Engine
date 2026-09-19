@@ -89,9 +89,7 @@ def demo_chemistry() -> None:
             if s.angular_index is not None
             else f"unresolved angular label; multiplicity={s.multiplicity}"
         )
-        print(
-            f"  {angular}   eigenvalue = {s.eigenvalue:.4f}"
-        )
+        print(f"  {angular}   eigenvalue = {s.eigenvalue:.4f}")
     print(
         f"  → measured multiplicities {[s.multiplicity for s in shells]} "
         "under this finite clustering protocol"

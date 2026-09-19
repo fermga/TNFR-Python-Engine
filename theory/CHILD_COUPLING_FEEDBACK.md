@@ -9,6 +9,11 @@ and a finite graph-owned bridge from the original preparation to its phase tail.
 Recovery of an earlier relative pattern requires a fixed comparison target.
 **Research links:** B2.d.8-B2.d.45/Q3/O3.a, S1, S2, S3, S8, S9, S10 and S16.
 
+**Research status:** The regional-response and C6 continuations recorded here
+are parked. Their hypotheses, obstructions and historical follow-ups remain
+reusable evidence; they are not active instructions. Scientific resumption
+belongs only to the [current G3 gate](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
+
 ## 1. Closing an existing structural feedback path
 
 [THOL birth and transport](THOL_BIRTH_AND_TRANSPORT.md) established an
@@ -567,8 +572,8 @@ positive single-child jumps below `-2*u_c/(1-h_c/Z0)`, approximately
 lies inside that interval. This explains its immediate direction without
 choosing a new factor or claiming that the interval is a policy invariant.
 
-The next structural question is compatibility of the target with a held
-post-event model. Equivalently to `P0*z_j=z0`, require
+The calculation continued in section 10 concerns compatibility of the
+original target with a held post-event model. Equivalently to `P0*z_j=z0`, require
 
 $$
 P_0\operatorname{diag}(\nu_j)
@@ -1377,6 +1382,9 @@ Generate the separately manifested local artifact with:
 
 ### Consequence for the next structural test
 
+This heading records the historical dependency developed in the following
+comparisons; it does not assign a current maintenance campaign.
+
 The mean-of-phasors derivative has entries
 `R_ij=cos(theta_j-m_i)/|sum_neighbors exp(i*theta)|` for neighbors,
 where `m_i` is their mean argument. Its rows sum to one but need not be
@@ -1409,7 +1417,7 @@ and uniform signed mean control open. The new opposite-pair continuation
 derives a finite nonlinear phase/EPI partial quotient and a distinct
 mean-preserving binary64 pure-channel class. The retained full winding
 execution fails its paired-pressure and common-binade premises, localizing
-the next question to joint pressure-pair leakage and compatible rounding
+the subsequent historical analysis to joint pressure-pair leakage and compatible rounding
 cells. A certified two-neighbor midpoint now centralizes the eligible IL
 and CPU phase-pressure realizations, correcting a retained phasor rounding
 error. The same finite comparison improves pressure-mean cancellation
@@ -1471,7 +1479,7 @@ Section 29 makes the frozen-stencil bound executable. A neighbor changes
 at step 15, ahead of the retained-carry center deadline 21, and lowers
 node 4's pressure while leaving it positive. The declared eight-boundary
 sign test ends censored at eighteen steps. The remaining exact gradient
-cut and the full nodal-area identity now constrain the next coupled
+cut and the full nodal-area identity constrain any proposed coupled
 reachability argument. The shared gradient observer rejects uniform area
 errors that would be invisible to a Laplacian-only comparison.
 This supplies a return-class discriminator, not a longer live campaign
@@ -1565,15 +1573,17 @@ extended to a later live invocation. The finite bridge closes for this
 declared carried solver; it does not authenticate B27-B40's different
 historical detached state or prove indefinite trapping.
 
-The next gate is forward inclusion of carry subcells restricted jointly
-with visible shape and signed accumulated vector area, or a recurrent-budget
-obstruction. Use B43's actual tail carry and its closure for that executed
-branch, retaining the fixed-map conditions explicitly; a B40 analysis must
+The historical proposed extension was forward inclusion of carry subcells
+restricted jointly with visible shape and signed accumulated vector area,
+or a recurrent-budget obstruction. A continuation of the B43 branch would
+have to use its actual tail carry and closure under the fixed-map conditions;
+a B40 analysis must
 remain identified as a separate detached branch. Enlarging a complete-cell
 family inside the same gradient class
 cannot evade B41. Repeating the node-4 sign search or seeking a fixed strict
-linear separator over the full certified class is also no longer the active
-question. Detailed proofs and shared owners remain centralized in the winding
+linear separator over the full certified class cannot remove those
+obstructions. This is parked research, not the current G3 gate. Detailed
+proofs and shared owners remain centralized in the winding
 note; none of these blocks advances the saved B40 endpoint.
 B2.d.44 now excludes the
 [local energy tube with independent mean bounds](COUPLING_WINDING_PERSISTENCE.md#38-b44-a-bounded-mean-interval-does-not-close-the-centered-energy-tube)
@@ -1583,10 +1593,10 @@ boundaries. B2.d.45 preserves the
 [coordinate arithmetic restriction as well](COUPLING_WINDING_PERSISTENCE.md#39-b45-the-coordinate-arithmetic-class-does-not-rescue-local-mean-confinement):
 a derived affine carry lift keeps the requested mean and satisfies an analytic
 energy bound in a slightly smaller local window. Neither result advances the
-saved B43 state or proves escape of its actual trajectory. The next region
-must couple mean boundaries to shape and individual carries; the independent
+saved B43 state or proves escape of its actual trajectory. An admissible
+proposed trapping region must couple mean boundaries to shape and individual carries; the independent
 local mean interval is insufficient even after this arithmetic restriction.
 The earlier target-only winding theorem remains distinct. Represented joint
 invariance, autonomous preparation, physical correspondence, eventual
 antipodal U3 crossing and complete-runtime long-time behavior remain open;
-extending the failed nominal antipodal run is not the next test.
+none of these open boundaries authorizes extending the failed nominal antipodal run.

@@ -32,7 +32,9 @@ def _rdata_module():
             "Volts ingestion requires the optional research dependency rdata==1.1.0"
         ) from exc
     if module.__version__ != RDATA_VERSION:
-        raise ImportError("Volts ingestion requires rdata==1.1.0 for reproducible decoding")
+        raise ImportError(
+            "Volts ingestion requires rdata==1.1.0 for reproducible decoding"
+        )
     return module
 
 
@@ -48,17 +50,30 @@ def _bounded_expand(raw: bytes) -> bytes:
     if len(expanded) > MAX_EXPANDED_BYTES or decoder.unconsumed_tail:
         raise ValueError("expanded input exceeds the Volts byte bound")
     if not decoder.eof or decoder.unused_data:
-        raise ValueError("Volts compression must be complete with no trailing members or bytes")
+        raise ValueError(
+            "Volts compression must be complete with no trailing members or bytes"
+        )
     if not expanded.startswith((b"RDX2\nX\n", b"RDX3\nX\n")):
-        raise ValueError("expected uncompressed XDR RData; nested compression is forbidden")
+        raise ValueError(
+            "expected uncompressed XDR RData; nested compression is forbidden"
+        )
     return expanded
 
 
 def _validate_plain_tree(parsed, module) -> None:
     """Reject executable/custom R types before invoking any class conversion."""
     types = module.parser.RObjectType
-    allowed = {types.NILVALUE, types.SYM, types.LIST, types.CHAR,
-               types.INT, types.REAL, types.STR, types.VEC, types.REF}
+    allowed = {
+        types.NILVALUE,
+        types.SYM,
+        types.LIST,
+        types.CHAR,
+        types.INT,
+        types.REAL,
+        types.STR,
+        types.VEC,
+        types.REF,
+    }
     pending = [(parsed.object, 0)]
     seen = set()
     while pending:
@@ -74,7 +89,9 @@ def _validate_plain_tree(parsed, module) -> None:
         if kind == types.REF:
             target = obj.referenced_object
             if target is None or target.info.type != types.SYM:
-                raise ValueError("only previously defined R symbol references are accepted")
+                raise ValueError(
+                    "only previously defined R symbol references are accepted"
+                )
             pending.append((target, depth + 1))
         for child in (obj.attributes, obj.tag):
             if child is not None:
@@ -96,7 +113,9 @@ def _validate_plain_tree(parsed, module) -> None:
             try:
                 obj.value.decode("ascii")
             except UnicodeDecodeError as exc:
-                raise ValueError("Volts metadata must contain only ASCII characters") from exc
+                raise ValueError(
+                    "Volts metadata must contain only ASCII characters"
+                ) from exc
 
 
 def _validated_run(converted) -> NodalMeasurementRun:
@@ -107,19 +126,27 @@ def _validated_run(converted) -> NodalMeasurementRun:
         raise ValueError("RData must contain exactly one dataset named Volts")
     frame = converted["Volts"]
     if type(frame) is not pd.DataFrame or frame.shape != (50, 2):
-        raise ValueError("Volts must be a plain data.frame with exactly 50 rows and two columns")
+        raise ValueError(
+            "Volts must be a plain data.frame with exactly 50 rows and two columns"
+        )
     if tuple(frame.columns) != ("Voltage", "Time"):
         raise ValueError("Volts columns must be exactly Voltage, Time in that order")
     for column in frame.columns:
         if frame[column].dtype.kind not in "fiu":
-            raise ValueError("Volts columns must be real numeric, not boolean or textual")
+            raise ValueError(
+                "Volts columns must be real numeric, not boolean or textual"
+            )
     values = frame.to_numpy(dtype=float, na_value=np.nan)
     if not np.isfinite(values).all():
         raise ValueError("Volts measurements and timestamps must all be finite")
     return NodalMeasurementRun(
-        run_id=RUN_ID, acquisition_id=RUN_ID, channel_ids=("Voltage",),
-        timestamps=tuple(values[:, 1]), samples=(tuple(values[:, 0]),),
-        value_unit="V", time_unit="s",
+        run_id=RUN_ID,
+        acquisition_id=RUN_ID,
+        channel_ids=("Voltage",),
+        timestamps=tuple(values[:, 1]),
+        samples=(tuple(values[:, 0]),),
+        value_unit="V",
+        time_unit="s",
     )
 
 
@@ -128,23 +155,33 @@ def _decode_expanded(expanded: bytes) -> tuple[NodalMeasurementRun, dict]:
     if len(expanded) > MAX_EXPANDED_BYTES:
         raise ValueError("expanded input exceeds the Volts byte bound")
     if not expanded.startswith((b"RDX2\nX\n", b"RDX3\nX\n")):
-        raise ValueError("expected uncompressed XDR RData; nested compression is forbidden")
+        raise ValueError(
+            "expected uncompressed XDR RData; nested compression is forbidden"
+        )
     module = _rdata_module()
     parsed = module.parser.parse_data(
-        expanded, expand_altrep=False, altrep_constructor_dict={}, extension=".rda",
+        expanded,
+        expand_altrep=False,
+        altrep_constructor_dict={},
+        extension=".rda",
     )
     _validate_plain_tree(parsed, module)
 
     def plain_frame(obj, attrs):
-        if (set(attrs) != {"names", "class", "row.names"}
-                or tuple(attrs["class"]) != ("data.frame",)):
-            raise ValueError("only the plain data.frame class and metadata are accepted")
+        if set(attrs) != {"names", "class", "row.names"} or tuple(attrs["class"]) != (
+            "data.frame",
+        ):
+            raise ValueError(
+                "only the plain data.frame class and metadata are accepted"
+            )
         return module.conversion.dataframe_constructor(obj, attrs)
 
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         converted = module.conversion.convert(
-            parsed, constructor_dict={"data.frame": plain_frame}, default_encoding="ascii",
+            parsed,
+            constructor_dict={"data.frame": plain_frame},
+            default_encoding="ascii",
         )
     run = _validated_run(converted)
     return run, {
@@ -163,13 +200,21 @@ def load_volts(path: str | Path) -> tuple[NodalMeasurementRun, dict]:
         raise ValueError("compressed input exceeds the Volts byte bound")
     digest = hashlib.sha256(raw).hexdigest()
     if len(raw) != SOURCE_BYTES or digest != SOURCE_SHA256:
-        raise ValueError("Volts source size or SHA-256 differs from the preregistered archive")
+        raise ValueError(
+            "Volts source size or SHA-256 differs from the preregistered archive"
+        )
     expanded = _bounded_expand(raw)
     run, metadata = _decode_expanded(expanded)
-    metadata.update({
-        "source_bytes": len(raw), "source_sha256": digest,
-        "dataset": "Volts", "rows": 50, "columns": ("Voltage", "Time"),
-        "acquisition_id": RUN_ID, "split_scope": "within_single_acquisition",
-        "physical_status": "not_admitted",
-    })
+    metadata.update(
+        {
+            "source_bytes": len(raw),
+            "source_sha256": digest,
+            "dataset": "Volts",
+            "rows": 50,
+            "columns": ("Voltage", "Time"),
+            "acquisition_id": RUN_ID,
+            "split_scope": "within_single_acquisition",
+            "physical_status": "not_admitted",
+        }
+    )
     return run, metadata

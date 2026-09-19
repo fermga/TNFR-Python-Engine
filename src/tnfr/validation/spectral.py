@@ -11,10 +11,10 @@ from typing import Any, Mapping, Sequence
 from ..compat.dataclass import dataclass
 from ..errors import TNFRValueError
 from ..mathematics.operators import CoherenceOperator, FrequencyOperator
+from ..mathematics.runtime import frequency_positive as runtime_frequency_positive
 from ..mathematics.runtime import (
     meets_spectral_expectation_threshold as runtime_spectral_threshold,
 )
-from ..mathematics.runtime import frequency_positive as runtime_frequency_positive
 from ..mathematics.runtime import normalized as runtime_normalized
 from ..mathematics.runtime import stable_unitary as runtime_stable_unitary
 from ..mathematics.spaces import HilbertSpace

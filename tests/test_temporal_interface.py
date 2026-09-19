@@ -321,29 +321,42 @@ def test_prospective_emission_is_invariant_to_future_suffix_and_records_latency(
     np.testing.assert_array_equal(original.available_at, original.window_end + 3)
     known = original.available_at < 43
     for name in ("grad_phi", "k_phi", "xi_c", "phi_s", "variance", "lag1_autocorr"):
-        np.testing.assert_equal(getattr(original, name)[known], getattr(altered, name)[known])
+        np.testing.assert_equal(
+            getattr(original, name)[known], getattr(altered, name)[known]
+        )
         np.testing.assert_equal(getattr(original, name)[known], getattr(prefix, name))
 
 
 def test_frozen_temporal_channels_evaluate_only_available_prefix():
     from tnfr.validation.temporal_interface import (
-        calibrate_temporal_warning, evaluate_prospective_warning,
+        calibrate_temporal_warning,
+        evaluate_prospective_warning,
     )
+
     rng = np.random.default_rng(902)
     cfg = TemporalInterfaceConfig(window=16, step=8, k_neighbours=2)
     training = rng.normal(size=80) * np.linspace(0.5, 2.0, 80)
     frozen = calibrate_temporal_warning(
-        training, calibration_run_id="calibration-1", config=cfg,
-        warmup_samples=4, latency_samples=2,
+        training,
+        calibration_run_id="calibration-1",
+        config=cfg,
+        warmup_samples=4,
+        latency_samples=2,
     )
     before = repr(frozen)
     test = rng.normal(size=80)
     first = evaluate_prospective_warning(
-        test, calibration=frozen, evaluation_run_id="reserved-1", transition_index=55,
+        test,
+        calibration=frozen,
+        evaluation_run_id="reserved-1",
+        transition_index=55,
     )
     test[55:] = np.nan
     second = evaluate_prospective_warning(
-        test, calibration=frozen, evaluation_run_id="reserved-1", transition_index=55,
+        test,
+        calibration=frozen,
+        evaluation_run_id="reserved-1",
+        transition_index=55,
     )
     assert first == second
     assert first.tnfr_channel == frozen.tnfr_channel
@@ -351,13 +364,17 @@ def test_frozen_temporal_channels_evaluate_only_available_prefix():
     assert all(index < 55 for index in first.available_at)
     assert repr(frozen) == before
     with pytest.raises(ValueError, match="different run"):
-        evaluate_prospective_warning(training, calibration=frozen,
-                                     evaluation_run_id="calibration-1")
+        evaluate_prospective_warning(
+            training, calibration=frozen, evaluation_run_id="calibration-1"
+        )
     with pytest.raises(ValueError, match="repeats"):
-        evaluate_prospective_warning(training.copy(), calibration=frozen,
-                                     evaluation_run_id="different-label")
+        evaluate_prospective_warning(
+            training.copy(), calibration=frozen, evaluation_run_id="different-label"
+        )
     short = evaluate_prospective_warning(
-        [1.0], calibration=frozen, evaluation_run_id="too-short",
+        [1.0],
+        calibration=frozen,
+        evaluation_run_id="too-short",
     )
     assert short.status == "unavailable"
     assert short.tnfr_trend is None and short.baseline_trend is None
@@ -365,16 +382,23 @@ def test_frozen_temporal_channels_evaluate_only_available_prefix():
 
 def test_constant_calibration_has_no_favorable_channel_fallback():
     from tnfr.validation.temporal_interface import calibrate_temporal_warning
+
     with pytest.raises(ValueError, match="no resolved trend"):
         calibrate_temporal_warning(
-            np.zeros(64), calibration_run_id="constant",
+            np.zeros(64),
+            calibration_run_id="constant",
             config=TemporalInterfaceConfig(window=16, step=8, k_neighbours=2),
         )
 
 
-@pytest.mark.parametrize("kwargs", [
-    {"step": True}, {"window": 10.5}, {"embedding_dim": 8, "window": 8},
-])
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"step": True},
+        {"window": 10.5},
+        {"embedding_dim": 8, "window": 8},
+    ],
+)
 def test_temporal_configuration_rejects_invalid_window_domains(kwargs):
     with pytest.raises((ValueError, TypeError)):
         TemporalInterfaceConfig(**kwargs)

@@ -94,9 +94,7 @@ def test_pure_proposal_matches_direct_glyph_binary64_state(
         factor=factor,
         vf_before=2.0,
         dnfr_before=0.3 if glyph is Glyph.NUL else None,
-        configured_densification_factor=(
-            1.0 / factor if glyph is Glyph.NUL else None
-        ),
+        configured_densification_factor=(1.0 / factor if glyph is Glyph.NUL else None),
         edge_aware_enabled=edge_aware,
         epi_before=epi if edge_aware else None,
         epi_min=epi_min,

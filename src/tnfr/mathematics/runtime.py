@@ -10,11 +10,7 @@ from ..config import get_flags
 from ..errors import TNFRValueError
 from ..utils import get_logger
 from .backend import ensure_array, ensure_numpy, get_backend
-from .operators import (
-    CoherenceOperator,
-    FrequencyOperator,
-    SpectralExpectationOperator,
-)
+from .operators import CoherenceOperator, FrequencyOperator, SpectralExpectationOperator
 from .spaces import HilbertSpace
 from .unified_numerical import np
 

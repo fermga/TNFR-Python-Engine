@@ -10,8 +10,11 @@ from dataclasses import dataclass
 from fractions import Fraction as F
 
 from ..dynamics._euler_kernel import (
-    NODAL_REMAINDER_DENOMINATOR_BITS, NodalRemainderState, NodalRemainderStep,
-    _validate_nodal_remainder_state, advance_nodal_remainder,
+    NODAL_REMAINDER_DENOMINATOR_BITS,
+    NodalRemainderState,
+    NodalRemainderStep,
+    _validate_nodal_remainder_state,
+    advance_nodal_remainder,
 )
 from ._cycle_algebra import Vector
 from .c6_carried_balance import C6CarriedPressurePoint, _closure, _point
@@ -19,8 +22,10 @@ from .c6_carried_closure import C6CarriedClosure
 from .nodal_remainder import derive_nodal_remainder_itinerary
 
 __all__ = [
-    "C6CarriedMeanCylinderObstruction", "derive_c6_carried_mean_cylinder_obstruction",
-    "C6CarriedMeanCylinderBoundary", "C6CarriedMeanCylinderEscape",
+    "C6CarriedMeanCylinderObstruction",
+    "derive_c6_carried_mean_cylinder_obstruction",
+    "C6CarriedMeanCylinderBoundary",
+    "C6CarriedMeanCylinderEscape",
     "observe_c6_carried_mean_cylinder_escape",
 ]
 
@@ -35,19 +40,33 @@ def _translation_window(point, grid):
     exact = _validate_nodal_remainder_state(state)
     indices = tuple(value / grid for value in exact)
     if any(value.denominator != 1 for value in indices):
-        raise RuntimeError("the canonical reconstructed state left the shared dyadic grid")
+        raise RuntimeError(
+            "the canonical reconstructed state left the shared dyadic grid"
+        )
     itinerary = derive_nodal_remainder_itinerary(
-        epi_states=(state.epi, state.epi), timesteps=(0.,), capacities=((1.,) * 6,),
-        pressures=(point.observation.pressure,), epi_lower=state.epi_lower, epi_upper=state.epi_upper,
+        epi_states=(state.epi, state.epi),
+        timesteps=(0.0,),
+        capacities=((1.0,) * 6,),
+        pressures=(point.observation.pressure,),
+        epi_lower=state.epi_lower,
+        epi_upper=state.epi_upper,
     )
     if not itinerary.feasible:
-        raise RuntimeError("a valid static point must belong to its zero-area rounding itinerary")
-    lower = max(cell.first_grid_index - value.numerator
-                for cell, value in zip(itinerary.coordinates, indices, strict=True))
-    upper = min(cell.last_grid_index - value.numerator
-                for cell, value in zip(itinerary.coordinates, indices, strict=True))
+        raise RuntimeError(
+            "a valid static point must belong to its zero-area rounding itinerary"
+        )
+    lower = max(
+        cell.first_grid_index - value.numerator
+        for cell, value in zip(itinerary.coordinates, indices, strict=True)
+    )
+    upper = min(
+        cell.last_grid_index - value.numerator
+        for cell, value in zip(itinerary.coordinates, indices, strict=True)
+    )
     if not lower <= 0 <= upper:
-        raise RuntimeError("the original valid encoding is absent from its translation window")
+        raise RuntimeError(
+            "the original valid encoding is absent from its translation window"
+        )
     return lower, upper
 
 
@@ -91,7 +110,10 @@ class C6CarriedMeanCylinderObstruction:
 
 
 def derive_c6_carried_mean_cylinder_obstruction(
-    closure: C6CarriedClosure, *, positive_state: NodalRemainderState, negative_state: NodalRemainderState,
+    closure: C6CarriedClosure,
+    *,
+    positive_state: NodalRemainderState,
+    negative_state: NodalRemainderState,
 ) -> C6CarriedMeanCylinderObstruction:
     """Certify a translation window and opposing canonical mean increments.
 
@@ -112,22 +134,44 @@ def derive_c6_carried_mean_cylinder_obstruction(
     bound = _closure(closure)
     positive, negative = _point(bound, positive_state), _point(bound, negative_state)
     origin_mean = bound.base_tube.initial_mean
-    means = tuple(_mean(_validate_nodal_remainder_state(point.state)) for point in (positive, negative))
+    means = tuple(
+        _mean(_validate_nodal_remainder_state(point.state))
+        for point in (positive, negative)
+    )
     if means != (origin_mean, origin_mean):
-        raise ValueError("both static points must have the rebuilt closure's exact origin mean")
+        raise ValueError(
+            "both static points must have the rebuilt closure's exact origin mean"
+        )
     grid = F(1, 2**NODAL_REMAINDER_DENOMINATOR_BITS)
     h = F(bound.base_tube.contraction.timestep)
-    increments = tuple(h * _mean(tuple(map(F, point.observation.pressure))) for point in (positive, negative))
+    increments = tuple(
+        h * _mean(tuple(map(F, point.observation.pressure)))
+        for point in (positive, negative)
+    )
     if not increments[0] > grid or not increments[1] < -grid:
-        raise ValueError("the supplied canonical mean increments must be greater than g and less than -g")
-    positive_window, negative_window = (_translation_window(point, grid) for point in (positive, negative))
+        raise ValueError(
+            "the supplied canonical mean increments must be greater than g and less than -g"
+        )
+    positive_window, negative_window = (
+        _translation_window(point, grid) for point in (positive, negative)
+    )
     lower = max(positive_window[0], negative_window[0])
     upper = min(positive_window[1], negative_window[1])
     if not lower <= 0 <= upper:
-        raise RuntimeError("the common translation window lost its two original witnesses")
+        raise RuntimeError(
+            "the common translation window lost its two original witnesses"
+        )
     return C6CarriedMeanCylinderObstruction(
-        bound, positive, negative, grid, lower, upper,
-        origin_mean + lower * grid, origin_mean + upper * grid, increments[0], increments[1],
+        bound,
+        positive,
+        negative,
+        grid,
+        lower,
+        upper,
+        origin_mean + lower * grid,
+        origin_mean + upper * grid,
+        increments[0],
+        increments[1],
     )
 
 
@@ -187,46 +231,87 @@ def _boundary(bound, point, *, direction, lower, upper):
     scaled = (target - origin_mean) / grid
     index = scaled.__floor__() if direction == "upper" else scaled.__ceil__()
     if not bound.translation_grid_lower <= index <= bound.translation_grid_upper:
-        raise RuntimeError("the selected mean-boundary shift left the certified translation window")
+        raise RuntimeError(
+            "the selected mean-boundary shift left the certified translation window"
+        )
     shift = index * grid
     source = point.state
     state = NodalRemainderState(
-        source.epi, tuple(value + shift for value in source.remainder), source.epi_lower, source.epi_upper,
+        source.epi,
+        tuple(value + shift for value in source.remainder),
+        source.epi_lower,
+        source.epi_upper,
     )
     translated = _point(bound.closure, state)
     exact = _validate_nodal_remainder_state(translated.state)
     before = _mean(exact)
-    if (translated.energy != point.energy or translated.observation.pressure != point.observation.pressure
-            or before != origin_mean + shift or not lower <= before <= upper):
-        raise RuntimeError("uniform translation lost its pressure, centered energy or interval membership")
+    if (
+        translated.energy != point.energy
+        or translated.observation.pressure != point.observation.pressure
+        or before != origin_mean + shift
+        or not lower <= before <= upper
+    ):
+        raise RuntimeError(
+            "uniform translation lost its pressure, centered energy or interval membership"
+        )
     gap = upper - before if direction == "upper" else before - lower
     if not 0 <= gap < grid:
-        raise RuntimeError("the chosen lattice mean is not within one grid quantum of its boundary")
+        raise RuntimeError(
+            "the chosen lattice mean is not within one grid quantum of its boundary"
+        )
     pressure = tuple(map(F, translated.observation.pressure))
     h = F(bound.closure.base_tube.contraction.timestep)
     added = tuple(h * value for value in pressure)
-    candidate = tuple(value + increment for value, increment in zip(exact, added, strict=True))
+    candidate = tuple(
+        value + increment for value, increment in zip(exact, added, strict=True)
+    )
     after = _mean(candidate)
-    if (direction == "upper" and not after > upper) or (direction == "lower" and not after < lower):
-        raise RuntimeError("the exact nodal mean increment failed its strict outward crossing")
-    failure = any(not F(state.epi_lower) <= value <= F(state.epi_upper) for value in candidate)
+    if (direction == "upper" and not after > upper) or (
+        direction == "lower" and not after < lower
+    ):
+        raise RuntimeError(
+            "the exact nodal mean increment failed its strict outward crossing"
+        )
+    failure = any(
+        not F(state.epi_lower) <= value <= F(state.epi_upper) for value in candidate
+    )
     step = None
     if not failure:
         step = advance_nodal_remainder(
-            translated.state, timestep=bound.closure.base_tube.contraction.timestep,
-            capacity=(1.,) * 6, pressure=translated.observation.pressure,
+            translated.state,
+            timestep=bound.closure.base_tube.contraction.timestep,
+            capacity=(1.0,) * 6,
+            pressure=translated.observation.pressure,
         )
-        if (_validate_nodal_remainder_state(step.after) != candidate or step.exact_increment != added
-                or any(step.nodal_balance_residual)):
-            raise RuntimeError("the outward candidate differs from its canonical carried replay")
+        if (
+            _validate_nodal_remainder_state(step.after) != candidate
+            or step.exact_increment != added
+            or any(step.nodal_balance_residual)
+        ):
+            raise RuntimeError(
+                "the outward candidate differs from its canonical carried replay"
+            )
     return C6CarriedMeanCylinderBoundary(
-        direction, translated.state, index, shift, _mean(pressure), before, after,
-        added, candidate, translated.energy, failure, step,
+        direction,
+        translated.state,
+        index,
+        shift,
+        _mean(pressure),
+        before,
+        after,
+        added,
+        candidate,
+        translated.energy,
+        failure,
+        step,
     )
 
 
 def observe_c6_carried_mean_cylinder_escape(
-    obstruction: C6CarriedMeanCylinderObstruction, *, mean_lower: F, mean_upper: F,
+    obstruction: C6CarriedMeanCylinderObstruction,
+    *,
+    mean_lower: F,
+    mean_upper: F,
 ) -> C6CarriedMeanCylinderEscape:
     """Exhibit outward points for an exact interval containing the origin mean.
 
@@ -243,12 +328,35 @@ def observe_c6_carried_mean_cylinder_escape(
     if type(mean_lower) is not F or type(mean_upper) is not F:
         raise TypeError("mean interval endpoints must be exact Fraction values")
     bound = derive_c6_carried_mean_cylinder_obstruction(
-        obstruction.closure, positive_state=obstruction.positive_point.state,
+        obstruction.closure,
+        positive_state=obstruction.positive_point.state,
         negative_state=obstruction.negative_point.state,
     )
     origin_mean = bound.closure.base_tube.initial_mean
-    if not bound.mean_lower <= mean_lower <= origin_mean <= mean_upper <= bound.mean_upper:
-        raise ValueError("the mean interval must contain the origin mean and lie inside the rebuilt window")
-    positive = _boundary(bound, bound.positive_point, direction="upper", lower=mean_lower, upper=mean_upper)
-    negative = _boundary(bound, bound.negative_point, direction="lower", lower=mean_lower, upper=mean_upper)
-    return C6CarriedMeanCylinderEscape(bound, mean_lower, mean_upper, positive, negative)
+    if (
+        not bound.mean_lower
+        <= mean_lower
+        <= origin_mean
+        <= mean_upper
+        <= bound.mean_upper
+    ):
+        raise ValueError(
+            "the mean interval must contain the origin mean and lie inside the rebuilt window"
+        )
+    positive = _boundary(
+        bound,
+        bound.positive_point,
+        direction="upper",
+        lower=mean_lower,
+        upper=mean_upper,
+    )
+    negative = _boundary(
+        bound,
+        bound.negative_point,
+        direction="lower",
+        lower=mean_lower,
+        upper=mean_upper,
+    )
+    return C6CarriedMeanCylinderEscape(
+        bound, mean_lower, mean_upper, positive, negative
+    )

@@ -16,7 +16,6 @@ from tnfr.physics.forced_support import (
 )
 from tnfr.physics.support_transport import observe_support_transport
 
-
 F = Fraction
 
 
@@ -24,17 +23,26 @@ def _reference(*, capacity=(1, 2), weight=1, forcing=(F(1, 4), F(1, 2))):
     graph = nx.path_graph(2)
     graph.edges[0, 1]["weight"] = weight
     for node, x, nu in zip(graph, (1, 0), capacity, strict=True):
-        graph.nodes[node].update({
-            ALIAS_EPI[0]: x, ALIAS_VF[0]: nu, ALIAS_DNFR[0]: 0,
-        })
+        graph.nodes[node].update(
+            {
+                ALIAS_EPI[0]: x,
+                ALIAS_VF[0]: nu,
+                ALIAS_DNFR[0]: 0,
+            }
+        )
     return derive_forced_support_balance(
-        observe_support_transport(graph), epi_weight=F(1, 2), forcing=forcing,
+        observe_support_transport(graph),
+        epi_weight=F(1, 2),
+        forcing=forcing,
     )
 
 
 def _event(old, new, *, x0=(F(1), F(0)), x1=(F(0), F(1))):
     return observe_forced_support_event(
-        old, new, replace(old.source, epi=x0), replace(new.source, epi=x1),
+        old,
+        new,
+        replace(old.source, epi=x0),
+        replace(new.source, epi=x1),
     )
 
 
@@ -106,7 +114,9 @@ def test_forcing_change_can_reverse_the_sign_of_the_full_event_budget():
 def test_epi_coefficient_change_is_accounted_for_as_a_new_profile():
     old = _reference()
     new = derive_forced_support_balance(
-        old.source, epi_weight=1, forcing=old.forcing,
+        old.source,
+        epi_weight=1,
+        forcing=old.forcing,
     )
     event = _event(old, new)
     assert event.after_reference.relative_profile == (F(-1, 12), F(1, 6))
@@ -165,7 +175,10 @@ def test_pressure_only_write_is_retained_without_invented_epi_evolution():
     reference = _reference()
     after = replace(reference.source, stored_pressure=(F(7), F(-3)))
     event = observe_forced_support_event(
-        reference, reference, reference.source, after,
+        reference,
+        reference,
+        reference.source,
+        after,
     )
     assert event.before.pressure_defect != event.after.pressure_defect
     assert event.after.snapshot.stored_pressure == (7, -3)
@@ -190,7 +203,10 @@ def test_no_epi_jump_reuses_the_same_epi_observers_budgets():
     assert event.reference_error_shift == reset.error_shift
     with pytest.raises(ValueError, match="identical node order and EPI"):
         observe_forced_support_reset(
-            old, new, old.source, replace(new.source, epi=(F(0), F(1))),
+            old,
+            new,
+            old.source,
+            replace(new.source, epi=(F(0), F(1))),
         )
 
 
@@ -224,15 +240,23 @@ def test_three_reference_event_chain_telescopes_to_independent_endpoints():
 def test_actual_support_addition_and_epi_jump_have_independent_three_node_energy():
     graph = nx.path_graph(3)
     for node, x in zip(graph, (1, 0, 0), strict=True):
-        graph.nodes[node].update({
-            ALIAS_EPI[0]: x, ALIAS_VF[0]: 1, ALIAS_DNFR[0]: 0,
-        })
+        graph.nodes[node].update(
+            {
+                ALIAS_EPI[0]: x,
+                ALIAS_VF[0]: 1,
+                ALIAS_DNFR[0]: 0,
+            }
+        )
     old = derive_forced_support_balance(
-        observe_support_transport(graph), epi_weight=F(1, 2), forcing=(0, 0, 0),
+        observe_support_transport(graph),
+        epi_weight=F(1, 2),
+        forcing=(0, 0, 0),
     )
     graph.add_edge(0, 2)
     new = derive_forced_support_balance(
-        observe_support_transport(graph), epi_weight=F(1, 2), forcing=(0, 0, 0),
+        observe_support_transport(graph),
+        epi_weight=F(1, 2),
+        forcing=(0, 0, 0),
     )
     event = _event(old, new, x0=(F(1), F(0), F(0)), x1=(F(0), F(1), F(0)))
     assert event.before.error_variance == F(3, 8)
@@ -262,8 +286,12 @@ def test_public_caches_are_rebuilt_and_inputs_stay_unchanged():
     assert before.epi_gradient == (F(999), F(999))
 
 
-@pytest.mark.parametrize("observer", [observe_forced_support_event, observe_forced_support_reset])
-def test_each_public_observation_rebuilds_each_reference_exactly_once(monkeypatch, observer):
+@pytest.mark.parametrize(
+    "observer", [observe_forced_support_event, observe_forced_support_reset]
+)
+def test_each_public_observation_rebuilds_each_reference_exactly_once(
+    monkeypatch, observer
+):
     from tnfr.physics import forced_support
 
     old, new = _reference(), _reference(capacity=(1, 1), weight=2)
@@ -289,51 +317,74 @@ def test_each_public_observation_rebuilds_each_reference_exactly_once(monkeypatc
 def test_different_valid_reference_node_orders_are_rejected_before_comparison():
     old = _reference()
     new = derive_forced_support_balance(
-        replace(old.source, nodes=(1, 0)), epi_weight=old.epi_weight,
+        replace(old.source, nodes=(1, 0)),
+        epi_weight=old.epi_weight,
         forcing=old.forcing,
     )
     with pytest.raises(ValueError, match="identical node count and order"):
         _event(old, new)
 
 
-@pytest.mark.parametrize("field,value", (
-    ("epi", (F(0),)), ("epi", (float("nan"), 0)), ("epi", (True, 0)),
-    ("nodes", (1, 0)), ("capacity", (1, 1)),
-    ("conductance", ((0, 1, F(2)), (1, 0, F(2)))),
-    ("support_neighbors", ((0, 1), (0,))),
-))
+@pytest.mark.parametrize(
+    "field,value",
+    (
+        ("epi", (F(0),)),
+        ("epi", (float("nan"), 0)),
+        ("epi", (True, 0)),
+        ("nodes", (1, 0)),
+        ("capacity", (1, 1)),
+        ("conductance", ((0, 1, F(2)), (1, 0, F(2)))),
+        ("support_neighbors", ((0, 1), (0,))),
+    ),
+)
 def test_invalid_or_wrong_model_actual_endpoint_is_rejected(field, value):
     reference = _reference()
     with pytest.raises((TypeError, ValueError)):
         observe_forced_support_event(
-            reference, reference, reference.source,
+            reference,
+            reference,
+            reference.source,
             replace(reference.source, **{field: value}),
         )
 
 
-@pytest.mark.parametrize("field,value", (
-    ("epi_weight", 0), ("epi_weight", float("inf")),
-    ("forcing", (F(1),)), ("forcing", (float("nan"), 0)),
-))
+@pytest.mark.parametrize(
+    "field,value",
+    (
+        ("epi_weight", 0),
+        ("epi_weight", float("inf")),
+        ("forcing", (F(1),)),
+        ("forcing", (float("nan"), 0)),
+    ),
+)
 def test_invalid_reference_inputs_are_revalidated(field, value):
     reference = _reference()
     with pytest.raises((TypeError, ValueError)):
         observe_forced_support_event(
-            reference, replace(reference, **{field: value}),
-            reference.source, reference.source,
+            reference,
+            replace(reference, **{field: value}),
+            reference.source,
+            reference.source,
         )
 
 
-@pytest.mark.parametrize("source", (
-    {"capacity": (0, 1)}, {"conductance": ()},
-    {"conductance": ((0, 1, F(1)),)},
-))
+@pytest.mark.parametrize(
+    "source",
+    (
+        {"capacity": (0, 1)},
+        {"conductance": ()},
+        {"conductance": ((0, 1, F(1)),)},
+    ),
+)
 def test_invalid_reference_domain_cannot_be_hidden_in_a_cached_record(source):
     reference = _reference()
     forged = replace(reference, source=replace(reference.source, **source))
     with pytest.raises(ValueError):
         observe_forced_support_event(
-            reference, forged, reference.source, forged.source,
+            reference,
+            forged,
+            reference.source,
+            forged.source,
         )
 
 
@@ -351,7 +402,9 @@ def test_new_public_api_is_exported_from_physics():
     from tnfr.physics import forced_support
 
     for name in (
-        "ForcedSupportEvent", "ForcedSupportJumpEnergy", "observe_forced_support_event",
+        "ForcedSupportEvent",
+        "ForcedSupportJumpEnergy",
+        "observe_forced_support_event",
     ):
         assert getattr(physics, name) is getattr(forced_support, name)
         assert name in physics.__all__

@@ -12,6 +12,7 @@ gravity, friction or harmonic forces from the nodal equation, the tetrad or the
 13 operators. The auxiliary symplectic substrate is also a separate declared
 Hamiltonian model; it supplies no canonical identity ``m = 1/nu_f``.
 """
+
 from __future__ import annotations
 
 import math
@@ -75,9 +76,7 @@ def _adapter_frequency(masses: np.ndarray) -> tuple[float, float]:
     mass_reference = scale * float(np.mean(masses / scale))
     frequency = 1.0 / mass_reference
     if not math.isfinite(frequency) or frequency <= 0.0:
-        raise TNFRValueError(
-            "inverse-mean-mass adapter frequency is not representable"
-        )
+        raise TNFRValueError("inverse-mean-mass adapter frequency is not representable")
     return mass_reference, frequency
 
 
@@ -109,9 +108,7 @@ class GeneralizedCoordinateSystem:
         if self.p is not None:
             self.p = _finite_real_vector(self.p, "p", shape=self.q.shape)
         if self.q_dot is not None:
-            self.q_dot = _finite_real_vector(
-                self.q_dot, "q_dot", shape=self.q.shape
-            )
+            self.q_dot = _finite_real_vector(self.q_dot, "q_dot", shape=self.q.shape)
         if self.masses is None:
             self.masses = np.ones_like(self.q, dtype=float)
         else:
@@ -247,10 +244,7 @@ class ClassicalMechanicsMapper:
             raise TNFRValueError(
                 "forces and masses must be real numeric arrays"
             ) from exc
-        if (
-            raw_forces.dtype.kind not in "iuf"
-            or raw_masses.dtype.kind not in "iuf"
-        ):
+        if raw_forces.dtype.kind not in "iuf" or raw_masses.dtype.kind not in "iuf":
             raise TNFRValueError("forces and masses must be real numeric arrays")
         try:
             force_values = np.asarray(forces, dtype=float)
@@ -294,9 +288,7 @@ class ClassicalMechanicsMapper:
         q_dot = values[n:]
         mass = 1.0 / frequency
         if not math.isfinite(mass) or mass <= 0.0:
-            raise TNFRValueError(
-                "inverse-frequency adapter mass is not representable"
-            )
+            raise TNFRValueError("inverse-frequency adapter mass is not representable")
         p = q_dot * mass
 
         return GeneralizedCoordinateSystem(

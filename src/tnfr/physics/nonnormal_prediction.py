@@ -35,8 +35,8 @@ from typing import Iterable
 import numpy as np
 
 from ..rng import validate_seed
-from .directed_diffusion import directed_rw_laplacian
 from ._helpers import finite_real_scalar
+from .directed_diffusion import directed_rw_laplacian
 from .spectral_projectors import (
     commutator_norm,
     derived_tolerance,
@@ -143,13 +143,17 @@ def deterministic_directed_family(
     transiently amplifying cases; no population-level sampling claim is made.
     """
     seed = validate_seed(seed, allow_none=False)
-    if isinstance(size, (bool, np.bool_)) or not isinstance(
-        size, (int, np.integer)
-    ) or size < 1:
+    if (
+        isinstance(size, (bool, np.bool_))
+        or not isinstance(size, (int, np.integer))
+        or size < 1
+    ):
         raise ValueError("size must be a positive integer")
-    if isinstance(nodes, (bool, np.bool_)) or not isinstance(
-        nodes, (int, np.integer)
-    ) or nodes < 2:
+    if (
+        isinstance(nodes, (bool, np.bool_))
+        or not isinstance(nodes, (int, np.integer))
+        or nodes < 2
+    ):
         raise ValueError("nodes must be an integer of at least two")
     try:
         edge_probability = finite_real_scalar(
@@ -162,15 +166,11 @@ def deterministic_directed_family(
     try:
         weight_span = finite_real_scalar(log10_weight_span, "log10_weight_span")
     except ValueError as exc:
-        raise ValueError(
-            "log10_weight_span must be finite and nonnegative"
-        ) from exc
+        raise ValueError("log10_weight_span must be finite and nonnegative") from exc
     if weight_span < 0.0:
         raise ValueError("log10_weight_span must be finite and nonnegative")
 
-    maximum_half_span = float(
-        np.log10(np.finfo(float).max / float(nodes))
-    )
+    maximum_half_span = float(np.log10(np.finfo(float).max / float(nodes)))
     if weight_span / 2.0 > maximum_half_span:
         raise ValueError(
             "log10_weight_span is too large to keep every row conductance finite"
@@ -190,9 +190,7 @@ def deterministic_directed_family(
                 if source == target:
                     continue
                 if rng.random() < edge_probability:
-                    weights[source, target] = 10.0 ** rng.uniform(
-                        -half_span, half_span
-                    )
+                    weights[source, target] = 10.0 ** rng.uniform(-half_span, half_span)
         family.append(weights)
     return tuple(family)
 
@@ -318,9 +316,7 @@ def measure_nonnormal_pressure_prediction(
     every non-consensus pressure reachable and is satisfied by a finite strongly
     connected directed graph with positive conductance on its arcs.
     """
-    if isinstance(index, (bool, np.bool_)) or not isinstance(
-        index, (int, np.integer)
-    ):
+    if isinstance(index, (bool, np.bool_)) or not isinstance(index, (int, np.integer)):
         raise ValueError("index must be an integer")
     try:
         horizon = finite_real_scalar(t_max, "t_max")
@@ -364,9 +360,7 @@ def measure_nonnormal_pressure_prediction(
     if horizon > np.finfo(float).max / max(1.0, generator_norm):
         raise ValueError("t_max is too large for a finite scaled generator")
     alpha = spectral_abscissa(generator)
-    numerical_alpha = float(
-        np.max(np.linalg.eigvalsh((generator + generator.T) / 2.0))
-    )
+    numerical_alpha = float(np.max(np.linalg.eigvalsh((generator + generator.T) / 2.0)))
     (
         lognorm_sign_estimate,
         lognorm_numerical_sign_status,
@@ -382,9 +376,7 @@ def measure_nonnormal_pressure_prediction(
         spectral_gap=-alpha,
         numerical_abscissa=numerical_alpha,
         normality_residual=commutator_norm(restricted),
-        kreiss_lower_bound=pseudospectral_bound(
-            generator, grid=int(resolvent_grid)
-        ),
+        kreiss_lower_bound=pseudospectral_bound(generator, grid=int(resolvent_grid)),
         peak_pressure_gain=peak_gain,
         peak_time_structural=peak_time,
         measured_pressure_burst=peak_gain > 1.0 + tolerance,
@@ -448,9 +440,11 @@ def benchmark_nonnormal_prediction(
     )
     lognorm_prediction = np.asarray(
         [
-            False
-            if record.lognorm_rule_predicts_burst is None
-            else record.lognorm_rule_predicts_burst
+            (
+                False
+                if record.lognorm_rule_predicts_burst is None
+                else record.lognorm_rule_predicts_burst
+            )
             for record in records
         ],
         dtype=bool,
@@ -466,9 +460,7 @@ def benchmark_nonnormal_prediction(
         all_lognorm_resolved and np.array_equal(observed, lognorm_prediction)
     )
     if not all_lognorm_resolved:
-        verification_status = (
-            "unresolved_numerical_signs_no_finite_family_verification"
-        )
+        verification_status = "unresolved_numerical_signs_no_finite_family_verification"
         numerical_scope = (
             f"NUMERICALLY UNRESOLVED for {unresolved_count} supplied record(s); "
             "no exact finite-family verification is claimed. "

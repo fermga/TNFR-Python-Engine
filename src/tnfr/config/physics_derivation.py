@@ -524,8 +524,7 @@ def provides_negative_feedback(operator: str) -> bool:
 
 
 def executes_bifurcation(operator: str) -> bool:
-    """U4b Transformer test: does the operator execute a structural bifurcation
-    that needs threshold context (a recent destabilizer)?
+    """Return the declared U4b transformer role, not a dynamical bifurcation test.
 
     **MUTATION (ZHIR)**: ✓ transformer
     - Phase transition θ → θ' when ΔEPI/Δt > ξ — crosses a structural threshold,
@@ -533,18 +532,22 @@ def executes_bifurcation(operator: str) -> bool:
       stable base (prior IL). The label check does not measure either threshold.
 
     **SELF-ORGANIZATION (THOL)**: ✓ transformer
-    - Spontaneous autopoietic reorganization — spawns sub-EPIs once the second
-      derivative ∂²EPI/∂t² exceeds τ.
+    - On an admitted invocation, public THOL proposes a child when the measured
+      magnitude |∂²EPI/∂t²| exceeds configured τ and the hierarchy permits birth.
+      This role neither causes the invocation nor detects loss of rank,
+      uniqueness or stability of a complete nodal evolution law.
     """
     return operator in {"mutation", "self_organization"}
 
 
 def triggers_bifurcation(operator: str) -> bool:
-    """U4a Bifurcation-trigger test: ∂²EPI/∂t² > τ may follow the operator.
+    """Return the declared U4a trigger role without asserting a bifurcation.
 
-    **DISSONANCE (OZ)**: ✓ trigger — may push ∂²EPI/∂t² past τ.
-    **MUTATION (ZHIR)**: ✓ trigger — a phase transformation is itself a
-    bifurcation event.
+    **DISSONANCE (OZ)**: ✓ trigger — may change later structural acceleration.
+    **MUTATION (ZHIR)**: ✓ trigger — applies an admitted phase transformation.
+    A finite phase change alone establishes neither a spectral crossing nor a
+    change of solution branches. Both entries classify grammar context; actual
+    acceleration, admission and event occurrence require separate evidence.
     """
     return operator in {"dissonance", "mutation"}
 
@@ -584,7 +587,7 @@ def derive_destabilizers_from_physics() -> frozenset[str]:
 
 
 def derive_transformers_from_physics() -> frozenset[str]:
-    """Derive the U4b transformer set: operators that execute bifurcations."""
+    """Collect the centralized U4b transformer roles from declared predicates."""
     return frozenset(
         op for op in _all_canonical_operator_names() if executes_bifurcation(op)
     )

@@ -394,12 +394,8 @@ def detect_cell_formation(
             raise TypeError(
                 f"graph_sequence[{snapshot_index}] must be a networkx graph"
             )
-        _membrane_nodes(
-            graph, internal, f"internal_nodes at snapshot {snapshot_index}"
-        )
-        _membrane_nodes(
-            graph, boundary, f"boundary_nodes at snapshot {snapshot_index}"
-        )
+        _membrane_nodes(graph, internal, f"internal_nodes at snapshot {snapshot_index}")
+        _membrane_nodes(graph, boundary, f"boundary_nodes at snapshot {snapshot_index}")
     if len(time_values) > 1 and np.any(np.diff(time_values) <= 0.0):
         raise ValueError("times must increase strictly")
 
@@ -416,9 +412,7 @@ def detect_cell_formation(
 
     fluxes = None if membrane_fluxes is None else list(membrane_fluxes)
     if fluxes is not None and len(fluxes) != n_timesteps:
-        raise ValueError(
-            "membrane_fluxes and graph_sequence must have the same length"
-        )
+        raise ValueError("membrane_fluxes and graph_sequence must have the same length")
 
     # Initialize arrays
     boundary_coherence = np.zeros(n_timesteps)
@@ -445,9 +439,7 @@ def detect_cell_formation(
             internal_coherence[t_idx] = 0.0
 
         # Selectivity index
-        selectivity_index[t_idx] = compute_selectivity_index(
-            graph, internal, boundary
-        )
+        selectivity_index[t_idx] = compute_selectivity_index(graph, internal, boundary)
 
         # Collect internal ΔNFR values
         internal_dnfr = []
@@ -490,9 +482,7 @@ def detect_cell_formation(
                 raise ValueError(
                     "each membrane_fluxes entry must be an (internal, external) pair"
                 )
-            membrane_integrity[t_idx] = compute_membrane_integrity(
-                pair[0], pair[1]
-            )
+            membrane_integrity[t_idx] = compute_membrane_integrity(pair[0], pair[1])
 
     # Detect cell formation time
     cell_formation_time: float | None = None
@@ -592,9 +582,7 @@ def _membrane_epi_scalar(value: Any, label: str) -> float:
     return float(scalar)
 
 
-def _declared_nodes(
-    values: Sequence[Hashable], label: str
-) -> tuple[Hashable, ...]:
+def _declared_nodes(values: Sequence[Hashable], label: str) -> tuple[Hashable, ...]:
     """Materialize a replayable sequence of unique hashable node identifiers."""
 
     if isinstance(values, (str, bytes, bytearray)):
@@ -647,8 +635,7 @@ def _owned_intrinsic_pressure(
     token = provenance.get("token")
     if (
         provenance.get("model") != _MEMBRANE_PRESSURE_MODEL
-        or provenance.get("source")
-        != "tnfr.physics.cell.apply_membrane_flux"
+        or provenance.get("source") != "tnfr.physics.cell.apply_membrane_flux"
         or provenance.get("node") != node
         or not isinstance(token, str)
         or token != raw_pressure.membrane_provenance_token
@@ -672,9 +659,7 @@ def _owned_intrinsic_pressure(
     return intrinsic
 
 
-def _set_owned_pressure(
-    node_data: dict[str, Any], value: float, token: str
-) -> None:
+def _set_owned_pressure(node_data: dict[str, Any], value: float, token: str) -> None:
     """Store an effective ΔNFR value with its in-process ownership token."""
 
     node_data[_pressure_alias_key(node_data)] = _MembraneOwnedPressure(value, token)
@@ -838,9 +823,7 @@ def apply_membrane_flux(
     kappa = _finite_membrane_scalar(permeability, "permeability")
     if not 0.0 <= kappa <= 1.0:
         raise ValueError("permeability must lie in the closed interval [0, 1]")
-    requested_phase_limit = _finite_membrane_scalar(
-        phase_threshold, "phase_threshold"
-    )
+    requested_phase_limit = _finite_membrane_scalar(phase_threshold, "phase_threshold")
     if requested_phase_limit < 0.0:
         raise ValueError("phase_threshold must be nonnegative")
     time_step = _finite_membrane_scalar(dt, "dt")
@@ -882,9 +865,7 @@ def apply_membrane_flux(
     for node in graph.nodes:
         node_data = graph.nodes[node]
         raw_delta_nfr = _raw_alias_value(node_data, ALIAS_DNFR, 0.0)
-        pressure = _finite_membrane_scalar(
-            raw_delta_nfr, f"node {node!r} delta_nfr"
-        )
+        pressure = _finite_membrane_scalar(raw_delta_nfr, f"node {node!r} delta_nfr")
         state = {
             "epi": _membrane_epi_scalar(
                 _raw_alias_value(node_data, ALIAS_EPI, 0.0),
@@ -1063,16 +1044,16 @@ def apply_membrane_flux(
         set_attr(new_data, ALIAS_DEPI, depi_after)
         set_attr(new_data, ALIAS_D2EPI, d2epi_after)
         history = histories[node]
-        new_data["epi_history"] = [
-            *history["legacy"], epi_after
-        ][-_MEMBRANE_HISTORY_LIMIT:]
+        new_data["epi_history"] = [*history["legacy"], epi_after][
+            -_MEMBRANE_HISTORY_LIMIT:
+        ]
         if history["private"] is not None:
-            new_data["_epi_history"] = [
-                *history["private"], epi_after
-            ][-_MEMBRANE_HISTORY_LIMIT:]
-        new_data["epi_time_history"] = [
-            *history["physical"], (end_time, epi_after)
-        ][-_MEMBRANE_HISTORY_LIMIT:]
+            new_data["_epi_history"] = [*history["private"], epi_after][
+                -_MEMBRANE_HISTORY_LIMIT:
+            ]
+        new_data["epi_time_history"] = [*history["physical"], (end_time, epi_after)][
+            -_MEMBRANE_HISTORY_LIMIT:
+        ]
 
         if node not in boundary_set:
             set_attr(new_data, ALIAS_DNFR, state["intrinsic_pressure"])
@@ -1137,9 +1118,7 @@ def apply_membrane_flux(
             "blocked_internal_nodes": proposal["blocked"],
             "boundary_projection_applied": projected,
         }
-        _set_owned_pressure(
-            new_data, proposal["effective_pressure"], transaction_token
-        )
+        _set_owned_pressure(new_data, proposal["effective_pressure"], transaction_token)
         new_data["delta_nfr_intrinsic"] = proposal["intrinsic_pressure"]
         new_data["delta_nfr_membrane"] = proposal["membrane_pressure"]
         new_data["membrane_effective_delta_nfr"] = proposal["effective_pressure"]
@@ -1152,9 +1131,9 @@ def apply_membrane_flux(
             "membrane_delta_nfr": proposal["membrane_pressure"],
             "effective_delta_nfr": proposal["effective_pressure"],
         }
-        new_data["membrane_pressure_history"] = [
-            *proposal["pressure_history"], event
-        ][-_MEMBRANE_HISTORY_LIMIT:]
+        new_data["membrane_pressure_history"] = [*proposal["pressure_history"], event][
+            -_MEMBRANE_HISTORY_LIMIT:
+        ]
         replacement_data[node] = new_data
 
     result = MembraneFluxResult(

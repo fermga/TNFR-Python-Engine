@@ -78,7 +78,9 @@ def _validated_bijection(mapping, index) -> tuple[int, ...]:
             raise ValueError("permutation domain must equal the complete node order")
         destinations = tuple(mapping[node] for node in index)
         if set(destinations) != set(index):
-            raise ValueError("permutation must be a bijection of the complete node order")
+            raise ValueError(
+                "permutation must be a bijection of the complete node order"
+            )
         return tuple(index[node] for node in destinations)
     except TypeError as exc:
         raise ValueError("permutation destinations must be hashable vertices") from exc
@@ -99,7 +101,9 @@ def automorphism_permutations(G, *, weight: str | None = None, cap: int = 2000):
     if type(cap) is not int or cap <= 0:
         raise ValueError("cap must be a positive nonboolean integer")
     if G.is_multigraph():
-        raise ValueError("automatic automorphisms support simple graphs, not multigraphs")
+        raise ValueError(
+            "automatic automorphisms support simple graphs, not multigraphs"
+        )
     if weight is not None and not isinstance(weight, str):
         raise ValueError("weight must be an edge-attribute name or None")
     matcher_cls = iso.DiGraphMatcher if G.is_directed() else iso.GraphMatcher
@@ -122,7 +126,9 @@ def automorphism_permutations(G, *, weight: str | None = None, cap: int = 2000):
     out: list[dict] = []
     for mapping in matcher.isomorphisms_iter():
         if len(out) == cap:
-            raise ValueError("automorphism group exceeds cap; no partial group is returned")
+            raise ValueError(
+                "automorphism group exceeds cap; no partial group is returned"
+            )
         out.append(dict(mapping))
     return out
 
@@ -208,7 +214,11 @@ def reynolds_projector(
     """
     nodes = _node_list(G, nodes)
     orbits = automorphism_orbits(
-        G, nodes=nodes, permutations=permutations, weight=weight, cap=cap,
+        G,
+        nodes=nodes,
+        permutations=permutations,
+        weight=weight,
+        cap=cap,
     )
     n = len(nodes)
     idx = {node: i for i, node in enumerate(nodes)}

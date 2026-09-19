@@ -5,11 +5,7 @@ from __future__ import annotations
 from ..constants.canonical import MATH_SPECTRAL_EXPECTATION_FLOOR_DEFAULT
 from ..errors import TNFRValueError
 from .backend import ensure_array, ensure_numpy, get_backend
-from .operators import (
-    CoherenceOperator,
-    FrequencyOperator,
-    SpectralExpectationOperator,
-)
+from .operators import CoherenceOperator, FrequencyOperator, SpectralExpectationOperator
 from .unified_numerical import np
 
 __all__ = [

@@ -122,9 +122,7 @@ class TNFRAdaptiveSystem:
 
         # Initialize all components
         self.feedback = StructuralFeedbackLoop(graph, node)
-        self.sequence_selector = AdaptiveSequenceSelector(
-            graph, node, seed=random_seed
-        )
+        self.sequence_selector = AdaptiveSequenceSelector(graph, node, seed=random_seed)
         self.homeostasis = StructuralHomeostasis(graph, node)
         self.learning = AdaptiveLearningSystem(graph, node)
         self.metabolism = StructuralMetabolism(graph, node)

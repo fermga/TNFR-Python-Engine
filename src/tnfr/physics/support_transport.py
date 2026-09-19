@@ -7,7 +7,7 @@ values; it is never silently identified with pure EPI diffusion.
 """
 
 from collections.abc import Mapping, Set
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from fractions import Fraction
 from itertools import islice
 
@@ -230,9 +230,14 @@ class SupportTransportDerivative:
 def observe_support_transport_derivative(
     snapshot,
     *,
-    conductance_rates,
+    conductance_rates=None,
 ) -> SupportTransportDerivative:
     """Differentiate the declared weighted channel and Dirichlet energy.
+
+    Input rates align with the supplied snapshot's conductance order. Entries
+    and their rates are then reordered together into the returned canonical
+    source order. Omission means zero rates. Ordered one-shot iterables are
+    materialized once; unordered edge containers cannot define this pairing.
 
     Assume differentiable exact-real x and symmetric positive conductances
     on the fixed active edge set. The supplied finite rates are coefficients,
@@ -250,15 +255,29 @@ def observe_support_transport_derivative(
     Stored pressure is used as declared; freshness is not asserted and no
     pressure is inferred retrospectively from measured EPI motion.
     """
-    source = _rebuild(snapshot)
-    rates = ordered_vector(conductance_rates, "conductance_rates")
-    if len(rates) != len(source.conductance):
+    if type(snapshot) is not SupportTransportSnapshot:
+        raise TypeError("state must be a SupportTransportSnapshot")
+    if isinstance(snapshot.conductance, (Mapping, Set)):
+        raise TypeError("conductance must be an ordered iterable")
+    # _rebuild sorts the effective edges. Retain the caller's edge/rate
+    # association before rebuilding; sorting edges alone can silently attach
+    # symmetric but unequal rates to the wrong reciprocal edge pair.
+    supplied_edges = tuple(tuple(entry) for entry in snapshot.conductance)
+    source = _rebuild(replace(snapshot, conductance=supplied_edges))
+    supplied_rates = (
+        (Fraction(0),) * len(supplied_edges)
+        if conductance_rates is None
+        else ordered_vector(conductance_rates, "conductance_rates")
+    )
+    if len(supplied_rates) != len(supplied_edges):
         raise ValueError("conductance_rates must align with every conductance entry")
     rate_map = {
-        (i, j): rate for (i, j, _), rate in zip(source.conductance, rates, strict=True)
+        (i, j): rate
+        for (i, j, _), rate in zip(supplied_edges, supplied_rates, strict=True)
     }
     if any(rate_map.get((j, i)) != rate for (i, j), rate in rate_map.items()):
         raise ValueError("conductance_rates must preserve symmetry")
+    rates = tuple(rate_map[i, j] for i, j, _ in source.conductance)
     size = len(source.nodes)
     strengths = [Fraction(0) for _ in range(size)]
     strength_rates = [Fraction(0) for _ in range(size)]

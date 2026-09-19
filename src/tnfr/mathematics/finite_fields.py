@@ -1,27 +1,22 @@
 r"""Finite-field residue networks and trace additive characters (R5).
 
-R2 proved that on the k-th power residue Cayley network over the **prime** field
-``F_p`` the pulse rank is the cyclotomy count ``s_k(p) = gcd(k, p−1) + 1``.  This
-module extends the construction to a general finite field ``F_q`` (``q = p^f``)
-via the additive characters built from the field **trace**
+The finite field and power-residue connection set are declared arithmetic
+inputs. Characters psi_a(x)=exp(2*pi*i*Tr(a*x)/p) diagonalize the additive
+Cayley transition. Its normalized eigenvalues are
+eta_a=(1/|S|)*sum_(s in S) psi_a(s); adjacency eigenvalues are |S|*eta_a and
+random-walk Laplacian eigenvalues are 1-eta_a. Multiplication by a power-subgroup
+element permutes the summation set, so periods, not the characters pointwise,
+are constant on multiplicative cosets.
 
-    ψ_a(x) = exp(2πi/p · Tr_{F_q/F_p}(a x)),      Tr(y) = y + y^p + ⋯ + y^{p^{f−1}},
+For prime fields classical cyclotomy gives gcd(k,p-1)+1 distinct values.
+For extensions the analogous count is at most gcd(k,q-1)+1 and coset character
+sums can coincide. Distinct counts here use numerical complex values and a
+tolerance; exact field operations do not make these eigencounts exact proofs.
+Elementwise trace collisions alone do not characterize spectral degeneracy.
 
-and asks when the number of distinct Gauss periods still equals
-``gcd(k, q−1) + 1``.  The eigenvalues of the additive Cayley graph
-``Cay(F_q, S)`` with ``S`` the non-zero k-th powers are exactly the normalised
-periods ``η_a = (1/|S|) Σ_{s∈S} ψ_a(s)``, constant on cosets of the k-th power
-subgroup.
-
-**Measured result (honest).**  For ``f = 1`` the count matches ``gcd(k, p−1)+1``
-(R2 regression, exact).  For extensions ``f ≥ 2`` the trace is many-to-one, so
-distinct cosets can share a period: the count is ``≤ gcd(k, q−1) + 1`` and is
-**strictly smaller** for some ``(p, f, k)`` (e.g. ``F_9, k=4``: 5 → 2).  The
-prime-field independence argument does **not** transfer unchanged.
-
-No external field package is required (pure Python + numpy); extension degrees
-``f ≤ 3`` are supported via a no-root irreducibility search.
-"""
+Pure Python field construction supports extension degrees through three via a
+no-root irreducibility search. No arithmetic carrier or dynamical NFR is
+claimed to emerge from the nodal identity."""
 
 from __future__ import annotations
 
@@ -91,7 +86,7 @@ class FiniteField:
             raise ValueError("extension degree f must be >= 1")
         self.p = int(p)
         self.f = int(f)
-        self.q = p ** f
+        self.q = p**f
         if modulus is None:
             self.modulus = _find_irreducible(p, f)
         else:
@@ -102,13 +97,8 @@ class FiniteField:
                 if coefficients != [0, 1]:
                     raise ValueError("prime fields use the canonical x modulus")
             elif f > 3:
-                raise NotImplementedError(
-                    "extension degree f > 3 unsupported"
-                )
-            elif any(
-                _poly_eval(coefficients, value, p) == 0
-                for value in range(p)
-            ):
+                raise NotImplementedError("extension degree f > 3 unsupported")
+            elif any(_poly_eval(coefficients, value, p) == 0 for value in range(p)):
                 raise ValueError("modulus must be irreducible over F_p")
             self.modulus = coefficients
 
@@ -147,9 +137,7 @@ class FiniteField:
             c = prod[deg]
             if c:
                 for k in range(f + 1):
-                    prod[deg - f + k] = (
-                        prod[deg - f + k] - c * self.modulus[k]
-                    ) % p
+                    prod[deg - f + k] = (prod[deg - f + k] - c * self.modulus[k]) % p
         return self._to_int(prod[:f])
 
     def power(self, a: int, n: int) -> int:
@@ -182,9 +170,7 @@ class FiniteField:
         return {self.power(a, k) for a in range(1, self.q)} - {0}
 
 
-def _evaluate_in_field(
-    coefficients: list[int], value: int, field: FiniteField
-) -> int:
+def _evaluate_in_field(coefficients: list[int], value: int, field: FiniteField) -> int:
     result = 0
     for coefficient in reversed(coefficients):
         result = field.add(field.mul(result, value), coefficient % field.p)
@@ -203,7 +189,8 @@ def presentation_isomorphism(
     if source.p != target.p or source.f != target.f:
         raise ValueError("presentations must have the same p and degree")
     roots = [
-        value for value in target.elements()
+        value
+        for value in target.elements()
         if _evaluate_in_field(source.modulus, value, target) == 0
     ]
     if not roots:

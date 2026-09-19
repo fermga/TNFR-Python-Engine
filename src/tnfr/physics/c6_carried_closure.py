@@ -5,10 +5,10 @@ module closes their joint error inequality exactly, without iterating fitted
 error estimates. Arithmetic mean and finite band admission remain separate.
 """
 
+import sys
 from dataclasses import dataclass
 from fractions import Fraction as F
 from math import isqrt
-import sys
 
 from ..dynamics._euler_kernel import NodalRemainderState
 from ._cycle_algebra import Vector, laplacian_action
@@ -43,7 +43,9 @@ def _integer_gradient_interval(center, quantum, carry, squared):
 
     pivot = center.__floor__()
     if not admitted(pivot):
-        raise RuntimeError("a valid initial state must admit a nonempty gradient interval")
+        raise RuntimeError(
+            "a valid initial state must admit a nonempty gradient interval"
+        )
     left, right = lower, pivot
     while left < right:
         middle = (left + right) // 2
@@ -108,7 +110,10 @@ class C6CarriedClosure:
 
 
 def derive_c6_carried_closure(
-    profile: C6CarriedProfile, *, state: NodalRemainderState, timestep: float,
+    profile: C6CarriedProfile,
+    *,
+    state: NodalRemainderState,
+    timestep: float,
 ) -> C6CarriedClosure:
     """Close the carried spatial/RN feedback with an exact rational energy floor.
 
@@ -146,7 +151,7 @@ def derive_c6_carried_closure(
     effective = contraction.norm_factor + 3 * h * slope
     if effective >= 1:
         raise ValueError("the self-consistent rounding feedback requires q + 3*h*b < 1")
-    floor = 6 * h * h * (2 * weight * carry + constant)**2 / (1 - effective)**2
+    floor = 6 * h * h * (2 * weight * carry + constant) ** 2 / (1 - effective) ** 2
     energy = max(base.initial_energy, floor)
     squared = F(3, 2) * energy
     radius = _sqrt_upper(squared)
@@ -154,22 +159,46 @@ def derive_c6_carried_closure(
     product_error = unit * product_argument + tail
     assembly_argument = source_max + product_argument + product_error
     if max(product_argument, assembly_argument) > F(sys.float_info.max):
-        raise ValueError("the closed pressure envelope cannot certify finite binary64 operations")
+        raise ValueError(
+            "the closed pressure envelope cannot certify finite binary64 operations"
+        )
     assembly_error = unit * assembly_argument + tail
     rounding = constant + slope * radius
     if rounding != product_error + assembly_error:
-        raise RuntimeError("the affine rounding envelope lost its two-operation decomposition")
+        raise RuntimeError(
+            "the affine rounding envelope lost its two-operation decomposition"
+        )
     quantum = contraction.profile.lattice.gradient_quantum
     centers = tuple(-value / quantum for value in laplacian)
-    intervals = tuple(_integer_gradient_interval(value, quantum, carry, squared) for value in centers)
+    intervals = tuple(
+        _integer_gradient_interval(value, quantum, carry, squared) for value in centers
+    )
     visible = tuple(F(value) for value in state.epi)
     actual = tuple(-value / quantum for value in laplacian_action(visible))
-    if any(value.denominator != 1 or not lo <= value <= hi
-           for value, (lo, hi) in zip(actual, intervals, strict=True)):
-        raise RuntimeError("the primitive initial gradient escaped its derived necessary intervals")
+    if any(
+        value.denominator != 1 or not lo <= value <= hi
+        for value, (lo, hi) in zip(actual, intervals, strict=True)
+    ):
+        raise RuntimeError(
+            "the primitive initial gradient escaped its derived necessary intervals"
+        )
     mean = balance.mean_drift
     return C6CarriedClosure(
-        base, laplacian, constant, slope, effective, floor, energy, squared, radius,
-        product_error, assembly_error, rounding, h * (mean - rounding), h * (mean + rounding),
-        centers, tuple(lo for lo, _ in intervals), tuple(hi for _, hi in intervals),
+        base,
+        laplacian,
+        constant,
+        slope,
+        effective,
+        floor,
+        energy,
+        squared,
+        radius,
+        product_error,
+        assembly_error,
+        rounding,
+        h * (mean - rounding),
+        h * (mean + rounding),
+        centers,
+        tuple(lo for lo, _ in intervals),
+        tuple(hi for _, hi in intervals),
     )

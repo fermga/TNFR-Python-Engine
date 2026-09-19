@@ -1,4 +1,9 @@
-"""Spectral Paley-based TNFR factorization utilities."""
+"""Spectral factor-candidate heuristics on supplied Jacobi-residue graphs.
+
+Arithmetic telemetry factors the input independently of the spectral route.
+The partial pure policy does not remove all arithmetic from the pipeline.
+Lab field names include proxies, and configured acceptance labels do not
+replace arithmetic divisibility checks; see the subproject README."""
 
 from __future__ import annotations
 
@@ -70,15 +75,10 @@ _PARTITION_HASH_ALGORITHM = "sha256"
 _REPLAY_METADATA_VERSION = "1.0"
 
 # ---------------------------------------------------------------------------
-# Arithmetic-recalibrated tetrad thresholds (§7.5, TNFR_NUMBER_THEORY.md)
-# The residue/divisibility-graph topology is highly structured (not random),
-# so §7.5 recalibrates the canonical GENERAL tetrad thresholds empirically.
-# The general baselines are the single source of truth in
-# tnfr.constants.canonical (imported below, never re-typed as magic literals).
-# The arithmetic values are the §7.5-measured recalibrations kept EXACT (they
-# are independent empirical constants, not derivations of the baselines); the
-# imported baselines are used to document and runtime-check the deviation, so
-# the link stays live if the canonical baselines ever change.
+# Configured lab thresholds for spectral proxies.
+# They are not canonical nodewise tetrad bounds or constants derived from
+# nodal dynamics. Imported reference policies support legacy ratio checks;
+# those checks establish neither calibration quality nor factor correctness.
 # ---------------------------------------------------------------------------
 from tnfr.constants.canonical import (
     GRAD_PHI_CANONICAL_THRESHOLD,  # general |∇φ|: γ/π ≈ 0.1837 (heuristic, not derived)
@@ -90,17 +90,13 @@ from tnfr.constants.canonical import (
     PHI_S_VON_KOCH_THRESHOLD,  # general Φ_s: 0.7711 (von Koch)
 )
 
-# §7.5 arithmetic recalibrations (exact empirical values, validated across the
-# prime/composite distribution). Deviation vs the canonical general baseline:
-#   Φ_s:   0.7452 ≈ 0.949 × (π/4)    (tighter — structured topology)
-#   |∇φ|:  0.2591 ≈ 1.41  × (γ/π)    (looser — residue graphs are dense)
-#   K_φ:   3.2275 ≈ 1.14  × (0.9π)
+# Retained heuristic values; numerical ratios to reference policies do not
+# imply validation across the prime/composite distribution.
 _ARITHMETIC_PHI_S_THRESHOLD = 0.7452
 _ARITHMETIC_GRAD_PHI_THRESHOLD = 0.2591
 _ARITHMETIC_K_PHI_THRESHOLD = 3.2275
 
-# Provenance guard: if the canonical general baselines drift, the documented
-# §7.5 ratios above are stale and must be re-derived. (Cheap module-load check.)
+# Compatibility ratio checks only; they are not physical provenance proofs.
 assert (
     0.93 < _ARITHMETIC_PHI_S_THRESHOLD / PHI_S_VON_KOCH_THRESHOLD < 0.97
 ), "§7.5 Φ_s recalibration ratio drifted from canonical PHI_S_VON_KOCH_THRESHOLD"
@@ -204,11 +200,10 @@ def _generate_replay_metadata(
     arithmetic: Any | None = None,
     partitioning: PartitionedPaleyGraph | None = None,
 ) -> Dict[str, Any]:
-    """Generate comprehensive replay metadata for exact reproducibility.
+    """Record selected parameters, backend information and environment settings.
 
-    Captures all seeds, backend parameters, and configuration needed
-    to reproduce the exact factorization attempt.
-    """
+    This metadata assists replay comparisons. It is not a complete capture of
+    all runtime state and does not itself guarantee exact reproducibility."""
     metadata = {
         "version": _REPLAY_METADATA_VERSION,
         "timestamp": time.time(),
@@ -371,7 +366,13 @@ except Exception:  # pragma: no cover - optional dependency in trimmed installs
 
 @dataclass
 class SpectralAnalysisResult:
-    """Container for spectral metrics, TNFR telemetry, and factor hints."""
+    """Spectral proxies, arithmetic telemetry, candidates and heuristic reports.
+
+    The legacy ``tnfr_certified_factors`` field reports the lab acceptance rule,
+    which records ``support_divisible`` separately from its final condition.
+    ``phi_s`` is edge density; phase-gradient and curvature fields are spectral
+    ratios. ``coherence_length`` is a backend value or inverse selected gap.
+    These are not automatically the canonical nodewise tetrad."""
 
     n: int
     modulus: int
@@ -417,7 +418,11 @@ class SpectralAnalysisResult:
 
 @dataclass
 class OperatorCertificate:
-    """Recorded operator sequence evidence for a factor claim."""
+    """Serialized candidate analysis with a proposed operator word.
+
+    Grammar metadata, hashes and recorded telemetry do not by themselves prove
+    that the word was executed, that replay is bitwise identical, or that a
+    candidate divides the input."""
 
     n: int
     candidate_factor: int | None
@@ -469,7 +474,11 @@ class PartitionManifestArtifacts:
 
 
 class SpectralPaleyFactorizer:
-    """Paley-gap-driven TNFR factorization prototype."""
+    """Experimental spectral and arithmetic candidate-analysis pipeline.
+
+    The default constructor cap is 4097; explicitly passing ``max_nodes=None``
+    disables it. The algorithm is not a factorization complexity improvement:
+    arithmetic telemetry already computes a factorization of the input."""
 
     def __init__(
         self,
@@ -514,7 +523,14 @@ class SpectralPaleyFactorizer:
         trace_certificates: bool = False,
         certificate_dir: Path | None = None,
     ) -> SpectralAnalysisResult:
-        """Analyze ``n`` via Paley-style Laplacian spectrum and TNFR telemetry."""
+        """Analyze a supplied integer with graph spectra and arithmetic telemetry.
+
+        Return candidates and heuristic acceptance metadata, including independent
+        divisibility observations where available. Pure mode changes selected
+        candidate paths; it does not bypass input factorization for telemetry or
+        the unguarded empty-candidate trial-division fallback. Trace records can
+        include proposed grammar-valid sequences and optional workflow results;
+        no general executed-factorization certificate follows."""
 
         if n <= 1:
             raise ValueError("n must be > 1")
@@ -1142,30 +1158,22 @@ def _jacobi_symbol(a: int, n: int) -> int:
 
 
 def _laplacian_eigenvalues(graph: nx.Graph) -> np.ndarray:
-    """Return the structural spectrum, derived from the EMERGENT TNFR operator.
+    """Return a combinatorial spectral diagnostic on the lab's unit graphs.
 
-    Canonical provenance: the spectrum is taken from the emergent
-    structural-diffusion operator L_rw = I − D⁻¹W
-    (:func:`tnfr.physics.structural_diffusion.structural_diffusion_operator`),
-    which is *exactly* the canonical ΔNFR EPI channel
-    (ΔNFR = neighbour_mean − self = −L_rw·EPI). On the residue/Paley graph,
-    which is **regular** (constant degree d), the emergent random-walk
-    Laplacian and the classical combinatorial Laplacian share eigenvectors
-    and their eigenvalues differ only by the degree: λ_classical = d·λ_rw.
-    Rescaling by d recovers the combinatorial spectrum exactly, so the
-    Fiedler-gap → prime-size map (a Paley Gauss-sum fact) is preserved while
-    the operator provenance is the emergent TNFR transport operator, not an
-    externally-imposed Laplacian.
+    For regular unit-weight support of degree d, the shared transport owner
+    provides L_rw and this helper returns eigenvalues of d*L_rw=D-W.
+    Irregular support uses the combinatorial Laplacian directly. This algebraic
+    identity does not derive the chosen residue graph or factor-recovery law.
 
-    For non-regular graphs (no single degree) the rescaling is ill-defined;
-    we fall back to the combinatorial Laplacian and the random-walk spectrum
-    is still available via the emergent operator for telemetry.
-    """
+    The returned gap is in the combinatorial normalization. A normalized EPI
+    flow with unit capacity relaxes at lambda_2(L_rw), not d times that rate.
+    The regular-degree rescaling is stated for unit-weight graphs; equality of
+    unweighted degrees alone is insufficient for general weighted inputs."""
     from tnfr.physics.structural_diffusion import structural_diffusion_operator
 
     degrees = [d for _, d in graph.degree()]
     if degrees and min(degrees) == max(degrees) and degrees[0] > 0:
-        # Regular graph: emergent L_rw spectrum × degree == combinatorial spectrum.
+        # Unit-weight regular graph: degree * L_rw == combinatorial Laplacian.
         _, l_rw = structural_diffusion_operator(graph)
         eig_rw = np.linalg.eigvals(l_rw).real
         eig_rw.sort()
@@ -1189,7 +1197,10 @@ def _laplacian_eigenvalues(graph: nx.Graph) -> np.ndarray:
 
 
 def _first_positive_eigenvalue(eigenvalues: Sequence[float] | np.ndarray) -> float:
-    """Return the smallest positive eigenvalue (Fiedler value)."""
+    """Return the first supplied eigenvalue strictly above 1e-9, else zero.
+
+    Callers supply sorted spectra. The cutoff can skip a positive lambda_2;
+    this is a selected numerical scale, not always the Fiedler eigenvalue."""
 
     for value in eigenvalues:
         if value > 1e-9:
@@ -1198,18 +1209,11 @@ def _first_positive_eigenvalue(eigenvalues: Sequence[float] | np.ndarray) -> flo
 
 
 def _structural_potential(nodes: int, edges: int) -> float:
-    """Edge-density PROXY for Φ_s (NOT the canonical per-node field).
+    """Return normalized edge density as a scalar lab feature.
 
-    HONEST SCOPE: the canonical Φ_s
-    (:func:`tnfr.physics.canonical.compute_structural_potential`) is a
-    per-node field Σ_j ΔNFR_j / d(i,j)^α requiring a ΔNFR distribution on
-    the graph. The factorizer operates on the residue-graph *spectrum*
-    (eigenvalues of the emergent operator), not on a node-level ΔNFR field,
-    so it uses this normalized edge density as a scalar coherence proxy.
-    The genuine per-node tetrad is measured by example 117 and is BLIND to
-    the factor cosets — the factor signal lives in the spectrum, which this
-    proxy summarizes. Kept as a proxy by design, labelled as such.
-    """
+    This function has no pressure or distance input. It therefore does not
+    compute canonical nodewise Phi_s=sum_j pressure_j/d(i,j)^2, and cannot
+    establish that the full tetrad detects or misses factor cosets."""
 
     if nodes < 2:
         return 0.0
@@ -1218,16 +1222,12 @@ def _structural_potential(nodes: int, edges: int) -> float:
 
 
 def _coherence_length(laplacian_gap: float) -> float:
-    """ξ_C PROXY via the inverse emergent spectral gap (diffusion timescale).
+    """Return inverse selected spectral gap as a lab proxy.
 
-    HONEST SCOPE: the canonical ξ_C
-    (:func:`tnfr.physics.canonical.estimate_coherence_length`) is a spatial
-    autocorrelation length of the local coherence field. Here the gap is the
-    Fiedler value of the EMERGENT structural-diffusion operator (see
-    :func:`_laplacian_eigenvalues`), so 1/gap is the canonical diffusion
-    relaxation timescale τ = 1/(νf·λ₂) at νf = 1 — a legitimate emergent
-    quantity, used as the ξ_C proxy on the spectral (not node-field) path.
-    """
+    The fallback caller supplies a combinatorial-Laplacian gap on unit graphs.
+    Its reciprocal is a timescale only for that declared generator and time
+    normalization, not the canonical coherence-product spatial fit. Backend
+    coherence values can follow a different convention and need provenance."""
 
     if laplacian_gap <= 0:
         return float("inf")
@@ -1271,12 +1271,11 @@ def _classify_dual_lever(
     sequence: Sequence[str],
     arithmetic: ArithmeticTelemetry,
 ) -> Dict[str, Any]:
-    """Classify operator sequence into capacity/pressure levers (§8).
+    """Count operator names in the lab's configured lever categories.
 
-    The nodal equation ∂EPI/∂t = νf·ΔNFR decomposes evolution into:
-      - Capacity lever (νf): UM, SHA, VAL, NUL
-      - Pressure lever (ΔNFR): IL, OZ, THOL, ZHIR, NAV
-    """
+    The nodal identity distinguishes capacity and pressure inputs, but these
+    name groups are descriptive metadata. They are not exclusive Jacobian
+    supports or proof that the classified operators change only one channel."""
     capacity_ops: List[str] = []
     pressure_ops: List[str] = []
     other_ops: List[str] = []
@@ -1322,15 +1321,13 @@ def _candidate_factors(
     modulus: int,
     arithmetic: ArithmeticTelemetry,
 ) -> List[int]:
-    """Derive candidate factor candidates.
+    """Construct heuristic seeds and optionally refine them arithmetically.
 
-    Two modes:
-    - Default (arithmetic-assisted): original heuristic + gcd refinement.
-    - Pure TNFR mode (env TNFR_PURE_MODE=1): emit nodal-derived seeds only,
-      avoiding gcd / trial division. Optional light divisibility check can be
-      enabled via TNFR_PURE_MODE_VERIFY_DIVISIBILITY=1 (kept separate so that
-      pure mode can run without invoking arithmetic factoring helpers).
-    """
+    Assisted mode adds arithmetic-statistic hints and uses gcd refinement.
+    Pure mode returns spectral/size seeds; the optional
+    ``TNFR_PURE_MODE_VERIFY_DIVISIBILITY`` flag filters this initial list.
+    That local policy does not disable input arithmetic telemetry, later
+    size-hint divisibility or the caller's trial-division fallback."""
 
     def _pure_tnfr_mode() -> bool:
         raw = os.getenv("TNFR_PURE_MODE", "")
@@ -2077,10 +2074,9 @@ def _verify_factors_tnfr(
         periodicity_confidence_avg = block_summary["periodicity_confidence_avg"]
 
         # Detect size-hint factors: partition cardinality as structural period.
-        # When size-hint inference provides strong endorsement (high flag count
-        # per partition), stabilization is not required because the structural
-        # evidence comes from partition cardinality resonance with n's factor
-        # geometry, not from individual partition convergence dynamics.
+        # The configured size-hint branch waives the stabilization requirement
+        # when enough partitions endorse it. This is a policy exception,
+        # not a theorem identifying partition convergence with divisibility.
         size_hint_detected = any(
             isinstance(rec.get("periodicity"), Mapping)
             and rec["periodicity"].get("size_hint")
@@ -2685,9 +2681,9 @@ def _evaluate_partition_nodal_sequence(
                 inferred_factor = period
 
     # Size-hint inference: partition cardinality as structural factor candidate.
-    # Physics basis: the partition dimension (dim(EPI) via VAL/NUL) encodes
-    # factor information through structural resonance — when node_count evenly
-    # divides n, the partition structure matches the number's factor geometry.
+    # Arithmetic size hint: accept partition cardinality when it divides n.
+    # This explicit divisibility check does not derive the factor from
+    # autonomous VAL/NUL dynamics and remains active in pure mode.
     if inferred_factor is None and node_count > 1 and n % node_count == 0:
         inferred_factor = node_count
         if periodicity_block is None:
@@ -2741,6 +2737,10 @@ def _partition_delta_nfr(
 def _simulate_partition_sequence(
     delta_nfr: float, local_phi_s: float, node_count: int
 ) -> float:
+    """Apply the lab's configured scalar pressure-attenuation surrogate.
+
+    The gains are fixed heuristic coefficients. This helper does not execute
+    named graph operators or integrate a closed nodal/phase/support law."""
     if delta_nfr <= 0:
         return 0.0
     phi_clamped = min(1.0, max(0.0, local_phi_s))
@@ -2907,7 +2907,11 @@ _ARITHMETIC_PARAMS = ArithmeticTNFRParameters()
 
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies={"n"})  # type: ignore[misc]
 def _compute_arithmetic_telemetry(n: int) -> ArithmeticTelemetry:
-    """Compute canonical arithmetic TNFR telemetry for ``n`` with caching."""
+    """Factor the input and cache arithmetic-statistic diagnostic values.
+
+    The supplied factorization determines Omega, tau and sigma before the
+    static EPI, capacity and pressure formulas are evaluated. This path runs
+    in both candidate modes and is not a spectral factor-recovery result."""
 
     if n <= 0:
         raise ValueError("n must be positive for arithmetic telemetry")

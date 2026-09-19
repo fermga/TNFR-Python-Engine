@@ -46,21 +46,30 @@ def _unit(v):
 
 
 CASES = [
-    ("circulant C7{1,2} (normal)", directed_cayley_adjacency(7, {1, 2}),
-     _unit([1, -1, 0.5, -0.5, 0.3, -0.2, -0.1])),
-    ("weighted ring+chord (SC, non-normal)",
-     np.array([[0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2], [2, 0, 1, 0]],
-              dtype=float), _unit([1, -1, 0.5, -0.5])),
-    ("star-in cycle-out (SC, non-normal)",
-     np.array([[0, 1, 1, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]],
-              dtype=float), _unit([1, -1, 0.5, -0.5])),
+    (
+        "circulant C7{1,2} (normal)",
+        directed_cayley_adjacency(7, {1, 2}),
+        _unit([1, -1, 0.5, -0.5, 0.3, -0.2, -0.1]),
+    ),
+    (
+        "weighted ring+chord (SC, non-normal)",
+        np.array([[0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2], [2, 0, 1, 0]], dtype=float),
+        _unit([1, -1, 0.5, -0.5]),
+    ),
+    (
+        "star-in cycle-out (SC, non-normal)",
+        np.array([[0, 1, 1, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]], dtype=float),
+        _unit([1, -1, 0.5, -0.5]),
+    ),
 ]
 
 
 def main() -> int:
     print("N05 transient U2/U6: no per-node-energy transient; ambient >1 = ||Q||")
-    header = (f"  {'graph':<38} {'||Q||':>6} {'symE':>6} {'peak':>6} "
-              f"{'kreiss':>7} {'ambient':>8} {'J<=b':>5} {'noAmp':>6}")
+    header = (
+        f"  {'graph':<38} {'||Q||':>6} {'symE':>6} {'peak':>6} "
+        f"{'kreiss':>7} {'ambient':>8} {'J<=b':>5} {'noAmp':>6}"
+    )
     print(header)
     all_no_amp = True
     all_artifact = True
@@ -72,35 +81,45 @@ def main() -> int:
         # ambient gain is the oblique ||Q|| factor, not dynamics
         if abs(c.ambient_oblique_gain - c.consensus_projection_norm) > 1e-3:
             all_artifact = False
-        print(f"  {label:<38} {c.consensus_projection_norm:>6.4f} "
-              f"{c.symmetric_part_min_eig:>6.3f} {c.peak_gain:>6.4f} "
-              f"{c.kreiss_lower_bound:>7.4f} {c.ambient_oblique_gain:>8.4f} "
-              f"{str(c.integrated_reorganization <= c.integrated_reorganization_bound):>5} "
-              f"{str(c.no_transient_amplification):>6}")
+        print(
+            f"  {label:<38} {c.consensus_projection_norm:>6.4f} "
+            f"{c.symmetric_part_min_eig:>6.3f} {c.peak_gain:>6.4f} "
+            f"{c.kreiss_lower_bound:>7.4f} {c.ambient_oblique_gain:>8.4f} "
+            f"{str(c.integrated_reorganization <= c.integrated_reorganization_bound):>5} "
+            f"{str(c.no_transient_amplification):>6}"
+        )
 
     audit = CircularityAudit()  # pure spectral / semigroup dynamics
     _ = ExperimentManifest(
         claim_id="NT-P09d",
         git_sha="local",
-        versions={"python": platform.python_version(),
-                  "numpy": np.__version__},
+        versions={"python": platform.python_version(), "numpy": np.__version__},
         seed=None,
         operator_sequence=(),
         uses_known_factors=False,
         input_bits=input_bit_length(max(len(w) for _, w, _ in CASES)),
-        controls=("normal_unit_gain", "euclidean_pernode_contraction",
-                  "ambient_equals_Q_norm", "kreiss_le_peak", "u2_finite",
-                  "u6_confined"),
+        controls=(
+            "normal_unit_gain",
+            "euclidean_pernode_contraction",
+            "ambient_equals_Q_norm",
+            "kreiss_le_peak",
+            "u2_finite",
+            "u6_confined",
+        ),
         artifacts=(),
     )
     print()
     print(f"  peak_gain == 1 (no per-node transient) : {all_no_amp}")
     print(f"  ambient gain == ||Q|| (oblique artifact): {all_artifact}")
     print(f"  U2/U6 inequality certificates hold      : {all_bounds}")
-    print(f"  per-node contraction  : {ClaimStatus.DERIVED.value} form; "
-          f"PSD-on-subspace {ClaimStatus.CONJECTURAL.value} (2e5 + in-hub)")
-    print(f"  canonical U2 metric   : {ClaimStatus.CONJECTURAL.value} / OPEN "
-          "(NT-P09d; U2/U6 unmodified)")
+    print(
+        f"  per-node contraction  : {ClaimStatus.DERIVED.value} form; "
+        f"PSD-on-subspace {ClaimStatus.CONJECTURAL.value} (2e5 + in-hub)"
+    )
+    print(
+        f"  canonical U2 metric   : {ClaimStatus.CONJECTURAL.value} / OPEN "
+        "(NT-P09d; U2/U6 unmodified)"
+    )
     print(f"  circularity           : {audit.verdict.value}")
     ok = all_no_amp and all_artifact and all_bounds
     return 0 if ok else 1

@@ -68,17 +68,23 @@ def test_state_mutation_never_hits_previous_entry() -> None:
         calls += 1
         return float(graph.nodes["node"]["EPI"])
 
-    assert cache.get(
-        CacheEntryType.NODAL_STATE,
-        graph,
-        computation_func=compute,
-    ) == 1.0
+    assert (
+        cache.get(
+            CacheEntryType.NODAL_STATE,
+            graph,
+            computation_func=compute,
+        )
+        == 1.0
+    )
     graph.nodes["node"]["EPI"] = 4.0
-    assert cache.get(
-        CacheEntryType.NODAL_STATE,
-        graph,
-        computation_func=compute,
-    ) == 4.0
+    assert (
+        cache.get(
+            CacheEntryType.NODAL_STATE,
+            graph,
+            computation_func=compute,
+        )
+        == 4.0
+    )
     assert calls == 2
 
 

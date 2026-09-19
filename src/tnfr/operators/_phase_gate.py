@@ -91,8 +91,7 @@ def resolve_u3_phase_limits(
     )
     if not 0.0 <= hard_limit <= float(DELTA_PHI_MAX):
         raise U3PhaseGateError(
-            "DELTA_PHI_MAX must lie in the canonical interval "
-            f"[0, {DELTA_PHI_MAX}]",
+            "DELTA_PHI_MAX must lie in the canonical interval " f"[0, {DELTA_PHI_MAX}]",
             failed_condition="phase_limit",
         )
 
@@ -121,9 +120,7 @@ def select_u3_phase_neighbors(
     require_compatible: bool,
 ) -> tuple[float, tuple[Any, ...], tuple[float, ...]]:
     """Validate phases and return only neighbors inside ``phase_limit``."""
-    resolved_target = _finite_real(
-        target_phase, "target phase", "target_phase"
-    )
+    resolved_target = _finite_real(target_phase, "target phase", "target_phase")
     candidates = tuple(neighbors)
     compatible: list[Any] = []
     phases: list[float] = []
@@ -135,9 +132,7 @@ def select_u3_phase_neighbors(
                 "neighbor phases must be finite real scalars",
                 failed_condition="neighbor_phase",
             ) from exc
-        neighbor_phase = _finite_real(
-            raw_phase, "neighbor phase", "neighbor_phase"
-        )
+        neighbor_phase = _finite_real(raw_phase, "neighbor phase", "neighbor_phase")
         if abs(angle_diff(resolved_target, neighbor_phase)) <= phase_limit:
             compatible.append(neighbor)
             phases.append(neighbor_phase)
@@ -153,9 +148,7 @@ def select_u3_phase_neighbors(
                 "U3 phase gate requires at least one coupled neighbor "
                 "inside the effective phase limit"
             )
-        raise U3PhaseGateError(
-            message, failed_condition="u3_phase_compatibility"
-        )
+        raise U3PhaseGateError(message, failed_condition="u3_phase_compatibility")
     return resolved_target, tuple(compatible), tuple(phases)
 
 

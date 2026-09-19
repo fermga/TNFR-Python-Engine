@@ -27,13 +27,11 @@ from typing import Any, Mapping, Sequence
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
+from ..constants.canonical import PI  # π ≈ 3.1416 (structural scale)
 
 # Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
 from ..constants.operational import (
     NODAL_OPT_COUPLING_CANONICAL,
-)
-from ..constants.canonical import PI  # π ≈ 3.1416 (structural scale)
-from ..constants.operational import (
     SELF_OPT_CACHE_CONTRACTION_CANONICAL,
     SELF_OPT_CACHE_EXPANSION_CANONICAL,
     SELF_OPT_CACHE_HIGH_FRACTION_CANONICAL,
@@ -51,8 +49,8 @@ from ..constants.operational import (
 )
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
-from ..types import require_finite_real_scalar_epi
 from ..operators.grammar import glyph_function_name, validate_sequence
+from ..types import require_finite_real_scalar_epi
 
 try:
     import networkx as nx
@@ -107,9 +105,7 @@ def _required_graph_scalar(
 def _node_scalar_epi(G: Any, node: Any) -> float:
     """Read one finite signed scalar EPI through canonical alias precedence."""
 
-    raw = get_attr(
-        G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value
-    )
+    raw = get_attr(G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value)
     return require_finite_real_scalar_epi(raw, f"node {node!r} EPI")
 
 
@@ -140,11 +136,7 @@ def _result_evidence(result: Any) -> dict[str, float | int]:
     cache = details.get("cache_measurements")
     if isinstance(cache, Mapping):
         hits = cache.get("hits")
-        if (
-            isinstance(hits, int)
-            and not isinstance(hits, bool)
-            and hits >= 0
-        ):
+        if isinstance(hits, int) and not isinstance(hits, bool) and hits >= 0:
             evidence["cache_hits"] = hits
     return evidence
 
@@ -264,10 +256,17 @@ def _graph_structure(graph: Any) -> dict[str, Any]:
     count = graph.number_of_nodes()
     edges = graph.number_of_edges()
     return {
-        "nodes": count, "edges": edges, "density": nx.density(graph),
+        "nodes": count,
+        "edges": edges,
+        "density": nx.density(graph),
         "is_connected": (
-            (nx.is_weakly_connected(graph) if graph.is_directed() else nx.is_connected(graph))
-            if count else False
+            (
+                nx.is_weakly_connected(graph)
+                if graph.is_directed()
+                else nx.is_connected(graph)
+            )
+            if count
+            else False
         ),
         "avg_degree": 2 * edges / count if count else 0.0,
     }
@@ -624,9 +623,7 @@ class TNFRSelfOptimizingEngine:
                 "mean_structural_charge_drift",
                 cf.get("structural_charge_drift", cf.get("charge_drift", 0.0)),
             )
-            alert_rate = cf.get(
-                "monitor_alert_rate", cf.get("violation_rate", 0.0)
-            )
+            alert_rate = cf.get("monitor_alert_rate", cf.get("violation_rate", 0.0))
             if has_balance_samples and balance_quality < _MIN_BALANCE_QUALITY_ALERT:
                 balance_alert_reviews.append("balance_quality_low_review")
             if has_balance_samples and candidate_derivative > 0.0:
@@ -1038,7 +1035,9 @@ class TNFRSelfOptimizingEngine:
             safe_seed = _sanitize_label(seed_value, "unseeded")
             safe_node = _sanitize_label(report_label, "global")
             if partition_label is not None:
-                label_hash = hashlib.sha256(str(partition_label).encode("utf-8")).hexdigest()[:12]
+                label_hash = hashlib.sha256(
+                    str(partition_label).encode("utf-8")
+                ).hexdigest()[:12]
                 safe_node = f"{safe_node}_{label_hash}"
             snapshot_path, signature = self._persist_dry_run_payload(
                 payload,
@@ -1129,9 +1128,7 @@ class TNFRSelfOptimizingEngine:
                             "candidate_energy_within_numerical_tolerance": (
                                 lyapunov.is_stable
                             ),
-                            "candidate_energy_derivative": (
-                                lyapunov.energy_derivative
-                            ),
+                            "candidate_energy_derivative": (lyapunov.energy_derivative),
                             "balance_alerts_detected": alerts["alerts_detected"],
                             "balance_alert_types": alerts.get("alert_types", []),
                             "grammar_validated": False,
@@ -1154,9 +1151,9 @@ class TNFRSelfOptimizingEngine:
                     perf_metrics["structural_charge_drift"] = conservation_result[
                         "structural_charge_drift"
                     ]
-                    perf_metrics["candidate_energy_derivative"] = (
-                        conservation_result["candidate_energy_derivative"]
-                    )
+                    perf_metrics["candidate_energy_derivative"] = conservation_result[
+                        "candidate_energy_derivative"
+                    ]
                     perf_metrics["balance_rms_residual"] = conservation_result[
                         "balance_rms_residual"
                     ]

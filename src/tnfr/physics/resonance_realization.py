@@ -41,20 +41,14 @@ or global affinity of the gated runtime operation.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from fractions import Fraction
-import math
 from types import SimpleNamespace
 from typing import Any
 
 from ..alias import get_attr, set_attr
-from ..constants import DEFAULTS
-from ..constants.aliases import (
-    ALIAS_EPI,
-    ALIAS_EPI_KIND,
-    ALIAS_THETA,
-    ALIAS_VF,
-)
+from ..constants.aliases import ALIAS_EPI, ALIAS_EPI_KIND, ALIAS_THETA, ALIAS_VF
 from ..constants.canonical import (
     COUPLING_FINE,
     COUPLING_GENTLE,
@@ -83,22 +77,28 @@ from ._exact_metric import (
     binary64_vectors_exactly_proportional as _exactly_proportional,
 )
 from ._helpers import finite_real_scalar
+from ._neighbor_epi_realization import exact_binary64_matrix as _exact_binary64_matrix
+from ._neighbor_epi_realization import (
+    exact_ideal_neighbor_blend_map as _exact_ideal_map,
+)
+from ._neighbor_epi_realization import exact_matrix_vector as _exact_matrix_vector
+from ._neighbor_epi_realization import (
+    fraction_float_or_infinity as _fraction_float_or_infinity,
+)
+from ._neighbor_epi_realization import optional_flow_duration as _optional_duration
+from ._neighbor_epi_realization import readonly_float_array as _readonly_array
+from ._neighbor_epi_realization import (
+    represented_neighbor_blend_map as _represented_map,
+)
+from ._neighbor_epi_realization import resolve_epi_bounds as _resolved_bounds
+from ._neighbor_epi_realization import (
+    validate_certificate_tolerance as _validate_tolerance,
+)
 from .hybrid_operator_stability import (
     AffineEPIJumpGainCertificate,
     HybridEPIStabilityCertificate,
     certify_affine_epi_jump_gain,
     compose_hybrid_epi_stability,
-)
-from ._neighbor_epi_realization import (
-    exact_binary64_matrix as _exact_binary64_matrix,
-    exact_ideal_neighbor_blend_map as _exact_ideal_map,
-    exact_matrix_vector as _exact_matrix_vector,
-    fraction_float_or_infinity as _fraction_float_or_infinity,
-    optional_flow_duration as _optional_duration,
-    readonly_float_array as _readonly_array,
-    represented_neighbor_blend_map as _represented_map,
-    resolve_epi_bounds as _resolved_bounds,
-    validate_certificate_tolerance as _validate_tolerance,
 )
 from .structural_diffusion import (
     HeterogeneousDiffusionStabilityCertificate,
@@ -139,14 +139,14 @@ def _resolve_factor(G: Any, supplied: Any, key: str, default: float) -> float:
     return float(get_factor(factors, key, default))
 
 
-def _require_explicit_scalar_epi(
-    G: Any, nodes: tuple[Any, ...]
-) -> tuple[float, ...]:
+def _require_explicit_scalar_epi(G: Any, nodes: tuple[Any, ...]) -> tuple[float, ...]:
     values: list[float] = []
     for node in nodes:
         mapping = G.nodes[node]
         if not any(alias in mapping for alias in ALIAS_EPI):
-            raise ValueError("Resonance realization requires explicit EPI on every node")
+            raise ValueError(
+                "Resonance realization requires explicit EPI on every node"
+            )
         raw = get_attr(
             mapping,
             ALIAS_EPI,
@@ -217,9 +217,7 @@ def _exact_weighted_mean_data(
         mapped - original for mapped, original in zip(mapped_row, exact_metric)
     )
     shift = (
-        exact_metric[target_index]
-        * accepted_increment
-        / sum(exact_metric, Fraction(0))
+        exact_metric[target_index] * accepted_increment / sum(exact_metric, Fraction(0))
     )
     return defect, all(value == 0 for value in defect), shift
 
@@ -418,9 +416,7 @@ def certify_resonance_epi_realization(
         "RA_phase_coupling",
         COUPLING_GENTLE,
     )
-    factor_failures = validate_resonance_runtime_factors(
-        mix, vf_boost, phase_coupling
-    )
+    factor_failures = validate_resonance_runtime_factors(mix, vf_boost, phase_coupling)
     if factor_failures:
         raise ValueError("; ".join(factor_failures))
     exact_mix = Fraction.from_float(mix)
@@ -432,8 +428,7 @@ def certify_resonance_epi_realization(
     )
     if not resonance_phase_limit_compatible(phase_limit, DELTA_PHI_MAX):
         raise ValueError(
-            "DELTA_PHI_MAX must lie in the canonical interval "
-            f"[0, {DELTA_PHI_MAX}]"
+            "DELTA_PHI_MAX must lie in the canonical interval " f"[0, {DELTA_PHI_MAX}]"
         )
     target_phase = phases[target_index]
     separations = tuple(
@@ -522,12 +517,13 @@ def certify_resonance_epi_realization(
 
     frequencies = np.asarray(tuple(_node_frequency(G, node) for node in nodes))
     amplification_active = bool(
-        identity_passed
-        and abs(neighbor_mean) > RA_RUNTIME_AMPLIFICATION_TRIGGER
+        identity_passed and abs(neighbor_mean) > RA_RUNTIME_AMPLIFICATION_TRIGGER
     )
     proposed_frequencies = np.array(frequencies, dtype=float, copy=True)
     if abs(neighbor_mean) > RA_RUNTIME_AMPLIFICATION_TRIGGER:
-        proposed_frequencies[target_index] = frequencies[target_index] * (1.0 + vf_boost)
+        proposed_frequencies[target_index] = frequencies[target_index] * (
+            1.0 + vf_boost
+        )
     accepted_frequencies = (
         np.array(proposed_frequencies, copy=True)
         if identity_passed
@@ -567,9 +563,7 @@ def certify_resonance_epi_realization(
     represented_target_float = _fraction_float_or_infinity(
         exact_represented_after[target_index]
     )
-    represented_scale = max(
-        1.0, abs(proposed_target), abs(represented_target_float)
-    )
+    represented_scale = max(1.0, abs(proposed_target), abs(represented_target_float))
     represented_within = bool(
         math.isfinite(represented_residual)
         and math.isfinite(represented_scale)
@@ -654,13 +648,13 @@ def certify_resonance_epi_realization(
             current_pressure = -(laplacian @ state)
             post_pressure = -(laplacian @ accepted_state)
             pressure_defect = current_pressure - post_pressure
-            pressure_defect_norm = float(
-                np.max(np.abs(pressure_defect), initial=0.0)
-            )
+            pressure_defect_norm = float(np.max(np.abs(pressure_defect), initial=0.0))
     except FloatingPointError as exc:
         raise ValueError("pure-EPI pressure diagnostic exceeds binary64 range") from exc
     pressure_detected = bool(np.any(pressure_defect != 0.0))
-    transport_neighbor_mean = float(state[target_index] + current_pressure[target_index])
+    transport_neighbor_mean = float(
+        state[target_index] + current_pressure[target_index]
+    )
 
     pre_defect, _pre_ideal_mean, pre_shift = _exact_weighted_mean_data(
         pre_flow.metric_weights, ideal_map, target_index, accepted_increment
@@ -695,9 +689,7 @@ def certify_resonance_epi_realization(
                 repeat_schedule=False,
                 tolerance=tol,
             )
-            hybrid_recovery = bool(
-                hybrid.disagreement_contracts_over_declared_horizon
-            )
+            hybrid_recovery = bool(hybrid.disagreement_contracts_over_declared_horizon)
 
     return ResonanceEPIRealizationCertificate(
         nodes=nodes,

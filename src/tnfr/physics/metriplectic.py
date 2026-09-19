@@ -22,8 +22,8 @@ from typing import Any
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..mathematics.unified_numerical import np
-from ._conductance import read_conductance
 from ._helpers import finite_real_scalar
+from .structural_diffusion import compute_diffusion_energy
 from .symplectic_substrate import (
     extract_phase_space_point,
     hamiltonian_vector_field,
@@ -77,7 +77,9 @@ def _real_attribute(graph: Any, node: Any, aliases: Any, name: str) -> float:
 
 
 def verify_metriplectic_product(
-    graph: Any, *, tolerance: float = 1e-10,
+    graph: Any,
+    *,
+    tolerance: float = 1e-10,
 ) -> MetriplecticProductCertificate:
     r"""Verify the exact direct-product bridge on one graph state.
 
@@ -90,6 +92,8 @@ def verify_metriplectic_product(
     Their vector field is exactly the harmonic substrate flow together with
     ``xdot=-M Bx=nu_f DeltaNFR_epi``.  The certificate is restricted to fixed
     symmetric conductance, positive capacity and scalar EPI.
+    The shared diffusion balance rejects unrepresentable positive mobility
+    and nonzero energy/rate terms before they can become false zero readings.
     """
     try:
         tolerance_value = finite_real_scalar(tolerance, "tolerance")
@@ -103,41 +107,41 @@ def verify_metriplectic_product(
         raise TypeError("graph must be a finite graph-like object") from exc
     if node_count < 2:
         raise ValueError("Metriplectic product requires at least two supported nodes")
-    input_nodes = frozenset(graph.nodes)
+    input_nodes = tuple(graph.nodes)
+    # Validate authoritative channels before field extraction can read or cache
+    # them. Retain those values and align once to the substrate's node order.
+    node_values = {
+        node: (
+            _real_attribute(graph, node, ALIAS_VF, "capacity"),
+            _real_attribute(graph, node, ALIAS_EPI, "scalar EPI"),
+            _real_attribute(graph, node, ALIAS_DNFR, "DeltaNFR"),
+            _real_attribute(graph, node, ALIAS_THETA, "phase"),
+        )
+        for node in input_nodes
+    }
+    if any(values[0] <= 0.0 for values in node_values.values()):
+        raise ValueError("Metriplectic product requires positive finite capacity")
+    diffusion = compute_diffusion_energy(graph)
+    if np.any(diffusion.mobility <= 0.0):
+        raise ValueError("Metriplectic product requires positive row strength")
     point = extract_phase_space_point(graph)
     nodes = point.nodes
-    if len(nodes) != node_count or frozenset(nodes) != input_nodes:
+    if (
+        len(nodes) != node_count
+        or frozenset(nodes) != frozenset(input_nodes)
+        or tuple(diffusion.nodes) != input_nodes
+    ):
         raise RuntimeError("graph node set changed during metriplectic capture")
+    diffusion_index = {node: index for index, node in enumerate(diffusion.nodes)}
+    alignment = [diffusion_index[node] for node in nodes]
     frequency = np.asarray(
-        [_real_attribute(graph, node, ALIAS_VF, "capacity") for node in nodes],
-        dtype=float,
-    )
-    epi = np.asarray(
-        [
-            _real_attribute(graph, node, ALIAS_EPI, "scalar EPI")
-            for node in nodes
-        ],
+        [node_values[node][0] for node in nodes],
         dtype=float,
     )
     stored_pressure = np.asarray(
-        [
-            _real_attribute(graph, node, ALIAS_DNFR, "DeltaNFR")
-            for node in nodes
-        ],
+        [node_values[node][2] for node in nodes],
         dtype=float,
     )
-    for node in nodes:
-        _real_attribute(graph, node, ALIAS_THETA, "phase")
-    conductance = read_conductance(graph, list(nodes), symmetric=True)
-    adjacency = conductance.dense()
-    strength = conductance.strength
-    if np.any(strength <= 0.0):
-        raise ValueError("Metriplectic product requires positive row strength")
-    if not np.all(np.isfinite(frequency)) or np.any(frequency <= 0.0):
-        raise ValueError("Metriplectic product requires positive finite capacity")
-    if not np.all(np.isfinite(epi)):
-        raise ValueError("Metriplectic product requires finite scalar EPI")
-
     n = len(nodes)
     substrate_dimension = 4 * n
     total_dimension = substrate_dimension + n
@@ -148,24 +152,21 @@ def verify_metriplectic_product(
     if not np.all(np.isfinite(z)):
         raise ValueError("Metriplectic product requires finite substrate fields")
     try:
-        with np.errstate(over="raise", invalid="raise", divide="raise"):
-            mobility = frequency / strength
-            dissipative[substrate_dimension:, substrate_dimension:] = np.diag(
-                mobility
-            )
-            laplacian = np.diag(strength) - adjacency
-            laplacian_epi = laplacian @ epi
+        with np.errstate(over="raise", under="raise", invalid="raise", divide="raise"):
+            mobility = diffusion.mobility[alignment]
+            dissipative[substrate_dimension:, substrate_dimension:] = np.diag(mobility)
+            laplacian_epi = diffusion.gradient[alignment]
             grad_h = np.concatenate((z, np.zeros(n, dtype=float)))
             grad_v = np.concatenate(
                 (np.zeros(substrate_dimension, dtype=float), laplacian_epi)
             )
             velocity = poisson @ grad_h - dissipative @ grad_v
             expected_substrate = hamiltonian_vector_field(point)
-            expected_epi = -mobility * laplacian_epi
-            expected_pressure = -laplacian_epi / strength
+            expected_epi = diffusion.epi_rate[alignment]
+            expected_pressure = expected_epi / frequency
 
             hamiltonian_derivative = float(grad_h @ velocity)
-            dirichlet_derivative = float(grad_v @ velocity)
+            dirichlet_derivative = diffusion.energy_rate
             antisymmetry = float(np.linalg.norm(poisson.T + poisson, 2))
             minimum_metric_eigenvalue = min(0.0, float(np.min(mobility)))
             poisson_degeneracy = float(np.linalg.norm(poisson @ grad_v))
@@ -186,7 +187,7 @@ def verify_metriplectic_product(
             )
             velocity_norm = float(np.linalg.norm(velocity))
             hamiltonian = substrate_hamiltonian(point)
-            dirichlet_functional = float(0.5 * epi @ laplacian_epi)
+            dirichlet_functional = diffusion.energy
     except (FloatingPointError, OverflowError) as exc:
         raise ValueError(
             "Metriplectic product exceeds finite floating-point range"
@@ -194,7 +195,6 @@ def verify_metriplectic_product(
 
     finite_arrays = (
         mobility,
-        laplacian,
         laplacian_epi,
         grad_h,
         grad_v,

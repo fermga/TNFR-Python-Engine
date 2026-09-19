@@ -27,9 +27,6 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import numpy as np
-
-from tnfr.operators.grammar_validate import validate_grammar
-
 from _flat_grammar_model import (
     ALPHA,
     NAME2INST,
@@ -39,6 +36,8 @@ from _flat_grammar_model import (
     spectral_radius,
     transfer_matrix,
 )
+
+from tnfr.operators.grammar_validate import validate_grammar
 
 
 def automaton_counts(edges, maxn):
@@ -56,10 +55,7 @@ def oracle_counts(maxn):
     for n in range(1, maxn + 1):
         if n == 1:
             out.append(
-                sum(
-                    validate_grammar([NAME2INST[symbol]], 0.0)
-                    for symbol in ALPHA
-                )
+                sum(validate_grammar([NAME2INST[symbol]], 0.0) for symbol in ALPHA)
             )
             continue
         count = 0

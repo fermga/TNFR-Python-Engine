@@ -16,15 +16,19 @@ from tnfr.physics.support_transport import (
     observe_support_transport_reset,
 )
 
-
 F = Fraction
 
 
 def _initialize(graph, epi, capacity, pressure):
     for node, x, nu, p in zip(graph, epi, capacity, pressure, strict=True):
-        graph.nodes[node].update({
-            ALIAS_EPI[0]: x, ALIAS_VF[0]: nu, ALIAS_DNFR[0]: p, "theta": 0.0,
-        })
+        graph.nodes[node].update(
+            {
+                ALIAS_EPI[0]: x,
+                ALIAS_VF[0]: nu,
+                ALIAS_DNFR[0]: p,
+                "theta": 0.0,
+            }
+        )
     return graph
 
 
@@ -38,9 +42,14 @@ def _attachment():
 def _flow_graph(epi, capacity, pressure):
     graph = _initialize(nx.path_graph(2), epi, capacity, pressure)
     graph.graph.update(
-        _t=0.0, _gamma_spec={"type": "none"}, GAMMA={"type": "none"},
-        use_extended_dynamics=False, DT_MIN=0.0,
-        EPI_MIN=-4.0, EPI_MAX=4.0, CLIP_MODE="hard",
+        _t=0.0,
+        _gamma_spec={"type": "none"},
+        GAMMA={"type": "none"},
+        use_extended_dynamics=False,
+        DT_MIN=0.0,
+        EPI_MIN=-4.0,
+        EPI_MAX=4.0,
+        CLIP_MODE="hard",
     )
     return graph
 
@@ -59,8 +68,12 @@ def test_weighted_child_attachment_has_distinct_channels_and_exact_energy_reset(
     graph.add_edge("parent", "child", weight=0.5)
     after = observe_support_transport(graph)
     assert after.nodes == ("parent", "peer", "child")
-    assert after.conductance == ((0, 1, F(2)), (0, 2, F(1, 2)),
-                                 (1, 0, F(2)), (2, 0, F(1, 2)))
+    assert after.conductance == (
+        (0, 1, F(2)),
+        (0, 2, F(1, 2)),
+        (1, 0, F(2)),
+        (2, 0, F(1, 2)),
+    )
     assert after.support_neighbors == ((1, 2), (0,), (0,))
     assert after.epi_gradient == (F(-11, 20), F(1, 2), F(3, 4))
     assert after.capacity_gradient == (F(-5, 4), 1, F(3, 2))
@@ -89,7 +102,9 @@ def test_zero_weight_edge_changes_support_channels_without_epi_transport():
     assert after.topology_gradient == (-1, 1, 1)
     assert after.support_neighbors == ((1, 2), (0,), (0,))
     reset = observe_support_transport_reset(before, after)
-    assert reset.energy_change == reset.edge_energy_change == reset.identity_residual == 0
+    assert (
+        reset.energy_change == reset.edge_energy_change == reset.identity_residual == 0
+    )
 
 
 def test_effectively_symmetric_zero_conductance_can_have_directed_support():
@@ -129,19 +144,27 @@ def test_attached_capacity_channel_has_nonzero_weighted_total():
     graph.add_edge(0, "child", weight=0.5)
     result = observe_support_transport(graph)
     assert result.capacity_gradient == (F(-1, 12),) + (0,) * 7 + (F(1, 4),)
-    strengths = tuple(sum(w for i, _, w in result.conductance if i == n)
-                      for n in range(9))
+    strengths = tuple(
+        sum(w for i, _, w in result.conductance if i == n) for n in range(9)
+    )
     total = sum(d * g for d, g in zip(strengths, result.capacity_gradient))
     assert total == F(-1, 12)
     assert total == 2 * (F(1, 2) - 1) * (1 - F(3, 4)) / 3
     assert result.epi_gradient == (0,) * 9
 
 
-@pytest.mark.parametrize(("location", "value"), [
-    ("weight", -1.0), ("weight", float("nan")), ("weight", float("inf")),
-    (ALIAS_VF[0], -0.5), (ALIAS_VF[0], float("inf")),
-    (ALIAS_DNFR[0], float("nan")), (ALIAS_EPI[0], float("inf")),
-])
+@pytest.mark.parametrize(
+    ("location", "value"),
+    [
+        ("weight", -1.0),
+        ("weight", float("nan")),
+        ("weight", float("inf")),
+        (ALIAS_VF[0], -0.5),
+        (ALIAS_VF[0], float("inf")),
+        (ALIAS_DNFR[0], float("nan")),
+        (ALIAS_EPI[0], float("inf")),
+    ],
+)
 def test_invalid_materialized_state_or_conductance_is_rejected(location, value):
     graph = _attachment()
     if location == "weight":
@@ -183,17 +206,25 @@ def test_binary64_euler_defect_has_an_independent_two_node_energy_expansion():
     after = observe_support_transport(graph)
     result = observe_support_transport_euler(before, after, 0.1)
     h = F(0.1)
-    expected = tuple(x + h * nu * p for x, nu, p in
-                     zip(before.epi, before.capacity, before.stored_pressure))
+    expected = tuple(
+        x + h * nu * p
+        for x, nu, p in zip(before.epi, before.capacity, before.stored_pressure)
+    )
     defect = tuple(actual - ideal for actual, ideal in zip(after.epi, expected))
     assert result.expected_epi == expected
     assert result.state_defect == defect and any(defect)
-    assert result.defect_term == ((expected[0] - expected[1]) * (defect[0] - defect[1])
-                                  + (defect[0] - defect[1])**2 / 2)
-    expected_change = ((after.epi[0] - after.epi[1])**2
-                       - (before.epi[0] - before.epi[1])**2) / 2
+    assert result.defect_term == (
+        (expected[0] - expected[1]) * (defect[0] - defect[1])
+        + (defect[0] - defect[1]) ** 2 / 2
+    )
+    expected_change = (
+        (after.epi[0] - after.epi[1]) ** 2 - (before.epi[0] - before.epi[1]) ** 2
+    ) / 2
     assert result.energy_change == expected_change
-    assert result.energy_change == result.drift_term + result.quadratic_term + result.defect_term
+    assert (
+        result.energy_change
+        == result.drift_term + result.quadratic_term + result.defect_term
+    )
     assert result.identity_residual == 0
 
 
@@ -202,8 +233,13 @@ def test_transition_readers_rebuild_cached_fields_without_trusting_public_data()
     before = observe_support_transport(graph)
     graph.add_edge("parent", "child", weight=0.5)
     after = observe_support_transport(graph)
-    forged = replace(before, dirichlet_energy=F(999), energy_rate=F(999),
-                     rate=(F(999),) * 3, epi_gradient=(F(999),) * 3)
+    forged = replace(
+        before,
+        dirichlet_energy=F(999),
+        energy_rate=F(999),
+        rate=(F(999),) * 3,
+        epi_gradient=(F(999),) * 3,
+    )
     assert observe_support_transport_reset(forged, after) == (
         observe_support_transport_reset(before, after)
     )
@@ -219,9 +255,12 @@ def test_transition_readers_rebuild_cached_fields_without_trusting_public_data()
 @pytest.mark.parametrize("changed", ["nodes", "epi"])
 def test_reset_rejects_unaligned_nodes_or_an_epi_jump(changed):
     before = observe_support_transport(_attachment())
-    after = replace(before, **{
-        changed: tuple(reversed(getattr(before, changed))),
-    })
+    after = replace(
+        before,
+        **{
+            changed: tuple(reversed(getattr(before, changed))),
+        },
+    )
     with pytest.raises(ValueError, match="identical node order and EPI"):
         observe_support_transport_reset(before, after)
 

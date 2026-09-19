@@ -18,9 +18,13 @@ Damp the graph wave with a coefficient γ:
     q̈ + γ q̇ + L q = 0          (damped graph oscillator)
 
 Per mode k the characteristic equation s² + γs + λ_k = 0 has a **slow** root
-s₋ → −λ_k/γ and a **fast** root s₊ → −γ. In the strong-damping limit the
-fast root is an instantaneous transient and mode k relaxes at λ_k/γ. That is
-exactly the structural-diffusion rate νf·λ_k under the identification
+s₋ → −λ_k/γ and a **fast** root s₊ → −γ. The fast transient has a timescale
+of order 1/γ. For λ_k > 0 and γ² > 4λ_k the exact slow decay rate is
+
+    -s₋ = 2λ_k / (γ + sqrt(γ² - 4λ_k)) > λ_k/γ.
+
+Its strong-damping asymptotic rate is λ_k/γ, the structural-diffusion rate
+νf·λ_k under the identification
 
     νf = 1/γ        (structural frequency = inverse damping = MOBILITY).
 
@@ -33,7 +37,8 @@ WHAT EMERGES (measured, not asserted)
 =====================================
 - The damped slow rate converges to the diffusion rate; the bridge error
   scales as O(λ_max/γ²) (exact leading order).
-- The slowest overdamped mode equals the diffusion spectral gap νf·λ₂.
+- The slowest overdamped decay rate approaches the diffusion gap νf·λ₂;
+  their relative difference is nonzero at finite damping for λ₂ > 0.
 - The damped-wave trajectory collapses onto the diffusion trajectory
   exp(−L t/γ)·q₀ as γ grows.
 
@@ -42,7 +47,9 @@ HONEST SCOPE
 This connects a separately specified damped graph wave with restricted
 pure-EPI structural diffusion and verifies the stated asymptotic rates. It
 does not connect the full four-channel dynamics to the isotropic substrate or
-resolve an open program.
+resolve an open program. The comparison uses common effective capacity 1/γ,
+not the heterogeneous capacities stored on the detached input graph. It does
+not execute an engine trajectory or infer a damping law from those capacities.
 
 References:
 - src/tnfr/physics/structural_diffusion.py (verify_overdamped_projection)
@@ -82,12 +89,12 @@ def _build(n=40, seed=11):
 def experiment_1_rate_convergence():
     """The damped slow rate converges to the diffusion rate λ_k/γ."""
     print("=" * 72)
-    print("EXPERIMENT 1: Damped substrate wave -> diffusion rates")
+    print("EXPERIMENT 1: Damped graph wave -> asymptotic diffusion rates")
     print("=" * 72)
     print()
     print("Per mode k:  s^2 + gamma*s + lambda_k = 0")
     print("  slow root s_- -> -lambda_k/gamma  (the diffusion rate nu_f*lambda_k)")
-    print("  fast root s_+ -> -gamma           (an instantaneous transient)")
+    print("  fast root s_+ -> -gamma           (transient timescale ~ 1/gamma)")
     print("Bridge error should scale as O(lambda_max / gamma^2).")
     print()
 
@@ -112,9 +119,9 @@ def experiment_1_rate_convergence():
 
 
 def experiment_2_spectral_gap_match():
-    """The slowest overdamped mode equals the diffusion spectral gap νf·λ₂."""
+    """Compare the finite-damping slowest rate with its diffusion limit νf·λ₂."""
     print("=" * 72)
-    print("EXPERIMENT 2: Slowest mode = diffusion spectral gap nu_f*lambda_2")
+    print("EXPERIMENT 2: Slowest decay approaches diffusion gap nu_f*lambda_2")
     print("=" * 72)
     print()
 
@@ -126,12 +133,12 @@ def experiment_2_spectral_gap_match():
         f"  diffusion spectral gap nu_f*lambda_2: " f"{cert.slowest_diffusion_rate:.6f}"
     )
     print(
-        f"  slow_rate / lambda_2 (recovers nu_f): {ratio:.6f} "
-        f"(= 1/gamma = {cert.nu_f_effective:.6f})"
+        f"  slow_rate / lambda_2: {ratio:.6f} "
+        f"(asymptotic reference 1/gamma = {cert.nu_f_effective:.6f})"
     )
     print()
-    print("-> the slowest surviving overdamped mode is exactly the diffusion")
-    print("   spectral gap, and slow_rate/lambda_2 recovers nu_f = 1/gamma.")
+    print("-> at finite damping the positive slow decay rate exceeds lambda_2/gamma;")
+    print("   its relative difference vanishes in the strong-damping limit.")
     print()
 
 
@@ -153,7 +160,7 @@ def experiment_3_nu_f_is_mobility():
         fast_mean = float(s_fast.mean())
         print(
             f"  gamma={gamma:>6.1f} -> nu_f=1/gamma={cert.nu_f_effective:.4f}; "
-            f"fast roots ~ {fast_mean:.2f} (= -gamma transient); "
+            f"fast roots ~ {fast_mean:.2f} (near -gamma); "
             f"trajectory err {cert.trajectory_max_rel_error:.2e}"
         )
     print()

@@ -45,9 +45,7 @@ class TestClassicalAdapter(unittest.TestCase):
             np.zeros((2, 2)), masses
         )
 
-        self.assertEqual(
-            active, ["emission", "dissonance", "coherence", "silence"]
-        )
+        self.assertEqual(active, ["emission", "dissonance", "coherence", "silence"])
         self.assertEqual(inactive, ["emission", "coherence", "silence"])
         self.assertTrue(validate_sequence(active).passed)
         self.assertTrue(validate_sequence(inactive).passed)
@@ -83,17 +81,13 @@ class TestClassicalAdapter(unittest.TestCase):
         np.testing.assert_array_equal(mapped[DNFR_PRIMARY], np.zeros(4))
         self.assertIsInstance(mapped["classical_L"], float)
         metadata = mapped["classical_adapter"]
-        self.assertEqual(
-            metadata["nu_f_semantics"], "inverse_mean_mass_adapter_only"
-        )
+        self.assertEqual(metadata["nu_f_semantics"], "inverse_mean_mass_adapter_only")
         self.assertEqual(
             metadata["mass_reduction"],
             "arithmetic_mean_single_node_summary",
         )
         self.assertEqual(metadata["mass_reference"], 2.0)
-        self.assertEqual(
-            metadata["dnfr_semantics"], "zero_placeholder_no_force_bridge"
-        )
+        self.assertEqual(metadata["dnfr_semantics"], "zero_placeholder_no_force_bridge")
         self.assertFalse(metadata["force_bridge_supplied"])
         self.assertFalse(metadata["canonical_coherence_available"])
 
@@ -110,9 +104,7 @@ class TestClassicalAdapter(unittest.TestCase):
 
         np.testing.assert_allclose(mapped[EPI_PRIMARY], [1.0, 2.0, 1.0, 2.0])
         self.assertEqual(mapped[VF_PRIMARY], 0.4)
-        self.assertFalse(
-            mapped["classical_adapter"]["canonical_coherence_available"]
-        )
+        self.assertFalse(mapped["classical_adapter"]["canonical_coherence_available"])
 
     def test_mapper_rejects_ambiguous_or_nonfinite_adapter_values(self):
         lagrangian_system = GeneralizedCoordinateSystem(
@@ -229,9 +221,7 @@ class TestClassicalAdapter(unittest.TestCase):
             q=q_init, q_dot=q_dot_init, masses=np.array([m])
         )
         mapped_state = ClassicalMechanicsMapper.lagrangian_to_tnfr(
-            lambda q, qd, t: float(
-                0.5 * m * np.sum(qd**2) - 0.5 * k * np.sum(q**2)
-            ),
+            lambda q, qd, t: float(0.5 * m * np.sum(qd**2) - 0.5 * k * np.sum(q**2)),
             system,
         )
 

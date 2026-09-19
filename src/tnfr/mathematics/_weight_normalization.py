@@ -40,15 +40,26 @@ def normalize_weights(weights, *, source=None, node_count=None):
         with np.errstate(under="ignore"):
             np.divide(rows, scale[:, None], out=normalized, where=positive[:, None])
             total = normalized.sum(axis=1)
-            np.divide(normalized, total[:, None], out=normalized, where=positive[:, None])
+            np.divide(
+                normalized, total[:, None], out=normalized, where=positive[:, None]
+            )
         return normalized.reshape(values.shape), scale, total
 
     indices = np.asarray(source)
-    if (values.ndim != 1 or indices.ndim != 1 or indices.shape != values.shape
-            or not np.issubdtype(indices.dtype, np.integer)):
+    if (
+        values.ndim != 1
+        or indices.ndim != 1
+        or indices.shape != values.shape
+        or not np.issubdtype(indices.dtype, np.integer)
+    ):
         raise ValueError("Sparse weights require one integer source index per edge")
-    if (isinstance(node_count, bool) or not isinstance(node_count, (int, np.integer))
-            or node_count < 0 or np.any(indices < 0) or np.any(indices >= node_count)):
+    if (
+        isinstance(node_count, bool)
+        or not isinstance(node_count, (int, np.integer))
+        or node_count < 0
+        or np.any(indices < 0)
+        or np.any(indices >= node_count)
+    ):
         raise ValueError("Sparse source indices must lie within node_count")
     scale = np.zeros(node_count, dtype=float)
     np.maximum.at(scale, indices, values)

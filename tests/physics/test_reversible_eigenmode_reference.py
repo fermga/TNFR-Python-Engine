@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import replace
 from fractions import Fraction
-import math
 from pathlib import Path
 
 import mpmath as mp
@@ -16,7 +16,6 @@ from tnfr.physics.reversible_eigenmode_reference import (
     ReversibleSingleEigenmodeEulerReferenceCertificate,
     certify_reversible_single_eigenmode_euler_reference,
 )
-
 
 F = Fraction
 
@@ -138,12 +137,10 @@ def test_proper_subdivision_strictly_improves_factor_and_bounds() -> None:
     )
     assert all(value > 0 for value in certificate.exact_euler_factor_improvements)
     assert all(
-        value > 0
-        for value in certificate.exact_linf_quadratic_bound_improvements
+        value > 0 for value in certificate.exact_linf_quadratic_bound_improvements
     )
     assert all(
-        value > 0
-        for value in certificate.exact_h_energy_quadratic_bound_improvements
+        value > 0 for value in certificate.exact_h_energy_quadratic_bound_improvements
     )
     assert certificate.strict_proper_subdivision_improvement_certified
     assert certificate.conditional_exact_real_partition_convergence_certified
@@ -397,8 +394,8 @@ def test_hostile_privately_resealed_derivative_does_not_dispatch_equality() -> N
 
 
 def test_type_stub_exposes_the_exact_public_contract() -> None:
-    stub = Path(reference_module.__file__).with_suffix(".pyi").read_text(
-        encoding="utf-8"
+    stub = (
+        Path(reference_module.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
     )
 
     assert "class ReversibleSingleEigenmodeEulerReferenceCertificate" in stub
@@ -468,9 +465,7 @@ def test_unordered_input_surfaces_are_rejected(surface: str) -> None:
     elif surface == "partitions":
         partitions = set(P2_PARTITIONS)  # type: ignore[assignment]
     else:
-        partitions = (  # type: ignore[assignment]
-            frozenset((F(1, 4), F(1, 8))),
-        )
+        partitions = (frozenset((F(1, 4), F(1, 8))),)  # type: ignore[assignment]
 
     with pytest.raises(TypeError, match="iterable sequence"):
         certify_reversible_single_eigenmode_euler_reference(

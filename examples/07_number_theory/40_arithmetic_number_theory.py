@@ -151,7 +151,9 @@ def experiment_2_component_breakdown():
     print()
 
     params = ArithmeticTNFRParameters()
-    print("Pressure coefficients (canonical unit weights, §4.2 — only π is structural):")
+    print(
+        "Pressure coefficients (canonical unit weights, §4.2 — only π is structural):"
+    )
     print(f"  ζ = {params.zeta:.4f}")
     print(f"  η = {params.eta:.4f}")
     print(f"  θ = {params.theta:.4f}")

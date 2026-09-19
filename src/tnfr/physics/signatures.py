@@ -26,7 +26,6 @@ from ..constants.canonical import (
     PI,
     U6_STRUCTURAL_POTENTIAL_LIMIT,
 )
-
 from .fields import (
     compute_phase_curvature,
     compute_phase_gradient,
@@ -224,9 +223,7 @@ def compute_element_signature(
             else "unperturbed_snapshot"
         ),
         "synthetic_probe_word": (
-            ("emission", "coherence", "silence")
-            if synthetic_step_applied
-            else ()
+            ("emission", "coherence", "silence") if synthetic_step_applied else ()
         ),
         "phase_gradient_ok": phase_grad_ok,
         "curvature_hotspots_ok": curv_hotspots_ok,

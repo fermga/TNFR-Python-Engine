@@ -18,7 +18,7 @@ $$
 where `p` is periodic. Require every oriented lifted gap to have absolute
 value strictly below both the effective U3 gate and `pi/2`. Each neighbor
 phasor sum then has a nonzero resultant on its unambiguous midpoint arc.
-The canonical phase gradient is exactly `-L*a`; this is the midpoint
+The canonical phase-pressure channel is exactly `g_phi=-L*a`; this is the midpoint
 identity of [Coupling winding persistence](COUPLING_WINDING_PERSISTENCE.md),
 not an independently imposed phase differential equation.
 

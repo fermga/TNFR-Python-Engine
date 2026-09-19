@@ -26,7 +26,6 @@ from tnfr.operators.definitions import (
 )
 from tnfr.operators.grammar_validate import validate_grammar
 
-
 OPERATORS = {
     "AL": Emission,
     "IL": Coherence,
@@ -148,7 +147,9 @@ def operator_sequences_demo() -> None:
         )
 
     print()
-    print(f"Grammar/proxy sign disagreements in this finite table: {mismatched_decisions}")
+    print(
+        f"Grammar/proxy sign disagreements in this finite table: {mismatched_decisions}"
+    )
     print("A positive proxy delta does not make a word valid, and a negative one")
     print("does not make it invalid. Grammar and trajectory telemetry answer")
     print("different questions and must be evaluated independently.")

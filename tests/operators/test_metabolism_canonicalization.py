@@ -221,9 +221,7 @@ def test_capture_uses_circular_phase_variance_at_the_wrap_boundary() -> None:
 
 def test_capture_rejects_rich_epi_without_lossy_scalar_projection() -> None:
     graph = _graph()
-    graph.nodes[1][ALIAS_EPI[0]] = BEPIElement(
-        (0.4, 0.8), (0.4, 0.4), (0.0, 1.0)
-    )
+    graph.nodes[1][ALIAS_EPI[0]] = BEPIElement((0.4, 0.8), (0.4, 0.4), (0.0, 1.0))
     before = _plain_state(graph)
 
     with pytest.raises(OperatorPreconditionError, match="signed scalar embedding"):
@@ -233,9 +231,7 @@ def test_capture_rejects_rich_epi_without_lossy_scalar_projection() -> None:
 
 
 def test_metabolize_helper_uses_shared_thol_scale_and_validates_signals() -> None:
-    assert metabolize_signals_into_subepi(0.6, None, d2_epi=0.2) == pytest.approx(
-        0.18
-    )
+    assert metabolize_signals_into_subepi(0.6, None, d2_epi=0.2) == pytest.approx(0.18)
 
     with pytest.raises(OperatorPreconditionError, match="circular phase variance"):
         metabolize_signals_into_subepi(

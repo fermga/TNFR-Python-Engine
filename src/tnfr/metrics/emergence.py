@@ -133,8 +133,7 @@ def compute_bifurcation_rate(G: TNFRGraph, node: NodeId, window: int = 10) -> fl
     # timestamp maximum keeps legacy records readable when no counter exists.
     current_time = max(current_operator_step(node_data), max(timestamps, default=0))
     recent_count = sum(
-        current_time - window < timestamp <= current_time
-        for timestamp in timestamps
+        current_time - window < timestamp <= current_time for timestamp in timestamps
     )
     return recent_count / float(window)
 

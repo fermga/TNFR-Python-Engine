@@ -88,9 +88,7 @@ def test_physical_history_uses_its_actual_interval(
 
 @pytest.mark.parametrize("times", [(1.0, 1.0), (2.0, 1.0)])
 def test_non_increasing_physical_time_is_invalid_and_not_a_false_observation(times):
-    certificate = _certify(
-        epi_time_history=[(times[0], 0.0), (times[1], 0.2)]
-    )
+    certificate = _certify(epi_time_history=[(times[0], 0.0), (times[1], 0.2)])
 
     assert certificate.evidence_available is True
     assert certificate.evidence_valid is False

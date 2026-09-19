@@ -118,7 +118,11 @@ def configure_hot_path_caches(
     if trig_cache_size is not None:
         config["trig_cache_size"] = int(trig_cache_size)
 
-    edge_capacities = [config[key] for key in ("buffer_max_entries", "trig_cache_size") if key in config]
+    edge_capacities = [
+        config[key]
+        for key in ("buffer_max_entries", "trig_cache_size")
+        if key in config
+    ]
 
     # If any edge-cache related capacity is set, update the unified CacheManager
     if edge_capacities:

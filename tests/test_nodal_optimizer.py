@@ -22,15 +22,14 @@ import networkx as nx
 import numpy as np
 import pytest
 
-from tnfr.errors import TNFRValueError
-from tnfr.mathematics import BEPIElement
-from tnfr.physics.structural_diffusion import structural_diffusion_operator
-
 from tnfr.dynamics.nodal_optimizer import (
     HAS_SPECTRAL,
     NodalEquationOptimizer,
     NodalOptimizationState,
 )
+from tnfr.errors import TNFRValueError
+from tnfr.mathematics import BEPIElement
+from tnfr.physics.structural_diffusion import structural_diffusion_operator
 
 pytestmark = pytest.mark.skipif(
     not HAS_SPECTRAL, reason="spectral dependencies (scipy) required"
@@ -178,9 +177,9 @@ def test_nodal_phase_prediction_excludes_u3_incompatible_neighbor() -> None:
     graph.nodes[0].update(EPI=0.0, nu_f=0.0, theta=0.0)
     graph.nodes[1].update(EPI=0.0, nu_f=0.0, theta=2.0)
 
-    proposal = NodalEquationOptimizer(enable_cache=False).compute_vectorized_nodal_evolution(
-        graph, 0.1
-    )
+    proposal = NodalEquationOptimizer(
+        enable_cache=False
+    ).compute_vectorized_nodal_evolution(graph, 0.1)
 
     assert proposal[0][1] == pytest.approx(0.0)
     assert proposal[1][1] == pytest.approx(2.0)
@@ -211,6 +210,7 @@ def test_clear_optimization_cache_preserves_graph_id_compatibility() -> None:
 
     assert optimizer.get_optimization_stats()["cached_graphs"] == 0
 
+
 def test_nodal_optimizer_public_state_cannot_poison_internal_cache() -> None:
     graph = _irregular_weighted_graph()
     optimizer = NodalEquationOptimizer(enable_cache=True)
@@ -240,6 +240,7 @@ def test_nodal_phase_gate_change_is_never_hidden_by_result_cache() -> None:
     assert coupled[1][1] != pytest.approx(0.5)
     assert blocked[0][1] == pytest.approx(0.0)
     assert blocked[1][1] == pytest.approx(0.5)
+
 
 def test_live_nodal_step_does_not_precompute_unused_spectrum() -> None:
     graph = _irregular_weighted_graph()

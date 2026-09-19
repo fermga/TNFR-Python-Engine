@@ -49,11 +49,14 @@ def main() -> int:
     print("R5A finite-field Gauss periods: prime-field regression + collisions")
     ok_prime = all(
         prime_field_matches_cyclotomy(p, k)
-        for p in (5, 7, 11, 13) for k in (1, 2, 3, 4)
+        for p in (5, 7, 11, 13)
+        for k in (1, 2, 3, 4)
     )
     print(f"  prime-field matches gcd(k,p-1)+1 (all): {ok_prime}")
-    print(f"  {'field':>8} {'q':>3} {'k':>2} {'pred':>4} {'count':>5} "
-          f"{'explicit':>8} note")
+    print(
+        f"  {'field':>8} {'q':>3} {'k':>2} {'pred':>4} {'count':>5} "
+        f"{'explicit':>8} note"
+    )
     agree = True
     for p, f in EXT:
         F = FiniteField(p, f)
@@ -61,10 +64,11 @@ def main() -> int:
             pred = cyclotomic_period_count(F.q, k)
             cnt = distinct_period_count(F, k)
             exp = explicit_cayley_spectrum_count(F, k)
-            agree &= (cnt == exp)
+            agree &= cnt == exp
             note = "collision" if cnt < pred else "match"
-            print(f"  F_{p}^{f:<5} {F.q:>3} {k:>2} {pred:>4} {cnt:>5} "
-                  f"{exp:>8} {note}")
+            print(
+                f"  F_{p}^{f:<5} {F.q:>3} {k:>2} {pred:>4} {cnt:>5} " f"{exp:>8} {note}"
+            )
 
     print()
     print("R5B Z[i]/(p) decomposition signature (k=2, units):")
@@ -80,22 +84,24 @@ def main() -> int:
     manifest = ExperimentManifest(
         claim_id="NT-P05",
         git_sha="local",
-        versions={"python": platform.python_version(),
-                  "numpy": np.__version__},
+        versions={"python": platform.python_version(), "numpy": np.__version__},
         seed=None,
         operator_sequence=(),
         uses_known_factors=False,
         input_bits=input_bit_length(max(p * p for p in GAUSS_PRIMES)),
-        controls=("prime_field_regression", "spectral_agreement",
-                  "k_sensitivity"),
+        controls=("prime_field_regression", "spectral_agreement", "k_sensitivity"),
         artifacts=(),
     )
     print()
     print(f"  period/explicit spectra agree (all): {agree}")
-    print(f"  finite-field claim : {ClaimStatus.DERIVED.value} (prime) + "
-          f"{ClaimStatus.MEASURED.value} (extensions); {struct.verdict.value}")
-    print(f"  Gaussian NT-P05    : {ClaimStatus.CONJECTURAL.value}; "
-          f"{descr.verdict.value} (ground-truth label used for scoring)")
+    print(
+        f"  finite-field claim : {ClaimStatus.DERIVED.value} (prime) + "
+        f"{ClaimStatus.MEASURED.value} (extensions); {struct.verdict.value}"
+    )
+    print(
+        f"  Gaussian NT-P05    : {ClaimStatus.CONJECTURAL.value}; "
+        f"{descr.verdict.value} (ground-truth label used for scoring)"
+    )
     print(f"  input bits (max)   : {manifest.input_bits}")
     return 0 if (ok_prime and agree and sep2) else 1
 

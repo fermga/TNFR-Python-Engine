@@ -9,7 +9,6 @@ import networkx as nx
 import pytest
 
 from tnfr.alias import get_attr, get_attr_str
-from tnfr.constants.canonical import COUPLING_GENTLE, COUPLING_MODERATE
 from tnfr.constants.aliases import (
     ALIAS_D2EPI,
     ALIAS_DNFR,
@@ -19,8 +18,10 @@ from tnfr.constants.aliases import (
     ALIAS_THETA,
     ALIAS_VF,
 )
-from tnfr.node import NodeNX
+from tnfr.constants.canonical import COUPLING_GENTLE, COUPLING_MODERATE
+from tnfr.errors import TNFRValueError
 from tnfr.mathematics import BEPIElement
+from tnfr.node import NodeNX
 from tnfr.operators import apply_glyph
 from tnfr.operators.definitions import SelfOrganization
 from tnfr.operators.metabolism import (
@@ -126,7 +127,10 @@ def test_public_thol_rejects_nonuniform_bepi_without_flattening_form() -> None:
     graph.nodes[0][ALIAS_EPI[0]] = serialize_bepi(rich)
     before = _plain_state(graph)
 
-    with pytest.raises(OperatorPreconditionError, match="signed scalar embedding"):
+    # Shared grammar validation rejects rich form before THOL can prepare writes.
+    with pytest.raises(
+        TNFRValueError, match="node 0 EPI must be a finite uniform-real EPI value"
+    ):
         SelfOrganization()(graph, 0, tau=0.1)
 
     assert _plain_state(graph) == before
@@ -420,6 +424,7 @@ def test_thol_and_public_metabolism_share_one_amplitude_kernel() -> None:
 
     assert graph.nodes[0]["sub_epis"][-1]["epi"] == pytest.approx(expected)
 
+
 def test_thol_rollback_restores_nested_runtime_cache_contents() -> None:
     class MutatingMonitor:
         def before_operator(self, graph, node) -> None:
@@ -440,6 +445,7 @@ def test_thol_rollback_restores_nested_runtime_cache_contents() -> None:
     assert graph.graph["custom_cache"] is cache
     assert cache == {"nested": {"value": 1}}
 
+
 def test_legacy_collective_threshold_is_inert() -> None:
     """Amplitude alignment no longer impersonates the canonical U5 target."""
 
@@ -451,6 +457,7 @@ def test_legacy_collective_threshold_is_inert() -> None:
     assert "_thol_subepi_amplitude_alignment" in graph.nodes[0]
     assert "_thol_collective_coherence" not in graph.nodes[0]
     assert "thol_coherence_warnings" not in graph.graph
+
 
 def test_thol_refreshes_stale_acceleration_before_pressure_update() -> None:
     graph = _graph(metabolic=False, propagation=False)
@@ -528,6 +535,4 @@ def test_thol_depth_limit_blocks_child_but_keeps_pressure_reorganization() -> No
     assert "sub_nodes" not in graph.nodes[0]
     assert get_attr(graph.nodes[0], ALIAS_DNFR) != pressure_before
     assert graph.nodes[0]["_thol_depth_limit_reached"] is True
-    assert graph.graph["thol_depth_limits"] == [
-        {"node": 0, "depth": 0, "max_depth": 0}
-    ]
+    assert graph.graph["thol_depth_limits"] == [{"node": 0, "depth": 0, "max_depth": 0}]

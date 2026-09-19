@@ -10,8 +10,8 @@ reappear.
 
 from __future__ import annotations
 
-from copy import deepcopy
 import threading
+from copy import deepcopy
 
 import networkx as nx
 

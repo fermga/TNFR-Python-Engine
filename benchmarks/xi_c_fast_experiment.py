@@ -108,9 +108,7 @@ def xi_c_experiment(
 
         results["xi_c"] = xi_c
         results["phase_symmetry"] = phase_sym_result.get("symmetry_index", 0.0)
-        results["reference_crossing"] = (
-            1 if intensity > REFERENCE_INTENSITY else 0
-        )
+        results["reference_crossing"] = 1 if intensity > REFERENCE_INTENSITY else 0
 
         # Only compute canonical fields if needed for correlation
         if intensity in [2.000, 2.015, 2.030]:  # Sample points for correlation

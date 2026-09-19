@@ -14,7 +14,8 @@ conservation, grammar and spectral projections.
 > action, prove that engine operators are symplectomorphisms, or establish a
 > conservation/Lyapunov theorem for arbitrary operator trajectories. The
 > implemented connection is the exact one-form
-> $A_{ij}=d(\arg\Psi)_{ij}$. Its cycle holonomy is zero analytically, so the
+> $A_{ij}=d(\arg\Psi)_{ij}$ modulo angle wrapping. Its U(1) cycle holonomy is
+> the identity analytically, so the
 > current implementation has no independent gauge curvature, vortices, flux,
 > confinement sector or non-trivial Yang-Mills dynamics. The corresponding
 > public names are retained as compatibility diagnostics. The
@@ -59,11 +60,11 @@ The following quantities are invariant under this auxiliary rotation:
 
 | Quantity | Definition | Established statement |
 |----------|-----------|-----------------------|
-| Energy density $\mathcal{E}(i)$ | $\Phi_s^2 + |\nabla\phi|^2 + |\Psi|^2 + J_{\Delta\mathrm{NFR}}^2$ | The $K_\phi,J_\phi$ quadratic sum is rotation invariant |
-| Field magnitude $|\Psi(i)|^2$ | $K_\phi^2 + J_\phi^2$ | Euclidean norm identity |
+| Energy density $\mathcal{E}(i)$ | $\Phi_s^2 + \vert \nabla\phi\vert ^2 + \vert \Psi\vert ^2 + J_{\Delta\mathrm{NFR}}^2$ | The $K_\phi,J_\phi$ quadratic sum is rotation invariant |
+| Field magnitude $\vert \Psi(i)\vert ^2$ | $K_\phi^2 + J_\phi^2$ | Euclidean norm identity |
 | Coherence $C(t)$ | Depends on the unchanged graph fields | Unchanged because the analysis transform does not mutate the graph |
-| Legacy topological norm $|\mathcal{T}|^2$ | $\mathcal{Q}^2 + \tilde{\mathcal{Q}}^2$ | Norm of an algebraic doublet |
-| Legacy chirality norm $|\mathcal{X}|^2$ | $\chi^2 + \tilde{\chi}^2$ | Norm of an algebraic doublet |
+| Legacy topological norm $\vert \mathcal{T}\vert ^2$ | $\mathcal{Q}^2 + \tilde{\mathcal{Q}}^2$ | Norm of an algebraic doublet |
+| Legacy chirality norm $\vert \mathcal{X}\vert ^2$ | $\chi^2 + \tilde{\chi}^2$ | Norm of an algebraic doublet |
 
 where:
 - $\tilde{\mathcal{Q}} = K_\phi \cdot |\nabla\phi| + J_\phi \cdot J_{\Delta\mathrm{NFR}}$ (dual topological charge)
@@ -82,7 +83,9 @@ members of those doublets:
 - Legacy quantity named Noether charge $Q = \sum(\Phi_s + K_\phi)$ — not invariant
 - Symmetry breaking $\mathcal{S} = (|\nabla\phi|^2 - K_\phi^2) + (J_\phi^2 - J_{\Delta\mathrm{NFR}}^2)$ — NOT invariant
 
-Their **norms** $|\mathcal{T}|^2$ and $|\mathcal{X}|^2$ are invariant because quadratic sums are preserved under rotation.
+The norms of the two doublets, $|\mathcal{T}|^2$ and $|\mathcal{X}|^2$, are
+invariant because their quadratic sums are preserved under rotation. No such
+norm-invariance statement is made for the separate $Q$ or $\mathcal S$ above.
 
 ### 1.4 Derivation Outline
 
@@ -113,8 +116,10 @@ $$
 A_{ij}=\theta_j-\theta_i-2\pi k_{ij}.
 $$
 
-Thus $A=d\theta$ modulo the branch convention: it is a **pure-gauge exact
-one-form**, not an independent edge variable.
+Thus the exponentiated links satisfy $e^{iA_{ij}}=e^{i\theta_j}e^{-i\theta_i}$:
+they are **pure gauge**, not independent edge variables. The unwrapped
+vertex difference is an exact real one-form. The wrapped real edge values
+can instead sum to a nonzero integer multiple of $2\pi$ around a cycle.
 
 ### 2.2 Covariant Derivative
 
@@ -167,8 +172,11 @@ $$
 Accordingly, any nonzero returned value is a floating-point wrapping or
 accumulation residual. It is not evidence of an independent field strength,
 vortex, topological defect, magnetic flux or confinement. Such phenomena
-would require independently specified edge degrees of freedom with nonzero
-cycle holonomy, which this API does not expose.
+would require independent edge curvature or an additional specified defect
+model, which this API does not expose. This does not rule out integer winding
+of a supplied nodal phase field: the final wrap discards that integer. The
+separate [declared-cycle winding interface](../docs/STRUCTURAL_FIELDS_TETRAD.md#appendix-topological-winding)
+retains branch and orientation evidence and is not this gauge-curvature diagnostic.
 
 ### 2.4 Yang-Mills Action
 
@@ -198,8 +206,8 @@ they are not derived fundamental interactions:
 |--------------|------------------|-------------|
 | **em_like** | $\arg(\Psi) \approx 0$ | Projection on the selected $K_\phi$ axis; gauge-frame dependent |
 | **weak_like** | $\arg(\Psi) \approx \pi/2$ | Projection on the selected $J_\phi$ axis; gauge-frame dependent |
-| **strong_like** | numerical $|F_C|$ | Pure-gauge closure-error slot; zero within tolerance in a valid computation |
-| **gravity_like** | $|\Phi_s| \gg |\Psi|$ | Gauge-invariant potential-to-field magnitude comparison |
+| **strong_like** | numerical $\vert F_C\vert $ | Pure-gauge closure-error slot; zero within tolerance in a valid computation |
+| **gravity_like** | $\vert \Phi_s\vert  \gg \vert \Psi\vert $ | Gauge-invariant potential-to-field magnitude comparison |
 
 The four scores share a unit reporting budget. The API marks a label active
 when its normalized score exceeds the equal-share reference
@@ -219,12 +227,12 @@ are not derived by the implementation:
 | Historical claim | Current status |
 |------------------|----------------|
 | UM creates $A_{ij}$ | Unsupported: $A$ is computed after the fact from $\Psi$ on every existing graph edge |
-| IL minimizes $|D\Psi|$ | Unsupported without before/after operator telemetry or a theorem |
+| IL minimizes $\vert D\Psi\vert $ | Unsupported without before/after operator telemetry or a theorem |
 | OZ sources $F_C$ | Incompatible with the current exact connection, whose cycle sum is always zero |
 | RA transports gauge invariants | Unsupported without an induced-map covariance check |
 
 Grammar rule **U3** constrains the node phase $\phi$ before coupling via
-$|\phi_i-\phi_j|\le\Delta\phi_{\max}$. It is not a gauge-fixing rule for this
+$|\operatorname{wrap}(\phi_i-\phi_j)|\le\Delta\phi_{\max}$. It is not a gauge-fixing rule for this
 auxiliary construction. Since $\Psi$ itself is extracted from graph fields,
 $\arg\Psi$ has not been established as an independent dynamical degree of
 freedom.

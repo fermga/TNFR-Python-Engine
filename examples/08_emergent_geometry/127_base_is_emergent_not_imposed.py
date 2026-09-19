@@ -1,89 +1,53 @@
 #!/usr/bin/env python3
 """
-Example 127 — Is the Base Layer Emergent-TNFR or Self-Imposed Graph Theory?
-The Operator Is Canonical, and the Topology Can Emerge from the Substrate
-==============================================================================
+Example 127 — Pressure Realization and State-Dependent Topology
+==============================================================
 
-Example 126 called the base layer "standard spectral graph theory". That phrase
-was imprecise and hid a doctrinal distinction the TNFR framework itself makes:
-`symplectic_substrate.py` states the graph is "an imposed combinatorial
-substrate". So is the base layer (the operator L_rw, its spectrum, lambda_2,
-R_eff) externally imposed mathematics, or does it emerge from the TNFR nodal
-dynamics? This example separates the two honestly, by measurement.
+The nodal product x_dot = nu_f * DeltaNFR requires a pressure realization.
+For the engine's declared neighbor-mean EPI channel on supported nodes,
+DeltaNFR_epi = -L_rw*x, where L_rw = I - D^-1 W. This exact identity follows
+from that channel definition, not uniquely from the nodal product. Both L_rw
+and the combinatorial Laplacian B = D-W are standard graph operators.
 
-The honest separation
----------------------
-There are two distinct things inside the "base":
+The example checks three distinct constructions:
 
-  1. The OPERATOR on the connectivity. This is NOT generic graph theory.
-     Standard spectral graph theory defaults to the combinatorial Laplacian
-     L_comb = D - W (the "ratio cut"). The canonical dNFR computes the
-     neighbour-MEAN minus self, which is exactly -L_rw * EPI with the
-     random-walk Laplacian L_rw = I - D^-1 W (the degree-normalized "normalized
-     cut", example 118). The nodal equation FORCES L_rw; one cannot substitute
-     the generic L_comb. The operator is TNFR-derived.
+M1 PRESSURE-OPERATOR AGREEMENT. The supplied unweighted graph fixtures compare
+   the production EPI channel with -L_rw*x and -B*x. On a d-regular graph,
+   B=d*L_rw. The actions can coincide, for example on a unit P2 (d=1), or
+   on a constant EPI field where both vanish. A nonzero residual in these
+   selected fixtures is not a universal inequality between the two actions.
 
-  2. The CONNECTIVITY itself. The initial connectivity is an input -- a boundary
-     condition, like the initial state of any dynamical system. But it is NOT
-     externally fixed forever: the canonical REMESH regenerates the topology
-     from the substrate state (the EPI field) via _mst_edges_from_epi. So the
-     base connectivity can EMERGE from the fiber.
+M2 REPRODUCIBLE OPERATOR. Fixed effective conductance W and the declared
+   normalization determine L_rw and its spectrum. Connectivity alone does
+   not determine weighted conductance. Nor does L_rw determine resistance:
+   W and c*W have the same L_rw for c>0, while B and effective resistance
+   scale by c and 1/c respectively. On a unit P2, changing the conductance
+   from 1 to 2 leaves L_rw unchanged and changes resistance from 1 to 1/2.
+   The repeated construction below checks L_rw only; it does not compute
+   resistance or infer a physical metric scale.
 
-So the base is emergent-TNFR in the sense that matters: the operator is dictated
-by the nodal equation (not imported), and the connectivity is regenerable from
-the substrate. The only genuinely imposed thing is the INITIAL connectivity,
-which is a boundary/initial condition, not imported mathematics.
+M3 STATE-DEPENDENT RECONSTRUCTION. The REMESH helper _mst_edges_from_epi
+   constructs a minimum spanning tree using absolute EPI differences. This
+   uses internal state, but the distance convention, MST selection and when
+   to invoke it are supplied algorithmic choices. The initial graph is not
+   the only premise. The construction does not derive an autonomous topology
+   law, phase law or capacity law from the nodal equation.
 
-Doctrine compliance
--------------------
-Everything is canonical: the operator from `structural_diffusion_operator`
-(which IS the dNFR EPI channel), the dNFR from `default_compute_delta_nfr`, the
-topology regeneration from the canonical REMESH helper `_mst_edges_from_epi`.
-
-Three measured results
-----------------------
-M1 THE OPERATOR IS TNFR-DERIVED, NOT GENERIC. The canonical dNFR equals
-   -L_rw * EPI to machine precision (residual ~0) on every graph, while it is
-   NOT equal to -L_comb * EPI (residual 0.4-2.3) anywhere -- even on regular
-   graphs, where L_comb = d * L_rw differs by the degree factor. The nodal
-   equation's neighbour-MEAN rule forces the degree-normalized L_rw; generic
-   spectral graph theory would default to L_comb, which TNFR does not use.
-
-M2 GIVEN CONNECTIVITY, EVERYTHING DERIVES WITH NO FREE PARAMETERS. The operator
-   L_rw is a deterministic function of the adjacency alone (no scale, no kernel
-   width, no tunable knob). The spectrum, lambda_2 and R_eff are properties of
-   that single canonical operator -- there is nothing for me to impose.
-
-M3 THE CONNECTIVITY CAN EMERGE FROM THE SUBSTRATE. The canonical REMESH helper
-   _mst_edges_from_epi builds a topology from the EPI field (the fiber state):
-   starting from a cycle, the regenerated edges come from the node EPI values,
-   and the resulting graph has its own canonical operator and spectral gap. The
-   base topology is regenerable from the fiber -- not externally fixed.
-
-The honest caveat (measured)
-----------------------------
-The eigenvector overlap between L_rw and L_comb is NOT a reliable
-regular/non-regular discriminator: eigenvalue degeneracy (e.g. the complete
-graph) scrambles the Fiedler vector, so the overlap is noisy. The clean,
-decisive evidence that the operator is TNFR-derived is M1 (dNFR = -L_rw*EPI
-exactly, never -L_comb*EPI), not an eigenvector comparison.
-
-Honest scope
-------------
-A measured doctrinal clarification, correcting example 126's loose phrasing. The
-operator's degree normalization (L_rw vs L_comb) and the resistance/Kron
-machinery are standard linear algebra; the contribution is the clean statement
-that TNFR DERIVES the specific operator (the nodal neighbour-mean) rather than
-importing generic spectral graph theory, and that the connectivity is
-regenerable from the substrate. It is not new mathematics and closes no open
-problem; the initial connectivity remains an imposed boundary condition.
+Scope
+-----
+These are finite implementation checks and a selected graph reconstruction.
+They use the shared pressure, diffusion and REMESH owners without establishing
+that the selected reconstruction is uniquely implied by TNFR. Spectral
+eigenvector overlap is also insufficient to distinguish regularity because
+degenerate eigenspaces admit different bases. No dynamical convergence or
+physical-emergence claim follows from these snapshot comparisons.
 
 References
 ----------
 - src/tnfr/dynamics/dnfr.py (the canonical dNFR = neighbour-mean = -L_rw*EPI)
 - src/tnfr/physics/structural_diffusion.py (structural_diffusion_operator)
 - src/tnfr/operators/remesh.py (_mst_edges_from_epi: topology from the EPI field)
-- src/tnfr/physics/symplectic_substrate.py ("an imposed combinatorial substrate")
+- theory/NODAL_PARAMETER_FOUNDATIONS.md (supplied channels and closure scope)
 - examples/08_emergent_geometry/118_emergent_vs_classical_operator.py (L_rw = Ncut)
 - examples/08_emergent_geometry/126_two_layers_base_fiber.py (the two-layer optic)
 """
@@ -112,7 +76,7 @@ def _seed(G, rng):
 
 
 def _combinatorial_laplacian(G, nodes):
-    """L_comb = D - W: the operator generic spectral graph theory defaults to."""
+    """L_comb = D-W on the simple unweighted graph fixtures used here."""
     idx = {n: i for i, n in enumerate(nodes)}
     n = len(nodes)
     L = np.zeros((n, n))
@@ -141,13 +105,13 @@ def _test_graphs():
 
 
 def experiment_1_operator_is_canonical():
-    """M1: dNFR = -L_rw*EPI exactly, NOT -L_comb*EPI (TNFR-derived operator)."""
+    """M1: compare the declared EPI pressure channel with two graph operators."""
     print("=" * 74)
-    print("EXPERIMENT 1: The Operator Is TNFR-Derived (L_rw), Not Generic (L_comb)")
+    print("EXPERIMENT 1: The Declared EPI Pressure Channel and Its Graph Operator")
     print("=" * 74)
-    print("Generic spectral graph theory defaults to L_comb = D - W. The")
-    print("canonical dNFR computes the neighbour-MEAN minus self = -L_rw*EPI")
-    print("(degree-normalized). Direct test: which operator IS the dNFR channel?")
+    print("L_comb = D-W and L_rw = I-D^-1 W use different normalizations.")
+    print("The declared EPI channel computes neighbor-MEAN minus self = -L_rw*EPI.")
+    print("This checks that channel realization on the selected graph fixtures.")
     print()
     print(
         f"  {'graph':22s} {'res(dNFR, -L_rw*EPI)':>21} "
@@ -166,21 +130,21 @@ def experiment_1_operator_is_canonical():
         res_comb = float(np.max(np.abs(dnfr - (-L_comb @ epi))))
         print(f"  {name:22s} {res_rw:>21.2e} {res_comb:>23.4f}")
     print()
-    print("  -> dNFR = -L_rw*EPI EXACTLY (res ~0) everywhere; dNFR != -L_comb*EPI")
-    print("     (res > 0) everywhere -- even regular graphs (L_comb = d*L_rw")
-    print("     differs by the degree factor). The nodal neighbour-MEAN rule")
-    print("     FORCES the degree-normalized L_rw (ex 118 = Shi-Malik Ncut);")
-    print("     generic graph theory's default L_comb is NOT what TNFR uses.")
+    print("  -> The residual checks the neighbor-mean EPI channel identity.")
+    print("     On d-regular graphs L_comb=d*L_rw; their actions can coincide")
+    print("     at d=1 or on constant EPI. These fixtures do not prove otherwise.")
+    print("     The pressure definition selects L_rw; the nodal product alone")
+    print("     does not uniquely select a pressure law.")
 
 
 def experiment_2_no_free_parameters():
-    """M2: given connectivity, the operator is determined, no free params."""
+    """M2: rebuild the normalized operator from the same conductance."""
     print()
     print("=" * 74)
-    print("EXPERIMENT 2: Given Connectivity, the Operator Has No Free Parameters")
+    print("EXPERIMENT 2: Rebuilding the Operator from Fixed Conductance")
     print("=" * 74)
-    print("L_rw is a deterministic function of the adjacency alone -- no scale,")
-    print("no kernel width, no tunable knob. Rebuild it twice; it is identical.")
+    print("Fixed conductance and normalization determine L_rw.")
+    print("Rebuild it twice on these unweighted fixtures; compare the results.")
     print()
     print(f"  {'graph':22s} {'lambda_2':>10} {'rebuild identical?':>20}")
     for name, G in _test_graphs():
@@ -190,29 +154,29 @@ def experiment_2_no_free_parameters():
         identical = bool(np.allclose(L1, L2))
         print(f"  {name:22s} {ev[1]:>10.6f} {str(identical):>20}")
     print()
-    print("  -> the operator is a pure function of the connectivity; the")
-    print("     spectrum, lambda_2 and R_eff are its properties -- nothing")
-    print("     for me to impose beyond the connectivity itself.")
+    print("  -> L_rw and its spectrum are reproducible for the same conductance.")
+    print("     W -> c*W leaves L_rw unchanged but scales resistance by 1/c.")
+    print("     Thus L_rw alone does not fix the resistance scale.")
 
 
 def experiment_3_topology_from_substrate():
-    """M3: the connectivity can emerge from the substrate (EPI) via REMESH."""
+    """M3: construct topology from EPI through the selected MST policy."""
     print()
     print("=" * 74)
-    print("EXPERIMENT 3: The Connectivity Can Emerge from the Substrate (REMESH)")
+    print("EXPERIMENT 3: State-Dependent Topology under the REMESH MST Policy")
     print("=" * 74)
-    print("The canonical REMESH helper _mst_edges_from_epi builds a topology")
-    print("from the EPI field (the fiber state). The base connectivity is")
-    print("regenerable from the substrate -- not externally fixed forever.")
+    print("The REMESH helper _mst_edges_from_epi constructs a topology")
+    print("from absolute EPI distances under a supplied MST rule.")
+    print("The state supplies the distances; the reconstruction policy is chosen.")
     print()
     nxmod, _ = _get_networkx_modules()
     G = nx.cycle_graph(10)
     _seed(G, np.random.default_rng(2))
     epi = {n: get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in G.nodes()}
     emergent_edges = _mst_edges_from_epi(nxmod, list(G.nodes()), epi)
-    print(f"  original cycle C10:        {G.number_of_edges()} edges (imposed)")
-    print(f"  EPI-derived MST topology:  {len(emergent_edges)} edges (emergent)")
-    print(f"  sample emergent edges:     {sorted(emergent_edges)[:5]}")
+    print(f"  original cycle C10:        {G.number_of_edges()} edges (initial graph)")
+    print(f"  EPI-distance MST topology: {len(emergent_edges)} edges (selected rule)")
+    print(f"  sample reconstructed edges: {sorted(emergent_edges)[:5]}")
     Ge = nx.Graph()
     Ge.add_nodes_from(G.nodes())
     Ge.add_edges_from(emergent_edges)
@@ -222,17 +186,17 @@ def experiment_3_topology_from_substrate():
         set_attr(Ge.nodes[nd], ALIAS_VF, 1.0)
     _, Le = structural_diffusion_operator(Ge)
     spec_e = np.sort(np.linalg.eigvals(Le).real)
-    print(f"  emergent graph spectral gap lambda_2 = {spec_e[1]:.4f}")
+    print(f"  reconstructed graph spectral gap lambda_2 = {spec_e[1]:.4f}")
     print()
-    print("  -> the topology (base) is REGENERATED from the EPI field (fiber):")
-    print("     the base emerges from the substrate; only the INITIAL")
-    print("     connectivity is imposed, as a boundary condition.")
+    print("  -> Topology is reconstructed from the EPI field using a chosen rule.")
+    print("     Initial connectivity, distance convention, rule and invocation")
+    print("     remain explicit premises; this is not an autonomous nodal law.")
 
 
 def main():
     print()
-    print("  TNFR Example 127: Is the Base Emergent-TNFR or Imposed Graph Theory?")
-    print("  The Operator Is Canonical; the Topology Can Emerge from the Substrate")
+    print("  TNFR Example 127: Pressure Realization and State-Dependent Topology")
+    print("  Shared Operators, Conductance Geometry and a Selected REMESH Rule")
     print("  ===================================================================")
     print()
     experiment_1_operator_is_canonical()
@@ -240,24 +204,16 @@ def main():
     experiment_3_topology_from_substrate()
     print()
     print("=" * 74)
-    print("VERDICT")
+    print("SCOPE OF THE THREE CHECKS")
     print("=" * 74)
-    print("The BASE layer is NOT self-imposed generic spectral graph theory:")
-    print("  (1) the operator is the canonical dNFR (L_rw, the nodal")
-    print("      neighbour-MEAN rule) -- the nodal equation FORCES it, distinct")
-    print("      from the generic combinatorial Laplacian L_comb (M1);")
-    print("  (2) given connectivity, every base quantity derives with NO free")
-    print("      parameters -- the operator is a pure function of the graph (M2);")
-    print("  (3) the connectivity itself can EMERGE from the substrate via the")
-    print("      canonical REMESH (_mst_edges_from_epi), so the base is")
-    print("      regenerable from the fiber (M3).")
-    print("Only the INITIAL connectivity is imposed -- a boundary / initial")
-    print("condition, like the initial state of any dynamical system, NOT")
-    print("imported mathematics. This corrects example 126's loose phrasing")
-    print("'standard spectral graph theory for the base'. HONEST SCOPE: a")
-    print("measured doctrinal clarification; the linear algebra is standard, the")
-    print("contribution is that TNFR DERIVES the operator (not imports it) and")
-    print("the topology is substrate-regenerable; closes no open problem.")
+    print("  (1) The declared neighbor-mean EPI pressure agrees with -L_rw*EPI.")
+    print("      The bare nodal product does not uniquely select that channel.")
+    print("  (2) Fixed conductance determines L_rw and its spectrum. Resistance")
+    print("      also retains the conductance scale discarded by L_rw.")
+    print("  (3) The MST helper constructs a graph from EPI distances under")
+    print("      a supplied rule. Its selection and timing are not derived here.")
+    print("These finite checks reuse the engine owners and standard graph algebra.")
+    print("They establish no autonomous phase, capacity or topology closure.")
 
 
 if __name__ == "__main__":

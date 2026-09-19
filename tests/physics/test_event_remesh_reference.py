@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+import math
 from collections import deque
 from dataclasses import replace
 from fractions import Fraction
-import math
 
 import networkx as nx
 import pytest
@@ -135,8 +135,7 @@ def test_reference_family_certifies_the_exact_p2_problem(
         "fine",
     )
     assert all(
-        mesh.cycle_result is cycle
-        and mesh.runtime_bridge.cycle_result is cycle
+        mesh.cycle_result is cycle and mesh.runtime_bridge.cycle_result is cycle
         for mesh, cycle in zip(result.meshes, cycles, strict=True)
     )
 
@@ -182,9 +181,7 @@ def test_p2_fields_coincide_with_the_general_eigenmode_kernel(observation) -> No
         conductance,
         nu_f=(result.exact_nu_f, result.exact_nu_f),
         initial_epi=result.exact_initial_field,
-        partitions=tuple(
-            mesh.exact_segment_durations for mesh in result.meshes
-        ),
+        partitions=tuple(mesh.exact_segment_durations for mesh in result.meshes),
     )
 
     assert result.exact_mean == kernel.exact_weighted_mean
@@ -192,8 +189,7 @@ def test_p2_fields_coincide_with_the_general_eigenmode_kernel(observation) -> No
     assert result.exact_total_duration == kernel.exact_total_duration
     assert result.exact_euler_factors == kernel.exact_euler_factors
     assert (
-        result.exact_euler_factor_improvements
-        == kernel.exact_euler_factor_improvements
+        result.exact_euler_factor_improvements == kernel.exact_euler_factor_improvements
     )
     assert (
         result.exact_quadratic_factor_error_upper_bounds
@@ -238,8 +234,7 @@ def test_remesh_scales_ideal_error_and_adds_the_runtime_residual(
     for mesh in observation.meshes:
         beta = mesh.exact_beta
         assert mesh.exact_ideal_post_remesh_error_symbolic_coefficients == tuple(
-            beta * item
-            for item in mesh.exact_factor_error_symbolic_coefficients
+            beta * item for item in mesh.exact_factor_error_symbolic_coefficients
         )
         assert mesh.exact_ideal_post_remesh_error_lower_bound == (
             beta * mesh.exact_pre_remesh_error_lower_bound
@@ -465,9 +460,7 @@ def test_p2_observer_delegates_once_to_runtime_reference_per_family(
     assert tuple(
         tuple(segment.exact_duration for segment in item.partition.segments)
         for item in partitions
-    ) == tuple(
-        mesh.exact_segment_durations for mesh in result.meshes
-    )
+    ) == tuple(mesh.exact_segment_durations for mesh in result.meshes)
     assert runtime_reference.reference_certificate.exact_partitions == tuple(
         mesh.exact_segment_durations for mesh in result.meshes
     )

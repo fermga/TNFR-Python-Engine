@@ -17,6 +17,8 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
+from tnfr.operators import validate_affine_epi_graph_input  # noqa: E402
+from tnfr.types import Glyph, scalarize_epi  # noqa: E402
 from tnfr.yang_mills import (  # noqa: E402
     StructuralGaugeGapOperator,
     StructuralGaugeGapResult,
@@ -24,8 +26,6 @@ from tnfr.yang_mills import (  # noqa: E402
     build_structural_gauge_graph,
     compute_structural_gauge_gap,
 )
-from tnfr.operators import validate_affine_epi_graph_input  # noqa: E402
-from tnfr.types import Glyph, scalarize_epi  # noqa: E402
 
 
 class TestStructuralGaugeGraph:

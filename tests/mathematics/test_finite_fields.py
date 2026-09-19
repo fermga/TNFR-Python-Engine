@@ -20,8 +20,8 @@ from tnfr.mathematics.finite_fields import (
     distinct_period_count,
     explicit_cayley_spectrum_count,
     gauss_period,
-    prime_field_matches_cyclotomy,
     presentation_isomorphism,
+    prime_field_matches_cyclotomy,
 )
 
 PRIMES = [5, 7, 11, 13, 17]
@@ -29,23 +29,36 @@ POWERS = [1, 2, 3, 4]
 
 # Exact measured distinct-period counts for small extensions (p, f, k).
 EXTENSION_COUNTS = {
-    (2, 2, 2): 2, (2, 2, 3): 2, (2, 2, 4): 2,
-    (2, 3, 2): 2, (2, 3, 3): 2, (2, 3, 4): 2,
-    (3, 2, 2): 3, (3, 2, 3): 2, (3, 2, 4): 2,
-    (3, 3, 2): 3, (3, 3, 3): 2, (3, 3, 4): 3,
-    (5, 2, 2): 3, (5, 2, 3): 3, (5, 2, 4): 5,
-    (7, 2, 2): 3, (7, 2, 3): 4, (7, 2, 4): 3,
+    (2, 2, 2): 2,
+    (2, 2, 3): 2,
+    (2, 2, 4): 2,
+    (2, 3, 2): 2,
+    (2, 3, 3): 2,
+    (2, 3, 4): 2,
+    (3, 2, 2): 3,
+    (3, 2, 3): 2,
+    (3, 2, 4): 2,
+    (3, 3, 2): 3,
+    (3, 3, 3): 2,
+    (3, 3, 4): 3,
+    (5, 2, 2): 3,
+    (5, 2, 3): 3,
+    (5, 2, 4): 5,
+    (7, 2, 2): 3,
+    (7, 2, 3): 4,
+    (7, 2, 4): 3,
 }
 
 
 # --------------------------------------------------------------------------- #
 # Field arithmetic
 # --------------------------------------------------------------------------- #
-@pytest.mark.parametrize("p,f", [(5, 1), (2, 2), (2, 3), (3, 2), (3, 3),
-                                 (5, 2), (7, 2)])
+@pytest.mark.parametrize(
+    "p,f", [(5, 1), (2, 2), (2, 3), (3, 2), (3, 3), (5, 2), (7, 2)]
+)
 def test_field_cardinality_and_modulus(p, f):
     F = FiniteField(p, f)
-    assert F.q == p ** f
+    assert F.q == p**f
     assert len(F.modulus) == f + 1 or f == 1
 
 

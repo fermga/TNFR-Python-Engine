@@ -6,9 +6,7 @@ import math
 from typing import Any
 
 
-def validate_structural_coherence(
-    value: Any, *, name: str = "coherence"
-) -> float:
+def validate_structural_coherence(value: Any, *, name: str = "coherence") -> float:
     """Return one finite canonical coherence value in the closed unit interval."""
 
     if isinstance(value, (bool, str, bytes)) or type(value).__name__ == "bool_":

@@ -11,11 +11,11 @@ observations. Every EPI evolution step uses the shared nodal integrator.
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
 import hashlib
 import math
-from pathlib import Path
 import re
+from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any, Sequence
 
 import networkx as nx
@@ -30,9 +30,15 @@ from ..physics.structural_diffusion import structural_diffusion_operator
 from ..utils.io import json_dumps, safe_write
 
 __all__ = [
-    "NodalMeasurementRun", "FrozenNodalCalibration", "NodalForecast",
-    "NodalForecastScore", "NodalCalibrationError", "calibrate_nodal_prediction",
-    "forecast_nodal_response", "score_nodal_forecast", "write_nodal_forecast",
+    "NodalMeasurementRun",
+    "FrozenNodalCalibration",
+    "NodalForecast",
+    "NodalForecastScore",
+    "NodalCalibrationError",
+    "calibrate_nodal_prediction",
+    "forecast_nodal_response",
+    "score_nodal_forecast",
+    "write_nodal_forecast",
 ]
 
 
@@ -67,8 +73,11 @@ def _labels(values: Any) -> tuple[str, ...]:
     if isinstance(values, (str, bytes)):
         raise TypeError("channel_ids must be a sequence")
     labels = tuple(values)
-    if (not labels or any(not isinstance(s, str) or not s.strip() for s in labels)
-            or len(set(labels)) != len(labels)):
+    if (
+        not labels
+        or any(not isinstance(s, str) or not s.strip() for s in labels)
+        or len(set(labels)) != len(labels)
+    ):
         raise ValueError("channel_ids must be unique nonempty strings")
     return labels
 
@@ -94,7 +103,10 @@ class NodalMeasurementRun:
 
     def __post_init__(self) -> None:
         for key in ("run_id", "value_unit", "time_unit", "acquisition_id"):
-            if not isinstance(getattr(self, key), str) or not getattr(self, key).strip():
+            if (
+                not isinstance(getattr(self, key), str)
+                or not getattr(self, key).strip()
+            ):
                 raise ValueError(f"{key} must be nonempty text")
         object.__setattr__(self, "channel_ids", _labels(self.channel_ids))
         object.__setattr__(self, "timestamps", _times(self.timestamps))
@@ -124,8 +136,12 @@ class NodalCalibrationError(ValueError):
 
 def _graph(labels: tuple[str, ...], conductance: Any) -> Any:
     matrix = np.asarray(conductance, dtype=float)
-    if (matrix.shape != (len(labels), len(labels)) or not np.isfinite(matrix).all()
-            or np.any(matrix < 0) or not np.array_equal(matrix, matrix.T)):
+    if (
+        matrix.shape != (len(labels), len(labels))
+        or not np.isfinite(matrix).all()
+        or np.any(matrix < 0)
+        or not np.array_equal(matrix, matrix.T)
+    ):
         raise ValueError("conductance must be finite, symmetric and nonnegative")
     graph = nx.Graph()
     graph.add_nodes_from(labels)
@@ -168,28 +184,46 @@ class FrozenNodalCalibration:
         if any(value <= 0 for value in self.scales):
             raise ValueError("scales must be positive")
         for field in ("structural_time_per_unit", "capacity"):
-            object.__setattr__(self, field, _real(getattr(self, field), field, positive=True))
+            object.__setattr__(
+                self, field, _real(getattr(self, field), field, positive=True)
+            )
         matrix = tuple(_vector(row, "conductance") for row in self.conductance)
         _graph(self.channel_ids, matrix)
         object.__setattr__(self, "conductance", matrix)
-        for field in ("calibration_run_ids", "calibration_hashes", "calibration_acquisition_ids"):
+        for field in (
+            "calibration_run_ids",
+            "calibration_hashes",
+            "calibration_acquisition_ids",
+        ):
             if isinstance(getattr(self, field), (str, bytes)):
                 raise TypeError(f"{field} must be a sequence")
             values = tuple(getattr(self, field))
             if not values or any(not isinstance(x, str) or not x for x in values):
                 raise ValueError(f"{field} must contain nonempty strings")
-            if field != "calibration_acquisition_ids" and len(set(values)) != len(values):
+            if field != "calibration_acquisition_ids" and len(set(values)) != len(
+                values
+            ):
                 raise ValueError(f"duplicate {field}")
             object.__setattr__(self, field, values)
         if len(self.calibration_hashes) != len(self.calibration_run_ids):
             raise ValueError("calibration hashes must identify every run")
         if len(self.calibration_acquisition_ids) != len(self.calibration_run_ids):
             raise ValueError("acquisition identities must identify every run")
-        if any(re.fullmatch(r"sha256:[0-9a-f]{64}", value) is None
-               for value in self.calibration_hashes):
+        if any(
+            re.fullmatch(r"sha256:[0-9a-f]{64}", value) is None
+            for value in self.calibration_hashes
+        ):
             raise ValueError("calibration_hashes must be SHA-256 digests")
-        for field in ("value_unit", "time_unit", "support_provenance", "measurement_provenance"):
-            if not isinstance(getattr(self, field), str) or not getattr(self, field).strip():
+        for field in (
+            "value_unit",
+            "time_unit",
+            "support_provenance",
+            "measurement_provenance",
+        ):
+            if (
+                not isinstance(getattr(self, field), str)
+                or not getattr(self, field).strip()
+            ):
                 raise ValueError(f"{field} must be declared")
 
     @property
@@ -199,17 +233,23 @@ class FrozenNodalCalibration:
 
 def _coordinates(samples: Any, offsets: Any, scales: Any) -> Any:
     with np.errstate(over="raise", invalid="raise", divide="raise"):
-        result = (np.asarray(samples) - np.asarray(offsets)[:, None]) / np.asarray(scales)[:, None]
+        result = (np.asarray(samples) - np.asarray(offsets)[:, None]) / np.asarray(
+            scales
+        )[:, None]
     if not np.isfinite(result).all():
         raise ValueError("EPI conversion is not finite")
     return result
 
 
 def calibrate_nodal_prediction(
-    runs: Sequence[NodalMeasurementRun], *, graph: Any,
-    offsets: Sequence[float], scales: Sequence[float],
+    runs: Sequence[NodalMeasurementRun],
+    *,
+    graph: Any,
+    offsets: Sequence[float],
+    scales: Sequence[float],
     structural_time_per_unit: float,
-    support_provenance: str, measurement_provenance: str,
+    support_provenance: str,
+    measurement_provenance: str,
 ) -> FrozenNodalCalibration:
     """Fit one common capacity on calibration-only increments and known support.
 
@@ -225,7 +265,9 @@ def calibrate_nodal_prediction(
         raise ValueError("graph order must equal declared channel order")
     for run in runs:
         if (run.channel_ids, run.value_unit, run.time_unit) != (
-            first.channel_ids, first.value_unit, first.time_unit
+            first.channel_ids,
+            first.value_unit,
+            first.time_unit,
         ):
             raise ValueError("calibration runs must share channels and units")
     snapshot = read_conductance(graph, symmetric=True)
@@ -249,8 +291,10 @@ def calibrate_nodal_prediction(
             increments.append(np.diff(x, axis=1))
             durations.append(dt)
             directions.append(-(laplacian @ x[:, :-1]) * dt)
-        x, r, dt, d = (np.concatenate(seq, axis=-1) for seq in
-                       (previous, increments, durations, directions))
+        x, r, dt, d = (
+            np.concatenate(seq, axis=-1)
+            for seq in (previous, increments, durations, directions)
+        )
         denominator = float(np.sum(d * d))
         if denominator <= 0:
             raise NodalCalibrationError("capacity_unidentifiable")
@@ -258,18 +302,32 @@ def calibrate_nodal_prediction(
     if not math.isfinite(capacity):
         raise NodalCalibrationError("capacity_unresolved")
     if capacity <= 0:
-        raise NodalCalibrationError("negative_capacity" if capacity < 0 else "inactive_capacity")
+        raise NodalCalibrationError(
+            "negative_capacity" if capacity < 0 else "inactive_capacity"
+        )
     # Positivity-preserving Euler is a numerical domain, not a physical law.
     if np.any(capacity * dt > 1.0):
         raise NodalCalibrationError("calibration_step_outside_convex_euler_domain")
-    baseline = [np.linalg.lstsq(np.column_stack((row * dt, dt)), inc, rcond=None)[0]
-                for row, inc in zip(x, r)]
+    baseline = [
+        np.linalg.lstsq(np.column_stack((row * dt, dt)), inc, rcond=None)[0]
+        for row, inc in zip(x, r)
+    ]
     return FrozenNodalCalibration(
-        first.channel_ids, conductance, tuple(run.run_id for run in runs),
-        tuple(run.content_hash for run in runs), tuple(run.acquisition_id for run in runs),
-        offsets, scales, bridge, capacity,
-        tuple(float(item[0]) for item in baseline), tuple(float(item[1]) for item in baseline),
-        first.value_unit, first.time_unit, support_provenance, measurement_provenance,
+        first.channel_ids,
+        conductance,
+        tuple(run.run_id for run in runs),
+        tuple(run.content_hash for run in runs),
+        tuple(run.acquisition_id for run in runs),
+        offsets,
+        scales,
+        bridge,
+        capacity,
+        tuple(float(item[0]) for item in baseline),
+        tuple(float(item[1]) for item in baseline),
+        first.value_unit,
+        first.time_unit,
+        support_provenance,
+        measurement_provenance,
     )
 
 
@@ -300,19 +358,38 @@ class NodalForecast:
         object.__setattr__(self, "initial_measurement", initial)
         for field in ("epi", "affine_baseline"):
             rows = tuple(_vector(row, field) for row in getattr(self, field))
-            if len(rows) != len(initial) or any(len(row) != len(self.timestamps) for row in rows):
+            if len(rows) != len(initial) or any(
+                len(row) != len(self.timestamps) for row in rows
+            ):
                 raise ValueError(f"{field} shape must match channels and timestamps")
             object.__setattr__(self, field, rows)
-        for field in ("absolute_error_bound", "max_update_residual", "max_structural_step"):
-            value = _real(getattr(self, field), field, positive=field == "max_structural_step")
+        for field in (
+            "absolute_error_bound",
+            "max_update_residual",
+            "max_structural_step",
+        ):
+            value = _real(
+                getattr(self, field), field, positive=field == "max_structural_step"
+            )
             if value < 0:
                 raise ValueError(f"{field} must be nonnegative")
             object.__setattr__(self, field, value)
-        if (isinstance(self.steps_executed, bool) or not isinstance(self.steps_executed, int)
-                or self.steps_executed < len(self.timestamps) - 1):
+        if (
+            isinstance(self.steps_executed, bool)
+            or not isinstance(self.steps_executed, int)
+            or self.steps_executed < len(self.timestamps) - 1
+        ):
             raise ValueError("steps_executed must cover the forecast intervals")
-        for field in ("calibration_hash", "evaluation_run_id", "evaluation_acquisition_id", "scope"):
-            if not isinstance(getattr(self, field), str) or not getattr(self, field).strip():
+        for field in (
+            "calibration_hash",
+            "evaluation_run_id",
+            "evaluation_acquisition_id",
+            "scope",
+        ):
+            if (
+                not isinstance(getattr(self, field), str)
+                or not getattr(self, field).strip()
+            ):
                 raise ValueError(f"{field} must be nonempty text")
 
     @property
@@ -321,10 +398,15 @@ class NodalForecast:
 
 
 def forecast_nodal_response(
-    calibration: FrozenNodalCalibration, *, evaluation_run_id: str,
+    calibration: FrozenNodalCalibration,
+    *,
+    evaluation_run_id: str,
     evaluation_acquisition_id: str,
-    initial_measurement: Sequence[float], timestamps: Sequence[float],
-    absolute_error_bound: float, max_structural_step: float, max_steps: int,
+    initial_measurement: Sequence[float],
+    timestamps: Sequence[float],
+    absolute_error_bound: float,
+    max_structural_step: float,
+    max_steps: int,
 ) -> NodalForecast:
     """Advance only the initial observation through the shared nodal integrator.
 
@@ -335,7 +417,10 @@ def forecast_nodal_response(
         raise ValueError("evaluation_run_id must be nonempty")
     if evaluation_run_id in calibration.calibration_run_ids:
         raise ValueError("evaluation run overlaps calibration")
-    if not isinstance(evaluation_acquisition_id, str) or not evaluation_acquisition_id.strip():
+    if (
+        not isinstance(evaluation_acquisition_id, str)
+        or not evaluation_acquisition_id.strip()
+    ):
         raise ValueError("evaluation_acquisition_id must be nonempty")
     if evaluation_acquisition_id in calibration.calibration_acquisition_ids:
         raise ValueError("evaluation acquisition overlaps calibration")
@@ -350,20 +435,31 @@ def forecast_nodal_response(
     if isinstance(max_steps, bool) or not isinstance(max_steps, int) or max_steps <= 0:
         raise ValueError("max_steps must be a positive integer")
     durations = tuple(
-        _real((b-a) * calibration.structural_time_per_unit,
-              "structural duration", positive=True)
+        _real(
+            (b - a) * calibration.structural_time_per_unit,
+            "structural duration",
+            positive=True,
+        )
         for a, b in zip(times, times[1:])
     )
-    counts = tuple(math.ceil(_real(span / max_step, "subdivision ratio", positive=True))
-                   for span in durations)
+    counts = tuple(
+        math.ceil(_real(span / max_step, "subdivision ratio", positive=True))
+        for span in durations
+    )
     if sum(counts) > max_steps:
         raise ValueError("forecast exceeds the declared step budget")
     graph = _graph(calibration.channel_ids, calibration.conductance)
     _, laplacian = structural_diffusion_operator(graph)
-    graph.graph.update(DT_MIN=0.0, EPI_MIN=-float(np.finfo(float).max),
-                       EPI_MAX=float(np.finfo(float).max),
-                       CLIP_MODE="hard", GAMMA={"type": "none"})
-    x = _coordinates(np.asarray(initial)[:, None], calibration.offsets, calibration.scales)[:, 0]
+    graph.graph.update(
+        DT_MIN=0.0,
+        EPI_MIN=-float(np.finfo(float).max),
+        EPI_MAX=float(np.finfo(float).max),
+        CLIP_MODE="hard",
+        GAMMA={"type": "none"},
+    )
+    x = _coordinates(
+        np.asarray(initial)[:, None], calibration.offsets, calibration.scales
+    )[:, 0]
     for node, value in zip(graph, x):
         set_attr(graph.nodes[node], ALIAS_EPI, float(value))  # initial preparation
         set_attr(graph.nodes[node], ALIAS_VF, calibration.capacity)
@@ -381,7 +477,9 @@ def forecast_nodal_response(
                     set_attr(graph.nodes[node], ALIAS_DNFR, float(value))
                 previous = x.copy()
                 update_epi_via_nodal_equation(graph, dt=h, t=t, method="euler")
-                x = np.asarray([get_attr(graph.nodes[node], ALIAS_EPI) for node in graph])
+                x = np.asarray(
+                    [get_attr(graph.nodes[node], ALIAS_EPI) for node in graph]
+                )
                 defect = x - previous - h * (calibration.capacity * pressure)
                 residual = max(residual, float(np.max(np.abs(defect))))
                 baseline = baseline + h * (
@@ -394,11 +492,18 @@ def forecast_nodal_response(
             history.append(x.copy())
             baseline_history.append(baseline.copy())
     return NodalForecast(
-        calibration.content_hash, evaluation_run_id, evaluation_acquisition_id,
-        calibration.channel_ids, times,
-        initial, tuple(tuple(float(v) for v in row) for row in np.asarray(history).T),
+        calibration.content_hash,
+        evaluation_run_id,
+        evaluation_acquisition_id,
+        calibration.channel_ids,
+        times,
+        initial,
+        tuple(tuple(float(v) for v in row) for row in np.asarray(history).T),
         tuple(tuple(float(v) for v in row) for row in np.asarray(baseline_history).T),
-        bound, max_step, sum(counts), residual,
+        bound,
+        max_step,
+        sum(counts),
+        residual,
     )
 
 
@@ -417,8 +522,11 @@ class NodalForecastScore:
 
 
 def score_nodal_forecast(
-    forecast: NodalForecast, calibration: FrozenNodalCalibration,
-    observation: NodalMeasurementRun, *, expected_forecast_hash: str,
+    forecast: NodalForecast,
+    calibration: FrozenNodalCalibration,
+    observation: NodalMeasurementRun,
+    *,
+    expected_forecast_hash: str,
 ) -> NodalForecastScore:
     """Score against a forecast digest retained before evaluation was opened.
 
@@ -427,19 +535,28 @@ def score_nodal_forecast(
     """
     if expected_forecast_hash != forecast.content_hash:
         raise ValueError("issued forecast hash mismatch")
-    if (forecast.calibration_hash != calibration.content_hash
-            or forecast.channel_ids != calibration.channel_ids):
+    if (
+        forecast.calibration_hash != calibration.content_hash
+        or forecast.channel_ids != calibration.channel_ids
+    ):
         raise ValueError("forecast/calibration hash mismatch")
-    if (observation.run_id in calibration.calibration_run_ids
-            or observation.acquisition_id in calibration.calibration_acquisition_ids
-            or observation.content_hash in calibration.calibration_hashes):
+    if (
+        observation.run_id in calibration.calibration_run_ids
+        or observation.acquisition_id in calibration.calibration_acquisition_ids
+        or observation.content_hash in calibration.calibration_hashes
+    ):
         raise ValueError("evaluation observations overlap calibration")
-    if (observation.run_id != forecast.evaluation_run_id
-            or observation.acquisition_id != forecast.evaluation_acquisition_id
-            or observation.channel_ids != forecast.channel_ids
-            or observation.timestamps != forecast.timestamps
-            or (observation.value_unit, observation.time_unit) != (calibration.value_unit, calibration.time_unit)):
-        raise ValueError("reserved run identity, coordinates, units or timestamps differ")
+    if (
+        observation.run_id != forecast.evaluation_run_id
+        or observation.acquisition_id != forecast.evaluation_acquisition_id
+        or observation.channel_ids != forecast.channel_ids
+        or observation.timestamps != forecast.timestamps
+        or (observation.value_unit, observation.time_unit)
+        != (calibration.value_unit, calibration.time_unit)
+    ):
+        raise ValueError(
+            "reserved run identity, coordinates, units or timestamps differ"
+        )
     if tuple(row[0] for row in observation.samples) != forecast.initial_measurement:
         raise ValueError("reserved initialization differs from issued forecast")
     actual = _coordinates(observation.samples, calibration.offsets, calibration.scales)
@@ -447,11 +564,17 @@ def score_nodal_forecast(
         residual = actual[:, 1:] - np.asarray(forecast.epi)[:, 1:]
         maximum = float(np.max(np.abs(residual)))
         mse = float(np.mean(residual**2))
-        persistence = float(np.mean((actual[:, 1:] - actual[:, :1])**2))
-        baseline = float(np.mean((actual[:, 1:] - np.asarray(forecast.affine_baseline)[:, 1:])**2))
+        persistence = float(np.mean((actual[:, 1:] - actual[:, :1]) ** 2))
+        baseline = float(
+            np.mean((actual[:, 1:] - np.asarray(forecast.affine_baseline)[:, 1:]) ** 2)
+        )
     return NodalForecastScore(
-        forecast.content_hash, observation.content_hash,
-        maximum, mse, persistence, baseline,
+        forecast.content_hash,
+        observation.content_hash,
+        maximum,
+        mse,
+        persistence,
+        baseline,
         maximum <= forecast.absolute_error_bound,
     )
 
@@ -466,6 +589,10 @@ def write_nodal_forecast(forecast: NodalForecast, path: str | Path) -> Path:
     if destination.exists():
         raise FileExistsError("do not overwrite an issued forecast")
     payload = {"forecast": asdict(forecast), "content_hash": forecast.content_hash}
-    safe_write(destination, lambda stream: stream.write(
-        json_dumps(payload, sort_keys=True, allow_nan=False) + "\n"))
+    safe_write(
+        destination,
+        lambda stream: stream.write(
+            json_dumps(payload, sort_keys=True, allow_nan=False) + "\n"
+        ),
+    )
     return destination

@@ -1025,10 +1025,9 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
     except Exception:
         pulse = {}
 
-    # Per-NFR resonance -- the local face of the pulse: each NFR oscillates
-    # (nu_f, phi) and resonance (local phase synchrony + the collective
-    # Kuramoto R) couples the pulses; the collective pulse emerges as they
-    # lock. The source the network rhythm is built from (structural_diffusion).
+    # Per-NFR resonance reads stored capacity and current phase alignment
+    # (local synchrony and collective Kuramoto R). It does not measure an
+    # oscillation period or derive a collective clock from synchronization.
     try:
         from .structural_diffusion import compute_nodal_pulse
 

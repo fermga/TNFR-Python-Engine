@@ -451,9 +451,7 @@ class Transition(Operator):
             label="phase_shift",
         )
 
-        vf_multiplier = {"latent": 1.2, "resonant": 0.95}.get(
-            regime, vf_factor
-        )
+        vf_multiplier = {"latent": 1.2, "resonant": 0.95}.get(regime, vf_factor)
         vf_after = finite_real(
             vf * vf_multiplier,
             operator=self.name,
@@ -524,9 +522,7 @@ class Transition(Operator):
                 label="random DeltaNFR upper proposal bound",
             )
         else:
-            signed_jitter = (
-                0.0 if random_mode else (jitter if base >= 0.0 else -jitter)
-            )
+            signed_jitter = 0.0 if random_mode else (jitter if base >= 0.0 else -jitter)
             handler_after = finite_real(
                 base + signed_jitter,
                 operator=self.name,
@@ -791,9 +787,7 @@ class Transition(Operator):
             )
 
     @staticmethod
-    def _commit_latency(
-        G: TNFRGraph, node: Any, proposal: _LatencyProposal
-    ) -> None:
+    def _commit_latency(G: TNFRGraph, node: Any, proposal: _LatencyProposal) -> None:
         """Clear latency state only after low-level NAV has succeeded."""
 
         if not proposal.active:
@@ -836,9 +830,7 @@ class Transition(Operator):
             operator=self.name,
             label="phase_shift",
         )
-        vf_multiplier = {"latent": 1.2, "resonant": 0.95}.get(
-            regime, vf_factor
-        )
+        vf_multiplier = {"latent": 1.2, "resonant": 0.95}.get(regime, vf_factor)
         vf_after = finite_real(
             vf * vf_multiplier,
             operator=self.name,

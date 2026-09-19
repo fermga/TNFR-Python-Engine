@@ -36,7 +36,6 @@ def validate_norm_preservation(
     metric: Callable[[Sequence[complex]], float],
     atol: float = 1e-09,
 ) -> None: ...
-
 @dataclass(frozen=True)
 class RegularityTrendViolation:
     index: int
@@ -74,7 +73,6 @@ def assess_composite_epi_regularity_trend(
     space: BanachSpaceEPI | None = None,
     regularity_kwargs: Mapping[str, float] | None = None,
 ) -> CompositeEPIRegularityTrendReport: ...
-
 def ensure_coherence_monotonicity(
     coherence_series: Sequence[float | BEPIElement],
     *,

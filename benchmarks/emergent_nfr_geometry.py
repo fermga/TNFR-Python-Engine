@@ -1,54 +1,18 @@
-"""Emergent NFR Geometry: every node is a pulsing NFR; dNFR=0 is the beat.
+"""Prepared eigenmode zeros and relative-form relaxation on fixed graphs.
 
-THE INSIGHT (user, theory creator): every node is an NFR -- a brick of the
-substrate carrying (EPI, nu_f, phi) -- and each NFR PULSES: the single-node
-nodal equation dEPI/dt = nu_f*dNFR reorganizes its form at its own frequency
-nu_f. dNFR(i) = neighbour-mean(EPI) - EPI(i) = -(L_rw EPI)(i) is the discrete
-CURVATURE of the EPI field, so "free of structural pressure" (dNFR=0) ==
-harmonic == zero curvature == FLAT. When the per-NFR pulses RESONATE into a
-standing mode, the dNFR=0 locus is the standing NODE: where neighbouring
-pulses cancel and the field is flat, stationary, coherent (C->1) -- the BEAT
-the pulses pass through. The antinodes are the SAME NFRs at the crest of their
-pulse (high |dNFR|). So the equilibria are NOT a separate "NFR vs non-NFR"
-class -- they are the NODAL SET (the Chladni pattern) of the resonating pulses,
-their count/distribution set by the spectral index (Courant). The combat
-coherence-vs-pressure is the pulse: standing node (beat) vs antinode (crest).
+For the pure EPI channel p=-L_rw x, a nonzero-eigenvalue mode has p=0 at its
+sampled zeros. This is a local zero of a discrete Laplacian, not geometric
+flatness of the graph, absence of an NFR or a proof of autonomous formation.
+Capacity scales a declared form response and does not imply a periodic pulse.
+The standing-wave interpretation separately prescribes oscillatory dynamics.
+The ring fixture counts sampled zeros/sign domains of chosen modes; Courant
+bounds do not imply equally spaced zeros for arbitrary symmetric graphs.
+Relative diffusion may approach the slowest excited eigenspace while its
+amplitude decays. It need not select a unique Fiedler shape or maintain identity.
+The recursive gasket is constructed directly, without a THOL invocation.
 
-WHAT EMERGES (measured):
-  - M1 dNFR = emergent CURVATURE (exact); at the standing NODE the pulse beats
-    flat (dNFR=0, is_structural_equilibrium=True, structural_coherence -> 1);
-    at the antinode the same NFR sits at its pulse crest (under pressure).
-  - M2 the BEAT LATTICE = the Chladni nodal pattern: mode k has 2k standing
-    nodes, so the node count grows with the structural pressure (the spectral
-    index) -- Courant nodal-domain ordering. The "where" is spectral-geometric.
-  - M3 the standing nodes are RESONANT (stationary fixed points of the
-    resonant standing wave -- a node stays at zero amplitude for all t) and
-    FRACTAL (on the self-similar THOL nest the NFR topology is multinodal and
-    nests -- classify_nodal_topology, the canonical NFR read-out).
-  - M4 the COMBAT selects the beat lattice: relaxing a random field collapses
-    the curvature energy and the survivor is the slowest (Fiedler) mode -- the
-    lowest-pressure standing-node pattern.
-
-So the emergent TNFR geometry answers "what determines a pressure-free point":
-it is the flat/nodal locus of the standing modes -- the beat where the
-resonating NFR pulses cancel. For atoms the modes are the shells
-(emergent_atom_dynamics.py); for
-primes "where they fall" becomes "the nodal set of which emergent operator" =
-the spectral (Hilbert-Polya) form of the Riemann problem, with the same
-Fix(S_n)^perp wall, now stated geometrically.
-
-HONEST SCOPE: the discrete-curvature / Chladni-nodal / Courant facts are
-standard spectral geometry; the TNFR content is the reading dNFR = curvature,
-dNFR=0 = flat = an NFR (the canonical coherence-equilibrium predicate), and the
-NFR lattice = the nodal geometry of the emergent modes. Closes no open problem
-(the prime case is RH). R and pi assumed.
-
-Run:
-    python benchmarks/emergent_nfr_geometry.py
-
-Theoretical anchor: AGENTS.md (NFR = region of structural coherence, dNFR=0
-attractor; tetrad K_phi = curvature; discrete-mode / Chladni regime, Courant);
-benchmarks/emergent_atom_dynamics.py (the shells as modes). Status: RESEARCH.
+Status: auxiliary or finite evidence. See theory/EMERGENT_ONTOLOGY.md and
+theory/NODAL_PARAMETER_FOUNDATIONS.md for model and physical-bridge limits.
 """
 
 from __future__ import annotations
@@ -66,7 +30,7 @@ if str(_SRC) not in sys.path:
 
 
 def sierpinski_simplex(m, levels):
-    """THOL self-similar nesting of K_m (a fractal NFR)."""
+    """Construct a prescribed K_m gasket directly."""
     if levels == 0:
         return nx.complete_graph(m), list(range(m))
     sub, subc = sierpinski_simplex(m, levels - 1)
@@ -123,7 +87,7 @@ def main() -> None:
     from tnfr.physics.fields import classify_nodal_topology
 
     print("=" * 70)
-    print("EMERGENT NFR GEOMETRY -- every node a pulsing NFR; dNFR=0 = beat")
+    print("EMERGENT NFR GEOMETRY -- prepared mode zeros and diffusive relaxation")
     print("=" * 70)
 
     n = 24
@@ -143,20 +107,20 @@ def main() -> None:
     is_node = np.abs(epi) < 1e-9  # the nodal set (v=0)
     eq_nodes = [is_structural_equilibrium(float(d)) for d in dnfr[is_node]]
     eq_anti = [is_structural_equilibrium(float(d)) for d in dnfr[~is_node]]
-    c_nodes = float(
-        np.mean([structural_coherence(float(d)) for d in dnfr[is_node]])
+    c_nodes = float(np.mean([structural_coherence(float(d)) for d in dnfr[is_node]]))
+    c_anti = float(np.mean([structural_coherence(float(d)) for d in dnfr[~is_node]]))
+    print(
+        f"  standing node (v=0): {int(is_node.sum())} points, all "
+        f"equilibrium={all(eq_nodes)}, mean C={c_nodes:.3f} -> the beat"
     )
-    c_anti = float(
-        np.mean([structural_coherence(float(d)) for d in dnfr[~is_node]])
+    print(
+        f"  antinode (crest)   : equilibrium={any(eq_anti)}, "
+        f"mean C={c_anti:.3f} -> under pressure"
     )
-    print(f"  standing node (v=0): {int(is_node.sum())} points, all "
-          f"equilibrium={all(eq_nodes)}, mean C={c_nodes:.3f} -> the beat")
-    print(f"  antinode (crest)   : equilibrium={any(eq_anti)}, "
-          f"mean C={c_anti:.3f} -> under pressure")
     assert all(eq_nodes) and not any(eq_anti) and c_nodes > c_anti
 
-    # M2 -- the beat lattice = the Chladni nodal pattern; count by Courant
-    print("\nM2 -- beat lattice = Chladni nodes; count by spectral index:")
+    # M2 -- count selected ring-mode sign domains
+    print("\nM2 -- selected ring-mode sign domains by mode index:")
     counts = []
     for kk in (1, 2, 3, 6):
         v = np.cos(2 * np.pi * kk * idx / n)
@@ -165,11 +129,11 @@ def main() -> None:
         lam = 1.0 - np.cos(2 * np.pi * kk / n)
         print(f"  mode k={kk}: pressure={lam:.4f}, standing nodes={nd} (=2k)")
     grows = all(counts[i] < counts[i + 1] for i in range(len(counts) - 1))
-    print(f"  more pressure -> more nodes, Courant-ordered: {grows}")
+    print(f"  selected ring mode indices -> larger sign-domain counts: {grows}")
     assert grows and counts == [2, 4, 6, 12]
 
-    # M3 -- the standing nodes are RESONANT (stationary) and FRACTAL (nesting)
-    print("\nM3 -- the standing nodes are RESONANT + FRACTAL:")
+    # M3 -- supplied cosine time dependence and independent gasket read-out
+    print("\nM3 -- supplied standing-wave zeros and gasket classification:")
     omega = np.sqrt(lam_k)
     n_nodes = int(is_node.sum())
     max_amp = max(
@@ -180,13 +144,14 @@ def main() -> None:
     print(f"            at amplitude {max_amp:.2e} (stationary resonant pts)")
     nest, _ = sierpinski_simplex(4, 2)
     topo = classify_nodal_topology(nest)
-    print(f"  FRACTAL : THOL nest NFR topology = '{topo['topology']}', "
-          f"{len(topo.get('centers', []))} NFR centers (self-similar)")
-    assert max_amp < 1e-9 and topo["topology"] in {
-        "radial", "annular", "multinodal"}
+    print(
+        f"  GASKET : supplied-graph topology = '{topo['topology']}', "
+        f"{len(topo.get('centers', []))} NFR centers (self-similar)"
+    )
+    assert max_amp < 1e-9 and topo["topology"] in {"radial", "annular", "multinodal"}
 
-    # M4 -- the COMBAT selects the beat lattice (curvature minimisation)
-    print("\nM4 -- the combat selects the beat lattice (Fiedler survivor):")
+    # M4 -- pure-EPI diffusion reduces Dirichlet energy in this finite run
+    print("\nM4 -- finite pure-EPI relative relaxation:")
     rng = np.random.default_rng(0)
     epi0 = rng.standard_normal(n)
     epi0 -= epi0.mean()
@@ -195,22 +160,24 @@ def main() -> None:
         e = expm(-t * L) @ epi0
         en = 0.5 * float(e @ (L @ e))
         rows.append((t, en, nodal_domains_ring(e)))
-        print(f"  t={t:5.1f}: curvature energy={en:.4f}, "
-              f"standing nodes={nodal_domains_ring(e)}")
+        print(
+            f"  t={t:5.1f}: curvature energy={en:.4f}, "
+            f"standing nodes={nodal_domains_ring(e)}"
+        )
     drops = rows[0][1] > rows[-1][1]
-    print("  combat lowers curvature -> survivor = Fiedler mode (2 nodes)")
+    print("  this finite endpoint has lower energy and two sign domains")
     assert drops and rows[-1][2] == 2
 
     print("\n" + "=" * 70)
-    print("VERDICT: every node is a pulsing NFR; 'free of structural")
-    print("pressure' is GEOMETRIC -- dNFR = curvature, dNFR=0 = flat. The")
-    print("standing node is where the resonating pulses beat flat (the")
-    print("canonical coherence equilibrium); the antinode is the pulse crest.")
-    print("The beat lattice = the Chladni pattern of the emergent modes,")
-    print("ordered by the spectral index (Courant); the nodes are resonant")
-    print("(stationary) and fractal (nesting). The combat selects them.")
-    print("HONEST SCOPE: standard spectral geometry (curvature/Chladni/")
-    print("Courant) re-read as NFR formation; the prime case is RH.")
+    print("RESULT SCOPE: p=-L_rw x belongs to the isolated EPI channel.")
+    print("A sampled eigenmode zero has zero local pressure in this prepared field.")
+    print("It is not a proof that the graph is flat or that an NFR has formed.")
+    print("Capacity nu_f is not automatically an oscillation frequency.")
+    print("The ring supplies specially structured nodal sets.")
+    print("General symmetric graphs need not have equally spaced mode zeros.")
+    print("Relative diffusion suppresses faster modes while amplitude also decays.")
+    print("The gasket geometry and any standing-wave time dependence are supplied.")
+    print("Autonomous maintained identity and physical particles remain unproved.")
     print("=" * 70)
 
 

@@ -12,22 +12,17 @@ import sys
 import time
 from collections import OrderedDict
 from collections.abc import Mapping, Sequence
-from numbers import Integral
 from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
+from numbers import Integral
 from typing import Any
 
 from ..alias import get_attr
-from ..constants.aliases import (
-    ALIAS_DNFR,
-    ALIAS_EPI,
-    ALIAS_THETA,
-    ALIAS_VF,
-)
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..errors import TNFRValueError
-from ..types import real_scalar_epi
 from ..mathematics.unified_numerical import np
+from ..types import real_scalar_epi
 
 try:
     import networkx as nx
@@ -137,9 +132,7 @@ class TNFRUnifiedBackend:
         try:
             self.cache_size_mb = float(cache_size_mb)
         except (TypeError, ValueError, OverflowError) as exc:
-            raise ValueError(
-                "cache_size_mb must be a positive finite scalar"
-            ) from exc
+            raise ValueError("cache_size_mb must be a positive finite scalar") from exc
         if not math.isfinite(self.cache_size_mb) or self.cache_size_mb <= 0.0:
             raise ValueError("cache_size_mb must be a positive finite scalar")
         self._cache_budget_bytes = int(self.cache_size_mb * 1024 * 1024)
@@ -260,15 +253,11 @@ class TNFRUnifiedBackend:
         if not np.isfinite(dt) or dt <= 0.0:
             raise TNFRValueError("dt must be a positive finite real scalar")
 
-        pressure_model = request.parameters.get(
-            "pressure_model", "stored_delta_nfr"
-        )
+        pressure_model = request.parameters.get("pressure_model", "stored_delta_nfr")
         if pressure_model == "epi_diffusion":
             if self._nodal_optimizer is None:
                 raise TNFRValueError("EPI diffusion optimizer is unavailable")
-            states = self._nodal_optimizer.compute_vectorized_nodal_evolution(
-                graph, dt
-            )
+            states = self._nodal_optimizer.compute_vectorized_nodal_evolution(graph, dt)
         elif pressure_model == "stored_delta_nfr":
             states = {}
             for node in graph.nodes():
@@ -400,9 +389,7 @@ class TNFRUnifiedBackend:
         if not HAS_SPECTRAL:
             raise TNFRValueError("spectral analysis is unavailable")
         graph = request.graph
-        cache_key = self._cache_signature(
-            graph, {"graph_topology", "precision_mode"}
-        )
+        cache_key = self._cache_signature(graph, {"graph_topology", "precision_mode"})
         cached = (
             self._cache_get("spectral", self._spectral_cache, cache_key)
             if request.enable_cache
@@ -440,9 +427,7 @@ class TNFRUnifiedBackend:
             "eigenvalues": np.array(eigenvalues, copy=True),
             "eigenvectors": np.array(eigenvectors, copy=True),
             "signal": np.array(signal, copy=True),
-            "spectral_coefficients": np.array(
-                spectral_coefficients, copy=True
-            ),
+            "spectral_coefficients": np.array(spectral_coefficients, copy=True),
             "backend": "tnfr-spectral-api",
             "detached": True,
         }
@@ -458,9 +443,7 @@ class TNFRUnifiedBackend:
                 ) from exc
             if not np.isfinite(cutoff):
                 raise TNFRValueError("filter_cutoff must be a finite real scalar")
-            filtered_coefficients = np.array(
-                spectral_coefficients, copy=True
-            )
+            filtered_coefficients = np.array(spectral_coefficients, copy=True)
             filtered_coefficients[np.real(eigenvalues) > cutoff] = 0
             result["filtered_signal"] = np.asarray(
                 igft(filtered_coefficients, eigenvectors)
@@ -504,9 +487,7 @@ class TNFRUnifiedBackend:
             "detached": True,
         }
         if request.enable_cache:
-            self._cache_store(
-                "field", self._field_cache, cache_key, deepcopy(results)
-            )
+            self._cache_store("field", self._field_cache, cache_key, deepcopy(results))
         return deepcopy(results)
 
     def _execute_temporal_integration(
@@ -516,9 +497,7 @@ class TNFRUnifiedBackend:
         graph = request.graph
         num_steps = request.parameters.get("num_steps", 10)
         dt = request.parameters.get("dt", 0.01)
-        pressure_model = request.parameters.get(
-            "pressure_model", "stored_delta_nfr"
-        )
+        pressure_model = request.parameters.get("pressure_model", "stored_delta_nfr")
 
         # The graph-spectral engine implements only the EPI diffusion channel.
         # Graph size and optimization level must never change pressure semantics.
@@ -621,24 +600,18 @@ class TNFRUnifiedBackend:
 
         raw_kwargs = request.parameters.get("operator_kwargs")
         if raw_kwargs is None:
-            per_operator_kwargs: list[dict[str, Any]] = [
-                {} for _ in operators
-            ]
+            per_operator_kwargs: list[dict[str, Any]] = [{} for _ in operators]
         elif (
             isinstance(raw_kwargs, (str, bytes))
             or not isinstance(raw_kwargs, Sequence)
             or len(raw_kwargs) != len(operators)
         ):
-            raise TNFRValueError(
-                "operator_kwargs must align one-to-one with operators"
-            )
+            raise TNFRValueError("operator_kwargs must align one-to-one with operators")
         else:
             per_operator_kwargs = []
             for index, item in enumerate(raw_kwargs):
                 if not isinstance(item, Mapping):
-                    raise TNFRValueError(
-                        f"operator_kwargs[{index}] must be a mapping"
-                    )
+                    raise TNFRValueError(f"operator_kwargs[{index}] must be a mapping")
                 if "sequence_context" in item:
                     raise TNFRValueError(
                         "sequence_context is owned by the unified backend"
@@ -655,9 +628,7 @@ class TNFRUnifiedBackend:
             )
         )
         if initial_epi is None:
-            raise TNFRValueError(
-                f"node {node!r} EPI has no scalar nodal embedding"
-            )
+            raise TNFRValueError(f"node {node!r} EPI has no scalar nodal embedding")
         word = ValidatedSequence(
             operators, context={"initial_epi_nonzero": initial_epi != 0.0}
         )
@@ -674,9 +645,7 @@ class TNFRUnifiedBackend:
                 )
         except BaseException as failure:
             monitor = graph.graph.get("integrity_monitor")
-            discard_pending = getattr(
-                monitor, "discard_pending_operator", None
-            )
+            discard_pending = getattr(monitor, "discard_pending_operator", None)
             if callable(discard_pending):
                 try:
                     discard_pending()

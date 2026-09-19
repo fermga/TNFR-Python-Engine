@@ -89,9 +89,7 @@ def test_first_emission_commit_replays_exact_lifecycle_patch_then_epi() -> None:
         was_initial_on_silence=False,
     )
     timestamp = "2030-01-02T03:04:05+00:00"
-    proposal = propose_emission_stage(
-        graph, 0, {"AL_boost": 0.2}, timestamp=timestamp
-    )
+    proposal = propose_emission_stage(graph, 0, {"AL_boost": 0.2}, timestamp=timestamp)
 
     commit_emission_lifecycle(graph, proposal)
 
@@ -178,9 +176,7 @@ def test_emission_warning_plan_is_immutable_and_emitted_before_metadata() -> Non
     assert len(proposal.warning_messages) == 2
     with pytest.warns(UserWarning) as captured:
         commit_emission_lifecycle(graph, proposal)
-    assert [str(item.message) for item in captured] == list(
-        proposal.warning_messages
-    )
+    assert [str(item.message) for item in captured] == list(proposal.warning_messages)
     assert "latent" not in graph.nodes[0]
 
 

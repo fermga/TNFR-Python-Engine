@@ -1,7 +1,7 @@
 name: Dependency Vulnerability Audit
 
-# This workflow scans all installed Python dependencies for known security vulnerabilities
-# using pip-audit, which checks against the Python Packaging Advisory Database (PyPA).
+# Audits the installed core, test-all and serialization environment using pip-audit.
+# Optional compute, documentation and deployment environments are outside this run.
 #
 # Runs on:
 # - Every push to main/master
@@ -49,11 +49,11 @@ jobs:
 
       - name: Install project dependencies
         run: |
-          # pip 25.2 is affected by GHSA-4xh5-x5gv-qwph; install the patched commit until 25.3 lands.
+          # Retained explicit installer revision; dependency findings remain audit output.
           python -m pip install --upgrade "pip @ git+https://github.com/pypa/pip.git@f2b92314da012b9fffa36b3f3e67748a37ef464a"
           python -m pip install --upgrade "setuptools>=78.1.1"
           python -m pip install pipx
-          python -m pip install .[all]
+          python -m pip install '.[test-all,serialization]'
 
       - name: Resolve site-packages path
         id: python_site
@@ -82,8 +82,8 @@ jobs:
           name: pip-audit-report
           path: pip-audit.json
 
-      - name: Fail if vulnerabilities were detected
+      - name: Fail when the JSON audit does not succeed
         if: steps.pip_audit.outcome == 'failure'
         run: |
-          echo 'pip-audit detected dependency vulnerabilities. Review pip-audit.json for details.'
+          echo 'pip-audit failed or reported vulnerabilities. Review the logs and available report.'
           exit 1

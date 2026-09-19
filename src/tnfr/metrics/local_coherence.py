@@ -55,9 +55,7 @@ def _mean_absolute(values: tuple[float, ...]) -> float:
     scale = max(abs(value) for value in values)
     if scale == 0.0:
         return 0.0
-    result = scale * (
-        math.fsum(abs(value) / scale for value in values) / len(values)
-    )
+    result = scale * (math.fsum(abs(value) / scale for value in values) / len(values))
     if not math.isfinite(result):
         raise ValueError("local mean magnitude exceeds finite range")
     return result
@@ -103,9 +101,7 @@ def compute_radius_structural_coherence(
     )
     from .common import structural_coherence
 
-    return float(
-        structural_coherence(_mean_absolute(pressures), _mean_absolute(rates))
-    )
+    return float(structural_coherence(_mean_absolute(pressures), _mean_absolute(rates)))
 
 
 def compute_local_coherence_fallback(G: Any, node: Any) -> float:

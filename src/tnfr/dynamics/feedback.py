@@ -154,7 +154,7 @@ class StructuralFeedbackLoop:
     def regulate(self) -> str:
         """Select appropriate operator based on current structural state.
 
-        Decision logic follows TNFR canonical regulation principles:
+        The configured policy maps structural readings to operator choices:
 
         - **Low coherence**: Stabilize with IL (Coherence)
         - **High coherence**: Explore with OZ (Dissonance)
@@ -169,9 +169,11 @@ class StructuralFeedbackLoop:
 
         Notes
         -----
-        The regulation logic implements structural decision-making based on
-        current node state. It avoids arbitrary choices by following TNFR
-        coherence principles.
+        The target, tolerances and thresholds are supplied control-policy
+        parameters. Reading nodal state and choosing registered operators
+        does not derive those parameters or their occurrence law from the
+        nodal equation. This is an engineering controller, not evidence of
+        autonomous phase/form maintenance.
         """
         dnfr = get_attr(self.G.nodes[self.node], ALIAS_DNFR, 0.0)
         epi = get_attr(self.G.nodes[self.node], ALIAS_EPI, 0.0)

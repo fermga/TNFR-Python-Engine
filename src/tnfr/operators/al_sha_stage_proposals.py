@@ -155,9 +155,7 @@ def _emission_lifecycle_fields(
                 tolerance = 0.01 * abs(preserved_epi)
                 should_warn = epi_drift > tolerance
             if should_warn:
-                node_type = (
-                    "initial" if abs(preserved_epi) < 1e-6 else "established"
-                )
+                node_type = "initial" if abs(preserved_epi) < 1e-6 else "established"
                 messages.append(
                     f"Node {node} ({node_type}) EPI drifted during silence "
                     f"(preserved: {preserved_epi:.3f}, "
@@ -218,9 +216,7 @@ def propose_emission_stage(
         label="target EPI state",
     )
     boost = get_factor(dict(factors), "AL_boost", COUPLING_GENTLE)
-    raw_proposal = _finite_operator_scalar(
-        epi_before + boost, "AL EPI proposal"
-    )
+    raw_proposal = _finite_operator_scalar(epi_before + boost, "AL EPI proposal")
     epi_after = _validated_epi_assignment_value(
         _GraphBoundsView(graph.graph), raw_proposal
     )
@@ -263,13 +259,9 @@ def propose_silence_stage(
     from . import _finite_operator_scalar, get_factor
 
     data = graph.nodes[node]
-    vf_before = _finite_operator_scalar(
-        get_attr(data, ALIAS_VF, 0.0), "SHA nu_f state"
-    )
+    vf_before = _finite_operator_scalar(get_attr(data, ALIAS_VF, 0.0), "SHA nu_f state")
     factor = get_factor(dict(factors), "SHA_vf_factor", SHA_VF_FACTOR)
-    vf_after = _finite_operator_scalar(
-        factor * vf_before, "SHA nu_f proposal"
-    )
+    vf_after = _finite_operator_scalar(factor * vf_before, "SHA nu_f proposal")
     preserved_epi = float(get_attr(data, ALIAS_EPI, 0.0))
     return SilenceStageProposal(
         node=node,
@@ -325,9 +317,7 @@ def commit_emission_structure(
     _set_epi_with_boundary_check(node, proposal.epi_after, apply_clip=False)
 
 
-def commit_silence_lifecycle(
-    graph: TNFRGraph, proposal: SilenceStageProposal
-) -> None:
+def commit_silence_lifecycle(graph: TNFRGraph, proposal: SilenceStageProposal) -> None:
     """Apply the exact five-field SHA latency metadata overwrite."""
 
     data = graph.nodes[proposal.node]
@@ -338,9 +328,7 @@ def commit_silence_lifecycle(
     data["was_initial_on_silence"] = proposal.was_initial_on_silence
 
 
-def commit_silence_structure(
-    graph: TNFRGraph, proposal: SilenceStageProposal
-) -> None:
+def commit_silence_structure(graph: TNFRGraph, proposal: SilenceStageProposal) -> None:
     """Commit the validated SHA capacity through the cache-aware setter."""
 
     from ..node import NodeNX

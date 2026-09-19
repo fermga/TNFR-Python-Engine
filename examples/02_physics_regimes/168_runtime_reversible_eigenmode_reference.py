@@ -16,8 +16,8 @@ or future TNFR stability.
 
 from __future__ import annotations
 
-from fractions import Fraction
 import json
+from fractions import Fraction
 from typing import Any
 
 import networkx as nx
@@ -31,7 +31,6 @@ from tnfr.physics import (
     ExecutedReversibleSingleEigenmodeEulerReferenceObservation,
     observe_executed_reversible_single_eigenmode_euler_reference,
 )
-
 
 F = Fraction
 INITIAL_EPI = (1.0e16, 1.0, -9_999_999_999_999_998.0)
@@ -88,14 +87,11 @@ def _execute_partition(durations: tuple[float, ...]):
     return result.physical_flow_partition_evidence[0]
 
 
-def run_protocol(
-) -> ExecutedReversibleSingleEigenmodeEulerReferenceObservation:
+def run_protocol() -> ExecutedReversibleSingleEigenmodeEulerReferenceObservation:
     """Execute and bind the finite two-, four- and eight-segment family."""
 
     executions = tuple(_execute_partition(row) for row in PARTITIONS)
-    return observe_executed_reversible_single_eigenmode_euler_reference(
-        executions
-    )
+    return observe_executed_reversible_single_eigenmode_euler_reference(executions)
 
 
 def _fraction_text(value: Fraction) -> str:
@@ -116,8 +112,7 @@ def build_report(
         "nodes": list(observation.nodes),
         "mu": _fraction_text(reference.exact_mode_eigenvalue),
         "reversible_metric": [
-            _fraction_text(value)
-            for value in reference.exact_reversible_metric
+            _fraction_text(value) for value in reference.exact_reversible_metric
         ],
         "partitions": [
             {
@@ -142,12 +137,8 @@ def build_report(
                     row.exact_endpoint_runtime_defect_linf
                 ),
                 "runtime_continuous_linf_error_interval": [
-                    _fraction_text(
-                        row.exact_runtime_continuous_linf_error_lower_bound
-                    ),
-                    _fraction_text(
-                        row.exact_runtime_continuous_linf_error_upper_bound
-                    ),
+                    _fraction_text(row.exact_runtime_continuous_linf_error_lower_bound),
+                    _fraction_text(row.exact_runtime_continuous_linf_error_upper_bound),
                 ],
             }
             for row in observation.partition_observations

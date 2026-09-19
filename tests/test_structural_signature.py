@@ -311,9 +311,7 @@ def test_numpy_array_signature_observes_numeric_and_object_state() -> None:
     assert objects_before != structural_proof_signature(objects)
 
     payload = tuple(np.array([float(index)]) for index in range(32))
-    assert structural_proof_signature(payload) == structural_proof_signature(
-        payload
-    )
+    assert structural_proof_signature(payload) == structural_proof_signature(payload)
 
     cyclic = np.empty(1, dtype=object)
     cyclic[0] = cyclic
@@ -334,9 +332,9 @@ def test_numpy_array_signature_observes_numeric_and_object_state() -> None:
         dtype=np.dtype("i4", metadata={"holder": metadata_holder}),
     )
     metadata_holder.append(metadata_cycle)
-    assert structural_proof_signature(
+    assert structural_proof_signature(metadata_cycle) == structural_proof_signature(
         metadata_cycle
-    ) == structural_proof_signature(metadata_cycle)
+    )
 
 
 def test_mapping_signature_canonically_orders_bit_identical_nan_keys() -> None:
@@ -443,10 +441,13 @@ def test_ephemeral_opaque_references_remain_live_during_traversal() -> None:
     expected = structural_proof_signature(generator)
 
     for _ in range(20):
-        assert structural_proof_signature(
-            generator,
-            opaque_references=ephemeral_references(),
-        ) == expected
+        assert (
+            structural_proof_signature(
+                generator,
+                opaque_references=ephemeral_references(),
+            )
+            == expected
+        )
 
 
 def test_retained_references_prevent_identity_reuse_across_comparison() -> None:

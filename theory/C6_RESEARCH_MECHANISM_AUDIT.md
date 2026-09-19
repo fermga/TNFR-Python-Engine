@@ -1,6 +1,14 @@
 # Repository mechanisms for C6: B71 audit through B75 witness refinement
 
-The repository contains useful mechanisms for the present proof effort, but
+**Status: retained conditional derivations and finite evidence; C6 campaign
+parked.** The B75 boundary remains 41 of 56 first-exit labels excluded and 15
+open; global C6 stability is not proved. Dated priorities below record earlier
+research steps. Only the [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md)
+owns current work; the [mechanism audit](C6_RESEARCH_MECHANISM_AUDIT.md) records
+verification fixes and supersession. Mathematical claims retain their local
+hypotheses and source-bound evidence.
+
+The repository contains useful mechanisms for the recorded C6 proof effort, but
 their hypotheses are more important than their names. This audit found two
 reproduced verification-boundary defects, a documentation overclaim, a stale
 root assumption, and concrete opportunities to share arithmetic. It found no

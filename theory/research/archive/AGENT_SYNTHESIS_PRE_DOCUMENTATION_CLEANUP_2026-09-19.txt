@@ -1,0 +1,1764 @@
+# TNFR: Resonant Fractal Nature Theory
+
+**Theoretical framework and engine for coherent pattern analysis on graph-coupled networks.**
+
+- **Version**: 0.0.3.5
+- **Status**: Canonical synthesized reference for TNFR agent guidance
+- **Repository**: https://github.com/fermga/TNFR-Python-Engine · **PyPI**: `pip install tnfr`
+
+This document is the **synthesized source of truth** for working on TNFR. It states
+the theory as a complete, self-contained whole — not as a changelog. Program
+histories, derivations, and per-example detail live in linked documents under
+[theory/](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md), [docs/](https://github.com/fermga/TNFR-Python-Engine/tree/main/docs/), and [examples/](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md);
+this file keeps only the canon an agent needs to reason and act correctly.
+
+---
+
+## 1. What TNFR is
+
+TNFR models **coherent dynamic patterns that persist through resonance**, rather
+than discrete objects. A pattern (a vortex, a neural assembly, a decision) is a
+configuration maintained by resonant coupling with its environment; it dissolves
+when that coupling fails. The mindset:
+
+- Model **coherence**, not objects · capture **process**, not state
+- Measure **resonance**, not properties · think **structure**, not substance
+- Embrace **emergence**, not reduction
+
+The canonical form-evolution identity is the **nodal equation**:
+
+$$\frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t)$$
+
+It determines the form rate once pressure and capacity are specified. A
+complete predictive model also needs their constitutive dependencies and
+the evolution of phase, support and any relevant history.
+
+### Source hierarchy (authority)
+
+1. **TNFR nodal/structural physics** — canonicity is a physical/mathematical
+   property, derivable from the nodal equation and the canonical invariants. This
+   is the ultimate authority.
+2. **The repository** ([TNFR-Python-Engine](https://github.com/fermga/TNFR-Python-Engine)) —
+   the primary canonical implementation.
+3. **This document** — the synthesized working reference, mirrored verbatim at
+   [.github/agents/my-agent.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/.github/agents/my-agent.md).
+4. **PyPI package** — stable releases; may lag the repository.
+
+This file is updated **only when genuinely novel or important TNFR canonicity
+emerges**, and is always written as a complete, closed synthesis — never as an
+incremental session log.
+
+### Communication policy
+
+1. **English only** for all code, docs, comments, commits, issues, and PRs.
+   Non-English text is allowed only in verbatim quotations or raw data.
+2. **Anchor every claim to math or telemetry** — the nodal equation, an operator
+   contract, or a recorded metric. No qualitative claim without data.
+3. **No metaphysical extrapolation** — describe engineering and mathematical
+   results, not cosmological, philosophical, or consciousness conclusions.
+4. **Academic tone** — precise, testable, with documented scope, seeds, and
+   operator sequences so any state is reproducible.
+
+---
+
+## 2. Foundations
+
+### The nodal equation
+
+$$\frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t)$$
+
+| Symbol | Name | Meaning | Units |
+|--------|------|---------|-------|
+| **EPI** | Primary Information Structure | Coherent structural form (configuration) | Declared form unit X |
+| **νf** | Structural frequency | Reorganization capacity / rate | Hz_str |
+| **ΔNFR** | Nodal gradient | Structural reorganization pressure | X when νf has inverse-time units |
+
+Read it as **structural change rate = reorganization capacity × reorganization
+pressure**. For this unforced EPI law, limiting states: `νf = 0` (inactive EPI channel);
+`ΔNFR = 0` (instantaneous zero EPI rate); both non-zero → active EPI reorganization.
+
+**Type and representation.** EPI denotes structural form, not the scalar
+coherence diagnostic. On a declared differentiable state space, pressure is a
+tangent response: with `[EPI]=X` and `[nu_f]=T^-1`, it has units X. A nodewise
+chart change `y=f(EPI)` requires the pressure pushforward `Df*DeltaNFR`; an
+unsigned distance or an extra time derivative cannot silently replace it.
+The engine's signed scalar chart is one supported realization, not a proof
+of the necessary dimension of structural form. Rich BEPI storage and temporal
+spectral entropy do not establish a complete alternative dynamics. Definitions,
+original-source dimensional conflicts and closure requirements are centralized in
+[FUNDAMENTAL_THEORY sections 2.4-2.6](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation).
+On positive-capacity continuous segments, `ds_i=nu_i dt` gives `dEPI_i/ds_i=p_i`;
+it reparameterizes a supplied evolution and supplies no missing capacity law.
+
+### Structural triad
+
+Every node carries three attributes:
+
+- **Form (EPI)** — coherent configuration in a structural manifold; named
+  transformations use canonical operators, while declared solver steps use the
+  shared nodal integrator with explicit pressure and provenance; supports
+  nesting (operational fractality).
+- **Frequency (νf)** — nonnegative reorganization capacity in Hz_str; `νf = 0`
+  suppresses the unforced EPI rate without erasing stored form.
+- **Phase (φ or θ)** — synchronization parameter in [0, 2π); coupling is admissible
+  only when the circular separation
+  `δ(φᵢ,φⱼ) = |wrap(φᵢ − φⱼ)| ≤ Δφ_max`.
+
+The graph engine's real scalar EPI chart is represented either directly or by
+the uniform-real `BEPIElement` embedding. `real_scalar_epi` recovers the signed
+coordinate and `scalarize_epi` applies the same rule to live and serialized
+values. `abs(BEPIElement)` remains a nonnegative magnitude; genuinely nonuniform
+or complex elements have no signed one-dimensional representative and are
+rejected by canonical glyphs that require a real scalar EPI coordinate,
+scalar-only diffusion, coarse EPI quotients and affine certificates.
+Scalar numerical solvers likewise require the finite signed chart before
+solver-owned writes; rich live or serialized EPI is not projected to magnitude.
+
+**Parameter foundations.** With `[EPI]=X`, `[t]=T`, `[νf]=T^-1`, directed
+pressure has units `X`. A phase coordinate does not by itself identify capacity
+with angular speed. For common form/time changes `y=a*x+b`, `tau=c*t`, the
+multichannel pressure covaries with `nu'=nu/c` and coefficients
+`(w_phase',w_epi',w_vf',w_topo')=(a*w_phase,w_epi,a*c*w_vf,a*w_topo)`;
+renormalizing these coefficients generally changes the law. Local linearity,
+uniform-shift invariance, uniform equilibrium and a maximum principle imply
+an EPI diffusive generator; reciprocity and row normalization are additional
+premises. Configured capacity ceilings, operator gains, coherence bands and
+clipping intervals are not uniquely derived physical constants. The optional
+additive `Gamma` integrator is a distinct forced model and can move EPI at
+zero capacity. Definitions, dependencies and full-tetrad scope are centralized
+in [theory/NODAL_PARAMETER_FOUNDATIONS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md).
+
+The candidate observation `z=EPI*exp(i*phase)` is not a faithful replacement
+for signed EPI and phase under the current multichannel pressure: an exact
+strict-U3 P2 pair has identical observation but different squared-modulus
+rates, independently of phase speed. At zero EPI, phase can still affect a
+neighbor. Retaining `(EPI,u)` with `|u|=1` faithfully encodes form and phase,
+but `u_dot=i*omega*u` leaves its angular law undetermined. A zero EPI coordinate
+therefore is not absence of the existing nodal substrate.
+
+At fixed unique support, active conductance edges and effective channel
+coefficients, the conditional smooth response is
+`p_dot=-w_epi*(L_W*(nu*p)+L_W_dot*EPI)+w_phase*(R-I)*(theta_dot/pi)-w_vf*L_U*nu_dot`,
+`EPI_ddot=nu_dot*p+nu*p_dot`. Here `R` differentiates the regular circular mean,
+`L_W` is weighted EPI transport and `L_U` is unique-support transport. A common
+capacity rate can leave pressure response unchanged while changing form
+acceleration. On connected undirected support, capacity can cancel phase-source
+motion exactly when its support-degree-weighted sum vanishes. These are
+conditional identities, not laws selecting phase/capacity/conductance motion
+or identifying the derivative of runtime arithmetic. The conductance term
+retains the derivative of row normalization and vanishes for common weight
+scaling; geometric Dirichlet work can nevertheless change. Omitted edge rates
+retain the fixed-conductance case. The shared owner is
+[phase_response.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/phase_response.py).
+
+For a held source `f` on connected reciprocal unique support with degrees `d`
+and `w_vf>0`, finite capacity compatibility is exactly
+`d^T(w_phase*g-f)=0`. Fixed topology changes the capacity profile but not this
+condition. All solutions are a unique degree-centered profile plus a uniform
+capacity, with strict positivity and any declared bands checked separately.
+This uniform freedom preserves the source but changes nodal rates away from
+zero pressure; it is not a physical state equivalence. The shared exact
+`derive_phase_capacity_balance` admits declared oriented phase data, not a
+phase-realization or autonomous-law certificate. U3 alone is insufficient:
+a strict three-leaf star has incompatible weighted phase source. See
+[finite joint compatibility](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md#11-finite-joint-phase-capacity-source-compatibility).
+
+### The fractal-resonant node (NFR)
+
+The node carrying the triad is a **Nodo Fractal Resonante (NFR)** — canonically, a
+**region of structural coherence coupled to a network** (TNFR.pdf §1.4.1). The triad
+(EPI, νf, φ) *defines* it; four properties characterize it:
+
+- **Multiscalar (fractal)** — an NFR can nest other NFRs (operational fractality; THOL
+  sub-EPIs, REMESH, grammar U5). A single node is a micro-NFR; a coherent region is a
+  macro-NFR.
+- **Autopoietic (self-generated)** — self-generated formation and maintenance
+  are the structural research requirement. AL and THOL implement declared
+  activation/creation maps; invoking them does not itself derive their
+  autonomous occurrence or prove independence from sustaining inputs.
+- **Relational** — exists only by coupling (U3). **Temporal** — persists while it
+  reorganizes its coherence.
+
+Its **nodal topology** is **radial** (one central nucleus), **annular** (passive center,
+peripheral ring) or **multinodal** (several centers), read from the emergent
+structural-potential geometry by [classify_nodal_topology](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py)
+using its calibrated canonical inverse-square kernel (`alpha = 2`), and surfaced
+as a whole-NFR read-out by `Network.nfr()` ([src/tnfr/sdk/simple.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/sdk/simple.py)).
+
+The **zero-pressure set** `ΔNFR = 0` has zero instantaneous unforced EPI rate
+(`C = 1` when the recorded `dEPI` also vanishes). In the joint system, phase,
+capacity or support can still change and generate later pressure; an invariant
+equilibrium requires their laws as well. Instantaneous EPI stationarity alone
+is weaker: zero capacity suppresses its rate even under nonzero pressure.
+For the pure EPI channel on a fixed connected symmetric graph with positive capacity,
+equilibrium is a uniform field; disconnected components can have different constants.
+In that restricted model the uniform field is an attractor. This result does
+not establish attractors for the full multichannel dynamics or for static
+arithmetic and chemical pressure fields. The shared numeric predicate is
+[is_structural_equilibrium](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/metrics/common.py), and the per-node coherence map
+`structural_coherence` (`C = 1/(1+|ΔNFR|+|dEPI|)`) is the **single kernel** every domain
+reads — graph nodes, arithmetic nodes (primes), chemical nodes (noble gases) — with only
+the `ΔNFR` realisation domain-specific.
+
+### Accumulated evolution and the convergence policy
+
+Integrating the nodal equation gives the accumulated structural change:
+
+$$\mathrm{EPI}(t)-\mathrm{EPI}(t_0)=\int_{t_0}^{t}\nu_f(\tau)\,\Delta\mathrm{NFR}(\tau)\,d\tau.$$
+
+Finite-horizon integrability, bounded trajectories, convergence as `t → ∞`, and
+absolute integrability are distinct conditions. Absolute integrability is sufficient
+for a finite limiting EPI; bounded or vanishing pressure alone is insufficient.
+Positive feedback can destabilize a trajectory, while diffusion can relax without
+named stabilizers. Grammar **U2** is the engine's stabilization and debt policy,
+motivated by controlling this accumulated change; it is not a universal convergence
+theorem for arbitrary pressure laws. See
+[theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md).
+
+### Transport content (structural diffusion)
+
+The canonical `ΔNFR` aggregates four structural gradient channels,
+`ΔNFR = w_phase·∂φ + w_epi·∂EPI + w_vf·∂νf + w_topo·∂topo` (weights and defaults in
+[src/tnfr/dynamics/dnfr.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/dynamics/dnfr.py)). The **EPI channel** is
+**exactly a graph diffusion**. For the EPI channel,
+
+$$\Delta\mathrm{NFR}_{\text{epi}}(i) = \overline{\mathrm{EPI}}_{\mathcal{N}(i)} - \mathrm{EPI}(i) = -(L_{\mathrm{rw}}\,\mathrm{EPI})(i),\qquad L_{\mathrm{rw}} = I - D^{-1}W,$$
+
+so `∂EPI/∂t = −diag(νf) · L_rw · EPI` describes the isolated channel, with zero
+Laplacian rows at isolates. For fixed capacities and fixed symmetric nonnegative
+weights with a common
+positive capacity, modes decay as `e^{−νf λ_k t}` and the degree-weighted total
+is conserved. Positive heterogeneous capacities instead conserve weights `d_i/νf_i`;
+their rates are eigenvalues of `diag(νf)L_rw`. On a connected homogeneous graph,
+`νf·λ₂` is the slowest nonuniform decay rate. The reaction threshold `r_c=νf·λ₂`
+concerns nonuniform modes; a positive reaction already grows the uniform mode.
+The executable fixed-capacity certificate rationalizes its materialized
+binary64 generator: consensus-subspace invariance, the stronger uniform
+fixed-point identity and preservation of the displayed weighted mean are three
+separate facts. The bounded time-varying theorem instead treats the effective
+binary64 conductances materialized by the shared reader and the declared bounds
+as exact real coefficients, derives its Laplacian and rate rationally, and keeps
+ordinary binary64 spectral diagnostics separate. A proven positive exact rate
+may lack an operational float representation after underflow. Finite
+executor-owned physical partitions now verify pressure refresh at
+explicit boundaries and conditionally identify represented Euler segment maps.
+Finite three-mesh event/REMESH observations are implemented; solver accuracy,
+generic runtime mesh convergence and future-schedule verification remain open.
+For any fixed connected symmetric nonnegative rational conductance with positive
+capacity, an exact single-eigenmode theorem uses `H=diag(d_i/nu_f_i)` and
+`A=diag(nu_f)L_rw`. When the H-centered initial field satisfies the exact
+rational identity `A v=mu v`, `mu>0`, it proves the refreshed-Euler
+`O(h_max)` endpoint bound and conditional exact-real convergence as
+`h_max -> 0`. A finite offline runtime adapter derives this exact reference
+from individually executor-certified pressure-refreshed partitions, separates
+binary64 pressure and held-input defects, and propagates their generally
+off-mode effect through the complete Euler matrices. It proves neither runtime
+mesh convergence nor common causal family provenance. The effective event-free
+`P2` adapter separately propagates ideal error through unit-delay REMESH by
+`beta=(1-alpha)^2` and adds the measured runtime residual. Neither result is a
+binary64 asymptotic convergence theorem. P2 submits its three physical
+partitions to the general runtime adapter once, then additionally requires
+exact-affine identification, zero pressure-realization and held-input
+residuals, and zero local and endpoint defects before applying its REMESH
+claims.
+A separate exact augmented-history theorem covers the uniform unclipped
+finite REMESH companion on fixed support and metric. One applied runtime
+transition is linked to it with signed binary64 rounding/clipping defects, and
+adjacent compatible cycle records provide an exact finite schedule/history
+energy telescope. A finite outer executor now runs declared cycle specs on one
+graph and binds each result to its ordinal and exact spec. By default it requires
+the compatible telescope and gives it same-invocation causal provenance plus
+graph-owned atomicity; its explicit no-telescope branch retains the same finite
+causal and atomic execution evidence with `runtime_telescope=None`. It does not
+prove repeated runtime stability, solver convergence, a global gain or future
+behavior.
+A sealed block observer now selects a nonempty contiguous part of a retained
+causal telescope and verifies `D=K+S`, `S>=0`. For positive initial augmented energy it
+reports the block-specific normalized lower margin `kappa=K/V_before` and the
+endpoint bound `V_after/V_before<=1-kappa`. One implemented witness has
+`kappa=139/256`; the lag-one `alpha=1` orbit has `kappa=0`. Equilibrium and
+amplitude scaling block a uniform positive absolute drop. A distinct conditional
+exact-model theorem now supplies prefix gain upper bound one and uniform normalized block
+margin `1-q` over `active_max_delay+1` cycles for any sequence of
+consensus-preserving schedules with one common fixed-metric disagreement gain
+`q<1`. It proves repeated geometric decay of spatial disagreement, including
+the `alpha=1` pure-delay case, but does not control spatially uniform temporal
+means. A robust conditional extension now assumes the signed bound
+`E_H(z)-E_H(y)<=eta*J`, where `J` is the active-history Jensen energy, and
+derives `q_eff=q*(1+eta)`. It reuses the same envelope theorem: `q_eff<1`
+gives margin `1-q_eff` and geometric spatial-disagreement decay, while
+`q_eff=1` gives only nonincrease. A causal adapter verifies `J`, the defect,
+the represented gain, the full energy-vector envelope and the complete-block
+endpoint factor on one finite executed block.
+An exact pairwise observer now computes the optimal nonnegative `eta` for one
+admissible binary64 tuple; it neither enumerates nor certifies a uniform runtime
+class. One normal-valued `alpha=1/2` witness requires `eta=2^210-1/4`, so strict
+robust-envelope contraction requires
+`q<4/(2^212+3)`; a bounded binary64 interval alone therefore does not give a
+useful bound for the implemented `q=9/16` witness policy. At the exact
+`alpha=1` boundary, a fixed-support, fixed-metric hard-clip class with sufficient
+represented history inside one fixed finite interval has uniform `eta=0` and
+is forward invariant under the REMESH map alone. The first useful restricted
+`0<alpha<1` class is also exact: on ordered P2 support, with any fixed positive
+diagonal metric, fixed delays, `alpha=1/2`, a symmetric hard interval
+`[-B,B]`, `B>=4*2^-1074`, and sufficient antisymmetric history rows `(a,-a)`,
+the production REMESH map preserves the class and has sharp uniform
+`eta=135/124`. Its proof combines an analytic IEEE tail for
+`sqrt(D)>=11*2^-1074` with exact enumeration of 6,615 finite-core candidates,
+3,890 admissible; `(-3,-2,-3)*2^-1074` attains the bound. Strict robust
+composition requires `q<124/259`. The case `q=4/9` gives
+`q_eff=259/279` and margin `20/279`; equality at `q=124/259` has zero margin,
+and `q=9/16` is rejected. General metric-centered rows and unrestricted fixed
+lattices are excluded by counterexamples. This invariance concerns REMESH
+alone, without schedule, graph/event or complete-runtime promotion. On the
+abstract two-node
+mutual-singleton support, a configured immutable-snapshot Reception EPI kernel
+with exact binary64 mix `0.5` maps every finite pair in the source interval to
+numeric consensus, hence its disagreement gain is `q=0` in every positive
+diagonal metric. Its
+composition with the `alpha=1` class extinguishes all active-history spatial
+disagreement after `tau_global+1` restricted cycles, under arbitrary finite
+repetition of those numeric kernels. The abstract certificate alone does not
+certify a live graph or executor. A sealed adapter now binds one completed
+graph-owned event to its grammar-admitted two-phase EN EPI stage, exact runtime
+neighbors, matching interval and metric, and captured `q=0` endpoint. It does
+not by itself bind the source REMESH history/configuration to that graph. A
+second sealed adapter now binds every such selected EN stage and every applied
+`alpha=1` hard-clipped REMESH to the same executor-owned finite P2 cycle
+sequence. For `N>=L=tau_global+1`, it verifies that the active chronological
+history suffix of length `L` lies in the source interval and that the observed
+post-horizon and final post-REMESH fields have zero spatial disagreement. Older
+retained history rows are inactive and outside the claim. This finite causal
+certificate does not audit every auxiliary Reception write, retain current
+live-graph state or prove future or unobserved repeated complete-runtime
+stability. The reusable
+`execute_p2_half_reception_remesh_policy_invocation` entry point now snapshots
+the graph before caller-input materialization, checks the current undirected
+P2/REMESH conditions, and rederives U1a admission from the live EPI pair at the
+start of every cycle. It
+executes and post-certifies each finite call inside one outer transaction.
+Failure restores graph-owned state; successful later calls are independently
+validated rather than predicted by an earlier certificate. The
+canonical default Reception factor has a normal-valued witness
+with disagreement-energy gain four; the half-factor proof therefore cannot be
+silently transferred to that broader configuration. A useful forward-invariant
+binary64 relative-defect class is now known on the restricted half-alpha
+antisymmetric P2 domain. Extension to broader states, support or coefficients,
+repeated complete-runtime execution and broader verified binary64 kernel
+families remain open.
+These scoped identities do not certify U2 for arbitrary operator sequences.
+The exact Dirichlet balance below uses this same adjacency convention. See
+[src/tnfr/physics/structural_diffusion.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/structural_diffusion.py).
+
+**Phase scale boundary.** In a selected open-semicircle chart, the pairwise
+phase-pressure realization `-(1/π) diag(νf)L_rw q` inherits the reversible EPI
+quotient identities. The actual canonical phase channel uses the argument of an
+unweighted neighbor-phasor sum (including zero-weight support edges) and is
+nonlinear. A sufficient domain for closure on the ordinary quotient's lifted
+block-constant subspace uses equitable support profiles, no intra-fiber
+edges, equal active macro-neighbor multiplicities, block-constant capacity and
+nonzero phasor resultants. A `K3,3` same-macro-state counterexample refutes
+global projected autonomy. Branch crossing, changing support and finite-time
+phase closure remain open. See
+[src/tnfr/physics/phase_quotient.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/phase_quotient.py).
+
+**Joint scale inheritance.** An enriched quotient retains unique-neighbor
+multiplicities `N_ab`, including internal and zero-conductance support neighbors,
+separately from aggregate transport. For equitable support and block-constant
+primitive phase and fine capacity `kappa_a`, these counts reconstruct the
+phase, capacity and topology channels. The cross-only transport quotient has
+`nu_eff,a=dbar_a/hbar_a`; its source pressure scales by the derived ratio
+`kappa_a/nu_eff,a`. Fine capacity must remain the input to the capacity-gradient
+channel. With exact EPI projection closure, this gives a conditional joint
+law with explicitly held phase, capacity, support and coefficients. The shared
+observer retains phase materialization, pressure assembly and stored-pressure
+defects separately; it does not certify geometric phase availability or
+autonomous selection of the held laws/partition. EPI closure also does not
+imply inherited potential closure: the latter tests `(-e R K L)Q=0` for its
+declared fine distance kernel. One shared exact invariant-row realization
+retains declared affine outputs of the held nodal model. Its geometry adapter
+uses `(R; -R K diag(1/nu) A)` and offset `(0; R K f)` to retain EPI means
+and averaged model potential, distinguishing pressure from rate at
+heterogeneous capacity. Exact paths on materialized edge lengths and
+numerical field residuals remain separate. Minimality is among all-state
+linear observations of that fixed model, not new-node identity or complete
+tetrad reconstruction. The shared tetrad dependency observer tests the exact
+hidden-pressure map `M-MTC`, with `M=-diag(1/nu)A`. Its vanishing is equivalent
+to full fine linear rank when the partition means are retained. It supplies
+pressure inputs for model read-outs but is not necessary for a scalar xi
+decoder. An exact P5 control has identical reduced EPI/potential and different
+successful xi fits. Held primitive-phase read-outs, unavailable curvature,
+stored pressure and runtime float distance bins retain separate provenance;
+the dimensionless fallback uses the smallest numerical eigenvalue above its
+declared cutoff, which need not be the smallest positive mode. On fixed
+unit P5 pure-EPI diffusion, the existing reflection quotient extends to
+`(a,p,c,r^2,r*s,s^2)` with rates induced by the fine generator and a nonnegative
+rank-one cone constraint. It retains form up to reflection and the declared
+aggregated fields. Its intrinsic dimension remains five; singular Jacobian
+rank is not reduced local dimension. The exact rational decoder selects a
+representative, not a physical orientation or a new evolution law. See
+[joint quotient and geometric scope](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#joint-constitutive-reduction-with-inherited-support-counts).
+
+For two neighbors whose oriented displacements are certified inside the
+center's open half-π interval, the phasor direction is their exact midpoint.
+IL and CPU pressure paths share a rational-π kernel that separately certifies
+rounding of this displacement and the displayed mean; unresolved cases retain
+the phasor path. Pressure still divides the rounded displacement by represented
+π. Existing phase normalization/writes, other channels and Euler rounding remain
+separate, so this local accuracy result does not prove runtime mean conservation.
+See [src/tnfr/mathematics/_phase_midpoint.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/mathematics/_phase_midpoint.py).
+
+---
+
+## 3. The structural tetrad
+
+Four structural fields form the canonical diagnostic read-out of a network.
+They organize aggregation, local phase derivatives and non-local correlation.
+Their selection does not establish complete reconstruction of the graph state or
+its evolution. **π** is the exact phase-wrap scale bounding `|∇φ|` and `|K_φ|`.
+
+| Structural field | Symbol | Tower order | Role |
+|------------------|--------|-------------|------|
+| Structural potential | Φ_s | 0th (aggregation) | Nonlocal pressure aggregation |
+| Phase gradient | \|∇φ\| | 1st (local) | Local desynchronization stress |
+| Phase curvature | K_φ | 2nd (local) | Local circular curvature |
+| Coherence length | ξ_C | non-local | Correlation range |
+
+### Field scales
+
+Each field has a characteristic scale or configured interpretation:
+
+- **π — phase scale (geometric, exact).** Both defined local phase read-outs are **wrapped
+  angles**, so `|∇φ| ≤ π` *and* `|K_φ| ≤ π` for any configuration — π scales the
+  whole **phase sector**. `|K_φ| < 0.9·π ≈ 2.827` is a selected safety margin
+  inside that exact bound; the factor 0.9 is a policy choice.
+- **Circular-mean domain.** `observe_phase_curvature` records exact sums of
+  materialized binary64 phasors and approximate angle read-outs. A nonzero
+  represented resultant has no arbitrary magnitude cutoff. Exact represented
+  cancellation yields unavailable curvature; numeric curvature/full telemetry
+  raise `UndefinedPhaseCurvatureError`, while phase gradient remains available.
+  This is not proof of a true trigonometric singularity or a new phase law.
+  Field readers reject malformed authoritative phase/pressure before cache
+  access and return detached maps. Safe telemetry emission retains independent
+  available fields and explicit errors instead of inventing a numeric result.
+- **|∇φ| — phase-wrap bounded.** Its genuine bound is `|∇φ| ≤ π`. There is no fixed
+  structural constant for the synchronization onset: the measured value is `≈ 0.29`
+  and σ-dependent (a dynamical transition, not a derived threshold).
+- **ξ_C — correlation length.** Both backends share an uncentered static
+  coherence-product fit using explicit edge `length`, fallback `weight`, then
+  unit lengths. Directed pairs retain their orientation. A successful fit has
+  path-distance units; the normalized-Laplacian fallback `1/√λ₂` is a separate
+  dimensionless spectral scale. Estimator provenance is required for comparison;
+  neither quantity alone proves criticality or a universal decay law.
+- **Φ_s — confinement policy.** `Δ Φ_s < π/2 ≈ 1.571` is the U6 drift policy;
+  per-node `|Φ_s| < π/4 ≈ 0.785` is a separate magnitude policy. Both are selected
+  π-scaled thresholds. Phase wrapping alone does not bound the source aggregation:
+  `||Φ_s||∞ ≤ ||B_G||∞ ||ΔNFR||∞`, where `(B_G)_ij=1/d(i,j)²` off the diagonal
+  and zero for unreachable pairs. Explicit edge `length` defines `d`; absent
+  `length`, the transport `weight` remains a compatibility fallback. A complete
+  graph with unit pressure gives `Φ_s=n−1`.
+
+**Structure and scope.** Circular phase curvature linearizes to a Laplacian action
+in a small-spread regime with matching neighborhood weights. The wrapped nonlinear
+field is not globally the linear EPI diffusion operator. Local phase derivatives
+and non-local source/correlation diagnostics provide complementary information.
+
+### Why these four (scope and minimality boundary)
+
+The four canonical channels organize the following read-outs:
+
+```
+ΔNFR_j → Σ 1/d²  → Φ_s   (0th order, global aggregation)
+φ_i    → ∇       → |∇φ|   (1st order, local)
+       → ∇²      → K_φ    (2nd order, local; Laplacian after phase linearization)
+       → corr    → ξ_C    (non-local correlation range)
+```
+
+Higher Laplacian powers belong to the algebra generated by the Laplacian, but this
+does not make their observations reconstructible from lossy tetrad summaries.
+For four distinct eigenvalues, `I,L,L²,L³` are linearly independent. Uniformly
+rescaling capacity can preserve the tetrad while changing the nodal evolution rate.
+A minimal complete state basis therefore remains unproved; the tetrad remains the
+required diagnostic interface.
+Full treatment: [theory/MINIMAL_STRUCTURAL_DEGREES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/MINIMAL_STRUCTURAL_DEGREES.md),
+[theory/FUNDAMENTAL_THEORY.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/FUNDAMENTAL_THEORY.md),
+[docs/STRUCTURAL_FIELDS_TETRAD.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/STRUCTURAL_FIELDS_TETRAD.md). All four fields
+are CANONICAL; compute them via [src/tnfr/physics/fields.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py).
+
+---
+
+## 4. Emergent geometry
+
+Graph fields support geometric read-outs and specified auxiliary dynamical models.
+Their algebraic identities, model flows and correspondence with engine trajectories
+must be stated separately. The implementations expose the corresponding scope.
+
+### Auxiliary symplectic substrate
+
+The substrate model uses an ambient symplectic space `P = ℝ^{4N}` with two canonical
+conjugate pairs per node, initialized from extracted graph fields:
+
+- **Geometric sector** `(K_φ, J_φ)` — curvature ↔ phase current
+- **Potential sector** `(Φ_s, J_ΔNFR)` — potential ↔ ΔNFR flux
+
+with canonical brackets `{K_φ, J_φ} = {Φ_s, J_ΔNFR} = 1`. The Hamiltonian is the
+structural **energy functional** `H_sub = ½Σ(K_φ² + J_φ² + Φ_s² + J_ΔNFR²)` (plus
+the held-fixed `½Σ|∇φ|²` background). Its exact harmonic flow is a
+**symplectomorphism**, preserving phase volume. This does not certify the 13 engine
+operators: each induced map would need its own symplecticity check, and extracted
+graph fields need not fill or remain on the ambient space under that flow.
+**Noether** ties each continuous symmetry to a conserved charge: time translation →
+`H_sub`; the geometric U(1) (`Ψ → e^{iα}Ψ`) → `E_geo = ½Σ|Ψ|²`; the potential U(1)
+→ `E_pot`. The complex coordinate `Ψ = K_φ + i·J_φ` is the geometric sector under
+the substrate's complex structure (flat Kähler). The substrate further carries a
+**U(2) polarization symmetry** with conserved Stokes parameters on a per-node
+**Poincaré sphere** — this is classical wave polarization (Stokes/Poincaré), a
+product (un-entangled) classical texture, **not** a quantum state.
+
+The full nodal equation has not been derived as an overdamped projection of this
+isotropic Hamiltonian. A restricted exact bridge exists for EPI-only diffusion
+on fixed symmetric nonnegative conductance: with `B=D−W`,
+`E_D=½ EPIᵀ B EPI`, and `M=diag(νf_i/d_i)` (zero at isolates),
+`dEPI/dt=−M∇E_D` and `dE_D/dt=−∇E_Dᵀ M∇E_D≤0`.
+`compute_diffusion_energy` reads this balance without evolving the graph.
+This Dirichlet energy differs from the tetrad potential; zero capacity yields
+degenerate mobility. A separate damped graph wave with stiffness `L_rw` has a
+slow diffusion limit, while the isotropic substrate has identity stiffness.
+See [theory/TNFR_VARIATIONAL_PRINCIPLE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_VARIATIONAL_PRINCIPLE.md).
+Implementation and certificates: [src/tnfr/physics/symplectic_substrate.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/symplectic_substrate.py);
+gauge / U(2) structure: [theory/GAUGE_SYMMETRY_AND_UNIFICATION.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/GAUGE_SYMMETRY_AND_UNIFICATION.md).
+
+**Induced internal geometry.** Fixed reversible EPI diffusion also has a
+direct observation mechanism: for centered relative form `y`, metric `H`
+and generator `A`, the normalized direction obeys `q_dot=-A*q+kappa*q`,
+where `kappa=<q,A*q>_H` and `kappa_dot=-2*||A*q-kappa*q||_H^2`.
+These ratios are undefined at zero relative form. On `P2 square C3` with unit
+conductance, capacity and pure EPI coefficient, two retained internal modes
+per triangle give `z_dot=(z_neighbor-z)/3-z`;
+its polar chart derives neighbor-coupled phase response and its internal
+Dirichlet energy supplies the restoring term. This is a restricted derived
+macro-form law, not an auxiliary oscillator or a law for primitive phase or
+capacity. The internal amplitude decays, and the current scalar canonical
+pressure formula is not preserved unchanged. Definitions and limits:
+[intrinsic-mode response](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md#12-intrinsic-response-from-a-closed-fine-nodal-model).
+
+On that same prism, the four internal coordinates plus the difference of
+triangle means form a minimal five-dimensional linear state for exact model
+pressure and potential; absolute EPI additionally needs the common mean.
+The exact mean-flow quotient does not inherit the scalar potential formula:
+its fine-source aggregation kernel is `[[2,3/2],[3/2,2]]`, including sources
+inside each triangle. A self-excluded coarse P2 potential gives the opposite
+sign on nonzero mean contrast, for every positive edge distance. Primitive
+phase data, pressure-realization residuals and field provenance remain separate;
+the unit prism's coherence length uses a spectral fallback. These exact-model
+identities do not certify complete runtime compression or autonomous maintenance.
+See [macro-state and tetrad inheritance](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md#13-faithful-macro-state-and-tetrad-inheritance-on-the-retained-prism).
+
+**Internal maintenance boundary.** On that prism with common positive
+triangle/cross conductances and common capacity, pure-EPI transport strictly
+reduces the fixed internal norm; extinction requires divergent cumulative
+exposure of each occupied mode. Changing conductance can increase Dirichlet
+energy while this norm decreases. Actual canonical internal phase pressure
+can instead exceed passive loss at a prepared state, as the existing forcing
+and regional-balance owners verify. This instantaneous contribution does not
+derive the source's phase evolution or autonomous maintenance. Within-fiber
+capacity variation also requires a new state-closure check. See
+[causal support and geometry work](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md#14-causal-support-versus-changing-geometry).
+
+An induced phase may act as canonical feedback only if the complete
+observed vector field matches the fine nodal law. Matching the phase
+tangent alone cannot repair a changed EPI rate. On the retained prism,
+adding the prepared supporting phase pressure fails this test for passive
+EPI diffusion. Its fixed-source tangent permits only common rotation;
+autonomous source preservation remains underived. Polar normalization
+does not supply sustaining work. See
+[source admission](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md#15-when-an-observed-phase-can-be-a-causal-source).
+
+On reciprocal unique support with nonzero neighbor resultants and an open
+phase-wrap branch, canonical phase pressure is the gradient of the
+unweighted pairwise phasor alignment cost under an exact state-dependent
+positive diagonal metric. This does not choose a phase clock or the
+reciprocal form/phase law. On this domain phase current and curvature have
+opposite signs; zero sine current alone does not establish equilibrium.
+See [phase metric and joint closure](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_VARIATIONAL_PRINCIPLE.md#136-exact-state-dependent-metric-for-canonical-phase-pressure).
+
+For the conditional joint potential `E=e*x^T*B*x/2-x^T*D*F+Psi`, with
+`Psi` independent of EPI, pointwise source compatibility `d^T*F=0` is
+insufficient for an interior minimum. If its phase derivative is nonzero,
+a common-EPI/phase second-variation plane is indefinite for every `C^2 Psi`.
+For positive phase weight and smooth symmetric positive definite gradient mobility,
+this excludes the regular nonconsensus repeated-triple unit-prism family
+from stationary stabilization on the open full EPI/phase chart. It does not
+exclude arbitrary phase states, derived constraints or moving patterns.
+The proof and auxiliary-potential nonuniqueness are owned by
+[joint source compatibility](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_VARIATIONAL_PRINCIPLE.md#139-joint-source-compatibility-and-the-common-mean-saddle).
+
+Persistence need not mean a stationary minimum. However, a pure autonomous
+symmetric positive-semidefinite gradient flow with a single-valued energy
+cannot have nonconstant recurrent full-state motion or an energy-invariant
+relative orbit: zero dissipative work forces zero velocity. Moving nodal
+patterns need a justified complete law and their own cycle work/boundary
+balance. A supplied periodic canonical phase source can sustain periodic EPI
+while leaving that source's clock underived. A phase-only return, common
+rotation or pulse spectrum does not certify complete-state recurrence. See
+[persistent motion and cycle budgets](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_VARIATIONAL_PRINCIPLE.md#1310-persistent-motion-is-a-separate-dynamical-target).
+
+Relational time is a research interpretation, not an identity between elapsed
+time and phase alignment: synchronized phases can accompany changing EPI.
+Accumulated capacity is a conditional local reparameterization, and a positive
+clock can only rescale an independently computed nodal tangent. With fixed
+symmetric conductance and positive fixed capacities, a nonconstant closed EPI
+path requires positive oriented source/form work `integral F^T D dx`, equal
+to `integral xdot^T H xdot dt`, where `H=diag(d/nu)`. A held source or common
+phase rotation cannot supply that work. This geometric necessary condition
+neither selects the curve nor derives its clock or autonomous phase law. See
+[relational-clock scope](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/FORCED_SUPPORT_BALANCE.md#25-relational-time-and-synchronization-are-separate-claims)
+and [oriented work](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_VARIATIONAL_PRINCIPLE.md#1312-oriented-sourceform-work-without-a-selected-clock).
+
+A proposed phase-from-form relation must also pass the
+[pulled-back work test](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_VARIATIONAL_PRINCIPLE.md#1313-work-pulled-back-to-a-proposed-geometric-phase-relation):
+an exact work one-form cannot sustain a closed embedded-state cycle with
+nonconstant EPI in the fixed model. EPI return alone is sufficient for this
+test only when it guarantees latent-state return. Nonzero circulation alone
+does not derive a trajectory. The optional independent-pressure extension
+is not a refreshed canonical-pressure
+closure: its graph-composed pressure slope has a positive squared-Laplacian
+generator on regular undirected support. Its separate conditional fresh-pressure
+phase comparison is dissipative on the stated prism chart. Both scopes are
+owned by the [constitutive audit](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#optional-pressure-composition-and-source-consistency).
+
+Primitive phase, internal form orientation and the reporting basis are distinct.
+Projected source components can maintain amplitude or turn form; an angular
+rate generally also needs amplitude ratios. Local internal bases require
+transport matrices, and moving frames require their covariant derivative.
+On regular repeated triples of the unit prism, the exact source projection
+gives `z_dot=-e*z-(w/pi)*zeta` and a common-mean rate with a cubic threefold
+phase-contrast dependence. A prescribed rotating contrast has an exact
+nonvanishing circular EPI response and a periodic moving mean; fixing that
+mean would generally violate the nodal law. This driven control does not
+derive its source clock or autonomous selection. Under the same prescribed
+phase input, fixed unit prism capacity and EPI weight `e>0`, full EPI
+preparation differences contract in the degree metric after removing the
+neutral mean offset, with norm rate at least `2e/3`. A separate all-time band
+bound covers the periodic particular response. These conditional facts do
+not establish stability to source/support/capacity perturbations or a
+binary64 runtime attractor. Definitions and proofs:
+[phase/form relation](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md#16-phase-and-form-directed-exchange-frames-and-the-moving-mean).
+
+On that regular repeated-prism domain, a locally Lipschitz memoryless
+phase-contrast map from form and its common mean, equivariant under the
+graph's triangle permutations and with no additional directional state,
+preserves reflection-axis planes. Positive-radius form cannot wind across
+them. Independent primitive phase contrast instead supplies relative oriented
+area `ell=Im(conj(z)*zeta)`, with `|z|^2*psi_dot=-(w/pi)*ell` and
+`ell_dot=-e*ell+Im(conj(z)*zeta_dot)`. This observation adds no nodal attribute
+or evolution law. Ordinary repeated-triple coordination scales contrast by
+one real factor; common phase advance is not contrast rotation. Joint linear
+response coefficients and their clock remain unspecified; these restrictions
+do not exclude richer state, other support or nonlinear/hybrid mechanisms.
+Proofs and reused-owner boundaries:
+[primitive phase origin](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md#17-primitive-phase-origin-symmetry-retained-state-and-the-missing-row).
+
+Power balance does not uniquely select that phase row: at nonzero regular
+phase torque on six nodes, four directions remain after removing common
+rotation. Intrinsic local null contributions preserve a specified balance.
+The simple skew cross tensor built from the diagonal phase mobility fails
+Jacobi at the retained prism preparation; power cancellation alone is not
+Hamiltonian structure. The separate valid centered pressure-coordinate
+pullback, if selected, restricts the Hamiltonian to `3||v||^2/2+U(y)` and
+leaves its potential undetermined. These are conditional restrictions,
+not new physical primitives or installed laws. See
+[structural closure conditions](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_VARIATIONAL_PRINCIPLE.md#1319-structural-closure-tests-exchange-jacobi-and-the-remaining-potential).
+
+The configured nonlinear phase response can produce relative oriented area
+from uniform primitive phase and nonuniform EPI on this prism, with its first
+generic small-form contribution at sixth order. This instantaneous result
+does not derive the formula or sustained motion. In its hypothetical
+fresh-pressure completion, a complete storage balance retains nonlinear
+common-pressure work. For the declared coefficients, fixed coupling,
+strict phase spread below `pi/2` and `|p_i|<=1/2`, the repeated-triple balance
+strictly dissipates contrast. On the full prism, the complete neighbor-response
+balance gives strict dissipation for global phase spread below `pi/2` and
+`|p_i|<=1/4`. All nonuniform linear modes at consensus have real negative
+rates, and the exact smooth fresh-pressure comparison has a locally attracting
+consensus manifold. The displayed finite bands are not proved invariant;
+global attraction and the implemented independent-pressure runtime are not
+certified. On the same unit-distance repeated support with
+fresh pressure, `ell=(4/e)*det(U^T Phi_s,U^T K_phi)` uses existing fields,
+with `U` the normalized one-triangle lift. This is a restricted observation,
+not complete-state reconstruction or a feedback law. The current prepared
+prism also has no primitive-phase lift of its auxiliary harmonic geometric
+velocity. Proofs and numerical scope:
+[nonlinear response](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md#18-nonlinear-phase-response-oriented-area-and-tetrad-reuse)
+and [complete mean and spatial work](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_VARIATIONAL_PRINCIPLE.md#1316-full-prism-feedback-boundary-exchange-does-not-remove-all-dissipation).
+
+**Constitutive locality boundary.** Locality must name the primitive state
+variables: a one-hop acceleration need not have a one-hop primitive-phase
+lift. On the fixed-capacity prism, the selected centered acceleration
+`-kappa*L_rw*y` (`kappa>=0`, positive EPI/phase weights) has a gauge-invariant
+remote phase-response derivative at an existing regular phase preparation.
+This does not exclude other stiffnesses or complete-triad laws. Likewise,
+exact embedding of diffusion in `ydot=v`, `vdot=-K*y-gamma*v` requires
+`K=gamma*e*L_rw-e^2*L_rw^2` on centered states, not merely the leading
+overdamped balance. Symmetry, locality and diffusion matching therefore
+do not by themselves select the joint law. Proof and assumptions:
+[locality and transport compatibility](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_VARIATIONAL_PRINCIPLE.md#1320-locality-and-exact-diffusion-compatibility).
+
+### Structural conservation theorem (Noether-like)
+
+The structural conservation diagnostics measure the balance
+
+$$\frac{\partial \rho}{\partial t} + \nabla\cdot\mathbf{J} = S_{\text{grammar}},\qquad \rho = \Phi_s + K_\phi,\quad \mathbf{J} = (J_\phi, J_{\Delta\mathrm{NFR}}),$$
+
+where the residual `S_grammar` must be measured along the actual trajectory;
+valid operator labels alone do not prove it vanishes. The energy functional
+`E = ½Σ(Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²) ≥ 0` is a **Lyapunov candidate**:
+its non-increase requires trajectory evidence or a model-specific proof. A
+complete general proof of asymptotic stability remains open. The six derived fields
+(`χ, 𝒮, 𝒞, ℰ, 𝒜, 𝒬`) are bilinear contractions of the singlets (`Φ_s`, `|∇φ|`) and
+the complex fields `Ψ = K_φ + i·J_φ` and `Ω = |∇φ| + i·J_ΔNFR` (e.g. chirality
+`χ = Re(Ψ·Ω)`). Conservation theorem:
+[src/tnfr/physics/conservation.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/conservation.py),
+[theory/STRUCTURAL_CONSERVATION_THEOREM.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_CONSERVATION_THEOREM.md);
+emergent fields: [src/tnfr/physics/fields.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py),
+[theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md).
+
+### Regime correspondences
+
+The nodal law and graph-wave diagnostics admit the following scoped comparisons
+(external labels "classical"/"quantum-like" are not TNFR primitives):
+
+- **Smooth-trajectory / overdamped drift**: first order in time,
+  `q̇ = νf·F` — drift velocity ∝ force, `νf` is **mobility** (Stokes/Einstein), not
+  inverse mass. The inertial (second-order) regime lives in the conservative
+  substrate flow.
+- **Discrete-mode**: finite graphs give a finite spectrum independently of dissonance.
+  Symmetric normalized diffusion supplies an orthonormal basis; graph-wave
+  frequencies are `√λ_k`. Nodal-domain upper bounds do not imply monotonic counts
+  across every degenerate eigenbasis. Directed transport needs separate analysis.
+
+The auxiliary graph-wave model supplies a **collective** modal rhythm
+(resonances `ω_k = √λ_k`, fundamental, dominant beat `ω_j − ω_k`, vibration
+statistic; `compute_emergent_pulse`, SDK `net.rhythm()`). Its legacy
+`vibration_energy` is half the spectral trace, not a measured wave-state energy
+without modal amplitudes and velocities. The separate **per-NFR**
+read-out summarizes structural capacity and phase synchronization
+(`local_phase_sync`, Kuramoto order `R`, U3 phase gate; `compute_nodal_pulse`,
+SDK `net.resonance()`). Positive `νf` is reorganization capacity, not by itself
+an observed oscillator. The nodal equation derives accumulated capacity
+`s_i=integral(nu_f_i dt)` and `dEPI_i/ds_i=DeltaNFR_i` where capacity is positive;
+it does not identify that coordinate with phase or imply `dphi/dt=nu_f`.
+The free angular advance used by the nodal optimizer/FFT engine and the
+ordinary runtime's phase-relaxation map are distinct declared constitutive
+models. Neither high phase order nor a frequency label establishes a nodal
+trajectory following the auxiliary wave. See
+[theory/FORCED_SUPPORT_BALANCE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/FORCED_SUPPORT_BALANCE.md#23-capacity-exposure-does-not-determine-a-phase-clock).
+
+See [src/tnfr/physics/structural_diffusion.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/structural_diffusion.py)
+and [examples/02_physics_regimes/](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md).
+
+---
+
+## 5. The 13 canonical operators
+
+Within the engine, registered canonical operators are the **semantic interface**
+for named node and network transformations. Declared numerical solvers form a
+separate evolution path: they may advance EPI only through the shared nodal
+integrator from explicit `nu_f` and `DeltaNFR`, with provenance or a residual;
+ad hoc state assignment is forbidden. The current registry contains 13
+transformations with defined physical contracts. Whether their composition,
+nesting and branching generate every mathematically admissible TNFR
+transformation remains open under research line S10.
+
+**Execution-path scope.** Ordinary `runtime.step` selects primitive
+`apply_glyph` maps, which can differ from public classes and atomic stages:
+native IL contracts pressure without phase locking. On the retained unit
+prism, fresh default Si and initialized unit-capacity nodes restrict native
+selection to IL/AL/EN; the default integrator and automatic delayed-EPI REMESH
+do not replenish phase contrast. In a common open-semicircle lift, ideal
+default coordination therefore contracts its diameter by event count.
+This conditional route theorem retains represented defects separately and
+does not prove all-channel pattern loss or repeated binary64 stability.
+Public phase-capable operators, custom writers and extended integrations
+require their own trace. See the
+[native writer atlas](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md#native-phase-writer-closure).
+
+| # | Operator (glyph) | Physics / effect | Grammar role | Contract |
+|---|------------------|------------------|--------------|----------|
+| 1 | **Emission** (AL) | Sources EPI from vacuum at pre-existing basal νf; leaves νf unchanged | Generator (U1a) | Sources new form without writing capacity, pressure or phase |
+| 2 | **Reception** (EN) | Integrates incoming resonance | — | Leaves stored ΔNFR and dEPI unchanged, hence immediate operator-local C(t) unchanged |
+| 3 | **Coherence** (IL) | Negative feedback; reduces \|ΔNFR\|, raises C(t) | Stabilizer (U2) | Must not reduce C(t) (outside dissonance test) |
+| 4 | **Dissonance** (OZ) | Controlled instability; raises \|ΔNFR\| | Destabilizer (U2), bifurcation trigger (U4a), closure (U1b) | Must increase \|ΔNFR\| |
+| 5 | **Coupling** (UM) | Phase synchronization link `φᵢ → φⱼ` | Requires phase check (U3) | Valid only if `\|wrap(φᵢ − φⱼ)\| ≤ Δφ_max` |
+| 6 | **Resonance** (RA) | Coherent amplification / propagation | Requires phase check (U3) | Blends scalar EPI over U3-compatible neighbours while preserving sign/kind identity |
+| 7 | **Silence** (SHA) | Reduces νf; leaves EPI unchanged at the event | Closure (U1b) | Preserves EPI during SHA; zero subsequent nodal change requires `νf·ΔNFR = 0` |
+| 8 | **Expansion** (VAL) | Adds structural complexity; raises νf | Destabilizer (U2) | νf not decreased (capacity lever) |
+| 9 | **Contraction** (NUL) | Removes complexity; νf↓ and ΔNFR densifies | — | νf not increased (acts on both levers) |
+| 10 | **Self-organization** (THOL) | Autopoietic sub-EPI formation | Stabilizer (U2), handler (U4a), transformer (U4b) | Preserves global form while creating sub-EPIs |
+| 11 | **Mutation** (ZHIR) | Phase transform `θ → θ'` when `ΔEPI/Δt > ξ` | Destabilizer (U2), trigger (U4a), transformer (U4b) | Requires prior IL + recent destabilizer (U4b) |
+| 12 | **Transition** (NAV) | Controlled regime shift; activates latent EPI | Generator (U1a), closure (U1b) | Trajectory controlled (not a U2 destabilizer) |
+| 13 | **Recursivity** (REMESH) | Echoes structure across scales (U5 fractality) | Generator (U1a), closure (U1b) | Network-scale; `EPI(t)` references `EPI(t−τ)` |
+
+**Public naming**: the lowercase English token (`emission`, `reception`, …) is
+the canonical executable identifier. Title-case names (Emission, Reception, …)
+are public display/class names; glyph codes (AL, EN, …) are internal symbols.
+
+### Dual-lever and contracts
+
+Each operator's primary effect lands on **one nodal channel** — the channel partition
+is simultaneously the **dual-lever** (capacity νf vs pressure ΔNFR), the tetrad driver,
+and the number-theory grading:
+
+- **νf (capacity)**: Silence, Expansion, Contraction
+- **ΔNFR (pressure)**: Coherence, Dissonance, Self-organization, Transition
+- **θ (phase)**: Coupling, Mutation
+- **EPI (form, written directly)**: Emission, Reception, Resonance, Recursivity
+
+The single source of truth for contracts (channel, scale NODE/NETWORK, postcondition,
+TNFR.pdf anchor) is [src/tnfr/operators/operator_contracts.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/operator_contracts.py);
+the proactive audit, reactive monitor, and introspection metadata all derive from it.
+See [theory/STRUCTURAL_OPERATORS.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_OPERATORS.md).
+
+**Mutation evidence boundary.** The nodal product `νf·ΔNFR` is the instantaneous
+model prediction; it is not by itself an observed ZHIR trigger. Direct Mutation
+requires active capacity and a finite signed two-sample secant strictly above
+`ZHIR_THRESHOLD_XI`. Timestamped `epi_time_history` is authoritative, uses its
+physical interval, and must end at the current EPI state. Under an explicit
+physical flow partition, its last two live samples span the terminal segment;
+a whole-parent secant is an offline comparison and never replaces the gate.
+Legacy `epi_history` and
+`_epi_history` retain an explicit unit-operator-step interpretation and make no
+physical-time claim. Missing, invalid, stale, equal-threshold or contracting evidence
+rejects direct execution; autonomous selection instead applies IL and records the
+abstention. The SDK preflights every target before a word containing ZHIR. Structural
+acceleration is a separate three-sample diagnostic, centralized by
+`compute_d2epi_dt2`; it does not replace the two-sample gate or U4b context. The
+`νf = 0.5` bifurcation-router threshold only proposes a branch and is not a Mutation
+admission condition. `ZHIR_BIFURCATION_MODE` supports detection only; the legacy
+`variant_creation` value is rejected before any write. ZHIR remains a theta-only
+transformation with bifurcation detection; topology and sub-EPI creation belong to
+THOL. Pure certificates and `Network.nodal_state()` report prediction and evidence
+without certifying U4b execution readiness.
+
+### Operator events and physical time
+
+Canonical operator events are represented as zero-duration hybrid jumps. A
+finite schedule with `m` events therefore declares exactly `m + 1` nodal-flow
+intervals: before, between and after the jumps. Materialized binary64 durations
+have authoritative exact-rational values and offsets; absolute float timestamps
+are display values, schedule logic never subtracts them to recover duration,
+and the builder does not insert them into `epi_time_history`. Coincident events
+retain their explicit event-index order in `hybrid_event_log`. For fixed
+connected symmetric positive-capacity pure-EPI diffusion, the exact
+quotient-rate certificate and rational log/exp enclosures provide a sufficient
+duration for a requested disagreement-energy fraction. These schedule and
+duration objects are read-only
+and do not turn U2/U4 into an adaptive policy.
+
+`execute_operator_event_schedule` binds a valid finite schedule to the
+configured nodal integrator and shared all-target stage dispatcher. It freezes
+the initial targets, requires the live binary64 clock at every boundary, rejects
+collapsed or nonadditive positive intervals, and commits graph-owned flow, jump,
+history, cache and event-log state in one transaction. Flow boundaries supply
+timestamped EPI evidence; a same-time EPI jump restarts that history and remains
+a zero-duration event. During schedule execution the executor exclusively owns
+`epi_time_history`: any integrator write is rejected and rolls back the graph
+transaction, and only declared flow boundaries, including explicit physical-
+segment boundaries, are appended. ZHIR therefore requires a positive immediately
+preceding flow whose displayed endpoint subtraction equals its authoritative
+declared duration. With `include_flow_certificates=True`, detached snapshots
+around each positive unpartitioned flow produce an `ExecutedNodalFlowInterval` in
+`flow_interval_evidence`. A physically partitioned parent instead always stores
+its segment records under
+`physical_flow_partition_evidence[*].segment_flow_evidence`. Each record keeps
+the exact rational held-pressure nodal identity and pure-EPI quotient theorem
+separate from the binary64 replays. Trusted sequential held-pressure
+identification requires the
+exact built-in `DefaultIntegrator`, Euler with at least one substep, live Gamma
+type `none`, inactive clipping, disabled extended dynamics, stable support,
+unchanged capacity and pressure, an exact represented substep-duration sum equal
+to the declared interval, and a matching replay. The older binary64 interval
+property and exact rational pure-EPI affine promotion still require one substep;
+the latter also requires fixed symmetric nonnegative conductance, positive row
+strengths and capacity, stored pressure `-L_rw EPI` and the exact nodal identity.
+Internal substeps keep pressure fixed, so they establish neither a physical mesh
+refinement nor a modal diffusion decision. Runtime flow wrappers are value-sealed;
+direct construction or later replacement cannot assert executor provenance.
+
+During one positive flow an integrator may modify only EPI, `dEPI_dt`,
+`d2EPI_dt2` and the runtime clock. A custom integrator must realize exactly in
+rationalized represented values
+`EPI_right-EPI_left=dt*nu_f_left*DeltaNFR_left` at every target. This held-input
+identity does not certify solver accuracy or order. The shared graph transaction
+is bound to its originating graph and preserves NetworkX structural mapping
+identities and aliases plus graph-reachable capturable callback state. It rejects
+mutable structural keys with non-identity hash/equality, custom `__deepcopy__`
+hooks and unmodelled opaque C state before writes; common immutable atoms remain
+admissible. Emitted I/O and warnings, external resources and external-only aliases
+remain outside rollback.
+
+`PhysicalFlowPartition` instead declares at least two explicit positive
+segments over one scheduled parent interval. Passing it through
+`physical_flow_partitions=` refreshes `DeltaNFR` before every segment and at
+the terminal boundary, then seals all boundary snapshots, segment flows and
+segment-start modal diagnostics. The callback may modify pressure aliases and
+known derived pressure/cache outputs only. EPI, capacity, phase, histories,
+full edge state, effective conductance, clock and persistent graph configuration
+must remain fixed, as must capturable state owned by a callable hook. Existing
+non-`None` cached pressure weights cannot change;
+the canonical default hook may initialize a missing or `None` cache. The same
+restriction governs stage pressure callbacks. The executor freezes hook
+presence and identity for the whole schedule and verifies them before any
+invocation, preventing an integrator from installing and running a replacement. Any
+violation or later failure rolls back the graph transaction. Physical and stage
+callback counts are recorded separately and must sum to the total.
+
+The separate opt-in `execute_nodal_remainder_event_schedule` retains numerical
+EPI as `X=Fraction(x)+r`, with visible `x=RN(X)`. Its shared carried kernel
+uses exact represented nodal areas `h*nu_f*DeltaNFR`; the visible prefix
+residual is `r_initial-r_final`. A graph-owned binding persists across calls
+and rejects stale chart, clock or support without resetting the remainder.
+Canonical pressure and timestamped histories read visible EPI. Each declared
+positive segment refreshes pressure and advances through the shared kernel;
+configured stage callbacks and terminal refreshes keep their separate roles.
+Only admitted EPI-preserving Coupling, Coherence and Silence events are
+supported, with actual chart/support checks and whole-invocation rollback.
+Both exact and visible EPI must remain inside the declared positive band
+and configured bounds. EPI-writing events, explicit REMESH, clipping,
+custom callbacks and broader solver configurations remain outside this path.
+The exact EPI readout shift is `w_epi*L_rw*r`; its nodal arithmetic mean
+vanishes on regular support with common capacity. Other channels and their
+realization retain a separate source budget. This finite sealed execution
+does not prove generated-pressure summability, solver convergence or future
+domain preservation. See
+[the carried flow/event contract](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/COUPLING_WINDING_PERSISTENCE.md#21-live-pressure-and-an-explicit-carried-flowevent-contract).
+
+For a fixed pure-EPI generator `A=diag(nu_f)L_rw`, the exact-real held-pressure
+Euler model has `g_H(mu)=1-T*mu` regardless of internal substeps whose exact
+represented durations sum to `T`; explicit pressure refresh gives the exact-real
+model factor `g_R(mu)=product_k(1-h_k*mu)`. Actual endpoints remain binary64
+observations. Modal diagnostics evaluate these factors in ordinary binary64 but
+do not identify an endpoint with either exact-real map. That stronger promotion
+requires the exact-affine certificate. Modal comparison requires trusted
+held-pressure segment replays and exact common node order, capacity and
+conductance; matching spectra alone do not identify a common eigenbasis.
+`observe_event_local_zhir_physical_prejump`
+uses the actual terminal-segment Mutation secant and retains the whole-parent
+secant offline. `compare_event_local_zhir_physical_refinement` reports its
+endpoint, rate, gate and modal differences from a matched held-pressure
+baseline. These sealed finite observations do not certify solver order,
+three-mesh convergence, U4 readiness, adaptive grammar or future behavior.
+
+`observe_executed_event_local_zhir_physical_prejump` starts from one intact
+stage-certified execution result and a committed ZHIR index. It binds the
+scheduled and executed event, preceding physical partition, terminal flow,
+glyph stage, ordered decisions and trigger certificates by identity, thereby
+certifying common execution provenance for that finite window. The offline
+coordinate-paired observer above does not make that provenance claim. Neither
+observer proves solver properties, convergence, general U4 readiness or future
+behavior.
+
+`observe_event_local_zhir_prejump` pairs one such sealed nonempty flow offline
+with a scheduled ZHIR boundary at the same exact and represented coordinate. It
+keeps the rational endpoint secant separate from the actual binary64
+subtraction/division used by Mutation; only the latter decides `rate > xi`, and
+both passing and failing thresholds are observations. The pairing does not prove
+a common schedule execution. For two observations with identical initial state,
+capacity, pressure, conductance, support, duration, event coordinate and `xi`
+but different positive substep counts,
+`compare_event_local_zhir_held_pressure_subdivision` certifies the represented
+gate outcome only when decisions agree and every exact rate difference is
+strictly below the baseline threshold distance. It does not certify physical
+pressure-reevaluated refinement, modal equivalence, solver accuracy/order, U4
+readiness, adaptive grammar or future behavior.
+
+Every accepted two-phase ZHIR stage seals one ordered
+`MutationStageDecisionObservation` per target from its immutable proposal. It
+retains the complete threshold certificate, capacity gate, phase/regime decision,
+acceleration/bifurcation read-out and U4 context independently of EPI-map
+certification. Opt-in event-stage evidence carries these observations forward.
+The complete `ExecutedGlyphStage` is value-sealed; its execution result requires
+one intact stage per committed event and binds ordered ZHIR observations to the
+ordered target support. An adjacent flow abstention remains observable but
+cannot enter a represented schedule product.
+
+Every accepted two-phase EN stage also seals one ordered
+`ReceptionStageObservation` per target. One owner-bound pre-EN snapshot supplies
+target/neighbor EPI, semantic kinds, optional source detection and metrics; the
+observation verifies final EPI, kind and tracked sources after all graph-mutating
+stage checks and before warning publication. Disabled tracking preserves opaque
+legacy source metadata without claiming its contents. Event execution binds
+these observations to ordered
+targets. Their `auxiliary_stability_certified` field is hard false: this is one
+finite provenance record, while counter/log cocycles and trajectory invariance
+remain open.
+On directed support, `source -> receiver` defines the incoming EN orientation:
+the numeric snapshot reads predecessors and source discovery follows the same
+path direction. Source discovery is optional telemetry: it neither selects nor
+gates the direct-neighbour numeric blend and may include more distant ancestors.
+The affine Reception certificate remains undirected-only.
+
+With `include_stage_certificates=True`, interval capture is implied and every
+accepted event returns an `ExecutedGlyphStage`. The event runtime binds the
+executor-owned pointwise certificate for AL/SHA/VAL/NUL/ZHIR/NAV or all-target
+neighbour certificate for EN/RA to the actual captured EPI endpoints; other
+glyphs and failed certificate domains abstain explicitly. One
+`RepresentedEPIScheduleOperation` records each positive flow and glyph in
+chronological order. `ObservedRepresentedEPIScheduleComposition` publishes an
+exact represented-map gain product only when all operations are eligible, node
+order and consecutive EPI endpoints match exactly, and one normalized positive
+rational metric spans the trace. Its represented-map contraction result is not
+a global executable binary64-map result;
+`runtime_schedule_global_gain_certified` is always false. Solver accuracy,
+refinement equivalence, full multichannel stability, delayed-REMESH gain,
+adaptive U2/U4 and future or repeated schedule stability remain unproved.
+
+`execute_event_remesh_cycle` composes one finite schedule with the separately
+invoked delayed map under an outer graph transaction. It appends exactly one
+full-support pre-REMESH `_epi_hist` sample through the ordinary runtime helper,
+so delay `tau` remains `history[-(tau + 1)]`; no post-jump delayed-history
+sample is stored. An applied jump separately records its same-time right
+endpoint in authoritative `epi_time_history`. The schedule must preserve ordered
+node support and incoming delayed history; edges may change there. The endpoint
+clock, committed event log, phase, pressure-hook identity and deterministic
+REMESH controls remain frozen. The EPI-only map treats ON_REMESH callbacks as
+observers: they must preserve all graph-owned topology, metadata, histories and
+stored non-EPI aliases. Capturable observer-owned state reachable from the graph
+shares that rollback boundary.
+One frozen positive diagonal metric measures cycle-level weighted EPI
+observations and feeds delayed-map evidence; legacy metadata retains unweighted
+means. Exact values remain authoritative when an optional float display is
+`None`. Weighted-consensus drift, capacity and pressure refresh remain separate.
+The optional refresh runs only after an applied map. The cycle can retain the
+finite represented flow/glyph composition inside its event result, but the
+delayed map and its one-step evidence remain separate. This certifies
+graph-owned one-cycle execution, not solver accuracy, delayed-REMESH gain or
+repeated stability with evolving history. Capturable graph-reachable integrator
+and callback state is covered; emitted I/O or warnings, external resources and
+external-only aliases remain outside rollback.
+Supplied `physical_flow_partitions` are materialized exactly once inside the
+outer transaction and the resulting tuple is forwarded unchanged to schedule
+execution.
+
+Each cycle seals a `RemeshHistoryTransitionObservation`. For bounded history
+capacity `M`, exact incoming history `H_in` and exact pre-REMESH state `x_pre`,
+it verifies `H_out = tail_M(tail_M(H_in) || (x_pre,))`, including truncation and
+append eviction. Local and global lag availability are recorded independently.
+A completed post-REMESH pressure callback is an operational fact and does not
+prove `DeltaNFR = -L_rw EPI`.
+
+`compose_event_remesh_cycle_observations` binds at least two sealed cycle results
+supplied in caller order into an `ObservedEventRemeshCycleSequence`. Its sealed
+`EventRemeshCycleBoundaryObservation` records compare exact EPI, capacity,
+pressure, phase, clock and full delayed history across adjacent supplied results.
+Indices are local ordinals. Identical-object reuse is rejected, while distinct
+copies do not prove causal order or shared-graph execution provenance. Exact
+raw metric equality remains separate from normalized-ray compatibility;
+tri-state nested schedule metric alignment is diagnostic. Schedule compositions
+and REMESH results remain separate. Recorded-boundary continuity is independent
+of metric compatibility; the stronger sequence result requires one normalized
+ray aligned with every nested schedule, without requiring raw metric equality.
+`None` or `False` alignment blocks only that stronger result. No gain
+multiplication, evolving-history repetition, runtime-global gain, whole-sequence
+atomicity, full graph or grammar-history continuity, solver or future theorem
+follows. In one explicit sequential lag-one execution with `alpha=1`, `(2,0)`
+with delayed row `(0,2)` alternates to `(0,2)` and back even though each
+fixed-history result has zero current-state coefficient.
+
+`observe_event_remesh_three_mesh_refinement` compares three already executed,
+sealed cycles with strictly nested coarse, intermediate and fine physical
+partitions. Compatibility requires the same schedule, ordered full support,
+initial EPI/capacity/phase/pressure, captured conductance, normalized metric,
+executor/callback metadata, incoming history and REMESH controls. It records
+exact represented EPI at pre-schedule, physical-boundary, pre-REMESH and
+post-REMESH checkpoints and pairwise persistent-node `L_inf` errors. It reports
+executor-linked ZHIR rates/gates whenever the required evidence exists;
+optional `zhir_xi` only validates the executed threshold. Modal products require
+a common captured generator. Detached cycles omit the complete pre-schedule
+graph namespace, callback closure and RNG state, node metadata and sub-EPI
+state, so a complete common reference problem and exclusive attribution of EPI
+differences to mesh are not certified. Integrity and decreasing finite errors
+do not prove solver order, mesh convergence, Lyapunov decrease, a combined
+schedule/REMESH gain or future behavior.
+
+`certify_reversible_single_eigenmode_euler_reference` is the pure exact source
+for a wider fixed-generator class. It derives the positive reversible metric
+`H=diag(d_i/nu_f_i)`, its conserved mean and the rational generator from an
+ordered symmetric nonnegative conductance matrix and positive capacities. It
+accepts only a nonzero H-centered field satisfying `A v=mu v` exactly with
+`mu>0`; mixed modes are rejected rather than projected. For positive partitions
+of one horizon with `0 < mu*h_j < 1`, it rationally encloses the exact modal
+solution and proves
+`0 <= exp(-mu*T)-g_P <= mu^2/2 sum_j h_j^2 <= mu^2/2 T h_max`.
+Proper subdivision strictly improves the factor and quadratic bound. Therefore
+the exact-real endpoints converge conditionally for any admissible fixed-data
+partition family with `h_max -> 0`; this does not observe an infinite family or
+certify binary64 execution, solver order, glyphs, REMESH, changing generators,
+directed transport, mixed modes or full TNFR stability. The rational enclosure
+caps `mu*T` at 4096 to limit its integer exponent, without bounding arbitrary
+`Fraction` input bit size.
+
+`observe_executed_reversible_single_eigenmode_euler_reference` binds that
+theorem to a finite ordered family of intact
+`ExecutedPressureRefreshedFlowPartition` records. It derives the exact node
+order, conductance, capacity, initial field and partitions from the executor
+evidence and rejects incompatible sources. For each segment it records
+`rho=p64-(-L_rw z)`, `eta=z_next-z-h*diag(nu_f)*p64` and
+`epsilon=h*diag(nu_f)*rho+eta`, then propagates the endpoint defect through the
+complete recurrence `r_next=(I-h*A)r+epsilon`; represented residuals need not
+remain modal. Signed coordinate intervals yield exact rational `L_inf` and
+`H`-error-energy bounds against the continuous solution. Every input partition
+retains its executor provenance, but their supplied family is offline. The
+observation does not certify binary64/runtime mesh convergence, solver accuracy
+or order, common causal provenance, glyph/REMESH dynamics, repetition, future
+behavior or full TNFR stability.
+
+`observe_p2_event_remesh_reference_family` certifies one compatible finite P2
+coordinate problem inside that observer. It requires three meshes related by
+two proper positive subdivisions of one event-free, homogeneous-capacity,
+effective two-node pure-EPI flow, with
+`0 < lambda*h_j < 1`, unit REMESH delays, the exact initial field as delayed row
+and hard clipping on one common scalar interval. From the executor-owned exact
+durations and checkpoints it independently reconstructs
+`g_P=product_j(1-lambda*h_j)` and rationally encloses
+`exp(-lambda*T)`. It proves
+`0 <= exp(-lambda*T)-g_P <= lambda^2/2 sum_j h_j^2 <= lambda^2/2 T h_max`,
+strict factor and quadratic-bound improvement under proper subdivision, and
+the ideal post-REMESH error factor `beta=(1-alpha)^2`; the committed binary64
+endpoint bound adds `||r_round+r_clip||_inf`. It does not certify solver order,
+generic or binary64 asymptotic convergence, arbitrary glyphs or mixed channels,
+soft clipping, changing support/metric, repeated stability or future behavior.
+Its modal factors, enclosures, bounds and subdivision decisions delegate to the
+general reversible single-eigenmode certificate.
+
+The distinct uniform exact delayed-REMESH recurrence has a finite
+augmented-history theorem. With fixed delays, ordered support, one fixed
+positive diagonal spatial metric, uniform `alpha` and no clipping, its
+companion matrix is row stochastic with an exact stationary temporal measure.
+The stationary-weighted sum of centered spatial disagreement energies has an
+exact nonnegative Jensen dissipation; equality holds exactly when all active
+centered input fields agree. For `0 < alpha < 1`, the companion is primitive
+and every spatial coordinate converges to the preserved stationary history
+barycenter. `alpha = 0` is the identity. At `alpha = 1`, the companion is a
+pure-delay permutation of order `tau_global + 1`; the augmented energy is
+conserved and individual orbit periods may divide that order. This retains the
+alternating-history obstruction to strict decay. It does not identify the
+clipped binary64 runtime, prove spatial consensus or `DeltaNFR = 0`, admit
+changing coefficients/metric/support, or combine schedule and REMESH gains.
+
+`certify_uniform_remesh_schedule_policy_stability` supplies the separate
+conditional exact composition theorem. Histories are indexed immediately after
+each schedule, so one abstract transition mixes them by REMESH and then applies
+the next schedule. If every possibly varying exact schedule preserves spatial
+consensus and has disagreement-energy gain at most a common `q` in the same
+fixed metric, then `B_q=diag(q,1,...,1)P`. Nonnegative-matrix domination gives
+prefix gain at most one. For the sufficient universal horizon
+`L=active_max_delay+1`, every companion path visits the head and
+`B_q^L<=qP^L`; hence `V[k+n]<=q^floor(n/L)V[k]`. Strict `q<1` yields uniform
+normalized block margin `1-q` and geometric spatial-disagreement decay in every
+history row. `L` need not be minimal for a particular interior companion. At
+`q=1`, only nonincrease and zero certified margin follow. The certificate does
+not inspect the schedule maps or prove anything about binary64 defects, solver
+behavior, adaptive grammar or full TNFR state.
+
+`observe_runtime_remesh_history_bridge` closes one narrower boundary by
+identifying an applied executor-sealed REMESH result with the exact companion.
+It retains the exact signed identity
+`bounded = ideal + rounding_residual + clipping_residual`, the corresponding
+lifted augmented-energy defects and a posteriori sufficient margins. Hard
+clipping onto one common scalar interval is disagreement-nonexpansive in the
+common positive diagonal metric;
+soft clipping and rounding retain explicit counterexamples to unconditional
+decrease. The runtime does not append the post-REMESH head immediately, so this
+single-cycle bridge does not establish live repetition.
+
+`observe_remesh_schedule_history_transition` adds a supplied scheduled head,
+verifies its declared gain bound and separates the schedule energy defect from
+the ideal, rounding and clipping terms. The stricter
+`observe_runtime_remesh_schedule_sequence` binds each applied REMESH result to
+the next represented schedule and verifies that its endpoint becomes the next
+recorded history head. Compatible adjacent balances telescope additively in one
+normalized metric and fixed REMESH configuration. The source sequence remains
+caller ordered; shared graph provenance, causal succession, cross-call
+atomicity, a global executable map, a uniform positive normalized block margin
+over a declared forward-invariant runtime class, an intrablock runtime prefix
+bound and future stability remain open.
+
+`execute_event_remesh_cycle_sequence` supplies the stronger finite execution
+boundary. It runs ordered `EventRemeshCycleExecutionSpec` values on one graph
+inside one outer graph transaction. Each sealed
+`CausalEventRemeshCycleReceipt` binds its execution ordinal, exact spec and
+resulting cycle, including identity of the executed and declared schedule. The
+sealed `ExecutedEventRemeshCycleSequence` retains the cycles, the ordinary
+offline cycle sequence and, by default, the compatible runtime schedule/history
+telescope. With `require_runtime_telescope=False`, the result always retains
+`runtime_telescope=None`; this admits a word without one common affine schedule
+metric. Exact
+telescope properties stay false while causal order, one graph identity and
+finite graph-owned atomicity remain certified. It does not compose schedule and REMESH gains,
+prove a uniform positive normalized block margin over a declared
+forward-invariant runtime class or an intrablock runtime prefix bound, solver accuracy/order,
+convergence, repeated or future stability, or rollback emitted I/O, warnings,
+external resources or external-only aliases. The nested offline observers keep
+their own false causal scope when used separately.
+
+`observe_executed_event_remesh_block_margin` derives an exact observation from
+one nonempty contiguous boundary block of an intact
+`ExecutedEventRemeshCycleSequence` that retains its runtime telescope. It identity-binds the causal source,
+telescope and selected boundary objects; sums the exact observed drop `D`,
+gain-based lower bound `K` and nonnegative schedule slack `S`; and verifies
+`D=K+S`. When `V_before>0`, it records `kappa=K/V_before`, the observed drop
+fraction and endpoint gain upper bound `1-kappa`. At `V_before=0`, these
+normalized fields are undefined. A positive value certifies only the recorded
+finite block. Absolute uniform margin is obstructed by quadratic amplitude
+scaling and equilibrium; uniform normalized runtime-class coercivity,
+intrablock runtime prefix control, repetition and future stability remain false
+for this finite observer.
+
+`certify_uniform_remesh_schedule_relative_defect_stability` extends the
+conditional common-`q` theorem with the signed centered-energy defect
+`delta=E_H(z)-E_H(y)<=eta*J`, where
+`J=sum_d c_d E_H(history[d])`. Jensen yields
+`q_eff=q*(1+eta)`. The certificate rejects `q_eff>1`; equality gives
+nonincrease with zero margin, while `q_eff<1` gives uniform block margin
+`1-q_eff` and repeated exact-model spatial-disagreement decay. `delta` is not
+the energy or norm of `z-y`. At `J=0` the inequality is checked directly and
+no ratio is formed.
+
+`observe_executed_event_remesh_relative_defect_block` binds that robust
+envelope to one nonempty contiguous block of an intact causal execution that
+retained its compatible runtime telescope. It
+verifies every exact `J`, defect and slack, every represented schedule gain
+`q_j<=q`, the complete `diag(q_eff,1,...,1)P` history-energy envelope and the
+finite endpoint factor `q_eff^floor(N/L)`. It inherits same-invocation graph
+provenance and atomicity only for that recorded block. It does not prove a
+uniform runtime defect class, forward invariance, a global runtime gain,
+repetition, future binary64 stability, solver properties, adaptive grammar or
+full TNFR stability.
+
+`certify_half_alpha_antisymmetric_hard_clip_remesh_class` certifies the first
+useful restricted represented class with `0<alpha<1`. It requires exactly two
+ordered nodes, any positive diagonal metric, fixed positive delays,
+`alpha=1/2`, a symmetric hard interval `[-B,B]` with `B>=4s`,
+`s=2^-1074`, and sufficient finite history whose rows are `(a,-a)`. The
+production nested binary64 recurrence and the symmetric clamp preserve numeric
+antisymmetry and the interval. For `D=c^2+l^2+2g^2`, `x=sqrt(D)` and
+`u=2^-53`, the proof stores
+`|r-y|<=A*x+C*s`, with `A=3u/2+u^2/2` and
+`C=9/4+9u/4+u^2/2`. The analytic `x>=11s` tail is strictly below
+`eta=135/124`; the exact `x<11s` enumeration checks 6,615 integer triples,
+3,890 admissible, and attains equality at `(-3,-2,-3)s`. Consequently the
+robust composition is strict exactly for `q<124/259`. The implemented
+`q=4/9` example has `q_eff=259/279` and margin `20/279`; equality at the
+threshold gives only nonincrease, and `q=9/16` is rejected. General
+positive-metric centering and fixed-lattice closure are not inherited. The
+certificate proves REMESH-only forward invariance and leaves schedule-family,
+graph/event, repeated complete-runtime, future, solver and full-TNFR claims
+false.
+
+`certify_executed_p2_half_reception_remesh_sequence` supplies a distinct finite
+P2 adapter that does not require the schedule/history energy telescope. It
+selects one executor-owned EN stage per cycle, binds its EPI endpoints to the
+global half-Reception `q=0` kernel, and binds the same cycle's applied
+`alpha=1` hard-clipped REMESH to its exact represented global-delay row with
+`eta=0`. Ordered support, metric, interval, delays, history capacity and runtime
+alpha-source provenance remain fixed. For an observed sequence with
+`N>=L=tau_global+1`, the active suffix of `L` chronological rows remains inside
+the source interval and the recorded post-horizon and final post-REMESH spatial
+energies are zero. If `tau_local>tau_global`, that suffix is shorter than the
+full source-class history requirement; its extra local-delay rows are inactive
+because `alpha=1`. Stale older rows, auxiliary Reception state, live-graph binding,
+future or unobserved repetition, solver properties and full TNFR stability are
+not certified.
+
+`execute_p2_half_reception_remesh_policy_invocation` supplies the reusable
+per-call boundary for that adapter. Before any caller-owned specification or
+metric is materialized, it takes an outer graph snapshot. Static preflight
+requires an intact kernel certificate; exact ordered undirected P2 support;
+positive capacity, symmetric conductance and the source metric ray; exact
+binary64 `EN_mix=0.5`; matching hard-clipped `alpha=1` REMESH controls; an entry
+EPI pair nonzero in at least one coordinate; sufficient active history;
+the live clock; and at least `tau_global+1` distinct, clock-chained, one-cycle
+zero-flow `EN -> IL -> REMESH` specifications with no physical partitions. It
+then rederives the U1a premise from the live pair at every cycle start, runs the
+no-telescope causal executor and constructs, identity-checks and deeply
+revalidates the finite certificate before commit. Post-certification must be
+read-only. A zero cycle-start pair or any other failure restores graph-owned
+state. Every accepted call
+certifies only that completed invocation; auxiliary Reception-state stability,
+future or unobserved execution, solver properties and full TNFR stability remain
+false.
+See
+[src/tnfr/operators/event_timing.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/event_timing.py),
+[src/tnfr/operators/event_runtime.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/event_runtime.py),
+[src/tnfr/operators/event_remesh_runtime.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/event_remesh_runtime.py),
+[src/tnfr/operators/event_remesh_sequence.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/event_remesh_sequence.py),
+[src/tnfr/operators/event_remesh_causal_runtime.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/event_remesh_causal_runtime.py),
+[src/tnfr/physics/event_duration.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/event_duration.py),
+[src/tnfr/physics/event_refinement.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/event_refinement.py),
+[src/tnfr/physics/event_remesh_refinement.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/event_remesh_refinement.py),
+[src/tnfr/physics/reversible_eigenmode_reference.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/reversible_eigenmode_reference.py),
+[src/tnfr/physics/event_remesh_reference.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/event_remesh_reference.py),
+[src/tnfr/physics/remesh_history_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/remesh_history_stability.py),
+[src/tnfr/physics/remesh_schedule_policy_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/remesh_schedule_policy_stability.py),
+[src/tnfr/physics/remesh_schedule_relative_defect_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/remesh_schedule_relative_defect_stability.py),
+[src/tnfr/physics/binary64_remesh_relative_defect.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/binary64_remesh_relative_defect.py),
+[src/tnfr/physics/binary64_p2_reception_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/binary64_p2_reception_stability.py),
+[src/tnfr/physics/runtime_p2_reception_stage.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_p2_reception_stage.py),
+[src/tnfr/physics/runtime_p2_reception_remesh_sequence.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_p2_reception_remesh_sequence.py),
+[src/tnfr/physics/runtime_p2_reception_remesh_policy.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_p2_reception_remesh_policy.py),
+[src/tnfr/physics/runtime_remesh_history_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_remesh_history_stability.py),
+[src/tnfr/physics/remesh_schedule_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/remesh_schedule_stability.py),
+[src/tnfr/physics/runtime_remesh_schedule_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_remesh_schedule_stability.py),
+[src/tnfr/physics/runtime_remesh_schedule_block_margin.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_remesh_schedule_block_margin.py),
+[src/tnfr/physics/runtime_remesh_schedule_relative_defect.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/runtime_remesh_schedule_relative_defect.py),
+and [theory/REMESH_INFINITY_DERIVATION.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/REMESH_INFINITY_DERIVATION.md).
+
+### Composition
+
+Operators compose into sequences satisfying U1–U6. The named building blocks are
+structural **fragments (macros)**, not standalone valid words:
+
+- **Bootstrap** = [Emission, Coupling, Coherence] · **Stabilize** = [Coherence, Silence]
+- **Explore** = [Dissonance, Mutation, Coherence] · **Propagate** = [Resonance, Coupling]
+
+A fragment becomes a valid word by adding the grammar glue (a U1a generator prefix, a
+U1b closure suffix, and the U4b context a transformer needs), e.g. `[Emission,
+Coupling, Coherence, Silence]`. Nesting `THOL[ body ]` lifts sequences to
+context-free (nested sub-EPIs, U5); branching `OZ → [ZHIR | NUL]` is the U4a
+bifurcation. SDK words and supported GPU blocks preserve operator order. When
+grammar keeps the requested glyph for every target, all thirteen stages
+read one immutable snapshot and commit atomically (two-phase Jacobi):
+neighbour-reading EN/IL/RA, pointwise AL/SHA/VAL/NUL/ZHIR/NAV, overlapping
+phase/topology stage UM, overlapping-pressure stage OZ, and child-support and
+hierarchy stage THOL, and advisory stage REMESH. IL contracts
+target `DeltaNFR` magnitude and
+locks target phase from the shared snapshot; its canonical stage/global and
+radius-local structural `C(t)` telemetry is distinct from retained legacy
+pressure-dispersion fields. Supported GPU AL/RA blocks reuse the same paths.
+Their committed primary structural channels are target-order invariant before
+the opaque pressure-refresh callback; AL/SHA also share one stage timestamp.
+NAV binds `nu_f`, phase, `DeltaNFR` and per-node RNG progress to the snapshot,
+resolves a missing graph seed inside the stage transaction, and uses one shared
+latency-observation instant. The resolved seed persists only after a successful
+commit; stable per-node offsets and draw counts make committed RNG progress
+target-order invariant. Ordered lifecycle, audit/telemetry and monitor streams
+retain the requested target order; IL warnings are the final transactional
+effect. UM merges overlapping circular displacements in immutable snapshot-rank
+order, normalizes final phases, rechecks U3 after the merge, and coalesces new
+functional links deterministically. This is an engine policy rather than a
+Lyapunov or relabeling theorem. OZ derives every local action and outgoing
+propagation increment from the same snapshot, then reduces overlapping incoming
+increments with `math.fsum` in snapshot-node rank. Its local pressure-magnitude
+postcondition precedes signed accumulation, where positive propagation can
+partially cancel a negative pressure; pressure and per-node RNG progress remain
+target-order invariant. THOL plans every target from the snapshot, resolves
+cross-parent child-ID collisions and commits `d2EPI`, `DeltaNFR`, child
+nodes, `sub_nodes`, `sub_epis` and graph `hierarchy` in snapshot-node
+rank after validating the complete merge on a detached graph. REMESH derives
+one shared advisory from the snapshot, records it at most once per telemetry
+step and leaves EPI, nu_f, phase, DeltaNFR and support unchanged. Explicit
+delayed EPI mixing remains the separate `apply_network_remesh` operation. Its
+`plan_network_remesh` boundary freezes exact-support history inputs and keeps
+the represented affine recurrence, nested binary64 result and clipping
+separate. Insufficient history or empty support is an explicit no-op; a
+successful graph-owned commit is atomic. Optional one-step evidence reports
+mean drift, a convex three-input disagreement bound and only a conditional
+fixed-history gain. It does not prove stability under history-updated
+repetition.
+Identity-bearing caches remain tied to their live graph and node objects; cache
+state and the pressure-refresh callback lie outside the target-order result.
+Relabeling equivariance remains unproved. Multi-target IL historically used
+the sequential schedule; the canonical word runner now uses its snapshot rule.
+A grammar replacement or Recursivity execution override still uses and reports
+the transactional Gauss-Seidel path.
+
+The shared pointwise stage executor can opt into a conditional certificate for
+AL/SHA/VAL/NUL/ZHIR/NAV by declaring whether support is fixed. A successful
+`NetworkStageResult` then carries the certificate computed from the executor's
+own detached snapshot and frozen proposals before commit. Certification
+requests reject IL, empty stages, grammar replacements and noncanonical
+operator overrides atomically. The three levels distinguish exact runtime
+realization, consensus-preserving affine action and an aligned positive
+pre/post diffusion metric. By themselves they do not certify mixed words,
+histories, the opaque pressure refresh or future repetition. The event runtime
+can compose supported pointwise and EN/RA represented maps only after exact
+observed-endpoint and common-metric gates pass. See
+[src/tnfr/physics/pointwise_stage_stability.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/pointwise_stage_stability.py).
+
+Read/write footprints, merge status, rollback scope and scoped structural-state
+target-order/relabeling claims are centralized in
+[src/tnfr/operators/stage_contracts.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/stage_contracts.py). See
+[examples/08_emergent_geometry/143_glyphic_function_sublanguage.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/08_emergent_geometry/143_glyphic_function_sublanguage.py)
+and [144_branching_combinator.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/08_emergent_geometry/144_branching_combinator.py).
+
+---
+
+## 6. Unified grammar (U1–U6)
+
+The grammar is the engine's structural contract, motivated by the nodal equation
+and encoded operator roles. Its policy choices are distinguished from mathematical
+implications in [theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md).
+Validation entry point:
+[src/tnfr/operators/grammar.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar.py); canonical specification
+[src/tnfr/operators/grammar_canon.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar_canon.py); full
+derivations [theory/UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/UNIFIED_GRAMMAR_RULES.md).
+
+- **U1 — Initiation & closure.** A standalone sequence must start with a generator
+  `{AL, NAV, REMESH}` (U1a) and end with a closure `{SHA, NAV, REMESH, OZ}` (U1b).
+  These are operator-history contracts: the nodal derivative is defined at `EPI=0`
+  for finite capacity and pressure. Context-aware execution may extend existing history.
+- **U2 — Convergence & boundedness.** The stabilization policy requires that any
+  destabilizer `{OZ, ZHIR, VAL}` requires a stabilizer `{IL, THOL}`. The max
+  uncompensated-destabilizer debt is the configured **relaxation absorption capacity**
+  `⌊1/(νf·dt·ρ)⌋ = 2` under canonical mean-rate calibration
+  (`derive_u2_debt_capacity_from_physics`), not a graph-uniform absorption theorem. Specialized
+  sub-rule: REMESH combined with a destabilizer also requires `{IL, THOL}` (recursive
+  amplification control).
+- **U3 — Resonant coupling.** Coupling/resonance `{UM, RA}` require phase compatibility
+  `δ(φᵢ,φⱼ) = |wrap(φᵢ − φⱼ)| ≤ Δφ_max` (antiphase is destructive). RA filters
+  its neighbourhood by this condition: incompatible neighbours contribute to
+  neither its EPI mean, phase mean, nor frequency-amplification trigger.
+- **U4 — Bifurcation dynamics.** (a) Triggers `{OZ, ZHIR}` need handlers `{THOL, IL}`.
+  (b) Transformers `{ZHIR, THOL}` need a recent destabilizer within the **structural-relaxation
+  window** — canonically 3 ops, **one window for every destabilizer**,
+  calibrated by a mean-rate relaxation surrogate to the band `1/(π+1)`
+  (`derive_bifurcation_window_from_physics`). Individual graph modes can take
+  substantially longer to relax; this recency policy is not a universal decay time.
+  ZHIR also needs a prior
+  IL (stable base).
+- **U5 — Multi-scale coherence.** Nested EPIs require stabilizers at each level;
+  `C_parent ≥ α · Σ C_child` is a hierarchy-dependent target requiring a
+  specified α and normalization. Evaluate a concrete hierarchy with
+  [`assess_u5_parent_child_coherence`](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/multiscale_coherence.py).
+  THOL amplitude alignment is a separate dispersion diagnostic, not `C(t)` or U5.
+  `THOL_MIN_COLLECTIVE_COHERENCE` is an inert legacy alias of the general
+  fragmentation-risk cut; THOL does not consume it.
+- **U6 — Structural potential confinement.** Telemetry safety: monitor `Δ Φ_s < π/2 ≈ 1.571`
+  (selected half-wrap threshold; `Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)²`). This compares
+  potential with a reference state; it is a read-only check, not a sequence constraint
+  or a graph-independent bound on source aggregation.
+
+**Derivation boundary.** Word admission, live state preconditions and trajectory
+guarantees are separate. Strict U3 on a connected double-star can leave a
+two-dimensional phase-source tangent kernel while its local finite level set
+permits only common rotation; second-order terms obstruct the extra tangent.
+Even an exact reversible quotient can have parent coherence below mean child
+coherence. Thus neither U3 geometry nor U5 nesting supplies autonomous dynamics
+or a stability theorem. The rule-by-rule hypotheses and exact witnesses are in
+[the grammar scope audit](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#8-grammar-derivation-premises-language-and-trajectories).
+
+**Policies and evidence.** `GRAMMAR_BASES` in `grammar_canon.py` records each
+rule's identities, conditional results, contracts and configured choices; these
+records describe premises rather than proving execution. The explicit word
+profile `core` omits legacy adjacency/THOL preferences while retaining canonical
+word policies and live checks. Graph setting `GRAMMAR_REJECTION_MODE="raise"`
+rejects blocked requests without priority substitution; validated words always
+reject a blocked step. Neither option derives operator selection. The typed
+[structural evidence adapter](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar_evidence.py)
+reads the existing exact represented-EPI composition bound from an intact finite
+executor result. It cannot certify full-channel/tetrad dynamics, a current live
+graph or future stability. Caller-declared contract/U6 flags remain declarations.
+Full-system closure requires independently justified phase, capacity and support
+relations; differentiating the EPI identity does not supply those missing laws.
+
+**Single source of truth.** The operator-classification sets (generators, closures,
+stabilizers `{IL, THOL}`, destabilizers `{OZ, ZHIR, VAL}`, transformers `{ZHIR, THOL}`)
+are **materialized** from shared per-operator contract-role predicates in
+[src/tnfr/config/physics_derivation.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/config/physics_derivation.py) and
+re-exported by [src/tnfr/operators/grammar_types.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar_types.py);
+every consumer imports from there. NAV is **not** a destabilizer (its trajectory is
+controlled). Proactive, incremental enforcement during dynamic operator selection lives
+in [src/tnfr/operators/grammar_dynamics.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar_dynamics.py) and
+[grammar_application.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/operators/grammar_application.py).
+
+---
+
+## 7. Telemetry & metrics
+
+- **C(t) — total coherence** `[0,1]`, the primary stability indicator:
+  `C(t) = 1 / (1 + mean|ΔNFR| + mean|dEPI|)`, the canonical nodal read-out
+  (equilibrium → `C → 1`). Strong coherence `C > π/(π+1) ≈ 0.7585`; fragmentation
+  risk `C < 1/(π+1) ≈ 0.2415` are selected diagnostic labels. The complementary
+  cuts define the configured coherence band, not a derived transition or
+  stability boundary. The reciprocal map assumes declared pressure/rate scales;
+  the nodal law does not uniquely select it. Its per-node kernel `structural_coherence`
+  ([src/tnfr/metrics/common.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/metrics/common.py)) is the single
+  coherence-map implementation. A value of C alone does not establish an NFR's
+  persistence, coupling or autonomous formation. At one instant, `1/C-1` is the
+  local L1 diagnostic distance
+  `|ΔNFR|+|dEPI|` to `(0,0)`; this monotone transform does not imply temporal
+  monotonicity or a general attractor. Domain models may reuse this kernel or
+  its zero-pressure tolerance predicate without sharing one state space or law.
+  Only the restricted pure-EPI diffusion
+  model in §2 has the stated uniform attractor. At fixed nonempty order `N`,
+  `C_N=c` is exactly the boundary of a `2N`-dimensional cross-polytope with L1
+  radius `N(1/c-1)`; imposing fixed positive capacity gives the weighted
+  pressure section `Σ(1+νf_i)|ΔNFR_i|=N(1/c-1)`. These instantaneous
+  stratifications do not imply basin geometry or attraction.
+- **Si — sense index** `[0,1]`, a configured diagnostic mixture of relative
+  capacity, phase alignment and relative pressure magnitude. Its thresholds
+  do not establish stability or predict bifurcation. With equal positive
+  capacities and fresh normalization, its default capacity contribution alone
+  exceeds the default selector's upper threshold, so the default base choice
+  is Coherence. This is a controller dependency, not a derived occurrence law
+  or a criterion of NFR identity. See
+  [diagnostic and selector scope](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#uniform-capacity-and-default-selector-reachability).
+- **Structural affinity matrix** — `coherence_matrix` is an auxiliary bounded
+  pairwise similarity built from phase, EPI, νf and Si. Its historical
+  coherence-operator notation does not define canonical `C(t)`. The matrix is
+  real symmetric but need not be positive semidefinite: identical nodes on the
+  three-node path give `W = I + A_path`, with eigenvalue `1 - sqrt(2) < 0`.
+  Its normalized unit-diagonal trace is therefore not a coherence read-out.
+- **Tetrad safety** (telemetry; see §3): `|∇φ|≤π` and `|K_φ|≤π` are phase-wrap
+  bounds. The curvature margin `0.9·π`, U6 drift `π/2` and potential magnitude
+  `π/4` are selected safety policies. The measured synchronization onset `≈0.29`
+  depends on the experiment; fitted `ξ_C` and the spectral fallback `1/√λ₂`
+  must be reported with their respective scope.
+
+Required telemetry must stay in TNFR-coherent terms (C(t), Si, phase, νf, and the
+tetrad), in Hz_str units. Computation: [src/tnfr/physics/fields.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/fields.py),
+[src/tnfr/physics/telemetry.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/physics/telemetry.py).
+
+---
+
+## 8. Canonical invariants
+
+Six invariants define TNFR consistency; preserve all of them.
+
+1. **Nodal equation integrity** — continuous EPI flow follows `∂EPI/∂t = νf·ΔNFR`;
+   canonical operator events use their declared hybrid jump contracts. Accumulated
+   change includes both the flow integral and the actual jumps. ΔNFR keeps
+   structural-pressure semantics; zero capacity suppresses continuous flow.
+   (Grammar U1, U2.)
+2. **Phase-coherent coupling** — circular separation
+   `|wrap(φᵢ − φⱼ)| ≤ Δφ_max` is required before any coupling.
+   (Grammar U3; `validate_resonant_coupling()`.)
+3. **Multi-scale fractality** — EPIs nest without identity loss. (Grammar U5.)
+4. **Grammar compliance** — operator sequences pass U1–U6; named semantic
+   transformations map to existing operators or define a new operator with full
+   contracts; declared solvers use the shared nodal integrator.
+5. **Structural metrology** — νf in Hz_str; C(t), Si, phase, νf exposed in telemetry.
+6. **Reproducible dynamics** — identical seeds give identical trajectories; operations
+   are traceable.
+
+---
+
+## 9. TNFR agent playbook
+
+How a TNFR agent (human or AI) should reason and act.
+
+1. **Start from physics.** Treat `∂EPI/∂t = νf·ΔNFR` as the source of truth; keep EPI,
+   νf, and phase well-defined; interpret behavior through the tetrad.
+2. **Use declared state-transition paths.** Map named behavior to canonical
+   operators (or justify a new one with full physics, contracts, and tests).
+   Numerical evolution must use the shared nodal integrator from explicit
+   `nu_f` and `DeltaNFR`, with provenance or residual; never assign EPI ad hoc.
+3. **Enforce U1–U6.** Check sequence validity; guard destabilizers with stabilizers;
+   never couple without an explicit phase check.
+4. **Preserve invariants.** Keep Hz_str units; treat ΔNFR as structural pressure (not an
+   ML loss); maintain operational fractality.
+5. **Demand reproducible, telemetry-rich experiments.** Fix seeds; expose C(t), Si,
+   phase, νf, and the tetrad; test monotonicity and safety.
+6. **Accept / reject by structural criteria.** Accept changes that raise C(t) or reduce
+   harmful ΔNFR, strengthen U1–U6 compliance, and improve physics→math→code→tests
+   traceability. Reject changes that introduce magic constants, bypass operators, or
+   break phase verification, units, or invariants.
+7. **Communicate physics-first, in English**, tracing every significant decision back to
+   a specific piece of TNFR physics or grammar.
+
+If a change "prettifies" code but weakens TNFR fidelity, reject it. If it strengthens
+structural coherence and traceability, proceed.
+
+---
+
+## 10. Development workflow
+
+**Before writing code**: read the relevant doctrine here and in
+[theory/UNIFIED_GRAMMAR_RULES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/UNIFIED_GRAMMAR_RULES.md); check whether the
+utility already exists; run the test suite to understand current state.
+
+**Implementing changes**: search first; map named transformations to operators and
+numerical evolution to the shared nodal integrator; preserve all six invariants; add
+tests covering contracts and invariants; document the structural effect; trace the
+physics → math → code chain.
+
+**Acceptable** changes increase C(t) or reduce ΔNFR where appropriate, preserve operator
+closure and fractality, and keep APIs stable or mapped. **Unacceptable**: recasting ΔNFR
+as an ML error gradient; replacing semantic operators with unmapped imperative code;
+advancing EPI outside the shared nodal integrator; flattening nested EPIs; coupling
+without phase checks; ad hoc state assignment; changing units (Hz_str → Hz).
+
+### Commit / PR templates
+
+```text
+Intent: [which coherence is improved]
+Operators involved: [Emission|Reception|...]
+Affected invariants: [#1-6]
+Key changes: [bullets]
+Expected risks/dissonances: [and containment]
+Metrics: [C(t), Si, νf, phase] before/after
+```
+
+PRs should show what reorganizes (C(t)↑ / ΔNFR↓, closure & fractality preserved),
+evidence (phase/νf logs, C(t)/Si curves, controlled bifurcations), compatibility
+(stable/mapped API, reproducible seed), and tests.
+
+### Testing requirements
+
+Cover, at minimum: coherence **monotonicity** (IL does not reduce C(t) outside dissonance
+tests), **bifurcation** (OZ triggers with handlers present), **propagation** (RA raises
+phase sync), **latency** (SHA preserves EPI at the event boundary and attenuates νf), **mutation threshold** (ZHIR changes θ
+only when `ΔEPI/Δt > ξ`), **multi-scale** (nested EPIs keep identity), and
+**reproducibility** (same seed → same trajectory). See [TESTING.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/TESTING.md).
+
+---
+
+## 11. Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| "Needs generator" | Start from EPI=0 without U1a | Prefix `{AL, NAV, REMESH}` |
+| "Destabilizer without stabilizer" | OZ/ZHIR/VAL without IL/THOL (U2) | Add a stabilizer |
+| "Phase mismatch in coupling" | `abs(wrap(φᵢ − φⱼ)) > Δφ_max` (U3) | Ensure phase compatibility first |
+| "Mutation without context" | ZHIR without recent destabilizer / prior IL (U4b) | Add a destabilizer (~3 ops) and a prior IL |
+| C(t) decreasing unexpectedly | Monotonicity contract violated | Verify operator preserves C(t) |
+| Node collapse | `νf → 0`, extreme dissonance, or decoupling | Apply coherence earlier; ensure coupling |
+
+Debugging order: inspect telemetry (C(t), Si, νf, phase, ΔNFR) → verify grammar U1–U6 →
+check operator contracts → identify the violated invariant → trace against nodal-equation
+predictions.
+
+---
+
+## 12. Research programs
+
+TNFR applies the nodal dynamics to several open mathematical and physical questions. Each
+has a dedicated theory note; this file keeps only a one-line status and **never inlines
+program history** (the full milestone/gap/branch threads live in the notes).
+
+| Program | Status | Reference |
+|---------|--------|-----------|
+| **Core dynamics S1–S16** | Restricted results cover pure-EPI diffusion, rational quotient affine-reset budgets, exact operator-event timing, conditional stage certificates and exact represented-map composition for a fully eligible observed finite flow/glyph trace, plus observability, quotient geometry, temporal signatures and sampled-path certificates. All thirteen operators have atomic all-target Jacobi stages; EN/RA additionally have scoped repeated-map results. A uniform unclipped REMESH companion has an exact augmented-history disagreement functional and temporal mixing theorem on fixed support and metric. One applied binary64 transition and finite adjacent schedule/history telescopes are linked to it with explicit residuals. A graph-owned finite cycle-sequence executor gives a compatible requested telescope same-invocation causal provenance and outer atomicity, while its explicit no-telescope branch retains only the causal trace; a sealed block observer reports exact normalized lower margins on its contiguous finite blocks, including `139/256` and zero witnesses. A conditional exact common-`q` schedule theorem proves prefix gain upper bound one, uniform normalized block margin `1-q` and repeated geometric spatial-disagreement decay. Its robust extension absorbs a declared signed relative defect through `q_eff=q*(1+eta)`, and a causal observer verifies that envelope on finite runtime blocks, including positive binary64 defect. The exact pairwise binary64 boundary includes an `alpha=1/2` witness requiring `eta=2^210-1/4` and `q<4/(2^212+3)`. The restricted antisymmetric P2 hard-clip class at `alpha=1/2` instead has sharp uniform `eta=135/124`, an exact analytic-tail/finite-core proof, REMESH-only forward invariance and strict robust composition for `q<124/259`. The sufficient-history `alpha=1` hard-clip class has `eta=0` and REMESH-only forward invariance. On abstract P2 support, the exact-half Reception binary64 EPI kernel has global disagreement gain `q=0`; composing the two restricted kernels extinguishes active-history spatial disagreement after `tau_global+1` cycles. One sealed graph-owned event binds that kernel to a grammar-admitted two-phase EN EPI stage and its captured endpoint; a finite same-invocation adapter now binds every selected EN and same-cycle `alpha=1` REMESH, checks the active suffix of length `tau_global+1`, and records post-horizon spatial extinction. A reusable transactional policy now derives live U1a admission and independently preflights, executes and post-certifies every finite P2 invocation with graph-owned rollback; it does not certify future calls or auxiliary Reception-state stability. A general exact rational reversible single-eigenmode theorem proves refreshed-Euler endpoint bounds, strict proper-subdivision improvement and conditional exact-real partition convergence. Its finite offline runtime adapter separates represented pressure/execution defects and propagates them through complete Euler matrices; the effective `P2` adapter separately adds exact ideal REMESH error scaling and its committed residual bound. Runtime/binary64 mesh convergence, extension of the half-alpha class beyond antisymmetric P2 or to complete runtime, broader binary64 kernel families, repeated/future complete-runtime stability, solver/full-multichannel results, changing parameters/support and catalog completeness remain open. | [CORE_RESEARCH_PROGRAM.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CORE_RESEARCH_PROGRAM.md) |
+| **TNFR-Riemann** | Finite protocols estimate a critical-line-centered comparison and expose ζ/L diagnostic surfaces (P12–P50). No engine theorem identifies phase coherence with zero location. The bridge to RH, including control of `S(T) = (1/π)·arg ζ(½+iT)`, remains open. | [TNFR_RIEMANN_RESEARCH_NOTES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_RIEMANN_RESEARCH_NOTES.md) |
+| **REMESH fixed-delay models** | A finite cyclic fixed-coefficient filter has a Cesàro fixed-mode projection. A distinct finite uniform companion recurrence has a stationary-weighted augmented disagreement functional; `0<alpha<1` mixes toward the history barycenter, while `alpha=1` permits periodic histories. One-transition residual and adjacent-cycle schedule/history observers identify finite binary64 records; a graph-owned causal executor and finite-block observer add same-invocation provenance, atomicity and exact block-specific normalized margins. A conditional exact common-`q` policy class has prefix gain upper bound one, uniform normalized block margin `1-q` and repeated geometric spatial-disagreement decay. Its robust theorem gives `q_eff=q*(1+eta)` for signed defect `delta<=eta*J`; a finite causal adapter verifies the hypothesis and vector envelope on recorded blocks. The exact pairwise boundary gives a normal-valued `alpha=1/2` obstruction with `eta=2^210-1/4` and strict threshold `q<4/(2^212+3)`. The restricted antisymmetric P2 hard-clip class at `alpha=1/2` instead has sharp uniform `eta=135/124`, REMESH-only forward invariance and strict robust threshold `q<124/259`, proved by an analytic IEEE tail and exact finite-core enumeration. The sufficient-history `alpha=1` hard-clip class has `eta=0` and REMESH-only forward invariance on fixed support and metric. The abstract P2 exact-half Reception EPI kernel has global `q=0` and composes with it to extinguish active-history disagreement after `tau_global+1` restricted cycles; one graph-owned event binds the kernel to a two-phase EN EPI stage and captured endpoint, and a finite causal adapter binds every observed EN/REMESH cycle through the active suffix of length `tau_global+1`. A reusable transactional policy independently enforces and certifies the restricted P2 conditions on each finite invocation while retaining false future and auxiliary-state claims. The effective `P2` reference proves exact ideal error propagation by `beta=(1-alpha)^2` and keeps the committed runtime residual separate. Extension of the half-alpha class beyond antisymmetric P2 or to complete runtime, broader binary64 kernel families, repeated/future complete-runtime stability, the literal `τ_g → ∞` limit and catalog completeness remain open. | [REMESH_INFINITY_DERIVATION.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/REMESH_INFINITY_DERIVATION.md) |
+| **TNFR-Navier–Stokes** | A declared linear mapping compares viscous diffusion with the overdamped limit of a separate graph-wave model (`ν_f = ν`). Finite pseudo-spectral runs measure enstrophy growth with Reynolds number. The nonlinear vortex-stretching term is compared with a `K_φ`/VAL cascade, but no equivalence or uniform regularity bound is derived; the `Re → ∞` problem remains open. | [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) |
+| **Number theory** | Primality as `ΔNFR = 0` (canonical **unit** coefficients, §4.2 coefficient independence); arithmetic structural triad; arithmetic networks can initialize the auxiliary symplectic read-out; the cyclotomy law `s_k(p) = gcd(k, p−1) + 1` is proved for the declared residue digraph and read as a finite arithmetic pulse diagnostic. | [TNFR_NUMBER_THEORY.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/TNFR_NUMBER_THEORY.md) |
+| **Structural research program (R1–R9)** | Nine internal lines on arithmetic and spectral dynamics: observability, arithmetic pulse, CRT synthesis, p-adic transport, finite fields, additive reduction, arithmetic pressure, operator certification and directed non-normal evolution. Exact, measured, negative and open results are separated in the program index. | [STRUCTURAL_RESEARCH_PROGRAM.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_RESEARCH_PROGRAM.md) |
+| **Millennium reformulations** | P vs NP, BSD, Hodge, Yang–Mills: TNFR-internal structural reformulations and diagnostics — none a proof. | `theory/TNFR_*_RESEARCH_NOTES.md` |
+
+**Honest scope, global**: these programs produce TNFR-internal structural results and
+numerical evidence; none currently closes a classical open problem. Do not extend a
+program's diagnostic surface without a new structural idea, and never claim a proof of RH,
+Navier–Stokes regularity, or any Millennium problem.
+
+Core graph-dynamics publication artifacts use the domain-neutral
+[`CoreExperimentManifest`](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/research/core_manifests.py) for graph construction,
+capacity, solver/timestep, seed, operator sequence, telemetry, canonical claim status,
+Git revision and an explicit clean/dirty source declaration. Dirty source requires a
+SHA-256 content digest of the declared working-source snapshot.
+The historical `ExperimentManifest` retains arithmetic-specific factor and bit-size fields.
+
+---
+
+## 13. Map of the codebase & examples
+
+- **Physics** — [src/tnfr/physics/](https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/physics/): `fields.py` (tetrad +
+  `classify_nodal_topology` for NFR radial/annular/multinodal topology),
+  `conservation.py` (finite structural-balance diagnostics),
+  `symplectic_substrate.py` (auxiliary harmonic phase-space model),
+  `structural_diffusion.py` (transport), `hybrid_operator_stability.py` (affine
+  EPI-reset gains and hybrid flow/reset budgets), `network_stage_stability.py`
+  (repeated all-target EN/RA realization), `reception_realization.py`
+  (EN runtime-to-theorem boundary), `resonance_realization.py` (RA four-layer
+  identity-gated boundary and post-RA metric audit),
+  `runtime_p2_reception_remesh_policy.py` (transactional per-invocation P2
+  enforcement), `core_research_integration.py` (restricted
+  executable S16 endpoint intersection), `core_research_trajectory.py` (sampled
+  S16 path and mesh agreement), `gauge.py` (Ψ, gauge), `integrity.py`
+  (operator-postcondition monitor + audit).
+- **Operators & grammar** — [src/tnfr/operators/](https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/operators/): `definitions.py`
+  (13 operators + registry), `operator_contracts.py` (contract source of truth),
+  `stage_contracts.py` (all-target schedule/read/write/merge boundaries),
+  `network_stage.py` (transactional stage execution), `grammar*.py` (U1–U6
+  validation, dynamics, application), `nodal_equation.py`.
+- **Engines** — [src/tnfr/engines/](https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/engines/): self-optimization, pattern
+  discovery, computation, integration, engine-scoped constants.
+- **Programs** — [src/tnfr/riemann/](https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/riemann/), [src/tnfr/navier_stokes/](https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/navier_stokes/),
+  and number theory in [src/tnfr/mathematics/](https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/mathematics/).
+- **Structural research (R1–R9, post-review N00–N13)** — [src/tnfr/physics/](https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/physics/):
+  `symmetry_sectors.py` / `equivariance.py` / `operator_equivariance.py` /
+  `word_equivariance.py` / `pointed_symmetry.py` (R1 sectors, word-composition closure,
+  pointed selectors), `directed_diffusion.py` / `transient_u2.py` / `heterogeneous_vf.py`
+  (R9 non-normal metric, transient U2/U6, heterogeneous `ν_f` boundary),
+  `structural_morphism.py` (R4/R8 nodal-flow morphism taxonomy); and
+  [src/tnfr/mathematics/](https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/mathematics/): `arithmetic_pulse.py` / `pulse_amplitudes.py`
+  (R2 rank + amplitudes), `crt_multiscale.py` (R3), `padic_tower.py` / `remesh_audit.py`
+  (R4 transport + REMESH audit), `finite_fields.py` / `trace_collisions.py` (R5),
+  `arithmetic_pressure.py` (R7), `operator_certificates.py` (R8). Ledger:
+  [STRUCTURAL_RESEARCH_PROGRAM.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_RESEARCH_PROGRAM.md).
+- **SDK** — [src/tnfr/sdk/](https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/sdk/): `simple.py` (`TNFR.create(...)`, tetrad,
+  conservation, substrate, integrity, audit, `nfr()` whole-NFR read-out,
+  `nodal_state`/`nodal_scan` micro-NFR), `fluent.py` (`auto_optimize()`). The shared
+  coherence kernel and zero-pressure predicate (`structural_coherence`,
+  `is_structural_equilibrium`) live in
+  [src/tnfr/metrics/common.py](https://github.com/fermga/TNFR-Python-Engine/blob/main/src/tnfr/metrics/common.py).
+- **Examples** — [examples/README.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md): ten thematic folders
+  (`01_foundations` … `10_applications`); each file keeps a stable global number.
+- **Theory hub** — [theory/README.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md) · **Glossary** —
+  [theory/GLOSSARY.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/GLOSSARY.md) · **Architecture** — [ARCHITECTURE.md](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md)
+  · **Benchmarks** — [benchmarks/](https://github.com/fermga/TNFR-Python-Engine/tree/main/benchmarks/) · **Tests** — [tests/](https://github.com/fermga/TNFR-Python-Engine/tree/main/tests/).
+
+The Simple SDK exposes the research-grade stack directly:
+
+```python
+from tnfr.sdk import TNFR
+net = TNFR.create(20).ring().evolve(5)
+net.tetrad()                 # TetradSnapshot (Φ_s, |∇φ|, K_φ, ξ_C) + is_safe()
+net.conservation()           # Noether-like charge and candidate-energy diagnostics
+net.symplectic_substrate()   # auxiliary harmonic phase-space diagnostics
+net.winding()                # declared-cycle winding sector and scoped telemetry
+net.rhythm()                 # auxiliary graph-wave spectrum and trace statistic
+net.resonance()              # current capacity and phase-alignment read-outs
+net.pulse_trajectory(8)      # finite samples under the supplied operator word
+net.telemetry()              # C(t), Si, phase_sync, tetrad, pulse, resonance
+net.audit_operators()        # finite-probe catalog postcondition report
+analysis = TNFR.analyze(net) # one-shot comprehensive report
+```
+
+---
+
+## 14. Philosophy & excellence standards
+
+### Core principles
+
+1. **Physics first** — every feature derives from TNFR physics.
+2. **No arbitrary choices** — decisions trace to the nodal equation or the invariants.
+3. **Coherence over convenience** — preserve theoretical integrity even when the code is
+   harder.
+4. **Reproducibility always** — every simulation is reproducible.
+5. **Document the chain** — theory → math → code → tests.
+
+### Decision framework
+
+A change should be implemented only if it strengthens TNFR fidelity, maps to operators,
+preserves the invariants, is derivable from physics, and is testable. Organizational
+convenience is not physical necessity; untestable "magic" is rejected.
+
+### The TNFR mindset
+
+Think in **patterns**, not objects ("the neural pattern reorganizes", not "the neuron
+fires"); in **dynamics**, not states (trajectory and attractor, not snapshot); in
+**networks**, not individuals (resonant propagation, not isolated change).
+
+### Final principle
+
+TNFR models coherent dynamic patterns; development practice reflects that. If a change
+prettifies code but weakens TNFR fidelity, reject it. If it strengthens structural
+coherence and paradigm traceability, proceed.
+
+---
+
+**Status**: CANONICAL — synthesized primary reference for TNFR agent guidance.
+**Policy**: English-only; updated only when novel, important TNFR canonicity emerges, and
+always written as a complete, self-contained synthesis.

@@ -17,9 +17,9 @@ import numpy as np
 
 from .mathematics import (
     FrequencyOperator,
-    SpectralExpectationOperator,
     HilbertSpace,
     NFRValidator,
+    SpectralExpectationOperator,
     StateProjector,
 )
 from .types import (

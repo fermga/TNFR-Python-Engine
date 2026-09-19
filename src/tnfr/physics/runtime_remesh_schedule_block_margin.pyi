@@ -4,13 +4,10 @@ from dataclasses import dataclass, field
 from fractions import Fraction
 from typing import Any
 
-from tnfr.operators.event_remesh_causal_runtime import (
-    ExecutedEventRemeshCycleSequence,
-)
+from tnfr.operators.event_remesh_causal_runtime import ExecutedEventRemeshCycleSequence
 from tnfr.physics.runtime_remesh_schedule_stability import (
     RuntimeRemeshScheduleBoundaryObservation,
 )
-
 
 @dataclass(frozen=True, slots=True)
 class RuntimeRemeshScheduleBlockMarginObservation:
@@ -70,13 +67,11 @@ class RuntimeRemeshScheduleBlockMarginObservation:
     @property
     def mesh_convergence_certified(self) -> bool: ...
 
-
 def observe_executed_event_remesh_block_margin(
     execution: ExecutedEventRemeshCycleSequence,
     *,
     start_boundary: int = ...,
     boundary_count: int | None = ...,
 ) -> RuntimeRemeshScheduleBlockMarginObservation: ...
-
 
 __all__: tuple[str, ...]

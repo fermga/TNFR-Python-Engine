@@ -21,11 +21,11 @@ from math import comb
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
+from _flat_grammar_model import NAME2INST
+
 from tnfr.operators.canonical_patterns import CANONICAL_SEQUENCES
 from tnfr.operators.grammar_types import GLYPH_TO_FUNCTION
 from tnfr.operators.grammar_validate import validate_grammar
-
-from _flat_grammar_model import NAME2INST
 
 GLYPH_TO_NAME = {glyph.value: name for glyph, name in GLYPH_TO_FUNCTION.items()}
 

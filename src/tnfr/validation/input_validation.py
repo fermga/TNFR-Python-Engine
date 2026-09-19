@@ -287,8 +287,8 @@ def validate_glyph_factors(
     ValidationError
         If factors is invalid
     """
+    from ..operators.factor_contracts import GlyphFactorValidationError
     from ..operators.factor_contracts import (
-        GlyphFactorValidationError,
         validate_glyph_factors as validate_factor_mapping,
     )
 

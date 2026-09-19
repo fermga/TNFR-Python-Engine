@@ -74,9 +74,9 @@ from .errors import TNFRValueError
 from .mathematics import (
     BasicStateProjector,
     FrequencyOperator,
-    SpectralExpectationOperator,
     HilbertSpace,
     MathematicalDynamicsEngine,
+    SpectralExpectationOperator,
     make_frequency_operator,
     make_spectral_expectation_operator,
 )
@@ -256,9 +256,7 @@ def _resolve_dimension(
             count = len(tuple(G.nodes))
         dimension = max(1, count)
 
-    return positive_spectral_dimension(
-        dimension, label="Hilbert space dimension"
-    )
+    return positive_spectral_dimension(dimension, label="Hilbert space dimension")
 
 
 def _ensure_spectral_operator(
@@ -286,9 +284,7 @@ def _ensure_spectral_operator(
                 context={"ndim": spectrum_array.ndim},
             )
         if not np.all(np.isfinite(spectrum_array)):
-            raise TNFRValueError(
-                "Spectral expectation spectrum must be finite."
-            )
+            raise TNFRValueError("Spectral expectation spectrum must be finite.")
         kwargs["spectrum"] = spectrum_array
     if expectation_floor is not None:
         kwargs["expectation_floor"] = finite_spectral_real(
@@ -472,8 +468,7 @@ def create_math_nfr(
         resolved_spectrum is not None or resolved_floor is not None
     ):
         raise TNFRValueError(
-            "Provide either a spectral operator or its factory parameters, "
-            "not both."
+            "Provide either a spectral operator or its factory parameters, " "not both."
         )
 
     G, node = create_nfr(
@@ -512,9 +507,11 @@ def create_math_nfr(
         expectation_floor=resolved_floor,
     )
     threshold = finite_spectral_real(
-        resolved_threshold
-        if resolved_threshold is not None
-        else spectral.expectation_floor,
+        (
+            resolved_threshold
+            if resolved_threshold is not None
+            else spectral.expectation_floor
+        ),
         label="spectral expectation threshold",
     )
 
@@ -576,9 +573,7 @@ def create_math_nfr(
         "norm": norm_value,
         "normalized": bool(summary.get("normalized", False)),
         "spectral_operator_expectation": expectation,
-        **spectral_expectation_metadata(
-            provenance="tnfr.structural.create_math_nfr"
-        ),
+        **spectral_expectation_metadata(provenance="tnfr.structural.create_math_nfr"),
         # Historical flat keys are compatibility mirrors only.
         "coherence_value": expectation["value"],
         "coherence_threshold": expectation["threshold"],
@@ -608,9 +603,7 @@ def create_math_nfr(
         "hilbert_space": hilbert,
         "spectral_operator": spectral,
         "spectral_expectation_threshold": threshold,
-        **spectral_expectation_metadata(
-            provenance="tnfr.structural.create_math_nfr"
-        ),
+        **spectral_expectation_metadata(provenance="tnfr.structural.create_math_nfr"),
         # Historical configuration keys.
         "coherence_operator": spectral,
         "coherence_threshold": threshold,

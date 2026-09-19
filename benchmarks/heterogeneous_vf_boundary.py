@@ -41,59 +41,77 @@ def _unit(v):
 
 
 CASES = [
-    ("circulant C7{1,2} (normal)", directed_cayley_adjacency(7, {1, 2}),
-     _unit([1, -1, 0.5, -0.5, 0.3, -0.2, -0.1])),
-    ("weighted ring+chord (SC, non-normal)",
-     np.array([[0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2], [2, 0, 1, 0]],
-              dtype=float), _unit([1, -1, 0.5, -0.5])),
+    (
+        "circulant C7{1,2} (normal)",
+        directed_cayley_adjacency(7, {1, 2}),
+        _unit([1, -1, 0.5, -0.5, 0.3, -0.2, -0.1]),
+    ),
+    (
+        "weighted ring+chord (SC, non-normal)",
+        np.array([[0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2], [2, 0, 1, 0]], dtype=float),
+        _unit([1, -1, 0.5, -0.5]),
+    ),
 ]
 
 
 def main() -> int:
     print("N13 heterogeneous vf: the scalar clock-change theorem does not extend")
     tg = np.linspace(0.0, 10.0, 600)
-    header = (f"  {'graph':<38} {'comm_sc':>8} {'comm_het':>9} {'res_sc':>8} "
-              f"{'res_het':>8} {'extend':>7} {'absc':>7} {'gain':>6}")
+    header = (
+        f"  {'graph':<38} {'comm_sc':>8} {'comm_het':>9} {'res_sc':>8} "
+        f"{'res_het':>8} {'extend':>7} {'absc':>7} {'gain':>6}"
+    )
     print(header)
     all_boundary = True
     all_stable = True
     for label, w, x in CASES:
         c = certify_heterogeneous_vf(w, x, tg)
-        boundary = (c.commutator_scalar < 1e-9
-                    and c.commutator_heterogeneous > 1e-3
-                    and c.scalar_time_residual_common < 1e-3
-                    and not c.scalar_time_theorem_extends)
+        boundary = (
+            c.commutator_scalar < 1e-9
+            and c.commutator_heterogeneous > 1e-3
+            and c.scalar_time_residual_common < 1e-3
+            and not c.scalar_time_theorem_extends
+        )
         all_boundary &= boundary
         all_stable &= c.fixed_generator_stable
-        print(f"  {label:<38} {c.commutator_scalar:>8.1e} "
-              f"{c.commutator_heterogeneous:>9.4f} "
-              f"{c.scalar_time_residual_common:>8.4f} "
-              f"{c.scalar_time_residual_heterogeneous:>8.4f} "
-              f"{str(c.scalar_time_theorem_extends):>7} "
-              f"{c.fixed_generator_abscissa:>7.3f} "
-              f"{c.heterogeneity_transient_gain:>6.3f}")
+        print(
+            f"  {label:<38} {c.commutator_scalar:>8.1e} "
+            f"{c.commutator_heterogeneous:>9.4f} "
+            f"{c.scalar_time_residual_common:>8.4f} "
+            f"{c.scalar_time_residual_heterogeneous:>8.4f} "
+            f"{str(c.scalar_time_theorem_extends):>7} "
+            f"{c.fixed_generator_abscissa:>7.3f} "
+            f"{c.heterogeneity_transient_gain:>6.3f}"
+        )
 
     audit = CircularityAudit()  # pure spectral / semigroup dynamics
     _ = ExperimentManifest(
         claim_id="NT-P09e",
         git_sha="local",
-        versions={"python": platform.python_version(),
-                  "numpy": np.__version__},
+        versions={"python": platform.python_version(), "numpy": np.__version__},
         seed=None,
         operator_sequence=(),
         uses_known_factors=False,
         input_bits=input_bit_length(7),
-        controls=("scalar_commutes", "heterogeneous_no_commute",
-                  "scalar_time_fails_heterogeneous", "fixed_generator_stable"),
+        controls=(
+            "scalar_commutes",
+            "heterogeneous_no_commute",
+            "scalar_time_fails_heterogeneous",
+            "fixed_generator_stable",
+        ),
         artifacts=(),
     )
     print()
     print(f"  scalar-time theorem fails (het) : {all_boundary}")
     print(f"  frozen D_vf stable (all)        : {all_stable}")
-    print(f"  scalar-time does NOT extend     : {ClaimStatus.DERIVED.value} "
-          "(commutator != 0) + MEASURED")
-    print(f"  uniform time-varying stability  : {ClaimStatus.CONJECTURAL.value}"
-          " / OPEN (NT-P09 heterogeneous)")
+    print(
+        f"  scalar-time does NOT extend     : {ClaimStatus.DERIVED.value} "
+        "(commutator != 0) + MEASURED"
+    )
+    print(
+        f"  uniform time-varying stability  : {ClaimStatus.CONJECTURAL.value}"
+        " / OPEN (NT-P09 heterogeneous)"
+    )
     print(f"  circularity                     : {audit.verdict.value}")
     ok = all_boundary and all_stable
     return 0 if ok else 1

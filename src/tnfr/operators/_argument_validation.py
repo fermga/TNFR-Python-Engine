@@ -79,9 +79,7 @@ def strict_bool(value: Any, *, operator: str, label: str) -> bool:
     """Return a real boolean, rejecting truthy compatibility coercions."""
 
     if not isinstance(value, bool):
-        reject_operator_argument(
-            operator, f"{label} must be a boolean, got {value!r}"
-        )
+        reject_operator_argument(operator, f"{label} must be a boolean, got {value!r}")
     return value
 
 
@@ -95,9 +93,7 @@ def nonnegative_integer(value: Any, *, operator: str, label: str) -> int:
     return int(value)
 
 
-def require_list_sink(
-    mapping: Mapping[str, Any], key: str, *, operator: str
-) -> None:
+def require_list_sink(mapping: Mapping[str, Any], key: str, *, operator: str) -> None:
     """Validate an existing append-only telemetry sink before state changes."""
 
     if key in mapping and not isinstance(mapping[key], list):

@@ -1,30 +1,13 @@
-"""Deterministic universality clustering for tetrad timing exponents.
+"""Descriptive clustering of supplied wall-clock scaling estimates.
 
-Reads `exponents_summary.json` produced by `tetrad_scaling_exponents.py` and
-derives a feature vector per topology using available timing exponents.
-
-Feature vector per topology:
-  [exp_phi_s, exp_phase_grad, exp_phase_curv, exp_xi_c, exp_tetrad_snapshot]
-
-Clustering method (deterministic k-means-like with fixed initial centroids):
-  1. Collect feature vectors (topologies).
-  2. If requested cluster count K >= number of topologies, each topology
-     becomes its own cluster (identity partition).
-  3. Otherwise initialize centroids as first K topology vectors in sorted
-     order of topology name for determinism.
-  4. Iterate (max 50 steps or convergence) assigning by Euclidean distance
-     and updating centroids to mean of members.
-  5. Produce final mapping topology -> cluster_id, with cluster statistics.
-
-All analysis is READ-ONLY; TNFR invariants preserved.
-
-CLI Example:
-  python benchmarks/universality_clusters.py \
-      --exponents-file results/exponents_summary.json --clusters 2
-
-Output:
-  results/universality_clusters.json
-  results/universality_clusters.md (table summary)
+Reads an exponents_summary.json with timing fields and groups topologies by a
+deterministic Euclidean assignment/update procedure. These are computational
+cost exponents, not physical time laws or TNFR universality classes. Machine,
+backend, input domain and fit windows must match before comparison.
+The historical tetrad_scaling_exponents.py producer is absent; this consumer
+requires an independently documented compatible input artifact.
+No live TNFR state is evolved or invariant certificate produced. JSON and
+Markdown output schemas are retained for existing supplied records.
 """
 
 from __future__ import annotations
@@ -207,7 +190,7 @@ def main() -> None:
     write_outputs(result, json_path, md_path)
     print(f"Clusters written: {json_path}")
     print(f"Markdown summary: {md_path}")
-    print("Invariants preserved (read-only universality analysis).")
+    print("Passive timing aggregation complete; no dynamical invariants were tested.")
 
 
 if __name__ == "__main__":  # pragma: no cover

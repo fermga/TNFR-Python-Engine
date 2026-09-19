@@ -50,9 +50,7 @@ def test_graph_gft_reads_alias_and_preserves_uniform_bepi_sign() -> None:
 
 def test_graph_gft_rejects_rich_epi_without_signed_scalar_chart() -> None:
     graph = nx.path_graph(2)
-    graph.nodes[0]["EPI"] = BEPIElement(
-        (-0.8, -0.7), (-0.8, -0.8), (0.0, 1.0)
-    )
+    graph.nodes[0]["EPI"] = BEPIElement((-0.8, -0.7), (-0.8, -0.8), (0.0, 1.0))
     graph.nodes[1]["EPI"] = 0.25
 
     with pytest.raises(TNFRValueError, match="uniform-real EPI"):
@@ -93,9 +91,7 @@ def test_normalized_cross_power_is_scale_invariant_without_absolute_epsilon() ->
     engine = _basic_engine()
 
     reference = engine.compute_cross_spectral_coherence(signal, signal)
-    rescaled = engine.compute_cross_spectral_coherence(
-        signal * 1.0e-9, signal * 3.0e-9
-    )
+    rescaled = engine.compute_cross_spectral_coherence(signal * 1.0e-9, signal * 3.0e-9)
 
     np.testing.assert_allclose(reference.spectral_data, np.ones(4))
     np.testing.assert_allclose(rescaled.spectral_data, reference.spectral_data)
@@ -104,9 +100,7 @@ def test_normalized_cross_power_is_scale_invariant_without_absolute_epsilon() ->
         == "common_nonzero_spectral_support"
     )
 
-    zero = engine.compute_cross_spectral_coherence(
-        np.zeros_like(signal), signal
-    )
+    zero = engine.compute_cross_spectral_coherence(np.zeros_like(signal), signal)
     np.testing.assert_array_equal(zero.spectral_data, np.zeros(4))
 
 
@@ -162,7 +156,4 @@ def test_graph_fft_euler_step_exposes_uncertified_stability_scope() -> None:
 
     assert result["integration_method"] == "forward_euler"
     assert result["stability_not_certified"] is True
-    assert (
-        result["stability_evidence"]
-        == "arbitrary_dt_without_step_size_certificate"
-    )
+    assert result["stability_evidence"] == "arbitrary_dt_without_step_size_certificate"

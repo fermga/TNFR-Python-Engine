@@ -136,9 +136,7 @@ def test_base_fibre_inputs_differ():
 # --------------------------------------------------------------------------- #
 def test_independent_commutator_properties():
     print("=" * 78)
-    print(
-        "TEST 2 -- PARALLEL FINITE CALCULATIONS: so(n) base / su(2) fibre"
-    )
+    print("TEST 2 -- PARALLEL FINITE CALCULATIONS: so(n) base / su(2) fibre")
     print("=" * 78)
     n = 5
     G = nx.complete_graph(n)
@@ -171,8 +169,7 @@ def test_independent_commutator_properties():
         and fibre_antiherm < TOL
     )
     print(
-        f"  base model : [D, P_s] != 0 (max = {base_break:.2f}) ; "
-        f"[A, D] is so(n)"
+        f"  base model : [D, P_s] != 0 (max = {base_break:.2f}) ; " f"[A, D] is so(n)"
     )
     print(
         f"               ||[A,D]|| = {base_gen_norm:.2f}, anti-symmetry "
@@ -197,9 +194,7 @@ def test_independent_commutator_properties():
 # --------------------------------------------------------------------------- #
 def test_tensor_factor_separation():
     print("=" * 78)
-    print(
-        "TEST 3 -- TENSOR FACTORS: a base operator commutes with fibre operators"
-    )
+    print("TEST 3 -- TENSOR FACTORS: a base operator commutes with fibre operators")
     print("=" * 78)
     n = 5
     d = 2
@@ -291,12 +286,8 @@ def test_input_and_audit_provenance():
         f"                  breaks S_n (||[D,P_s]|| = {base_break:.2f}) but "
         "is IMPOSED input"
     )
-    print(
-        "                  (the values are supplied before the matrix checks)."
-    )
-    print(
-        f"  fibre input  : non-commuting [T_x,T_y] (= {fibre_break:.3f})"
-    )
+    print("                  (the values are supplied before the matrix checks).")
+    print(f"  fibre input  : non-commuting [T_x,T_y] (= {fibre_break:.3f})")
     print("  independent repository audit:")
     print(f"                  {verdict_line}")
     print(

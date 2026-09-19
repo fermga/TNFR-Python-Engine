@@ -53,8 +53,10 @@ CASES = [
 
 def main() -> int:
     print("R4 projective p-adic tower: R_e P_{e+1} = P_e R_e (exact over Q)")
-    print(f"  {'p':>3} {'e':>2} {'commut':>7} {'intertw':>7} {'Rlift-I':>7} "
-          f"{'spec_sub':>9}")
+    print(
+        f"  {'p':>3} {'e':>2} {'commut':>7} {'intertw':>7} {'Rlift-I':>7} "
+        f"{'spec_sub':>9}"
+    )
     all_exact = True
     for p, e, base in CASES:
         c = projective_commutation_residual(p, e, base)
@@ -62,10 +64,12 @@ def main() -> int:
         it = lift_intertwining_residual(p, e, base)
         lr = lift_reduction_residual(p, e)
         sub = surviving_spectrum_containment(p, e, base)
-        exact = (c == 0 and lc == 0 and it == 0 and lr == 0)
+        exact = c == 0 and lc == 0 and it == 0 and lr == 0
         all_exact &= exact
-        print(f"  {p:>3} {e:>2} {float(c):>7.0e} {float(it):>7.0e} "
-              f"{float(lr):>7.0e} {sub:>9.1e}")
+        print(
+            f"  {p:>3} {e:>2} {float(c):>7.0e} {float(it):>7.0e} "
+            f"{float(lr):>7.0e} {sub:>9.1e}"
+        )
 
     print()
     print("  spectral gap lambda2(L_e) across levels (base = units):")
@@ -79,8 +83,7 @@ def main() -> int:
     manifest = ExperimentManifest(
         claim_id="NT-P04",
         git_sha="local",
-        versions={"python": platform.python_version(),
-                  "numpy": np.__version__},
+        versions={"python": platform.python_version(), "numpy": np.__version__},
         seed=None,  # deterministic exact rational arithmetic
         operator_sequence=(),
         uses_known_factors=False,
@@ -92,8 +95,10 @@ def main() -> int:
     print(f"  projective consistency exact (all): {all_exact}")
     print(f"  transport claim  : {ClaimStatus.DERIVED.value} + measured")
     print(f"  circularity      : {audit.verdict.value}")
-    print(f"  REMESH realized  : {remesh.realizes_remesh} "
-          f"(NT-P04 {ClaimStatus.CONJECTURAL.value}; contract unverified)")
+    print(
+        f"  REMESH realized  : {remesh.realizes_remesh} "
+        f"(NT-P04 {ClaimStatus.CONJECTURAL.value}; contract unverified)"
+    )
     print(f"  input bits (max) : {manifest.input_bits}")
     return 0 if all_exact and not remesh.realizes_remesh else 1
 

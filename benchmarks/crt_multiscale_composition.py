@@ -89,11 +89,14 @@ def main() -> int:
     print(f"  Kronecker identity exact (all) : {all_exact}")
     print(f"  U5 gap bound holds (all)       : {all_bounded}")
     print(f"  control set never factors (all): {control_all_fail}")
-    print(f"  claim status                   : "
-          f"{ClaimStatus.DERIVED.value} + measured")
+    print(
+        f"  claim status                   : " f"{ClaimStatus.DERIVED.value} + measured"
+    )
     print(f"  circularity verdict            : {audit.verdict.value}")
-    print(f"  discovery-claim permitted      : {audit.permits_discovery_claim}"
-          " (structural synthesis, NOT factoring)")
+    print(
+        f"  discovery-claim permitted      : {audit.permits_discovery_claim}"
+        " (structural synthesis, NOT factoring)"
+    )
     ok = all_exact and all_bounded and control_all_fail
     return 0 if ok else 1
 

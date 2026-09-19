@@ -8,7 +8,8 @@ Beyond the core structural field tetrad $(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)$,
 
 ## 1. Extended transport diagnostics
 
-Two flux fields complement the core tetrad by adding directed transport dynamics.
+Two flux fields complement the core tetrad with directed neighbor statistics;
+their read-outs do not select or measure an evolution law by themselves.
 
 ### 1.1 Phase Current ($J_\phi$)
 
@@ -18,10 +19,23 @@ $$
 
 | Property | Value |
 |----------|-------|
-| **Physics** | Geometric phase confinement drives directed transport |
-| **Sign convention** | Positive = net inward flow; negative = net outward flow; zero = equilibrium |
+| **Definition scope** | Signed mean sine over unique support neighbors; a directional statistic, not an observed transport rate |
+| **Sign convention** | Sign of the summed neighbor sine displacement; zero permits cancellation or antipodal phases and does not establish nodal equilibrium |
 | **Finite evidence** | 48 historical samples across WS, BA and grid topologies reported anticorrelation $r(J_\phi, K_\phi) \approx -0.854$ to $-0.997$ under that protocol (see §2.2) |
 | **Engine status** | Canonical diagnostic definition; no universal correlation theorem |
+
+On a regular exact-real chart with nonzero neighbor resultant,
+`J_phi(i)=-|S_i| sin(K_phi(i))/degree_i`. Nonzero current and curvature have
+opposite signs on this chart; that identity does not prescribe the magnitude
+of a sample correlation. The numerical readers retain their separate
+trigonometric and angular rounding.
+
+The implementation counts parallel neighbors once and self-loops once,
+uses successors on directed graphs, and includes zero-conductance edges.
+Isolates use an explicit zero convention. For reciprocal support, the
+[pair-cost and state-dependent metric identity](TNFR_VARIATIONAL_PRINCIPLE.md#136-exact-state-dependent-metric-for-canonical-phase-pressure)
+relates this statistic to canonical phase pressure. A phase evolution law
+remains a separate premise; none is selected by this read-out.
 
 ### 1.2 $\Delta$NFR Flux ($J_{\Delta\mathrm{NFR}}$)
 
@@ -31,8 +45,8 @@ $$
 
 | Property | Value |
 |----------|-------|
-| **Physics** | Potential-driven reorganisation transport |
-| **Sign convention** | Positive = net inward reorganisation pressure; negative = net outward |
+| **Definition scope** | Signed pressure contrast over unique support neighbors; no physical transport-rate factor is supplied |
+| **Sign convention** | Positive means the neighbor-average pressure exceeds the node pressure; negative means the reverse |
 | **Engine status** | Canonical diagnostic definition |
 
 ### 1.3 Research-Level Fields
@@ -61,7 +75,7 @@ $$
 
 | Property | Expression |
 |----------|-----------|
-| Magnitude | $|\Psi| = \sqrt{K_\phi^2 + J_\phi^2}$ |
+| Magnitude | $\vert \Psi\vert  = \sqrt{K_\phi^2 + J_\phi^2}$ |
 | Phase | $\arg(\Psi) = \operatorname{atan2}(J_\phi, K_\phi)$ |
 
 ### 2.2 Anticorrelation Evidence
@@ -79,8 +93,13 @@ definitions. Graph topology, phase distribution and weighting can change it.
 ### 2.3 Physical Interpretation
 
 $\Psi$ unifies two complementary aspects of the geometric sector:
-- $\operatorname{Re}(\Psi) = K_\phi$: Static geometric confinement (how much the phase field bends)
-- $\operatorname{Im}(\Psi) = J_\phi$: Dynamic transport (how much phase flows through the node)
+- $\operatorname{Re}(\Psi) = K_\phi$: signed circular mismatch with the neighbor mean;
+- $\operatorname{Im}(\Psi) = J_\phi$: signed neighbor sine average.
+
+Both are instantaneous read-outs of primitive phase. Neither supplies a phase
+velocity or a confinement law. The harmonic coordinate interpretation and
+its graph-realizability obstructions are owned by the
+[variational note](TNFR_VARIATIONAL_PRINCIPLE.md#3-harmonic-model-and-the-unresolved-nodal-correspondence).
 
 The pair can be embedded in the auxiliary rotation/gauge comparison described in
 [GAUGE_SYMMETRY_AND_UNIFICATION.md](GAUGE_SYMMETRY_AND_UNIFICATION.md); forming a
@@ -122,7 +141,8 @@ $$
 \mathcal{C}(i) = \Phi_s(i) \cdot |\Psi(i)|
 $$
 
-Multi-scale connector that measures how strongly the global potential field $\Phi_s$ couples to the local geometric-transport intensity $|\Psi|$.
+Signed product of the source aggregation and local geometric magnitude. It
+does not measure a dynamical coupling coefficient or demonstrate energy transfer.
 
 ### 3.4 Energy Density ($\mathcal{E}$)
 
@@ -196,14 +216,17 @@ Per-node Hamiltonian density: $H(i) = \frac{1}{2}\mathcal{E}(i)$.
 | **Geometric** | $K_\phi$, $J_\phi$ | Auxiliary pair $(K_\phi, J_\phi)$ via $\Psi$ | Curvature vs transport |
 | **Potential** | $\Phi_s$, $J_{\Delta\mathrm{NFR}}$ | Auxiliary pair $(\Phi_s, J_{\Delta\mathrm{NFR}})$ | Source aggregation vs reorganisation transport |
 
-The phase gradient $|\nabla\phi|$ mediates between sectors, appearing in the potential energy but driving transport through its gradient.
+The phase-gradient magnitude appears in the quadratic diagnostic and several
+cross-products. This algebraic participation does not derive transport from its
+gradient. The [shared normalization boundary](STRUCTURAL_CONSERVATION_THEOREM.md#main-result)
+also applies before interpreting these sums and products as physical energies.
 
 ---
 
 ## 5. Graph-field probe signatures
 
 `compute_element_signature()` is a compatibility-named diagnostic over the
-supplied graph. It reports fitted $\xi_C$, phase-gradient and phase-curvature
+supplied graph. It reports the $\xi_C$ estimator, phase-gradient and phase-curvature
 summaries, and the response of $\Phi_s$ to an optional declared probe. The
 default probe runs the valid word
 `[Emission, Coherence, Silence]` once on a detached graph copy and defines
@@ -221,13 +244,18 @@ gates because the implementation treats the absent drift check as satisfied.
 
 | Diagnostic policy | Value | Status |
 |-------------------|-------|--------|
-| Mean $|\nabla\phi|$ gate | $\pi/16 \approx 0.196$ | Selected early-warning threshold; the exact kinematic bound is $\pi$ |
-| Maximum $|K_\phi|$ gate | $0.9\pi \approx 2.827$ | Selected margin within the exact wrapped bound $\pi$ |
+| Mean $\vert \nabla\phi\vert $ gate | $\pi/16 \approx 0.196$ | Selected early-warning threshold; the exact kinematic bound is $\pi$ |
+| Maximum $\vert K_\phi\vert $ gate | $0.9\pi \approx 2.827$ | Selected margin within the exact wrapped bound $\pi$ |
 | Probe $\Phi_s$ drift gate | $\pi/2$ | Selected U6 policy, applied only when the probe runs |
-| Fitted $\xi_C$ category | relative to $\sqrt{|V|}$ | Heuristic: localized below $0.3\sqrt{|V|}$, extended above $1.2\sqrt{|V|}$ |
+| Fitted $\xi_C$ category | relative to $\sqrt{\vert V\vert }$ | Heuristic: localized below $0.3\sqrt{\vert V\vert }$, extended above $1.2\sqrt{\vert V\vert }$ |
 | Legacy Au-like curvature gate | $0.95\pi \approx 2.985$ | Compatibility policy |
 
 These outputs are a response signature for a specified graph and intervention.
+The coherence estimator can return a product-fit length, a dimensionless
+spectral fallback or an unavailable value. Legacy size-relative categories
+must not silently identify these branches; the
+[tetrad guide](../docs/STRUCTURAL_FIELDS_TETRAD.md#coherence-length)
+owns their units and provenance requirements.
 They are not spectral-coherence metrics, physical-element signatures, chemical
 stability tests, or evidence of autonomous restoring dynamics. The historical
 `compute_au_like_signature()` name adds a compatibility boolean from declared
@@ -299,7 +327,6 @@ emergent = net.emergent_fields()        # chirality, symmetry_breaking, coherenc
 
 | Example | Concept from this document |
 |---------|---------------------------|
-
 | [33_complex_field_unification.py](../examples/02_physics_regimes/33_complex_field_unification.py) | Ψ = K_φ + i·J_φ anticorrelation, emergent fields χ/𝒮/𝒞, energy decomposition |
 | [unified_fields_showcase.py](../examples/08_emergent_geometry/unified_fields_showcase.py) | Ψ = K_φ + i·J_φ, emergent fields χ/𝒮/𝒰, tensor invariants |
 

@@ -171,7 +171,7 @@ capacity ratios, and they do not cover changing node sets.
 | Scalar $\nu_f(t)$ is a clock change | Exact on a fixed graph |
 | General heterogeneous $\nu_f(t)$ is one scalar clock | False when generators do not commute |
 | Fixed-symmetric Dirichlet energy decreases under nonnegative heterogeneous capacity | Exact instantaneous identity |
-| Absolute $|\Phi_s|$ magnitude is U6 drift | False; compatibility aliases are marked |
+| Absolute $\lvert\Phi_s\rvert$ magnitude is U6 drift | False; compatibility aliases are marked |
 | Canonical directed U2 metric and full nonlinear bound | Open |
 | Universal U6 interval/tail safety from finite samples | Open |
 

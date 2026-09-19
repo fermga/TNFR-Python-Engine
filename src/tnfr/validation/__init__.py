@@ -92,16 +92,6 @@ from .multichannel_interface import (  # noqa: F401
     phase_locking_matrix,
     phase_offsets,
 )
-from .signal_confrontation import (  # noqa: F401
-    ModalRootDiagnostic,
-    NodalPredictionSkill,
-    SignalConfrontation,
-    confront_signal,
-    diagnose_modal_roots,
-    emergent_wave_fraction,
-    estimate_quality_factor,
-    nodal_prediction_skill,
-)
 from .nodal_prediction import (  # noqa: F401
     FrozenNodalCalibration,
     NodalCalibrationError,
@@ -114,10 +104,10 @@ from .nodal_prediction import (  # noqa: F401
     write_nodal_forecast,
 )
 from .p2_transport import (  # noqa: F401
-    P2MeasurementBounds,
     P2IntervalCalibration,
-    P2IntervalForecast,
     P2IntervalComparison,
+    P2IntervalForecast,
+    P2MeasurementBounds,
     calibrate_p2_transport,
     forecast_p2_transport,
     score_p2_transport,
@@ -146,6 +136,16 @@ from .runtime import (  # noqa: F401
     validate_canon,
 )
 from .sequence_validator import SequenceSemanticValidator  # noqa: F401
+from .signal_confrontation import (  # noqa: F401
+    ModalRootDiagnostic,
+    NodalPredictionSkill,
+    SignalConfrontation,
+    confront_signal,
+    diagnose_modal_roots,
+    emergent_wave_fraction,
+    estimate_quality_factor,
+    nodal_prediction_skill,
+)
 from .soft_filters import (  # noqa: F401
     acceleration_norm,
     check_repeats,
@@ -172,12 +172,12 @@ from .temporal_interface import (  # noqa: F401
     ProspectiveWarningComparison,
     TemporalInterfaceConfig,
     TemporalWarningCalibration,
-    calibrate_temporal_warning,
-    evaluate_prospective_warning,
     WindowTetradSeries,
     build_temporal_proximity_graph,
+    calibrate_temporal_warning,
     delay_embedding,
     evaluate_early_warning,
+    evaluate_prospective_warning,
     hilbert_instantaneous_phase,
     kendall_tau,
     local_structural_pressure,

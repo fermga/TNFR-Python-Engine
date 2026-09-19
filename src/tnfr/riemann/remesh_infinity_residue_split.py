@@ -409,9 +409,7 @@ def compute_residue_split_certificate(
     unselected = np.flatnonzero(~mask)
     if unselected.size:
         k_nonres = int(unselected[0])
-        control_nonres = np.cos(
-            2.0 * math.pi * k_nonres * sample_index / n_samples
-        )
+        control_nonres = np.cos(2.0 * math.pi * k_nonres * sample_index / n_samples)
         rng_nonres, _ = split_residue_by_remesh_infinity(
             control_nonres, tau_l=tau_l, tau_g=tau_g
         )

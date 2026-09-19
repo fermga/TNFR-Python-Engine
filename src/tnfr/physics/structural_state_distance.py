@@ -41,20 +41,14 @@ operator histories remains open.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
 from typing import Any, Mapping, Sequence
 
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
 
-from ..constants.aliases import (
-    ALIAS_DEPI,
-    ALIAS_DNFR,
-    ALIAS_EPI,
-    ALIAS_THETA,
-    ALIAS_VF,
-)
+from ..constants.aliases import ALIAS_DEPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ._edge_semantics import effective_edge_length
 from ._helpers import finite_real_scalar, wrap_angle
 
@@ -111,9 +105,7 @@ class StructuralChannelScales:
             ("edge_conductance", self.edge_conductance),
             (
                 "edge_length",
-                self.edge_conductance
-                if self.edge_length is None
-                else self.edge_length,
+                self.edge_conductance if self.edge_length is None else self.edge_length,
             ),
         ):
             try:
@@ -201,13 +193,9 @@ def _required_channel(
     """Read the first canonical alias without inventing a missing value."""
     for attribute in aliases:
         if attribute in data:
-            value = _finite_real(
-                data[attribute], f"{side} node {node!r} {channel}"
-            )
+            value = _finite_real(data[attribute], f"{side} node {node!r} {channel}")
             if channel == "frequency" and value < 0.0:
-                raise ValueError(
-                    f"{side} node {node!r} frequency must be nonnegative"
-                )
+                raise ValueError(f"{side} node {node!r} frequency must be nonnegative")
             return value
     raise ValueError(f"{side} node {node!r} is missing required {channel}")
 
@@ -220,9 +208,7 @@ def _extract_state(graph: nx.Graph, *, side: str) -> dict[Any, tuple[float, ...]
             _required_channel(
                 data, ALIAS_VF, side=side, node=node, channel="frequency"
             ),
-            _required_channel(
-                data, ALIAS_THETA, side=side, node=node, channel="phase"
-            ),
+            _required_channel(data, ALIAS_THETA, side=side, node=node, channel="phase"),
             _required_channel(
                 data, ALIAS_DNFR, side=side, node=node, channel="pressure"
             ),
@@ -530,9 +516,7 @@ def fixed_topology_structural_state_distance(
 
     mapping_unique = component_minimizer_count == 1
     public_mapping = (
-        tuple((node, best_mapping[node]) for node in nodes)
-        if mapping_unique
-        else ()
+        tuple((node, best_mapping[node]) for node in nodes) if mapping_unique else ()
     )
 
     return StructuralStateDistanceCertificate(

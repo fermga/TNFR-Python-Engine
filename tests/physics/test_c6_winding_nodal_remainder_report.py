@@ -1,16 +1,19 @@
 """Finite prescribed-input evidence for the carried C6 nodal encoding."""
 
-from copy import deepcopy
-from fractions import Fraction as F
 import hashlib
 import json
+from copy import deepcopy
+from fractions import Fraction as F
 from pathlib import Path
 
 import pytest
 
 from benchmarks import c6_winding_nodal_remainder as campaign
 
-INPUT = Path(__file__).resolve().parents[2] / "artifacts/research/c6_winding_phase_kernel.json"
+INPUT = (
+    Path(__file__).resolve().parents[2]
+    / "artifacts/research/c6_winding_phase_kernel.json"
+)
 
 
 @pytest.fixture(scope="module")
@@ -26,10 +29,14 @@ def report(parent):
 
 
 def _all_sequences(report):
-    return (sequence for case in report["cases"] for sequence in case["sequences"].values())
+    return (
+        sequence for case in report["cases"] for sequence in case["sequences"].values()
+    )
 
 
-def test_validation_runs_once_without_graph_execution_or_parent_mutation(parent, monkeypatch):
+def test_validation_runs_once_without_graph_execution_or_parent_mutation(
+    parent, monkeypatch
+):
     from benchmarks import c6_winding_joint_domain as graph_campaign
     from benchmarks import c6_winding_phase_kernel as comparison
     from tnfr.dynamics.integrators import DefaultIntegrator
@@ -55,7 +62,9 @@ def test_validation_runs_once_without_graph_execution_or_parent_mutation(parent,
 
 def test_declared_matrix_contains_only_nine_eight_step_arithmetic_sequences(report):
     assert [(case["mode"], case["epsilon"]) for case in report["cases"]] == [
-        ("null", 0), ("k1", F(1, 4096)), ("k3", F(1, 4096)),
+        ("null", 0),
+        ("k1", F(1, 4096)),
+        ("k3", F(1, 4096)),
     ]
     for case in report["cases"]:
         assert tuple(case["sequences"]) == campaign.SEQUENCES
@@ -64,30 +73,45 @@ def test_declared_matrix_contains_only_nine_eight_step_arithmetic_sequences(repo
         observed = sequence["observation"]
         assert len(observed["steps"]) == len(observed["prefixes"]) == 8
         assert len(sequence["pressure_schedule"]) == len(sequence["cycles"]) == 2
-        assert all(step["timestep"] == 1 / 16 and step["capacity"] == (1.0,) * 6
-                   for step in observed["steps"])
+        assert all(
+            step["timestep"] == 1 / 16 and step["capacity"] == (1.0,) * 6
+            for step in observed["steps"]
+        )
 
 
 def test_every_endpoint_equals_the_closed_form_exact_nodal_area(report):
     for sequence in _all_sequences(report):
         p, q = sequence["pressure_schedule"]
-        expected = tuple(F(1, 2) + (F(first) + F(second)) / 4
-                         for first, second in zip(p, q, strict=True))
+        expected = tuple(
+            F(1, 2) + (F(first) + F(second)) / 4
+            for first, second in zip(p, q, strict=True)
+        )
         endpoint = sequence["observation"]["endpoint"]
-        reconstructed = tuple(F(x) + r for x, r in zip(endpoint["epi"], endpoint["remainder"], strict=True))
+        reconstructed = tuple(
+            F(x) + r
+            for x, r in zip(endpoint["epi"], endpoint["remainder"], strict=True)
+        )
         assert reconstructed == expected
         assert endpoint["epi"] == tuple(float(value) for value in expected)
-        assert sequence["summary"]["accumulated_nodal_mean_area"] == sum(expected) / 6 - F(1, 2)
-        assert sequence["summary"]["reconstructed_mean_change"] == sum(expected) / 6 - F(1, 2)
+        assert sequence["summary"]["accumulated_nodal_mean_area"] == sum(
+            expected
+        ) / 6 - F(1, 2)
+        assert sequence["summary"]["reconstructed_mean_change"] == sum(
+            expected
+        ) / 6 - F(1, 2)
 
 
 def test_every_prefix_has_exact_vector_balance_and_independent_cell_membership(report):
     for sequence in _all_sequences(report):
         observation = sequence["observation"]
         p, q = sequence["pressure_schedule"]
-        for ordinal, (step, prefix) in enumerate(zip(observation["steps"], observation["prefixes"], strict=True), 1):
-            expected_area = tuple((min(ordinal, 4) * F(first) + max(ordinal - 4, 0) * F(second)) / 16
-                                  for first, second in zip(p, q, strict=True))
+        for ordinal, (step, prefix) in enumerate(
+            zip(observation["steps"], observation["prefixes"], strict=True), 1
+        ):
+            expected_area = tuple(
+                (min(ordinal, 4) * F(first) + max(ordinal - 4, 0) * F(second)) / 16
+                for first, second in zip(p, q, strict=True)
+            )
             assert prefix["ordinal"] == ordinal
             assert prefix["cumulative_nodal_area"] == expected_area
             assert prefix["reconstructed_change"] == expected_area
@@ -102,37 +126,63 @@ def test_every_prefix_has_exact_vector_balance_and_independent_cell_membership(r
                 if exact in (cell["lower"], cell["upper"]):
                     assert cell["even_significand"]
                 assert cell["contains_exact_input"]
-                assert F(endpoint["epi"][index]) - F(1, 2) == expected_area[index] - endpoint["remainder"][index]
+                assert (
+                    F(endpoint["epi"][index]) - F(1, 2)
+                    == expected_area[index] - endpoint["remainder"][index]
+                )
             defect = prefix["mean_visible_change"] - sum(expected_area) / 6
-            assert prefix["mean_rounding_lower_bound"] <= defect <= prefix["mean_rounding_upper_bound"]
-            assert abs(defect) <= observation["uniform_mean_rounding_bound"] == F(1, 2**53)
+            assert (
+                prefix["mean_rounding_lower_bound"]
+                <= defect
+                <= prefix["mean_rounding_upper_bound"]
+            )
+            assert (
+                abs(defect) <= observation["uniform_mean_rounding_bound"] == F(1, 2**53)
+            )
 
 
-@pytest.mark.parametrize("index,ordinary,visible,shadow,gap", (
-    (0, F(0), -F(1, 6 * 2**54), F(19, 2**115), F(1, 2**54)),
-    (1, F(1, 3 * 2**52), -F(1, 6 * 2**54), F(1, 2**72), F(1, 2**52)),
-    (2, F(0), F(0), F(1, 2**73), F(1, 2**51)),
-))
-def test_recorded_pressure_results_keep_source_and_rounding_drift_distinct(report, index, ordinary, visible, shadow, gap):
+@pytest.mark.parametrize(
+    "index,ordinary,visible,shadow,gap",
+    (
+        (0, F(0), -F(1, 6 * 2**54), F(19, 2**115), F(1, 2**54)),
+        (1, F(1, 3 * 2**52), -F(1, 6 * 2**54), F(1, 2**72), F(1, 2**52)),
+        (2, F(0), F(0), F(1, 2**73), F(1, 2**51)),
+    ),
+)
+def test_recorded_pressure_results_keep_source_and_rounding_drift_distinct(
+    report, index, ordinary, visible, shadow, gap
+):
     summary = report["cases"][index]["sequences"]["original"]["summary"]
     assert summary["ordinary_mean_change"] == ordinary
     assert summary["visible_mean_change"] == visible
-    assert summary["reconstructed_mean_change"] == summary["accumulated_nodal_mean_area"] == shadow
+    assert (
+        summary["reconstructed_mean_change"]
+        == summary["accumulated_nodal_mean_area"]
+        == shadow
+    )
     assert summary["mean_endpoint_remainder"] == shadow - visible
     assert summary["max_endpoint_gap"] == gap
     assert summary["exact_nodal_mean_source_is_zero"] is False
 
 
-def test_zero_sum_inputs_preserve_reconstructed_mean_without_forcing_visible_mean(report):
+def test_zero_sum_inputs_preserve_reconstructed_mean_without_forcing_visible_mean(
+    report,
+):
     single_visible = (-F(1, 6 * 2**54), -F(1, 6 * 2**54), 0)
     opposite_visible = (0, -F(1, 6 * 2**54), -F(1, 3 * 2**54))
     for index, case in enumerate(report["cases"]):
-        for name, expected in (("zero_sum_witness", single_visible[index]),
-                               ("opposite_pair_witness", opposite_visible[index])):
+        for name, expected in (
+            ("zero_sum_witness", single_visible[index]),
+            ("opposite_pair_witness", opposite_visible[index]),
+        ):
             sequence = case["sequences"][name]
-            assert all(sum(map(F, pressure)) == 0 for pressure in sequence["pressure_schedule"])
-            assert all(prefix["mean_nodal_area"] == prefix["mean_reconstructed_change"] == 0
-                       for prefix in sequence["observation"]["prefixes"])
+            assert all(
+                sum(map(F, pressure)) == 0 for pressure in sequence["pressure_schedule"]
+            )
+            assert all(
+                prefix["mean_nodal_area"] == prefix["mean_reconstructed_change"] == 0
+                for prefix in sequence["observation"]["prefixes"]
+            )
             summary = sequence["summary"]
             assert summary["exact_nodal_mean_source_is_zero"]
             assert summary["visible_mean_change"] == expected
@@ -157,17 +207,29 @@ def test_carry_is_not_reset_at_the_two_pressure_tuple_boundary(report):
 
 def test_null_ordinary_stasis_is_not_a_fixed_point_of_the_carried_reference(report):
     sequence = report["cases"][0]["sequences"]["original"]
-    assert all(row == (.5,) * 6 for row in sequence["ordinary_trace"])
+    assert all(row == (0.5,) * 6 for row in sequence["ordinary_trace"])
     endpoint = sequence["observation"]["endpoint"]["epi"]
-    assert endpoint[:5] == (.5,) * 5
+    assert endpoint[:5] == (0.5,) * 5
     assert endpoint[5] == float.fromhex("0x1.fffffffffffffp-2")
 
 
-def test_ordinary_traces_remain_bound_to_retained_data_but_carry_pressures_are_prescribed(parent, report):
+def test_ordinary_traces_remain_bound_to_retained_data_but_carry_pressures_are_prescribed(
+    parent, report
+):
     for source, case in zip(parent["current_cases"], report["cases"], strict=True):
         for sequence in case["sequences"].values():
             for index in range(2):
-                endpoint = tuple(map(float, map(F, source["cycles"][index]["flow"]["raw_after_integrator"]["epi"])))
+                endpoint = tuple(
+                    map(
+                        float,
+                        map(
+                            F,
+                            source["cycles"][index]["flow"]["raw_after_integrator"][
+                                "epi"
+                            ],
+                        ),
+                    )
+                )
                 assert sequence["ordinary_trace"][4 * index + 3] == endpoint
                 assert sequence["cycles"][index]["pressure_refresh_executed"] is False
             assert sequence["summary"]["ordinary_matches_retained_trace"]
@@ -175,7 +237,9 @@ def test_ordinary_traces_remain_bound_to_retained_data_but_carry_pressures_are_p
             assert sequence["canonical_pressure_generated_for_carried_state"] is False
 
 
-def test_summary_flags_keep_band_evidence_distinct_from_runtime_or_future_claims(report):
+def test_summary_flags_keep_band_evidence_distinct_from_runtime_or_future_claims(
+    report,
+):
     for sequence in _all_sequences(report):
         assert sequence["summary"]["all_states_in_band"]
         assert sequence["summary"]["prefix_identities_hold"]
@@ -184,14 +248,23 @@ def test_summary_flags_keep_band_evidence_distinct_from_runtime_or_future_claims
             for x, r in zip(state["epi"], state["remainder"], strict=True):
                 assert F(state["epi_lower"]) <= F(x) + r <= F(state["epi_upper"])
                 assert state["epi_lower"] <= x <= state["epi_upper"]
-    for flag in ("runtime_executed", "graph_events_executed", "live_provenance_certified",
-                 "future_bounds_verified", "production_integrator_modified", "empirical_correspondence_tested"):
+    for flag in (
+        "runtime_executed",
+        "graph_events_executed",
+        "live_provenance_certified",
+        "future_bounds_verified",
+        "production_integrator_modified",
+        "empirical_correspondence_tested",
+    ):
         assert report[flag] is False
     assert report["detached_record_validation"] is True
     json.dumps(campaign._payload(report), allow_nan=False)
 
 
-@pytest.mark.parametrize("change", ("claim", "seed", "horizon", "order", "controls", "pressure", "state", "history"))
+@pytest.mark.parametrize(
+    "change",
+    ("claim", "seed", "horizon", "order", "controls", "pressure", "state", "history"),
+)
 def test_corrupt_parent_is_rejected_by_shared_validation(parent, change):
     changed = deepcopy(parent)
     if change == "claim":
@@ -203,22 +276,38 @@ def test_corrupt_parent_is_rejected_by_shared_validation(parent, change):
     elif change == "order":
         changed["current_cases"].reverse()
     elif change == "controls":
-        changed["current_cases"][1]["initial"]["configured_controls"]["DT_MIN"] = .125
+        changed["current_cases"][1]["initial"]["configured_controls"]["DT_MIN"] = 0.125
     elif change == "pressure":
-        changed["current_cases"][1]["cycles"][0]["flow"]["before"]["pressure"][0] = "1/3"
+        changed["current_cases"][1]["cycles"][0]["flow"]["before"]["pressure"][
+            0
+        ] = "1/3"
     elif change == "state":
-        changed["current_cases"][1]["cycles"][0]["after_capture"]["snapshot"]["epi"][0] = "3/4"
+        changed["current_cases"][1]["cycles"][0]["after_capture"]["snapshot"]["epi"][
+            0
+        ] = "3/4"
     else:
-        changed["current_cases"][1]["cycles"][0]["il"]["before"]["state"]["glyph_history"]["0"] = []
+        changed["current_cases"][1]["cycles"][0]["il"]["before"]["state"][
+            "glyph_history"
+        ]["0"] = []
     with pytest.raises(ValueError):
         campaign.analyze_c6_nodal_remainder(changed)
 
 
-def test_manifest_binds_historical_input_and_distinct_analysis_source(parent, report, tmp_path, monkeypatch):
+def test_manifest_binds_historical_input_and_distinct_analysis_source(
+    parent, report, tmp_path, monkeypatch
+):
     target = tmp_path / "remainder.json"
-    monkeypatch.setattr(campaign.sys, "argv", ["remainder", "--input", str(INPUT), "--output", str(target)])
-    monkeypatch.setattr(campaign, "analyze_c6_nodal_remainder", lambda value: deepcopy(report))
-    monkeypatch.setattr(campaign, "current_git_source_provenance", lambda *args: ("a" * 40, False, None))
+    monkeypatch.setattr(
+        campaign.sys,
+        "argv",
+        ["remainder", "--input", str(INPUT), "--output", str(target)],
+    )
+    monkeypatch.setattr(
+        campaign, "analyze_c6_nodal_remainder", lambda value: deepcopy(report)
+    )
+    monkeypatch.setattr(
+        campaign, "current_git_source_provenance", lambda *args: ("a" * 40, False, None)
+    )
     campaign.main()
     output = json.loads(target.read_bytes())
     assert output["manifest"]["claim_id"] == "O3.a-C6-prescribed-nodal-remainder"
@@ -232,18 +321,28 @@ def test_manifest_binds_historical_input_and_distinct_analysis_source(parent, re
 
 
 @pytest.mark.parametrize("change", ("source", "input", "same_output"))
-def test_cli_source_and_input_guards_prevent_invalid_publication(parent, report, tmp_path, monkeypatch, change):
+def test_cli_source_and_input_guards_prevent_invalid_publication(
+    parent, report, tmp_path, monkeypatch, change
+):
     source, target = tmp_path / "parent.json", tmp_path / "result.json"
     source.write_text(json.dumps(parent), encoding="utf-8")
     original = source.read_bytes()
     if change == "same_output":
         target = source
-    monkeypatch.setattr(campaign.sys, "argv", ["remainder", "--input", str(source), "--output", str(target)])
+    monkeypatch.setattr(
+        campaign.sys,
+        "argv",
+        ["remainder", "--input", str(source), "--output", str(target)],
+    )
     calls = []
 
     def provenance(*args):
         calls.append(None)
-        return (("b" if change == "source" and len(calls) > 1 else "a") * 40, False, None)
+        return (
+            ("b" if change == "source" and len(calls) > 1 else "a") * 40,
+            False,
+            None,
+        )
 
     def analyze(value):
         if change == "input":

@@ -18,9 +18,7 @@ def finite_real(value: Any, *, label: str) -> float:
     try:
         result = float(value)
     except (OverflowError, TypeError, ValueError) as exc:
-        raise TNFRValueError(
-            f"{label} must be a finite real scalar"
-        ) from exc
+        raise TNFRValueError(f"{label} must be a finite real scalar") from exc
     if not math.isfinite(result):
         raise TNFRValueError(f"{label} must be finite")
     return result
@@ -35,14 +33,11 @@ def nonnegative_magnitude(value: Any, *, label: str) -> float:
     return result
 
 
-def sum_nonnegative_magnitudes(
-    values: Iterable[Any], *, label: str
-) -> float:
+def sum_nonnegative_magnitudes(values: Iterable[Any], *, label: str) -> float:
     """Return a finite compensated sum of unbounded magnitudes."""
 
     materialized = tuple(
-        nonnegative_magnitude(value, label=f"{label} component")
-        for value in values
+        nonnegative_magnitude(value, label=f"{label} component") for value in values
     )
     try:
         total = math.fsum(sorted(materialized))

@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-from dataclasses import dataclass, field, fields, replace
 import hashlib
 import math
+import re
+from collections.abc import Mapping
+from dataclasses import dataclass, field, fields, replace
 from numbers import Real
 from pathlib import Path, PurePosixPath, PureWindowsPath
-import re
 from types import MappingProxyType
 from typing import Any
 
@@ -24,16 +24,29 @@ class EvidenceAdmissionError(ValueError):
     """Raised when an evidence envelope omits required scientific context."""
 
 
-_ARITHMETIC_PROVENANCE = frozenset((
-    "uses_known_factors", "uses_target_labels", "uses_expected_answers",
-))
-_CORE_PROVENANCE = frozenset((
-    "uses_future_samples", "uses_outcome_derived_wiring", "fits_on_evaluation_data",
-    "uses_evaluation_labels", "uses_postselection",
-))
+_ARITHMETIC_PROVENANCE = frozenset(
+    (
+        "uses_known_factors",
+        "uses_target_labels",
+        "uses_expected_answers",
+    )
+)
+_CORE_PROVENANCE = frozenset(
+    (
+        "uses_future_samples",
+        "uses_outcome_derived_wiring",
+        "fits_on_evaluation_data",
+        "uses_evaluation_labels",
+        "uses_postselection",
+    )
+)
 _CONTEXTS = (
-    "graph_context", "state_context", "numerical_context", "observation_context",
-    "cost_context", "artifact_hashes",
+    "graph_context",
+    "state_context",
+    "numerical_context",
+    "observation_context",
+    "cost_context",
+    "artifact_hashes",
 )
 
 
@@ -65,14 +78,19 @@ def _artifact_name(value: str) -> str:
         raise EvidenceAdmissionError("artifact paths must be nonempty relative paths")
     name = value.replace("\\", "/")
     path = PurePosixPath(name)
-    if (path.is_absolute() or PureWindowsPath(name).drive
-            or any(part in ("", ".", "..") for part in name.split("/"))):
+    if (
+        path.is_absolute()
+        or PureWindowsPath(name).drive
+        or any(part in ("", ".", "..") for part in name.split("/"))
+    ):
         raise EvidenceAdmissionError("artifact paths must stay within root_dir")
     return path.as_posix()
 
 
 def _digest(value: str) -> str:
-    if not isinstance(value, str) or not re.fullmatch(r"(?:sha256:)?[0-9a-fA-F]{64}", value):
+    if not isinstance(value, str) or not re.fullmatch(
+        r"(?:sha256:)?[0-9a-fA-F]{64}", value
+    ):
         raise EvidenceAdmissionError("artifact hashes must be SHA-256 digests")
     return value.removeprefix("sha256:").lower()
 
@@ -120,15 +138,23 @@ class EvidenceSidecar:
         if type(self.manifest) is CoreExperimentManifest:
             manifest = CoreExperimentManifest.from_dict(self.manifest.to_dict())
         elif type(self.manifest) is ExperimentManifest:
-            manifest = ExperimentManifest.from_dict(self.manifest.to_dict(), strict=True)
+            manifest = ExperimentManifest.from_dict(
+                self.manifest.to_dict(), strict=True
+            )
             for item in fields(manifest):
-                object.__setattr__(manifest, item.name, _freeze(getattr(manifest, item.name)))
+                object.__setattr__(
+                    manifest, item.name, _freeze(getattr(manifest, item.name))
+                )
         else:
-            raise EvidenceAdmissionError("manifest must be a core or arithmetic manifest")
+            raise EvidenceAdmissionError(
+                "manifest must be a core or arithmetic manifest"
+            )
         object.__setattr__(self, "manifest", manifest)
         if self.certificate is not None:
             if type(self.certificate) is not NumericalCertificate:
-                raise EvidenceAdmissionError("certificate must be a NumericalCertificate")
+                raise EvidenceAdmissionError(
+                    "certificate must be a NumericalCertificate"
+                )
             object.__setattr__(self, "certificate", replace(self.certificate))
         for name in ("provenance", *_CONTEXTS):
             value = getattr(self, name)
@@ -148,8 +174,16 @@ class EvidenceSidecar:
         """Validate declared context only; this does not authenticate files."""
         self.manifest.validate_for_admission()
         for name in (
-            "artifact", "model", "norm", "distance_convention", "clock", "tail_status",
-            "claim_statement", "claim_status", "scope", "outcome",
+            "artifact",
+            "model",
+            "norm",
+            "distance_convention",
+            "clock",
+            "tail_status",
+            "claim_statement",
+            "claim_status",
+            "scope",
+            "outcome",
         ):
             value = getattr(self, name)
             if not isinstance(value, str) or not value.strip():
@@ -157,12 +191,18 @@ class EvidenceSidecar:
         if self.finite_horizon is not None:
             value = self.finite_horizon
             try:
-                valid = (not isinstance(value, bool) and isinstance(value, Real)
-                         and math.isfinite(value) and value >= 0)
+                valid = (
+                    not isinstance(value, bool)
+                    and isinstance(value, Real)
+                    and math.isfinite(value)
+                    and value >= 0
+                )
             except OverflowError:
                 valid = False
             if not valid:
-                raise EvidenceAdmissionError("finite_horizon must be finite and nonnegative")
+                raise EvidenceAdmissionError(
+                    "finite_horizon must be finite and nonnegative"
+                )
         if not self.assumptions:
             raise EvidenceAdmissionError("assumptions are required")
         if not self.source_imports:
@@ -171,9 +211,13 @@ class EvidenceSidecar:
         if is_core:
             expected = self.manifest.dirty_source_hash or ""
             if self.dirty_source_hash != expected:
-                raise EvidenceAdmissionError("dirty_source_hash must match the core manifest")
+                raise EvidenceAdmissionError(
+                    "dirty_source_hash must match the core manifest"
+                )
             if self.claim_status != self.manifest.result_status.value:
-                raise EvidenceAdmissionError("claim_status must match the core manifest")
+                raise EvidenceAdmissionError(
+                    "claim_status must match the core manifest"
+                )
         elif not self.dirty_source_hash:
             raise EvidenceAdmissionError("dirty_source_hash is required")
         if self.dirty_source_hash:
@@ -192,9 +236,7 @@ class EvidenceSidecar:
             raise EvidenceAdmissionError(
                 "provenance must explicitly answer every admission field"
             )
-        if not all(
-            type(value) is bool for value in self.provenance.values()
-        ):
+        if not all(type(value) is bool for value in self.provenance.values()):
             raise EvidenceAdmissionError("provenance values must be boolean")
         if self.certificate is not None:
             self.certificate.validate_for_admission()
@@ -202,16 +244,22 @@ class EvidenceSidecar:
         for name, digest in self.artifact_hashes.items():
             normalized = _artifact_name(name)
             if normalized in hashes:
-                raise EvidenceAdmissionError("artifact paths must be unique after normalization")
+                raise EvidenceAdmissionError(
+                    "artifact paths must be unique after normalization"
+                )
             hashes[normalized] = _digest(digest)
         required_artifacts = (self.artifact, *self.manifest.artifacts)
         if any(_artifact_name(name) not in hashes for name in required_artifacts):
-            raise EvidenceAdmissionError("every declared artifact requires its SHA-256 digest")
+            raise EvidenceAdmissionError(
+                "every declared artifact requires its SHA-256 digest"
+            )
         # Also validate scalar fields and detached manifest/certificate payloads.
         try:
             json_dumps(self.to_dict(), allow_nan=False)
         except (TypeError, ValueError) as exc:
-            raise EvidenceAdmissionError("evidence metadata must be finite JSON") from exc
+            raise EvidenceAdmissionError(
+                "evidence metadata must be finite JSON"
+            ) from exc
 
     def _verified_paths(self, root_dir: str | Path) -> tuple[Path, ...]:
         root = Path(root_dir).resolve(strict=True)
@@ -221,7 +269,9 @@ class EvidenceSidecar:
         for name, expected in self.artifact_hashes.items():
             path = (root / _artifact_name(name)).resolve()
             if not path.is_relative_to(root) or not path.is_file():
-                raise EvidenceAdmissionError("artifact must be an existing file within root_dir")
+                raise EvidenceAdmissionError(
+                    "artifact must be an existing file within root_dir"
+                )
             digest = hashlib.sha256()
             with path.open("rb") as stream:
                 for chunk in iter(lambda: stream.read(1 << 16), b""):
@@ -249,9 +299,7 @@ class EvidenceSidecar:
             "tail_status": self.tail_status,
             "provenance": dict(self.provenance),
             "certificate": (
-                None
-                if self.certificate is None
-                else self.certificate.to_dict()
+                None if self.certificate is None else self.certificate.to_dict()
             ),
             "claim_statement": self.claim_statement,
             "claim_status": self.claim_status,
@@ -275,7 +323,9 @@ class EvidenceSidecar:
         artifacts = self._verified_paths(root_dir)
         destination = Path(path)
         if destination.resolve() in artifacts:
-            raise EvidenceAdmissionError("sidecar destination must not overwrite an artifact")
+            raise EvidenceAdmissionError(
+                "sidecar destination must not overwrite an artifact"
+            )
         payload = json_dumps(self.to_dict(), indent=2, allow_nan=False) + "\n"
 
         def write(stream):

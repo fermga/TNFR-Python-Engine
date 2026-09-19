@@ -86,18 +86,12 @@ def validate_fft_epi_diffusion_dispatch(
     before handing the live graph to the mutating engine.
     """
     if operation != FFT_EPI_DIFFUSION_OPERATION:
-        raise TNFRValueError(
-            "SPECTRAL_FFT supports only operation='epi_diffusion'"
-        )
+        raise TNFRValueError("SPECTRAL_FFT supports only operation='epi_diffusion'")
     resolved_model = (
-        FFT_EPI_DIFFUSION_PRESSURE_MODEL
-        if pressure_model is None
-        else pressure_model
+        FFT_EPI_DIFFUSION_PRESSURE_MODEL if pressure_model is None else pressure_model
     )
     if resolved_model != FFT_EPI_DIFFUSION_PRESSURE_MODEL:
-        raise TNFRValueError(
-            "SPECTRAL_FFT requires pressure_model='epi_diffusion'"
-        )
+        raise TNFRValueError("SPECTRAL_FFT requires pressure_model='epi_diffusion'")
     return FFT_EPI_DIFFUSION_PRESSURE_MODEL
 
 
@@ -496,9 +490,7 @@ class TNFROptimizationOrchestrator:
             }
             result.details["accuracy_verification"] = verification
         verified = verification.get("passed")
-        result.accuracy_preserved = (
-            verified is True and "error" not in result.details
-        )
+        result.accuracy_preserved = verified is True and "error" not in result.details
 
         self._update_performance_history(result)
         return result
@@ -557,9 +549,7 @@ class TNFROptimizationOrchestrator:
                     "pressure_model": pressure_model,
                     "transaction_committed": equation_verified,
                     "performance_measurements": _performance_measurements(
-                        throughput_steps_per_second=fft_results.get(
-                            "steps_per_second"
-                        )
+                        throughput_steps_per_second=fft_results.get("steps_per_second")
                     ),
                     "cache_measurements": {
                         "hits": raw_cache_hits,
@@ -641,9 +631,8 @@ class TNFROptimizationOrchestrator:
 
         nodes, laplacian = structural_diffusion_operator(G)
         node_order = tuple(nodes)
-        complete = (
-            set(proposals) == set(node_order)
-            and len(proposals) == len(node_order)
+        complete = set(proposals) == set(node_order) and len(proposals) == len(
+            node_order
         )
         epi = np.asarray(
             [_read_scalar_epi(G, node) for node in node_order],
@@ -776,10 +765,7 @@ class TNFROptimizationOrchestrator:
         )
         test_times = np.linspace(t_start, t_end, sample_count)
         interpolated = np.asarray(
-            [
-                self.adelic_engine.compute_geometric_trace(float(t))
-                for t in test_times
-            ],
+            [self.adelic_engine.compute_geometric_trace(float(t)) for t in test_times],
             dtype=float,
         )
 
@@ -875,9 +861,7 @@ class TNFROptimizationOrchestrator:
 
         stats_before = self.structural_cache.get_cache_stats()
         local_start = time.perf_counter()
-        uncached = self.structural_cache.get_structural_fields(
-            G, force_recompute=True
-        )
+        uncached = self.structural_cache.get_structural_fields(G, force_recompute=True)
         cached = self.structural_cache.get_structural_fields(G)
         local_elapsed = time.perf_counter() - local_start
         stats_after = self.structural_cache.get_cache_stats()
@@ -925,9 +909,7 @@ class TNFROptimizationOrchestrator:
                 self._execute_structural_optimization(G, operation, **kwargs)
             )
 
-        structural_failed = bool(
-            components and not components[-1].accuracy_preserved
-        )
+        structural_failed = bool(components and not components[-1].accuracy_preserved)
         if (
             not structural_failed
             and operation == FFT_EPI_DIFFUSION_OPERATION
@@ -974,9 +956,7 @@ class TNFROptimizationOrchestrator:
                 "component_verifications": [
                     {
                         "strategy": component.strategy_used.value,
-                        "verification": component.details.get(
-                            "accuracy_verification"
-                        ),
+                        "verification": component.details.get("accuracy_verification"),
                         "error": component.details.get("error"),
                     }
                     for component in components
@@ -994,9 +974,9 @@ class TNFROptimizationOrchestrator:
                     "passed": passed,
                     "baseline_comparison_performed": any(
                         bool(
-                            component.details.get(
-                                "accuracy_verification", {}
-                            ).get("baseline_comparison_performed")
+                            component.details.get("accuracy_verification", {}).get(
+                                "baseline_comparison_performed"
+                            )
                         )
                         for component in components
                     ),

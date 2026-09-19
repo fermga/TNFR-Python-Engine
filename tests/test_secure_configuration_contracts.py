@@ -7,17 +7,28 @@ from tnfr.config.security import ConfigurationError, SecurityAuditor, load_redis
 
 @pytest.fixture(autouse=True)
 def isolated_redis_environment(monkeypatch):
-    for key in ("REDIS_URL", "REDIS_HOST", "REDIS_PORT", "REDIS_PASSWORD",
-                "REDIS_DB", "REDIS_USE_TLS"):
+    for key in (
+        "REDIS_URL",
+        "REDIS_HOST",
+        "REDIS_PORT",
+        "REDIS_PASSWORD",
+        "REDIS_DB",
+        "REDIS_USE_TLS",
+    ):
         monkeypatch.delenv(key, raising=False)
 
 
 def test_url_credentials_are_decoded_for_connection_parameters(monkeypatch):
-    monkeypatch.setenv("REDIS_URL", "rediss://:synthetic%40pass%2Fword@localhost:6380/0")
+    monkeypatch.setenv(
+        "REDIS_URL", "rediss://:synthetic%40pass%2Fword@localhost:6380/0"
+    )
     config = load_redis_config()
     assert config["password"] == "synthetic@pass/word"
     assert (config["host"], config["port"], config["db"], config["ssl"]) == (
-        "localhost", 6380, 0, True,
+        "localhost",
+        6380,
+        0,
+        True,
     )
 
 
@@ -35,8 +46,13 @@ def test_tls_flag_ignores_surrounding_whitespace(monkeypatch, raw, expected):
 @pytest.mark.parametrize("from_url", [True, False])
 @pytest.mark.parametrize("database", ["-1", "wrong"])
 def test_invalid_databases_fail_consistently(monkeypatch, from_url, database):
-    key, value = ("REDIS_URL", f"redis://localhost/{database}") if from_url else (
-        "REDIS_DB", database,
+    key, value = (
+        ("REDIS_URL", f"redis://localhost/{database}")
+        if from_url
+        else (
+            "REDIS_DB",
+            database,
+        )
     )
     monkeypatch.setenv(key, value)
     with pytest.raises(ConfigurationError, match="REDIS_DB"):

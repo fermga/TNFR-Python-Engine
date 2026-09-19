@@ -1,79 +1,18 @@
-"""Why is the generation tower FINITE? Localization truncates it, and the count
-is the coherent core's simplex grade = its symmetry cardinal (Layer 3, sharpened).
+"""Finite spectra of selected simplex cores, imposed wells and perturbations.
 
-THE CONVICTION (theory creator): the internal-mode tower of
-benchmarks/emergent_internal_quantum_numbers.py is INFINITE on a fixed manifold,
-yet nature has a FINITE count (3 lepton/quark generations). The answer must come
-from the FULL TNFR unification -- graph theory, number theory, fractality,
-resonance -- combined, not from the particle layer alone. It does:
+The program constructs K_m and an attached finite ring, supplies the spectral
+well L_sym-depth*P_core, and counts negative eigenvalues using a tolerance.
+The isolated core has nonconstant multiplicity m-1; its selected embedded well
+can have m negative modes including the ground state. These are distinct
+counts, and a finite graph has no literal continuum band. A supplied diagonal
+spectral perturbation tests splitting; it is not canonical nodal pressure.
 
-  a real species is not a whole manifold but a LOCALIZED coherent core -- a
-  maximally-coupled cluster of mutually-resonant NFRs, which is exactly the
-  SIMPLEX K_{g+1} of grade g (theory/EMERGENT_ONTOLOGY.md Sec.3.2: "dimension =
-  simplex grade = cardinal"). A localized core binds only FINITELY many internal
-  states (the tight-binding bound states, Sec.7.4), so the tower is TRUNCATED,
-  and the count is a spectral-counting quantity fixed by the core's grade and
-  symmetry -- one object read across every domain (Sec.2.4).
-
-THE UNIFICATION (each domain supplies one face of the same count):
-  - GRAPH THEORY   -> the internal spectrum is the L_sym spectrum of the core;
-    "how many generations" = how many eigenvalues below the continuum band
-    (bound-state / Weyl counting).
-  - PHYSICS        -> a localized well binds only FINITELY many states (Sec.7.4),
-    so the infinite manifold tower is TRUNCATED to a finite core tower.
-  - NUMBER THEORY  -> the simplex K_{g+1} has a g-fold internal level whose
-    multiplicity g is the standard-irrep dimension of S_{g+1} = the CARDINAL =
-    the same integer that is the emergent dimension (Sec.3.2). The count is a
-    cardinal, the very object number theory reads off the fixed point.
-  - FRACTALITY     -> the core is the canonical THOL coherent cluster; nesting it
-    (U5) bands the spectrum self-similarly, so the finite count recurs per level.
-  - RESONANCE      -> the core is the maximally-coupled (mutually resonant)
-    cluster; the bound states are its localized resonant modes (high coherence),
-    the continuum the delocalized (unbound) rest.
-
-WHAT EMERGES (measured):
-  - M1: a localized well binds a FINITE number of internal states that SATURATES
-    at the core size as the depth grows -- the infinite tower is truncated.
-  - M2: the count is the coherent core's grade: the simplex K_{g+1} carries a
-    g-fold internal level (a ground mode + g excited internal states); embedded
-    in a bath it binds exactly (g+1) localized states. The generation count is
-    the simplex grade = the cardinal (graph theory and number theory, one count).
-  - M3: the g-fold internal level is the standard irrep of S_{g+1} (dimension g)
-    -- the degeneracy is representation-theoretic (the symmetry cardinals
-    2, 6, 12, 20 of emergent_substrate_symmetry.py), not free.
-  - M4: the tetrahedron K_4 (grade 3 -- the minimal 3D coherent core, which
-    Sec.3.2 nests to the locked U(2) fibre) carries a THREE-fold internal level:
-    this is where a count of 3 would come from.
-  - M5: a generic asymmetric environment (distinct on-site structural pressures)
-    LIFTS the S_4-protected degeneracy, splitting the 3-fold level into THREE
-    DISTINCT masses -- three generations with different masses, not a degenerate
-    triple.
-
-HONEST SCOPE: the FINITENESS (localization truncates the tower), the count
-= simplex grade = cardinal = standard-irrep dimension, and the degeneracy
-SPLITTING into a distinct-mass triple under a generic environment are DERIVED
-(tight-binding + spectral graph theory + the Sec.3.2 cardinal identity + basic
-perturbation theory). This is a real advance over "infinite, unexplained": the
-generation count is a FINITE cardinal fixed by the coherent core, and the three
-masses are the split components of the grade-3 core's internal level. It does
-NOT derive the real VALUE: (i) WHY the physical core is grade 3 (a 3D coherent
-cluster) is not selected by any principle here, and (ii) the split RATIOS depend
-on the specific environment (~1 : 1.1 : 1.2 in the demo, NOT the real
-1 : 207 : 3477). So "the count is the coherent core's grade and the triple
-splits" is DERIVED; "the grade is 3, split into those exact masses" stays OPEN
-(theory/EMERGENT_ONTOLOGY.md Sec.9.1). Standard tools (K_m Laplacian, tight-
-binding, S_n irreps, perturbation theory); the TNFR content is the unification
-of the count across domains. Closes no open problem.
-
-Run:
-    python benchmarks/emergent_generation_count.py
-
-Theoretical anchor: theory/EMERGENT_ONTOLOGY.md Sec.2.4 (one object, every
-domain), Sec.3.2 (dimension = simplex grade = cardinal), Sec.7.4 (composite
-matter / bound states), Sec.9.1 (OPEN properties); benchmarks/
-emergent_internal_quantum_numbers.py (the infinite tower this truncates);
-emergent_substrate_symmetry.py (the symmetry cardinals).
-Status: RESEARCH (Layer-3 truncation via the cross-domain unification).
+No THOL/UM trajectory, autonomous core selection, physical generation, mass
+map or equality of simplex/fractal dimension with U(2) sectors is established.
+The calculations are retained as conditional finite spectral comparisons.
+Scope: theory/EMERGENT_ONTOLOGY.md sections 3.2, 7.4 and 9.1.
+Run: python benchmarks/emergent_generation_count.py
+Status: RESEARCH (finite auxiliary spectral controls).
 """
 
 from __future__ import annotations
@@ -100,14 +39,14 @@ def lsym(G) -> np.ndarray:
 
 
 def core_in_bath(m: int, *, bath: int = 40, depth: float = 3.0):
-    """A coherent simplex core K_m weakly contacting a ring bath; well depth on
-    the core. Returns (eigenvalues, n_core)."""
+    """Selected K_m/ring graph with one unit edge and an imposed diagonal well.
+    Returns eigenvalues and core size; no physical binding law is derived."""
     G = nx.Graph()
     G.add_edges_from(nx.complete_graph(m).edges())
     ring = list(range(m, m + bath))
     for k, b in enumerate(ring):
         G.add_edge(b, ring[(k + 1) % bath])
-    G.add_edge(0, ring[0])  # single weak contact core -> bath
+    G.add_edge(0, ring[0])  # single unit-conductance core-to-bath edge
     nodes = list(G.nodes())
     idx = {n: i for i, n in enumerate(nodes)}
     _, lap = symmetric_normalized_laplacian(G, nodes=nodes)
@@ -120,7 +59,7 @@ def core_in_bath(m: int, *, bath: int = 40, depth: float = 3.0):
 
 
 def count_bound(ev: np.ndarray) -> int:
-    """Number of internal states below the continuum band (eigenvalues < 0)."""
+    """Count modes below the chosen negative numerical cutoff."""
     return int(np.sum(ev < -1e-9))
 
 
@@ -137,11 +76,11 @@ def distinct_levels(ev: np.ndarray, *, tol: float = 1e-4):
 
 def main() -> None:
     print("=" * 74)
-    print("GENERATION COUNT -- localization truncates the tower to a cardinal")
+    print("SIMPLEX SPECTRA -- distinct multiplicity, well count and splitting")
     print("=" * 74)
 
     # -- M1: localization truncates the tower to FINITE -----------------------
-    print("\n[M1] TRUNCATION: a localized well binds FINITELY many internal states.")
+    print("\n[M1] FINITE CONTROL: negative modes of a configured spectral well.")
     print(f"     {'well depth':>11} {'#bound':>8}  (core = simplex K_5, size 5)")
     counts = []
     for depth in (0.5, 1.0, 2.0, 3.0, 5.0, 8.0):
@@ -150,11 +89,11 @@ def main() -> None:
         counts.append(nb)
         print(f"     {depth:>11.1f} {nb:>8}")
     assert counts[-1] == 5 and counts == sorted(counts), "count not finite/monotone"
-    print("     -> the count grows then SATURATES at the core size (=5): the")
-    print("        infinite manifold tower is truncated to a finite core tower.")
+    print("     -> the sampled depths reach five negative eigenvalues;")
+    print("        this does not test an infinite manifold or physical generations.")
 
-    # -- M2: the count is the coherent core's grade = the cardinal -------------
-    print("\n[M2] THE COUNT = SIMPLEX GRADE = CARDINAL (graph theory + numbers).")
+    # -- M2: compare isolated multiplicity with embedded mode count -------------
+    print("\n[M2] ISOLATED MULTIPLICITY versus EMBEDDED NEGATIVE-MODE COUNT.")
     print(f"     {'core':>6} {'grade':>6} {'internal level':>15} {'#bound(embed)':>14}")
     for m in (2, 3, 4, 5):
         ev_iso = np.linalg.eigvalsh(lsym(nx.complete_graph(m)))
@@ -166,8 +105,8 @@ def main() -> None:
         assert top_mult == m - 1, f"K_{m} internal level not (m-1)-fold"
         assert nb == m, f"K_{m} did not bind m states"
     print("     -> K_{g+1} has a g-fold internal level; embedded it binds g+1")
-    print("        states. The count IS the simplex grade = the cardinal (the")
-    print("        same integer that is the emergent dimension, Sec.3.2).")
+    print("        states including its ground state: these are different counts.")
+    print("        Neither count selects a physical generation or dimension.")
 
     # -- M3: the degeneracy is the standard irrep of S_{g+1} -------------------
     print("\n[M3] DEGENERACY = STANDARD IRREP dim of S_{g+1} (representation).")
@@ -178,7 +117,7 @@ def main() -> None:
         print(f"     K_{m:<4} {'S_' + str(m):>6} {mult:>14} {m - 1:>14}")
         assert mult == m - 1
     print("     -> the internal multiplicity is the S_{g+1} standard-irrep dim g")
-    print("        = the symmetry cardinal (2,6,12,20 chain); not free.")
+    print("        = m-1 for this complete graph; no particle mapping is supplied.")
 
     # -- M4: grade 3 gives a THREE-fold internal level ------------------------
     print("\n[M4] GRADE 3 -> a THREE-fold internal level (the tetrahedron K_4).")
@@ -189,16 +128,16 @@ def main() -> None:
         f"{[(round(v, 3), mlt) for v, mlt in levels]}"
     )
     assert levels[-1][1] == 3, "tetrahedron internal level not 3-fold"
-    print("     -> the minimal 3D coherent core (grade 3, which Sec.3.2 nests to")
-    print("        the U(2) fibre) carries EXACTLY a 3-fold internal level: this")
-    print("        is where a count of 3 would come from.")
+    print("     -> the selected K_4 has a three-dimensional nonconstant level.")
+    print("        This does not select K_4 or identify spatial dimension with U(2).")
+    print("        A physical generation count is not derived.")
 
-    # -- M5: an asymmetric environment splits the 3-fold into 3 masses ---------
-    print("\n[M5] SPLITTING: a generic environment lifts the 3-fold into 3 masses.")
+    # -- M5: the selected diagonal perturbation splits the triplet ---------
+    print("\n[M5] SPLITTING: a supplied diagonal spectral perturbation of K_4.")
     k4 = lsym(nx.complete_graph(4))
     print(f"     {'asymmetry':>10} {'excited internal levels':>28} {'distinct':>9}")
     for eps in (0.0, 0.05, 0.1, 0.3):
-        # distinct on-site structural pressures = the generic environment
+        # supplied spectral offsets; not canonical nodal pressure
         shift = np.array([0.0, 1.0, 2.0, 3.0]) * eps
         excited = np.sort(np.linalg.eigvalsh(k4 - np.diag(shift)))[1:]
         ndist = len({round(float(v), 3) for v in excited})
@@ -207,23 +146,23 @@ def main() -> None:
     shift = np.array([0.0, 1.0, 2.0, 3.0]) * 0.1
     excited = np.sort(np.linalg.eigvalsh(k4 - np.diag(shift)))[1:]
     assert len({round(float(v), 3) for v in excited}) == 3, "3-fold did not split"
-    print("     -> the S_4-protected degeneracy is lifted by ANY asymmetry: the")
-    print("        3-fold level becomes THREE DISTINCT masses = three generations.")
+    print("     -> the tested perturbation splits this S_4-protected level;")
+    print("        other perturbations need separate tests; no masses are mapped.")
 
     print("\n" + "=" * 74)
-    print("SHARPENED RESULT (Layer 3):")
-    print("  DERIVED: localization truncates the tower to FINITE; the count is the")
-    print("    coherent core's simplex GRADE = the CARDINAL = the S_{g+1} standard-")
-    print("    irrep dimension. 'Infinite, unexplained' -> 'finite, a cardinal'.")
-    print("  DERIVED: grade 3 (the tetrahedron) gives a 3-fold level, and a generic")
-    print("    asymmetric environment SPLITS it into 3 DISTINCT masses = 3 gens.")
-    print("  UNIFIED: one count read by graph theory (spectral counting), physics")
-    print("    (bound states), number theory (the cardinal), fractality (the THOL")
-    print("    simplex), resonance (the coupled core).")
-    print("  STILL OPEN: WHY grade 3 is not selected by a principle, and the split")
-    print("    RATIOS depend on the perturbation (~1:1.1:1.2 here, not 1:207:3477).")
-    print("    The count STRUCTURE and the 3-way splitting emerge; the choice of")
-    print("    grade 3 and the exact ratios stay open.")
+    print("SCOPED RESULT:")
+    print("  MEASURED: finite negative-mode counts in the configured well family.")
+    print("    EXACT GRAPH FACT: K_(g+1) has nonconstant multiplicity g.")
+    print("    Its embedded well can instead have g+1 negative modes.")
+    print("  MEASURED: the selected perturbation splits the K_4 triplet.")
+    print("    Neither masses nor physical generations follow from these spectra.")
+    print("  REUSED: graph spectra and representation multiplicities.")
+    print("    The graph, spectral well and perturbation are configured;")
+    print("    no canonical birth or autonomous topology selection is executed.")
+    print("  OPEN: physical state map, formation law and empirical validation.")
+    print("    Eigenvalue ratios depend on the selected perturbation.")
+    print("    These finite checks do not identify graph grade with physical")
+    print("    dimension, substrate sector count or a particle catalog.")
     print("=" * 74)
 
 

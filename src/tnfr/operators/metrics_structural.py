@@ -518,13 +518,9 @@ def self_organization_metrics(G, node, epi_before, vf_before):
     u5_target_satisfied = None
     u5_coherence_residual = None
     if nested_epi_count and "THOL_U5_ALPHA" in G.graph:
-        from ..physics.multiscale_coherence import (
-            assess_u5_parent_child_coherence,
-        )
+        from ..physics.multiscale_coherence import assess_u5_parent_child_coherence
 
-        u5 = assess_u5_parent_child_coherence(
-            G, node, alpha=G.graph["THOL_U5_ALPHA"]
-        )
+        u5 = assess_u5_parent_child_coherence(G, node, alpha=G.graph["THOL_U5_ALPHA"])
         u5_target_satisfied = u5.satisfies_target
         u5_coherence_residual = u5.residual
     metabolic_activity = compute_metabolic_activity_index(G, node)
@@ -1055,7 +1051,6 @@ def transition_metrics(
     operators.definitions.Transition : NAV operator implementation
     operators.definitions.Transition._detect_regime : Regime detection logic
     """
-    import math
 
     # Get current state (after transformation)
     epi_after = _get_node_attr(G, node, ALIAS_EPI)

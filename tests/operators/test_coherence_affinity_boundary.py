@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
 import math
+from copy import deepcopy
 
 import networkx as nx
 import numpy as np
@@ -292,15 +292,11 @@ def test_local_phase_sync_query_does_not_record_affinity_history() -> None:
 
     graph = _phase_sync_graph()
     history = ensure_history(graph)
-    before = {
-        key: list(history.get(key, ()))
-        for key in ("W_sparse", "W_i", "W_stats")
-    }
+    before = {key: list(history.get(key, ())) for key in ("W_sparse", "W_i", "W_stats")}
 
     assert local_phase_sync(graph, 1) == pytest.approx(1.0)
     assert {
-        key: list(history.get(key, ()))
-        for key in ("W_sparse", "W_i", "W_stats")
+        key: list(history.get(key, ())) for key in ("W_sparse", "W_i", "W_stats")
     } == before
 
 
@@ -309,10 +305,7 @@ def test_dissonance_events_builds_affinity_once_without_history_growth(
 ) -> None:
     graph = _configured_path()
     history = ensure_history(graph)
-    before = {
-        key: list(history.get(key, ()))
-        for key in ("W_sparse", "W_i", "W_stats")
-    }
+    before = {key: list(history.get(key, ())) for key in ("W_sparse", "W_i", "W_stats")}
     import tnfr.metrics.diagnosis as diagnosis_module
 
     original = diagnosis_module.coherence_matrix
@@ -330,6 +323,5 @@ def test_dissonance_events_builds_affinity_once_without_history_growth(
 
     assert calls == 1
     assert {
-        key: list(history.get(key, ()))
-        for key in ("W_sparse", "W_i", "W_stats")
+        key: list(history.get(key, ())) for key in ("W_sparse", "W_i", "W_stats")
     } == before

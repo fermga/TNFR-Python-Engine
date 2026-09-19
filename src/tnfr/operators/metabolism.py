@@ -113,9 +113,7 @@ def capture_network_signals(G: TNFRGraph, node: NodeId) -> dict[str, Any] | None
     coupling_strengths = []
 
     for n in neighbors:
-        n_epi = _read_node_scalar_epi(
-            G.nodes[n], label=f"neighbor {n!r} EPI"
-        )
+        n_epi = _read_node_scalar_epi(G.nodes[n], label=f"neighbor {n!r} EPI")
         n_theta = finite_real(
             get_attr(G.nodes[n], ALIAS_THETA, 0.0),
             operator=_OPERATOR,
@@ -168,9 +166,7 @@ def compose_subepi_amplitude(
     actually determine its result.
     """
 
-    parent_epi = finite_real(
-        parent_epi, operator=_OPERATOR, label="parent EPI"
-    )
+    parent_epi = finite_real(parent_epi, operator=_OPERATOR, label="parent EPI")
     scaling_factor = finite_real(
         scaling_factor,
         operator=_OPERATOR,
@@ -247,6 +243,7 @@ def metabolize_signals_into_subepi(
         gradient_weight=gradient_weight,
         complexity_weight=complexity_weight,
     )
+
 
 def propagate_subepi_to_network(
     G: TNFRGraph,

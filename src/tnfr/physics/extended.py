@@ -1,12 +1,12 @@
 """TNFR Extended Canonical Fields - Flux and Transport
 
-The two newly-promoted CANONICAL flux fields that capture directed transport:
+Two canonical diagnostic fields read directed neighbor contrasts:
 
-- J_φ: Phase current (geometric phase confinement drives directed transport)
-- J_ΔNFR: ΔNFR flux (potential-driven reorganization transport)
+- J_φ: Mean sine of neighbor phase displacement
+- J_ΔNFR: Mean neighbor pressure difference
 
-These complement the core tetrad (Φ_s, |∇φ|, K_φ, ξ_C) by adding transport
-dynamics while maintaining read-only telemetry semantics.
+These complement the core tetrad (Φ_s, |∇φ|, K_φ, ξ_C) as read-only
+statistics. They are not measured time derivatives or evolution laws.
 """
 
 from __future__ import annotations
@@ -50,28 +50,25 @@ except ImportError:
 
 
 def compute_phase_current(G: Any) -> dict[Any, float]:
-    """Compute phase current J_φ for each locus [CANONICAL - PROMOTED Nov 12, 2025].
+    """Read the signed mean-sine phase statistic over unique neighbors.
 
-    **Canonical Status**: Promoted November 12, 2025 after robust multi-topology
-    validation (48 samples, r(J_φ, K_φ) = +0.592 ± 0.092, 100% sign consistency).
+    ``J_phi(i)=mean_j sin(theta_j-theta_i)`` uses successors on directed
+    graphs, counts parallel neighbors once and includes a self-loop once.
+    Isolates have the explicit value zero. Edge conductance does not weight
+    this diagnostic, including on zero-conductance support edges.
 
-    **Physics**: Geometric phase confinement drives directed transport.
-    Phase current captures the local "flow" of phase information through the
-    network, complementing static curvature K_φ with transport dynamics.
+    In exact arithmetic, with nonzero neighbor resultant S and regular
+    curvature K=wrap(theta_i-Arg(S)), ``J_phi=-|S|*sin(K)/degree``.
+    Nonzero current and curvature therefore have opposite signs away from
+    the half-turn cut. Their numeric readers use separately rounded
+    trigonometric and angular operations; no exact binary64 identity is
+    asserted. See TNFR_VARIATIONAL_PRINCIPLE section 13.6 for the reciprocal
+    support pair cost and its state-dependent phase-pressure metric.
 
-    **Definition**:
-        J_φ(i) = Σ_{j∈neighbors(i)} sin(φ_j - φ_i) / |neighbors(i)|
-
-    **Validation Evidence**:
-    - 48 samples across WS, BA, Grid topologies
-    - Ultra-robust correlation: r(J_φ, K_φ) = +0.592 ± 0.092
-    - 100% sign consistency across parameter sweeps
-    - Integration priority: HIGH
-
-    **Usage as Telemetry**:
-    - Read-only field computation (never mutates EPI)
-    - Complements K_φ by adding directed transport dimension
-    - High |J_φ| indicates active phase transport vs static confinement
+    This directional statistic selects no phase evolution or actual transport
+    rate. Zero mean sine may arise from antipodal phases or cancellation;
+    it does not establish a defined circular mean, zero canonical phase
+    pressure, or equilibrium of the full nodal state.
 
     Parameters
     ----------
@@ -81,14 +78,7 @@ def compute_phase_current(G: Any) -> dict[Any, float]:
     Returns
     -------
     dict[NodeId, float]
-        Phase current per node. Positive = net inward flow,
-        negative = net outward flow, zero = equilibrium.
-
-    References
-    ----------
-    - AGENTS.md § Extended Canonical Fields (Nov 12, 2025 promotion)
-    - Validation data: 48-sample multi-topology experiment
-    - Physics: Geometric transport from phase field gradients
+        Detached per-node signed mean sine, a read-only diagnostic.
     """
     nodes = tuple(G.nodes())
     phases = tuple(_get_phase(G, node) for node in nodes)
@@ -149,28 +139,15 @@ def _phase_current_cached(G, node_order, neighbor_order, phase_values):
 
 
 def compute_dnfr_flux(G: Any) -> dict[Any, float]:
-    """Compute ΔNFR flux J_ΔNFR for each locus [CANONICAL - PROMOTED Nov 12, 2025].
-
-    **Canonical Status**: Promoted November 12, 2025 after robust multi-topology
-    validation (48 samples, r(J_ΔNFR, Φ_s) = -0.471 ± 0.159, 100% sign consistency).
-
-    **Physics**: Potential-driven reorganization transport. ΔNFR flux captures
-    the local "flow" of structural reorganization pressure, analogous to current
-    flow in potential fields.
+    """Read the mean-neighbor pressure contrast, named ΔNFR flux J_ΔNFR.
 
     **Definition**:
         J_ΔNFR(i) = Σ_{j∈neighbors(i)} (ΔNFR_j - ΔNFR_i) / |neighbors(i)|
 
-    **Validation Evidence**:
-    - 48 samples across WS, BA, Grid topologies
-    - Ultra-robust correlation: r(J_ΔNFR, Φ_s) = -0.471 ± 0.159
-    - 100% sign consistency across parameter sweeps
-    - Integration priority: HIGH
-
-    **Usage as Telemetry**:
-    - Read-only field computation (never mutates EPI)
-    - Complements Φ_s by adding directed transport dimension
-    - Positive J_ΔNFR = net inward pressure, negative = net outward
+    This is a read-only diagnostic of stored pressure on unique support
+    neighbors. It contains no capacity or time factor and does not specify
+    pressure evolution, physical transport or a sustaining interaction.
+    Correlation with structural potential cannot establish those laws.
 
     Parameters
     ----------
@@ -180,14 +157,14 @@ def compute_dnfr_flux(G: Any) -> dict[Any, float]:
     Returns
     -------
     dict[NodeId, float]
-        ΔNFR flux per node. Positive = net inward reorganization pressure,
-        negative = net outward pressure, zero = equilibrium.
+        Positive means neighbors have higher mean stored pressure than the
+        node; negative means lower. Zero is zero mean neighbor pressure
+        contrast, not necessarily zero pressure or nodal equilibrium.
 
     References
     ----------
-    - AGENTS.md § Extended Canonical Fields (Nov 12, 2025 promotion)
-    - Validation data: 48-sample multi-topology experiment
-    - Physics: Transport from ΔNFR gradients (potential-driven flow)
+    - theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md (field definitions)
+    - theory/TNFR_VARIATIONAL_PRINCIPLE.md (scoped graph-field dynamics)
     """
     nodes = tuple(G.nodes())
     pressure = tuple(_get_dnfr(G, node) for node in nodes)

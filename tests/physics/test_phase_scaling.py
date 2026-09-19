@@ -19,13 +19,9 @@ def _synthetic_sweep():
     control_profiles = np.array([0.4, 1.0, 0.6])
     for i, size in enumerate(sizes):
         for j, profile in enumerate(control_profiles):
-            order[i, j] = -(size ** -0.25) * profile * replicate_factors
-            susceptibility[i, j] = (
-                size**0.5 * profile * replicate_factors
-            )
-            coherence_length[i, j] = (
-                size**0.4 * profile * replicate_factors
-            )
+            order[i, j] = -(size**-0.25) * profile * replicate_factors
+            susceptibility[i, j] = size**0.5 * profile * replicate_factors
+            coherence_length[i, j] = size**0.4 * profile * replicate_factors
     return sizes, controls, order, susceptibility, coherence_length
 
 
@@ -59,9 +55,7 @@ def test_two_dimensional_input_is_one_replicate_without_fake_sem():
     order = np.array([[0.1, 0.2], [0.08, 0.15], [0.06, 0.1]])
     susceptibility = np.array([[1.0, 2.0], [2.0, 4.0], [4.0, 8.0]])
 
-    result = analyze_phase_finite_size_scaling(
-        sizes, controls, order, susceptibility
-    )
+    result = analyze_phase_finite_size_scaling(sizes, controls, order, susceptibility)
 
     assert result.replicate_count == 1
     assert result.peak_susceptibility_sem == (None, None, None)
@@ -75,13 +69,9 @@ def test_sampled_peak_can_shift_with_size():
     sizes = [10, 20, 40]
     controls = [0.2, 0.4, 0.6]
     order = np.ones((3, 3))
-    susceptibility = np.array(
-        [[3.0, 2.0, 1.0], [1.0, 4.0, 2.0], [1.0, 2.0, 5.0]]
-    )
+    susceptibility = np.array([[3.0, 2.0, 1.0], [1.0, 4.0, 2.0], [1.0, 2.0, 5.0]])
 
-    result = analyze_phase_finite_size_scaling(
-        sizes, controls, order, susceptibility
-    )
+    result = analyze_phase_finite_size_scaling(sizes, controls, order, susceptibility)
 
     assert result.pseudocritical_control == (0.2, 0.4, 0.6)
 
@@ -104,9 +94,7 @@ def test_plateau_reports_all_maximizers_and_any_boundary_contact():
         ]
     )
 
-    result = analyze_phase_finite_size_scaling(
-        sizes, controls, order, susceptibility
-    )
+    result = analyze_phase_finite_size_scaling(sizes, controls, order, susceptibility)
 
     assert result.pseudocritical_control == (None, None, None)
     assert result.pseudocritical_controls == ((1.0, 2.0),) * 3
@@ -133,9 +121,7 @@ def test_plateau_reports_all_maximizers_and_any_boundary_contact():
 )
 def test_rejects_invalid_protocols(sizes, controls, order, susceptibility, error):
     with pytest.raises(ValueError, match=error):
-        analyze_phase_finite_size_scaling(
-            sizes, controls, order, susceptibility
-        )
+        analyze_phase_finite_size_scaling(sizes, controls, order, susceptibility)
 
 
 def test_result_is_reproducible_and_does_not_claim_universality():
@@ -151,13 +137,9 @@ def test_nonpositive_peak_withholds_fit_without_dropping_a_size():
     sizes = [8, 16, 32, 64]
     controls = [0.0, 1.0]
     order = np.ones((4, 2))
-    susceptibility = np.array(
-        [[0.0, 0.0], [0.5, 1.0], [1.0, 2.0], [2.0, 4.0]]
-    )
+    susceptibility = np.array([[0.0, 0.0], [0.5, 1.0], [1.0, 2.0], [2.0, 4.0]])
 
-    result = analyze_phase_finite_size_scaling(
-        sizes, controls, order, susceptibility
-    )
+    result = analyze_phase_finite_size_scaling(sizes, controls, order, susceptibility)
 
     assert result.susceptibility_size_fit is None
     assert result.nonpositive_fit_observables == ("peak_susceptibility",)
@@ -178,6 +160,8 @@ def test_positive_observable_mean_cannot_silently_underflow_to_zero():
             order,
             susceptibility,
         )
+
+
 def test_boolean_observations_are_not_silently_converted_to_numbers():
     sizes = [8, 16, 32]
     controls = [0.0, 1.0]
@@ -185,9 +169,7 @@ def test_boolean_observations_are_not_silently_converted_to_numbers():
     order[1, 1] = True
 
     with pytest.raises(ValueError, match="not booleans"):
-        analyze_phase_finite_size_scaling(
-            sizes, controls, order, np.ones((3, 2))
-        )
+        analyze_phase_finite_size_scaling(sizes, controls, order, np.ones((3, 2)))
 
 
 def test_numpy_boolean_control_is_not_silently_converted_to_zero():

@@ -40,9 +40,7 @@ from typing import Any
 
 from ..errors import TNFRValueError
 from ..operators.event_remesh_runtime import EventRemeshCycleResult, _proof_value
-from ..utils._structural_signature import (
-    proof_stamps_are_identical,
-)
+from ..utils._structural_signature import proof_stamps_are_identical
 from . import event_remesh_refinement as _refinement_module
 from . import runtime_remesh_history_stability as _bridge_module
 from .event_remesh_refinement import (
@@ -58,9 +56,7 @@ from .runtime_eigenmode_reference import (
     ExecutedReversibleSingleEigenmodeEulerReferenceObservation,
     observe_executed_reversible_single_eigenmode_euler_reference,
 )
-from .runtime_remesh_history_stability import (
-    RuntimeRemeshHistoryBridgeObservation,
-)
+from .runtime_remesh_history_stability import RuntimeRemeshHistoryBridgeObservation
 
 __all__ = (
     "P2EventRemeshMeshReferenceObservation",
@@ -164,9 +160,7 @@ def _stamp_from_values(
 ) -> tuple[Any, ...]:
     return (
         version,
-        tuple(
-            (name, _compact_proof_value(values[name])) for name in field_names
-        ),
+        tuple((name, _compact_proof_value(values[name])) for name in field_names),
     )
 
 
@@ -429,16 +423,10 @@ def _refinement_from_validated_cycles(
         persistent_tokens,
         None,
     )
-    modal = _refinement_module._modal_observations(
-        meshes[0], meshes[1], meshes[2]
-    )
+    modal = _refinement_module._modal_observations(meshes[0], meshes[1], meshes[2])
     supports_equal = bool(
-        _refinement_module._ordered_supports_match(
-            meshes[0].nodes, meshes[1].nodes
-        )
-        and _refinement_module._ordered_supports_match(
-            meshes[1].nodes, meshes[2].nodes
-        )
+        _refinement_module._ordered_supports_match(meshes[0].nodes, meshes[1].nodes)
+        and _refinement_module._ordered_supports_match(meshes[1].nodes, meshes[2].nodes)
     )
     conditions = (
         ("coarse_cycle_proof_intact", True),
@@ -533,16 +521,12 @@ def _canonical_nested_observations(
                 refinement_override.intermediate,
                 refinement_override.fine,
             )
-            if type(refinement_override)
-            is EventRemeshThreeMeshRefinementObservation
+            if type(refinement_override) is EventRemeshThreeMeshRefinementObservation
             else ()
         )
         if (
-            type(refinement_override)
-            is not EventRemeshThreeMeshRefinementObservation
-            or not _refinement_owned_proofs_are_locally_sealed(
-                refinement_override
-            )
+            type(refinement_override) is not EventRemeshThreeMeshRefinementObservation
+            or not _refinement_owned_proofs_are_locally_sealed(refinement_override)
             or len(meshes) != 3
             or any(
                 mesh.cycle_result is not cycle
@@ -707,10 +691,7 @@ def _derive_mesh_values(
     if (
         type(bridge) is not RuntimeRemeshHistoryBridgeObservation
         or bridge.cycle_result is not cycle
-        or (
-            not bridge_already_validated
-            and not bridge.bridge_observation_certified
-        )
+        or (not bridge_already_validated and not bridge.bridge_observation_certified)
     ):
         raise TNFRValueError("runtime REMESH bridge is not canonical for its cycle")
 
@@ -733,9 +714,7 @@ def _derive_mesh_values(
     first = boundaries[0].after
     capacity = first.exact_nu_f
     if len(capacity) != 2 or capacity[0] <= 0 or capacity[0] != capacity[1]:
-        raise TNFRValueError(
-            "the P2 reference requires homogeneous positive capacity"
-        )
+        raise TNFRValueError("the P2 reference requires homogeneous positive capacity")
     nu_f = capacity[0]
     lambda_ = 2 * nu_f
     conductance = first.conductance
@@ -759,10 +738,8 @@ def _derive_mesh_values(
         raise TNFRValueError("physical durations do not sum to the parent interval")
 
     if runtime_reference is None:
-        runtime_binding = (
-            observe_executed_reversible_single_eigenmode_euler_reference(
-                (partition,)
-            )
+        runtime_binding = observe_executed_reversible_single_eigenmode_euler_reference(
+            (partition,)
         )
         modal_index = 0
         runtime_reference_already_validated = True
@@ -840,10 +817,8 @@ def _derive_mesh_values(
         if (
             boundary_left.exact_epi != expected_left
             or boundary_left.exact_delta_nfr != _p2_pressure(expected_left)
-            or runtime_row.exact_runtime_boundary_epi[index]
-            != expected_left
-            or runtime_row.exact_reference_boundary_epi[index]
-            != expected_left
+            or runtime_row.exact_runtime_boundary_epi[index] != expected_left
+            or runtime_row.exact_reference_boundary_epi[index] != expected_left
         ):
             raise TNFRValueError(
                 "represented checkpoints do not follow the exact P2 recurrence"
@@ -860,10 +835,8 @@ def _derive_mesh_values(
         expected_right = _p2_field(mean, amplitude * running_factor)
         if (
             certificate.right.exact_epi != expected_right
-            or runtime_row.exact_runtime_boundary_epi[index + 1]
-            != expected_right
-            or runtime_row.exact_reference_boundary_epi[index + 1]
-            != expected_right
+            or runtime_row.exact_runtime_boundary_epi[index + 1] != expected_right
+            or runtime_row.exact_reference_boundary_epi[index + 1] != expected_right
         ):
             raise TNFRValueError("one represented Euler endpoint is not exact")
     expected_pre_remesh = _p2_field(mean, amplitude * euler_factor)
@@ -881,9 +854,7 @@ def _derive_mesh_values(
     exp_upper = modal_reference.exact_continuous_factor_upper_bound
     error_lower = modal_reference.exact_factor_error_lower_bounds[modal_index]
     error_upper = modal_reference.exact_factor_error_upper_bounds[modal_index]
-    quadratic = modal_reference.exact_quadratic_factor_error_upper_bounds[
-        modal_index
-    ]
+    quadratic = modal_reference.exact_quadratic_factor_error_upper_bounds[modal_index]
     hmax = modal_reference.exact_hmax_factor_error_upper_bounds[modal_index]
     if error_lower < 0 or error_upper < error_lower:
         raise RuntimeError("rational enclosure does not prove nonnegative error")
@@ -934,9 +905,7 @@ def _derive_mesh_values(
     absolute_amplitude = abs(amplitude)
     pre_lower = modal_reference.exact_linf_error_lower_bounds[modal_index]
     pre_upper = modal_reference.exact_linf_error_upper_bounds[modal_index]
-    pre_quadratic = (
-        modal_reference.exact_linf_quadratic_error_upper_bounds[modal_index]
-    )
+    pre_quadratic = modal_reference.exact_linf_quadratic_error_upper_bounds[modal_index]
     pre_hmax = modal_reference.exact_linf_hmax_error_upper_bounds[modal_index]
     if (
         modal_reference.exact_mode_linf_norm != absolute_amplitude
@@ -1158,8 +1127,7 @@ class P2EventRemeshReferenceFamilyObservation:
     @property
     def strict_proper_subdivision_improvement_certified(self) -> bool:
         return bool(
-            self._proof_fields_are_intact()
-            and self.strict_pre_remesh_error_improvement
+            self._proof_fields_are_intact() and self.strict_pre_remesh_error_improvement
         )
 
     @property
@@ -1223,26 +1191,20 @@ def _derive_family_values(
         bridge_overrides=bridge_overrides,
     )
     partitions = tuple(
-        _partition_for_cycle(cycle, proof_already_validated=True)
-        for cycle in cycles
+        _partition_for_cycle(cycle, proof_already_validated=True) for cycle in cycles
     )
     durations = tuple(
         tuple(segment.exact_duration for segment in item.partition.segments)
         for item in partitions
     )
     initial_fields = tuple(
-        _exact_binary64_vector(cycle.pre_schedule_epi.epi_values)
-        for cycle in cycles
+        _exact_binary64_vector(cycle.pre_schedule_epi.epi_values) for cycle in cycles
     )
     if not initial_fields[0] == initial_fields[1] == initial_fields[2]:
         raise TNFRValueError("P2 reference meshes require one exact initial field")
-    initial_states = tuple(
-        item.boundary_observations[0].after for item in partitions
-    )
+    initial_states = tuple(item.boundary_observations[0].after for item in partitions)
     first_capacity = initial_states[0].exact_nu_f
-    capacities = tuple(
-        state.exact_nu_f for state in initial_states
-    )
+    capacities = tuple(state.exact_nu_f for state in initial_states)
     if (
         len(first_capacity) != 2
         or first_capacity[0] <= 0
@@ -1252,33 +1214,25 @@ def _derive_family_values(
         raise TNFRValueError("P2 reference capacity is not homogeneous")
     conductances = tuple(state.conductance for state in initial_states)
     if any(
-        not _p2_conductance(value) or value != conductances[0]
-        for value in conductances
+        not _p2_conductance(value) or value != conductances[0] for value in conductances
     ):
         raise TNFRValueError(
             "P2 reference conductance must be one fixed effective edge"
         )
-    runtime_reference = (
-        observe_executed_reversible_single_eigenmode_euler_reference(
-            partitions
-        )
+    runtime_reference = observe_executed_reversible_single_eigenmode_euler_reference(
+        partitions
     )
     modal_reference = runtime_reference.reference_certificate
     runtime_rows = runtime_reference.partition_observations
-    if (
-        len(runtime_rows) != 3
-        or any(
-            row.execution is not partition
-            or row.partition_index != index
-            or row.reference_certificate is not modal_reference
-            for index, (row, partition) in enumerate(
-                zip(runtime_rows, partitions, strict=True)
-            )
+    if len(runtime_rows) != 3 or any(
+        row.execution is not partition
+        or row.partition_index != index
+        or row.reference_certificate is not modal_reference
+        for index, (row, partition) in enumerate(
+            zip(runtime_rows, partitions, strict=True)
         )
     ):
-        raise RuntimeError(
-            "the general runtime binding lost P2 partition identity"
-        )
+        raise RuntimeError("the general runtime binding lost P2 partition identity")
     lambda_ = modal_reference.exact_mode_eigenvalue
     exp_bounds = (
         modal_reference.exact_continuous_factor_lower_bound,
@@ -1393,23 +1347,18 @@ def _derive_family_values(
     fine_refines = coarse_refines
     factors = modal_reference.exact_euler_factors
     factor_improvements = modal_reference.exact_euler_factor_improvements
-    quadratic_bounds = (
-        modal_reference.exact_quadratic_factor_error_upper_bounds
-    )
+    quadratic_bounds = modal_reference.exact_quadratic_factor_error_upper_bounds
     quadratic_improvements = modal_reference.exact_quadratic_bound_improvements
     kernel_matches_meshes = bool(
         len(factors) == len(meshes) == 3
         and len(factor_improvements) == len(quadratic_improvements) == 2
         and tuple(mesh.exact_euler_factor for mesh in meshes) == factors
-        and tuple(
-            mesh.exact_quadratic_factor_error_upper_bound for mesh in meshes
-        )
+        and tuple(mesh.exact_quadratic_factor_error_upper_bound for mesh in meshes)
         == quadratic_bounds
         and all(
             mesh.exact_continuous_factor_lower_bound == exp_bounds[0]
             and mesh.exact_continuous_factor_upper_bound == exp_bounds[1]
-            and mesh.exact_segment_durations
-            == modal_reference.exact_partitions[index]
+            and mesh.exact_segment_durations == modal_reference.exact_partitions[index]
             and mesh.exact_scaled_segment_durations
             == modal_reference.exact_scaled_partitions[index]
             and mesh.exact_euler_segment_factors

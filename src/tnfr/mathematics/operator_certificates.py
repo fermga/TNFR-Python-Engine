@@ -1,33 +1,18 @@
-r"""Arithmetic transformation-to-operator certification (R8).
+r"""Synthetic arithmetic-to-contract comparisons and rejection records (R8).
 
-Whether an arithmetic transformation "is" a TNFR operator is a **contract**
-question, not a naming one.  This module issues a reproducible
-:class:`ArithmeticOperatorCertificate` for candidate transformations, mapping each
-to a canonical operator only when its measured effect matches that operator's
-contract (channel, scale, postcondition — from
-:mod:`tnfr.operators.operator_contracts`) and its grammar word validates against
-U1-U6.  Decorative naming is rejected, and **no fourteenth operator is invented**.
+These helpers reuse canonical contract metadata and selected finite residuals.
+The positive AL record assigns synthetic EPI values 0 and 1; the RA record
+multiplies a localized vector by a declared transition matrix and checks its
+sum. Neither executes the corresponding engine operator or a graph-owned
+history. U3 in the RA record is a textual premise, not a measured phase test.
+The certified property means only that a canonical_operator name is present;
+grammar_valid separately checks a listed word, without executing it.
 
-A **negative** certificate is a useful result: showing that an arithmetic
-operation does not fit the 13 operators without an external axiom sharpens the
-TNFR boundary.  Audited candidates:
-
-* localized **emission at zero** (the pointed-pulse seed ``e_0``)  → **Emission**;
-* **propagation over residue edges** (additive Cayley transport)    → **Resonance**
-  (under the U3 phase precondition);
-* **CRT projection** ``σ``                                          → rejected
-  (pure relabeling; modifies no nodal channel);
-* **p-adic lift** ``ℤ/p^eℤ → ℤ/p^{e+1}ℤ``                           → rejected
-  (transport-consistent but the REMESH contract is unverified — R4);
-* affine ``x ↦ ax + b (mod n)``                                    → rejected
-  (network automorphism / relabeling);
-* power map ``x ↦ x^k (mod n)``                                    → rejected
-  (group endomorphism; its "contraction" is of the state space, not of νf).
-
-Scope: the two positive certificates reuse the canonical contracts; the four
-negatives are the honest boundary result.  No claim maps an arithmetic operation
-to an operator beyond these contracts (``NT-P08`` OPEN).
-"""
+The negative records reject the tested identification, not every possible
+future canonical realization. An invertible affine residue map is a
+permutation; it is a Cayley-graph automorphism only if its multiplier preserves
+the connection set. Zero EPI is not absence of a nodal substrate. Full operator
+equivalence and a general arithmetic-map classification remain unproved."""
 
 from __future__ import annotations
 
@@ -93,7 +78,10 @@ class ArithmeticOperatorCertificate:
 # Positive certificates (measured effect matches the canonical contract)
 # --------------------------------------------------------------------------- #
 def certify_emission_at_zero() -> ArithmeticOperatorCertificate:
-    r"""Localized emission at the additive identity ``e_0`` → **Emission (AL)**."""
+    r"""Build an AL-named candidate record from synthetic EPI values 0 and 1.
+
+    No Emission operation is executed; the sign residual and metadata do not
+    certify a full transition or autonomous creation."""
     contract = contract_for("Emission")
     epi_before, epi_after = 0.0, 1.0  # e_0 seeds EPI at the neutral node
     delta_epi = epi_after - epi_before
@@ -116,25 +104,22 @@ def certify_emission_at_zero() -> ArithmeticOperatorCertificate:
 def certify_residue_edge_propagation(
     p: int = 5, base: frozenset[int] = frozenset({1, 2, 3, 4})
 ) -> ArithmeticOperatorCertificate:
-    r"""Propagation over residue edges (additive Cayley transport) → **Resonance
-    (RA)**, under the U3 phase-compatibility precondition.
+    r"""Compare a supplied Cayley transition step with selected RA contract metadata.
 
-    Measured: one random-walk transport step conserves the total EPI (identity
-    preserved) — the residual is the conservation defect.
-    """
+    The residual checks EPI-sum preservation for the synthetic localized input.
+    No Resonance operation or phase check is executed; U3 is a recorded premise.
+    Preserving a scalar sum does not by itself preserve full pattern identity."""
     contract = contract_for("Resonance")
     connection = compatible_connection_set(p, 1, base)
     transition = padic_transition(p, 1, connection)
     epi = [1.0] + [0.0] * (p - 1)  # EPI concentrated at node 0
     propagated = [
-        float(sum(transition[i][j] * epi[j] for j in range(p)))
-        for i in range(p)
+        float(sum(transition[i][j] * epi[j] for j in range(p))) for i in range(p)
     ]
     conservation_defect = abs(sum(propagated) - sum(epi))
     spread = sum(1 for v in propagated if v > 0)
     return ArithmeticOperatorCertificate(
-        transformation="propagation over residue edges (additive Cayley "
-        "transport)",
+        transformation="propagation over residue edges (additive Cayley " "transport)",
         canonical_operator=contract.english_name,
         state_channel=contract.primary_channel.value,
         scale=contract.scale.value,
@@ -142,8 +127,7 @@ def certify_residue_edge_propagation(
             "U3 phase compatibility |wrap(phi_i - phi_j)| <= dphi_max",
             "identity (EPI kind) preserved",
         ),
-        postconditions=(contract.postcondition,
-                        "EPI propagated to residue neighbors"),
+        postconditions=(contract.postcondition, "EPI propagated to residue neighbors"),
         grammar_word=("emission", "resonance", "coupling", "silence"),
         residuals={
             "conservation_defect": conservation_defect,
@@ -155,9 +139,7 @@ def certify_residue_edge_propagation(
 # --------------------------------------------------------------------------- #
 # Negative certificates (the honest boundary: no contract fit)
 # --------------------------------------------------------------------------- #
-def reject_crt_projection(
-    a: int = 3, b: int = 5
-) -> ArithmeticOperatorCertificate:
+def reject_crt_projection(a: int = 3, b: int = 5) -> ArithmeticOperatorCertificate:
     r"""CRT projection ``σ`` → **rejected**: a pure relabeling changes no channel."""
     perm = crt_ordering(a, b)
     is_permutation = float(sorted(perm) == list(range(a * b)))
@@ -189,7 +171,8 @@ def reject_padic_lift(
     commutation = float(projective_commutation_residual(p, e, base))
     audit = remesh_contract_audit()
     unmet = sum(
-        1 for key, v in audit.to_dict().items()
+        1
+        for key, v in audit.to_dict().items()
         if key != "realizes_remesh" and v is False
     )
     return ArithmeticOperatorCertificate(
@@ -216,7 +199,11 @@ def reject_padic_lift(
 def reject_affine_map(
     a: int = 2, b: int = 1, n: int = 7
 ) -> ArithmeticOperatorCertificate:
-    r"""Affine ``x ↦ ax + b (mod n)`` → **rejected**: automorphism / relabeling."""
+    r"""Record rejection of an affine residue permutation as a named state operator.
+
+    Bijectivity is checked. Edge preservation on a particular Cayley graph would
+    also require the multiplier to preserve its connection set; this helper does
+    not check that condition."""
     image = {(a * x + b) % n for x in range(n)}
     is_bijection = float(len(image) == n and gcd(a, n) == 1)
     return ArithmeticOperatorCertificate(
@@ -239,9 +226,7 @@ def reject_affine_map(
     )
 
 
-def reject_power_map(
-    k: int = 3, p: int = 13
-) -> ArithmeticOperatorCertificate:
+def reject_power_map(k: int = 3, p: int = 13) -> ArithmeticOperatorCertificate:
     r"""Power map ``x ↦ x^k (mod p)`` → **rejected**: group endomorphism."""
     order = p - 1
     image = {pow(x, k, p) for x in range(1, p)}
@@ -252,8 +237,9 @@ def reject_power_map(
         state_channel="nu_f (candidate, rejected)",
         scale="none",
         preconditions=(),
-        postconditions=(f"image is the k-th power subgroup (size {len(image)} "
-                        f"of {order})",),
+        postconditions=(
+            f"image is the k-th power subgroup (size {len(image)} " f"of {order})",
+        ),
         grammar_word=(),
         residuals={
             "image_fraction": len(image) / order,

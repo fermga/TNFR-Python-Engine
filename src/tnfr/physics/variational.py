@@ -67,10 +67,10 @@ from .canonical import (
 )
 from .extended import compute_dnfr_flux, compute_phase_current
 from .unified import (
-    _StructuralFieldReadout,
     _action_density_from_fields,
     _capture_structural_fields,
     _energy_density_from_fields,
+    _StructuralFieldReadout,
 )
 from .unified import compute_action_density as _action_density
 from .unified import compute_energy_density as _raw_energy_density
@@ -366,10 +366,7 @@ def compute_potential_density(G: Any) -> dict[Any, float]:
 def _potential_density_from_fields(
     phi_s: dict[Any, float], grad_phi: dict[Any, float], k_phi: dict[Any, float]
 ) -> dict[Any, float]:
-    return {
-        n: 0.5 * (phi_s[n] ** 2 + grad_phi[n] ** 2 + k_phi[n] ** 2)
-        for n in phi_s
-    }
+    return {n: 0.5 * (phi_s[n] ** 2 + grad_phi[n] ** 2 + k_phi[n] ** 2) for n in phi_s}
 
 
 def compute_lagrangian_density(G: Any) -> dict[Any, float]:
@@ -509,11 +506,7 @@ def translate_sectors(G: Any) -> dict[str, Any]:
     psi = _complex_geometric_field(k_phi, j_phi)
 
     # Consistency: T(i) + V(i) must equal ½·ℰ(i)
-    max_err = (
-        max(abs((T[n] + V[n]) - 0.5 * raw[n]) for n in phi_s)
-        if phi_s
-        else 0.0
-    )
+    max_err = max(abs((T[n] + V[n]) - 0.5 * raw[n]) for n in phi_s) if phi_s else 0.0
 
     return {
         "variational": {"T": T, "V": V},
@@ -1234,8 +1227,12 @@ def classify_operator_canonical(
         Classification results.
     """
     symp = check_symplectic_preservation(
-        before, after, operator_name, tolerance,
-        jacobian=jacobian, jacobian_tolerance=jacobian_tolerance,
+        before,
+        after,
+        operator_name,
+        tolerance,
+        jacobian=jacobian,
+        jacobian_tolerance=jacobian_tolerance,
     )
 
     dH = after.total_hamiltonian - before.total_hamiltonian
@@ -1254,8 +1251,7 @@ def classify_operator_canonical(
     expected = _OPERATOR_CANONICAL_MAP.get(operator_name, {})
 
     energy_trend_matches = (
-        energy_class == expected.get("type", energy_class)
-        or energy_class == "neutral"
+        energy_class == expected.get("type", energy_class) or energy_class == "neutral"
     )
 
     return {

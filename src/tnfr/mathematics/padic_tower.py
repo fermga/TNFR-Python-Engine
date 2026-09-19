@@ -73,7 +73,7 @@ def projective_scale_map(p: int, e: int) -> Matrix:
     ``(R_e f)(y) = (1/p) Σ_{x ≡ y (mod p^e)} f(x)`` — the aggregation/averaging
     operator over each ``p``-element fiber.  Deliberately **not** named REMESH.
     """
-    lo, hi = p ** e, p ** (e + 1)
+    lo, hi = p**e, p ** (e + 1)
     inv = Fraction(1, p)
     R: Matrix = [[Fraction(0)] * hi for _ in range(lo)]
     for x in range(hi):
@@ -87,7 +87,7 @@ def padic_lift_map(p: int, e: int) -> Matrix:
     ``(Lift_e g)(x) = g(x mod p^e)`` — the pullback that is constant on fibers;
     the right inverse of :func:`projective_scale_map`.
     """
-    lo, hi = p ** e, p ** (e + 1)
+    lo, hi = p**e, p ** (e + 1)
     L: Matrix = [[Fraction(0)] * lo for _ in range(hi)]
     for x in range(hi):
         L[x][x % lo] = Fraction(1)
@@ -105,7 +105,7 @@ def compatible_connection_set(p: int, e: int, base: frozenset[int]) -> set[int]:
         raise ValueError("base connection set must be non-empty")
     if any((r % p) == 0 for r in base):
         raise ValueError("base residues must be non-zero mod p (no self-loops)")
-    return {x for x in range(p ** e) if (x % p) in {r % p for r in base}}
+    return {x for x in range(p**e) if (x % p) in {r % p for r in base}}
 
 
 # --------------------------------------------------------------------------- #
@@ -113,7 +113,7 @@ def compatible_connection_set(p: int, e: int, base: frozenset[int]) -> set[int]:
 # --------------------------------------------------------------------------- #
 def padic_transition(p: int, e: int, connection: set[int]) -> Matrix:
     r"""Exact transition ``P = (1/d) W`` for ``Cay(ℤ/p^eℤ, connection)``."""
-    n = p ** e
+    n = p**e
     d = len(connection)
     if d == 0:
         raise ValueError("empty connection set")
@@ -128,7 +128,7 @@ def padic_transition(p: int, e: int, connection: set[int]) -> Matrix:
 def padic_laplacian(p: int, e: int, connection: set[int]) -> Matrix:
     r"""Exact random-walk Laplacian ``L = I − P`` at level ``e``."""
     P = padic_transition(p, e, connection)
-    n = p ** e
+    n = p**e
     return [
         [(Fraction(1) if i == j else Fraction(0)) - P[i][j] for j in range(n)]
         for i in range(n)
@@ -141,8 +141,7 @@ def padic_laplacian(p: int, e: int, connection: set[int]) -> Matrix:
 def _matmul(A: Matrix, B: Matrix) -> Matrix:
     n, k, m = len(A), len(B), len(B[0])
     return [
-        [sum((A[i][t] * B[t][j] for t in range(k)), Fraction(0))
-         for j in range(m)]
+        [sum((A[i][t] * B[t][j] for t in range(k)), Fraction(0)) for j in range(m)]
         for i in range(n)
     ]
 
@@ -156,8 +155,9 @@ def _maxabs(A: Matrix) -> Fraction:
 
 
 def _identity(n: int) -> Matrix:
-    return [[Fraction(1) if i == j else Fraction(0) for j in range(n)]
-            for i in range(n)]
+    return [
+        [Fraction(1) if i == j else Fraction(0) for j in range(n)] for i in range(n)
+    ]
 
 
 def _to_float(L: Matrix) -> np.ndarray:
@@ -167,9 +167,7 @@ def _to_float(L: Matrix) -> np.ndarray:
 # --------------------------------------------------------------------------- #
 # Projective consistency (all exact over ℚ for the compatible family)
 # --------------------------------------------------------------------------- #
-def projective_commutation_residual(
-    p: int, e: int, base: frozenset[int]
-) -> Fraction:
+def projective_commutation_residual(p: int, e: int, base: frozenset[int]) -> Fraction:
     r"""Exact ``‖R_e P_{e+1} − P_e R_e‖_max`` for the compatible family.
 
     Zero iff fiber-averaging commutes with transport (projective transport).
@@ -180,9 +178,7 @@ def projective_commutation_residual(
     return _maxabs(_sub(_matmul(R, Pe1), _matmul(Pe, R)))
 
 
-def laplacian_commutation_residual(
-    p: int, e: int, base: frozenset[int]
-) -> Fraction:
+def laplacian_commutation_residual(p: int, e: int, base: frozenset[int]) -> Fraction:
     r"""Exact ``‖R_e L_{e+1} − L_e R_e‖_max`` (Laplacian projective transport)."""
     R = projective_scale_map(p, e)
     Le = padic_laplacian(p, e, compatible_connection_set(p, e, base))
@@ -190,9 +186,7 @@ def laplacian_commutation_residual(
     return _maxabs(_sub(_matmul(R, Le1), _matmul(Le, R)))
 
 
-def lift_intertwining_residual(
-    p: int, e: int, base: frozenset[int]
-) -> Fraction:
+def lift_intertwining_residual(p: int, e: int, base: frozenset[int]) -> Fraction:
     r"""Exact ``‖P_{e+1} Lift_e − Lift_e P_e‖_max``.
 
     Zero means the lift intertwines the two levels, so every coarse eigenvector
@@ -209,7 +203,7 @@ def lift_reduction_residual(p: int, e: int) -> Fraction:
     r"""Exact ``‖R_e Lift_e − I‖_max`` (the lift is a right inverse)."""
     R = projective_scale_map(p, e)
     Lift = padic_lift_map(p, e)
-    return _maxabs(_sub(_matmul(R, Lift), _identity(p ** e)))
+    return _maxabs(_sub(_matmul(R, Lift), _identity(p**e)))
 
 
 # --------------------------------------------------------------------------- #
@@ -219,9 +213,7 @@ def _eig_mags(L: Matrix) -> list[float]:
     return sorted(abs(z) for z in np.linalg.eigvals(_to_float(L)))
 
 
-def surviving_spectrum_containment(
-    p: int, e: int, base: frozenset[int]
-) -> float:
+def surviving_spectrum_containment(p: int, e: int, base: frozenset[int]) -> float:
     r"""Max distance from each ``|λ| ∈ spec(L_e)`` to the nearest fine eigenvalue.
 
     Numerical corroboration of ``spec(L_e) ⊆ spec(L_{e+1})`` (should sit below the

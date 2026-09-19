@@ -16,10 +16,16 @@ from ..constants.aliases import ALIAS_THETA
 from ..dynamics import dnfr, fused_dnfr
 from ..metrics.common import merge_and_normalize_weights
 from ._cycle_algebra import Vector, ordered_vector
-from .support_transport import SupportTransportSnapshot, _rebuild, observe_support_transport
+from .support_transport import (
+    SupportTransportSnapshot,
+    _rebuild,
+    observe_support_transport,
+)
 
 __all__ = [
-    "NonEpiForcingObservation", "capture_non_epi_forcing", "decompose_non_epi_forcing",
+    "NonEpiForcingObservation",
+    "capture_non_epi_forcing",
+    "decompose_non_epi_forcing",
 ]
 
 _CHANNELS = ("phase", "epi", "vf", "topo")
@@ -63,14 +69,18 @@ def _runtime_weights(graph):
     configured = graph.graph.get("_dnfr_weights")
     if configured is None:
         configured = merge_and_normalize_weights(
-            graph, "DNFR_WEIGHTS", _CHANNELS, default=0.0,
+            graph,
+            "DNFR_WEIGHTS",
+            _CHANNELS,
+            default=0.0,
         )
     if not isinstance(configured, Mapping):
         raise TypeError("cached DeltaNFR weights must be a mapping")
     weights = []
     for channel in _CHANNELS:
         value, exact = finite_represented_real(
-            configured.get(channel, 0.0), f"DeltaNFR {channel} weight",
+            configured.get(channel, 0.0),
+            f"DeltaNFR {channel} weight",
         )
         if value < 0.0:
             raise ValueError("DeltaNFR weights must be nonnegative")
@@ -79,11 +89,14 @@ def _runtime_weights(graph):
 
 
 def _forcing_components(snapshot, weights, phase_gradient):
-    return tuple((name, tuple(weights[name] * value for value in values))
-                 for name, values in (
-                     ("phase", phase_gradient), ("vf", snapshot.capacity_gradient),
-                     ("topo", snapshot.topology_gradient),
-                 ))
+    return tuple(
+        (name, tuple(weights[name] * value for value in values))
+        for name, values in (
+            ("phase", phase_gradient),
+            ("vf", snapshot.capacity_gradient),
+            ("topo", snapshot.topology_gradient),
+        )
+    )
 
 
 def decompose_non_epi_forcing(observation) -> tuple:
@@ -99,21 +112,31 @@ def decompose_non_epi_forcing(observation) -> tuple:
     source = _rebuild(observation.snapshot)
     pairs = tuple(observation.normalized_weights)
     if tuple(name for name, _ in pairs) != _CHANNELS:
-        raise ValueError("forcing weights require the ordered phase/epi/vf/topo channels")
-    weights = {name: exact_or_represented_real(value, f"{name} weight")
-               for name, value in pairs}
+        raise ValueError(
+            "forcing weights require the ordered phase/epi/vf/topo channels"
+        )
+    weights = {
+        name: exact_or_represented_real(value, f"{name} weight")
+        for name, value in pairs
+    }
     if any(value < 0 for value in weights.values()):
         raise ValueError("forcing weights must be nonnegative")
-    if weights["epi"] != exact_or_represented_real(observation.epi_weight, "epi_weight"):
+    if weights["epi"] != exact_or_represented_real(
+        observation.epi_weight, "epi_weight"
+    ):
         raise ValueError("EPI coefficient differs from the captured weights")
     phase = ordered_vector(observation.phase_gradient, "phase gradient")
     if len(phase) != len(source.nodes):
         raise ValueError("phase gradient must match the captured node order")
     components = _forcing_components(source, weights, phase)
-    forcing = tuple(sum((values[i] for _, values in components), Fraction(0))
-                    for i in range(len(source.nodes)))
+    forcing = tuple(
+        sum((values[i] for _, values in components), Fraction(0))
+        for i in range(len(source.nodes))
+    )
     if forcing != ordered_vector(observation.forcing, "forcing"):
-        raise ValueError("captured forcing differs from its exact channel decomposition")
+        raise ValueError(
+            "captured forcing differs from its exact channel decomposition"
+        )
     return components
 
 
@@ -145,25 +168,32 @@ def capture_non_epi_forcing(G) -> NonEpiForcingObservation:
     indices = {node: index for index, node in enumerate(nodes)}
     edge_src, edge_dst = dnfr._build_edge_index_arrays(G, nodes, indices)
     if len(edge_src) > _MAX_SUPPORT_ENTRIES:
-        raise ValueError("forcing read-out supports at most 100 directed support entries")
+        raise ValueError(
+            "forcing read-out supports at most 100 directed support entries"
+        )
     phase = _represented_vector(
-        (get_attr(G.nodes[node], ALIAS_THETA, 0.0, conv=lambda v: v, strict=True)
-         for node in nodes),
+        (
+            get_attr(G.nodes[node], ALIAS_THETA, 0.0, conv=lambda v: v, strict=True)
+            for node in nodes
+        ),
         "phase",
     )
     weights = _runtime_weights(G)
     exact_weights = dict(weights)
     array = dnfr.np.asarray
     arguments = {
-        "edge_src": edge_src, "edge_dst": edge_dst,
+        "edge_src": edge_src,
+        "edge_dst": edge_dst,
         "phase": array(tuple(map(float, phase)), dtype=float),
         "epi": array(tuple(map(float, snapshot.epi)), dtype=float),
         "vf": array(tuple(map(float, snapshot.capacity)), dtype=float),
-        "accumulate_both_directions": False, "use_jit": False,
+        "accumulate_both_directions": False,
+        "use_jit": False,
     }
     phase_gradient = _represented_vector(
         fused_dnfr.compute_fused_gradients_symmetric(
-            **arguments, weights={"w_phase": 1.0},
+            **arguments,
+            weights={"w_phase": 1.0},
         ),
         "unit phase gradient",
     )
@@ -177,21 +207,36 @@ def capture_non_epi_forcing(G) -> NonEpiForcingObservation:
         "fresh kernel pressure",
     )
     components = _forcing_components(snapshot, exact_weights, phase_gradient)
-    forcing = tuple(sum((values[i] for _, values in components), Fraction(0))
-                    for i in range(len(nodes)))
+    forcing = tuple(
+        sum((values[i] for _, values in components), Fraction(0))
+        for i in range(len(nodes))
+    )
     epi_weight = exact_weights["epi"]
     kernel_defect = tuple(
         actual - epi_weight * epi_i - force_i
         for actual, epi_i, force_i in zip(
-            full_kernel_pressure, snapshot.epi_gradient, forcing, strict=True,
+            full_kernel_pressure,
+            snapshot.epi_gradient,
+            forcing,
+            strict=True,
         )
     )
     stored_residual = tuple(
-        stored - fresh for stored, fresh in zip(
-            snapshot.stored_pressure, full_kernel_pressure, strict=True,
+        stored - fresh
+        for stored, fresh in zip(
+            snapshot.stored_pressure,
+            full_kernel_pressure,
+            strict=True,
         )
     )
     return NonEpiForcingObservation(
-        snapshot, phase, epi_weight, forcing, phase_gradient, weights,
-        full_kernel_pressure, kernel_defect, stored_residual,
+        snapshot,
+        phase,
+        epi_weight,
+        forcing,
+        phase_gradient,
+        weights,
+        full_kernel_pressure,
+        kernel_defect,
+        stored_residual,
     )

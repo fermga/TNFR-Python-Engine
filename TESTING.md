@@ -1,15 +1,15 @@
 # TNFR Testing Guide
 
-This is the authoritative guide to the test suite. Test expectations follow the
-[nodal equation and six invariants](AGENTS.md#8-canonical-invariants),
-[operator contracts](src/tnfr/operators/operator_contracts.py), and
-[unified grammar](theory/UNIFIED_GRAMMAR_RULES.md). A passing test establishes
-only the behavior and parameter range asserted by that test.
+This page owns local validation instructions. [pyproject.toml](pyproject.toml)
+defines tools and dependencies; [the workflow guide](.github/WORKFLOWS.md) owns
+CI behavior. Expected mathematics and contracts follow [AGENTS.md](AGENTS.md)
+and the source being tested. A passing test establishes its asserted behavior
+and domain, not a general physical theorem.
 
 ## Run the repository tests
 
-Run commands from the repository root with the Python interpreter for your
-active environment. Install the project and the same dependency groups used by
+Run commands from the repository root with the interpreter of a separate
+environment. Install the editable project and the dependency groups used by
 the main CI test job:
 
 ```sh
@@ -17,140 +17,196 @@ python -m pip install -e ".[test,numpy,yaml,orjson]"
 python -m pytest
 ```
 
-[pyproject.toml](pyproject.toml) sets `pythonpath = ["src"]`,
-`testpaths = ["tests"]`, and `addopts = "-m 'not slow'"`. Thus pytest imports the
-working source tree and excludes tests marked `slow` by default. It does not
-configure `--benchmark-skip`, `--strict-markers`, or `--tb=short`.
+`test` is the compatibility alias for `test-all`; NumPy is already a core
+dependency. There are no `dev` or `all` extras. Smaller extras such as
+`test-unit` install only their declared tools and may not support collection
+of the whole repository.
 
-Useful bounded runs:
+The default configuration sets `pythonpath = ["src"]`, `testpaths = ["tests"]`
+and `addopts = "-m 'not slow'"`. Pytest imports the working source tree and
+excludes tests marked slow. It does not enable strict markers, benchmark skipping
+or short tracebacks automatically.
+
+Choose an affected directory, module or test for bounded validation:
 
 ```sh
-python -m pytest tests/operators -q
-python -m pytest tests/core_physics tests/physics -q
-python -m pytest tests/mathematics/test_backends.py -q
+python -m pytest tests/core_physics -q
+python -m pytest tests/operators/test_u3_hard_invariant.py -q
 python -m pytest tests/sdk -q
-python -m pytest tests/operators/test_u3_hard_invariant.py -v
-python -m pytest --collect-only -q
+python -m pytest tests/sdk --collect-only -q
 ```
 
-To remove the default slow exclusion, use `python -m pytest -o addopts=""`.
-To select only tests actually marked slow, use `python -m pytest -m slow`.
-A marker can be registered without any currently collected tests using it;
-inspect collection before treating a marker-selected run as coverage.
+To include slow tests, use `python -m pytest -o addopts=""` with intended paths.
+To select only marked slow tests, use `python -m pytest -m slow` with those
+paths. Inspect `python -m pytest --markers` and collection before treating
+a marker-selected run as coverage: a registered marker can select no tests.
 
-For standalone scripts outside pytest, use an editable installation or set
-`PYTHONPATH` to `src`; pytest's `pythonpath` setting does not affect ordinary
-`python` invocations. Otherwise an installed release can be imported instead
-of the working tree.
+Standalone scripts do not inherit pytest's source-path configuration. Use the
+editable installation above or explicitly set the shell's `PYTHONPATH` to
+`src` so a previously installed release cannot replace the working source.
 
 ## Organization
 
-| Location | Current scope |
-|---|---|
-| [core_physics/](tests/core_physics/) | Nodal equation, structural triad, pressure channels, conservation, backend agreement |
-| [operators/](tests/operators/) | Canonical operators, contracts, grammar, U3 phase gate, selection and execution |
-| [physics/](tests/physics/) | Structural fields, diffusion, symmetry, conservation, directed dynamics, cache correctness |
-| [mathematics/](tests/mathematics/) | Mathematical backends, spaces, arithmetic networks, pulse, multiscale constructions |
-| [sdk/](tests/sdk/) | Public network interface |
-| [engines/](tests/engines/) | Self-optimization and pattern-discovery manifests |
-| [parallel/](tests/parallel/) | Fractal partition manifests |
-| [research/](tests/research/) | Research infrastructure |
-| [scripts/](tests/scripts/) | Self-optimization command-line scripts |
-| [Top-level test files](tests/) | Phase-gate interfaces, external data interfaces, replay, distributed FFT, factorization and mechanics |
-| [data/](tests/data/) | Fixture data and manifests |
+[tests/](tests/) contains top-level modules and subject directories. Search for
+the affected API rather than maintaining another inventory of individual tests.
+Core nodal behavior is in [core_physics/](tests/core_physics/), operators in
+[operators/](tests/operators/), specialized certificates in
+[physics/](tests/physics/) and public network usage in [sdk/](tests/sdk/).
+[conftest.py](tests/conftest.py) and [utils.py](tests/utils.py) own shared helpers.
 
-[tests/conftest.py](tests/conftest.py) defines shared fixtures, backend selection,
-and global-state cleanup. [tests/utils.py](tests/utils.py) supplies additional
-helpers. The current tree has no separate `unit`, `property`, `integration`,
-`performance`, `stress`, or `grammar_operators` test directories. Research
-benchmark scripts live separately in [benchmarks/](benchmarks/README.md);
-use their documented entry points rather than assuming pytest collection.
+Research producers under [benchmarks/](benchmarks/README.md) have declared entry
+points and provenance requirements; a default pytest run does not implicitly
+cover them. Do not regenerate retained evidence for an unrelated change.
+
+The [Makefile](Makefile) target `make test` runs the core_physics, operators
+and physics directories, then executes `benchmarks/riemann_program.py`. It
+is neither the full pytest suite nor a guaranteed quick check. `make validate`
+checks importability, references, documentation integrity and SDK tests.
 
 ## Structural regression evidence
 
-Start with the checks relevant to the changed physical contract. These are
-existing entry points, not claims of exhaustive invariant coverage:
+Assert the contract of the changed path. Record representation, graph/support,
+coefficients, primitive triad, input history, step size and operator sequence as
+relevant. An operator jump and a continuous solver step need different expected
+results. For a full grammar word, verify initiation, closure and contextual
+admission; distinguish fragments explicitly.
 
-| Behavior | Test entry points |
-|---|---|
-| Nodal equation and pressure computation | [test_nodal_equation.py](tests/core_physics/test_nodal_equation.py), [test_delta_nfr_computation_paths.py](tests/core_physics/test_delta_nfr_computation_paths.py), [test_dnfr_backend_consistency.py](tests/core_physics/test_dnfr_backend_consistency.py) |
-| Operator channel and scale contracts | [test_operator_contracts.py](tests/operators/test_operator_contracts.py) |
-| U3 rejection before mutation and wrapped phase distance | [test_u3_hard_invariant.py](tests/operators/test_u3_hard_invariant.py) |
-| U1-U4 context, accepted history and per-node fallback | [test_grammar_dynamics.py](tests/operators/test_grammar_dynamics.py) |
-| Grammar classification consistency | [test_grammar_canon.py](tests/operators/test_grammar_canon.py), [test_grammar_canonical_consistency.py](tests/operators/test_grammar_canonical_consistency.py) |
-| Silence EPI preservation and coupling phase synchronization | [test_canonical_operators_modern.py](tests/operators/test_canonical_operators_modern.py) |
-| Tetrad bounds, field readout and cache invalidation | [test_tetrad_bounds.py](tests/physics/test_tetrad_bounds.py), [test_field_readout_consistency.py](tests/physics/test_field_readout_consistency.py), [test_field_cache_invalidation.py](tests/physics/test_field_cache_invalidation.py) |
-| Diffusion modes and conservation | [test_structural_diffusion.py](tests/physics/test_structural_diffusion.py), [test_dissipative_conservation.py](tests/physics/test_dissipative_conservation.py) |
-| Multiscale arithmetic transport and REMESH audit | [test_crt_multiscale.py](tests/mathematics/test_crt_multiscale.py), [test_remesh_audit.py](tests/mathematics/test_remesh_audit.py) |
+Do not assume all operators increase coherence or that SHA freezes every later
+EPI update. Its capacity attenuation, pure-EPI diffusion and a multichannel
+trajectory have different scopes. Inspect the
+[operator contracts](src/tnfr/operators/operator_contracts.py) and
+[grammar scope](theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) before asserting an invariant.
+Initialization may set fixture state directly; test subsequent evolution through
+the API under review.
 
-For new or changed dynamics, assert the actual contract: IL must not reduce
-`C(t)` outside a documented dissonance test; OZ needs a handler; RA must respect
-phase compatibility and preserve identity; SHA must preserve EPI over the
-specified evolution interval; ZHIR must obey its threshold and context; nested
-EPIs must retain identity. Check the same seeded run twice when changing
-stochastic execution. Execution without an exception alone does not establish
-these properties, and changing EPI alone does not verify the nodal equation.
-
-Specify graph topology, seed, initial triad, operator sequence, time step,
-tolerances and measured quantities. Keep structural frequency in `Hz_str` and
-report `C(t)`, `Si`, phase, structural frequency and the tetrad when relevant.
-Declare whether a sequence is a full grammar word or a fragment; full words
-require initiation, closure and transformer context. Set up initial fixtures
-explicitly, then exercise state changes through canonical operators.
+When stochastic behavior changes, control the RNG and record its seed, initial
+state and execution order. A seed alone does not fix timestamps, external data
+or every backend. When relevant, compare available tetrad fields with estimator
+provenance and unavailable-field reasons. Diagnostic scores are not acceptance
+thresholds unless that specific policy is being tested.
 
 ## Backends and optional dependencies
 
 [tests/conftest.py](tests/conftest.py) accepts `--math-backend` and
-`TNFR_TEST_MATH_BACKEND`. The command-line option takes precedence over that
-test-specific environment variable; the selected value sets
-`TNFR_MATH_BACKEND` and clears the backend cache before test collection.
+`TNFR_TEST_MATH_BACKEND`. The command-line option takes precedence; the
+selected value sets `TNFR_MATH_BACKEND` and clears the backend cache before
+collection.
 
 ```sh
-python -m pytest tests/mathematics/test_backends.py --math-backend=numpy -q
-python -m pytest tests/mathematics/test_backends.py --math-backend=torch -q
+python -m pytest tests/mathematics/test_backends.py --math-backend=numpy -q -rs
 ```
 
-Install optional backends before interpreting their results. The cross-backend
-tests explicitly request NumPy, JAX and PyTorch and skip cases where the
-requested adapter is unavailable. Setting the session backend does not replace
-explicit per-test backend arguments. NumPy is required by the shared conftest;
-a missing NumPy installation does not constitute a successful NumPy-free run.
-Use `-rs` to review skip reasons and report which adapters were exercised.
+Install `compute-jax` or `compute-torch` before requesting those optional
+adapters. Explicit per-test backend requests are not replaced by the session
+setting. Review skip reasons with `-rs` and report adapters actually exercised.
+NumPy is required by the shared conftest; a missing installation is not evidence
+of successful NumPy-free execution.
 
-The registered project markers are `slow`, `benchmarks`, `stress`, `val`,
-`canonical`, `nodal_equation`, `fractality`, and `integration`; inspect
-`python -m pytest --markers` for their definitions. Backend-specific markers such
-as `requires_jax` and `numpy_only` are not registered project options.
+## Code quality and documentation checks
+
+Install tools needed for the check; options are configured in
+[pyproject.toml](pyproject.toml):
+
+```sh
+python -m pip install -e ".[dev-minimal,test-quality,typecheck]"
+python -m black --check src/tnfr
+python -m flake8 src/tnfr
+python -m pydocstyle src/tnfr
+python -m mypy src/tnfr
+python -m pyright src/tnfr
+```
+
+Pass affected files for a focused edit where supported. Black and isort use
+88 columns; pydocstyle uses NumPy conventions. CI's advisory checks are listed
+in [the workflow guide](.github/WORKFLOWS.md). `make format` modifies files;
+it is not a read-only validation step.
+
+Optional pre-commit setup requires installing `pre-commit` separately before
+`pre-commit install`. [.pre-commit-config.yaml](.pre-commit-config.yaml)
+includes local Bash hooks, so Windows needs Bash available to those hooks. The
+local code-review hook prints a reminder; it does not perform a review.
+
+For Markdown-only changes, use the relevant reference check. For site or
+documentation-infrastructure changes, also run integrity and build checks:
+
+```sh
+python scripts/verify_internal_references.py --ci
+python scripts/check_documentation.py
+python -m pip install -e ".[docs]"
+python scripts/prepare_docs.py
+python -m mkdocs build --strict
+```
+
+The reference checker accepts `--dirs` followed by files or directories to
+bound the check. The staging script copies repository owners into the generated
+site; edit those owners rather than generated copies.
+
+## Security checks
+
+Follow [SECURITY.md](SECURITY.md) for reporting and trust boundaries:
+
+```sh
+python -m pip install -e ".[security]"
+python -m pip_audit
+python -m bandit -r src -c bandit.yaml
+```
+
+The dependency audit covers installed packages, including extras actually
+installed; it does not automatically cover every optional dependency. Bandit's
+configured exception is recorded in [bandit.yaml](bandit.yaml). A clean report
+does not guarantee that dependencies or code contain no vulnerabilities.
 
 ## Validation workflow and reporting
 
-1. Read the relevant doctrine and operator contract; search for existing helpers.
-2. Run the relevant baseline before editing. Reproduce a suspected defect with
-   an explicit expected result and record whether it fails before the fix.
-3. Add a regression that exercises the physical or public API behavior, including
-   boundary cases and cache invalidation where relevant.
-4. Run the affected tests, then the full default suite before delivery. Run
-   applicable slow, optional-backend or research checks explicitly when the
-   changed scope requires them.
-5. Report exact commands, interpreter/dependency versions, pass/fail/skip counts,
-   warnings and any untested scope. Do not assume failures are pre-existing
-   without baseline evidence.
+1. Identify the affected contract and existing owners. Reproduce a suspected bug
+   before the fix when feasible; distinguish a new counterexample from a measured
+   baseline.
+2. Add meaningful regression coverage when behavior or an important boundary
+   changes. A small documentation correction need not add numerical tests.
+3. Run affected checks. Broaden to dependents, optional backends or the default
+   suite when changed scope or a failure justifies it. Do not rerun unrelated
+   expensive research producers as a routine checklist item.
+4. Report actual commands, interpreter and relevant dependency versions,
+   pass/fail/skip counts, warnings and untested scope. Do not label a failure
+   pre-existing without baseline evidence.
 
-The `structural_rng` fixture supplies `numpy.random.default_rng(seed=0)`.
-`structural_tolerances` supplies `atol=1e-12` and `rtol=1e-10`; use tolerances
-appropriate to the mathematical scale and backend precision and document any
-relaxation. The autouse cleanup fixture resets selected global state; tests
-that mutate additional caches or configuration must restore those explicitly.
+The `structural_rng` fixture supplies NumPy's generator with seed zero.
+`structural_tolerances` supplies atol=1e-12 and rtol=1e-10; these are not
+exact-theorem eligibility gates. Choose scale-appropriate numerical tolerances
+and keep them distinct from represented exact equality. The autouse cleanup
+resets selected global state; restore additional state your test changes.
 
-Coverage is a measurement, not proof of a physical invariant. With the test
-dependencies installed, generate a report using:
+Coverage is feedback, not proof of a physical invariant. With test dependencies
+installed, a selected run can generate a report:
 
 ```sh
-python -m pytest --cov=tnfr --cov-report=term-missing --cov-report=html
+python -m pytest tests/sdk --cov=tnfr --cov-report=term-missing
 ```
 
 The current project configuration does not enforce a coverage percentage.
-The [main CI workflow](.github/workflows/ci.yml) runs Python 3.10-3.13, applies
-the default pytest selection and reports coverage on Python 3.11. Consult the
-workflow files for the current checks rather than duplicating their matrices
-or results in test reports.
+
+## Retained C6 campaign reproduction
+
+The union/history report tests that reconstruct the retained B54/B55 lineage
+are marked `slow`, including tests whose shared fixtures perform that work.
+During the 2026-09-19 release check, one union-report fixture consumed more
+than 20 minutes of CPU time. This observed cost is not a runtime ceiling.
+Lightweight lineage and output-overwrite rejection tests remain in the default
+suite; the finite-state union oracles run independently of the retained campaign.
+
+Select the expensive report checks explicitly:
+
+```sh
+python -m pytest -m slow tests/physics/test_c6_winding_union_report.py tests/physics/test_c6_winding_history_report.py -q
+```
+
+For the independent small-state controls:
+
+```sh
+python -m pytest tests/physics/test_c6_carried_return_unions.py -q
+```
+
+This classification changes selection by cost, not assertions or scientific
+scope. Report the expensive campaign as unrun when omitted, and retain failures
+from earlier attempts. A passing reduced suite does not certify the historical
+report or close C6 global stability.

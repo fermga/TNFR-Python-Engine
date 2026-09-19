@@ -6,8 +6,8 @@ no EPI flow is run, and grammar or future runtime admission is not inferred.
 Fixed support is justified by checking every edge and nonedge phase gate.
 """
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
 
 import networkx as nx
 
@@ -15,7 +15,10 @@ from .._binary64 import uses_ieee_binary64_rounding
 from ..config import inject_defaults
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_THETA, ALIAS_VF
 from ..dynamics._euler_kernel import _binary64_tuple
-from ..operators._coherence_stage_kernel import DEFAULT_PHASE_LOCKING_COEFFICIENT, propose_coherence_phase
+from ..operators._coherence_stage_kernel import (
+    DEFAULT_PHASE_LOCKING_COEFFICIENT,
+    propose_coherence_phase,
+)
 from ..operators._coupling_stage_kernel import propose_coupling_stage
 from ..operators._phase_gate import resolve_u3_phase_limits
 from ..operators.factor_contracts import resolve_runtime_operator_factors
@@ -23,8 +26,10 @@ from ..types import Glyph
 from ..utils import angle_diff
 
 __all__ = [
-    "C6CouplingCoherencePhaseStep", "C6CouplingCoherencePhaseOrbit",
-    "observe_c6_coupling_coherence_phase_step", "derive_c6_coupling_coherence_phase_orbit",
+    "C6CouplingCoherencePhaseStep",
+    "C6CouplingCoherencePhaseOrbit",
+    "observe_c6_coupling_coherence_phase_step",
+    "derive_c6_coupling_coherence_phase_orbit",
 ]
 
 
@@ -46,10 +51,15 @@ def _phase_graph(phase):
     inject_defaults(graph)
     graph.graph["RANDOM_SEED"] = 17
     for node, value in enumerate(phase):
-        graph.nodes[node].update({
-            ALIAS_EPI[0]: .5, ALIAS_VF[0]: 1.0, ALIAS_THETA[0]: value,
-            ALIAS_DNFR[0]: 0.0, ALIAS_SI[0]: .5,
-        })
+        graph.nodes[node].update(
+            {
+                ALIAS_EPI[0]: 0.5,
+                ALIAS_VF[0]: 1.0,
+                ALIAS_THETA[0]: value,
+                ALIAS_DNFR[0]: 0.0,
+                ALIAS_SI[0]: 0.5,
+            }
+        )
     for edge in graph.edges:
         graph.edges[edge].update(weight=1.0, length=1.0)
     return graph
@@ -57,10 +67,16 @@ def _phase_graph(phase):
 
 def _gate_margins(graph, phase, limit):
     edges = tuple(limit - abs(angle_diff(phase[i], phase[j])) for i, j in graph.edges)
-    nonedges = tuple(abs(angle_diff(phase[i], phase[j])) - limit
-                     for i in range(6) for j in range(i + 1, 6) if not graph.has_edge(i, j))
+    nonedges = tuple(
+        abs(angle_diff(phase[i], phase[j])) - limit
+        for i in range(6)
+        for j in range(i + 1, 6)
+        if not graph.has_edge(i, j)
+    )
     if min(edges) < 0 or min(nonedges) <= 0:
-        raise ValueError("the phase projection requires all C6 edges admitted and all nonedges excluded")
+        raise ValueError(
+            "the phase projection requires all C6 edges admitted and all nonedges excluded"
+        )
     return edges, nonedges
 
 
@@ -79,7 +95,9 @@ class C6CouplingCoherencePhaseStep:
     coherence_methods: tuple[str, ...]
 
 
-def observe_c6_coupling_coherence_phase_step(*, phase: tuple[float, ...]) -> C6CouplingCoherencePhaseStep:
+def observe_c6_coupling_coherence_phase_step(
+    *, phase: tuple[float, ...]
+) -> C6CouplingCoherencePhaseStep:
     """Evaluate default all-target UM followed by simultaneous IL phase.
 
     A fresh ordered unit C6 supplies canonical default factors and topology.
@@ -100,34 +118,62 @@ def observe_c6_coupling_coherence_phase_step(*, phase: tuple[float, ...]) -> C6C
     """
     before = _phases(phase)
     if not uses_ieee_binary64_rounding():
-        raise RuntimeError("phase orbit replay requires the declared IEEE binary64 environment")
+        raise RuntimeError(
+            "phase orbit replay requires the declared IEEE binary64 environment"
+        )
     graph = _phase_graph(before)
-    if not all(graph.graph.get(key, True) for key in ("UM_BIDIRECTIONAL", "UM_FUNCTIONAL_LINKS", "UM_SYNC_VF")):
-        raise ValueError("the projection requires the declared bidirectional/default-link/unit-capacity policy")
-    factors = resolve_runtime_operator_factors(graph.graph["GLYPH_FACTORS"], Glyph.UM, graph.graph)
+    if not all(
+        graph.graph.get(key, True)
+        for key in ("UM_BIDIRECTIONAL", "UM_FUNCTIONAL_LINKS", "UM_SYNC_VF")
+    ):
+        raise ValueError(
+            "the projection requires the declared bidirectional/default-link/unit-capacity policy"
+        )
+    factors = resolve_runtime_operator_factors(
+        graph.graph["GLYPH_FACTORS"], Glyph.UM, graph.graph
+    )
     _, limit = resolve_u3_phase_limits(graph.graph, operator_code="UM")
     initial_edges, initial_nonedges = _gate_margins(graph, before, limit)
     stage = propose_coupling_stage(
-        graph, tuple(graph), factors, resolved_seed=17, node_offsets={i: i for i in graph},
+        graph,
+        tuple(graph),
+        factors,
+        resolved_seed=17,
+        node_offsets={i: i for i in graph},
     )
-    if (stage.edges or tuple(update.node for update in stage.node_updates) != tuple(graph)
-            or any(p.compatible_neighbors != tuple(graph.neighbors(p.node)) or p.link_candidates
-                   for p in stage.target_proposals)
-            or any(update.vf_after != 1.0 for update in stage.node_updates)):
-        raise RuntimeError("the default phase proposal changed the declared fixed C6 support or capacity")
+    if (
+        stage.edges
+        or tuple(update.node for update in stage.node_updates) != tuple(graph)
+        or any(
+            p.compatible_neighbors != tuple(graph.neighbors(p.node))
+            or p.link_candidates
+            for p in stage.target_proposals
+        )
+        or any(update.vf_after != 1.0 for update in stage.node_updates)
+    ):
+        raise RuntimeError(
+            "the default phase proposal changed the declared fixed C6 support or capacity"
+        )
     after_um = _phases(tuple(update.theta_after for update in stage.node_updates))
     um_edges, um_nonedges = _gate_margins(graph, after_um, limit)
     # This is construction of a second detached proposal input. No operator
     # or numerical EPI update is represented by these phase-only fixtures.
     il_graph = _phase_graph(after_um)
-    proposals = tuple(propose_coherence_phase(il_graph, i, DEFAULT_PHASE_LOCKING_COEFFICIENT)
-                      for i in il_graph)
+    proposals = tuple(
+        propose_coherence_phase(il_graph, i, DEFAULT_PHASE_LOCKING_COEFFICIENT)
+        for i in il_graph
+    )
     after_il = _phases(tuple(proposal.theta_after for proposal in proposals))
     il_edges, il_nonedges = _gate_margins(graph, after_il, limit)
     return C6CouplingCoherencePhaseStep(
-        before, after_um, after_il, float(factors["UM_theta_push"]),
-        DEFAULT_PHASE_LOCKING_COEFFICIENT, limit,
-        (initial_edges, um_edges, il_edges), (initial_nonedges, um_nonedges, il_nonedges),
+        before,
+        after_um,
+        after_il,
+        float(factors["UM_theta_push"]),
+        DEFAULT_PHASE_LOCKING_COEFFICIENT,
+        limit,
+        (initial_edges, um_edges, il_edges),
+        (initial_nonedges, um_nonedges, il_nonedges),
         tuple(proposal.method for proposal in proposals),
     )
 
@@ -157,7 +203,9 @@ class C6CouplingCoherencePhaseOrbit:
 
 
 def derive_c6_coupling_coherence_phase_orbit(
-    *, phase_states: tuple[tuple[float, ...], ...], cycle_start: int,
+    *,
+    phase_states: tuple[tuple[float, ...], ...],
+    cycle_start: int,
 ) -> C6CouplingCoherencePhaseOrbit:
     """Replay a caller-supplied path and verify its exact terminal closure.
 
@@ -170,16 +218,24 @@ def derive_c6_coupling_coherence_phase_orbit(
     periodic by this result. Public dataclasses remain detached records.
     """
     if type(phase_states) is not tuple or len(phase_states) < 2:
-        raise ValueError("a phase orbit requires an ordered path including its repeated endpoint")
+        raise ValueError(
+            "a phase orbit requires an ordered path including its repeated endpoint"
+        )
     if type(cycle_start) is not int or not 0 <= cycle_start < len(phase_states) - 1:
         raise ValueError("cycle_start must index a nonempty terminal cycle")
     states = tuple(_phases(phase) for phase in phase_states)
     if _signature(states[-1]) != _signature(states[cycle_start]):
-        raise ValueError("the terminal phase tuple must exactly repeat the declared cycle start")
+        raise ValueError(
+            "the terminal phase tuple must exactly repeat the declared cycle start"
+        )
     steps = []
     for before, expected in zip(states[:-1], states[1:], strict=True):
         step = observe_c6_coupling_coherence_phase_step(phase=before)
         if _signature(step.phase_after_coherence) != _signature(expected):
-            raise ValueError("supplied phase transition differs from the production proposal replay")
+            raise ValueError(
+                "supplied phase transition differs from the production proposal replay"
+            )
         steps.append(step)
-    return C6CouplingCoherencePhaseOrbit(states, tuple(steps), cycle_start, len(steps) - cycle_start)
+    return C6CouplingCoherencePhaseOrbit(
+        states, tuple(steps), cycle_start, len(steps) - cycle_start
+    )

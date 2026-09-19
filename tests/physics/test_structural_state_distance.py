@@ -11,7 +11,6 @@ from tnfr.physics import (
     fixed_topology_structural_state_distance,
 )
 
-
 SCALES = StructuralChannelScales(
     epi=2.0,
     frequency=0.5,
@@ -178,9 +177,7 @@ def test_symmetry_and_triangle_inequality_hold_on_finite_fixture():
     third = _populate(nx.path_graph(4), offset=-0.2)
     second.nodes[0]["theta"] = 2.0 * math.pi - 0.1
     third.nodes[3]["delta_nfr"] += 0.15
-    third.nodes[3]["dEPI_dt"] = (
-        third.nodes[3]["nu_f"] * third.nodes[3]["delta_nfr"]
-    )
+    third.nodes[3]["dEPI_dt"] = third.nodes[3]["nu_f"] * third.nodes[3]["delta_nfr"]
     first.edges[0, 1]["weight"] = 0.5
     second.edges[0, 1]["weight"] = 1.25
     third.edges[0, 1]["weight"] = 1.75
@@ -259,9 +256,7 @@ def test_persistent_node_labels_can_expose_an_isomorphic_support_change():
         )
 
     assert _distance(left, right).distance == pytest.approx(0.0)
-    labelled = _distance(
-        left, right, node_label_attributes=("persistent_id",)
-    )
+    labelled = _distance(left, right, node_label_attributes=("persistent_id",))
     assert labelled.distance > 0.0
     assert dict(labelled.minimizing_mapping) == {0: 0, 1: 1}
 
@@ -409,9 +404,7 @@ def test_extreme_finite_phase_representatives_do_not_overflow():
 
     assert math.isfinite(distance)
     assert 0.0 <= distance <= math.pi
-    assert distance == pytest.approx(
-        circular_phase_distance(-1.0e308, 1.0e308)
-    )
+    assert distance == pytest.approx(circular_phase_distance(-1.0e308, 1.0e308))
 
 
 def test_unrepresentable_scaled_distance_reports_range_not_topology_failure():

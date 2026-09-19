@@ -12,9 +12,9 @@ mesh convergence, solver order, repeated runtime stability or future behavior.
 
 from __future__ import annotations
 
+import json
 from collections import deque
 from fractions import Fraction
-import json
 from typing import Any
 
 import networkx as nx
@@ -24,10 +24,7 @@ from tnfr.operators.event_timing import (
     build_operator_event_schedule,
     build_physical_flow_partition,
 )
-from tnfr.physics.event_remesh_reference import (
-    observe_p2_event_remesh_reference_family,
-)
-
+from tnfr.physics.event_remesh_reference import observe_p2_event_remesh_reference_family
 
 MESH_DURATIONS = (
     (0.25, 0.25),
@@ -158,9 +155,7 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
                 "beta_scaled_post_error_upper_bound": float(
                     mesh.exact_ideal_post_remesh_error_upper_bound
                 ),
-                "runtime_residual_linf": _fraction_text(
-                    mesh.exact_total_residual_linf
-                ),
+                "runtime_residual_linf": _fraction_text(mesh.exact_total_residual_linf),
                 "runtime_post_error_upper_bound": float(
                     mesh.exact_runtime_post_remesh_error_upper_bound
                 ),
@@ -182,9 +177,7 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
             "changing_support_or_metric": (
                 reference.changing_support_or_metric_certified
             ),
-            "generic_mesh_convergence": (
-                reference.generic_mesh_convergence_certified
-            ),
+            "generic_mesh_convergence": (reference.generic_mesh_convergence_certified),
             "solver_order": reference.solver_order_certified,
             "repeated_runtime_stability": (
                 reference.repeated_runtime_stability_certified

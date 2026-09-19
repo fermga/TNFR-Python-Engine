@@ -175,9 +175,7 @@ def propose_scale_operator(
 
     factor_key = "VAL_scale" if glyph is Glyph.VAL else "NUL_scale"
     resolved_factor = validate_glyph_factor(factor_key, factor)
-    resolved_vf_before = _finite_scalar(
-        vf_before, "nu_f before scale operator"
-    )
+    resolved_vf_before = _finite_scalar(vf_before, "nu_f before scale operator")
     vf_after = _finite_scalar(
         resolved_vf_before * resolved_factor,
         f"{glyph.value} nu_f proposal",

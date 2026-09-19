@@ -323,9 +323,7 @@ def transient_gain_in_norm(
     for t in np.linspace(0.0, t_max, samples):
         gain = max(
             gain,
-            induced_operator_norm(
-                matrix_exponential(a * t), kind=kind, pi=pi
-            ),
+            induced_operator_norm(matrix_exponential(a * t), kind=kind, pi=pi),
         )
     return gain
 
@@ -359,8 +357,12 @@ def is_stationary_contraction(
 
 
 def net_reorganization(
-    generator, x0, *, kind: NormKind = NormKind.EUCLIDEAN,
-    pi: np.ndarray | None = None, t_infinity: float = 60.0,
+    generator,
+    x0,
+    *,
+    kind: NormKind = NormKind.EUCLIDEAN,
+    pi: np.ndarray | None = None,
+    t_infinity: float = 60.0,
 ) -> float:
     r"""Net displacement ``‖x(∞) − x(0)‖`` — the norm of the **signed** integral
     ``∫₀^∞ ẋ dt = x(∞) − x(0)`` (reorganizations may cancel)."""
@@ -371,8 +373,13 @@ def net_reorganization(
 
 
 def total_reorganization(
-    generator, x0, *, kind: NormKind = NormKind.EUCLIDEAN,
-    pi: np.ndarray | None = None, t_max: float = 60.0, samples: int = 400,
+    generator,
+    x0,
+    *,
+    kind: NormKind = NormKind.EUCLIDEAN,
+    pi: np.ndarray | None = None,
+    t_max: float = 60.0,
+    samples: int = 400,
 ) -> float:
     r"""Sampled structural variation on ``[0, t_max]``.
 
@@ -384,8 +391,7 @@ def total_reorganization(
     x0 = np.asarray(x0, dtype=float)
     ts = np.linspace(0.0, t_max, samples)
     speeds = [
-        state_norm(a @ (matrix_exponential(a * t) @ x0), kind=kind, pi=pi)
-        for t in ts
+        state_norm(a @ (matrix_exponential(a * t) @ x0), kind=kind, pi=pi) for t in ts
     ]
     return float(trapezoid(speeds, ts))
 
@@ -410,8 +416,12 @@ class U2IntegralReadings:
 
 
 def u2_integral_readings(
-    adjacency, x0, *, kind: NormKind = NormKind.EUCLIDEAN,
-    t_max: float = 60.0, samples: int = 400,
+    adjacency,
+    x0,
+    *,
+    kind: NormKind = NormKind.EUCLIDEAN,
+    t_max: float = 60.0,
+    samples: int = 400,
 ) -> U2IntegralReadings:
     r"""Both U2 integral readings for the diffusion of ``x0`` on the digraph.
 
@@ -419,13 +429,8 @@ def u2_integral_readings(
     canonical U2 quantity (the decision is gated in AGENTS.md §6).
     """
     generator = -directed_rw_laplacian(adjacency)
-    pi = (
-        stationary_distribution(adjacency)
-        if kind is NormKind.STATIONARY else None
-    )
-    net = net_reorganization(
-        generator, x0, kind=kind, pi=pi, t_infinity=t_max
-    )
+    pi = stationary_distribution(adjacency) if kind is NormKind.STATIONARY else None
+    net = net_reorganization(generator, x0, kind=kind, pi=pi, t_infinity=t_max)
     total = total_reorganization(
         generator, x0, kind=kind, pi=pi, t_max=t_max, samples=samples
     )
@@ -465,9 +470,7 @@ def nonconsensus_abscissa(adjacency, *, tol: float | None = None) -> float:
     return float(np.min(nonzero.real))
 
 
-def sustained_gain(
-    adjacency, *, t_max: float = 40.0, samples: int = 200
-) -> float:
+def sustained_gain(adjacency, *, t_max: float = 40.0, samples: int = 200) -> float:
     r"""``M = sup_{s≥0} ‖e^{−sL} Q‖₂`` — the sustained non-consensus gain.
 
     ``M = 1`` for a normal generator (contraction); ``M > 1`` for a non-normal
@@ -478,14 +481,18 @@ def sustained_gain(
     gain = 0.0
     for s in np.linspace(0.0, t_max, samples):
         gain = max(
-            gain, float(np.linalg.norm(matrix_exponential(-laplacian * s) @ q,
-                                       2))
+            gain, float(np.linalg.norm(matrix_exponential(-laplacian * s) @ q, 2))
         )
     return gain
 
 
 def structural_time(vf: Callable[[float], float], t_grid) -> np.ndarray:
-    r"""Structural time ``s(t) = ∫₀^t ν_f(τ) dτ`` (cumulative trapezoid)."""
+    r"""Capacity exposure ``s(t) = ∫_{t_grid[0]}^t ν_f(τ) dτ``.
+
+    This cumulative trapezoidal approximation starts at zero at the supplied
+    grid origin. It is not a phase-synchronization clock or a physical-time
+    calibration.
+    """
     t = np.asarray(t_grid, dtype=float)
     vals = np.array([float(vf(ti)) for ti in t], dtype=float)
     ds = (vals[1:] + vals[:-1]) / 2.0 * np.diff(t)
@@ -511,9 +518,7 @@ def _rk4_transport(laplacian, x0, vf, t_grid) -> np.ndarray:
     return np.array(out)
 
 
-def clock_change_residual(
-    adjacency, x0, vf: Callable[[float], float], t_grid
-) -> float:
+def clock_change_residual(adjacency, x0, vf: Callable[[float], float], t_grid) -> float:
     r"""``max_t ‖x_RK4(t) − e^{−s(t)L} x₀‖`` for ``ẋ = −ν_f(t) L x``.
 
     A numerical (non-exponential) integrator of the time-varying ODE converges to
@@ -524,9 +529,7 @@ def clock_change_residual(
     x_rk4 = _rk4_transport(laplacian, x0, vf, t)
     s = structural_time(vf, t)
     x0v = np.asarray(x0, dtype=float)
-    x_exact = np.array(
-        [matrix_exponential(-laplacian * si) @ x0v for si in s]
-    )
+    x_exact = np.array([matrix_exponential(-laplacian * si) @ x0v for si in s])
     return float(np.max(np.abs(x_rk4 - x_exact)))
 
 
@@ -547,12 +550,11 @@ def reorganization_time_invariance_residual(
     s = structural_time(vf, t)
 
     def speed(si):
-        return float(np.linalg.norm(
-            laplacian @ (matrix_exponential(-laplacian * si) @ q @ x0v)
-        ))
+        return float(
+            np.linalg.norm(laplacian @ (matrix_exponential(-laplacian * si) @ q @ x0v))
+        )
 
-    lhs = float(trapezoid([float(vf(ti)) * speed(si)
-                           for ti, si in zip(t, s)], t))
+    lhs = float(trapezoid([float(vf(ti)) * speed(si) for ti, si in zip(t, s)], t))
     s_grid = np.linspace(0.0, s[-1], len(t))
     rhs = float(trapezoid([speed(si) for si in s_grid], s_grid))
     return abs(lhs - rhs) / max(rhs, np.finfo(float).eps)
@@ -577,8 +579,9 @@ def total_variation_bound(
     x0v = np.asarray(x0, dtype=float)
     ts = np.linspace(0.0, t_max, samples)
     speeds = [
-        float(np.linalg.norm(
-            laplacian @ (matrix_exponential(-laplacian * s) @ q @ x0v)))
+        float(
+            np.linalg.norm(laplacian @ (matrix_exponential(-laplacian * s) @ q @ x0v))
+        )
         for s in ts
     ]
     j = float(trapezoid(speeds, ts))
@@ -614,7 +617,12 @@ def dissipative_envelope_bound(adjacency, x0) -> float:
 
 @dataclass(frozen=True)
 class StructuralTimeCertificate:
-    """Certificate of the scalar-frequency structural-time theorem."""
+    """Numerical checks of the scalar-frequency structural-time theorem.
+
+    ``observation_window_structural`` is the accumulated capacity exposure
+    from the supplied grid origin, not its last external time coordinate.
+    ``total_reorganization`` is a quadrature over that exposure window.
+    """
 
     nonconsensus_abscissa: float
     sustained_gain: float  # M
@@ -634,16 +642,16 @@ def certify_structural_time(
     omega = nonconsensus_abscissa(adjacency)
     m = sustained_gain(adjacency)
     clock = clock_change_residual(adjacency, x0, vf, t_grid)
-    invariance = reorganization_time_invariance_residual(
-        adjacency, x0, vf, t_grid
-    )
+    invariance = reorganization_time_invariance_residual(adjacency, x0, vf, t_grid)
     t = np.asarray(t_grid, dtype=float)
     if t.ndim != 1 or len(t) < 2 or not np.all(np.isfinite(t)):
         raise ValueError("t_grid must contain at least two finite times")
     if np.any(np.diff(t) < 0.0):
         raise ValueError("t_grid must be nondecreasing")
+    exposure = structural_time(vf, t)
+    horizon = float(exposure[-1])
     j, bound, holds = total_variation_bound(
-        adjacency, x0, t_max=float(t[-1]), samples=max(2, len(t))
+        adjacency, x0, t_max=horizon, samples=max(2, len(t))
     )
     return StructuralTimeCertificate(
         nonconsensus_abscissa=omega,
@@ -653,6 +661,6 @@ def certify_structural_time(
         total_reorganization=j,
         total_reorganization_bound=bound,
         bound_holds=holds,
-        observation_window_structural=float(t[-1]),
+        observation_window_structural=horizon,
         tail_status="UNASSESSED_FINITE_WINDOW",
     )

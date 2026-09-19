@@ -68,9 +68,7 @@ from .._remesh_contract import (
 )
 from ..dynamics.structural_clip import structural_clip
 from ..errors import TNFRValueError
-from ..operators._delayed_remesh_kernel import (
-    _evaluate_delayed_remesh_binary64,
-)
+from ..operators._delayed_remesh_kernel import _evaluate_delayed_remesh_binary64
 from ..utils._structural_signature import (
     proof_stamps_are_identical,
     structural_proof_signature,
@@ -101,9 +99,7 @@ Binary64Pair = tuple[float, float]
 
 _PAIR_PROOF_VERSION = "binary64_remesh_pair_relative_defect_v1"
 _CLASS_PROOF_VERSION = "uniform_alpha_one_hard_clip_remesh_class_v1"
-_HALF_CLASS_PROOF_VERSION = (
-    "uniform_half_alpha_antisymmetric_hard_clip_remesh_class_v1"
-)
+_HALF_CLASS_PROOF_VERSION = "uniform_half_alpha_antisymmetric_hard_clip_remesh_class_v1"
 _PAIR_SCOPE = (
     "One exact pairwise comparison between the exact-rational REMESH head and "
     "the production nested binary64 evaluation followed by the configured "
@@ -217,8 +213,9 @@ def _round_half_integer_ties_even(value: int) -> int:
     return sign * quotient
 
 
-def _enumerate_half_class_subnormal_core(
-) -> tuple[Fraction, tuple[int, int, int], int, int]:
+def _enumerate_half_class_subnormal_core() -> (
+    tuple[Fraction, tuple[int, int, int], int, int]
+):
     """Exhaust the exact ``sqrt(D) < 11*s`` integer reduction."""
 
     maximum: Fraction | None = None
@@ -229,11 +226,7 @@ def _enumerate_half_class_subnormal_core(
         for local in range(-10, 11):
             for global_ in range(-7, 8):
                 candidate_count += 1
-                denominator = (
-                    current * current
-                    + local * local
-                    + 2 * global_ * global_
-                )
+                denominator = current * current + local * local + 2 * global_ * global_
                 if denominator == 0 or denominator >= 121:
                     continue
                 admissible_count += 1
@@ -373,16 +366,12 @@ def _pair_payload_types_are_canonical(value: Any) -> bool:
         ):
             return False
         if not all(
-            _stored_binary64_pair_is_canonical(
-                object.__getattribute__(value, name)
-            )
+            _stored_binary64_pair_is_canonical(object.__getattribute__(value, name))
             for name in binary64_pair_fields
         ):
             return False
         if not all(
-            _stored_exact_pair_is_canonical(
-                object.__getattribute__(value, name)
-            )
+            _stored_exact_pair_is_canonical(object.__getattribute__(value, name))
             for name in exact_pair_fields
         ):
             return False
@@ -476,9 +465,7 @@ def _pair_values(
     local_q = _exact_pair(local)
     global_q = _exact_pair(global_)
     ideal = tuple(
-        beta * current_value
-        + gamma * local_value
-        + delta * global_value
+        beta * current_value + gamma * local_value + delta * global_value
         for current_value, local_value, global_value in zip(
             current_q,
             local_q,
@@ -535,9 +522,7 @@ def _pair_values(
     minimum_eta = (
         Fraction(0)
         if denominator == 0 and total_defect <= 0
-        else None
-        if denominator == 0
-        else max(Fraction(0), ratio)
+        else None if denominator == 0 else max(Fraction(0), ratio)
     )
     clipping_intervened = tuple(
         bounded_value != raw_value
@@ -546,10 +531,7 @@ def _pair_values(
     conditions = (
         (
             "canonical_nonnegative_coefficient_partition",
-            beta >= 0
-            and gamma >= 0
-            and delta >= 0
-            and beta + gamma + delta == 1,
+            beta >= 0 and gamma >= 0 and delta >= 0 and beta + gamma + delta == 1,
         ),
         ("all_inputs_are_finite_binary64", all(map(math.isfinite, all_inputs))),
         (
@@ -709,9 +691,7 @@ class Binary64RemeshPairRelativeDefectObservation:
                 epi_max=binary64_epi_max,
                 clip_mode=clip_mode,
             )
-            expected_value = Binary64RemeshPairRelativeDefectObservation(
-                **expected
-            )
+            expected_value = Binary64RemeshPairRelativeDefectObservation(**expected)
             return proof_stamps_are_identical(
                 _proof_stamp(
                     self,
@@ -741,9 +721,7 @@ class Binary64RemeshPairRelativeDefectObservation:
     @property
     def failed_conditions(self) -> tuple[str, ...]:
         if not self._proof_fields_are_intact():
-            return (
-                "binary64_remesh_pair_relative_defect_proof_fields_intact",
-            )
+            return ("binary64_remesh_pair_relative_defect_proof_fields_intact",)
         return tuple(name for name, passed in self.conditions if not passed)
 
     @property
@@ -796,9 +774,7 @@ def observe_binary64_remesh_pair_relative_defect(
     except TNFRValueError:
         raise
     except BaseException as exc:
-        raise TNFRValueError(
-            "invalid binary64 REMESH pair observation inputs"
-        ) from exc
+        raise TNFRValueError("invalid binary64 REMESH pair observation inputs") from exc
     value = Binary64RemeshPairRelativeDefectObservation(**values)
     result = _seal(value, type(value), _PAIR_PROOF_VERSION)
     if not result.pair_relative_defect_observation_certified:
@@ -845,13 +821,8 @@ def _class_conditions(
     remesh: UniformRemeshHistoryStabilityCertificate,
 ) -> tuple[tuple[str, bool], ...]:
     required = max(configuration.tau_local, configuration.tau_global) + 1
-    node_signatures = tuple(
-        structural_proof_signature(node) for node in node_order
-    )
-    support_valid = bool(
-        node_order
-        and len(node_order) == len(set(node_signatures))
-    )
+    node_signatures = tuple(structural_proof_signature(node) for node in node_order)
+    support_valid = bool(node_order and len(node_order) == len(set(node_signatures)))
     metric_valid = bool(
         len(metric) == len(node_order)
         and all(type(value) is Fraction and value > 0 for value in metric)
@@ -904,9 +875,7 @@ class UniformAlphaOneHardClipRemeshClassCertificate:
     epi_max: Fraction
     alpha: Fraction
     clip_mode: Literal["hard"]
-    remesh_certificate: UniformRemeshHistoryStabilityCertificate = field(
-        repr=False
-    )
+    remesh_certificate: UniformRemeshHistoryStabilityCertificate = field(repr=False)
     exact_uniform_relative_defect_upper_bound: Fraction
     conditions: tuple[tuple[str, bool], ...]
     _proof_stamp: tuple[Any, ...] = field(default=(), repr=False, compare=False)
@@ -948,8 +917,7 @@ class UniformAlphaOneHardClipRemeshClassCertificate:
                 or type(self.epi_max) is not Fraction
                 or type(self.alpha) is not Fraction
                 or type(self.clip_mode) is not str
-                or type(self.exact_uniform_relative_defect_upper_bound)
-                is not Fraction
+                or type(self.exact_uniform_relative_defect_upper_bound) is not Fraction
                 or type(configuration.tau_local) is not int
                 or configuration.tau_local <= 0
                 or type(configuration.tau_global) is not int
@@ -1052,9 +1020,7 @@ class UniformAlphaOneHardClipRemeshClassCertificate:
                 rows = tuple(list.__iter__(history))
         except BaseException:
             return False
-        if not (
-            self.required_history_length <= len(rows) <= self.history_maxlen
-        ):
+        if not (self.required_history_length <= len(rows) <= self.history_maxlen):
             return False
         width = len(self.node_order)
         lower = self.configuration.epi_min
@@ -1125,9 +1091,7 @@ def certify_alpha_one_hard_clip_remesh_class(
     except TNFRValueError:
         raise
     except BaseException as exc:
-        raise TNFRValueError(
-            "invalid alpha-one REMESH class inputs"
-        ) from exc
+        raise TNFRValueError("invalid alpha-one REMESH class inputs") from exc
     remesh = certify_uniform_remesh_history_stability(
         alpha=Fraction(1),
         tau_local=configuration.tau_local,
@@ -1205,12 +1169,9 @@ def _half_class_conditions(
     witness: Binary64RemeshPairRelativeDefectObservation,
 ) -> tuple[tuple[str, bool], ...]:
     required = max(configuration.tau_local, configuration.tau_global) + 1
-    node_signatures = tuple(
-        structural_proof_signature(node) for node in node_order
-    )
+    node_signatures = tuple(structural_proof_signature(node) for node in node_order)
     support_valid = bool(
-        len(node_order) == 2
-        and len(node_order) == len(set(node_signatures))
+        len(node_order) == 2 and len(node_order) == len(set(node_signatures))
     )
     metric_valid = bool(
         len(metric) == 2
@@ -1256,8 +1217,7 @@ def _half_class_conditions(
             4.0 * _MIN_BINARY64_SUBNORMAL,
         )
         and witness.exact_relative_signed_defect_ratio == _HALF_CLASS_ETA
-        and witness.exact_minimum_nonnegative_relative_defect_bound
-        == _HALF_CLASS_ETA
+        and witness.exact_minimum_nonnegative_relative_defect_bound == _HALF_CLASS_ETA
     )
     return (
         ("ordered_support_is_exactly_two_unique_nodes", support_valid),
@@ -1285,8 +1245,7 @@ def _half_class_conditions(
         (
             "ieee_sign_symmetry_preserves_numeric_antisymmetry",
             _runtime_uses_required_binary64_rounding_model()
-            and _round_half_integer_ties_even(-3)
-            == -_round_half_integer_ties_even(3),
+            and _round_half_integer_ties_even(-3) == -_round_half_integer_ties_even(3),
         ),
         (
             "symmetric_hard_clip_preserves_antisymmetry_and_interval",
@@ -1294,21 +1253,18 @@ def _half_class_conditions(
         ),
         (
             "pairwise_variance_identity_cancels_every_positive_metric_factor",
-            metric_valid
-            and metric[0] * metric[1] / 2 > 0,
+            metric_valid and metric[0] * metric[1] / 2 > 0,
         ),
         (
             "analytic_large_norm_tail_is_strictly_below_uniform_eta",
-            _HALF_CLASS_TAIL_ERROR_RATIO
-            < _HALF_CLASS_CLEAN_TAIL_ERROR_RATIO_BOUND
+            _HALF_CLASS_TAIL_ERROR_RATIO < _HALF_CLASS_CLEAN_TAIL_ERROR_RATIO_BOUND
             and 4
             * (
                 _HALF_CLASS_CLEAN_TAIL_ERROR_RATIO_BOUND
                 + _HALF_CLASS_CLEAN_TAIL_ERROR_RATIO_BOUND**2
             )
             == _HALF_CLASS_CLEAN_TAIL_RELATIVE_DEFECT_BOUND
-            and _HALF_CLASS_CLEAN_TAIL_RELATIVE_DEFECT_BOUND
-            < _HALF_CLASS_ETA,
+            and _HALF_CLASS_CLEAN_TAIL_RELATIVE_DEFECT_BOUND < _HALF_CLASS_ETA,
         ),
         (
             "exact_subnormal_core_enumeration_has_sharp_uniform_eta",
@@ -1331,11 +1287,9 @@ def _half_class_conditions(
         ),
         (
             "four_ninths_example_has_positive_exact_robust_margin",
-            _HALF_CLASS_EXAMPLE_Q
-            * (Fraction(1, 1) + _HALF_CLASS_ETA)
+            _HALF_CLASS_EXAMPLE_Q * (Fraction(1, 1) + _HALF_CLASS_ETA)
             == _HALF_CLASS_EXAMPLE_Q_EFF
-            and Fraction(1, 1) - _HALF_CLASS_EXAMPLE_Q_EFF
-            == _HALF_CLASS_EXAMPLE_MARGIN
+            and Fraction(1, 1) - _HALF_CLASS_EXAMPLE_Q_EFF == _HALF_CLASS_EXAMPLE_MARGIN
             and _HALF_CLASS_EXAMPLE_MARGIN > 0,
         ),
     )
@@ -1357,9 +1311,7 @@ class UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate:
     epi_max: Fraction
     alpha: Fraction
     clip_mode: Literal["hard"]
-    remesh_certificate: UniformRemeshHistoryStabilityCertificate = field(
-        repr=False
-    )
+    remesh_certificate: UniformRemeshHistoryStabilityCertificate = field(repr=False)
     exact_uniform_relative_defect_upper_bound: Fraction
     exact_tail_error_linear_coefficient: Fraction
     exact_tail_error_absolute_coefficient: Fraction
@@ -1372,9 +1324,7 @@ class UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate:
     example_schedule_energy_gain_upper_bound: Fraction
     exact_example_effective_head_energy_gain_upper_bound: Fraction
     exact_example_normalized_block_margin_lower_bound: Fraction
-    sharpness_witness: Binary64RemeshPairRelativeDefectObservation = field(
-        repr=False
-    )
+    sharpness_witness: Binary64RemeshPairRelativeDefectObservation = field(repr=False)
     conditions: tuple[tuple[str, bool], ...]
     _proof_stamp: tuple[Any, ...] = field(default=(), repr=False, compare=False)
 
@@ -1418,13 +1368,10 @@ class UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate:
                 or len(node_order) != 2
                 or type(metric) is not tuple
                 or len(metric) != 2
-                or not all(
-                    type(value) is Fraction and value > 0 for value in metric
-                )
+                or not all(type(value) is Fraction and value > 0 for value in metric)
                 or sum(metric, Fraction(0)) != 1
                 or type(remesh) is not UniformRemeshHistoryStabilityCertificate
-                or type(witness)
-                is not Binary64RemeshPairRelativeDefectObservation
+                or type(witness) is not Binary64RemeshPairRelativeDefectObservation
                 or not _strict_conditions(
                     conditions,
                     _HALF_CLASS_CONDITION_NAMES,
@@ -1492,14 +1439,12 @@ class UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate:
                 and self.required_history_length
                 == max(self.tau_local, self.tau_global) + 1
                 and self.epi_bound == Fraction.from_float(canonical.epi_max)
-                and self.epi_bound
-                >= Fraction.from_float(_MIN_HALF_CLASS_BOUND)
+                and self.epi_bound >= Fraction.from_float(_MIN_HALF_CLASS_BOUND)
                 and self.epi_min == -self.epi_bound
                 and self.epi_max == self.epi_bound
                 and self.alpha == Fraction(1, 2)
                 and self.clip_mode == "hard"
-                and self.exact_uniform_relative_defect_upper_bound
-                == _HALF_CLASS_ETA
+                and self.exact_uniform_relative_defect_upper_bound == _HALF_CLASS_ETA
                 and self.exact_tail_error_linear_coefficient
                 == _HALF_CLASS_TAIL_ERROR_LINEAR_COEFFICIENT
                 and self.exact_tail_error_absolute_coefficient
@@ -1508,12 +1453,10 @@ class UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate:
                 == _HALF_CLASS_TAIL_ERROR_RATIO
                 and self.exact_tail_relative_defect_upper_bound
                 == _HALF_CLASS_TAIL_RELATIVE_DEFECT_BOUND
-                and self.finite_core_candidate_count
-                == _HALF_CLASS_CORE_CANDIDATE_COUNT
+                and self.finite_core_candidate_count == _HALF_CLASS_CORE_CANDIDATE_COUNT
                 and self.finite_core_admissible_count
                 == _HALF_CLASS_CORE_ADMISSIBLE_COUNT
-                and self.finite_core_maximizer_amplitudes
-                == _HALF_CLASS_CORE_MAXIMIZER
+                and self.finite_core_maximizer_amplitudes == _HALF_CLASS_CORE_MAXIMIZER
                 and self.exact_strict_schedule_gain_threshold
                 == _HALF_CLASS_STRICT_Q_THRESHOLD
                 and self.example_schedule_energy_gain_upper_bound
@@ -1601,9 +1544,7 @@ class UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate:
                 rows = tuple(list.__iter__(history))
         except BaseException:
             return False
-        if not (
-            self.required_history_length <= len(rows) <= self.history_maxlen
-        ):
+        if not (self.required_history_length <= len(rows) <= self.history_maxlen):
             return False
         lower = self.configuration.epi_min
         upper = self.configuration.epi_max
@@ -1700,9 +1641,7 @@ def certify_half_alpha_antisymmetric_hard_clip_remesh_class(
             tau_local=tau_local,
             tau_global=tau_global,
             alpha=0.5,
-            alpha_source=(
-                "half_alpha_antisymmetric_hard_clip_class_certificate"
-            ),
+            alpha_source=("half_alpha_antisymmetric_hard_clip_class_certificate"),
             epi_min=-bound,
             epi_max=bound,
             clip_mode="hard",
@@ -1751,18 +1690,12 @@ def certify_half_alpha_antisymmetric_hard_clip_remesh_class(
         clip_mode="hard",
         remesh_certificate=remesh,
         exact_uniform_relative_defect_upper_bound=_HALF_CLASS_ETA,
-        exact_tail_error_linear_coefficient=(
-            _HALF_CLASS_TAIL_ERROR_LINEAR_COEFFICIENT
-        ),
+        exact_tail_error_linear_coefficient=(_HALF_CLASS_TAIL_ERROR_LINEAR_COEFFICIENT),
         exact_tail_error_absolute_coefficient=(
             _HALF_CLASS_TAIL_ERROR_ABSOLUTE_COEFFICIENT
         ),
-        exact_tail_error_ratio_at_eleven_subnormals=(
-            _HALF_CLASS_TAIL_ERROR_RATIO
-        ),
-        exact_tail_relative_defect_upper_bound=(
-            _HALF_CLASS_TAIL_RELATIVE_DEFECT_BOUND
-        ),
+        exact_tail_error_ratio_at_eleven_subnormals=(_HALF_CLASS_TAIL_ERROR_RATIO),
+        exact_tail_relative_defect_upper_bound=(_HALF_CLASS_TAIL_RELATIVE_DEFECT_BOUND),
         finite_core_candidate_count=_HALF_CLASS_CORE_CANDIDATE_COUNT,
         finite_core_admissible_count=_HALF_CLASS_CORE_ADMISSIBLE_COUNT,
         finite_core_maximizer_amplitudes=_HALF_CLASS_CORE_MAXIMIZER,
@@ -1771,16 +1704,13 @@ def certify_half_alpha_antisymmetric_hard_clip_remesh_class(
         exact_example_effective_head_energy_gain_upper_bound=(
             _HALF_CLASS_EXAMPLE_Q_EFF
         ),
-        exact_example_normalized_block_margin_lower_bound=(
-            _HALF_CLASS_EXAMPLE_MARGIN
-        ),
+        exact_example_normalized_block_margin_lower_bound=(_HALF_CLASS_EXAMPLE_MARGIN),
         sharpness_witness=witness,
         conditions=conditions,
     )
     result = _seal(value, type(value), _HALF_CLASS_PROOF_VERSION)
     if not result.half_alpha_antisymmetric_hard_clip_class_certificate_certified:
         raise RuntimeError(
-            "constructed half-alpha antisymmetric REMESH class proof is "
-            "inconsistent"
+            "constructed half-alpha antisymmetric REMESH class proof is " "inconsistent"
         )
     return result

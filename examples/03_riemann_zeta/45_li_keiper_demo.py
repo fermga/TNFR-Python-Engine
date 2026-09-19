@@ -1,27 +1,28 @@
-"""Example 45: Li-Keiper positivity criterion via TNFR resonance spectrum (P16).
+"""Example 45: finite Li-Keiper zero-sum comparisons (P16).
 
 Li's criterion (Xian-Jin Li, 1997) states that the Riemann Hypothesis is
 equivalent to the positivity of every Li-Keiper coefficient
 
     lambda_n = sum_rho [1 - (1 - 1/rho)^n],   n = 1, 2, 3, ...
 
-This demo computes lambda_n for n = 1..N using:
+This demo computes truncated sums for n = 1..N using:
 
   * the classical zeros provided by mpmath.zetazero (reference);
-  * optionally, the resonance peaks detected on the critical line by the
-    P13 analytic-continuation scan (TNFR-native).
+  * optionally, peak ordinates from the P13 classical analytic-continuation
+    scan, explicitly placed on the critical line.
 
-A negative lambda_n at any index would falsify RH. The numerical
-positivity observed here (matching Voros 2003 and Bombieri-Lagarias 1999
-through ~10^5 coefficients) is therefore a RH-equivalent diagnostic
-expressed entirely in TNFR-friendly terms.
+For rho = 1/2 + i*t, abs(1 - 1/rho) = 1. Every exact conjugate-pair
+contribution is therefore nonnegative, even if t is not a zero ordinate.
+The reported signs do not independently validate the scan or zero location.
 
-Honesty disclaimer
-------------------
-P16 does NOT prove RH. A finite verification of lambda_n > 0 for
-n = 1..N proves RH only in the limit N -> infinity with rigorous
-truncation control of the zero-sum. This example provides a numerical
-witness, not a proof.
+Scope
+-----
+No omitted-zero or rounding enclosure is supplied. A finite sum's sign is
+not a certified sign of the complete Li coefficient. Negative numerical
+output would require an input/arithmetic investigation, not refute RH.
+Compatibility labels such as certificate and lambda_n retain this finite
+scope. No nodal trajectory, independent zero prediction or physical model
+is implemented here.
 """
 
 from __future__ import annotations
@@ -47,12 +48,13 @@ def section_1_classical_reference() -> LiKeiperCertificate:
     print()
     print(cert.summary())
     print()
-    print("First 10 Li-Keiper coefficients:")
+    print("First 10 truncated Li-Keiper sums:")
     for n in range(1, 11):
         print(f"  lambda_{n:<2d} = {cert.lambda_classical[n - 1]:+.6e}")
     print()
     print(
-        "Positivity preserved for every n in [1, 30]: " f"{cert.positivity_classical}"
+        "Computed truncated sums positive for n in [1, 30]: "
+        f"{cert.positivity_classical}"
     )
     return cert
 
@@ -74,7 +76,8 @@ def section_2_extended_range() -> LiKeiperCertificate:
     print()
     print(f"min_n lambda_n = {float(cert.lambda_classical.min()):+.6e}")
     print(
-        "All coefficients > 0 -> consistent with RH " "(necessary but not sufficient)."
+        "These critical-line inputs give nonnegative exact paired terms; "
+        "the finite sign check does not independently test RH."
     )
     return cert
 
@@ -82,14 +85,14 @@ def section_2_extended_range() -> LiKeiperCertificate:
 def section_3_tnfr_comparison() -> None:
     _print_section("Section 3 - TNFR resonance peaks vs classical zeros (optional)")
     print(
-        "Re-running with compare_tnfr=True: zeros are taken from the P13\n"
-        "critical-line resonance-pole scan on t in [10, 80] and the\n"
-        "Li-Keiper coefficients are recomputed from those peaks."
+        "Re-running with compare_tnfr=True: P13 peak ordinates from the\n"
+        "critical-line scan on t in [10, 80] are assigned real part 1/2;\n"
+        "the finite conjugate-pair sums are recomputed from those coordinates."
     )
     print(
         "NOTE: the TNFR scan covers a much smaller t-window than mpmath\n"
-        "(150 zeros), so the *values* differ by truncation; the *signs*\n"
-        "must remain positive."
+        "(the supplied zero list), so values reflect different truncations.\n"
+        "Nonnegative exact terms follow from the imposed real part, not a zero test."
     )
     cert = verify_li_keiper_criterion(
         n_max=20,
@@ -115,32 +118,27 @@ def section_3_tnfr_comparison() -> None:
 def section_4_interpretation() -> None:
     _print_section("Section 4 - Operational interpretation")
     print(
-        "What P16 establishes:\n"
-        "  * Li's criterion is RH-equivalent: lambda_n > 0 for all n>=1\n"
-        "    is necessary and sufficient for the Riemann Hypothesis.\n"
-        "  * The TNFR resonance spectrum (P13) reproduces the same\n"
-        "    positivity certificate as the classical zeros, validating\n"
-        "    the structural reading of RH inside TNFR.\n"
-        "  * Combined with P14 (self-adjoint prime-ladder Hamiltonian)\n"
-        "    and P15 (Weil-Guinand explicit formula), P16 closes the\n"
-        "    TNFR-Riemann diagnostic surface: RH becomes a structural\n"
-        "    positivity test on the prime-ladder spectrum.\n"
+        "What this finite comparison reports:\n"
+        "  * Li's classical criterion concerns complete coefficients\n"
+        "    at every positive integer index.\n"
+        "  * This example reports truncated sums from supplied zeros\n"
+        "    and separately from peak ordinates placed on Re(rho)=1/2.\n"
+        "  * Each exact paired term is nonnegative on that line, even\n"
+        "    without zero membership; signs do not validate the scan.\n"
         "\n"
         "What P16 does NOT establish:\n"
-        "  * It does NOT prove RH. Verifying lambda_n > 0 for finitely\n"
-        "    many n is consistent with, but does not imply, RH.\n"
-        "  * Gap G4 (the full RH statement itself) remains open. The\n"
-        "    TNFR-Riemann programme provides a complete *spectral\n"
-        "    reformulation* of RH; a proof requires an additional step\n"
-        "    (e.g. an a-priori positivity argument on the resonance\n"
-        "    spectrum, or a self-adjointness witness for an operator\n"
-        "    whose eigenvalues are forced to be real).\n"
+        "  * No certified omitted-zero tail or rounding enclosure is\n"
+        "    returned, even for a single complete coefficient.\n"
+        "  * RH, an independently derived Hilbert-Polya bridge and\n"
+        "    autonomous arithmetic NFR formation remain open.\n"
+        "  * A negative numerical sum requires checking its inputs\n"
+        "    and arithmetic; it is not a refutation of RH.\n"
     )
 
 
 def main() -> None:
     print("TNFR-Riemann Programme - Example 45")
-    print("Li-Keiper positivity criterion via TNFR resonance spectrum (P16)")
+    print("Finite Li-Keiper zero-sum comparisons (P16)")
     section_1_classical_reference()
     section_2_extended_range()
     section_3_tnfr_comparison()

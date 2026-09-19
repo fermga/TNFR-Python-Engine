@@ -41,7 +41,6 @@ from tnfr.research import (
     current_git_source_provenance,
 )
 
-
 NODES = ("left", "right")
 EDGE_WEIGHT = 3.0
 INITIAL_EPI = (2.0, -1.0)
@@ -159,9 +158,10 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
     )
     manifest.validate_for_admission()
 
-    minimum_amplification_flow = math.log(
-        amplification.energy_gain_bound_for_composition
-    ) / flow.certified_exponential_rate_lower_bound
+    minimum_amplification_flow = (
+        math.log(amplification.energy_gain_bound_for_composition)
+        / flow.certified_exponential_rate_lower_bound
+    )
     return {
         "claim": "conditional affine-reset hybrid pure-EPI stability boundary",
         "flow": {
@@ -197,19 +197,13 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
                     amplification.exact_weighted_frobenius_energy_bound
                 ),
                 "total_flow_duration": amplification_word.total_flow_duration,
-                "minimum_flow_duration_for_strict_bound": (
-                    minimum_amplification_flow
-                ),
-                "energy_multiplier_bound": (
-                    amplification_word.energy_multiplier_bound
-                ),
+                "minimum_flow_duration_for_strict_bound": (minimum_amplification_flow),
+                "energy_multiplier_bound": (amplification_word.energy_multiplier_bound),
                 "repeated_disagreement_convergence_certified": (
-                    amplification_word.
-                    repeated_schedule_disagreement_convergence_certified
+                    amplification_word.repeated_schedule_disagreement_convergence_certified
                 ),
                 "initial_weighted_consensus_convergence_certified": (
-                    amplification_word.
-                    repeated_schedule_initial_weighted_consensus_convergence_certified
+                    amplification_word.repeated_schedule_initial_weighted_consensus_convergence_certified
                 ),
             },
             "uniform_translation": {
@@ -225,12 +219,10 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
                 ),
                 "energy_multiplier_bound": translation_word.energy_multiplier_bound,
                 "repeated_disagreement_convergence_certified": (
-                    translation_word.
-                    repeated_schedule_disagreement_convergence_certified
+                    translation_word.repeated_schedule_disagreement_convergence_certified
                 ),
                 "initial_weighted_consensus_convergence_certified": (
-                    translation_word.
-                    repeated_schedule_initial_weighted_consensus_convergence_certified
+                    translation_word.repeated_schedule_initial_weighted_consensus_convergence_certified
                 ),
                 "weighted_consensus_shift_per_jump": 1.0,
             },

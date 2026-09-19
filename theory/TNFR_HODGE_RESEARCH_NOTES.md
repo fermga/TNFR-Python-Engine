@@ -18,8 +18,8 @@ Problem. The Clay Hodge conjecture asserts: on a non-singular complex
 projective variety, every Hodge class (a rational cohomology class of type
 `(p,p)`) is a rational combination of cohomology classes of **algebraic
 cycles** (subvarieties cut out by polynomial equations). Nothing here
-establishes that statement; this programme delivers an **honest strong
-negative** about the reach of the discrete/structural setting.
+establishes that statement. The missing data delimit this particular auxiliary
+finite model; they are not a no-go theorem for every discrete or TNFR construction.
 
 ---
 
@@ -66,7 +66,7 @@ Reproduced in `examples/09_millennium/111_hodge_discrete_and_honest_gap.py`.
 - **Eckmann baseline.** On a triangulated torus (`|V|=25, |E|=75, |T|=50`,
   Euler `0`), the numerically detected harmonic dimensions
   `(dim ker L_0, L_1, L_2) = (1, 2, 1)` match Betti `(1, 2, 1)`. The two sampled
-  harmonic 1-forms are closed (`|d1 h| ~ 1e-16`) and co-closed
+  harmonic 1-forms are co-closed (`|d1 h| ~ 1e-16`) and closed
   (`|d2^T h| ~ 1e-15`). Eckmann's theorem is the exact external result; the
   reported ranks use a declared numerical tolerance.
 - **Topology comparison.** An octahedral sphere gives harmonic dimensions
@@ -109,17 +109,17 @@ to a property of the tetrad.
 - **Branch B** (open attack surface) — *not* the right classification here.
   Unlike P-vs-NP (PNP-2) or BSD (BSD-2), there is **no concrete discrete next
   milestone** toward the conjecture: bridging to `(p,p)` bigrading and
-  algebraicity requires leaving the discrete/structural setting entirely.
+  algebraicity requires additional mathematical structure not supplied by
+  this finite real cochain model. No theorem here excludes a future compatible
+  discrete construction carrying such data.
 - **Branch B3-leaning** (no closure through this baseline) — current
   classification. This particular auxiliary finite model cannot express the
   actual conjecture. That is a scope result about the model, not a proof that
   every possible TNFR extension is incapable of doing so.
 
-This is the **strongest negative** of the TNFR Millennium programs. Where the
-Riemann `S(T)` residual, the NS cascade, the Yang–Mills continuum gap, and the
-P-vs-NP trapping are *open obstructions with attack surfaces*, the Hodge gap is
-a *qualitative blindness*: the discrete cochain tower cannot represent the
-algebraic-complex structure at all.
+The absence of complex/algebraic data is a scope boundary of this baseline.
+Ranking it as a stronger impossibility result than the other programs would
+require quantified theorems for each; these finite diagnostics supply none.
 
 ---
 
@@ -129,11 +129,11 @@ algebraic-complex structure at all.
 | --- | --- | --- |
 | HC-1 | Auxiliary finite simplicial Hodge baseline (Eckmann); honest gap | **DONE** (`examples/111`) |
 | HC-1b | Derive oriented TNFR edge/face cochains and prove compatibility with canonical telemetry | **OPEN** |
-| HC-2 | Whether any TNFR-native complex structure induces a `(p,p)` bigrading | open, **expected negative** |
-| HC-3 | Whether algebraicity has any structural (non-topological) TNFR analogue | open, **expected negative** |
+| HC-2 | Whether a derived complex structure admits a compatible `(p,p)` bigrading | unimplemented; no general impossibility proof |
+| HC-3 | Whether an algebraic-cycle comparison can be defined from derived data | unimplemented; no general impossibility proof |
 
-HC-2 and HC-3 are recorded for completeness; the honest a-priori expectation
-is that the discrete/structural setting cannot supply either ingredient.
+HC-2 and HC-3 are reference questions, not a separate active queue. The
+[single execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md) owns priorities.
 
 ---
 

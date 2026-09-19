@@ -326,9 +326,7 @@ def capture_reception_read_snapshot(
         )
 
     consumer_owner = (
-        graph
-        if _metric_consumer_graph_owner is None
-        else _metric_consumer_graph_owner
+        graph if _metric_consumer_graph_owner is None else _metric_consumer_graph_owner
     )
     candidate = ReceptionReadSnapshot(
         node=node,
@@ -358,9 +356,7 @@ def capture_reception_read_snapshot(
             _reception_read_payload_stamp(candidate),
             _reception_read_payload_stamp(consumer_snapshot),
         ):
-            raise ValueError(
-                "Reception metrics consumer does not match the read graph"
-            )
+            raise ValueError("Reception metrics consumer does not match the read graph")
     return replace(
         candidate,
         _proof_stamp=_reception_read_snapshot_stamp(candidate),
@@ -456,9 +452,7 @@ def reception_read_snapshot_matches_graph(
                 if snapshot.source_max_distance is not None
                 else 0
             ),
-            _metric_consumer_graph_owner=(
-                snapshot._metric_consumer_graph_owner
-            ),
+            _metric_consumer_graph_owner=(snapshot._metric_consumer_graph_owner),
         )
     except Exception:
         return False

@@ -286,9 +286,9 @@ def main() -> None:
             f"     {w:>3} {grad_after:>12.5f} {_TWO_PI * abs(w) / n:>10.5f} "
             f"{phase_proxy:>8.4f} {str(path_kept):>8} {gradient_std:>10.3e}"
         )
-        assert w_after == w and path_kept, (
-            f"winding {w} changed in the sampled consensus trajectory"
-        )
+        assert (
+            w_after == w and path_kept
+        ), f"winding {w} changed in the sampled consensus trajectory"
         assert float(diagnostics["minimum_branch_margin"]) > 1e-6
         assert gradient_std < 2e-3
         if prev_c is not None and phase_proxy > prev_c + 1e-9:

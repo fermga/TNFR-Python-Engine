@@ -32,7 +32,8 @@ from tnfr.operators.self_organization_selection import (  # noqa: E402
 )
 from tnfr.research.claims import ClaimStatus  # noqa: E402
 from tnfr.research.core_manifests import (  # noqa: E402
-    CoreExperimentManifest, current_git_source_provenance,
+    CoreExperimentManifest,
+    current_git_source_provenance,
 )
 from tnfr.sdk._state import copy_graph_state  # noqa: E402
 from tnfr.utils.io import safe_write  # noqa: E402
@@ -43,8 +44,9 @@ def _eligibility_record(observation):
     return {
         **asdict(observation),
         "eligible_nodes": observation.eligible_nodes,
-        "candidates": tuple({**asdict(row), "eligible": row.eligible}
-                            for row in observation.candidates),
+        "candidates": tuple(
+            {**asdict(row), "eligible": row.eligible} for row in observation.candidates
+        ),
     }
 
 
@@ -74,11 +76,15 @@ def _run_branch(graph, *, policy_change):
             None if dispatch.stage_result is None else asdict(dispatch.stage_result)
         ),
         "parent_children": births,
-        "children": tuple({
-            "parent": parent, "child": child,
-            "degree": graph.degree(child),
-            "node_data": deepcopy(dict(graph.nodes[child])),
-        } for parent, child in births),
+        "children": tuple(
+            {
+                "parent": parent,
+                "child": child,
+                "degree": graph.degree(child),
+                "node_data": deepcopy(dict(graph.nodes[child])),
+            }
+            for parent, child in births
+        ),
         "after": after,
         "scope": (
             "Complete original eight-node candidate inventory, followed by an "
@@ -113,30 +119,49 @@ def run_study():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=(
-        ROOT / "artifacts/research/thol_eligibility_dispatch.json"
-    ))
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=(ROOT / "artifacts/research/thol_eligibility_dispatch.json"),
+    )
     args = parser.parse_args()
     scope = (
-        "src/tnfr", "benchmarks/thol_eligibility_dispatch.py",
-        "benchmarks/thol_birth_transport.py", "benchmarks/thol_pressure_feedback.py",
+        "src/tnfr",
+        "benchmarks/thol_eligibility_dispatch.py",
+        "benchmarks/thol_birth_transport.py",
+        "benchmarks/thol_pressure_feedback.py",
         "benchmarks/capacity_localization.py",
     )
     provenance = current_git_source_provenance(ROOT, scope)
     sha, dirty, digest = provenance
     manifest = CoreExperimentManifest(
-        claim_id="O1.b-THOL-eligibility-explicit-dispatch", git_sha=sha,
-        source_dirty=dirty, dirty_source_hash=digest,
-        versions={"python": platform.python_version(), "networkx": nx.__version__,
-                  "numpy": np.__version__},
+        claim_id="O1.b-THOL-eligibility-explicit-dispatch",
+        git_sha=sha,
+        source_dirty=dirty,
+        dirty_source_hash=digest,
+        versions={
+            "python": platform.python_version(),
+            "networkx": nx.__version__,
+            "numpy": np.__version__,
+        },
         graph_construction="Existing causally prepared, IL/OZ-marked C8",
         capacity_specification="Unit preparation; unchanged default THOL factors",
         solver="Shared refreshed Euler preparation only; no post-dispatch flow",
-        timestep=0.25, seed=17, result_status=ClaimStatus.MEASURED,
-        operator_sequence=("IL", "OZ", "two physical preparation steps",
-                           "explicit eligible-set THOL stage or empty no-op"),
+        timestep=0.25,
+        seed=17,
+        result_status=ClaimStatus.MEASURED,
+        operator_sequence=(
+            "IL",
+            "OZ",
+            "two physical preparation steps",
+            "explicit eligible-set THOL stage or empty no-op",
+        ),
         telemetry=("all candidate gates", "joint viability", "actual parent/child map"),
-        controls=("pure observation", "existing optional gate enabled", "empty dispatch"),
+        controls=(
+            "pure observation",
+            "existing optional gate enabled",
+            "empty dispatch",
+        ),
         artifacts=(str(args.output),),
     )
     manifest.validate_for_admission()

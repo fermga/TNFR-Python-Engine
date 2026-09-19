@@ -132,12 +132,7 @@ def experiment_1_integer_winding():
     ws = [face_winding(arg, f) for f in sampled_faces]
     min_magnitude = min(abs(value) for value in psi.values())
     min_branch_margin = min(
-        np.pi
-        - abs(
-            wrap_angle(
-                arg[face[(edge + 1) % len(face)]] - arg[face[edge]]
-            )
-        )
+        np.pi - abs(wrap_angle(arg[face[(edge + 1) % len(face)]] - arg[face[edge]]))
         for face in sampled_faces
         for edge in range(len(face))
     )
@@ -169,10 +164,7 @@ def experiment_2_periodic_cancellation():
     print("Each periodic edge occurs in two oppositely oriented face boundaries,")
     print("so the sum of all branch-regular face degrees is zero.")
     print()
-    print(
-        f"  {'seed':>6} {'total class':>13} {'#+1 faces':>11} "
-        f"{'#-1 faces':>14}"
-    )
+    print(f"  {'seed':>6} {'total class':>13} {'#+1 faces':>11} " f"{'#-1 faces':>14}")
     n_zero = 0
     for s in range(4):
         G = seed_grid(np.random.default_rng(s))
@@ -196,8 +188,10 @@ def experiment_3_local_rephasing_dependence():
     print("Apply a seeded node-dependent coordinate rotation alpha_i. Individual")
     print("face classes can change although the periodic total still cancels.")
     print()
-    print(f"  {'seed':>6} {'net before/after':>18} {'changed faces':>14} "
-          f"{'nonzero before/after':>23}")
+    print(
+        f"  {'seed':>6} {'net before/after':>18} {'changed faces':>14} "
+        f"{'nonzero before/after':>23}"
+    )
     n_changed = 0
     for s in range(3):
         G = seed_grid(np.random.default_rng(40 + s))
@@ -213,9 +207,11 @@ def experiment_3_local_rephasing_dependence():
         n_changed += int(changed > 0)
         before_count = sum(value != 0 for value in before)
         after_count = sum(value != 0 for value in after)
-        print(f"  {s:>6} {(str(sum(before)) + '/' + str(sum(after))):>18} "
-              f"{changed:>14d} "
-              f"{(str(before_count) + '/' + str(after_count)):>23}")
+        print(
+            f"  {s:>6} {(str(sum(before)) + '/' + str(sum(after))):>18} "
+            f"{changed:>14d} "
+            f"{(str(before_count) + '/' + str(after_count)):>23}"
+        )
     print()
     print(f"  -> local rephasing changed face classes for {n_changed}/3 seeds.")
     print("     Both totals stay zero because the periodic edge sum cancels.")
@@ -231,10 +227,7 @@ def experiment_4_q_is_not_winding():
     print("bilinear snapshot. It does not localize the integer-winding")
     print("classes in this sample: compare mean |Q| on nonzero and zero faces.")
     print()
-    print(
-        f"  {'topology':>12} {'|Q| nonzero':>11} {'|Q| zero':>12} "
-        f"{'ratio':>7}"
-    )
+    print(f"  {'topology':>12} {'|Q| nonzero':>11} {'|Q| zero':>12} " f"{'ratio':>7}")
     for label, periodic in [("torus", True), ("open grid", False)]:
         G = seed_grid(np.random.default_rng(0), periodic=periodic)
         arg = arg_psi(G)

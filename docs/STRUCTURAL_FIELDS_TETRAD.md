@@ -11,6 +11,21 @@ The four channels are structural potential Φ_s, phase-gradient magnitude
 structural triad and global C(t)/Si measurements. They do not by themselves
 reconstruct every graph state or determine its evolution.
 
+Exact closure of a coarse nodal evolution does not automatically preserve
+these field formulas on the coarse graph. In particular, aggregating fine
+potential can retain sources inside each coarse node that the self-excluded
+macro formula removes. Preserve the observation map and metric separately
+from the dynamical quotient; the
+[prism inheritance test](../theory/NODAL_PARAMETER_FOUNDATIONS.md#13-faithful-macro-state-and-tetrad-inheritance-on-the-retained-prism)
+gives an exact counterexample and the correct inherited kernel.
+
+A separate [restricted prism identity](../theory/NODAL_PARAMETER_FOUNDATIONS.md#183-the-same-oriented-area-is-readable-through-the-tetrad)
+recovers relative phase/form oriented area from projected potential and
+curvature, using known channel coefficients and fresh pressure. It requires
+the repeated unit-distance support and retains a pressure-defect correction;
+it neither reconstructs absolute common phase/EPI nor introduces a feedback
+rule or a fifth canonical field.
+
 ## 1. Physics basis
 
 The nodal equation relates structural change to capacity and pressure:
@@ -81,9 +96,13 @@ which conductance and distance differ must set both attributes. Unreachable and
 zero-distance pairs contribute zero under the current compatibility behavior.
 Parallel edges use minimum effective path lengths.
 
-On a fixed graph, Φ_s = B_G ΔNFR is exactly linear in pressure. Therefore
+For a fixed distance kernel in exact arithmetic, Φ_s = B_G ΔNFR is linear in
+pressure. Therefore
 
     ||Φ_s||∞ ≤ ||B_G||∞ ||ΔNFR||∞.
+
+The implemented floating-point path sums, powers and source accumulation retain
+rounding; this identity does not assert exact linearity of runtime arithmetic.
 
 A change in graph topology or edge length changes B_G as well as any pressure
 response. Uniform pressure scaling generally produces nonzero potential drift;
@@ -112,6 +131,7 @@ The magnitude discards signs and local ordering. It can identify the location
 of phase stress that a single global C(t) does not report, but it is not a
 complete reconstruction of the phase field.
 
+<a id="phase-curvature"></a>
 ### 2.3 Circular phase curvature K_φ
 
     K_φ(i) = wrap(φ_i − Arg(Σ_(j in N(i)) exp(i φ_j))).
@@ -172,6 +192,7 @@ The multiscale utilities fit curvature-variance decay under a specified
 coarse-graining protocol. A fitted exponent or the utility's default exponent
 is not a topology-independent law.
 
+<a id="coherence-length"></a>
 ### 2.4 Coherence length ξ_C
 
 The current estimator forms pressure-derived local coherence
@@ -228,6 +249,19 @@ controls in [the distance-contract tests](../tests/physics/test_coherence_distan
 check a known exponential product and its distance scaling without a trajectory
 or a physical correlation claim.
 
+### Observation completeness across scale
+
+Preserving averaged EPI and potential does not necessarily preserve this
+nonlinear coherence estimator. The exact P5 reflection example has identical
+three-coordinate EPI/potential observations but distinct successful product
+fits. The [scale bridge](../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md)
+owns the pressure-factorization criterion, numerical field provenance and
+counterexamples; [P5 reflection invariants](../theory/DERIVED_EPI_MEMORY.md)
+retain the hidden shape up to a specified reflection without reducing its
+generic continuous dimension. These are observation results for held fine
+models. Primitive phase, capacity, support and lengths remain declared inputs,
+and the four diagnostic names do not certify full-state reconstruction.
+
 ## 3. Contracts, units, and edge cases
 
 - Telemetry does not mutate EPI or replace the operator execution path.
@@ -251,7 +285,7 @@ both edge channels when their physical meanings differ.
 
 | Public call | Purpose |
 |-------------|---------|
-| compute_structural_potential(G, alpha=2.0, ...) | Exact potential by default; optional landmark approximation |
+| compute_structural_potential(G, alpha=2.0, ...) | Full-source numerical potential by default; optional landmark approximation |
 | compute_phase_gradient(G) | Per-node wrapped mismatch magnitude |
 | compute_phase_curvature(G) | Per-node circular curvature; raises on undefined represented direction |
 | observe_phase_curvature(G) | Immutable per-node resultant evidence, availability and independent gradient |
@@ -270,9 +304,11 @@ public module.
 
 For structural potential, landmark_ratio explicitly opts into approximation.
 With signed pressure, landmark path lengths do not bound relative potential
-error. The validate option compares against the full exact field, refines the
-approximation and falls back to exact evaluation when required. Use the exact
-default for U6 decisions.
+error. The validate option compares against the full-source numerical field,
+refines the approximation and falls back to that evaluation when required.
+Here “exact” distinguishes full-source evaluation from landmark sampling; it
+does not remove path-sum, inverse-power or accumulation rounding. Use the
+full-source default for U6 decisions, with its numerical scope retained.
 
 ## 5. Validation and safety thresholds
 
@@ -294,10 +330,12 @@ operator sequence for potential drift. Crossing a threshold flags a policy
 condition; it does not independently prove fragmentation. U1–U5 word
 acceptance does not guarantee that every later field reading will pass U6.
 
-Operator verification retains Coherence monotonicity, controlled bifurcation,
-Resonance propagation, Silence latency, Mutation threshold behavior, nested
-identity, and same-seed reproducibility. Field verification should test exact
-definitions and edge cases, including pressure scaling and wrapped phases.
+Operator verification follows the specific
+[API contracts](API_CONTRACTS.md), including their local/event scope and
+state-dependent preconditions. Field verification should test definitions and
+edge cases, including pressure scaling and wrapped phases. Reproducibility
+requires declared inputs, execution order and backend as well as a seed; no
+universal monotonicity or post-Silence freezing follows from an operator name.
 
 ## 6. Minimal read-only example
 

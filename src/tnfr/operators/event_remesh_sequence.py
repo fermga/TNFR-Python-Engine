@@ -67,8 +67,7 @@ def _exact_history_is_well_typed(value: Any) -> bool:
     return bool(
         type(value) is tuple
         and all(
-            type(row) is tuple
-            and all(type(item) is Fraction for item in row)
+            type(row) is tuple and all(type(item) is Fraction for item in row)
             for row in value
         )
     )
@@ -104,11 +103,7 @@ def _hashable_items_match(left: Hashable, right: Hashable) -> bool:
         equality_holds = bool(equal)
     except Exception:
         return False
-    return bool(
-        equality_holds
-        and hashes_match
-        and _structural_equal(left, right)
-    )
+    return bool(equality_holds and hashes_match and _structural_equal(left, right))
 
 
 def _ordered_support_is_continuous(
@@ -146,13 +141,9 @@ def _validate_conditions(
             or type(item[0]) is not str
             or type(item[1]) is not bool
         ):
-            raise TypeError(
-                f"{label} conditions[{index}] must be tuple[str, bool]"
-            )
+            raise TypeError(f"{label} conditions[{index}] must be tuple[str, bool]")
         if item[0] != expected_name:
-            raise ValueError(
-                f"{label} condition names must retain canonical order"
-            )
+            raise ValueError(f"{label} condition names must retain canonical order")
 
 
 def _applicable_proof_is_intact(value: Any) -> bool:
@@ -259,9 +250,7 @@ def _boundary_conditions(**fields: Any) -> tuple[tuple[str, bool], ...]:
             )
             or (
                 fields["left_post_remesh_pressure_refresh_requested"]
-                and fields[
-                    "left_post_remesh_pressure_refresh_callback_invocations"
-                ]
+                and fields["left_post_remesh_pressure_refresh_callback_invocations"]
                 == 1
             ),
         ),
@@ -289,10 +278,7 @@ def _boundary_stamp(
 ) -> tuple[Any, ...]:
     return (
         _BOUNDARY_PROOF_VERSION,
-        tuple(
-            (name, _proof_value(fields[name]))
-            for name in _BOUNDARY_FIELD_NAMES
-        ),
+        tuple((name, _proof_value(fields[name])) for name in _BOUNDARY_FIELD_NAMES),
         _proof_value(conditions),
         _proof_value(scope),
     )
@@ -386,8 +372,7 @@ class EventRemeshCycleBoundaryObservation:
         if any(type(value) is not bool for value in flags):
             raise TypeError("boundary proof and atomicity flags must be bools")
         if (
-            type(self.left_post_remesh_pressure_refresh_callback_invocations)
-            is not int
+            type(self.left_post_remesh_pressure_refresh_callback_invocations) is not int
             or self.left_post_remesh_pressure_refresh_callback_invocations < 0
         ):
             raise ValueError("pressure refresh invocation count must be nonnegative")
@@ -400,12 +385,9 @@ class EventRemeshCycleBoundaryObservation:
             raise ValueError("boundary conditions do not match endpoint evidence")
         if type(self.scope) is not str or self.scope != _BOUNDARY_SCOPE:
             raise ValueError("boundary scope must retain its canonical value")
-        if (
-            type(self._proof_stamp) is not tuple
-            or not _structural_equal(
-                self._proof_stamp,
-                _boundary_stamp(fields, self.conditions, self.scope),
-            )
+        if type(self._proof_stamp) is not tuple or not _structural_equal(
+            self._proof_stamp,
+            _boundary_stamp(fields, self.conditions, self.scope),
         ):
             raise ValueError("boundary proof fields are inconsistent")
 
@@ -445,9 +427,7 @@ def _build_boundary(
         "right_cycle_index": index + 1,
         "left_nodes": left.target_nodes,
         "right_nodes": right.target_nodes,
-        "exact_left_schedule_end_time": (
-            left.event_execution.schedule.exact_end_time
-        ),
+        "exact_left_schedule_end_time": (left.event_execution.schedule.exact_end_time),
         "exact_right_schedule_start_time": (
             right.event_execution.schedule.exact_start_time
         ),
@@ -622,8 +602,7 @@ def _sequence_conditions(
         ),
         (
             "every_cycle_metric_bound",
-            len(per_cycle_metric_bound) == len(cycles)
-            and all(per_cycle_metric_bound),
+            len(per_cycle_metric_bound) == len(cycles) and all(per_cycle_metric_bound),
         ),
         (
             "one_exact_normalized_metric_ray",
@@ -641,8 +620,7 @@ def _sequence_conditions(
             "every_nested_schedule_exposes_the_common_metric",
             len(nested_schedule_metric_alignment) == len(cycles)
             and all(
-                alignment is True
-                for alignment in nested_schedule_metric_alignment
+                alignment is True for alignment in nested_schedule_metric_alignment
             ),
         ),
     )
@@ -671,10 +649,7 @@ _SEQUENCE_FIELD_NAMES = (
 def _sequence_stamp(fields: dict[str, Any]) -> tuple[Any, ...]:
     return (
         _SEQUENCE_PROOF_VERSION,
-        tuple(
-            (name, _proof_value(fields[name]))
-            for name in _SEQUENCE_FIELD_NAMES
-        ),
+        tuple((name, _proof_value(fields[name])) for name in _SEQUENCE_FIELD_NAMES),
     )
 
 
@@ -685,9 +660,7 @@ class ObservedEventRemeshCycleSequence:
     cycle_indices: tuple[int, ...]
     cycles: tuple[EventRemeshCycleResult, ...]
     boundaries: tuple[EventRemeshCycleBoundaryObservation, ...]
-    schedule_compositions: tuple[
-        ObservedRepresentedEPIScheduleComposition | None, ...
-    ]
+    schedule_compositions: tuple[ObservedRepresentedEPIScheduleComposition | None, ...]
     remesh_results: tuple[DelayedRemeshResult, ...]
     cycle_exact_metric_weights: tuple[ExactVector, ...]
     cycle_exact_normalized_metric_rays: tuple[ExactVector, ...]
@@ -706,9 +679,7 @@ class ObservedEventRemeshCycleSequence:
         if type(self.cycles) is not tuple or len(self.cycles) < 2:
             raise ValueError("a cycle sequence requires at least two cycles")
         if any(type(cycle) is not EventRemeshCycleResult for cycle in self.cycles):
-            raise TypeError(
-                "cycles must contain exact EventRemeshCycleResult objects"
-            )
+            raise TypeError("cycles must contain exact EventRemeshCycleResult objects")
         if len({id(cycle) for cycle in self.cycles}) != len(self.cycles):
             raise ValueError("cycle observations must have distinct identities")
         if any(not _cycle_proof_is_intact(cycle) for cycle in self.cycles):
@@ -725,9 +696,7 @@ class ObservedEventRemeshCycleSequence:
 
         expected_boundaries = tuple(
             _build_boundary(index, left, right)
-            for index, (left, right) in enumerate(
-                zip(self.cycles, self.cycles[1:])
-            )
+            for index, (left, right) in enumerate(zip(self.cycles, self.cycles[1:]))
         )
         if (
             type(self.boundaries) is not tuple
@@ -768,8 +737,7 @@ class ObservedEventRemeshCycleSequence:
         if any(
             composition is not None
             and (
-                type(composition)
-                is not ObservedRepresentedEPIScheduleComposition
+                type(composition) is not ObservedRepresentedEPIScheduleComposition
                 or not _applicable_proof_is_intact(composition)
             )
             for composition in self.schedule_compositions
@@ -796,19 +764,15 @@ class ObservedEventRemeshCycleSequence:
             raise ValueError("nested REMESH result proofs are not intact")
 
         raw_metrics = tuple(
-            _exact_vector(cycle.metric_weights, "cycle metric")
-            for cycle in self.cycles
+            _exact_vector(cycle.metric_weights, "cycle metric") for cycle in self.cycles
         )
         rays_optional = tuple(
-            normalized_positive_fraction_metric(metric)
-            for metric in raw_metrics
+            normalized_positive_fraction_metric(metric) for metric in raw_metrics
         )
         if any(ray is None for ray in rays_optional):
             raise ValueError("cycle metrics must define positive exact rays")
         rays = tuple(ray for ray in rays_optional if ray is not None)
-        proof_states = tuple(
-            _cycle_proof_is_intact(cycle) for cycle in self.cycles
-        )
+        proof_states = tuple(_cycle_proof_is_intact(cycle) for cycle in self.cycles)
         atomic_states = tuple(
             type(cycle.whole_cycle_graph_state_atomic) is bool
             and cycle.whole_cycle_graph_state_atomic
@@ -816,8 +780,7 @@ class ObservedEventRemeshCycleSequence:
         )
         bindings = tuple(_cycle_metric_binding(cycle) for cycle in self.cycles)
         raw_equal = all(
-            _structural_equal(metric, raw_metrics[0])
-            for metric in raw_metrics[1:]
+            _structural_equal(metric, raw_metrics[0]) for metric in raw_metrics[1:]
         )
         ray_equal = all(_structural_equal(ray, rays[0]) for ray in rays[1:])
         common_ray = rays[0] if ray_equal else None
@@ -825,9 +788,7 @@ class ObservedEventRemeshCycleSequence:
             _nested_schedule_metric_alignment(cycle, ray)
             for cycle, ray in zip(self.cycles, rays, strict=True)
         )
-        configurations = tuple(
-            _configuration_signature(cycle) for cycle in self.cycles
-        )
+        configurations = tuple(_configuration_signature(cycle) for cycle in self.cycles)
         config_equal = all(
             _structural_equal(signature, configurations[0])
             for signature in configurations[1:]
@@ -863,12 +824,9 @@ class ObservedEventRemeshCycleSequence:
             raise ValueError("sequence scope must retain its canonical value")
 
         fields = {name: getattr(self, name) for name in _SEQUENCE_FIELD_NAMES}
-        if (
-            type(self._proof_stamp) is not tuple
-            or not _structural_equal(
-                self._proof_stamp,
-                _sequence_stamp(fields),
-            )
+        if type(self._proof_stamp) is not tuple or not _structural_equal(
+            self._proof_stamp,
+            _sequence_stamp(fields),
         ):
             raise ValueError("sequence proof fields are inconsistent")
 
@@ -908,13 +866,9 @@ class ObservedEventRemeshCycleSequence:
 
         if not self._proof_fields_are_intact():
             return False
-        if any(
-            value is False for value in self.nested_schedule_metric_alignment
-        ):
+        if any(value is False for value in self.nested_schedule_metric_alignment):
             return False
-        if any(
-            value is None for value in self.nested_schedule_metric_alignment
-        ):
+        if any(value is None for value in self.nested_schedule_metric_alignment):
             return None
         return True
 
@@ -976,17 +930,13 @@ def compose_event_remesh_cycle_observations(
         raise ValueError("cycle observations must have distinct identities")
     for index, cycle in enumerate(materialized):
         if type(cycle) is not EventRemeshCycleResult:
-            raise TypeError(
-                f"cycles[{index}] must be an exact EventRemeshCycleResult"
-            )
+            raise TypeError(f"cycles[{index}] must be an exact EventRemeshCycleResult")
         if not _cycle_proof_is_intact(cycle):
             raise ValueError(f"cycles[{index}] proof fields are not intact")
 
     boundaries = tuple(
         _build_boundary(index, left, right)
-        for index, (left, right) in enumerate(
-            zip(materialized, materialized[1:])
-        )
+        for index, (left, right) in enumerate(zip(materialized, materialized[1:]))
     )
     raw_metrics = tuple(
         _exact_vector(
@@ -1002,17 +952,13 @@ def compose_event_remesh_cycle_observations(
         raise ValueError("every cycle metric must define a positive exact ray")
     rays = tuple(ray for ray in rays_optional if ray is not None)
     ray_equal = all(_structural_equal(ray, rays[0]) for ray in rays[1:])
-    proof_states = tuple(
-        _cycle_proof_is_intact(cycle) for cycle in materialized
-    )
+    proof_states = tuple(_cycle_proof_is_intact(cycle) for cycle in materialized)
     atomic_states = tuple(
         type(cycle.whole_cycle_graph_state_atomic) is bool
         and cycle.whole_cycle_graph_state_atomic
         for cycle in materialized
     )
-    bindings = tuple(
-        _cycle_metric_binding(cycle) for cycle in materialized
-    )
+    bindings = tuple(_cycle_metric_binding(cycle) for cycle in materialized)
     schedule_compositions = tuple(
         cycle.event_execution.represented_epi_schedule_composition
         for cycle in materialized
@@ -1022,9 +968,7 @@ def compose_event_remesh_cycle_observations(
         _nested_schedule_metric_alignment(cycle, ray)
         for cycle, ray in zip(materialized, rays, strict=True)
     )
-    configurations = tuple(
-        _configuration_signature(cycle) for cycle in materialized
-    )
+    configurations = tuple(_configuration_signature(cycle) for cycle in materialized)
     fields: dict[str, Any] = {
         "cycle_indices": tuple(range(len(materialized))),
         "cycles": materialized,
@@ -1033,15 +977,12 @@ def compose_event_remesh_cycle_observations(
         "remesh_results": remesh_results,
         "cycle_exact_metric_weights": raw_metrics,
         "cycle_exact_normalized_metric_rays": rays,
-        "exact_common_normalized_metric_ray": (
-            rays[0] if ray_equal else None
-        ),
+        "exact_common_normalized_metric_ray": (rays[0] if ray_equal else None),
         "per_cycle_proof_fields_intact": proof_states,
         "per_cycle_graph_state_atomic": atomic_states,
         "per_cycle_metric_bound": bindings,
         "raw_metric_weights_equal": all(
-            _structural_equal(metric, raw_metrics[0])
-            for metric in raw_metrics[1:]
+            _structural_equal(metric, raw_metrics[0]) for metric in raw_metrics[1:]
         ),
         "nested_schedule_metric_alignment": schedule_alignment,
         "remesh_configurations_equal": all(

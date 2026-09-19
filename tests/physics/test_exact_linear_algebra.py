@@ -158,7 +158,9 @@ def test_inverse_rejects_singular_exact_matrices(matrix) -> None:
         exact_matrix_inverse(matrix)
 
 
-@pytest.mark.parametrize("operation", [exact_matrix_inverse, exact_symmetric_semidefinite])
+@pytest.mark.parametrize(
+    "operation", [exact_matrix_inverse, exact_symmetric_semidefinite]
+)
 @pytest.mark.parametrize(
     ("matrix", "error", "message"),
     [
@@ -177,14 +179,21 @@ def test_inverse_rejects_singular_exact_matrices(matrix) -> None:
     ],
 )
 def test_inverse_and_semidefinite_reject_malformed_exact_inputs(
-    operation, matrix, error, message,
+    operation,
+    matrix,
+    error,
+    message,
 ) -> None:
     with pytest.raises(error, match=message):
         operation(matrix)
 
 
-@pytest.mark.parametrize("operation", [exact_matrix_inverse, exact_symmetric_semidefinite])
-def test_inverse_and_semidefinite_reject_foreign_types_without_coercion(operation) -> None:
+@pytest.mark.parametrize(
+    "operation", [exact_matrix_inverse, exact_symmetric_semidefinite]
+)
+def test_inverse_and_semidefinite_reject_foreign_types_without_coercion(
+    operation,
+) -> None:
     class ProtocolTrap:
         def __iter__(self):
             raise AssertionError("foreign iteration must not be called")
@@ -213,7 +222,9 @@ def test_inverse_and_semidefinite_reject_foreign_types_without_coercion(operatio
     "matrix",
     [_matrix((1, 10), (0, 1)), _matrix((1, 0), (10, 1)), _matrix((0, 0), (10, 1))],
 )
-def test_semidefinite_rejects_asymmetry_instead_of_accepting_false_psd(matrix, strict) -> None:
+def test_semidefinite_rejects_asymmetry_instead_of_accepting_false_psd(
+    matrix, strict
+) -> None:
     with pytest.raises(ValueError, match="exactly symmetric"):
         exact_symmetric_semidefinite(matrix, strict=strict)
 
@@ -237,8 +248,12 @@ def test_semidefinite_matches_two_dimensional_principal_minor_oracle() -> None:
     for a, b, d in product((Fraction(value, 3) for value in range(-2, 3)), repeat=3):
         matrix = ((a, b), (b, d))
         determinant = a * d - b * b
-        assert exact_symmetric_semidefinite(matrix) is (a >= 0 and d >= 0 and determinant >= 0)
-        assert exact_symmetric_semidefinite(matrix, strict=True) is (a > 0 and determinant > 0)
+        assert exact_symmetric_semidefinite(matrix) is (
+            a >= 0 and d >= 0 and determinant >= 0
+        )
+        assert exact_symmetric_semidefinite(matrix, strict=True) is (
+            a > 0 and determinant > 0
+        )
         assert matrix == ((a, b), (b, d))
 
 
@@ -253,7 +268,9 @@ def test_semidefinite_matches_two_dimensional_principal_minor_oracle() -> None:
     ],
 )
 def test_semidefinite_preserves_singular_and_definite_symmetric_cases(
-    matrix, semidefinite, definite,
+    matrix,
+    semidefinite,
+    definite,
 ) -> None:
     assert exact_symmetric_semidefinite(matrix) is semidefinite
     assert exact_symmetric_semidefinite(matrix, strict=True) is definite

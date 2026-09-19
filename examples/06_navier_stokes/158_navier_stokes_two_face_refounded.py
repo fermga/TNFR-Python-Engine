@@ -56,20 +56,26 @@ def main() -> None:
     e0, w0 = flow.energy(), flow.enstrophy()
     for _ in range(40):
         flow.step(0.01)
-    print(f"   energy {e0:.4f} -> {flow.energy():.4f} (decays); "
-          f"enstrophy {w0:.3f} -> {flow.enstrophy():.3f}")
+    print(
+        f"   energy {e0:.4f} -> {flow.energy():.4f} (decays); "
+        f"enstrophy {w0:.3f} -> {flow.enstrophy():.3f}"
+    )
     print(f"   incompressibility: max|div u| = {flow.divergence_sup():.1e}")
-    print(f"   3D vortex-stretching production = "
-          f"{flow.stretching_production():.4f} (zero in 2D)")
+    print(
+        f"   3D vortex-stretching production = "
+        f"{flow.stretching_production():.4f} (zero in 2D)"
+    )
 
     # M2 -- the two-face reading
     print("\nM2 -- which face is linear NS on? (gamma = 1/nu)")
     for nu in (0.05, 0.01):
         fo = face_of_flow(nu)
         cert = verify_diffusive_face(nu)
-        print(f"   nu={nu}: {fo['face']} (gamma={fo['gamma']:.0f}); "
-              f"verify_diffusive_face VALID={cert.is_valid_projection}, "
-              f"recovers nu_f={cert.nu_f_effective:.4f}")
+        print(
+            f"   nu={nu}: {fo['face']} (gamma={fo['gamma']:.0f}); "
+            f"verify_diffusive_face VALID={cert.is_valid_projection}, "
+            f"recovers nu_f={cert.nu_f_effective:.4f}"
+        )
     print("   => linear NS is diffusive (over-damped); the conservative /")
     print("      inertial content is the NONLINEAR stretching, not a wave.")
 
@@ -79,8 +85,9 @@ def main() -> None:
         n=16, viscosities=(0.05, 0.02, 0.01), tau_target=0.15, dt=0.01
     )
     for r, d, s in zip(cert.reynolds, cert.peak_debt, cert.peak_stretching):
-        print(f"   Re={r:6.0f}: peak enstrophy debt={d:.3f}, "
-              f"peak stretching={s:.3f}")
+        print(
+            f"   Re={r:6.0f}: peak enstrophy debt={d:.3f}, " f"peak stretching={s:.3f}"
+        )
     print(f"   {cert.summary()}")
 
     print("\n" + "=" * 72)

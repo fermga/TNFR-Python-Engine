@@ -19,25 +19,38 @@ from tnfr.operators.self_organization_selection import (
 def _graph(nodes=(0, 1)):
     graph = nx.Graph(THOL_METABOLIC_ENABLED=False, RANDOM_SEED=17)
     for node in nodes:
-        graph.add_node(node, **{
-            ALIAS_EPI[0]: 0.6, ALIAS_VF[0]: 1.0, ALIAS_DNFR[0]: 0.2,
-            "theta": 0.0, "glyph_history": ["OZ"],
-            "epi_time_history": [(0.0, 0.0), (1.0, 0.1), (2.0, 0.6)],
-        })
+        graph.add_node(
+            node,
+            **{
+                ALIAS_EPI[0]: 0.6,
+                ALIAS_VF[0]: 1.0,
+                ALIAS_DNFR[0]: 0.2,
+                "theta": 0.0,
+                "glyph_history": ["OZ"],
+                "epi_time_history": [(0.0, 0.0), (1.0, 0.1), (2.0, 0.6)],
+            },
+        )
     if len(nodes) > 1:
         graph.add_edges_from(zip(nodes, nodes[1:]))
     return graph
 
 
 def _state(graph):
-    return deepcopy((
-        {key: value for key, value in graph.graph.items()
-         if key != "integrity_monitor"},
-        tuple((node, dict(data)) for node, data in graph.nodes(data=True)),
-        tuple(graph.edges(data=True)),
-        (hasattr(graph, "_last_operator_applied"),
-         getattr(graph, "_last_operator_applied", None)),
-    ))
+    return deepcopy(
+        (
+            {
+                key: value
+                for key, value in graph.graph.items()
+                if key != "integrity_monitor"
+            },
+            tuple((node, dict(data)) for node, data in graph.nodes(data=True)),
+            tuple(graph.edges(data=True)),
+            (
+                hasattr(graph, "_last_operator_applied"),
+                getattr(graph, "_last_operator_applied", None),
+            ),
+        )
+    )
 
 
 def _rows(report):
@@ -75,15 +88,21 @@ def test_grammar_denial_does_not_hide_a_separately_valid_birth_proposal():
     assert _state(graph) == before
 
 
-@pytest.mark.parametrize("enabled, requested, eligible", (
-    (False, True, True), (True, False, True), (True, True, False),
-))
+@pytest.mark.parametrize(
+    "enabled, requested, eligible",
+    (
+        (False, True, True),
+        (True, False, True),
+        (True, True, False),
+    ),
+)
 def test_optional_gate_switches_match_public_semantics(enabled, requested, eligible):
     graph = _graph()
     graph.graph.update(VALIDATE_OPERATOR_PRECONDITIONS=enabled, THOL_MIN_VF=2.0)
     before = _state(graph)
     report = observe_self_organization_eligibility(
-        graph, execution_kwargs={"validate_preconditions": requested},
+        graph,
+        execution_kwargs={"validate_preconditions": requested},
     )
     assert bool(report.eligible_nodes) is eligible
     for row in _rows(report).values():
@@ -98,7 +117,8 @@ def test_short_authoritative_history_does_not_reuse_old_cache_or_legacy_values()
     graph = _graph()
     for node in graph:
         graph.nodes[node].update(
-            epi_time_history=[(2.0, 0.6)], epi_history=[0.0, 0.0, 100.0],
+            epi_time_history=[(2.0, 0.6)],
+            epi_history=[0.0, 0.0, 100.0],
         )
         graph.nodes[node][ALIAS_D2EPI[0]] = 100.0
     before = _state(graph)
@@ -234,9 +254,13 @@ def test_late_monitor_failure_restores_every_selected_parent_and_monitor():
 
 
 @pytest.mark.parametrize("key", ("targets", "sequence_context", "compute_delta_nfr"))
-@pytest.mark.parametrize("entry", (
-    observe_self_organization_eligibility, execute_eligible_self_organization_stage,
-))
+@pytest.mark.parametrize(
+    "entry",
+    (
+        observe_self_organization_eligibility,
+        execute_eligible_self_organization_stage,
+    ),
+)
 def test_extra_selection_or_callback_keywords_are_not_silently_accepted(key, entry):
     graph = _graph()
     before = _state(graph)
@@ -245,9 +269,13 @@ def test_extra_selection_or_callback_keywords_are_not_silently_accepted(key, ent
     assert _state(graph) == before
 
 
-@pytest.mark.parametrize("entry", (
-    observe_self_organization_eligibility, execute_eligible_self_organization_stage,
-))
+@pytest.mark.parametrize(
+    "entry",
+    (
+        observe_self_organization_eligibility,
+        execute_eligible_self_organization_stage,
+    ),
+)
 def test_adversarial_kwargs_materialization_cannot_leave_graph_side_effects(entry):
     graph = _graph()
     before = _state(graph)
@@ -282,7 +310,8 @@ def test_late_metric_failure_rolls_back_an_otherwise_viable_joint_birth(monkeypa
     monkeypatch.setattr(SelfOrganization, "_collect_metrics", fail_second)
     with pytest.raises(RuntimeError, match="second metric rejected"):
         execute_eligible_self_organization_stage(
-            graph, execution_kwargs={"collect_metrics": True},
+            graph,
+            execution_kwargs={"collect_metrics": True},
         )
     assert _state(graph) == before
 
@@ -304,11 +333,13 @@ def test_short_trace_retention_does_not_change_runtime_grammar_window():
     for node in graph:
         graph.nodes[node]["glyph_history"] = ["OZ", "EN", "EN"]
     report = observe_self_organization_eligibility(
-        graph, execution_kwargs={"window": 1},
+        graph,
+        execution_kwargs={"window": 1},
     )
     assert report.eligible_nodes == (0, 1)
     result = execute_eligible_self_organization_stage(
-        graph, execution_kwargs={"window": 1},
+        graph,
+        execution_kwargs={"window": 1},
     )
     assert {parent for parent, child in result.parent_children} == {0, 1}
     for parent in (0, 1):
@@ -329,12 +360,17 @@ def test_observation_is_immutable_and_does_not_retain_mutable_options():
         _rows(report)[0].proposal_valid = False
 
 
-@pytest.mark.parametrize("renaming", (
-    {0: "north", 1: "south", 2: "east", 3: "west"},
-    {0: 20, 1: -1, 2: 0, 3: 7},
-    {0: ("n", 4), 1: ("n", 1), 2: ("n", 9), 3: ("n", 3)},
-))
-def test_supplied_state_complete_eligible_set_covaries_under_finite_relabeling(renaming):
+@pytest.mark.parametrize(
+    "renaming",
+    (
+        {0: "north", 1: "south", 2: "east", 3: "west"},
+        {0: 20, 1: -1, 2: 0, 3: 7},
+        {0: ("n", 4), 1: ("n", 1), 2: ("n", 9), 3: ("n", 3)},
+    ),
+)
+def test_supplied_state_complete_eligible_set_covaries_under_finite_relabeling(
+    renaming,
+):
     # This is a finite supplied-history control. It establishes neither causal
     # history provenance nor arbitrary all-state runtime equivariance.
     graph = _graph((0, 1, 2, 3))
@@ -364,7 +400,9 @@ def test_joint_support_failure_is_reported_and_prevents_any_dispatch(monkeypatch
         snapshot.graph["detached_attempt"] = True
         raise ValueError("joint support rejected")
 
-    monkeypatch.setattr(selection, "_merge_and_validate_self_organization_stage", reject_joint)
+    monkeypatch.setattr(
+        selection, "_merge_and_validate_self_organization_stage", reject_joint
+    )
     report = observe_self_organization_eligibility(graph)
     assert report.eligible_nodes == (0, 1)
     assert report.joint_stage_viable is False
@@ -375,13 +413,16 @@ def test_joint_support_failure_is_reported_and_prevents_any_dispatch(monkeypatch
     assert _state(graph) == before
 
 
-def test_runtime_grammar_replacement_is_rolled_back_instead_of_reported_as_birth(monkeypatch):
+def test_runtime_grammar_replacement_is_rolled_back_instead_of_reported_as_birth(
+    monkeypatch,
+):
     from tnfr.operators import grammar_application
 
     graph = _graph()
     before = _state(graph)
-    monkeypatch.setattr(grammar_application, "enforce_canonical_grammar",
-                        lambda *args, **kwargs: "IL")
+    monkeypatch.setattr(
+        grammar_application, "enforce_canonical_grammar", lambda *args, **kwargs: "IL"
+    )
     with pytest.raises(RuntimeError, match="built-in two-phase"):
         execute_eligible_self_organization_stage(graph)
     assert _state(graph) == before
@@ -420,7 +461,9 @@ def test_invalid_joint_pattern_sink_is_diagnosed_without_removing_individual_eli
     assert _state(graph) == before
 
 
-@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+@pytest.mark.parametrize(
+    "graph_type", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+)
 def test_successful_monitor_cannot_remove_original_edge_support(graph_type):
     class DeletingEdgeMonitor(_RecordingMonitor):
         def after_operator(self, graph, node, operator):
@@ -439,26 +482,41 @@ def test_successful_monitor_cannot_remove_original_edge_support(graph_type):
     monitor = DeletingEdgeMonitor()
     graph.graph["integrity_monitor"] = monitor
     before = _state(graph)
-    original_edges = tuple(graph.edges(keys=True)) if graph.is_multigraph() else tuple(graph.edges)
+    original_edges = (
+        tuple(graph.edges(keys=True)) if graph.is_multigraph() else tuple(graph.edges)
+    )
     with pytest.raises(RuntimeError, match="edge support"):
         execute_eligible_self_organization_stage(graph)
     assert _state(graph) == before
-    after_edges = tuple(graph.edges(keys=True)) if graph.is_multigraph() else tuple(graph.edges)
+    after_edges = (
+        tuple(graph.edges(keys=True)) if graph.is_multigraph() else tuple(graph.edges)
+    )
     assert after_edges == original_edges
     assert graph.graph["integrity_monitor"] is monitor
     assert monitor.events == []
 
 
-@pytest.mark.parametrize("options", (
-    {"tau": float("nan")}, {"tau": True}, {"window": False}, {"window": -1},
-    {"collect_metrics": "false"}, {"validate_preconditions": 1},
-    {"validate_nodal_equation": None}, {"dt": 0.0}, {"dt": float("inf")},
-))
+@pytest.mark.parametrize(
+    "options",
+    (
+        {"tau": float("nan")},
+        {"tau": True},
+        {"window": False},
+        {"window": -1},
+        {"collect_metrics": "false"},
+        {"validate_preconditions": 1},
+        {"validate_nodal_equation": None},
+        {"dt": 0.0},
+        {"dt": float("inf")},
+    ),
+)
 def test_invalid_execution_options_reject_before_graph_owned_effects(options):
     graph = _graph()
     before = _state(graph)
-    for entry in (observe_self_organization_eligibility,
-                  execute_eligible_self_organization_stage):
+    for entry in (
+        observe_self_organization_eligibility,
+        execute_eligible_self_organization_stage,
+    ):
         with pytest.raises((TypeError, ValueError, OperatorPreconditionError)):
             entry(graph, execution_kwargs=options)
         assert _state(graph) == before

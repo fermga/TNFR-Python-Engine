@@ -12,15 +12,12 @@ import pytest
 from tnfr.alias import set_attr
 from tnfr.config import get_precision_mode, set_precision_mode
 from tnfr.constants.aliases import ALIAS_DNFR
-from tnfr.physics.canonical import (
-    _PHI_S_DISTANCE_CACHE,
-    compute_structural_potential,
-)
+from tnfr.physics.canonical import _PHI_S_DISTANCE_CACHE, compute_structural_potential
+from tnfr.physics.fields import classify_nodal_topology, path_integrated_gradient
 from tnfr.physics.vectorized_ops import (
     compute_phi_s_exact_vectorized,
     compute_phi_s_landmarks_vectorized,
 )
-from tnfr.physics.fields import classify_nodal_topology, path_integrated_gradient
 from tnfr.utils.cache import reset_global_cache
 
 
@@ -44,8 +41,7 @@ def test_large_default_potential_matches_analytic_path():
     graph = nx.path_graph(600)
     _set_pressure(graph, {node: 0.1 for node in graph})
     expected = {
-        i: math.fsum(0.1 / (i - j) ** 2 for j in graph if i != j)
-        for i in graph
+        i: math.fsum(0.1 / (i - j) ** 2 for j in graph if i != j) for i in graph
     }
     assert compute_structural_potential(graph) == pytest.approx(expected, abs=1e-12)
 
@@ -89,7 +85,9 @@ def test_weight_remains_legacy_length_fallback():
 
 @pytest.mark.parametrize("mode", ["standard", "high", "research"])
 @pytest.mark.parametrize("leaf_count", [3, 50])
-def test_exact_potential_preserves_signed_residual_across_size_and_precision(mode, leaf_count):
+def test_exact_potential_preserves_signed_residual_across_size_and_precision(
+    mode, leaf_count
+):
     graph = nx.star_graph(leaf_count)
     pressure = {node: 0.0 for node in graph}
     pressure.update({1: 1e30, 2: 1.0, 3: -1e30})
@@ -100,7 +98,9 @@ def test_exact_potential_preserves_signed_residual_across_size_and_precision(mod
     assert compute_structural_potential(graph)[0] == 1.0
 
 
-def test_research_potential_keeps_compensation_when_longdouble_aliases_float64(monkeypatch):
+def test_research_potential_keeps_compensation_when_longdouble_aliases_float64(
+    monkeypatch,
+):
     import tnfr.physics.canonical as canonical
 
     graph = nx.star_graph(50)
@@ -115,16 +115,21 @@ def test_research_potential_keeps_compensation_when_longdouble_aliases_float64(m
 @pytest.mark.parametrize("dtype", [np.float64, np.longdouble])
 @pytest.mark.parametrize("force_fallback", [False, True])
 def test_direct_dense_potential_and_fallback_preserve_signed_residual(
-    dtype, force_fallback, monkeypatch,
+    dtype,
+    force_fallback,
+    monkeypatch,
 ):
     graph = nx.star_graph(3)
     pressure = {0: 0.0, 1: 1e30, 2: 1.0, 3: -1e30}
     if force_fallback:
+
         def unavailable_floyd_warshall(*args, **kwargs):
             raise RuntimeError("Floyd-Warshall unavailable")
 
         monkeypatch.setattr(nx, "floyd_warshall_numpy", unavailable_floyd_warshall)
-    result = compute_phi_s_exact_vectorized(graph, list(graph), pressure, 2.0, dtype=dtype)
+    result = compute_phi_s_exact_vectorized(
+        graph, list(graph), pressure, 2.0, dtype=dtype
+    )
     assert result[0] == 1.0
 
 
@@ -140,7 +145,9 @@ def test_research_potential_keeps_extended_intermediate_range():
     _set_pressure(graph, pressure)
     set_precision_mode("research")
     # Squaring 1e200 overflows float64, but the final potential is 1e-100.
-    assert compute_structural_potential(graph)[0] == pytest.approx(1e-100, rel=1e-14, abs=0)
+    assert compute_structural_potential(graph)[0] == pytest.approx(
+        1e-100, rel=1e-14, abs=0
+    )
 
 
 def test_landmark_distance_uses_directed_path_through_landmark():
@@ -149,7 +156,9 @@ def test_landmark_distance_uses_directed_path_through_landmark():
     nodes = list(graph)
     pressure = {node: 0.2 for node in graph}
     distances = {1: nx.single_source_dijkstra_path_length(graph, 1, weight="weight")}
-    result = compute_phi_s_landmarks_vectorized(graph, nodes, pressure, 2.0, [1], distances)
+    result = compute_phi_s_landmarks_vectorized(
+        graph, nodes, pressure, 2.0, [1], distances
+    )
     # Every reachable path from node 0 passes through landmark 1.
     assert result[0] == pytest.approx(0.2 / 0.25**2 + 0.2 / 0.5**2 + 0.2 / 0.75**2)
     # Sink 3 cannot reach the landmark or any other node.
@@ -171,12 +180,15 @@ def test_validation_enforces_global_error_for_signed_pressure():
     pressure = {node: (-1.0) ** node * 0.1 for node in graph}
     _set_pressure(graph, pressure)
     expected = {
-        i: math.fsum(pressure[j] / (i - j) ** 2 for j in graph if i != j)
-        for i in graph
+        i: math.fsum(pressure[j] / (i - j) ** 2 for j in graph if i != j) for i in graph
     }
     result = compute_structural_potential(
-        graph, landmark_ratio=0.025, validate=True,
-        error_epsilon=0.0, max_refinements=0, sample_size=1,
+        graph,
+        landmark_ratio=0.025,
+        validate=True,
+        error_epsilon=0.0,
+        max_refinements=0,
+        sample_size=1,
     )
     actual = {node: result[node] for node in graph}
     assert actual == pytest.approx(expected, abs=1e-12)
@@ -201,8 +213,7 @@ def test_weighted_multigraph_default_uses_minimum_parallel_distance():
     graph.add_weighted_edges_from((i, i + 1, 0.5) for i in range(59))
     _set_pressure(graph, {node: 0.1 for node in graph})
     expected = {
-        i: math.fsum(0.1 / (0.5 * (i - j)) ** 2 for j in graph if i != j)
-        for i in graph
+        i: math.fsum(0.1 / (0.5 * (i - j)) ** 2 for j in graph if i != j) for i in graph
     }
     assert compute_structural_potential(graph) == pytest.approx(expected, abs=1e-12)
 
@@ -228,7 +239,9 @@ def test_path_integral_has_one_term_per_edge_and_zero_empty_path():
 def test_validation_rejects_invalid_error_tolerance(epsilon):
     with pytest.raises(ValueError, match="error_epsilon"):
         compute_structural_potential(
-            nx.path_graph(4), landmark_ratio=0.1, validate=True,
+            nx.path_graph(4),
+            landmark_ratio=0.1,
+            validate=True,
             error_epsilon=epsilon,
         )
 
@@ -246,7 +259,9 @@ def test_zero_distance_exclusion_agrees_for_explicit_landmarks():
     _set_pressure(graph, {node: 0.1 for node in graph})
     expected = {0: 0.4, 1: 0.4, 2: 0.8}
     assert compute_structural_potential(graph) == pytest.approx(expected)
-    assert compute_structural_potential(graph, landmark_ratio=0.1) == pytest.approx(expected)
+    assert compute_structural_potential(graph, landmark_ratio=0.1) == pytest.approx(
+        expected
+    )
 
 
 @pytest.mark.parametrize("first_length", [0.0, 1.0])
@@ -262,7 +277,10 @@ def test_validation_rejects_nonfinite_exact_output_on_both_fallback_paths(first_
     with np.errstate(over="ignore", invalid="ignore"):
         with pytest.raises(ValueError, match="finite exact potentials"):
             compute_structural_potential(
-                graph, landmark_ratio=0.1, validate=True, error_epsilon=0.0,
+                graph,
+                landmark_ratio=0.1,
+                validate=True,
+                error_epsilon=0.0,
             )
 
 
@@ -271,8 +289,10 @@ def test_scalar_and_vectorized_landmark_paths_agree(monkeypatch):
 
     graph = nx.DiGraph()
     graph.add_weighted_edges_from((i, i + 1, 0.5) for i in range(9))
-    _set_pressure(graph, {node: (-1.0)**node * 0.1 for node in graph})
+    _set_pressure(graph, {node: (-1.0) ** node * 0.1 for node in graph})
     expected = compute_structural_potential(graph, landmark_ratio=0.3)
     reset_global_cache()
     monkeypatch.setattr(canonical, "_VECTORIZATION_AVAILABLE", False)
-    assert compute_structural_potential(graph, landmark_ratio=0.3) == pytest.approx(expected)
+    assert compute_structural_potential(graph, landmark_ratio=0.3) == pytest.approx(
+        expected
+    )

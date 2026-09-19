@@ -9,9 +9,9 @@ future runtime states.
 
 from __future__ import annotations
 
+import json
 from collections import deque
 from fractions import Fraction
-import json
 from typing import Any
 
 import networkx as nx
@@ -34,8 +34,7 @@ def _set_pure_epi_pressure(graph: nx.Graph) -> None:
     for node in graph:
         neighbours = tuple(graph.neighbors(node))
         graph.nodes[node]["delta_nfr"] = (
-            sum(values[item] for item in neighbours) / len(neighbours)
-            - values[node]
+            sum(values[item] for item in neighbours) / len(neighbours) - values[node]
         )
 
 
@@ -211,9 +210,7 @@ def _row(certificate: Any, observation: Any) -> dict[str, Any]:
         "endpoint_gain_upper_bound": _fraction_text(
             observation.exact_finite_endpoint_energy_gain_upper_bound
         ),
-        "finite_endpoint_bound": (
-            observation.exact_finite_endpoint_bound_certified
-        ),
+        "finite_endpoint_bound": (observation.exact_finite_endpoint_bound_certified),
     }
 
 
@@ -242,9 +239,7 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
             "repeated_binary64_stability": (
                 dyadic.repeated_binary64_runtime_stability_certified
             ),
-            "future_runtime_stability": (
-                dyadic.future_runtime_stability_certified
-            ),
+            "future_runtime_stability": (dyadic.future_runtime_stability_certified),
             "solver_accuracy": dyadic.solver_accuracy_certified,
             "full_tnfr_stability": dyadic.full_tnfr_stability_certified,
         },

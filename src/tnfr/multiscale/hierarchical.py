@@ -97,12 +97,8 @@ class ScaleDefinition:
 
         object.__setattr__(self, "name", self.name.strip())
         object.__setattr__(self, "node_count", int(self.node_count))
-        object.__setattr__(
-            self, "coupling_strength", float(self.coupling_strength)
-        )
-        object.__setattr__(
-            self, "edge_probability", float(self.edge_probability)
-        )
+        object.__setattr__(self, "coupling_strength", float(self.coupling_strength))
+        object.__setattr__(self, "edge_probability", float(self.edge_probability))
 
 
 @dataclass
@@ -188,9 +184,7 @@ class HierarchicalTNFRNetwork:
         if not isinstance(parallel, bool):
             raise TypeError("parallel must be bool")
         if max_workers is not None:
-            if isinstance(max_workers, bool) or not isinstance(
-                max_workers, Integral
-            ):
+            if isinstance(max_workers, bool) or not isinstance(max_workers, Integral):
                 raise TypeError("max_workers must be a positive integer or None")
             if int(max_workers) <= 0:
                 raise ValueError("max_workers must be positive")
@@ -353,8 +347,7 @@ class HierarchicalTNFRNetwork:
         from ..metrics.common import finite_mean_absolute, structural_coherence
 
         total_nodes = sum(
-            graph.number_of_nodes()
-            for graph in self.networks_by_scale.values()
+            graph.number_of_nodes() for graph in self.networks_by_scale.values()
         )
         if total_nodes == 0:
             return 0.0
@@ -531,9 +524,7 @@ class HierarchicalTNFRNetwork:
     def _finite_pressure_sum(values: Iterable[float], *, name: str) -> float:
         """Return a representable finite sum of finite pressure terms."""
 
-        normalized = tuple(
-            _finite_signed_mean((value,), name=name) for value in values
-        )
+        normalized = tuple(_finite_signed_mean((value,), name=name) for value in values)
         try:
             result = math.fsum(normalized)
         except OverflowError as exc:

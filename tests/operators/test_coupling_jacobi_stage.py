@@ -53,9 +53,7 @@ def _graph(
         )
     selected_edges = edges
     if selected_edges is None:
-        selected_edges = tuple(
-            (node, node + 1) for node in range(len(phases) - 1)
-        )
+        selected_edges = tuple((node, node + 1) for node in range(len(phases) - 1))
     graph.add_edges_from(selected_edges)
     graph.graph["RANDOM_SEED"] = 17
     graph.graph["UM_FUNCTIONAL_LINKS"] = False

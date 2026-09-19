@@ -7,8 +7,8 @@ secure serialization with HMAC signing to prevent tampering.
 
 from __future__ import annotations
 
-import os
 import io
+import os
 import pickle
 import pickletools
 import shelve
@@ -235,10 +235,23 @@ class _EnvelopeUnpickler(pickle.Unpickler):
         raise TNFRSecurityError("executable outer shelve pickle rejected")
 
 
-_OUTER_ENVELOPE_OPCODES = frozenset({
-    "PROTO", "FRAME", "STOP", "SHORT_BINBYTES", "BINBYTES", "BINBYTES8",
-    "MEMOIZE", "BINPUT", "LONG_BINPUT", "PUT", "BINGET", "LONG_BINGET", "GET",
-})
+_OUTER_ENVELOPE_OPCODES = frozenset(
+    {
+        "PROTO",
+        "FRAME",
+        "STOP",
+        "SHORT_BINBYTES",
+        "BINBYTES",
+        "BINBYTES8",
+        "MEMOIZE",
+        "BINPUT",
+        "LONG_BINPUT",
+        "PUT",
+        "BINGET",
+        "LONG_BINGET",
+        "GET",
+    }
+)
 
 
 def _decode_outer_envelope(blob: bytes) -> bytes:
@@ -432,7 +445,12 @@ class ShelveCacheLayer(CacheLayer):
                 blob = self._shelf.dict[name.encode(self._shelf.keyencoding)]
                 try:
                     entry = _decode_outer_envelope(blob)
-                except (pickle.PickleError, EOFError, ValueError, TNFRSecurityError) as exc:
+                except (
+                    pickle.PickleError,
+                    EOFError,
+                    ValueError,
+                    TNFRSecurityError,
+                ) as exc:
                     self.delete(name)
                     raise TNFRSecurityError("invalid outer shelve envelope") from exc
             else:
@@ -455,7 +473,8 @@ class ShelveCacheLayer(CacheLayer):
                 # protocols 0-2. The requested protocol still controls the
                 # authenticated inner value, preserving its public semantics.
                 self._shelf.dict[name.encode(self._shelf.keyencoding)] = pickle.dumps(
-                    stored_value, protocol=3,
+                    stored_value,
+                    protocol=3,
                 )
                 self._shelf.cache.pop(name, None)
             self._shelf.sync()

@@ -1,16 +1,17 @@
 """Exact additive defects and signed finite C6 reserve telescopes."""
 
+import math
 from dataclasses import FrozenInstanceError, replace
 from fractions import Fraction
-import math
 
 import pytest
 
 from tnfr.physics.coupling_winding import (
-    bound_c6_winding_defect_prefix, derive_c6_winding_joint_domain,
-    observe_c6_winding_defect, observe_c6_winding_joint_domain,
+    bound_c6_winding_defect_prefix,
+    derive_c6_winding_joint_domain,
+    observe_c6_winding_defect,
+    observe_c6_winding_joint_domain,
 )
-
 
 F = Fraction
 ZERO = (F(0),) * 6
@@ -19,9 +20,14 @@ HALF = (F(1, 2),) * 6
 
 def _reference(**overrides):
     values = {
-        "coupling_phase_factor": F(1, 2), "coherence_phase_factor": F(1, 3),
-        "capacity": 1, "epi_weight": F(1, 2), "phase_weight": F(1, 4),
-        "timestep": F(1, 2), "epi_lower": F(1, 4), "epi_upper": F(3, 4),
+        "coupling_phase_factor": F(1, 2),
+        "coherence_phase_factor": F(1, 3),
+        "capacity": 1,
+        "epi_weight": F(1, 2),
+        "phase_weight": F(1, 4),
+        "timestep": F(1, 2),
+        "epi_lower": F(1, 4),
+        "epi_upper": F(3, 4),
     }
     values.update(overrides)
     return derive_c6_winding_joint_domain(**values)
@@ -29,16 +35,21 @@ def _reference(**overrides):
 
 def _hand_defect():
     return observe_c6_winding_defect(
-        _reference(), phase_before_pi=ZERO,
-        phase_after_pi=(F(1, 120), F(-1, 120)) * 3, epi_before=HALF,
+        _reference(),
+        phase_before_pi=ZERO,
+        phase_after_pi=(F(1, 120), F(-1, 120)) * 3,
+        epi_before=HALF,
         epi_after=(F(5993, 12000), F(6031, 12000)) * 3,
     )
 
 
 def _uniform_shift(reference, before, shift):
     return observe_c6_winding_defect(
-        reference, phase_before_pi=ZERO, phase_after_pi=ZERO,
-        epi_before=(before,) * 6, epi_after=(before + shift,) * 6,
+        reference,
+        phase_before_pi=ZERO,
+        phase_after_pi=ZERO,
+        epi_before=(before,) * 6,
+        epi_after=(before + shift,) * 6,
     )
 
 
@@ -77,11 +88,17 @@ def test_original_defect_free_observer_and_new_model_share_the_same_nodal_endpoi
     before = (F(1, 96), F(-1, 96)) * 3
     after = (F(1, 120), F(-1, 120)) * 3
     original = observe_c6_winding_joint_domain(
-        reference, phase_before_pi=before, phase_after_pi=after, epi=HALF,
+        reference,
+        phase_before_pi=before,
+        phase_after_pi=after,
+        epi=HALF,
     )
     result = observe_c6_winding_defect(
-        reference, phase_before_pi=before, phase_after_pi=after,
-        epi_before=HALF, epi_after=original.epi_after,
+        reference,
+        phase_before_pi=before,
+        phase_after_pi=after,
+        epi_before=HALF,
+        epi_after=original.epi_after,
     )
     assert result.modeled_epi_after == original.epi_after
     assert result.modeled_pressure == original.modeled_pressure
@@ -103,7 +120,11 @@ def test_finite_prefix_preserves_signed_mean_cancellation_instead_of_summing_abs
     assert prefix.signed_lower_loss_prefix == (0, -eta, 0)
     assert prefix.signed_upper_loss_prefix == (0, eta, 0)
     assert prefix.absolute_defect_cost_prefix == (0, eta, 2 * eta)
-    assert prefix.lower_reserve_bounds == prefix.upper_reserve_bounds == (F(1, 2), F(51, 100), F(1, 2))
+    assert (
+        prefix.lower_reserve_bounds
+        == prefix.upper_reserve_bounds
+        == (F(1, 2), F(51, 100), F(1, 2))
+    )
     assert prefix.mean_prefix_bound == eta
     assert prefix.phase_oscillation_envelope == (0, 0, 0)
     assert prefix.phase_class_preserved and prefix.epi_reserve_preserved
@@ -126,11 +147,17 @@ def test_finite_phase_envelope_propagates_a_nonzero_defect_through_a_later_exact
     reference = first.reference
     z2 = tuple(z / 2 for z in first.phase_after_pi)
     second_model = observe_c6_winding_joint_domain(
-        reference, phase_before_pi=first.phase_after_pi, phase_after_pi=z2, epi=first.epi_after,
+        reference,
+        phase_before_pi=first.phase_after_pi,
+        phase_after_pi=z2,
+        epi=first.epi_after,
     )
     second = observe_c6_winding_defect(
-        reference, phase_before_pi=first.phase_after_pi, phase_after_pi=z2,
-        epi_before=first.epi_after, epi_after=second_model.epi_after,
+        reference,
+        phase_before_pi=first.phase_after_pi,
+        phase_after_pi=z2,
+        epi_before=first.epi_after,
+        epi_after=second_model.epi_after,
     )
     prefix = bound_c6_winding_defect_prefix(reference, observations=(first, second))
     assert second.phase_oscillation_defect == 0
@@ -144,8 +171,11 @@ def test_finite_phase_envelope_propagates_a_nonzero_defect_through_a_later_exact
 
 def test_phase_box_failure_is_retained_as_observation_instead_of_rejected_or_certified():
     result = observe_c6_winding_defect(
-        _reference(), phase_before_pi=ZERO, phase_after_pi=(F(1, 12), F(-1, 12)) * 3,
-        epi_before=HALF, epi_after=HALF,
+        _reference(),
+        phase_before_pi=ZERO,
+        phase_after_pi=(F(1, 12), F(-1, 12)) * 3,
+        epi_before=HALF,
+        epi_after=HALF,
     )
     assert result.phase_box_before and not result.phase_box_after
     assert result.phase_oscillation_defect == F(1, 6)
@@ -155,8 +185,11 @@ def test_phase_box_failure_is_retained_as_observation_instead_of_rejected_or_cer
 
 def test_phase_common_rotation_is_recorded_but_does_not_invent_pressure_or_oscillation_cost():
     result = observe_c6_winding_defect(
-        _reference(), phase_before_pi=ZERO, phase_after_pi=(F(1, 10),) * 6,
-        epi_before=HALF, epi_after=HALF,
+        _reference(),
+        phase_before_pi=ZERO,
+        phase_after_pi=(F(1, 10),) * 6,
+        epi_before=HALF,
+        epi_after=HALF,
     )
     assert result.phase_interval_expansion == F(1, 10)
     assert result.phase_oscillation_defect == result.absolute_defect_cost == 0
@@ -166,28 +199,47 @@ def test_phase_common_rotation_is_recorded_but_does_not_invent_pressure_or_oscil
 
 def test_observer_and_finite_prefix_rederive_forged_public_caches():
     reference = _reference()
-    forged_reference = replace(reference, phase_reference=None, nodal_euler_matrix=(),
-                               nonlinear_oscillation_factor=99, epi_phase_budget_weight=0)
+    forged_reference = replace(
+        reference,
+        phase_reference=None,
+        nodal_euler_matrix=(),
+        nonlinear_oscillation_factor=99,
+        epi_phase_budget_weight=0,
+    )
     result = _uniform_shift(forged_reference, F(1, 2), F(1, 100))
     assert result.reference == reference
-    forged_result = replace(result, phase_oscillation_defect=99, endpoint_defect=(99,) * 6,
-                            mean_defect=99, lower_loss_bound=99, upper_loss_bound=99,
-                            absolute_defect_cost=0)
-    prefix = bound_c6_winding_defect_prefix(forged_reference, observations=(forged_result,))
+    forged_result = replace(
+        result,
+        phase_oscillation_defect=99,
+        endpoint_defect=(99,) * 6,
+        mean_defect=99,
+        lower_loss_bound=99,
+        upper_loss_bound=99,
+        absolute_defect_cost=0,
+    )
+    prefix = bound_c6_winding_defect_prefix(
+        forged_reference, observations=(forged_result,)
+    )
     assert prefix.observations == (result,)
     assert prefix.mean_defect_prefix == (0, F(1, 100))
     assert prefix.absolute_defect_cost_prefix == (0, F(1, 100))
 
 
 @pytest.mark.parametrize("mismatch", ("epi", "phase", "reference"))
-def test_finite_chain_requires_actual_primitive_endpoint_adjacency_and_common_coefficients(mismatch):
+def test_finite_chain_requires_actual_primitive_endpoint_adjacency_and_common_coefficients(
+    mismatch,
+):
     reference = _reference()
     first = _uniform_shift(reference, F(1, 2), 0)
     ref2 = _reference(timestep=F(1, 4)) if mismatch == "reference" else reference
     x2 = (F(3, 5),) * 6 if mismatch == "epi" else HALF
     z2 = (F(1, 10),) * 6 if mismatch == "phase" else ZERO
     second = observe_c6_winding_defect(
-        ref2, phase_before_pi=z2, phase_after_pi=z2, epi_before=x2, epi_after=x2,
+        ref2,
+        phase_before_pi=z2,
+        phase_after_pi=z2,
+        epi_before=x2,
+        epi_after=x2,
     )
     with pytest.raises(ValueError, match="adjacent endpoints|same joint-domain"):
         bound_c6_winding_defect_prefix(reference, observations=(first, second))
@@ -205,14 +257,25 @@ def test_unordered_observations_are_not_a_finite_prefix():
         bound_c6_winding_defect_prefix(result.reference, observations={result})
 
 
-@pytest.mark.parametrize("field,value", (
-    ("epi_before", (0,) * 5), ("epi_after", (0,) * 7),
-    ("phase_before_pi", {i: 0 for i in range(6)}),
-    ("phase_after_pi", (math.nan,) * 6), ("epi_after", (True,) * 6),
-))
-def test_defect_observer_validates_exact_endpoint_dimensions_and_scalar_inputs(field, value):
-    inputs = {"phase_before_pi": ZERO, "phase_after_pi": ZERO,
-              "epi_before": HALF, "epi_after": HALF}
+@pytest.mark.parametrize(
+    "field,value",
+    (
+        ("epi_before", (0,) * 5),
+        ("epi_after", (0,) * 7),
+        ("phase_before_pi", {i: 0 for i in range(6)}),
+        ("phase_after_pi", (math.nan,) * 6),
+        ("epi_after", (True,) * 6),
+    ),
+)
+def test_defect_observer_validates_exact_endpoint_dimensions_and_scalar_inputs(
+    field, value
+):
+    inputs = {
+        "phase_before_pi": ZERO,
+        "phase_after_pi": ZERO,
+        "epi_before": HALF,
+        "epi_after": HALF,
+    }
     inputs[field] = value
     with pytest.raises((TypeError, ValueError)):
         observe_c6_winding_defect(_reference(), **inputs)

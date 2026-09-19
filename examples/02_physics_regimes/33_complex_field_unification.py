@@ -115,7 +115,9 @@ def demo_anticorrelation() -> None:
         ("Complete (N=15)", "Complete", 15),
     ]
 
-    print("\n  Scope: one seed and one size per topology; no universal interval assumed")
+    print(
+        "\n  Scope: one seed and one size per topology; no universal interval assumed"
+    )
     print(
         f"\n  {'Topology':<20}  {'r(K_phi, J_phi)':>16}  {'Mean |Psi|':>10}  {'Verdict':>10}"
     )

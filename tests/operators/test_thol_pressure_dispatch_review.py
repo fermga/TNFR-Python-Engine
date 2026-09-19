@@ -66,14 +66,22 @@ def test_prepared_reception_sources_survive_subsequent_thol_dispatch():
     graph.graph["GLYPH_FACTORS"] = {"EN_mix": 0.5, "THOL_accel": 0.25}
     for node, epi in enumerate((0.0, 0.5)):
         graph.nodes[node].update(
-            EPI=epi, nu_f=1.0, theta=0.0, delta_nfr=0.25,
-            glyph_history=["AL"], EPI_kind="seed",
+            EPI=epi,
+            nu_f=1.0,
+            theta=0.0,
+            delta_nfr=0.25,
+            glyph_history=["AL"],
+            EPI_kind="seed",
         )
     snapshot = capture_reception_read_snapshot(graph, 0, track_sources=True)
     assert snapshot.reception_sources is not None
 
     operators._apply_prepared_reception_glyph(
-        graph, 0, Glyph.EN, window=8, prepared_state=snapshot,
+        graph,
+        0,
+        Glyph.EN,
+        window=8,
+        prepared_state=snapshot,
     )
     assert real_scalar_epi(graph.nodes[0]["EPI"]) == 0.25
     assert graph.nodes[0]["_reception_sources"] == list(snapshot.reception_sources)

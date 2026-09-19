@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from fractions import Fraction
 import importlib.util
 import json
+from fractions import Fraction
 from pathlib import Path
 
 import pytest
-
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE_PATH = (
@@ -51,10 +50,7 @@ def test_example_exposes_the_exact_normal_binary64_counterexample(
     )
     assert observation.exact_ideal_squared_separation == Fraction(1, 2**318)
     assert observation.exact_bounded_squared_separation == Fraction(1, 2**106)
-    assert (
-        observation.exact_minimum_nonnegative_relative_defect_bound
-        == exact_eta
-    )
+    assert observation.exact_minimum_nonnegative_relative_defect_bound == exact_eta
 
     witness = report["normal_binary64_counterexample"]
     assert witness["observation_valid"]
@@ -64,9 +60,7 @@ def test_example_exposes_the_exact_normal_binary64_counterexample(
         "gamma": "1/4",
         "delta": "1/2",
     }
-    assert witness["minimum_eta"] == (
-        f"{exact_eta.numerator}/{exact_eta.denominator}"
-    )
+    assert witness["minimum_eta"] == (f"{exact_eta.numerator}/{exact_eta.denominator}")
     assert witness["eta_identity"] == "2^210 - 1/4"
     assert witness["eta_identity_verified"]
     assert not witness["uniform_bound_certified"]

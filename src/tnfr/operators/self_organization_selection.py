@@ -9,9 +9,9 @@ It reuses public THOL planning/commit and never synthesizes pressure or history.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping
 from dataclasses import dataclass
-import math
 from typing import Any
 
 from ..rng import validate_graph_seed
@@ -21,28 +21,46 @@ from ._thol_config import resolve_thol_bifurcation_threshold
 from .grammar_debt import require_replayable_history
 from .grammar_dynamics import validate_candidate
 from .network_stage import (
-    GraphTransactionSnapshot, NetworkStageResult, TWO_PHASE_JACOBI,
-    _detached_stage_graph, _merge_and_validate_self_organization_stage,
+    TWO_PHASE_JACOBI,
+    GraphTransactionSnapshot,
+    NetworkStageResult,
+    _detached_stage_graph,
+    _merge_and_validate_self_organization_stage,
     execute_self_organization_stage,
 )
 from .nodal_equation import (
-    StructuralAccelerationObservation, observe_structural_acceleration,
+    StructuralAccelerationObservation,
+    observe_structural_acceleration,
 )
 from .preconditions import OperatorPreconditionError
 from .self_organization import SelfOrganization
 
 __all__ = [
-    "SelfOrganizationCandidate", "SelfOrganizationEligibility",
-    "EligibleSelfOrganizationDispatch", "observe_self_organization_eligibility",
+    "SelfOrganizationCandidate",
+    "SelfOrganizationEligibility",
+    "EligibleSelfOrganizationDispatch",
+    "observe_self_organization_eligibility",
     "execute_eligible_self_organization_stage",
 ]
 
 _OPERATOR = "Self-organization eligibility"
-_OPTIONS = frozenset({
-    "tau", "window", "validate_preconditions", "collect_metrics",
-    "validate_nodal_equation", "dt",
-})
-_DOMAIN_ERRORS = (ValueError, TypeError, KeyError, OverflowError, OperatorPreconditionError)
+_OPTIONS = frozenset(
+    {
+        "tau",
+        "window",
+        "validate_preconditions",
+        "collect_metrics",
+        "validate_nodal_equation",
+        "dt",
+    }
+)
+_DOMAIN_ERRORS = (
+    ValueError,
+    TypeError,
+    KeyError,
+    OverflowError,
+    OperatorPreconditionError,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -67,9 +85,13 @@ class SelfOrganizationCandidate:
     @property
     def eligible(self) -> bool:
         return bool(
-            self.acceleration is not None and self.acceleration.available
-            and self.grammar_allowed and self.application_preconditions_passed
-            and self.proposal_valid and self.threshold_crossed and self.birth_proposed
+            self.acceleration is not None
+            and self.acceleration.available
+            and self.grammar_allowed
+            and self.application_preconditions_passed
+            and self.proposal_valid
+            and self.threshold_crossed
+            and self.birth_proposed
         )
 
 
@@ -90,7 +112,9 @@ class SelfOrganizationEligibility:
 
     @property
     def eligible_nodes(self) -> tuple[Any, ...]:
-        return tuple(candidate.node for candidate in self.candidates if candidate.eligible)
+        return tuple(
+            candidate.node for candidate in self.candidates if candidate.eligible
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -109,8 +133,10 @@ def _error(exc: Exception) -> str:
 
 def _edge_support(graph: Any) -> frozenset[Any]:
     """Capture topology, including orientation and parallel keys, not attributes."""
-    edges = graph.edges(keys=True) if graph.is_multigraph() else (
-        (left, right, None) for left, right in graph.edges
+    edges = (
+        graph.edges(keys=True)
+        if graph.is_multigraph()
+        else ((left, right, None) for left, right in graph.edges)
     )
     return frozenset(
         ((left, right) if graph.is_directed() else frozenset((left, right)), key)
@@ -129,18 +155,25 @@ def _materialize_options(options: Mapping[str, Any] | None) -> dict[str, Any]:
         raise ValueError("unsupported Self-organization eligibility option")
     result = {}
     for key, value in values.items():
-        if key in ("validate_preconditions", "collect_metrics", "validate_nodal_equation"):
+        if key in (
+            "validate_preconditions",
+            "collect_metrics",
+            "validate_nodal_equation",
+        ):
             result[key] = strict_bool(value, operator=_OPERATOR, label=key)
         elif key == "window":
             result[key] = (
-                None if value is None else
-                nonnegative_integer(value, operator=_OPERATOR, label=key)
+                None
+                if value is None
+                else nonnegative_integer(value, operator=_OPERATOR, label=key)
             )
         elif key == "tau" and value is None:
             result[key] = None
         else:
             result[key] = finite_real(
-                value, operator=_OPERATOR, label=key,
+                value,
+                operator=_OPERATOR,
+                label=key,
                 lower=0.0 if key == "tau" else math.nextafter(0.0, math.inf),
             )
     return result
@@ -157,7 +190,8 @@ def _observe(snapshot: Any, options: dict[str, Any]) -> SelfOrganizationEligibil
     tau = resolve_thol_bifurcation_threshold(snapshot.graph, options.get("tau"))
     options["tau"] = tau
     gate_enabled = options.get("validate_preconditions", True) and snapshot.graph.get(
-        "VALIDATE_OPERATOR_PRECONDITIONS", False,
+        "VALIDATE_OPERATOR_PRECONDITIONS",
+        False,
     )
     operator = SelfOrganization()
     candidates = []
@@ -196,12 +230,22 @@ def _observe(snapshot: Any, options: dict[str, Any]) -> SelfOrganizationEligibil
         except _DOMAIN_ERRORS as exc:
             proposal_error = _error(exc)
         candidate = SelfOrganizationCandidate(
-            node, acceleration, acceleration_error,
-            grammar_allowed, grammar_violations, grammar_error,
-            bool(gate_enabled), application_error is None, application_error,
-            proposal is not None, proposal_error,
-            abs(acceleration.value) > tau
-            if acceleration is not None and acceleration.available else None,
+            node,
+            acceleration,
+            acceleration_error,
+            grammar_allowed,
+            grammar_violations,
+            grammar_error,
+            bool(gate_enabled),
+            application_error is None,
+            application_error,
+            proposal is not None,
+            proposal_error,
+            (
+                abs(acceleration.value) > tau
+                if acceleration is not None and acceleration.available
+                else None
+            ),
             proposal.bifurcation is not None if proposal is not None else None,
             proposal.depth_limit_reached is not None if proposal is not None else None,
         )
@@ -212,18 +256,25 @@ def _observe(snapshot: Any, options: dict[str, Any]) -> SelfOrganizationEligibil
     if eligible_proposals:
         try:
             _merge_and_validate_self_organization_stage(
-                snapshot, operator, tuple(eligible_proposals),
+                snapshot,
+                operator,
+                tuple(eligible_proposals),
             )
         except _DOMAIN_ERRORS as exc:
             joint_error = _error(exc)
     return SelfOrganizationEligibility(
-        tuple(candidates), tau, tuple(sorted(options.items())),
-        joint_error is None, joint_error,
+        tuple(candidates),
+        tau,
+        tuple(sorted(options.items())),
+        joint_error is None,
+        joint_error,
     )
 
 
 def observe_self_organization_eligibility(
-    graph: Any, *, execution_kwargs: Mapping[str, Any] | None = None,
+    graph: Any,
+    *,
+    execution_kwargs: Mapping[str, Any] | None = None,
 ) -> SelfOrganizationEligibility:
     """Observe all current nodes without committing graph-owned changes.
 
@@ -246,7 +297,9 @@ def observe_self_organization_eligibility(
 
 
 def execute_eligible_self_organization_stage(
-    graph: Any, *, execution_kwargs: Mapping[str, Any] | None = None,
+    graph: Any,
+    *,
+    execution_kwargs: Mapping[str, Any] | None = None,
 ) -> EligibleSelfOrganizationDispatch:
     """Explicitly execute every currently eligible parent once, atomically.
 
@@ -269,27 +322,37 @@ def execute_eligible_self_organization_stage(
         if not targets:
             return EligibleSelfOrganizationDispatch(eligibility, None, ())
         if not eligibility.joint_stage_viable:
-            raise ValueError(f"joint THOL birth proposal rejected: {eligibility.joint_error}")
+            raise ValueError(
+                f"joint THOL birth proposal rejected: {eligibility.joint_error}"
+            )
         initial_nodes = frozenset(graph.nodes)
         initial_edges = _edge_support(graph)
         initial_children = {
             node: tuple(graph.nodes[node].get("sub_nodes", ())) for node in targets
         }
         stage = execute_self_organization_stage(
-            graph, SelfOrganization(), targets, transaction_snapshot=transaction,
+            graph,
+            SelfOrganization(),
+            targets,
+            transaction_snapshot=transaction,
             **dict(eligibility.execution_options),
         )
         if stage.schedule != TWO_PHASE_JACOBI or stage.nodes_processed != len(targets):
-            raise RuntimeError("eligible THOL dispatch requires the built-in two-phase stage")
+            raise RuntimeError(
+                "eligible THOL dispatch requires the built-in two-phase stage"
+            )
         births = []
         for node in targets:
             children = tuple(graph.nodes[node].get("sub_nodes", ()))
             previous = initial_children[node]
             if len(children) != len(previous) + 1 or children[:-1] != previous:
-                raise RuntimeError("eligible THOL parent did not append exactly one child")
+                raise RuntimeError(
+                    "eligible THOL parent did not append exactly one child"
+                )
             child = children[-1]
             if (
-                child in initial_nodes or child not in graph
+                child in initial_nodes
+                or child not in graph
                 or graph.nodes[child].get("parent_node") != node
                 or graph.degree(child) != 0
             ):

@@ -15,8 +15,8 @@ import pytest
 from tnfr.mathematics import arithmetic_pressure as ap
 from tnfr.mathematics.arithmetic_pressure import (
     FourthChannelCriteria,
-    abundance_class,
     ablation_detects_primes,
+    abundance_class,
     admits_fourth_channel,
     algorithmic_primality_is_circular,
     all_channels_sufficient,
@@ -53,10 +53,18 @@ from tnfr.research import CircularityAudit, CircularityVerdict
 # --------------------------------------------------------------------------- #
 # Required test 1: exact invariant values
 # --------------------------------------------------------------------------- #
-@pytest.mark.parametrize("n,omega,tau,sigma", [
-    (2, 1, 2, 3), (4, 2, 3, 7), (6, 2, 4, 12), (12, 3, 6, 28),
-    (16, 4, 5, 31), (30, 3, 8, 72), (36, 4, 9, 91),
-])
+@pytest.mark.parametrize(
+    "n,omega,tau,sigma",
+    [
+        (2, 1, 2, 3),
+        (4, 2, 3, 7),
+        (6, 2, 4, 12),
+        (12, 3, 6, 28),
+        (16, 4, 5, 31),
+        (30, 3, 8, 72),
+        (36, 4, 9, 91),
+    ],
+)
 def test_exact_arithmetic_functions(n, omega, tau, sigma):
     assert big_omega(n) == omega
     assert num_divisors(n) == tau
@@ -153,18 +161,31 @@ def test_pressure_by_factor_class():
         assert stats[cls]["min"] > 0.0
 
 
-@pytest.mark.parametrize("n,cls", [
-    (7, "prime"), (8, "prime_power"), (9, "prime_power"),
-    (6, "semiprime"), (15, "semiprime"), (30, "composite_other"),
-])
+@pytest.mark.parametrize(
+    "n,cls",
+    [
+        (7, "prime"),
+        (8, "prime_power"),
+        (9, "prime_power"),
+        (6, "semiprime"),
+        (15, "semiprime"),
+        (30, "composite_other"),
+    ],
+)
 def test_factor_class(n, cls):
     assert factor_class(n) == cls
 
 
-@pytest.mark.parametrize("n,cls", [
-    (6, "perfect"), (28, "perfect"), (12, "abundant"), (8, "deficient"),
-    (7, "deficient"),
-])
+@pytest.mark.parametrize(
+    "n,cls",
+    [
+        (6, "perfect"),
+        (28, "perfect"),
+        (12, "abundant"),
+        (8, "deficient"),
+        (7, "deficient"),
+    ],
+)
 def test_abundance_class(n, cls):
     assert abundance_class(n) == cls
 
@@ -203,19 +224,38 @@ def test_pressure_rejects_small_n(n):
 
 def test_module_exports_complete():
     expected = {
-        "big_omega", "num_divisors", "divisor_sum",
-        "channel_factorization", "channel_divisor", "channel_abundance",
-        "channels", "arithmetic_pressure", "CHANNEL_NAMES",
-        "primes_in_range", "channel_zero_set", "channel_is_sufficient",
-        "all_channels_sufficient", "channels_nonnegative",
-        "pressure_zero_iff_prime", "channel_matrix", "channel_rank",
-        "has_linear_relation", "channel_correlations",
-        "ablation_detects_primes", "minimal_channels_for_primality",
-        "is_redundant_for_primality", "factor_class", "abundance_class",
-        "pressure_by_class", "FourthChannelCriteria",
-        "admits_fourth_channel", "completeness_proven",
-        "ArithmeticPressureVector", "pressure_vector",
-        "IndependenceProof", "prove_functional_independence",
+        "big_omega",
+        "num_divisors",
+        "divisor_sum",
+        "channel_factorization",
+        "channel_divisor",
+        "channel_abundance",
+        "channels",
+        "arithmetic_pressure",
+        "CHANNEL_NAMES",
+        "primes_in_range",
+        "channel_zero_set",
+        "channel_is_sufficient",
+        "all_channels_sufficient",
+        "channels_nonnegative",
+        "pressure_zero_iff_prime",
+        "channel_matrix",
+        "channel_rank",
+        "has_linear_relation",
+        "channel_correlations",
+        "ablation_detects_primes",
+        "minimal_channels_for_primality",
+        "is_redundant_for_primality",
+        "factor_class",
+        "abundance_class",
+        "pressure_by_class",
+        "FourthChannelCriteria",
+        "admits_fourth_channel",
+        "completeness_proven",
+        "ArithmeticPressureVector",
+        "pressure_vector",
+        "IndependenceProof",
+        "prove_functional_independence",
         "algorithmic_primality_is_circular",
     }
     assert expected <= set(ap.__all__)

@@ -16,7 +16,7 @@ from numbers import Integral
 from typing import Any
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ..constants.aliases import ALIAS_THETA
 from ..constants.operational import STRUCT_CACHE_INTERPOLATE_CANONICAL
 from ..mathematics.unified_numerical import np
 

@@ -1,31 +1,10 @@
-"""
-Core TNFR Primality Testing Implementation
+"""Arithmetic-pressure diagnostics and primality predicates.
 
-This module contains the fundamental TNFR-based primality testing algorithms
-based on the arithmetic pressure equation ΔNFR(n).
-
-Mathematical Foundation:
-ΔNFR(n) = ζ·(Ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
-
-Where:
-- Ω(n) = prime factor count with multiplicity (big Omega)
-- τ(n) = number of divisors
-- σ(n) = sum of divisors
-- ζ = φ×γ ≈ 0.9340  (factorization pressure, notational)
-- η = (γ/φ)×π ≈ 1.1207  (divisor pressure, notational)
-- θ = 1/φ ≈ 0.6180  (abundance pressure, notational)
-
-These coefficients are (φ, γ, π, e) combinations chosen to approximate the
-original empirical values (1.0, 0.8, 0.6) — notational, NOT derived (audit 2026).
-
-Theorem: n is prime ⟺ ΔNFR(n) = 0
-
-Dual-lever interpretation (experimental discovery, March 2026):
-- ΔNFR is the pressure lever in the nodal equation ∂EPI/∂t = νf · ΔNFR(t)
-- Primes are zero-pressure nodes (ΔNFR = 0): maximum structural coherence
-- Composites carry positive pressure proportional to factorization complexity
-- Φ_s responds linearly to ΔNFR perturbations (|r| = 1.000)
-"""
+Divisor enumeration and trial factorization supply the statistics. With
+positive coefficients their exact-real pressure vanishes precisely at primes
+n>=2. The implementation uses floats and configurable numerical tolerance;
+this characterization is not a derivation of nodal dynamics or a universal
+floating-point correctness/performance certificate."""
 
 from __future__ import annotations
 
@@ -133,27 +112,22 @@ def tnfr_delta_nfr(
     eta: float = ETA_CANONICAL,
     theta: float = THETA_CANONICAL,
 ) -> float:
-    """
-    Calculate TNFR arithmetic pressure ΔNFR(n).
-
-    The ΔNFR equation quantifies structural pressure in arithmetic systems.
-    For prime numbers, this pressure is exactly zero due to their perfect
-    structural coherence.
+    """Compute a weighted arithmetic pressure from divisor/factor statistics.
 
     Args:
-        n: Integer to analyze
-        zeta: Factorization pressure coefficient (default: φ×γ ≈ 0.9340)
-        eta: Divisor pressure coefficient (default: (γ/φ)×π ≈ 1.1207)
-        theta: Abundance pressure coefficient (default: 1/φ ≈ 0.6180)
+        n: Integer to analyze; values below 2 return positive infinity.
+        zeta: Weight of Omega(n)-1; default 1.0.
+        eta: Weight of tau(n)-2; default 1.0.
+        theta: Weight of sigma(n)/n-(1+1/n); default 1.0.
 
     Returns:
-        ΔNFR value. Zero indicates primality.
+        Floating pressure. For positive coefficients and exact arithmetic,
+        its zero set on n>=2 is precisely the primes. Coefficients are not
+        validated here; arbitrary nonpositive choices need not preserve that
+        result. The defaults are a selected normalization.
 
-    Mathematical Derivation:
-        - Factorization pressure: ζ·(Ω(n)−1)
-        - Divisor pressure: η·(τ(n)−2)
-        - Abundance pressure: θ·(σ(n)/n − (1+1/n))
-    """
+    The routine computes divisors and prime-factor multiplicity first. It
+    observes no phase and integrates no nodal equation."""
     if n < 2:
         return float("inf")  # Invalid input
 
@@ -171,31 +145,23 @@ def tnfr_delta_nfr(
 
 
 def tnfr_is_prime(n: int, *, tolerance: float = 1e-10) -> Tuple[bool, float]:
-    """
-    TNFR-based primality test using arithmetic pressure analysis.
-
-    This function determines primality by calculating the TNFR arithmetic
-    pressure ΔNFR(n). Prime numbers exhibit perfect structural coherence
-    with ΔNFR(p) = 0, while composite numbers show positive pressure.
+    """Return a numerical zero-pressure predicate and its arithmetic pressure.
 
     Args:
-        n: Integer to test for primality
-        tolerance: Numerical tolerance for zero detection (default: 1e-10)
+        n: Integer to test; the default predicate rejects values below 2.
+        tolerance: Strict absolute zero tolerance; default 1e-10.
 
     Returns:
-        Tuple of (is_prime: bool, delta_nfr: float)
+        Tuple ``(abs(pressure) < tolerance, pressure)``. Custom tolerances
+        change the predicate; it is not an unconditional accuracy certificate.
+
+    The basic path enumerates divisors through sqrt(n) and trial-factors the
+    input. O(sqrt(n)) describes the arithmetic-loop scale, not bit complexity
+    or a performance advantage over established primality algorithms.
 
     Examples:
         >>> tnfr_is_prime(17)
-        (True, 0.0)
-        >>> tnfr_is_prime(982451653)
-        (True, 0.0)
-
-    Performance:
-        - Time Complexity: O(√n)
-        - Space Complexity: O(1)
-        - Accuracy: 100% (deterministic)
-    """
+        (True, 0.0)"""
     delta_nfr = tnfr_delta_nfr(n)
     is_prime = abs(delta_nfr) < tolerance
     return (is_prime, delta_nfr)
@@ -255,20 +221,20 @@ def tnfr_structural_triad(
     eta: float = ETA_CANONICAL,
     theta: float = THETA_CANONICAL,
 ) -> Dict[str, float]:
-    """Compute the full structural triad (EPI, νf, ΔNFR) for a number.
+    """Return a compatibility bundle of static arithmetic diagnostics.
 
-    The structural triad characterizes each number in the three
-    fundamental dimensions of TNFR dynamics:
-      - EPI (form): structural complexity profile
-      - νf  (frequency): reorganization capacity
-      - ΔNFR (pressure): structural coherence pressure
+    The retained name refers to ``EPI``, ``vf`` and ``delta_nfr`` fields, with
+    ``local_coherence`` and ``components``. It is not the canonical nodal triad
+    (EPI, capacity, phase): no phase is returned. EPI and capacity are selected
+    functions of supplied Omega, tau and sigma, not a derived autonomous law.
 
-    This implements the dual-lever interpretation: νf is the capacity
-    lever and ΔNFR is the pressure lever of ∂EPI/∂t = νf · ΔNFR(t).
+    Args:
+        n: Integer; values below 2 use the documented inactive sentinel bundle.
+        zeta: Pressure multiplicity weight, default 1.0.
+        eta: Pressure divisor weight, default 1.0.
+        theta: Pressure abundance weight, default 1.0.
 
-    Returns:
-        Dictionary with EPI, vf, delta_nfr, local_coherence, components.
-    """
+    The function does not evolve n, EPI, capacity or graph support."""
     if n < 2:
         return {
             "EPI": 0.0,
@@ -375,18 +341,16 @@ def tnfr_is_prime_cached(n: int, *, tolerance: float = 1e-10) -> Tuple[bool, flo
 
 
 def validate_tnfr_theory(test_range: int = 1000) -> dict:
-    """
-    Validate TNFR primality theory against known results.
+    """Compare this numerical predicate with trial division on a finite range.
 
-    This function tests the TNFR primality criterion against all numbers
-    in a given range and compares with traditional primality testing.
+    This is an implementation consistency check, not validation of the entire
+    TNFR framework or independent evidence for emergent physical dynamics.
 
     Args:
-        test_range: Test numbers from 2 to test_range
+        test_range: Inclusive maximum integer; tests begin at 2.
 
     Returns:
-        Dictionary with validation statistics
-    """
+        Counts and accuracy statistics for the checked range."""
 
     def is_prime_traditional(n):
         """Traditional primality test for comparison."""

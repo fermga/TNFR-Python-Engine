@@ -1,36 +1,15 @@
-"""TNFR Example 99: Structural Diffusion — the transport content of the
-nodal equation.
+"""Finite demonstrations of the isolated EPI diffusion channel.
 
-This example demonstrates, by direct measurement, that the TNFR nodal
-equation
-
-    ∂EPI/∂t = νf · ΔNFR(t)
-
-is **structurally a diffusion equation on the network** — not an analogy
-imported from another paradigm, but the literal content of the canonical
-ΔNFR computation.
-
-WHAT EMERGES (in TNFR's own terms, compared only to empirically-
-demonstrated phenomena):
-
-- The EPI channel of ΔNFR is exactly the random-walk graph Laplacian
-  (the discrete diffusion / heat operator): ΔNFR_epi = −L_rw·EPI.
-- The structural form EPI spreads and relaxes to a uniform field, exactly
-  as heat or a concentration diffuses (Fourier 1822, Fick 1855,
-  Einstein 1905 — established by the strictest empirical method).
-- The diffusion conserves the degree-weighted structural total
-  Σ deg·EPI (the analogue of the conserved amount of diffusing substance).
-- νf is the diffusivity (mobility); ΔNFR is the structural pressure
-  (the gradient driving the flux); ΔNFR = 0 ⟺ no gradients ⟺ equilibrium.
-- The phase channel of ΔNFR drives Kuramoto synchronization (also an
-  empirically-demonstrated phenomenon: fireflies, pacemaker cells,
-  neurons, Josephson junctions).
-
-References:
-- src/tnfr/physics/structural_diffusion.py
-- src/tnfr/dynamics/dnfr.py (the neighbour-mean ΔNFR gradients)
-- src/tnfr/observers.py (kuramoto_order)
-- AGENTS.md §"Foundational Physics"
+The EPI contribution is p_epi=-L_rw*x. With fixed connected reciprocal weights
+and common positive capacity, x_dot=-nu*L_rw*x relaxes to the degree-weighted
+mean. Heterogeneous capacities instead use invariant weights d_i/nu_i, and the
+full multichannel pressure need not be an unforced diffusion.
+The reaction comparison explicitly adds r*x, giving modal growth r-nu*lambda.
+Phase-pressure observations do not themselves define a Kuramoto phase law;
+capacity is not automatically angular frequency or a material diffusivity.
+These graph identities provide conditional models, not physical identification.
+See theory/TNFR_DIFFUSION_STABILITY_THEOREM.md and
+ theory/NODAL_PARAMETER_FOUNDATIONS.md.
 """
 
 import math
@@ -233,7 +212,7 @@ def experiment_6_structural_stability():
     print()
     print("The growth/decay of each structural mode under diffusion plus a")
     print("local reaction rate r follows the dispersion relation")
-    print("σ_k = r − νf·λ_k — the universal linear-stability law. Pure")
+    print("σ_k = r − νf·λ_k — the declared reaction-diffusion modal law. Pure")
     print("diffusion (r=0) decays every non-uniform mode; the threshold")
     print("r_c = νf·λ₂ separates uniform amplification from structural")
     print("pattern formation (the Fiedler partition).")
@@ -351,30 +330,30 @@ def main():
     print("WHAT THIS ESTABLISHES")
     print("=" * 72)
     print()
-    print("The nodal equation ∂EPI/∂t = νf·ΔNFR(t) is, structurally, a")
-    print("diffusion–synchronization equation on the network:")
+    print("The held pure-EPI law ∂EPI/∂t = -νf L_rw EPI is a")
+    print("diffusion equation under the stated reciprocal-graph hypotheses:")
     print("  • EPI diffuses (heat/Fick equation), relaxing to uniformity,")
     print("    conserving the degree-weighted total;")
     print("  • νf is the diffusivity/mobility, ΔNFR the structural pressure;")
-    print("  • the phase channel synchronizes (Kuramoto);")
-    print("  • being first-order, it produces the overdamped drift law")
-    print("    q̇ = νf·F (Stokes/Einstein), not inertial Newton — that lives")
-    print("    in the second-order symplectic substrate;")
+    print("  • the phase experiment uses a separately supplied synchronization law;")
+    print("  • a selected mobility/force interpretation gives a first-order drift;")
+    print("    the units and physical force mapping require separate justification.")
+    print("    The auxiliary symplectic substrate is a different declared model;")
     print("  • a bounded manifold has discrete standing-wave modes (the")
     print("    Laplacian eigenmodes — Pythagoras/Chladni harmonics);")
     print("  • the dispersion relation σ_k=r−νf·λ_k governs stability; above")
-    print("    r_c=νf·λ₂ the Fiedler mode grows (structural pattern / U2);")
-    print("  • the operator generates a random walk (Brownian motion); its")
+    print("    r_c=νf·λ₂ its nonuniform mode grows; the uniform mode grows for r>0;")
+    print("  • the generator defines a graph Markov process; its")
     print("    resistance geometry is a transport metric (Ohm/Kirchhoff).")
     print("  • the transport carries a Fick current whose Kirchhoff balance")
     print("    is the continuity equation div(J)=L·EPI (Ohm under injection).")
     print()
-    print("These are reproduced as the SAME mathematics as the empirically-")
-    print("demonstrated phenomena of diffusion, synchronization, mobility,")
+    print("These conditional graph identities support comparisons with")
+    print("models of diffusion, separately supplied synchronization, mobility,")
     print("standing waves, linear stability, and random walks / resistance —")
-    print("in TNFR's own variables (EPI, ΔNFR, νf, θ), not borrowed concepts.")
-    print("The emergent geometric tower (symplectic substrate, conservation")
-    print("laws) sits on top of this irreducible transport dynamics.")
+    print("with declared mappings and units, rather than physical identification.")
+    print("The auxiliary substrate and full multichannel dynamics require their own")
+    print("bridge, realizability and conservation assumptions.")
     print()
 
 

@@ -102,7 +102,11 @@ On a continuous segment, integrating the nodal equation gives
 
     EPI(t) − EPI(t₀) = ∫[t₀,t] ν_f(s) ΔNFR(s) ds.
 
-Local integrability supplies finite-horizon existence. On an infinite horizon,
+Local integrability of the supplied time-dependent product defines its
+finite-horizon accumulated change. Existence and uniqueness for a
+state-dependent constitutive law require separate hypotheses; see the
+[integrability distinctions](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#1-existence-boundedness-and-convergence).
+On an infinite horizon,
 bounded partial integrals, convergence of the improper integral, and absolute
 integrability are different conditions. For example, EPI(t) = sin(t) is bounded
 but does not converge, and ΔNFR(t) = 1/(1+t) with ν_f = 1 tends to zero while
@@ -129,7 +133,9 @@ The accounting kernel is
 obligations, not instantaneous physical pressure. Persistent execution context
 preserves debt that is older than a bounded retained trace.
 
-Coherence and Self-organization provide their contracted negative feedback.
+Coherence attenuates stored pressure under its contract. Self-organization
+applies signed acceleration-dependent pressure reorganization, whose magnitude
+can rise or fall; its stabilizer classification is not a contraction theorem.
 Proving convergence for repeated actions additionally requires a pressure law,
 gain and frequency bounds, elapsed times, and a suitable norm. The absence of
 named stabilizers does not imply positive feedback: pure EPI diffusion itself
@@ -228,9 +234,11 @@ stabilizer.
 Structural potential aggregates pressure through the canonical inverse-square
 distance kernel:
 
-    Φ_s(i) = Σ_(reachable j ≠ i) ΔNFR_j / d(i,j)².
+    Φ_s(i) = Σ_(reachable j ≠ i, 0 < d(i,j) < infinity) ΔNFR_j / d(i,j)².
 
-The field API defaults to exact evaluation. U6 compares before/after potential
+The field API defaults to full-graph numerical evaluation rather than a
+truncated neighborhood approximation; this is not exact rational arithmetic.
+U6 compares before/after potential
 telemetry using U6_STRUCTURAL_POTENTIAL_LIMIT = **π/2**. The related per-node
 warning value PHI_S_VON_KOCH_THRESHOLD = **π/4** is distinct from the drift
 check. Monitor reports must specify their node aggregation and baseline.
@@ -343,9 +351,10 @@ Verification has separate targets:
 
 - **Grammar contracts:** generators, closures, causal debt, transformer context,
   hierarchy depth, explicit phase checks, and context-specific allowances.
-- **Operator contracts:** Coherence monotonicity outside dissonance tests,
-  controlled bifurcation, Resonance propagation, Silence latency, Mutation's
-  threshold, nested identity, and reproducibility.
+- **Operator contracts:** verify each declared local postcondition on its
+  actual execution path, including optional side effects and unavailable
+  evidence. Pressure attenuation, phase-gated propagation, capacity attenuation
+  and conditional child creation are distinct from future stability.
 - **Analytic claims:** explicit graph, pressure law, frequency assumptions,
   integrator, norm, and gain bounds. Validate the claimed quantity rather than
   substituting a surrogate.

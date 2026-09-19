@@ -23,9 +23,7 @@ def _loop(*, dnfr: float, depi: float) -> StructuralFeedbackLoop:
 
 
 def test_feedback_local_coherence_uses_constitutive_kernel() -> None:
-    assert _loop(dnfr=1.0, depi=0.0)._compute_local_coherence() == pytest.approx(
-        0.5
-    )
+    assert _loop(dnfr=1.0, depi=0.0)._compute_local_coherence() == pytest.approx(0.5)
     assert _loop(dnfr=0.0, depi=0.5)._compute_local_coherence() == pytest.approx(
         2.0 / 3.0
     )

@@ -88,9 +88,7 @@ def validate_reception_strict(G: TNFRGraph, node: Any) -> None:
             f"Stored EPI is outside the configured Reception range. "
             f"Apply Reception only below the configured EPI upper bound.",
             context={"epi": epi, "epi_threshold": epi_threshold},
-            suggestion=(
-                "Apply Reception only below the configured EPI upper bound."
-            ),
+            suggestion=("Apply Reception only below the configured EPI upper bound."),
         )
 
     # Precondition 2: enforce the selected signed-pressure upper bound.

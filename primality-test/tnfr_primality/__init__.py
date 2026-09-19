@@ -1,17 +1,11 @@
-"""
-TNFR-Based Primality Testing Package
+"""Standalone arithmetic-pressure primality compatibility package.
 
-This package provides a novel approach to primality testing based on
-TNFR (Resonant Fractal Nature Theory) and arithmetic pressure equations.
-
-Theoretical foundation: TNFR-Python-Engine/theory/TNFR_NUMBER_THEORY.md
-  - Theorem (§4): n is prime ⟺ ΔNFR(n) = 0
-  - Canonical constants (§5): All coefficients from φ, γ, π, e
-
-Author: TNFR Research Team
-License: MIT
-Year: 2025
-"""
+The pressure zero set characterizes primes for n>=2 when exact divisor and
+factor statistics and positive coefficients are supplied. Runtime uses
+floating arithmetic and a declared zero tolerance. Unit defaults are a
+normalization choice, not coefficients derived from phi, gamma, pi or e.
+Static EPI/capacity summaries do not supply phase or an autonomous NFR law.
+See the subproject README and theory/TNFR_NUMBER_THEORY.md."""
 
 from .core import (
     tnfr_component_breakdown,

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import numpy as np
 import networkx as nx
+import numpy as np
 import pytest
 
 from tnfr.constants import EPI_PRIMARY
@@ -71,9 +71,9 @@ def test_pair_force_honors_graph_edges() -> None:
     system = _two_body_system()
     system.graph.remove_edge("body_0", "body_1")
 
-    assert compute_nbody_pair_forces(
-        system.graph, system.positions
-    ) == pytest.approx(np.zeros((2, 3)))
+    assert compute_nbody_pair_forces(system.graph, system.positions) == pytest.approx(
+        np.zeros((2, 3))
+    )
     assert compute_nbody_pair_potential(system.graph, system.positions) == 0.0
 
 
@@ -84,9 +84,9 @@ def test_parallel_pair_couplings_add_independently_of_insertion_order() -> None:
     combined = system.graph.copy()
     combined["body_0"]["body_1"]["weight"] = 0.5
 
-    assert compute_nbody_pair_forces(
-        parallel, system.positions
-    ) == pytest.approx(compute_nbody_pair_forces(combined, system.positions))
+    assert compute_nbody_pair_forces(parallel, system.positions) == pytest.approx(
+        compute_nbody_pair_forces(combined, system.positions)
+    )
 
 
 def test_coincident_positions_have_finite_zero_direction_force() -> None:
@@ -121,9 +121,7 @@ def test_legacy_hamiltonian_readout_is_not_the_position_potential() -> None:
 
 def test_projector_commutator_rate_is_zero_and_phases_stay_fixed() -> None:
     system = _two_body_system(phases=(0.25, 0.7))
-    rates = compute_tnfr_delta_nfr(
-        system.graph, ["body_0", "body_1"], system.hbar_str
-    )
+    rates = compute_tnfr_delta_nfr(system.graph, ["body_0", "body_1"], system.hbar_str)
     initial_phases = system.phases.copy()
 
     system.step(0.01)

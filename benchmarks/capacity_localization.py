@@ -24,11 +24,15 @@ import numpy as np  # noqa: E402
 
 from tnfr.alias import get_attr, set_attr  # noqa: E402
 from tnfr.constants.aliases import (  # noqa: E402
-    ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF,
+    ALIAS_DNFR,
+    ALIAS_EPI,
+    ALIAS_THETA,
+    ALIAS_VF,
 )
 from tnfr.dynamics.dnfr import default_compute_delta_nfr  # noqa: E402
 from tnfr.operators import (  # noqa: E402
-    build_operator_event_schedule, build_physical_flow_partition,
+    build_operator_event_schedule,
+    build_physical_flow_partition,
     execute_operator_event_schedule,
 )
 from tnfr.operators.definitions import Silence  # noqa: E402
@@ -38,11 +42,13 @@ from tnfr.physics.capacity_localization import (  # noqa: E402
 )
 from tnfr.physics.emergent_particles import winding_ring  # noqa: E402
 from tnfr.physics.winding_certificates import (  # noqa: E402
-    certify_phase_winding, observe_winding_word,
+    certify_phase_winding,
+    observe_winding_word,
 )
 from tnfr.research.claims import ClaimStatus  # noqa: E402
 from tnfr.research.core_manifests import (  # noqa: E402
-    CoreExperimentManifest, current_git_source_provenance,
+    CoreExperimentManifest,
+    current_git_source_provenance,
 )
 
 
@@ -54,11 +60,18 @@ def build_cycle(count, *, winding=1, epi=None, capacity=None):
     if len(epi) != count or len(capacity) != count:
         raise ValueError("preparation vectors must match the cycle")
     graph.graph.update(
-        _t=0.0, RANDOM_SEED=17, GLYPH_HYSTERESIS_WINDOW=64,
-        _gamma_spec={"type": "none"}, GAMMA={"type": "none"},
-        use_extended_dynamics=False, DT_MIN=0.0,
-        EPI_MIN=-4.0, EPI_MAX=4.0, CLIP_MODE="hard",
-        UM_BIDIRECTIONAL=False, UM_FUNCTIONAL_LINKS=False,
+        _t=0.0,
+        RANDOM_SEED=17,
+        GLYPH_HYSTERESIS_WINDOW=64,
+        _gamma_spec={"type": "none"},
+        GAMMA={"type": "none"},
+        use_extended_dynamics=False,
+        DT_MIN=0.0,
+        EPI_MIN=-4.0,
+        EPI_MAX=4.0,
+        CLIP_MODE="hard",
+        UM_BIDIRECTIONAL=False,
+        UM_FUNCTIONAL_LINKS=False,
         compute_delta_nfr=default_compute_delta_nfr,
     )
     for node in graph:
@@ -80,15 +93,15 @@ def _reference(graph, *, epi=None, capacity=None):
     return observe_cycle_capacity_balance(
         _values(graph, ALIAS_EPI) if epi is None else epi,
         _values(graph, ALIAS_VF) if capacity is None else capacity,
-        epi_weight=weights["epi"], vf_weight=weights["vf"],
+        epi_weight=weights["epi"],
+        vf_weight=weights["vf"],
     )
 
 
 def _channel_profile(reference, pressure):
     epi_pressure = tuple(
-        -reference.epi_weight * sum(
-            (entry * value for entry, value in zip(row, reference.epi)), Fraction(0)
-        )
+        -reference.epi_weight
+        * sum((entry * value for entry, value in zip(row, reference.epi)), Fraction(0))
         for row in reference.laplacian
     )
     capacity_pressure = tuple(
@@ -145,9 +158,7 @@ def execute_refreshed_flow(graph, *, duration=4.0, step=0.25):
     schedule = build_operator_event_schedule(
         (), start_time=graph.graph["_t"], flow_durations=(duration,)
     )
-    partition = build_physical_flow_partition(
-        schedule.intervals[0], (step,) * count
-    )
+    partition = build_physical_flow_partition(schedule.intervals[0], (step,) * count)
     result = execute_operator_event_schedule(
         graph, schedule, method="euler", physical_flow_partitions=(partition,)
     )
@@ -156,63 +167,88 @@ def execute_refreshed_flow(graph, *, duration=4.0, step=0.25):
     for boundary in evidence.boundary_observations:
         snapshot = boundary.after
         model = _reference(graph, epi=snapshot.epi, capacity=snapshot.nu_f)
-        boundaries.append({
-            "time": boundary.time, "exact_time": boundary.exact_time,
-            "epi": snapshot.epi, "capacity": snapshot.nu_f,
-            "pressure": snapshot.delta_nfr,
-            "channel_profile": _channel_profile(model, snapshot.delta_nfr),
-            "callback_name": boundary.callback_name,
-            "pressure_only_refresh": boundary.nonpressure_state_preserved,
-        })
+        boundaries.append(
+            {
+                "time": boundary.time,
+                "exact_time": boundary.exact_time,
+                "epi": snapshot.epi,
+                "capacity": snapshot.nu_f,
+                "pressure": snapshot.delta_nfr,
+                "channel_profile": _channel_profile(model, snapshot.delta_nfr),
+                "callback_name": boundary.callback_name,
+                "pressure_only_refresh": boundary.nonpressure_state_preserved,
+            }
+        )
     segments = []
     for segment, left, right in zip(
-        evidence.segment_flow_evidence, evidence.boundary_observations[:-1],
-        evidence.boundary_observations[1:], strict=True,
+        evidence.segment_flow_evidence,
+        evidence.boundary_observations[:-1],
+        evidence.boundary_observations[1:],
+        strict=True,
     ):
         dt = segment.interval.exact_duration
         predicted = tuple(
             x + dt * nu * pressure
             for x, nu, pressure in zip(
-                left.after.exact_epi, left.after.exact_nu_f,
-                left.after.exact_delta_nfr, strict=True,
+                left.after.exact_epi,
+                left.after.exact_nu_f,
+                left.after.exact_delta_nfr,
+                strict=True,
             )
         )
-        segments.append({
-            "duration": segment.interval.duration,
-            "exact_held_input_euler_residual": tuple(
-                actual - ideal for actual, ideal in zip(
-                    right.before.exact_epi, predicted, strict=True
-                )
-            ),
-            "integrator": segment.integrator_name,
-            "method": segment.resolved_method,
-            "clipping_applied": segment.clipping_applied,
-            "gamma_is_none": segment.gamma_is_none,
-        })
+        segments.append(
+            {
+                "duration": segment.interval.duration,
+                "exact_held_input_euler_residual": tuple(
+                    actual - ideal
+                    for actual, ideal in zip(
+                        right.before.exact_epi, predicted, strict=True
+                    )
+                ),
+                "integrator": segment.integrator_name,
+                "method": segment.resolved_method,
+                "clipping_applied": segment.clipping_applied,
+                "gamma_is_none": segment.gamma_is_none,
+            }
+        )
     final = _state(
         graph, pressure_origin="executor-owned terminal canonical pressure refresh"
     )
     exact_final = tuple(Fraction.from_float(value) for value in final["epi"])
     deviation = tuple(
-        value - equilibrium for value, equilibrium in zip(
+        value - equilibrium
+        for value, equilibrium in zip(
             exact_final, reference.equilibrium_epi, strict=True
         )
     )
-    final_error = sum(
-        (weight * error**2 for weight, error in zip(
-            reference.metric_weights, deviation, strict=True
-        )),
-        Fraction(0),
-    ) / 2
+    final_error = (
+        sum(
+            (
+                weight * error**2
+                for weight, error in zip(
+                    reference.metric_weights, deviation, strict=True
+                )
+            ),
+            Fraction(0),
+        )
+        / 2
+    )
     drift = sum(
-        (weight * (end - start) for weight, end, start in zip(
-            reference.metric_weights, exact_final, reference.epi, strict=True
-        )), Fraction(0),
+        (
+            weight * (end - start)
+            for weight, end, start in zip(
+                reference.metric_weights, exact_final, reference.epi, strict=True
+            )
+        ),
+        Fraction(0),
     )
     return {
-        "initial": initial, "final": final,
-        "duration": duration, "step": step,
-        "segments": segments, "boundaries": boundaries,
+        "initial": initial,
+        "final": final,
+        "duration": duration,
+        "step": step,
+        "segments": segments,
+        "boundaries": boundaries,
         "initial_error_energy_to_fixed_profile": reference.lyapunov_value,
         "final_error_energy_to_fixed_profile": final_error,
         "exact_fixed_metric_total_drift": drift,
@@ -232,7 +268,8 @@ def run_fixed_capacity_case(count, preparation, *, winding=1):
         epi = (1.0,) + (0.5,) * (count - 1)
         graph = build_cycle(count, winding=winding, epi=epi)
         preparation_record = {
-            "kind": "explicit initial EPI bump", "actual_operator_history": (),
+            "kind": "explicit initial EPI bump",
+            "actual_operator_history": (),
         }
     elif preparation == "single_silence":
         graph = build_cycle(count, winding=winding)
@@ -240,13 +277,15 @@ def run_fixed_capacity_case(count, preparation, *, winding=1):
         result = observe_winding_word(graph, tuple(graph), 0, [Silence()])
         preparation_record = {
             "kind": "one actual canonical SHA at node0; then held capacity",
-            "before": before, "after": _state(graph),
+            "before": before,
+            "after": _state(graph),
             "actual_operator_history": result.actual_history,
         }
     else:
         raise ValueError("unknown declared preparation")
     return {
-        "nodes": count, "prepared_winding": winding,
+        "nodes": count,
+        "prepared_winding": winding,
         "preparation": preparation_record,
         "flow": execute_refreshed_flow(graph),
     }
@@ -267,18 +306,21 @@ def run_capacity_release_case(count=8):
     balanced = _state(graph)
     events = []
     run_network_sequence(
-        graph, ["coupling", "silence"],
+        graph,
+        ["coupling", "silence"],
         context={"initial_epi_nonzero": all(x != 0.0 for x in balanced["epi"])},
-        on_step=lambda operator: events.append({
-            "operator": operator,
-            **_state(
-                graph,
-                pressure_origin=(
-                    "after dispatcher-owned default_compute_delta_nfr refresh; "
-                    "on_step only reads the graph"
+        on_step=lambda operator: events.append(
+            {
+                "operator": operator,
+                **_state(
+                    graph,
+                    pressure_origin=(
+                        "after dispatcher-owned default_compute_delta_nfr refresh; "
+                        "on_step only reads the graph"
+                    ),
                 ),
-            ),
-        }),
+            }
+        ),
     )
     return {
         "capacity_preparation_history": preparation.actual_history,
@@ -307,7 +349,8 @@ def _payload(value):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--output", type=Path,
+        "--output",
+        type=Path,
         default=ROOT / "artifacts/research/capacity_localization.json",
     )
     args = parser.parse_args()
@@ -315,30 +358,39 @@ def main():
     sha, dirty, digest = current_git_source_provenance(ROOT, scope)
     manifest = CoreExperimentManifest(
         claim_id="O3.a-held-capacity-localization-and-release",
-        git_sha=sha, source_dirty=dirty, dirty_source_hash=digest,
+        git_sha=sha,
+        source_dirty=dirty,
+        dirty_source_hash=digest,
         versions={
             "python": platform.python_version(),
-            "networkx": nx.__version__, "numpy": np.__version__,
+            "networkx": nx.__version__,
+            "numpy": np.__version__,
         },
-        graph_construction=(
-            "Unit-edge C8/C16 with winding=1; C8 winding=0 controls"
-        ),
+        graph_construction=("Unit-edge C8/C16 with winding=1; C8 winding=0 controls"),
         capacity_specification=(
             "Uniform or actual one-SHA preparation; held in each flow"
         ),
         solver="Existing event executor, refreshed shared nodal Euler, T=4",
         timestep=0.25,
-        result_status=ClaimStatus.MEASURED, seed=17,
+        result_status=ClaimStatus.MEASURED,
+        seed=17,
         operator_sequence=(
-            "single SHA preparation", "UM SHA release", "event-free flow"
+            "single SHA preparation",
+            "UM SHA release",
+            "event-free flow",
         ),
         telemetry=(
-            "exact held-capacity balance", "per-channel pressure residual",
-            "executor physical boundaries", "clipping and Euler residual",
-            "nodal triad and winding", "fixed-metric total and profile error",
+            "exact held-capacity balance",
+            "per-channel pressure residual",
+            "executor physical boundaries",
+            "clipping and Euler residual",
+            "nodal triad and winding",
+            "fixed-metric total and profile error",
         ),
         controls=(
-            "uniform capacity", "winding=0", "C8/C16",
+            "uniform capacity",
+            "winding=0",
+            "C8/C16",
             "actual capacity-writing release",
         ),
         artifacts=(str(args.output),),
@@ -352,8 +404,10 @@ def main():
         result_status=ClaimStatus.DERIVED,
         operator_sequence=(),
         telemetry=(
-            "shifted pressure identity", "fixed-metric invariant",
-            "stationary profile", "shifted Lyapunov/Dirichlet identities",
+            "shifted pressure identity",
+            "fixed-metric invariant",
+            "stationary profile",
+            "shifted Lyapunov/Dirichlet identities",
         ),
     )
     exact_manifest.validate_for_admission()
@@ -367,7 +421,8 @@ def main():
         ),
         "fixed_capacity_cases": [
             run_fixed_capacity_case(count, preparation)
-            for count in (8, 16) for preparation in ("epi_bump", "single_silence")
+            for count in (8, 16)
+            for preparation in ("epi_bump", "single_silence")
         ],
         "zero_winding_controls": [
             run_fixed_capacity_case(8, preparation, winding=0)
@@ -380,7 +435,9 @@ def main():
     if (sha, dirty, digest) != (final_sha, final_dirty, final_digest):
         raise RuntimeError("source changed while executing the research artifact")
     report["manifest"] = replace(
-        manifest, git_sha=final_sha, source_dirty=final_dirty,
+        manifest,
+        git_sha=final_sha,
+        source_dirty=final_dirty,
         dirty_source_hash=final_digest,
     ).to_dict()
     args.output.parent.mkdir(parents=True, exist_ok=True)

@@ -17,9 +17,9 @@ proposal without mutating the graph.
 from __future__ import annotations
 
 import math
-from numbers import Real
 from typing import Any
 
+from .._exact_time import finite_represented_real
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
 
@@ -27,15 +27,27 @@ __all__ = ["propose_u3_gated_phase_step"]
 
 
 def _finite_real(value: Any, name: str) -> float:
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, Real):
-        raise TNFRValueError(f"{name} must be a finite real scalar.")
     try:
-        result = float(value)
-    except (OverflowError, TypeError, ValueError) as exc:
-        raise TNFRValueError(f"{name} must be a finite real scalar.") from exc
-    if not math.isfinite(result):
-        raise TNFRValueError(f"{name} must be a finite real scalar.")
-    return result
+        return finite_represented_real(value, name)[0]
+    except (TypeError, ValueError) as exc:
+        raise TNFRValueError(str(exc)) from exc
+
+
+def _finite_vector(values: Any, count: int, name: str) -> np.ndarray:
+    """Validate original scalar kinds before binary64 array conversion."""
+    try:
+        original = np.asarray(values, dtype=object)
+    except (TypeError, ValueError) as exc:
+        raise TNFRValueError(f"{name} vector must match node order.") from exc
+    if original.shape != (count,):
+        raise TNFRValueError("Phase and frequency vectors must match node order.")
+    return np.array(
+        [
+            _finite_real(value, f"{name}[{index}]")
+            for index, value in enumerate(original)
+        ],
+        dtype=float,
+    )
 
 
 def propose_u3_gated_phase_step(
@@ -47,18 +59,20 @@ def propose_u3_gated_phase_step(
     dt: float,
     coupling_strength: float,
 ) -> np.ndarray:
-    """Return one simultaneous free-advance plus U3-gated phase proposal."""
+    """Return one simultaneous free-advance plus U3-gated phase proposal.
+
+    Phase and capacity vectors contain finite real scalars, not Boolean,
+    text or complex values. Validation precedes binary64 conversion; no
+    imaginary component is discarded from an inverse spectral transform.
+    Nonzero input scalars must remain nonzero when materialized as binary64.
+    """
     from ..operators._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
 
     if tuple(graph.nodes()) != tuple(nodes):
         raise TNFRValueError("Phase proposal node order differs from the graph.")
-    phase = np.asarray(phases, dtype=float)
-    frequency = np.asarray(frequencies, dtype=float)
     count = len(nodes)
-    if phase.shape != (count,) or frequency.shape != (count,):
-        raise TNFRValueError("Phase and frequency vectors must match node order.")
-    if not np.all(np.isfinite(phase)) or not np.all(np.isfinite(frequency)):
-        raise TNFRValueError("Phase and frequency vectors must be finite.")
+    phase = _finite_vector(phases, count, "phase")
+    frequency = _finite_vector(frequencies, count, "structural frequency")
     if np.any(frequency < 0.0):
         raise TNFRValueError("Structural frequency must be nonnegative.")
 

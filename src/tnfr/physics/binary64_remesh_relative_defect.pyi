@@ -79,9 +79,7 @@ class UniformAlphaOneHardClipRemeshClassCertificate:
     epi_max: Fraction
     alpha: Fraction
     clip_mode: Literal["hard"]
-    remesh_certificate: UniformRemeshHistoryStabilityCertificate = field(
-        repr=False
-    )
+    remesh_certificate: UniformRemeshHistoryStabilityCertificate = field(repr=False)
     exact_uniform_relative_defect_upper_bound: Fraction
     conditions: tuple[tuple[str, bool], ...]
     _proof_stamp: tuple[Any, ...] = field(...)
@@ -124,9 +122,7 @@ class UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate:
     epi_max: Fraction
     alpha: Fraction
     clip_mode: Literal["hard"]
-    remesh_certificate: UniformRemeshHistoryStabilityCertificate = field(
-        repr=False
-    )
+    remesh_certificate: UniformRemeshHistoryStabilityCertificate = field(repr=False)
     exact_uniform_relative_defect_upper_bound: Fraction
     exact_tail_error_linear_coefficient: Fraction
     exact_tail_error_absolute_coefficient: Fraction
@@ -139,9 +135,7 @@ class UniformHalfAlphaAntisymmetricHardClipRemeshClassCertificate:
     example_schedule_energy_gain_upper_bound: Fraction
     exact_example_effective_head_energy_gain_upper_bound: Fraction
     exact_example_normalized_block_margin_lower_bound: Fraction
-    sharpness_witness: Binary64RemeshPairRelativeDefectObservation = field(
-        repr=False
-    )
+    sharpness_witness: Binary64RemeshPairRelativeDefectObservation = field(repr=False)
     conditions: tuple[tuple[str, bool], ...]
     _proof_stamp: tuple[Any, ...] = field(...)
     def _proof_fields_are_intact(self) -> bool: ...
@@ -197,7 +191,6 @@ def observe_binary64_remesh_pair_relative_defect(
     epi_max: Real,
     clip_mode: Literal["hard", "soft"] = "hard",
 ) -> Binary64RemeshPairRelativeDefectObservation: ...
-
 def certify_alpha_one_hard_clip_remesh_class(
     nodes: Iterable[Hashable],
     metric_weights: Mapping[Hashable, Real] | Sequence[Real] | None = None,
@@ -207,7 +200,6 @@ def certify_alpha_one_hard_clip_remesh_class(
     epi_min: Real,
     epi_max: Real,
 ) -> UniformAlphaOneHardClipRemeshClassCertificate: ...
-
 def certify_half_alpha_antisymmetric_hard_clip_remesh_class(
     nodes_pair: Iterable[Hashable],
     metric_weights: Mapping[Hashable, Real] | Sequence[Real] | None = None,

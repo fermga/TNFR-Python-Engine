@@ -25,11 +25,15 @@ from ..dynamics._euler_kernel import (
 from .binary64_nodal_flow import Binary64AdditionCell, _rounding_cell
 
 __all__ = [
-    "NodalRemainderPrefix", "NodalRemainderSequence",
+    "NodalRemainderPrefix",
+    "NodalRemainderSequence",
     "observe_nodal_remainder_sequence",
-    "NodalRemainderCellHorizon", "derive_nodal_remainder_cell_horizon",
-    "NodalRemainderCellExit", "observe_nodal_remainder_cell_exit",
-    "NodalRemainderItineraryCell", "NodalRemainderItinerary",
+    "NodalRemainderCellHorizon",
+    "derive_nodal_remainder_cell_horizon",
+    "NodalRemainderCellExit",
+    "observe_nodal_remainder_cell_exit",
+    "NodalRemainderItineraryCell",
+    "NodalRemainderItinerary",
     "derive_nodal_remainder_itinerary",
 ]
 
@@ -65,8 +69,11 @@ class NodalRemainderCellHorizon:
 
 
 def derive_nodal_remainder_cell_horizon(
-    *, state: NodalRemainderState, timestep: float,
-    capacity: tuple[float, ...], pressure: tuple[float, ...],
+    *,
+    state: NodalRemainderState,
+    timestep: float,
+    capacity: tuple[float, ...],
+    pressure: tuple[float, ...],
 ) -> NodalRemainderCellHorizon:
     """Derive an exact integer prefix without iterating a held nodal flow.
 
@@ -94,10 +101,14 @@ def derive_nodal_remainder_cell_horizon(
         raise ValueError("capacity and pressure tuples must match the EPI dimensions")
     if h < 0 or any(value < 0 for value in capacities):
         raise ValueError("timestep and capacity must be nonnegative")
-    increment = tuple(Fraction(h) * Fraction(nu) * Fraction(p)
-                      for nu, p in zip(capacities, pressures, strict=True))
+    increment = tuple(
+        Fraction(h) * Fraction(nu) * Fraction(p)
+        for nu, p in zip(capacities, pressures, strict=True)
+    )
     lower, upper = Fraction(state.epi_lower), Fraction(state.epi_upper)
-    cells = tuple(_rounding_cell(x, value) for x, value in zip(state.epi, exact, strict=True))
+    cells = tuple(
+        _rounding_cell(x, value) for x, value in zip(state.epi, exact, strict=True)
+    )
     limits = []
     for value, added, cell in zip(exact, increment, cells, strict=True):
         if not added:
@@ -112,27 +123,63 @@ def derive_nodal_remainder_cell_horizon(
             closed = endpoint > cell.lower or cell.even_significand
             ratio = (value - endpoint) / -added
         # ceil(ratio)-1 == (numerator-1)//denominator for rational ratio.
-        limit = (ratio.numerator if closed else ratio.numerator - 1) // ratio.denominator
+        limit = (
+            ratio.numerator if closed else ratio.numerator - 1
+        ) // ratio.denominator
         if limit < 0:
-            raise RuntimeError("validated carried state is outside its initial admissible cell")
+            raise RuntimeError(
+                "validated carried state is outside its initial admissible cell"
+            )
         limits.append(limit)
     finite_limits = tuple(value for value in limits if value is not None)
     maximum = min(finite_limits) if finite_limits else None
     first_exit = maximum + 1 if maximum is not None else None
-    endpoint = (tuple(value + maximum * added for value, added in zip(exact, increment, strict=True))
-                if maximum is not None else None)
-    after = (tuple(value + first_exit * added for value, added in zip(exact, increment, strict=True))
-             if first_exit is not None else None)
-    leaves_cell = tuple(
-        not _rounding_cell(x, value).contains_exact_input
-        for x, value in zip(state.epi, after, strict=True)
-    ) if after is not None else (False,) * len(exact)
-    leaves_band = tuple(not lower <= value <= upper for value in after) if after is not None else (False,) * len(exact)
+    endpoint = (
+        tuple(
+            value + maximum * added
+            for value, added in zip(exact, increment, strict=True)
+        )
+        if maximum is not None
+        else None
+    )
+    after = (
+        tuple(
+            value + first_exit * added
+            for value, added in zip(exact, increment, strict=True)
+        )
+        if first_exit is not None
+        else None
+    )
+    leaves_cell = (
+        tuple(
+            not _rounding_cell(x, value).contains_exact_input
+            for x, value in zip(state.epi, after, strict=True)
+        )
+        if after is not None
+        else (False,) * len(exact)
+    )
+    leaves_band = (
+        tuple(not lower <= value <= upper for value in after)
+        if after is not None
+        else (False,) * len(exact)
+    )
     if after is not None and not any(leaves_cell + leaves_band):
         raise RuntimeError("first carried-cell exit failed its exact boundary check")
     return NodalRemainderCellHorizon(
-        state, h, capacities, pressures, increment, _mean(increment), cells,
-        tuple(limits), maximum, first_exit, endpoint, after, leaves_cell, leaves_band,
+        state,
+        h,
+        capacities,
+        pressures,
+        increment,
+        _mean(increment),
+        cells,
+        tuple(limits),
+        maximum,
+        first_exit,
+        endpoint,
+        after,
+        leaves_cell,
+        leaves_band,
     )
 
 
@@ -174,7 +221,9 @@ class NodalRemainderSequence:
 
 
 def observe_nodal_remainder_sequence(
-    *, initial: NodalRemainderState, timesteps: tuple[float, ...],
+    *,
+    initial: NodalRemainderState,
+    timesteps: tuple[float, ...],
     capacities: tuple[tuple[float, ...], ...],
     pressures: tuple[tuple[float, ...], ...],
 ) -> NodalRemainderSequence:
@@ -199,11 +248,18 @@ def observe_nodal_remainder_sequence(
     if not isinstance(initial, NodalRemainderState):
         raise TypeError("initial must be a NodalRemainderState")
     exact_initial = initial.exact_epi
-    for values, label in ((timesteps, "timesteps"), (capacities, "capacities"),
-                          (pressures, "pressures")):
+    for values, label in (
+        (timesteps, "timesteps"),
+        (capacities, "capacities"),
+        (pressures, "pressures"),
+    ):
         if type(values) is not tuple:
             raise TypeError(f"{label} must be an ordered tuple")
-    if not timesteps or len(capacities) != len(timesteps) or len(pressures) != len(timesteps):
+    if (
+        not timesteps
+        or len(capacities) != len(timesteps)
+        or len(pressures) != len(timesteps)
+    ):
         raise ValueError("the prescribed schedule must have nonempty matching lengths")
     visible_initial = tuple(Fraction.from_float(value) for value in initial.epi)
     initial_mean_carry = _mean(initial.remainder)
@@ -211,36 +267,81 @@ def observe_nodal_remainder_sequence(
     area = (Fraction(0),) * len(exact_initial)
     current = initial
     steps, prefixes = [], []
-    for ordinal, (h, capacity, pressure) in enumerate(zip(timesteps, capacities, pressures, strict=True), 1):
-        step = advance_nodal_remainder(current, timestep=h, capacity=capacity, pressure=pressure)
+    for ordinal, (h, capacity, pressure) in enumerate(
+        zip(timesteps, capacities, pressures, strict=True), 1
+    ):
+        step = advance_nodal_remainder(
+            current, timestep=h, capacity=capacity, pressure=pressure
+        )
         current = step.after
         exact = current.exact_epi
         visible = tuple(Fraction.from_float(value) for value in current.epi)
-        area = tuple(total + added for total, added in zip(area, step.exact_increment, strict=True))
-        visible_change = tuple(y - x for x, y in zip(visible_initial, visible, strict=True))
-        reconstructed_change = tuple(y - x for x, y in zip(exact_initial, exact, strict=True))
-        transfer = tuple(x - y for x, y in zip(initial.remainder, current.remainder, strict=True))
-        residual = tuple(change - total - carried for change, total, carried
-                         in zip(visible_change, area, transfer, strict=True))
-        cells = tuple(_rounding_cell(value, coordinate)
-                      for value, coordinate in zip(current.epi, exact, strict=True))
-        remainder_lower = tuple(cell.lower - value for cell, value in zip(cells, visible, strict=True))
-        remainder_upper = tuple(cell.upper - value for cell, value in zip(cells, visible, strict=True))
+        area = tuple(
+            total + added
+            for total, added in zip(area, step.exact_increment, strict=True)
+        )
+        visible_change = tuple(
+            y - x for x, y in zip(visible_initial, visible, strict=True)
+        )
+        reconstructed_change = tuple(
+            y - x for x, y in zip(exact_initial, exact, strict=True)
+        )
+        transfer = tuple(
+            x - y for x, y in zip(initial.remainder, current.remainder, strict=True)
+        )
+        residual = tuple(
+            change - total - carried
+            for change, total, carried in zip(
+                visible_change, area, transfer, strict=True
+            )
+        )
+        cells = tuple(
+            _rounding_cell(value, coordinate)
+            for value, coordinate in zip(current.epi, exact, strict=True)
+        )
+        remainder_lower = tuple(
+            cell.lower - value for cell, value in zip(cells, visible, strict=True)
+        )
+        remainder_upper = tuple(
+            cell.upper - value for cell, value in zip(cells, visible, strict=True)
+        )
         lower = initial_mean_carry - _mean(remainder_upper)
         upper = initial_mean_carry - _mean(remainder_lower)
         mean_area, mean_visible = _mean(area), _mean(visible_change)
         defect = mean_visible - mean_area
-        if (any(residual) or reconstructed_change != area
-                or not all(cell.contains_exact_input for cell in cells)
-                or not lower <= defect <= upper or abs(defect) > bound):
-            raise RuntimeError("carried nodal prefix failed its exact area or rounding-cell balance")
-        prefixes.append(NodalRemainderPrefix(
-            ordinal, area, visible_change, reconstructed_change, transfer, residual,
-            mean_area, mean_visible, _mean(reconstructed_change), _mean(transfer),
-            _mean(residual), defect, lower, upper, cells,
-        ))
+        if (
+            any(residual)
+            or reconstructed_change != area
+            or not all(cell.contains_exact_input for cell in cells)
+            or not lower <= defect <= upper
+            or abs(defect) > bound
+        ):
+            raise RuntimeError(
+                "carried nodal prefix failed its exact area or rounding-cell balance"
+            )
+        prefixes.append(
+            NodalRemainderPrefix(
+                ordinal,
+                area,
+                visible_change,
+                reconstructed_change,
+                transfer,
+                residual,
+                mean_area,
+                mean_visible,
+                _mean(reconstructed_change),
+                _mean(transfer),
+                _mean(residual),
+                defect,
+                lower,
+                upper,
+                cells,
+            )
+        )
         steps.append(step)
-    return NodalRemainderSequence(initial, tuple(steps), tuple(prefixes), current, bound)
+    return NodalRemainderSequence(
+        initial, tuple(steps), tuple(prefixes), current, bound
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -257,8 +358,12 @@ class NodalRemainderCellExit:
 
 
 def observe_nodal_remainder_cell_exit(
-    *, state: NodalRemainderState, timestep: float,
-    capacity: tuple[float, ...], pressure: tuple[float, ...], step_budget: int,
+    *,
+    state: NodalRemainderState,
+    timestep: float,
+    capacity: tuple[float, ...],
+    pressure: tuple[float, ...],
+    step_budget: int,
 ) -> NodalRemainderCellExit:
     """Replay one analytically bounded cell exit without discarding carry.
 
@@ -280,7 +385,10 @@ def observe_nodal_remainder_cell_exit(
     if step_budget <= 0:
         raise ValueError("step_budget must be positive")
     horizon = derive_nodal_remainder_cell_horizon(
-        state=state, timestep=timestep, capacity=capacity, pressure=pressure,
+        state=state,
+        timestep=timestep,
+        capacity=capacity,
+        pressure=pressure,
     )
     count = horizon.first_exit_step
     if count is None:
@@ -290,16 +398,22 @@ def observe_nodal_remainder_cell_exit(
     if count > step_budget:
         raise ValueError("the first cell exit exceeds step_budget")
     sequence = observe_nodal_remainder_sequence(
-        initial=horizon.state, timesteps=(horizon.timestep,) * count,
-        capacities=(horizon.capacity,) * count, pressures=(horizon.pressure,) * count,
+        initial=horizon.state,
+        timesteps=(horizon.timestep,) * count,
+        capacities=(horizon.capacity,) * count,
+        pressures=(horizon.pressure,) * count,
     )
-    if (len(sequence.steps) != count
-            or any(step.before.epi != horizon.state.epi for step in sequence.steps)
-            or any(step.after.epi != horizon.state.epi for step in sequence.steps[:-1])
-            or sequence.steps[-1].before.exact_epi != horizon.unchanged_endpoint
-            or sequence.steps[-1].after.exact_epi != horizon.first_exit_exact
-            or sequence.endpoint.exact_epi != horizon.first_exit_exact):
-        raise RuntimeError("shared carried replay differs from the analytic first cell exit")
+    if (
+        len(sequence.steps) != count
+        or any(step.before.epi != horizon.state.epi for step in sequence.steps)
+        or any(step.after.epi != horizon.state.epi for step in sequence.steps[:-1])
+        or sequence.steps[-1].before.exact_epi != horizon.unchanged_endpoint
+        or sequence.steps[-1].after.exact_epi != horizon.first_exit_exact
+        or sequence.endpoint.exact_epi != horizon.first_exit_exact
+    ):
+        raise RuntimeError(
+            "shared carried replay differs from the analytic first cell exit"
+        )
     return NodalRemainderCellExit(horizon, sequence)
 
 
@@ -364,13 +478,19 @@ class NodalRemainderItinerary:
 def _itinerary_rows(rows, label):
     if type(rows) is not tuple:
         raise TypeError(f"{label} must be an ordered tuple of binary64 rows")
-    return tuple(_binary64_tuple(row, f"{label}[{index}]") for index, row in enumerate(rows))
+    return tuple(
+        _binary64_tuple(row, f"{label}[{index}]") for index, row in enumerate(rows)
+    )
 
 
 def derive_nodal_remainder_itinerary(
-    *, epi_states: tuple[tuple[float, ...], ...], timesteps: tuple[float, ...],
-    capacities: tuple[tuple[float, ...], ...], pressures: tuple[tuple[float, ...], ...],
-    epi_lower: float = .05, epi_upper: float = 1.0,
+    *,
+    epi_states: tuple[tuple[float, ...], ...],
+    timesteps: tuple[float, ...],
+    capacities: tuple[tuple[float, ...], ...],
+    pressures: tuple[tuple[float, ...], ...],
+    epi_lower: float = 0.05,
+    epi_upper: float = 1.0,
 ) -> NodalRemainderItinerary:
     """Intersect exact translated output cells for a nonempty itinerary.
 
@@ -403,7 +523,11 @@ def derive_nodal_remainder_itinerary(
     capacity_rows = _itinerary_rows(capacities, "capacities")
     pressure_rows = _itinerary_rows(pressures, "pressures")
     count = len(steps)
-    if len(states) != count + 1 or len(capacity_rows) != count or len(pressure_rows) != count:
+    if (
+        len(states) != count + 1
+        or len(capacity_rows) != count
+        or len(pressure_rows) != count
+    ):
         raise ValueError("the itinerary requires N steps and N+1 visible EPI rows")
     dimension = len(states[0])
     if any(len(row) != dimension for row in states + capacity_rows + pressure_rows):
@@ -414,11 +538,17 @@ def derive_nodal_remainder_itinerary(
         raise ValueError("every visible EPI must lie in the declared positive band")
     zero = (Fraction(0),) * dimension
     area = [zero]
-    for h, capacities_at_step, pressures_at_step in zip(steps, capacity_rows, pressure_rows, strict=True):
-        area.append(tuple(
-            total + Fraction(h) * Fraction(nu) * Fraction(p)
-            for total, nu, p in zip(area[-1], capacities_at_step, pressures_at_step, strict=True)
-        ))
+    for h, capacities_at_step, pressures_at_step in zip(
+        steps, capacity_rows, pressure_rows, strict=True
+    ):
+        area.append(
+            tuple(
+                total + Fraction(h) * Fraction(nu) * Fraction(p)
+                for total, nu, p in zip(
+                    area[-1], capacities_at_step, pressures_at_step, strict=True
+                )
+            )
+        )
     exact_lower, exact_upper = Fraction(lower), Fraction(upper)
     scale = 2**NODAL_REMAINDER_DENOMINATOR_BITS
     coordinate_cells = []
@@ -449,9 +579,17 @@ def derive_nodal_remainder_itinerary(
             first += 1
         if not upper_closed and scaled_upper.denominator == 1:
             last -= 1
-        coordinate_cells.append(NodalRemainderItineraryCell(
-            interval_lower, interval_upper, lower_closed, upper_closed, first, last, first <= last,
-        ))
+        coordinate_cells.append(
+            NodalRemainderItineraryCell(
+                interval_lower,
+                interval_upper,
+                lower_closed,
+                upper_closed,
+                first,
+                last,
+                first <= last,
+            )
+        )
     coordinates = tuple(coordinate_cells)
     feasible = all(cell.feasible for cell in coordinates)
     initial_indices = tuple(int(Fraction(value) * scale) for value in states[0])
@@ -462,24 +600,47 @@ def derive_nodal_remainder_itinerary(
     witness = sequence = None
     if feasible:
         initial_exact = tuple(
-            Fraction(min(max(index, cell.first_grid_index), cell.last_grid_index), scale)
+            Fraction(
+                min(max(index, cell.first_grid_index), cell.last_grid_index), scale
+            )
             for cell, index in zip(coordinates, initial_indices, strict=True)
         )
         witness = NodalRemainderState(
-            states[0], tuple(value - Fraction(visible)
-                             for value, visible in zip(initial_exact, states[0], strict=True)),
-            lower, upper,
+            states[0],
+            tuple(
+                value - Fraction(visible)
+                for value, visible in zip(initial_exact, states[0], strict=True)
+            ),
+            lower,
+            upper,
         )
         _validate_nodal_remainder_state(witness)
         sequence = observe_nodal_remainder_sequence(
-            initial=witness, timesteps=steps, capacities=capacity_rows, pressures=pressure_rows,
+            initial=witness,
+            timesteps=steps,
+            capacities=capacity_rows,
+            pressures=pressure_rows,
         )
         if tuple(step.after.epi for step in sequence.steps) != states[1:]:
-            raise RuntimeError("the feasible itinerary witness failed shared-kernel replay")
+            raise RuntimeError(
+                "the feasible itinerary witness failed shared-kernel replay"
+            )
     visible_closed = states[0] == states[-1]
     carried_cycle = feasible and visible_closed and not any(area[-1])
     return NodalRemainderItinerary(
-        states, steps, capacity_rows, pressure_rows, lower, upper, coordinates,
-        tuple(area), area[-1], feasible, visible_closed, carried_cycle,
-        zero_carry_feasible, witness, sequence,
+        states,
+        steps,
+        capacity_rows,
+        pressure_rows,
+        lower,
+        upper,
+        coordinates,
+        tuple(area),
+        area[-1],
+        feasible,
+        visible_closed,
+        carried_cycle,
+        zero_carry_feasible,
+        witness,
+        sequence,
     )

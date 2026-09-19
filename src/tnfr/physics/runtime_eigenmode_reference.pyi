@@ -13,7 +13,6 @@ from .reversible_eigenmode_reference import (
 ExactVector = tuple[Fraction, ...]
 ExactPartition = tuple[Fraction, ...]
 
-
 @dataclass(frozen=True, slots=True)
 class ExecutedReversibleSingleEigenmodeEulerPartitionObservation:
     reference_certificate: ReversibleSingleEigenmodeEulerReferenceCertificate = field(
@@ -51,7 +50,6 @@ class ExecutedReversibleSingleEigenmodeEulerPartitionObservation:
     def exact_runtime_defect_decomposition_certified(self) -> bool: ...
     @property
     def exact_continuous_error_enclosure_certified(self) -> bool: ...
-
 
 @dataclass(frozen=True, slots=True)
 class ExecutedReversibleSingleEigenmodeEulerReferenceObservation:
@@ -96,10 +94,8 @@ class ExecutedReversibleSingleEigenmodeEulerReferenceObservation:
     @property
     def full_tnfr_stability_certified(self) -> bool: ...
 
-
 def observe_executed_reversible_single_eigenmode_euler_reference(
     partitions: Iterable[ExecutedPressureRefreshedFlowPartition],
 ) -> ExecutedReversibleSingleEigenmodeEulerReferenceObservation: ...
-
 
 __all__: tuple[str, ...]

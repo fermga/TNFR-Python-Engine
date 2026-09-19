@@ -214,13 +214,10 @@ import math
 import random
 from collections import defaultdict, deque
 from collections.abc import Hashable, Iterable, Mapping, MutableMapping, Sequence
-from copy import deepcopy
 from dataclasses import dataclass, field
 from fractions import Fraction
 from functools import cache
-from io import StringIO
 from itertools import combinations
-from numbers import Real
 from operator import ge, le
 from statistics import StatisticsError, fmean
 from types import ModuleType

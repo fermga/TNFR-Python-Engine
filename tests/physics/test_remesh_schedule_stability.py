@@ -57,9 +57,7 @@ def test_public_physics_facade_and_stub_expose_schedule_balance() -> None:
     )
 
     package = Path(physics.__file__).parent
-    stub = (package / "remesh_schedule_stability.pyi").read_text(
-        encoding="utf-8"
-    )
+    stub = (package / "remesh_schedule_stability.pyi").read_text(encoding="utf-8")
     assert "class RemeshScheduleHistoryStabilityObservation" in stub
     assert "def observe_remesh_schedule_history_transition" in stub
 

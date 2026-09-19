@@ -15,23 +15,27 @@ from tnfr.physics.forced_support import (
 )
 from tnfr.physics.support_transport import observe_support_transport
 
-
 F = Fraction
 
 
 def _snapshot(graph=None, *, epi=(1, 0), capacity=(1, 2), pressure=(-0.25, 1)):
     graph = nx.path_graph(2) if graph is None else graph
     for node, x, nu, p in zip(graph, epi, capacity, pressure, strict=True):
-        graph.nodes[node].update({
-            ALIAS_EPI[0]: x, ALIAS_VF[0]: nu, ALIAS_DNFR[0]: p,
-        })
+        graph.nodes[node].update(
+            {
+                ALIAS_EPI[0]: x,
+                ALIAS_VF[0]: nu,
+                ALIAS_DNFR[0]: p,
+            }
+        )
     return observe_support_transport(graph)
 
 
 def _reference(snapshot=None, *, forcing=(F(1, 4), F(1, 2))):
     return derive_forced_support_balance(
         _snapshot() if snapshot is None else snapshot,
-        epi_weight=F(1, 2), forcing=forcing,
+        epi_weight=F(1, 2),
+        forcing=forcing,
     )
 
 
@@ -63,7 +67,8 @@ def test_compatible_profile_allows_every_initial_mean(mean):
     assert reference.relative_profile == (F(1, 6), F(-1, 3))
     snapshot = replace(
         reference.source,
-        epi=(mean + F(1, 6), mean - F(1, 3)), stored_pressure=(F(0), F(0)),
+        epi=(mean + F(1, 6), mean - F(1, 3)),
+        stored_pressure=(F(0), F(0)),
     )
     state = observe_forced_support_state(reference, snapshot)
     assert state.mean == mean
@@ -138,7 +143,8 @@ def test_mean_defects_can_cancel_while_centered_error_remains_nonzero():
 def test_declared_hard_clip_endpoint_keeps_nonzero_pressure_and_mean_defect():
     reference = _reference()
     before = replace(
-        reference.source, epi=(F(3, 4), F(3, 4)),
+        reference.source,
+        epi=(F(3, 4), F(3, 4)),
         stored_pressure=(F(1, 4), F(1, 2)),
     )
     after = replace(before, epi=(F(1), F(1)))
@@ -168,11 +174,18 @@ def test_large_ideal_euler_step_can_increase_relative_energy():
 def test_cached_reference_and_snapshot_fields_are_recomputed():
     reference = _reference()
     forged = replace(
-        reference, mean_drift=F(999), relative_profile=(F(888), F(888)),
-        metric_weights=(F(1), F(1)), max_convex_step=F(999),
+        reference,
+        mean_drift=F(999),
+        relative_profile=(F(888), F(888)),
+        metric_weights=(F(1), F(1)),
+        max_convex_step=F(999),
     )
-    before = replace(reference.source, epi_gradient=(F(999), F(999)),
-                     rate=(F(999), F(999)), dirichlet_energy=F(999))
+    before = replace(
+        reference.source,
+        epi_gradient=(F(999), F(999)),
+        rate=(F(999), F(999)),
+        dirichlet_energy=F(999),
+    )
     after = replace(before, epi=(F(15, 16), F(1, 2)))
     result = observe_forced_support_step(forged, before, after, F(1, 4))
     assert result.reference == reference
@@ -186,8 +199,9 @@ def test_observations_are_detached_and_frozen():
     snapshot = _snapshot(graph)
     before = deepcopy(graph)
     forcing = [F(1, 4), F(1, 2)]
-    reference = derive_forced_support_balance(snapshot, epi_weight=F(1, 2),
-                                            forcing=forcing)
+    reference = derive_forced_support_balance(
+        snapshot, epi_weight=F(1, 2), forcing=forcing
+    )
     forcing[0] = F(999)
     assert reference.forcing == (F(1, 4), F(1, 2))
     assert nx.utils.graphs_equal(graph, before)
@@ -198,8 +212,9 @@ def test_observations_are_detached_and_frozen():
 @pytest.mark.parametrize("epi_weight", (0, -1, float("nan"), True))
 def test_invalid_epi_weight_is_rejected(epi_weight):
     with pytest.raises((TypeError, ValueError)):
-        derive_forced_support_balance(_snapshot(), epi_weight=epi_weight,
-                                      forcing=(0, 0))
+        derive_forced_support_balance(
+            _snapshot(), epi_weight=epi_weight, forcing=(0, 0)
+        )
 
 
 @pytest.mark.parametrize("forcing", ((0,), (0, 0, 0), (0, float("inf")), (0, True)))
@@ -219,19 +234,21 @@ def test_zero_capacity_and_zero_strength_are_outside_profile_scope():
 def test_zero_weight_bridge_does_not_establish_transport_connectivity():
     graph = nx.path_graph(4)
     graph.edges[1, 2]["weight"] = 0
-    snapshot = _snapshot(graph, epi=(1, 0, 1, 0), capacity=(1,) * 4,
-                         pressure=(0,) * 4)
+    snapshot = _snapshot(graph, epi=(1, 0, 1, 0), capacity=(1,) * 4, pressure=(0,) * 4)
     assert nx.is_connected(graph)
     with pytest.raises(ValueError):
         _reference(snapshot, forcing=(0,) * 4)
 
 
-@pytest.mark.parametrize("field,value", (
-    ("nodes", (1, 0)),
-    ("capacity", (F(1), F(3))),
-    ("conductance", ((0, 1, F(2)), (1, 0, F(2)))),
-    ("support_neighbors", ((0, 1), (0,))),
-))
+@pytest.mark.parametrize(
+    "field,value",
+    (
+        ("nodes", (1, 0)),
+        ("capacity", (F(1), F(3))),
+        ("conductance", ((0, 1, F(2)), (1, 0, F(2)))),
+        ("support_neighbors", ((0, 1), (0,))),
+    ),
+)
 def test_changed_held_support_or_capacity_is_rejected(field, value):
     reference = _reference()
     changed = replace(reference.source, **{field: value})

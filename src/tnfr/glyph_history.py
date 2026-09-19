@@ -66,6 +66,7 @@ def _ensure_history(
         nd["glyph_history"] = hist
     return v_window, hist
 
+
 _OPERATOR_STEP_KEY = "_operator_step"
 
 
@@ -97,8 +98,12 @@ def push_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> None:
     """
 
     from .operators.grammar_debt import (
-        PRIOR_COHERENCE_KEY, U2_DEBT_KEY, advance_debt, advance_prior_coherence,
-        node_debt, node_has_prior_coherence,
+        PRIOR_COHERENCE_KEY,
+        U2_DEBT_KEY,
+        advance_debt,
+        advance_prior_coherence,
+        node_debt,
+        node_has_prior_coherence,
     )
 
     # Capture debt before resizing/evicting the bounded trace. Neutral glyphs

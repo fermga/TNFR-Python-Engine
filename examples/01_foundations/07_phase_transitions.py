@@ -77,9 +77,7 @@ def build_phase_sweep(
                     seed + 10_000 * size_index + 100 * control_index + replicate
                 )
                 rng = np.random.default_rng(local_seed)
-                graph = nx.watts_strogatz_graph(
-                    size, 4, 0.25, seed=local_seed
-                )
+                graph = nx.watts_strogatz_graph(size, 4, 0.25, seed=local_seed)
                 inject_defaults(graph)
                 for node in graph:
                     theta = float(rng.uniform(-np.pi * amplitude, np.pi * amplitude))
@@ -90,9 +88,7 @@ def build_phase_sweep(
                     graph.nodes[node][ALIAS_DEPI[0]] = capacity * pressure
 
                 snapshot = capture_phase_snapshot(graph)
-                order[size_index, control_index, replicate] = (
-                    snapshot.order_parameter
-                )
+                order[size_index, control_index, replicate] = snapshot.order_parameter
                 susceptibility[size_index, control_index, replicate] = (
                     snapshot.susceptibility
                 )
@@ -110,8 +106,7 @@ def build_phase_sweep(
         susceptibility=susceptibility,
         coherence_length=coherence_length,
         snapshots=tuple(
-            tuple(tuple(cell) for cell in size_cells)
-            for size_cells in all_snapshots
+            tuple(tuple(cell) for cell in size_cells) for size_cells in all_snapshots
         ),
     )
 
@@ -144,8 +139,7 @@ def main() -> None:
         sem_text = "unavailable" if sem is None else f"{sem:.6g}"
         control_text = "unavailable" if control is None else f"{control:.3f}"
         print(
-            f"  N={size:3d}: g*={control_text}, "
-            f"chi_peak={peak:.6g}, SEM={sem_text}"
+            f"  N={size:3d}: g*={control_text}, " f"chi_peak={peak:.6g}, SEM={sem_text}"
         )
 
     fits = (

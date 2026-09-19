@@ -29,9 +29,11 @@ def _exact_constant_capacity_step(graph, state, frequency, duration):
     root = np.sqrt(mobility)
     symmetric_generator = root[:, None] * laplacian * root[None, :]
     rates, modes = np.linalg.eigh(symmetric_generator)
-    propagator = root[:, None] * (
-        modes @ np.diag(np.exp(-rates * duration)) @ modes.T
-    ) / root[None, :]
+    propagator = (
+        root[:, None]
+        * (modes @ np.diag(np.exp(-rates * duration)) @ modes.T)
+        / root[None, :]
+    )
     return propagator @ state
 
 
@@ -114,9 +116,7 @@ def test_uniform_field_is_the_unique_certified_equilibrium():
 
 def test_rounded_laplacian_rows_cannot_fake_a_global_diffusion_theorem():
     graph = nx.Graph()
-    graph.add_weighted_edges_from(
-        [(0, 1, 0.1), (0, 2, 0.2), (1, 2, 0.3)]
-    )
+    graph.add_weighted_edges_from([(0, 1, 0.1), (0, 2, 0.2), (1, 2, 0.3)])
     _set_state(graph, [1.0, 1.0, 1.0], [1.0, 1.0, 1.0])
 
     result = verify_heterogeneous_diffusion_stability(graph)
@@ -176,7 +176,10 @@ def test_exact_flow_obeys_exponential_envelope_on_seeded_weighted_graphs(seed):
     "graph, message",
     [
         (_set_state(nx.empty_graph(2), [0.0, 1.0], [1.0, 1.0]), "row strength"),
-        (_set_state(nx.path_graph(3), [0.0, 1.0, 2.0], [1.0, 0.0, 1.0]), "positive structural frequency"),
+        (
+            _set_state(nx.path_graph(3), [0.0, 1.0, 2.0], [1.0, 0.0, 1.0]),
+            "positive structural frequency",
+        ),
     ],
 )
 def test_degenerate_transport_is_outside_the_theorem(graph, message):
@@ -217,9 +220,7 @@ def test_time_varying_bound_matches_closed_two_node_rate():
     assert result.maximum_mobility == pytest.approx(1.5)
     assert result.dirichlet_energy == pytest.approx(4.0)
     assert result.spectral_energy_decay_rate_estimate == pytest.approx(2.0)
-    assert result.spectral_consensus_distance_estimate == pytest.approx(
-        np.sqrt(2.0)
-    )
+    assert result.spectral_consensus_distance_estimate == pytest.approx(np.sqrt(2.0))
     assert result.exact_combinatorial_gap_lower_bound == Fraction(4)
     assert result.certified_combinatorial_gap_lower_bound == 4.0
     assert result.exact_minimum_mobility_lower_bound == Fraction(1, 4)
@@ -237,13 +238,10 @@ def test_time_varying_bound_matches_closed_two_node_rate():
         result.exact_energy_decay_rate_lower_bound
     )
     assert Fraction.from_float(result.energy_derivative_upper_bound) >= (
-        -Fraction.from_float(result.energy_decay_rate)
-        * result.exact_dirichlet_energy
+        -Fraction.from_float(result.energy_decay_rate) * result.exact_dirichlet_energy
     )
     assert Fraction.from_float(result.consensus_distance_bound) ** 2 >= (
-        2
-        * result.exact_dirichlet_energy
-        / result.exact_combinatorial_gap_lower_bound
+        2 * result.exact_dirichlet_energy / result.exact_combinatorial_gap_lower_bound
     )
     assert isinstance(result.nodes, tuple)
     assert result.exact_real_uniform_fixed_point_preservation
@@ -256,9 +254,7 @@ def test_time_varying_bound_matches_closed_two_node_rate():
 
 def test_time_varying_exact_real_theorem_is_separate_from_binary64_laplacian():
     graph = nx.Graph()
-    graph.add_weighted_edges_from(
-        [(0, 1, 0.1), (0, 2, 0.2), (1, 2, 0.3)]
-    )
+    graph.add_weighted_edges_from([(0, 1, 0.1), (0, 2, 0.2), (1, 2, 0.3)])
     _set_state(graph, [2.0, -1.0, 4.0], [1.0, 1.0, 1.0])
 
     result = derive_time_varying_diffusion_stability_bound(
@@ -277,9 +273,7 @@ def test_time_varying_exact_real_theorem_is_separate_from_binary64_laplacian():
 
 
 def test_time_varying_rate_underflow_causes_safe_operational_abstention():
-    graph = _set_state(
-        nx.path_graph(7), np.arange(7.0), np.ones(7)
-    )
+    graph = _set_state(nx.path_graph(7), np.arange(7.0), np.ones(7))
     smallest_positive = np.nextafter(0.0, 1.0)
 
     result = derive_time_varying_diffusion_stability_bound(
@@ -307,9 +301,7 @@ def test_spectral_overflow_does_not_suppress_exact_real_certificate():
     )
 
     assert not np.isfinite(result.dirichlet_energy)
-    assert result.exact_dirichlet_energy > Fraction.from_float(
-        np.finfo(float).max
-    )
+    assert result.exact_dirichlet_energy > Fraction.from_float(np.finfo(float).max)
     assert result.dirichlet_energy_upper_bound == float("inf")
     assert result.exact_energy_decay_rate_lower_bound == Fraction(4)
     assert result.energy_decay_rate == 4.0
@@ -323,18 +315,12 @@ def test_time_varying_payload_arrays_are_detached_and_read_only():
     lower = np.array([0.5, 0.75, 1.0])
     upper = np.array([1.5, 1.75, 2.0])
 
-    result = derive_time_varying_diffusion_stability_bound(
-        graph, lower, upper
-    )
+    result = derive_time_varying_diffusion_stability_bound(graph, lower, upper)
     lower[:] = 99.0
     upper[:] = 101.0
 
-    np.testing.assert_allclose(
-        result.frequency_lower_bounds, [0.5, 0.75, 1.0]
-    )
-    np.testing.assert_allclose(
-        result.frequency_upper_bounds, [1.5, 1.75, 2.0]
-    )
+    np.testing.assert_allclose(result.frequency_lower_bounds, [0.5, 0.75, 1.0])
+    np.testing.assert_allclose(result.frequency_upper_bounds, [1.5, 1.75, 2.0])
     for payload in (
         result.frequency_lower_bounds,
         result.frequency_upper_bounds,
@@ -477,9 +463,7 @@ def test_euler_spectral_cutoff_is_relative_to_global_frequency_scale():
         1e-12 * base_frequency,
     )
 
-    result = diagnose_euler_relaxation_window(
-        graph, dt=1.0, tolerance=1e-12
-    )
+    result = diagnose_euler_relaxation_window(graph, dt=1.0, tolerance=1e-12)
 
     assert len(result.decay_rates) == len(graph) - 1
     assert result.slowest_decay_rate > 0.0
@@ -504,9 +488,7 @@ def test_euler_window_rejects_invalid_parameters(dt, target, message):
         diagnose_euler_relaxation_window(graph, dt=dt, target_fraction=target)
 
 
-@pytest.mark.parametrize(
-    "boolean", [True, False, np.bool_(True), np.bool_(False)]
-)
+@pytest.mark.parametrize("boolean", [True, False, np.bool_(True), np.bool_(False)])
 @pytest.mark.parametrize("parameter", ["dt", "target_fraction", "tolerance"])
 def test_euler_window_rejects_boolean_numeric_controls(boolean, parameter):
     graph = _set_state(nx.path_graph(3), [0.0, 1.0, 2.0], [1.0] * 3)
@@ -517,9 +499,7 @@ def test_euler_window_rejects_boolean_numeric_controls(boolean, parameter):
         diagnose_euler_relaxation_window(graph, **controls)
 
 
-@pytest.mark.parametrize(
-    "boolean", [True, False, np.bool_(True), np.bool_(False)]
-)
+@pytest.mark.parametrize("boolean", [True, False, np.bool_(True), np.bool_(False)])
 def test_diffusion_stability_certificates_reject_boolean_tolerance(boolean):
     graph = _set_state(nx.path_graph(3), [0.0, 1.0, 2.0], [1.0] * 3)
     other = _set_state(nx.cycle_graph(3), [0.0, 1.0, 2.0], [2.0] * 3)
@@ -527,18 +507,12 @@ def test_diffusion_stability_certificates_reject_boolean_tolerance(boolean):
     with pytest.raises(ValueError, match="tolerance.*not boolean"):
         verify_heterogeneous_diffusion_stability(graph, tolerance=boolean)
     with pytest.raises(ValueError, match="tolerance.*not boolean"):
-        verify_switching_diffusion_stability(
-            [graph, other], tolerance=boolean
-        )
+        verify_switching_diffusion_stability([graph, other], tolerance=boolean)
 
 
-@pytest.mark.parametrize(
-    "boolean", [True, False, np.bool_(True), np.bool_(False)]
-)
+@pytest.mark.parametrize("boolean", [True, False, np.bool_(True), np.bool_(False)])
 @pytest.mark.parametrize("parameter", ["lower", "upper"])
-def test_time_varying_frequency_limits_reject_boolean_scalars(
-    boolean, parameter
-):
+def test_time_varying_frequency_limits_reject_boolean_scalars(boolean, parameter):
     graph = _set_state(nx.path_graph(3), [0.0, 1.0, 2.0], [1.0] * 3)
     bounds = {"lower": 0.5, "upper": 2.0}
     bounds[parameter] = boolean
@@ -710,9 +684,7 @@ def test_large_tolerance_does_not_promote_approximate_metric_to_exact_theorem():
     first = _switching_regime(nx.path_graph(4), epi, first_metric)
     second = _switching_regime(nx.cycle_graph(4), epi, second_metric)
 
-    result = verify_switching_diffusion_stability(
-        [first, second], tolerance=0.5
-    )
+    result = verify_switching_diffusion_stability([first, second], tolerance=0.5)
 
     assert result.common_metric_residual > 0.0
     assert result.common_metric_within_tolerance
@@ -722,12 +694,8 @@ def test_large_tolerance_does_not_promote_approximate_metric_to_exact_theorem():
 
 
 def test_metric_normalization_underflow_cannot_create_false_exact_theorem():
-    first = _set_state(
-        nx.path_graph(2), [0.0, 1.0], [1e-308, 1e308]
-    )
-    second = _set_state(
-        nx.path_graph(2), [0.0, 1.0], [1e-308, 5e307]
-    )
+    first = _set_state(nx.path_graph(2), [0.0, 1.0], [1e-308, 1e308])
+    second = _set_state(nx.path_graph(2), [0.0, 1.0], [1e-308, 5e307])
 
     # The raw metric vectors are [1e308, 1e-308] and
     # [1e308, 2e-308], so they are not proportional.  Direct normalization

@@ -43,22 +43,29 @@ CASES = [(5, 2), (7, 3), (11, 2), (13, 4)]
 
 def main() -> int:
     print("N12 pulse amplitudes: a_lambda = m_lambda / n (normalized multiplicity)")
-    header = (f"  {'(p,k)':<8} {'ndist':>5} {'rank':>5} {'sum=1':>5} "
-              f"{'a=m/p':>6} {'moment_res':>11} {'basis_res':>11}")
+    header = (
+        f"  {'(p,k)':<8} {'ndist':>5} {'rank':>5} {'sum=1':>5} "
+        f"{'a=m/p':>6} {'moment_res':>11} {'basis_res':>11}"
+    )
     print(header)
     all_ok = True
     for p, k in CASES:
         c = certify_pulse_amplitudes(p, k)
-        ok = (c.rank_matches_cyclotomy and c.amplitudes_sum_to_one
-              and c.amplitude_equals_multiplicity
-              and c.moment_reconstruction_residual < 1e-9
-              and c.basis_invariance_residual < 1e-9)
+        ok = (
+            c.rank_matches_cyclotomy
+            and c.amplitudes_sum_to_one
+            and c.amplitude_equals_multiplicity
+            and c.moment_reconstruction_residual < 1e-9
+            and c.basis_invariance_residual < 1e-9
+        )
         all_ok &= ok
-        print(f"  ({p:2d},{k})  {c.n_distinct:>5} {gcd(k, p - 1) + 1:>5} "
-              f"{str(c.amplitudes_sum_to_one):>5} "
-              f"{str(c.amplitude_equals_multiplicity):>6} "
-              f"{c.moment_reconstruction_residual:>11.1e} "
-              f"{c.basis_invariance_residual:>11.1e}")
+        print(
+            f"  ({p:2d},{k})  {c.n_distinct:>5} {gcd(k, p - 1) + 1:>5} "
+            f"{str(c.amplitudes_sum_to_one):>5} "
+            f"{str(c.amplitude_equals_multiplicity):>6} "
+            f"{c.moment_reconstruction_residual:>11.1e} "
+            f"{c.basis_invariance_residual:>11.1e}"
+        )
 
     print()
     print("  amplitude spectrum (p=11, k=2):")
@@ -69,20 +76,25 @@ def main() -> int:
     _ = ExperimentManifest(
         claim_id="NT-P02b",
         git_sha="local",
-        versions={"python": platform.python_version(),
-                  "numpy": np.__version__},
+        versions={"python": platform.python_version(), "numpy": np.__version__},
         seed=0,
         operator_sequence=(),
         uses_known_factors=False,
         input_bits=input_bit_length(max(p for p, _ in CASES)),
-        controls=("amplitude_equals_multiplicity", "exact_moment_reconstruction",
-                  "basis_invariant", "rank_matches_cyclotomy"),
+        controls=(
+            "amplitude_equals_multiplicity",
+            "exact_moment_reconstruction",
+            "basis_invariant",
+            "rank_matches_cyclotomy",
+        ),
         artifacts=(),
     )
     print()
     print(f"  all checks pass          : {all_ok}")
-    print(f"  amplitudes = m_lambda/n  : {ClaimStatus.DERIVED.value} "
-          "+ MEASURED (exact reconstruction)")
+    print(
+        f"  amplitudes = m_lambda/n  : {ClaimStatus.DERIVED.value} "
+        "+ MEASURED (exact reconstruction)"
+    )
     print("  claim                    : NT-P02b")
     print(f"  circularity              : {audit.verdict.value}")
     return 0 if all_ok else 1

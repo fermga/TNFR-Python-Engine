@@ -2,35 +2,25 @@ from dataclasses import dataclass, field
 from fractions import Fraction
 from typing import Any
 
-from ..operators.event_remesh_causal_runtime import (
-    ExecutedEventRemeshCycleSequence,
-)
-from .binary64_p2_reception_stability import (
-    P2HalfReceptionRemeshStabilityCertificate,
-)
-from .runtime_p2_reception_stage import (
-    ExecutedP2HalfReceptionStageCertificate,
-)
-from .runtime_remesh_history_stability import (
-    RuntimeRemeshHistoryBridgeObservation,
-)
+from ..operators.event_remesh_causal_runtime import ExecutedEventRemeshCycleSequence
+from .binary64_p2_reception_stability import P2HalfReceptionRemeshStabilityCertificate
+from .runtime_p2_reception_stage import ExecutedP2HalfReceptionStageCertificate
+from .runtime_remesh_history_stability import RuntimeRemeshHistoryBridgeObservation
 
 ExactPair = tuple[Fraction, Fraction]
 
 @dataclass(frozen=True, slots=True)
 class ExecutedP2HalfReceptionRemeshSequenceCertificate:
-    kernel_certificate: P2HalfReceptionRemeshStabilityCertificate = field(
-        repr=False
-    )
+    kernel_certificate: P2HalfReceptionRemeshStabilityCertificate = field(repr=False)
     execution: ExecutedEventRemeshCycleSequence = field(repr=False)
     cycle_indices: tuple[int, ...]
     reception_event_indices: tuple[int, ...]
     reception_stage_certificates: tuple[
         ExecutedP2HalfReceptionStageCertificate, ...
     ] = field(repr=False)
-    remesh_history_bridges: tuple[
-        RuntimeRemeshHistoryBridgeObservation, ...
-    ] = field(repr=False)
+    remesh_history_bridges: tuple[RuntimeRemeshHistoryBridgeObservation, ...] = field(
+        repr=False
+    )
     node_order: tuple[Any, Any]
     exact_normalized_metric: ExactPair
     cycle_count: int

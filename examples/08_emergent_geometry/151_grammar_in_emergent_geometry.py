@@ -86,8 +86,7 @@ def _history_codes(graph: nx.Graph, node: Any) -> tuple[str, ...]:
     """Read normalized runtime glyph history without changing it."""
     history = graph.nodes[node].get("glyph_history") or ()
     return tuple(
-        str(getattr(item, "value", item)).rsplit(".", 1)[-1].upper()
-        for item in history
+        str(getattr(item, "value", item)).rsplit(".", 1)[-1].upper() for item in history
     )
 
 
@@ -101,9 +100,7 @@ def _apply_request(graph: nx.Graph, node: Any, requested: str) -> dict[str, str]
         return {
             "requested": requested,
             "actual": "NONE",
-            "error": (
-                f"{type(exc).__name__}: {exc}; history {before} -> {after}"
-            ),
+            "error": (f"{type(exc).__name__}: {exc}; history {before} -> {after}"),
         }
     after = _history_codes(graph, node)
     if not after or after == before:
@@ -150,9 +147,7 @@ def run_case(word: tuple[str, ...], *, sweep: bool) -> dict[str, Any]:
             [OPERATORS[glyph]() for glyph in word],
             epi_initial=0.0,
         ),
-        "actual": ",".join(
-            f"{key}:{value}" for key, value in sorted(actual.items())
-        ),
+        "actual": ",".join(f"{key}:{value}" for key, value in sorted(actual.items())),
         "errors": errors,
         "h_sub": substrate_hamiltonian(point),
         "energy": compute_energy_functional(graph),
@@ -198,9 +193,7 @@ def main() -> None:
             print(f"  execution failure: {error}")
 
     valid_energies = {
-        round(float(result["energy"]), 12)
-        for result in results
-        if result["flat_valid"]
+        round(float(result["energy"]), 12) for result in results if result["flat_valid"]
     }
     invalid_energies = {
         round(float(result["energy"]), 12)

@@ -71,14 +71,16 @@ def _ring_mode_observation(n: int, k: int) -> dict[str, Any]:
     laplacian_phasor = np.asarray(laplacian) @ phase_phasor
     predicted = 1.0 - math.cos(math.tau * sampled_index / n)
     measured = float(
-        np.real(np.vdot(phase_phasor, laplacian_phasor)
-                / np.vdot(phase_phasor, phase_phasor))
+        np.real(
+            np.vdot(phase_phasor, laplacian_phasor)
+            / np.vdot(phase_phasor, phase_phasor)
+        )
     )
     residual = float(np.max(np.abs(laplacian_phasor - predicted * phase_phasor)))
     representative = (
-        None if 2 * sampled_index == n
-        else sampled_index if 2 * sampled_index < n
-        else sampled_index - n
+        None
+        if 2 * sampled_index == n
+        else sampled_index if 2 * sampled_index < n else sampled_index - n
     )
     return {
         "mode_index": int(k),
@@ -147,8 +149,12 @@ def main() -> None:
             f"{certificate.minimum_branch_margin:>14.6f}"
         )
         assert observation["eigenvector_residual"] < 1e-9
-        assert abs(observation["eigenvalue_measured"]
-                   - observation["eigenvalue_predicted"]) < 1e-9
+        assert (
+            abs(
+                observation["eigenvalue_measured"] - observation["eigenvalue_predicted"]
+            )
+            < 1e-9
+        )
         if representative is None:
             assert not certificate.is_defined, "Nyquist winding must be undefined"
         else:

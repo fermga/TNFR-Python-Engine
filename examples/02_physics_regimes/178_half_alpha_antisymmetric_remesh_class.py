@@ -14,9 +14,9 @@ metric-centered rows and an unrestricted fixed lattice.
 
 from __future__ import annotations
 
-from fractions import Fraction
 import json
 import math
+from fractions import Fraction
 from typing import Any
 
 from tnfr.physics import (
@@ -112,8 +112,7 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
         ),
         "class": {
             "certificate_valid": (
-                certificate
-                .half_alpha_antisymmetric_hard_clip_class_certificate_certified
+                certificate.half_alpha_antisymmetric_hard_clip_class_certificate_certified
             ),
             "alpha": _fraction_text(certificate.alpha),
             "interval": [
@@ -121,8 +120,7 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
                 _fraction_text(certificate.epi_max),
             ],
             "metric": [
-                _fraction_text(value)
-                for value in certificate.exact_normalized_metric
+                _fraction_text(value) for value in certificate.exact_normalized_metric
             ],
             "uniform_eta": _fraction_text(
                 certificate.exact_uniform_relative_defect_upper_bound
@@ -138,12 +136,8 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
                     certificate.exact_tail_relative_defect_upper_bound
                     < certificate.exact_uniform_relative_defect_upper_bound
                 ),
-                "finite_core_candidates": (
-                    certificate.finite_core_candidate_count
-                ),
-                "finite_core_admissible": (
-                    certificate.finite_core_admissible_count
-                ),
+                "finite_core_candidates": (certificate.finite_core_candidate_count),
+                "finite_core_admissible": (certificate.finite_core_admissible_count),
                 "finite_core_maximizer": list(
                     certificate.finite_core_maximizer_amplitudes
                 ),
@@ -157,9 +151,7 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
             "repeated_binary64_runtime": (
                 certificate.repeated_binary64_stability_certified
             ),
-            "future_execution": (
-                certificate.future_binary64_execution_certified
-            ),
+            "future_execution": (certificate.future_binary64_execution_certified),
             "full_tnfr_stability": certificate.full_tnfr_stability_certified,
         },
         "strict_schedule_composition": {
@@ -202,8 +194,7 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
         },
         "excluded_generalizations": {
             "general_metric_centered_input_centers": [
-                _fraction_text(_weighted_center(pair))
-                for pair in centered_inputs
+                _fraction_text(_weighted_center(pair)) for pair in centered_inputs
             ],
             "general_metric_centered_output_center": _fraction_text(
                 _weighted_center(centered.runtime_bounded_pair)

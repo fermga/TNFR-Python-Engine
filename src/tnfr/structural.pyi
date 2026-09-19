@@ -8,9 +8,9 @@ from tnfr.validation import validate_sequence as validate_sequence
 from .mathematics import (
     BasicStateProjector,
     FrequencyOperator,
-    SpectralExpectationOperator,
     HilbertSpace,
     MathematicalDynamicsEngine,
+    SpectralExpectationOperator,
 )
 from .operators.definitions import Coherence as Coherence
 from .operators.definitions import Contraction as Contraction

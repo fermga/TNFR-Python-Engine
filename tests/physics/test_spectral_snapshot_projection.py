@@ -43,11 +43,14 @@ def test_static_spectral_activity_projects_the_existing_divergence_once():
 
     assert result.node_order == tuple(nodes)
     assert np.allclose(result.modal_divergence_magnitude, expected)
-    assert np.array_equal(result.conservation_by_mode,
-                          result.modal_divergence_magnitude)
+    assert np.array_equal(
+        result.conservation_by_mode, result.modal_divergence_magnitude
+    )
     # The retired implementation multiplied the already-computed divergence
     # by one more eigenvalue and therefore erased its zero-mode component.
-    assert not np.allclose(expected, np.abs(eigenvalues * (eigenvectors.T @ divergence)))
+    assert not np.allclose(
+        expected, np.abs(eigenvalues * (eigenvectors.T @ divergence))
+    )
 
 
 def test_legacy_mode_count_is_an_explicit_alias_for_the_median_split():

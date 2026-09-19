@@ -3,7 +3,7 @@
 **Status:** P1 engineering complete; P2 physical admission `not_admitted`;
 the admitted physical protocol remains `not_tested`. A predeclared Volts
 continuation has been computed as an exploration within one acquisition;
-its [result and evidence record](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md#completed-exploratory-record--2026-09-18)
+its [result and evidence record](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md#volts-exploratory-record)
 report lower error for the affine control than for the nodal model. It does
 not close physical admission. The historical numerical summaries below have
 not been independently reproduced in this
@@ -12,9 +12,9 @@ results, not admitted validation of the complete nodal equation.
 
 ## Implemented diagnostic boundary
 
-The [2026-09-17 strategic review](../theory/NODAL_RESEARCH_STRATEGY.md)
-identified implementation defects and scientific scope limits. The P1 repairs
-now distinguish them explicitly:
+The [research strategy](../theory/NODAL_RESEARCH_STRATEGY.md) distinguishes
+implementation defects from scientific scope limits. The P1 repairs implement
+the following boundary:
 
 - Modal-analysis exceptions return `status="failure"` with a reason. Short,
   constant or degenerate valid windows return `status="unresolved"`; neither
@@ -62,13 +62,13 @@ and names nonfinite read-outs in `nonfinite_readouts` for strict JSON.
 ## Purpose
 
 TNFR's structural read-outs (the tetrad `|∇φ|`, `K_φ`, `Φ_s`, `ξ_C`;
-the pulse `ω_k = √λ_k`; static pressure coherence `C_static`; structural
-frequency `νf`) are
+the auxiliary graph-wave spectrum `ω_k = √λ_k`; static pressure coherence
+`C_static`; structural capacity `νf`) are
 meant to be **confronted with real data** — tests that *can* fail. The engine
 ships the **data-agnostic instrument**; it does **not** bundle datasets.
 
 - **Instrument (in-engine):** [`confront_signal`](../src/tnfr/validation/signal_confrontation.py)
-  maps any real multichannel signal → the **emergent phase-locking graph**
+  maps a supported finite real multichannel signal → a **constructed phase-locking graph**
   ([`build_coupling_graph`](../src/tnfr/validation/multichannel_interface.py),
   PLV observational graph, not a U3 certificate) → the scoped read-outs
   (tetrad, pulse, `ξ_C` via the graph's
@@ -94,11 +94,11 @@ ships the **data-agnostic instrument**; it does **not** bundle datasets.
 | Confrontation | Result | Reading |
 |---|---|---|
 | **Local phase tetrad** `\|∇φ\|`, `\|K_φ\|` vs seizure/interictal | cross-patient (leave-one-patient-out) **AUC ≈ 0.66–0.67**, higher at ictal | reported association with labels; independent replay remains pending |
-| **Global Kuramoto `R`** vs seizure | **AUC ≈ 0.49** (chance) | global hypersynchrony does **not** rise under the bipolar montage / focal onset — the state is *local*, not mean-field |
+| **Global Kuramoto `R`** vs seizure | **AUC ≈ 0.49** (chance) | reported lack of label discrimination in this preparation; does not by itself identify a local mechanism or exclude global synchrony effects |
 | **`νf`** (single structural frequency) | tracks the measured dominant EEG frequency (**Spearman ρ ≈ 0.86**); fingerprints subjects | reported association does not identify structural mobility with physical oscillation frequency |
 | **Single-`νf` conservative-wave forecaster** (few-shot, leave-one-patient-out) | **ties** a strong Gaussian process and a stabilised DMD/Koopman model (within ~1%); beats a parameter-matched neural net | reported accuracy with 1–3 model parameters and ~20× lower cost than the neural TNFR; physical identification and replay remain pending |
 | **Face diagnosis** (`verify_overdamped_projection` at the data-fitted `γ`) | reported under-damped classification | a fitted auxiliary-model result, not certification of physical conservative dynamics |
-| **Pre-ictal** (5 min before onset) tetrad | every magnitude at **chance** | the tetrad is a **detection** marker (concurrent), **not** a **prediction** marker |
+| **Pre-ictal** (5 min before onset) tetrad | every magnitude reported at **chance** | no predictive evidence in the reported five-minute preparation; concurrent association does not establish a general detection or prediction rule |
 
 ## Reported cross-subject confrontation (PhysioNet eegmmidb)
 
@@ -116,20 +116,19 @@ to be pinned and replayed.
 | **Modal root classifier** (AR(2) on `L_sym`) | reported **WAVE / under-damped in 18/20** conditions | descriptive classification; the reported thermal comparison (97–99% diffusive labels) also needs acquisition/replay provenance and is not a physical certificate |
 | **`K_φ`** (phase curvature, local) | rises in **10/10** subjects (paired dz ≈ +1.1, sign-test **p ≈ 0.002**) | reported cross-subject association in this sample; independent replay remains pending |
 | **`\|∇φ\|`** (phase gradient, local) | rises in **9/10** (**p ≈ 0.021**) | reported cross-subject association, pending replay |
-| **`C_static`** (pressure snapshot) / **`Q`** (quality factor) | both rise (8/10 each) | a sharper rhythm; `C_static` is a pressure-only trend (p ≈ 0.11), not dynamic total `C(t)` |
-| **Global Kuramoto `R`** | **falls** in 9/10 (dz ≈ −0.9) | mean-field synchrony moves **opposite** to the local fields — the local tetrad and `R` **dissociate** |
-| **Collective pulse** `ω₀=√λ₂` | structural `ω₀ ∈ [0.12, 0.27]` vs measured `1–11 Hz` (Spearman ≈ −0.3); flat open↔closed (dz ≈ −0.2, **p = 1.0**) | the pulse `ω_k=√λ_k` is the coupling graph's **spatial / topological** standing-wave spectrum — **not** the temporal Hz spectrum, and not a state marker here (the k-NN PLV topology is state-insensitive by construction); the *local* tetrad carries the state |
+| **`C_static`** (pressure snapshot) / **`Q`** (quality factor) | both rise (8/10 each) | reported trends; `C_static` is pressure-only (p ≈ 0.11), not dynamic total `C(t)` or proof of a sharper physical rhythm |
+| **Global Kuramoto `R`** | **falls** in 9/10 (dz ≈ −0.9) | reported direction differs from the local-field trends in this sample; no general diagnostic ordering follows |
+| **Collective pulse** `ω₀=√λ₂` | structural `ω₀ ∈ [0.12, 0.27]` vs measured `1–11 Hz` (Spearman ≈ −0.3); flat open↔closed (dz ≈ −0.2, **p = 1.0**) | graph-derived auxiliary wave scale, without an identified conversion to temporal Hz; the reported absence of discrimination does not prove topology is state-insensitive |
 
-**Falsification and correction.** The naive single-subject reading (eyes-closed
-⇒ `|∇φ|` *down*) did **not** generalise: cross-subject, `|∇φ|` and `K_φ` rise
-while `R` falls.  Measured first, then reported — the cross-subject test
-corrected a premature single-subject conclusion.  The consistent structural fact
-is a **local↔global dissociation**: eyes-closed alpha is a spatially-structured
-rhythm (local phase curvature up, global in-phase order down), an established
-phenomenon (alpha as a spatial / travelling wave) that the canonical *local*
-tetrad reads correctly where the mean-field order parameter mis-signs it.
-Recovers a known phenomenon structurally; closes nothing, beats nothing, is not
-new physics.
+**Reported correction.** The cross-subject summary gives the opposite local-field
+direction to the earlier single-subject reading (eyes-closed ⇒ `|∇φ|` down).
+If replay confirms those results, they would reject that directional
+generalization for this preparation. A local/global diagnostic difference does
+not establish a travelling wave, show that one observable has the correct sign
+and the other the wrong one, or identify a TNFR mechanism. Fixing k in a PLV
+neighbor graph does not fix which neighbors its data-dependent construction
+selects. Both acquisition provenance and the actual constructed graphs are
+needed to interpret the reported result.
 
 ## Dynamics confrontation (the nodal equation as a predictor)
 
@@ -145,8 +144,8 @@ scores; it does not establish out-of-sample forecasting.
 | Signal | nodal 1-step skill | AR-1 | Reading |
 |---|---|---|---|
 | synthetic graph diffusion | **+0.16–+0.21** (recovers `c`) | +0.03 | reported synthetic same-window recovery; not rerun here or physical validation |
-| real EEG (eyes-closed) | +0.02 | **+0.05** | oscillatory — the EPI *diffusion* channel is weak; AR-1 wins |
-| real thermal field (60–120 min steps) | **+0.015–+0.029** | +0.013–+0.025 | diffusive — the nodal diffusion **matches/edges** AR-1 at diffusive timescales |
+| real EEG (eyes-closed) | +0.02 | **+0.05** | reported same-window AR-1 score exceeds the selected diffusion-direction fit |
+| real thermal field (60–120 min steps) | **+0.015–+0.029** | +0.013–+0.025 | reported same-window scores are close; this comparison alone does not certify a diffusive physical regime |
 
 For nonzero increments `r` and diffusion direction `d`, the fitted improvement
 is `(r dot d)^2/(||r||^2*||d||^2) >= 0`. A positive score alone therefore
@@ -220,14 +219,17 @@ nor replacements for the frozen nodal response model.
   accuracy near GP and stabilized DMD. That comparison needs a replay manifest;
   it does not derive the auxiliary wave from canonical nodal evolution or
   establish physical meanings for its fitted parameters.
-- **Detection, not prediction.** The tetrad tracks the seizure while it happens
-  (AUC ≈ 0.67), not its approach (pre-ictal at chance).
-- **One substrate, modest margins.** Single corpus; relative-MSE margins over the
-  baselines are ~1%; AUC ≈ 0.67 is not a competitive seizure detector.
-- **Cross-subject, still one paradigm.** The eegmmidb generalisation is n = 10,
-  a single eyes-open/closed paradigm; effect sizes are medium–large (`K_φ`
-  p ≈ 0.002) but `C` is only a trend. It recovers a known phenomenon (spatial
-  alpha) rather than out-predicting a baseline.
+- **Concurrent association, not an admitted predictor.** The CHB-MIT summary
+  reports concurrent AUC ≈ 0.67 and chance-level pre-ictal results. No clinical
+  detection/prediction capability follows without replay and the appropriate
+  evaluation protocol.
+- **Modest reported margins.** Relative-MSE differences near 1% and the listed
+  AUCs need uncertainty and information-matched comparisons; these summaries
+  establish no competitive-performance claim.
+- **Limited cross-subject preparation.** The eegmmidb report covers ten subjects
+  in one eyes-open/closed comparison. Its local/global trends, if reproduced,
+  would remain observations in that sample, not identification of spatial alpha
+  dynamics or of the complete nodal law.
 - **Modal diagnosis has limited scope.** Adequate samples do not turn AR(2)
   root classification into a certificate of diffusion, conservative dynamics
   or TNFR correspondence. Failure and unresolved fits now retain explicit

@@ -91,26 +91,31 @@ def main() -> None:
     print("=" * 74)
     print("NS LAMBDA-MOMENT HIERARCHY -- the wall climbs the moment ladder")
     print("=" * 74)
-    print("\n  Re | M0 energy | M1 enstroph | M2 palinstr | M1/M0 | M2/M1 |"
-          " kmax*eta")
+    print(
+        "\n  Re | M0 energy | M1 enstroph | M2 palinstr | M1/M0 | M2/M1 |" " kmax*eta"
+    )
     rows = []
     for nu in VISCOSITIES:
         m = moments_at_peak(nu)
         rows.append(m)
         flag = "resolved" if m["resolved"] else "UNDER-RES"
-        print(f"{m['Re']:5.0f} | {m['energy_m0']:9.4f} | "
-              f"{m['enstrophy_m1']:11.4f} | {m['palinstrophy_m2']:11.3f} | "
-              f"{m['m1_over_m0']:5.2f} | {m['m2_over_m1']:5.2f} | "
-              f"{m['kmax_eta']:.2f} {flag}")
+        print(
+            f"{m['Re']:5.0f} | {m['energy_m0']:9.4f} | "
+            f"{m['enstrophy_m1']:11.4f} | {m['palinstrophy_m2']:11.3f} | "
+            f"{m['m1_over_m0']:5.2f} | {m['m2_over_m1']:5.2f} | "
+            f"{m['kmax_eta']:.2f} {flag}"
+        )
 
     res = [m for m in rows if m["resolved"]]
     if len(res) >= 2:
         a, b = res[0], res[-1]
-        print(f"\nRESOLVED Re {a['Re']:.0f}->{b['Re']:.0f} "
-              f"({b['Re'] / a['Re']:.1f}x): "
-              f"M0 x{b['energy_m0'] / a['energy_m0']:.2f}, "
-              f"M1 x{b['enstrophy_m1'] / a['enstrophy_m1']:.2f}, "
-              f"M2 x{b['palinstrophy_m2'] / a['palinstrophy_m2']:.2f}")
+        print(
+            f"\nRESOLVED Re {a['Re']:.0f}->{b['Re']:.0f} "
+            f"({b['Re'] / a['Re']:.1f}x): "
+            f"M0 x{b['energy_m0'] / a['energy_m0']:.2f}, "
+            f"M1 x{b['enstrophy_m1'] / a['enstrophy_m1']:.2f}, "
+            f"M2 x{b['palinstrophy_m2'] / a['palinstrophy_m2']:.2f}"
+        )
 
     # The ladder-closure rung: interpolation saturation + growth-phase balance.
     print("\n  Re | interp. s=M1^2/(M0 M2) | growth-phase P/(2 nu M2)")

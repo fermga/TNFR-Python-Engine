@@ -13,8 +13,8 @@ import pytest
 import tnfr.operators as operators
 import tnfr.operators.event_runtime as event_runtime_module
 import tnfr.operators.network_stage as network_stage_module
-from tnfr.node import NodeNX
 from tnfr.errors import TNFRValueError
+from tnfr.node import NodeNX
 from tnfr.operators import apply_glyph, apply_glyph_obj
 from tnfr.operators._reception_kernel import (
     RECEPTION_PRE_STATE_BOUNDARY,
@@ -28,10 +28,7 @@ from tnfr.operators.metrics_basic import (
     _reception_metrics_from_snapshot,
     reception_metrics,
 )
-from tnfr.operators.network_analysis.source_detection import (
-    detect_emission_sources,
-)
-from tnfr.operators.preconditions import validate_reception
+from tnfr.operators.network_analysis.source_detection import detect_emission_sources
 from tnfr.operators.network_stage import (
     TWO_PHASE_JACOBI,
     NetworkStageResult,
@@ -39,6 +36,7 @@ from tnfr.operators.network_stage import (
     _same_reception_value,
     execute_neighbor_stage,
 )
+from tnfr.operators.preconditions import validate_reception
 from tnfr.types import Glyph, real_scalar_epi
 
 
@@ -65,8 +63,9 @@ def _epi(graph: nx.Graph, node: int) -> float:
     return float(real_scalar_epi(graph.nodes[node]["EPI"]))
 
 
-def test_direct_metrics_use_one_pre_en_self_loop_snapshot_and_pressure_magnitude(
-) -> None:
+def test_direct_metrics_use_one_pre_en_self_loop_snapshot_and_pressure_magnitude() -> (
+    None
+):
     graph = _graph((0.0, 1.0))
     graph.add_edge(0, 0)
     graph.nodes[0]["delta_nfr"] = -2.0
@@ -85,8 +84,7 @@ def test_direct_metrics_use_one_pre_en_self_loop_snapshot_and_pressure_magnitude
     assert metrics["neighbor_epi_mean"] == 0.5
     assert metrics["reception_read_boundary"] == RECEPTION_PRE_STATE_BOUNDARY
     assert (
-        metrics["dnfr_observation_boundary"]
-        == RECEPTION_PRESSURE_OBSERVATION_BOUNDARY
+        metrics["dnfr_observation_boundary"] == RECEPTION_PRESSURE_OBSERVATION_BOUNDARY
     )
     assert (
         metrics["stored_source_metadata_observation_boundary"]
@@ -239,8 +237,7 @@ def test_stage_rejects_tampered_snapshot_seal_without_metrics(
     assert dict(graph.graph) == before_graph
 
 
-def test_all_graph_backed_en_entry_points_share_self_loop_and_missing_epi(
-) -> None:
+def test_all_graph_backed_en_entry_points_share_self_loop_and_missing_epi() -> None:
     template = _graph((0.0, 0.0, 1.0))
     template.add_edge(0, 0)
     template.add_edge(0, 2)
@@ -262,9 +259,7 @@ def test_all_graph_backed_en_entry_points_share_self_loop_and_missing_epi(
 
     object_level = deepcopy(template)
     apply_glyph_obj(NodeNX.from_graph(object_level, 0), Glyph.EN)
-    outputs.append(
-        (_epi(object_level, 0), object_level.nodes[0]["EPI_kind"])
-    )
+    outputs.append((_epi(object_level, 0), object_level.nodes[0]["EPI_kind"]))
 
     staged = deepcopy(template)
     execute_neighbor_stage(
@@ -278,14 +273,12 @@ def test_all_graph_backed_en_entry_points_share_self_loop_and_missing_epi(
     assert outputs == [(1.0 / 6.0, "kind-2")] * 4
 
 
-def test_directed_reception_reads_incoming_arcs_and_matches_source_causality(
-) -> None:
+def test_directed_reception_reads_incoming_arcs_and_matches_source_causality() -> None:
     graph = nx.DiGraph()
     template = _graph((1.0, 0.0))
     graph.graph.update(deepcopy(dict(template.graph)))
     graph.add_nodes_from(
-        (node, deepcopy(data))
-        for node, data in template.nodes(data=True)
+        (node, deepcopy(data)) for node, data in template.nodes(data=True)
     )
     graph.add_edge(0, 1)
 
@@ -318,8 +311,7 @@ def _asymmetric_reception_graph(
     graph = nx.DiGraph()
     graph.graph.update(deepcopy(dict(template.graph)))
     graph.add_nodes_from(
-        (node, deepcopy(data))
-        for node, data in template.nodes(data=True)
+        (node, deepcopy(data)) for node, data in template.nodes(data=True)
     )
     graph.add_edges_from(((0, 1), (1, 2)))
     return graph
@@ -345,8 +337,7 @@ def test_parallel_directed_arcs_do_not_duplicate_reception_input() -> None:
     graph = nx.MultiDiGraph()
     graph.graph.update(deepcopy(dict(template.graph)))
     graph.add_nodes_from(
-        (node, deepcopy(data))
-        for node, data in template.nodes(data=True)
+        (node, deepcopy(data)) for node, data in template.nodes(data=True)
     )
     graph.add_edge(0, 1)
     graph.add_edge(0, 1)
@@ -539,9 +530,7 @@ def test_two_phase_metrics_and_seal_retain_stage_start_reads() -> None:
     assert observations[0].reception_sources_after == (
         observations[0].reception_sources
     )
-    assert observations[0].post_state_boundary == (
-        "completed_en_stage_before_result"
-    )
+    assert observations[0].post_state_boundary == ("completed_en_stage_before_result")
     assert observations[0].auxiliary_stability_certified is False
     assert observations[2].reception_sources == ()
     assert observations[2].reception_sources_present_after is True
@@ -694,8 +683,7 @@ def test_reception_controls_reject_noncanonical_values_before_writes(kwargs) -> 
     assert dict(graph.nodes(data=True)) == before
 
 
-def test_public_reception_precondition_admits_isolated_target_without_warning(
-) -> None:
+def test_public_reception_precondition_admits_isolated_target_without_warning() -> None:
     graph = _graph((0.0, 0.2))
     graph.remove_edge(0, 1)
     graph.nodes[0]["delta_nfr"] = 0.01
@@ -710,8 +698,7 @@ def test_public_reception_precondition_admits_isolated_target_without_warning(
 def test_public_glyph_entry_points_do_not_expose_prepared_state_bypass() -> None:
     assert "_prepared_operator_state" not in inspect.signature(apply_glyph).parameters
     assert (
-        "_prepared_operator_state"
-        not in inspect.signature(apply_glyph_obj).parameters
+        "_prepared_operator_state" not in inspect.signature(apply_glyph_obj).parameters
     )
 
 
@@ -982,9 +969,7 @@ def test_executed_glyph_stage_retains_and_seals_reception_observations() -> None
     )
     resealed_stage = replace(
         stage_candidate,
-        _proof_stamp=event_runtime_module._executed_glyph_stage_stamp(
-            stage_candidate
-        ),
+        _proof_stamp=event_runtime_module._executed_glyph_stage_stamp(stage_candidate),
     )
     assert not resealed_stage._proof_fields_are_intact()
 
@@ -1035,8 +1020,7 @@ def test_post_state_anchor_protects_directed_en_without_certificate() -> None:
         _gamma_spec={"type": "none"},
     )
     graph.add_nodes_from(
-        (node, deepcopy(data))
-        for node, data in template.nodes(data=True)
+        (node, deepcopy(data)) for node, data in template.nodes(data=True)
     )
     graph.add_edges_from(((0, 1), (1, 0)))
     for node in graph:

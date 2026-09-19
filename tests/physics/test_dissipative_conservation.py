@@ -140,9 +140,7 @@ class TestDissipatorAlgebra:
             compute_dissipator_action(density, _amplitude_damping_ops(gamma)),
             ord="fro",
         )
-        bound = compute_dissipation_bound(
-            _amplitude_damping_ops(gamma), purity=1.0
-        )
+        bound = compute_dissipation_bound(_amplitude_damping_ops(gamma), purity=1.0)
         assert bound > 0.0
         assert action_norm <= bound
 
@@ -167,9 +165,7 @@ class TestDissipatorAlgebra:
         assert purifying_rate > 0.0
 
     def test_unital_dephasing_decreases_plus_state_purity(self):
-        rate = compute_instantaneous_purity_rate(
-            _dephasing_ops(0.25), _plus_state()
-        )
+        rate = compute_instantaneous_purity_rate(_dephasing_ops(0.25), _plus_state())
         assert rate == pytest.approx(-0.25)
 
     @pytest.mark.parametrize(
@@ -260,9 +256,7 @@ class TestBalance:
     def test_trace_distance_to_fixed_point_is_used(self):
         before = capture_dissipative_snapshot(_pure_state(1))
         after = capture_dissipative_snapshot(np.diag([0.7, 0.3]))
-        balance = verify_dissipative_balance(
-            before, after, steady_state=_pure_state(0)
-        )
+        balance = verify_dissipative_balance(before, after, steady_state=_pure_state(0))
         assert balance.contractivity_gap == pytest.approx(0.3)
         assert balance.contractivity_evaluated
         assert balance.is_contractive

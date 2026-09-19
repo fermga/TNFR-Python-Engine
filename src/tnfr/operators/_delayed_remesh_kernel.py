@@ -42,9 +42,7 @@ __all__ = [
     "build_delayed_remesh_plan",
 ]
 
-DelayedRemeshStatus = Literal[
-    "applied", "insufficient_history", "empty_support"
-]
+DelayedRemeshStatus = Literal["applied", "insufficient_history", "empty_support"]
 ClipMode = Literal["hard", "soft"]
 
 _EVIDENCE_SCOPE = (
@@ -125,18 +123,14 @@ class DelayedRemeshStabilityEvidence:
     def raw_global_disagreement_gain_certified(self) -> bool:
         """Whether the fixed-history raw map has a finite global gain bound."""
 
-        return (
-            self.fixed_history_raw_global_disagreement_gain_upper_bound
-            is not None
-        )
+        return self.fixed_history_raw_global_disagreement_gain_upper_bound is not None
 
     @property
     def bounded_global_disagreement_gain_certified(self) -> bool:
         """Whether a sufficient bounded-map gain was proved in the real model."""
 
         return (
-            self.fixed_history_bounded_global_disagreement_gain_upper_bound
-            is not None
+            self.fixed_history_bounded_global_disagreement_gain_upper_bound is not None
         )
 
 
@@ -253,9 +247,7 @@ def _materialize_indexed_history(
                 type(history),
             )
             if type(shape) is not tuple or len(shape) != 1:
-                raise TNFRValueError(
-                    f"{label} NumPy storage must be one-dimensional"
-                )
+                raise TNFRValueError(f"{label} NumPy storage must be one-dimensional")
             flat = type(flat_descriptor).__get__(
                 flat_descriptor,
                 history,
@@ -399,10 +391,13 @@ def _weighted_mean(
     if not values:
         return None
     total_weight = sum(weights, Fraction(0))
-    return sum(
-        (weight * value for weight, value in zip(weights, values, strict=True)),
-        Fraction(0),
-    ) / total_weight
+    return (
+        sum(
+            (weight * value for weight, value in zip(weights, values, strict=True)),
+            Fraction(0),
+        )
+        / total_weight
+    )
 
 
 def _disagreement(
@@ -412,13 +407,16 @@ def _disagreement(
     mean = _weighted_mean(values, weights)
     if mean is None:
         return None
-    return sum(
-        (
-            weight * (value - mean) * (value - mean)
-            for weight, value in zip(weights, values, strict=True)
-        ),
-        Fraction(0),
-    ) / 2
+    return (
+        sum(
+            (
+                weight * (value - mean) * (value - mean)
+                for weight, value in zip(weights, values, strict=True)
+            ),
+            Fraction(0),
+        )
+        / 2
+    )
 
 
 def _diagnostic_float(value: Fraction, label: str) -> float:
@@ -431,13 +429,10 @@ def _diagnostic_float(value: Fraction, label: str) -> float:
             f"{label} exceeds the finite binary64 diagnostic range"
         ) from exc
     if not math.isfinite(result):
-        raise TNFRValueError(
-            f"{label} exceeds the finite binary64 diagnostic range"
-        )
+        raise TNFRValueError(f"{label} exceeds the finite binary64 diagnostic range")
     if result == 0.0 and value != 0:
         raise TNFRValueError(
-            f"{label} is nonzero but underflows the finite binary64 "
-            "diagnostic range"
+            f"{label} is nonzero but underflows the finite binary64 " "diagnostic range"
         )
     return result
 
@@ -498,11 +493,7 @@ def _build_evidence(
     ideal_mean_combination = (
         None
         if current_mean is None
-        else (
-            beta_q * current_mean
-            + gamma_q * local_mean
-            + delta_q * global_mean
-        )
+        else (beta_q * current_mean + gamma_q * local_mean + delta_q * global_mean)
     )
     current_energy = _disagreement(current_q, weights_q)
     raw_energy = _disagreement(runtime_raw_q, weights_q)
@@ -513,9 +504,7 @@ def _build_evidence(
     convex_bound = (
         None
         if current_energy is None
-        else beta_q * current_energy
-        + gamma_q * local_energy
-        + delta_q * global_energy
+        else beta_q * current_energy + gamma_q * local_energy + delta_q * global_energy
     )
     offset_uniform = None if not proposals else _all_equal(delayed_offset_q)
     raw_gain = (
@@ -533,9 +522,7 @@ def _build_evidence(
         )
     else:
         bounded_gain = None
-    clipped_nodes = tuple(
-        item.node for item in proposals if item.clipping_intervened
-    )
+    clipped_nodes = tuple(item.node for item in proposals if item.clipping_intervened)
     observed_consensus_fixed = bool(
         proposals
         and _all_equal(current_q + local_q + global_q)
@@ -548,9 +535,7 @@ def _build_evidence(
         beta=_diagnostic_float(beta_q, "beta coefficient"),
         gamma=_diagnostic_float(gamma_q, "gamma coefficient"),
         delta=_diagnostic_float(delta_q, "delta coefficient"),
-        coefficient_partition_exact=(
-            beta_q + gamma_q + delta_q == Fraction(1)
-        ),
+        coefficient_partition_exact=(beta_q + gamma_q + delta_q == Fraction(1)),
         max_raw_affine_rounding_residual=_diagnostic_float(
             max(residuals, default=Fraction(0)),
             "raw affine rounding residual",
@@ -669,9 +654,7 @@ def build_delayed_remesh_plan(
     if type(include_stability_evidence) is not bool:
         raise TypeError("include_stability_evidence must be a bool")
     if metric_weights is not None and not include_stability_evidence:
-        raise TNFRValueError(
-            "metric_weights requires include_stability_evidence=True"
-        )
+        raise TNFRValueError("metric_weights requires include_stability_evidence=True")
     weights = (
         _materialize_remesh_metric(metric_weights, nodes)
         if include_stability_evidence
@@ -754,9 +737,7 @@ def build_delayed_remesh_plan(
                 record_stats=False,
             )
         except (OverflowError, TypeError, ValueError) as exc:
-            raise TNFRValueError(
-                f"node {node!r} REMESH clipping failed"
-            ) from exc
+            raise TNFRValueError(f"node {node!r} REMESH clipping failed") from exc
         bounded_epi = _finite_real(
             bounded_epi, f"node {node!r} bounded REMESH proposal"
         )

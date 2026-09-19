@@ -1,15 +1,14 @@
-"""
-Advanced Command Line Interface for TNFR Primality Testing
+"""Command-line interface for basic and cached arithmetic-pressure tests.
 
-Provides access to both standard and advanced TNFR algorithms with repository integration.
-Supports performance analysis, benchmarking, caching, and infrastructure diagnostics.
+Examples::
 
-Usage:
     python -m tnfr_primality.cli 17 97 997 --timing
-    python -m tnfr_primality.cli --benchmark 10000 --advanced
-    python -m tnfr_primality.cli --validate 1000 --infrastructure-status
-    python -m tnfr_primality.cli --batch 2 3 5 7 11 13 17 --cached
-"""
+    python -m tnfr_primality.cli --batch --optimized 17 97
+    python -m tnfr_primality.cli --validate 1000
+
+This parser does not accept --advanced, --cached or --infrastructure-status;
+those belong to the separate advanced interface where supported. Validation
+and timings concern finite arithmetic inputs, not the complete TNFR theory."""
 
 from __future__ import annotations
 
@@ -48,13 +47,15 @@ Examples:
   python -m tnfr_primality.cli --timing 982451653      # With timing info
   python -m tnfr_primality.cli --benchmark 10000       # Performance benchmark  
   python -m tnfr_primality.cli --batch --optimized 2 3 5 7  # Batch mode
-  python -m tnfr_primality.cli --validate 1000         # Validate theory
+  python -m tnfr_primality.cli --validate 1000         # Compare finite arithmetic results
 
-TNFR Theory:
-  A number n is prime ⟺ ΔNFR(n) = 0, where:
-  ΔNFR(n) = ζ·(ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
-  
-  This represents arithmetic pressure in structural coherence systems.
+Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
+  n is prime iff DeltaNFR(n) = 0, where
+  DeltaNFR(n) = zeta*(Omega(n)-1) + eta*(tau(n)-2)
+               + theta*(sigma(n)/n - (1+1/n)).
+  Omega counts prime factors with multiplicity; defaults are unit weights.
+  Runtime uses floating arithmetic and a numerical zero tolerance.
+  Finite comparisons do not validate the full TNFR physical framework.
         """,
     )
 
@@ -81,7 +82,7 @@ TNFR Theory:
         "--validate",
         type=int,
         metavar="N",
-        help="Validate TNFR theory against traditional methods up to N",
+        help="Compare the arithmetic predicate with trial division over the finite range up to N",
     )
     parser.add_argument(
         "--compare", action="store_true", help="Compare basic vs optimized performance"
@@ -91,7 +92,7 @@ TNFR Theory:
         "--sieve",
         type=int,
         metavar="N",
-        help="Generate primes up to N using TNFR-verified sieve",
+        help="Generate primes up to N with a classical sieve followed by pressure checks",
     )
 
     args = parser.parse_args(argv)
@@ -99,7 +100,7 @@ TNFR Theory:
     # Validation mode
     if args.validate:
         print(
-            f"Validating TNFR theory against traditional primality testing up to {args.validate}..."
+            f"Comparing the arithmetic predicate with trial division up to {args.validate}..."
         )
         print("=" * 70)
 
@@ -116,9 +117,9 @@ TNFR Theory:
         print(f"Validation time: {elapsed*1000:.2f} ms")
 
         if results["accuracy"] == 1.0:
-            print("✅ TNFR theory validation: PERFECT ACCURACY")
+            print("Finite comparison: all checked classifications agree")
         else:
-            print("❌ TNFR theory validation: ERRORS DETECTED")
+            print("Finite comparison: classification disagreements detected")
 
         return 0
 
@@ -145,7 +146,9 @@ TNFR Theory:
 
     # Sieve mode
     if args.sieve:
-        print(f"Generating primes up to {args.sieve:,} using TNFR-verified sieve...")
+        print(
+            f"Generating primes up to {args.sieve:,} using a classical sieve and arithmetic-pressure checks..."
+        )
 
         optimizer = OptimizedTNFRPrimality()
         start_time = time.perf_counter()

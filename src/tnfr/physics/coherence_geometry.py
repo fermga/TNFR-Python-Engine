@@ -16,9 +16,9 @@ geometry alone proves neither temporal monotonicity nor attraction.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Iterator, Mapping, Sequence, Set
 from dataclasses import dataclass
-import math
 from numbers import Integral
 
 from ._helpers import finite_real_scalar
@@ -65,9 +65,7 @@ class CrossPolytopeStratification:
     def face_count(self, face_dimension: int) -> int:
         """Return the exact number of faces of a requested dimension."""
 
-        if isinstance(face_dimension, bool) or not isinstance(
-            face_dimension, Integral
-        ):
+        if isinstance(face_dimension, bool) or not isinstance(face_dimension, Integral):
             raise ValueError("face_dimension must be an integer")
         dimension = int(face_dimension)
         if self.is_degenerate_point:
@@ -77,9 +75,7 @@ class CrossPolytopeStratification:
                 )
             return 1
         if not 0 <= dimension < self.coordinate_dimension:
-            raise ValueError(
-                "face_dimension must lie in [0, coordinate_dimension)"
-            )
+            raise ValueError("face_dimension must lie in [0, coordinate_dimension)")
         return (1 << (dimension + 1)) * math.comb(
             self.coordinate_dimension, dimension + 1
         )
@@ -206,9 +202,7 @@ def _cross_polytope_stratification(
         )
 
     singular_range = (
-        (0, coordinate_dimension - 2)
-        if coordinate_dimension >= 2
-        else None
+        (0, coordinate_dimension - 2) if coordinate_dimension >= 2 else None
     )
     return CrossPolytopeStratification(
         coordinate_dimension=coordinate_dimension,
@@ -217,22 +211,16 @@ def _cross_polytope_stratification(
         is_degenerate_point=False,
         singular_face_dimension_range=singular_range,
         regular_facet_count_exponent=coordinate_dimension,
-        level_set_is_globally_smooth_embedded_manifold=(
-            coordinate_dimension == 1
-        ),
+        level_set_is_globally_smooth_embedded_manifold=(coordinate_dimension == 1),
         kernel_has_regular_locus=True,
-        kernel_is_differentiable_everywhere_on_level=(
-            coordinate_dimension == 1
-        ),
+        kernel_is_differentiable_everywhere_on_level=(coordinate_dimension == 1),
     )
 
 
 def _checked_regular_gradient_norm(value: float, scale: float) -> float:
     result = scale * value * value
     if result == 0.0 or not math.isfinite(result):
-        raise ValueError(
-            "regular gradient norm is outside finite floating-point range"
-        )
+        raise ValueError("regular gradient norm is outside finite floating-point range")
     return result
 
 
@@ -276,9 +264,7 @@ def coherence_level_set_geometry(coherence: float) -> CoherenceLevelSetCertifica
             ),
         )
 
-    regular_gradient_norm = _checked_regular_gradient_norm(
-        value, math.sqrt(2.0)
-    )
+    regular_gradient_norm = _checked_regular_gradient_norm(value, math.sqrt(2.0))
     singular = (
         (radius, 0.0),
         (-radius, 0.0),
@@ -324,9 +310,7 @@ def network_coherence_level_set_geometry(
     total_radius = _checked_total_radius(mean_radius, count)
     dimension = 2 * count
     equilibrium = total_radius == 0.0
-    stratification = _cross_polytope_stratification(
-        dimension, equilibrium=equilibrium
-    )
+    stratification = _cross_polytope_stratification(dimension, equilibrium=equilibrium)
     if equilibrium:
         minimum = maximum = gradient_norm = 0.0
         gradient_available = False
@@ -337,9 +321,7 @@ def network_coherence_level_set_geometry(
                 "network Euclidean radius is outside finite floating-point range"
             )
         maximum = total_radius
-        gradient_norm = _checked_regular_gradient_norm(
-            value, math.sqrt(2.0 / count)
-        )
+        gradient_norm = _checked_regular_gradient_norm(value, math.sqrt(2.0 / count))
         gradient_available = True
 
     return NetworkCoherenceLevelSetCertificate(
@@ -376,13 +358,10 @@ def fixed_capacity_coherence_level_set_geometry(
     consistency slice, not an evolution or convergence certificate.
     """
 
-    if (
-        isinstance(
-            capacities,
-            (str, bytes, bytearray, Mapping, Set, Iterator),
-        )
-        or not isinstance(capacities, Sequence)
-    ):
+    if isinstance(
+        capacities,
+        (str, bytes, bytearray, Mapping, Set, Iterator),
+    ) or not isinstance(capacities, Sequence):
         raise ValueError("capacities must be a nonempty reusable sequence")
     raw_capacities = tuple(capacities)
     if not raw_capacities:
@@ -391,17 +370,13 @@ def fixed_capacity_coherence_level_set_geometry(
     normalized: list[float] = []
     for index, capacity in enumerate(raw_capacities):
         try:
-            capacity_value = finite_real_scalar(
-                capacity, f"capacities[{index}]"
-            )
+            capacity_value = finite_real_scalar(capacity, f"capacities[{index}]")
         except ValueError as exc:
             raise ValueError(
                 "capacities must contain finite nonnegative real scalars"
             ) from exc
         if capacity_value < 0.0:
-            raise ValueError(
-                "capacities must contain finite nonnegative real scalars"
-            )
+            raise ValueError("capacities must contain finite nonnegative real scalars")
         normalized.append(capacity_value)
 
     nu_f = tuple(normalized)
@@ -409,9 +384,7 @@ def fixed_capacity_coherence_level_set_geometry(
     value, mean_radius = _coherence_and_radius(coherence)
     weighted_radius = _checked_total_radius(mean_radius, count)
     equilibrium = weighted_radius == 0.0
-    stratification = _cross_polytope_stratification(
-        count, equilibrium=equilibrium
-    )
+    stratification = _cross_polytope_stratification(count, equilibrium=equilibrium)
 
     if equilibrium:
         pressure_vertices: tuple[float, ...] = ()
@@ -433,9 +406,7 @@ def fixed_capacity_coherence_level_set_geometry(
             embedding_scale = math.hypot(1.0, capacity)
             embedded_radius = weighted_radius * (embedding_scale / weight)
             if not math.isfinite(embedded_radius):
-                raise ValueError(
-                    "nodal-slice Euclidean radius exceeds finite range"
-                )
+                raise ValueError("nodal-slice Euclidean radius exceeds finite range")
             pressure_values.append(pressure_vertex)
             embedded_values.append(embedded_radius)
             dual_metric_terms.append((weight / embedding_scale) ** 2)
@@ -447,12 +418,9 @@ def fixed_capacity_coherence_level_set_geometry(
         maximum = max(embedded_vertices)
         if minimum == 0.0 or not math.isfinite(minimum):
             raise ValueError(
-                "nodal-slice Euclidean radius is outside finite "
-                "floating-point range"
+                "nodal-slice Euclidean radius is outside finite " "floating-point range"
             )
-        gradient_norm = _checked_regular_gradient_norm(
-            value, dual_norm_scale / count
-        )
+        gradient_norm = _checked_regular_gradient_norm(value, dual_norm_scale / count)
         gradient_available = True
 
     return FixedCapacityCoherenceLevelSetCertificate(

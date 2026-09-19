@@ -2,16 +2,16 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
 import math
+from copy import deepcopy
 
 import networkx as nx
 import numpy as np
 import pytest
 
 from tnfr.dynamics.integrators import update_epi_via_nodal_equation
-from tnfr.operators.nodal_equation import validate_nodal_equation
 from tnfr.dynamics.structural_cache import StructuralCoherenceCache
+from tnfr.operators.nodal_equation import validate_nodal_equation
 from tnfr.physics.cell import (
     apply_membrane_flux,
     compute_homeostatic_index,
@@ -249,6 +249,7 @@ def test_membrane_pressure_change_cannot_reuse_a_stale_structural_field() -> Non
     assert after.phi_s[1] == pytest.approx(0.5)
     assert cache.interpolations == 0
 
+
 def test_structural_cache_separates_canonical_coherence_from_phase_sync() -> None:
     graph = nx.Graph([(0, 1)])
     graph.nodes[0].update(_node(0.0, phase=0.0, dnfr=10.0))
@@ -286,6 +287,7 @@ def test_structural_cache_returns_defensive_field_snapshots() -> None:
     assert second.phi_s == expected
     assert second is not first
 
+
 @pytest.mark.parametrize(
     "bad_samples",
     [
@@ -311,8 +313,9 @@ def test_homeostatic_index_coerces_finite_numeric_sequences() -> None:
         compute_homeostatic_index([0.2, 0.2], epsilon=0.0)
 
 
-def test_cell_detector_rejects_corrupt_internal_pressure_before_classification(
-) -> None:
+def test_cell_detector_rejects_corrupt_internal_pressure_before_classification() -> (
+    None
+):
     graph = _compartment_snapshot()
     graph.nodes[1]["delta_nfr"] = float("nan")
 

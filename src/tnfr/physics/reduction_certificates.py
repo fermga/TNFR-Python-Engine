@@ -13,13 +13,7 @@ from typing import Any
 import numpy as np
 
 from ..alias import set_attr
-from ..constants.aliases import (
-    ALIAS_DEPI,
-    ALIAS_DNFR,
-    ALIAS_EPI,
-    ALIAS_THETA,
-    ALIAS_VF,
-)
+from ..constants.aliases import ALIAS_DEPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..metrics.common import compute_coherence, structural_coherence
 from .canonical import (
     compute_phase_curvature,
@@ -29,10 +23,7 @@ from .canonical import (
 from .fields import classify_nodal_topology
 from .spectral_projectors import matrix_exponential
 from .structural_diffusion import structural_diffusion_operator
-from .structural_morphism import (
-    finite_time_intertwining_bound,
-    intertwining_residual,
-)
+from .structural_morphism import finite_time_intertwining_bound, intertwining_residual
 from .transient_u2 import potential_operator_from_graph
 
 __all__ = [
@@ -87,9 +78,7 @@ def _configured_graph(
     return configured
 
 
-def _field_vector(
-    values: dict[Any, float], nodes: tuple[Any, ...]
-) -> np.ndarray:
+def _field_vector(values: dict[Any, float], nodes: tuple[Any, ...]) -> np.ndarray:
     return np.asarray([values[node] for node in nodes], dtype=float)
 
 
@@ -110,12 +99,8 @@ def observer_transport_certificate(
     Capacity is included in the full generator ``diag(nu_f)L_rw``.  Phase is
     observational here; no phase dynamics or operator trajectory is asserted.
     """
-    source_nodes_list, source_laplacian = structural_diffusion_operator(
-        source_graph
-    )
-    target_nodes_list, target_laplacian = structural_diffusion_operator(
-        target_graph
-    )
+    source_nodes_list, source_laplacian = structural_diffusion_operator(source_graph)
+    target_nodes_list, target_laplacian = structural_diffusion_operator(target_graph)
     source_nodes = tuple(source_nodes_list)
     target_nodes = tuple(target_nodes_list)
     map_matrix = np.asarray(morphism, dtype=float)
@@ -140,49 +125,45 @@ def observer_transport_certificate(
             raise ValueError(f"{name} must be finite and aligned to its graph")
 
     source = _configured_graph(
-        source_graph, source_nodes, source_state_array, source_phase_array,
-        source_capacity_array, source_laplacian,
+        source_graph,
+        source_nodes,
+        source_state_array,
+        source_phase_array,
+        source_capacity_array,
+        source_laplacian,
     )
     target = _configured_graph(
-        target_graph, target_nodes, target_state_array, target_phase_array,
-        target_capacity_array, target_laplacian,
+        target_graph,
+        target_nodes,
+        target_state_array,
+        target_phase_array,
+        target_capacity_array,
+        target_laplacian,
     )
     source_pressure = -(source_laplacian @ source_state_array)
     target_pressure = -(target_laplacian @ target_state_array)
     source_rate = source_capacity_array * source_pressure
     target_rate = target_capacity_array * target_pressure
-    source_local = np.asarray([
-        structural_coherence(source_pressure[index], source_rate[index])
-        for index in range(len(source_nodes))
-    ])
-    target_local = np.asarray([
-        structural_coherence(target_pressure[index], target_rate[index])
-        for index in range(len(target_nodes))
-    ])
-    source_gradient = _field_vector(
-        compute_phase_gradient(source), source_nodes
+    source_local = np.asarray(
+        [
+            structural_coherence(source_pressure[index], source_rate[index])
+            for index in range(len(source_nodes))
+        ]
     )
-    target_gradient = _field_vector(
-        compute_phase_gradient(target), target_nodes
+    target_local = np.asarray(
+        [
+            structural_coherence(target_pressure[index], target_rate[index])
+            for index in range(len(target_nodes))
+        ]
     )
-    source_curvature = _field_vector(
-        compute_phase_curvature(source), source_nodes
-    )
-    target_curvature = _field_vector(
-        compute_phase_curvature(target), target_nodes
-    )
-    source_potential = _field_vector(
-        compute_structural_potential(source), source_nodes
-    )
-    target_potential = _field_vector(
-        compute_structural_potential(target), target_nodes
-    )
-    kernel_source_nodes, kernel_source = potential_operator_from_graph(
-        source_graph
-    )
-    kernel_target_nodes, kernel_target = potential_operator_from_graph(
-        target_graph
-    )
+    source_gradient = _field_vector(compute_phase_gradient(source), source_nodes)
+    target_gradient = _field_vector(compute_phase_gradient(target), target_nodes)
+    source_curvature = _field_vector(compute_phase_curvature(source), source_nodes)
+    target_curvature = _field_vector(compute_phase_curvature(target), target_nodes)
+    source_potential = _field_vector(compute_structural_potential(source), source_nodes)
+    target_potential = _field_vector(compute_structural_potential(target), target_nodes)
+    kernel_source_nodes, kernel_source = potential_operator_from_graph(source_graph)
+    kernel_target_nodes, kernel_target = potential_operator_from_graph(target_graph)
     if tuple(kernel_source_nodes) != source_nodes:
         raise ValueError("source potential kernel node order changed")
     if tuple(kernel_target_nodes) != target_nodes:
@@ -197,9 +178,7 @@ def observer_transport_certificate(
             map_matrix, source_generator, target_generator
         ),
         state_transport_defect=float(
-            np.linalg.norm(
-                map_matrix @ source_state_array - target_state_array
-            )
+            np.linalg.norm(map_matrix @ source_state_array - target_state_array)
         ),
         local_coherence_defect=float(
             np.linalg.norm(map_matrix @ source_local - target_local)
@@ -217,9 +196,7 @@ def observer_transport_certificate(
             np.linalg.norm(map_matrix @ source_potential - target_potential)
         ),
         potential_kernel_transport_residual=float(
-            np.linalg.norm(
-                map_matrix @ kernel_source - kernel_target @ map_matrix, 2
-            )
+            np.linalg.norm(map_matrix @ kernel_source - kernel_target @ map_matrix, 2)
         ),
         source_topology=source_topology,
         target_topology=target_topology,
@@ -268,13 +245,9 @@ def kron_reduction_certificate(
         or not np.all(np.isfinite(laplacian))
         or not np.all(np.isfinite(x))
     ):
-        raise ValueError(
-            "laplacian and state must form one finite square system"
-        )
+        raise ValueError("laplacian and state must form one finite square system")
     if not np.allclose(laplacian, laplacian.T, atol=1e-12, rtol=1e-10):
-        raise ValueError(
-            "Kron control requires a symmetric conductance Laplacian"
-        )
+        raise ValueError("Kron control requires a symmetric conductance Laplacian")
     boundary = tuple(int(index) for index in boundary_indices)
     if len(set(boundary)) != len(boundary) or not boundary:
         raise ValueError("boundary indices must be unique and nonempty")
@@ -298,11 +271,7 @@ def kron_reduction_certificate(
     boundary_resistance = full_resistance[np.ix_(boundary, boundary)]
     return KronReductionCertificate(
         reduced.copy(),
-        float(
-            np.linalg.norm(
-                boundary_resistance - reduced_resistance, np.inf
-            )
-        ),
+        float(np.linalg.norm(boundary_resistance - reduced_resistance, np.inf)),
         float(np.linalg.norm(full_rate - reduced_rate)),
         float(np.linalg.norm(quasistatic_rate - reduced_rate)),
         float(np.linalg.norm(bi @ ib, 2)),
@@ -364,10 +333,9 @@ def composed_reduction_certificate(
     residual_first = first @ source - middle @ first
     residual_second = second @ middle - target @ second
     residual_composed = composed @ source - target @ composed
-    component_bound = (
-        np.linalg.norm(second, 2) * np.linalg.norm(residual_first, 2)
-        + np.linalg.norm(residual_second, 2) * np.linalg.norm(first, 2)
-    )
+    component_bound = np.linalg.norm(second, 2) * np.linalg.norm(
+        residual_first, 2
+    ) + np.linalg.norm(residual_second, 2) * np.linalg.norm(first, 2)
     trajectory_defect, trajectory_bound = finite_time_intertwining_bound(
         composed,
         source,
@@ -376,45 +344,30 @@ def composed_reduction_certificate(
         structural_time=structural_time,
     )
     source_flow = matrix_exponential(-structural_time * source) @ state
-    target_flow = matrix_exponential(
-        -structural_time * target
-    ) @ (composed @ state)
+    target_flow = matrix_exponential(-structural_time * target) @ (composed @ state)
     state_difference = composed @ source_flow - target_flow
     if observer.ndim != 2 or observer.shape[1] != target.shape[0]:
         raise ValueError("target observer must align with target coordinates")
     observer_defect = float(np.linalg.norm(observer @ state_difference))
     observer_bound = float(np.linalg.norm(observer, 2) * trajectory_bound)
     kernel_residual = None
-    if (
-        source_potential_kernel is not None
-        or target_potential_kernel is not None
-    ):
+    if source_potential_kernel is not None or target_potential_kernel is not None:
         if source_potential_kernel is None or target_potential_kernel is None:
-            raise ValueError(
-                "both potential kernels must be supplied together"
-            )
+            raise ValueError("both potential kernels must be supplied together")
         source_kernel = np.asarray(source_potential_kernel, dtype=float)
         target_kernel = np.asarray(target_potential_kernel, dtype=float)
-        if (
-            source_kernel.shape != source.shape
-            or target_kernel.shape != target.shape
-        ):
-            raise ValueError(
-                "potential kernels must align with their generators"
-            )
+        if source_kernel.shape != source.shape or target_kernel.shape != target.shape:
+            raise ValueError("potential kernels must align with their generators")
         # Generator intertwining does not imply distance-kernel intertwining;
         # a nonzero value is an observer-loss result, not a transport defect.
         kernel_residual = float(
-            np.linalg.norm(
-                composed @ source_kernel - target_kernel @ composed, 2
-            )
+            np.linalg.norm(composed @ source_kernel - target_kernel @ composed, 2)
         )
     source_dimension = source.shape[0]
     middle_dimension = middle.shape[0]
     target_dimension = target.shape[0]
     cost_ratio = float(
-        source_dimension ** 3
-        / max(middle_dimension ** 3 + target_dimension ** 3, 1)
+        source_dimension**3 / max(middle_dimension**3 + target_dimension**3, 1)
     )
     return ComposedReductionCertificate(
         float(np.linalg.norm(residual_first, 2)),

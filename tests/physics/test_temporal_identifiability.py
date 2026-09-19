@@ -242,12 +242,8 @@ def test_temporal_phase_delta_uses_half_open_canonical_wrapping() -> None:
 
 
 def test_canonical_probe_is_reproducible_and_executes_all_operators() -> None:
-    first = probe_canonical_operator_identifiability(
-        probe_seeds=(7, 29), n_nodes=6
-    )
-    second = probe_canonical_operator_identifiability(
-        probe_seeds=(7, 29), n_nodes=6
-    )
+    first = probe_canonical_operator_identifiability(probe_seeds=(7, 29), n_nodes=6)
+    second = probe_canonical_operator_identifiability(probe_seeds=(7, 29), n_nodes=6)
 
     assert first == second
     assert len(first.requested_operators) == 13
@@ -311,9 +307,7 @@ def test_temporal_channels_separate_silence_from_contraction_collision() -> None
 
 
 def test_operator_identifiers_are_not_signature_features() -> None:
-    certificate = probe_canonical_operator_identifiability(
-        probe_seeds=(11,), n_nodes=5
-    )
+    certificate = probe_canonical_operator_identifiability(probe_seeds=(11,), n_nodes=5)
     feature_text = " ".join(certificate.algebra.feature_names).lower()
     for label in certificate.algebra.labels:
         assert label.lower() not in feature_text

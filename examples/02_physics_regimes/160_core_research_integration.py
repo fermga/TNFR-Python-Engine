@@ -29,7 +29,6 @@ from tnfr.research import (
     current_git_source_provenance,
 )
 
-
 PARTITION = ((0, 3), (1, 2))
 SOURCE_SNAPSHOT_PATHS = (
     "src/tnfr",
@@ -64,9 +63,7 @@ def frozen_state(
     pressure = -(laplacian @ field)
     for node, value in zip(nodes, pressure):
         graph.nodes[node]["delta_nfr"] = float(value)
-        graph.nodes[node]["dEPI_dt"] = float(
-            graph.nodes[node]["nu_f"] * value
-        )
+        graph.nodes[node]["dEPI_dt"] = float(graph.nodes[node]["nu_f"] * value)
     return graph
 
 
@@ -117,9 +114,7 @@ def main() -> None:
                     certificate.joint_numerical_conditions_pass
                 ),
                 "failed_conditions": certificate.failed_conditions,
-                "structural_state_distance": (
-                    certificate.structural_distance.distance
-                ),
+                "structural_state_distance": (certificate.structural_distance.distance),
                 "conditions": dict(certificate.numerical_conditions),
                 "manifest": manifest.to_dict(),
                 "scope": certificate.scope,

@@ -65,9 +65,7 @@ def _certificate(
 def _diagonal_head_gain(q: Fraction, dimension: int) -> ExactSquareMatrix:
     return tuple(
         tuple(
-            (q if row == 0 else Fraction(1))
-            if row == column
-            else Fraction(0)
+            (q if row == 0 else Fraction(1)) if row == column else Fraction(0)
             for column in range(dimension)
         )
         for row in range(dimension)
@@ -95,9 +93,9 @@ def test_direct_module_and_stub_expose_relative_defect_api() -> None:
         "certify_uniform_remesh_schedule_relative_defect_stability",
     )
     package = Path(robust_module.__file__).parent
-    stub = (
-        package / "remesh_schedule_relative_defect_stability.pyi"
-    ).read_text(encoding="utf-8")
+    stub = (package / "remesh_schedule_relative_defect_stability.pyi").read_text(
+        encoding="utf-8"
+    )
     assert "class UniformRemeshScheduleRelativeDefectStabilityCertificate" in stub
     assert "def certify_uniform_remesh_schedule_relative_defect_stability" in stub
     assert "def exact_cycle_energy_gain_upper_bound" in stub
@@ -121,8 +119,7 @@ def test_effective_gain_is_exact_q_times_one_plus_eta() -> None:
     assert certificate.exact_effective_head_energy_gain_upper_bound == Fraction(3, 5)
     assert certificate.effective_head_energy_gain_upper_bound == Fraction(3, 5)
     assert (
-        certificate.effective_head_gain_envelope_certificate
-        .schedule_energy_gain_upper_bound
+        certificate.effective_head_gain_envelope_certificate.schedule_energy_gain_upper_bound
         == Fraction(3, 5)
     )
     assert certificate.relative_defect_stability_certificate_certified
@@ -139,8 +136,7 @@ def test_effective_envelope_reuses_DqeffP_in_the_exact_order() -> None:
         exact_square_matrix_product(diagonal, companion)
     )
     assert certificate.effective_head_energy_domination_matrix == (
-        certificate.effective_head_gain_envelope_certificate
-        .schedule_energy_domination_matrix
+        certificate.effective_head_gain_envelope_certificate.schedule_energy_domination_matrix
     )
     assert certificate.effective_head_energy_domination_matrix[0] == tuple(
         q_effective * entry for entry in companion[0]
@@ -171,8 +167,7 @@ def test_prefix_and_universal_block_inequalities_use_effective_gain() -> None:
     )
     assert certificate.exact_intrablock_prefix_energy_gain_upper_bound == 1
     assert (
-        certificate
-        .conditional_exact_model_spatial_disagreement_nonincrease_certified
+        certificate.conditional_exact_model_spatial_disagreement_nonincrease_certified
     )
     assert certificate.uniform_intrablock_prefix_bound_certified
     assert certificate.repeated_exact_model_spatial_disagreement_stability_certified
@@ -227,8 +222,7 @@ def test_effective_gain_one_is_a_valid_zero_margin_boundary_only() -> None:
     assert certificate.exact_uniform_block_energy_gain_upper_bound == 1
     assert certificate.effective_gain_one_zero_margin_boundary_certified
     assert (
-        certificate
-        .conditional_exact_model_spatial_disagreement_nonincrease_certified
+        certificate.conditional_exact_model_spatial_disagreement_nonincrease_certified
     )
     assert certificate.repeated_exact_model_spatial_disagreement_stability_certified
     assert not certificate.uniform_positive_normalized_block_margin_certified
@@ -279,9 +273,7 @@ def test_zero_jensen_input_envelope_has_no_relative_defect_budget() -> None:
 
     assert defect <= eta * jensen_input_envelope
     assert eta * jensen_input_envelope - defect == 0
-    assert not (
-        Fraction(1) - ideal_energy <= eta * jensen_input_envelope
-    )
+    assert not (Fraction(1) - ideal_energy <= eta * jensen_input_envelope)
 
 
 def test_jensen_envelope_avoids_an_ideal_energy_cancellation_singularity() -> None:
@@ -291,11 +283,14 @@ def test_jensen_envelope_avoids_an_ideal_energy_cancellation_singularity() -> No
     active_energies = (Fraction(1, 2), Fraction(1, 2))
     coefficients = (Fraction(1, 2), Fraction(1, 2))
     jensen_input_envelope = sum(
-        (coefficient * energy for coefficient, energy in zip(
-            coefficients,
-            active_energies,
-            strict=True,
-        )),
+        (
+            coefficient * energy
+            for coefficient, energy in zip(
+                coefficients,
+                active_energies,
+                strict=True,
+            )
+        ),
         Fraction(0),
     )
     ideal_energy = Fraction(0)
@@ -413,8 +408,7 @@ def test_nested_effective_certificate_tampering_invalidates_outer_certificate() 
     )
 
     assert not (
-        certificate.effective_head_gain_envelope_certificate
-        .policy_stability_certificate_certified
+        certificate.effective_head_gain_envelope_certificate.policy_stability_certificate_certified
     )
     assert not certificate.relative_defect_stability_certificate_certified
 

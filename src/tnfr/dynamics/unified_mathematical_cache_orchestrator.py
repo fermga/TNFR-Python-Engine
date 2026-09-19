@@ -55,9 +55,7 @@ from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
 # Operational engine-tuning knob (not TNFR physics) → tnfr.constants.operational
-from ..constants.operational import (
-    UNIFIED_CACHE_MIN_COHERENCE_CANONICAL,
-)
+from ..constants.operational import UNIFIED_CACHE_MIN_COHERENCE_CANONICAL
 
 # Import mathematical engines
 try:

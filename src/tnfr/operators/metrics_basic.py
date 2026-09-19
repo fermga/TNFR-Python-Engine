@@ -11,10 +11,6 @@ from ..utils._structural_signature import (
     proof_stamps_are_identical,
     structural_proof_signature,
 )
-from .metrics_core import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
-from .metrics_core import EMISSION_TIMESTAMP_TUPLE as _ALIAS_EMISSION_TIMESTAMP_TUPLE
-from .metrics_core import HAS_EMISSION_TIMESTAMP_ALIAS as _HAS_EMISSION_TIMESTAMP_ALIAS
-from .metrics_core import get_node_attr as _get_node_attr
 from ._diagnostic_scores import (
     mean_unit_score,
     nonnegative_magnitude,
@@ -26,6 +22,10 @@ from ._reception_kernel import (
     ReceptionReadSnapshot,
     capture_reception_read_snapshot,
 )
+from .metrics_core import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from .metrics_core import EMISSION_TIMESTAMP_TUPLE as _ALIAS_EMISSION_TIMESTAMP_TUPLE
+from .metrics_core import HAS_EMISSION_TIMESTAMP_ALIAS as _HAS_EMISSION_TIMESTAMP_ALIAS
+from .metrics_core import get_node_attr as _get_node_attr
 
 _COARSE_PRESSURE_MAGNITUDE_THRESHOLD = 0.1
 
@@ -243,8 +243,7 @@ def _reception_metrics_impl(
         else None
     )
     stored_source_metadata_valid = (
-        stored_source_metadata_present
-        and normalized_stored_sources is not None
+        stored_source_metadata_present and normalized_stored_sources is not None
     )
 
     if read_snapshot is None:
@@ -290,9 +289,7 @@ def _reception_metrics_impl(
         pressure_boundary = RECEPTION_PRESSURE_OBSERVATION_BOUNDARY
         source_tracking_enabled = read_snapshot.source_tracking_enabled
         source_max_distance = read_snapshot.source_max_distance
-        stored_source_metadata_boundary = (
-            RECEPTION_PRESSURE_OBSERVATION_BOUNDARY
-        )
+        stored_source_metadata_boundary = RECEPTION_PRESSURE_OBSERVATION_BOUNDARY
 
     # Compute the signed EPI change. This is form change, not C(t).
     delta_epi = epi_after - epi_before
@@ -301,9 +298,7 @@ def _reception_metrics_impl(
     num_sources = len(sources)
 
     source_activities = tuple(
-        nonnegative_magnitude(
-            activity, label="EN source emission activity"
-        )
+        nonnegative_magnitude(activity, label="EN source emission activity")
         for _, _, activity in sources
     )
     total_source_emission_activity = sum_nonnegative_magnitudes(
@@ -319,9 +314,7 @@ def _reception_metrics_impl(
     # Source detection is sorted, while standalone legacy metadata need not be.
     # ``max`` retains the first record when compatibility scores tie.
     most_compatible_source = (
-        max(sources, key=lambda source: source[1])[0]
-        if sources
-        else None
+        max(sources, key=lambda source: source[1])[0] if sources else None
     )
 
     mean_phase_compatibility_score = (
@@ -361,13 +354,9 @@ def _reception_metrics_impl(
         "source_tracking_enabled": source_tracking_enabled,
         "source_max_distance": source_max_distance,
         "sources_observed": (
-            source_tracking_enabled
-            if source_tracking_enabled is not None
-            else None
+            source_tracking_enabled if source_tracking_enabled is not None else None
         ),
-        "source_absence_observed": (
-            not sources if source_tracking_enabled else None
-        ),
+        "source_absence_observed": (not sources if source_tracking_enabled else None),
         "stored_source_metadata_present": stored_source_metadata_present,
         "stored_source_metadata_valid": stored_source_metadata_valid,
         "total_source_emission_activity": total_source_emission_activity,
@@ -382,9 +371,7 @@ def _reception_metrics_impl(
         "pressure_magnitude_below_effectiveness_threshold": (
             pressure_magnitude_below_threshold
         ),
-        "pressure_effectiveness_threshold": (
-            _COARSE_PRESSURE_MAGNITUDE_THRESHOLD
-        ),
+        "pressure_effectiveness_threshold": (_COARSE_PRESSURE_MAGNITUDE_THRESHOLD),
         "stabilization_effective": pressure_magnitude_below_threshold,
     }
 
@@ -438,9 +425,7 @@ def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
     magnitude_after = abs(dnfr_after)
     dnfr_reduction = magnitude_before - magnitude_after
     dnfr_reduction_pct = (
-        dnfr_reduction / magnitude_before * 100.0
-        if magnitude_before > 0.0
-        else 0.0
+        dnfr_reduction / magnitude_before * 100.0 if magnitude_before > 0.0 else 0.0
     )
 
     # Compute global coherence using shared common implementation
@@ -465,15 +450,12 @@ def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
         "C_local": C_local,
         "phase_alignment": phase_alignment,
         "phase_coherence_quality": phase_alignment,  # Alias for clarity
-        "stabilization_quality": C_local
-        * max(0.0, 1.0 - magnitude_after),
+        "stabilization_quality": C_local * max(0.0, 1.0 - magnitude_after),
         "epi_final": epi,
         "vf_final": vf,
         # Coarse operator-effectiveness flag, NOT structural equilibrium (the
         # canonical fixed point is |ΔNFR| <= 1e-3; see is_structural_equilibrium)
-        "is_stabilized": (
-            abs(dnfr_after) < _COARSE_PRESSURE_MAGNITUDE_THRESHOLD
-        ),
+        "is_stabilized": (abs(dnfr_after) < _COARSE_PRESSURE_MAGNITUDE_THRESHOLD),
     }
 
 

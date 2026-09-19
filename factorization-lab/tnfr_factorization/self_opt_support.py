@@ -163,7 +163,8 @@ def _extract_promotable_partitions(
         delta_c = (entry.get("telemetry_deltas") or {}).get("delta_c")
         if (
             not isinstance(delta_c, (int, float))
-            or not math.isfinite(delta_c) or delta_c <= 0.0
+            or not math.isfinite(delta_c)
+            or delta_c <= 0.0
         ):
             continue
         engine_block = entry.get("engine") or {}

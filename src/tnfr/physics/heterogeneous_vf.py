@@ -79,7 +79,8 @@ def _symmetric_conductance(
         or np.any(weights < 0.0)
     ):
         raise ValueError("adjacency must be square, finite and nonnegative")
-    if not np.allclose(weights, weights.T, atol=1e-12, rtol=1e-10):
+    # Reciprocity is a premise of the identity, not a tolerance-based fit.
+    if not np.array_equal(weights, weights.T):
         raise ValueError("Dirichlet identity requires symmetric conductance")
     degree = weights.sum(axis=1)
     laplacian = np.diag(degree) - weights
@@ -111,9 +112,7 @@ class FixedMeasureComparison:
     left_residual: float
 
 
-def compare_fixed_stationary_measures(
-    vf_diag, adjacency
-) -> FixedMeasureComparison:
+def compare_fixed_stationary_measures(vf_diag, adjacency) -> FixedMeasureComparison:
     """Expose the change from ``pi`` to normalized ``pi/nu_f``."""
     pi = stationary_distribution(adjacency)
     eta = heterogeneous_stationary_distribution(vf_diag, adjacency)
@@ -154,9 +153,7 @@ def certify_convex_hull_generator(
     off_diagonal = generator.copy()
     np.fill_diagonal(off_diagonal, 0.0)
     minimum = float(np.min(off_diagonal)) if off_diagonal.size else 0.0
-    row_residual = (
-        float(np.max(np.abs(generator.sum(axis=1)))) if len(vf) else 0.0
-    )
+    row_residual = float(np.max(np.abs(generator.sum(axis=1)))) if len(vf) else 0.0
     metzler = minimum >= -tolerance
     zero_rows = row_residual <= tolerance
     return ConvexHullGeneratorCertificate(
@@ -203,8 +200,7 @@ def time_dependent_dirichlet_balance(
         dissipation,
         abs(energy_rate + dissipation),
         0.0,
-        "instantaneous fixed symmetric graph; "
-        "time-varying nonnegative mobility",
+        "instantaneous fixed symmetric graph; " "time-varying nonnegative mobility",
     )
 
 
@@ -246,23 +242,18 @@ def certify_dirichlet_convergence(
     """
     _, degree, b = _symmetric_conductance(adjacency)
     x = np.asarray(state, dtype=float)
-    bounds = (capacity_lower_bound, capacity_upper_bound,
-              integrated_min_mobility)
+    bounds = (capacity_lower_bound, capacity_upper_bound, integrated_min_mobility)
     if x.shape != degree.shape or not np.all(np.isfinite(x)):
         raise ValueError("state must be finite and match adjacency")
     if not all(np.isfinite(value) and value >= 0.0 for value in bounds):
-        raise ValueError(
-            "capacity and mobility bounds must be finite and nonnegative"
-        )
+        raise ValueError("capacity and mobility bounds must be finite and nonnegative")
     if capacity_lower_bound > capacity_upper_bound:
         raise ValueError("capacity lower bound cannot exceed upper bound")
     eigenvalues = np.linalg.eigvalsh(b)
     positive = eigenvalues[eigenvalues > 1e-12]
     gap = float(positive[0]) if positive.size else 0.0
     energy = float(0.5 * x @ (b @ x))
-    energy_bound = float(
-        energy * np.exp(-2.0 * gap * integrated_min_mobility)
-    )
+    energy_bound = float(energy * np.exp(-2.0 * gap * integrated_min_mobility))
     connected = bool(len(x) <= 1 or np.sum(eigenvalues <= 1e-12) == 1)
     consensus = bool(
         connected and capacity_lower_bound > 0.0 and tail_integral_diverges
@@ -270,17 +261,20 @@ def certify_dirichlet_convergence(
     positive_degree = degree[degree > 0.0]
     minimum_mobility = (
         float(capacity_lower_bound / np.max(positive_degree))
-        if positive_degree.size else 0.0
+        if positive_degree.size
+        else 0.0
     )
     maximum_mobility = (
         float(capacity_upper_bound / np.min(positive_degree))
-        if positive_degree.size else 0.0
+        if positive_degree.size
+        else 0.0
     )
     maximum_eigenvalue = float(eigenvalues[-1]) if eigenvalues.size else 0.0
     variation_bound = None
     if consensus and gap > 0.0 and minimum_mobility > 0.0:
         variation_bound = float(
-            maximum_mobility * np.sqrt(2.0 * maximum_eigenvalue * energy)
+            maximum_mobility
+            * np.sqrt(2.0 * maximum_eigenvalue * energy)
             / (gap * minimum_mobility)
         )
     variation = (
@@ -390,8 +384,7 @@ def finite_schedule_readout(graph, state, segments) -> FiniteScheduleReadout:
 
 def heterogeneous_generator(vf_diag, adjacency) -> np.ndarray:
     r"""The time-frozen generator ``D_{ν_f} · L`` for a nodal frequency vector."""
-    return np.diag(np.asarray(vf_diag, dtype=float)) @ directed_rw_laplacian(
-        adjacency)
+    return np.diag(np.asarray(vf_diag, dtype=float)) @ directed_rw_laplacian(adjacency)
 
 
 def heterogeneous_stationary_distribution(vf_diag, adjacency) -> np.ndarray:
@@ -413,40 +406,57 @@ def heterogeneous_stationary_distribution(vf_diag, adjacency) -> np.ndarray:
 
 
 def generator_commutator_norm(vf1, vf2, adjacency) -> float:
-    r"""``‖[D₁L, D₂L]‖₂`` — zero iff the two generators share an eigenbasis.
+    r"""Return the numerical commutator norm ``‖[D₁L, D₂L]‖₂``.
 
-    For **scalar** (all-equal) ``ν_f`` both are multiples of ``L`` and commute;
-    a **heterogeneous** ``ν_f`` makes it non-zero, so no clock change exists.
+    Common scalar capacities commute because both generators are multiples
+    of ``L``. Proportional heterogeneous profiles also commute: their common
+    fixed generator is ``D₀L``, rather than ``L``. Heterogeneity alone therefore
+    does not exclude a scalar clock change of a fixed generator.
+
+    In exact arithmetic a shared eigenbasis implies commutation; the converse
+    additionally requires both matrices to be diagonalizable. A nonzero
+    exact commutator excludes a common scalar-multiple generator. This
+    floating-point norm is a diagnostic, not an exact commutation proof.
     """
     a = heterogeneous_generator(vf1, adjacency)
     b = heterogeneous_generator(vf2, adjacency)
     return float(np.linalg.norm(a @ b - b @ a, 2))
 
 
-def scalar_schedule(n: int, base: float = 1.0, amp: float = 0.4,
-                    freq: float = 1.0) -> VfSchedule:
+def scalar_schedule(
+    n: int, base: float = 1.0, amp: float = 0.4, freq: float = 1.0
+) -> VfSchedule:
     r"""A **common** frequency schedule ``ν_f(t) = base·(1 + amp·sin(freq·t))·1``
     (identical on every node — a genuine clock change)."""
 
     def vf(t: float) -> np.ndarray:
         return base * (1.0 + amp * np.sin(freq * t)) * np.ones(n)
+
     return vf
 
 
-def heterogeneous_schedule(n: int, base: float = 1.0,
-                           amp: float = 0.6) -> VfSchedule:
+def heterogeneous_schedule(n: int, base: float = 1.0, amp: float = 0.6) -> VfSchedule:
     r"""A **per-node** frequency schedule ``ν_f_i(t) = base·(1 + amp·sin(t + i))``
-    (a different phase per node — no clock change)."""
+    with supplied node-dependent sinusoidal offsets.
+
+    This can produce noncommuting generators. Degenerate choices such as
+    ``amp=0`` instead give a common schedule; the name is not a certificate.
+    """
     idx = np.arange(n)
 
     def vf(t: float) -> np.ndarray:
         return base * (1.0 + amp * np.sin(t + idx))
+
     return vf
 
 
 def structural_time_mean(vf: VfSchedule, t_grid) -> np.ndarray:
-    r"""Cumulative mean structural time ``s̄(t) = ∫ mean_i ν_f_i`` (the best
-    scalar surrogate for a heterogeneous schedule)."""
+    r"""Cumulative trapezoidal mean-capacity exposure from the grid origin.
+
+    ``s̄(t) = ∫_{t_grid[0]}^t mean_i ν_f_i`` is a selected scalar summary.
+    No optimality criterion or exact reduction of a heterogeneous generator
+    is established by this average.
+    """
     t = np.asarray(t_grid, dtype=float)
     means = np.array([float(np.mean(vf(ti))) for ti in t])
     ds = (means[1:] + means[:-1]) / 2.0 * np.diff(t)
@@ -475,9 +485,12 @@ def _rk4_heterogeneous(laplacian, x0, vf: VfSchedule, t_grid) -> np.ndarray:
 def scalar_time_ansatz_residual(adjacency, x0, vf: VfSchedule, t_grid) -> float:
     r"""``max_t ‖x_RK4(t) − e^{−s̄(t)L} x₀‖`` for ``ẋ = −D_{ν_f}(t) L x``.
 
-    The scalar clock-change ansatz uses the mean frequency ``s̄ = ∫ mean ν_f``; it
-    is exact (``≈ 0``) for a common schedule and **fails** (large) for a
-    heterogeneous one — the scalar theorem does not extend.
+    The scalar clock-change ansatz uses mean-capacity exposure ``s̄``. For a
+    common schedule the continuous identity is exact, while this numerical
+    comparison retains RK4 and quadrature error. Heterogeneous schedules can
+    violate the ansatz, but a small residual on one initial state does not
+    establish a general reduction: a uniform field stays fixed under either
+    generator, for example.
     """
     laplacian = directed_rw_laplacian(adjacency)
     t = np.asarray(t_grid, dtype=float)
@@ -555,36 +568,42 @@ def within_initial_convex_hull(propagator, x0, *, tol: float = 1e-10) -> bool:
 
 @dataclass(frozen=True)
 class HeterogeneousVfCertificate:
-    """Where the scalar clock-change theorem stops."""
+    """Finite diagnostic comparison of the two supplied capacity schedules.
 
-    commutator_scalar: float           # ≈ 0 (common ν_f commutes)
-    commutator_heterogeneous: float    # > 0 (no clock change)
-    scalar_time_residual_common: float       # ≈ 0 (clock change holds)
-    scalar_time_residual_heterogeneous: float  # large (theorem fails)
-    scalar_time_theorem_extends: bool  # False for heterogeneous ν_f
-    fixed_generator_abscissa: float    # ≤ 0 (frozen D is stable)
+    ``scalar_time_theorem_extends`` is a legacy name for the observed
+    heterogeneous residual passing its numerical tolerance on one initial
+    state and grid. It is not a universal theorem-extension certificate.
+    """
+
+    commutator_scalar: float  # ≈ 0 (common ν_f commutes)
+    commutator_heterogeneous: float  # sampled generator commutator norm
+    scalar_time_residual_common: float  # ≈ 0 (clock change holds)
+    scalar_time_residual_heterogeneous: float  # finite state/grid comparison
+    scalar_time_theorem_extends: bool  # legacy name: residual below tolerance
+    fixed_generator_abscissa: float  # ≤ 0 (frozen D is stable)
     fixed_generator_stable: bool
     heterogeneity_transient_gain: float
     tolerance: float
     claim_status: str
 
 
-def certify_heterogeneous_vf(adjacency, x0, t_grid, *,
-                             tol: float = 1e-6) -> HeterogeneousVfCertificate:
+def certify_heterogeneous_vf(
+    adjacency, x0, t_grid, *, tol: float = 1e-6
+) -> HeterogeneousVfCertificate:
     r"""Contrast a common vs a heterogeneous ``ν_f`` schedule on ``ẋ = −D_{ν_f}L x``.
 
-    Documents that the scalar clock-change theorem holds for a common schedule and
-    **fails** for a heterogeneous one, while a frozen positive ``D_{ν_f}`` is still
-    stable.  Does **not** modify U2/U6.
+    Reports whether the selected heterogeneous schedule and initial state
+    distinguish the scalar-time ansatz on the supplied finite grid, alongside
+    the common-schedule control and a frozen-generator stability diagnostic.
+    It does not prove that every heterogeneous schedule violates a clock
+    reduction, or modify U2/U6.
     """
     n = len(np.asarray(x0))
     common = scalar_schedule(n)
     hetero = heterogeneous_schedule(n)
     t0 = float(t_grid[0])
-    comm_scalar = generator_commutator_norm(common(t0), common(t0 + 1.0),
-                                            adjacency)
-    comm_hetero = generator_commutator_norm(hetero(t0), hetero(t0 + 1.0),
-                                            adjacency)
+    comm_scalar = generator_commutator_norm(common(t0), common(t0 + 1.0), adjacency)
+    comm_hetero = generator_commutator_norm(hetero(t0), hetero(t0 + 1.0), adjacency)
     res_common = scalar_time_ansatz_residual(adjacency, x0, common, t_grid)
     res_hetero = scalar_time_ansatz_residual(adjacency, x0, hetero, t_grid)
     abscissa = fixed_generator_abscissa(hetero(t0), adjacency)
@@ -601,9 +620,9 @@ def certify_heterogeneous_vf(adjacency, x0, t_grid, *,
         heterogeneity_transient_gain=gain,
         tolerance=tol,
         claim_status=(
-            "scalar clock-change theorem does NOT extend to heterogeneous nu_f "
-            "DERIVED (commutator != 0) + MEASURED (scalar-time residual large); "
-            "fixed-D stability MEASURED; uniform time-varying stability OPEN "
-            "(NT-P09 heterogeneous); U2/U6 unmodified"
+            "FINITE_DIAGNOSTIC: commutators and state/grid residuals for the "
+            "supplied common and heterogeneous schedules; not a universal "
+            "clock-reduction test. Fixed-D stability MEASURED; general schedule "
+            "guarantees beyond the stated hypotheses remain OPEN; U2/U6 unmodified"
         ),
     )

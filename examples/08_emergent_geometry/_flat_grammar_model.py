@@ -156,9 +156,7 @@ def transition(state: tuple, symbol: str, rules: FlatRules = DEFAULT_RULES):
     if rules.u2 and next_debt > U2_DEBT_CAPACITY:
         return None
 
-    recent = (recent_destabilizers + (symbol in DESTABILIZERS,))[
-        -BIFURCATION_WINDOW:
-    ]
+    recent = (recent_destabilizers + (symbol in DESTABILIZERS,))[-BIFURCATION_WINDOW:]
     return (
         recent,
         prior_il or symbol == "coherence",
@@ -236,11 +234,7 @@ def accepted_counts(
             for _symbol, next_state in edges.get(state, ()):
                 next_layer[next_state] = next_layer.get(next_state, 0) + count
         counts.append(
-            sum(
-                count
-                for state, count in next_layer.items()
-                if is_accept(state, rules)
-            )
+            sum(count for state, count in next_layer.items() if is_accept(state, rules))
         )
         layer = next_layer
     return counts

@@ -10,8 +10,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from ..mathematics.unified_numerical import np
 from ..mathematics._weight_normalization import normalize_weights
+from ..mathematics.unified_numerical import np
 
 
 @dataclass(frozen=True)
@@ -30,16 +30,25 @@ class ConductanceSnapshot:
         A normalized walk can exist even when a finite row's sum exceeds the
         floating-point range. Raw strengths have a narrower numerical domain.
         """
-        strength = np.asarray(np.bincount(
-            self.source, weights=self.weight, minlength=len(self.nodes),
-        ), dtype=float)
+        strength = np.asarray(
+            np.bincount(
+                self.source,
+                weights=self.weight,
+                minlength=len(self.nodes),
+            ),
+            dtype=float,
+        )
         if not np.all(np.isfinite(strength)):
-            raise ValueError("Diffusion row strength exceeds finite floating-point range")
+            raise ValueError(
+                "Diffusion row strength exceeds finite floating-point range"
+            )
         return strength
 
     def normalization(self) -> tuple[Any, Any, Any]:
         """Return edge probabilities and a scaled representation of each strength."""
-        return normalize_weights(self.weight, source=self.source, node_count=len(self.nodes))
+        return normalize_weights(
+            self.weight, source=self.source, node_count=len(self.nodes)
+        )
 
     def weighted_total(self, field: Any) -> float:
         """Sum W_ij*field_i without requiring representable intermediate degrees.
@@ -61,13 +70,16 @@ class ConductanceSnapshot:
             except (FloatingPointError, OverflowError):
                 pass
         from fractions import Fraction
+
         from ..mathematics._exact_weighted import exact_weighted_sum_ratio
 
         numerator, denominator = exact_weighted_sum_ratio(self.weight, values)
         try:
             total = float(Fraction(numerator, denominator))
         except OverflowError as exc:
-            raise ValueError("Degree-weighted total exceeds finite floating-point range") from exc
+            raise ValueError(
+                "Degree-weighted total exceeds finite floating-point range"
+            ) from exc
         if numerator and total == 0.0:
             raise ValueError("Degree-weighted total is below floating-point range")
         return total
@@ -117,11 +129,15 @@ class ConductanceSnapshot:
         avoidable overflow or underflow. Unrepresentable positive results
         remain explicit errors, as required by the mobility read-out.
         """
-        degree = np.bincount(self.source, weights=self.weight, minlength=len(self.nodes))
+        degree = np.bincount(
+            self.source, weights=self.weight, minlength=len(self.nodes)
+        )
         result = np.zeros(len(self.nodes), dtype=float)
         positive = degree > 0.0
         try:
-            with np.errstate(over="raise", invalid="raise", divide="raise", under="ignore"):
+            with np.errstate(
+                over="raise", invalid="raise", divide="raise", under="ignore"
+            ):
                 if np.all(np.isfinite(degree)):
                     np.divide(numerator, degree, out=result, where=positive)
                 else:
@@ -130,12 +146,17 @@ class ConductanceSnapshot:
                     scale_m, scale_e = np.frexp(scale[positive])
                     total_m, total_e = np.frexp(total[positive])
                     result[positive] = np.ldexp(
-                        number_m / scale_m / total_m, number_e - scale_e - total_e,
+                        number_m / scale_m / total_m,
+                        number_e - scale_e - total_e,
                     )
         except FloatingPointError as exc:
-            raise ValueError("Diffusion mobility exceeds finite floating-point range") from exc
+            raise ValueError(
+                "Diffusion mobility exceeds finite floating-point range"
+            ) from exc
         if np.any(positive & (numerator > 0.0) & (result == 0.0)):
-            raise ValueError("Positive diffusion mobility is below floating-point range")
+            raise ValueError(
+                "Positive diffusion mobility is below floating-point range"
+            )
         return result
 
     def dense(self, values: Any = None) -> Any:
@@ -153,7 +174,10 @@ class ConductanceSnapshot:
 
 
 def read_conductance(
-    G: Any, nodes: list | None = None, *, symmetric: bool = False,
+    G: Any,
+    nodes: list | None = None,
+    *,
+    symmetric: bool = False,
 ) -> ConductanceSnapshot:
     """Read effective finite nonnegative weights, optionally requiring symmetry.
 
@@ -176,18 +200,29 @@ def read_conductance(
             for neighbor, attributes in G.adj[node].items():
                 if neighbor not in indices:
                     continue
-                weight = (float(sum(data.get("weight", 1.0) for data in attributes.values()))
-                          if multiple else float(attributes.get("weight", 1.0)))
+                weight = (
+                    float(sum(data.get("weight", 1.0) for data in attributes.values()))
+                    if multiple
+                    else float(attributes.get("weight", 1.0))
+                )
                 if not np.isfinite(weight) or weight < 0.0:
-                    raise ValueError("Diffusion requires finite nonnegative edge weights")
+                    raise ValueError(
+                        "Diffusion requires finite nonnegative edge weights"
+                    )
                 if weight:
                     entries[source, indices[neighbor]] = weight
     except (TypeError, OverflowError) as exc:
         raise ValueError("Diffusion requires finite nonnegative edge weights") from exc
-    if symmetric and any(entries.get((target, source)) != weight
-                         for (source, target), weight in entries.items()):
+    if symmetric and any(
+        entries.get((target, source)) != weight
+        for (source, target), weight in entries.items()
+    ):
         raise ValueError("This transport formula requires symmetric adjacency")
-    source = np.fromiter((pair[0] for pair in entries), dtype=np.intp, count=len(entries))
-    target = np.fromiter((pair[1] for pair in entries), dtype=np.intp, count=len(entries))
+    source = np.fromiter(
+        (pair[0] for pair in entries), dtype=np.intp, count=len(entries)
+    )
+    target = np.fromiter(
+        (pair[1] for pair in entries), dtype=np.intp, count=len(entries)
+    )
     weight = np.fromiter(entries.values(), dtype=float, count=len(entries))
     return ConductanceSnapshot(nodes, source, target, weight)

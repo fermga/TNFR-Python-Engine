@@ -107,9 +107,7 @@ def test_structural_acceleration_store_flag_is_keyword_only() -> None:
 
 
 def test_mutation_certificate_inputs_remain_keyword_only() -> None:
-    parameters = inspect.signature(
-        mutation_trigger.certify_mutation_trigger
-    ).parameters
+    parameters = inspect.signature(mutation_trigger.certify_mutation_trigger).parameters
 
     assert parameters
     assert all(

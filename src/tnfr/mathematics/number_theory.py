@@ -1399,13 +1399,9 @@ class ArithmeticTNFRNetwork:
             dnfr = [float(self.graph.nodes[k]["delta_nfr"]) for k in nodes]
             eq_nodes = [k for k, d in zip(nodes, dnfr) if is_structural_equilibrium(d)]
             eq_frac = len(eq_nodes) / n
-            mean_abs_dnfr = finite_mean_absolute(
-                dnfr, name="arithmetic delta_nfr"
-            )
+            mean_abs_dnfr = finite_mean_absolute(dnfr, name="arithmetic delta_nfr")
             coherence = structural_coherence(mean_abs_dnfr, 0.0)
-            mean_local_coherence = (
-                sum(structural_coherence(d, 0.0) for d in dnfr) / n
-            )
+            mean_local_coherence = sum(structural_coherence(d, 0.0) for d in dnfr) / n
             epi_mean = sum(float(self.graph.nodes[k]["EPI"]) for k in nodes) / n
             vf_mean = sum(float(self.graph.nodes[k]["nu_f"]) for k in nodes) / n
             primes = [k for k in nodes if self.graph.nodes[k]["is_prime"]]
@@ -1501,9 +1497,7 @@ class ArithmeticTNFRNetwork:
             "n_nodes": float(G.number_of_nodes()),
         }
 
-    def symplectic_substrate(
-        self, *, phase_method: str = "logn"
-    ) -> dict[str, object]:
+    def symplectic_substrate(self, *, phase_method: str = "logn") -> dict[str, object]:
         """Evaluate the auxiliary symplectic model on an arithmetic graph.
 
         Extracted arithmetic-network fields initialize the declared ambient
@@ -1558,11 +1552,7 @@ class ArithmeticTNFRNetwork:
         coupled: dict[tuple[int, int], bool] = {}
 
         for u, v, data in G.edges(data=True):
-            d = abs(
-                angle_diff(
-                    self.graph.nodes[u]["phi"], self.graph.nodes[v]["phi"]
-                )
-            )
+            d = abs(angle_diff(self.graph.nodes[u]["phi"], self.graph.nodes[v]["phi"]))
             is_ok = d <= float(delta_phi_max)
             data["coupled"] = bool(is_ok)
             key = (u, v) if u < v else (v, u)

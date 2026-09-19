@@ -343,9 +343,7 @@ def _short_undirected_cycles(G: Any, max_cycle_length: int) -> list[tuple[Any, .
     if max_cycle_length >= 4 and len(nodes) <= 200:
         for u_index, u in enumerate(nodes):
             for w in nodes[u_index + 1 :]:
-                common = sorted(
-                    adjacency[u] & adjacency[w], key=order.__getitem__
-                )
+                common = sorted(adjacency[u] & adjacency[w], key=order.__getitem__)
                 for first in range(len(common)):
                     for second in range(first + 1, len(common)):
                         v = common[first]
@@ -421,9 +419,7 @@ def compute_gauge_curvature(
     """
     if nx is None:
         raise RuntimeError("networkx required for cycle detection")
-    if isinstance(max_cycle_length, bool) or not isinstance(
-        max_cycle_length, Integral
-    ):
+    if isinstance(max_cycle_length, bool) or not isinstance(max_cycle_length, Integral):
         raise TypeError("max_cycle_length must be an integer of at least 3")
     max_cycle_length = int(max_cycle_length)
     if max_cycle_length < 3:
@@ -840,9 +836,7 @@ def verify_gauge_invariance(
     details: dict[str, Any] = {
         "num_nodes": len(nodes),
         "alpha_range": (
-            (min(angles.values()), max(angles.values()))
-            if angles
-            else (0.0, 0.0)
+            (min(angles.values()), max(angles.values())) if angles else (0.0, 0.0)
         ),
         "has_nontrivial_alpha": has_nontrivial_alpha,
         "noether_charge_before": q_before,
@@ -1391,11 +1385,7 @@ def compute_matter_current(G: Any) -> dict[tuple, float]:
         a_uv = connection.get((u, v), 0.0)
 
         # The +A sign is required by A' = A + alpha(v) - alpha(u).
-        transport = (
-            psi_v.conjugate()
-            * complex(math.cos(a_uv), math.sin(a_uv))
-            * psi_u
-        )
+        transport = psi_v.conjugate() * complex(math.cos(a_uv), math.sin(a_uv)) * psi_u
         current[(u, v)] = transport.imag
 
         if not G.is_directed():

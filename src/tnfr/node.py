@@ -43,8 +43,8 @@ from .constants.aliases import (
     ALIAS_DNFR,
     ALIAS_EPI,
     ALIAS_EPI_KIND,
-    ALIAS_SOURCE_GLYPH,
     ALIAS_SI,
+    ALIAS_SOURCE_GLYPH,
     ALIAS_THETA,
     ALIAS_VF,
 )
@@ -52,18 +52,18 @@ from .locking import get_lock
 from .mathematics import (
     BasicStateProjector,
     FrequencyOperator,
-    SpectralExpectationOperator,
     HilbertSpace,
+    SpectralExpectationOperator,
     StateProjector,
 )
 from .mathematics.operators_factory import (
     make_frequency_operator,
     make_spectral_expectation_operator,
 )
+from .mathematics.runtime import frequency_positive as runtime_frequency_positive
 from .mathematics.runtime import (
     meets_spectral_expectation_threshold as runtime_spectral_threshold,
 )
-from .mathematics.runtime import frequency_positive as runtime_frequency_positive
 from .mathematics.runtime import normalized as runtime_normalized
 from .mathematics.runtime import stable_unitary as runtime_stable_unitary
 from .mathematics.unified_numerical import np
@@ -321,13 +321,9 @@ class NodeNX(NodeProtocol):
         """Infer the Hilbert dimension from explicit spectral inputs."""
 
         if dimension is not None:
-            return positive_spectral_dimension(
-                dimension, label="spectral_dimension"
-            )
+            return positive_spectral_dimension(dimension, label="spectral_dimension")
         if isinstance(operator, SpectralExpectationOperator):
-            validated = validate_spectral_operator(
-                operator, label="spectral_operator"
-            )
+            validated = validate_spectral_operator(operator, label="spectral_operator")
             return int(validated.matrix.shape[0])
         if spectrum is not None:
             spectrum_array = np.asarray(spectrum)
@@ -520,9 +516,7 @@ class NodeNX(NodeProtocol):
             dimension_hint is not None
             and dimension_hint != self.hilbert_space.dimension
         ):
-            raise ValueError(
-                "Spectral inputs must match the Hilbert space dimension."
-            )
+            raise ValueError("Spectral inputs must match the Hilbert space dimension.")
         operator_dimension = (
             self.hilbert_space.dimension if spectral_requested else None
         )
@@ -560,7 +554,9 @@ class NodeNX(NodeProtocol):
         # Only add to default cache if not being created by from_graph
         if not G.graph.get("_creating_node", False):
             cache = G.graph.get("_node_cache")
-            owner_sample = next(iter(cache.values()), None) if cache is not None else None
+            owner_sample = (
+                next(iter(cache.values()), None) if cache is not None else None
+            )
             if owner_sample is None or owner_sample.G is not G:
                 cache = {}
                 G.graph["_node_cache"] = cache
@@ -573,9 +569,7 @@ class NodeNX(NodeProtocol):
         return self.spectral_operator
 
     @coherence_operator.setter
-    def coherence_operator(
-        self, value: SpectralExpectationOperator | None
-    ) -> None:
+    def coherence_operator(self, value: SpectralExpectationOperator | None) -> None:
         self.spectral_operator = (
             validate_spectral_operator(
                 value,
@@ -595,9 +589,7 @@ class NodeNX(NodeProtocol):
     @coherence_threshold.setter
     def coherence_threshold(self, value: float | None) -> None:
         self.spectral_expectation_threshold = (
-            finite_spectral_real(
-                value, label="spectral expectation threshold"
-            )
+            finite_spectral_real(value, label="spectral expectation threshold")
             if value is not None
             else None
         )
@@ -840,9 +832,7 @@ class NodeNX(NodeProtocol):
         if hilbert_space is None and dimension_hint is not None:
             hilbert = HilbertSpace(dimension_hint)
         elif dimension_hint is not None and dimension_hint != hilbert.dimension:
-            raise ValueError(
-                "Spectral inputs must match the Hilbert space dimension."
-            )
+            raise ValueError("Spectral inputs must match the Hilbert space dimension.")
         operator_dimension = hilbert.dimension if spectral_requested else None
         effective_spectral = (
             self._prepare_spectral_operator(
@@ -939,21 +929,17 @@ class NodeNX(NodeProtocol):
                 metrics["normalized"] = bool(norm_passed)
                 metrics["norm"] = float(norm_value)
                 if effective_spectral is not None and threshold is not None:
-                    expectation_passed, expectation_value = (
-                        runtime_spectral_threshold(
-                            state,
-                            effective_spectral,
-                            threshold,
-                            label=label,
-                        )
+                    expectation_passed, expectation_value = runtime_spectral_threshold(
+                        state,
+                        effective_spectral,
+                        threshold,
+                        label=label,
                     )
                     expectation = spectral_expectation_payload(
                         value=expectation_value,
                         threshold=threshold,
                         passed=expectation_passed,
-                        provenance=(
-                            "tnfr.node.NodeNX.run_sequence_with_validation"
-                        ),
+                        provenance=("tnfr.node.NodeNX.run_sequence_with_validation"),
                         operator=effective_spectral,
                     )
                     metrics["spectral_operator_expectation"] = expectation

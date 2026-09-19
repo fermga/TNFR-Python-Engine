@@ -13,19 +13,23 @@ from tnfr.physics.forced_support import (
 )
 from tnfr.physics.support_transport import observe_support_transport
 
-
 F = Fraction
 
 
 def _reference(*, capacity=(1, 1), forcing=(0, 0), epi_weight=F(1, 2)):
     graph = nx.path_graph(len(capacity))
     for node, nu in zip(graph, capacity, strict=True):
-        graph.nodes[node].update({
-            ALIAS_EPI[0]: int(node == 0), ALIAS_VF[0]: nu,
-            ALIAS_DNFR[0]: 0,
-        })
+        graph.nodes[node].update(
+            {
+                ALIAS_EPI[0]: int(node == 0),
+                ALIAS_VF[0]: nu,
+                ALIAS_DNFR[0]: 0,
+            }
+        )
     return derive_forced_support_balance(
-        observe_support_transport(graph), epi_weight=epi_weight, forcing=forcing,
+        observe_support_transport(graph),
+        epi_weight=epi_weight,
+        forcing=forcing,
     )
 
 
@@ -50,10 +54,13 @@ def test_compatible_three_node_model_can_increase_the_old_metric_energy():
     # This is a detached forced-model control, not default capacity forcing.
     old = _reference(capacity=(1, 2, 1), forcing=(0, 0, 0), epi_weight=1)
     current = _reference(
-        capacity=(F(1, 8), F(1, 8), 4), forcing=(0, 0, 0), epi_weight=1,
+        capacity=(F(1, 8), F(1, 8), 4),
+        forcing=(0, 0, 0),
+        epi_weight=1,
     )
     snapshot = replace(
-        current.source, epi=(F(1, 8), F(3, 4), F(5, 8)),
+        current.source,
+        epi=(F(1, 8), F(3, 4), F(5, 8)),
         stored_pressure=(F(5, 8), F(-3, 8), F(1, 8)),
     )
     result = observe_forced_support_target(old, current, snapshot)
@@ -88,7 +95,9 @@ def test_proportional_metrics_recover_the_exact_dirichlet_dissipation_balance():
     assert result.model_energy_rate == F(-9, 4)
     assert result.stored_pressure_energy_rate_defect == 0
     assert result.model_energy_rate == (
-        -2 * current.epi_weight * result.metric_proportionality
+        -2
+        * current.epi_weight
+        * result.metric_proportionality
         * result.pattern.error_dirichlet_energy
     )
 
@@ -141,13 +150,21 @@ def test_uniform_epi_translation_changes_only_the_fixed_pattern_mean():
     reference = _reference(capacity=(1, 2), forcing=(F(1, 4), F(1, 2)))
     base = observe_forced_support_target(reference, reference, reference.source)
     shifted = observe_forced_support_target(
-        reference, reference, replace(reference.source, epi=(8, 7)),
+        reference,
+        reference,
+        replace(reference.source, epi=(8, 7)),
     )
     assert shifted.pattern.mean - base.pattern.mean == 7
     for field in (
-        "target_rate", "compatibility_residual", "compatibility_energy", "model_rate",
-        "homogeneous_energy_rate", "target_source_energy_rate", "model_energy_rate",
-        "stored_pressure_energy_rate_defect", "stored_nodal_energy_rate",
+        "target_rate",
+        "compatibility_residual",
+        "compatibility_energy",
+        "model_rate",
+        "homogeneous_energy_rate",
+        "target_source_energy_rate",
+        "model_energy_rate",
+        "stored_pressure_energy_rate_defect",
+        "stored_nodal_energy_rate",
     ):
         assert getattr(shifted, field) == getattr(base, field)
     assert shifted.pattern.relative_error == base.pattern.relative_error
@@ -157,10 +174,14 @@ def test_nonzero_pressure_channels_can_cancel_exactly_in_target_rate():
     reference = _reference(forcing=(F(1, 2), F(-1, 2)))
     components = (("phase", (1, -1)), ("vf", (F(-1, 2), F(1, 2))))
     result = observe_forced_support_target(
-        reference, reference, reference.source, forcing_components=components,
+        reference,
+        reference,
+        reference.source,
+        forcing_components=components,
     )
     assert result.pressure_channels == (
-        ("epi", (F(-1, 2), F(1, 2))), *components,
+        ("epi", (F(-1, 2), F(1, 2))),
+        *components,
     )
     assert result.projected_rate_channels == result.pressure_channels
     assert result.channel_gram == (
@@ -180,7 +201,8 @@ def test_default_forcing_channel_keeps_heterogeneous_capacity_projection():
     result = observe_forced_support_target(old, current, current.source)
     assert result.pressure_channels == (("epi", (0, 0)), ("forcing", (1, 0)))
     assert result.projected_rate_channels == (
-        ("epi", (0, 0)), ("forcing", (F(2, 3), F(-4, 3))),
+        ("epi", (0, 0)),
+        ("forcing", (F(2, 3), F(-4, 3))),
     )
     assert result.target_rate == (2, 0)
     assert result.compatibility_residual == (F(2, 3), F(-4, 3))
@@ -189,18 +211,24 @@ def test_default_forcing_channel_keeps_heterogeneous_capacity_projection():
     assert result.profile_identity_residual == (0, 0)
 
 
-@pytest.mark.parametrize("components", (
-    (("phase", (1, 0)),),
-    (("phase", (0,)),),
-    (("phase", (0, 0, 0)),),
-    (("phase", (0, 0)), ("phase", (0, 0))),
-    (("epi", (0, 0)),),
-))
+@pytest.mark.parametrize(
+    "components",
+    (
+        (("phase", (1, 0)),),
+        (("phase", (0,)),),
+        (("phase", (0, 0, 0)),),
+        (("phase", (0, 0)), ("phase", (0, 0))),
+        (("epi", (0, 0)),),
+    ),
+)
 def test_invalid_component_sums_dimensions_duplicates_or_reserved_name_fail(components):
     reference = _reference()
     with pytest.raises((TypeError, ValueError)):
         observe_forced_support_target(
-            reference, reference, reference.source, forcing_components=components,
+            reference,
+            reference,
+            reference.source,
+            forcing_components=components,
         )
 
 
@@ -209,7 +237,10 @@ def test_unordered_or_textual_component_containers_are_rejected(components):
     reference = _reference()
     with pytest.raises((TypeError, ValueError)):
         observe_forced_support_target(
-            reference, reference, reference.source, forcing_components=components,
+            reference,
+            reference,
+            reference.source,
+            forcing_components=components,
         )
 
 
@@ -227,7 +258,9 @@ def test_snapshot_must_match_current_reference_coefficients_and_node_order():
 def test_current_reference_and_snapshot_cannot_reorder_the_original_target():
     old = _reference()
     current = derive_forced_support_balance(
-        replace(old.source, nodes=(1, 0)), epi_weight=old.epi_weight, forcing=old.forcing,
+        replace(old.source, nodes=(1, 0)),
+        epi_weight=old.epi_weight,
+        forcing=old.forcing,
     )
     with pytest.raises(ValueError):
         observe_forced_support_target(old, current, current.source)
@@ -238,14 +271,20 @@ def test_public_cached_fields_are_rebuilt_for_both_references_and_snapshot():
     current = _reference(capacity=(1, 2), forcing=(F(1, 4), F(1, 2)))
     expected = observe_forced_support_target(old, current, current.source)
     bad_source = replace(
-        current.source, epi_gradient=(99, 99), rate=(99, 99),
-        dirichlet_energy=99, capacity_gradient=(99, 99),
+        current.source,
+        epi_gradient=(99, 99),
+        rate=(99, 99),
+        dirichlet_energy=99,
+        capacity_gradient=(99, 99),
     )
     actual = observe_forced_support_target(
         replace(old, relative_profile=(99, 99), metric_weights=(99, 99)),
         replace(
-            current, source=bad_source, relative_profile=(99, 99),
-            metric_weights=(99, 99), mean_drift=99,
+            current,
+            source=bad_source,
+            relative_profile=(99, 99),
+            metric_weights=(99, 99),
+            mean_drift=99,
         ),
         bad_source,
     )

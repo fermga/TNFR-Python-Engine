@@ -47,14 +47,11 @@ def _finite_scalar(
     return result
 
 
-
 def _same_shape(reference: np.ndarray, value: np.ndarray, name: str) -> None:
     """Reject implicit broadcasting between independently sampled channels."""
 
     if value.shape != reference.shape:
-        raise ValueError(
-            f"{name} must have the same shape as the EPI series"
-        )
+        raise ValueError(f"{name} must have the same shape as the EPI series")
 
 
 def _finite_output(values: np.ndarray, name: str) -> np.ndarray:
@@ -222,9 +219,7 @@ def detect_life_emergence(
     if autopoietic[0] > 1.0:
         threshold_time = float(time_values[0])
     else:
-        crossings = np.flatnonzero(
-            (autopoietic[:-1] <= 1.0) & (autopoietic[1:] > 1.0)
-        )
+        crossings = np.flatnonzero((autopoietic[:-1] <= 1.0) & (autopoietic[1:] > 1.0))
         if crossings.size:
             index = int(crossings[0])
             left = float(autopoietic[index])

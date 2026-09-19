@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import FrozenInstanceError, replace
 from fractions import Fraction
-import math
 
 import networkx as nx
 import numpy as np
@@ -71,17 +71,14 @@ def test_diagnostic_uses_the_fixed_certificate_energy_rate() -> None:
     assert result.required_flow_duration == pytest.approx(
         result.required_flow_duration_estimate
     )
-    assert result.decay_factor_estimate == pytest.approx(
-        math.exp(-rate * duration)
-    )
+    assert result.decay_factor_estimate == pytest.approx(math.exp(-rate * duration))
     assert result.certified_decay_factor_upper_bound is not None
     assert result.exact_log_target_upper_bound is not None
     assert result.exact_required_flow_duration_upper_bound is not None
     exact_rate = result.exact_energy_decay_rate_lower_bound
     assert exact_rate is not None
     assert (
-        exact_rate * result.exact_flow_duration
-        >= result.exact_log_target_upper_bound
+        exact_rate * result.exact_flow_duration >= result.exact_log_target_upper_bound
     )
     assert result.duration_reaches_target
     assert result.solver_timestep_independent
@@ -92,15 +89,11 @@ def test_diagnostic_uses_the_fixed_certificate_energy_rate() -> None:
 
 def test_continuous_diagnostic_is_invariant_to_euler_grid_choice() -> None:
     graph = _state(nx.path_graph(21))
-    before = diagnose_continuous_relaxation_duration(
-        graph, flow_duration=10.0
-    )
+    before = diagnose_continuous_relaxation_duration(graph, flow_duration=10.0)
 
     coarse = diagnose_euler_relaxation_window(graph, dt=0.5)
     fine = diagnose_euler_relaxation_window(graph, dt=0.25)
-    after = diagnose_continuous_relaxation_duration(
-        graph, flow_duration=10.0
-    )
+    after = diagnose_continuous_relaxation_duration(graph, flow_duration=10.0)
 
     assert coarse.dt != fine.dt
     assert coarse.modal_steps != fine.modal_steps
@@ -156,9 +149,7 @@ def test_capacity_changes_the_fixed_continuous_clock() -> None:
     ],
 )
 def test_out_of_domain_fixed_flows_return_explicit_abstention(graph, detail) -> None:
-    result = diagnose_continuous_relaxation_duration(
-        graph, flow_duration=1.0
-    )
+    result = diagnose_continuous_relaxation_duration(graph, flow_duration=1.0)
 
     assert result.abstained
     assert result.abstention_reason == "fixed_flow_domain_error"
@@ -172,14 +163,10 @@ def test_out_of_domain_fixed_flows_return_explicit_abstention(graph, detail) -> 
 
 def test_rounded_uniform_fixed_point_failure_abstains_after_certificate() -> None:
     graph = nx.Graph()
-    graph.add_weighted_edges_from(
-        [(0, 1, 0.1), (0, 2, 0.2), (1, 2, 0.3)]
-    )
+    graph.add_weighted_edges_from([(0, 1, 0.1), (0, 2, 0.2), (1, 2, 0.3)])
     graph = _state(graph)
 
-    result = diagnose_continuous_relaxation_duration(
-        graph, flow_duration=1.0
-    )
+    result = diagnose_continuous_relaxation_duration(graph, flow_duration=1.0)
 
     assert result.abstained
     assert result.fixed_flow_certificate_available
@@ -395,6 +382,7 @@ def test_non_certificate_source_abstains_before_reading_payload(
     assert result.certified_energy_decay_rate_lower_bound is None
     assert result.spectral_energy_decay_rate_estimate is None
     assert result._proof_fields_are_intact()
+
 
 def test_invalid_unsealed_spectral_estimate_does_not_block_exact_proof(
     monkeypatch,

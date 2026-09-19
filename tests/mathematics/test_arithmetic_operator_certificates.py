@@ -62,8 +62,9 @@ def test_positive_certificates_have_u3_or_stabilizer_preconditions():
 # --------------------------------------------------------------------------- #
 # Required test 2: grammar word validation
 # --------------------------------------------------------------------------- #
-@pytest.mark.parametrize("factory", [certify_emission_at_zero,
-                                     certify_residue_edge_propagation])
+@pytest.mark.parametrize(
+    "factory", [certify_emission_at_zero, certify_residue_edge_propagation]
+)
 def test_certified_grammar_words_are_valid(factory):
     cert = factory()
     assert cert.grammar_valid

@@ -164,10 +164,7 @@ def test_t1_coherence_is_orthogonal_projection() -> bool:
     print("  [T1] finite fixed-delay DFT projection")
     print(f"       ||P^2 - P||  (idempotent)  : {idem:.2e}")
     print(f"       ||P - P^H||  (self-adjoint): {selfadj:.2e}")
-    print(
-        f"       rank = trace(P)            : {rank} "
-        f"(expect gcd={fixed_period})"
-    )
+    print(f"       rank = trace(P)            : {rank} " f"(expect gcd={fixed_period})")
     print(f"       |Parseval residual|        : {parseval:.2e}")
     print(f"       |<selected, complement>|   : {ortho:.2e}")
     print("       (P^2=P and P=P^H => exact finite orthogonal projection)")

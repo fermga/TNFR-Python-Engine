@@ -778,12 +778,8 @@ class TNFRAdvancedFFTEngine:
             attenuation = np.maximum(frequencies - safe_cutoff, 0.0)
             response = 1.0 - np.exp(-attenuation * filter_order / safe_cutoff)
         elif filter_type == "bandpass":
-            low_cutoff = (
-                safe_cutoff * FFT_LOW_CUTOFF_CANONICAL
-            )  # = 0.34 (operational)
-            high_cutoff = (
-                safe_cutoff * FFT_HIGH_CUTOFF_CANONICAL
-            )  # = 0.6 (operational)
+            low_cutoff = safe_cutoff * FFT_LOW_CUTOFF_CANONICAL  # = 0.34 (operational)
+            high_cutoff = safe_cutoff * FFT_HIGH_CUTOFF_CANONICAL  # = 0.6 (operational)
             response = np.exp(
                 -np.maximum(low_cutoff - frequencies, 0.0) * filter_order / safe_cutoff
             )
@@ -791,14 +787,10 @@ class TNFRAdvancedFFTEngine:
                 -np.maximum(frequencies - high_cutoff, 0.0) * filter_order / safe_cutoff
             )
         elif filter_type == "notch":
-            bandwidth = (
-                safe_cutoff * FFT_BANDWIDTH_CANONICAL
-            )  # = 0.1 (operational)
+            bandwidth = safe_cutoff * FFT_BANDWIDTH_CANONICAL  # = 0.1 (operational)
             distance = np.abs(frequencies - safe_cutoff)
             safe_bandwidth = max(bandwidth, 1e-12)
-            response = 1.0 - np.exp(
-                -((distance / safe_bandwidth) ** filter_order)
-            )
+            response = 1.0 - np.exp(-((distance / safe_bandwidth) ** filter_order))
         else:
             raise TNFRUserError(
                 message=f"Unknown filter type: {filter_type}",
@@ -863,9 +855,7 @@ class TNFRAdvancedFFTEngine:
         coherence = np.zeros(min_size, dtype=float)
         band_coherence = []
         for index in range(band_count):
-            band_mask = (freqs1 >= band_edges[index]) & (
-                freqs1 < band_edges[index + 1]
-            )
+            band_mask = (freqs1 >= band_edges[index]) & (freqs1 < band_edges[index + 1])
             if not np.any(band_mask):
                 band_coherence.append(0.0)
                 continue
@@ -874,9 +864,7 @@ class TNFRAdvancedFFTEngine:
             auto_power2 = float(np.mean(power2[band_mask]))
             denominator = auto_power1 * auto_power2
             value = (
-                float(abs(cross_mean) ** 2 / denominator)
-                if denominator > 0
-                else 0.0
+                float(abs(cross_mean) ** 2 / denominator) if denominator > 0 else 0.0
             )
             value = float(np.clip(value, 0.0, 1.0))
             coherence[band_mask] = value

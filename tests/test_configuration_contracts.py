@@ -72,10 +72,13 @@ def test_global_configuration_exposes_canonical_defaults():
     assert get_config().get_param_with_fallback({}, "DT") == DEFAULTS["DT"]
 
 
-@pytest.mark.parametrize("apply", [
-    lambda graph: inject_defaults(graph, {"VF_MIN": 2.0}, override=True),
-    lambda graph: merge_overrides(graph, VF_MIN=2.0),
-])
+@pytest.mark.parametrize(
+    "apply",
+    [
+        lambda graph: inject_defaults(graph, {"VF_MIN": 2.0}, override=True),
+        lambda graph: merge_overrides(graph, VF_MIN=2.0),
+    ],
+)
 def test_invalid_effective_bounds_fail_before_graph_mutation(apply):
     graph = nx.Graph(VF_MIN=0.0, VF_MAX=1.0)
     before = deepcopy(graph.graph)
@@ -97,10 +100,18 @@ def test_unknown_override_is_atomic():
     assert graph.graph == {"DT": 0.125}
 
 
-@pytest.mark.parametrize("key", [
-    "DT", "VF_MIN", "VF_MAX", "EPI_MIN", "EPI_MAX", "INIT_THETA_MIN",
-    "INIT_THETA_MAX",
-])
+@pytest.mark.parametrize(
+    "key",
+    [
+        "DT",
+        "VF_MIN",
+        "VF_MAX",
+        "EPI_MIN",
+        "EPI_MAX",
+        "INIT_THETA_MIN",
+        "INIT_THETA_MAX",
+    ],
+)
 @pytest.mark.parametrize("value", [float("nan"), float("inf"), "invalid"])
 def test_numeric_configuration_rejects_nonfinite_or_nonnumeric(key, value):
     with pytest.raises(TNFRConfigError, match=key):
@@ -130,13 +141,22 @@ def test_initialization_preserves_legacy_aliases_including_zero(random_phase):
 
 
 def test_initialization_writes_existing_aliases_on_override():
-    graph = nx.Graph(RANDOM_SEED=37, INIT_RANDOM_PHASE=False,
-                     INIT_VF_MIN=0.0, INIT_VF_MAX=0.0,
-                     INIT_SI_MIN=0.0, INIT_SI_MAX=0.0, INIT_EPI_VALUE=0.0)
+    graph = nx.Graph(
+        RANDOM_SEED=37,
+        INIT_RANDOM_PHASE=False,
+        INIT_VF_MIN=0.0,
+        INIT_VF_MAX=0.0,
+        INIT_SI_MIN=0.0,
+        INIT_SI_MAX=0.0,
+        INIT_EPI_VALUE=0.0,
+    )
     graph.add_node(0, phase=0.7, nu_f=1.0, psi=0.4, sense_index=0.2)
     init_node_attrs(graph)
     assert dict(graph.nodes[0]) == {
-        "phase": 0.0, "nu_f": 0.0, "psi": 0.0, "sense_index": 0.0,
+        "phase": 0.0,
+        "nu_f": 0.0,
+        "psi": 0.0,
+        "sense_index": 0.0,
     }
 
 
@@ -151,6 +171,7 @@ def test_seeded_initialization_is_reproducible_and_seed_sensitive():
 
 def test_feature_flag_context_is_thread_local(monkeypatch):
     from tnfr.config import feature_flags
+
     monkeypatch.setattr(feature_flags, "_BASE_FLAGS", MathFeatureFlags())
     with context_flags(enable_math_dynamics=True):
         with ThreadPoolExecutor(max_workers=1) as executor:
@@ -199,6 +220,7 @@ def test_feature_flag_contexts_are_isolated_across_async_tasks():
 
 def test_preset_callers_cannot_mutate_future_operator_sequences():
     from tnfr.config.presets import get_preset
+
     preset = get_preset("contained_mutation")
     before = deepcopy(preset)
     try:
@@ -212,6 +234,7 @@ def test_preset_callers_cannot_mutate_future_operator_sequences():
 @pytest.mark.parametrize("module_name", ["init", "metric"])
 def test_legacy_defaults_reexport_canonical_objects(module_name):
     from importlib import import_module
+
     legacy = import_module(f"tnfr.constants.{module_name}")
     canonical = import_module(f"tnfr.config.defaults_{module_name}")
     # The legacy module's public names remain available, including helper imports.
@@ -220,11 +243,17 @@ def test_legacy_defaults_reexport_canonical_objects(module_name):
             assert getattr(legacy, name) is getattr(canonical, name)
 
 
-@pytest.mark.parametrize("key,value", [
-    ("INIT_EPI_VALUE", float("nan")), ("INIT_VF_MIN", float("inf")),
-    ("INIT_VF_STD", -1), ("INIT_SI_MAX", float("inf")),
-    ("RANDOM_SEED", 1.5), ("RANDOM_SEED", float("nan")),
-])
+@pytest.mark.parametrize(
+    "key,value",
+    [
+        ("INIT_EPI_VALUE", float("nan")),
+        ("INIT_VF_MIN", float("inf")),
+        ("INIT_VF_STD", -1),
+        ("INIT_SI_MAX", float("inf")),
+        ("RANDOM_SEED", 1.5),
+        ("RANDOM_SEED", float("nan")),
+    ],
+)
 def test_invalid_initialization_parameters_fail_before_node_mutation(key, value):
     graph = nx.path_graph(2)
     graph.graph[key] = value
@@ -239,8 +268,11 @@ def test_none_initialization_seed_records_realized_integer():
     graph.graph["RANDOM_SEED"] = None
     init_node_attrs(graph)
     assert type(graph.graph["RANDOM_SEED"]) is int
-    assert all(np.isfinite(value) for _, attrs in graph.nodes(data=True)
-               for value in attrs.values())
+    assert all(
+        np.isfinite(value)
+        for _, attrs in graph.nodes(data=True)
+        for value in attrs.values()
+    )
 
 
 @pytest.mark.parametrize("raw", [False, 0, "false", " FALSE ", "off", "0"])
@@ -260,6 +292,7 @@ def test_flag_override_false_string_is_not_truthy():
 def test_backend_configuration_rejects_methods_and_is_atomic(monkeypatch):
     from tnfr import backend_config
     from tnfr.errors import TNFRValueError
+
     config = backend_config.TNFRConfig()
     monkeypatch.setattr(backend_config, "_global_config", config)
     before = config.cuda_enabled
@@ -272,12 +305,14 @@ def test_backend_configuration_rejects_methods_and_is_atomic(monkeypatch):
 @pytest.mark.parametrize("raw", [" true ", "enabled", "yes"])
 def test_backend_boolean_environment_matches_graph_parser(monkeypatch, raw):
     from tnfr.backend_config import TNFRConfig as BackendConfig
+
     monkeypatch.setenv("TNFR_CUDA_ENABLED", raw)
     assert BackendConfig(cuda_enabled=False).cuda_enabled is True
 
 
 def test_invalid_backend_boolean_environment_preserves_default(monkeypatch):
     from tnfr.backend_config import TNFRConfig as BackendConfig
+
     monkeypatch.setenv("TNFR_CUDA_ENABLED", "unrecognized")
     with pytest.warns(UserWarning, match="TNFR_CUDA_ENABLED"):
         assert BackendConfig(cuda_enabled=True).cuda_enabled is True

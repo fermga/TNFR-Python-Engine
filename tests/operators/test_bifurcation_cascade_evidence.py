@@ -6,10 +6,7 @@ import networkx as nx
 import pytest
 
 from tnfr.constants.aliases import ALIAS_D2EPI, ALIAS_EPI
-from tnfr.dynamics.propagation import (
-    detect_bifurcation_cascade,
-    propagate_dissonance,
-)
+from tnfr.dynamics.propagation import detect_bifurcation_cascade, propagate_dissonance
 from tnfr.errors import TNFRValueError
 
 
@@ -23,7 +20,9 @@ def _graph():
 
 
 def _state(graph):
-    return deepcopy((graph.graph, dict(graph.nodes(data=True)), list(graph.edges(data=True))))
+    return deepcopy(
+        (graph.graph, dict(graph.nodes(data=True)), list(graph.edges(data=True)))
+    )
 
 
 def test_input_from_another_source_is_not_attributed_to_requested_source():

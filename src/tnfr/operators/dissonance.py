@@ -25,7 +25,6 @@ from ..errors import TNFRValueError
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
 
-
 _MISSING = object()
 _PROPAGATION_EVENTS_KEY = "_oz_propagation_events"
 _JITTER_PROGRESS_KEY = "_rng_jitter_progress"
@@ -69,9 +68,9 @@ class _MappingRollback:
             if isinstance(value, (list, deque)):
                 sequences.append((value, tuple(value)))
 
-        mappings: list[
-            tuple[MutableMapping[Any, Any], tuple[tuple[Any, Any], ...]]
-        ] = []
+        mappings: list[tuple[MutableMapping[Any, Any], tuple[tuple[Any, Any], ...]]] = (
+            []
+        )
         for key in mapping_keys:
             value = mapping.get(key, _MISSING)
             if isinstance(value, MutableMapping):
@@ -170,9 +169,7 @@ def _plan_local_dissonance(G: TNFRGraph, node: Any) -> _LocalDissonancePlan:
     probe.add_nodes_from(G.nodes)
     probe.nodes[node].update(G.nodes[node])
     had_jitter_progress = _JITTER_PROGRESS_KEY in G.nodes[node]
-    jitter_progress_before = deepcopy(
-        G.nodes[node].get(_JITTER_PROGRESS_KEY)
-    )
+    jitter_progress_before = deepcopy(G.nodes[node].get(_JITTER_PROGRESS_KEY))
 
     probe_node = NodeNX(probe, node)
     dnfr_before = float(probe_node.dnfr)
@@ -180,10 +177,7 @@ def _plan_local_dissonance(G: TNFRGraph, node: Any) -> _LocalDissonancePlan:
     GLYPH_OPERATIONS[Glyph.OZ](probe_node, factors)
     dnfr_after = float(probe_node.dnfr)
     magnitude = abs(dnfr_after - dnfr_before)
-    if not all(
-        math.isfinite(value)
-        for value in (dnfr_before, dnfr_after, magnitude)
-    ):
+    if not all(math.isfinite(value) for value in (dnfr_before, dnfr_after, magnitude)):
         raise TNFRValueError("OZ local plan must remain finite")
 
     original_seed = G.graph.get("RANDOM_SEED", _MISSING)
@@ -285,9 +279,7 @@ class Dissonance(Operator):
         # Both append-only graph sinks are validated before local OZ. The
         # operator metric is still collected at its historical lifecycle point,
         # before network propagation.
-        require_list_sink(
-            G.graph, _PROPAGATION_EVENTS_KEY, operator=self.name
-        )
+        require_list_sink(G.graph, _PROPAGATION_EVENTS_KEY, operator=self.name)
         collect_metrics = kw.get("collect_metrics", False) or G.graph.get(
             "COLLECT_OPERATOR_METRICS", False
         )

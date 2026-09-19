@@ -120,8 +120,9 @@ def experiment_1_fixed_point():
     js = [_jaccard(traj[k], traj[k + 1]) for k in range(len(traj) - 1)]
     print("  Jaccard(T_k, T_{k+1}) along the loop (cycle init, seed 0):")
     print("   " + " ".join(f"{j:.2f}" for j in js[:18]))
-    print(f"  terminal topology unchanged = {js[-1] > 0.999} "
-          f"(Jaccard {js[-1]:.3f})")
+    print(
+        f"  terminal topology unchanged = {js[-1] > 0.999} " f"(Jaccard {js[-1]:.3f})"
+    )
     nodes = list(Gfix.nodes())
     epi = {nd: get_attr(Gfix.nodes[nd], ALIAS_EPI, 0.0) for nd in nodes}
     sc = _jaccard(Gfix.edges(), _topology_from_epi(nodes, epi))
@@ -200,7 +201,9 @@ def experiment_3_basins():
             print(f"    {names[i]:18s} vs {names[j]:18s}: {ov:.3f}")
     print()
     print("  -> all values are < 1: the four terminal edge sets differ.")
-    print("     This finite dependence does not identify dynamical basins or attractors.")
+    print(
+        "     This finite dependence does not identify dynamical basins or attractors."
+    )
 
 
 def _ensure_connected(G):

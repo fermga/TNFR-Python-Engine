@@ -4,11 +4,7 @@ from typing import Sequence
 
 import numpy as np
 
-from .operators import (
-    CoherenceOperator,
-    FrequencyOperator,
-    SpectralExpectationOperator,
-)
+from .operators import CoherenceOperator, FrequencyOperator, SpectralExpectationOperator
 from .spaces import HilbertSpace
 
 __all__ = [

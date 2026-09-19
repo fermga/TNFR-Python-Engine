@@ -34,7 +34,7 @@ REMESH (§5).
 ## 2. The reduction-compatible family
 
 Transport is projective only for connection sets that reduce uniformly over
-fibers. The canonical family lifts any base pattern mod `p` by ignoring higher
+fibers. The declared family lifts any nonempty base pattern mod `p` by ignoring higher
 p-adic digits:
 
 $$S_e = \{\, x \in \mathbb{Z}/p^e\mathbb{Z} : x \bmod p \in \text{base} \,\},
@@ -71,7 +71,9 @@ fine preimages in `S_{e+1}`, summing over the fiber of `y` and over `S_{e+1}`
 reproduces `p·d_e` copies of the coarse sum, and the two `1/p` and `1/d`
 normalisations collapse to `P_e R_e`. The control (`test_non_uniform_fine_set_
 breaks_commutation`) drops one fiber element to make the multiplicity non-uniform
-and the residual becomes non-zero — compatibility is necessary.
+and the residual becomes non-zero. This control shows failure for that altered
+set. The theorem concerns the displayed uniform reduction condition, not a
+classification of all possible weighted projective families.
 
 ## 4. Surviving modes (DERIVED + MEASURED)
 
@@ -90,9 +92,17 @@ spectrum sits within the fine spectrum to `~1e-15`
 (`surviving_spectrum_containment`, below the derived tolerance `√ε·‖L‖₂`). The
 measured spectral gap `λ₂(L_e)` decreases from level 1 and then **stabilises**
 (e.g. `p = 3`, unit base: `1.5 → 1.0 → 1.0`) — the slow-mode timescale reaches a
-fixed p-adic scale.
+fixed value in that finite sample. For directed operators the helper reports
+the minimum nonzero eigenvalue modulus, which need not be the decay rate
+`nu_f * min Re(lambda)` of the heat evolution.
 
 ## 5. REMESH is not claimed (the contract audit)
+
+These are exact identities of declared finite linear transport models. The
+prime, residue carrier and connection family are inputs; neither their
+formation nor a joint phase/capacity/support law is derived. Projective
+consistency of the EPI channel does not by itself transport the full tetrad or
+the multichannel pressure constitutive map.
 
 TNFR's REMESH operator (recursivity, [AGENTS.md](../AGENTS.md) §5) has a specific
 contract: a recursive **EPI echo across scales**, **NETWORK**-scale

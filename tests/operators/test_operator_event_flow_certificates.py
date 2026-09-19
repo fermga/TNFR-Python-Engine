@@ -119,10 +119,7 @@ def test_opt_in_binds_one_exact_dyadic_default_euler_interval() -> None:
     assert not evidence.solver_accuracy_certified
     assert not evidence.future_or_repeated_schedule_stability_certified
     assert result.all_positive_flow_intervals_binary64_identified is True
-    assert (
-        result.all_positive_flow_intervals_binary64_held_pressure_identified
-        is True
-    )
+    assert result.all_positive_flow_intervals_binary64_held_pressure_identified is True
     assert result.all_positive_flow_intervals_exact_affine is True
     assert result.all_positive_flow_intervals_contracting is True
     assert not result.solver_accuracy_certified
@@ -187,10 +184,7 @@ def test_default_path_remains_uncertified_when_opt_in_is_disabled() -> None:
     assert not result.flow_certification_requested
     assert result.flow_interval_evidence == ()
     assert result.all_positive_flow_intervals_binary64_identified is None
-    assert (
-        result.all_positive_flow_intervals_binary64_held_pressure_identified
-        is None
-    )
+    assert result.all_positive_flow_intervals_binary64_held_pressure_identified is None
     assert result.all_positive_flow_intervals_exact_affine is None
     assert result.all_positive_flow_intervals_contracting is None
 
@@ -441,10 +435,7 @@ def test_multistep_clipping_blocks_held_pressure_runtime_identification() -> Non
     assert evidence.certificate is not None
     assert evidence.certificate.binary64_held_pressure_replay_matches is False
     assert not evidence.runtime_bound_binary64_held_pressure_interval_identified
-    assert (
-        result.all_positive_flow_intervals_binary64_held_pressure_identified
-        is False
-    )
+    assert result.all_positive_flow_intervals_binary64_held_pressure_identified is False
     assert tuple(graph.nodes[node]["EPI"] for node in graph) == (1.0, -1.0)
 
 
@@ -522,10 +513,7 @@ def test_zero_positive_intervals_have_vacuous_requested_aggregates() -> None:
 
     assert result.flow_interval_evidence == ()
     assert result.all_positive_flow_intervals_binary64_identified is True
-    assert (
-        result.all_positive_flow_intervals_binary64_held_pressure_identified
-        is True
-    )
+    assert result.all_positive_flow_intervals_binary64_held_pressure_identified is True
     assert result.all_positive_flow_intervals_exact_affine is True
     assert result.all_positive_flow_intervals_contracting is True
 
@@ -542,6 +530,7 @@ def test_include_flow_certificates_requires_a_strict_bool() -> None:
 
     assert graph.graph["_t"] == 0.0
     assert all(graph.nodes[node]["EPI"] in (1.0, -1.0) for node in graph)
+
 
 def test_unexpected_certificate_failure_rolls_back_schedule(
     monkeypatch: pytest.MonkeyPatch,
@@ -573,7 +562,6 @@ def test_unexpected_certificate_failure_rolls_back_schedule(
     assert "flow_interval_evidence" not in graph.graph
 
 
-
 def test_forced_signed_zero_interval_mutation_invalidates_runtime_wrapper() -> None:
     result = execute_operator_event_schedule(
         _graph(epi=(0.0, 0.0), pressure=(0.0, 0.0)),
@@ -581,7 +569,7 @@ def test_forced_signed_zero_interval_mutation_invalidates_runtime_wrapper() -> N
         include_flow_certificates=True,
     )
     evidence = result.flow_interval_evidence[0]
-    assert evidence.interval.start_time.hex() == 0.0.hex()
+    assert evidence.interval.start_time.hex() == (0.0).hex()
     assert evidence._proof_fields_are_intact()
 
     object.__setattr__(evidence.interval, "start_time", -0.0)

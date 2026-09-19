@@ -15,8 +15,6 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
-from ..rng import resolve_graph_seed, validate_seed
-
 from ..config.operator_names import (
     COHERENCE,
     DISSONANCE,
@@ -25,8 +23,8 @@ from ..config.operator_names import (
     RECEPTION,
     RECURSIVITY,
     SILENCE,
-    TRANSITION,
 )
+from ..rng import resolve_graph_seed, validate_seed
 
 __all__ = ["AdaptiveSequenceSelector"]
 
@@ -209,11 +207,7 @@ class AdaptiveSequenceSelector:
             raise ValueError(
                 "coherence_gain and performance_score are aliases; provide one"
             )
-        value = (
-            performance_score
-            if performance_score is not None
-            else coherence_gain
-        )
+        value = performance_score if performance_score is not None else coherence_gain
         if (
             isinstance(value, bool)
             or not isinstance(value, Real)

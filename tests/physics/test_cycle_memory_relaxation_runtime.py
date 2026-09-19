@@ -5,7 +5,10 @@ from fractions import Fraction
 import pytest
 
 from benchmarks.cycle_memory_relaxation import (
-    CYCLE_COUNT, INITIAL_EPI, WORD, run_cycle_memory_case,
+    CYCLE_COUNT,
+    INITIAL_EPI,
+    WORD,
+    run_cycle_memory_case,
 )
 from tnfr.utils.numeric import angle_diff
 
@@ -137,12 +140,17 @@ def test_finite_memory_echo_slows_this_bump_without_stopping_the_nodal_clock(cas
     assert control_energy < memory_energy < initial_energy
     for case in cases.values():
         assert abs(case["final"]["exact_mean"] - case["initial"]["exact_mean"]) < 1e-13
-        assert max(
-            abs(angle_diff(a, b)) for a, b in zip(
-                case["initial"]["phase_readout"]["phase"],
-                case["final"]["phase_readout"]["phase"], strict=True,
+        assert (
+            max(
+                abs(angle_diff(a, b))
+                for a, b in zip(
+                    case["initial"]["phase_readout"]["phase"],
+                    case["final"]["phase_readout"]["phase"],
+                    strict=True,
+                )
             )
-        ) < 1e-13
+            < 1e-13
+        )
 
 
 def test_causal_execution_and_detached_contraction_theorem_have_separate_scope(cases):

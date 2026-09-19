@@ -20,10 +20,9 @@ from ..constants.canonical import (
     FRAGMENTATION_THRESHOLD,
     GRAD_PHI_CANONICAL_THRESHOLD,
     K_PHI_CANONICAL_THRESHOLD,
-    PI as CANONICAL_PI,
-    U6_STRUCTURAL_POTENTIAL_LIMIT,
-    XI_C_CRITICAL_RATIO,
 )
+from ..constants.canonical import PI as CANONICAL_PI
+from ..constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT, XI_C_CRITICAL_RATIO
 from ..errors import TNFRValueError
 
 # UNIFIED NUMPY IMPORT - Single point of import for entire TNFR codebase
@@ -183,7 +182,6 @@ class TNFRNumericalUtilities:
         else:
             self._rng = random.Random(self.seed)
 
-
         logger.info(f"Initialized TNFR numerical utilities with seed {self.seed}")
 
     def normalize_phase(self, phase: ArrayLike) -> ArrayLike:
@@ -338,9 +336,9 @@ class TNFRNumericalUtilities:
         numerator_is_iterable = hasattr(numerator, "__iter__") and not isinstance(
             numerator, (str, bytes, bytearray)
         )
-        denominator_is_iterable = hasattr(
-            denominator, "__iter__"
-        ) and not isinstance(denominator, (str, bytes, bytearray))
+        denominator_is_iterable = hasattr(denominator, "__iter__") and not isinstance(
+            denominator, (str, bytes, bytearray)
+        )
         if numerator_is_iterable:
             numerators = list(numerator)
         else:
@@ -361,15 +359,13 @@ class TNFRNumericalUtilities:
         elif denominators is not None:
             pairs = ((numerator, item) for item in denominators)
         else:
-            return (
-                numerator / denominator
-                if denominator != 0
+            return numerator / denominator if denominator != 0 else fallback_value
+        return [
+            (
+                item_numerator / item_denominator
+                if item_denominator != 0
                 else fallback_value
             )
-        return [
-            item_numerator / item_denominator
-            if item_denominator != 0
-            else fallback_value
             for item_numerator, item_denominator in pairs
         ]
 
@@ -392,9 +388,7 @@ class TNFRNumericalUtilities:
             mean_cos = math.fsum(math.cos(angle) for angle in values) / len(values)
 
         if math.hypot(mean_sin, mean_cos) <= CONSTANTS.FLOAT_TOLERANCE:
-            raise TNFRValueError(
-                "circular mean is undefined for a vanishing resultant"
-            )
+            raise TNFRValueError("circular mean is undefined for a vanishing resultant")
         return math.atan2(mean_sin, mean_cos)
 
     def is_finite_array(self, arr: ArrayLike) -> bool:

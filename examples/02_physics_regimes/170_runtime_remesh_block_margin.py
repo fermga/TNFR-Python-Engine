@@ -9,9 +9,9 @@ prefixes inside a repeated block.
 
 from __future__ import annotations
 
+import json
 from collections import deque
 from fractions import Fraction
-import json
 from typing import Any
 
 import networkx as nx
@@ -133,9 +133,7 @@ def run_protocol() -> dict[str, Any]:
             positive_execution
         ),
         "zero_execution": zero_execution,
-        "zero_margin": observe_executed_event_remesh_block_margin(
-            zero_execution
-        ),
+        "zero_margin": observe_executed_event_remesh_block_margin(zero_execution),
     }
 
 
@@ -151,9 +149,7 @@ def _margin_report(observation: Any) -> dict[str, Any]:
         "exact_energy_before": _fraction_text(
             observation.exact_augmented_energy_before
         ),
-        "exact_energy_after": _fraction_text(
-            observation.exact_augmented_energy_after
-        ),
+        "exact_energy_after": _fraction_text(observation.exact_augmented_energy_after),
         "exact_lower_bound": _fraction_text(
             observation.exact_gain_based_energy_drop_lower_bound
         ),

@@ -484,9 +484,7 @@ class TNFRCacheAwareFFTEngine:
             "coherence_bands": coherence_bands,
             "coherence_results": coherence_results,
             "mean_coherence": (
-                float(
-                    np.mean([r["coherence"] for r in coherence_results.values()])
-                )
+                float(np.mean([r["coherence"] for r in coherence_results.values()]))
                 if coherence_results
                 else 0.0
             ),

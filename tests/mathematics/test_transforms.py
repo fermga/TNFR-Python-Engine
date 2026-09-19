@@ -9,9 +9,9 @@ import pytest
 np = pytest.importorskip("numpy")
 
 from tnfr.mathematics import (
-    BEPIElement,
     COMPOSITE_EPI_REGULARITY_KIND,
     COMPOSITE_EPI_REGULARITY_PROVENANCE,
+    BEPIElement,
     evaluate_coherence_transform,
     evaluate_composite_epi_regularity_transform,
     transforms,

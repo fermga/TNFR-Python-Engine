@@ -1,11 +1,11 @@
 """Recorded graph seeds reproduce initialization and runtime random streams."""
 
-from copy import deepcopy
 import hashlib
 import json
 import random
 import struct
 from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
 
 import networkx as nx
 import numpy as np
@@ -19,15 +19,21 @@ from tnfr.initialization import init_node_attrs
 from tnfr.node import NodeNX
 from tnfr.operators import _um_select_candidates, apply_glyph
 from tnfr.operators.definitions import Dissonance
-from tnfr.operators.jitter import JitterCache, get_jitter_manager, random_jitter, reset_jitter_manager
+from tnfr.operators.jitter import (
+    JitterCache,
+    get_jitter_manager,
+    random_jitter,
+    reset_jitter_manager,
+)
 from tnfr.operators.remesh import apply_topological_remesh
 from tnfr.rng import base_seed, make_rng, resolve_graph_seed, validate_graph_seed
 
 
 def _graph(seed, n=60):
     graph = nx.path_graph(n)
-    graph.graph.update(RANDOM_SEED=seed, UM_CANDIDATE_COUNT=7,
-                       OZ_NOISE_MODE=True, OZ_SIGMA=0.1)
+    graph.graph.update(
+        RANDOM_SEED=seed, UM_CANDIDATE_COUNT=7, OZ_NOISE_MODE=True, OZ_SIGMA=0.1
+    )
     return graph
 
 
@@ -45,15 +51,23 @@ def test_integer_factory_and_sampling_keep_legacy_stream(seed):
     expected = _legacy_rng(int(seed), -1)
     assert [rng.random() for _ in range(12)] == [expected.random() for _ in range(12)]
     update_node_sample(graph, step=3)
-    assert graph.graph["_node_sample"] == _legacy_rng(int(seed), 3).sample(tuple(graph), 7)
+    assert graph.graph["_node_sample"] == _legacy_rng(int(seed), 3).sample(
+        tuple(graph), 7
+    )
 
 
 @pytest.mark.parametrize("seed", [0, 17, -5])
 def test_integer_initialization_keeps_legacy_draw_order(seed):
     graph = _graph(seed, 4)
-    graph.graph.update(INIT_THETA_MIN=-1, INIT_THETA_MAX=1,
-                       INIT_VF_MODE="uniform", INIT_VF_MIN=0.2, INIT_VF_MAX=0.7,
-                       INIT_SI_MIN=0.1, INIT_SI_MAX=0.9)
+    graph.graph.update(
+        INIT_THETA_MIN=-1,
+        INIT_THETA_MAX=1,
+        INIT_VF_MODE="uniform",
+        INIT_VF_MIN=0.2,
+        INIT_VF_MAX=0.7,
+        INIT_SI_MIN=0.1,
+        INIT_SI_MAX=0.9,
+    )
     init_node_attrs(graph)
     rng = _legacy_rng(seed, -1)
     for _, attrs in graph.nodes(data=True):
@@ -64,13 +78,19 @@ def test_integer_initialization_keeps_legacy_draw_order(seed):
 
 def test_none_draws_entropy_once_even_for_concurrent_consumers(monkeypatch):
     calls = []
-    monkeypatch.setattr(random.SystemRandom, "getrandbits",
-                        lambda self, bits: calls.append(bits) or 123456789)
+    monkeypatch.setattr(
+        random.SystemRandom,
+        "getrandbits",
+        lambda self, bits: calls.append(bits) or 123456789,
+    )
     graph = _graph(None)
     assert validate_graph_seed(graph) is None
     assert calls == []
     with ThreadPoolExecutor(max_workers=8) as pool:
-        assert list(pool.map(lambda _: resolve_graph_seed(graph), range(20))) == [123456789] * 20
+        assert (
+            list(pool.map(lambda _: resolve_graph_seed(graph), range(20)))
+            == [123456789] * 20
+        )
     assert graph.graph["RANDOM_SEED"] == 123456789
     init_node_attrs(graph)
     update_node_sample(graph, step=0)
@@ -94,22 +114,29 @@ def test_recorded_seed_replays_initialization_operators_sampling_and_remesh(seed
         for node in (0, 3, 0):
             apply_glyph(source, node, "dissonance")
             apply_glyph(replay, node, "dissonance")
-            assert get_attr(source.nodes[node], ALIAS_DNFR) == get_attr(replay.nodes[node], ALIAS_DNFR)
+            assert get_attr(source.nodes[node], ALIAS_DNFR) == get_attr(
+                replay.nodes[node], ALIAS_DNFR
+            )
     apply_topological_remesh(source, mode="knn", k=2, p_rewire=0.8)
     apply_topological_remesh(replay, mode="knn", k=2, p_rewire=0.8)
     assert set(source.edges()) == set(replay.edges())
     for node in (0, 3):
-        assert source.nodes[node]["_rng_jitter_progress"] == replay.nodes[node]["_rng_jitter_progress"]
+        assert (
+            source.nodes[node]["_rng_jitter_progress"]
+            == replay.nodes[node]["_rng_jitter_progress"]
+        )
 
 
 def test_coupling_candidate_stream_accepts_none_and_replays_recorded_seed():
     source = _graph(None, 12)
     source_node = NodeNX(source, 0)
-    chosen = _um_select_candidates(source_node, iter(NodeNX(source, n) for n in range(1, 12)),
-                                   4, "random", 0)
+    chosen = _um_select_candidates(
+        source_node, iter(NodeNX(source, n) for n in range(1, 12)), 4, "random", 0
+    )
     replay = _graph(source.graph["RANDOM_SEED"], 12)
-    repeated = _um_select_candidates(NodeNX(replay, 0), iter(NodeNX(replay, n) for n in range(1, 12)),
-                                     4, "random", 0)
+    repeated = _um_select_candidates(
+        NodeNX(replay, 0), iter(NodeNX(replay, n) for n in range(1, 12)), 4, "random", 0
+    )
     assert [n.n for n in chosen] == [n.n for n in repeated]
 
 
@@ -122,13 +149,21 @@ def test_copy_after_resolution_has_independent_recorded_jitter_progress():
     source_next = random_jitter(NodeNX(source, 0), 0.2)
     assert copied.nodes[0]["_rng_jitter_progress"] == recorded
     assert random_jitter(NodeNX(copied, 0), 0.2) == source_next
-    assert source.nodes[0]["_rng_jitter_progress"] == copied.nodes[0]["_rng_jitter_progress"]
-    assert source.nodes[0]["_rng_jitter_progress"] is not copied.nodes[0]["_rng_jitter_progress"]
+    assert (
+        source.nodes[0]["_rng_jitter_progress"]
+        == copied.nodes[0]["_rng_jitter_progress"]
+    )
+    assert (
+        source.nodes[0]["_rng_jitter_progress"]
+        is not copied.nodes[0]["_rng_jitter_progress"]
+    )
 
 
 def test_unresolved_copy_gets_its_own_entropy(monkeypatch):
     seeds = iter([101, 202])
-    monkeypatch.setattr(random.SystemRandom, "getrandbits", lambda self, bits: next(seeds))
+    monkeypatch.setattr(
+        random.SystemRandom, "getrandbits", lambda self, bits: next(seeds)
+    )
     source = _graph(None, 2)
     copied = source.copy()
     assert resolve_graph_seed(source) == 101
@@ -140,8 +175,14 @@ def test_json_recorded_progress_continues_stream_without_cache_state():
     source = _graph(7, 2)
     node = NodeNX(source, 0)
     random_jitter(node, 0.2)
-    persisted = json.loads(json.dumps({"RANDOM_SEED": source.graph["RANDOM_SEED"],
-                                      "progress": source.nodes[0]["_rng_jitter_progress"]}))
+    persisted = json.loads(
+        json.dumps(
+            {
+                "RANDOM_SEED": source.graph["RANDOM_SEED"],
+                "progress": source.nodes[0]["_rng_jitter_progress"],
+            }
+        )
+    )
     replay = nx.path_graph(2)
     replay.graph["RANDOM_SEED"] = persisted["RANDOM_SEED"]
     replay.nodes[0]["_rng_jitter_progress"] = persisted["progress"]
@@ -191,7 +232,11 @@ def test_progress_validation_is_local_to_the_selected_node():
     for node in range(1, 100):
         graph.nodes[node]["_rng_jitter_progress"] = "unreadable unrelated record"
     assert -0.1 <= random_jitter(NodeNX(graph, 0), 0.1) <= 0.1
-    assert graph.nodes[0]["_rng_jitter_progress"] == {"seed": 7, "offset": 0, "draws": 1}
+    assert graph.nodes[0]["_rng_jitter_progress"] == {
+        "seed": 7,
+        "offset": 0,
+        "draws": 1,
+    }
     assert graph.nodes[99]["_rng_jitter_progress"] == "unreadable unrelated record"
 
 
@@ -203,11 +248,19 @@ def test_offset_change_starts_the_new_offset_stream():
     replay.add_nodes_from([1, 2])
     replay.graph["RANDOM_SEED"] = 7
     assert random_jitter(NodeNX(graph, 1), 0.2) == random_jitter(NodeNX(replay, 1), 0.2)
-    assert graph.nodes[1]["_rng_jitter_progress"] == {"seed": 7, "offset": 0, "draws": 1}
+    assert graph.nodes[1]["_rng_jitter_progress"] == {
+        "seed": 7,
+        "offset": 0,
+        "draws": 1,
+    }
 
 
-@pytest.mark.parametrize("seed", [True, False, "0", 1.0, 1.5, float("nan"), float("inf")])
-@pytest.mark.parametrize("operation", ["initialize", "sample", "glyph", "public_operator", "remesh"])
+@pytest.mark.parametrize(
+    "seed", [True, False, "0", 1.0, 1.5, float("nan"), float("inf")]
+)
+@pytest.mark.parametrize(
+    "operation", ["initialize", "sample", "glyph", "public_operator", "remesh"]
+)
 def test_invalid_seed_is_rejected_before_mutation(seed, operation):
     graph = _graph(seed, 2)
     before_graph = dict(graph.graph)

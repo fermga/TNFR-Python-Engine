@@ -28,8 +28,8 @@ requires separate analysis). No complexity / crypto / Millennium claim.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
 from numbers import Integral, Real
 
 import numpy as np
@@ -88,11 +88,7 @@ def _scan_parameters(t_max: float, samples: int) -> tuple[float, int]:
         raise ValueError("t_max must be finite and nonnegative") from exc
     if not math.isfinite(window) or window < 0.0:
         raise ValueError("t_max must be finite and nonnegative")
-    if (
-        isinstance(samples, bool)
-        or not isinstance(samples, Integral)
-        or samples < 2
-    ):
+    if isinstance(samples, bool) or not isinstance(samples, Integral) or samples < 2:
         raise ValueError("samples must be an integer of at least 2")
     return window, int(samples)
 
@@ -202,7 +198,10 @@ def potential_operator(adjacency, *, alpha: float = 2.0) -> np.ndarray:
 
 
 def potential_operator_from_graph(
-    graph, *, alpha: float = 2.0, weight: str | None = "weight",
+    graph,
+    *,
+    alpha: float = 2.0,
+    weight: str | None = "weight",
     directed: bool | None = None,
 ) -> tuple[list, np.ndarray]:
     r"""Build the canonical distance kernel for a graph-owned readout.
@@ -220,9 +219,7 @@ def potential_operator_from_graph(
     use_directed = graph.is_directed() if directed is None else directed
     source = graph if use_directed else graph.to_undirected()
     path_weight = structural_path_weight(source) if weight == "weight" else weight
-    distances = dict(
-        nx.all_pairs_dijkstra_path_length(source, weight=path_weight)
-    )
+    distances = dict(nx.all_pairs_dijkstra_path_length(source, weight=path_weight))
     kernel = np.zeros((len(nodes), len(nodes)), dtype=float)
     positions = {node: index for index, node in enumerate(nodes)}
     for source_node, lengths in distances.items():
@@ -271,20 +268,20 @@ class TransientU2Certificate:
 
     norm_kind: str
     consensus_projection_residual: float  # ‖LQ − L‖ ≈ 0 (Q commutes with L)
-    consensus_projection_norm: float      # ‖Q‖₂ ≥ 1 (the oblique factor)
-    spectral_abscissa: float              # α(−L) ≤ 0 => spectrally stable
-    normality_residual: float             # ‖[L, Lᵀ]‖ = 0 => normal
-    symmetric_part_min_eig: float         # sampled/derived symmetric-part readout
-    peak_gain: float                      # sup_s ‖e^{−s L_sub}‖ (per-node energy)
-    peak_time_structural: float           # s* achieving the peak
-    kreiss_lower_bound: float             # ≤ peak_gain (Kreiss theorem)
-    ambient_oblique_gain: float           # sup_s ‖e^{−sL} Q‖ (= ‖Q‖ artifact)
-    integrated_reorganization: float      # J
+    consensus_projection_norm: float  # ‖Q‖₂ ≥ 1 (the oblique factor)
+    spectral_abscissa: float  # α(−L) ≤ 0 => spectrally stable
+    normality_residual: float  # ‖[L, Lᵀ]‖ = 0 => normal
+    symmetric_part_min_eig: float  # sampled/derived symmetric-part readout
+    peak_gain: float  # sup_s ‖e^{−s L_sub}‖ (per-node energy)
+    peak_time_structural: float  # s* achieving the peak
+    kreiss_lower_bound: float  # ≤ peak_gain (Kreiss theorem)
+    ambient_oblique_gain: float  # sup_s ‖e^{−sL} Q‖ (= ‖Q‖ artifact)
+    integrated_reorganization: float  # J
     integrated_reorganization_bound: float
     peak_structural_potential: float  # max_{s,i} |Φ_s(s)[i]|
     structural_potential_bound: float
     u6_confined: bool
-    no_transient_amplification: bool      # measured peak_gain ≤ 1 in this window
+    no_transient_amplification: bool  # measured peak_gain ≤ 1 in this window
     tolerance: float
     bounds_hold: bool
     claim_status: str

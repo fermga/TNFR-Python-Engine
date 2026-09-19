@@ -11,7 +11,6 @@ from .event_runtime import OperatorEventExecutionResult
 from .event_timing import OperatorEventSchedule, PhysicalFlowPartition
 from .remesh import DelayedRemeshResult
 
-
 @dataclass(frozen=True, slots=True)
 class RemeshHistoryTransitionObservation:
     nodes: tuple[Hashable, ...]
@@ -35,7 +34,6 @@ class RemeshHistoryTransitionObservation:
     @property
     def canonical_history_transition_certified(self) -> bool: ...
 
-
 @dataclass(frozen=True, slots=True)
 class WeightedEPIObservation:
     nodes: tuple[Hashable, ...]
@@ -45,7 +43,6 @@ class WeightedEPIObservation:
     weighted_mean: float
     exact_disagreement_energy: Fraction
     disagreement_energy: float | None
-
 
 @dataclass(frozen=True, slots=True)
 class EventRemeshCycleResult:
@@ -110,14 +107,11 @@ class EventRemeshCycleResult:
     @property
     def post_remesh_pressure_refresh_performed(self) -> bool: ...
 
-
 def execute_event_remesh_cycle(
     graph: nx.Graph,
     schedule: OperatorEventSchedule,
     *,
-    metric_weights: (
-        Mapping[Hashable, Any] | Sequence[Any] | None
-    ) = ...,
+    metric_weights: Mapping[Hashable, Any] | Sequence[Any] | None = ...,
     refresh_pressure_after_remesh: bool = ...,
     context: Mapping[str, Any] | None = ...,
     method: str | None = ...,
@@ -127,6 +121,5 @@ def execute_event_remesh_cycle(
     include_stage_certificates: bool = ...,
     physical_flow_partitions: Iterable[PhysicalFlowPartition] = ...,
 ) -> EventRemeshCycleResult: ...
-
 
 __all__: list[str]

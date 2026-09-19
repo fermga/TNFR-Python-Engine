@@ -339,8 +339,7 @@ def _validated_feature_scales(
             "feature_scales must be a sequence of positive numbers"
         ) from exc
     if any(
-        isinstance(value, bool) or not isinstance(value, Real)
-        for value in raw_scales
+        isinstance(value, bool) or not isinstance(value, Real) for value in raw_scales
     ):
         raise TypeError("feature_scales must contain real numbers")
     scales = np.asarray(raw_scales, dtype=float)
@@ -367,9 +366,7 @@ def _scaled_distance(left: Any, right: Any, scales: Any, norm: str) -> float:
             # is large enough to make the mathematical quotient finite.
             component = left_float / scale_float - right_float / scale_float
         if not math.isfinite(component):
-            raise ValueError(
-                "scaled signature differences exceed floating-point range"
-            )
+            raise ValueError("scaled signature differences exceed floating-point range")
         if component == 0.0 and left_float != right_float:
             raise ValueError(
                 "scaled signature separation is below floating-point range; "
@@ -611,9 +608,7 @@ def identify_nearest_signature(
     ordered_metrics = sorted(metric for metric, _ in distance_pairs)
     second_metric = ordered_metrics[1]
     second_distance = min(
-        floating
-        for metric, floating in distance_pairs
-        if metric == second_metric
+        floating for metric, floating in distance_pairs if metric == second_metric
     )
     within_radius = _metric_is_inside_radius(
         nearest_metric,
@@ -757,9 +752,13 @@ def _frame_signature(
         float(graph.number_of_nodes() - before_node_count),
         float(graph.number_of_edges() - before_edge_count),
     )
-    return tuple(float(value) for value in target_delta) + tuple(
-        float(value) for value in mean_delta
-    ) + tuple(float(value) for value in rms_delta) + velocity_features + graph_size
+    return (
+        tuple(float(value) for value in target_delta)
+        + tuple(float(value) for value in mean_delta)
+        + tuple(float(value) for value in rms_delta)
+        + velocity_features
+        + graph_size
+    )
 
 
 def _frame_feature_names(prefix: str) -> tuple[str, ...]:
@@ -831,9 +830,7 @@ def probe_canonical_operator_identifiability(
     requested = tuple(contract.name for contract in contracts)
     display_labels = tuple(contract.english_name for contract in contracts)
     expected_glyphs = {contract.name: contract.glyph for contract in contracts}
-    signatures_by_operator: dict[str, list[float]] = {
-        name: [] for name in requested
-    }
+    signatures_by_operator: dict[str, list[float]] = {name: [] for name in requested}
     feature_names: list[str] = []
     executed: list[str] = []
 
@@ -874,9 +871,7 @@ def probe_canonical_operator_identifiability(
                 )
             )
 
-    signature_rows = tuple(
-        tuple(signatures_by_operator[name]) for name in requested
-    )
+    signature_rows = tuple(tuple(signatures_by_operator[name]) for name in requested)
     algebra = certify_temporal_signature_matrix(
         signature_rows,
         display_labels,
@@ -888,8 +883,7 @@ def probe_canonical_operator_identifiability(
         signature_rows
         if decimals is None
         else tuple(
-            tuple(round(value, decimals) for value in row)
-            for row in signature_rows
+            tuple(round(value, decimals) for value in row) for row in signature_rows
         )
     )
     noise_margin = certify_signature_noise_margin(

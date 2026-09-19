@@ -48,10 +48,7 @@ def _exact_square_matrix_product_unchecked(
     return tuple(
         tuple(
             sum(
-                (
-                    left[row][inner] * right[inner][column]
-                    for inner in range(dimension)
-                ),
+                (left[row][inner] * right[inner][column] for inner in range(dimension)),
                 Fraction(0),
             )
             for column in range(dimension)
@@ -88,8 +85,7 @@ def exact_square_matrix_power(
     dimension = len(factor)
     result = tuple(
         tuple(
-            Fraction(1) if row == column else Fraction(0)
-            for column in range(dimension)
+            Fraction(1) if row == column else Fraction(0) for column in range(dimension)
         )
         for row in range(dimension)
     )
@@ -111,17 +107,12 @@ def exact_matrix_inverse(
     matrix = _require_exact_square_matrix(matrix, name="matrix")
     dimension = len(matrix)
     augmented = [
-        list(row)
-        + [Fraction(1) if i == j else Fraction(0) for j in range(dimension)]
+        list(row) + [Fraction(1) if i == j else Fraction(0) for j in range(dimension)]
         for i, row in enumerate(matrix)
     ]
     for column in range(dimension):
         pivot_row = next(
-            (
-                row
-                for row in range(column, dimension)
-                if augmented[row][column] != 0
-            ),
+            (row for row in range(column, dimension) if augmented[row][column] != 0),
             None,
         )
         if pivot_row is None:
@@ -141,9 +132,7 @@ def exact_matrix_inverse(
                 continue
             augmented[row] = [
                 value - factor * pivot_value
-                for value, pivot_value in zip(
-                    augmented[row], augmented[column]
-                )
+                for value, pivot_value in zip(augmented[row], augmented[column])
             ]
     return tuple(tuple(row[dimension:]) for row in augmented)
 
@@ -185,9 +174,7 @@ def exact_symmetric_semidefinite(
             for column in range(row, dimension):
                 updated = (
                     work[row][column]
-                    - work[row][pivot_index]
-                    * work[pivot_index][column]
-                    / pivot
+                    - work[row][pivot_index] * work[pivot_index][column] / pivot
                 )
                 work[row][column] = updated
                 work[column][row] = updated

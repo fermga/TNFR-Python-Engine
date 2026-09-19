@@ -13,9 +13,7 @@ from tnfr.physics.remesh_history_stability import (
 @dataclass(frozen=True, slots=True)
 class RuntimeRemeshHistoryBridgeObservation:
     cycle_result: EventRemeshCycleResult = field(..., repr=False)
-    exact_transition: UniformRemeshHistoryTransitionObservation = field(
-        ..., repr=False
-    )
+    exact_transition: UniformRemeshHistoryTransitionObservation = field(..., repr=False)
     nodes: tuple[Hashable, ...]
     exact_metric_weights: ExactVector
     exact_history: ExactHistory

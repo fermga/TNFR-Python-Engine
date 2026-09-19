@@ -38,12 +38,15 @@ The complete hypotheses, counterexamples, and limits are centralized in
   `Delta NFR` can produce a finite derivative at zero. U1 therefore requires
   operator initialization context rather than following from a singularity.
 - A destabilizer token does not by itself prove exponential divergence. U2
-  limits uncompensated structural-pressure debt in finite words.
+  limits uncompensated operator-role debt in finite words; the debt is not a
+  measurement of pressure.
 - The canonical U2 debt capacity and U4 recency window evaluate to 2 and 3 under
   the documented mean-rate calibration. They are not uniform modal relaxation
   theorems for every graph.
-- U5 preserves nested identity operationally. A general inequality between
-  parent and child coherence requires an explicit hierarchy and normalization.
+- U5 imposes a scale-stabilization obligation on declared deep Recursivity.
+  Actual nested identity and parent/child coherence require the operator
+  contract, an explicit hierarchy and a declared normalization; word validity
+  alone does not certify them.
 - The `pi/4` potential magnitude and `pi/2` drift values are selected safety
   policies. Crossing them records a U6 warning; it does not prove
   fragmentation.
@@ -57,7 +60,7 @@ The complete hypotheses, counterexamples, and limits are centralized in
 3. Public validation facade:
    [`grammar.py`](../../src/tnfr/operators/grammar.py)
 4. Runtime state checks:
-   [operator preconditions](../../src/tnfr/operators/preconditions/)
+   [operator preconditions](https://github.com/fermga/TNFR-Python-Engine/tree/main/src/tnfr/operators/preconditions)
 5. Grammar-aware application:
    [`grammar_application.py`](../../src/tnfr/operators/grammar_application.py)
 
@@ -68,7 +71,7 @@ operator sets.
 
 | Contract | Principal tests |
 | --- | --- |
-| Role derivation and source consistency | [`test_grammar_canon.py`](../../tests/operators/test_grammar_canon.py), [`test_grammar_canonical_consistency.py`](../../tests/operators/test_grammar_canonical_consistency.py) |
+| Role-registry and consumer consistency | [`test_grammar_canon.py`](../../tests/operators/test_grammar_canon.py), [`test_grammar_canonical_consistency.py`](../../tests/operators/test_grammar_canonical_consistency.py) |
 | U1-U4 context and history | [`test_grammar_dynamics.py`](../../tests/operators/test_grammar_dynamics.py) |
 | U3 rejection before mutation | [`test_u3_hard_invariant.py`](../../tests/operators/test_u3_hard_invariant.py) |
 | Operator postconditions | [`test_operator_contracts.py`](../../tests/operators/test_operator_contracts.py) |

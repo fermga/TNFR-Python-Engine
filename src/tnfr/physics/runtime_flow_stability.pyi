@@ -8,7 +8,6 @@ from typing import Any
 ExactVector = tuple[Fraction, ...]
 ExactMatrix = tuple[tuple[Fraction, ...], ...]
 
-
 @dataclass(frozen=True, slots=True)
 class NodalFlowStateSnapshot:
     nodes: tuple[Any, ...]
@@ -21,7 +20,6 @@ class NodalFlowStateSnapshot:
     conductance: ExactMatrix
     binary64_pure_epi_pressure: tuple[float, ...]
     exact_binary64_pure_epi_pressure: ExactVector
-
 
 @dataclass(frozen=True, slots=True)
 class NodalFlowIntervalCertificate:
@@ -82,7 +80,6 @@ class NodalFlowIntervalCertificate:
     _proof_stamp: tuple[Any, ...] = field(...)
 
     def _proof_fields_are_intact(self) -> bool: ...
-
     @property
     def binary64_held_pressure_runtime_identified(self) -> bool: ...
     @property
@@ -106,14 +103,11 @@ class NodalFlowIntervalCertificate:
     @property
     def euler_map_abstention_reasons(self) -> tuple[str, ...]: ...
 
-
 def capture_nodal_flow_state(
     graph: Any,
     *,
     nodes: Iterable[Any] | None = ...,
 ) -> NodalFlowStateSnapshot: ...
-
-
 def certify_observed_nodal_flow_interval(
     left: NodalFlowStateSnapshot,
     right: NodalFlowStateSnapshot,
@@ -126,6 +120,5 @@ def certify_observed_nodal_flow_interval(
     clipping_applied: bool | None = ...,
     extended_dynamics_requested: bool | None = ...,
 ) -> NodalFlowIntervalCertificate: ...
-
 
 __all__: list[str]

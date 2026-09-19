@@ -26,9 +26,7 @@ from fractions import Fraction
 from typing import Any
 
 from ..errors import TNFRValueError
-from ..operators.event_remesh_causal_runtime import (
-    ExecutedEventRemeshCycleSequence,
-)
+from ..operators.event_remesh_causal_runtime import ExecutedEventRemeshCycleSequence
 from ..utils._structural_signature import proof_stamps_are_identical
 from ._exact_linear_algebra import ExactSquareMatrix
 from .remesh_history_stability import ExactVector
@@ -40,9 +38,7 @@ from .runtime_remesh_schedule_block_margin import (
     _execution_is_intact,
     _observe_executed_event_remesh_block_margin_after_source_validation,
 )
-from .runtime_remesh_schedule_stability import (
-    RuntimeRemeshScheduleBoundaryObservation,
-)
+from .runtime_remesh_schedule_stability import RuntimeRemeshScheduleBoundaryObservation
 
 __all__ = (
     "RuntimeRemeshScheduleRelativeDefectBlockObservation",
@@ -100,8 +96,9 @@ def _certificate_is_intact(value: Any) -> bool:
         return False
     try:
         return bool(
-            UniformRemeshScheduleRelativeDefectStabilityCertificate
-            ._proof_fields_are_intact(value)
+            UniformRemeshScheduleRelativeDefectStabilityCertificate._proof_fields_are_intact(
+                value
+            )
             is True
         )
     except BaseException:
@@ -150,10 +147,7 @@ def _matrix_vector_action(
         raise TNFRValueError("history-energy vector is not exact and complete")
     return tuple(
         sum(
-            (
-                matrix[row][column] * vector[column]
-                for column in range(dimension)
-            ),
+            (matrix[row][column] * vector[column] for column in range(dimension)),
             Fraction(0),
         )
         for row in range(dimension)
@@ -167,10 +161,7 @@ def _weighted_energy(
     if not _strict_exact_vector(weights, len(energies)):
         raise TNFRValueError("stationary history weights are invalid")
     return sum(
-        (
-            weight * energy
-            for weight, energy in zip(weights, energies, strict=True)
-        ),
+        (weight * energy for weight, energy in zip(weights, energies, strict=True)),
         Fraction(0),
     )
 
@@ -189,8 +180,7 @@ def _remesh_models_match(left: Any, right: Any) -> bool:
             and type(left.tau_global) is int
             and type(right.tau_global) is int
             and left.tau_global == right.tau_global
-            and left.combined_delay_coefficients
-            == right.combined_delay_coefficients
+            and left.combined_delay_coefficients == right.combined_delay_coefficients
             and left.companion_matrix == right.companion_matrix
             and left.stationary_distribution == right.stationary_distribution
         )
@@ -270,13 +260,8 @@ def _derive_values(
     block_already_validated: bool = False,
 ) -> dict[str, Any]:
     if type(execution) is not ExecutedEventRemeshCycleSequence:
-        raise TypeError(
-            "execution must be an ExecutedEventRemeshCycleSequence"
-        )
-    if (
-        type(certificate)
-        is not UniformRemeshScheduleRelativeDefectStabilityCertificate
-    ):
+        raise TypeError("execution must be an ExecutedEventRemeshCycleSequence")
+    if type(certificate) is not UniformRemeshScheduleRelativeDefectStabilityCertificate:
         raise TypeError(
             "certificate must be a "
             "UniformRemeshScheduleRelativeDefectStabilityCertificate"
@@ -285,21 +270,16 @@ def _derive_values(
         raise TNFRValueError(
             "executed cycle sequence is unsealed, tampered, or inconsistent"
         )
-    if (
-        not certificate_already_validated
-        and not _certificate_is_intact(certificate)
-    ):
+    if not certificate_already_validated and not _certificate_is_intact(certificate):
         raise TNFRValueError(
             "relative-defect certificate is unsealed, tampered, or inconsistent"
         )
 
     if block_override is None:
-        block = (
-            _observe_executed_event_remesh_block_margin_after_source_validation(
-                execution,
-                start_boundary=start_boundary,
-                boundary_count=boundary_count,
-            )
+        block = _observe_executed_event_remesh_block_margin_after_source_validation(
+            execution,
+            start_boundary=start_boundary,
+            boundary_count=boundary_count,
         )
     else:
         block = block_override
@@ -406,10 +386,7 @@ def _derive_values(
 
         try:
             budget = sum(
-                (
-                    coefficient * energies[delay]
-                    for delay, coefficient in coefficients
-                ),
+                (coefficient * energies[delay] for delay, coefficient in coefficients),
                 Fraction(0),
             )
         except (IndexError, TypeError) as exc:
@@ -425,9 +402,7 @@ def _derive_values(
         scheduled = schedule_balance.exact_scheduled_head_energy
         q_j = boundary.schedule_composition.exact_energy_gain_upper_bound
         scalar_values = (budget, ideal, bounded, scheduled, q_j)
-        scalar_telemetry_exact = all(
-            type(value) is Fraction for value in scalar_values
-        )
+        scalar_telemetry_exact = all(type(value) is Fraction for value in scalar_values)
         if not scalar_telemetry_exact:
             raise TNFRValueError("runtime boundary energy telemetry must be exact")
         if any(value < 0 for value in scalar_values):
@@ -460,10 +435,7 @@ def _derive_values(
             budget == remesh_action[0]
             and budget
             == sum(
-                (
-                    coefficient * energies[delay]
-                    for delay, coefficient in coefficients
-                ),
+                (coefficient * energies[delay] for delay, coefficient in coefficients),
                 Fraction(0),
             )
         )
@@ -555,8 +527,7 @@ def _derive_values(
             "fixed_exact_metric_and_history_dimension",
             all(
                 boundary.exact_common_normalized_metric == common_metric
-                and len(boundary.exact_transition.exact_history_energies)
-                == dimension
+                and len(boundary.exact_transition.exact_history_energies) == dimension
                 for boundary in boundaries
             ),
         ),
@@ -616,9 +587,7 @@ def _derive_values(
         passed for _name, passed in conditions
     ):
         failed = ", ".join(name for name, passed in conditions if not passed)
-        raise TNFRValueError(
-            f"runtime REMESH relative-defect block failed: {failed}"
-        )
+        raise TNFRValueError(f"runtime REMESH relative-defect block failed: {failed}")
 
     return {
         "source_execution": execution,
@@ -638,9 +607,7 @@ def _derive_values(
         "exact_relative_energy_defect_ratios": tuple(ratios),
         "exact_relative_energy_defect_slacks": tuple(slacks),
         "exact_schedule_energy_gain_upper_bounds": tuple(schedule_gains),
-        "exact_effective_head_energy_upper_bounds": tuple(
-            effective_head_bounds
-        ),
+        "exact_effective_head_energy_upper_bounds": tuple(effective_head_bounds),
         "exact_scheduled_head_energies": tuple(scheduled_energies),
         "exact_energy_envelope_vectors": tuple(envelope_vectors),
         "exact_augmented_energy_before": before,
@@ -768,9 +735,7 @@ class RuntimeRemeshScheduleRelativeDefectBlockObservation:
     @property
     def failed_conditions(self) -> tuple[str, ...]:
         if not self._proof_fields_are_intact():
-            return (
-                "runtime_remesh_schedule_relative_defect_proof_fields_intact",
-            )
+            return ("runtime_remesh_schedule_relative_defect_proof_fields_intact",)
         return tuple(name for name, passed in self.conditions if not passed)
 
     @property

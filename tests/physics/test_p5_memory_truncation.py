@@ -14,7 +14,6 @@ import pytest
 
 from tnfr.physics.p5_memory_truncation import bound_p5_memory_truncation
 
-
 F = Fraction
 INITIAL = (F(0), F(3, 2), F(-3), F(3, 2), F(0))
 
@@ -37,8 +36,12 @@ def _coordinates(initial):
     u = x[2] - (x[1] + x[3]) / 2
     d = a - b
     return (
-        a, b, u, (a + 3 * b) / 4,
-        2 * d / 3 - 4 * u / 9, d / 3 + 4 * u / 9,
+        a,
+        b,
+        u,
+        (a + 3 * b) / 4,
+        2 * d / 3 - 4 * u / 9,
+        d / 3 + 4 * u / 9,
     )
 
 
@@ -51,10 +54,9 @@ def _reference(initial, time, capacity=1):
 def _zero_window(initial, time, capacity=1):
     a, b, u, *_ = _coordinates(initial)
     r = _mp(capacity) * _mp(time)
-    return (
-        (_mp(a - b) - 4 * _mp(u) / 3) * mp.exp(-4 * r / 3)
-        + 4 * _mp(u) * mp.exp(-5 * r / 3) / 3
-    )
+    return (_mp(a - b) - 4 * _mp(u) / 3) * mp.exp(-4 * r / 3) + 4 * _mp(u) * mp.exp(
+        -5 * r / 3
+    ) / 3
 
 
 def _first_correction(initial, time, window, capacity=1):
@@ -62,9 +64,14 @@ def _first_correction(initial, time, window, capacity=1):
     nu = _mp(capacity)
     r = nu * (_mp(time) - _mp(window))
     decay = mp.exp(-5 * nu * _mp(window) / 3)
-    return -2 * decay / 9 * (
-        _mp(c1) * ((r - 1) * mp.exp(-r) + mp.exp(-2 * r))
-        + _mp(c2) * (mp.exp(-r) - (1 + r) * mp.exp(-2 * r))
+    return (
+        -2
+        * decay
+        / 9
+        * (
+            _mp(c1) * ((r - 1) * mp.exp(-r) + mp.exp(-2 * r))
+            + _mp(c2) * (mp.exp(-r) - (1 + r) * mp.exp(-2 * r))
+        )
     )
 
 
@@ -75,9 +82,14 @@ def _tail(initial, time, window, capacity=1):
     nu = _mp(capacity)
     q = nu * (_mp(time) - _mp(window))
     decay = mp.exp(-5 * nu * _mp(window) / 3)
-    return nu * decay / 3 * (
-        _mp(c1) * (mp.exp(-q) - mp.exp(-5 * q / 3))
-        + 2 * _mp(c2) * (mp.exp(-5 * q / 3) - mp.exp(-2 * q))
+    return (
+        nu
+        * decay
+        / 3
+        * (
+            _mp(c1) * (mp.exp(-q) - mp.exp(-5 * q / 3))
+            + 2 * _mp(c2) * (mp.exp(-5 * q / 3) - mp.exp(-2 * q))
+        )
     )
 
 
@@ -147,7 +159,10 @@ def test_first_delay_window_has_analytic_correction_and_signed_tail(initial):
                 _tail(initial, sample.time, window, capacity),
             )
             source = (
-                -4 * _mp(capacity) * _mp(result.initial_hidden_contrast) / 9
+                -4
+                * _mp(capacity)
+                * _mp(result.initial_hidden_contrast)
+                / 9
                 * mp.exp(-5 * _mp(capacity) * _mp(sample.time) / 3)
             )
             _contains(sample.initial_source_contrast, source)
@@ -162,9 +177,7 @@ def _delayed_block_reference(initial, time, window, capacity):
     quotient = time / window
     count = (quotient.numerator - 1) // quotient.denominator
     generator = np.array([[0.0, 1.0], [-2 * nu**2, -3 * nu]])
-    coupling = np.array(
-        [[0.0, 0.0], [-2 * nu**2 * np.exp(-5 * nu * cut / 3) / 9, 0.0]]
-    )
+    coupling = np.array([[0.0, 0.0], [-2 * nu**2 * np.exp(-5 * nu * cut / 3) / 9, 0.0]])
     total = 0.0
     for index in range(int(count) + 1):
         matrix = np.kron(np.eye(index + 1), generator)
@@ -199,9 +212,7 @@ def test_reference_contrast_maximum_includes_interior_extremum():
     assert result.contrast_coefficients == (F(2), F(-2))
     assert result.initial_macro == (F(0), F(0))
     assert result.max_reference_contrast == F(1, 2)
-    endpoint = bound_p5_memory_truncation(
-        (1, 0, 0, 0, 1), memory_window=1, times=(0,)
-    )
+    endpoint = bound_p5_memory_truncation((1, 0, 0, 0, 1), memory_window=1, times=(0,))
     assert endpoint.max_reference_contrast == F(1)
 
 
@@ -217,8 +228,12 @@ def test_exponential_tail_and_both_global_and_causal_error_bounds():
         delta = mp.exp(-5 * _mp(capacity) * _mp(window) / 3)
         for sample in result.samples:
             q = _mp(capacity) * max(mp.mpf(0), _mp(sample.time - window))
-            exact_bound = 3 * _mp(result.max_reference_contrast) * delta / 4 * min(
-                1 / (9 + delta), (1 - mp.exp(-q)) ** 2 / 9
+            exact_bound = (
+                3
+                * _mp(result.max_reference_contrast)
+                * delta
+                / 4
+                * min(1 / (9 + delta), (1 - mp.exp(-q)) ** 2 / 9)
             )
             assert _mp(sample.macro_error_bound) >= exact_bound
             assert abs(_mp(sample.macro_error_bound) - exact_bound) < mp.mpf("1e-20")

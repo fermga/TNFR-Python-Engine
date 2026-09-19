@@ -22,9 +22,9 @@ from typing import (
 
 from ..errors import TNFRValueError
 from .epi import (
-    BEPIElement,
     COMPOSITE_EPI_REGULARITY_KIND,
     COMPOSITE_EPI_REGULARITY_PROVENANCE,
+    BEPIElement,
 )
 from .unified_numerical import np
 

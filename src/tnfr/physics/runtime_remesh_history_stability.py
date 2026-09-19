@@ -184,12 +184,8 @@ def _exact_transition_matches(
     return bool(
         all(
             proof_stamps_are_identical(
-                _proof_value(
-                    object.__getattribute__(observed_certificate, name)
-                ),
-                _proof_value(
-                    object.__getattribute__(expected_certificate, name)
-                ),
+                _proof_value(object.__getattribute__(observed_certificate, name)),
+                _proof_value(object.__getattribute__(expected_certificate, name)),
             )
             for name in certificate_names
         )
@@ -247,9 +243,7 @@ class RuntimeRemeshHistoryBridgeObservation:
     """One exact runtime/companion identification and perturbation balance."""
 
     cycle_result: EventRemeshCycleResult = field(repr=False)
-    exact_transition: UniformRemeshHistoryTransitionObservation = field(
-        repr=False
-    )
+    exact_transition: UniformRemeshHistoryTransitionObservation = field(repr=False)
     nodes: tuple[Hashable, ...]
     exact_metric_weights: ExactVector
     exact_history: ExactHistory
@@ -297,9 +291,10 @@ class RuntimeRemeshHistoryBridgeObservation:
                 return False
             cycle = self.cycle_result
             transition = self.exact_transition
-            if type(cycle) is not EventRemeshCycleResult or type(
-                transition
-            ) is not UniformRemeshHistoryTransitionObservation:
+            if (
+                type(cycle) is not EventRemeshCycleResult
+                or type(transition) is not UniformRemeshHistoryTransitionObservation
+            ):
                 return False
             if not EventRemeshCycleResult._proof_fields_are_intact(cycle):
                 return False
@@ -456,9 +451,7 @@ def _build_runtime_remesh_history_bridge(
     cycle_result: EventRemeshCycleResult,
     *,
     verify_result: bool,
-    exact_transition_override: (
-        UniformRemeshHistoryTransitionObservation | None
-    ) = None,
+    exact_transition_override: UniformRemeshHistoryTransitionObservation | None = None,
 ) -> RuntimeRemeshHistoryBridgeObservation:
     if type(cycle_result) is not EventRemeshCycleResult:
         raise TypeError("cycle_result must be an EventRemeshCycleResult")
@@ -504,13 +497,9 @@ def _build_runtime_remesh_history_bridge(
     selected_inputs_match = bool(
         selected_local == outgoing[-(plan.tau_local + 1)]
         and selected_global == outgoing[-(plan.tau_global + 1)]
+        and (certificate.gamma == 0 or exact_history[plan.tau_local] == selected_local)
         and (
-            certificate.gamma == 0
-            or exact_history[plan.tau_local] == selected_local
-        )
-        and (
-            certificate.delta == 0
-            or exact_history[plan.tau_global] == selected_global
+            certificate.delta == 0 or exact_history[plan.tau_global] == selected_global
         )
     )
     if not selected_inputs_match:
@@ -520,15 +509,10 @@ def _build_runtime_remesh_history_bridge(
 
     proposals = plan.proposals
     runtime_raw_floats = tuple(proposal.raw_epi for proposal in proposals)
-    runtime_bounded_floats = tuple(
-        proposal.bounded_epi for proposal in proposals
-    )
+    runtime_bounded_floats = tuple(proposal.bounded_epi for proposal in proposals)
     replayed_raw = tuple(
         (1.0 - plan.alpha)
-        * (
-            (1.0 - plan.alpha) * proposal.epi_now
-            + plan.alpha * proposal.epi_local
-        )
+        * ((1.0 - plan.alpha) * proposal.epi_now + plan.alpha * proposal.epi_local)
         + plan.alpha * proposal.epi_global
         for proposal in proposals
     )
@@ -557,9 +541,7 @@ def _build_runtime_remesh_history_bridge(
 
     ideal = exact_transition.exact_next_field
     raw = tuple(Fraction.from_float(value) for value in runtime_raw_floats)
-    bounded = tuple(
-        Fraction.from_float(value) for value in runtime_bounded_floats
-    )
+    bounded = tuple(Fraction.from_float(value) for value in runtime_bounded_floats)
     rounding = _vector_subtract(raw, ideal)
     clipping = _vector_subtract(bounded, raw)
     total = _vector_subtract(bounded, ideal)
@@ -649,13 +631,11 @@ def _build_runtime_remesh_history_bridge(
         ),
         (
             "runtime_raw_augmented_energy_balance",
-            raw_drop
-            == exact_transition.exact_jensen_dissipation - rounding_defect,
+            raw_drop == exact_transition.exact_jensen_dissipation - rounding_defect,
         ),
         (
             "runtime_bounded_augmented_energy_balance",
-            bounded_drop
-            == exact_transition.exact_jensen_dissipation - total_defect,
+            bounded_drop == exact_transition.exact_jensen_dissipation - total_defect,
         ),
         (
             "rounding_energy_defect_within_absolute_bound",
@@ -722,9 +702,7 @@ def _build_runtime_remesh_history_bridge(
         exact_lifted_runtime_bounded_energy_drop_lower_bound=bounded_drop_lower_bound,
         exact_lifted_runtime_raw_barycenter_drift=raw_barycenter_drift,
         exact_lifted_runtime_bounded_barycenter_drift=bounded_barycenter_drift,
-        clipping_intervened=any(
-            proposal.clipping_intervened for proposal in proposals
-        ),
+        clipping_intervened=any(proposal.clipping_intervened for proposal in proposals),
         raw_binary64_replay_identified=raw_replay_identified,
         bounded_binary64_replay_identified=bounded_replay_identified,
         conditions=conditions,

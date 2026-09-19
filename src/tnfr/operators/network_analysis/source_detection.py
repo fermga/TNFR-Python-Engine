@@ -28,11 +28,7 @@ from typing import TYPE_CHECKING, Any
 
 from ...constants.operational import ACTIVE_EMISSION_THRESHOLD
 from ...utils import angle_diff
-from .._diagnostic_scores import (
-    finite_real,
-    nonnegative_magnitude,
-    unit_score,
-)
+from .._diagnostic_scores import finite_real, nonnegative_magnitude, unit_score
 from .._epi_domain import require_real_scalar_epi
 
 if TYPE_CHECKING:

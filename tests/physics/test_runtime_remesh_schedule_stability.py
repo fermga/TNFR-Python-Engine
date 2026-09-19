@@ -13,9 +13,7 @@ import pytest
 import tnfr.physics.runtime_remesh_schedule_stability as bridge_module
 from tnfr.errors import TNFRValueError
 from tnfr.operators.event_remesh_runtime import execute_event_remesh_cycle
-from tnfr.operators.event_remesh_sequence import (
-    compose_event_remesh_cycle_observations,
-)
+from tnfr.operators.event_remesh_sequence import compose_event_remesh_cycle_observations
 from tnfr.operators.event_timing import build_operator_event_schedule
 from tnfr.physics.runtime_remesh_schedule_stability import (
     RuntimeRemeshScheduleBoundaryObservation,
@@ -29,8 +27,7 @@ def _set_pure_epi_pressure(graph: nx.Graph) -> None:
     for node in graph:
         neighbours = tuple(graph.neighbors(node))
         graph.nodes[node]["delta_nfr"] = (
-            sum(values[item] for item in neighbours) / len(neighbours)
-            - values[node]
+            sum(values[item] for item in neighbours) / len(neighbours) - values[node]
         )
 
 
@@ -166,9 +163,7 @@ def test_two_cycles_bind_schedule_endpoint_to_next_history(
         boundary.exact_scheduled_head,
         (Fraction(7, 4), Fraction(1, 4)),
     )
-    assert boundary.exact_next_cycle_history == (
-        boundary.exact_scheduled_post_history
-    )
+    assert boundary.exact_next_cycle_history == (boundary.exact_scheduled_post_history)
     assert boundary.exact_recorded_history_advance_certified
     assert boundary.failed_conditions == ()
 
@@ -183,8 +178,7 @@ def test_two_cycle_exact_energy_balance_has_no_hidden_gain_product(
     assert boundary.exact_augmented_energy_after == Fraction(351, 2048)
     assert boundary.exact_energy_drop == Fraction(417, 2048)
     assert (
-        boundary.exact_gain_based_energy_drop_lower_bound
-        == boundary.exact_energy_drop
+        boundary.exact_gain_based_energy_drop_lower_bound == boundary.exact_energy_drop
     )
     assert boundary.exact_schedule_augmented_energy_gain_slack == 0
     assert boundary.exact_finite_schedule_remesh_balance_certified

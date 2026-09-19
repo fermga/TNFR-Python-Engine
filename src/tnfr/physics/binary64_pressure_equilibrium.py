@@ -7,18 +7,22 @@ It neither evolves a graph nor asserts that a canonical event keeps those
 phases fixed. In particular it proves neither band exit nor mean drift.
 """
 
+import math
 from dataclasses import dataclass
 from fractions import Fraction
-import math
 
 from .._binary64 import uses_ieee_binary64_rounding
 from ..dynamics import fused_dnfr
 from ..dynamics._euler_kernel import _binary64_tuple, _finite_binary64
-from ..mathematics._phase_midpoint import CertifiedTwoNeighborPhase, certified_two_neighbor_phase
+from ..mathematics._phase_midpoint import (
+    CertifiedTwoNeighborPhase,
+    certified_two_neighbor_phase,
+)
 from .binary64_nodal_flow import Binary64AdditionCell, _rounding_cell
 
 __all__ = [
-    "Binary64PressureEquilibriumRow", "Binary64C6PressureEquilibriumObstruction",
+    "Binary64PressureEquilibriumRow",
+    "Binary64C6PressureEquilibriumObstruction",
     "derive_binary64_c6_pressure_equilibrium_obstruction",
 ]
 
@@ -88,8 +92,12 @@ class Binary64C6PressureEquilibriumObstruction:
 
 
 def derive_binary64_c6_pressure_equilibrium_obstruction(
-    *, phase: tuple[float, ...], epi_weight: float, phase_weight: float,
-    epi_lower: float = .05, epi_upper: float = 1.0,
+    *,
+    phase: tuple[float, ...],
+    epi_weight: float,
+    phase_weight: float,
+    epi_lower: float = 0.05,
+    epi_upper: float = 1.0,
 ) -> Binary64C6PressureEquilibriumObstruction:
     """Derive necessary row cancellation cells for the actual CPU assembly.
 
@@ -126,28 +134,43 @@ def derive_binary64_c6_pressure_equilibrium_obstruction(
         raise ValueError("the phase tuple must contain the six ordered C6 vertices")
     lower = _finite_binary64(epi_lower, "epi_lower")
     upper = _finite_binary64(epi_upper, "epi_upper")
-    if not .05 <= lower <= upper <= 1.0:
+    if not 0.05 <= lower <= upper <= 1.0:
         raise ValueError("the declared EPI band must be a subinterval of [.05,1]")
     e = _finite_binary64(epi_weight, "epi_weight")
     a = _finite_binary64(phase_weight, "phase_weight")
     if not 0.0 < e <= 1.0 or not 0.0 < a <= 1.0:
         raise ValueError("the represented channel weights must lie in (0,1]")
     if not uses_ieee_binary64_rounding():
-        raise RuntimeError("the pressure lattice requires the declared IEEE binary64 rounding behavior")
+        raise RuntimeError(
+            "the pressure lattice requires the declared IEEE binary64 rounding behavior"
+        )
     if fused_dnfr.np is None:
-        raise RuntimeError("the pressure lattice requires the shared NumPy CPU pressure kernel")
-    responses = tuple(certified_two_neighbor_phase(phases[i], phases[i - 1], phases[(i + 1) % 6])
-                      for i in range(6))
+        raise RuntimeError(
+            "the pressure lattice requires the shared NumPy CPU pressure kernel"
+        )
+    responses = tuple(
+        certified_two_neighbor_phase(phases[i], phases[i - 1], phases[(i + 1) % 6])
+        for i in range(6)
+    )
     if any(response is None for response in responses):
-        raise ValueError("every C6 row must have a certified strict two-neighbor phase midpoint")
+        raise ValueError(
+            "every C6 row must have a certified strict two-neighbor phase midpoint"
+        )
     np = fused_dnfr.np
     source = np.asarray(tuple(i for i in range(6) for _ in range(2)), dtype=np.intp)
-    target = np.asarray(tuple(j for i in range(6) for j in ((i - 1) % 6, (i + 1) % 6)), dtype=np.intp)
+    target = np.asarray(
+        tuple(j for i in range(6) for j in ((i - 1) % 6, (i + 1) % 6)), dtype=np.intp
+    )
     contributions = fused_dnfr.compute_fused_gradients_symmetric(
-        edge_src=source, edge_dst=target, phase=np.asarray(phases, dtype=float),
-        epi=np.zeros(6, dtype=float), vf=np.ones(6, dtype=float),
-        weights={"w_epi": e, "w_phase": a}, edge_weight=np.ones(12, dtype=float),
-        accumulate_both_directions=False, use_jit=False,
+        edge_src=source,
+        edge_dst=target,
+        phase=np.asarray(phases, dtype=float),
+        epi=np.zeros(6, dtype=float),
+        vf=np.ones(6, dtype=float),
+        weights={"w_epi": e, "w_phase": a},
+        edge_weight=np.ones(12, dtype=float),
+        accumulate_both_directions=False,
+        use_jit=False,
     )
     if len(contributions) != 6:
         raise RuntimeError("the shared phase-source probe changed its C6 dimensions")
@@ -156,12 +179,19 @@ def derive_binary64_c6_pressure_equilibrium_obstruction(
     rows = []
     for index, response in enumerate(responses):
         gradient = response.delta / math.pi
-        contribution = _finite_binary64(float(contributions[index]), "weighted phase contribution")
+        contribution = _finite_binary64(
+            float(contributions[index]), "weighted phase contribution"
+        )
         if contribution != a * gradient:
-            raise RuntimeError("the shared CPU source differs from the certified phase assembly")
+            raise RuntimeError(
+                "the shared CPU source differs from the certified phase assembly"
+            )
         target_pressure = -contribution
         cell = _rounding_cell(target_pressure, Fraction.from_float(target_pressure))
-        inverse_lower, inverse_upper = cell.lower / exact_weight, cell.upper / exact_weight
+        inverse_lower, inverse_upper = (
+            cell.lower / exact_weight,
+            cell.upper / exact_weight,
+        )
         scaled_lower, scaled_upper = inverse_lower / quantum, inverse_upper / quantum
         first = -((-scaled_lower.numerator) // scaled_lower.denominator)
         last = scaled_upper.numerator // scaled_upper.denominator
@@ -170,13 +200,31 @@ def derive_binary64_c6_pressure_equilibrium_obstruction(
                 first += 1
             if scaled_upper.denominator == 1:
                 last -= 1
-        rows.append(Binary64PressureEquilibriumRow(
-            index, response, gradient, contribution, target_pressure, cell,
-            inverse_lower, inverse_upper, cell.even_significand, cell.even_significand,
-            first, last, first > last,
-        ))
+        rows.append(
+            Binary64PressureEquilibriumRow(
+                index,
+                response,
+                gradient,
+                contribution,
+                target_pressure,
+                cell,
+                inverse_lower,
+                inverse_upper,
+                cell.even_significand,
+                cell.even_significand,
+                first,
+                last,
+                first > last,
+            )
+        )
     result_rows = tuple(rows)
     return Binary64C6PressureEquilibriumObstruction(
-        phases, exact_weight, Fraction.from_float(a), lower, upper, quantum,
-        result_rows, any(row.grid_excluded for row in result_rows),
+        phases,
+        exact_weight,
+        Fraction.from_float(a),
+        lower,
+        upper,
+        quantum,
+        result_rows,
+        any(row.grid_excluded for row in result_rows),
     )

@@ -11,7 +11,6 @@ from ..operators.event_runtime import ObservedRepresentedEPIScheduleComposition
 from ..operators.remesh import DelayedRemeshResult
 from .event_refinement import ExecutedEventLocalZHIRPhysicalPrejumpObservation
 
-
 @dataclass(frozen=True, slots=True)
 class EventRemeshEPICheckpointObservation:
     mesh_name: str
@@ -31,16 +30,13 @@ class EventRemeshEPICheckpointObservation:
     @property
     def key(self) -> tuple[str, int | None, Fraction]: ...
 
-
 @dataclass(frozen=True, slots=True)
 class EventRemeshMeshObservation:
     mesh_name: str
     cycle_result: EventRemeshCycleResult = field(repr=False)
     nodes: tuple[Hashable, ...]
     physical_partition_interval_indices: tuple[int, ...]
-    exact_partition_boundary_times: tuple[
-        tuple[int, tuple[Fraction, ...]], ...
-    ]
+    exact_partition_boundary_times: tuple[tuple[int, tuple[Fraction, ...]], ...]
     checkpoints: tuple[EventRemeshEPICheckpointObservation, ...]
     schedule_composition: ObservedRepresentedEPIScheduleComposition | None = field(
         repr=False
@@ -51,7 +47,6 @@ class EventRemeshMeshObservation:
     def _proof_fields_are_intact(self) -> bool: ...
     @property
     def mesh_observation_certified(self) -> bool: ...
-
 
 @dataclass(frozen=True, slots=True)
 class EventRemeshPersistentEPIError:
@@ -73,7 +68,6 @@ class EventRemeshPersistentEPIError:
     def error_observation_certified(self) -> bool: ...
     @property
     def checkpoint_key(self) -> tuple[str, int | None, Fraction]: ...
-
 
 @dataclass(frozen=True, slots=True)
 class EventRemeshThreeMeshZHIRObservation:
@@ -116,7 +110,6 @@ class EventRemeshThreeMeshZHIRObservation:
     @property
     def physical_zhir_comparison_certified(self) -> bool: ...
 
-
 @dataclass(frozen=True, slots=True)
 class EventRemeshThreeMeshModalObservation:
     parent_interval_index: int
@@ -142,7 +135,6 @@ class EventRemeshThreeMeshModalObservation:
     def _proof_fields_are_intact(self) -> bool: ...
     @property
     def common_generator_modal_factors_observed(self) -> bool: ...
-
 
 @dataclass(frozen=True, slots=True)
 class EventRemeshThreeMeshRefinementObservation:
@@ -205,7 +197,6 @@ class EventRemeshThreeMeshRefinementObservation:
     @property
     def epi_differences_attributable_only_to_mesh_certified(self) -> bool: ...
 
-
 def observe_event_remesh_three_mesh_refinement(
     coarse: EventRemeshCycleResult,
     intermediate: EventRemeshCycleResult,
@@ -213,6 +204,5 @@ def observe_event_remesh_three_mesh_refinement(
     *,
     zhir_xi: Real | None = ...,
 ) -> EventRemeshThreeMeshRefinementObservation: ...
-
 
 __all__: tuple[str, ...]

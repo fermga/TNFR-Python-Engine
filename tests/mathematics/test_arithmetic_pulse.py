@@ -35,10 +35,7 @@ from tnfr.mathematics.krylov import (
     krylov_dimension,
     moment_sequence,
 )
-from tnfr.mathematics.number_theory import (
-    arithmetic_cayley_digraph,
-    power_residue_set,
-)
+from tnfr.mathematics.number_theory import arithmetic_cayley_digraph, power_residue_set
 from tnfr.physics.structural_diffusion import structural_diffusion_operator
 
 PRIMES = [5, 7, 11, 13, 17, 19, 23]
@@ -56,8 +53,7 @@ def test_exact_cayley_action_and_spectrum_match_dense_reference():
     vector = [Fraction(i - 2) for i in range(5)]
     matrix = cayley_laplacian(5, connection)
     expected = [
-        sum((row[j] * vector[j] for j in range(5)), Fraction(0))
-        for row in matrix
+        sum((row[j] * vector[j] for j in range(5)), Fraction(0)) for row in matrix
     ]
     assert cayley_first_row(5, connection) == matrix[0]
     assert cayley_action(5, connection, vector) == expected
@@ -111,14 +107,14 @@ def test_cayley_diffusion_action_matches_dense_nodal_transport():
     structural_time = 0.6
     capacity = 0.7
     matrix = np.array(
-        [[float(value) for value in row]
-         for row in cayley_laplacian(modulus, connection)]
+        [
+            [float(value) for value in row]
+            for row in cayley_laplacian(modulus, connection)
+        ]
     )
     from tnfr.physics.spectral_projectors import matrix_exponential
 
-    expected = matrix_exponential(
-        -capacity * structural_time * matrix
-    ) @ vector
+    expected = matrix_exponential(-capacity * structural_time * matrix) @ vector
     actual = cayley_diffusion_action(
         modulus,
         connection,
@@ -131,9 +127,9 @@ def test_cayley_diffusion_action_matches_dense_nodal_transport():
 
 def test_cayley_diffusion_action_handles_frozen_and_invalid_capacity():
     vector = np.array([1.0, -0.5, 2.0, 0.25, -1.0])
-    assert cayley_diffusion_action(
-        5, {1, 2}, vector, capacity=0.0
-    ) == pytest.approx(vector)
+    assert cayley_diffusion_action(5, {1, 2}, vector, capacity=0.0) == pytest.approx(
+        vector
+    )
     with pytest.raises(ValueError, match="capacity"):
         cayley_diffusion_action(5, {1, 2}, vector, capacity=-1.0)
     with pytest.raises(ValueError, match="structural_time"):

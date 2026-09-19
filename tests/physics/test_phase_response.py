@@ -20,8 +20,9 @@ def _identity(n):
 
 def _stencil(n, coefficients):
     """Materialize a separately derived translation-invariant stencil."""
-    return tuple(tuple(coefficients.get((j - i) % n, Q(0)) for j in range(n))
-                 for i in range(n))
+    return tuple(
+        tuple(coefficients.get((j - i) % n, Q(0)) for j in range(n)) for i in range(n)
+    )
 
 
 def _closed_rows(n):
@@ -74,12 +75,26 @@ def test_c6_open_mean_and_open_receivers_reach_distance_two():
 def test_c6_closed_receivers_average_all_three_source_proposals():
     result = _derive(receiver_sources=_closed_rows(6))
 
-    expected_received = _stencil(6, {
-        0: Q(1, 3), 1: Q(1, 4), 5: Q(1, 4), 2: Q(1, 12), 4: Q(1, 12),
-    })
-    expected_jacobian = _stencil(6, {
-        0: Q(7, 9), 1: Q(1, 12), 5: Q(1, 12), 2: Q(1, 36), 4: Q(1, 36),
-    })
+    expected_received = _stencil(
+        6,
+        {
+            0: Q(1, 3),
+            1: Q(1, 4),
+            5: Q(1, 4),
+            2: Q(1, 12),
+            4: Q(1, 12),
+        },
+    )
+    expected_jacobian = _stencil(
+        6,
+        {
+            0: Q(7, 9),
+            1: Q(1, 12),
+            5: Q(1, 12),
+            2: Q(1, 36),
+            4: Q(1, 36),
+        },
+    )
     assert result.receiver_response == expected_received
     assert result.jacobian == expected_jacobian
     assert result.jacobian[0][3] == 0
@@ -114,12 +129,16 @@ def test_rational_planar_phasors_give_an_exact_nonsymmetric_mean_row():
     # Unit vectors (1,0), (3/5,4/5), (-4/5,3/5) have sum (4/5,7/5).
     gram = ((1, Q(3, 5), Q(-4, 5)), (Q(3, 5), 1, 0), (Q(-4, 5), 0, 1))
     result = _derive(
-        cosine_gram=gram, mean_neighbors=((0, 1, 2),) * 3,
-        receiver_sources=_direct_rows(3), phase_factor=1,
+        cosine_gram=gram,
+        mean_neighbors=((0, 1, 2),) * 3,
+        receiver_sources=_direct_rows(3),
+        phase_factor=1,
     )
     expected = ((Q(4, 13), Q(8, 13), Q(1, 13)),) * 3
     assert result.mean_resultant_squared == (Q(13, 5),) * 3
-    assert result.mean_response == result.receiver_response == result.jacobian == expected
+    assert (
+        result.mean_response == result.receiver_response == result.jacobian == expected
+    )
 
 
 @pytest.mark.parametrize("factor", (Q(1, 2), Q(1)))
@@ -142,7 +161,8 @@ def test_zero_factor_classifies_the_final_jacobian_not_its_negative_mean():
     signs = (1, 1, 1, -1, -1, -1)
     result = _derive(
         cosine_gram=tuple(tuple(a * b for b in signs) for a in signs),
-        mean_neighbors=((0, 1, 3),) + _direct_rows(6)[1:], phase_factor=0,
+        mean_neighbors=((0, 1, 3),) + _direct_rows(6)[1:],
+        phase_factor=0,
     )
     assert result.mean_response[0][3] == -1
     assert result.jacobian == _identity(6)
@@ -152,8 +172,10 @@ def test_zero_factor_classifies_the_final_jacobian_not_its_negative_mean():
 def test_a_small_positive_resultant_is_retained_without_a_tolerance_cutoff():
     gram = ((1, Q(-999, 1001)), (Q(-999, 1001), 1))
     result = _derive(
-        cosine_gram=gram, mean_neighbors=((0, 1),) * 2,
-        receiver_sources=_direct_rows(2), phase_factor=1,
+        cosine_gram=gram,
+        mean_neighbors=((0, 1),) * 2,
+        receiver_sources=_direct_rows(2),
+        phase_factor=1,
     )
     assert result.mean_resultant_squared == (Q(4, 1001),) * 2
     assert result.jacobian == ((Q(1, 2), Q(1, 2)),) * 2
@@ -163,37 +185,49 @@ def test_a_small_positive_resultant_is_retained_without_a_tolerance_cutoff():
 def test_a_zero_phasor_resultant_is_undefined_even_at_zero_factor(factor):
     with pytest.raises(ValueError, match="nonzero resultant"):
         _derive(
-            cosine_gram=((1, -1), (-1, 1)), mean_neighbors=((0, 1),) * 2,
-            receiver_sources=_direct_rows(2), phase_factor=factor,
+            cosine_gram=((1, -1), (-1, 1)),
+            mean_neighbors=((0, 1),) * 2,
+            receiver_sources=_direct_rows(2),
+            phase_factor=factor,
         )
 
 
-@pytest.mark.parametrize("gram", (
-    (),
-    ((1, 0),),
-    ((1, 0), (0,)),
-    ((1, 0), (Q(1, 2), 1)),
-    ((Q(4, 5), 0), (0, 1)),
-    ((1, 2), (2, 1)),
-    ((1, 0, 0), (0, 1, 2), (0, 2, 1)),
-    ((1, 1, 1), (1, 1, -1), (1, -1, 1)),
-    _identity(3),
-))
+@pytest.mark.parametrize(
+    "gram",
+    (
+        (),
+        ((1, 0),),
+        ((1, 0), (0,)),
+        ((1, 0), (Q(1, 2), 1)),
+        ((Q(4, 5), 0), (0, 1)),
+        ((1, 2), (2, 1)),
+        ((1, 0, 0), (0, 1, 2), (0, 2, 1)),
+        ((1, 1, 1), (1, 1, -1), (1, -1, 1)),
+        _identity(3),
+    ),
+)
 def test_nonunit_nonplanar_or_invalid_gram_data_are_not_repaired(gram):
     with pytest.raises(ValueError):
         _derive(
-            cosine_gram=gram, mean_neighbors=_direct_rows(len(gram)),
+            cosine_gram=gram,
+            mean_neighbors=_direct_rows(len(gram)),
             receiver_sources=_direct_rows(len(gram)),
         )
 
 
-@pytest.mark.parametrize("value", (True, "1", complex(1, 0), float("nan"), float("inf")))
+@pytest.mark.parametrize(
+    "value", (True, "1", complex(1, 0), float("nan"), float("inf"))
+)
 def test_invalid_gram_scalars_are_rejected(value):
     with pytest.raises((TypeError, ValueError)):
-        _derive(cosine_gram=((value,),), mean_neighbors=((0,),), receiver_sources=((0,),))
+        _derive(
+            cosine_gram=((value,),), mean_neighbors=((0,),), receiver_sources=((0,),)
+        )
 
 
-@pytest.mark.parametrize("factor", (-1, Q(1001, 1000), True, False, "0.5", float("nan"), float("inf")))
+@pytest.mark.parametrize(
+    "factor", (-1, Q(1001, 1000), True, False, "0.5", float("nan"), float("inf"))
+)
 def test_invalid_phase_factors_are_rejected(factor):
     with pytest.raises((TypeError, ValueError)):
         _derive(phase_factor=factor)
@@ -211,17 +245,20 @@ def test_a_nonnegative_jacobian_can_preserve_every_phase_disagreement():
 
 
 @pytest.mark.parametrize("field", ("mean_neighbors", "receiver_sources"))
-@pytest.mark.parametrize("rows", (
-    (),
-    ((0,),) * 5,
-    ((),) + _direct_rows(6)[1:],
-    ((0, 0),) + _direct_rows(6)[1:],
-    ((-1,),) + _direct_rows(6)[1:],
-    ((6,),) + _direct_rows(6)[1:],
-    ((True,),) + _direct_rows(6)[1:],
-    ((Q(0),),) + _direct_rows(6)[1:],
-    ((0.0,),) + _direct_rows(6)[1:],
-))
+@pytest.mark.parametrize(
+    "rows",
+    (
+        (),
+        ((0,),) * 5,
+        ((),) + _direct_rows(6)[1:],
+        ((0, 0),) + _direct_rows(6)[1:],
+        ((-1,),) + _direct_rows(6)[1:],
+        ((6,),) + _direct_rows(6)[1:],
+        ((True,),) + _direct_rows(6)[1:],
+        ((Q(0),),) + _direct_rows(6)[1:],
+        ((0.0,),) + _direct_rows(6)[1:],
+    ),
+)
 def test_row_dimensions_membership_and_index_types_are_explicit(field, rows):
     with pytest.raises(ValueError):
         _derive(**{field: rows})
@@ -237,14 +274,18 @@ def test_unordered_or_textual_outer_inputs_are_rejected(field, unordered):
 def test_node_permutation_covariance_preserves_the_declared_source_incidence():
     rows = ((0, 1), (1, 2, 3), (2,), (3, 4), (4, 5, 0), (5,))
     receivers = ((0, 1), (1,), (1, 2), (2, 3), (3, 4, 5), (0, 5))
-    original = _derive(mean_neighbors=rows, receiver_sources=receivers, phase_factor=Q(2, 7))
+    original = _derive(
+        mean_neighbors=rows, receiver_sources=receivers, phase_factor=Q(2, 7)
+    )
     permutation = (3, 0, 5, 2, 1, 4)
     inverse = {old: new for new, old in enumerate(permutation)}
     gram = _c6_gram()
     permuted = _derive(
         cosine_gram=tuple(tuple(gram[i][j] for j in permutation) for i in permutation),
         mean_neighbors=tuple(tuple(inverse[j] for j in rows[i]) for i in permutation),
-        receiver_sources=tuple(tuple(inverse[j] for j in receivers[i]) for i in permutation),
+        receiver_sources=tuple(
+            tuple(inverse[j] for j in receivers[i]) for i in permutation
+        ),
         phase_factor=Q(2, 7),
     )
     for field in ("mean_response", "receiver_response", "jacobian"):

@@ -3,7 +3,15 @@
 from fractions import Fraction as Q
 
 import networkx as nx
+import pytest
 
+from tnfr.physics._exact_linear_algebra import exact_symmetric_semidefinite
+from tnfr.physics.fields import (
+    compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
+    estimate_coherence_length_with_provenance,
+)
 from tnfr.physics.forced_support import derive_forced_support_balance
 from tnfr.physics.forcing_realization import (
     capture_non_epi_forcing,
@@ -14,6 +22,10 @@ from tnfr.physics.support_transport import _from_data
 
 _EPI = (Q(1, 4), Q(1), Q(3, 4))
 _CAPACITY = (Q(1, 2), Q(1), Q(3, 2))
+_XI0 = Q(1, 4)
+_ETA0 = Q(-1, 2)
+_E = Q(1, 2)
+_V = Q(1, 4)
 
 
 def _source(epi=_EPI, capacity=_CAPACITY, edge_weights=(1, 2)):
@@ -212,3 +224,216 @@ def test_strict_u3_star_refutes_constant_diagonal_phase_gradient_metric():
     # The analytic identity (1-c)/(5+4*c)>0 for every c in (0,1)
     # gives the open-neighborhood obstruction; this is its exact owner control.
     assert defects[0] == (1 - Q(3, 5)) / (5 + 4 * Q(3, 5))
+
+
+def _p2_source(xi=_XI0, eta=_ETA0):
+    """Detached dyadic states, with fixed common means and zero phase."""
+    graph = nx.path_graph(2)
+    epi = (Q(1, 8) + xi / 2, Q(1, 8) - xi / 2)
+    capacity = (Q(5, 4) + eta / 2, Q(5, 4) - eta / 2)
+    for node, x, nu in zip(graph, epi, capacity, strict=True):
+        graph.nodes[node].update(EPI=float(x), nu_f=float(nu), theta=0.0, delta_nfr=0.0)
+    graph.graph["DNFR_WEIGHTS"] = {
+        "phase": 0.25,
+        "epi": 0.5,
+        "vf": 0.25,
+        "topo": 0.0,
+    }
+    observation = capture_non_epi_forcing(graph)
+    assert observation.snapshot.epi == epi
+    assert observation.snapshot.capacity == capacity
+    assert observation.kernel_pressure_defect == (0, 0)
+    reference = derive_forced_support_balance(
+        observation.snapshot,
+        epi_weight=observation.epi_weight,
+        forcing=observation.forcing,
+    )
+    return graph, observation, reference
+
+
+def _p2_base_potential(xi, eta):
+    _, observation, reference = _p2_source(xi, eta)
+    return _forced_potential(reference, observation.snapshot)
+
+
+def _p2_conditional_potential(xi, eta, curvature):
+    # A logical completion of the forced potential, not an installed law.
+    # The linear term is required for joint stationarity at the baseline.
+    b = eta - _ETA0
+    psi = -_V * _XI0 * b + curvature * b * b / 2
+    return _p2_base_potential(xi, eta) + psi
+
+
+def _centered_p2_jet(potential):
+    # These differences are exact for the degree-two potentials used here.
+    # Every capture remains in a small, positive-capacity dyadic neighborhood.
+    h = Q(1, 16)
+    center = potential(_XI0, _ETA0)
+    xp = potential(_XI0 + h, _ETA0)
+    xm = potential(_XI0 - h, _ETA0)
+    yp = potential(_XI0, _ETA0 + h)
+    ym = potential(_XI0, _ETA0 - h)
+    mixed = (
+        potential(_XI0 + h, _ETA0 + h)
+        - potential(_XI0 + h, _ETA0 - h)
+        - potential(_XI0 - h, _ETA0 + h)
+        + potential(_XI0 - h, _ETA0 - h)
+    ) / (4 * h * h)
+    return (
+        ((xp - xm) / (2 * h), (yp - ym) / (2 * h)),
+        (
+            ((xp - 2 * center + xm) / (h * h), mixed),
+            (mixed, (yp - 2 * center + ym) / (h * h)),
+        ),
+    )
+
+
+def test_zero_pressure_does_not_make_the_uncompleted_joint_potential_stationary():
+    _, observation, reference = _p2_source()
+    snapshot = observation.snapshot
+    assert snapshot.epi == (Q(1, 4), 0)
+    assert snapshot.capacity == (1, Q(3, 2))
+    assert observation.epi_weight == _E
+    assert dict(observation.normalized_weights)["vf"] == _V
+    assert dict(decompose_non_epi_forcing(observation)) == {
+        "phase": (0, 0),
+        "vf": (Q(1, 8), Q(-1, 8)),
+        "topo": (0, 0),
+    }
+    assert observation.forcing == (-_V * _ETA0, _V * _ETA0)
+    assert observation.full_kernel_pressure == snapshot.stored_pressure == (0, 0)
+    assert observation.stored_pressure_residual == snapshot.rate == (0, 0)
+    assert reference.compatibility_residual == 0
+    assert _forced_potential(reference, snapshot) == (
+        _E * _XI0 * _XI0 / 2 + _V * _XI0 * _ETA0
+    )
+
+    gradient, hessian = _centered_p2_jet(_p2_base_potential)
+    assert gradient == (0, Q(1, 16))
+    assert hessian == ((_E, _V), (_V, 0))
+    # Psi=0 is not a joint critical point: it needs Psi_eta=-1/16.
+    # The reciprocal mixed curvature comes from fresh canonical source reads.
+    assert -gradient[1] == -_V * _XI0 == Q(-1, 16)
+
+
+@pytest.mark.parametrize(
+    ("curvature", "semidefinite", "definite"),
+    (
+        (Q(0), False, False),
+        (Q(1, 16), False, False),
+        (Q(1, 8), True, False),
+        (Q(1, 4), True, True),
+    ),
+)
+def test_stationary_joint_potential_requires_curvature_for_a_restricted_minimum(
+    curvature,
+    semidefinite,
+    definite,
+):
+    gradient, hessian = _centered_p2_jet(
+        lambda xi, eta: _p2_conditional_potential(xi, eta, curvature)
+    )
+    assert gradient == (0, 0)
+    assert hessian == ((_E, _V), (_V, curvature))
+    assert exact_symmetric_semidefinite(hessian) is semidefinite
+    assert exact_symmetric_semidefinite(hessian, strict=True) is definite
+    assert _V * _V / _E == Q(1, 8)
+    assert semidefinite is (curvature >= _V * _V / _E)
+    # This is necessary for a minimum on the fixed-mean, fixed-phase slice;
+    # positive definiteness here makes no claim about other nodal directions.
+
+
+@pytest.mark.parametrize("curvature", (Q(0), Q(1, 16)))
+def test_insufficient_restoring_curvature_has_an_admissible_descent_direction(
+    curvature,
+):
+    direction = (-_V / _E, Q(1))
+    assert direction == (Q(-1, 2), 1)
+    hessian = ((_E, _V), (_V, curvature))
+    directional_form = sum(
+        direction[i] * hessian[i][j] * direction[j] for i in range(2) for j in range(2)
+    )
+    assert directional_form == curvature - Q(1, 8) < 0
+    base = _p2_conditional_potential(_XI0, _ETA0, curvature)
+    for s in (Q(-1, 16), Q(1, 16)):
+        a, b = (s * value for value in direction)
+        xi, eta = _XI0 + a, _ETA0 + b
+        _, observation, _ = _p2_source(xi, eta)
+        assert all(Q(3, 4) < nu < Q(7, 4) for nu in observation.snapshot.capacity)
+        assert observation.full_kernel_pressure == (0, 0)
+        completed = _E * (a + _V * b / _E) ** 2 / 2
+        completed += (curvature - _V * _V / _E) * b * b / 2
+        difference = _p2_conditional_potential(xi, eta, curvature) - base
+        assert difference == completed == directional_form * s * s / 2 < 0
+    # The exact quadratic identity holds for every sufficiently small nonzero
+    # s. These are detached nearby states, not a zero-pressure EPI trajectory.
+
+
+def test_equal_hessians_at_the_restoring_boundary_allow_minimum_saddle_or_valley():
+    sympy = pytest.importorskip("sympy")
+    a, b = sympy.symbols("a b", real=True)
+    threshold = _V * _V / _E
+    base = _E * (_XI0 + a) ** 2 / 2 + _V * (_XI0 + a) * (_ETA0 + b)
+    # All three conditional Psi choices have the necessary nonzero slope.
+    psi = -_V * _XI0 * b + threshold * b * b / 2
+    quadratic = sympy.expand(base + psi - base.subs({a: 0, b: 0}))
+    assert sympy.expand(quadratic - _E * (a + _V * b / _E) ** 2 / 2) == 0
+    for sign in (-1, 0, 1):
+        polynomial = quadratic + sign * b**4
+        assert sympy.diff(psi + sign * b**4, b).subs(b, 0) == Q(-1, 16)
+        assert tuple(sympy.diff(polynomial, q).subs({a: 0, b: 0}) for q in (a, b)) == (
+            0,
+            0,
+        )
+        assert sympy.hessian(polynomial, (a, b)).subs({a: 0, b: 0}) == (
+            sympy.Matrix(((_E, _V), (_V, threshold)))
+        )
+        assert sympy.expand(polynomial.subs(a, -_V * b / _E)) == sign * b**4
+        assert polynomial.subs(b, 0) == _E * a * a / 2
+    # +b^4 is a strict minimum: both nonnegative summands vanish only at 0.
+    # -b^4 is a saddle, and the quadratic alone has an entire null valley.
+    # Same gradient/Hessian cannot distinguish these local behaviors; these
+    # polynomials are logical counterexamples, not proposed capacity laws.
+
+
+def test_zero_pressure_curve_and_complete_tetrad_do_not_detect_joint_energy_drop():
+    first_graph, first, _ = _p2_source()
+    s = Q(1, 4)
+    second_graph, second, _ = _p2_source(_XI0 - s / 2, _ETA0 + s)
+    assert second.snapshot.epi == (Q(1, 4) - s / 4, s / 4)
+    assert second.snapshot.capacity == (1 + s / 2, Q(3, 2) - s / 2)
+    for observation in (first, second):
+        assert observation.full_kernel_pressure == (0, 0)
+        assert observation.kernel_pressure_defect == (0, 0)
+        assert observation.stored_pressure_residual == (0, 0)
+        assert observation.snapshot.rate == (0, 0)
+        assert all(Q(3, 4) <= nu <= Q(7, 4) for nu in observation.snapshot.capacity)
+    first_tetrad = tuple(
+        observer(first_graph)
+        for observer in (
+            compute_structural_potential,
+            compute_phase_gradient,
+            compute_phase_curvature,
+            estimate_coherence_length_with_provenance,
+        )
+    )
+    second_tetrad = tuple(
+        observer(second_graph)
+        for observer in (
+            compute_structural_potential,
+            compute_phase_gradient,
+            compute_phase_curvature,
+            estimate_coherence_length_with_provenance,
+        )
+    )
+    assert first_tetrad == second_tetrad
+    assert first_tetrad[:3] == ({0: 0, 1: 0},) * 3
+    assert first_tetrad[3].method == "spectral_gap"
+    assert first_tetrad[3].value > 0
+    curvature = Q(1, 16)
+    difference = _p2_conditional_potential(
+        _XI0 - s / 2, _ETA0 + s, curvature
+    ) - _p2_conditional_potential(_XI0, _ETA0, curvature)
+    assert difference == (curvature - _V * _V / _E) * s * s / 2 < 0
+    # This curve is not a trajectory: x varies with s while the nodal rate
+    # vanishes everywhere on it. The tetrad is a state diagnostic, not Psi.

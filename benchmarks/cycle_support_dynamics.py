@@ -27,27 +27,37 @@ import numpy as np  # noqa: E402
 from benchmarks.capacity_localization import build_cycle  # noqa: E402
 from tnfr.alias import get_attr, set_attr  # noqa: E402
 from tnfr.constants.aliases import (  # noqa: E402
-    ALIAS_DEPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF,
+    ALIAS_DEPI,
+    ALIAS_DNFR,
+    ALIAS_EPI,
+    ALIAS_THETA,
+    ALIAS_VF,
 )
 from tnfr.constants.canonical import (  # noqa: E402
-    COUPLING_GENTLE, SHA_VF_FACTOR, UM_THETA_PUSH,
+    COUPLING_GENTLE,
+    SHA_VF_FACTOR,
+    UM_THETA_PUSH,
 )
 from tnfr.dynamics.dnfr import default_compute_delta_nfr  # noqa: E402
 from tnfr.operators import (  # noqa: E402
-    build_operator_event_schedule, build_physical_flow_partition,
+    build_operator_event_schedule,
+    build_physical_flow_partition,
     execute_operator_event_schedule,
 )
 from tnfr.operators.definitions import Silence  # noqa: E402
 from tnfr.physics.cycle_support_dynamics import (  # noqa: E402
-    observe_cycle_support_balance, observe_cycle_support_euler,
+    observe_cycle_support_balance,
+    observe_cycle_support_euler,
     observe_cycle_support_reset,
 )
 from tnfr.physics.winding_certificates import (  # noqa: E402
-    certify_phase_winding, observe_winding_word,
+    certify_phase_winding,
+    observe_winding_word,
 )
 from tnfr.research.claims import ClaimStatus  # noqa: E402
 from tnfr.research.core_manifests import (  # noqa: E402
-    CoreExperimentManifest, current_git_source_provenance,
+    CoreExperimentManifest,
+    current_git_source_provenance,
 )
 from tnfr.utils.numeric import angle_diff  # noqa: E402
 
@@ -82,8 +92,11 @@ def _phase_chart(phases):
 
 def _reference(epi, capacity, phase_chart, weights):
     return observe_cycle_support_balance(
-        epi, capacity, phase_chart,
-        epi_weight=weights["epi"], vf_weight=weights["vf"],
+        epi,
+        capacity,
+        phase_chart,
+        epi_weight=weights["epi"],
+        vf_weight=weights["vf"],
         phase_weight=weights["phase"],
     )
 
@@ -102,9 +115,12 @@ def _state(graph):
     )
     return {
         "time": float(graph.graph["_t"]),
-        "epi": epi, "capacity": capacity, "phase": phase,
+        "epi": epi,
+        "capacity": capacity,
+        "phase": phase,
         "capacity_range": max(capacity) - min(capacity),
-        "pressure": pressure, "depi": _values(graph, ALIAS_DEPI),
+        "pressure": pressure,
+        "depi": _values(graph, ALIAS_DEPI),
         "pressure_origin": "stored value after the last canonical refresh",
         "normalized_channel_weights": weights,
         "phase_offset_over_represented_pi": offsets,
@@ -122,19 +138,21 @@ def _state(graph):
         "epi_range": max(epi) - min(epi),
         "core_minus_background_mean": epi[0] - sum(epi[1:]) / (len(epi) - 1),
         "ordinary_epi_dirichlet_energy": sum(
-            (epi[(node + 1) % len(epi)] - value) ** 2
-            for node, value in enumerate(epi)
-        ) / 2,
+            (epi[(node + 1) % len(epi)] - value) ** 2 for node, value in enumerate(epi)
+        )
+        / 2,
         "reference": asdict(model),
         "exact_pressure_realization_residual": _difference(
-            _exact(pressure), model.pressure,
+            _exact(pressure),
+            model.pressure,
         ),
     }
 
 
 def _snapshot(snapshot):
     return {
-        "epi": snapshot.epi, "capacity": snapshot.nu_f,
+        "epi": snapshot.epi,
+        "capacity": snapshot.nu_f,
         "pressure": snapshot.delta_nfr,
         "phase_vector_retained": False,
     }
@@ -144,17 +162,23 @@ def _execute_cycle(graph, *, events):
     before = _state(graph)
     weights = before["normalized_channel_weights"]
     initial_model = _reference(
-        before["epi"], before["capacity"],
-        before["phase_offset_over_represented_pi"], weights,
+        before["epi"],
+        before["capacity"],
+        before["phase_offset_over_represented_pi"],
+        weights,
     )
     word = ("coupling", "silence") if events else ()
     schedule = build_operator_event_schedule(
-        word, start_time=graph.graph["_t"],
+        word,
+        start_time=graph.graph["_t"],
         flow_durations=(0.0, 0.0, 0.5) if events else (0.5,),
     )
     partition = build_physical_flow_partition(schedule.intervals[-1], (0.25, 0.25))
     result = execute_operator_event_schedule(
-        graph, schedule, method="euler", include_stage_certificates=True,
+        graph,
+        schedule,
+        method="euler",
+        include_stage_certificates=True,
         context={"initial_epi_nonzero": all(value != 0 for value in before["epi"])},
         physical_flow_partitions=(partition,),
     )
@@ -170,58 +194,77 @@ def _execute_cycle(graph, *, events):
             "reference": asdict(predicted_reset),
             "actual_after_events_reference": asdict(actual_reset),
             "exact_epi_residual": _difference(
-                actual_reset.epi, predicted_reset.after.epi,
+                actual_reset.epi,
+                predicted_reset.after.epi,
             ),
             "exact_capacity_residual": _difference(
-                actual_reset.capacity, predicted_reset.after.capacity,
+                actual_reset.capacity,
+                predicted_reset.after.capacity,
             ),
             "exact_phase_coordinate_residual": _difference(
-                chart, predicted_reset.after.phase_offset_over_pi,
+                chart,
+                predicted_reset.after.phase_offset_over_pi,
             ),
             "actual_energy_change": (
                 actual_reset.dirichlet_energy - initial_model.dirichlet_energy
             ),
             "exact_energy_realization_residual": (
-                actual_reset.dirichlet_energy - initial_model.dirichlet_energy
+                actual_reset.dirichlet_energy
+                - initial_model.dirichlet_energy
                 - predicted_reset.energy_change
             ),
         }
     boundaries = []
     for boundary in evidence.boundary_observations:
         model = _reference(
-            boundary.after.exact_epi, boundary.after.exact_nu_f, chart, weights,
+            boundary.after.exact_epi,
+            boundary.after.exact_nu_f,
+            chart,
+            weights,
         )
-        boundaries.append({
-            "time": boundary.time, "exact_time": boundary.exact_time,
-            "before": _snapshot(boundary.before), "after": _snapshot(boundary.after),
-            "callback_name": boundary.callback_name,
-            "pressure_only_refresh": boundary.nonpressure_state_preserved,
-            "phase_preserved_during_refresh": boundary.phase_preserved,
-            "capacity_preserved_during_refresh": boundary.capacity_preserved,
-            "node_support_preserved": boundary.node_support_preserved,
-            "edge_state_preserved": boundary.edge_state_preserved,
-            "reference": asdict(model),
-            "exact_pressure_realization_residual": _difference(
-                boundary.after.exact_delta_nfr, model.pressure,
-            ),
-        })
+        boundaries.append(
+            {
+                "time": boundary.time,
+                "exact_time": boundary.exact_time,
+                "before": _snapshot(boundary.before),
+                "after": _snapshot(boundary.after),
+                "callback_name": boundary.callback_name,
+                "pressure_only_refresh": boundary.nonpressure_state_preserved,
+                "phase_preserved_during_refresh": boundary.phase_preserved,
+                "capacity_preserved_during_refresh": boundary.capacity_preserved,
+                "node_support_preserved": boundary.node_support_preserved,
+                "edge_state_preserved": boundary.edge_state_preserved,
+                "reference": asdict(model),
+                "exact_pressure_realization_residual": _difference(
+                    boundary.after.exact_delta_nfr,
+                    model.pressure,
+                ),
+            }
+        )
     segments = []
     for segment, left, right in zip(
-        evidence.segment_flow_evidence, evidence.boundary_observations[:-1],
-        evidence.boundary_observations[1:], strict=True,
+        evidence.segment_flow_evidence,
+        evidence.boundary_observations[:-1],
+        evidence.boundary_observations[1:],
+        strict=True,
     ):
         model = _reference(left.after.exact_epi, left.after.exact_nu_f, chart, weights)
         dt = segment.interval.exact_duration
         prediction = observe_cycle_support_euler(model, dt=dt)
         actual_end = _reference(
-            right.before.exact_epi, right.before.exact_nu_f, chart, weights,
+            right.before.exact_epi,
+            right.before.exact_nu_f,
+            chart,
+            weights,
         )
         pressure_defect = _difference(left.after.exact_delta_nfr, model.pressure)
         held_prediction = tuple(
             x + dt * nu * pressure
             for x, nu, pressure in zip(
-                left.after.exact_epi, left.after.exact_nu_f,
-                left.after.exact_delta_nfr, strict=True,
+                left.after.exact_epi,
+                left.after.exact_nu_f,
+                left.after.exact_delta_nfr,
+                strict=True,
             )
         )
         held_defect = _difference(right.before.exact_epi, held_prediction)
@@ -229,59 +272,74 @@ def _execute_cycle(graph, *, events):
         decomposed = tuple(
             dt * nu * pressure + arithmetic
             for nu, pressure, arithmetic in zip(
-                model.capacity, pressure_defect, held_defect, strict=True,
+                model.capacity,
+                pressure_defect,
+                held_defect,
+                strict=True,
             )
         )
-        segments.append({
-            "duration": segment.interval.duration, "exact_duration": dt,
-            "reference": asdict(prediction),
-            "exact_pressure_realization_residual": pressure_defect,
-            "exact_held_input_euler_residual": held_defect,
-            "exact_model_endpoint_residual": endpoint_defect,
-            "exact_endpoint_decomposition_residual": _difference(
-                endpoint_defect, decomposed,
-            ),
-            "actual_energy_change": (
-                actual_end.dirichlet_energy - model.dirichlet_energy
-            ),
-            "exact_energy_realization_residual": (
-                actual_end.dirichlet_energy - model.dirichlet_energy
-                - prediction.energy_change
-            ),
-            "node_clock_increments": tuple(dt * nu for nu in model.capacity),
-            "capacity_held_during_flow": (
-                left.after.exact_nu_f == right.before.exact_nu_f
-            ),
-            "integrator": segment.integrator_name,
-            "method": segment.resolved_method,
-            "clipping_applied": segment.clipping_applied,
-            "gamma_is_none": segment.gamma_is_none,
-            "extended_dynamics_requested": segment.extended_dynamics_requested,
-        })
+        segments.append(
+            {
+                "duration": segment.interval.duration,
+                "exact_duration": dt,
+                "reference": asdict(prediction),
+                "exact_pressure_realization_residual": pressure_defect,
+                "exact_held_input_euler_residual": held_defect,
+                "exact_model_endpoint_residual": endpoint_defect,
+                "exact_endpoint_decomposition_residual": _difference(
+                    endpoint_defect,
+                    decomposed,
+                ),
+                "actual_energy_change": (
+                    actual_end.dirichlet_energy - model.dirichlet_energy
+                ),
+                "exact_energy_realization_residual": (
+                    actual_end.dirichlet_energy
+                    - model.dirichlet_energy
+                    - prediction.energy_change
+                ),
+                "node_clock_increments": tuple(dt * nu for nu in model.capacity),
+                "capacity_held_during_flow": (
+                    left.after.exact_nu_f == right.before.exact_nu_f
+                ),
+                "integrator": segment.integrator_name,
+                "method": segment.resolved_method,
+                "clipping_applied": segment.clipping_applied,
+                "gamma_is_none": segment.gamma_is_none,
+                "extended_dynamics_requested": segment.extended_dynamics_requested,
+            }
+        )
     exact_change = (
         after["reference"]["dirichlet_energy"] - initial_model.dirichlet_energy
     )
     actual_reset_change = actual_reset.dirichlet_energy - initial_model.dirichlet_energy
     telescope = actual_reset_change + sum(
-        (item["actual_energy_change"] for item in segments), Fraction(0),
+        (item["actual_energy_change"] for item in segments),
+        Fraction(0),
     )
     return {
-        "before": before, "after": after,
-        "schedule_word": word, "flow_durations": (0.0, 0.0, 0.5) if events else (0.5,),
+        "before": before,
+        "after": after,
+        "schedule_word": word,
+        "flow_durations": (0.0, 0.0, 0.5) if events else (0.5,),
         "grammar_admission": (
             "Existing executor validates each complete finite word "
             "against the live graph"
         ),
-        "events": [{
-            "operator": stage.event.operator_name,
-            "left": _snapshot(stage.left), "right": _snapshot(stage.right),
-            "pressure_scope": (
-                "Stored executor stage endpoints; not an isolated observation "
-                "of the internal auxiliary pressure write"
-            ),
-            "certificate_kind": stage.certificate_kind,
-            "certificate_abstention_reason": stage.certificate_abstention_reason,
-        } for stage in result.glyph_stage_evidence],
+        "events": [
+            {
+                "operator": stage.event.operator_name,
+                "left": _snapshot(stage.left),
+                "right": _snapshot(stage.right),
+                "pressure_scope": (
+                    "Stored executor stage endpoints; not an isolated observation "
+                    "of the internal auxiliary pressure write"
+                ),
+                "certificate_kind": stage.certificate_kind,
+                "certificate_abstention_reason": stage.certificate_abstention_reason,
+            }
+            for stage in result.glyph_stage_evidence
+        ],
         "intermediate_phase_observation": False,
         "flow_phase_chart_scope": (
             "Inferred from the recorded cycle endpoint and the declared "
@@ -289,7 +347,9 @@ def _execute_cycle(graph, *, events):
             "certify pressure refresh only. "
             "No intermediate phase trajectory was retained."
         ),
-        "reset": reset, "boundaries": boundaries, "segments": segments,
+        "reset": reset,
+        "boundaries": boundaries,
+        "segments": segments,
         "actual_shifted_energy_change": exact_change,
         "exact_energy_telescope_residual": exact_change - telescope,
         "whole_call_graph_state_atomic": result.whole_schedule_graph_state_atomic,
@@ -324,8 +384,11 @@ def run_cycle_support_case(case):
     cycles = [_execute_cycle(graph, events=case != "held_support") for _ in range(4)]
     node_clocks = tuple(
         sum(
-            (segment["node_clock_increments"][node]
-             for cycle in cycles for segment in cycle["segments"]),
+            (
+                segment["node_clock_increments"][node]
+                for cycle in cycles
+                for segment in cycle["segments"]
+            ),
             Fraction(0),
         )
         for node in graph
@@ -335,24 +398,33 @@ def run_cycle_support_case(case):
         - initial["reference"]["dirichlet_energy"]
     )
     return {
-        "case": case, "construction": construction,
+        "case": case,
+        "construction": construction,
         "phase_preparation": (
-            "regular twist" if case == "uniform_bump" else
-            "theta_i=2*pi*i/8+(pi/16)*sin(2*pi*i/8), initial preparation only"
+            "regular twist"
+            if case == "uniform_bump"
+            else "theta_i=2*pi*i/8+(pi/16)*sin(2*pi*i/8), initial preparation only"
         ),
         "capacity_preparation": {
-            "before": before_preparation, "after": initial,
+            "before": before_preparation,
+            "after": initial,
             "actual_operator_history": prep_history,
         },
-        "cycles": cycles, "initial": initial, "final": cycles[-1]["after"],
-        "physical_elapsed_time": 2.0, "node_reorganization_clocks": node_clocks,
+        "cycles": cycles,
+        "initial": initial,
+        "final": cycles[-1]["after"],
+        "physical_elapsed_time": 2.0,
+        "node_reorganization_clocks": node_clocks,
         "reset_defaults": {
-            "eta": UM_THETA_PUSH, "vf_sync": COUPLING_GENTLE,
+            "eta": UM_THETA_PUSH,
+            "vf_sync": COUPLING_GENTLE,
             "silence_factor": SHA_VF_FACTOR,
         },
         "actual_shifted_energy_change": energy_change,
-        "exact_multicall_telescope_residual": energy_change - sum(
-            (cycle["actual_shifted_energy_change"] for cycle in cycles), Fraction(0),
+        "exact_multicall_telescope_residual": energy_change
+        - sum(
+            (cycle["actual_shifted_energy_change"] for cycle in cycles),
+            Fraction(0),
         ),
         "atomicity_scope": (
             "Each invocation is atomic; the four-call experiment "
@@ -378,22 +450,27 @@ def _payload(value):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--output", type=Path,
+        "--output",
+        type=Path,
         default=ROOT / "artifacts/research/cycle_support_dynamics.json",
     )
     args = parser.parse_args()
     scope = (
-        "src/tnfr", "benchmarks/capacity_localization.py",
+        "src/tnfr",
+        "benchmarks/capacity_localization.py",
         "benchmarks/cycle_support_dynamics.py",
     )
     provenance = current_git_source_provenance(ROOT, scope)
     sha, dirty, digest = provenance
     manifest = CoreExperimentManifest(
         claim_id="O3.a-finite-changing-phase-capacity-support",
-        git_sha=sha, source_dirty=dirty, dirty_source_hash=digest,
+        git_sha=sha,
+        source_dirty=dirty,
+        dirty_source_hash=digest,
         versions={
             "python": platform.python_version(),
-            "networkx": nx.__version__, "numpy": np.__version__,
+            "networkx": nx.__version__,
+            "numpy": np.__version__,
         },
         graph_construction=(
             "Unit-edge C8 with winding=1; initial small periodic phase offsets "
@@ -407,7 +484,9 @@ def main():
             "Existing physical event executor, four half-unit calls, "
             "two refreshed shared Euler segments per call"
         ),
-        timestep=0.25, result_status=ClaimStatus.MEASURED, seed=17,
+        timestep=0.25,
+        result_status=ClaimStatus.MEASURED,
+        seed=17,
         operator_sequence=(
             "single-node SHA preparation where declared",
             "four whole UM SHA words or empty-word held-support controls",
@@ -426,12 +505,15 @@ def main():
     )
     manifest.validate_for_admission()
     reference_manifest = replace(
-        manifest, claim_id="O3.a-exact-cycle-support-energy-budget",
+        manifest,
+        claim_id="O3.a-exact-cycle-support-energy-budget",
         solver=(
             "Detached exact rational cycle support/reset/Euler identities; "
             "no runtime advance"
         ),
-        timestep=None, result_status=ClaimStatus.DERIVED, operator_sequence=(),
+        timestep=None,
+        result_status=ClaimStatus.DERIVED,
+        operator_sequence=(),
     )
     reference_manifest.validate_for_admission()
     report = {

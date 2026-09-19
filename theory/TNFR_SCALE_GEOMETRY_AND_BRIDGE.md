@@ -20,7 +20,11 @@ policy is centralized in
 
 ## 1. Pure-EPI coarse-graining
 
-On a fixed symmetric graph with positive capacity, write
+On fixed symmetric nonnegative conductance with positive fine row strengths
+and positive capacities, take a partition with positive macro row strengths.
+These hypotheses make the inverse metric and the displayed positive macro
+capacities well defined. Isolates require a separate zero-row treatment and
+are outside this construction. Write
 
 ```text
 x' = -A x,                 A = H^-1 B,
@@ -75,6 +79,485 @@ reflection partition of a path has zero residual to machine precision. A path pa
 whose middle block mixes boundary and interior nodes is an executable
 counterexample.
 
+### Inherited topology source and same-law scope
+
+Closure of EPI diffusion does not imply that every canonical pressure channel
+can be recomputed from the bare quotient graph. This can fail even at uniform
+phase and capacity, with no unresolved EPI memory. The following exact
+fixed-support result uses the existing unique-neighbor topology channel,
+not an additional physical interaction.
+
+Take unit undirected complete bipartite support `K_(a,b)`, with positive
+integers `a,b`, `a+b>2`, and common capacity `nu>0`. Partition into its two
+sides. Hold support, capacity and common phase fixed and keep the declared
+effective channel coefficients fixed. The fine unique degrees are `b` on
+the first side and `a` on the second. The existing topology response is the
+neighbor-mean degree minus the node's degree, hence
+
+```text
+g_topo = (a-b) on side A, (b-a) on side B.
+```
+
+The reversible projection is the arithmetic mean on each side: fine weights
+are `b/nu` and `a/nu`, and each block has total metric weight `a*b/nu`.
+The quotient conductance is `a*b`, its capacity is again `nu`, and
+
+```text
+A_bar = nu * [[1,-1],[-1,1]],       R A = A_bar R.
+```
+
+Indeed every fine neighbor mean is exactly the opposite block's average;
+averaging each fine derivative proves the intertwining identity for all
+fine EPI fields, not only block-constant ones. Uniform capacity and phase
+make their gradient channels zero. With `y=R*x`, the complete enabled
+pressure therefore gives the exact affine coarse law
+
+```text
+y_dot = -w_epi*A_bar*y + nu*w_topo*(a-b, b-a).
+```
+
+But the simple two-node quotient has one unique neighbor at each node,
+regardless of the conductance `a*b`. Its freshly recomputed topology gradient
+is `(0,0)`. For `a!=b` and `w_topo!=0`, applying the unchanged four-channel
+recipe to that bare quotient loses a nonzero source. Changing only its
+scalar coefficient cannot repair a zero gradient. In `K_(2,3)` at uniform
+EPI, `nu=1` and all four effective weights `1/4`, the actual projected nodal
+rate is `(-1/4,+1/4)` while the naive quotient rate is zero.
+
+**Positive inheritance result.** Retaining the fine degree profile `(b,a)`
+or its calculated source restores the displayed exact affine law. This is
+structure inherited from the declared graph, not pressure solved from a
+desired trajectory. The existing
+[forced closure observer](../src/tnfr/physics/epi_memory.py) verifies its
+all-state affine closure and zero hidden-to-macro coupling. Thus the result
+does not refute coarse autonomy; it refutes losing inherited structure while
+claiming the identical bare-graph pressure recipe. For this held domain the
+source is constant; a changing support would need its own inherited evolution
+and event law.
+
+[Nine executable controls](../tests/physics/test_joint_scale_topology_scope.py)
+compare the production pressure writer, exact represented-coefficient
+support/forcing records and both macro constructions. They include hidden
+nonuniform fine EPI, the inherited affine response, balanced bipartite graphs
+and a zero-topology-weight control. The default topology weight is zero, so
+this is not a defect in the default configuration. The all-state real identity
+above and the finite binary64 controls have distinct scope. Neither supplies
+autonomous phase/capacity/support laws, spontaneous partition selection or
+physical emergence. This complements the existing phase-fiber and inherited
+potential obstructions below rather than replacing them.
+
+### Joint constitutive reduction with inherited support counts
+
+The next constructive bridge retains structural information rather than
+reapplying the fine formulas to a bare simple graph. Consider connected
+symmetric positive transport and a fixed partition with exactly
+block-constant primitive phases `Theta_a` and positive fine capacities
+`kappa_a`. Hold phase, capacity, support and effective channel coefficients
+fixed. Fine scalar EPI evolves by the declared multichannel pressure and
+need not be block-constant. These held rows specify a conditional fine
+model; the nodal product does not derive their stationarity.
+
+Require equitable **unique-support** counts
+
+```text
+N_ab = number of distinct neighbors in block b of each node in block a,
+s_a = sum_b N_ab.
+```
+
+Internal neighbors contribute to `N_aa`; zero-conductance support edges
+still contribute to these counts. They are different from transport
+conductance. On the defined circular-mean branch, the fine non-EPI channels
+are block-constant and are reconstructed by
+
+```text
+g_phase,a = wrap(Arg(sum_b N_ab exp(i Theta_b)) - Theta_a) / pi,
+g_vf,a    = (sum_b N_ab kappa_b)/s_a - kappa_a,
+g_topo,a  = (sum_b N_ab s_b)/s_a - s_a.
+```
+
+These follow by grouping the existing neighbor sums. They do not introduce
+chosen phase weights, a new pressure channel or an autonomous phase clock.
+The phase formula retains the production wrap orientation; a zero phasor
+resultant requires an explicit implementation policy and is outside an
+exact regular-branch interpretation.
+
+Keep `d_i` for fine **transport strength**, so `h_i=d_i/kappa_a` and
+`hbar_a=sum_(i in a) h_i`. The existing cross-only quotient removes internal
+transport from its displayed adjacency, giving strength `dbar_a` and
+effective capacity `nu_eff,a=dbar_a/hbar_a`. Consequently
+
+```text
+sigma_a = kappa_a / nu_eff,a = (sum_(i in a) d_i)/dbar_a,
+f_N,a   = w_phase*g_phase,a + w_vf*g_vf,a + w_topo*g_topo,a,
+p_eff   = -w_epi*L_rw,bar*y + diag(sigma)*f_N,
+y_dot   = diag(nu_eff)*p_eff.
+```
+
+This is the projected nodal law for every fine EPI state when the existing
+exact EPI intertwining test passes. Indeed `R diag(nu)` applied to a
+block-constant source equals `diag(kappa)` applied to that source, while
+`diag(nu_eff) diag(sigma)=diag(kappa)`. Thus the rescaling is fixed by the
+inherited metric and the selected transport normalization, independently
+of measured rates or desired responses. Fine capacity `kappa` remains
+the input to the capacity-pressure formula; replacing it by `nu_eff`
+generally changes that formula.
+
+**A second normalization obstruction.** On unit `K3`, partition
+`((0),(1,2))`, uniform fine capacity one descends to `nu_eff=(1,1/2)`.
+Here `N=((0,2),(1,1))`, so counted capacity pressure is still zero.
+Using `nu_eff` as the capacity field on a new bare P2 instead produces
+gradients `(-1/2,+1/2)`. Retaining a self-neighbor changes the second
+incorrect value but does not repair the first. This issue can occur with
+the default positive capacity-channel weight, unlike the earlier
+zero-default-topology counterexample. It concerns a naive reduction, not
+the original fine engine. The counted construction preserves the actual
+zero channel without a fitted cancellation.
+
+The shared [support observer](../src/tnfr/physics/quotient_structure.py)
+owns exact multiplicities, both conductance normalizations, the inherited
+metric, both capacities and counted capacity/topology gradients. It rejects
+inequitable support or nonconstant block capacity; weighted EPI closure is
+a separate obligation. The [joint observer](../src/tnfr/physics/joint_quotient.py)
+then reuses the existing pressure capture and exact affine closure owners.
+It evaluates counted phase with the same non-JIT NumPy kernel using repeated
+target indices for distinct fine neighbors, rather than adding another
+phase implementation.
+
+**Numerical and dynamical scope.** Grouped phase sums can round differently
+from the fine neighbor order. The observer keeps that unit-phase defect,
+its projected rate contribution, fresh pressure assembly error and stale
+stored-pressure residual separately. Its exact rational identities connect
+those represented-coefficient models. The inherited NumPy `atan2(0,0)`
+policy can also return a pressure coefficient where the geometric curvature
+reader reports an undefined represented resultant. The explicit
+`phase_geometry_scope` retains that distinction; successful rate identities
+do not certify geometric phase availability. They are not a certificate of exact
+transcendental evaluation, continuous phase evolution or repeated runtime
+execution. Held phases/capacities have zero rates in this specified model;
+no history or event is executed. The selected partition has not emerged.
+This is a derived effective description with inherited structure, not
+proof that the unchanged simple-graph engine represents every scale.
+
+Controls are centralized in
+[support tests](../tests/physics/test_quotient_structure.py) and
+[joint-channel tests](../tests/physics/test_joint_quotient_contract.py).
+They distinguish the counted channels from simple-graph recomputation,
+including unequal phase-neighbor multiplicities and internal neighbors.
+Field inheritance remains a separate requirement, addressed next.
+
+### Geometric observation can require an additional state coordinate
+
+For the same held fine law, write `p=-e L x+f`, `x_dot=-A x+b`,
+and let `K` be the actual inverse-square fine distance kernel. Observing
+the averaged potential gives
+
+```text
+O = -e R K L,             o0 = R K f,
+R Phi_s = O P y + O Q x + o0,       Q=I-PR.
+```
+
+EPI autonomy requires `R A Q=0`. Potential determination by the current
+macro EPI additionally requires `O Q=0`. This is weaker than the full
+arbitrary-pressure factorization `R K=Kbar R`; the latter must not replace
+the actual observation test when only this constitutive family is claimed.
+
+A minimal exact countercontrol uses unit-conductance P3, common capacity
+one, pure EPI pressure and blocks `((0,2),(1))`. Set the existing explicit
+edge lengths to `1,2`, so the endpoint distance is `3`. The transport still
+closes exactly, but for the hidden vector `delta_x=(1,0,-1)`:
+
+```text
+R delta_x=0,       R A delta_x=0,       -R K L delta_x=(0,-3/4).
+```
+
+The missing geometric observation is retained by one derived coordinate,
+`h=(x0-x2)/2`. With `u=(x0+x2)/2`, `v=x1`,
+
+```text
+u_dot=v-u,       v_dot=u-v,       h_dot=-h,
+R Phi_s=(-37*(v-u)/72, 5*(v-u)/4 - 3*h/4).
+```
+
+The stacked linear observation `(R;O)` has rank three. Thus three scalar
+coordinates are necessary and sufficient for this exact instantaneous
+linear state/field description; the explicit equations also close its
+evolution. No new force was introduced: the extra coordinate was already
+part of fine EPI. Equal edge lengths supply the two-coordinate positive
+control, with inherited kernel `((1/4,1),(2,0))`. The asymmetric lengths
+are declared input geometry, not a claimed spontaneously selected metric.
+
+[Independent rational and production-field controls](../tests/physics/test_joint_quotient_geometry.py)
+verify the two domains and the decoder. This is one potential observation,
+not full-tetrad sufficiency. In particular, primitive phase fields and the
+nonlinear coherence-length fit have their own dependencies.
+
+### Joint EPI/potential realization and field provenance
+
+The [joint geometry observer](../src/tnfr/physics/geometry_realization.py)
+now derives the joint observation directly from a captured held fine law.
+With `A=e diag(nu) L`, it constructs
+
+```text
+O_joint = (R; -R K diag(1/nu) A),
+o_joint = (0; R K f).
+```
+
+The inverse-capacity conversion is essential: the potential aggregates
+pressure, whereas `A` generates the EPI rate. Using `-R K A` would silently
+change the field at heterogeneous capacity. The fixed source `f` comes from
+the existing non-EPI channel capture, independently of a desired response or
+stored pressure. Its potential offset stays in the decoder, without adding
+a constant state coordinate.
+
+The observer delegates these rows to the single
+[affine realization owner](DERIVED_EPI_MEMORY.md#11-minimal-linear-state-retaining-a-declared-observation).
+That owner derives a minimal closed **linear** state `s=Cx` with
+`s_dot=-G s+C b` and outputs `D s+o_joint`. Both EPI means and averaged
+model potential, including their rates, are reproduced for every initial
+scalar EPI in the held model. EPI partitions that fail instantaneous closure
+are allowed: the same invariant-row construction retains the missing
+directions. Redundant field rows do not inflate the state dimension. The
+two P3 controls give dimensions two and three as derived above; dimension
+three is a change of coordinates of the complete P3 form, not compression.
+
+**Distance provenance.** The exact kernel uses the shared edge reader's
+materialized binary64 lengths: explicit `length`, legacy `weight`, then
+unit default, with the minimum over parallel edges. This differs from the
+summed parallel conductance used in transport. Detached rational shortest
+paths and inverse squares give `K`; self, zero-distance and unreachable
+pairs contribute zero, following the canonical field policy. The original
+raw edge attribute need not equal its binary64 materialization. Runtime
+path sums, inverse powers and field accumulation are separate numerical
+operations: for example, exact represented edge lengths `1` and `2^-54`
+have rational path sum `1+2^-54`, while binary64 addition gives `1`.
+
+For fresh pressure-kernel defect `delta_p_kernel`, stored-pressure residual
+`delta_p_stored` and the actually materialized fine field `Phi_runtime`,
+the observer verifies the exact diagnostic telescope
+
+```text
+R Phi_runtime = (O x + R K f)
+              + R K delta_p_kernel + R K delta_p_stored + delta_field,
+delta_field  = R Phi_runtime - R K p_stored,
+O            = -R K diag(1/nu) A.
+```
+
+Thus numerical field evaluation is not silently identified with the exact
+model observation. These potential corrections have no capacity multiplier.
+They are detached measurements, not certified future error bounds.
+[Geometry controls](../tests/physics/test_forced_support_geometry.py)
+independently check capacities, source offsets, nonclosed partitions,
+length/transport conventions, the separate defects and graph immutability.
+Phase, capacity, support, materialized lengths and channel coefficients
+remain held data. This result introduces no graph evolution, partition
+selection, complete-tetrad reconstruction or physical-emergence claim.
+
+### Remaining tetrad dependencies and the limit of linear compression
+
+[`observe_forced_support_tetrad_dependencies`](../src/tnfr/physics/geometry_realization.py)
+composes the same geometry realization with the existing phase and coherence
+readers. It does not create another field implementation or reduction method.
+The retained observation is `s=Cx`, with `CT=I`. Set
+
+```text
+M = -diag(1/nu) A,       Dp = M T,       Ep = M - Dp C,
+p = Dp s + f + Ep x.
+```
+
+Thus all fine **model pressure** is determined by `s` exactly when `Ep=0`.
+If column `j` of `Ep` is nonzero, `delta=(I-TC)e_j` satisfies `C delta=0`
+and `M delta=Ep e_j != 0`: it is a same-state/different-pressure witness.
+The observer tests the whole residual matrix, not just its action on the
+current state, which can vanish accidentally.
+
+There is a useful limit. On the admitted connected positive-capacity model,
+`ker(M)=span(1)`. Because `C` retains `R` and `R1=1`,
+`ker(C) intersect ker(M)={0}`. Consequently `Ep=0` implies `ker(C)={0}`;
+the converse follows from `TC=I` at full rank. **Retaining all fine pressure
+and the partition means therefore requires the full fine linear dimension.**
+Pressure completeness is sufficient input for a pressure-based model
+diagnostic, but it is not necessary for every nonlinear scalar diagnostic.
+Failure of this test must not be labeled failure of every possible xi decoder.
+
+The dependency contract is:
+
+| Read-out | Retained input and result | Boundary |
+| --- | --- | --- |
+| Averaged model potential | The shared affine realization supplies the exact linear output and its rate | Actual stored pressure and numerical field residuals remain separate |
+| Averaged phase gradient and curvature | Fine primitive phases and unique-neighbor support are held; the existing phase observer supplies these constant read-outs | They are not derived form angles; represented cancellation leaves curvature unavailable in any average containing it |
+| Coherence-length fit | Nonlinear function of fine pressure products, runtime floating paths and the estimator's sample/bin policy | A current value from full stored pressure is not a forecast from `s`; model pressure completeness only supplies a sufficient input criterion |
+| Coherence-length fallback | A selected normalized-Laplacian mode scale with explicit method metadata | It is dimensionless, not fitted path-length correlation; the cutoff can skip the true smallest positive mode |
+
+The observer evaluates xi on a detached graph copy so that the canonical
+spectral cache does not mutate the caller's graph. Its `observed_coherence_length`
+uses **actual stored pressure**. It preserves the `autocorrelation_fit`,
+historical `spectral_gap`, or `unavailable` method and associated provenance.
+The fallback selects the smallest numerical eigenvalue greater than `1e-9`;
+it equals the usual gap scale only when that gap passes the selection. An
+independent P4 with conductances `(1,2^-40,1)` demonstrates a skipped small
+mode. The fit bins equality of floating shortest-path distances, not the
+rational edge-path model used by the potential realization. These are
+estimation conventions, not new TNFR equations.
+
+**An exact nonlinear obstruction on the existing P5 reduction.** Use the
+unit path, common capacity one, pure EPI pressure, equal primitive phases
+and reflection blocks `((0,4),(1,3),(2))`. Both its transport and inverse-square
+kernel respect reflection. The existing three-coordinate orbit projection
+therefore retains EPI means and averaged potential and is already invariant.
+For the hidden form
+
+```text
+x(a)=a*(-2,-1,0,1,2),      Cx(a)=0,
+p(a)=(a,0,0,0,-a),        R Phi_s(a)=0,
+```
+
+the retained state and all its modeled outputs are the same for every `a`.
+Nevertheless the canonical coherence products differ. At `a=1`, the three
+accepted distance bins `1,2,3` have exact means `(3/4,2/3,1/2)`; at `a=2`
+they have `(2/3,5/9,1/3)`. Their pair counts are `(4,3,2)`; the tenth pair
+at distance four is a singleton and is excluded from regression. The exact
+real log-linear fits give
+
+```text
+xi(a=1)=2/log(3/2),       xi(a=2)=2/log(2).
+```
+
+The production reader agrees numerically on prepared inputs whose stored
+and model pressures coincide. These are successful fits, not two values of
+the spectral fallback. Hence no single-valued xi output of this three-state
+realization exists on the full admitted fine-form domain. No trajectory or
+new force is needed for the counterexample. Completing its pressure inputs
+with the shared affine algorithm gives dimension five, as the theorem predicts.
+
+The converse boundary matters: every finite-pressure P3 has fewer than the
+required ten pairs, so its fitted branch is unavailable independently of
+pressure. Its fixed selected spectral value can be constant despite missing
+pressure coordinates. Also `a` and `-a` on P5 have opposite pressure but
+identical xi by reflection. These facts motivate a symmetry-based nonlinear
+observation test; they do not establish a minimal nonlinear state or an
+autonomously selected geometry.
+
+Controls reuse the existing P5 reduction owner in
+[tetrad dependency tests](../tests/physics/test_tetrad_geometry_scope.py),
+with separate [spectral selection controls](../tests/physics/test_coherence_spectral_selection_scope.py).
+Held phase, capacity, source and support are still premises. This completes
+the explicit observation/dependency contract, not full-tetrad minimality or
+a complete evolving law for the fine substrate.
+
+### A complete reflection-invariant form state on the retained P5
+
+The P5 observation obstruction can be resolved without declaring the missing
+shape irrelevant. Write the existing fine form as
+
+```text
+x=(a+r, p+s, c, p-s, a-r).
+```
+
+Reflection fixes `(a,p,c)` and sends `(r,s)` to `(-r,-s)`. Reuse the same
+unit-support, pure-EPI P5 generator with common positive capacity `nu`.
+Its equations give
+
+```text
+a_dot=nu*(p-a),       p_dot=nu*((a+c)/2-p),       c_dot=nu*(p-c),
+r_dot=nu*(s-r),       s_dot=nu*(r/2-s).
+```
+
+The three quadratic observations
+
+```text
+J00=r^2,       J01=r*s,       J11=s^2
+```
+
+are unchanged by reflection. Their valid image requires **both**
+`J00>=0,J11>=0` and `J00*J11=J01^2`; the determinant equality alone is
+insufficient. They determine the hidden pair up to its simultaneous sign:
+when `J00>0`, choose `r=sqrt(J00)` and `s=J01/r`; when `J00=0`, necessarily
+`J01=0`, so choose `r=0,s=sqrt(J11)`. The zero triple gives zero hidden form.
+Thus `(a,p,c,J00,J01,J11)` distinguishes exactly the two-element reflection
+orbits, with the symmetric form as the one-element orbit.
+
+The product rule derives a closed law, rather than selecting one:
+
+```text
+J00_dot=2*nu*(J01-J00),
+J01_dot=nu*(J00/2+J11-2*J01),
+J11_dot=nu*(J01-2*J11).
+```
+
+For `Delta=J00*J11-J01^2`, `Delta_dot=-4*nu*Delta`. More fully, the matrix
+`J=h h^T` evolves by `J_dot=B J+J B^T`, where
+`B=nu*((-1,1),(1/2,-1))`. Congruence with the exact linear hidden flow
+preserves positive semidefiniteness and rank; the valid invariant image is
+forward invariant in the exact continuous model. Keeping only the diagonal
+squares fails: `(r,s)=(1,1)` and `(1,-1)` have the same squares, but
+`J00_dot` is respectively `0` and `-4*nu`. The cross term carries necessary
+shape information.
+
+**What is preserved.** Reflection commutes with this transport generator
+and with the unit-path inverse-square kernel. Pressure and fine potential
+are therefore recovered **up to reflection**; their labels are not recovered
+uniquely. Orbit-averaged potential and EPI, uniform held-phase read-outs and
+the scalar coherence diagnostic are invariant. Reflection bijects the full
+unordered node pairs while preserving their distances and coherence products,
+so it preserves the fit input and its branch, as well as the selected spectral
+fallback. This exact statement concerns the declared model and estimator;
+arbitrary stored-pressure defects and numerical order effects need their own
+provenance. The invariant state retains the previously missing magnitude
+information, so it distinguishes the P5 `a=1` and `a=2` hidden-line examples.
+
+**Dimension and boundary.** Six displayed coordinates obey one independent
+constraint away from zero hidden form: the quotient still has intrinsic
+dimension five. It removes the duplication between reflected descriptions,
+not two continuous physical degrees of freedom. The observation Jacobian
+has rank five off `r=s=0` and rank three on that symmetric stratum; the latter
+does not make its surrounding state space three-dimensional. A chosen
+representative can change sign branch at `r=0` even while the invariants
+remain continuous. That change of representative is not a physical jump.
+The exact symmetric stratum stays symmetric under this unforced law; no
+spontaneous symmetry breaking or geometry selection has been derived.
+
+The implementation lives beside the existing reduction in
+[`p5_reduction.py`](../src/tnfr/physics/p5_reduction.py).
+`observe_p5_reflection_invariants` derives the observation and its rates from
+the shared fine generator. `decode_p5_reflection_invariants` supplies an exact
+rational representative on the rationally liftable image, including both
+axes and the zero state. A valid real image with irrational lift is outside
+that exact rational decoder and is explicitly rejected; no floating square
+root silently replaces it. Generated rational/represented fine snapshots
+lie in the supported image. The mathematical real quotient is broader.
+
+No integrator is added. In particular, advancing quadratic invariants with
+ordinary Euler is not the pushforward of a fine Euler step: squaring
+`h+dt*h_dot` also gives `dt^2*h_dot*h_dot^T`. An independently supplied Euler
+step on the displayed J law need not stay on its rank-one cone.
+[Independent controls](../tests/physics/test_p5_reflection_invariants.py)
+verify the quotient, mixed-term obstruction, derivative and singular domains,
+decoder, and field invariance using the existing readers.
+
+### Continuity boundary for a later approximate reduction
+
+Removing a discrete reflection redundancy differs from neglecting a small
+hidden amplitude. For the preceding hidden line, write its amplitude as
+`alpha>0` to distinguish it from the even coordinate `a`. Endpoint coherence
+is `z=1/(1+alpha)`. The retained bin means are
+`((1+z)/2,(1+2*z)/3,z)`, and their exact-real fit is
+
+```text
+xi(alpha)=2/log(1+alpha/2).
+```
+
+This expression applies while all three bins pass the current floor,
+`0<alpha<10^9-1`. Hence it diverges as `alpha -> 0+`, whereas the exactly
+uniform pressure case has no admissible fit and returns the distinct finite
+P5 spectral scale `sqrt(2+sqrt(2))`. This is a discontinuity between tagged
+estimator branches, not a divergence of the nodal state or a phase transition
+proved by the dynamics. Binary64 coherence rounding can switch branches
+earlier; the expression is not a binary64 asymptotic theorem. It follows
+that small pressure error alone cannot justify a uniform error bound for
+the unqualified displayed xi value near this boundary. Any later dynamical
+reduction must retain that distinction instead of imposing continuity or
+altering a nodal force to improve the diagnostic.
+
 ### Derived memory when closure fails
 
 For fixed reversible pure-EPI diffusion, the unresolved coordinate
@@ -115,6 +598,15 @@ The pure-EPI diffusion channel is a fixed family under every exact quotient:
 its generator remains `diag(nu_bar)L_rw,bar`. This does not show that Emission,
 Coherence, REMESH or the other nonlinear operators close under the same map.
 Operator RG flow therefore remains open beyond this one channel.
+
+Field inheritance is another independent obligation. On the unit triangular
+prism, the triangle-mean quotient closes exactly and has zero memory kernel,
+yet a self-excluded scalar macro potential reverses the sign of the averaged
+fine potential. The inherited kernel retains within-block sources. Keeping
+four internal modes and the mean contrast instead reconstructs full exact
+model pressure and potential; primitive phase and field provenance remain
+separate. See the single
+[macro-state and tetrad derivation](NODAL_PARAMETER_FOUNDATIONS.md#13-faithful-macro-state-and-tetrad-inheritance-on-the-retained-prism).
 
 ### Generic fixed-vector operator test
 
@@ -165,7 +657,7 @@ For a lifted block-constant phase field, this nonlinear channel closes on the
 macro support under a sufficient fixed-support domain: neighbor-count profiles
 are equitable inside each fiber, fibers have no internal edges, every active
 macro neighbor has the same multiplicity within its source block, capacity is
-block-constant, the chart stays on one wrap branch, and all phasor resultants
+exactly block-constant, the chart stays on one wrap branch, and all phasor resultants
 are nonzero. The canonical support is the unweighted NetworkX adjacency,
 including edges whose transport `weight` is zero; the reversible pairwise
 projection continues to use the conductance-degree-over-capacity metric.
@@ -181,6 +673,14 @@ support and finite-time phase evolution remain outside the certificate.
 [`certify_phase_nodal_coarse_graining`](../src/tnfr/physics/phase_quotient.py)
 reports the pairwise matrix quotient, the restricted canonical lift test and
 the same-macro-state counterexample without reading or changing EPI.
+The capacity hypothesis uses exact represented equality within each fiber;
+the separately rounded macro-capacity match has its own numerical residual.
+In a `K3,3` fiber, capacities `1` and `1+2^-35` can pass a `1e-10` tolerance
+while unequal lifted nodal rates still exclude exact closure. Numerical
+closeness must not satisfy that algebraic premise. A small nonzero phasor
+resultant can likewise fail the implementation's numerical margin without
+being an exact circular-mean singularity. The regression owner is
+[the phase quotient tests](../tests/physics/test_phase_quotient.py).
 
 ## 2. Geometry forced by canonical coherence
 

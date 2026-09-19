@@ -1,9 +1,9 @@
 r"""Tests for heterogeneous nodal frequency.
 
-The scalar clock-change theorem (N04) holds for a common ν_f but **fails** for a
-heterogeneous D_{ν_f}(t): the generators D_{ν_f}(t)·L no longer commute, so
-x(t) ≠ e^{-s(t)L} x₀. A fixed positive D_{ν_f} is still stable; uniform
-time-varying stability stays open.
+The scalar clock-change theorem (N04) holds for a common ν_f; heterogeneous
+generators need not commute. Proportional heterogeneous profiles nevertheless
+share a fixed generator, and a given initial state can conceal a failure of
+full-state reduction. Stability statements retain their declared hypotheses.
 """
 
 from __future__ import annotations
@@ -16,13 +16,13 @@ from tnfr.physics.directed_diffusion import directed_cayley_adjacency
 from tnfr.physics.heterogeneous_vf import (
     certify_convex_hull_generator,
     certify_dirichlet_convergence,
-    compare_fixed_stationary_measures,
     certify_heterogeneous_vf,
+    compare_fixed_stationary_measures,
     finite_schedule_readout,
     fixed_generator_abscissa,
     generator_commutator_norm,
-    heterogeneous_schedule,
     heterogeneous_generator,
+    heterogeneous_schedule,
     heterogeneous_stationary_distribution,
     piecewise_propagator,
     scalar_schedule,
@@ -31,37 +31,54 @@ from tnfr.physics.heterogeneous_vf import (
     within_initial_convex_hull,
 )
 
-W_SC = np.array([[0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2], [2, 0, 1, 0]],
-                dtype=float)
+W_SC = np.array([[0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2], [2, 0, 1, 0]], dtype=float)
 X4 = np.array([1.0, -1.0, 0.5, -0.5]) / np.linalg.norm([1.0, -1.0, 0.5, -0.5])
 T = np.linspace(0.0, 10.0, 600)
 
 
 # --------------------------------------------------------------------------- #
-# Commutators: scalar commutes, heterogeneous does not
+# Commutators: proportional profiles commute; other profiles need not
 # --------------------------------------------------------------------------- #
 def test_scalar_frequency_generators_commute():
     # any two scalar multiples of L commute
-    assert generator_commutator_norm(2.0 * np.ones(4), 3.0 * np.ones(4),
-                                     W_SC) < 1e-9
+    assert generator_commutator_norm(2.0 * np.ones(4), 3.0 * np.ones(4), W_SC) < 1e-9
 
 
 def test_heterogeneous_frequency_generators_do_not_commute():
-    assert generator_commutator_norm(np.array([0.5, 1.5, 1.0, 2.0]),
-                                     np.array([2.0, 0.5, 1.5, 1.0]),
-                                     W_SC) > 1e-3
+    assert (
+        generator_commutator_norm(
+            np.array([0.5, 1.5, 1.0, 2.0]), np.array([2.0, 0.5, 1.5, 1.0]), W_SC
+        )
+        > 1e-3
+    )
+
+
+def test_proportional_heterogeneous_profiles_share_a_fixed_generator():
+    # P2 makes every coefficient dyadic: these identities are represented
+    # exactly, without promoting a near-zero numerical norm to a proof.
+    adjacency = np.array([[0.0, 1.0], [1.0, 0.0]])
+    first = np.array([1.0, 2.0])
+    second = 4.0 * first
+    first_generator = heterogeneous_generator(first, adjacency)
+    second_generator = heterogeneous_generator(second, adjacency)
+
+    np.testing.assert_array_equal(first_generator, [[1, -1], [-2, 2]])
+    np.testing.assert_array_equal(second_generator, 4.0 * first_generator)
+    assert generator_commutator_norm(first, second, adjacency) == 0.0
+    bare_laplacian = heterogeneous_generator(np.ones(2), adjacency)
+    assert not np.array_equal(first_generator, first.mean() * bare_laplacian)
 
 
 # --------------------------------------------------------------------------- #
-# The scalar-time theorem does not extend to heterogeneous capacity
+# A selected heterogeneous schedule violates the bare-L scalar-time ansatz
 # --------------------------------------------------------------------------- #
 def test_heterogeneous_vf_does_not_use_scalar_time_theorem():
     common = scalar_schedule(4)
     hetero = heterogeneous_schedule(4)
     res_common = scalar_time_ansatz_residual(W_SC, X4, common, T)
     res_hetero = scalar_time_ansatz_residual(W_SC, X4, hetero, T)
-    assert res_common < 1e-3            # common ν_f: clock change holds
-    assert res_hetero > 1e-2            # heterogeneous: ansatz fails
+    assert res_common < 1e-3  # common ν_f: clock change holds
+    assert res_hetero > 1e-2  # heterogeneous: ansatz fails
     assert res_hetero > 10 * res_common
 
 
@@ -69,7 +86,9 @@ def test_common_schedule_is_an_exact_clock_change():
     res = scalar_time_ansatz_residual(
         directed_cayley_adjacency(7, {1, 2}),
         np.ones(7) / np.sqrt(7) * np.array([1, -1, 1, -1, 1, -1, 1]),
-        scalar_schedule(7), T)
+        scalar_schedule(7),
+        T,
+    )
     assert res < 1e-3
 
 
@@ -118,9 +137,7 @@ def test_piecewise_nonnegative_diffusion_preserves_initial_convex_hull():
 
 
 def test_metzler_certificate_proves_convex_hull_with_frozen_node():
-    certificate = certify_convex_hull_generator(
-        np.array([0.0, 1.5, 1.0, 2.0]), W_SC
-    )
+    certificate = certify_convex_hull_generator(np.array([0.0, 1.5, 1.0, 2.0]), W_SC)
     assert certificate.is_metzler
     assert certificate.zero_row_sums
     assert certificate.preserves_convex_hull
@@ -132,9 +149,9 @@ def test_all_zero_capacity_freezes_state_without_consensus_claim():
     certificate = certify_convex_hull_generator(zero, W_SC)
     assert np.array_equal(generator, np.zeros((4, 4)))
     assert certificate.preserves_convex_hull
-    assert np.array_equal(matrix := piecewise_propagator(
-        W_SC, [(2.0, zero)]
-    ), np.eye(4))
+    assert np.array_equal(
+        matrix := piecewise_propagator(W_SC, [(2.0, zero)]), np.eye(4)
+    )
     assert np.array_equal(matrix @ X4, X4)
 
 
@@ -160,16 +177,14 @@ def test_rapid_switching_approaches_ordered_average_generator():
     first = np.array([0.5, 1.5, 1.0, 2.0])
     second = np.array([1.2, 0.7, 1.7, 0.6])
     averaged = 0.5 * (
-        heterogeneous_generator(first, W_SC)
-        + heterogeneous_generator(second, W_SC)
+        heterogeneous_generator(first, W_SC) + heterogeneous_generator(second, W_SC)
     )
     reference = matrix_exponential(-averaged)
     errors = []
     for switches in (2, 8, 32):
         duration = 1.0 / switches
         segments = [
-            (duration, first if index % 2 == 0 else second)
-            for index in range(switches)
+            (duration, first if index % 2 == 0 else second) for index in range(switches)
         ]
         product = piecewise_propagator(W_SC, segments)
         errors.append(float(np.linalg.norm(product - reference, 2)))
@@ -177,27 +192,60 @@ def test_rapid_switching_approaches_ordered_average_generator():
 
 
 def test_time_dependent_mobility_has_exact_dirichlet_sign_identity():
-    adjacency = np.array(
-        [[0.0, 2.0, 0.0], [2.0, 0.0, 1.0], [0.0, 1.0, 0.0]]
-    )
+    adjacency = np.array([[0.0, 2.0, 0.0], [2.0, 0.0, 1.0], [0.0, 1.0, 0.0]])
     state = np.array([1.0, -0.5, 2.0])
     for capacity in (
         np.array([0.0, 1.5, 0.2]),
         np.array([2.0, 0.4, 3.0]),
     ):
-        balance = time_dependent_dirichlet_balance(
-            adjacency, state, capacity
-        )
+        balance = time_dependent_dirichlet_balance(adjacency, state, capacity)
         assert balance.identity_residual < 1e-12
         assert balance.energy_rate == pytest.approx(-balance.dissipation)
         assert balance.energy_rate <= 0.0
         assert balance.topology_term == 0.0
 
 
-def test_dirichlet_hierarchy_separates_consensus_from_finite_clock():
-    adjacency = np.array(
-        [[0.0, 1.0, 0.0], [1.0, 0.0, 1.0], [0.0, 1.0, 0.0]]
+def test_dirichlet_readers_reject_small_represented_asymmetry():
+    perturbation = 2.0**-35
+    adjacency = np.array([[0.0, 1.0], [1.0 + perturbation, 0.0]])
+    state = np.array([1.0, 0.0])
+    capacity = np.ones(2)
+    degree = adjacency.sum(axis=1)
+    laplacian = np.diag(degree) - adjacency
+    rate = -(laplacian @ state) / degree
+    # An approximately reciprocal matrix has a different energy gradient.
+    # These dyadic values exhibit the formerly accepted false identity.
+    actual_gradient = (laplacian + laplacian.T) @ state / 2.0
+    assert actual_gradient @ rate == -2.0 - perturbation / 2.0
+    assert (laplacian @ state) @ rate == -2.0 - perturbation
+    with pytest.raises(ValueError, match="symmetric conductance"):
+        time_dependent_dirichlet_balance(adjacency, state, capacity)
+    with pytest.raises(ValueError, match="symmetric conductance"):
+        certify_dirichlet_convergence(
+            adjacency,
+            state,
+            capacity_lower_bound=1.0,
+            capacity_upper_bound=1.0,
+            integrated_min_mobility=1.0,
+            tail_integral_diverges=True,
+        )
+
+
+def test_dirichlet_balance_retains_small_exactly_reciprocal_conductance():
+    weight = 2.0**-40
+    adjacency = np.array([[0.0, weight], [weight, 0.0]])
+    balance = time_dependent_dirichlet_balance(
+        adjacency, np.array([1.0, 0.0]), np.ones(2)
     )
+    np.testing.assert_array_equal(balance.state_rate, [-1.0, 1.0])
+    assert balance.energy == weight / 2.0
+    assert balance.energy_rate == -2.0 * weight
+    assert balance.dissipation == 2.0 * weight
+    assert balance.identity_residual == 0.0
+
+
+def test_dirichlet_hierarchy_separates_consensus_from_finite_clock():
+    adjacency = np.array([[0.0, 1.0, 0.0], [1.0, 0.0, 1.0], [0.0, 1.0, 0.0]])
     state = np.array([0.0, 2.0, -1.0])
     convergent = certify_dirichlet_convergence(
         adjacency,
@@ -228,9 +276,7 @@ def test_dirichlet_hierarchy_separates_consensus_from_finite_clock():
 def test_dirichlet_total_variation_bound_controls_refined_trajectory():
     from tnfr.physics.spectral_projectors import matrix_exponential
 
-    adjacency = np.array(
-        [[0.0, 1.0, 0.0], [1.0, 0.0, 1.0], [0.0, 1.0, 0.0]]
-    )
+    adjacency = np.array([[0.0, 1.0, 0.0], [1.0, 0.0, 1.0], [0.0, 1.0, 0.0]])
     state = np.array([0.0, 2.0, -1.0])
     capacity = np.array([0.5, 1.5, 1.0])
     certificate = certify_dirichlet_convergence(
@@ -243,8 +289,10 @@ def test_dirichlet_total_variation_bound_controls_refined_trajectory():
     )
     generator = heterogeneous_generator(capacity, adjacency)
     trajectory = np.array(
-        [matrix_exponential(-time * generator) @ state
-         for time in np.linspace(0.0, 20.0, 2001)]
+        [
+            matrix_exponential(-time * generator) @ state
+            for time in np.linspace(0.0, 20.0, 2001)
+        ]
     )
     sampled_variation = float(
         np.sum(np.linalg.norm(np.diff(trajectory, axis=0), axis=1))
@@ -267,7 +315,9 @@ def test_finite_schedule_reports_exact_kernel_u6_without_interval_claim():
     assert len(readout.euclidean_deviations) == 3
     assert len(readout.instantaneous_weighted_deviations) == 3
     assert readout.metric_capacity_context == (
-        "first_segment", "preceding_segment_1", "preceding_segment_2"
+        "first_segment",
+        "preceding_segment_1",
+        "preceding_segment_2",
     )
     assert readout.mean_absolute_u6_drifts[0] == 0.0
     assert readout.u6_kernel.startswith("canonical_directed_weighted")
@@ -290,12 +340,28 @@ def test_certificate_marks_theorem_boundary():
     assert "unmodified" in cert.claim_status
 
 
+def test_equilibrium_hides_clock_ansatz_error_without_universal_status_claim():
+    adjacency = np.array([[0.0, 1.0], [1.0, 0.0]])
+    cert = certify_heterogeneous_vf(adjacency, np.ones(2), np.linspace(0, 0.25, 5))
+
+    assert cert.commutator_heterogeneous > 0.0
+    assert cert.scalar_time_residual_heterogeneous < 1e-12
+    assert cert.scalar_time_theorem_extends is True  # legacy finite-residual flag
+    assert cert.claim_status.startswith("FINITE_DIAGNOSTIC:")
+    assert "not a universal clock-reduction test" in cert.claim_status
+
+
 def test_module_exports_complete():
     expected = {
-        "heterogeneous_generator", "generator_commutator_norm",
-        "scalar_schedule", "heterogeneous_schedule", "structural_time_mean",
-        "scalar_time_ansatz_residual", "fixed_generator_abscissa",
-        "nonconsensus_transient_gain", "HeterogeneousVfCertificate",
+        "heterogeneous_generator",
+        "generator_commutator_norm",
+        "scalar_schedule",
+        "heterogeneous_schedule",
+        "structural_time_mean",
+        "scalar_time_ansatz_residual",
+        "fixed_generator_abscissa",
+        "nonconsensus_transient_gain",
+        "HeterogeneousVfCertificate",
         "certify_heterogeneous_vf",
     }
     assert expected <= set(hv.__all__)

@@ -1,7 +1,7 @@
 """Two fixed C6 cycles retain admission, nodal flow and conditional-model limits."""
 
-from fractions import Fraction as F
 import math
+from fractions import Fraction as F
 
 import networkx as nx
 import pytest
@@ -46,8 +46,14 @@ def test_exactly_three_inherited_preparations_and_two_default_cycles(cases):
         assert controls.get("UM_STABILIZE_DNFR", True)
         assert controls["CLIP_MODE"] == "hard"
         for cycle in record["cycles"]:
-            assert cycle["um"]["resolved_factors"]["UM_theta_push"] == defaults["UM_theta_push"]
-            assert cycle["il"]["resolved_factors"]["IL_dnfr_factor"] == defaults["IL_dnfr_factor"]
+            assert (
+                cycle["um"]["resolved_factors"]["UM_theta_push"]
+                == defaults["UM_theta_push"]
+            )
+            assert (
+                cycle["il"]["resolved_factors"]["IL_dnfr_factor"]
+                == defaults["IL_dnfr_factor"]
+            )
 
 
 def test_joint_band_uses_the_actual_um_floor_and_distinct_strict_il_minimum(cases):
@@ -59,7 +65,9 @@ def test_joint_band_uses_the_actual_um_floor_and_distinct_strict_il_minimum(case
         assert band["configured_epi_min"] == -1
         assert band["epi_upper"] == band["configured_epi_max"] == 1
         assert not band["configured_strict_preconditions_enabled"]
-        assert record["joint_domain_reference"]["epi_lower"] == band["positive_epi_lower"]
+        assert (
+            record["joint_domain_reference"]["epi_lower"] == band["positive_epi_lower"]
+        )
         assert record["joint_domain_reference"]["epi_upper"] == band["epi_upper"]
 
 
@@ -67,7 +75,13 @@ def test_joint_band_uses_the_actual_um_floor_and_distinct_strict_il_minimum(case
 def test_actual_words_and_per_target_history_span_both_cycles(cases, case):
     record = cases[case]
     word = record["word"]
-    assert word["names"] == ("coupling", "coherence", "coupling", "coherence", "silence")
+    assert word["names"] == (
+        "coupling",
+        "coherence",
+        "coupling",
+        "coherence",
+        "silence",
+    )
     assert word["string_validator_passed"] and word["instance_validator_passed"]
     assert word["context"]["initial_epi_nonzero"]
     expected_history = ()
@@ -75,22 +89,32 @@ def test_actual_words_and_per_target_history_span_both_cycles(cases, case):
         assert cycle["ordinal"] == ordinal
         for key, glyph in (("um", "UM"), ("il", "IL")):
             event = cycle[key]
-            assert all(event["before"]["state"]["glyph_history"][node] == expected_history
-                       for node in range(6))
+            assert all(
+                event["before"]["state"]["glyph_history"][node] == expected_history
+                for node in range(6)
+            )
             expected_history += (glyph,)
-            assert all(event["raw_state"]["state"]["glyph_history"][node] == expected_history
-                       for node in range(6))
+            assert all(
+                event["raw_state"]["state"]["glyph_history"][node] == expected_history
+                for node in range(6)
+            )
             assert event["stage_result"]["schedule"] == "two_phase_jacobi"
             assert event["stage_result"]["nodes_processed"] == 6
-            assert all(a["allowed"] and a["candidate"] == glyph for a in event["admissions"])
+            assert all(
+                a["allowed"] and a["candidate"] == glyph for a in event["admissions"]
+            )
             assert all(m["glyph"] == glyph for m in event["actual_operator_metrics"])
     closure = record["closure_after_measurement"]
     assert all(item["allowed"] for item in closure["admissions"])
-    assert all(closure["after"]["state"]["glyph_history"][node] == expected_history + ("SHA",)
-               for node in range(6))
+    assert all(
+        closure["after"]["state"]["glyph_history"][node] == expected_history + ("SHA",)
+        for node in range(6)
+    )
 
 
-def test_configured_um_and_strict_il_readiness_can_be_rechecked_from_actual_inputs(cases):
+def test_configured_um_and_strict_il_readiness_can_be_rechecked_from_actual_inputs(
+    cases,
+):
     for record in cases.values():
         for cycle in record["cycles"]:
             um_graph = _recorded_graph(cycle["um"]["before"])
@@ -100,15 +124,24 @@ def test_configured_um_and_strict_il_readiness_can_be_rechecked_from_actual_inpu
                 assert validate_coupling(um_graph, item["node"]) is None
             for item in cycle["il"]["independent_strict_il_readiness"]:
                 assert item["passed"]
-                assert validate_coherence_strict(il_graph, item["node"], emit_warnings=False) is None
+                assert (
+                    validate_coherence_strict(
+                        il_graph, item["node"], emit_warnings=False
+                    )
+                    is None
+                )
             for graph in (um_graph, il_graph):
                 assert all(graph.nodes[node][ALIAS_EPI[0]] > 0 for node in graph)
                 assert all(graph.nodes[node][ALIAS_VF[0]] == 1 for node in graph)
-                assert all(graph.nodes[node].get("_grammar_u2_debt", 0) == 0 for node in graph)
+                assert all(
+                    graph.nodes[node].get("_grammar_u2_debt", 0) == 0 for node in graph
+                )
 
 
 @pytest.mark.parametrize("case", campaign.CASES)
-def test_phase_events_preserve_epi_and_unit_capacity_without_creating_edges(cases, case):
+def test_phase_events_preserve_epi_and_unit_capacity_without_creating_edges(
+    cases, case
+):
     initial = cases[case]["initial_capture"]["snapshot"]
     for cycle in cases[case]["cycles"]:
         for key in ("um", "il"):
@@ -119,7 +152,10 @@ def test_phase_events_preserve_epi_and_unit_capacity_without_creating_edges(case
                 assert capture["snapshot"]["epi"] == before["epi"]
                 assert capture["snapshot"]["capacity"] == (1,) * 6
                 assert capture["snapshot"]["conductance"] == initial["conductance"]
-                assert capture["snapshot"]["support_neighbors"] == initial["support_neighbors"]
+                assert (
+                    capture["snapshot"]["support_neighbors"]
+                    == initial["support_neighbors"]
+                )
             assert event["event_budget"]["epi_jump"] == (0,) * 6
             assert event["event_budget"]["variance_identity_residual"] == 0
             assert event["event_budget"]["dirichlet_identity_residual"] == 0
@@ -129,7 +165,9 @@ def test_phase_events_preserve_epi_and_unit_capacity_without_creating_edges(case
 
 
 @pytest.mark.parametrize("case", campaign.CASES)
-def test_each_cycle_uses_one_bound_default_interval_with_four_held_pressure_substeps(cases, case):
+def test_each_cycle_uses_one_bound_default_interval_with_four_held_pressure_substeps(
+    cases, case
+):
     record = cases[case]
     previous_capture = record["initial_capture"]
     for index, cycle in enumerate(record["cycles"]):
@@ -143,21 +181,39 @@ def test_each_cycle_uses_one_bound_default_interval_with_four_held_pressure_subs
         assert evidence["integrator_provenance_certified"] and evidence["gamma_is_none"]
         assert not evidence["extended_dynamics_requested"]
         assert not evidence["clipping_applied"]
-        assert all(evidence["left_binding"].values()) and all(evidence["right_binding"].values())
+        assert all(evidence["left_binding"].values()) and all(
+            evidence["right_binding"].values()
+        )
         assert evidence["duration"] == flow["duration"] == 0.25
-        assert evidence["captured_left"]["pressure"] == evidence["captured_right"]["pressure"]
+        assert (
+            evidence["captured_left"]["pressure"]
+            == evidence["captured_right"]["pressure"]
+        )
         assert all(flow["frozen_input_checks"].values())
         assert cycle["post_il_capture"]["phase"] == cycle["after_capture"]["phase"]
         exact = flow["regime_step_budget"]
         before = cycle["post_il_capture"]["snapshot"]
-        held_prediction = tuple(x + F(1, 4) * nu * p for x, nu, p in zip(
-            before["epi"], before["capacity"], before["stored_pressure"], strict=True,
-        ))
+        held_prediction = tuple(
+            x + F(1, 4) * nu * p
+            for x, nu, p in zip(
+                before["epi"],
+                before["capacity"],
+                before["stored_pressure"],
+                strict=True,
+            )
+        )
         assert exact["support_budget"]["expected_epi"] == held_prediction
         assert exact["support_budget"]["state_defect"] == tuple(
-            x - y for x, y in zip(cycle["after_capture"]["snapshot"]["epi"], held_prediction, strict=True)
+            x - y
+            for x, y in zip(
+                cycle["after_capture"]["snapshot"]["epi"], held_prediction, strict=True
+            )
         )
-        assert exact["mean_identity_residual"] == exact["relative_energy_budget"]["identity_residual"] == 0
+        assert (
+            exact["mean_identity_residual"]
+            == exact["relative_energy_budget"]["identity_residual"]
+            == 0
+        )
         previous_capture = cycle["after_capture"]
     assert record["final_capture"] == previous_capture
     assert record["final_before_closure"]["state"]["time"] == 0.5
@@ -170,7 +226,9 @@ def test_readonly_repeat_control_preserves_the_validator_disagreement(cases):
         assert not control["word"]["string_validator_passed"]
         assert control["word"]["instance_validator_passed"]
         assert control["materialized_state_preserved"]
-        assert all(history == ("UM",) for history in control["history_at_probe"].values())
+        assert all(
+            history == ("UM",) for history in control["history_at_probe"].values()
+        )
         graph = _recorded_graph(record["cycles"][0]["um"]["after_refresh"])
         for node, recorded in enumerate(control["live_candidates_after_one_um"]):
             actual = validate_candidate(graph, node, "UM")
@@ -183,13 +241,17 @@ def test_measured_joint_readouts_keep_binary64_pi_and_exact_reserve_accounting(c
         weight = record["joint_domain_reference"]["epi_phase_budget_weight"]
         readouts = [(record["initial_capture"], record["initial_joint_readout"])]
         for cycle in record["cycles"]:
-            readouts.extend((
-                (cycle["post_il_capture"], cycle["post_il_joint_readout"]),
-                (cycle["after_capture"], cycle["after_joint_readout"]),
-            ))
+            readouts.extend(
+                (
+                    (cycle["post_il_capture"], cycle["post_il_joint_readout"]),
+                    (cycle["after_capture"], cycle["after_joint_readout"]),
+                )
+            )
         for capture, readout in readouts:
             assert readout["represented_pi_scale"] == F(math.pi)
-            scaled = tuple(value / F(math.pi) for value in readout["phase"]["represented_lift"])
+            scaled = tuple(
+                value / F(math.pi) for value in readout["phase"]["represented_lift"]
+            )
             assert readout["phase_pi_represented"] == scaled
             diameter = max(scaled) - min(scaled)
             assert readout["phase_oscillation_pi"] == diameter
@@ -205,7 +267,9 @@ def test_measured_joint_readouts_keep_binary64_pi_and_exact_reserve_accounting(c
             assert min(readout["strict_il_capacity_margins"]) > 0
 
 
-def test_nonzero_controls_bind_the_conditional_nodal_step_with_signed_runtime_defects(cases):
+def test_nonzero_controls_bind_the_conditional_nodal_step_with_signed_runtime_defects(
+    cases,
+):
     for key in campaign.CASES[1:]:
         record = cases[key]
         model = record["joint_domain_reference"]
@@ -213,22 +277,38 @@ def test_nonzero_controls_bind_the_conditional_nodal_step_with_signed_runtime_de
             conditional = cycle["conditional_transition"]
             assert conditional["status"] == "observed_conditional_transition"
             assert conditional["observed_phase_contraction_residual"] <= 0
-            x, phase = conditional["epi_before"], conditional["phase_after_pi_represented"]
-            h, c, we, wp = (model[name] for name in ("timestep", "capacity", "epi_weight", "phase_weight"))
-            expected = tuple(x[i] + h * c * (
-                we * ((x[(i - 1) % 6] + x[(i + 1) % 6]) / 2 - x[i])
-                + wp * ((phase[(i - 1) % 6] + phase[(i + 1) % 6]) / 2 - phase[i])
-            ) for i in range(6))
+            x, phase = (
+                conditional["epi_before"],
+                conditional["phase_after_pi_represented"],
+            )
+            h, c, we, wp = (
+                model[name]
+                for name in ("timestep", "capacity", "epi_weight", "phase_weight")
+            )
+            expected = tuple(
+                x[i]
+                + h
+                * c
+                * (
+                    we * ((x[(i - 1) % 6] + x[(i + 1) % 6]) / 2 - x[i])
+                    + wp * ((phase[(i - 1) % 6] + phase[(i + 1) % 6]) / 2 - phase[i])
+                )
+                for i in range(6)
+            )
             assert conditional["observation"]["epi_after"] == expected
             actual = cycle["after_capture"]["snapshot"]["epi"]
             assert conditional["runtime_minus_conditional_epi"] == tuple(
                 a - b for a, b in zip(actual, expected, strict=True)
             )
             assert conditional["defect_identity_residual"] == (0,) * 6
-            assert conditional["runtime_minus_conditional_epi"] == tuple(a + b for a, b in zip(
-                conditional["conditional_pressure_realization_effect"],
-                conditional["actual_integrator_endpoint_defect"], strict=True,
-            ))
+            assert conditional["runtime_minus_conditional_epi"] == tuple(
+                a + b
+                for a, b in zip(
+                    conditional["conditional_pressure_realization_effect"],
+                    conditional["actual_integrator_endpoint_defect"],
+                    strict=True,
+                )
+            )
 
 
 def test_null_numeric_phase_residue_is_not_promoted_to_an_exact_transition(cases):
@@ -250,9 +330,14 @@ def test_null_numeric_phase_residue_is_not_promoted_to_an_exact_transition(cases
 
 
 @pytest.mark.parametrize("case", campaign.CASES)
-def test_terminal_sha_follows_measurement_and_leaves_the_unit_capacity_domain(cases, case):
+def test_terminal_sha_follows_measurement_and_leaves_the_unit_capacity_domain(
+    cases, case
+):
     record = cases[case]
-    before, closure = record["final_before_closure"]["state"], record["closure_after_measurement"]
+    before, closure = (
+        record["final_before_closure"]["state"],
+        record["closure_after_measurement"],
+    )
     after = closure["after"]["state"]
     assert all(item["passed"] for item in closure["independent_strict_sha_readiness"])
     assert before["time"] == after["time"] == 0.5
@@ -261,10 +346,16 @@ def test_terminal_sha_follows_measurement_and_leaves_the_unit_capacity_domain(ca
     expected_capacity = canonical_glyph_factor_defaults()["SHA_vf_factor"]
     assert after["capacity"] == (expected_capacity,) * 6
     assert 0 < expected_capacity < 1
-    assert all(after["glyph_history"][node] == ("UM", "IL", "UM", "IL", "SHA") for node in range(6))
+    assert all(
+        after["glyph_history"][node] == ("UM", "IL", "UM", "IL", "SHA")
+        for node in range(6)
+    )
 
 
-@pytest.mark.parametrize("case", (("k1", -2.0**-12), ("k3", -2.0**-12), ("null", 1.0), ("k2", 0.0), ("null", 0)))
+@pytest.mark.parametrize(
+    "case",
+    (("k1", -(2.0**-12)), ("k3", -(2.0**-12)), ("null", 1.0), ("k2", 0.0), ("null", 0)),
+)
 def test_campaign_rejects_unregistered_preparations_before_execution(case):
     with pytest.raises(ValueError, match="three inherited"):
         campaign.run_c6_joint_case(*case)

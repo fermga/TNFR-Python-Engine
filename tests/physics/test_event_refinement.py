@@ -19,14 +19,14 @@ from tnfr.operators.event_timing import (
     build_physical_flow_partition,
 )
 from tnfr.physics.event_refinement import (
-    ExecutedEventLocalZHIRPhysicalPrejumpObservation,
     EventLocalZHIRHeldPressureComparison,
     EventLocalZHIRPhysicalRefinementComparison,
+    ExecutedEventLocalZHIRPhysicalPrejumpObservation,
     compare_event_local_zhir_held_pressure_subdivision,
     compare_event_local_zhir_physical_refinement,
-    observe_executed_event_local_zhir_physical_prejump,
     observe_event_local_zhir_physical_prejump,
     observe_event_local_zhir_prejump,
+    observe_executed_event_local_zhir_physical_prejump,
 )
 from tnfr.physics.mutation_trigger import certify_mutation_trigger
 
@@ -66,7 +66,8 @@ def _assert_historical_claim_fields(
 ) -> None:
     """Preserve published fields while making raw claim tampering fail closed."""
 
-    field_names = {item.name for item in fields(value)}
+    declared_fields = {item.name: item for item in fields(value)}
+    field_names = set(declared_fields)
     slots = set(getattr(type(value), "__slots__", ()))
     serialized = asdict(value)
     representation = repr(value)
@@ -79,8 +80,14 @@ def _assert_historical_claim_fields(
         assert name in slots
         assert serialized[name] == expected_value
         assert f"{name}=" in representation
-        with pytest.raises(ValueError, match="init=False"):
+        assert not declared_fields[name].init
+        # Python 3.12 raises ValueError; 3.13 raises TypeError for this same gate.
+        with pytest.raises(
+            (ValueError, TypeError),
+            match=rf"field {name} is declared with init=False",
+        ):
             replace(value, **{name: "forged"})
+        assert value._proof_fields_are_intact()
 
         raw = object.__getattribute__(value, name)
         promoted = True if expected_value is False else "forged broader theorem"
@@ -187,7 +194,7 @@ def _observation(
 
 def test_observation_separates_rational_secant_from_actual_zhir_arithmetic() -> None:
     observation = _observation(
-        epi=(-2.0**-53,),
+        epi=(-(2.0**-53),),
         pressure=(1.0000000000000002,),
         substeps=1,
         xi=1.0,
@@ -206,7 +213,7 @@ def test_observation_separates_rational_secant_from_actual_zhir_arithmetic() -> 
 @pytest.mark.parametrize(
     ("epi", "pressure", "substeps", "xi"),
     [
-        ((-2.0**-53,), (1.0000000000000002,), 1, 1.0),
+        ((-(2.0**-53),), (1.0000000000000002,), 1, 1.0),
         ((0.25, -0.25), (2.0, -2.0), 2, 1.0),
         ((1.0e16,), (4.0,), 4, 1.0),
     ],
@@ -255,9 +262,10 @@ def test_observation_reproduces_the_canonical_mutation_trigger(
         for result in trigger_results
         if result.observed_depi_dt is not None
     ) == tuple(rate.hex() for rate in observation.binary64_observed_gate_rates)
-    assert tuple(
-        result.threshold_gate_satisfied for result in trigger_results
-    ) == observation.binary64_observed_strict_gate_decisions
+    assert (
+        tuple(result.threshold_gate_satisfied for result in trigger_results)
+        == observation.binary64_observed_strict_gate_decisions
+    )
 
 
 def test_strict_margin_certifies_an_invariant_actual_gate_decision() -> None:
@@ -385,9 +393,7 @@ def test_observation_rejects_unsealed_flow_evidence() -> None:
         certificate=flow.certificate,
         abstention_reason=flow.abstention_reason,
         integrator_name=flow.integrator_name,
-        integrator_provenance_certified=(
-            flow.integrator_provenance_certified
-        ),
+        integrator_provenance_certified=(flow.integrator_provenance_certified),
         resolved_method=flow.resolved_method,
         resolved_substeps=flow.resolved_substeps,
         gamma_is_none=flow.gamma_is_none,
@@ -768,10 +774,7 @@ def _pure_epi_path3_graph() -> nx.Graph:
         )
 
     def refresh_pressure(live_graph: nx.Graph) -> None:
-        epi = {
-            node: float(live_graph.nodes[node]["EPI"])
-            for node in live_graph
-        }
+        epi = {node: float(live_graph.nodes[node]["EPI"]) for node in live_graph}
         for node in live_graph:
             neighbors = tuple(live_graph.neighbors(node))
             mean = sum(epi[neighbor] for neighbor in neighbors) / len(neighbors)
@@ -950,9 +953,7 @@ def test_physical_refinement_can_stabilize_the_held_interval_modal_map() -> None
     assert result.baseline_held_interval_binary64_maximum_modal_factor == 1.5
     assert result.baseline_held_interval_modal_stable is False
     assert result.physical_segment_modal_decisions == (True, True)
-    assert result.physical_refined_composite_binary64_modal_multipliers == (
-        0.0625,
-    )
+    assert result.physical_refined_composite_binary64_modal_multipliers == (0.0625,)
     assert result.physical_refined_composite_binary64_maximum_modal_factor == 0.0625
     assert result.physical_refined_composite_modal_stable is True
     assert result.modal_stability_decisions_agree is False
@@ -974,9 +975,7 @@ def test_held_modal_factor_uses_parent_duration_across_internal_substeps() -> No
     ) == (2, 2)
     assert result.modal_comparison_applicable
     assert result.baseline_held_interval_binary64_modal_multipliers == (0.0,)
-    assert result.physical_refined_composite_binary64_modal_multipliers == (
-        0.25,
-    )
+    assert result.physical_refined_composite_binary64_modal_multipliers == (0.25,)
 
 
 def test_physical_modal_comparison_abstains_outside_pure_epi_pressure() -> None:
@@ -991,12 +990,8 @@ def test_physical_modal_comparison_abstains_outside_pure_epi_pressure() -> None:
         graph.nodes[0]["delta_nfr"] = -1.0
         graph.nodes[1]["delta_nfr"] = 1.0
         graph.graph["compute_delta_nfr"] = constant_pressure
-    schedule = build_operator_event_schedule(
-        (), start_time=0.0, flow_durations=(0.5,)
-    )
-    partition = build_physical_flow_partition(
-        schedule.intervals[0], (0.25, 0.25)
-    )
+    schedule = build_operator_event_schedule((), start_time=0.0, flow_durations=(0.5,))
+    partition = build_physical_flow_partition(schedule.intervals[0], (0.25, 0.25))
     baseline_result = execute_operator_event_schedule(
         baseline_graph,
         schedule,
@@ -1032,10 +1027,8 @@ def _path3_custom_physical_comparison(*, permute_capacity: bool):
     duration = 0.25
     baseline_graph = _pure_epi_path3_graph()
     physical_graph = _pure_epi_path3_graph()
-    physical_graph.graph["integrator"] = (
-        _HeldEulerWithOptionalCapacityPermutation(
-            permute_capacity_after_first_call=permute_capacity,
-        )
+    physical_graph.graph["integrator"] = _HeldEulerWithOptionalCapacityPermutation(
+        permute_capacity_after_first_call=permute_capacity,
     )
     schedule = build_operator_event_schedule(
         (),
@@ -1109,14 +1102,17 @@ def test_physical_execution_rejects_and_rolls_back_capacity_permutation() -> Non
 
     assert graph.graph["_t"] == 0.0
     assert integrator.calls == 0
-    assert tuple(
-        (
-            float(graph.nodes[node]["EPI"]),
-            float(graph.nodes[node]["nu_f"]),
-            float(graph.nodes[node]["delta_nfr"]),
+    assert (
+        tuple(
+            (
+                float(graph.nodes[node]["EPI"]),
+                float(graph.nodes[node]["nu_f"]),
+                float(graph.nodes[node]["delta_nfr"]),
+            )
+            for node in graph
         )
-        for node in graph
-    ) == before
+        == before
+    )
 
 
 def test_physical_modal_comparison_requires_trusted_segment_runtime() -> None:

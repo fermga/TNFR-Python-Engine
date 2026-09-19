@@ -7,10 +7,7 @@ from typing import Any
 from ..operators.event_remesh_runtime import EventRemeshCycleResult
 from .event_remesh_refinement import EventRemeshThreeMeshRefinementObservation
 from .remesh_history_stability import ExactVector
-from .runtime_remesh_history_stability import (
-    RuntimeRemeshHistoryBridgeObservation,
-)
-
+from .runtime_remesh_history_stability import RuntimeRemeshHistoryBridgeObservation
 
 @dataclass(frozen=True, slots=True)
 class P2EventRemeshMeshReferenceObservation:
@@ -74,7 +71,6 @@ class P2EventRemeshMeshReferenceObservation:
     def exact_ideal_remesh_error_scaling_certified(self) -> bool: ...
     @property
     def runtime_residual_error_bound_certified(self) -> bool: ...
-
 
 @dataclass(frozen=True, slots=True)
 class P2EventRemeshReferenceFamilyObservation:
@@ -142,12 +138,10 @@ class P2EventRemeshReferenceFamilyObservation:
     @property
     def future_stability_certified(self) -> bool: ...
 
-
 def observe_p2_event_remesh_reference_family(
     coarse: EventRemeshCycleResult,
     intermediate: EventRemeshCycleResult,
     fine: EventRemeshCycleResult,
 ) -> P2EventRemeshReferenceFamilyObservation: ...
-
 
 __all__: tuple[str, ...]

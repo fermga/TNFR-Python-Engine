@@ -126,9 +126,7 @@ def validate_coherence_strict(
         emit_coherence_precondition_warnings(G, node)
 
 
-def coherence_precondition_warnings(
-    G: TNFRGraph, node: Any
-) -> tuple[str, ...]:
+def coherence_precondition_warnings(G: TNFRGraph, node: Any) -> tuple[str, ...]:
     """Return strict IL warnings without emitting or mutating graph state."""
 
     from ...alias import get_attr
@@ -138,9 +136,7 @@ def coherence_precondition_warnings(
     config = G.graph.get("IL_PRECONDITIONS", {})
     dnfr = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
     magnitude = abs(dnfr)
-    critical = float(
-        config.get("dnfr_critical_threshold", DNFR_IL_CRITICAL)
-    )
+    critical = float(config.get("dnfr_critical_threshold", DNFR_IL_CRITICAL))
     messages: list[str] = []
     if bool(config.get("warn_zero_dnfr", True)) and magnitude == 0.0:
         messages.append(
@@ -154,11 +150,7 @@ def coherence_precondition_warnings(
             f"> {critical:.3f}. High reorganization pressure may require "
             "repeated IL or THOL stabilization."
         )
-    if (
-        bool(config.get("warn_isolated", True))
-        and G.degree(node) == 0
-        and len(G) > 1
-    ):
+    if bool(config.get("warn_isolated", True)) and G.degree(node) == 0 and len(G) > 1:
         messages.append(
             f"IL warning: Node {node!r} isolated (degree=0). "
             "Phase locking will have no effect. "
@@ -167,9 +159,7 @@ def coherence_precondition_warnings(
     return tuple(messages)
 
 
-def emit_coherence_precondition_warnings(
-    G: TNFRGraph, node: Any
-) -> None:
+def emit_coherence_precondition_warnings(G: TNFRGraph, node: Any) -> None:
     """Emit the pure warning set for one accepted direct IL request."""
 
     import warnings
@@ -267,9 +257,7 @@ def diagnose_coherence_readiness(G: TNFRGraph, node: Any) -> dict:
         recommendations.append("Apply AL (Emission) to seed structural form")
 
     if not checks["vf_active"]:
-        recommendations.append(
-            "Apply VAL (Expansion) or NAV (Transition) to raise νf"
-        )
+        recommendations.append("Apply VAL (Expansion) or NAV (Transition) to raise νf")
 
     if not checks["dnfr_present"]:
         recommendations.append("⚠ ΔNFR=0 - IL may be redundant")

@@ -1,7 +1,7 @@
 """Causal C8 checks of candidate evidence versus explicit public dispatch."""
 
-from fractions import Fraction
 import json
+from fractions import Fraction
 
 import pytest
 

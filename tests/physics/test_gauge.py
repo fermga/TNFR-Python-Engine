@@ -1098,9 +1098,7 @@ class TestNetworkInteractionProfile:
             "strong_like": 0.0,
             "gravity_like": 0.0,
         }
-        assert all(
-            math.isfinite(value) for value in profile.regime_fractions.values()
-        )
+        assert all(math.isfinite(value) for value in profile.regime_fractions.values())
         assert math.isfinite(profile.mixing_entropy)
 
     def test_distribution_sums_to_n(self, ws_graph):

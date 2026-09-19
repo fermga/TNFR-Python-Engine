@@ -171,9 +171,7 @@ class RemeshScheduleHistoryStabilityObservation:
             object.__getattribute__(self, "_proof_stamp"),
             _proof_stamp_from_values(values),
         ):
-            raise ValueError(
-                "REMESH/schedule history proof fields are inconsistent"
-            )
+            raise ValueError("REMESH/schedule history proof fields are inconsistent")
         _validate_observation(self)
 
     def _proof_fields_are_intact(self) -> bool:
@@ -221,8 +219,7 @@ class RemeshScheduleHistoryStabilityObservation:
         return bool(
             self._proof_fields_are_intact()
             and all(
-                item == 0
-                for item in self.exact_stationary_history_barycenter_drift
+                item == 0 for item in self.exact_stationary_history_barycenter_drift
             )
         )
 
@@ -302,9 +299,7 @@ def _validate_observation(
         raise ValueError("REMESH/schedule conditions are inconsistent")
 
     metric = transition.exact_metric_weights
-    raw_centered, raw_energy = _centered_energy(
-        value.exact_runtime_raw_head, metric
-    )
+    raw_centered, raw_energy = _centered_energy(value.exact_runtime_raw_head, metric)
     bounded_centered, bounded_energy = _centered_energy(
         value.exact_runtime_bounded_head, metric
     )
@@ -354,26 +349,23 @@ def _validate_observation(
         - augmented[1]
         + contraction_margin
     )
-    scheduled_post_history = (
-        value.exact_scheduled_head,
-    ) + transition.exact_history[:-1]
+    scheduled_post_history = (value.exact_scheduled_head,) + transition.exact_history[
+        :-1
+    ]
     barycenter_before = transition.exact_stationary_history_barycenter
     barycenter_after = _weighted_history_field(
         transition.certificate.stationary_distribution,
         scheduled_post_history,
     )
     barycenter_drift = _vector_subtract(barycenter_after, barycenter_before)
-    augmented_after = (
-        transition.exact_augmented_energy_after + augmented[3]
-    )
+    augmented_after = transition.exact_augmented_energy_after + augmented[3]
     energy_drop = transition.exact_augmented_energy_before - augmented_after
     expected = (
         value.exact_schedule_energy_gain_slack == slack,
         value.exact_schedule_augmented_energy_gain_slack == augmented_slack,
         value.exact_schedule_contraction_augmented_margin == contraction_margin,
         value.exact_gain_based_energy_drop_lower_bound == lower_bound,
-        value.exact_augmented_energy_before
-        == transition.exact_augmented_energy_before,
+        value.exact_augmented_energy_before == transition.exact_augmented_energy_before,
         value.exact_augmented_energy_after == augmented_after,
         value.exact_energy_drop == energy_drop,
         value.exact_stationary_history_barycenter_before == barycenter_before,
@@ -413,18 +405,14 @@ def observe_remesh_schedule_history_transition(
         "schedule_energy_gain_upper_bound",
     )
     if q < 0:
-        raise TNFRValueError(
-            "schedule_energy_gain_upper_bound must be nonnegative"
-        )
+        raise TNFRValueError("schedule_energy_gain_upper_bound must be nonnegative")
 
     metric = transition.exact_metric_weights
     raw_centered, raw_energy = _centered_energy(raw, metric)
     bounded_centered, bounded_energy = _centered_energy(bounded, metric)
     scheduled_centered, scheduled_energy = _centered_energy(scheduled, metric)
     if scheduled_energy > q * bounded_energy:
-        raise TNFRValueError(
-            "scheduled head violates schedule_energy_gain_upper_bound"
-        )
+        raise TNFRValueError("scheduled head violates schedule_energy_gain_upper_bound")
 
     pi_zero = transition.certificate.stationary_distribution[0]
     ideal_energy = transition.exact_next_energy
@@ -478,8 +466,7 @@ def observe_remesh_schedule_history_transition(
         ),
         (
             "augmented_energy_defects_telescope",
-            total_augmented
-            == raw_augmented + clipping_augmented + schedule_augmented,
+            total_augmented == raw_augmented + clipping_augmented + schedule_augmented,
         ),
         (
             "schedule_energy_gain_bound_satisfied",

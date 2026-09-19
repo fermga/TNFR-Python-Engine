@@ -59,9 +59,7 @@ class ExperimentManifest:
         if not self.input_size_model:
             raise ManifestValidationError("input_size_model is required")
         object.__setattr__(self, "versions", dict(self.versions))
-        object.__setattr__(
-            self, "operator_sequence", tuple(self.operator_sequence)
-        )
+        object.__setattr__(self, "operator_sequence", tuple(self.operator_sequence))
         object.__setattr__(self, "controls", tuple(self.controls))
         object.__setattr__(self, "artifacts", tuple(self.artifacts))
 
@@ -97,9 +95,7 @@ class ExperimentManifest:
             raise ManifestValidationError("at least one artifact is required")
 
     @classmethod
-    def from_dict(
-        cls, data: dict, *, strict: bool = False
-    ) -> "ExperimentManifest":
+    def from_dict(cls, data: dict, *, strict: bool = False) -> "ExperimentManifest":
         if strict and "uses_known_factors" not in data:
             raise ManifestValidationError("uses_known_factors must be explicit")
         if strict and not isinstance(data.get("uses_known_factors"), bool):
@@ -111,9 +107,7 @@ class ExperimentManifest:
             seed=data.get("seed"),
             operator_sequence=tuple(data.get("operator_sequence", ())),
             uses_known_factors=bool(data.get("uses_known_factors", False)),
-            input_size_model=data.get(
-                "input_size_model", "L = floor(log2 n) + 1 bits"
-            ),
+            input_size_model=data.get("input_size_model", "L = floor(log2 n) + 1 bits"),
             input_bits=data.get("input_bits"),
             controls=tuple(data.get("controls", ())),
             artifacts=tuple(data.get("artifacts", ())),

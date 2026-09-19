@@ -100,8 +100,9 @@ def test_power_concentration_is_translation_invariant():
 def test_power_concentration_is_conjugation_invariant():
     # reversing n -> -n conjugates the spectrum; |hat 1|^2 is unchanged
     primes = prime_indicator(512)
-    assert np.isclose(power_concentration(primes),
-                      power_concentration(np.roll(primes[::-1], 1)))
+    assert np.isclose(
+        power_concentration(primes), power_concentration(np.roll(primes[::-1], 1))
+    )
 
 
 def test_goldbach_is_translation_equivariant():
@@ -132,8 +133,9 @@ def test_prime_constellation_signature_is_classical():
     # twin-prime starts also stand out under the classical observable vs matched
     twins = constellation_indicator(2048, (0, 2))
     count = int(twins.sum())
-    z = discrimination_z(power_concentration, twins, kind="matched",
-                         n_controls=30, seed=1)
+    z = discrimination_z(
+        power_concentration, twins, kind="matched", n_controls=30, seed=1
+    )
     assert abs(z) > 3.0
     assert count > 0
 
@@ -145,8 +147,7 @@ def test_excess_result_is_reproducible():
 
 
 def test_phase_curvature_energy_is_finite():
-    for ind in (prime_indicator(256),
-                matched_random_indicator(50, 256, seed=2)):
+    for ind in (prime_indicator(256), matched_random_indicator(50, 256, seed=2)):
         assert np.isfinite(phase_curvature_energy(ind))
 
 
@@ -155,8 +156,13 @@ def test_phase_curvature_energy_is_finite():
 # --------------------------------------------------------------------------- #
 def test_unknown_control_kind_rejected():
     with pytest.raises(ValueError):
-        discrimination_z(power_concentration, prime_indicator(128),
-                         kind="bogus", n_controls=5, seed=0)
+        discrimination_z(
+            power_concentration,
+            prime_indicator(128),
+            kind="bogus",
+            n_controls=5,
+            seed=0,
+        )
 
 
 def test_module_exports_complete():

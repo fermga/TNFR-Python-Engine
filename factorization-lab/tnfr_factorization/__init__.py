@@ -1,9 +1,9 @@
-"""TNFR Spectral Factorization namespace.
+"""Experimental spectral factorization lab namespace.
 
-Public API:
-    - SpectralPaleyFactorizer / SpectralAnalysisResult (low-level analysis)
-    - factorize / FactorizationResult (high-level nodal factorization)
-"""
+``SpectralPaleyFactorizer`` / ``SpectralAnalysisResult`` expose the detailed
+analysis; ``factorize`` / ``FactorizationResult`` provide the high-level
+wrapper. Returned structural acceptance is heuristic, not a proof of
+divisibility, completeness or autonomous nodal factor recovery."""
 
 from .api import FactorizationResult, factorize
 from .spectral_paley import SpectralAnalysisResult, SpectralPaleyFactorizer

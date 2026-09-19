@@ -9,8 +9,8 @@ precision.  This complements the exact invariant-subspace certificate of
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
 from numbers import Real
 
 __all__ = ["NumericalCertificate", "certify_within_tolerance"]
@@ -54,8 +54,12 @@ class NumericalCertificate:
         """Require numerical context before admitting a public result."""
         if not isinstance(self.quantity, str) or not self.quantity.strip():
             raise ValueError("quantity and precision are required")
-        if (not isinstance(self.precision, str)
-                or self.precision not in {"float32", "float64", "longdouble", "exact"}):
+        if not isinstance(self.precision, str) or self.precision not in {
+            "float32",
+            "float64",
+            "longdouble",
+            "exact",
+        }:
             raise ValueError("precision must name a supported numerical model")
         _finite_real(self.value, "value")
         _finite_real(self.tolerance, "tolerance")

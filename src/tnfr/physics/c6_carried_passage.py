@@ -5,16 +5,28 @@ centered shape into a first-passage theorem. This is a conditional result
 for the fixed numerical map; no future live operator admission is inferred.
 """
 
-from dataclasses import dataclass
-from fractions import Fraction as F
 import math
 import sys
+from dataclasses import dataclass
+from fractions import Fraction as F
 
 from ._cycle_algebra import Vector, laplacian_action
-from .c6_carried_tube import C6CarriedTube, C6CarriedBandHorizon, _tube, derive_c6_carried_band_horizon
-from .c6_pressure_lattice import C6PressureSignSector, derive_c6_pressure_sign_sector, observe_c6_pressure_lattice
+from .c6_carried_tube import (
+    C6CarriedBandHorizon,
+    C6CarriedTube,
+    _tube,
+    derive_c6_carried_band_horizon,
+)
+from .c6_pressure_lattice import (
+    C6PressureSignSector,
+    derive_c6_pressure_sign_sector,
+    observe_c6_pressure_lattice,
+)
 
-__all__ = ["C6CarriedPositivePressurePassage", "derive_c6_carried_positive_pressure_passage"]
+__all__ = [
+    "C6CarriedPositivePressurePassage",
+    "derive_c6_carried_positive_pressure_passage",
+]
 
 
 def _ceil_sqrt(value: F) -> int:
@@ -67,7 +79,9 @@ class C6CarriedPositivePressurePassage:
         return False
 
 
-def derive_c6_carried_positive_pressure_passage(tube, *, node: int) -> C6CarriedPositivePressurePassage:
+def derive_c6_carried_positive_pressure_passage(
+    tube, *, node: int
+) -> C6CarriedPositivePressurePassage:
     """Force a nonpositive pressure readout using an exact finite budget.
 
     With X=x+r and y=P*X-z, the carried equation gives
@@ -100,16 +114,24 @@ def derive_c6_carried_positive_pressure_passage(tube, *, node: int) -> C6Carried
     initial_pressure = F(initial.pressure[node])
     quantum = lattice.epi_quantum
     laplacian_radius = _ceil_sqrt(F(3, 2) * bound.energy_bound / quantum**2) * quantum
-    gradients = tuple(abs(value) + laplacian_radius + 2 * bound.carry_bound
-                      for value in laplacian_action(ref.forced_balance.relative_profile))
+    gradients = tuple(
+        abs(value) + laplacian_radius + 2 * bound.carry_bound
+        for value in laplacian_action(ref.forced_balance.relative_profile)
+    )
     weight = ref.forced_balance.epi_weight
     unit, half_subnormal = F(1, 2**53), F(1, 2**1075)
     products = tuple(weight * value for value in gradients)
     product_errors = tuple(unit * value + half_subnormal for value in products)
-    arguments = tuple(abs(source) + product + error for source, product, error in
-                      zip(ref.forced_balance.forcing, products, product_errors, strict=True))
+    arguments = tuple(
+        abs(source) + product + error
+        for source, product, error in zip(
+            ref.forced_balance.forcing, products, product_errors, strict=True
+        )
+    )
     if max(products + arguments) > F(sys.float_info.max):
-        raise ValueError("the centered pressure envelope cannot certify finite binary64 operations")
+        raise ValueError(
+            "the centered pressure envelope cannot certify finite binary64 operations"
+        )
     assembly_errors = tuple(unit * value + half_subnormal for value in arguments)
     errors = tuple(a + b for a, b in zip(product_errors, assembly_errors, strict=True))
     mean_upper = (sum(ref.forced_balance.forcing, F(0)) + sum(errors, F(0))) / 6
@@ -117,7 +139,11 @@ def derive_c6_carried_positive_pressure_passage(tube, *, node: int) -> C6Carried
     sector = derive_c6_pressure_sign_sector(lattice, node=node, sign=1)
     positive_index = sector.bounding_gradient_index
     minimum = sector.signed_pressure_margin
-    increment = None if minimum is None else F(bound.contraction.timestep) * (minimum - mean_upper)
+    increment = (
+        None
+        if minimum is None
+        else F(bound.contraction.timestep) * (minimum - mean_upper)
+    )
     steps = latest = None
     covers = hit = False
     reason = None
@@ -125,7 +151,9 @@ def derive_c6_carried_positive_pressure_passage(tube, *, node: int) -> C6Carried
         steps = latest = 0
         covers = hit = True
     elif increment is None:
-        raise RuntimeError("an actual positive pressure contradicts the relaxed lattice range")
+        raise RuntimeError(
+            "an actual positive pressure contradicts the relaxed lattice range"
+        )
     elif increment <= 0:
         reason = "the centered increment has no strictly positive lower bound"
     else:
@@ -138,7 +166,9 @@ def derive_c6_carried_positive_pressure_passage(tube, *, node: int) -> C6Carried
         coordinate_radius = _ceil_sqrt(squared / quantum**2) * quantum
         low, high = 0, (coordinate_radius - y0) // increment + 1
         if high < 1 or contradicts(0) or not contradicts(high):
-            raise RuntimeError("the initial tube or finite passage bracket is inconsistent")
+            raise RuntimeError(
+                "the initial tube or finite passage bracket is inconsistent"
+            )
         while low + 1 < high:
             middle = (low + high) // 2
             if contradicts(middle):
@@ -147,14 +177,32 @@ def derive_c6_carried_positive_pressure_passage(tube, *, node: int) -> C6Carried
                 low = middle
         steps = high
         covers = band.tube_initially_admitted and (
-            band.unbounded_conditional_prefix or band.maximum_steps is not None and steps <= band.maximum_steps
+            band.unbounded_conditional_prefix
+            or band.maximum_steps is not None
+            and steps <= band.maximum_steps
         )
         if covers:
             latest, hit = steps - 1, True
         else:
             reason = "the independent sufficient band horizon does not cover the contradiction"
     return C6CarriedPositivePressurePassage(
-        bound, band, sector, node, initial_pressure, gradients, product_errors, assembly_errors,
-        errors, mean_upper, positive_index, minimum, increment, squared, steps, latest,
-        covers, hit, reason,
+        bound,
+        band,
+        sector,
+        node,
+        initial_pressure,
+        gradients,
+        product_errors,
+        assembly_errors,
+        errors,
+        mean_upper,
+        positive_index,
+        minimum,
+        increment,
+        squared,
+        steps,
+        latest,
+        covers,
+        hit,
+        reason,
     )

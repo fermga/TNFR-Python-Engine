@@ -80,6 +80,7 @@ def test_declared_variational_exports_exist():
 
     assert all(hasattr(variational, name) for name in variational.__all__)
 
+
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -341,15 +342,16 @@ class TestSymplecticPreservation:
     @staticmethod
     def _snapshot(q, p):
         pair = ConjugatePair("geometric", {0: q}, {0: p})
-        return LagrangianSnapshot({}, {}, {}, {}, {}, 0., 0., 0., 0., pair, pair)
+        return LagrangianSnapshot({}, {}, {}, {}, {}, 0.0, 0.0, 0.0, 0.0, pair, pair)
 
     def test_canonical_rotation_passes_despite_changing_snapshot_products(self):
         c = 1.0 / math.sqrt(2.0)
-        rotation = np.array([[c, c, 0, 0], [-c, c, 0, 0],
-                             [0, 0, c, c], [0, 0, -c, c]])
+        rotation = np.array([[c, c, 0, 0], [-c, c, 0, 0], [0, 0, c, c], [0, 0, -c, c]])
         result = check_symplectic_preservation(
-            self._snapshot(1., 0.), self._snapshot(c, -c),
-            "rotation", jacobian=rotation,
+            self._snapshot(1.0, 0.0),
+            self._snapshot(c, -c),
+            "rotation",
+            jacobian=rotation,
         )
         assert result.is_canonical is True
         assert result.classification == "canonical"
@@ -358,11 +360,13 @@ class TestSymplecticPreservation:
         assert result.verification_method == "provided_jacobian"
 
     def test_reflection_fails_despite_preserving_snapshot_products_and_volume(self):
-        reflection = np.diag([1., -1., 1., -1.])
+        reflection = np.diag([1.0, -1.0, 1.0, -1.0])
         assert np.linalg.det(reflection) == 1.0
         result = check_symplectic_preservation(
-            self._snapshot(1., 1.), self._snapshot(1., -1.),
-            "reflection", jacobian=reflection,
+            self._snapshot(1.0, 1.0),
+            self._snapshot(1.0, -1.0),
+            "reflection",
+            jacobian=reflection,
         )
         assert result.is_canonical is False
         assert result.classification == "non_symplectic"
@@ -370,21 +374,22 @@ class TestSymplecticPreservation:
         assert result.heuristic_classification == "canonical"
 
     def test_zero_fixed_point_does_not_certify_a_contraction(self):
-        snap = self._snapshot(0., 0.)
-        result = check_symplectic_preservation(snap, snap, jacobian=0.5*np.eye(4))
+        snap = self._snapshot(0.0, 0.0)
+        result = check_symplectic_preservation(snap, snap, jacobian=0.5 * np.eye(4))
         assert result.is_canonical is False
         assert result.symplectic_residual == pytest.approx(0.75)
 
     def test_jacobian_tolerance_is_not_the_legacy_ratio_tolerance(self):
-        snap = self._snapshot(1., 1.)
-        result = check_symplectic_preservation(snap, snap, jacobian=1.00001*np.eye(4))
+        snap = self._snapshot(1.0, 1.0)
+        result = check_symplectic_preservation(snap, snap, jacobian=1.00001 * np.eye(4))
         assert result.is_canonical is False
 
-    @pytest.mark.parametrize("jacobian", [np.eye(3), np.ones((4, 3)),
-                                          np.full((4, 4), np.nan),
-                                          np.eye(4, dtype=complex)])
+    @pytest.mark.parametrize(
+        "jacobian",
+        [np.eye(3), np.ones((4, 3)), np.full((4, 4), np.nan), np.eye(4, dtype=complex)],
+    )
     def test_invalid_jacobian_is_rejected(self, jacobian):
-        snap = self._snapshot(1., 1.)
+        snap = self._snapshot(1.0, 1.0)
         with pytest.raises(ValueError):
             check_symplectic_preservation(snap, snap, jacobian=jacobian)
 

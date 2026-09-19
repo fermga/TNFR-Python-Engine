@@ -25,23 +25,16 @@ class StructuralObservation:
     equilibrium_tolerance: float | None
     scope: str
     value: Any = None
-    metadata: Mapping[str, Any] = field(
-        default_factory=lambda: MappingProxyType({})
-    )
+    metadata: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
 
     def __post_init__(self) -> None:
         if not self.domain or not self.pressure_realization:
             raise ValueError("domain and pressure_realization are required")
         if not self.aggregation or not self.derivative_kind or not self.scope:
             raise ValueError("observation provenance fields are required")
-        if (
-            self.equilibrium_tolerance is not None
-            and self.equilibrium_tolerance < 0
-        ):
+        if self.equilibrium_tolerance is not None and self.equilibrium_tolerance < 0:
             raise ValueError("equilibrium_tolerance must be nonnegative")
-        object.__setattr__(
-            self, "metadata", MappingProxyType(dict(self.metadata))
-        )
+        object.__setattr__(self, "metadata", MappingProxyType(dict(self.metadata)))
 
     def as_dict(self) -> dict[str, Any]:
         """Return a detached serializable representation."""
@@ -73,9 +66,7 @@ def observe_graph_tetrad(
     )
 
 
-def observe_arithmetic_nfr(
-    readout: Mapping[str, Any]
-) -> StructuralObservation:
+def observe_arithmetic_nfr(readout: Mapping[str, Any]) -> StructuralObservation:
     """Wrap an arithmetic NFR readout with explicit aggregate semantics."""
     unavailable = (
         not bool(readout)

@@ -44,9 +44,7 @@ def test_remesh_rejects_invalid_alpha_before_mutating_epi(attributes):
     graph = nx.path_graph(2)
     graph.graph.update(attributes)
     graph.graph.update(REMESH_TAU_GLOBAL=1, REMESH_TAU_LOCAL=1)
-    graph.graph["_epi_hist"] = deque(
-        [{0: 0.0, 1: 0.0}, {0: 0.5, 1: -0.5}]
-    )
+    graph.graph["_epi_hist"] = deque([{0: 0.0, 1: 0.0}, {0: 0.5, 1: -0.5}])
     graph.nodes[0]["EPI"] = 0.25
     graph.nodes[1]["EPI"] = -0.25
     before = dict(nx.get_node_attributes(graph, "EPI"))

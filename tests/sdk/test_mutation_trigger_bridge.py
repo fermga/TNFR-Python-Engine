@@ -232,7 +232,8 @@ def test_old_report_construction_keeps_near_bifurcation_as_prediction_alias():
 
 def test_measured_zero_acceleration_is_not_missing_evidence():
     network = _network(
-        epi=1.0, epi_time_history=[(0.0, 0.25), (1.0, 0.5), (3.0, 1.0)],
+        epi=1.0,
+        epi_time_history=[(0.0, 0.25), (1.0, 0.5), (3.0, 1.0)],
     )
     before = deepcopy(dict(network.G.nodes["n"]))
     report = network.nodal_state("n", bifurcation_threshold=0.1)
@@ -248,7 +249,8 @@ def test_measured_zero_acceleration_is_not_missing_evidence():
 
 def test_unequal_step_acceleration_and_legacy_sources_stay_distinct():
     physical = _network(
-        epi=3.25, epi_time_history=[(0.0, 0.25), (1.0, 0.75), (3.0, 3.25)],
+        epi=3.25,
+        epi_time_history=[(0.0, 0.25), (1.0, 0.75), (3.0, 3.25)],
     ).nodal_state("n")
     legacy = _network(epi_history=[0.25, 0.75, 3.25]).nodal_state("n")
     assert physical.observed_d2epi_dt2 == pytest.approx(0.5)

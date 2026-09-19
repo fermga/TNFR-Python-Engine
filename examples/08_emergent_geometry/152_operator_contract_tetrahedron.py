@@ -122,7 +122,9 @@ def experiment_1_channel_partition():
         print(f"             {', '.join(ops)}")
     print()
     total = sum(len(operators_in_channel(ch)) for ch in StateChannel)
-    print(f"  registry entries assigned exactly once: {total}/{len(OPERATOR_CONTRACTS)}")
+    print(
+        f"  registry entries assigned exactly once: {total}/{len(OPERATOR_CONTRACTS)}"
+    )
     print("  -> this is specification metadata. U2/U4 grammar roles and")
     print("     realized downstream responses remain separate facts.")
 

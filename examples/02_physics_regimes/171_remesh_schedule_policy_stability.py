@@ -9,8 +9,8 @@ inspect or execute a binary64 schedule.
 
 from __future__ import annotations
 
-from fractions import Fraction
 import json
+from fractions import Fraction
 from typing import Any
 
 from tnfr.physics import (

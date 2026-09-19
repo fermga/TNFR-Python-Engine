@@ -60,11 +60,11 @@ try:
 except Exception:  # pragma: no cover
     nx = None  # type: ignore
 
-from ..constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT
 from ..constants.canonical import (
     GRAD_PHI_CANONICAL_THRESHOLD,
     K_PHI_CANONICAL_THRESHOLD,
     PHYSICS_HOTSPOT_FRACTION_CANONICAL,
+    U6_STRUCTURAL_POTENTIAL_LIMIT,
 )
 from ..operators.definitions import (
     Coherence,
@@ -200,7 +200,10 @@ def em_like(
                 f"{grad_mean_a:.3f} ≥ {grad_threshold}"
             )
         )
-    if aft.get("phi_s_drift") is not None and float(aft["phi_s_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
+    if (
+        aft.get("phi_s_drift") is not None
+        and float(aft["phi_s_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT
+    ):
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
@@ -216,9 +219,7 @@ def em_like(
         kphi_before_abs_mean=kphi_abs_b,
         kphi_after_abs_mean=kphi_abs_a,
         phi_s_drift_mean=(
-            float(aft["phi_s_drift"])
-            if aft.get("phi_s_drift") is not None
-            else None
+            float(aft["phi_s_drift"]) if aft.get("phi_s_drift") is not None else None
         ),
     )
 
@@ -285,7 +286,10 @@ def weak_like(
                 f"{grad_mean_a:.3f} ≥ {grad_threshold}"
             )
         )
-    if aft.get("phi_s_drift") is not None and float(aft["phi_s_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
+    if (
+        aft.get("phi_s_drift") is not None
+        and float(aft["phi_s_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT
+    ):
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
@@ -301,9 +305,7 @@ def weak_like(
         kphi_before_abs_mean=kphi_abs_b,
         kphi_after_abs_mean=kphi_abs_a,
         phi_s_drift_mean=(
-            float(aft["phi_s_drift"])
-            if aft.get("phi_s_drift") is not None
-            else None
+            float(aft["phi_s_drift"]) if aft.get("phi_s_drift") is not None else None
         ),
     )
 
@@ -361,7 +363,10 @@ def strong_like(
                 f"{hotspot_frac * 100:.1f}% ≥ {PHYSICS_HOTSPOT_FRACTION_CANONICAL * 100:.1f}%"
             )
         )
-    if aft.get("phi_s_drift") is not None and float(aft["phi_s_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
+    if (
+        aft.get("phi_s_drift") is not None
+        and float(aft["phi_s_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT
+    ):
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
@@ -379,9 +384,7 @@ def strong_like(
         ),  # type: ignore[index]
         kphi_after_abs_mean=_mean(kphi_abs_a),
         phi_s_drift_mean=(
-            float(aft["phi_s_drift"])
-            if aft.get("phi_s_drift") is not None
-            else None
+            float(aft["phi_s_drift"]) if aft.get("phi_s_drift") is not None else None
         ),
     )
 
@@ -427,7 +430,10 @@ def gravity_like(
 
     aft = _telemetry_after(G, snap, compute_phi_s=compute_phi_s)
     warnings: list[str] = []
-    if aft.get("phi_s_drift") is not None and float(aft["phi_s_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
+    if (
+        aft.get("phi_s_drift") is not None
+        and float(aft["phi_s_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT
+    ):
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
@@ -447,9 +453,7 @@ def gravity_like(
             {k: abs(v) for k, v in aft["kphi_a"].items()}
         ),  # type: ignore[index]
         phi_s_drift_mean=(
-            float(aft["phi_s_drift"])
-            if aft.get("phi_s_drift") is not None
-            else None
+            float(aft["phi_s_drift"]) if aft.get("phi_s_drift") is not None else None
         ),
     )
 

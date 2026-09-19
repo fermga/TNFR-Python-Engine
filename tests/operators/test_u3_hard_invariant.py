@@ -8,8 +8,8 @@ before any state mutation (it is not a warning and cannot be disabled).
 
 from __future__ import annotations
 
-from copy import deepcopy
 import math
+from copy import deepcopy
 
 import networkx as nx
 import pytest
@@ -95,12 +95,8 @@ def test_any_compatible_neighbor_allows_operator():
     """UM derives every synchronized channel from compatible neighbours only."""
     G = nx.Graph()
     G.add_node(0, EPI=0.6, frequency=1.0, theta=0.0, dnfr=1.0)
-    G.add_node(
-        1, EPI=0.6, frequency=100.0, theta=2.5, dnfr=7.0
-    )  # incompatible
-    G.add_node(
-        2, EPI=0.6, frequency=3.0, theta=0.4, dnfr=5.0
-    )  # compatible
+    G.add_node(1, EPI=0.6, frequency=100.0, theta=2.5, dnfr=7.0)  # incompatible
+    G.add_node(2, EPI=0.6, frequency=3.0, theta=0.4, dnfr=5.0)  # compatible
     G.add_edge(0, 1)
     G.add_edge(0, 2)
     G.graph["UM_FUNCTIONAL_LINKS"] = False
@@ -122,9 +118,7 @@ def test_any_compatible_neighbor_allows_operator():
     assert get_attr(G.nodes[0], ALIAS_THETA, 0.0) == pytest.approx(
         expected_target_phase
     )
-    assert get_attr(G.nodes[2], ALIAS_THETA, 0.0) == pytest.approx(
-        expected_good_phase
-    )
+    assert get_attr(G.nodes[2], ALIAS_THETA, 0.0) == pytest.approx(expected_good_phase)
     assert get_attr(G.nodes[0], ALIAS_VF, 0.0) == pytest.approx(
         1.0 + k_vf * (3.0 - 1.0)
     )

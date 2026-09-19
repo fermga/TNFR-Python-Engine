@@ -56,14 +56,10 @@ class GlyphFactorSpec:
     def contains(self, value: float) -> bool:
         """Return whether ``value`` satisfies this factor's hard domain."""
         if self.lower is not None:
-            if value < self.lower or (
-                value == self.lower and not self.lower_inclusive
-            ):
+            if value < self.lower or (value == self.lower and not self.lower_inclusive):
                 return False
         if self.upper is not None:
-            if value > self.upper or (
-                value == self.upper and not self.upper_inclusive
-            ):
+            if value > self.upper or (value == self.upper and not self.upper_inclusive):
                 return False
         if self.nonzero_modulus is not None:
             if math.fmod(value, self.nonzero_modulus) == 0.0:
@@ -89,18 +85,12 @@ class GlyphFactorSpec:
 # endpoint. Explicit graph flags remain the supported way to disable optional
 # UM channels.
 _SPECS = {
-    "AL_boost": GlyphFactorSpec(
-        Glyph.AL, lower=0.0, lower_inclusive=False
-    ),
-    "EN_mix": GlyphFactorSpec(
-        Glyph.EN, lower=0.0, upper=1.0, lower_inclusive=False
-    ),
+    "AL_boost": GlyphFactorSpec(Glyph.AL, lower=0.0, lower_inclusive=False),
+    "EN_mix": GlyphFactorSpec(Glyph.EN, lower=0.0, upper=1.0, lower_inclusive=False),
     "IL_dnfr_factor": GlyphFactorSpec(
         Glyph.IL, lower=0.0, upper=1.0, upper_inclusive=False
     ),
-    "OZ_dnfr_factor": GlyphFactorSpec(
-        Glyph.OZ, lower=1.0, lower_inclusive=False
-    ),
+    "OZ_dnfr_factor": GlyphFactorSpec(Glyph.OZ, lower=1.0, lower_inclusive=False),
     "UM_theta_push": GlyphFactorSpec(
         Glyph.UM, lower=0.0, upper=1.0, lower_inclusive=False
     ),
@@ -113,18 +103,14 @@ _SPECS = {
     "RA_epi_diff": GlyphFactorSpec(
         Glyph.RA, lower=0.0, upper=1.0, lower_inclusive=False
     ),
-    "RA_vf_amplification": GlyphFactorSpec(
-        Glyph.RA, lower=0.0, lower_inclusive=False
-    ),
+    "RA_vf_amplification": GlyphFactorSpec(Glyph.RA, lower=0.0, lower_inclusive=False),
     "RA_phase_coupling": GlyphFactorSpec(
         Glyph.RA, lower=0.0, upper=1.0, lower_inclusive=False
     ),
     "SHA_vf_factor": GlyphFactorSpec(
         Glyph.SHA, lower=0.0, upper=1.0, upper_inclusive=False
     ),
-    "VAL_scale": GlyphFactorSpec(
-        Glyph.VAL, lower=1.0, lower_inclusive=False
-    ),
+    "VAL_scale": GlyphFactorSpec(Glyph.VAL, lower=1.0, lower_inclusive=False),
     "NUL_scale": GlyphFactorSpec(
         Glyph.NUL,
         lower=0.0,
@@ -135,9 +121,7 @@ _SPECS = {
     "NUL_densification_factor": GlyphFactorSpec(
         Glyph.NUL, lower=1.0, lower_inclusive=False
     ),
-    "THOL_accel": GlyphFactorSpec(
-        Glyph.THOL, lower=0.0, lower_inclusive=False
-    ),
+    "THOL_accel": GlyphFactorSpec(Glyph.THOL, lower=0.0, lower_inclusive=False),
     "ZHIR_theta_shift_factor": GlyphFactorSpec(
         Glyph.ZHIR,
         lower=0.0,
@@ -199,9 +183,7 @@ def _coerce_known_factor(key: str, value: Any) -> float:
             f"{key} must be representable as a finite real scalar, got {value!r}"
         ) from exc
     if not math.isfinite(resolved):
-        raise GlyphFactorValidationError(
-            f"{key} must be finite, got {value!r}"
-        )
+        raise GlyphFactorValidationError(f"{key} must be finite, got {value!r}")
     return resolved
 
 
@@ -235,9 +217,7 @@ def _normalize_glyph(glyph: Glyph | str) -> Glyph:
 
         return Glyph(contract_for(token).glyph)
     except (KeyError, ValueError) as exc:
-        raise GlyphFactorValidationError(
-            f"Unknown glyph context {glyph!r}"
-        ) from exc
+        raise GlyphFactorValidationError(f"Unknown glyph context {glyph!r}") from exc
 
 
 def _validate_nul_relation(
@@ -277,8 +257,7 @@ def validate_glyph_factors(
         return {}
     if not isinstance(factors, Mapping):
         raise GlyphFactorValidationError(
-            "Glyph factors must be a mapping, "
-            f"got {type(factors).__name__}"
+            "Glyph factors must be a mapping, " f"got {type(factors).__name__}"
         )
 
     result = dict(factors)
@@ -305,9 +284,7 @@ def validate_glyph_factors(
             result[key] = validate_glyph_factor(key, result[key])
 
     if (context is None or context is Glyph.NUL) and (
-        active_keys is None
-        or "NUL_scale" in keys
-        or "NUL_densification_factor" in keys
+        active_keys is None or "NUL_scale" in keys or "NUL_densification_factor" in keys
     ):
         _validate_nul_relation(result, explicit_keys=frozenset(result))
 
@@ -338,9 +315,7 @@ def resolve_operator_factors(
 
     active = None if active_keys is None else frozenset(active_keys)
     nul_relation_active = context is Glyph.NUL and (
-        active is None
-        or "NUL_scale" in active
-        or "NUL_densification_factor" in active
+        active is None or "NUL_scale" in active or "NUL_densification_factor" in active
     )
     if nul_relation_active:
         scale = validate_glyph_factor("NUL_scale", resolved["NUL_scale"])
@@ -348,14 +323,10 @@ def resolve_operator_factors(
             resolved["NUL_densification_factor"] = 1.0 / scale
         _validate_nul_relation(
             resolved,
-            explicit_keys=frozenset(
-                {"NUL_scale", "NUL_densification_factor"}
-            ),
+            explicit_keys=frozenset({"NUL_scale", "NUL_densification_factor"}),
         )
 
-    return validate_glyph_factors(
-        resolved, glyph=context, active_keys=active_keys
-    )
+    return validate_glyph_factors(resolved, glyph=context, active_keys=active_keys)
 
 
 def runtime_active_glyph_factor_keys(
@@ -382,9 +353,7 @@ def runtime_active_glyph_factor_keys(
             active.remove("UM_dnfr_reduction")
     elif context is Glyph.ZHIR:
         fixed_shift = isinstance(overrides, Mapping) and "ZHIR_theta_shift" in overrides
-        active.remove(
-            "ZHIR_theta_shift_factor" if fixed_shift else "ZHIR_theta_shift"
-        )
+        active.remove("ZHIR_theta_shift_factor" if fixed_shift else "ZHIR_theta_shift")
     elif context is Glyph.NAV and bool(graph_data.get("NAV_STRICT", False)):
         active.remove("NAV_eta")
     elif context is Glyph.REMESH:
@@ -404,8 +373,7 @@ def resolve_runtime_operator_factors(
 
     if overrides is not None and not isinstance(overrides, Mapping):
         raise GlyphFactorValidationError(
-            "Glyph factors must be a mapping, "
-            f"got {type(overrides).__name__}"
+            "Glyph factors must be a mapping, " f"got {type(overrides).__name__}"
         )
     active = runtime_active_glyph_factor_keys(glyph, graph_data, overrides)
     return resolve_operator_factors(overrides, glyph, active_keys=active)

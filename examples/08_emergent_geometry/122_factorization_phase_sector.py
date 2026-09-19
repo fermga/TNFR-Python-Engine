@@ -150,9 +150,7 @@ def noncoset_subspace(n, d):
 
 def coset_score(n, d, clusters):
     """Basis-invariant score of the (i mod d) coset subspace (shared module)."""
-    return projector_score(
-        noncoset_subspace(n, d), clusters, min_abs_eigenvalue=1e-9
-    )
+    return projector_score(noncoset_subspace(n, d), clusters, min_abs_eigenvalue=1e-9)
 
 
 def coset_residual(n, d, L):

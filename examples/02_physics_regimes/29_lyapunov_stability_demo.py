@@ -227,10 +227,7 @@ def demo_policy_and_spectrum() -> None:
         f"\n  {'Operator':20s} {'U2 role':>13s} {'policy m':>10s} "
         f"{'score half':>11s} {'λ_rw':>9s} {'τ_rw':>9s}"
     )
-    print(
-        f"  {'─' * 20} {'─' * 13} {'─' * 10} {'─' * 11} "
-        f"{'─' * 9} {'─' * 9}"
-    )
+    print(f"  {'─' * 20} {'─' * 13} {'─' * 10} {'─' * 11} " f"{'─' * 9} {'─' * 9}")
 
     for name in operators:
         summary = analyze_operator_policy_context(G, name)

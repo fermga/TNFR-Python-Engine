@@ -28,6 +28,7 @@ def resolve_thol_bifurcation_threshold(
         value = graph_data.get("BIFURCATION_THRESHOLD_TAU")
     if value is None:
         value = graph_data.get(
-            "THOL_BIFURCATION_THRESHOLD", CORE_DEFAULTS["THOL_BIFURCATION_THRESHOLD"],
+            "THOL_BIFURCATION_THRESHOLD",
+            CORE_DEFAULTS["THOL_BIFURCATION_THRESHOLD"],
         )
     return finite_real(value, operator=operator, label="tau", lower=0.0)

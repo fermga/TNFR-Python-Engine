@@ -43,9 +43,7 @@ def test_detects_annular_radial_and_multinodal_changes_without_interpolation():
         _configured(nx.barbell_graph(5, 0), offset=0.04),
     )
 
-    certificate = detect_nodal_topology_transitions(
-        graphs, times=(0.0, 0.25, 1.0)
-    )
+    certificate = detect_nodal_topology_transitions(graphs, times=(0.0, 0.25, 1.0))
 
     assert certificate.label_sequence == ("annular", "radial", "multinodal")
     assert certificate.transition_indices == (1, 2)
@@ -85,8 +83,7 @@ def test_state_changes_do_not_create_a_geometry_label_transition():
     assert not certificate.steps[0].topology_changed
     assert certificate.steps[0].centrality_delta == pytest.approx((0.0,) * 8)
     assert any(
-        abs(value) > 0.0
-        for value in certificate.steps[0].structural_potential_delta
+        abs(value) > 0.0 for value in certificate.steps[0].structural_potential_delta
     )
     assert certificate.steps[0].coherence_delta != 0.0
 
@@ -146,8 +143,7 @@ def test_ambiguous_relabeling_suppresses_nonidentifiable_pointwise_deltas():
 
     reordered = nx.Graph()
     reordered.add_nodes_from(
-        (node, copy.deepcopy(after.nodes[node]))
-        for node in reversed(tuple(after))
+        (node, copy.deepcopy(after.nodes[node])) for node in reversed(tuple(after))
     )
     reordered.add_edges_from(
         (source, target, copy.deepcopy(data))

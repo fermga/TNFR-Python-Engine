@@ -1,32 +1,11 @@
-"""
-Advanced TNFR Primality Testing with Repository Infrastructure Integration
+"""Optional adapters to repository arithmetic helpers with basic fallbacks.
 
-This module leverages the full TNFR repository infrastructure for optimal performance:
-- Advanced caching systems (LRU, hierarchical, persistent)
-- Symbolic mathematics engine
-- Optimized number theory computations with sieve algorithms
-- Backend-agnostic mathematical operations (NumPy/JAX/Torch)
-- Arithmetic TNFR network algorithms with coherence analysis
-- Mathematical constants derived from canonical theory
-
-Author: F. F. Martinez Gamo
-Date: 2025-11-29
-License: MIT
-
-Mathematical Foundation:
-ΔNFR(n) = ζ·(Ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
-
-Canonical coefficients (derived from φ, γ, π, e):
-- ζ = φ×γ ≈ 0.9340  (factorization pressure)
-- η = (γ/φ)×π ≈ 1.1207  (divisor pressure)
-- θ = 1/φ ≈ 0.6180  (abundance pressure)
-
-Advanced Features:
-- Structural field analysis (Φ_s, |∇φ|, K_φ, ξ_C)
-- Prime certificate generation with coherence metrics
-- Network-based primality analysis
-- Performance optimized factorization algorithms
-"""
+These paths compute divisor and factor statistics, then static arithmetic
+pressure with unit default coefficients. Imported infrastructure availability
+does not establish that every backend, cache or field reader is exercised.
+No autonomous NFR evolution or full tetrad trajectory is produced by the
+primality predicate. Returned certificates record arithmetic zero-pressure
+checks; see the README for their conditional return type and scope."""
 
 from __future__ import annotations
 
@@ -126,9 +105,7 @@ def get_infrastructure_status() -> str:
     return status
 
 
-# TNFR Constants - use canonical from constants module
-# Canonical derivation: ζ=φ×γ, η=(γ/φ)×π, θ=1/φ
-# Canonical coefficients (same in all branches)
+# Shared unit defaults; a normalization choice, not a constants derivation.
 ZETA = ZETA_CANONICAL
 ETA = ETA_CANONICAL
 THETA = THETA_CANONICAL
@@ -154,19 +131,14 @@ def get_cache():
 
 
 def divisor_count_advanced(n: int) -> int:
-    """Count divisors using advanced TNFR algorithms with sieve optimization.
-
-    Performance benefits:
-    - O(log n) for numbers within sieve range
-    - SymPy integration for complex cases
-    - Hierarchical caching across calls
+    """Count divisors using a repository helper or enumeration fallback.
 
     Args:
-        n: Positive integer
+        n: Positive integer.
 
     Returns:
-        Number of divisors of n
-    """
+        Divisor count. The repository branch constructs an arithmetic network
+        per call and may fall back; no universal O(log n) runtime is claimed."""
     if n <= 0:
         raise ValueError("n must be positive")
 
@@ -275,24 +247,19 @@ def tnfr_delta_nfr_advanced(
     theta: float = THETA,
     use_cache: bool = True,
 ) -> float:
-    """Advanced TNFR arithmetic pressure computation with repository integration.
-
-    Enhanced features:
-    - Cached computation with dependency tracking
-    - Optimized arithmetic functions with sieve algorithms
-    - Symbolic mathematics validation when available
-    - Component breakdown analysis
+    """Compute static arithmetic pressure through an optional repository adapter.
 
     Args:
-        n: Positive integer to test
-        zeta: Factorization pressure coefficient (default: φ×γ ≈ 0.9340)
-        eta: Divisor pressure coefficient (default: (γ/φ)×π ≈ 1.1207)
-        theta: Sigma pressure coefficient (default: 1/φ ≈ 0.6180)
-        use_cache: Enable computation caching (default: True)
+        n: Integer; values below 2 return positive infinity.
+        zeta: Multiplicity pressure coefficient, default 1.0.
+        eta: Divisor pressure coefficient, default 1.0.
+        theta: Abundance pressure coefficient, default 1.0.
+        use_cache: Retained compatibility parameter; this body does not use it.
 
     Returns:
-        ΔNFR value (0 indicates prime)
-    """
+        Floating pressure from supplied arithmetic statistics. Its exact-real
+        prime zero-set statement requires positive coefficients; the fallback
+        does not validate that premise. Cached wrappers are separate functions."""
     if n <= 1:
         return float("inf")  # Not prime by definition
 
@@ -326,21 +293,22 @@ def tnfr_delta_nfr_advanced(
 
 
 def tnfr_is_prime_advanced(n: int, *, return_certificate: bool = False):
-    """Advanced primality test with full TNFR infrastructure integration.
-
-    Enhanced capabilities:
-    - Prime certificate generation with structural analysis
-    - Advanced tolerance computation using canonical constants
-    - Cached results with dependency tracking
-    - Component breakdown and coherence analysis
+    """Return an arithmetic predicate or an optional arithmetic certificate.
 
     Args:
-        n: Integer to test for primality
-        return_certificate: Return detailed PrimeCertificate object
+        n: Integer to test.
+        return_certificate: Request a repository ``PrimeCertificate`` when
+            infrastructure is available and the certificate call succeeds.
 
     Returns:
-        Tuple of (is_prime, delta_nfr_value) or PrimeCertificate if requested
-    """
+        Usually ``(is_prime, pressure)``. A successful certificate request can
+        return a ``PrimeCertificate`` instead. Inputs n<=1 and n=2, unavailable
+        infrastructure, or a caught certificate failure still return a tuple.
+        Callers must inspect the actual type rather than assume the request
+        guarantees a certificate.
+
+    The result is a check on divisor/factor statistics and a numerical pressure
+    tolerance. It is not a full nodal triad, operator trace or dynamics proof."""
     if n <= 1:
         return False, float("inf")
     if n == 2:
@@ -348,7 +316,7 @@ def tnfr_is_prime_advanced(n: int, *, return_certificate: bool = False):
 
     if HAS_TNFR_INFRASTRUCTURE and return_certificate:
         try:
-            # Use advanced certificate-based approach with full analysis
+            # Request the arithmetic-statistic certificate; no operator trace.
             params = ArithmeticTNFRParameters()
 
             omega_n = prime_factor_count_advanced(n)
@@ -360,7 +328,7 @@ def tnfr_is_prime_advanced(n: int, *, return_certificate: bool = False):
                 n, terms, params, tolerance=TOLERANCE
             )
 
-            return certificate  # Return full certificate object
+            return certificate  # Return arithmetic certificate object
         except Exception:
             pass
 
@@ -418,21 +386,17 @@ else:
 
 
 def validate_tnfr_theory_advanced(max_n: int = 1000) -> Dict[str, Any]:
-    """Comprehensive TNFR theory validation with advanced analytics.
+    """Collect finite arithmetic validation and timing diagnostics.
 
-    Enhanced validation features:
-    - Network-wide prime analysis with coherence metrics
-    - Structural field analysis when available
-    - Performance benchmarking and optimization tracking
-    - Component breakdown statistics
-    - Advanced error analysis
+    The report compares selected primality implementations and records optional
+    analysis where available. This is not a proof of general runtime accuracy,
+    network dynamics or emergent physical behavior.
 
     Args:
-        max_n: Maximum number to test (default: 1000)
+        max_n: Maximum tested integer, default 1000.
 
     Returns:
-        Dictionary with comprehensive validation results and analytics
-    """
+        Statistics and optional diagnostic summaries for that finite input set."""
     start_time = time.time()
 
     results: Dict[str, Any] = {
@@ -475,7 +439,7 @@ def validate_tnfr_theory_advanced(max_n: int = 1000) -> Dict[str, Any]:
             except Exception:
                 pass
 
-            # Detect prime candidates using canonical threshold
+            # Detect numerical zero-pressure candidates using the configured tolerance
             try:
                 candidates = network.detect_prime_candidates(
                     delta_nfr_threshold=TOLERANCE, return_certificates=True

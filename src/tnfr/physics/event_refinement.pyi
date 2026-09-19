@@ -16,7 +16,6 @@ from ..operators.event_timing import ScheduledOperatorEvent
 from ..operators.network_stage import MutationStageDecisionObservation
 from .mutation_trigger import MutationTriggerCertificate
 
-
 @dataclass(frozen=True, slots=True)
 class EventLocalZHIRPrejumpObservation:
     event_identity: tuple[int, int, int, str, str]
@@ -61,10 +60,8 @@ class EventLocalZHIRPrejumpObservation:
     binary64_pressure: tuple[float, ...] = ()
 
     def _proof_fields_are_intact(self) -> bool: ...
-
     @property
     def pre_jump_observation_certified(self) -> bool: ...
-
 
 @dataclass(frozen=True, slots=True)
 class EventLocalZHIRHeldPressureComparison:
@@ -109,28 +106,20 @@ class EventLocalZHIRHeldPressureComparison:
     diffusion_modal_decisions_established: bool = field(default=..., init=False)
     solver_accuracy_certified: bool = field(default=..., init=False)
     solver_order_certified: bool = field(default=..., init=False)
-    physical_refinement_equivalence_certified: bool = field(
-        default=..., init=False
-    )
-    future_or_repeated_behavior_certified: bool = field(
-        default=..., init=False
-    )
+    physical_refinement_equivalence_certified: bool = field(default=..., init=False)
+    future_or_repeated_behavior_certified: bool = field(default=..., init=False)
     u4_readiness_certified: bool = field(default=..., init=False)
     adaptive_policy_certified: bool = field(default=..., init=False)
     scope: str = field(default=..., init=False)
     _proof_stamp: tuple[Any, ...] = field(...)
 
     def _proof_fields_are_intact(self) -> bool: ...
-
     @property
     def event_local_gate_invariance_certified(self) -> bool: ...
 
-
 @dataclass(frozen=True, slots=True)
 class EventLocalZHIRPhysicalPrejumpObservation:
-    partition_evidence: ExecutedPressureRefreshedFlowPartition = field(
-        repr=False
-    )
+    partition_evidence: ExecutedPressureRefreshedFlowPartition = field(repr=False)
     event_identity: tuple[int, int, int, str, str]
     parent_interval_index: int
     nodes: tuple[Any, ...]
@@ -193,31 +182,22 @@ class EventLocalZHIRPhysicalPrejumpObservation:
     _proof_stamp: tuple[Any, ...] = field(...)
 
     def _proof_fields_are_intact(self) -> bool: ...
-
     @property
     def common_jump_execution_certified(self) -> bool: ...
-
     @property
     def u4_readiness_certified(self) -> bool: ...
-
     @property
     def solver_accuracy_certified(self) -> bool: ...
-
     @property
     def solver_order_certified(self) -> bool: ...
-
     @property
     def mesh_convergence_certified(self) -> bool: ...
-
     @property
     def future_or_repeated_behavior_certified(self) -> bool: ...
-
     @property
     def scope(self) -> str: ...
-
     @property
     def physical_pre_jump_observation_certified(self) -> bool: ...
-
 
 @dataclass(frozen=True, slots=True)
 class ExecutedEventLocalZHIRPhysicalPrejumpObservation:
@@ -225,55 +205,38 @@ class ExecutedEventLocalZHIRPhysicalPrejumpObservation:
     event_index: int
     scheduled_event: ScheduledOperatorEvent = field(repr=False)
     executed_event: ExecutedOperatorEvent = field(repr=False)
-    partition_evidence: ExecutedPressureRefreshedFlowPartition = field(
-        repr=False
-    )
+    partition_evidence: ExecutedPressureRefreshedFlowPartition = field(repr=False)
     glyph_stage: ExecutedGlyphStage = field(repr=False)
-    physical_observation: EventLocalZHIRPhysicalPrejumpObservation = field(
-        repr=False
-    )
+    physical_observation: EventLocalZHIRPhysicalPrejumpObservation = field(repr=False)
     nodes: tuple[Any, ...]
-    mutation_decision_observations: tuple[
-        MutationStageDecisionObservation, ...
-    ] = field(repr=False)
-    trigger_certificates: tuple[MutationTriggerCertificate, ...] = field(
-        repr=False
+    mutation_decision_observations: tuple[MutationStageDecisionObservation, ...] = (
+        field(repr=False)
     )
+    trigger_certificates: tuple[MutationTriggerCertificate, ...] = field(repr=False)
     _proof_stamp: tuple[Any, ...] = field(...)
 
     def _proof_fields_are_intact(self) -> bool: ...
-
     @property
     def common_execution_provenance_certified(self) -> bool: ...
-
     @property
     def solver_accuracy_certified(self) -> bool: ...
-
     @property
     def solver_order_certified(self) -> bool: ...
-
     @property
     def mesh_convergence_certified(self) -> bool: ...
-
     @property
     def u4_readiness_certified(self) -> bool: ...
-
     @property
     def adaptive_policy_certified(self) -> bool: ...
-
     @property
     def future_or_repeated_behavior_certified(self) -> bool: ...
-
     @property
     def scope(self) -> str: ...
-
 
 @dataclass(frozen=True, slots=True)
 class EventLocalZHIRPhysicalRefinementComparison:
     baseline_observation: EventLocalZHIRPrejumpObservation = field(repr=False)
-    physical_observation: EventLocalZHIRPhysicalPrejumpObservation = field(
-        repr=False
-    )
+    physical_observation: EventLocalZHIRPhysicalPrejumpObservation = field(repr=False)
     comparison_kind: str
     event_identity: tuple[int, int, int, str, str]
     nodes: tuple[Any, ...]
@@ -323,40 +286,28 @@ class EventLocalZHIRPhysicalRefinementComparison:
     _proof_stamp: tuple[Any, ...] = field(...)
 
     def _proof_fields_are_intact(self) -> bool: ...
-
     @property
     def modal_equivalence_certified(self) -> bool: ...
-
     @property
     def common_execution_provenance_certified(self) -> bool: ...
-
     @property
     def solver_accuracy_certified(self) -> bool: ...
-
     @property
     def solver_order_certified(self) -> bool: ...
-
     @property
     def mesh_convergence_certified(self) -> bool: ...
-
     @property
     def future_or_repeated_behavior_certified(self) -> bool: ...
-
     @property
     def u4_readiness_certified(self) -> bool: ...
-
     @property
     def adaptive_policy_certified(self) -> bool: ...
-
     @property
     def scope(self) -> str: ...
-
     @property
     def fixed_horizon_gate_agreement_certified(self) -> bool: ...
-
     @property
     def actual_terminal_gate_invariance_certified(self) -> bool: ...
-
 
 def observe_event_local_zhir_prejump(
     flow: ExecutedNodalFlowInterval,
@@ -364,33 +315,24 @@ def observe_event_local_zhir_prejump(
     *,
     xi: Real,
 ) -> EventLocalZHIRPrejumpObservation: ...
-
-
 def compare_event_local_zhir_held_pressure_subdivision(
     baseline: EventLocalZHIRPrejumpObservation,
     candidate: EventLocalZHIRPrejumpObservation,
 ) -> EventLocalZHIRHeldPressureComparison: ...
-
-
 def observe_event_local_zhir_physical_prejump(
     partition_evidence: ExecutedPressureRefreshedFlowPartition,
     event: ScheduledOperatorEvent,
     *,
     xi: Real,
 ) -> EventLocalZHIRPhysicalPrejumpObservation: ...
-
-
 def observe_executed_event_local_zhir_physical_prejump(
     execution_result: OperatorEventExecutionResult,
     *,
     event_index: int,
 ) -> ExecutedEventLocalZHIRPhysicalPrejumpObservation: ...
-
-
 def compare_event_local_zhir_physical_refinement(
     baseline: EventLocalZHIRPrejumpObservation,
     physical: EventLocalZHIRPhysicalPrejumpObservation,
 ) -> EventLocalZHIRPhysicalRefinementComparison: ...
-
 
 __all__: tuple[str, ...]

@@ -1,14 +1,15 @@
 # TNFR Python Engine Architecture
 
-**Version:** 0.0.3.5
+**Version:** 0.0.3.6
 **Status:** Implemented architecture reference
 
 This document describes the repository as implemented. Mathematical claims are
-owned by [AGENTS.md](AGENTS.md) and the scoped specifications under
-[`theory/`](theory/README.md); this guide links to those sources rather than
+owned by the scoped specifications under
+[`theory/`](theory/README.md); [AGENTS](AGENTS.md) summarizes working conventions.
+This guide links to those sources rather than
 strengthening their claims.
 
-## Authority and ownership
+## Implementation owners
 
 | Concern | Source of truth |
 | --- | --- |
@@ -29,13 +30,13 @@ strengthening their claims.
 | Coherence and equilibrium kernel | [`common.py`](src/tnfr/metrics/common.py) |
 | Public high-level API | [`sdk/simple.py`](src/tnfr/sdk/simple.py) |
 
-Derived documents and tables must import or link to these owners. They must not
-define competing constants, operator sets, or theorem scope.
+These are implementation responsibilities. The [documentation ownership map](docs/README.md)
+identifies the single maintained guide for each responsibility.
 
 ## Nodal execution flow
 
 ```mermaid
-flowchart LR
+flowchart TD
     A[Graph and nodal triad] --> B[Delta NFR channels]
     B --> C[Nodal equation integrator]
     C --> D[Updated EPI and derivatives]
@@ -51,13 +52,15 @@ flowchart LR
 2. `tnfr.dynamics.dnfr` computes the configured pressure channels. The EPI
    channel realizes random-walk graph diffusion; other channels retain their
    documented circular, capacity, and topology semantics.
-3. `tnfr.dynamics.integrators` advances EPI through the nodal equation and
-   records derivatives needed by coherence telemetry.
+3. `tnfr.dynamics.integrators` advances the declared nodal row. Optional Gamma
+   is an additive rate source, separate from the unforced product. Rate/history
+   evidence depends on the selected execution path.
 4. `tnfr.metrics` and `tnfr.physics` compute coherence, equilibrium, the tetrad,
    conservation diagnostics, pulse, and other read-outs.
-5. Operator execution passes through canonical grammar and operator
-   preconditions. Coupling and Resonance enforce the U3 phase gate before state
-   mutation.
+5. Grammar-aware sequence and runtime paths enforce word policies and live
+   checks. Direct glyphs, public classes and atomic stages have distinct
+   secondary effects; a low-level map is not a full sequence certificate.
+   Coupling and Resonance retain their path-specific circular U3 checks.
 
 For THOL, grammar admission, the optional public precondition gate, acceleration
 threshold crossing and a viable birth proposal are distinct checks. The public
@@ -136,13 +139,14 @@ The canonical diagnostic tetrad is `(Phi_s, |grad phi|, K_phi, xi_C)`.
 `Psi = K_phi + i J_phi` is a derived complex field and does not replace `K_phi`
 in the tetrad.
 
-- Wrapped phase differences and wrapped curvature have exact magnitude bound
-  `pi`.
+- Wrapped phase differences have magnitude bound `pi`; wrapped curvature has
+  that bound where its represented resultant defines a direction.
 - `0.9*pi` is an operational curvature warning margin.
 - `pi/4` per-node potential and `pi/2` potential drift are selected safety
   policies, not topology-independent bounds.
-- The spectral coherence-length estimate scales as `1/sqrt(lambda_2)` under
-  its stated graph hypotheses.
+- Fitted coherence length is distinct from the tagged spectral fallback, which
+  selects the first eigenvalue above `1e-9`; it is `1/sqrt(lambda_2)` only under
+  the corresponding connectivity and cutoff hypotheses.
 - The tetrad is the canonical read-out. Complete reconstruction of arbitrary
   system state from four scalars remains an open stronger claim.
 
@@ -222,31 +226,41 @@ parameters live in `tnfr.constants.operational`.
 
 ## Documentation architecture
 
-The documentation has four layers:
+The [documentation map](docs/README.md) owns guide responsibilities and update
+rules. The [theory index](theory/README.md) owns scientific reference status;
+the [execution plan](theory/research/FIVE_STAGE_EXECUTION_PLAN.md) owns research
+work. Generated contract tables read the registry; historical captures retain
+their original context and do not redefine current behavior.
 
-1. canonical doctrine: `AGENTS.md` and its exact agent mirror;
-2. normative specifications: grammar, field, and operator-contract documents;
-3. user and developer guides: README, architecture, testing, contributing, and
-   examples;
-4. dated research and audit records.
+Documentation checks, staging and site construction are described in
+[scripts/README](scripts/README.md). Publication triggers and permissions belong
+to [workflow YAML and its guide](.github/WORKFLOWS.md).
 
-`scripts/check_documentation.py` verifies invariant documentation assumptions.
-`scripts/verify_internal_references.py` validates local paths and Markdown
-fragments. `scripts/prepare_docs.py` stages canonical repository sources for the
-single MkDocs build. CI builds with strict mode and publishes the same artifact
-to GitHub Pages.
+### Single-file public facades
+
+These modules remain files, not importable same-named directories. Their
+functions/stubs own API details; this compact map replaces the separate guide.
+
+| Module | Responsibility |
+| --- | --- |
+| `tnfr.flatten` | Nested-data projection helpers; not an evolution or identity theorem |
+| `tnfr.gamma` | Registry of optional additive EPI-rate sources, separate from unforced nodal evolution |
+| `tnfr.glyph_history` | Recorded operator history |
+| `tnfr.glyph_runtime` | Runtime glyph execution |
+| `tnfr.immutable` | Immutable data helpers |
+| `tnfr.initialization` | Node/network initial conditions |
+| `tnfr.io` | Input/output facade |
+| `tnfr.node` | Nodal data/lifecycle helpers |
+| `tnfr.observers` | Runtime observer interfaces |
+| `tnfr.structural` | NFR creation and sequence execution |
 
 ## Extension constraints
 
-Changes must preserve the six invariants in
-[AGENTS.md](AGENTS.md#8-canonical-invariants):
-
-- EPI changes remain traceable to canonical operators and the nodal equation;
-- Coupling and Resonance retain the U3 phase gate;
-- nested EPI identity is preserved;
-- sequences remain grammar-valid;
-- telemetry retains TNFR units and canonical read-outs;
-- seeded evolution remains reproducible.
+Use the [working invariants](AGENTS.md#8-canonical-invariants) and the actual
+operator/solver contract. Reproducibility requires fixed source, inputs,
+configuration, seed, order, precision and backend. Do not replace a scoped
+precondition with an unconditional claim that a name, seed or grammar label
+ensures a trajectory property.
 
 New domain modules should depend on the canonical core and expose diagnostics
 without adding parallel definitions of constants, grammar sets, coherence, or

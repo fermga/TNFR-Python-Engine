@@ -35,13 +35,20 @@ $$\underbrace{\operatorname{rank}[\mu_{i+j}]}_{\text{Hankel}}
 \;=\;
 \underbrace{\gcd(k, p-1) + 1}_{\text{cyclotomy}} .$$
 
-- **Hankel = Krylov** is Kronecker's theorem (holds for *any* square ``L``).
+- **Hankel = reachable-and-observable dimension** holds for the scalar moment
+  sequence. Equality with the full Krylov dimension additionally requires that
+  the chosen output see every reachable mode. Here the pointed circulant has
+  nonzero weights `m_lambda/n` on every distinct eigenvalue, so that condition
+  holds. It is false for an arbitrary square matrix: with
+  `L=[[0,0],[1,0]]` and `v=(1,0)`, the Krylov dimension is two but
+  `v^T L^m v=(1,0,0,...)` has Hankel rank one.
 - **Krylov = #distinct eigenvalues** holds because ``L_rw`` is a **circulant**,
   so ``e_0`` has a non-zero projection on every Fourier mode and the cyclic
   subspace it generates picks up exactly one dimension per distinct eigenvalue.
 - **= gcd(k, p−1) + 1** for primes is the cyclotomy law (Gauss periods).
 
-This turns the static spectral rank into the order of the **temporal pulse**
+For a fixed common `nu_f>0`, this turns the static spectral rank into the
+order of the **temporal pulse**
 
 $$h(t) = e_0^\top e^{-\nu_f L t} e_0 = \sum_{j=1}^{s} a_j\, e^{-\nu_f \lambda_j t},
 \qquad s = \gcd(k, p-1) + 1 .$$
@@ -55,8 +62,8 @@ dimension matches the numerical distinct-eigenvalue count, and the pointed-pulse
 rank is **independent of the chosen point** (translation is an automorphism of
 the Cayley graph).
 
-**Composite controls (outside the theorem).** Hankel = Krylov still holds for
-composites (Kronecker is universal), but the cyclotomy value ``gcd(k, n−1) + 1``
+**Composite controls (outside the prime cyclotomy theorem).** Hankel = Krylov
+still holds for these pointed circulant constructions, but the value ``gcd(k, n−1) + 1``
 does **not** — e.g. ``n = 15, k = 2`` gives rank ``9 ≠ 3``. The identity is
 prime-specific; an occasional coincidental composite match (``n=15, k=3``) is why
 this is a **control**, not a primality test.
@@ -96,6 +103,15 @@ changing it.
   the root of a complex eigenvalue a "tone" without that derivation.
 
 ## 5. Honest scope
+
+The word "pulse" denotes the response of the declared fixed linear generator
+to an imposed localized initial condition. It does not derive the occurrence of
+AL, phase angular velocity, autonomous sustained oscillation or an arithmetic
+substrate from the nodal identity. The heat response need not oscillate.
+
+At zero capacity, the actual heat response is constant and does not retain
+the nonzero temporal rates; the moments of the unscaled matrix remain a
+separate algebraic diagnostic.
 
 This is a **recurrence-order identity** connecting the pointed pulse to the
 cyclotomy law — a structural bridge, not an algorithm. Building and analysing the

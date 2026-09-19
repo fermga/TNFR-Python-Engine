@@ -15,9 +15,7 @@ from tnfr.physics import certify_phase_nodal_coarse_graining
 def _state(graph, phases, frequencies=None):
     if frequencies is None:
         frequencies = [1.0] * len(graph)
-    for node, phase, frequency in zip(
-        graph, phases, frequencies, strict=True
-    ):
+    for node, phase, frequency in zip(graph, phases, frequencies, strict=True):
         graph.nodes[node].update(
             EPI=0.0,
             nu_f=float(frequency),
@@ -40,10 +38,7 @@ def test_fixed_branch_pairwise_channel_closes_but_circular_fibers_do_not():
 
     assert result.fixed_wrap_branch
     assert result.pairwise_strong_closure_certified
-    assert (
-        result.pairwise_operator_quotient
-        .global_strong_closure_within_tolerance
-    )
+    assert result.pairwise_operator_quotient.global_strong_closure_within_tolerance
     assert result.canonical_operator_quotient.sampled_callables_repeatable
     assert not result.canonical_operator_quotient.sampled_fiber_independence
     assert result.relative_pairwise_projection_residual < 1e-12
@@ -72,6 +67,10 @@ def test_block_constant_state_certifies_only_the_lifted_subspace():
     )
 
     assert result.canonical_lift_closure_certified
+    assert result.block_constant_capacity
+    assert result.macro_capacity_residual == 0.0
+    assert result.relative_macro_capacity_residual == 0.0
+    assert result.macro_capacity_within_tolerance
     assert result.sampled_projected_closure_within_tolerance
     assert not result.current_state_is_counterexample
     assert result.global_canonical_projected_closure is None
@@ -79,6 +78,43 @@ def test_block_constant_state_certifies_only_the_lifted_subspace():
     assert "global canonical projected autonomy remains unproved" in (
         result.claim_status
     )
+
+
+def test_nearly_equal_capacities_cannot_satisfy_the_exact_lift_hypothesis():
+    graph = _bipartite_state([0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
+    epsilon = 2.0**-35
+    graph.nodes[1]["nu_f"] = 1.0 + epsilon
+    result = certify_phase_nodal_coarse_graining(graph, [(0, 1, 2), (3, 4, 5)])
+
+    # Each node on the first side sees the same opposing phase. Its rate
+    # is nu_i/pi, so the exact-real difference is epsilon/pi, not zero.
+    rates = result.lifted_micro_canonical_nodal_rate
+    assert rates[1] - rates[0] == pytest.approx(epsilon / math.pi, rel=1e-5)
+    assert rates[1] != rates[0] == rates[2]
+    assert 0.0 < result.relative_canonical_lift_residual < result.tolerance
+    assert 0.0 < result.relative_macro_capacity_residual < result.tolerance
+    assert result.macro_capacity_within_tolerance
+    assert result.reversible_partition_closure_within_tolerance
+    assert not result.block_constant_capacity
+    assert not result.canonical_lift_hypotheses_satisfied
+    assert not result.canonical_lift_closure_certified
+    assert result.support_status == "sampled_only"
+    assert result.claim_status.startswith("ABSTAINED")
+
+
+def test_small_nonzero_resultant_is_a_numerical_margin_not_a_proved_singularity():
+    angle = math.pi / 2 - 7.5e-11
+    graph = _state(nx.complete_bipartite_graph(2, 2), [-angle, angle] * 2)
+    result = certify_phase_nodal_coarse_graining(graph, [(0, 1), (2, 3)])
+
+    assert result.fixed_wrap_branch
+    assert result.wrap_branch_margin > result.tolerance
+    assert 0.0 < result.minimum_circular_resultant < result.tolerance
+    assert not result.circular_means_defined
+    assert not result.canonical_lift_closure_certified
+    assert result.support_status == "abstained_circular_margin"
+    assert "does not prove a circular-mean singularity" in result.claim_status
+    assert "numerically zero" not in result.claim_status
 
 
 def test_certificate_matches_the_engine_phase_only_pressure_hook():
@@ -238,9 +274,7 @@ def test_canonical_support_follows_networkx_neighbor_semantics(graph_type):
     )
 
     expected = (
-        ((1, 2), (0, 2), (1,))
-        if graph.is_directed()
-        else ((1, 2), (0, 2), (0, 1))
+        ((1, 2), (0, 2), (1,)) if graph.is_directed() else ((1, 2), (0, 2), (0, 1))
     )
     assert result.macro_neighbor_support == expected
     assert result.canonical_lift_hypotheses_satisfied

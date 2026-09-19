@@ -87,7 +87,6 @@ def evaluate_composite_epi_regularity_transform(
     space: BanachSpaceEPI | None = None,
     regularity_kwargs: Mapping[str, float] | None = None,
 ) -> CompositeEPIRegularityEvaluation: ...
-
 def evaluate_coherence_transform(
     element: BEPIElement,
     transform: Callable[[BEPIElement], BEPIElement],

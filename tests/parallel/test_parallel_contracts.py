@@ -66,7 +66,9 @@ def test_distributed_engine_rejects_invalid_chunk_size(chunk_size):
         )
 
 
-@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
 def test_chunk_worker_matches_global_si_without_reconstructing_graph_kind(graph_type):
     graph = _graph(graph_type)
     expected = compute_Si(graph, inplace=False, n_jobs=1)
@@ -124,6 +126,8 @@ def test_simulation_seed_makes_generated_graph_statistics_reproducible():
     first = engine.simulate_large_network(20, 0.2, [], chunk_size=5, seed=17)
     second = engine.simulate_large_network(20, 0.2, [], chunk_size=5, seed=17)
     assert first["network_stats"] == second["network_stats"]
+
+
 def test_partitioner_exposes_affinity_name_and_legacy_alias():
     partitioner = FractalPartitioner(affinity_threshold=0.7)
     assert partitioner.affinity_threshold == pytest.approx(0.7)
@@ -153,9 +157,9 @@ def test_partitioner_affinity_alias_matches_canonical_method():
 
     affinity = partitioner._compute_community_affinity(graph, {0}, 1)
     assert affinity == pytest.approx(1.0)
-    assert partitioner._compute_community_coherence(
-        graph, {0}, 1
-    ) == pytest.approx(affinity)
+    assert partitioner._compute_community_coherence(graph, {0}, 1) == pytest.approx(
+        affinity
+    )
 
 
 def test_partitioner_spatial_index_respects_phase_wrap():
@@ -169,16 +173,10 @@ def test_partitioner_spatial_index_respects_phase_wrap():
     nx.set_node_attributes(graph, phases, ALIAS_THETA[0])
     partitioner._build_spatial_index(graph)
 
-    index_by_node = {
-        node: index for index, node in partitioner._node_index_map.items()
-    }
+    index_by_node = {node: index for index, node in partitioner._node_index_map.items()}
     coords = partitioner._kdtree.data
-    wrap_distance = math.dist(
-        coords[index_by_node[0]], coords[index_by_node[1]]
-    )
-    opposite_distance = math.dist(
-        coords[index_by_node[0]], coords[index_by_node[2]]
-    )
+    wrap_distance = math.dist(coords[index_by_node[0]], coords[index_by_node[1]])
+    opposite_distance = math.dist(coords[index_by_node[0]], coords[index_by_node[2]])
     assert wrap_distance < opposite_distance
 
 
@@ -200,9 +198,7 @@ def test_partitioner_rejects_invalid_coherence_threshold(threshold):
         (ALIAS_THETA, False, "phase.*finite real"),
     ],
 )
-def test_partitioner_rejects_invalid_canonical_coordinates(
-    aliases, value, message
-):
+def test_partitioner_rejects_invalid_canonical_coordinates(aliases, value, message):
     graph = nx.empty_graph(1)
     graph.nodes[0][aliases[0]] = value
     with pytest.raises(ValueError, match=message):

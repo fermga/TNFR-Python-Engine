@@ -51,40 +51,52 @@ def main() -> int:
     all_equiv = True
     for r in audit_word_equivariance():
         all_equiv &= r.is_equivariant
-        print(f"  {r.label:<18} {'.'.join(r.glyphs):<24} {r.residual:>10.2e} "
-              f"{str(r.is_equivariant):>6}")
+        print(
+            f"  {r.label:<18} {'.'.join(r.glyphs):<24} {r.residual:>10.2e} "
+            f"{str(r.is_equivariant):>6}"
+        )
 
     cycle, sigma, node = _test_cases()[0]
     word = [Emission, Coupling, Coherence, Silence]
-    full, worst_prefix, holds = composition_closure_holds(word, cycle, sigma,
-                                                          node)
+    full, worst_prefix, holds = composition_closure_holds(word, cycle, sigma, node)
     fixed, spread = word_preserves_fix(word, cycle)
     print()
-    print(f"  closure witness (Bootstrap+close): full={full:.2e} "
-          f"worst_prefix={worst_prefix:.2e} holds={holds}")
-    print(f"  Fix(Gamma) preserved (symmetric sweep): fixed={fixed} "
-          f"spread={spread:.2e}")
+    print(
+        f"  closure witness (Bootstrap+close): full={full:.2e} "
+        f"worst_prefix={worst_prefix:.2e} holds={holds}"
+    )
+    print(
+        f"  Fix(Gamma) preserved (symmetric sweep): fixed={fixed} "
+        f"spread={spread:.2e}"
+    )
 
     audit = CircularityAudit()  # pure representation theory / relabeling
     _ = ExperimentManifest(
         claim_id="NT-P01b",
         git_sha="local",
-        versions={"python": platform.python_version(),
-                  "numpy": np.__version__},
+        versions={"python": platform.python_version(), "numpy": np.__version__},
         seed=None,
         operator_sequence=("AL", "UM", "IL", "SHA"),
         uses_known_factors=False,
         input_bits=input_bit_length(6),
-        controls=("cycle_rotation", "star_leaf_swap", "prefix_induction",
-                  "fix_preservation_sweep"),
+        controls=(
+            "cycle_rotation",
+            "star_leaf_swap",
+            "prefix_induction",
+            "fix_preservation_sweep",
+        ),
         artifacts=(),
     )
     print()
     print(f"  all canonical words equivariant : {all_equiv}")
-    print(f"  composition closure             : {ClaimStatus.DERIVED.value} "
-          "(induction) on MEASURED base case")
-    print(f"  Fix(Gamma) preservation         : {ClaimStatus.DERIVED.value} "
-          "(corollary)")
+    print(
+        f"  composition closure             : {ClaimStatus.DERIVED.value} "
+        "(induction) on MEASURED base case"
+    )
+    print(
+        f"  Fix(Gamma) preservation         : {ClaimStatus.DERIVED.value} "
+        "(corollary)"
+    )
     print(f"  circularity                     : {audit.verdict.value}")
     ok = all_equiv and holds and fixed
     return 0 if ok else 1

@@ -17,8 +17,11 @@ from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ...errors import TNFRValueError
 from ...types import TNFRGraph, real_scalar_epi
 from .._argument_validation import (
-    finite_node_real, finite_real, nonnegative_integer,
-    reject_operator_argument, strict_bool,
+    finite_node_real,
+    finite_real,
+    nonnegative_integer,
+    reject_operator_argument,
+    strict_bool,
 )
 from .._thol_config import resolve_thol_bifurcation_threshold
 
@@ -90,7 +93,11 @@ def _require_indexed_acceleration_history(history: Any, source: str) -> None:
 
 
 def validate_self_organization_strict(
-    G: TNFRGraph, node: Any, *, tau=None, emit_warnings: bool = True,
+    G: TNFRGraph,
+    node: Any,
+    *,
+    tau=None,
+    emit_warnings: bool = True,
 ) -> None:
     """Check the optional public THOL gate without changing graph state.
 
@@ -105,13 +112,13 @@ def validate_self_organization_strict(
     execution records belong to a successful operator commit.
     """
     emit_warnings = strict_bool(
-        emit_warnings, operator=_OPERATOR, label="emit_warnings",
+        emit_warnings,
+        operator=_OPERATOR,
+        label="emit_warnings",
     )
     data = G.nodes[node]
     epi = _finite_node_epi(data, label="EPI")
-    dnfr = finite_node_real(
-        data, ALIAS_DNFR, 0.0, operator=_OPERATOR, label="DeltaNFR"
-    )
+    dnfr = finite_node_real(data, ALIAS_DNFR, 0.0, operator=_OPERATOR, label="DeltaNFR")
     vf = finite_node_real(
         data,
         ALIAS_VF,
@@ -180,7 +187,8 @@ def validate_self_organization_strict(
         )
     if observation.source is not None:
         _require_indexed_acceleration_history(
-            data[observation.source], observation.source,
+            data[observation.source],
+            observation.source,
         )
     history_length = observation.history_length
     if history_length < min_history:
@@ -190,7 +198,9 @@ def validate_self_organization_strict(
             f"{min_history} required",
         )
     d2_epi = finite_real(
-        observation.value, operator=_OPERATOR, label="signed EPI acceleration",
+        observation.value,
+        operator=_OPERATOR,
+        label="signed EPI acceleration",
     )
 
     metabolic = strict_bool(

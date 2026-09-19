@@ -14,9 +14,9 @@ execution.
 
 from __future__ import annotations
 
-from fractions import Fraction
 import json
 import math
+from fractions import Fraction
 from typing import Any
 
 from tnfr.physics import (
@@ -84,9 +84,7 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
             "current_hex": [
                 value.hex() for value in counterexample.binary64_current_pair
             ],
-            "local_hex": [
-                value.hex() for value in counterexample.binary64_local_pair
-            ],
+            "local_hex": [value.hex() for value in counterexample.binary64_local_pair],
             "global_hex": [
                 value.hex() for value in counterexample.binary64_global_pair
             ],
@@ -141,9 +139,7 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
                 alpha_one_class.future_binary64_execution_certified
             ),
             "solver_accuracy": alpha_one_class.solver_accuracy_certified,
-            "full_tnfr_stability": (
-                alpha_one_class.full_tnfr_stability_certified
-            ),
+            "full_tnfr_stability": (alpha_one_class.full_tnfr_stability_certified),
         },
     }
 

@@ -1,121 +1,30 @@
-## Pull Request: [Brief Title]
+## Problem and resulting behavior
 
-### 🎯 Intent
-<!-- Which coherence is improved or what structural capability is added? -->
+<!-- State the concrete problem and resulting behavior. Link related issues. -->
 
-### 🔧 Changes
-<!-- High-level summary of changes -->
+## Scope
 
-**Type of Change**:
-- [ ] New feature (coherence expansion)
-- [ ] Bug fix (stability improvement)
-- [ ] Performance optimization
-- [ ] Documentation update
-- [ ] Domain extension
-- [ ] Community pattern
-- [ ] Infrastructure/tooling
+<!-- Identify affected APIs, model assumptions, documentation owners,
+dependencies or data formats. Omit categories that do not apply. -->
 
-### 🔬 Structural Impact
+## Validation
 
-**Operators Involved**: 
-<!-- List structural operators touched: emission, reception, coherence, etc. -->
+<!-- List commands actually run, relevant results and untested scope.
+Use TESTING.md for commands. Distinguish exact proofs, numerical checks and
+observations. For performance work, include workload and comparison method. -->
 
-**Affected Invariants**: 
-<!-- Reference numbered canonical invariants from AGENTS.md: #1, #4, etc. -->
+## Review notes
 
-**Metrics Impact**:
-<!-- Describe expected changes to C(t), Si, νf, or phase -->
-- C(t): 
-- Si: 
-- νf: 
-- Phase: 
+<!-- Explain material limitations, compatibility changes or migration needs. -->
 
-### ✅ Quality Checklist
+- [ ] I checked affected definitions and existing implementation owners.
+- [ ] This description reports validation actually performed and its limits.
+- [ ] Relevant documentation and meaningful regression coverage are updated,
+      or their absence is explained.
 
-**Code Quality**:
-- [ ] All tests pass locally
-- [ ] New tests added for new functionality
-- [ ] Type annotations complete (mypy passes)
-- [ ] Docstrings follow NumPy style guide
-- [ ] Code follows TNFR canonical conventions
-- [ ] `.pyi` stub files generated/updated
+See [CONTRIBUTING.md](../CONTRIBUTING.md) and [TESTING.md](../TESTING.md).
+For undisclosed vulnerabilities, follow [SECURITY.md](../SECURITY.md).
 
-**TNFR Canonical Requirements**:
-- [ ] EPI changes only via structural operators
-- [ ] Structural units (Hz_str) preserved
-- [ ] ΔNFR semantics maintained
-- [ ] Operator closure preserved
-- [ ] Phase verification explicit in couplings
-- [ ] Node birth/collapse conditions respected
-- [ ] Operational fractality maintained
-- [ ] Determinism/reproducibility ensured
-- [ ] Structural metrics exposed in telemetry
-- [ ] Domain neutrality maintained
-
-**Testing**:
-- [ ] Monotonicity tests pass (coherence doesn't decrease)
-- [ ] Bifurcation tests pass (when applicable)
-- [ ] Propagation tests pass (resonance)
-- [ ] Multi-scale tests pass (fractality)
-- [ ] Reproducibility verified (seeds work)
-
-**Documentation**:
-- [ ] CHANGELOG fragment added (`docs/changelog.d/`)
-- [ ] API documentation updated (if applicable)
-- [ ] Examples updated (if applicable)
-- [ ] README updated (if applicable)
-
-**Security** (if applicable):
-- [ ] No vulnerabilities introduced
-- [ ] Security audit passed (`make security-audit`)
-- [ ] Dependency vulnerabilities addressed
-
-### 🧪 Testing Evidence
-
-**Test Coverage**:
-```
-# Paste test output showing new coverage
-```
-
-**Benchmark Results** (if performance-related):
-```
-# Paste benchmark comparison
-```
-
-**Health Metrics** (if applicable):
-```
-# Show C(t), Si measurements for new patterns/features
-```
-
-### 🔗 Related Issues
-<!-- Link related issues: Closes #123, Relates to #456 -->
-
-### 📋 Additional Context
-<!-- Any other information reviewers should know -->
-
-### 🎨 Visual Changes (if applicable)
-<!-- Screenshots or diagrams showing UI/visualization changes -->
-
----
-
-### For Extension Contributors
-
-**Extension-Specific Checks** (if submitting domain extension):
-- [ ] Follows `TNFRExtension` base class structure
-- [ ] All patterns achieve health score > 0.75
-- [ ] Minimum 3 validated use cases per pattern
-- [ ] Integration tests included
-- [ ] Domain documentation complete
-- [ ] Real-world mapping clearly explained
-- [ ] Extension validation passed
-
-**Community Pattern Checks** (if submitting pattern):
-- [ ] Pattern uses canonical English operators
-- [ ] Health metrics documented
-- [ ] Domain context explained
-- [ ] Validation method described
-
----
-
-### Reviewer Notes
-<!-- Space for reviewer comments and feedback -->
+<!-- No universal coherence-score threshold, mandatory numerical test for a
+documentation edit, or assumption that every operator increases coherence.
+Workflow scope is centralized in .github/WORKFLOWS.md. -->

@@ -48,39 +48,59 @@ def _edge_pressure(graph):
         for neighbor, data in neighbors.items():
             weight = (
                 sum(edge.get("weight", 1.0) for edge in data.values())
-                if graph.is_multigraph() else data.get("weight", 1.0)
+                if graph.is_multigraph()
+                else data.get("weight", 1.0)
             )
             weighted.append((neighbor, weight))
         strength = sum(weight for _, weight in weighted)
         if strength:
-            expected[node] = sum(
-                weight * (
-                    get_attr(graph.nodes[neighbor], ALIAS_EPI)
-                    - get_attr(graph.nodes[node], ALIAS_EPI)
-                ) for neighbor, weight in weighted
-            ) / strength
+            expected[node] = (
+                sum(
+                    weight
+                    * (
+                        get_attr(graph.nodes[neighbor], ALIAS_EPI)
+                        - get_attr(graph.nodes[node], ALIAS_EPI)
+                    )
+                    for neighbor, weight in weighted
+                )
+                / strength
+            )
     return expected
 
 
-@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
 @pytest.mark.parametrize("size", [999, 1000])
 @pytest.mark.parametrize("frequency", [0.0, 2.0])
-def test_graph_size_does_not_change_weighted_pressure(backend, graph_type, size, frequency):
+def test_graph_size_does_not_change_weighted_pressure(
+    backend, graph_type, size, frequency
+):
     graph = _graph(graph_type, size, frequency)
     before = [
-        tuple(get_attr(graph.nodes[n], alias) for alias in (ALIAS_EPI, ALIAS_VF, ALIAS_THETA))
+        tuple(
+            get_attr(graph.nodes[n], alias)
+            for alias in (ALIAS_EPI, ALIAS_VF, ALIAS_THETA)
+        )
         for n in graph
     ]
     backend.compute_delta_nfr(graph)
-    np.testing.assert_allclose(_pressure(graph), _edge_pressure(graph), atol=1e-12, rtol=0)
+    np.testing.assert_allclose(
+        _pressure(graph), _edge_pressure(graph), atol=1e-12, rtol=0
+    )
     after = [
-        tuple(get_attr(graph.nodes[n], alias) for alias in (ALIAS_EPI, ALIAS_VF, ALIAS_THETA))
+        tuple(
+            get_attr(graph.nodes[n], alias)
+            for alias in (ALIAS_EPI, ALIAS_VF, ALIAS_THETA)
+        )
         for n in graph
     ]
     assert after == before
 
 
-@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
 def test_all_pressure_channels_match_canonical_dispatch(backend, graph_type):
     graph = _graph(graph_type, 1000, 1.0)
     rng = np.random.default_rng(7)

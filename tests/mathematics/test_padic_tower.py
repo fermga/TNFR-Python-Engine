@@ -21,11 +21,11 @@ from tnfr.mathematics import padic_tower as pt
 from tnfr.mathematics.padic_tower import (
     RemeshContractAudit,
     compatible_connection_set,
+    laplacian_commutation_residual,
     lift_intertwining_residual,
     lift_reduction_residual,
-    laplacian_commutation_residual,
-    padic_lift_map,
     padic_laplacian,
+    padic_lift_map,
     padic_spectral_gaps,
     padic_transition,
     projective_commutation_residual,
@@ -38,10 +38,12 @@ from tnfr.physics.spectral_projectors import derived_tolerance
 # Small primes and low exponents; both a single-generator base and the units.
 PRIMES = [2, 3, 5, 7]
 LEVELS = [1, 2]
-BASES = {2: [frozenset({1})],
-         3: [frozenset({1}), frozenset({1, 2})],
-         5: [frozenset({1}), frozenset({1, 2, 3, 4})],
-         7: [frozenset({1}), frozenset({1, 2, 3, 4, 5, 6})]}
+BASES = {
+    2: [frozenset({1})],
+    3: [frozenset({1}), frozenset({1, 2})],
+    5: [frozenset({1}), frozenset({1, 2, 3, 4})],
+    7: [frozenset({1}), frozenset({1, 2, 3, 4, 5, 6})],
+}
 
 
 def _cases():
@@ -62,7 +64,7 @@ CASES = list(_cases())
 @pytest.mark.parametrize("p,e", [(2, 1), (3, 1), (3, 2), (5, 1)])
 def test_reduction_map_is_stochastic(p, e):
     R = projective_scale_map(p, e)
-    assert len(R) == p ** e
+    assert len(R) == p**e
     assert len(R[0]) == p ** (e + 1)
     for row in R:
         assert sum(row) == Fraction(1)  # each fiber averages to 1
@@ -74,10 +76,10 @@ def test_reduction_map_is_stochastic(p, e):
 def test_lift_map_is_constant_on_fibers(p, e):
     Lift = padic_lift_map(p, e)
     assert len(Lift) == p ** (e + 1)
-    assert len(Lift[0]) == p ** e
+    assert len(Lift[0]) == p**e
     for x in range(p ** (e + 1)):
         # row x is the indicator of the coarse node x mod p^e
-        assert Lift[x][x % (p ** e)] == Fraction(1)
+        assert Lift[x][x % (p**e)] == Fraction(1)
         assert sum(Lift[x]) == Fraction(1)
 
 
@@ -97,8 +99,7 @@ def test_laplacian_commutation_is_exact(p, e, base):
 # --------------------------------------------------------------------------- #
 # Required test 2: lift/reduction consistency (exact)
 # --------------------------------------------------------------------------- #
-@pytest.mark.parametrize("p,e", [(2, 1), (2, 2), (3, 1), (3, 2), (5, 1),
-                                 (7, 1)])
+@pytest.mark.parametrize("p,e", [(2, 1), (2, 2), (3, 1), (3, 2), (5, 1), (7, 1)])
 def test_lift_is_right_inverse_of_reduction(p, e):
     assert lift_reduction_residual(p, e) == Fraction(0)
 
@@ -114,9 +115,12 @@ def test_surviving_spectrum_containment(p, e, base):
     dist = surviving_spectrum_containment(p, e, base)
     tol = derived_tolerance(
         np.array(
-            [[float(x) for x in row]
-             for row in padic_laplacian(
-                 p, e + 1, compatible_connection_set(p, e + 1, base))],
+            [
+                [float(x) for x in row]
+                for row in padic_laplacian(
+                    p, e + 1, compatible_connection_set(p, e + 1, base)
+                )
+            ],
             dtype=float,
         )
     )
@@ -168,7 +172,8 @@ def test_remesh_not_claimed_by_default():
     d = audit.to_dict()
     assert d["realizes_remesh"] is False
     assert not any(
-        d[k] for k in (
+        d[k]
+        for k in (
             "epi_recursion_verified",
             "network_scale_verified",
             "identity_preserved_verified",
@@ -178,8 +183,9 @@ def test_remesh_not_claimed_by_default():
 
 
 def test_remesh_realized_only_when_all_conditions_hold():
-    partial = RemeshContractAudit(epi_recursion_verified=True,
-                                  network_scale_verified=True)
+    partial = RemeshContractAudit(
+        epi_recursion_verified=True, network_scale_verified=True
+    )
     assert partial.realizes_remesh is False
     full = RemeshContractAudit(True, True, True, True)
     assert full.realizes_remesh is True

@@ -188,10 +188,7 @@ riemann_s_phase = sampled_argument_value
 # --------------------------------------------------------------------------- #
 def test_selected_real_spectra():
     print("=" * 78)
-    print(
-        "TEST 1 -- SELECTED REAL MATRICES: self-adjoint => arg "
-        "in {0, pi}"
-    )
+    print("TEST 1 -- SELECTED REAL MATRICES: self-adjoint => arg " "in {0, pi}")
     print("=" * 78)
     # A path graph whose length is chosen from a short prime list.
     primes = _sieve(20)  # [2,3,5,7,11,13,17,19]
@@ -230,9 +227,7 @@ def test_selected_real_spectra():
 # --------------------------------------------------------------------------- #
 def test_sampled_argument_values():
     print("=" * 78)
-    print(
-        "TEST 2 -- SAMPLED ARGUMENTS near selected zeta-zero heights"
-    )
+    print("TEST 2 -- SAMPLED ARGUMENTS near selected zeta-zero heights")
     print("=" * 78)
     nu_f, primes = selected_prime_frequencies(60)
     source = (
@@ -282,8 +277,7 @@ def test_sampled_argument_values():
 def test_selected_unitary_input():
     print("=" * 78)
     print(
-        "TEST 3 -- SELECTED UNITARY: U(t) = diag(exp(i t nu_f)) reaches the "
-        "circle,"
+        "TEST 3 -- SELECTED UNITARY: U(t) = diag(exp(i t nu_f)) reaches the " "circle,"
     )
     print("           but is non-self-adjoint and nu_f = log p is IMPOSED")
     print("=" * 78)
@@ -333,9 +327,7 @@ def test_selected_unitary_input():
 # --------------------------------------------------------------------------- #
 def test_selected_exponential_map():
     print("=" * 78)
-    print(
-        "TEST 4 -- SELECTED EXPONENTIAL: real combination vs exp(i M)"
-    )
+    print("TEST 4 -- SELECTED EXPONENTIAL: real combination vs exp(i M)")
     print("=" * 78)
     primes = _sieve(20)
     G = nx.path_graph(len(primes))

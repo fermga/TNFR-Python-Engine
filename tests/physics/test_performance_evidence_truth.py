@@ -105,9 +105,12 @@ def test_integration_forecasts_require_explicit_evidence():
         "memory_savings": None,
     }
     assert measured.expected_benefit == {"speedup": 1.2}
-    assert TNFREmergentIntegrationEngine._measure_baseline_performance(
-        object(), object(), unmeasured
-    ) == {}
+    assert (
+        TNFREmergentIntegrationEngine._measure_baseline_performance(
+            object(), object(), unmeasured
+        )
+        == {}
+    )
 
 
 def _pattern(opportunity_type: IntegrationOpportunity) -> IntegrationPattern:
@@ -150,9 +153,10 @@ def test_only_finite_metrics_with_measured_provenance_are_reported():
         "text": "1.5",
     }
 
-    assert TNFREmergentIntegrationEngine._measured_metric_mapping(
-        metrics, "not_measured"
-    ) == {}
+    assert (
+        TNFREmergentIntegrationEngine._measured_metric_mapping(metrics, "not_measured")
+        == {}
+    )
     assert TNFREmergentIntegrationEngine._measured_metric_mapping(
         metrics, "measured"
     ) == {"speedup": 1.25}

@@ -41,9 +41,7 @@ def _source(
 def _diagonal_head_gain(q: Fraction, dimension: int) -> ExactSquareMatrix:
     return tuple(
         tuple(
-            (q if row == 0 else Fraction(1))
-            if row == column
-            else Fraction(0)
+            (q if row == 0 else Fraction(1)) if row == column else Fraction(0)
             for column in range(dimension)
         )
         for row in range(dimension)
@@ -71,10 +69,7 @@ def _left_action(
 ) -> tuple[Fraction, ...]:
     return tuple(
         sum(
-            (
-                vector[row] * matrix[row][column]
-                for row in range(len(matrix))
-            ),
+            (vector[row] * matrix[row][column] for row in range(len(matrix))),
             Fraction(0),
         )
         for column in range(len(matrix))
@@ -83,8 +78,7 @@ def _left_action(
 
 def _zero_matrix(dimension: int) -> ExactSquareMatrix:
     return tuple(
-        tuple(Fraction(0) for _column in range(dimension))
-        for _row in range(dimension)
+        tuple(Fraction(0) for _column in range(dimension)) for _row in range(dimension)
     )
 
 
@@ -217,8 +211,7 @@ def test_exact_prefix_powers_and_stationary_inequalities_are_reproducible() -> N
         )
     )
     assert (
-        certificate
-        .conditional_policy_family_spatial_disagreement_nonincrease_certified
+        certificate.conditional_policy_family_spatial_disagreement_nonincrease_certified
     )
     assert certificate.uniform_intrablock_prefix_bound_certified
     assert certificate.repeated_exact_model_spatial_disagreement_stability_certified
@@ -237,9 +230,7 @@ def test_universal_horizon_closes_every_head_avoiding_companion_path() -> None:
     # The shift chain still has a head-avoiding path one step earlier.  This
     # makes L a sharp universal path bound; it does not claim that every
     # concrete interior-alpha orbit needs L cycles to contract.
-    assert exact_square_matrix_power(avoidance, horizon - 1) != _zero_matrix(
-        horizon
-    )
+    assert exact_square_matrix_power(avoidance, horizon - 1) != _zero_matrix(horizon)
 
 
 def test_q_zero_annihilates_the_energy_envelope_within_one_block() -> None:
@@ -271,8 +262,7 @@ def test_q_one_is_a_valid_zero_margin_boundary_without_convergence_claim() -> No
     assert certificate.exact_uniform_normalized_block_margin_lower_bound == 0
     assert certificate.exact_uniform_block_energy_gain_upper_bound == 1
     assert (
-        certificate
-        .conditional_policy_family_spatial_disagreement_nonincrease_certified
+        certificate.conditional_policy_family_spatial_disagreement_nonincrease_certified
     )
     assert certificate.repeated_exact_model_spatial_disagreement_stability_certified
     assert not certificate.uniform_positive_normalized_block_margin_certified
@@ -399,8 +389,7 @@ def test_varying_exact_schedule_maps_obey_every_prefix_and_block_bound() -> None
         observed_energy = _augmented_energy(history, temporal_weights)
         assert observed_energy <= previous_energy
         assert observed_energy <= (
-            certificate.exact_cycle_energy_gain_upper_bound(cycle)
-            * initial_energy
+            certificate.exact_cycle_energy_gain_upper_bound(cycle) * initial_energy
         )
 
 
@@ -540,9 +529,7 @@ def test_private_reseal_cannot_promote_inconsistent_derivatives(
     resealed = policy_module._seal(forged)
 
     assert not resealed.policy_stability_certificate_certified
-    assert resealed.failed_conditions == (
-        "remesh_schedule_policy_proof_fields_intact",
-    )
+    assert resealed.failed_conditions == ("remesh_schedule_policy_proof_fields_intact",)
 
 
 def test_tampered_hostile_numeric_field_is_rejected_without_dispatch() -> None:

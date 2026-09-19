@@ -19,6 +19,22 @@ Run the complete documentation gate with:
 make docs
 ```
 
+The reference check covers maintained Markdown and skips ignored `artifacts/`,
+`output/`, `outputs/` and `results/` captures, whose paths and assertions retain
+their original context. Local
+research evidence is identified explicitly instead of linked as published content.
+
+The reference check also resolves this repository's GitHub `blob/main` and
+`tree/main` links against the checkout. It includes the Spanish manuscript and
+reference-style links, and ignores Markdown examples inside fenced code blocks.
+External websites and frozen run captures are outside this local check.
+
+The operator table in `docs/API_CONTRACTS.md` is generated from the registry.
+After an intentional contract change, run
+`python scripts/check_documentation.py --write-generated` and review the diff.
+The ordinary gate verifies exact table content, including postconditions; it
+does not update documentation silently.
+
 This validates references and executable examples before running a strict MkDocs
 build. Generated documentation sources and the rendered `site/` directory are not
 canonical sources.
@@ -45,3 +61,13 @@ record their seed, inputs, operator sequence, and generated manifest.
 
 See [ARCHITECTURE.md](../ARCHITECTURE.md), [TESTING.md](../TESTING.md), and
 [SECURITY.md](../SECURITY.md) for the governing contracts.
+
+## Retired profiler wrapper
+
+The old `run_reproducible_benchmarks.py` registry referenced four absent profiler
+programs and had no runnable workload. It has been removed. The remaining
+`tnfr profile-si` and `tnfr profile-pipeline` compatibility commands also depend
+on absent benchmark helpers and report unavailability in this checkout; they
+are not maintained profiling instructions. The [benchmark guide](../benchmarks/README.md)
+lists the current instruments. Their individual provenance requirements remain
+necessary; a seed and checksum alone do not prove reproducibility.

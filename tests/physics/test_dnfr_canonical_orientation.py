@@ -43,9 +43,7 @@ def _epi_vector(G, nodes):
 
 
 def _read_dnfr(G, nodes):
-    return np.array(
-        [get_attr(G.nodes[n], ALIAS_DNFR, 0.0) for n in nodes], dtype=float
-    )
+    return np.array([get_attr(G.nodes[n], ALIAS_DNFR, 0.0) for n in nodes], dtype=float)
 
 
 def _lrw_gradient(G):
@@ -136,14 +134,26 @@ def test_unit_weights_preserve_legacy_result():
     weights = {"w_phase": 0.0, "w_epi": 1.0, "w_vf": 0.0, "w_topo": 0.0}
 
     g_none = compute_fused_gradients_symmetric(
-        edge_src=edge_src, edge_dst=edge_dst, phase=phase, epi=epi, vf=vf,
-        weights=weights, edge_weight=None, accumulate_both_directions=False,
+        edge_src=edge_src,
+        edge_dst=edge_dst,
+        phase=phase,
+        epi=epi,
+        vf=vf,
+        weights=weights,
+        edge_weight=None,
+        accumulate_both_directions=False,
         use_jit=False,
     )
     g_ones = compute_fused_gradients_symmetric(
-        edge_src=edge_src, edge_dst=edge_dst, phase=phase, epi=epi, vf=vf,
-        weights=weights, edge_weight=np.ones(edge_src.shape[0]),
-        accumulate_both_directions=False, use_jit=False,
+        edge_src=edge_src,
+        edge_dst=edge_dst,
+        phase=phase,
+        epi=epi,
+        vf=vf,
+        weights=weights,
+        edge_weight=np.ones(edge_src.shape[0]),
+        accumulate_both_directions=False,
+        use_jit=False,
     )
     assert np.array_equal(g_none, g_ones)
 

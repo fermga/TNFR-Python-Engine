@@ -205,9 +205,7 @@ def test_private_reseal_cannot_forge_the_executor_abstention_reason(
     )
     altered_stage = replace(
         altered_stage,
-        _proof_stamp=event_runtime_module._executed_glyph_stage_stamp(
-            altered_stage
-        ),
+        _proof_stamp=event_runtime_module._executed_glyph_stage_stamp(altered_stage),
     )
     altered_stages = (altered_stage,) + execution.glyph_stage_evidence[1:]
     altered_composition = (
@@ -225,9 +223,7 @@ def test_private_reseal_cannot_forge_the_executor_abstention_reason(
         if item.init and item.name != "_proof_stamp"
     }
     execution_payload["glyph_stage_evidence"] = altered_stages
-    execution_payload["represented_epi_schedule_composition"] = (
-        altered_composition
-    )
+    execution_payload["represented_epi_schedule_composition"] = altered_composition
     unsealed_execution = OperatorEventExecutionResult(**execution_payload)
     altered_execution = replace(
         unsealed_execution,
@@ -287,9 +283,7 @@ def test_private_outer_reseal_cannot_hide_inconsistent_local_factor_evidence(
     altered_stage = replace(original_stage, certificate=altered_certificate)
     altered_stage = replace(
         altered_stage,
-        _proof_stamp=event_runtime_module._executed_glyph_stage_stamp(
-            altered_stage
-        ),
+        _proof_stamp=event_runtime_module._executed_glyph_stage_stamp(altered_stage),
     )
     assert not altered_stage._proof_fields_are_intact()
 

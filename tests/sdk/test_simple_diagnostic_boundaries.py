@@ -1,7 +1,7 @@
 """SDK observations preserve graph state and the canonical scalar/phase domains."""
 
-from copy import deepcopy
 import math
+from copy import deepcopy
 
 import networkx as nx
 import numpy as np
@@ -20,8 +20,11 @@ def _network(order=(0, 1)):
     graph = nx.Graph()
     for node in order:
         graph.add_node(
-            node, EPI=-1.0 - 2.0 * node, nu_f=1.0 + node,
-            delta_nfr=0.1 + 0.7 * node, phase=0.2 * node,
+            node,
+            EPI=-1.0 - 2.0 * node,
+            nu_f=1.0 + node,
+            delta_nfr=0.1 + 0.7 * node,
+            phase=0.2 * node,
         )
         graph.nodes[node][ALIAS_SI[0]] = 99.0 + node
     graph.add_edge(0, 1, weight=1.0)
@@ -46,7 +49,8 @@ def test_sense_index_means_all_nodes_without_writing_live_state():
 
 @pytest.mark.parametrize("array_result", [False, True])
 def test_sense_index_mapping_array_parity_and_detached_cache_writes(
-    monkeypatch, array_result,
+    monkeypatch,
+    array_result,
 ):
     network = _network()
 
@@ -98,8 +102,12 @@ def test_nonfinite_phase_is_an_error_not_degeneracy(value):
         network.avg_phase()
 
 
-@pytest.mark.parametrize("representation", [ensure_bepi, serialize_bepi, serialize_bepi_json])
-def test_nfr_preserves_signed_scalar_epi_across_live_and_serialized_forms(representation):
+@pytest.mark.parametrize(
+    "representation", [ensure_bepi, serialize_bepi, serialize_bepi_json]
+)
+def test_nfr_preserves_signed_scalar_epi_across_live_and_serialized_forms(
+    representation,
+):
     network = _network()
     for node in network.G:
         network.G.nodes[node]["EPI"] = representation(-1.0 - 2.0 * node)
@@ -123,7 +131,10 @@ def test_nonuniform_epi_cannot_be_reported_as_signed_scalar_magnitude(serialized
 @pytest.mark.parametrize("xi", [float("nan"), float("inf"), -float("inf"), -1.0])
 def test_unavailable_or_invalid_correlation_length_is_not_safe(xi):
     result = TetradSnapshot(
-        phi_s={0: 0.0}, grad_phi={0: 0.0}, k_phi={0: 0.0}, xi_c=xi,
+        phi_s={0: 0.0},
+        grad_phi={0: 0.0},
+        k_phi={0: 0.0},
+        xi_c=xi,
     ).is_safe()
     assert result["xi_c_safe"] is False
     assert result["overall"] is False

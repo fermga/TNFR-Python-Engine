@@ -556,13 +556,9 @@ def _validated_node_order(
             and set(requested) == set(graph_nodes)
         )
     except TypeError as exc:
-        raise TypeError(
-            "nodes must contain hashable graph node identifiers"
-        ) from exc
+        raise TypeError("nodes must contain hashable graph node identifiers") from exc
     if not same_nodes:
-        raise ValueError(
-            "nodes must be a duplicate-free permutation of graph nodes"
-        )
+        raise ValueError("nodes must be a duplicate-free permutation of graph nodes")
     return requested
 
 
@@ -572,10 +568,7 @@ def _dense_coherence_affinity(
 ) -> FloatMatrix:
     """Materialize and reorder the auxiliary affinity exactly once."""
 
-    from ..metrics.coherence import (
-        _is_sparse_affinity_payload,
-        coherence_matrix,
-    )
+    from ..metrics.coherence import _is_sparse_affinity_payload, coherence_matrix
 
     requested = _validated_node_order(G, nodes)
 

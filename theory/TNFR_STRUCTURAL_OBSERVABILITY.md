@@ -1,8 +1,10 @@
 # TNFR Structural Observability — the Symmetry-Sector Theorem (R1)
 
 **Status**: diffusion-sector base case — DERIVED (representation theory) +
-MEASURED (implementation-certified). The full operator-by-operator equivariance
-theorem is a later R1 stage and is **not** claimed here.
+MEASURED (finite implementation checks). Pointed operator/word covariance is
+tested on selected fixtures. A universal catalog equivariance theorem, a
+complete observability theorem and an analytic Riemann obstruction are **not**
+established here.
 **Modules**: [src/tnfr/physics/symmetry_sectors.py](../src/tnfr/physics/symmetry_sectors.py),
 [src/tnfr/physics/equivariance.py](../src/tnfr/physics/equivariance.py) ·
 **Tests**: [tests/physics/test_symmetry_sectors.py](../tests/physics/test_symmetry_sectors.py) ·
@@ -31,7 +33,8 @@ $\ker(Q_\Gamma)=\mathrm{Fix}(\Gamma)^\perp$, with
 
 $$\dim\mathrm{Fix}(\Gamma) = \#\{\text{vertex orbits of }\Gamma\}.$$
 
-By Schur's lemma an equivariant operator commutes with $Q_\Gamma$, so it
+By averaging the commutation identities over the finite group, an equivariant
+linear operator commutes with $Q_\Gamma$, so it
 block-diagonalises:
 
 $$\mathbb{R}^N = \mathrm{Fix}(\Gamma)\ \oplus\ \mathrm{Fix}(\Gamma)^\perp,\qquad
@@ -40,9 +43,11 @@ $$\mathbb{R}^N = \mathrm{Fix}(\Gamma)\ \oplus\ \mathrm{Fix}(\Gamma)^\perp,\qquad
 **Consequence for the flow.** With an orbit-constant `νf` (so `D_νf` also
 commutes with `P_σ`), the overdamped nodal-equation flow
 $\dot x = -D_{\nu f} L_{rw} x$ preserves both sectors. A symmetric seed stays in
-`Fix(Γ)`; the canonical dynamics alone cannot manufacture per-node structure that
+`Fix(Γ)`; this fixed-support diffusion cannot manufacture per-node structure that
 separates two nodes in the same orbit. Any such separation must come from the
-seed or an external per-node lever, not from the operator.
+seed or a departure from the stated equivariant evolution assumptions. This is
+not a claim that all possible TNFR evolutions, changing supports or effective
+descriptions satisfy those assumptions.
 
 ## 3. Certification (MEASURED)
 
@@ -87,8 +92,9 @@ make the break *exactly* `Aut(G) → Γ_o`:
   orbit: star `2 → 3` sectors (`{0},{1,2,3,4} → {0},{1},{2,3,4}`), cycle `1 → 4`.
 - **Break localization** (MEASURED): a pointed Emission maps `Fix(Aut(G))` **out**
   of `Fix(Aut(G))` (`break_magnitude ≈ 0.07 > 0`) yet **into** `Fix(Γ_o)`
-  (`stabilizer_residual = 0`). The broken directions are exactly the coset space
-  `Aut(G)/Γ_o = orbit(o)`; a singleton-orbit origin (the star centre) breaks
+  (`stabilizer_residual = 0`). The possible marked origins are parameterized by
+  the coset set `Aut(G)/Γ_o`, in bijection with `orbit(o)`; this discrete set
+  is not a linear space of broken directions. A singleton-orbit origin (the star centre) breaks
   nothing (`break_magnitude = 0`).
 
 **No privileged origin (conjugation).** Origins in one orbit are conjugate:
@@ -97,23 +103,24 @@ structures at `o` and `g(o)` are isomorphic — the choice of `0` in `(G_{p,k}, 
 is a labelling convention, and the arithmetic-pulse observables are independent
 of it.
 
-## 4b. Per-operator equivariance (all 13, certified under isolation)
+## 4b. Pointed per-operator covariance (finite isolated probes)
 
-The non-linear stage asks whether each operator `O` is equivariant,
-`O(P_σ x) = P_σ O(x)`. The testable form: an equivariant operator maps a
-`Fix(Γ)` state to a `Fix(Γ)` state, so applying it at `v` and at `σ(v)` on a
-σ-invariant seed gives σ-related results
+The probes compare actions at corresponding selected nodes:
+`O_(σv)(P_σ x) = P_σ O_v(x)`, evaluated on a σ-invariant seed.
+This covariance of the family of pointed maps differs from equivariance of
+one map with a fixed selector. A single selected-node emission can break the
+seed symmetry while still obeying the pointed covariance identity
 ([operator_equivariance.py](../src/tnfr/physics/operator_equivariance.py),
 [test_operator_equivariance.py](../tests/operators/test_operator_equivariance.py)).
 
 **Result (MEASURED).** On the vertex-transitive cycle (uniform seed) and the
 two-orbit star (orbit-constant seed), **all 13 canonical operators** — AL, EN,
 IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH — are equivariant to
-machine precision (residual $<10^{-6}$, most exactly $0$). Combined with the
-diffusion base case, a grammar-composed *word* of equivariant operators is
-equivariant, so no canonical word can move a symmetric state into
-$\mathrm{Fix}(\Gamma)^\perp$ — the §8.1.7 falsification search finds no
-counterexample.
+the selected tolerance (residual $<10^{-6}$, most exactly $0$) on these
+pointed comparisons. The helper reads four scalar channels on the original
+node set after refreshing pressure. It does not compare every history,
+created node, changed edge, selector or other state attribute; its boolean
+`is_equivariant` is a finite probe verdict, not an all-state theorem.
 
 **Root cause and fix (N01).** The certification requires each operator to be
 measured from an **independent, clean graph cache**. TNFR content-keyed caches
@@ -135,7 +142,8 @@ are isolated.
 
 ## 4c. Word composition closure (N06)
 
-The base case (§4b) plus one algebraic step give the *general* word theorem.
+The following algebraic theorem assumes complete equivariance of each map on
+its stated domain. The finite pointed probes in §4b do not prove that premise.
 
 **Theorem (composition closure).** If each factor `O_i` is Γ-equivariant
 (`O_i ρ(g) = ρ(g) O_i` for every automorphism `g`), then the grammar word
@@ -146,38 +154,36 @@ $$W' \rho(g) = O\,(W \rho(g)) = O\,(\rho(g)\,W) = (O \rho(g))\,W = \rho(g)\,(O W
 
 **Corollary (`Fix(Γ)` preservation).** An equivariant `W` maps `Fix(Γ)` into
 `Fix(Γ)`: if `ρ(g)x = x` for all `g` then `ρ(g) W(x) = W(ρ(g)x) = W(x)`. A
-symmetric configuration therefore **cannot** be pushed into `Fix(Γ)^⊥` by any
-grammar word — the wall of examples 117–122 and the Riemann residual
-`S(T) ∈ Fix(S_n)^⊥`.
+symmetric configuration therefore has no new component in `Fix(Γ)^⊥` under
+such a word. Grammar admission alone does not imply the premise, and no
+representation placing analytic `S(T)` in this finite complement is supplied.
 
-**Status.** The inductive **step is DERIVED** (the algebra above); the length-1
-**base case is MEASURED** (§4b, all 13 operators). The composition-closure
-*conclusion* is therefore DERIVED conditional on the measured base case — not a
-new empirical claim per word. The measurement in
-[word_equivariance.py](../src/tnfr/physics/word_equivariance.py) confirms it: the
+**Status.** The conditional composition theorem is exact. Small residuals on a
+finite base-case sample do not establish its hypothesis on later inputs, or
+control error accumulation under arbitrary composition. The independent probes in
+[word_equivariance.py](../src/tnfr/physics/word_equivariance.py) report that the
 five canonical words (Bootstrap, Bootstrap+close, Stabilize, Propagate, Explore)
 have **exactly zero** residual on both test cases, every prefix stays within
 tolerance (`composition_closure_holds`), and a Γ-symmetric sweep keeps the seed
 orbit-constant (`word_preserves_fix`)
 ([test_word_equivariance.py](../tests/physics/test_word_equivariance.py)). This
-closes remaining item (i) of §5; the non-equivariant **selector** (ii) is the
-pointed structure of §4 (N07).
+checks the recorded words and prefixes. A sequential sweep also needs its
+ordering respected by the group action; merely visiting every node does not
+prove equivariance. The pointed-selector result remains distinct (§4).
 
 ## 5. Honest scope
 
-This is the representation theory of graph automorphisms (Schur's lemma)
-re-expressed in the canonical emergent operator, with an implementation
-certificate. It **explains and unifies** the walls of the §9.5–§9.10 arc — the
-residue-digraph vertex-transitivity wall (ex 120), the substrate blindness, the
-spectral primality (ex 119) and the Riemann residual
-$S(T)\in\ker(\mathcal R_\infty)\cap\mathrm{Fix}(S_n)^\perp$ — as one
-`Fix(Γ)/Fix(Γ)^⊥` split for different groups. It is **not** new mathematics and
-closes no open problem. The diffusion base case, the per-operator audit (§4b, all
-13 equivariant under isolation), the word composition-closure theorem (§4c)
-**and** the pointed selector structure (§4, N07) are now established: composition
-preserves equivariance by a derived induction on the measured base case, and a
-localized selector performs a *declared* reduction `Aut(G) → Γ_o` (orbit–
-stabilizer, residual-sector refinement, origin conjugation) rather than a
-spontaneous break. The representation-theoretic picture of R1 is therefore
-complete; what it does **not** do is close any external open problem — it
-organizes and certifies the walls, nothing more.
+The reusable results are fixed-graph diffusion equivariance, the conditional
+composition theorem, and the group theory of pointed selectors. The finite
+operator/word residuals supplement those proofs without extending their
+quantifiers. An invariant input and equivariant observer explain nodewise
+constancy on vertex-transitive residue fixtures; arbitrary perturbed states
+fall outside that conclusion.
+
+A global spectral invariant is not a vector in the nontrivial sector merely
+because it distinguishes graphs. No map identifies analytic `S(T)` with a
+finite symmetry complement or REMESH kernel. The R1 decomposition is useful
+but not a complete joint-state observability theory, an autonomous symmetry
+selection mechanism, or a solution to an external open problem. Current
+cross-scale dynamic and geometric output obligations are maintained in
+[TNFR_SCALE_GEOMETRY_AND_BRIDGE.md](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md).

@@ -1,8 +1,8 @@
 # TNFR–Birch–Swinnerton-Dyer Structural-Pressure Research Notes
 
-**Status**: Pre-registered research programme; BSD-1 diagnostic implemented; obstruction classified as Branch B (open)
+**Status**: Auxiliary finite point-count diagnostic; BSD and any nodal dynamics bridge remain open
 **Date**: 2026-06-13
-**Scope**: TNFR-internal structural-pressure accumulation across the prime network; **not** a proof of the Clay Birch–Swinnerton-Dyer conjecture
+**Scope**: Declared arithmetic point-count products and comparison with known rank labels; **not** a nodal derivation or a proof of the Clay Birch–Swinnerton-Dyer conjecture
 **Primary anchors**: nodal equation `∂EPI/∂t = νf · ΔNFR(t)`, structural pressure `ΔNFR`, the shipped TNFR L-track (P32–P49, GL(1) Dirichlet), the P14 von-Mangoldt prime-ladder Hamiltonian (GL(1))
 
 ---
@@ -29,16 +29,22 @@ The shipped TNFR L-track builds **Dirichlet** L-functions — a GL(1) object:
 
 | Component | Existing source | Euler factor |
 | --- | --- | --- |
-| χ-twisted prime ladder (P32) | `src/tnfr/riemann/dirichlet_l.py` | `(1 − χ(p) p^{-s})^{-1}`, `|χ(p)| = 1` |
+| χ-twisted prime ladder (P32) | `src/tnfr/riemann/dirichlet_l.py` | `(1 − χ(p) p^{-s})^{-1}`; `\|χ(p)\|=1` away from the character modulus, `χ(p)=0` at its prime divisors |
 | von-Mangoldt Hamiltonian (P14) | `src/tnfr/riemann/prime_ladder_hamiltonian.py` | spectrum `{k log p}` |
 | Twisted continuation / Weil (P33–P49) | `src/tnfr/riemann/twisted_*` | GL(1) functional equation |
 
-Elliptic-curve L-functions are **GL(2)**:
+For an elliptic curve, the following **degree-two** Euler factor applies at
+primes of good reduction:
 
 $$
-L(E, s) = \prod_p \bigl(1 - a_p\, p^{-s} + p^{1-2s}\bigr)^{-1},
+L(E, s) = \prod_{p\ \mathrm{good}} \bigl(1 - a_p\, p^{-s} + p^{1-2s}\bigr)^{-1}
+\prod_{p\ \mathrm{bad}} L_p(E,s),
 \qquad a_p = p + 1 - \#E(\mathbb{F}_p), \quad |a_p| \le 2\sqrt{p}\ (\text{Hasse}).
 $$
+
+Bad-reduction factors require their own local definition. The Hasse bound in
+the display is stated for the smooth reduced elliptic curve. A uniform
+degree-two product over every prime would be incorrect.
 
 The degree-2 Euler factor carries the coefficient `a_p`, which the GL(1)
 track does not. **Building an `a_p`-weighted prime-ladder Hamiltonian (the
@@ -46,7 +52,7 @@ GL(2) analogue of P14) is the open milestone BSD-2** and is not assumed.
 
 ---
 
-## 2. TNFR-Native Reformulation
+## 2. Declared arithmetic comparison
 
 Read each prime `p` as a node. The deviation of the local point count from
 the neutral value `p + 1`,
@@ -55,16 +61,19 @@ $$
 a_p = p + 1 - \#E(\mathbb{F}_p),
 $$
 
-is the **structural pressure** at prime `p` — the arithmetic analogue of
-`ΔNFR` (how far the local reorganisation departs from the neutral count),
-bounded by Hasse `|a_p| ≤ 2√p`. The accumulated product
+is an arithmetic deviation, proposed as a pressure-like diagnostic at good
+primes. Calling it pressure does not supply an EPI chart, a constitutive
+response, a capacity law or a phase/support evolution. The product
 
 $$
 P(X) = \prod_{p \le X} \frac{\#E(\mathbb{F}_p)}{p}
 $$
 
-is the accumulated structural coherence of the curve across the prime
-network.
+is a classical point-count statistic. It is neither the canonical coherence
+`1/(1+|pressure|+|dEPI|)` nor the nodal accumulated change `integral nu*p dt`.
+The example includes point counts from the displayed equations at bad primes
+without constructing the full local L-function factors; that finite product
+must not be substituted for the good-reduction Euler product above.
 
 > **BSD-1**: Does structural-pressure accumulation `P(X)` separate elliptic
 > curves by rank — i.e. does `P(X) ∼ C (log X)^r` with `r` increasing with
@@ -100,8 +109,9 @@ The slope is `d(log P)/d(log log X)` over the tail, which equals `r` under
 `P(X) ∼ C (log X)^r`. The slopes are **strictly ordered by rank** and track
 `0, 1, 2, 3`.
 
-**BSD-1 verdict**: structural-pressure accumulation separates the ranks —
-the TNFR-native reproduction of the original 1965 BSD empirical discovery.
+**BSD-1 verdict**: the recorded finite slopes are ordered for these four
+curves with supplied rank labels. This is not a proved asymptotic, a general
+rank detector, an out-of-sample prediction or a TNFR generation mechanism.
 
 ---
 
@@ -113,16 +123,14 @@ Using the same A/B trichotomy as the other TNFR Millennium programs:
   BSD-1 is the measurement side; it uses **known** ranks and the GL(1) track
   cannot carry `a_p`.
 - **Branch B** (open; current classification) — the rank-separation signal is
-  real and clean, but (i) the GL(2) `a_p`-weighted prime-ladder Hamiltonian
+  recorded for the selected examples, but (i) the GL(2) `a_p`-weighted prime-ladder Hamiltonian
   (BSD-2) is unbuilt, and (ii) the Clay content — rigorous equality of
   algebraic rank and analytic order of vanishing — is untouched.
 - **Branch B3** (no TNFR closure) — not decidable from BSD-1.
 
-This obstruction is structurally analogous to the open residuals of the
-sibling programs: the Riemann `S(T)` oscillatory half, the Navier–Stokes
-cascade at scale → 0, the Yang–Mills continuum gap (YMG-5), and the P-vs-NP
-synthesis trapping (PNP-2). In each case TNFR reformulates and **localises**
-the obstruction without closing it.
+The sibling programs also distinguish finite diagnostics from unproved
+theorems. Their mathematical obstructions are not thereby equivalent, nor
+does the shared vocabulary provide a common nodal law.
 
 ---
 
@@ -136,17 +144,17 @@ the obstruction without closing it.
 | BSD-4 | Functional equation / analytic continuation of the GL(2) L-function | open |
 | BSD-5 | Rigorous rank ↔ order-of-vanishing equality (Clay-hard boundary) | open, **not assumed** |
 
-BSD-5 is the Clay-strength statement and is not claimed.
+BSD-5 is not claimed. These milestones are a historical comparison inventory;
+the [single execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md) owns active priorities.
 
 ---
 
 ## 6. What This Program Does and Does Not Do
 
-**Does**: provide a TNFR-native reformulation of BSD as structural-pressure
-(`a_p`) accumulation across the prime network; reproduce the original 1965
-empirical rank-separation `P(X) ∼ C (log X)^r` from first-principles point
-counting; document the GL(1) → GL(2) gap precisely; classify the obstruction
-honestly (Branch B, open).
+**Does**: compute finite point-count products for supplied curves and compare
+their fitted slopes with supplied ranks; expose the missing degree-two local
+data and nodal dynamics bridge. The reported fit is a finite observation,
+not a reproduction of a proved asymptotic.
 
 **Does not**: prove BSD; derive the ranks (they are known inputs); build the
 GL(2) `a_p`-weighted Hamiltonian (BSD-2, open); establish the rank ↔

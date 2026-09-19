@@ -27,9 +27,7 @@ from tnfr.operators.word_execution import run_network_sequence
 
 
 def _context():
-    return ValidatedSequence(
-        [Emission(), Dissonance(), Coherence(), Silence()]
-    ).step(1)
+    return ValidatedSequence([Emission(), Dissonance(), Coherence(), Silence()]).step(1)
 
 
 def _add_state(graph: nx.Graph, node: int, pressure: float) -> None:
@@ -68,16 +66,12 @@ def _graph(graph_type: type[nx.Graph] = nx.Graph) -> nx.Graph:
 
 
 def _pressures(graph: nx.Graph) -> dict[int, float]:
-    return {
-        node: float(get_attr(graph.nodes[node], ALIAS_DNFR))
-        for node in graph
-    }
+    return {node: float(get_attr(graph.nodes[node], ALIAS_DNFR)) for node in graph}
 
 
 def _progress(graph: nx.Graph) -> dict[int, Any]:
     return {
-        node: deepcopy(graph.nodes[node].get("_rng_jitter_progress"))
-        for node in graph
+        node: deepcopy(graph.nodes[node].get("_rng_jitter_progress")) for node in graph
     }
 
 
@@ -113,9 +107,7 @@ def test_overlapping_pressure_reduction_is_target_order_invariant(graph_type):
     )
 
     assert _pressures(reverse) == _pressures(forward)
-    assert {
-        node: tuple(forward.nodes[node]["glyph_history"]) for node in forward
-    } == {
+    assert {node: tuple(forward.nodes[node]["glyph_history"]) for node in forward} == {
         node: tuple(reverse.nodes[node]["glyph_history"]) for node in reverse
     }
     assert forward.graph[STAGE_SCHEDULE_KEY]["schedule"] == TWO_PHASE_JACOBI
@@ -137,16 +129,14 @@ def test_single_target_stage_matches_direct_local_and_propagated_structure():
         graph.add_edge(0, 1, weight=0.5)
 
     Dissonance()(direct, 0, sequence_context=_context())
-    execute_dissonance_stage(
-        staged, Dissonance(), (0,), sequence_context=_context()
-    )
+    execute_dissonance_stage(staged, Dissonance(), (0,), sequence_context=_context())
 
     assert _pressures(staged) == pytest.approx(_pressures(direct))
     for node in direct:
         assert dict(staged.nodes[node]) == dict(direct.nodes[node])
-    assert staged.graph["_oz_propagation_events"] == direct.graph[
-        "_oz_propagation_events"
-    ]
+    assert (
+        staged.graph["_oz_propagation_events"] == direct.graph["_oz_propagation_events"]
+    )
 
 
 def test_noise_streams_and_reduced_pressure_are_target_order_invariant():
@@ -179,9 +169,7 @@ def test_local_oz_contract_is_separate_from_signed_incoming_cancellation():
     _add_state(graph, 1, -0.2)
     graph.add_edge(0, 1, weight=1.0)
 
-    proposal = propose_dissonance_stage(
-        graph, (0, 1), propagate=True
-    )
+    proposal = propose_dissonance_stage(graph, (0, 1), propagate=True)
     local = next(item for item in proposal.target_proposals if item.node == 1)
     merged = next(item for item in proposal.pressure_updates if item.node == 1)
 
@@ -191,42 +179,38 @@ def test_local_oz_contract_is_separate_from_signed_incoming_cancellation():
     assert merged.dnfr_after == pytest.approx(-0.1)
     assert abs(merged.dnfr_after) < abs(local.dnfr_before)
 
-    execute_dissonance_stage(
-        graph, Dissonance(), (0, 1), sequence_context=_context()
-    )
+    execute_dissonance_stage(graph, Dissonance(), (0, 1), sequence_context=_context())
 
     assert _pressures(graph)[1] == pytest.approx(-0.1)
     # Metrics retain the direct local-OZ observation boundary; the committed
     # field separately includes simultaneous incoming propagation.
-    assert graph.graph["operator_metrics"][1]["dnfr_final"] == pytest.approx(
-        -0.4
-    )
+    assert graph.graph["operator_metrics"][1]["dnfr_final"] == pytest.approx(-0.4)
 
 
 def test_propagation_event_streams_retain_requested_source_order():
     forward = _graph(nx.DiGraph)
     reverse = _graph(nx.DiGraph)
 
-    execute_dissonance_stage(
-        forward, Dissonance(), (0, 2), sequence_context=_context()
-    )
-    execute_dissonance_stage(
-        reverse, Dissonance(), (2, 0), sequence_context=_context()
-    )
+    execute_dissonance_stage(forward, Dissonance(), (0, 2), sequence_context=_context())
+    execute_dissonance_stage(reverse, Dissonance(), (2, 0), sequence_context=_context())
 
     assert _pressures(reverse) == _pressures(forward)
-    assert [
-        event["from_node"] for event in forward.nodes[1]["_oz_propagation"]
-    ] == [0, 2]
-    assert [
-        event["from_node"] for event in reverse.nodes[1]["_oz_propagation"]
-    ] == [2, 0]
-    assert [
-        event["source"] for event in forward.graph["_oz_propagation_events"]
-    ] == [0, 2]
-    assert [
-        event["source"] for event in reverse.graph["_oz_propagation_events"]
-    ] == [2, 0]
+    assert [event["from_node"] for event in forward.nodes[1]["_oz_propagation"]] == [
+        0,
+        2,
+    ]
+    assert [event["from_node"] for event in reverse.nodes[1]["_oz_propagation"]] == [
+        2,
+        0,
+    ]
+    assert [event["source"] for event in forward.graph["_oz_propagation_events"]] == [
+        0,
+        2,
+    ]
+    assert [event["source"] for event in reverse.graph["_oz_propagation_events"]] == [
+        2,
+        0,
+    ]
 
 
 def test_strict_precondition_context_and_warnings_commit_in_target_order():
@@ -344,9 +328,7 @@ def test_final_reduction_preserves_legacy_alias_and_pressure_cache():
     graph.add_edge(0, 1, weight=10.0)
     graph.graph.update(_dnfrmax=0.2, _dnfrmax_node=0)
 
-    execute_dissonance_stage(
-        graph, Dissonance(), (0,), sequence_context=_context()
-    )
+    execute_dissonance_stage(graph, Dissonance(), (0,), sequence_context=_context())
 
     assert ALIAS_DNFR[0] not in graph.nodes[0]
     assert ALIAS_DNFR[0] not in graph.nodes[1]
@@ -368,14 +350,10 @@ def test_self_loop_local_and_propagated_overlap_matches_direct_execution():
         graph.add_edge(0, 0, weight=0.5)
 
     Dissonance()(direct, 0, sequence_context=_context())
-    execute_dissonance_stage(
-        staged, Dissonance(), (0,), sequence_context=_context()
-    )
+    execute_dissonance_stage(staged, Dissonance(), (0,), sequence_context=_context())
 
     assert _pressures(staged) == pytest.approx(_pressures(direct))
-    assert staged.nodes[0]["_oz_propagation"] == direct.nodes[0][
-        "_oz_propagation"
-    ]
+    assert staged.nodes[0]["_oz_propagation"] == direct.nodes[0]["_oz_propagation"]
 
 
 @pytest.mark.parametrize("invalid_pressure", [np.bool_(True), "0.2"])
@@ -404,12 +382,10 @@ def test_missing_seed_is_materialized_once_with_per_node_progress():
 
     realized_seed = graph.graph["RANDOM_SEED"]
     assert isinstance(realized_seed, int)
-    assert {
-        graph.nodes[node]["_rng_jitter_progress"]["seed"] for node in graph
-    } == {realized_seed}
-    assert {
-        graph.nodes[node]["_rng_jitter_progress"]["draws"] for node in graph
-    } == {1}
+    assert {graph.nodes[node]["_rng_jitter_progress"]["seed"] for node in graph} == {
+        realized_seed
+    }
+    assert {graph.nodes[node]["_rng_jitter_progress"]["draws"] for node in graph} == {1}
 
 
 def test_overflowing_incoming_reduction_rejects_before_live_write():
@@ -451,6 +427,4 @@ def test_noncanonical_dissonance_override_uses_transactional_fallback(
 
     assert calls == [0, 1, 2]
     assert result.schedule == OPERATOR_MAJOR_GAUSS_SEIDEL
-    assert graph.graph[STAGE_SCHEDULE_KEY]["schedule"] == (
-        OPERATOR_MAJOR_GAUSS_SEIDEL
-    )
+    assert graph.graph[STAGE_SCHEDULE_KEY]["schedule"] == (OPERATOR_MAJOR_GAUSS_SEIDEL)

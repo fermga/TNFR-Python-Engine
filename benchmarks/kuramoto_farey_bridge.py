@@ -91,7 +91,7 @@ if _SRC not in sys.path:
     sys.path.insert(0, _SRC)
 
 # golden ratio (1+√5)/2 — the emergent last-to-lock limit, NOT a TNFR structural constant
-_CANON_PHI = (1.0 + 5.0 ** 0.5) / 2.0
+_CANON_PHI = (1.0 + 5.0**0.5) / 2.0
 _HAVE_CANON_PHI = False
 
 try:  # canonical Kuramoto order parameter R = |mean exp(i theta)|

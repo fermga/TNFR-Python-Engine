@@ -5,8 +5,8 @@ all-target kernels. They do not identify a fixed capacity profile as an
 autonomous localized entity or certify future full multichannel execution.
 """
 
-from fractions import Fraction
 import math
+from fractions import Fraction
 
 import networkx as nx
 import numpy as np
@@ -85,7 +85,8 @@ def _named_stage(graph, operator):
     # A one-step named-kernel observation, with the retained AL history and
     # the production live grammar authoritative; no whole-word claim follows.
     executor = (
-        execute_coupling_stage if isinstance(operator, Coupling)
+        execute_coupling_stage
+        if isinstance(operator, Coupling)
         else execute_pointwise_stage
     )
     result = executor(
@@ -94,8 +95,7 @@ def _named_stage(graph, operator):
     assert result.glyph == operator.glyph.value
     assert result.schedule == TWO_PHASE_JACOBI
     assert all(
-        graph.nodes[node]["glyph_history"][-1] == operator.glyph.value
-        for node in graph
+        graph.nodes[node]["glyph_history"][-1] == operator.glyph.value for node in graph
     )
 
 
@@ -124,16 +124,17 @@ def test_regular_weighted_degree_does_not_identify_epi_and_capacity_walks():
         graph.edges[node, (node + 1) % 4]["weight"] = 1.0 if node % 2 == 0 else 3.0
     _initialize(graph, (1, 2, 3, 4), (4, 3, 2, 1))
     graph.graph["DNFR_WEIGHTS"] = {
-        "phase": 0.0, "epi": 1.0, "vf": 1.0, "topo": 0.0,
+        "phase": 0.0,
+        "epi": 1.0,
+        "vf": 1.0,
+        "topo": 0.0,
     }
 
     default_compute_delta_nfr(graph)
 
     assert set(dict(graph.degree(weight="weight")).values()) == {4.0}
     assert _weights(graph)["epi"] == _weights(graph)["vf"] == 0.5
-    np.testing.assert_array_equal(
-        _field(graph, ALIAS_DNFR), (-0.25, -0.25, 0.25, 0.25)
-    )
+    np.testing.assert_array_equal(_field(graph, ALIAS_DNFR), (-0.25, -0.25, 0.25, 0.25))
 
 
 def test_zero_weight_edge_remains_in_the_capacity_neighborhood():
@@ -141,7 +142,10 @@ def test_zero_weight_edge_remains_in_the_capacity_neighborhood():
     graph.edges[0, 1]["weight"] = 0.0
     _initialize(graph, (1, 2, 3, 4), (4, 3, 2, 1))
     graph.graph["DNFR_WEIGHTS"] = {
-        "phase": 0.0, "epi": 1.0, "vf": 1.0, "topo": 0.0,
+        "phase": 0.0,
+        "epi": 1.0,
+        "vf": 1.0,
+        "topo": 0.0,
     }
 
     default_compute_delta_nfr(graph)
@@ -157,7 +161,10 @@ def test_weighted_path_capacity_forcing_has_nonzero_conserved_total_drift(epi):
     graph.edges[1, 2]["weight"] = 3.0
     _initialize(graph, (1, 2, 4), epi)
     graph.graph["DNFR_WEIGHTS"] = {
-        "phase": 0.0, "epi": 1.0, "vf": 1.0, "topo": 0.0,
+        "phase": 0.0,
+        "epi": 1.0,
+        "vf": 1.0,
+        "topo": 0.0,
     }
 
     default_compute_delta_nfr(graph)
@@ -184,8 +191,7 @@ def test_default_um_capacity_sync_breaks_the_pin_after_full_pressure_refresh():
         for value, lap in zip(before_capacity, laplacian)
     ]
     expected_pressure = [
-        float(frequency_weight * sync * lap)
-        for lap in _cycle_laplacian(laplacian)
+        float(frequency_weight * sync * lap) for lap in _cycle_laplacian(laplacian)
     ]
 
     _named_stage(graph, Coupling())
@@ -219,8 +225,10 @@ def test_default_global_silence_breaks_the_pin_without_changing_epi():
 
     np.testing.assert_array_equal(_field(graph, ALIAS_EPI), before_epi)
     np.testing.assert_allclose(
-        _field(graph, ALIAS_VF), float(factor) * before_capacity,
-        rtol=0.0, atol=3e-16,
+        _field(graph, ALIAS_VF),
+        float(factor) * before_capacity,
+        rtol=0.0,
+        atol=3e-16,
     )
     np.testing.assert_allclose(
         _field(graph, ALIAS_DNFR), expected_pressure, rtol=0.0, atol=5e-16

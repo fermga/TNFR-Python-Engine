@@ -12,7 +12,7 @@ by trial division). This example maps the **ontological position** of a number a
 a ladder, each rung measured from canonical TNFR structure/dynamics:
 
     Layer 0  Substrate    R continuum + pi (the one genuine structural scale)
-    Layer 1  Cardinal     n = a degeneracy = dim of an irrep of Aut(G)
+    Layer 1  Cardinal     n = an eigenspace dimension, possibly several irreps
     Layer 2  Operations   +, x emerge from graph products (Cartesian/tensor)
     Layer 3  Primality    spectral: directed residue operator -> 3 eigenvalues
                           <=> odd prime (Sector B, x^2 mod n only)
@@ -25,9 +25,13 @@ Physics
 -------
 - Layer 1: the emergent structural operator L_rw = I - D^{-1} W (like every
   Aut(G)-equivariant operator) commutes with Aut(G), so its eigenvalue
-  multiplicities are dimensions of irreps of Aut(G) -- operator-invariant, a
-  *count of structural modes*, not a property of the imposed D - A
-  (emergent_integers_symmetry.py).
+  eigenspaces are invariant representations. Their dimensions can sum several
+  irrep contributions; vertex transitivity does not guarantee irreducibility
+  or identical eigenspaces for every equivariant operator. On the regular
+  unit-conductance controls here, D - A = d*L_rw, so these particular operators
+  share eigenspaces. The truncated-cube counterexample in
+  inverse_spectrum_to_symmetry.py has a five-dimensional eigenspace combining
+  sectors of dimensions two and three. Graphs remain supplied inputs.
 - Layer 2: the COMBINATORIAL graph Laplacian's Cartesian product G [] H has
   spectrum {lambda_i + mu_j} (ADDITION); the tensor product has adjacency
   spectrum {alpha_i . beta_j} (MULTIPLICATION). Additivity is a theorem of the
@@ -84,11 +88,12 @@ _BLOCK_TO_EXP = {v: k for k, v in _RHO_PRIME_POWER.items()}
 
 
 def _laplacian_degeneracies(G: nx.Graph) -> set[int]:
-    """Integers that emerge as eigenvalue multiplicities of the canonical
-    emergent structural operator L_rw = I - D^{-1} W (read via its symmetric
-    twin L_sym). On a vertex-transitive manifold every Aut(G)-equivariant
-    operator shares these eigenspaces, so the multiplicities (irrep dimensions)
-    are operator-invariant -- NOT a property of the imposed D - A."""
+    """Numerically clustered multiplicities of L_rw via its symmetric twin.
+
+    Invariant eigenspaces can contain several irreducible sectors. For the
+    supplied regular graphs L_rw and D-A differ by a scalar, but arbitrary
+    equivariant operators need not have identical eigenspaces or degeneracies.
+    """
     from tnfr.mathematics.spectral import get_laplacian_spectrum
 
     eig, _ = get_laplacian_spectrum(G, operator="symmetric")
@@ -118,14 +123,14 @@ def _exponent_multisets_from_rank(rank: int) -> list[list[int]]:
 
 
 def experiment_1_cardinals():
-    """Layer 1: integers emerge as irrep dimensions (Laplacian degeneracies)."""
+    """Layer 1: observe eigenspace dimensions on supplied symmetric graphs."""
     print("=" * 72)
     print("EXPERIMENT 1: Layer 1 -- cardinals emerge from symmetry")
     print("=" * 72)
     print()
     print("The emergent operator L_rw = I - D^-1 W commutes with Aut(G); its")
-    print("eigenvalue multiplicities are dimensions of irreps of Aut(G)")
-    print("(operator-invariant) -- a count of structural modes, not injected.")
+    print("eigenspaces are invariant and can combine several irreducible sectors.")
+    print("Their measured dimensions alone do not determine the symmetry group.")
     print()
     cases = [
         ("triangle K3", nx.complete_graph(3), 2),
@@ -138,8 +143,10 @@ def experiment_1_cardinals():
         degs = _laplacian_degeneracies(G)
         emerged = expect in degs
         all_ok &= emerged
-        print(f"  {name:13s}: degeneracies {sorted(degs)} -> {expect} emerges? "
-              f"{'YES' if emerged else 'NO'}")
+        print(
+            f"  {name:13s}: degeneracies {sorted(degs)} -> {expect} emerges? "
+            f"{'YES' if emerged else 'NO'}"
+        )
     assert all_ok, "cardinal emergence failed"
     print()
     print("VALIDATED: 2 @ triangle, 3 @ tetrahedron, 5 @ icosahedron.")
@@ -230,10 +237,12 @@ def experiment_4_arithmetic_emerges():
         unique = len(cands) == 1 and cands[0] == type_true
         recovered_ok &= unique
         omega_em = sum(cands[0]) if cands else None
-        tau_em = (int(np.prod([a + 1 for a in cands[0]])) if cands else None)
-        print(f"    n={n:3d}: rho={rho_spectral:2d}  type{type_true}  mult={mult}"
-              f"  -> Omega={omega_em} tau={tau_em}"
-              f"  (oracle Omega={sum(type_true)} tau={int(sympy.divisor_count(n))})")
+        tau_em = int(np.prod([a + 1 for a in cands[0]])) if cands else None
+        print(
+            f"    n={n:3d}: rho={rho_spectral:2d}  type{type_true}  mult={mult}"
+            f"  -> Omega={omega_em} tau={tau_em}"
+            f"  (oracle Omega={sum(type_true)} tau={int(sympy.divisor_count(n))})"
+        )
     assert ok_mult, "rho multiplicativity failed"
     assert recovered_ok, "type recovery failed for the demo range"
     print()

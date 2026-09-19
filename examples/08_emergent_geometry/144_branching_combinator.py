@@ -17,9 +17,9 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-from tnfr.operators.grammar_validate import validate_grammar
-
 from _flat_grammar_model import NAME2INST, SHORT
+
+from tnfr.operators.grammar_validate import validate_grammar
 
 
 def valid(names):

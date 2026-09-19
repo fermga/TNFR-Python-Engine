@@ -9,22 +9,29 @@ import pytest
 
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from tnfr.physics.support_transport import (
-    _from_data, observe_regional_support_balance, observe_support_transport,
+    _from_data,
+    observe_regional_support_balance,
+    observe_support_transport,
 )
-
 
 F = Fraction
 
 
 def _path(*, epi=(0, 1, 5), capacity=(1, 2, 1), pressure=(0, 0, 0)):
-    return _from_data(("a", "b", "outside"),
-                      ((0, 1, 1), (1, 0, 1), (1, 2, 1), (2, 1, 1)),
-                      ((1,), (0, 2), (1,)), epi, capacity, pressure)
+    return _from_data(
+        ("a", "b", "outside"),
+        ((0, 1, 1), (1, 0, 1), (1, 2, 1), (2, 1, 1)),
+        ((1,), (0, 2), (1,)),
+        epi,
+        capacity,
+        pressure,
+    )
 
 
 def _observe(source=None, region=("a", "b"), *, e=1, forcing=(0, 0, 0)):
-    return observe_regional_support_balance(_path() if source is None else source, region,
-                                            epi_weight=e, forcing=forcing)
+    return observe_regional_support_balance(
+        _path() if source is None else source, region, epi_weight=e, forcing=forcing
+    )
 
 
 def test_three_node_hand_balance_keeps_forcing_and_stored_defect_separate():
@@ -45,8 +52,12 @@ def test_three_node_hand_balance_keeps_forcing_and_stored_defect_separate():
     assert result.variance_forcing_rate == F(-3, 2)
     assert result.model_variance_rate == F(-1, 2)
     assert result.variance_defect_rate == F(1, 2) and result.stored_variance_rate == 0
-    assert (result.model_mass_identity_residual, result.mass_identity_residual,
-            result.model_variance_identity_residual, result.variance_identity_residual) == (0, 0, 0, 0)
+    assert (
+        result.model_mass_identity_residual,
+        result.mass_identity_residual,
+        result.model_variance_identity_residual,
+        result.variance_identity_residual,
+    ) == (0, 0, 0, 0)
 
 
 def test_boundary_injection_can_grow_regional_variance_despite_internal_dissipation():
@@ -58,14 +69,17 @@ def test_boundary_injection_can_grow_regional_variance_despite_internal_dissipat
     assert result.model_variance_rate == result.stored_variance_rate == 1 > 0
     # Independent two-coordinate calculation: E=(x_b-x_a)^2/4.
     rate = source.rate
-    assert result.stored_variance_rate == (source.epi[1]-source.epi[0])*(rate[1]-rate[0])/2
+    assert (
+        result.stored_variance_rate
+        == (source.epi[1] - source.epi[0]) * (rate[1] - rate[0]) / 2
+    )
 
 
 def test_full_graph_normalization_and_environment_are_not_replaced_by_induced_subgraph():
     source = _path()
     observed = _observe(source)
     assert observed.strengths[1] == 2 and observed.metric_weights[1] == 1
-    induced_mean = (F(1, 2)*source.epi[1])/(1+F(1, 2))
+    induced_mean = (F(1, 2) * source.epi[1]) / (1 + F(1, 2))
     assert observed.mean != induced_mean
     altered = _observe(replace(source, epi=(F(0), F(1), F(9))))
     assert altered.mean == observed.mean and altered.variance == observed.variance
@@ -79,11 +93,14 @@ def test_complementary_cut_totals_cancel_and_recover_the_full_source_balance():
     left = _observe(source, forcing=(1, -1, 2))
     right = _observe(source, region=("outside",), forcing=(1, -1, 2))
     assert left.outward_cut_current == -right.outward_cut_current
-    assert left.mass_boundary_rate+right.mass_boundary_rate == 0
-    assert left.model_mass_rate+right.model_mass_rate == 1
-    assert left.stored_mass_rate+right.stored_mass_rate == sum(
-        h*r for h, r in zip(left.metric_weights, source.rate, strict=True))
-    assert right.variance == right.model_variance_rate == right.stored_variance_rate == 0
+    assert left.mass_boundary_rate + right.mass_boundary_rate == 0
+    assert left.model_mass_rate + right.model_mass_rate == 1
+    assert left.stored_mass_rate + right.stored_mass_rate == sum(
+        h * r for h, r in zip(left.metric_weights, source.rate, strict=True)
+    )
+    assert (
+        right.variance == right.model_variance_rate == right.stored_variance_rate == 0
+    )
     assert right.internal_dissipation == right.variance_boundary_rate == 0
 
 
@@ -91,15 +108,25 @@ def test_region_order_is_preserved_without_affecting_scalar_balances():
     forward, reverse = _observe(), _observe(region=("b", "a"))
     assert reverse.region_indices == (1, 0)
     assert reverse.centered_epi == tuple(reversed(forward.centered_epi))
-    for name in ("mean", "variance", "model_mass_rate", "stored_mass_rate",
-                 "internal_dissipation", "variance_boundary_rate", "model_variance_rate"):
+    for name in (
+        "mean",
+        "variance",
+        "model_mass_rate",
+        "stored_mass_rate",
+        "internal_dissipation",
+        "variance_boundary_rate",
+        "model_variance_rate",
+    ):
         assert getattr(forward, name) == getattr(reverse, name)
 
 
 def test_self_loops_enter_full_metric_but_have_zero_cut_or_internal_flux():
     source = _path()
-    looped = replace(source, conductance=((0, 0, F(3)),)+source.conductance,
-                     support_neighbors=((0, 1), (0, 2), (1,)))
+    looped = replace(
+        source,
+        conductance=((0, 0, F(3)),) + source.conductance,
+        support_neighbors=((0, 1), (0, 2), (1,)),
+    )
     result = _observe(looped)
     assert result.strengths == (4, 2, 1) and result.metric_weights == (4, 1, 1)
     assert result.mean == F(1, 5)
@@ -109,8 +136,14 @@ def test_self_loops_enter_full_metric_but_have_zero_cut_or_internal_flux():
 
 
 def test_disconnected_full_support_and_disconnected_region_need_no_profile_solve():
-    source = _from_data((0, 1, 2, 3), ((0, 1, 1), (1, 0, 1), (2, 3, 2), (3, 2, 2)),
-                        ((1,), (0,), (3,), (2,)), (0, 1, 3, 4), (1, 1, 2, 2), (0, 0, 0, 0))
+    source = _from_data(
+        (0, 1, 2, 3),
+        ((0, 1, 1), (1, 0, 1), (2, 3, 2), (3, 2, 2)),
+        ((1,), (0,), (3,), (2,)),
+        (0, 1, 3, 4),
+        (1, 1, 2, 2),
+        (0, 0, 0, 0),
+    )
     result = _observe(source, region=(0, 2), forcing=(0, 0, 0, 0))
     assert result.internal_dissipation == 0
     assert result.environment == (1, 3)
@@ -119,8 +152,14 @@ def test_disconnected_full_support_and_disconnected_region_need_no_profile_solve
 
 def test_cached_derived_fields_are_rebuilt_and_invalid_primitives_remain_rejected():
     source = _path()
-    forged = replace(source, epi_gradient=(F(99),)*3, rate=(F(99),)*3,
-                     dirichlet_gradient=(F(99),)*3, dirichlet_energy=F(99), energy_rate=F(99))
+    forged = replace(
+        source,
+        epi_gradient=(F(99),) * 3,
+        rate=(F(99),) * 3,
+        dirichlet_gradient=(F(99),) * 3,
+        dirichlet_energy=F(99),
+        energy_rate=F(99),
+    )
     assert _observe(forged) == _observe(source)
     bad = replace(forged, capacity=(F(1), F(0), F(1)))
     with pytest.raises(ValueError, match="positive"):
@@ -129,8 +168,17 @@ def test_cached_derived_fields_are_rebuilt_and_invalid_primitives_remain_rejecte
         _observe({"nodes": source.nodes})
 
 
-@pytest.mark.parametrize("region", ((), ("a", "b", "outside"), ("a",)*2, ("missing",),
-                                    ([],), ("a", "b", "outside", "extra")))
+@pytest.mark.parametrize(
+    "region",
+    (
+        (),
+        ("a", "b", "outside"),
+        ("a",) * 2,
+        ("missing",),
+        ([],),
+        ("a", "b", "outside", "extra"),
+    ),
+)
 def test_invalid_region_membership_is_rejected(region):
     with pytest.raises(ValueError):
         _observe(region=region)
@@ -161,8 +209,10 @@ def test_invalid_epi_weight_is_rejected(weight):
         _observe(e=weight)
 
 
-@pytest.mark.parametrize("forcing", ((0, 0), (0, float("nan"), 0), (0, float("inf"), 0),
-                                     (0, True, 0), {0, 1, 2}))
+@pytest.mark.parametrize(
+    "forcing",
+    ((0, 0), (0, float("nan"), 0), (0, float("inf"), 0), (0, True, 0), {0, 1, 2}),
+)
 def test_forcing_must_be_explicit_finite_and_full_graph_aligned(forcing):
     with pytest.raises((TypeError, ValueError)):
         _observe(forcing=forcing)
@@ -170,7 +220,9 @@ def test_forcing_must_be_explicit_finite_and_full_graph_aligned(forcing):
 
 def test_zero_strength_anywhere_is_outside_the_declared_positive_metric_domain():
     source = _path()
-    isolated = replace(source, conductance=source.conductance[:2], support_neighbors=((1,), (0,), ()))
+    isolated = replace(
+        source, conductance=source.conductance[:2], support_neighbors=((1,), (0,), ())
+    )
     with pytest.raises(ValueError, match="positive full strengths"):
         _observe(isolated)
 
@@ -178,7 +230,9 @@ def test_zero_strength_anywhere_is_outside_the_declared_positive_metric_domain()
 def test_input_state_and_graph_are_unchanged_and_output_is_frozen():
     graph = nx.path_graph(3)
     for node in graph:
-        graph.nodes[node].update({ALIAS_EPI[0]: float(node), ALIAS_VF[0]: 1.0, ALIAS_DNFR[0]: .1})
+        graph.nodes[node].update(
+            {ALIAS_EPI[0]: float(node), ALIAS_VF[0]: 1.0, ALIAS_DNFR[0]: 0.1}
+        )
     graph.graph["marker"] = {"values": [1, 2]}
     saved = deepcopy((graph.graph, dict(graph.nodes(data=True)), dict(graph.edges)))
     source = observe_support_transport(graph)
@@ -194,17 +248,23 @@ def test_input_state_and_graph_are_unchanged_and_output_is_frozen():
 
 
 def test_rational_finite_difference_of_regional_variance_matches_the_declared_rate():
-    source = _path(epi=(F(-2, 3), F(7, 5), F(11, 7)), capacity=(2, 3, 5),
-                   pressure=(F(1, 3), F(-2, 5), F(4, 7)))
+    source = _path(
+        epi=(F(-2, 3), F(7, 5), F(11, 7)),
+        capacity=(2, 3, 5),
+        pressure=(F(1, 3), F(-2, 5), F(4, 7)),
+    )
     result = _observe(source, e=F(3, 7), forcing=(F(1, 5), F(-2, 3), F(4, 9)))
     # A centered difference of this quadratic along the supplied stored rate
     # is exact at any rational h; no numerical solver or small-step claim.
 
     def energy(step):
-        x = tuple(value+step*rate for value, rate in zip(source.epi, source.rate, strict=True))
+        x = tuple(
+            value + step * rate
+            for value, rate in zip(source.epi, source.rate, strict=True)
+        )
         h = result.metric_weights
-        mean = (h[0]*x[0]+h[1]*x[1])/(h[0]+h[1])
-        return (h[0]*(x[0]-mean)**2+h[1]*(x[1]-mean)**2)/2
+        mean = (h[0] * x[0] + h[1] * x[1]) / (h[0] + h[1])
+        return (h[0] * (x[0] - mean) ** 2 + h[1] * (x[1] - mean) ** 2) / 2
 
     step = F(7, 11)
-    assert (energy(step)-energy(-step))/(2*step) == result.stored_variance_rate
+    assert (energy(step) - energy(-step)) / (2 * step) == result.stored_variance_rate

@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+import networkx as nx
 import pytest
 
-import networkx as nx
-
+from tnfr.mathematics.number_theory import ArithmeticTNFRNetwork
 from tnfr.metrics import (
     StructuralObservation,
     observe_arithmetic_nfr,
@@ -13,10 +13,11 @@ from tnfr.metrics import (
     observe_graph_tetrad,
 )
 from tnfr.metrics.common import is_structural_equilibrium, structural_coherence
-from tnfr.physics.emergent_chemistry import classify_element
 from tnfr.metrics.tetrad import collect_tetrad_snapshot
-from tnfr.mathematics.number_theory import ArithmeticTNFRNetwork
-from tnfr.physics.emergent_chemistry import classify_element_observation
+from tnfr.physics.emergent_chemistry import (
+    classify_element,
+    classify_element_observation,
+)
 from tnfr.sdk.simple import Network
 
 
@@ -88,12 +89,9 @@ def test_domain_observation_adapters_preserve_distinct_semantics():
     )
     assert arithmetic_observation.metadata["canonical_field"] == "coherence"
     assert (
-        arithmetic_observation.metadata["descriptive_field"]
-        == "mean_local_coherence"
+        arithmetic_observation.metadata["descriptive_field"] == "mean_local_coherence"
     )
-    assert chemical_observation.pressure_realization == (
-        "valence_shell_distance"
-    )
+    assert chemical_observation.pressure_realization == ("valence_shell_distance")
 
 
 def test_empty_arithmetic_observation_is_marked_unavailable():
@@ -107,9 +105,7 @@ def test_empty_arithmetic_observation_is_marked_unavailable():
 def test_public_domain_readouts_expose_opt_in_observation_envelopes():
     graph = nx.path_graph(3)
     for node in graph:
-        graph.nodes[node].update(
-            EPI=float(node), nu_f=1.0, theta=0.1, delta_nfr=0.0
-        )
+        graph.nodes[node].update(EPI=float(node), nu_f=1.0, theta=0.1, delta_nfr=0.0)
     network = Network(graph)
     assert network.tetrad_observation().domain == "graph"
     assert network.nfr_observation().domain == "graph"
@@ -118,9 +114,7 @@ def test_public_domain_readouts_expose_opt_in_observation_envelopes():
 
 
 def test_cross_domain_fixed_point_logic_and_frozen_state_remain_distinct():
-    arithmetic = observe_arithmetic_nfr(
-        {"coherence": structural_coherence(0.0)}
-    )
+    arithmetic = observe_arithmetic_nfr({"coherence": structural_coherence(0.0)})
     chemical = classify_element_observation(2)
     assert is_structural_equilibrium(0.0)
     assert arithmetic.value["coherence"] == 1.0

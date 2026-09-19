@@ -146,9 +146,7 @@ def test_node_historical_constructor_and_method_keywords_remain_aliases() -> Non
         enable_validation=False,
     )
 
-    _assert_auxiliary_payload(
-        result["post_metrics"]["spectral_operator_expectation"]
-    )
+    _assert_auxiliary_payload(result["post_metrics"]["spectral_operator_expectation"])
 
 
 def test_runtime_materializes_canonical_history_from_legacy_config() -> None:
@@ -165,15 +163,11 @@ def test_runtime_materializes_canonical_history_from_legacy_config() -> None:
 
     _advance_math_engine(graph, dt=0.1, step_idx=7, hist=history)
 
-    payload = history["math_engine_summary"][0][
-        "spectral_operator_expectation"
-    ]
+    payload = history["math_engine_summary"][0]["spectral_operator_expectation"]
     _assert_auxiliary_payload(payload)
     assert history["math_engine_summary"][0]["coherence"] is payload
     assert history["math_engine_coherence"] == [payload["value"]]
-    assert history["math_engine_spectral_operator_expectation"] == [
-        payload["value"]
-    ]
+    assert history["math_engine_spectral_operator_expectation"] == [payload["value"]]
     assert config["coherence_operator"] is config["spectral_operator"]
     assert "C_steps" not in history
 

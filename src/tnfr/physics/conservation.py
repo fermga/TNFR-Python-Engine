@@ -55,11 +55,7 @@ from ..constants.canonical import (
     PI,
     U6_STRUCTURAL_POTENTIAL_LIMIT,
 )
-from .canonical import (
-    compute_phase_curvature,
-    compute_phase_gradient,
-    compute_structural_potential,
-)
+from .canonical import compute_phase_curvature, compute_structural_potential
 from .extended import compute_dnfr_flux, compute_phase_current
 from .unified import _capture_structural_fields, _energy_density_from_fields
 from .unified import compute_energy_density as _raw_energy_density

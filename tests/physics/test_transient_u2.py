@@ -34,8 +34,9 @@ NORMAL = directed_cayley_adjacency(7, {1, 2})
 NON_NORMAL = np.array(
     [[0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2], [2, 0, 1, 0]], dtype=float
 )
-STAR_IN = np.array([[0, 1, 1, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]],
-                   dtype=float)
+STAR_IN = np.array(
+    [[0, 1, 1, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]], dtype=float
+)
 NON_NORMALS = [NON_NORMAL, STAR_IN]
 
 
@@ -53,10 +54,11 @@ X4 = _unit([1.0, -1.0, 0.5, -0.5])
 def test_nonconsensus_basis_orthonormal_and_spans_subspace():
     v = nonconsensus_basis(NON_NORMAL)
     assert v.shape == (4, 3)
-    assert np.allclose(v.T @ v, np.eye(3))                 # orthonormal
+    assert np.allclose(v.T @ v, np.eye(3))  # orthonormal
     from tnfr.physics.directed_diffusion import stationary_distribution
+
     pi = stationary_distribution(NON_NORMAL)
-    assert np.allclose(pi @ v, 0.0, atol=1e-9)             # spans {pi^T y = 0}
+    assert np.allclose(pi @ v, 0.0, atol=1e-9)  # spans {pi^T y = 0}
 
 
 def test_restricted_generator_shape():
@@ -94,8 +96,8 @@ def test_ambient_gain_equals_consensus_projection_norm_artifact():
         q_norm = float(np.linalg.norm(consensus_projection(w), 2))
         assert c.consensus_projection_norm == pytest.approx(q_norm, abs=1e-9)
         assert c.ambient_oblique_gain == pytest.approx(q_norm, abs=1e-3)
-        assert c.ambient_oblique_gain > 1.0            # naive number > 1
-        assert c.no_transient_amplification            # but per-node energy = 1
+        assert c.ambient_oblique_gain > 1.0  # naive number > 1
+        assert c.no_transient_amplification  # but per-node energy = 1
 
 
 def test_normal_graph_has_unit_ambient_gain():
@@ -114,8 +116,8 @@ def test_potential_operator_inverse_square_kernel():
     assert np.allclose(np.diag(b), 0.0)
     assert b[0, 1] == pytest.approx(1.0)
     assert b[1, 2] == pytest.approx(1.0)
-    assert b[0, 2] == pytest.approx(0.25)   # 1 / 2^2
-    assert np.allclose(b, b.T)              # symmetric distance kernel
+    assert b[0, 2] == pytest.approx(0.25)  # 1 / 2^2
+    assert np.allclose(b, b.T)  # symmetric distance kernel
 
 
 def test_matrix_potential_kernel_preserves_directed_reachability():
@@ -231,10 +233,10 @@ def test_legacy_dataclass_fields_remain_serializable_and_constructible():
 def test_certificate_bounds_hold_and_status_open():
     for w in NON_NORMALS:
         c = certify_transient_u2(w, X4)
-        assert c.consensus_projection_residual < 1e-9   # LQ = L
-        assert c.spectral_abscissa <= 1e-9              # spectrally stable
+        assert c.consensus_projection_residual < 1e-9  # LQ = L
+        assert c.spectral_abscissa <= 1e-9  # spectrally stable
         assert c.bounds_hold
-        assert "OPEN" in c.claim_status                 # U2 metric not decided
+        assert "OPEN" in c.claim_status  # U2 metric not decided
 
 
 def test_certificate_relabel_invariant():
@@ -245,24 +247,28 @@ def test_certificate_relabel_invariant():
         p[pi_, i] = 1.0
     c = certify_transient_u2(p @ NON_NORMAL @ p.T, p @ X4)
     assert c.peak_gain == pytest.approx(base.peak_gain, abs=1e-6)
-    assert c.kreiss_lower_bound == pytest.approx(base.kreiss_lower_bound,
-                                                 abs=1e-6)
+    assert c.kreiss_lower_bound == pytest.approx(base.kreiss_lower_bound, abs=1e-6)
     assert c.symmetric_part_min_eig == pytest.approx(
-        base.symmetric_part_min_eig, abs=1e-6)
+        base.symmetric_part_min_eig, abs=1e-6
+    )
     assert c.consensus_projection_norm == pytest.approx(
-        base.consensus_projection_norm, abs=1e-6)
+        base.consensus_projection_norm, abs=1e-6
+    )
 
 
 def test_weighted_nonconsensus_euclidean_contraction_has_counterexample():
     """The weighted graph class is not universally Euclidean-contracting."""
-    weights = np.array([
-        [0, 1, 0, 0, 0, 12],
-        [0, 0, 1, 0, 0, 0],
-        [0, 0, 0, 15, 0, 0],
-        [0, 9, 0, 0, 1, 0],
-        [0, 0, 0, 0, 0, 10],
-        [1, 0, 0, 0, 0, 0],
-    ], dtype=float)
+    weights = np.array(
+        [
+            [0, 1, 0, 0, 0, 12],
+            [0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 15, 0, 0],
+            [0, 9, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 10],
+            [1, 0, 0, 0, 0, 0],
+        ],
+        dtype=float,
+    )
     vector = np.array([4341, -4028, -4275, -4065, 2273, 4998], dtype=float)
     basis = nonconsensus_basis(weights)
     restricted = basis.T @ tu2.directed_rw_laplacian(weights) @ basis
@@ -273,9 +279,14 @@ def test_weighted_nonconsensus_euclidean_contraction_has_counterexample():
 
 def test_module_exports_complete():
     expected = {
-        "nonconsensus_basis", "restricted_generator", "symmetric_part_min_eig",
-        "peak_transient_gain", "kreiss_lower_bound", "potential_operator",
-        "structural_potential_peak", "TransientU2Certificate",
+        "nonconsensus_basis",
+        "restricted_generator",
+        "symmetric_part_min_eig",
+        "peak_transient_gain",
+        "kreiss_lower_bound",
+        "potential_operator",
+        "structural_potential_peak",
+        "TransientU2Certificate",
         "certify_transient_u2",
     }
     assert expected <= set(tu2.__all__)

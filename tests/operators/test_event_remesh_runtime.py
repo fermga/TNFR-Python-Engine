@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+import sys
 from collections import deque
 from copy import deepcopy
 from dataclasses import replace
 from fractions import Fraction
 from numbers import Real
-import sys
 from typing import Any
 
 import networkx as nx
@@ -53,9 +53,7 @@ def _graph(
             delta_nfr=0.0,
             glyph_history=[],
         )
-    history = [] if past is None else [
-        {node: value for node, value in enumerate(past)}
-    ]
+    history = [] if past is None else [{node: value for node, value in enumerate(past)}]
     graph.graph["_epi_hist"] = deque(history, maxlen=64)
     return graph
 
@@ -118,9 +116,7 @@ def test_cycle_preserves_pre_jump_history_index_and_one_metric() -> None:
         {0: 0.0, 1: 2.0},
         {0: 2.0, 1: 0.0},
     ]
-    assert result.history_convention.endswith(
-        "history[-(tau+1)]"
-    )
+    assert result.history_convention.endswith("history[-(tau+1)]")
     assert result.schedule_left_history_unchanged
     assert result.whole_cycle_graph_state_atomic
     assert result.common_metric_is_frozen
@@ -210,12 +206,8 @@ def test_cycle_proof_compacts_nested_runtime_seals_and_fails_closed() -> None:
     )
     assert cycle_fields["remesh"][0] != "tnfr-nested-proof-stamp-v1"
 
-    execution_fields = dict(
-        object.__getattribute__(execution, "_proof_stamp")[1]
-    )
-    partition_sequence = execution_fields[
-        "physical_flow_partition_evidence"
-    ]
+    execution_fields = dict(object.__getattribute__(execution, "_proof_stamp")[1])
+    partition_sequence = execution_fields["physical_flow_partition_evidence"]
     assert partition_sequence[0] == "tnfr-nested-proof-sequence-v1"
     assert type(partition_sequence[1]) is tuple
     assert len(partition_sequence[1]) == 1
@@ -329,9 +321,7 @@ def test_virtual_nodes_side_effect_is_rolled_back_during_preparation() -> None:
     source = _graph()
     graph = SideEffectGraph()
     graph.graph.update(deepcopy(source.graph))
-    graph.add_nodes_from(
-        (node, deepcopy(data)) for node, data in source._node.items()
-    )
+    graph.add_nodes_from((node, deepcopy(data)) for node, data in source._node.items())
     graph.add_edges_from(source.edges)
     schedule = _schedule(graph)
     before = _state(graph)
@@ -646,9 +636,7 @@ def test_public_stub_exposes_event_remesh_cycle_contract() -> None:
     module_stub = ast.parse(
         (package / "event_remesh_runtime.pyi").read_text(encoding="utf-8")
     )
-    package_stub = ast.parse(
-        (package / "__init__.pyi").read_text(encoding="utf-8")
-    )
+    package_stub = ast.parse((package / "__init__.pyi").read_text(encoding="utf-8"))
     functions = {
         node.name: node
         for node in module_stub.body
@@ -671,8 +659,7 @@ def test_public_stub_exposes_event_remesh_cycle_contract() -> None:
     imported = {
         alias.name
         for node in package_stub.body
-        if isinstance(node, ast.ImportFrom)
-        and node.module == "event_remesh_runtime"
+        if isinstance(node, ast.ImportFrom) and node.module == "event_remesh_runtime"
         for alias in node.names
     }
     assert imported == {
@@ -682,6 +669,7 @@ def test_public_stub_exposes_event_remesh_cycle_contract() -> None:
         "execute_event_remesh_cycle",
     }
 
+
 class _DoubleAppendDeque(deque):
     def append(self, value: object) -> None:
         super().append(value)
@@ -690,9 +678,7 @@ class _DoubleAppendDeque(deque):
 
 def test_history_subclass_cannot_duplicate_the_owned_pre_remesh_sample() -> None:
     graph = _graph()
-    graph.graph["_epi_hist"] = _DoubleAppendDeque(
-        graph.graph["_epi_hist"], maxlen=64
-    )
+    graph.graph["_epi_hist"] = _DoubleAppendDeque(graph.graph["_epi_hist"], maxlen=64)
 
     result = execute_event_remesh_cycle(graph, _schedule(graph))
 
@@ -850,6 +836,7 @@ def test_unrepresentable_disagreement_keeps_exact_observation() -> None:
     assert result.pre_schedule_epi.exact_disagreement_energy > 0
     assert result.pre_schedule_epi.disagreement_energy is None
 
+
 def test_cycle_forwards_detached_runtime_flow_certificates() -> None:
     graph = _graph()
     graph.graph["DT_MIN"] = 0.0
@@ -929,9 +916,7 @@ def test_history_transition_records_exact_append_and_selected_lags() -> None:
 
     assert isinstance(transition, RemeshHistoryTransitionObservation)
     assert transition.nodes == (0, 1)
-    assert transition.incoming_exact_history == (
-        (Fraction(0), Fraction(2)),
-    )
+    assert transition.incoming_exact_history == ((Fraction(0), Fraction(2)),)
     assert transition.outgoing_exact_history == (
         (Fraction(0), Fraction(2)),
         (Fraction(2), Fraction(0)),
@@ -1057,10 +1042,7 @@ def test_history_transition_records_independent_insufficient_lags() -> None:
 
 def test_history_transition_records_canonical_left_eviction() -> None:
     graph = _graph()
-    incoming = [
-        {0: float(index), 1: -float(index)}
-        for index in range(64)
-    ]
+    incoming = [{0: float(index), 1: -float(index)} for index in range(64)]
     graph.graph["_epi_hist"] = deque(incoming, maxlen=64)
 
     result = execute_event_remesh_cycle(graph, _schedule(graph))
@@ -1088,8 +1070,7 @@ def test_history_transition_records_canonical_left_eviction() -> None:
 def test_history_transition_records_rebuild_truncation_before_eviction() -> None:
     graph = _graph()
     graph.graph["_epi_hist"] = [
-        {0: float(index), 1: -float(index)}
-        for index in range(66)
+        {0: float(index), 1: -float(index)} for index in range(66)
     ]
 
     result = execute_event_remesh_cycle(graph, _schedule(graph))
@@ -1290,9 +1271,7 @@ def test_cycle_proof_detects_nested_schedule_composition_tampering() -> None:
         _schedule(graph, durations=(0.25,)),
         include_stage_certificates=True,
     )
-    composition = (
-        result.event_execution.represented_epi_schedule_composition
-    )
+    composition = result.event_execution.represented_epi_schedule_composition
     assert composition is not None
     assert result._proof_fields_are_intact()
 
@@ -1313,6 +1292,7 @@ def test_cycle_proof_detects_boundary_phase_tampering() -> None:
     object.__setattr__(result, "phase_before_schedule", (0.5, 0.0))
 
     assert not result._proof_fields_are_intact()
+
 
 def test_history_transition_records_reverse_independent_lag_availability() -> None:
     graph = _graph()
@@ -1341,10 +1321,7 @@ class _CyclicHashableNode:
         return hash(self.label)
 
     def __eq__(self, other: object) -> bool:
-        return (
-            type(other) is _CyclicHashableNode
-            and self.label == other.label
-        )
+        return type(other) is _CyclicHashableNode and self.label == other.label
 
 
 def test_cycle_rejects_mutable_cyclic_structural_node_keys() -> None:
@@ -1380,6 +1357,7 @@ def test_cycle_hard_false_claims_are_read_only_properties() -> None:
         with pytest.raises(AttributeError):
             object.__setattr__(result, name, True)
 
+
 class _SlottedMutableNode:
     __slots__ = ("label", "payload", "self_reference")
 
@@ -1392,10 +1370,7 @@ class _SlottedMutableNode:
         return hash(self.label)
 
     def __eq__(self, other: object) -> bool:
-        return (
-            type(other) is _SlottedMutableNode
-            and self.label == other.label
-        )
+        return type(other) is _SlottedMutableNode and self.label == other.label
 
 
 def test_cycle_rejects_mutable_slotted_structural_node_keys() -> None:
@@ -1595,9 +1570,7 @@ def test_cycle_does_not_materialize_networkx_cached_views() -> None:
 
     assert result.remesh.applied
     assert result._proof_fields_are_intact()
-    assert all(
-        key not in graph.__dict__ for key in ("nodes", "edges", "degree", "adj")
-    )
+    assert all(key not in graph.__dict__ for key in ("nodes", "edges", "degree", "adj"))
 
 
 def test_post_remesh_refresh_rejects_unrelated_metadata_atomically() -> None:

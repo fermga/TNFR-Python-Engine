@@ -115,21 +115,24 @@ def envelope(t):
 
 
 def m1_phase_is_exact():
-    print("\nM1 -- the pulse phase is exact (no RH input): "
-          "theta/pi + 1 + S(T) == integer zero-count")
+    print(
+        "\nM1 -- the pulse phase is exact (no RH input): "
+        "theta/pi + 1 + S(T) == integer zero-count"
+    )
     for t in (20.0, 40.0, 76.0):
         s = s_exact(t)
         n_of_t = riemann_siegel_theta(t) / math.pi + 1.0 + s
         known = sum(1 for g in KNOWN_RIEMANN_ZEROS if g < t)
         trunc = argument_fluctuation(t)  # shipped truncated pulse phase
-        print(f"   T={t:5.1f}: S_exact={s:+.4f}  N=theta/pi+1+S={n_of_t:6.3f}"
-              f"  known<T={known:2d}  |  shipped pulse S={trunc:+.4f}"
-              f"  (dS={abs(trunc - s):.3f})")
+        print(
+            f"   T={t:5.1f}: S_exact={s:+.4f}  N=theta/pi+1+S={n_of_t:6.3f}"
+            f"  known<T={known:2d}  |  shipped pulse S={trunc:+.4f}"
+            f"  (dS={abs(trunc - s):.3f})"
+        )
 
 
 def m2_m3_coherence_budget():
-    print("\nM2/M3 -- the coherence budget (RMS vs Selberg) and slack to the "
-          "wall:")
+    print("\nM2/M3 -- the coherence budget (RMS vs Selberg) and slack to the " "wall:")
     print("   T_c |  mean(S) | RMS(S) | Selberg | max|S| | envelope | peak/env")
     llt, rms2 = [], []
     for tc in CENTRES:
@@ -139,17 +142,23 @@ def m2_m3_coherence_budget():
         rms = float(np.sqrt(np.mean(a**2)))
         mx = float(np.max(np.abs(a)))
         env = envelope(tc)
-        print(f"   {tc:5.0f} | {np.mean(a):+7.3f} | {rms:6.3f} |"
-              f" {selberg_sigma(tc):7.3f} | {mx:6.3f} | {env:8.3f} |"
-              f" {mx / env:7.2f}")
+        print(
+            f"   {tc:5.0f} | {np.mean(a):+7.3f} | {rms:6.3f} |"
+            f" {selberg_sigma(tc):7.3f} | {mx:6.3f} | {env:8.3f} |"
+            f" {mx / env:7.2f}"
+        )
         llt.append(math.log(math.log(tc)))
         rms2.append(rms**2)
     mat = np.vstack([np.array(llt), np.ones(len(llt))]).T
     slope, intercept = np.linalg.lstsq(mat, np.array(rms2), rcond=None)[0]
-    print(f"\n   Selberg fit: RMS^2 = {slope:.4f}*log log T + {intercept:+.4f}"
-          f"   (1/(2 pi^2) = {SELBERG_SLOPE:.4f})")
-    print("   (max|S| slightly UNDER-estimates the true peak: step 0.2 "
-          "under-samples the zero-spaced peaks.)")
+    print(
+        f"\n   Selberg fit: RMS^2 = {slope:.4f}*log log T + {intercept:+.4f}"
+        f"   (1/(2 pi^2) = {SELBERG_SLOPE:.4f})"
+    )
+    print(
+        "   (max|S| slightly UNDER-estimates the true peak: step 0.2 "
+        "under-samples the zero-spaced peaks.)"
+    )
 
 
 def main() -> None:

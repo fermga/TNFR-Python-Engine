@@ -1,16 +1,15 @@
 r"""TNFR-Riemann P15 — Weil/Guinand explicit formula.
 
-This module implements a numerical verification of the classical
-**Weil-Guinand explicit formula** linking the non-trivial zeros of
-the Riemann zeta function to the spectrum of the canonical TNFR
-prime-ladder Hamiltonian constructed in P14
+This module compares finite approximations to terms of the classical
+**Weil-Guinand explicit formula** using known critical-line zeros and a
+declared prime-ladder Hamiltonian constructed in P14
 (:mod:`tnfr.riemann.prime_ladder_hamiltonian`).
 
 Mathematical statement
 ----------------------
 
-Let ``h`` be a real, even Schwartz test function on the real line
-with Fourier transform
+For the entire Gaussian test functions implemented below, use the Fourier
+transform convention
 
 .. math::
 
@@ -21,7 +20,7 @@ The Weil-Guinand explicit formula reads
 
 .. math::
 
-    \sum_{\gamma} h(\gamma)
+    \sum_{\rho} h\!\bigl((\rho-1/2)/i\bigr)
        \;=\;
        h\!\bigl(i/2\bigr) + h\!\bigl(-i/2\bigr)
        \;-\; g(0)\,\log\pi
@@ -29,16 +28,19 @@ The Weil-Guinand explicit formula reads
             h(t)\,\operatorname{Re}\psi\!\Bigl(\tfrac14 + \tfrac{it}{2}\Bigr)\, dt
        \;-\; 2 \sum_{n\ge 1} \frac{\Lambda(n)}{\sqrt{n}}\, g(\log n),
 
-where the left-hand sum runs over the imaginary parts ``\gamma`` of
-all non-trivial zeros ``\rho = 1/2 + i\gamma`` of ``\zeta(s)``,
-``\psi`` is the digamma function and ``\Lambda`` is the von
-Mangoldt function.
+where the left-hand sum runs over all non-trivial zeros ``rho`` of
+``zeta`` with multiplicity, ``psi`` is the digamma function, and
+``Lambda`` is the von Mangoldt function. The argument ``(rho-1/2)/i``
+is complex for an off-line zero; replacing it with the imaginary part
+of every zero would assume RH. Real-even Schwartz regularity alone
+would not define the complex evaluations in this formula; the chosen
+entire Gaussian supplies the required analytic extension and strip decay.
 
 Connection to TNFR P14
 ----------------------
 
-The prime-power sum on the right is **exactly** a spectral
-functional on the P14 Hamiltonian
+With the decoupled diagonal prime-ladder construction, the prime-power
+sum is a spectral functional of
 ``H = \operatorname{diag}(k\log p)`` with weight operator
 ``W = \operatorname{diag}(\log p)``:
 
@@ -49,33 +51,32 @@ functional on the P14 Hamiltonian
        -2 \operatorname{Tr}\!\bigl(\hat W\, e^{-\hat H / 2}\, g(\hat H)\bigr),
 
 since ``n = p^k`` gives ``\Lambda(n) = \log p``, ``\sqrt n =
-e^{(k\log p)/2}`` and ``g(\log n) = g(k\log p)``.  Each eigenvalue
+e^{(k\log p)/2}`` and ``g(\log n) = g(k\log p)``. Each assigned eigenvalue
 ``E_n = k\log p`` of the P14 Hamiltonian is a node ``|p,k\rangle``
-with weight ``\log p``.  This is the canonical TNFR realisation of
-the prime side of Weil's formula.
+with weight ``\log p``. The finite implementation truncates this identity
+to the supplied nodes. An interacting Hamiltonian need not have that
+prime-ladder spectrum; its weighted trace then describes the supplied
+matrix rather than the classical prime side.
 
-What this module proves and what it does not
---------------------------------------------
+Finite comparison and its boundary
+----------------------------------
 
-This module verifies the Weil-Guinand identity **numerically** with
-a Gaussian test function family
+This module computes a residual for the Gaussian family
 
 .. math:: h_{\sigma}(t) = \exp\!\bigl(-t^2/(2\sigma^2)\bigr).
 
-It does **not** prove the Riemann Hypothesis.  The explicit
-formula is a *theorem* of analytic number theory (Riemann 1859,
-Guinand 1948, Weil 1952) that holds **independently of the
-location of the zeros**.  RH affects only the placement of the
-``\gamma`` along the real line; the identity itself is unconditional.
+The classical formula with complex zero arguments is unconditional.
+The implemented zero side instead sums a finite known critical-line list
+from ``mpmath.zetazero``. It does not enumerate arbitrary off-line zeros,
+certify omitted tails or establish that the list exhausts the analytic
+zero set. The integral and matrix trace also use finite numerical data.
 
-What is *new* here is purely an instrumental result: the prime
-side of Weil's formula is computable to machine precision from the
-canonical TNFR P14 Hamiltonian, with no extra arithmetic
-machinery.  This closes gap G3 of the TNFR-Riemann programme in
-its operational sense — every term of Weil's bridge between
-primes and zeros is exhibited inside the canonical TNFR formalism.
-Gap G4 (localisation of zeros on Re(s)=1/2) is RH itself and
-remains open.
+The compatibility field ``verified`` means only that the materialized
+absolute residual is below the supplied tolerance. It is not a uniform
+error bound, a proof of the analytic identity, a new Hilbert-Polya bridge
+or a proof of RH. Prime labels and logarithmic weights are construction
+inputs, not outputs of an autonomous nodal trajectory. Current scope is
+centralized in ``theory/TNFR_RIEMANN_RESEARCH_NOTES.md``.
 """
 
 from __future__ import annotations
@@ -159,7 +160,11 @@ def gaussian_test_function(sigma: float) -> GaussianTestFunction:
 
 
 def weil_pole_side(test: GaussianTestFunction) -> float:
-    r"""Return ``h(i/2) + h(-i/2)`` (poles of ``\zeta`` at ``s=0,1``)."""
+    r"""Return the explicit-formula term ``h(i/2) + h(-i/2)``.
+
+    These terms involve completion points 0 and 1; zeta itself has its
+    simple pole only at 1, not at 0.
+    """
     return 2.0 * test.h_at_half_pole()
 
 
@@ -204,7 +209,7 @@ def weil_prime_side_from_hamiltonian(
     bundle: PrimeLadderHamiltonian,
     test: GaussianTestFunction,
 ) -> float:
-    r"""Compute the prime-power side of Weil's formula from P14.
+    r"""Compute the weighted trace for the supplied P14 matrix.
 
     Returns
 
@@ -214,7 +219,8 @@ def weil_prime_side_from_hamiltonian(
         \;=\;
         -2 \sum_{(p,k)} \log(p)\, e^{-k\log(p)/2}\, g(k\log p),
 
-    using the eigendecomposition of ``\hat H_{\text{int}}`` carried
+    The prime-power sum equality requires the decoupled diagonal spectrum.
+    The actual trace uses the eigendecomposition of ``\hat H_{\text{int}}`` carried
     by ``bundle.hamiltonian``.  At ``J_0 = 0`` the Hamiltonian is
     diagonal and the trace collapses to a simple weighted sum over
     nodes ``(p, k)``.
@@ -239,11 +245,11 @@ def weil_zero_side(
     convergence_tol: float = 1e-12,
     max_zeros: int = 500,
 ) -> tuple[float, int]:
-    r"""Compute ``\sum_{\gamma > 0} 2 h(\gamma)`` over Riemann zeros.
+    r"""Compute a finite ``\sum_{\gamma > 0} 2 h(\gamma)`` from known line zeros.
 
-    The sum is doubled because the trivial-zero-free zeros of
-    ``\zeta`` come in conjugate pairs ``\rho = 1/2 \pm i\gamma``
-    and ``h`` is real and even.
+    Each supplied critical-line zero has conjugate ``1/2 - i*gamma``;
+    the real-even Gaussian gives the doubled contribution. This routine
+    does not inspect possible off-line zeros or certify the omitted tail.
 
     Parameters
     ----------
@@ -253,7 +259,8 @@ def weil_zero_side(
         Initial number of zeros to use from :func:`mpmath.zetazero`.
     convergence_tol
         Stop adding zeros once the per-zero contribution falls
-        below this threshold.
+        below this threshold. A small last term is not a bound on the
+        sum of all remaining terms.
     max_zeros
         Hard cap to prevent runaway loops.
 
@@ -262,7 +269,7 @@ def weil_zero_side(
     total
         The truncated sum.
     n_used
-        Number of positive-axis zeros actually used.
+        Number of upper-half-plane critical-line zeros actually used.
     """
     total = 0.0
     n_used = 0
@@ -283,7 +290,7 @@ def weil_zero_side(
 
 @dataclass(frozen=True)
 class WeilExplicitFormulaCertificate:
-    """Outcome of :func:`verify_weil_explicit_formula`."""
+    """Finite residual record; ``verified`` is a supplied-tolerance test only."""
 
     sigma: float
     n_zeros_used: int
@@ -320,31 +327,33 @@ def verify_weil_explicit_formula(
     tolerance: float = 1e-3,
     integration_limit: float | None = None,
 ) -> WeilExplicitFormulaCertificate:
-    r"""Verify Weil's explicit formula numerically against P14.
+    r"""Compare finite zero-side and weighted-trace approximations.
 
-    The identity verified is
+    The classical comparison uses the identity
 
     .. math::
 
-        \underbrace{\sum_{\gamma} h(\gamma)}_{\text{zero side}}
+        \underbrace{\sum_{\rho} h((\rho-1/2)/i)}_{\text{zero side}}
         \;=\;
         \underbrace{h(i/2) + h(-i/2)}_{\text{pole side}}
         \;-\; g(0)\log\pi
         \;+\; \underbrace{\tfrac{1}{2\pi}\!\int h(t)\,\Re\psi(\tfrac14+\tfrac{it}{2})dt}_{\text{archimedean side}}
         \;+\; \underbrace{\bigl(-2\sum_n \tfrac{\Lambda(n)}{\sqrt n}g(\log n)\bigr)}_{\text{prime side from P14}}.
 
-    The residual is the difference of the two sides; ``verified``
-    is set when ``|residual| < tolerance``.
+    The implementation uses a finite known critical-line list on the
+    left and a finite matrix on the right. The classical prime-sum
+    interpretation requires a decoupled diagonal prime ladder.
+    ``verified`` is set when the materialized absolute residual is below
+    ``tolerance``; no full-sum or rounding enclosure is returned.
 
     Notes
     -----
     The prime side is truncated by the finite size of ``bundle``
-    (it contains only the first ``n_primes`` primes and echo depths
-    ``k <= max_power``).  For ``sigma`` small enough that ``g`` has
-    negligible support beyond the Hamiltonian's spectral support,
-    the truncation error is dominated by the zero-side and
-    archimedean-integral truncations rather than by the prime-side
-    cutoff.
+    (it contains only the first ``n_primes`` primes and ladder depths
+    ``k <= max_power``). The Fourier Gaussian has width proportional
+    to ``1/sigma``: decreasing ``sigma`` broadens the prime-side window.
+    No uniform claim about which truncation dominates follows without
+    bounding all omitted zero, prime and integral contributions.
     """
     test = gaussian_test_function(sigma)
     zero_total, n_used = weil_zero_side(

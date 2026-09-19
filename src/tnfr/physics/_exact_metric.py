@@ -13,8 +13,8 @@ shape, finiteness, non-emptiness and equal length before invoking it.
 
 from __future__ import annotations
 
-from fractions import Fraction
 import math
+from fractions import Fraction
 from typing import Any
 
 
@@ -61,10 +61,7 @@ def exact_vectors_proportional_if_aligned(
 
     if not left or not right or len(left) != len(right):
         return False
-    return all(
-        lhs * right[0] == rhs * left[0]
-        for lhs, rhs in zip(left, right)
-    )
+    return all(lhs * right[0] == rhs * left[0] for lhs, rhs in zip(left, right))
 
 
 def normalized_positive_binary64_metric(
@@ -88,8 +85,10 @@ def normalized_positive_fraction_metric(
 ) -> tuple[Fraction, ...] | None:
     """Normalize a strictly typed positive rational metric, if valid."""
 
-    if values is None or not values or any(
-        type(value) is not Fraction or value <= 0 for value in values
+    if (
+        values is None
+        or not values
+        or any(type(value) is not Fraction or value <= 0 for value in values)
     ):
         return None
     total = sum(values, Fraction(0))

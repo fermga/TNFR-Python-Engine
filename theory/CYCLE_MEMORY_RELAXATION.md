@@ -22,8 +22,10 @@ $$
 Thus the flow uses the same canonical channels as
 [joint support dynamics](CYCLE_SUPPORT_DYNAMICS.md). No Silence attenuation
 or additional restoring law is inserted. Capacity persists, so repeating
-one fixed positive physical partition supplies a common strict contraction
-on every delay circuit. This removes the finite-clock explanation for EPI
+one fixed partition satisfying the exact Euler restriction
+`0 < e*nu*h_j <= 1/2` from section 2 supplies a common strict contraction
+on every delay circuit. Positive duration alone is insufficient for Euler
+stability; the continuous-flow result has its separate spectral bound. This removes the finite-clock explanation for EPI
 contrast in the preceding block; it does not itself prove a localized
 restoring mechanism.
 

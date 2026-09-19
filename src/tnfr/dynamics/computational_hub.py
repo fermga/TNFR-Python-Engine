@@ -531,9 +531,7 @@ class TNFRComputationalHub:
     def _execute_unified_backend(self, request: ComputationRequest) -> Any:
         """Execute one operation through its declared unified computation type."""
         try:
-            computation_type = UNIFIED_OPERATION_TO_COMPUTATION_TYPE[
-                request.operation
-            ]
+            computation_type = UNIFIED_OPERATION_TO_COMPUTATION_TYPE[request.operation]
         except KeyError as exc:
             supported = ", ".join(sorted(UNIFIED_OPERATION_TO_COMPUTATION_TYPE))
             raise TNFRValueError(

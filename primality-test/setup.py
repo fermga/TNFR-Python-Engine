@@ -57,11 +57,8 @@ setup(
             "pandas>=1.5",  # For advanced analytics
             "jupyter>=1.0",  # For interactive benchmarking
         ],
-        "docs": [
-            "sphinx>=5.0",
-            "sphinx-rtd-theme>=1.2",
-            "myst-parser>=0.18",
-        ],
+        # Compatibility alias: build documentation with the repository root docs extra.
+        "docs": [],
     },
     entry_points={
         "console_scripts": [

@@ -6,8 +6,10 @@ from typing import Any
 from .._compat import TypeAlias
 from ._delayed_remesh_kernel import (
     DelayedRemeshNodeProposal as DelayedRemeshNodeProposal,
-    DelayedRemeshPlan as DelayedRemeshPlan,
-    DelayedRemeshResult as DelayedRemeshResult,
+)
+from ._delayed_remesh_kernel import DelayedRemeshPlan as DelayedRemeshPlan
+from ._delayed_remesh_kernel import DelayedRemeshResult as DelayedRemeshResult
+from ._delayed_remesh_kernel import (
     DelayedRemeshStabilityEvidence as DelayedRemeshStabilityEvidence,
 )
 

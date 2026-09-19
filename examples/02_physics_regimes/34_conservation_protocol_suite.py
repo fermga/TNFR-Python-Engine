@@ -127,7 +127,9 @@ def demo_charge_drift() -> dict[str, float | int | bool]:
     n_steps = 20
     dt = 0.05
 
-    print(f"\n  Protocol: Evolve {n_steps} auxiliary smoothing steps, measure charge drift")
+    print(
+        f"\n  Protocol: Evolve {n_steps} auxiliary smoothing steps, measure charge drift"
+    )
     print("  Legacy target: |Q(t_f) - Q(t_0)| / |Q(t_0)| < 0.03%")
     print()
     print(
@@ -473,9 +475,7 @@ def demo_candidate_energy_monotonicity() -> dict[str, int | bool]:
         E_prev = E_curr
 
     target_met = positive_derivative_steps == 0
-    print(
-        f"\n  Positive-derivative steps: {positive_derivative_steps}/{n_steps}"
-    )
+    print(f"\n  Positive-derivative steps: {positive_derivative_steps}/{n_steps}")
     print(f"  Finite target result: {'PASS' if target_met else 'FAIL'}")
     print(
         "  Passing this sample does not establish a Lyapunov theorem "

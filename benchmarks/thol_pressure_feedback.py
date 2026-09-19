@@ -25,19 +25,27 @@ from benchmarks.capacity_localization import build_cycle  # noqa: E402
 from tnfr.alias import get_attr, set_attr  # noqa: E402
 from tnfr.config import inject_defaults  # noqa: E402
 from tnfr.constants.aliases import (  # noqa: E402
-    ALIAS_D2EPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF,
+    ALIAS_D2EPI,
+    ALIAS_DNFR,
+    ALIAS_EPI,
+    ALIAS_THETA,
+    ALIAS_VF,
 )
 from tnfr.dynamics.dnfr import default_compute_delta_nfr  # noqa: E402
 from tnfr.dynamics.integrators import (  # noqa: E402
-    DefaultIntegrator, update_epi_via_nodal_equation,
+    DefaultIntegrator,
+    update_epi_via_nodal_equation,
 )
 from tnfr.dynamics.runtime import step  # noqa: E402
 from tnfr.operators import (  # noqa: E402
-    build_operator_event_schedule, build_physical_flow_partition,
+    build_operator_event_schedule,
+    build_physical_flow_partition,
     execute_operator_event_schedule,
 )
 from tnfr.operators.definitions import (  # noqa: E402
-    Coherence, Dissonance, SelfOrganization,
+    Coherence,
+    Dissonance,
+    SelfOrganization,
 )
 from tnfr.operators.factor_contracts import (  # noqa: E402
     resolve_runtime_operator_factors,
@@ -48,14 +56,18 @@ from tnfr.operators.nodal_equation import compute_d2epi_dt2  # noqa: E402
 from tnfr.operators.self_organization import _configured_tau  # noqa: E402
 from tnfr.research.claims import ClaimStatus  # noqa: E402
 from tnfr.research.core_manifests import (  # noqa: E402
-    CoreExperimentManifest, current_git_source_provenance,
+    CoreExperimentManifest,
+    current_git_source_provenance,
 )
 from tnfr.types import Glyph  # noqa: E402
 
 PREPARATION_STEPS = (0.125, 0.375)
 NEXT_STEP = 0.25
 ROUTES = (
-    "baseline", "public_held", "public_refreshed", "staged_refreshed",
+    "baseline",
+    "public_held",
+    "public_refreshed",
+    "staged_refreshed",
     "selector_runtime",
 )
 
@@ -72,9 +84,12 @@ def _exact(values):
 
 def _state(graph):
     return {
-        "time": float(graph.graph.get("_t", 0.0)), "nodes": tuple(graph),
-        "epi": _values(graph, ALIAS_EPI), "capacity": _values(graph, ALIAS_VF),
-        "phase": _values(graph, ALIAS_THETA), "pressure": _values(graph, ALIAS_DNFR),
+        "time": float(graph.graph.get("_t", 0.0)),
+        "nodes": tuple(graph),
+        "epi": _values(graph, ALIAS_EPI),
+        "capacity": _values(graph, ALIAS_VF),
+        "phase": _values(graph, ALIAS_THETA),
+        "pressure": _values(graph, ALIAS_DNFR),
         "cached_acceleration": _values(graph, ALIAS_D2EPI),
         "edges": tuple((u, v, dict(data)) for u, v, data in graph.edges(data=True)),
         "glyph_history": {
@@ -101,13 +116,12 @@ def _acceleration(graph, node=0):
     exact = 2 * (slopes[1] - slopes[0]) / (h1 + h2)
     actual = compute_d2epi_dt2(graph, node, store=False)
     return {
-        "physical_samples": samples, "exact_secants": slopes,
+        "physical_samples": samples,
+        "exact_secants": slopes,
         "exact_three_point_acceleration": exact,
         "observed_acceleration": actual,
         "cached_acceleration": float(get_attr(graph.nodes[node], ALIAS_D2EPI, 0)),
-        "exact_acceleration_arithmetic_residual": (
-            Fraction.from_float(actual) - exact
-        ),
+        "exact_acceleration_arithmetic_residual": (Fraction.from_float(actual) - exact),
     }
 
 
@@ -117,24 +131,34 @@ def _prepare_recorded_ring():
     Coherence()(graph, 0)
     Dissonance()(graph, 0)
     schedule = build_operator_event_schedule(
-        (), start_time=0.0, flow_durations=(sum(PREPARATION_STEPS),),
+        (),
+        start_time=0.0,
+        flow_durations=(sum(PREPARATION_STEPS),),
     )
     partition = build_physical_flow_partition(
-        schedule.intervals[0], PREPARATION_STEPS,
+        schedule.intervals[0],
+        PREPARATION_STEPS,
     )
     execution = execute_operator_event_schedule(
-        graph, schedule, method="euler", physical_flow_partitions=(partition,),
+        graph,
+        schedule,
+        method="euler",
+        physical_flow_partitions=(partition,),
     )
     evidence = execution.physical_flow_partition_evidence[0]
     preparation = {
         "actual_prefix": tuple(graph.nodes[0]["glyph_history"]),
         "physical_steps": PREPARATION_STEPS,
         "acceleration": _acceleration(graph),
-        "boundaries": [{
-            "time": item.time, "epi": item.after.epi,
-            "pressure": item.after.delta_nfr,
-            "pressure_only_refresh": item.nonpressure_state_preserved,
-        } for item in evidence.boundary_observations],
+        "boundaries": [
+            {
+                "time": item.time,
+                "epi": item.after.epi,
+                "pressure": item.after.delta_nfr,
+                "pressure_only_refresh": item.nonpressure_state_preserved,
+            }
+            for item in evidence.boundary_observations
+        ],
         "segment_methods": tuple(
             item.resolved_method for item in evidence.segment_flow_evidence
         ),
@@ -149,19 +173,22 @@ def _prepare_recorded_ring():
 def _integration_record(before, after, graph):
     dt = Fraction.from_float(NEXT_STEP)
     x, nu, pressure, output = (
-        _exact(values) for values in (
-            before["epi"], before["capacity"], before["pressure"], after["epi"],
+        _exact(values)
+        for values in (
+            before["epi"],
+            before["capacity"],
+            before["pressure"],
+            after["epi"],
         )
     )
-    predicted = tuple(
-        a + dt * b * c for a, b, c in zip(x, nu, pressure, strict=True)
-    )
+    predicted = tuple(a + dt * b * c for a, b, c in zip(x, nu, pressure, strict=True))
     low, high = (
-        Fraction.from_float(float(graph.graph[name]))
-        for name in ("EPI_MIN", "EPI_MAX")
+        Fraction.from_float(float(graph.graph[name])) for name in ("EPI_MIN", "EPI_MAX")
     )
     return {
-        "before": before, "after": after, "duration": NEXT_STEP,
+        "before": before,
+        "after": after,
+        "duration": NEXT_STEP,
         "exact_held_input_prediction": predicted,
         "exact_held_input_euler_residual": tuple(
             actual - ideal for actual, ideal in zip(output, predicted, strict=True)
@@ -202,7 +229,9 @@ def run_recorded_thol_case(route, *, poison_cache=False):
     acceleration = _acceleration(graph)
     admission = validate_candidate(graph, 0, "THOL")
     factor = resolve_runtime_operator_factors(
-        graph.graph.get("GLYPH_FACTORS"), Glyph.THOL, graph.graph,
+        graph.graph.get("GLYPH_FACTORS"),
+        Glyph.THOL,
+        graph.graph,
     )["THOL_accel"]
     birth_threshold = _configured_tau(graph.graph, {})
     refreshed = None
@@ -210,7 +239,8 @@ def run_recorded_thol_case(route, *, poison_cache=False):
     if route == "selector_runtime":
         integrator = _RecordingIntegrator()
         graph.graph.update(
-            integrator=integrator, glyph_selector=_target_zero_thol,
+            integrator=integrator,
+            glyph_selector=_target_zero_thol,
             INTEGRATOR_METHOD="euler",
         )
         step(graph, dt=NEXT_STEP, use_Si=False, apply_glyphs=True)
@@ -226,8 +256,11 @@ def run_recorded_thol_case(route, *, poison_cache=False):
                 observed.append(_state(current))
 
             result = execute_self_organization_stage(
-                graph, SelfOrganization(), (0,),
-                compute_delta_nfr=capture_and_refresh, collect_metrics=True,
+                graph,
+                SelfOrganization(),
+                (0,),
+                compute_delta_nfr=capture_and_refresh,
+                collect_metrics=True,
             )
             raw, refreshed = observed
             stage = {
@@ -244,32 +277,34 @@ def run_recorded_thol_case(route, *, poison_cache=False):
         integration_before = _state(graph)
         update_epi_via_nodal_equation(graph, dt=NEXT_STEP, method="euler")
         integration = _integration_record(integration_before, _state(graph), graph)
-    pressure_change = (
-        Fraction.from_float(raw["pressure"][0])
-        - Fraction.from_float(before["pressure"][0])
+    pressure_change = Fraction.from_float(raw["pressure"][0]) - Fraction.from_float(
+        before["pressure"][0]
     )
-    ideal_change = (
-        Fraction.from_float(factor)
-        * Fraction.from_float(acceleration["observed_acceleration"])
+    ideal_change = Fraction.from_float(factor) * Fraction.from_float(
+        acceleration["observed_acceleration"]
     )
     return {
-        "route": route, "preparation": preparation,
-        "before": before, "acceleration": acceleration,
+        "route": route,
+        "preparation": preparation,
+        "before": before,
+        "acceleration": acceleration,
         "cache_poisoned_for_regression": poison_cache,
         "grammar_admission": {
-            "allowed": admission.allowed, "candidate": admission.candidate,
+            "allowed": admission.allowed,
+            "candidate": admission.candidate,
             "scope": "Incremental live admission after actual IL and OZ",
         },
         "default_thol_factor": factor,
         "default_birth_threshold": birth_threshold,
-        "raw_after_operator": raw, "after_refresh": refreshed,
-        "stage": stage, "integration": integration,
+        "raw_after_operator": raw,
+        "after_refresh": refreshed,
+        "stage": stage,
+        "integration": integration,
         "whole_route_endpoint": _state(graph),
         "exact_operator_pressure_change": pressure_change,
         "exact_thol_pressure_proposal": ideal_change,
         "exact_pressure_arithmetic_residual": (
-            pressure_change - ideal_change
-            if route != "baseline" else Fraction(0)
+            pressure_change - ideal_change if route != "baseline" else Fraction(0)
         ),
         "scope": (
             "Direct/staged calls are single incrementally admitted operations. "
@@ -285,17 +320,29 @@ def run_prepared_birth_case():
     """Use the existing P2 birth fixture with prepared physical history."""
     graph = nx.Graph()
     graph.add_node(
-        0, EPI=0.6, nu_f=1.0, theta=0.1, delta_nfr=0.2,
+        0,
+        EPI=0.6,
+        nu_f=1.0,
+        theta=0.1,
+        delta_nfr=0.2,
         epi_time_history=[(0.0, 0.0), (1.0, 0.1), (2.0, 0.6)],
-        epi_history=[0.0, 0.1, 0.6], glyph_history=["OZ"], epi_kind="seed-identity",
+        epi_history=[0.0, 0.1, 0.6],
+        glyph_history=["OZ"],
+        epi_kind="seed-identity",
     )
     graph.add_node(1, EPI=0.4, nu_f=1.0, theta=0.12, delta_nfr=0.1)
     graph.add_edge(0, 1, weight=1.0, length=1.0)
     graph.graph.update(
-        _t=2.0, RANDOM_SEED=17, GLYPH_HYSTERESIS_WINDOW=64,
-        _gamma_spec={"type": "none"}, GAMMA={"type": "none"},
-        use_extended_dynamics=False, DT_MIN=0.0,
-        EPI_MIN=-1.0, EPI_MAX=1.0, CLIP_MODE="hard",
+        _t=2.0,
+        RANDOM_SEED=17,
+        GLYPH_HYSTERESIS_WINDOW=64,
+        _gamma_spec={"type": "none"},
+        GAMMA={"type": "none"},
+        use_extended_dynamics=False,
+        DT_MIN=0.0,
+        EPI_MIN=-1.0,
+        EPI_MAX=1.0,
+        CLIP_MODE="hard",
         compute_delta_nfr=default_compute_delta_nfr,
     )
     default_compute_delta_nfr(graph)
@@ -317,8 +364,10 @@ def run_prepared_birth_case():
         ),
         "grammar_admission_allowed": admission.allowed,
         "default_birth_threshold": birth_threshold,
-        "before": before, "acceleration": acceleration,
-        "raw_after_operator": raw, "after_refresh": refreshed,
+        "before": before,
+        "acceleration": acceleration,
+        "raw_after_operator": raw,
+        "after_refresh": refreshed,
         "children": children,
         "child_degrees": tuple(graph.degree(child) for child in children),
         "sub_epi_records": tuple(graph.nodes[0].get("sub_epis", ())),
@@ -343,45 +392,57 @@ def _payload(value):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--output", type=Path,
+        "--output",
+        type=Path,
         default=ROOT / "artifacts/research/thol_pressure_feedback.json",
     )
     args = parser.parse_args()
     scope = (
-        "src/tnfr", "benchmarks/capacity_localization.py",
+        "src/tnfr",
+        "benchmarks/capacity_localization.py",
         "benchmarks/thol_pressure_feedback.py",
     )
     provenance = current_git_source_provenance(ROOT, scope)
     sha, dirty, digest = provenance
     manifest = CoreExperimentManifest(
         claim_id="O3.a-thol-acceleration-pressure-consumption-and-birth",
-        git_sha=sha, source_dirty=dirty, dirty_source_hash=digest,
+        git_sha=sha,
+        source_dirty=dirty,
+        dirty_source_hash=digest,
         versions={
             "python": platform.python_version(),
-            "networkx": nx.__version__, "numpy": np.__version__,
+            "networkx": nx.__version__,
+            "numpy": np.__version__,
         },
         graph_construction=(
             "Unit C8 with EPI bump; separately prepared P2 birth fixture"
         ),
         capacity_specification="Initial unit capacity; default THOL child capacity",
         solver="Existing refreshed event preparation and shared nodal Euler consumers",
-        timestep=NEXT_STEP, seed=17, result_status=ClaimStatus.MEASURED,
+        timestep=NEXT_STEP,
+        seed=17,
+        result_status=ClaimStatus.MEASURED,
         operator_sequence=(
-            "actual IL OZ preparation", "single THOL via declared routes",
+            "actual IL OZ preparation",
+            "single THOL via declared routes",
         ),
         telemetry=(
             "physical secants and cached acceleration",
             "pressure before and after refresh",
-            "shared-integrator EPI increments", "child nodes and transport edges",
+            "shared-integrator EPI increments",
+            "child nodes and transport edges",
         ),
         controls=(
-            "held baseline", "canonical pressure refresh", "prepared birth history",
+            "held baseline",
+            "canonical pressure refresh",
+            "prepared birth history",
         ),
         artifacts=(str(args.output),),
     )
     manifest.validate_for_admission()
     report = {
-        "manifest": manifest.to_dict(), "source_scope": scope,
+        "manifest": manifest.to_dict(),
+        "source_scope": scope,
         "recorded_cases": [run_recorded_thol_case(route) for route in ROUTES],
         "prepared_birth": run_prepared_birth_case(),
         "experimental_status": "No empirical correspondence tested",

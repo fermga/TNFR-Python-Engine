@@ -338,9 +338,7 @@ class StructuralAccelerationObservation:
         }
 
 
-def compute_d2epi_dt2(
-    G: "TNFRGraph", node: "NodeId", *, store: bool = True
-) -> float:
+def compute_d2epi_dt2(G: "TNFRGraph", node: "NodeId", *, store: bool = True) -> float:
     """Compute ∂²EPI/∂t² (structural acceleration).
 
     Return the shared three-sample finite difference. Operator-specific gates
@@ -440,7 +438,8 @@ def compute_d2epi_dt2(
 
 
 def observe_structural_acceleration(
-    G: "TNFRGraph", node: "NodeId",
+    G: "TNFRGraph",
+    node: "NodeId",
 ) -> StructuralAccelerationObservation:
     """Read one active history without writing telemetry or changing the graph.
 
@@ -459,14 +458,27 @@ def observe_structural_acceleration(
     source, history = _select_acceleration_history(node_data)
     if history is None:
         return StructuralAccelerationObservation(
-            None, 0, None, False, None, (), None, "missing_history",
+            None,
+            0,
+            None,
+            False,
+            None,
+            (),
+            None,
+            "missing_history",
         )
     length = _history_length_or_error(history, source)
     physical = source == "epi_time_history"
     time_basis = "physical_time" if physical else "legacy_unit_operator_step"
     if length < 3:
         return StructuralAccelerationObservation(
-            source, length, time_basis, False, None, (), None,
+            source,
+            length,
+            time_basis,
+            False,
+            None,
+            (),
+            None,
             "insufficient_history",
         )
 
@@ -488,9 +500,7 @@ def observe_structural_acceleration(
         if not math.isfinite(dt1) or not math.isfinite(dt2):
             raise TNFRValueError("epi_time_history intervals must remain finite.")
         if dt1 <= 0.0 or dt2 <= 0.0:
-            raise TNFRValueError(
-                "epi_time_history timestamps must increase strictly."
-            )
+            raise TNFRValueError("epi_time_history timestamps must increase strictly.")
         span = dt1 + dt2
         if not math.isfinite(span):
             raise TNFRValueError("epi_time_history total span must remain finite.")
@@ -523,8 +533,14 @@ def observe_structural_acceleration(
         raise TNFRValueError(f"{source} produces non-finite structural acceleration.")
 
     return StructuralAccelerationObservation(
-        source, length, time_basis, True, float(d2epi), observed_samples,
-        True if physical else None, None,
+        source,
+        length,
+        time_basis,
+        True,
+        float(d2epi),
+        observed_samples,
+        True if physical else None,
+        None,
     )
 
 

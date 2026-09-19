@@ -130,10 +130,7 @@ def _append_remesh_epi_history_snapshot_from_materialized(
     else:
         retained = _materialize_indexed_history(raw_history)
 
-    if (
-        type(raw_history) is not deque
-        or raw_history.maxlen != history_maxlen
-    ):
+    if type(raw_history) is not deque or raw_history.maxlen != history_maxlen:
         raw_history = deque(
             retained[-history_maxlen:],
             maxlen=history_maxlen,
@@ -153,8 +150,7 @@ def _append_remesh_epi_history_snapshot_from_materialized(
         history_length_after=length_after,
         history_maxlen=history_maxlen,
         oldest_snapshot_evicted=(
-            length_before == history_maxlen
-            and length_after == history_maxlen
+            length_before == history_maxlen and length_after == history_maxlen
         ),
         snapshot_items=snapshot_items,
     )

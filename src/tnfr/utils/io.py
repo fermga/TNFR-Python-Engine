@@ -15,6 +15,7 @@ from .init import LazyImportProxy, cached_import, get_logger
 
 logger = get_logger(__name__)
 
+
 def clear_orjson_param_warnings() -> None:
     """Compatibility no-op: JSON options are now honored by one encoder."""
 
@@ -32,8 +33,6 @@ class JsonDumpsParams:
 
 
 DEFAULT_PARAMS = JsonDumpsParams()
-
-
 
 
 def _json_dumps_std(

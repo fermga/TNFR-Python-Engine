@@ -10,20 +10,25 @@ from dataclasses import dataclass
 from fractions import Fraction as F
 
 from ..dynamics._euler_kernel import (
-    NODAL_REMAINDER_DENOMINATOR_BITS, NodalRemainderState,
-    _binary64_tuple, _finite_binary64,
+    NODAL_REMAINDER_DENOMINATOR_BITS,
+    NodalRemainderState,
+    _binary64_tuple,
+    _finite_binary64,
 )
 from .c6_pressure_lattice import (
-    C6PressureLatticeReference, _observe_rebuilt_c6_pressure_lattice, _rebuild_lattice,
+    C6PressureLatticeReference,
+    _observe_rebuilt_c6_pressure_lattice,
+    _rebuild_lattice,
 )
 from .nodal_remainder import (
-    NodalRemainderCellHorizon, derive_nodal_remainder_cell_horizon,
+    NodalRemainderCellHorizon,
+    derive_nodal_remainder_cell_horizon,
     derive_nodal_remainder_itinerary,
 )
 
 __all__ = ["C6CarriedCellGraph", "derive_c6_carried_cell_graph"]
 
-_CAPACITY = (1.,) * 6
+_CAPACITY = (1.0,) * 6
 
 
 @dataclass(frozen=True, slots=True)
@@ -74,43 +79,62 @@ class C6CarriedCellGraph:
 
 def _itinerary(reference, source, target, timestep, pressure):
     return derive_nodal_remainder_itinerary(
-        epi_states=(source, target), timesteps=(timestep,),
-        capacities=(_CAPACITY,), pressures=(pressure,),
-        epi_lower=reference.source.epi_lower, epi_upper=reference.source.epi_upper,
+        epi_states=(source, target),
+        timesteps=(timestep,),
+        capacities=(_CAPACITY,),
+        pressures=(pressure,),
+        epi_lower=reference.source.epi_lower,
+        epi_upper=reference.source.epi_upper,
     )
 
 
 def _maximal_residence(reference, epi, timestep, pressure):
     # The zero-area itinerary exposes the exact legal grid endpoints of
     # each source cell, including band clipping and nearest-even ties.
-    cells = _itinerary(reference, epi, epi, 0., pressure).coordinates
+    cells = _itinerary(reference, epi, epi, 0.0, pressure).coordinates
     scale = 2**NODAL_REMAINDER_DENOMINATOR_BITS
-    exact = tuple(F(cell.first_grid_index if p >= 0 else cell.last_grid_index, scale)
-                  for cell, p in zip(cells, pressure, strict=True))
+    exact = tuple(
+        F(cell.first_grid_index if p >= 0 else cell.last_grid_index, scale)
+        for cell, p in zip(cells, pressure, strict=True)
+    )
     state = NodalRemainderState(
-        epi, tuple(value - F(visible) for value, visible in zip(exact, epi, strict=True)),
-        reference.source.epi_lower, reference.source.epi_upper,
+        epi,
+        tuple(value - F(visible) for value, visible in zip(exact, epi, strict=True)),
+        reference.source.epi_lower,
+        reference.source.epi_upper,
     )
     horizon = derive_nodal_remainder_cell_horizon(
-        state=state, timestep=timestep, capacity=_CAPACITY, pressure=pressure,
+        state=state,
+        timestep=timestep,
+        capacity=_CAPACITY,
+        pressure=pressure,
     )
     # The chosen carry maximizes every directional distance at once.
     # This grid-width calculation verifies maximality, not only a witness.
-    for cell, increment, limit in zip(cells, horizon.exact_increment,
-                                      horizon.coordinate_step_limits, strict=True):
+    for cell, increment, limit in zip(
+        cells, horizon.exact_increment, horizon.coordinate_step_limits, strict=True
+    ):
         displacement = increment * scale
         if displacement.denominator != 1:
             raise RuntimeError("a shared nodal increment escaped the legal dyadic grid")
-        maximum = ((cell.last_grid_index - cell.first_grid_index) // abs(displacement.numerator)
-                   if displacement else None)
+        maximum = (
+            (cell.last_grid_index - cell.first_grid_index)
+            // abs(displacement.numerator)
+            if displacement
+            else None
+        )
         if maximum != limit:
-            raise RuntimeError("the extremal legal carry did not maximize cell residence")
+            raise RuntimeError(
+                "the extremal legal carry did not maximize cell residence"
+            )
     return horizon
 
 
 def _topological_order(adjacency):
     count = len(adjacency)
-    indegree = [sum(adjacency[j][i] for j in range(count) if j != i) for i in range(count)]
+    indegree = [
+        sum(adjacency[j][i] for j in range(count) if j != i) for i in range(count)
+    ]
     ready = [i for i, value in enumerate(indegree) if not value]
     order = []
     while ready:
@@ -126,8 +150,10 @@ def _topological_order(adjacency):
 
 
 def derive_c6_carried_cell_graph(
-    reference: C6PressureLatticeReference, *,
-    epi_states: tuple[tuple[float, ...], ...], timestep: float,
+    reference: C6PressureLatticeReference,
+    *,
+    epi_states: tuple[tuple[float, ...], ...],
+    timestep: float,
 ) -> C6CarriedCellGraph:
     """Certify all pairwise transitions of a supplied finite visible family.
 
@@ -151,30 +177,60 @@ def derive_c6_carried_cell_graph(
         raise ValueError("the cell graph requires a positive timestep")
     if type(epi_states) is not tuple or not epi_states:
         raise ValueError("epi_states must be a nonempty ordered tuple")
-    rows = tuple(_binary64_tuple(row, f"epi_states[{i}]") for i, row in enumerate(epi_states))
+    rows = tuple(
+        _binary64_tuple(row, f"epi_states[{i}]") for i, row in enumerate(epi_states)
+    )
     if len(set(rows)) != len(rows):
         raise ValueError("the visible cell family must not contain duplicate rows")
-    pressures = tuple(_observe_rebuilt_c6_pressure_lattice(ref, row).pressure for row in rows)
+    pressures = tuple(
+        _observe_rebuilt_c6_pressure_lattice(ref, row).pressure for row in rows
+    )
     adjacency, witnesses, exclusions = [], [], []
     for source, pressure in zip(rows, pressures, strict=True):
         edges = tuple(_itinerary(ref, source, target, h, pressure) for target in rows)
         adjacency.append(tuple(edge.feasible for edge in edges))
         witnesses.append(tuple(edge.witness_initial for edge in edges))
-        exclusions.append(tuple(next((i for i, cell in enumerate(edge.coordinates)
-                                      if not cell.feasible), None) for edge in edges))
+        exclusions.append(
+            tuple(
+                next(
+                    (i for i, cell in enumerate(edge.coordinates) if not cell.feasible),
+                    None,
+                )
+                for edge in edges
+            )
+        )
     graph = tuple(adjacency)
-    residence = tuple(_maximal_residence(ref, row, h, pressure)
-                      for row, pressure in zip(rows, pressures, strict=True))
+    residence = tuple(
+        _maximal_residence(ref, row, h, pressure)
+        for row, pressure in zip(rows, pressures, strict=True)
+    )
     order = _topological_order(graph)
     bounds = None
-    if order is not None and all(item.first_exit_step is not None for item in residence):
+    if order is not None and all(
+        item.first_exit_step is not None for item in residence
+    ):
         values = [0] * len(rows)
         for source in reversed(order):
-            remaining = max((values[j] for j, edge in enumerate(graph[source])
-                             if j != source and edge), default=0)
+            remaining = max(
+                (
+                    values[j]
+                    for j, edge in enumerate(graph[source])
+                    if j != source and edge
+                ),
+                default=0,
+            )
             values[source] = residence[source].first_exit_step + remaining
         bounds = tuple(values)
     return C6CarriedCellGraph(
-        ref, h, rows, pressures, graph, tuple(witnesses), tuple(exclusions), residence,
-        order, bounds, max(bounds) if bounds is not None else None,
+        ref,
+        h,
+        rows,
+        pressures,
+        graph,
+        tuple(witnesses),
+        tuple(exclusions),
+        residence,
+        order,
+        bounds,
+        max(bounds) if bounds is not None else None,
     )

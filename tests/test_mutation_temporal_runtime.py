@@ -1,4 +1,9 @@
-"""Runtime production and autonomous use of physical Mutation evidence."""
+"""Runtime recording and configured consumption of Mutation evidence.
+
+The selector controls explicitly request ZHIR; the acceptance control also
+supplies timestamped samples and disables grammar. They test evidence gating,
+not autonomous default selection or endogenous occurrence of Mutation.
+"""
 
 from __future__ import annotations
 
@@ -14,10 +19,7 @@ from tnfr.constants import (
     VF_PRIMARY,
     inject_defaults,
 )
-from tnfr.dynamics.runtime import (
-    _record_mutation_flow_boundary,
-    _update_nodes,
-)
+from tnfr.dynamics.runtime import _record_mutation_flow_boundary, _update_nodes
 from tnfr.dynamics.selectors import _apply_glyphs
 from tnfr.errors import TNFRValueError
 from tnfr.physics.mutation_trigger import certify_mutation_trigger
@@ -106,7 +108,7 @@ def test_history_recording_is_atomic_across_nodes_on_invalid_input():
     assert dict(graph.nodes[0]) == before
 
 
-def test_autonomous_selector_abstains_when_mutation_evidence_is_missing():
+def test_configured_selector_abstains_when_mutation_evidence_is_missing():
     graph = _graph(epi=0.3)
     history_state = {}
 
@@ -120,7 +122,7 @@ def test_autonomous_selector_abstains_when_mutation_evidence_is_missing():
     assert abstention["observed_depi_dt"] is None
 
 
-def test_autonomous_selector_executes_mutation_with_fresh_physical_crossing():
+def test_configured_selector_executes_mutation_with_matching_physical_samples():
     graph = _graph(epi=0.2)
     graph.graph["GRAMMAR_CANON"] = {"enabled": False}
     graph.nodes[0]["epi_time_history"] = [(0.0, 0.0), (1.0, 0.2)]

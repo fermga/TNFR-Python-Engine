@@ -55,9 +55,9 @@ operator grammar/history effects, or repeated operator words.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from fractions import Fraction
-import math
 from types import SimpleNamespace
 from typing import Any
 
@@ -70,19 +70,29 @@ from ..operators._neighbor_epi_kernel import (
     neighbor_epi_unweighted_mean,
     reception_proposed_epi_kind,
 )
-from ..types import Glyph, ZERO_BEPI_STORAGE, ensure_bepi
+from ..types import ZERO_BEPI_STORAGE, Glyph, ensure_bepi
 from ._helpers import finite_real_scalar
+from ._neighbor_epi_realization import exact_binary64_matrix as _exact_binary64_matrix
 from ._neighbor_epi_realization import (
-    exact_binary64_matrix as _exact_binary64_matrix,
     exact_ideal_neighbor_blend_map as _exact_ideal_map,
-    exact_matrix_vector as _exact_matrix_vector,
+)
+from ._neighbor_epi_realization import exact_matrix_vector as _exact_matrix_vector
+from ._neighbor_epi_realization import (
     fraction_float_or_infinity as _fraction_float_or_infinity,
-    optional_flow_duration as _optional_duration,
-    readonly_float_array as _readonly_array,
+)
+from ._neighbor_epi_realization import optional_flow_duration as _optional_duration
+from ._neighbor_epi_realization import readonly_float_array as _readonly_array
+from ._neighbor_epi_realization import (
     represented_neighbor_blend_map as _represented_map,
+)
+from ._neighbor_epi_realization import (
     require_explicit_epi as _require_explicit_epi_shared,
-    resolve_epi_bounds as _resolved_bounds,
+)
+from ._neighbor_epi_realization import resolve_epi_bounds as _resolved_bounds
+from ._neighbor_epi_realization import (
     uses_scalar_epi_embedding as _uses_scalar_epi_embedding,
+)
+from ._neighbor_epi_realization import (
     validate_certificate_tolerance as _validate_tolerance,
 )
 from .hybrid_operator_stability import (
@@ -292,9 +302,7 @@ def certify_reception_epi_realization(
         conv=lambda value: value,
     )
     runtime_epi_operand = ensure_bepi(raw_target_epi)
-    unclipped_target = neighbor_epi_blend_value(
-        runtime_epi_operand, neighbor_mean, mix
-    )
+    unclipped_target = neighbor_epi_blend_value(runtime_epi_operand, neighbor_mean, mix)
     runtime_target = float(
         structural_clip(
             unclipped_target,
@@ -410,9 +418,7 @@ def certify_reception_epi_realization(
             current_pressure = -(laplacian @ state)
             post_pressure = -(laplacian @ state_after)
             pressure_defect = current_pressure - post_pressure
-            pressure_defect_norm = float(
-                np.max(np.abs(pressure_defect), initial=0.0)
-            )
+            pressure_defect_norm = float(np.max(np.abs(pressure_defect), initial=0.0))
     except FloatingPointError as exc:
         raise ValueError("pure-EPI pressure diagnostic exceeds binary64 range") from exc
     pressure_detected = bool(np.any(pressure_defect != 0.0))
@@ -427,27 +433,20 @@ def certify_reception_epi_realization(
     )
     exact_weighted_row = tuple(
         sum(
-            (
-                metric_exact[row] * ideal_map[row][column]
-                for row in range(len(nodes))
-            ),
+            (metric_exact[row] * ideal_map[row][column] for row in range(len(nodes))),
             Fraction(0),
         )
         for column in range(len(nodes))
     )
     ideal_mean_defect = tuple(
-        mapped - original
-        for mapped, original in zip(exact_weighted_row, metric_exact)
+        mapped - original for mapped, original in zip(exact_weighted_row, metric_exact)
     )
     ideal_mean_preserved = all(value == 0 for value in ideal_mean_defect)
-    exact_increment = (
-        Fraction.from_float(runtime_target)
-        - Fraction.from_float(float(state[target_index]))
+    exact_increment = Fraction.from_float(runtime_target) - Fraction.from_float(
+        float(state[target_index])
     )
     exact_mean_shift = (
-        metric_exact[target_index]
-        * exact_increment
-        / sum(metric_exact, Fraction(0))
+        metric_exact[target_index] * exact_increment / sum(metric_exact, Fraction(0))
     )
     normalized_metric = np.asarray(flow.metric_weights, dtype=float)
     normalized_metric = normalized_metric / float(np.sum(normalized_metric))
@@ -479,9 +478,7 @@ def certify_reception_epi_realization(
                 repeat_schedule=False,
                 tolerance=tol,
             )
-            hybrid_recovery = bool(
-                hybrid.disagreement_contracts_over_declared_horizon
-            )
+            hybrid_recovery = bool(hybrid.disagreement_contracts_over_declared_horizon)
 
     return ReceptionEPIRealizationCertificate(
         nodes=nodes,
@@ -505,9 +502,7 @@ def certify_reception_epi_realization(
         nontrivial_runtime_reception=nontrivial,
         epi_kind_before=kind_before,
         epi_kind_after=kind_after,
-        ideal_real_hard_clipping_inactive_by_convexity=(
-            ideal_clipping_inactive
-        ),
+        ideal_real_hard_clipping_inactive_by_convexity=(ideal_clipping_inactive),
         runtime_hard_clipping_inactive_at_snapshot=clipping_inactive,
         ideal_real_linear_map=ideal_map,
         represented_linear_map=_readonly_array(represented_map),

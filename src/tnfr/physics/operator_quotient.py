@@ -212,9 +212,7 @@ def _probe_matrix(value: Any, dimension: int, name: str) -> np.ndarray:
     if probes.ndim == 1:
         probes = probes.reshape(1, -1)
     if probes.ndim != 2 or probes.shape[1] != dimension:
-        raise ValueError(
-            f"{name} must have shape (probe_count, {dimension})"
-        )
+        raise ValueError(f"{name} must have shape (probe_count, {dimension})")
     if probes.shape[0] == 0:
         raise ValueError(f"{name} must contain at least one probe")
     if not np.all(np.isfinite(probes)):
@@ -370,10 +368,7 @@ def certify_operator_quotient(
         raise ValueError(f"operation_kind must be one of: {choices}")
     if operator_name is not None and not isinstance(operator_name, str):
         raise TypeError("operator_name must be a string or None")
-    if (
-        isinstance(tolerance, (bool, np.bool_))
-        or not isinstance(tolerance, Real)
-    ):
+    if isinstance(tolerance, (bool, np.bool_)) or not isinstance(tolerance, Real):
         raise ValueError("tolerance must be finite and positive")
     tolerance_value = float(tolerance)
     if not math.isfinite(tolerance_value) or tolerance_value <= 0.0:
@@ -577,9 +572,7 @@ def certify_operator_quotient(
 
     if macro_probes is None:
         raise ValueError("macro_probes are required for callable dynamics")
-    macro_probe_array = _probe_matrix(
-        macro_probes, macro_dimension, "macro_probes"
-    )
+    macro_probe_array = _probe_matrix(macro_probes, macro_dimension, "macro_probes")
     micro_probe_array = (
         None
         if micro_probes is None
@@ -623,9 +616,7 @@ def certify_operator_quotient(
         projected_micro_output = _finite_product(
             r, micro_output, "projected micro output"
         )
-        lifted_macro_output = _finite_product(
-            p, macro_output, "lifted macro output"
-        )
+        lifted_macro_output = _finite_product(p, macro_output, "lifted macro output")
         lifted_projection_defects.append(
             _finite_difference(
                 projected_micro_output,
@@ -691,9 +682,7 @@ def certify_operator_quotient(
                     "sampled fiber-dependence residual",
                 )
             )
-            arbitrary_projection_outputs.extend(
-                (projected_micro_output, macro_output)
-            )
+            arbitrary_projection_outputs.extend((projected_micro_output, macro_output))
             fiber_outputs.extend(
                 (projected_micro_output, projected_representative_output)
             )
@@ -709,32 +698,22 @@ def certify_operator_quotient(
     lifted_projection_residual = _max_norm(lifted_projection_defects)
     lift_residual = _max_norm(lift_defects)
     arbitrary_residual = (
-        None
-        if micro_probe_array is None
-        else _max_norm(arbitrary_projection_defects)
+        None if micro_probe_array is None else _max_norm(arbitrary_projection_defects)
     )
-    fiber_residual = (
-        None if micro_probe_array is None else _max_norm(fiber_defects)
-    )
+    fiber_residual = None if micro_probe_array is None else _max_norm(fiber_defects)
     lifted_projection_scale = max(1.0, _max_norm(lifted_projection_outputs))
     lift_scale = max(1.0, _max_norm(lift_outputs))
-    arbitrary_projection_scale = max(
-        1.0, _max_norm(arbitrary_projection_outputs)
-    )
+    arbitrary_projection_scale = max(1.0, _max_norm(arbitrary_projection_outputs))
     fiber_scale = max(1.0, _max_norm(fiber_outputs))
     repeatability_residual = _max_norm(repeatability_defects)
     repeatability_scale = max(1.0, _max_norm(repeatability_outputs))
-    callables_repeatable = (
-        _within_relative_tolerance(
-            repeatability_residual, repeatability_scale, tolerance_value
-        )
+    callables_repeatable = _within_relative_tolerance(
+        repeatability_residual, repeatability_scale, tolerance_value
     )
-    lifted_projected = (
-        _within_relative_tolerance(
-            lifted_projection_residual,
-            lifted_projection_scale,
-            tolerance_value,
-        )
+    lifted_projected = _within_relative_tolerance(
+        lifted_projection_residual,
+        lifted_projection_scale,
+        tolerance_value,
     )
     lift_invariant = _within_relative_tolerance(
         lift_residual, lift_scale, tolerance_value
@@ -751,9 +730,7 @@ def certify_operator_quotient(
     fiber_independent = (
         None
         if fiber_residual is None
-        else _within_relative_tolerance(
-            fiber_residual, fiber_scale, tolerance_value
-        )
+        else _within_relative_tolerance(fiber_residual, fiber_scale, tolerance_value)
     )
     sampled_strong = None
     if arbitrary_projected is not None and fiber_independent is not None:

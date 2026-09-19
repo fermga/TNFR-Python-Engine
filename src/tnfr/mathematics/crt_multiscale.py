@@ -1,38 +1,24 @@
-r"""CRT multiscale composition of residue networks (R3).
+r"""Finite CRT product identities for declared residue transport (R3).
 
-This module realises the Chinese Remainder Theorem (CRT) as the **U5 multiscale**
-axiom of TNFR: for coprime moduli ``a, b`` the additive group factors
-``ℤ/abℤ ≅ ℤ/aℤ × ℤ/bℤ``, and — restricted to the **unit** power-residue
-connection set — the Cayley operator factors as an exact Kronecker product.
+For coprime supplied moduli a,b and unit k-th-power connection sets, CRT
+identifies the parent connection set with S_a x S_b. Consequently, in CRT
+order, P_ab=P_a tensor P_b and L_ab=I-(I-L_a) tensor (I-L_b), exactly over Q.
+Parent eigenvalues are lambda+mu-lambda*mu. Every child eigenvalue embeds by
+pairing with the other factor's zero mode. Other prescribed connection sets
+can also factor; unit membership is a sufficient family, not a universal
+necessary condition. The unrestricted power-residue family supplies failing
+controls in selected cases.
 
-Writing ``L_m`` for the random-walk Laplacian ``I − (1/d) W`` of the Cayley
-digraph ``Cay(ℤ/mℤ, S_m)`` with ``S_m = unit_power_residue_set(m, k)``, the CRT
-permutation ``σ`` (node ``r ↦ (r mod a, r mod b)``) gives, **exactly over ℚ**,
+The helper named spectral_gap returns the minimum computed eigenvalue modulus
+above its tolerance. The corresponding exact nonzero-modulus bound follows
+from child-mode embedding, excluding any zero cross modes. Directed heat-flow
+decay depends on real parts, so this modulus is not generally a decay rate.
+Real symmetric random-walk Laplacians have spectra in [0,2]; equality of the
+child/parent modulus minimum follows under the stronger [0,1] hypothesis.
 
-    A_ab = A_a ⊗ A_b,      P_ab = P_a ⊗ P_b,
-    L_ab = I − (I − L_a) ⊗ (I − L_b)          (up to σ),
-
-because the unit restriction makes ``S_ab`` CRT-factor as ``S_a × S_b`` (the CRT
-bijection of unit groups ``(ℤ/abℤ)^* ≅ (ℤ/aℤ)^* × (ℤ/bℤ)^*``).  From the Kronecker
-structure the parent spectrum is the **child eigenvalue composition**
-
-    λ_parent = λ + μ − λμ = 1 − (1 − λ)(1 − μ),
-
-exactly.  Because every child eigenvalue embeds in the parent through the trivial
-mode (``μ = 0``), the parent spectral gap obeys the exact U5 bound
-``λ₂(ab) ≤ min(λ₂(a), λ₂(b))`` — composing scales never speeds up the slowest
-sub-EPI, it only adds slower cross-scale modes (with equality for real,
-symmetric-connection spectra).
-
-**Scope (honest).**  This is a *structural* branch: it **uses the known factors**
-``a, b`` to exhibit how sub-networks assemble into the whole — it is **not** a
-factoring algorithm and makes **no** complexity, cryptographic, or Millennium
-claim.  The exact algebraic product theorem (Kronecker identity + eigenvalue law)
-is stated and tested **separately** from any inverse/factoring use.  The
-non-factorizing control is :func:`full_power_residue_laplacian`: the *unrestricted*
-power-residue set (non-unit entries included) does **not** CRT-factor in general,
-so the Kronecker identity fails for it — the unit restriction is necessary.
-"""
+This is a finite construction using known factors. It does not execute U5,
+REMESH, a joint phase/capacity/support evolution or a discovery algorithm.
+Compatibility names containing U5 denote this limited product comparison."""
 
 from __future__ import annotations
 
@@ -104,9 +90,7 @@ def kron(A: Matrix, B: Matrix) -> Matrix:
     r"""Exact Kronecker product ``A ⊗ B`` over ℚ."""
     na, ma = len(A), len(A[0])
     nb, mb = len(B), len(B[0])
-    out: Matrix = [
-        [Fraction(0) for _ in range(ma * mb)] for _ in range(na * nb)
-    ]
+    out: Matrix = [[Fraction(0) for _ in range(ma * mb)] for _ in range(na * nb)]
     for ia in range(na):
         for ja in range(ma):
             aij = A[ia][ja]
@@ -120,8 +104,9 @@ def kron(A: Matrix, B: Matrix) -> Matrix:
 
 
 def _identity(n: int) -> Matrix:
-    return [[Fraction(1) if i == j else Fraction(0) for j in range(n)]
-            for i in range(n)]
+    return [
+        [Fraction(1) if i == j else Fraction(0) for j in range(n)] for i in range(n)
+    ]
 
 
 def _sub(A: Matrix, B: Matrix) -> Matrix:
@@ -209,7 +194,11 @@ def verify_spectrum_composition(a: int, b: int, k: int) -> float:
 
 
 def spectral_gap(L: Matrix, *, tol: float | None = None) -> float:
-    r"""Slowest non-zero relaxation rate ``λ₂`` = smallest ``|λ| > 0`` of ``L``."""
+    r"""Return the smallest computed eigenvalue modulus above the selected tolerance.
+
+    Return zero if none survives. For directed matrices this is not generally
+    the slowest heat-decay rate, which depends on eigenvalue real parts. Numerical
+    thresholding also differs from an exact minimum over nonzero eigenvalues."""
     arr = _to_float(L)
     if tol is None:
         tol = derived_tolerance(arr)
@@ -223,20 +212,15 @@ def spectral_gap(L: Matrix, *, tol: float | None = None) -> float:
 def u5_spectral_gap_composition(
     a: int, b: int, k: int
 ) -> tuple[float, float, float, bool]:
-    r"""U5 read-out: parent spectral gap vs child gaps.
+    r"""Compare thresholded parent and child nonzero-eigenvalue moduli.
 
-    Every child eigenvalue embeds in the parent spectrum through the trivial mode
-    (``μ = 0`` gives ``λ + 0 − 0 = λ``), so the parent's non-zero spectrum contains
-    the union of the child non-zero spectra **plus** genuinely multiscale cross
-    modes ``λ + μ − λμ`` (``λ, μ ≠ 0``).  Hence the exact, always-true bound
-
-        λ₂(ab) = min(λ₂(a), λ₂(b), min_{λ,μ≠0}|λ + μ − λμ|) ≤ min(λ₂(a), λ₂(b)),
-
-    with equality when the spectra are real in ``[0, 1]`` (symmetric connection).
-    Returns ``(gap_ab, gap_a, gap_b, bounded)`` where ``bounded`` checks the bound:
-    composing scales never speeds up the slowest sub-EPI, it only adds slower
-    cross-scale modes.
-    """
+    Return (gap_ab, gap_a, gap_b, bounded). In exact arithmetic child-mode
+    embedding gives g_ab<=min(g_a,g_b), where g selects nonzero moduli. Zero cross
+    modes must be excluded from that minimum and can add stationary directions.
+    Equality follows if both child spectra lie in [0,1], not from symmetry alone.
+    The returned boolean applies the numerical tolerance to this finite comparison;
+    it does not certify U5, connectedness, a continuum limit or a directed decay
+    rate."""
     La = unit_power_residue_laplacian(a, k)
     Lb = unit_power_residue_laplacian(b, k)
     Lab = unit_power_residue_laplacian(a * b, k)

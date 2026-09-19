@@ -91,8 +91,7 @@ def test_centralization_normalizes_extreme_same_sign_epi_without_overflow() -> N
 
     assert len(candidates) == 2
     assert all(
-        candidate.mathematical_signature["epi_concentration"]
-        == pytest.approx(0.5)
+        candidate.mathematical_signature["epi_concentration"] == pytest.approx(0.5)
         for candidate in candidates
     )
 
@@ -122,12 +121,16 @@ def test_centralization_reports_scores_without_inventing_improvements() -> None:
 @pytest.mark.parametrize(
     "factory",
     [
-        lambda graph: TNFREmergentCentralizationEngine().analyze_information_flow_centralization(graph),
+        lambda graph: TNFREmergentCentralizationEngine().analyze_information_flow_centralization(
+            graph
+        ),
         lambda graph: TNFREmergentPatternEngine().discover_entropy_flow_patterns(graph),
         lambda graph: _self_optimization_landscape(graph),
     ],
 )
-def test_diagnostics_reject_nonuniform_primary_epi_without_alias_fallback(factory) -> None:
+def test_diagnostics_reject_nonuniform_primary_epi_without_alias_fallback(
+    factory,
+) -> None:
     graph = _scalar_graph([1.0, 0.0])
     graph.nodes[0]["EPI"] = _rich_epi()
     graph.nodes[0]["psi"] = 5.0
@@ -272,7 +275,9 @@ def test_self_optimizer_does_not_learn_legacy_performance_sentinels(
     graph = _scalar_graph([1.0, 2.0])
     engine = TNFRSelfOptimizingEngine()
     monkeypatch.setattr(self_optimization_module, "HAS_CONSERVATION", False)
-    monkeypatch.setattr(engine, "recommend_optimization_strategy", lambda *args: _recommendation())
+    monkeypatch.setattr(
+        engine, "recommend_optimization_strategy", lambda *args: _recommendation()
+    )
     engine.orchestrator = _EvidenceOrchestrator(
         {"speedup_factor": None, "memory_used_mb": None}, None
     )
@@ -290,7 +295,9 @@ def test_self_optimizer_records_authoritative_performance_measurements(
     graph = _scalar_graph([1.0, 2.0])
     engine = TNFRSelfOptimizingEngine()
     monkeypatch.setattr(self_optimization_module, "HAS_CONSERVATION", False)
-    monkeypatch.setattr(engine, "recommend_optimization_strategy", lambda *args: _recommendation())
+    monkeypatch.setattr(
+        engine, "recommend_optimization_strategy", lambda *args: _recommendation()
+    )
     engine.orchestrator = _EvidenceOrchestrator(
         {"speedup_factor": 2.0, "memory_used_mb": 3.5}, 4
     )

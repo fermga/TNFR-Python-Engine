@@ -194,9 +194,7 @@ def propose_dissonance_stage(
             has_jitter_progress_after=plan.has_jitter_progress_after,
             jitter_progress_after=plan.jitter_progress_after,
             precondition_context=(
-                deepcopy(
-                    snapshot.nodes[node]["_oz_precondition_context"]
-                )
+                deepcopy(snapshot.nodes[node]["_oz_precondition_context"])
                 if preconditions_validated
                 else None
             ),
@@ -246,8 +244,10 @@ def propose_dissonance_stage(
     pressure_updates: list[DissonancePressureUpdate] = []
     for node in sorted(touched, key=rank.__getitem__):
         local = local_by_node.get(node)
-        before = local.dnfr_before if local is not None else _snapshot_pressure(
-            snapshot, node
+        before = (
+            local.dnfr_before
+            if local is not None
+            else _snapshot_pressure(snapshot, node)
         )
         base = local.dnfr_local_after if local is not None else before
         additions = [item.magnitude for item in incoming.get(node, ())]

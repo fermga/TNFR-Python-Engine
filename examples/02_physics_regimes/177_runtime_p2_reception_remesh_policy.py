@@ -8,16 +8,14 @@ then executes and post-certifies inside one outer graph transaction.
 
 from __future__ import annotations
 
+import json
 from collections import deque
 from fractions import Fraction
-import json
 from typing import Any
 
 import networkx as nx
 
-from tnfr.operators.event_remesh_causal_runtime import (
-    EventRemeshCycleExecutionSpec,
-)
+from tnfr.operators.event_remesh_causal_runtime import EventRemeshCycleExecutionSpec
 from tnfr.operators.event_timing import build_operator_event_schedule
 from tnfr.physics import (
     certify_alpha_one_hard_clip_remesh_class,
@@ -124,8 +122,7 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
     return {
         "claim": "two independently revalidated finite P2 invocations",
         "certificate_valid": [
-            certificate
-            .executed_p2_half_reception_remesh_sequence_certificate_certified
+            certificate.executed_p2_half_reception_remesh_sequence_certificate_certified
             for certificate in (first, second)
         ],
         "distinct_executions": first.execution is not second.execution,

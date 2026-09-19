@@ -13,23 +13,35 @@ from fractions import Fraction
 from math import gcd, lcm
 
 from ..dynamics._euler_kernel import (
-    NodalRemainderState, _binary64_tuple, _finite_binary64, _require_remainder_rounding,
+    NodalRemainderState,
+    _binary64_tuple,
+    _finite_binary64,
+    _require_remainder_rounding,
     _validate_nodal_remainder_state,
 )
-from .binary64_nodal_flow import _rounding_cell
 from ._cycle_algebra import Vector, dot, laplacian_action
 from ._exact_linear_algebra import ExactSquareMatrix, _require_exact_square_matrix
+from .binary64_nodal_flow import _rounding_cell
 from .support_transport import _laplacian
 
 __all__ = [
-    "NodalRemainderPressureReadout", "observe_nodal_remainder_pressure_readout",
-    "PeriodicPhaseSourceBudget", "PeriodicPhaseSourceCompensation",
-    "derive_periodic_phase_source_budget", "observe_periodic_phase_source_compensation",
-    "FiniteNodalPressureDrift", "observe_finite_nodal_pressure_drift",
-    "NodalAreaCrossing", "NodalAreaCrossings", "derive_nodal_area_crossings",
-    "TwoLevelNodalReturn", "derive_two_level_nodal_return",
-    "FiniteLevelNodalReturn", "derive_finite_level_nodal_return",
-    "NodalRemainderCycleGradient", "observe_nodal_remainder_cycle_gradient",
+    "NodalRemainderPressureReadout",
+    "observe_nodal_remainder_pressure_readout",
+    "PeriodicPhaseSourceBudget",
+    "PeriodicPhaseSourceCompensation",
+    "derive_periodic_phase_source_budget",
+    "observe_periodic_phase_source_compensation",
+    "FiniteNodalPressureDrift",
+    "observe_finite_nodal_pressure_drift",
+    "NodalAreaCrossing",
+    "NodalAreaCrossings",
+    "derive_nodal_area_crossings",
+    "TwoLevelNodalReturn",
+    "derive_two_level_nodal_return",
+    "FiniteLevelNodalReturn",
+    "derive_finite_level_nodal_return",
+    "NodalRemainderCycleGradient",
+    "observe_nodal_remainder_cycle_gradient",
 ]
 
 
@@ -66,8 +78,11 @@ class NodalRemainderCycleGradient:
 
 
 def observe_nodal_remainder_cycle_gradient(
-    *, initial: NodalRemainderState, endpoint: NodalRemainderState,
-    nodal_area: Vector, epi_quantum: Fraction,
+    *,
+    initial: NodalRemainderState,
+    endpoint: NodalRemainderState,
+    nodal_area: Vector,
+    epi_quantum: Fraction,
 ) -> NodalRemainderCycleGradient:
     """Check full nodal area, then derive an ordered cycle's gradient budget.
 
@@ -86,26 +101,49 @@ def observe_nodal_remainder_cycle_gradient(
         raise ValueError("cycle endpoints must have the same size of at least three")
     if type(epi_quantum) is not Fraction or epi_quantum <= 0:
         raise ValueError("epi_quantum must be a strictly positive Fraction")
-    if (type(nodal_area) is not tuple or len(nodal_area) != size
-            or any(type(value) is not Fraction for value in nodal_area)):
+    if (
+        type(nodal_area) is not tuple
+        or len(nodal_area) != size
+        or any(type(value) is not Fraction for value in nodal_area)
+    ):
         raise TypeError("nodal_area must be a matching tuple of exact Fractions")
     if nodal_area != tuple(b - a for a, b in zip(start, end, strict=True)):
         raise ValueError("nodal_area must equal the full reconstructed endpoint change")
-    before = tuple(-2 * value / epi_quantum for value in laplacian_action(tuple(map(Fraction, initial.epi))))
-    after = tuple(-2 * value / epi_quantum for value in laplacian_action(tuple(map(Fraction, endpoint.epi))))
+    before = tuple(
+        -2 * value / epi_quantum
+        for value in laplacian_action(tuple(map(Fraction, initial.epi)))
+    )
+    after = tuple(
+        -2 * value / epi_quantum
+        for value in laplacian_action(tuple(map(Fraction, endpoint.epi)))
+    )
     if any(value.denominator != 1 for value in before + after):
-        raise ValueError("the endpoint gradients must belong to the declared integer lattice")
+        raise ValueError(
+            "the endpoint gradients must belong to the declared integer lattice"
+        )
     change = tuple(b - a for a, b in zip(before, after, strict=True))
-    carry = tuple(b - a for a, b in zip(initial.remainder, endpoint.remainder, strict=True))
-    nodal_term = tuple(-2 * value / epi_quantum for value in laplacian_action(nodal_area))
+    carry = tuple(
+        b - a for a, b in zip(initial.remainder, endpoint.remainder, strict=True)
+    )
+    nodal_term = tuple(
+        -2 * value / epi_quantum for value in laplacian_action(nodal_area)
+    )
     carry_term = tuple(2 * value / epi_quantum for value in laplacian_action(carry))
-    residual = tuple(delta - area - transfer for delta, area, transfer
-                     in zip(change, nodal_term, carry_term, strict=True))
+    residual = tuple(
+        delta - area - transfer
+        for delta, area, transfer in zip(change, nodal_term, carry_term, strict=True)
+    )
     if any(residual):
         raise RuntimeError("the cycle gradient lost its exact nodal/carry identity")
     return NodalRemainderCycleGradient(
-        tuple(map(int, before)), tuple(map(int, after)), change, nodal_area,
-        carry, nodal_term, carry_term, residual,
+        tuple(map(int, before)),
+        tuple(map(int, after)),
+        change,
+        nodal_area,
+        carry,
+        nodal_term,
+        carry_term,
+        residual,
     )
 
 
@@ -149,9 +187,13 @@ class FiniteNodalPressureDrift:
 
 
 def observe_finite_nodal_pressure_drift(
-    *, epi_states: tuple[tuple[float, ...], ...],
-    pressure_vectors: tuple[tuple[float, ...], ...], functional: Vector,
-    timestep: float, epi_lower: float = .05, epi_upper: float = 1.0,
+    *,
+    epi_states: tuple[tuple[float, ...], ...],
+    pressure_vectors: tuple[tuple[float, ...], ...],
+    functional: Vector,
+    timestep: float,
+    epi_lower: float = 0.05,
+    epi_upper: float = 1.0,
 ) -> FiniteNodalPressureDrift:
     """Bound residence in a finite class by a strictly positive projection.
 
@@ -176,14 +218,21 @@ def observe_finite_nodal_pressure_drift(
     if not epi_states or len(pressure_vectors) != len(epi_states):
         raise ValueError("a nonempty state class needs one pressure vector per state")
     states = tuple(_binary64_tuple(row, "epi_states") for row in epi_states)
-    pressures = tuple(_binary64_tuple(row, "pressure_vectors") for row in pressure_vectors)
+    pressures = tuple(
+        _binary64_tuple(row, "pressure_vectors") for row in pressure_vectors
+    )
     size = len(states[0])
     if any(len(row) != size for row in states + pressures):
-        raise ValueError("every visible state and pressure must have the same dimension")
+        raise ValueError(
+            "every visible state and pressure must have the same dimension"
+        )
     if len({tuple(value.hex() for value in row) for row in states}) != len(states):
         raise ValueError("visible states must be distinct in the supplied pressure map")
-    if (type(functional) is not tuple or len(functional) != size
-            or any(type(value) is not Fraction for value in functional)):
+    if (
+        type(functional) is not tuple
+        or len(functional) != size
+        or any(type(value) is not Fraction for value in functional)
+    ):
         raise TypeError("functional must be a matching tuple of exact Fraction values")
     if not any(functional):
         raise ValueError("the separating functional must be nonzero")
@@ -198,20 +247,49 @@ def observe_finite_nodal_pressure_drift(
     lower_bounds, upper_bounds = [], []
     for row in states:
         cells = tuple(_rounding_cell(value, Fraction(value)) for value in row)
-        intervals = tuple((max(cell.lower, exact_lower), min(cell.upper, exact_upper)) for cell in cells)
-        lower_bounds.append(sum((weight * (left if weight >= 0 else right)
-                                 for weight, (left, right) in zip(functional, intervals, strict=True)), Fraction(0)))
-        upper_bounds.append(sum((weight * (right if weight >= 0 else left)
-                                 for weight, (left, right) in zip(functional, intervals, strict=True)), Fraction(0)))
+        intervals = tuple(
+            (max(cell.lower, exact_lower), min(cell.upper, exact_upper))
+            for cell in cells
+        )
+        lower_bounds.append(
+            sum(
+                (
+                    weight * (left if weight >= 0 else right)
+                    for weight, (left, right) in zip(functional, intervals, strict=True)
+                ),
+                Fraction(0),
+            )
+        )
+        upper_bounds.append(
+            sum(
+                (
+                    weight * (right if weight >= 0 else left)
+                    for weight, (left, right) in zip(functional, intervals, strict=True)
+                ),
+                Fraction(0),
+            )
+        )
     projections = tuple(dot(functional, tuple(map(Fraction, row))) for row in pressures)
     gap = min(projections)
     class_lower, class_upper = min(lower_bounds), max(upper_bounds)
     width = class_upper - class_lower
     maximum = width // (Fraction(h) * gap) if gap > 0 else None
     return FiniteNodalPressureDrift(
-        states, pressures, functional, h, lower, upper, projections, gap,
-        tuple(lower_bounds), tuple(upper_bounds), class_lower, class_upper, width,
-        maximum, maximum + 1 if maximum is not None else None,
+        states,
+        pressures,
+        functional,
+        h,
+        lower,
+        upper,
+        projections,
+        gap,
+        tuple(lower_bounds),
+        tuple(upper_bounds),
+        class_lower,
+        class_upper,
+        width,
+        maximum,
+        maximum + 1 if maximum is not None else None,
     )
 
 
@@ -248,8 +326,11 @@ class NodalRemainderPressureReadout:
 
 
 def observe_nodal_remainder_pressure_readout(
-    *, state: NodalRemainderState, conductance: ExactSquareMatrix,
-    capacity: tuple[float, ...], stored_pressure: tuple[float, ...],
+    *,
+    state: NodalRemainderState,
+    conductance: ExactSquareMatrix,
+    capacity: tuple[float, ...],
+    stored_pressure: tuple[float, ...],
     epi_weight: float | Fraction,
 ) -> NodalRemainderPressureReadout:
     """Compare pure EPI diffusion at visible x and reconstructed X=x+r.
@@ -296,35 +377,74 @@ def observe_nodal_remainder_pressure_readout(
     pressure = tuple(Fraction.from_float(value) for value in pressures)
     if any(value < 0 for value in nu):
         raise ValueError("capacity must be nonnegative")
-    weight = (epi_weight if type(epi_weight) is Fraction else
-              Fraction.from_float(_finite_binary64(epi_weight, "epi_weight")))
+    weight = (
+        epi_weight
+        if type(epi_weight) is Fraction
+        else Fraction.from_float(_finite_binary64(epi_weight, "epi_weight"))
+    )
     if weight < 0:
         raise ValueError("epi_weight must be nonnegative")
-    edges = tuple((i, j, value) for i, row in enumerate(matrix)
-                  for j, value in enumerate(row) if value)
+    edges = tuple(
+        (i, j, value)
+        for i, row in enumerate(matrix)
+        for j, value in enumerate(row)
+        if value
+    )
 
     def laplacian(values):
-        return tuple(value / degree for value, degree in
-                     zip(_laplacian(edges, values), strengths, strict=True))
+        return tuple(
+            value / degree
+            for value, degree in zip(_laplacian(edges, values), strengths, strict=True)
+        )
 
     epi_visible = tuple(-weight * value for value in laplacian(visible))
     epi_exact = tuple(-weight * value for value in laplacian(exact))
     shift = tuple(weight * value for value in laplacian(state.remainder))
-    residual_visible = tuple(p - value for p, value in zip(pressure, epi_visible, strict=True))
-    residual_exact = tuple(p - value for p, value in zip(pressure, epi_exact, strict=True))
-    identity = tuple(total - other - changed for total, other, changed in
-                     zip(residual_exact, residual_visible, shift, strict=True))
+    residual_visible = tuple(
+        p - value for p, value in zip(pressure, epi_visible, strict=True)
+    )
+    residual_exact = tuple(
+        p - value for p, value in zip(pressure, epi_exact, strict=True)
+    )
+    identity = tuple(
+        total - other - changed
+        for total, other, changed in zip(
+            residual_exact, residual_visible, shift, strict=True
+        )
+    )
     nodal_shift = tuple(v * value for v, value in zip(nu, shift, strict=True))
     degree_mean = dot(strengths, shift) / sum(strengths, Fraction(0))
-    reversible = tuple(d / v for d, v in zip(strengths, nu, strict=True)) if all(nu) else None
-    reversible_mean = (dot(reversible, nodal_shift) / sum(reversible, Fraction(0))
-                       if reversible is not None else None)
+    reversible = (
+        tuple(d / v for d, v in zip(strengths, nu, strict=True)) if all(nu) else None
+    )
+    reversible_mean = (
+        dot(reversible, nodal_shift) / sum(reversible, Fraction(0))
+        if reversible is not None
+        else None
+    )
     if any(identity) or degree_mean != 0 or reversible_mean not in (None, Fraction(0)):
-        raise RuntimeError("pressure readout lost its exact decomposition or reversible balance")
+        raise RuntimeError(
+            "pressure readout lost its exact decomposition or reversible balance"
+        )
     return NodalRemainderPressureReadout(
-        state, matrix, nu, pressure, weight, strengths, epi_visible, epi_exact,
-        shift, residual_visible, residual_exact, identity, nodal_shift,
-        _mean(shift), _mean(nodal_shift), degree_mean, reversible, reversible_mean,
+        state,
+        matrix,
+        nu,
+        pressure,
+        weight,
+        strengths,
+        epi_visible,
+        epi_exact,
+        shift,
+        residual_visible,
+        residual_exact,
+        identity,
+        nodal_shift,
+        _mean(shift),
+        _mean(nodal_shift),
+        degree_mean,
+        reversible,
+        reversible_mean,
     )
 
 
@@ -355,7 +475,9 @@ class PeriodicPhaseSourceBudget:
 
 
 def derive_periodic_phase_source_budget(
-    *, phase_contributions: tuple[tuple[float, ...], ...], block_duration: float,
+    *,
+    phase_contributions: tuple[tuple[float, ...], ...],
+    block_duration: float,
 ) -> PeriodicPhaseSourceBudget:
     """Split a declared periodic source into constant drift and finite offsets.
 
@@ -368,18 +490,26 @@ def derive_periodic_phase_source_budget(
     only; the full nodal mean still includes EPI-reduction and assembly terms.
     """
     if type(phase_contributions) is not tuple:
-        raise TypeError("phase_contributions must be an ordered tuple of six-coordinate rows")
+        raise TypeError(
+            "phase_contributions must be an ordered tuple of six-coordinate rows"
+        )
     if not phase_contributions:
         raise ValueError("the declared phase-source cycle must be nonempty")
-    sources = tuple(_binary64_tuple(row, f"phase_contributions[{i}]")
-                    for i, row in enumerate(phase_contributions))
+    sources = tuple(
+        _binary64_tuple(row, f"phase_contributions[{i}]")
+        for i, row in enumerate(phase_contributions)
+    )
     if any(len(row) != 6 for row in sources):
-        raise ValueError("every phase-source row must contain the six ordered C6 coordinates")
+        raise ValueError(
+            "every phase-source row must contain the six ordered C6 coordinates"
+        )
     duration = _finite_binary64(block_duration, "block_duration")
     if duration <= 0:
         raise ValueError("block_duration must be positive")
     exact_duration = Fraction.from_float(duration)
-    means = tuple(_mean(tuple(Fraction.from_float(value) for value in row)) for row in sources)
+    means = tuple(
+        _mean(tuple(Fraction.from_float(value) for value in row)) for row in sources
+    )
     drift = _mean(means)
     prefixes = [Fraction(0)]
     for value in means:
@@ -387,7 +517,12 @@ def derive_periodic_phase_source_budget(
     if prefixes[-1] != 0:
         raise RuntimeError("the exact centered phase-source cycle did not close")
     return PeriodicPhaseSourceBudget(
-        sources, duration, len(sources), means, drift, tuple(prefixes),
+        sources,
+        duration,
+        len(sources),
+        means,
+        drift,
+        tuple(prefixes),
         exact_duration * sum(means, Fraction(0)),
         exact_duration * max(map(abs, prefixes)),
     )
@@ -427,9 +562,13 @@ class PeriodicPhaseSourceCompensation:
 
 
 def observe_periodic_phase_source_compensation(
-    reference: PeriodicPhaseSourceBudget, *, block_count: int,
-    initial_mean: Fraction, actual_nonphase_area: Fraction,
-    epi_lower: float = .05, epi_upper: float = 1.0,
+    reference: PeriodicPhaseSourceBudget,
+    *,
+    block_count: int,
+    initial_mean: Fraction,
+    actual_nonphase_area: Fraction,
+    epi_lower: float = 0.05,
+    epi_upper: float = 1.0,
 ) -> PeriodicPhaseSourceCompensation:
     """Compute the signed compensation a bounded carried mean would require.
 
@@ -452,12 +591,15 @@ def observe_periodic_phase_source_compensation(
     if type(reference) is not PeriodicPhaseSourceBudget:
         raise TypeError("reference must be a PeriodicPhaseSourceBudget")
     rebuilt = derive_periodic_phase_source_budget(
-        phase_contributions=reference.phase_contributions, block_duration=reference.block_duration,
+        phase_contributions=reference.phase_contributions,
+        block_duration=reference.block_duration,
     )
     if type(block_count) is not int or block_count < 0:
         raise ValueError("block_count must be a nonnegative integer, not a boolean")
     if type(initial_mean) is not Fraction or type(actual_nonphase_area) is not Fraction:
-        raise TypeError("initial_mean and actual_nonphase_area must be exact Fraction values")
+        raise TypeError(
+            "initial_mean and actual_nonphase_area must be exact Fraction values"
+        )
     lower = _finite_binary64(epi_lower, "epi_lower")
     upper = _finite_binary64(epi_upper, "epi_upper")
     if not 0 < lower <= upper <= 1:
@@ -478,11 +620,26 @@ def observe_periodic_phase_source_compensation(
     required_upper = exact_upper - initial_mean - phase_area
     in_band = required_lower <= actual_nonphase_area <= required_upper
     if in_band != (exact_lower <= final <= exact_upper):
-        raise RuntimeError("the exact source-compensation interval lost its mean identity")
+        raise RuntimeError(
+            "the exact source-compensation interval lost its mean identity"
+        )
     return PeriodicPhaseSourceCompensation(
-        rebuilt, block_count, whole, remainder, initial_mean, actual_nonphase_area,
-        lower, upper, linear, periodic, phase_area, change, final,
-        required_lower, required_upper, in_band,
+        rebuilt,
+        block_count,
+        whole,
+        remainder,
+        initial_mean,
+        actual_nonphase_area,
+        lower,
+        upper,
+        linear,
+        periodic,
+        phase_area,
+        change,
+        final,
+        required_lower,
+        required_upper,
+        in_band,
     )
 
 
@@ -550,8 +707,12 @@ class NodalAreaCrossings:
 
 
 def derive_nodal_area_crossings(
-    *, initial_area: tuple[Fraction, ...], timestep: float,
-    capacity: tuple[float, ...], pressure: tuple[float, ...], max_steps: int,
+    *,
+    initial_area: tuple[Fraction, ...],
+    timestep: float,
+    capacity: tuple[float, ...],
+    pressure: tuple[float, ...],
+    max_steps: int,
 ) -> NodalAreaCrossings:
     """Solve exact scalar crossings and simultaneous vector zeroes algebraically.
 
@@ -593,8 +754,10 @@ def derive_nodal_area_crossings(
         raise TypeError("max_steps must be a nonnegative integer")
     if max_steps < 0:
         raise ValueError("max_steps must be nonnegative")
-    increments = tuple(Fraction(h) * Fraction(nu) * Fraction(p)
-                       for nu, p in zip(capacities, pressures, strict=True))
+    increments = tuple(
+        Fraction(h) * Fraction(nu) * Fraction(p)
+        for nu, p in zip(capacities, pressures, strict=True)
+    )
     coordinates = []
     for d, a in zip(initial_area, increments, strict=True):
         root = -d / a if a else None
@@ -608,27 +771,51 @@ def derive_nodal_area_crossings(
         if d * a < 0:
             crossing = -((-root.numerator) // root.denominator)
             before, after = d + (crossing - 1) * a, d + crossing * a
-        coordinates.append(NodalAreaCrossing(
-            d, a, root, zero, stationary, stationary or zero is not None and zero <= max_steps,
-            crossing, crossing is not None and crossing <= max_steps,
-            before, after, crossing is not None and after == 0,
-        ))
+        coordinates.append(
+            NodalAreaCrossing(
+                d,
+                a,
+                root,
+                zero,
+                stationary,
+                stationary or zero is not None and zero <= max_steps,
+                crossing,
+                crossing is not None and crossing <= max_steps,
+                before,
+                after,
+                crossing is not None and after == 0,
+            )
+        )
     initially_zero = not any(initial_area)
     stationary_vector = initially_zero and not any(increments)
     joint = None
     if stationary_vector:
         joint = 1
-    elif not any(d != 0 and a == 0 for d, a in zip(initial_area, increments, strict=True)):
-        roots = {coordinate.continuous_zero_step for coordinate in coordinates if coordinate.increment}
+    elif not any(
+        d != 0 and a == 0 for d, a in zip(initial_area, increments, strict=True)
+    ):
+        roots = {
+            coordinate.continuous_zero_step
+            for coordinate in coordinates
+            if coordinate.increment
+        }
         if len(roots) == 1:
             candidate = next(iter(roots))
             if candidate > 0 and candidate.denominator == 1:
                 joint = candidate.numerator
     return NodalAreaCrossings(
-        initial_area, h, capacities, pressures, max_steps, increments,
+        initial_area,
+        h,
+        capacities,
+        pressures,
+        max_steps,
+        increments,
         tuple(d + max_steps * a for d, a in zip(initial_area, increments, strict=True)),
-        tuple(coordinates), initially_zero, joint,
-        joint is not None and joint <= max_steps, stationary_vector,
+        tuple(coordinates),
+        initially_zero,
+        joint,
+        joint is not None and joint <= max_steps,
+        stationary_vector,
     )
 
 
@@ -664,7 +851,9 @@ class TwoLevelNodalReturn:
 
 
 def derive_two_level_nodal_return(
-    *, negative_pressure: float, positive_pressure: float,
+    *,
+    negative_pressure: float,
+    positive_pressure: float,
 ) -> TwoLevelNodalReturn:
     """Derive exact count divisibility for two opposite represented sources.
 
@@ -685,14 +874,26 @@ def derive_two_level_nodal_return(
     negative = _finite_binary64(negative_pressure, "negative_pressure")
     positive = _finite_binary64(positive_pressure, "positive_pressure")
     if not negative < 0 < positive:
-        raise ValueError("the two pressure levels must have strictly opposite declared signs")
+        raise ValueError(
+            "the two pressure levels must have strictly opposite declared signs"
+        )
     _, denominator, integers = _integerized_pressure_levels((negative, positive))
     negative_integer, positive_integer = -integers[0], integers[1]
     divisor = gcd(negative_integer, positive_integer)
-    negative_count, positive_count = positive_integer // divisor, negative_integer // divisor
+    negative_count, positive_count = (
+        positive_integer // divisor,
+        negative_integer // divisor,
+    )
     return TwoLevelNodalReturn(
-        negative, positive, denominator, negative_integer, positive_integer,
-        divisor, negative_count, positive_count, negative_count + positive_count,
+        negative,
+        positive,
+        denominator,
+        negative_integer,
+        positive_integer,
+        divisor,
+        negative_count,
+        positive_count,
+        negative_count + positive_count,
     )
 
 
@@ -701,7 +902,9 @@ def _integerized_pressure_levels(pressure_levels):
     levels = _binary64_tuple(pressure_levels, "pressure_levels")
     exact = tuple(Fraction(value) for value in levels)
     denominator = lcm(*(value.denominator for value in exact))
-    integers = tuple(value.numerator * (denominator // value.denominator) for value in exact)
+    integers = tuple(
+        value.numerator * (denominator // value.denominator) for value in exact
+    )
     return levels, denominator, integers
 
 
@@ -746,7 +949,8 @@ class FiniteLevelNodalReturn:
 
 
 def derive_finite_level_nodal_return(
-    *, pressure_levels: tuple[float, ...],
+    *,
+    pressure_levels: tuple[float, ...],
 ) -> FiniteLevelNodalReturn:
     """Derive a necessary return-length divisor without evolving nodal state.
 
@@ -786,6 +990,15 @@ def derive_finite_level_nodal_return(
     zero = any(value == 0 for value in integers)
     positive = any(value > 0 for value in integers)
     return FiniteLevelNodalReturn(
-        levels, denominator, integers, anchor, difference_divisor, residue_divisor,
-        length_multiple, negative, zero, positive, zero or negative and positive,
+        levels,
+        denominator,
+        integers,
+        anchor,
+        difference_divisor,
+        residue_divisor,
+        length_multiple,
+        negative,
+        zero,
+        positive,
+        zero or negative and positive,
     )

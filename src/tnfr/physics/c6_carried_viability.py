@@ -6,32 +6,48 @@ Each result distinguishes domain inclusion, origin membership and finite
 temporal evidence. Resource limits retain only completely proved layers.
 """
 
+import math
 from bisect import bisect_left, bisect_right
 from collections import defaultdict
 from dataclasses import dataclass
 from fractions import Fraction as F
 from itertools import combinations, product
-import math
 
 from ..dynamics._euler_kernel import (
-    NODAL_REMAINDER_DENOMINATOR_BITS, NodalRemainderState, NodalRemainderStep,
+    NODAL_REMAINDER_DENOMINATOR_BITS,
+    NodalRemainderState,
+    NodalRemainderStep,
+    _binary64_tuple,
+    _finite_binary64,
+    _validate_nodal_remainder_state,
     advance_nodal_remainder,
-    _binary64_tuple, _finite_binary64, _validate_nodal_remainder_state,
 )
 from .c6_pressure_lattice import (
-    C6PressureLatticeReference, _observe_rebuilt_c6_pressure_lattice, _rebuild_lattice,
+    C6PressureLatticeReference,
+    _observe_rebuilt_c6_pressure_lattice,
+    _rebuild_lattice,
 )
 from .nodal_remainder import derive_nodal_remainder_itinerary
 
 __all__ = [
-    "C6CarriedViabilityBox", "C6CarriedViabilityIteration", "C6CarriedViability",
-    "derive_c6_carried_viability", "C6CarriedForwardZone", "C6CarriedPairBarrier",
-    "C6CarriedForwardIteration", "C6CarriedForwardEnvelope",
+    "C6CarriedViabilityBox",
+    "C6CarriedViabilityIteration",
+    "C6CarriedViability",
+    "derive_c6_carried_viability",
+    "C6CarriedForwardZone",
+    "C6CarriedPairBarrier",
+    "C6CarriedForwardIteration",
+    "C6CarriedForwardEnvelope",
     "derive_c6_carried_forward_envelope",
-    "C6CarriedPredecessorLayer", "C6CarriedPredecessors", "derive_c6_carried_predecessors",
-    "C6CarriedRegionIteration", "C6CarriedRegionExclusion", "C6CarriedRegionExclusions",
+    "C6CarriedPredecessorLayer",
+    "C6CarriedPredecessors",
+    "derive_c6_carried_predecessors",
+    "C6CarriedRegionIteration",
+    "C6CarriedRegionExclusion",
+    "C6CarriedRegionExclusions",
     "derive_c6_carried_region_exclusions",
-    "C6CarriedReachableIteration", "C6CarriedReachableEnvelope",
+    "C6CarriedReachableIteration",
+    "C6CarriedReachableEnvelope",
     "derive_c6_carried_reachable_envelope",
 ]
 
@@ -134,11 +150,17 @@ def _intersection(first, second):
 
 
 def _volume(pieces):
-    return sum(math.prod(b - a + 1 for a, b in zip(low, high, strict=True)) for _row, low, high in pieces)
+    return sum(
+        math.prod(b - a + 1 for a, b in zip(low, high, strict=True))
+        for _row, low, high in pieces
+    )
 
 
 def _origin_present(pieces):
-    return any(all(a <= 0 <= b for a, b in zip(low, high, strict=True)) for _row, low, high in pieces)
+    return any(
+        all(a <= 0 <= b for a, b in zip(low, high, strict=True))
+        for _row, low, high in pieces
+    )
 
 
 def _coalesce(pieces, work):
@@ -149,7 +171,9 @@ def _coalesce(pieces, work):
             groups = defaultdict(list)
             for row, low, high in pieces:
                 work.charge()
-                groups[(row, low[:axis] + low[axis + 1:], high[:axis] + high[axis + 1:])].append(
+                groups[
+                    (row, low[:axis] + low[axis + 1 :], high[:axis] + high[axis + 1 :])
+                ].append(
                     (low[axis], high[axis]),
                 )
             following = []
@@ -157,13 +181,21 @@ def _coalesce(pieces, work):
                 merged = []
                 for lo, hi in sorted(intervals):
                     if merged and lo <= merged[-1][1]:
-                        raise RuntimeError("the exact viability partition unexpectedly overlaps")
+                        raise RuntimeError(
+                            "the exact viability partition unexpectedly overlaps"
+                        )
                     if merged and lo == merged[-1][1] + 1:
                         merged[-1] = (merged[-1][0], hi)
                     else:
                         merged.append((lo, hi))
-                following.extend((row, rest_low[:axis] + (lo,) + rest_low[axis:],
-                                  rest_high[:axis] + (hi,) + rest_high[axis:]) for lo, hi in merged)
+                following.extend(
+                    (
+                        row,
+                        rest_low[:axis] + (lo,) + rest_low[axis:],
+                        rest_high[:axis] + (hi,) + rest_high[axis:],
+                    )
+                    for lo, hi in merged
+                )
             pieces = following
         if len(pieces) == previous:
             return pieces
@@ -176,7 +208,8 @@ class _BoxIndex:
         self.boxes = boxes
         self.orders = tuple(
             tuple(sorted((box[bound][axis], i) for i, box in enumerate(boxes)))
-            for bound in range(2) for axis in range(6)
+            for bound in range(2)
+            for axis in range(6)
         )
 
     def candidates(self, low, high, work):
@@ -184,8 +217,11 @@ class _BoxIndex:
         selected = None
         for index, order in enumerate(self.orders):
             axis = index % 6
-            cut = (bisect_right(order, (high[axis], len(self.boxes))) if index < 6
-                   else bisect_left(order, (low[axis], -1)))
+            cut = (
+                bisect_right(order, (high[axis], len(self.boxes)))
+                if index < 6
+                else bisect_left(order, (low[axis], -1))
+            )
             bounds = (0, cut) if index < 6 else (cut, len(order))
             if selected is None or bounds[1] - bounds[0] < selected[2] - selected[1]:
                 selected = (order, *bounds)
@@ -204,12 +240,18 @@ def _positive_integer(value, label):
 
 
 def _exact_bounds(values, label):
-    if type(values) is not tuple or len(values) != 6 or any(type(value) is not F for value in values):
+    if (
+        type(values) is not tuple
+        or len(values) != 6
+        or any(type(value) is not F for value in values)
+    ):
         raise TypeError(f"{label} must contain six exact Fraction bounds")
     return values
 
 
-def _prepare_carried_family(reference, *, state, epi_states, timestep, row_limit, row_limit_label):
+def _prepare_carried_family(
+    reference, *, state, epi_states, timestep, row_limit, row_limit_label
+):
     """Rebuild the shared fixed source and its exact band-clipped RN cells."""
     ref = _rebuild_lattice(reference)
     if type(state) is not NodalRemainderState:
@@ -217,35 +259,57 @@ def _prepare_carried_family(reference, *, state, epi_states, timestep, row_limit
     origin = _validate_nodal_remainder_state(state)
     if len(origin) != 6:
         raise ValueError("the carried state must contain six coordinates")
-    if not ref.source.epi_lower <= state.epi_lower <= state.epi_upper <= ref.source.epi_upper:
+    if (
+        not ref.source.epi_lower
+        <= state.epi_lower
+        <= state.epi_upper
+        <= ref.source.epi_upper
+    ):
         raise ValueError("the carried state band must lie inside the reference slab")
     h = _finite_binary64(timestep, "timestep")
     if h <= 0:
         raise ValueError("viability requires a positive timestep")
     if type(epi_states) is not tuple or not epi_states or len(epi_states) > row_limit:
-        raise ValueError(f"epi_states must be a nonempty tuple within {row_limit_label}")
+        raise ValueError(
+            f"epi_states must be a nonempty tuple within {row_limit_label}"
+        )
     rows = tuple(_binary64_tuple(row, "epi_states row") for row in epi_states)
     if len(set(rows)) != len(rows) or any(len(row) != 6 for row in rows):
         raise ValueError("the visible rows must be distinct six-coordinate tuples")
     observations = tuple(_observe_rebuilt_c6_pressure_lattice(ref, row) for row in rows)
     pressures = tuple(item.pressure for item in observations)
     areas = tuple(tuple(F(h) * F(value) for value in row) for row in pressures)
-    cells = tuple(derive_nodal_remainder_itinerary(
-        epi_states=(row, row), timesteps=(0.,), capacities=((1.,) * 6,), pressures=((0.,) * 6,),
-        epi_lower=state.epi_lower, epi_upper=state.epi_upper,
-    ).coordinates for row in rows)
-    complete = tuple(C6CarriedViabilityBox(
-        row, tuple(cell.first_grid_index * _GRID for cell in row_cells),
-        tuple(cell.last_grid_index * _GRID for cell in row_cells),
-    ) for row, row_cells in zip(rows, cells, strict=True))
+    cells = tuple(
+        derive_nodal_remainder_itinerary(
+            epi_states=(row, row),
+            timesteps=(0.0,),
+            capacities=((1.0,) * 6,),
+            pressures=((0.0,) * 6,),
+            epi_lower=state.epi_lower,
+            epi_upper=state.epi_upper,
+        ).coordinates
+        for row in rows
+    )
+    complete = tuple(
+        C6CarriedViabilityBox(
+            row,
+            tuple(cell.first_grid_index * _GRID for cell in row_cells),
+            tuple(cell.last_grid_index * _GRID for cell in row_cells),
+        )
+        for row, row_cells in zip(rows, cells, strict=True)
+    )
     return ref, origin, h, rows, pressures, areas, complete
 
 
 def derive_c6_carried_viability(
-    reference: C6PressureLatticeReference, *, state: NodalRemainderState,
-    epi_states: tuple[tuple[float, ...], ...], timestep: float,
+    reference: C6PressureLatticeReference,
+    *,
+    state: NodalRemainderState,
+    epi_states: tuple[tuple[float, ...], ...],
+    timestep: float,
     initial_boxes: tuple[C6CarriedViabilityBox, ...] | None = None,
-    max_work_items: int = 500_000, max_boxes: int = 30_000,
+    max_work_items: int = 500_000,
+    max_boxes: int = 30_000,
 ) -> C6CarriedViability:
     """Compute exact complete descents, stopping on a proof or resource limit.
 
@@ -265,17 +329,32 @@ def derive_c6_carried_viability(
     maximum = _positive_integer(max_work_items, "max_work_items")
     box_limit = _positive_integer(max_boxes, "max_boxes")
     ref, origin, h, rows, pressures, areas, complete = _prepare_carried_family(
-        reference, state=state, epi_states=epi_states, timestep=timestep,
-        row_limit=box_limit, row_limit_label="max_boxes",
+        reference,
+        state=state,
+        epi_states=epi_states,
+        timestep=timestep,
+        row_limit=box_limit,
+        row_limit_label="max_boxes",
     )
     denominator = math.lcm(*(value.denominator for row in areas for value in row))
-    spacings = tuple(F(math.gcd(*(int(row[i] * denominator) for row in areas)), denominator) or _GRID
-                     for i in range(6))
-    translations = tuple(tuple(int(value / spacing) for value, spacing in zip(row, spacings, strict=True))
-                         for row in areas)
-    if any(value != step * spacing for row, steps in zip(areas, translations, strict=True)
-           for value, step, spacing in zip(row, steps, spacings, strict=True)):
-        raise RuntimeError("the candidate pressure family lost its exact affine increment lattice")
+    spacings = tuple(
+        F(math.gcd(*(int(row[i] * denominator) for row in areas)), denominator) or _GRID
+        for i in range(6)
+    )
+    translations = tuple(
+        tuple(
+            int(value / spacing) for value, spacing in zip(row, spacings, strict=True)
+        )
+        for row in areas
+    )
+    if any(
+        value != step * spacing
+        for row, steps in zip(areas, translations, strict=True)
+        for value, step, spacing in zip(row, steps, spacings, strict=True)
+    ):
+        raise RuntimeError(
+            "the candidate pressure family lost its exact affine increment lattice"
+        )
     supplied = complete if initial_boxes is None else initial_boxes
     if type(supplied) is not tuple or not supplied or len(supplied) > box_limit:
         raise ValueError("initial_boxes must be a nonempty tuple within max_boxes")
@@ -287,21 +366,39 @@ def derive_c6_carried_viability(
         if visible not in rows:
             raise ValueError("every initial box must use a declared visible row")
         index = rows.index(visible)
-        low, high = _exact_bounds(box.lower, "box.lower"), _exact_bounds(box.upper, "box.upper")
-        if any(not cell_lo <= lo <= hi <= cell_hi for cell_lo, lo, hi, cell_hi in zip(
-                complete[index].lower, low, high, complete[index].upper, strict=True)):
-            raise ValueError("initial box bounds must remain inside the exact legal RN cell")
-        lower = tuple(((value - x) / g).__ceil__() for value, x, g in zip(low, origin, spacings, strict=True))
-        upper = tuple(((value - x) / g).__floor__() for value, x, g in zip(high, origin, spacings, strict=True))
+        low, high = _exact_bounds(box.lower, "box.lower"), _exact_bounds(
+            box.upper, "box.upper"
+        )
+        if any(
+            not cell_lo <= lo <= hi <= cell_hi
+            for cell_lo, lo, hi, cell_hi in zip(
+                complete[index].lower, low, high, complete[index].upper, strict=True
+            )
+        ):
+            raise ValueError(
+                "initial box bounds must remain inside the exact legal RN cell"
+            )
+        lower = tuple(
+            ((value - x) / g).__ceil__()
+            for value, x, g in zip(low, origin, spacings, strict=True)
+        )
+        upper = tuple(
+            ((value - x) / g).__floor__()
+            for value, x, g in zip(high, origin, spacings, strict=True)
+        )
         if all(a <= b for a, b in zip(lower, upper, strict=True)):
             pieces.append((index, lower, upper))
     grouped = defaultdict(list)
     for index, low, high in pieces:
         if any(_intersection((low, high), box) is not None for box in grouped[index]):
-            raise ValueError("initial boxes must be disjoint on the derived affine cosets")
+            raise ValueError(
+                "initial boxes must be disjoint on the derived affine cosets"
+            )
         grouped[index].append((low, high))
     if not _origin_present(pieces):
-        raise ValueError("the initial candidate must contain the unchanged supplied origin")
+        raise ValueError(
+            "the initial candidate must contain the unchanged supplied origin"
+        )
     initial = tuple(pieces)
     count = _volume(pieces)
     records = [C6CarriedViabilityIteration(0, len(pieces), count, True)]
@@ -318,15 +415,35 @@ def derive_c6_carried_viability(
                 source_result = []
                 displacement = translations[source]
                 for low, high in source_boxes:
-                    image_low = tuple(a + d for a, d in zip(low, displacement, strict=True))
-                    image_high = tuple(b + d for b, d in zip(high, displacement, strict=True))
+                    image_low = tuple(
+                        a + d for a, d in zip(low, displacement, strict=True)
+                    )
+                    image_high = tuple(
+                        b + d for b, d in zip(high, displacement, strict=True)
+                    )
                     for target in indices.values():
-                        for target_low, target_high in target.candidates(image_low, image_high, work):
-                            shifted = (tuple(a - d for a, d in zip(target_low, displacement, strict=True)),
-                                       tuple(b - d for b, d in zip(target_high, displacement, strict=True)))
+                        for target_low, target_high in target.candidates(
+                            image_low, image_high, work
+                        ):
+                            shifted = (
+                                tuple(
+                                    a - d
+                                    for a, d in zip(
+                                        target_low, displacement, strict=True
+                                    )
+                                ),
+                                tuple(
+                                    b - d
+                                    for b, d in zip(
+                                        target_high, displacement, strict=True
+                                    )
+                                ),
+                            )
                             result = _intersection((low, high), shifted)
                             if result is None:
-                                raise RuntimeError("the exact target index returned an impossible preimage")
+                                raise RuntimeError(
+                                    "the exact target index returned an impossible preimage"
+                                )
                             source_result.append((source, *result))
                             if len(source_result) > box_limit:
                                 raise _Limit
@@ -337,7 +454,11 @@ def derive_c6_carried_viability(
             if next_count > count:
                 raise RuntimeError("the descending viability set gained grid points")
             present = _origin_present(following)
-            records.append(C6CarriedViabilityIteration(len(records), len(following), next_count, present))
+            records.append(
+                C6CarriedViabilityIteration(
+                    len(records), len(following), next_count, present
+                )
+            )
             pieces = following
             if not present:
                 status = "origin_excluded"
@@ -350,14 +471,32 @@ def derive_c6_carried_viability(
             break
 
     def public(boxes):
-        return tuple(C6CarriedViabilityBox(
-            rows[index], tuple(x + g * i for x, g, i in zip(origin, spacings, low, strict=True)),
-            tuple(x + g * i for x, g, i in zip(origin, spacings, high, strict=True)),
-        ) for index, low, high in boxes)
+        return tuple(
+            C6CarriedViabilityBox(
+                rows[index],
+                tuple(x + g * i for x, g, i in zip(origin, spacings, low, strict=True)),
+                tuple(
+                    x + g * i for x, g, i in zip(origin, spacings, high, strict=True)
+                ),
+            )
+            for index, low, high in boxes
+        )
 
     return C6CarriedViability(
-        ref, state, h, rows, pressures, spacings, origin, public(initial), public(pieces),
-        tuple(records), status, work.count, maximum, box_limit,
+        ref,
+        state,
+        h,
+        rows,
+        pressures,
+        spacings,
+        origin,
+        public(initial),
+        public(pieces),
+        tuple(records),
+        status,
+        work.count,
+        maximum,
+        box_limit,
     )
 
 
@@ -453,7 +592,8 @@ def _dbm_close(bounds):
         for first in range(7):
             for last in range(7):
                 result[first][last] = min(
-                    result[first][last], result[first][middle] + result[middle][last],
+                    result[first][last],
+                    result[first][middle] + result[middle][last],
                 )
     if any(result[i][i] < 0 for i in range(7)):
         return None
@@ -462,20 +602,28 @@ def _dbm_close(bounds):
 
 def _dbm_box(lower, upper):
     low, high = lower + (0,), upper + (0,)
-    return tuple(tuple(0 if i == j else high[i] - low[j] for j in range(7)) for i in range(7))
+    return tuple(
+        tuple(0 if i == j else high[i] - low[j] for j in range(7)) for i in range(7)
+    )
 
 
 def _dbm_intersection(first, second):
-    return _dbm_close(tuple(tuple(min(a, b) for a, b in zip(x, y, strict=True))
-                            for x, y in zip(first, second, strict=True)))
+    return _dbm_close(
+        tuple(
+            tuple(min(a, b) for a, b in zip(x, y, strict=True))
+            for x, y in zip(first, second, strict=True)
+        )
+    )
 
 
 def _dbm_join(first, second):
     """The componentwise maximum of closed DBMs is their least DBM hull."""
     if first is None:
         return second
-    return tuple(tuple(max(a, b) for a, b in zip(x, y, strict=True))
-                 for x, y in zip(first, second, strict=True))
+    return tuple(
+        tuple(max(a, b) for a, b in zip(x, y, strict=True))
+        for x, y in zip(first, second, strict=True)
+    )
 
 
 def _dbm_contains_origin(bounds):
@@ -483,17 +631,28 @@ def _dbm_contains_origin(bounds):
 
 
 def _dbm_subset(first, second):
-    return first is None or second is not None and all(
-        a <= b for x, y in zip(first, second, strict=True) for a, b in zip(x, y, strict=True)
+    return (
+        first is None
+        or second is not None
+        and all(
+            a <= b
+            for x, y in zip(first, second, strict=True)
+            for a, b in zip(x, y, strict=True)
+        )
     )
 
 
 def _conditional_pair_barriers(boxes, translations):
     barriers = []
     for first, second in combinations(range(6), 2):
-        projections = tuple((low[first] - high[second], high[first] - low[second],
-                             translations[row][first] - translations[row][second])
-                            for row, low, high in boxes)
+        projections = tuple(
+            (
+                low[first] - high[second],
+                high[first] - low[second],
+                translations[row][first] - translations[row][second],
+            )
+            for row, low, high in boxes
+        )
         lower = upper = 0
         while True:
             previous = lower, upper
@@ -510,9 +669,12 @@ def _conditional_pair_barriers(boxes, translations):
         # this closure has no physical horizon or tolerance parameter.
         for low, high, increment in projections:
             if max(low, lower) <= min(high, upper) and (
-                max(low, lower) + increment < lower or min(high, upper) + increment > upper
+                max(low, lower) + increment < lower
+                or min(high, upper) + increment > upper
             ):
-                raise RuntimeError("the conditional pair interval failed exact forward inclusion")
+                raise RuntimeError(
+                    "the conditional pair interval failed exact forward inclusion"
+                )
         barriers.append(C6CarriedPairBarrier(first, second, lower, upper))
     return tuple(barriers)
 
@@ -527,19 +689,28 @@ def _forward_outgoing(zones, translations, lower, upper):
 
 
 def _forward_contains(state, zones, rows, origin, grid):
-    values = tuple((x - initial) / grid for x, initial in zip(state.exact_epi, origin, strict=True))
+    values = tuple(
+        (x - initial) / grid for x, initial in zip(state.exact_epi, origin, strict=True)
+    )
     if any(value.denominator != 1 for value in values):
         return False
     point = tuple(map(int, values)) + (0,)
-    return any(zone is not None and row == state.epi and all(
-        point[i] - point[j] <= zone[i][j] for i in range(7) for j in range(7)
-    ) for row, zone in zip(rows, zones, strict=True))
+    return any(
+        zone is not None
+        and row == state.epi
+        and all(point[i] - point[j] <= zone[i][j] for i in range(7) for j in range(7))
+        for row, zone in zip(rows, zones, strict=True)
+    )
 
 
 def derive_c6_carried_forward_envelope(
-    reference: C6PressureLatticeReference, *, state: NodalRemainderState,
-    epi_states: tuple[tuple[float, ...], ...], timestep: float,
-    derive_pair_barriers: bool = True, max_intersections: int = 250_000,
+    reference: C6PressureLatticeReference,
+    *,
+    state: NodalRemainderState,
+    epi_states: tuple[tuple[float, ...], ...],
+    timestep: float,
+    derive_pair_barriers: bool = True,
+    max_intersections: int = 250_000,
     max_cells: int = 4096,
 ) -> C6CarriedForwardEnvelope:
     """Bound compatible-past images with one exact relational zone per cell.
@@ -571,34 +742,66 @@ def derive_c6_carried_forward_envelope(
     if type(derive_pair_barriers) is not bool:
         raise TypeError("derive_pair_barriers must be an exact boolean")
     ref, origin, h, rows, pressures, areas, complete = _prepare_carried_family(
-        reference, state=state, epi_states=epi_states, timestep=timestep,
-        row_limit=cell_limit, row_limit_label="max_cells",
+        reference,
+        state=state,
+        epi_states=epi_states,
+        timestep=timestep,
+        row_limit=cell_limit,
+        row_limit_label="max_cells",
     )
     denominator = math.lcm(*(value.denominator for row in areas for value in row))
-    grid = F(math.gcd(*(int(value * denominator) for row in areas for value in row)), denominator) or _GRID
+    grid = (
+        F(
+            math.gcd(*(int(value * denominator) for row in areas for value in row)),
+            denominator,
+        )
+        or _GRID
+    )
     exact_translations = tuple(tuple(value / grid for value in row) for row in areas)
     if any(value.denominator != 1 for row in exact_translations for value in row):
-        raise RuntimeError("the common affine grid does not preserve all canonical nodal increments")
+        raise RuntimeError(
+            "the common affine grid does not preserve all canonical nodal increments"
+        )
     translations = tuple(tuple(map(int, row)) for row in exact_translations)
     boxes = []
     for index, box in enumerate(complete):
-        low = tuple(((value - initial) / grid).__ceil__()
-                    for value, initial in zip(box.lower, origin, strict=True))
-        high = tuple(((value - initial) / grid).__floor__()
-                     for value, initial in zip(box.upper, origin, strict=True))
+        low = tuple(
+            ((value - initial) / grid).__ceil__()
+            for value, initial in zip(box.lower, origin, strict=True)
+        )
+        high = tuple(
+            ((value - initial) / grid).__floor__()
+            for value, initial in zip(box.upper, origin, strict=True)
+        )
         if all(a <= b for a, b in zip(low, high, strict=True)):
             boxes.append((index, low, high))
     if not _origin_present(boxes):
-        raise ValueError("the forward candidate must contain the unchanged supplied origin")
-    intervals = tuple(tuple(sorted({(low[i], high[i]) for _row, low, high in boxes})) for i in range(6))
-    if any(any(first[1] + 1 != second[0] for first, second in zip(axis, axis[1:])) for axis in intervals):
-        raise ValueError("the forward RN family must have contiguous affine-grid intervals on every coordinate")
+        raise ValueError(
+            "the forward candidate must contain the unchanged supplied origin"
+        )
+    intervals = tuple(
+        tuple(sorted({(low[i], high[i]) for _row, low, high in boxes}))
+        for i in range(6)
+    )
+    if any(
+        any(first[1] + 1 != second[0] for first, second in zip(axis, axis[1:]))
+        for axis in intervals
+    ):
+        raise ValueError(
+            "the forward RN family must have contiguous affine-grid intervals on every coordinate"
+        )
     actual_boxes = {tuple(zip(low, high, strict=True)) for _row, low, high in boxes}
-    if math.prod(map(len, intervals)) != len(actual_boxes) or actual_boxes != set(product(*intervals)):
-        raise ValueError("the forward RN family must cover its complete Cartesian affine-grid domain")
+    if math.prod(map(len, intervals)) != len(actual_boxes) or actual_boxes != set(
+        product(*intervals)
+    ):
+        raise ValueError(
+            "the forward RN family must cover its complete Cartesian affine-grid domain"
+        )
     lower = tuple(axis[0][0] for axis in intervals)
     upper = tuple(axis[-1][1] for axis in intervals)
-    barriers = _conditional_pair_barriers(boxes, translations) if derive_pair_barriers else ()
+    barriers = (
+        _conditional_pair_barriers(boxes, translations) if derive_pair_barriers else ()
+    )
     source_cells = [None] * len(rows)
     for row, low, high in boxes:
         zone = [list(bound) for bound in _dbm_box(low, high)]
@@ -609,16 +812,23 @@ def derive_c6_carried_forward_envelope(
         source_cells[row] = _dbm_close(zone)
     initial = zones = tuple(source_cells)
     if not any(_dbm_contains_origin(zone) for zone in zones):
-        raise RuntimeError("derived pair barriers unexpectedly excluded their supplied origin")
+        raise RuntimeError(
+            "derived pair barriers unexpectedly excluded their supplied origin"
+        )
     records = []
     work = _Work(maximum)
     status = "resource_limit"
     while True:
         count = sum(zone is not None for zone in zones)
         outgoing = _forward_outgoing(zones, translations, lower, upper)
-        records.append(C6CarriedForwardIteration(
-            len(records), count, outgoing, any(_dbm_contains_origin(zone) for zone in zones),
-        ))
+        records.append(
+            C6CarriedForwardIteration(
+                len(records),
+                count,
+                outgoing,
+                any(_dbm_contains_origin(zone) for zone in zones),
+            )
+        )
         if not count:
             status = "empty_core"
             break
@@ -631,11 +841,15 @@ def derive_c6_carried_forward_envelope(
                 if zone is None:
                     continue
                 shift = added + (0,)
-                translated = tuple(tuple(zone[i][j] + shift[i] - shift[j] for j in range(7))
-                                   for i in range(7))
+                translated = tuple(
+                    tuple(zone[i][j] + shift[i] - shift[j] for j in range(7))
+                    for i in range(7)
+                )
                 for target, cell in enumerate(initial):
-                    if cell is None or any(translated[i][6] < -cell[6][i]
-                                           or cell[i][6] < -translated[6][i] for i in range(6)):
+                    if cell is None or any(
+                        translated[i][6] < -cell[6][i] or cell[i][6] < -translated[6][i]
+                        for i in range(6)
+                    ):
                         continue
                     work.charge()
                     piece = _dbm_intersection(translated, cell)
@@ -644,8 +858,13 @@ def derive_c6_carried_forward_envelope(
         except _Limit:
             break
         following = tuple(following)
-        if not all(_dbm_subset(after, before) for after, before in zip(following, zones, strict=True)):
-            raise RuntimeError("the monotone forward envelope failed its exact descending identity")
+        if not all(
+            _dbm_subset(after, before)
+            for after, before in zip(following, zones, strict=True)
+        ):
+            raise RuntimeError(
+                "the monotone forward envelope failed its exact descending identity"
+            )
         if following == zones:
             status = "stationary_outer_envelope"
             break
@@ -658,12 +877,22 @@ def derive_c6_carried_forward_envelope(
         else:
             current = state
             for _ordinal in range(records[-1].ordinal):
-                pressure = _observe_rebuilt_c6_pressure_lattice(ref, current.epi).pressure
-                candidate = tuple(value + F(h) * F(p) for value, p in zip(current.exact_epi, pressure, strict=True))
-                if any(not F(state.epi_lower) <= value <= F(state.epi_upper) for value in candidate):
+                pressure = _observe_rebuilt_c6_pressure_lattice(
+                    ref, current.epi
+                ).pressure
+                candidate = tuple(
+                    value + F(h) * F(p)
+                    for value, p in zip(current.exact_epi, pressure, strict=True)
+                )
+                if any(
+                    not F(state.epi_lower) <= value <= F(state.epi_upper)
+                    for value in candidate
+                ):
                     entry_failure = "band_exit"
                     break
-                step = advance_nodal_remainder(current, timestep=h, capacity=(1.,) * 6, pressure=pressure)
+                step = advance_nodal_remainder(
+                    current, timestep=h, capacity=(1.0,) * 6, pressure=pressure
+                )
                 entry_steps.append(step)
                 current = step.after
                 if not _forward_contains(current, initial, rows, origin, grid):
@@ -671,16 +900,37 @@ def derive_c6_carried_forward_envelope(
                     break
             if entry_failure is None:
                 if not _forward_contains(current, zones, rows, origin, grid):
-                    raise RuntimeError("the exact proof-derived entry is absent from its forward envelope")
+                    raise RuntimeError(
+                        "the exact proof-derived entry is absent from its forward envelope"
+                    )
                 entry_state = current
 
     def public(values):
-        return tuple(C6CarriedForwardZone(row, zone)
-                     for row, zone in zip(rows, values, strict=True) if zone is not None)
+        return tuple(
+            C6CarriedForwardZone(row, zone)
+            for row, zone in zip(rows, values, strict=True)
+            if zone is not None
+        )
 
     return C6CarriedForwardEnvelope(
-        ref, state, h, rows, pressures, grid, origin, barriers, public(initial), public(zones),
-        tuple(records), status, work.count, maximum, cell_limit, entry_state, tuple(entry_steps), entry_failure,
+        ref,
+        state,
+        h,
+        rows,
+        pressures,
+        grid,
+        origin,
+        barriers,
+        public(initial),
+        public(zones),
+        tuple(records),
+        status,
+        work.count,
+        maximum,
+        cell_limit,
+        entry_state,
+        tuple(entry_steps),
+        entry_failure,
     )
 
 
@@ -777,7 +1027,9 @@ class C6CarriedPredecessors:
     def origin_path(self) -> tuple[NodalRemainderState, ...]:
         for layer in self.layers:
             if self.state in layer.states:
-                return _predecessor_path(self.layers, layer.depth, layer.states.index(self.state))
+                return _predecessor_path(
+                    self.layers, layer.depth, layer.states.index(self.state)
+                )
         return ()
 
     @property
@@ -804,41 +1056,69 @@ class C6CarriedPredecessors:
 def _predecessor_domain(rows, complete, origin, grid, supplied):
     cells = {}
     for row, box in zip(rows, complete, strict=True):
-        low = tuple(((value - x) / grid).__ceil__() for value, x in zip(box.lower, origin, strict=True))
-        high = tuple(((value - x) / grid).__floor__() for value, x in zip(box.upper, origin, strict=True))
+        low = tuple(
+            ((value - x) / grid).__ceil__()
+            for value, x in zip(box.lower, origin, strict=True)
+        )
+        high = tuple(
+            ((value - x) / grid).__floor__()
+            for value, x in zip(box.upper, origin, strict=True)
+        )
         if all(a <= b for a, b in zip(low, high, strict=True)):
             cells[row] = _dbm_box(low, high)
     if supplied is None:
         return tuple(C6CarriedForwardZone(row, bounds) for row, bounds in cells.items())
     if type(supplied) is not tuple or not supplied or len(supplied) > len(rows):
-        raise ValueError("domain_zones must be a nonempty tuple with at most one zone per declared row")
+        raise ValueError(
+            "domain_zones must be a nonempty tuple with at most one zone per declared row"
+        )
     seen, result = set(), []
     for zone in supplied:
         if type(zone) is not C6CarriedForwardZone:
             raise TypeError("each domain zone must be an exact C6CarriedForwardZone")
         row = _binary64_tuple(zone.epi, "domain zone epi")
         if row not in cells or row in seen:
-            raise ValueError("domain zones must use distinct declared rows with nonempty affine-grid RN cells")
+            raise ValueError(
+                "domain zones must use distinct declared rows with nonempty affine-grid RN cells"
+            )
         bounds = zone.bounds
-        if type(bounds) is not tuple or len(bounds) != 7 or any(
-            type(values) is not tuple or len(values) != 7 or any(type(x) is not int for x in values)
-            for values in bounds
+        if (
+            type(bounds) is not tuple
+            or len(bounds) != 7
+            or any(
+                type(values) is not tuple
+                or len(values) != 7
+                or any(type(x) is not int for x in values)
+                for values in bounds
+            )
         ):
-            raise TypeError("domain bounds must be a seven-by-seven tuple of exact integers")
+            raise TypeError(
+                "domain bounds must be a seven-by-seven tuple of exact integers"
+            )
         if any(bounds[i][i] != 0 for i in range(7)) or _dbm_close(bounds) != bounds:
-            raise ValueError("domain bounds must be nonempty closed difference bounds with zero diagonal")
+            raise ValueError(
+                "domain bounds must be nonempty closed difference bounds with zero diagonal"
+            )
         if not _dbm_subset(bounds, cells[row]):
-            raise ValueError("each domain zone must stay inside its exact legal RN cell")
+            raise ValueError(
+                "each domain zone must stay inside its exact legal RN cell"
+            )
         seen.add(row)
         result.append(C6CarriedForwardZone(row, bounds))
     return tuple(result)
 
 
 def derive_c6_carried_predecessors(
-    reference: C6PressureLatticeReference, *, state: NodalRemainderState,
-    target: NodalRemainderState, epi_states: tuple[tuple[float, ...], ...],
-    timestep: float, max_depth: int, domain_zones: tuple[C6CarriedForwardZone, ...] | None = None,
-    max_row_checks: int = 32_768, max_cells: int = 4096,
+    reference: C6PressureLatticeReference,
+    *,
+    state: NodalRemainderState,
+    target: NodalRemainderState,
+    epi_states: tuple[tuple[float, ...], ...],
+    timestep: float,
+    max_depth: int,
+    domain_zones: tuple[C6CarriedForwardZone, ...] | None = None,
+    max_row_checks: int = 32_768,
+    max_cells: int = 4096,
 ) -> C6CarriedPredecessors:
     """Enumerate every exact predecessor of one target at each completed depth.
 
@@ -862,21 +1142,43 @@ def derive_c6_carried_predecessors(
     maximum = _positive_integer(max_row_checks, "max_row_checks")
     cell_limit = _positive_integer(max_cells, "max_cells")
     ref, origin, h, rows, pressures, areas, complete = _prepare_carried_family(
-        reference, state=state, epi_states=epi_states, timestep=timestep,
-        row_limit=cell_limit, row_limit_label="max_cells",
+        reference,
+        state=state,
+        epi_states=epi_states,
+        timestep=timestep,
+        row_limit=cell_limit,
+        row_limit_label="max_cells",
     )
     if type(target) is not NodalRemainderState:
         raise TypeError("target must be an exact NodalRemainderState")
     exact_target = _validate_nodal_remainder_state(target)
-    if len(exact_target) != 6 or (target.epi_lower, target.epi_upper) != (state.epi_lower, state.epi_upper):
-        raise ValueError("target must have six coordinates and the same declared band as state")
+    if len(exact_target) != 6 or (target.epi_lower, target.epi_upper) != (
+        state.epi_lower,
+        state.epi_upper,
+    ):
+        raise ValueError(
+            "target must have six coordinates and the same declared band as state"
+        )
     denominator = math.lcm(*(value.denominator for row in areas for value in row))
-    spacings = tuple(F(math.gcd(*(int(row[i] * denominator) for row in areas)), denominator) or _GRID
-                     for i in range(6))
-    grid = F(math.gcd(*(int(value * denominator) for row in areas for value in row)), denominator) or _GRID
-    if any((value / spacing).denominator != 1 for row in areas
-           for value, spacing in zip(row, spacings, strict=True)):
-        raise RuntimeError("the predecessor pressure family lost its exact affine increment lattice")
+    spacings = tuple(
+        F(math.gcd(*(int(row[i] * denominator) for row in areas)), denominator) or _GRID
+        for i in range(6)
+    )
+    grid = (
+        F(
+            math.gcd(*(int(value * denominator) for row in areas for value in row)),
+            denominator,
+        )
+        or _GRID
+    )
+    if any(
+        (value / spacing).denominator != 1
+        for row in areas
+        for value, spacing in zip(row, spacings, strict=True)
+    ):
+        raise RuntimeError(
+            "the predecessor pressure family lost its exact affine increment lattice"
+        )
     domain = _predecessor_domain(rows, complete, origin, grid, domain_zones)
     by_row = {zone.epi: zone.bounds for zone in domain}
 
@@ -886,16 +1188,24 @@ def derive_c6_carried_predecessors(
             for x, initial, spacing in zip(exact, origin, spacings, strict=True)
         ):
             return False
-        indices = tuple((x - initial) / grid for x, initial in zip(exact, origin, strict=True))
+        indices = tuple(
+            (x - initial) / grid for x, initial in zip(exact, origin, strict=True)
+        )
         if any(value.denominator != 1 for value in indices):
             return False
         point, bounds = tuple(map(int, indices)) + (0,), by_row[row]
-        return all(point[i] - point[j] <= bounds[i][j] for i in range(7) for j in range(7))
+        return all(
+            point[i] - point[j] <= bounds[i][j] for i in range(7) for j in range(7)
+        )
 
     if not contains(origin, state.epi):
-        raise ValueError("the declared predecessor domain must contain the unchanged supplied origin")
+        raise ValueError(
+            "the declared predecessor domain must contain the unchanged supplied origin"
+        )
     if not contains(exact_target, target.epi):
-        raise ValueError("target must belong to the declared domain and the origin coordinate cosets")
+        raise ValueError(
+            "target must belong to the declared domain and the origin coordinate cosets"
+        )
     layers = [C6CarriedPredecessorLayer(0, (target,), ())]
     work, status = _Work(maximum), "depth_limit"
     for depth in range(1, max_depth + 1):
@@ -903,23 +1213,41 @@ def derive_c6_carried_predecessors(
         try:
             for successor_index, successor in enumerate(layers[-1].states):
                 exact_successor = successor.exact_epi
-                for row, pressure, area, cell in zip(rows, pressures, areas, complete, strict=True):
+                for row, pressure, area, cell in zip(
+                    rows, pressures, areas, complete, strict=True
+                ):
                     work.charge()
-                    exact = tuple(x - added for x, added in zip(exact_successor, area, strict=True))
-                    if any(not low <= value <= high for low, value, high in zip(
-                            cell.lower, exact, cell.upper, strict=True)) or not contains(exact, row):
+                    exact = tuple(
+                        x - added
+                        for x, added in zip(exact_successor, area, strict=True)
+                    )
+                    if any(
+                        not low <= value <= high
+                        for low, value, high in zip(
+                            cell.lower, exact, cell.upper, strict=True
+                        )
+                    ) or not contains(exact, row):
                         continue
                     predecessor = NodalRemainderState(
-                        row, tuple(x - F(y) for x, y in zip(exact, row, strict=True)),
-                        state.epi_lower, state.epi_upper,
+                        row,
+                        tuple(x - F(y) for x, y in zip(exact, row, strict=True)),
+                        state.epi_lower,
+                        state.epi_upper,
                     )
                     step = advance_nodal_remainder(
-                        predecessor, timestep=h, capacity=(1.,) * 6, pressure=pressure,
+                        predecessor,
+                        timestep=h,
+                        capacity=(1.0,) * 6,
+                        pressure=pressure,
                     )
                     if step.after != successor:
-                        raise RuntimeError("an admitted exact predecessor failed shared nodal replay")
+                        raise RuntimeError(
+                            "an admitted exact predecessor failed shared nodal replay"
+                        )
                     if exact in seen:
-                        raise RuntimeError("a deterministic carried predecessor has conflicting successor links")
+                        raise RuntimeError(
+                            "a deterministic carried predecessor has conflicting successor links"
+                        )
                     seen.add(exact)
                     following.append(predecessor)
                     links.append(successor_index)
@@ -931,8 +1259,22 @@ def derive_c6_carried_predecessors(
             status = "past_excluded"
             break
     return C6CarriedPredecessors(
-        ref, state, target, h, rows, pressures, spacings, grid, origin, domain, tuple(layers), status,
-        work.count, maximum, max_depth, cell_limit,
+        ref,
+        state,
+        target,
+        h,
+        rows,
+        pressures,
+        spacings,
+        grid,
+        origin,
+        domain,
+        tuple(layers),
+        status,
+        work.count,
+        maximum,
+        max_depth,
+        cell_limit,
     )
 
 
@@ -975,9 +1317,10 @@ class C6CarriedRegionExclusion:
 
     @property
     def origin_path_within_domain_excluded(self) -> bool:
-        return self.status in ("empty_complete_layer", "stationary_complete_layer") and not any(
-            record.origin_present for record in self.iterations
-        )
+        return self.status in (
+            "empty_complete_layer",
+            "stationary_complete_layer",
+        ) and not any(record.origin_present for record in self.iterations)
 
     @property
     def actual_origin_reachability_certified(self) -> bool:
@@ -1030,11 +1373,15 @@ class C6CarriedRegionExclusions:
 
 
 def derive_c6_carried_region_exclusions(
-    reference: C6PressureLatticeReference, *, state: NodalRemainderState,
-    epi_states: tuple[tuple[float, ...], ...], timestep: float,
+    reference: C6PressureLatticeReference,
+    *,
+    state: NodalRemainderState,
+    epi_states: tuple[tuple[float, ...], ...],
+    timestep: float,
     target_regions: tuple[tuple[C6CarriedForwardZone, ...], ...],
     domain_zones: tuple[C6CarriedForwardZone, ...] | None = None,
-    max_intersections: int = 250_000, max_cells: int = 4096,
+    max_intersections: int = 250_000,
+    max_cells: int = 4096,
 ) -> C6CarriedRegionExclusions:
     """Bound all compatible pasts of each declared target region.
 
@@ -1055,38 +1402,70 @@ def derive_c6_carried_region_exclusions(
     maximum = _positive_integer(max_intersections, "max_intersections")
     cell_limit = _positive_integer(max_cells, "max_cells")
     ref, origin, h, rows, pressures, areas, complete = _prepare_carried_family(
-        reference, state=state, epi_states=epi_states, timestep=timestep,
-        row_limit=cell_limit, row_limit_label="max_cells",
+        reference,
+        state=state,
+        epi_states=epi_states,
+        timestep=timestep,
+        row_limit=cell_limit,
+        row_limit_label="max_cells",
     )
     denominator = math.lcm(*(value.denominator for row in areas for value in row))
-    grid = F(math.gcd(*(int(value * denominator) for row in areas for value in row)), denominator) or _GRID
+    grid = (
+        F(
+            math.gcd(*(int(value * denominator) for row in areas for value in row)),
+            denominator,
+        )
+        or _GRID
+    )
     exact_shifts = tuple(tuple(value / grid for value in row) for row in areas)
     if any(value.denominator != 1 for row in exact_shifts for value in row):
-        raise RuntimeError("the region pressure family lost its exact common increment lattice")
+        raise RuntimeError(
+            "the region pressure family lost its exact common increment lattice"
+        )
     shifts = tuple(tuple(map(int, row)) + (0,) for row in exact_shifts)
     domain = _predecessor_domain(rows, complete, origin, grid, domain_zones)
     by_row = {zone.epi: zone.bounds for zone in domain}
     if state.epi not in by_row or not _dbm_contains_origin(by_row[state.epi]):
-        raise ValueError("the declared predecessor domain must contain the unchanged supplied origin")
-    if type(target_regions) is not tuple or not target_regions or len(target_regions) > cell_limit:
-        raise ValueError("target_regions must be a nonempty tuple of queries within max_cells")
+        raise ValueError(
+            "the declared predecessor domain must contain the unchanged supplied origin"
+        )
+    if (
+        type(target_regions) is not tuple
+        or not target_regions
+        or len(target_regions) > cell_limit
+    ):
+        raise ValueError(
+            "target_regions must be a nonempty tuple of queries within max_cells"
+        )
     cells = tuple(by_row.get(row) for row in rows)
     queries = []
     for supplied in target_regions:
         targets = _predecessor_domain(rows, complete, origin, grid, supplied)
         if supplied is None:
-            raise TypeError("each target query must be an explicit nonempty tuple of zones")
-        if any(zone.epi not in by_row or not _dbm_subset(zone.bounds, by_row[zone.epi]) for zone in targets):
+            raise TypeError(
+                "each target query must be an explicit nonempty tuple of zones"
+            )
+        if any(
+            zone.epi not in by_row or not _dbm_subset(zone.bounds, by_row[zone.epi])
+            for zone in targets
+        ):
             raise ValueError("every target region must stay inside the declared domain")
         target_by_row = {zone.epi: zone.bounds for zone in targets}
         zones = tuple(target_by_row.get(row) for row in rows)
         present = any(_dbm_contains_origin(zone) for zone in zones)
-        queries.append(dict(
-            targets=targets, zones=zones, records=[C6CarriedRegionIteration(0, len(targets), present)],
-            status="origin_not_excluded" if present else "active", intersections=0,
-        ))
+        queries.append(
+            dict(
+                targets=targets,
+                zones=zones,
+                records=[C6CarriedRegionIteration(0, len(targets), present)],
+                status="origin_not_excluded" if present else "active",
+                intersections=0,
+            )
+        )
     work = _Work(maximum)
-    while any(query["status"] == "active" for query in queries) and work.count < maximum:
+    while (
+        any(query["status"] == "active" for query in queries) and work.count < maximum
+    ):
         for query in queries:
             if query["status"] != "active":
                 continue
@@ -1098,10 +1477,15 @@ def derive_c6_carried_region_exclusions(
                     if cell is None:
                         continue
                     for target in targets:
-                        translated = tuple(tuple(target[i][j] - shift[i] + shift[j] for j in range(7))
-                                           for i in range(7))
-                        if any(translated[i][6] < -cell[6][i]
-                               or cell[i][6] < -translated[6][i] for i in range(6)):
+                        translated = tuple(
+                            tuple(target[i][j] - shift[i] + shift[j] for j in range(7))
+                            for i in range(7)
+                        )
+                        if any(
+                            translated[i][6] < -cell[6][i]
+                            or cell[i][6] < -translated[6][i]
+                            for i in range(6)
+                        ):
                             continue
                         work.charge()
                         piece = _dbm_intersection(cell, translated)
@@ -1113,12 +1497,20 @@ def derive_c6_carried_region_exclusions(
                 break
             query["intersections"] += work.count - previous_work
             following = tuple(following)
-            if any(not _dbm_subset(zone, cell) or zone is not None and _dbm_close(zone) != zone
-                   for zone, cell in zip(following, cells, strict=True)):
-                raise RuntimeError("an abstract predecessor hull escaped its exact source domain")
+            if any(
+                not _dbm_subset(zone, cell)
+                or zone is not None
+                and _dbm_close(zone) != zone
+                for zone, cell in zip(following, cells, strict=True)
+            ):
+                raise RuntimeError(
+                    "an abstract predecessor hull escaped its exact source domain"
+                )
             present = any(_dbm_contains_origin(zone) for zone in following)
             count = sum(zone is not None for zone in following)
-            query["records"].append(C6CarriedRegionIteration(len(query["records"]), count, present))
+            query["records"].append(
+                C6CarriedRegionIteration(len(query["records"]), count, present)
+            )
             if present:
                 query["status"] = "origin_not_excluded"
             elif not count:
@@ -1128,15 +1520,35 @@ def derive_c6_carried_region_exclusions(
             query["zones"] = following
 
     def public(zones):
-        return tuple(C6CarriedForwardZone(row, zone)
-                     for row, zone in zip(rows, zones, strict=True) if zone is not None)
+        return tuple(
+            C6CarriedForwardZone(row, zone)
+            for row, zone in zip(rows, zones, strict=True)
+            if zone is not None
+        )
 
-    results = tuple(C6CarriedRegionExclusion(
-        query["targets"], public(query["zones"]), tuple(query["records"]),
-        "resource_limit" if query["status"] == "active" else query["status"], query["intersections"],
-    ) for query in queries)
+    results = tuple(
+        C6CarriedRegionExclusion(
+            query["targets"],
+            public(query["zones"]),
+            tuple(query["records"]),
+            "resource_limit" if query["status"] == "active" else query["status"],
+            query["intersections"],
+        )
+        for query in queries
+    )
     return C6CarriedRegionExclusions(
-        ref, state, h, rows, pressures, grid, origin, domain, results, work.count, maximum, cell_limit,
+        ref,
+        state,
+        h,
+        rows,
+        pressures,
+        grid,
+        origin,
+        domain,
+        results,
+        work.count,
+        maximum,
+        cell_limit,
     )
 
 
@@ -1201,10 +1613,14 @@ class C6CarriedReachableEnvelope:
 
 
 def derive_c6_carried_reachable_envelope(
-    reference: C6PressureLatticeReference, *, state: NodalRemainderState,
-    epi_states: tuple[tuple[float, ...], ...], timestep: float,
+    reference: C6PressureLatticeReference,
+    *,
+    state: NodalRemainderState,
+    epi_states: tuple[tuple[float, ...], ...],
+    timestep: float,
     domain_zones: tuple[C6CarriedForwardZone, ...] | None = None,
-    max_intersections: int = 250_000, max_cells: int = 4096,
+    max_intersections: int = 250_000,
+    max_cells: int = 4096,
 ) -> C6CarriedReachableEnvelope:
     """Close a canonical carried domain under origin-containing image hulls.
 
@@ -1217,19 +1633,33 @@ def derive_c6_carried_reachable_envelope(
     maximum = _positive_integer(max_intersections, "max_intersections")
     cell_limit = _positive_integer(max_cells, "max_cells")
     ref, origin, h, rows, pressures, areas, complete = _prepare_carried_family(
-        reference, state=state, epi_states=epi_states, timestep=timestep,
-        row_limit=cell_limit, row_limit_label="max_cells",
+        reference,
+        state=state,
+        epi_states=epi_states,
+        timestep=timestep,
+        row_limit=cell_limit,
+        row_limit_label="max_cells",
     )
     denominator = math.lcm(*(value.denominator for row in areas for value in row))
-    grid = F(math.gcd(*(int(value * denominator) for row in areas for value in row)), denominator) or _GRID
+    grid = (
+        F(
+            math.gcd(*(int(value * denominator) for row in areas for value in row)),
+            denominator,
+        )
+        or _GRID
+    )
     exact_shifts = tuple(tuple(value / grid for value in row) for row in areas)
     if any(value.denominator != 1 for row in exact_shifts for value in row):
-        raise RuntimeError("the reachable envelope lost its exact common increment lattice")
+        raise RuntimeError(
+            "the reachable envelope lost its exact common increment lattice"
+        )
     shifts = tuple(tuple(map(int, row)) + (0,) for row in exact_shifts)
     domain = _predecessor_domain(rows, complete, origin, grid, domain_zones)
     by_row = {zone.epi: zone.bounds for zone in domain}
     if state.epi not in by_row or not _dbm_contains_origin(by_row[state.epi]):
-        raise ValueError("the declared reachable domain must contain the unchanged supplied origin")
+        raise ValueError(
+            "the declared reachable domain must contain the unchanged supplied origin"
+        )
     origin_index = rows.index(state.epi)
     cells = tuple(by_row.get(row) for row in rows)
     zones = cells
@@ -1243,10 +1673,15 @@ def derive_c6_carried_reachable_envelope(
             for zone, shift in zip(zones, shifts, strict=True):
                 if zone is None:
                     continue
-                image = tuple(tuple(zone[i][j] + shift[i] - shift[j] for j in range(7)) for i in range(7))
+                image = tuple(
+                    tuple(zone[i][j] + shift[i] - shift[j] for j in range(7))
+                    for i in range(7)
+                )
                 for target, cell in enumerate(cells):
-                    if cell is None or any(image[i][6] < -cell[6][i]
-                                           or cell[i][6] < -image[6][i] for i in range(6)):
+                    if cell is None or any(
+                        image[i][6] < -cell[6][i] or cell[i][6] < -image[6][i]
+                        for i in range(6)
+                    ):
                         continue
                     work.charge()
                     piece = _dbm_intersection(image, cell)
@@ -1255,17 +1690,40 @@ def derive_c6_carried_reachable_envelope(
         except _Limit:
             break
         following = tuple(following)
-        if (not _dbm_contains_origin(following[origin_index])
-                or any(not _dbm_subset(after, before) for after, before in zip(following, zones, strict=True))):
-            raise RuntimeError("the reachable envelope lost its origin or descending inclusion")
-        records.append(C6CarriedReachableIteration(len(records), sum(z is not None for z in following), True))
+        if not _dbm_contains_origin(following[origin_index]) or any(
+            not _dbm_subset(after, before)
+            for after, before in zip(following, zones, strict=True)
+        ):
+            raise RuntimeError(
+                "the reachable envelope lost its origin or descending inclusion"
+            )
+        records.append(
+            C6CarriedReachableIteration(
+                len(records), sum(z is not None for z in following), True
+            )
+        )
         if following == zones:
             status = "fixed_point"
             break
         zones = following
-    retained = tuple(C6CarriedForwardZone(row, zone)
-                     for row, zone in zip(rows, zones, strict=True) if zone is not None)
+    retained = tuple(
+        C6CarriedForwardZone(row, zone)
+        for row, zone in zip(rows, zones, strict=True)
+        if zone is not None
+    )
     return C6CarriedReachableEnvelope(
-        ref, state, h, rows, pressures, grid, origin, domain, retained,
-        tuple(records), status, work.count, maximum, cell_limit,
+        ref,
+        state,
+        h,
+        rows,
+        pressures,
+        grid,
+        origin,
+        domain,
+        retained,
+        tuple(records),
+        status,
+        work.count,
+        maximum,
+        cell_limit,
     )

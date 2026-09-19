@@ -5,7 +5,8 @@ import pytest
 from benchmarks.thol_birth_transport import prepare_birth_selection_source
 from tnfr.operators.definitions import SelfOrganization
 from tnfr.physics.support_transport import (
-    observe_support_transport, observe_support_transport_reset,
+    observe_support_transport,
+    observe_support_transport_reset,
 )
 
 

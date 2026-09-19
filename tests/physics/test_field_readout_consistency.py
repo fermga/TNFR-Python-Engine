@@ -21,7 +21,9 @@ from tnfr.physics.extended import compute_dnfr_flux, compute_phase_current
 from tnfr.physics.telemetry import compute_structural_telemetry
 
 
-@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
 def test_fields_match_unique_neighbor_means(graph_type):
     """Successors, loops and parallel edges use the documented G.neighbors set."""
     graph = graph_type()
@@ -42,11 +44,17 @@ def test_fields_match_unique_neighbor_means(graph_type):
             continue
         differences = np.array([phases[other] - phases[node] for other in neighbors])
         wrapped = (differences + math.pi) % (2 * math.pi) - math.pi
-        mean_phase = np.angle(np.mean(np.exp(1j * np.array([phases[n] for n in neighbors]))))
+        mean_phase = np.angle(
+            np.mean(np.exp(1j * np.array([phases[n] for n in neighbors])))
+        )
         expected["grad_phi"][node] = float(np.mean(np.abs(wrapped)))
-        expected["curv_phi"][node] = (phases[node] - mean_phase + math.pi) % (2 * math.pi) - math.pi
+        expected["curv_phi"][node] = (phases[node] - mean_phase + math.pi) % (
+            2 * math.pi
+        ) - math.pi
         expected["j_phi"][node] = float(np.mean(np.sin(wrapped)))
-        expected["j_dnfr"][node] = float(np.mean([pressure[n] - pressure[node] for n in neighbors]))
+        expected["j_dnfr"][node] = float(
+            np.mean([pressure[n] - pressure[node] for n in neighbors])
+        )
 
     standalone = {
         "grad_phi": compute_phase_gradient(graph),

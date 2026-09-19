@@ -108,9 +108,7 @@ def test_dcoh_rejects_zero_expectation(
     psi, _ = orthonormal_basis
     singular_operator = CoherenceOperator([[0.0, 0.0], [0.0, 1.0]])
 
-    with pytest.raises(
-        ValueError, match="Spectral expectation must be positive"
-    ):
+    with pytest.raises(ValueError, match="Spectral expectation must be positive"):
         dcoh(psi, psi, singular_operator)
 
 
@@ -138,6 +136,7 @@ def test_spectral_angle_is_projective_and_dcoh_is_compatibility_alias(
     ) == pytest.approx(expected)
     assert dcoh(psi1, psi2, hermitian_operator) == pytest.approx(expected)
 
+
 def test_dcoh_respects_tolerance_thresholds(
     orthonormal_basis: tuple[np.ndarray, np.ndarray],
 ) -> None:
@@ -146,9 +145,7 @@ def test_dcoh_respects_tolerance_thresholds(
     psi1, psi2 = orthonormal_basis
     near_null_operator = CoherenceOperator([1e-12, 1.0])
 
-    with pytest.raises(
-        ValueError, match="Spectral expectation must be positive"
-    ):
+    with pytest.raises(ValueError, match="Spectral expectation must be positive"):
         dcoh(psi1, psi2, near_null_operator)
 
     result = dcoh(psi1, psi2, near_null_operator, atol=1e-13)

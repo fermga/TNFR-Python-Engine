@@ -183,8 +183,11 @@ def propose_coherence_phase(
         for neighbor in neighbors
     }
     certified = (
-        certified_two_neighbor_phase(theta_normalized, phases[neighbors[0]], phases[neighbors[1]])
-        if len(neighbors) == 2 else None
+        certified_two_neighbor_phase(
+            theta_normalized, phases[neighbors[0]], phases[neighbors[1]]
+        )
+        if len(neighbors) == 2
+        else None
     )
     method = "phasor"
     if certified is not None:
@@ -194,15 +197,26 @@ def propose_coherence_phase(
     else:
         cosines = {neighbor: math.cos(phase) for neighbor, phase in phases.items()}
         sines = {neighbor: math.sin(phase) for neighbor, phase in phases.items()}
-        theta_network = neighbor_phase_mean_list(
-            neighbors, cosines, sines, fallback=theta_normalized,
-        ) % math.tau
+        theta_network = (
+            neighbor_phase_mean_list(
+                neighbors,
+                cosines,
+                sines,
+                fallback=theta_normalized,
+            )
+            % math.tau
+        )
         delta_theta = angle_diff(theta_network, theta_normalized)
     theta_network = finite_real(
-        theta_network, operator="Coherence", label="neighborhood phase mean",
-        lower=0.0, upper=math.tau,
+        theta_network,
+        operator="Coherence",
+        label="neighborhood phase mean",
+        lower=0.0,
+        upper=math.tau,
     )
-    delta_theta = finite_real(delta_theta, operator="Coherence", label="phase-locking delta")
+    delta_theta = finite_real(
+        delta_theta, operator="Coherence", label="phase-locking delta"
+    )
     theta_after = finite_real(
         (theta_normalized + coefficient * delta_theta) % math.tau,
         operator="Coherence",
@@ -281,7 +295,8 @@ def coherence_phase_event(proposal: CoherenceStageProposal) -> dict[str, Any] | 
 
 
 def coherence_phase_proposal_event(
-    node: Any, phase: CoherencePhaseProposal,
+    node: Any,
+    phase: CoherencePhaseProposal,
 ) -> dict[str, Any] | None:
     """Format one phase proposal identically for direct and staged IL."""
 
@@ -364,22 +379,16 @@ def coherence_tracking_event(
         ),
         "C_dispersion_local_before": before.dispersion_local,
         "C_dispersion_local_after": after.dispersion_local,
-        "C_dispersion_local_delta": (
-            after.dispersion_local - before.dispersion_local
-        ),
+        "C_dispersion_local_delta": (after.dispersion_local - before.dispersion_local),
         "legacy_C_fields_deprecated": True,
         "legacy_C_fields_definition": "pressure_dispersion_auxiliary",
         # Canonical stage/global and radius-local constitutive coherence.
         "C_t_global_before": before.structural_global,
         "C_t_global_after": after.structural_global,
-        "C_t_global_delta": (
-            after.structural_global - before.structural_global
-        ),
+        "C_t_global_delta": (after.structural_global - before.structural_global),
         "C_structural_local_before": before.structural_local,
         "C_structural_local_after": after.structural_local,
-        "C_structural_local_delta": (
-            after.structural_local - before.structural_local
-        ),
+        "C_structural_local_delta": (after.structural_local - before.structural_local),
     }
 
 

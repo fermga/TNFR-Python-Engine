@@ -5,6 +5,11 @@ pure-EPI network. Its coordinates ``(a,p,c)`` close under diffusion and
 uniform unclipped REMESH. Observing only ``(a,b)=(a,(2*p+c)/3)`` loses the
 contrast ``u=c-p`` and produces the derived memory kernel.
 
+For the separate fixed pure-EPI flow, retaining the hidden quadratic data
+``(r*r,r*s,s*s)`` completes the reflection-invariant observation. It identifies
+five-coordinate states up to reversal and has a closed induced rate. This
+nonlinear observation is not a three-node state or an additional dynamics.
+
 These are fixed-model algebraic observations. They neither replace nodal
 diffusion by REMESH nor certify binary64 execution, clipping or full TNFR
 state closure. Proof and scope: ``theory/DERIVED_EPI_MEMORY.md`` section 9.
@@ -15,9 +20,11 @@ from __future__ import annotations
 from collections.abc import Mapping, Set
 from dataclasses import dataclass
 from fractions import Fraction
+from math import isqrt
 
 from .._exact_time import exact_or_represented_real as _rational
 from ..mathematics.krylov import exact_rank
+from ._cycle_algebra import dot
 from .hybrid_operator_stability import _exact_matrix_product
 from .remesh_history_stability import (
     UniformRemeshHistoryStabilityCertificate,
@@ -30,9 +37,12 @@ __all__ = [
     "P5ReducedState",
     "P5ReductionGeometry",
     "P5RemeshReduction",
+    "P5ReflectionInvariants",
     "reduce_p5_state",
     "p5_reduction_geometry",
     "observe_p5_remesh_reduction",
+    "observe_p5_reflection_invariants",
+    "decode_p5_reflection_invariants",
 ]
 
 Vector = tuple[Fraction, ...]
@@ -189,6 +199,189 @@ def p5_reduction_geometry(capacity=1) -> P5ReductionGeometry:
         memory_metric=memory_metric,
         visible_projection=visible,
         minimal_linear_dimension=dimension,
+    )
+
+
+@dataclass(frozen=True)
+class P5ReflectionInvariants:
+    """Exact fixed-P5 observation and rates, complete up to path reflection.
+
+    ``quadratic_invariants=(r*r,r*s,s*s)`` and ``orbit_epi=(a,p,c)`` retain
+    the reflection orbit of the supplied scalar state. ``hidden_epi=(r,s)``
+    records the original orientation for checking the induced rate; it is
+    not an additional invariant. The chosen ``representative_epi`` decodes
+    the invariant data, not an executed or newly selected physical state.
+
+    ``jacobian_rank`` is the derivative rank of the six-output quadratic
+    observation: five off the reflection-fixed set and three at r=s=0.
+    It is not the local topological dimension of the quotient. The canonical
+    representative is not asserted to be a globally smooth coordinate chart.
+    """
+
+    geometry: P5ReductionGeometry
+    reduced: P5ReducedState
+    orbit_epi: Vector
+    hidden_epi: Vector
+    quadratic_invariants: Vector
+    orbit_rate: Vector
+    hidden_rate: Vector
+    invariant_rate: Vector
+    representative_epi: Vector
+    jacobian_rank: int
+    exact_identity_checks: tuple[str, ...]
+    scope: str
+
+
+def _rational_square_root(value: Fraction) -> Fraction:
+    """Return a nonnegative rational root, rejecting an algebraic-only lift."""
+    numerator = isqrt(value.numerator)
+    denominator = isqrt(value.denominator)
+    if (
+        numerator * numerator != value.numerator
+        or denominator * denominator != value.denominator
+    ):
+        raise ValueError(
+            "reflection invariants admit a real lift but this decoder requires "
+            "an exact rational square root"
+        )
+    return Fraction(numerator, denominator)
+
+
+def decode_p5_reflection_invariants(orbit_epi, quadratic_invariants) -> Vector:
+    """Decode the canonical rational representative of one reflection orbit.
+
+    Both ordered inputs have three finite exact/represented real coordinates.
+    For J=(J00,J01,J11), require J00,J11>=0 and J00*J11=J01**2 exactly.
+    These conditions characterize a positive-semidefinite rank-at-most-one
+    real matrix. Rational decoding additionally requires an exact rational
+    square root; a valid real cone point without that lift raises ValueError
+    rather than being rounded by a floating square root.
+
+    Choose r>0 when J00>0 and s=J01/r; otherwise choose r=0 and s>=0.
+    Return (a+r,p+s,c,p-s,a-r). The all-zero hidden case decodes uniquely.
+    This algebraic convention selects neither a physical orientation nor a
+    smooth global chart, and supplies no evolution or graph realization.
+    """
+    orbit = _vector(orbit_epi, "orbit_epi")
+    quadratic = _vector(quadratic_invariants, "quadratic_invariants")
+    if len(orbit) != 3 or len(quadratic) != 3:
+        raise ValueError(
+            "orbit_epi and quadratic_invariants must each contain three coordinates"
+        )
+    j00, j01, j11 = quadratic
+    if j00 < 0 or j11 < 0:
+        raise ValueError("quadratic invariant diagonal entries must be nonnegative")
+    if j00 * j11 != j01 * j01:
+        raise ValueError(
+            "quadratic invariants must satisfy the exact rank-one cone identity"
+        )
+    if j00:
+        r = _rational_square_root(j00)
+        s = j01 / r
+    else:
+        r, s = Fraction(0), _rational_square_root(j11)
+    a, p, c = orbit
+    return a + r, p + s, c, p - s, a - r
+
+
+def observe_p5_reflection_invariants(epi, capacity=1) -> P5ReflectionInvariants:
+    """Observe a closed nonlinear reflection quotient of fixed P5 diffusion.
+
+    The declared fine model has fixed unit-conductance, unit-length P5 support,
+    common positive capacity, pure EPI coefficient one, and equal held primitive
+    phases. There are no other pressure sources or phase/capacity/support laws.
+    No graph, solver, xi estimator, REMESH history or runtime event is executed.
+
+    Reuse the existing even coordinates (a,p,c) and discarded coordinates
+    (r,s,0,-s,-r). The latter satisfy r'=nu*(s-r), s'=nu*(r/2-s), hence
+    J' = nu*(2*(J01-J00), J00/2+J11-2*J01, J01-2*J11).
+    The even rate uses the existing orbit generator. Exact checks compare
+    both sectors and the quadratic chain rule to the existing fine generator,
+    verify the cone constraint and decode to the original state or reversal.
+    These are induced identities on supplied states, not a new feedback law
+    or a certificate of persistence, full tetrad dynamics or physical emergence.
+    """
+    reduced = reduce_p5_state(epi)
+    geometry = p5_reduction_geometry(capacity)
+    nu = geometry.capacity
+    r, s = reduced.discarded_epi[:2]
+    quadratic = (r * r, r * s, s * s)
+    j00, j01, j11 = quadratic
+    orbit_rate = tuple(-dot(row, reduced.orbit_epi) for row in geometry.orbit_generator)
+    hidden_rate = (nu * (s - r), nu * (r / 2 - s))
+    invariant_rate = (
+        2 * nu * (j01 - j00),
+        nu * (j00 / 2 + j11 - 2 * j01),
+        nu * (j01 - 2 * j11),
+    )
+    representative = decode_p5_reflection_invariants(reduced.orbit_epi, quadratic)
+    representative_reduced = reduce_p5_state(representative)
+    decoded_r, decoded_s = representative_reduced.discarded_epi[:2]
+    fine_rate = tuple(-dot(row, reduced.epi) for row in geometry.micro_generator)
+    rate_parts = reduce_p5_state(fine_rate)
+    fine_r_rate, fine_s_rate = rate_parts.discarded_epi[:2]
+    chain_rule = (
+        2 * r * fine_r_rate,
+        s * fine_r_rate + r * fine_s_rate,
+        2 * s * fine_s_rate,
+    )
+    zero = Fraction(0)
+    jacobian = (
+        *geometry.orbit_projection,
+        (r, zero, zero, zero, -r),
+        (s / 2, r / 2, zero, -r / 2, -s / 2),
+        (zero, s, zero, -s, zero),
+    )
+    differential_rank = exact_rank(jacobian)
+    checks = {
+        "even rate is the projection of the fine nodal rate": orbit_rate
+        == rate_parts.orbit_epi,
+        "hidden rate is the odd part of the fine nodal rate": hidden_rate
+        == (fine_r_rate, fine_s_rate),
+        "quadratic rate obeys the fine nodal chain rule": invariant_rate == chain_rule,
+        "quadratic data lie on the nonnegative rank-one cone": j00 >= 0
+        and j11 >= 0
+        and j00 * j11 == j01 * j01,
+        "quadratic rate is tangent to the rank-one cone": invariant_rate[0] * j11
+        + j00 * invariant_rate[2]
+        - 2 * j01 * invariant_rate[1]
+        == 0,
+        "decoded representative retains even and quadratic data": representative_reduced.orbit_epi
+        == reduced.orbit_epi
+        and (decoded_r**2, decoded_r * decoded_s, decoded_s**2) == quadratic,
+        "decoded representative is the original state or its reflection": representative
+        in (reduced.epi, reduced.epi[::-1]),
+        "fine generator commutes with reflection": all(
+            geometry.micro_generator[i][j] == geometry.micro_generator[4 - i][4 - j]
+            for i in range(5)
+            for j in range(5)
+        ),
+        "quadratic observation differential rank": differential_rank
+        == (5 if r or s else 3),
+    }
+    failed = tuple(name for name, passed in checks.items() if not passed)
+    if failed:
+        raise RuntimeError(f"exact P5 reflection-invariant identities failed: {failed}")
+    return P5ReflectionInvariants(
+        geometry=geometry,
+        reduced=reduced,
+        orbit_epi=reduced.orbit_epi,
+        hidden_epi=(r, s),
+        quadratic_invariants=quadratic,
+        orbit_rate=orbit_rate,
+        hidden_rate=hidden_rate,
+        invariant_rate=invariant_rate,
+        representative_epi=representative,
+        jacobian_rank=differential_rank,
+        exact_identity_checks=tuple(checks),
+        scope=(
+            "Exact induced reflection-invariant observation of fixed unit-support/unit-length "
+            "P5 pure-EPI diffusion with common positive capacity and equal held primitive phases. "
+            "Five-coordinate scalar states are retained up to reflection; the six output "
+            "coordinates obey one cone constraint. Jacobian rank is not local topological "
+            "dimension. No source, phase/capacity/support law, solver, xi reimplementation, "
+            "REMESH/runtime execution, persistence or physical emergence is certified."
+        ),
     )
 
 

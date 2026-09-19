@@ -15,7 +15,11 @@ from tnfr.operators.self_organization import SelfOrganization
 def _graph():
     graph = nx.Graph(GLYPH_FACTORS={"THOL_accel": 0.25})
     graph.add_node(
-        0, EPI=9.0, nu_f=1.0, theta=0.0, delta_nfr=0.5,
+        0,
+        EPI=9.0,
+        nu_f=1.0,
+        theta=0.0,
+        delta_nfr=0.5,
         epi_time_history=[(0.0, 0.0), (1.0, 1.0), (3.0, 9.0)],
         epi_history=[0.0, 100.0, 0.0],
         glyph_history=["IL", "OZ"],
@@ -51,12 +55,17 @@ def test_short_physical_history_never_reuses_cached_or_legacy_acceleration(histo
     assert graph.nodes[0][ALIAS_D2EPI[0]] == 0.0
 
 
-@pytest.mark.parametrize("bad_history", [
-    [(0.0, 0.0), (0.0, 1.0), (3.0, 9.0)],
-    [(0.0, 0.0), (1.0, 1.0), (3.0, 8.0)],
-    [(0.0, 0.0), (1.0, float("nan")), (3.0, 9.0)],
-])
-def test_invalid_history_rejects_before_pressure_telemetry_or_provenance_writes(bad_history):
+@pytest.mark.parametrize(
+    "bad_history",
+    [
+        [(0.0, 0.0), (0.0, 1.0), (3.0, 9.0)],
+        [(0.0, 0.0), (1.0, 1.0), (3.0, 8.0)],
+        [(0.0, 0.0), (1.0, float("nan")), (3.0, 9.0)],
+    ],
+)
+def test_invalid_history_rejects_before_pressure_telemetry_or_provenance_writes(
+    bad_history,
+):
     graph = _graph()
     graph.nodes[0]["epi_time_history"] = bad_history
     # Bind the adapter before the snapshot: cache creation is not a channel write.
@@ -86,11 +95,14 @@ def test_signed_physical_history_overrides_even_nonfinite_cached_acceleration(st
     assert graph.nodes[0][ALIAS_D2EPI[0]] == -2.0
 
 
-@pytest.mark.parametrize("histories, expected", [
-    ({}, 0.0),
-    ({"epi_history": [0.0, 1.0, 4.0], "_epi_history": [0.0, 50.0, 0.0]}, 2.0),
-    ({"epi_history": [], "_epi_history": [0.0, 1.0, 4.0]}, 2.0),
-])
+@pytest.mark.parametrize(
+    "histories, expected",
+    [
+        ({}, 0.0),
+        ({"epi_history": [0.0, 1.0, 4.0], "_epi_history": [0.0, 50.0, 0.0]}, 2.0),
+        ({"epi_history": [], "_epi_history": [0.0, 1.0, 4.0]}, 2.0),
+    ],
+)
 def test_legacy_and_absent_history_use_shared_precedence(histories, expected):
     graph = _graph()
     del graph.nodes[0]["epi_time_history"]

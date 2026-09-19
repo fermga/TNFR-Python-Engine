@@ -2,22 +2,18 @@
 
 from __future__ import annotations
 
+import math
 from copy import deepcopy
 from dataclasses import replace
 from datetime import datetime, timezone
 from fractions import Fraction
-import math
 from typing import Any
 
 import networkx as nx
 import pytest
 
-from tnfr.constants.aliases import (
-    ALIAS_DNFR,
-    ALIAS_EPI,
-    ALIAS_THETA,
-    ALIAS_VF,
-)
+import tnfr.physics.pointwise_stage_stability as pointwise
+from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from tnfr.operators.factor_contracts import resolve_runtime_operator_factors
 from tnfr.operators.network_stage import (
     PointwiseStageProposal,
@@ -25,7 +21,6 @@ from tnfr.operators.network_stage import (
     execute_pointwise_stage,
 )
 from tnfr.operators.transition import Transition
-import tnfr.physics.pointwise_stage_stability as pointwise
 from tnfr.physics.pointwise_stage_stability import (
     certify_pointwise_epi_jump_realization,
 )
@@ -34,7 +29,6 @@ from tnfr.physics.structural_diffusion import (
     verify_heterogeneous_diffusion_stability,
 )
 from tnfr.types import Glyph
-
 
 _NOW = datetime(2032, 1, 2, 3, 4, 5, tzinfo=timezone.utc)
 _TIMESTAMP = _NOW.isoformat()
@@ -78,10 +72,7 @@ def _graph(glyph: Glyph) -> nx.Graph:
 
 def _plain_graph_state(graph: nx.Graph) -> tuple[Any, ...]:
     return (
-        tuple(
-            (node, deepcopy(dict(data)))
-            for node, data in graph.nodes(data=True)
-        ),
+        tuple((node, deepcopy(dict(data))) for node, data in graph.nodes(data=True)),
         tuple(
             (left, right, deepcopy(dict(data)))
             for left, right, data in graph.edges(data=True)
@@ -119,11 +110,7 @@ def _stage_proposals(
             operator,
             glyph,
             factors,
-            timestamp=(
-                stage_timestamp
-                if glyph in (Glyph.AL, Glyph.SHA)
-                else None
-            ),
+            timestamp=(stage_timestamp if glyph in (Glyph.AL, Glyph.SHA) else None),
             tau=zhir_tau if glyph is Glyph.ZHIR else None,
             transition_now=_NOW if glyph is Glyph.NAV else None,
             resolved_seed=nav_seed,
@@ -217,9 +204,7 @@ def test_certificate_is_read_only_for_graph_and_frozen_proposals(
 ) -> None:
     graph = _graph(glyph)
     nav_kwargs = (
-        {"vf_factor": 1.0, "phase_shift": 0.125}
-        if glyph is Glyph.NAV
-        else None
+        {"vf_factor": 1.0, "phase_shift": 0.125} if glyph is Glyph.NAV else None
     )
     proposals = _stage_proposals(graph, glyph, nav_kwargs=nav_kwargs)
     before = _plain_graph_state(graph)
@@ -393,10 +378,7 @@ def test_nul_pressure_diagnostics_are_separate_from_epi_gain() -> None:
         Fraction(0),
         Fraction(0),
     )
-    assert (
-        certificate.exact_nul_stored_pressure_minus_pure_epi_pressure
-        is not None
-    )
+    assert certificate.exact_nul_stored_pressure_minus_pure_epi_pressure is not None
     assert certificate.nul_stored_pressure_defect_norm is not None
     assert certificate.nul_stored_pressure_defect_norm > 0.0
     assert certificate.nul_pressure_diagnostic_abstention_reason is None
@@ -450,9 +432,7 @@ def test_missing_exogenous_builder_inputs_cause_level_a_abstention(
 ) -> None:
     graph = _graph(glyph)
     nav_kwargs = (
-        {"vf_factor": 1.0, "phase_shift": 0.125}
-        if glyph is Glyph.NAV
-        else None
+        {"vf_factor": 1.0, "phase_shift": 0.125} if glyph is Glyph.NAV else None
     )
     proposals = _stage_proposals(graph, glyph, nav_kwargs=nav_kwargs)
     certificate = certify_pointwise_epi_jump_realization(
@@ -563,9 +543,7 @@ def test_replayed_proposal_and_returned_certificate_reject_tampering() -> None:
     proposals = _stage_proposals(graph, Glyph.ZHIR)
     changed_payload = replace(
         proposals[0].payload,
-        structural_acceleration=(
-            proposals[0].payload.structural_acceleration + 1.0
-        ),
+        structural_acceleration=(proposals[0].payload.structural_acceleration + 1.0),
     )
     changed = (
         replace(proposals[0], payload=changed_payload),
@@ -670,9 +648,7 @@ def test_pointwise_proof_stamp_rejects_hostile_equality_without_dispatch() -> No
             raise SystemExit("proof-stamp truthiness must not be dispatched")
 
     graph = _graph(Glyph.ZHIR)
-    certificate = _certificate(
-        graph, Glyph.ZHIR, _stage_proposals(graph, Glyph.ZHIR)
-    )
+    certificate = _certificate(graph, Glyph.ZHIR, _stage_proposals(graph, Glyph.ZHIR))
     probe = Probe()
     original = object.__getattribute__(certificate, "_proof_stamp")
     object.__setattr__(certificate, "_proof_stamp", (probe, *original[1:]))
@@ -688,9 +664,7 @@ def test_pointwise_nested_semantic_equality_cannot_escape_integrity_check() -> N
             raise SystemExit("nested semantic equality must fail closed")
 
     graph = _graph(Glyph.ZHIR)
-    certificate = _certificate(
-        graph, Glyph.ZHIR, _stage_proposals(graph, Glyph.ZHIR)
-    )
+    certificate = _certificate(graph, Glyph.ZHIR, _stage_proposals(graph, Glyph.ZHIR))
     nested = certificate.affine_jump_certificate
     assert nested is not None
     forged_nested = replace(nested, operator_name=HostileName())
@@ -770,8 +744,7 @@ def _hostile_graph(graph_type: type[nx.Graph], glyph: Glyph) -> nx.Graph:
     graph = graph_type()
     graph.graph.update(deepcopy(dict(source.graph)))
     graph.add_nodes_from(
-        (node, deepcopy(dict(data)))
-        for node, data in source.nodes(data=True)
+        (node, deepcopy(dict(data))) for node, data in source.nodes(data=True)
     )
     graph.add_edges_from(
         (left, right, deepcopy(dict(data)))
@@ -947,12 +920,10 @@ def test_nul_pressure_matvec_is_exact_over_represented_fractions() -> None:
     pressure_nodes, laplacian = structural_diffusion_operator(post)
     assert tuple(pressure_nodes) == tuple(graph)
     laplacian_q = tuple(
-        tuple(Fraction.from_float(float(value)) for value in row)
-        for row in laplacian
+        tuple(Fraction.from_float(float(value)) for value in row) for row in laplacian
     )
     epi_q = tuple(
-        Fraction.from_float(float(proposal.payload.epi_after))
-        for proposal in proposals
+        Fraction.from_float(float(proposal.payload.epi_after)) for proposal in proposals
     )
     pure_q = tuple(
         -sum(
@@ -966,21 +937,16 @@ def test_nul_pressure_matvec_is_exact_over_represented_fractions() -> None:
         for proposal in proposals
     )
     expected = tuple(
-        stored - pure
-        for stored, pure in zip(stored_q, pure_q, strict=True)
+        stored - pure for stored, pure in zip(stored_q, pure_q, strict=True)
     )
     rounded = tuple(
         Fraction.from_float(
-            float(stored)
-            + sum(float(a) * float(x) for a, x in zip(row, epi_q))
+            float(stored) + sum(float(a) * float(x) for a, x in zip(row, epi_q))
         )
         for stored, row in zip(stored_q, laplacian_q, strict=True)
     )
 
-    assert (
-        certificate.exact_nul_stored_pressure_minus_pure_epi_pressure
-        == expected
-    )
+    assert certificate.exact_nul_stored_pressure_minus_pure_epi_pressure == expected
     assert expected != rounded
     assert certificate.nul_pressure_diagnostic_abstention_reason is None
 
@@ -1002,10 +968,7 @@ def test_nul_pressure_diagnostic_abstention_is_explicit_and_nondecisive(
     certificate = _certificate(graph, Glyph.NUL, proposals)
 
     assert certificate.pre_post_common_metric_bridge_certified
-    assert (
-        certificate.exact_nul_stored_pressure_minus_pure_epi_pressure
-        is None
-    )
+    assert certificate.exact_nul_stored_pressure_minus_pure_epi_pressure is None
     assert certificate.nul_stored_pressure_defect_norm is None
     assert certificate.nul_pressure_diagnostic_abstention_reason is not None
     assert "diagnostic unavailable" in (
@@ -1033,14 +996,12 @@ def test_nul_pressure_node_order_mismatch_has_a_sealed_reason(
     certificate = _certificate(graph, Glyph.NUL, proposals)
 
     assert certificate.pre_post_common_metric_bridge_certified
-    assert (
-        certificate.exact_nul_stored_pressure_minus_pure_epi_pressure
-        is None
-    )
+    assert certificate.exact_nul_stored_pressure_minus_pure_epi_pressure is None
     assert "node order changed" in (
         certificate.nul_pressure_diagnostic_abstention_reason or ""
     )
     assert certificate._proof_fields_are_intact()
+
 
 @pytest.mark.parametrize(
     ("glyph", "operator_type", "execution_kwargs"),
@@ -1076,9 +1037,9 @@ def test_executor_opt_in_certifies_its_own_frozen_proposals(
     }
     graph = _graph(glyph)
     nodes = (2, 0, 1)
-    epi_before = tuple(_raw for _raw in (
-        float(graph.nodes[node][ALIAS_EPI[0]]) for node in graph
-    ))
+    epi_before = tuple(
+        _raw for _raw in (float(graph.nodes[node][ALIAS_EPI[0]]) for node in graph)
+    )
 
     result = execute_pointwise_stage(
         graph,

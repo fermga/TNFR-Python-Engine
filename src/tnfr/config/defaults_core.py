@@ -107,8 +107,8 @@ class CoreDefaults:
     )
     SI_WEIGHTS: dict[str, float] = field(
         default_factory=lambda: {
-            # Same coherence-band hierarchy: νf-coherence ≻ phase-sync ≻ |ΔNFR|.
-            "alpha": CHANNEL_WEIGHT_PRIMARY,  # π/(π+1) ≈ 0.7585 (νf-coherence)
+            # Configured diagnostic hierarchy: relative capacity, alignment, pressure.
+            "alpha": CHANNEL_WEIGHT_PRIMARY,  # π/(π+1) ≈ 0.7585 (relative capacity)
             "beta": CHANNEL_WEIGHT_SECONDARY,  # π/(π+1)² ≈ 0.1832 (phase-sync)
             "gamma": CHANNEL_WEIGHT_TERTIARY,  # 1/(π+1)² ≈ 0.0583 (|ΔNFR|)
         }

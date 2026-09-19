@@ -5,15 +5,14 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
 import tnfr.operators as operators
 import tnfr.operators.event_remesh_causal_runtime as causal_module
-
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE_PATH = (
@@ -51,9 +50,7 @@ def test_module_stub_and_facade_expose_causal_sequence_api() -> None:
     }
 
     assert set(causal_module.__all__) == expected
-    stub = Path(causal_module.__file__).with_suffix(".pyi").read_text(
-        encoding="utf-8"
-    )
+    stub = Path(causal_module.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
     assert "class CausalEventRemeshCycleReceipt" in stub
     assert "class EventRemeshCycleExecutionSpec" in stub
     assert "class ExecutedEventRemeshCycleSequence" in stub
@@ -147,8 +144,6 @@ def test_main_emits_finite_json(
     example.main()
     decoded = json.loads(capsys.readouterr().out)
 
-    assert decoded["claim"] == (
-        "one finite graph-owned causal event/REMESH sequence"
-    )
+    assert decoded["claim"] == ("one finite graph-owned causal event/REMESH sequence")
     assert decoded["causal_cycle_order_certified"]
     assert decoded["epi_trajectory"][-1] == decoded["epi_trajectory"][0]

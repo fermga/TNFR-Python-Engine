@@ -157,9 +157,7 @@ def test_near_zero_lognorm_sign_abstains_from_exact_numerical_verification():
     assert np.isnan(certificate.lognorm_rule_accuracy)
     assert np.isnan(certificate.lognorm_rule_balanced_accuracy)
     assert "NUMERICALLY UNRESOLVED" in certificate.claim_status
-    assert (
-        "no exact finite-family verification is claimed" in certificate.claim_status
-    )
+    assert "no exact finite-family verification is claimed" in certificate.claim_status
 
 
 def test_row_rescaling_does_not_change_prediction():
@@ -254,9 +252,7 @@ def test_single_graph_rejects_noninteger_index(index):
 
 def test_single_graph_rejects_boolean_conductance():
     with pytest.raises(ValueError, match="not booleans"):
-        measure_nonnormal_pressure_prediction(
-            np.array([[False, True], [True, False]])
-        )
+        measure_nonnormal_pressure_prediction(np.array([[False, True], [True, False]]))
 
 
 def test_public_records_are_typed_and_indexed(benchmark):

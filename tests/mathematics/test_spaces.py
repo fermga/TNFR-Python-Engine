@@ -106,12 +106,8 @@ def test_banach_space_derivative_regularity(
     spacing = np.diff(x_grid)
     derivative_sq = np.abs(derivative) ** 2
     function_sq = np.abs(f) ** 2
-    numerator = np.sum(
-        0.5 * (derivative_sq[:-1] + derivative_sq[1:]) * spacing
-    )
-    denominator = 1.0 + np.sum(
-        0.5 * (function_sq[:-1] + function_sq[1:]) * spacing
-    )
+    numerator = np.sum(0.5 * (derivative_sq[:-1] + derivative_sq[1:]) * spacing)
+    denominator = 1.0 + np.sum(0.5 * (function_sq[:-1] + function_sq[1:]) * spacing)
     expected = numerator / denominator
 
     result = space.derivative_regularity(f, x_grid)
@@ -133,11 +129,7 @@ def test_composite_epi_regularity_combines_components(
     a = np.array([1.0 + 0.0j, -1.0j], dtype=np.complex128)
 
     derivative_term = space.derivative_regularity(f, x_grid)
-    expected = (
-        2.0 * np.max(np.abs(f))
-        + 3.0 * np.linalg.norm(a)
-        + 0.5 * derivative_term
-    )
+    expected = 2.0 * np.max(np.abs(f)) + 3.0 * np.linalg.norm(a) + 0.5 * derivative_term
 
     result = space.composite_epi_regularity(
         f, a, x_grid=x_grid, alpha=2.0, beta=3.0, gamma=0.5

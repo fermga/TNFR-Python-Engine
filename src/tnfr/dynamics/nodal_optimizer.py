@@ -23,13 +23,13 @@ from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
-from ..physics.structural_diffusion import structural_diffusion_operator
 from ..operators.grammar_types import (
     COUPLING_RESONANCE,
     DESTABILIZERS,
     STABILIZERS,
     glyph_function_name,
 )
+from ..physics.structural_diffusion import structural_diffusion_operator
 from ..types import real_scalar_epi
 from .phase_evolution import propose_u3_gated_phase_step
 
@@ -54,12 +54,11 @@ def _finite_epi(value: Any, name: str) -> float:
     try:
         result = real_scalar_epi(value)
     except (KeyError, OverflowError, TypeError, ValueError) as exc:
-        raise TNFRValueError(
-            f"{name} must be a finite scalar EPI embedding."
-        ) from exc
+        raise TNFRValueError(f"{name} must be a finite scalar EPI embedding.") from exc
     if result is None or not math.isfinite(float(result)):
         raise TNFRValueError(f"{name} must be a finite scalar EPI embedding.")
     return float(result)
+
 
 try:
     import networkx as nx
@@ -260,9 +259,7 @@ class NodalEquationOptimizer:
         node_order = tuple(nodes)
         node_index = {node: index for index, node in enumerate(node_order)}
         if spectral_needed:
-            eigenvals, eigenvecs = get_laplacian_spectrum(
-                G, operator="symmetric"
-            )
+            eigenvals, eigenvecs = get_laplacian_spectrum(G, operator="symmetric")
         else:
             eigenvals = np.array([])
             eigenvecs = np.empty((len(node_order), 0), dtype=float)
@@ -362,9 +359,7 @@ class NodalEquationOptimizer:
         with np.errstate(over="ignore", invalid="ignore"):
             depi_dt = vf_vector * dnfr_vector
             new_epi_vector = epi_vector + dt_value * depi_dt
-        if not np.all(np.isfinite(depi_dt)) or not np.all(
-            np.isfinite(new_epi_vector)
-        ):
+        if not np.all(np.isfinite(depi_dt)) or not np.all(np.isfinite(new_epi_vector)):
             raise TNFRValueError("Nodal EPI proposal must remain finite.")
         new_phase_vector = self._predict_phase_evolution(
             G, opt_state, phase_vector, dt_value
@@ -485,9 +480,7 @@ class NodalEquationOptimizer:
             operator for operator in canonical_ops if operator == "coherence"
         ]
         phase_ops = [
-            operator
-            for operator in canonical_ops
-            if operator in COUPLING_RESONANCE
+            operator for operator in canonical_ops if operator in COUPLING_RESONANCE
         ]
         candidates: list[str] = []
         if len(coherence_ops) > 2:

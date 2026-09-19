@@ -17,11 +17,10 @@ $$
 \frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t),
 $$
 
-admits different coherence regimes:
-
-- smooth-trajectory regimes, externally comparable to classical mechanics;
-- discrete-mode / high-dissonance regimes, externally comparable to quantum-mechanical behaviour;
-- auxiliary field-coordinate rotations of `Ψ = K_φ + i·J_φ`, without a derived independent gauge degree of freedom.
+does not by itself select a classical or quantum theory. The implemented
+surface uses auxiliary field-coordinate rotations of `Ψ = K_φ + i·J_φ`,
+without a derived independent gauge degree of freedom. Discrete modes or high
+dissonance do not establish quantum behavior.
 
 Therefore, references to Yang–Mills and mass gap are treated as **external comparison targets**. The TNFR object implemented here is a finite nodal spectral diagnostic with an auxiliary pure-gauge twist: construct the declared matrix, measure its spectral separation, and test associations with TNFR telemetry. Y1–Y4 neither execute an operator history nor compare two structural-potential snapshots, so they cannot infer that U1–U6 enforce the measured gap.
 
@@ -78,7 +77,10 @@ The continuum-strength question is deferred:
 
 > **YMG-5**: Does `liminf_{a→0, L→∞} Δ_TNFR(a,L) > 0` hold under a canonically specified scaling regime?
 
-YMG-5 is the Clay-hard boundary and is not assumed.
+Even this proposed lower bound would concern the chosen scaled matrix family.
+A full identification with the Clay problem additionally needs a constructed
+four-dimensional quantum field theory with the required axioms and an
+identified energy spectrum. YMG-5 alone is not equivalent to that problem.
 
 ---
 
@@ -97,16 +99,10 @@ dynamical admissibility require separate proofs.
 | Confinement | Future hypothesis requiring an independently derived non-flat edge connection; absent from the current pure-gauge surface |
 | Gauge field | Not implemented independently; the current `A` is only `d(arg Ψ)` |
 
-The working hypothesis is:
-
-$$
-\Delta_{\mathrm{TNFR}} > 0
-\quad\Longleftrightarrow\quad
-\text{U6 drift control + independently derived curvature + declared evolution hypotheses exclude zero-cost non-trivial modes.}
-$$
-
-This is an open TNFR working hypothesis about nodal dynamics, not an established
-consequence of U6 and not an ontological statement about a separate quantum layer.
+The historical biconditional between a positive finite gap and "U6 plus
+curvature" is withdrawn: it lacked a precisely defined evolution and either
+direction of proof. A future question must state the matrix, trajectory,
+reference drift and quantitative lower-bound hypotheses separately.
 The present Y1–Y4 surface cannot test the hypothesis: it supplies neither a U6
 reference trajectory nor an independent edge connection with nonzero holonomy.
 Its positive finite gaps can already arise from finite graph connectivity and
@@ -145,11 +141,19 @@ The implementation exposes non-negative weights for sensitivity studies and uses
 | **YMG-5** | Continuum + thermodynamic scaling `liminf Δ > 0` | **FINITE SCALING DIAGNOSTIC IMPLEMENTED** by Y4; continuum limit remains **OPEN / Clay-hard** |
 | **YMG-6** | Closure / obstruction classification | **CLASSIFIED: BRANCH_B_OBSTRUCTION_CLASSIFIED** by Y5 |
 
-The key honesty constraint is YMG-4: classical Yang–Mills mass gap is non-Abelian.  A multi-channel or non-Abelian TNFR gauge sector cannot be assumed merely because external Yang–Mills uses it.  It must be derived as a structural consequence of the nodal equation, tetrad, operators, and U1–U6.
+The key scope constraint is YMG-4: the Clay target is a quantum Yang–Mills
+theory with a compact simple non-Abelian gauge group. A multichannel or
+non-Abelian TNFR gauge sector cannot be assumed merely because that target
+uses it. Its state, connection and evolution require a structural derivation;
+shared diagnostic names and grammar rules do not supply one.
 
 ---
 
 ## 6. Pre-Registered Milestones
+
+This is the retained implementation inventory of the original finite program.
+Proposed follow-ups are not an active parallel queue; priorities are set by
+the [single execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md).
 
 ### Y1 — Finite Structural Gauge Gap Diagnostic
 
@@ -301,8 +305,13 @@ or derive their positive finite gap from canonical nodal dynamics.
 
 Any claimed TNFR–Yang–Mills result must satisfy:
 
-1. **Nodal derivability** — every term traces to `∂EPI/∂t = νf · ΔNFR(t)` or canonical tetrad telemetry.
-2. **Operator discipline** — no EPI mutation outside the 13 canonical operators.
+1. **Nodal derivability** — reading canonical telemetry is not enough to
+   derive a law. Every proposed evolution term needs its constitutive
+   derivation and explicit state/units/domain assumptions.
+2. **Evolution provenance** — named transformations use their operator
+   contracts; declared continuous solver segments use the shared nodal
+   integrator with explicit pressure and provenance. This read-only
+   diagnostic performs neither kind of evolution.
 3. **Grammar compliance** — U1–U6 constraints are checked or explicitly scoped.
 4. **Auxiliary U(1) covariance** — the reported finite spectrum must be invariant under the paired `Ψ → e^{iα}Ψ`, `A → A+dα` analysis transformation, or any dependence must be classified as a diagnostic failure; this check is not an engine symmetry theorem.
 5. **Declared coefficients** — every diagnostic weight and normalization is recorded; promotion to a canonical constant requires a nodal-dynamics derivation.
@@ -311,8 +320,12 @@ Any claimed TNFR–Yang–Mills result must satisfy:
 
 ---
 
-## 8. Immediate Next Step
+## 8. Deferred derivation boundary
 
-The next research target is **Y6 / Branch-B derivation search**: first derive an independent TNFR edge degree of freedom that can carry nonzero cycle holonomy, then determine whether it supports a TNFR-native non-Abelian connection and non-commuting generator algebra from the nodal equation, nested EPI structure, and canonical operator histories. If such a derivation cannot be found without external group labels, the Yang–Mills programme should remain paused at Branch B rather than extending finite diagnostics indefinitely.
+The historical Y6 proposal requires an independent edge degree of freedom
+and its evolution before any non-flat or non-Abelian connection claim. It is
+a deferred reference question, not the current next task. The finite matrix
+studies remain paused; the central plan determines whether a derived mechanism
+from the main nodal research justifies revisiting this comparison.
 
 The programme begins from TNFR's own structural dynamics.  External Yang–Mills terminology is used only to name the comparison problem and to define the mass-gap target surface.

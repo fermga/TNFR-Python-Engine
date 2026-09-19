@@ -31,10 +31,10 @@ estimate solver error, or prove future, refined, or repeated schedules.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field, fields, replace
 from fractions import Fraction
-import math
 from numbers import Integral, Real
 from typing import Any
 
@@ -46,6 +46,8 @@ from ..mathematics.unified_numerical import np
 from ..types import real_scalar_epi
 from ..utils._structural_signature import (
     binary64_vectors_are_identical as _binary64_vectors_match,
+)
+from ..utils._structural_signature import (
     proof_stamps_are_identical,
     structural_proof_signature,
 )
@@ -81,22 +83,16 @@ _SCOPE = (
 
 def _binary64_fraction(value: Any, name: str) -> tuple[float, Fraction]:
     if isinstance(value, (bool, np.bool_)) or not isinstance(value, Real):
-        raise ValueError(
-            f"{name} must contain finite real values, not booleans"
-        )
+        raise ValueError(f"{name} must contain finite real values, not booleans")
     try:
         source_nonzero = bool(value != 0)
         floating = float(value)
     except (TypeError, ValueError, OverflowError, ZeroDivisionError) as exc:
-        raise ValueError(
-            f"{name} must contain finite binary64 values"
-        ) from exc
+        raise ValueError(f"{name} must contain finite binary64 values") from exc
     if not math.isfinite(floating):
         raise ValueError(f"{name} must contain finite binary64 values")
     if floating == 0.0 and source_nonzero:
-        raise ValueError(
-            f"{name} contains a nonzero value below binary64 range"
-        )
+        raise ValueError(f"{name} contains a nonzero value below binary64 range")
     return floating, Fraction.from_float(floating)
 
 
@@ -121,9 +117,7 @@ def _node_order(
     if nodes is None:
         return graph_nodes
     if isinstance(nodes, (str, bytes)):
-        raise TypeError(
-            "nodes must be an iterable of unique node identifiers"
-        )
+        raise TypeError("nodes must be an iterable of unique node identifiers")
     try:
         ordered = tuple(nodes)
         unique = set(ordered)
@@ -147,11 +141,7 @@ def _conductance_observation(
     snapshot = read_conductance(graph, list(nodes))
     dense = snapshot.dense()
     exact_matrix = tuple(
-        tuple(
-            Fraction.from_float(float(value))
-            for value in row
-        )
-        for row in dense
+        tuple(Fraction.from_float(float(value)) for value in row) for row in dense
     )
     replay_array = edge_mean_differences(
         np.asarray(epi, dtype=float),
@@ -160,23 +150,15 @@ def _conductance_observation(
         snapshot.weight,
     )
     replay = tuple(float(value) for value in replay_array)
-    exact_replay = tuple(
-        Fraction.from_float(value) for value in replay
-    )
+    exact_replay = tuple(Fraction.from_float(value) for value in replay)
     return exact_matrix, replay, exact_replay
 
 
 def _is_symmetric_nonnegative(matrix: ExactMatrix) -> bool:
     return bool(
-        all(
-            value >= 0
-            for row in matrix
-            for value in row
-        )
+        all(value >= 0 for row in matrix for value in row)
         and all(
-            matrix[i][j] == matrix[j][i]
-            for i in range(len(matrix))
-            for j in range(i)
+            matrix[i][j] == matrix[j][i] for i in range(len(matrix)) for j in range(i)
         )
     )
 
@@ -194,10 +176,7 @@ def _pure_pressure(
         return None
     return tuple(
         sum(
-            (
-                adjacency[i][j] * (epi[j] - epi[i])
-                for j in range(len(epi))
-            ),
+            (adjacency[i][j] * (epi[j] - epi[i]) for j in range(len(epi))),
             Fraction(0),
         )
         / degrees[i]
@@ -217,10 +196,7 @@ def _euler_map(
             (Fraction(1) if i == j else Fraction(0))
             + duration
             * nu_f[i]
-            * (
-                adjacency[i][j] / degrees[i]
-                - (Fraction(1) if i == j else Fraction(0))
-            )
+            * (adjacency[i][j] / degrees[i] - (Fraction(1) if i == j else Fraction(0)))
             for j in range(size)
         )
         for i in range(size)
@@ -233,10 +209,7 @@ def _matrix_vector(
 ) -> ExactVector:
     return tuple(
         sum(
-            (
-                coefficient * value
-                for coefficient, value in zip(row, vector)
-            ),
+            (coefficient * value for coefficient, value in zip(row, vector)),
             Fraction(0),
         )
         for row in matrix
@@ -248,20 +221,20 @@ def _energy(
     metric: ExactVector,
 ) -> Fraction:
     total = sum(metric, Fraction(0))
-    center = sum(
-        (
-            weight * value
-            for weight, value in zip(metric, epi)
-        ),
-        Fraction(0),
-    ) / total
-    return sum(
-        (
-            weight * (value - center) ** 2
-            for weight, value in zip(metric, epi)
-        ),
-        Fraction(0),
-    ) / 2
+    center = (
+        sum(
+            (weight * value for weight, value in zip(metric, epi)),
+            Fraction(0),
+        )
+        / total
+    )
+    return (
+        sum(
+            (weight * (value - center) ** 2 for weight, value in zip(metric, epi)),
+            Fraction(0),
+        )
+        / 2
+    )
 
 
 def _gain_bound(
@@ -424,28 +397,18 @@ class NodalFlowIntervalCertificate:
 
     @property
     def failed_diffusion_conditions(self) -> tuple[str, ...]:
-        return tuple(
-            name
-            for name, passed in self.diffusion_conditions
-            if not passed
-        )
+        return tuple(name for name, passed in self.diffusion_conditions if not passed)
 
     @property
     def failed_runtime_conditions(self) -> tuple[str, ...]:
-        return tuple(
-            name
-            for name, passed in self.runtime_conditions
-            if not passed
-        )
+        return tuple(name for name, passed in self.runtime_conditions if not passed)
 
     @property
     def failed_held_pressure_runtime_conditions(self) -> tuple[str, ...]:
         """Names blocking identification of the held-pressure replay."""
 
         return tuple(
-            name
-            for name, passed in self.held_pressure_runtime_conditions
-            if not passed
+            name for name, passed in self.held_pressure_runtime_conditions if not passed
         )
 
     @property
@@ -525,19 +488,13 @@ def capture_nodal_flow_state(
             conv=lambda value: value,
         )
         if isinstance(epi_value, (bool, np.bool_)):
-            raise ValueError(
-                "nodal-flow capture requires real scalar EPI"
-            )
+            raise ValueError("nodal-flow capture requires real scalar EPI")
         try:
             scalar_epi = real_scalar_epi(epi_value)
         except (TypeError, ValueError, OverflowError) as exc:
-            raise ValueError(
-                "nodal-flow capture requires real scalar EPI"
-            ) from exc
+            raise ValueError("nodal-flow capture requires real scalar EPI") from exc
         if scalar_epi is None:
-            raise ValueError(
-                "nodal-flow capture requires real scalar EPI"
-            )
+            raise ValueError("nodal-flow capture requires real scalar EPI")
         raw_epi.append(scalar_epi)
         raw_nu_f.append(
             get_attr(
@@ -616,9 +573,7 @@ def certify_observed_nodal_flow_interval(
     stable_support = left.nodes == right.nodes
     if stable_support:
         nodal_residual: ExactVector | None = tuple(
-            right_value
-            - left_value
-            - duration_exact * capacity * pressure
+            right_value - left_value - duration_exact * capacity * pressure
             for left_value, right_value, capacity, pressure in zip(
                 left.exact_epi,
                 right.exact_epi,
@@ -628,19 +583,14 @@ def certify_observed_nodal_flow_interval(
         )
         nodal_realized = all(value == 0 for value in nodal_residual)
         capacity_unchanged = left.exact_nu_f == right.exact_nu_f
-        pressure_unchanged = (
-            left.exact_delta_nfr == right.exact_delta_nfr
-        )
+        pressure_unchanged = left.exact_delta_nfr == right.exact_delta_nfr
     else:
         nodal_residual = None
         nodal_realized = False
         capacity_unchanged = False
         pressure_unchanged = False
 
-    fixed_conductance = bool(
-        stable_support
-        and left.conductance == right.conductance
-    )
+    fixed_conductance = bool(stable_support and left.conductance == right.conductance)
     symmetric = bool(
         _is_symmetric_nonnegative(left.conductance)
         and _is_symmetric_nonnegative(right.conductance)
@@ -665,9 +615,7 @@ def certify_observed_nodal_flow_interval(
                 expected_pressure,
             )
         )
-        pressure_realized = all(
-            value == 0 for value in pressure_residual
-        )
+        pressure_realized = all(value == 0 for value in pressure_residual)
 
     binary_pressure_residual = tuple(
         observed - expected
@@ -676,9 +624,7 @@ def certify_observed_nodal_flow_interval(
             left.exact_binary64_pure_epi_pressure,
         )
     )
-    binary_pressure_realized = all(
-        value == 0 for value in binary_pressure_residual
-    )
+    binary_pressure_realized = all(value == 0 for value in binary_pressure_residual)
 
     diffusion_conditions = (
         ("at_least_two_nodes", len(left.nodes) >= 2),
@@ -691,9 +637,7 @@ def certify_observed_nodal_flow_interval(
         ("pressure_unchanged", pressure_unchanged),
         ("exact_pure_epi_pressure_realized", pressure_realized),
     )
-    diffusion_eligible = all(
-        passed for _, passed in diffusion_conditions
-    )
+    diffusion_eligible = all(passed for _, passed in diffusion_conditions)
 
     positive_substeps = bool(
         isinstance(substeps, Integral)
@@ -712,9 +656,7 @@ def certify_observed_nodal_flow_interval(
             extended_dynamics_requested is False,
         ),
     )
-    runtime_eligible = all(
-        passed for _, passed in runtime_conditions
-    )
+    runtime_eligible = all(passed for _, passed in runtime_conditions)
 
     binary_replay: tuple[float, ...] | None = None
     binary_residual: ExactVector | None = None
@@ -737,12 +679,9 @@ def certify_observed_nodal_flow_interval(
                     base,
                 )
             if np.all(np.isfinite(replay_array)):
-                binary_replay = tuple(
-                    float(value) for value in replay_array
-                )
+                binary_replay = tuple(float(value) for value in replay_array)
                 exact_binary_replay = tuple(
-                    Fraction.from_float(value)
-                    for value in binary_replay
+                    Fraction.from_float(value) for value in binary_replay
                 )
                 binary_residual = tuple(
                     observed - expected
@@ -779,16 +718,11 @@ def certify_observed_nodal_flow_interval(
             binary_substep_duration = duration_float / step_count
         except OverflowError:
             binary_substep_duration = None
-        if (
-            binary_substep_duration is not None
-            and math.isfinite(binary_substep_duration)
+        if binary_substep_duration is not None and math.isfinite(
+            binary_substep_duration
         ):
-            exact_binary_substep_duration = Fraction.from_float(
-                binary_substep_duration
-            )
-            exact_binary_substep_sum = (
-                exact_binary_substep_duration * step_count
-            )
+            exact_binary_substep_duration = Fraction.from_float(binary_substep_duration)
+            exact_binary_substep_sum = exact_binary_substep_duration * step_count
             substep_sum_matches = exact_binary_substep_sum == duration_exact
             if stable_support:
                 try:
@@ -808,15 +742,16 @@ def certify_observed_nodal_flow_interval(
                         held_state = np.asarray(left.epi, dtype=float)
                         for _ in range(step_count):
                             held_state = euler_update(
-                                held_state, binary_substep_duration, held_base,
+                                held_state,
+                                binary_substep_duration,
+                                held_base,
                             )
                     if np.all(np.isfinite(held_state)):
                         held_pressure_replay = tuple(
                             float(value) for value in held_state
                         )
                         exact_held_replay = tuple(
-                            Fraction.from_float(value)
-                            for value in held_pressure_replay
+                            Fraction.from_float(value) for value in held_pressure_replay
                         )
                         held_pressure_residual = tuple(
                             observed - expected
@@ -854,11 +789,7 @@ def certify_observed_nodal_flow_interval(
     held_pressure_runtime_identified = all(
         passed for _, passed in held_pressure_conditions
     )
-    map_identified = bool(
-        nodal_realized
-        and diffusion_eligible
-        and runtime_eligible
-    )
+    map_identified = bool(nodal_realized and diffusion_eligible and runtime_eligible)
 
     metric: ExactVector | None = None
     left_energy: Fraction | None = None
@@ -891,9 +822,7 @@ def certify_observed_nodal_flow_interval(
     contracts = False
     if map_identified:
         if metric is None:
-            raise RuntimeError(
-                "internal error: identified Euler metric is absent"
-            )
+            raise RuntimeError("internal error: identified Euler metric is absent")
         exact_map = _euler_map(
             left.conductance,
             degrees,
@@ -917,8 +846,7 @@ def certify_observed_nodal_flow_interval(
 
     stored_substeps = (
         int(substeps)
-        if isinstance(substeps, Integral)
-        and not isinstance(substeps, (bool, np.bool_))
+        if isinstance(substeps, Integral) and not isinstance(substeps, (bool, np.bool_))
         else None
     )
     certificate = NodalFlowIntervalCertificate(
@@ -938,12 +866,8 @@ def certify_observed_nodal_flow_interval(
         exact_pure_epi_pressure=expected_pressure,
         exact_pressure_residual=pressure_residual,
         exact_pure_epi_pressure_realized=pressure_realized,
-        exact_binary64_pressure_replay_residual=(
-            binary_pressure_residual
-        ),
-        binary64_pure_epi_pressure_realized=(
-            binary_pressure_realized
-        ),
+        exact_binary64_pressure_replay_residual=(binary_pressure_residual),
+        binary64_pure_epi_pressure_realized=(binary_pressure_realized),
         diffusion_conditions=diffusion_conditions,
         pure_epi_diffusion_eligible=diffusion_eligible,
         integrator_name=integrator_name,
@@ -957,22 +881,16 @@ def certify_observed_nodal_flow_interval(
         binary64_euler_replay=binary_replay,
         exact_binary64_euler_replay_residual=binary_residual,
         binary64_euler_replay_matches=binary_matches,
-        binary64_runtime_interval_identified=(
-            binary_runtime_identified
-        ),
+        binary64_runtime_interval_identified=(binary_runtime_identified),
         binary64_substep_duration=binary_substep_duration,
         exact_binary64_substep_duration=exact_binary_substep_duration,
         exact_binary64_substep_duration_sum=exact_binary_substep_sum,
         exact_substep_duration_sum_matches_interval=substep_sum_matches,
         binary64_held_pressure_replay=held_pressure_replay,
-        exact_binary64_held_pressure_replay_residual=(
-            held_pressure_residual
-        ),
+        exact_binary64_held_pressure_replay_residual=(held_pressure_residual),
         binary64_held_pressure_replay_matches=held_pressure_matches,
         held_pressure_runtime_conditions=held_pressure_conditions,
-        _binary64_held_pressure_runtime_identified=(
-            held_pressure_runtime_identified
-        ),
+        _binary64_held_pressure_runtime_identified=(held_pressure_runtime_identified),
         exact_metric_weights=metric,
         exact_explicit_euler_map=exact_map,
         exact_explicit_euler_endpoint_residual=map_residual,

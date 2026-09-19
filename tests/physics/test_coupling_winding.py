@@ -13,7 +13,6 @@ from tnfr.constants.canonical import DELTA_PHI_MAX, UM_THETA_PUSH
 from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.physics.coupling_winding import observe_coupling_gap_step
 
-
 F = Fraction
 
 
@@ -83,7 +82,8 @@ def test_jacobi_dissipation_matches_the_independent_jensen_identity():
         for left in range(len(row)):
             for right in range(left + 1, len(row)):
                 expected += (
-                    row[left] * row[right]
+                    row[left]
+                    * row[right]
                     * (result.input_gaps[left] - result.input_gaps[right]) ** 2
                     / 2
                 )
@@ -162,8 +162,10 @@ def test_exact_rationals_and_materialized_reals_have_explicit_semantics():
 
 @pytest.mark.parametrize(
     "gaps",
-    [np.array([1, 0, -1], dtype=np.int64),
-     (F(np.int64(1)), F(np.int64(0)), F(np.int64(-1)))],
+    [
+        np.array([1, 0, -1], dtype=np.int64),
+        (F(np.int64(1)), F(np.int64(0)), F(np.int64(-1))),
+    ],
 )
 def test_numpy_rational_inputs_are_promoted_to_python_integer_arithmetic(gaps):
     result = observe_coupling_gap_step(gaps)
@@ -185,9 +187,18 @@ def test_output_is_immutable_and_detached_from_caller_coordinates():
 
 @pytest.mark.parametrize(
     "gaps",
-    [(), (0, 0), "000", {0, 1, 2}, {0: 0, 1: 1, 2: -1},
-     (True, 0, 0), ("0", 0, 0), (1j, 0, 0), (float("nan"), 0, 0),
-     (float("inf"), 0, 0)],
+    [
+        (),
+        (0, 0),
+        "000",
+        {0, 1, 2},
+        {0: 0, 1: 1, 2: -1},
+        (True, 0, 0),
+        ("0", 0, 0),
+        (1j, 0, 0),
+        (float("nan"), 0, 0),
+        (float("inf"), 0, 0),
+    ],
 )
 def test_invalid_gap_coordinates_are_rejected(gaps):
     with pytest.raises((TypeError, ValueError)):

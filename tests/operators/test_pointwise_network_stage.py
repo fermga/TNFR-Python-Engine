@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from collections import deque
-from copy import deepcopy
 import math
 import threading
 import warnings
+from collections import deque
+from copy import deepcopy
 from typing import Any
 
 import networkx as nx
@@ -34,7 +34,6 @@ from tnfr.operators.network_stage import (
 from tnfr.operators.preconditions import OperatorPreconditionError
 from tnfr.operators.stage_contracts import stage_schedule_metadata
 from tnfr.types import Glyph, real_scalar_epi
-
 
 _OPERATOR_TYPES = {
     Glyph.AL: Emission,
@@ -72,9 +71,7 @@ def _graph(*, glyph: Glyph) -> nx.Graph:
                 ALIAS_THETA[0]: 0.1 * node,
                 "EPI_kind": "wave",
                 "glyph_history": (
-                    ["AL", "IL", "OZ"]
-                    if glyph is Glyph.ZHIR
-                    else ["AL", "IL"]
+                    ["AL", "IL", "OZ"] if glyph is Glyph.ZHIR else ["AL", "IL"]
                 ),
             }
         )
@@ -106,10 +103,7 @@ def _plain_state(
     graph: nx.Graph, *, omit_graph_keys: frozenset[str] = frozenset()
 ) -> tuple[object, ...]:
     return (
-        tuple(
-            (node, deepcopy(dict(data)))
-            for node, data in graph.nodes(data=True)
-        ),
+        tuple((node, deepcopy(dict(data))) for node, data in graph.nodes(data=True)),
         tuple(
             (left, right, deepcopy(dict(data)))
             for left, right, data in graph.edges(data=True)
@@ -155,22 +149,14 @@ def test_pointwise_primary_state_is_exactly_target_order_invariant(
     reverse = _graph(glyph=glyph)
     operator_type = _OPERATOR_TYPES[glyph]
 
-    forward_result = execute_pointwise_stage(
-        forward, operator_type(), (0, 1, 2)
-    )
-    reverse_result = execute_pointwise_stage(
-        reverse, operator_type(), (2, 1, 0)
-    )
+    forward_result = execute_pointwise_stage(forward, operator_type(), (0, 1, 2))
+    reverse_result = execute_pointwise_stage(reverse, operator_type(), (2, 1, 0))
 
     assert _primary_state(forward, glyph) == _primary_state(reverse, glyph)
     assert forward_result.schedule == TWO_PHASE_JACOBI
     assert reverse_result.schedule == TWO_PHASE_JACOBI
-    _assert_exact_schedule(
-        forward, operator_type(), schedule=TWO_PHASE_JACOBI, count=3
-    )
-    _assert_exact_schedule(
-        reverse, operator_type(), schedule=TWO_PHASE_JACOBI, count=3
-    )
+    _assert_exact_schedule(forward, operator_type(), schedule=TWO_PHASE_JACOBI, count=3)
+    _assert_exact_schedule(reverse, operator_type(), schedule=TWO_PHASE_JACOBI, count=3)
     for graph in (forward, reverse):
         for node in graph:
             assert tuple(graph.nodes[node]["glyph_history"])[-1] == glyph.value
@@ -214,9 +200,12 @@ def test_nul_and_edge_intervention_logs_retain_requested_target_order() -> None:
     nul_graph.graph["nul_densification_log"] = [{"node": "existing"}]
     execute_pointwise_stage(nul_graph, Contraction(), (2, 0, 1))
 
-    assert [
-        event["node"] for event in nul_graph.graph["nul_densification_log"]
-    ] == ["existing", 2, 0, 1]
+    assert [event["node"] for event in nul_graph.graph["nul_densification_log"]] == [
+        "existing",
+        2,
+        0,
+        1,
+    ]
 
     val_graph = _graph(glyph=Glyph.VAL)
     val_graph.graph["GLYPH_FACTORS"] = {"VAL_scale": 2.0}
@@ -248,10 +237,7 @@ def test_grammar_replacement_falls_back_to_an_exact_gs_diagnostic() -> None:
     assert contract["declared_schedule"] == TWO_PHASE_JACOBI
     assert contract["schedule_matches_contract"] is False
     assert contract["executed_two_phase_contract_complete"] is False
-    assert all(
-        tuple(graph.nodes[node]["glyph_history"])[-1] == "IL"
-        for node in graph
-    )
+    assert all(tuple(graph.nodes[node]["glyph_history"])[-1] == "IL" for node in graph)
 
 
 def test_empty_stage_calls_pressure_callback_once_and_records_its_contract() -> None:
@@ -274,9 +260,7 @@ def test_empty_stage_calls_pressure_callback_once_and_records_its_contract() -> 
     assert graph.graph["empty_pressure_refresh"] is True
     assert result.nodes_processed == 0
     assert result.schedule == TWO_PHASE_JACOBI
-    _assert_exact_schedule(
-        graph, operator, schedule=TWO_PHASE_JACOBI, count=0
-    )
+    _assert_exact_schedule(graph, operator, schedule=TWO_PHASE_JACOBI, count=0)
 
 
 def test_warning_promoted_to_error_rolls_back_prior_lifecycle_commits() -> None:
@@ -324,18 +308,16 @@ def test_monitor_failure_rolls_back_graph_and_monitor_state() -> None:
     graph = _graph(glyph=Glyph.SHA)
     monitor = _RejectingMonitor()
     graph.graph["integrity_monitor"] = monitor
-    before = _plain_state(
-        graph, omit_graph_keys=frozenset({"integrity_monitor"})
-    )
+    before = _plain_state(graph, omit_graph_keys=frozenset({"integrity_monitor"}))
     monitor_before = deepcopy(vars(monitor))
 
     with pytest.raises(RuntimeError, match="monitor rejected second target"):
         execute_pointwise_stage(graph, Silence(), (0, 1, 2))
 
     assert graph.graph["integrity_monitor"] is monitor
-    assert _plain_state(
-        graph, omit_graph_keys=frozenset({"integrity_monitor"})
-    ) == before
+    assert (
+        _plain_state(graph, omit_graph_keys=frozenset({"integrity_monitor"})) == before
+    )
     assert vars(monitor) == monitor_before
 
 
@@ -419,9 +401,7 @@ def test_hostile_callable_introspection_is_not_run_before_failed_preflight() -> 
         (node, deepcopy(dict(data))) for node, data in graph.nodes(data=True)
     )
 
-    with pytest.raises(
-        OperatorPreconditionError, match="signed dEPI/dt > xi"
-    ):
+    with pytest.raises(OperatorPreconditionError, match="signed dEPI/dt > xi"):
         execute_pointwise_stage(
             graph,
             Mutation(),
@@ -432,9 +412,10 @@ def test_hostile_callable_introspection_is_not_run_before_failed_preflight() -> 
     assert tuple(graph.graph) == graph_keys_before
     assert "hostile_introspection_marker" not in graph.graph
     assert object.__getattribute__(callback, "calls") == 0
-    assert tuple(
-        (node, dict(data)) for node, data in graph.nodes(data=True)
-    ) == nodes_before
+    assert (
+        tuple((node, dict(data)) for node, data in graph.nodes(data=True))
+        == nodes_before
+    )
 
 
 def test_zhir_rejects_late_target_evidence_before_any_target_commit() -> None:
@@ -442,26 +423,19 @@ def test_zhir_rejects_late_target_evidence_before_any_target_commit() -> None:
     graph.nodes[2]["epi_history"] = [0.0, 0.1]
     before = _plain_state(graph)
 
-    with pytest.raises(
-        OperatorPreconditionError, match="signed dEPI/dt > xi"
-    ):
+    with pytest.raises(OperatorPreconditionError, match="signed dEPI/dt > xi"):
         execute_pointwise_stage(graph, Mutation(), (0, 1, 2))
 
     assert _plain_state(graph) == before
 
 
-def test_zhir_bounded_histories_use_monotonic_steps_and_one_event_per_target(
-) -> None:
+def test_zhir_bounded_histories_use_monotonic_steps_and_one_event_per_target() -> None:
     graph = _graph(glyph=Glyph.ZHIR)
     for node in graph:
-        graph.nodes[node]["glyph_history"] = deque(
-            ["IL", "OZ"], maxlen=2
-        )
+        graph.nodes[node]["glyph_history"] = deque(["IL", "OZ"], maxlen=2)
         graph.nodes[node]["_operator_step"] = 10
 
-    execute_pointwise_stage(
-        graph, Mutation(), (0, 1, 2), tau=0.01, window=2
-    )
+    execute_pointwise_stage(graph, Mutation(), (0, 1, 2), tau=0.01, window=2)
 
     first_events = graph.graph["zhir_bifurcation_events"]
     assert [event["node"] for event in first_events] == [0, 1, 2]
@@ -474,9 +448,7 @@ def test_zhir_bounded_histories_use_monotonic_steps_and_one_event_per_target(
         push_glyph(graph.nodes[node], "IL", 2)
         push_glyph(graph.nodes[node], "OZ", 2)
 
-    execute_pointwise_stage(
-        graph, Mutation(), (2, 1, 0), tau=0.01, window=2
-    )
+    execute_pointwise_stage(graph, Mutation(), (2, 1, 0), tau=0.01, window=2)
 
     events = graph.graph["zhir_bifurcation_events"]
     assert [event["node"] for event in events] == [0, 1, 2, 2, 1, 0]
@@ -490,9 +462,7 @@ def test_zhir_bounded_histories_use_monotonic_steps_and_one_event_per_target(
 def test_zhir_history_resize_does_not_rewind_the_proposed_operator_step() -> None:
     graph = _graph(glyph=Glyph.ZHIR)
 
-    execute_pointwise_stage(
-        graph, Mutation(), (0,), tau=0.01, window=2
-    )
+    execute_pointwise_stage(graph, Mutation(), (0,), tau=0.01, window=2)
 
     assert graph.nodes[0]["_operator_step"] == 4
     assert list(graph.nodes[0]["glyph_history"]) == ["OZ", "ZHIR"]
@@ -533,9 +503,7 @@ def test_zhir_strict_preflight_and_late_factor_rejection_are_read_only() -> None
     )
     before = _plain_state(graph)
 
-    with pytest.raises(
-        GlyphFactorValidationError, match="ZHIR_theta_shift_factor"
-    ):
+    with pytest.raises(GlyphFactorValidationError, match="ZHIR_theta_shift_factor"):
         execute_pointwise_stage(graph, Mutation(), (0, 1, 2))
 
     assert _plain_state(graph) == before

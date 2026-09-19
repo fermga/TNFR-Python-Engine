@@ -43,13 +43,13 @@ import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-from tnfr.physics.emergent_particles import winding_number, winding_ring
-from tnfr.metrics.common import structural_coherence
 from tnfr.mathematics.number_theory import (
     arithmetic_cayley_digraph,
     quadratic_residue_set,
     residue_network_rank,
 )
+from tnfr.metrics.common import structural_coherence
+from tnfr.physics.emergent_particles import winding_number, winding_ring
 
 _TWO_PI = 2.0 * np.pi
 
@@ -94,8 +94,10 @@ def experiment_1_dihedral_winding_comparison():
     flipped = sum(_winding_along(G, perm) == -W0 for _, _, perm in autos)
     ok = preserved + flipped == len(autos)
     print(f"  ring C_{n}, planted target W={W} -> measured W = {W0}")
-    print(f"  under all {len(autos)} dihedral automorphisms of C_{n}: rotations preserve W "
-          f"({preserved}), reflections flip W->-W ({flipped})")
+    print(
+        f"  under all {len(autos)} dihedral automorphisms of C_{n}: rotations preserve W "
+        f"({preserved}), reflections flip W->-W ({flipped})"
+    )
     print(f"  => |W| is unchanged in this complete finite traversal check: {ok}")
     print("     The phase field and the group action were supplied as inputs; this")
     print("     does not show that TNFR dynamics formed the winding sector.")
@@ -117,13 +119,11 @@ def experiment_2_reflection_vs_phase_negation():
     W_reflection = _winding_along(G, reflection_order)
     # A separate, pointwise transformation of the supplied phase field.
     W_negated = _winding_along(_negate_phase(G), list(range(n)))
-    ok = (
-        (W_reflection == -W0)
-        and (W_negated == -W0)
-        and abs(W0) == abs(W_reflection)
+    ok = (W_reflection == -W0) and (W_negated == -W0) and abs(W0) == abs(W_reflection)
+    print(
+        f"  W = {W0};  reflected traversal: W -> {W_reflection};  "
+        f"negated phase field: W -> {W_negated}"
     )
-    print(f"  W = {W0};  reflected traversal: W -> {W_reflection};  "
-          f"negated phase field: W -> {W_negated}")
     print(f"  => both flip the sign, |W| invariant under both: {ok}")
     print("     These are two externally selected involutions on different inputs.")
     print("     Their matching output does not identify the transformations or give")
@@ -140,8 +140,10 @@ def experiment_3_uniform_node_readout():
     print("=" * 78)
     n = 12
     G = winding_ring(n, 2)  # a ring is vertex-transitive
-    coh = [round(structural_coherence(float(G.nodes[i]["delta_nfr"]), 0.0), 12)
-           for i in G.nodes()]
+    coh = [
+        round(structural_coherence(float(G.nodes[i]["delta_nfr"]), 0.0), 12)
+        for i in G.nodes()
+    ]
     distinct = len(set(coh))
     ok = distinct == 1
     print(f"  structural_coherence over C_{n}: distinct per-node values = {distinct}")

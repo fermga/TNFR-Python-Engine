@@ -134,12 +134,8 @@ def run_train_crossing_demo() -> None:
             print(f"-> Crossing Detected at Step {step}!")
 
         # Advance the declared second-order adapter with zero external force.
-        TNFRSymplecticIntegrator.velocity_verlet(
-            node_a, dt, zero_adapter_force
-        )
-        TNFRSymplecticIntegrator.velocity_verlet(
-            node_b, dt, zero_adapter_force
-        )
+        TNFRSymplecticIntegrator.velocity_verlet(node_a, dt, zero_adapter_force)
+        TNFRSymplecticIntegrator.velocity_verlet(node_b, dt, zero_adapter_force)
 
         time += dt
 

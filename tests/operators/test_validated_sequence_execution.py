@@ -7,33 +7,50 @@ import pytest
 
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from tnfr.operators.definitions import (
-    Coherence, Coupling, Dissonance, Emission, Expansion, Mutation, Recursivity, Silence,
+    Coherence,
+    Coupling,
+    Dissonance,
+    Emission,
+    Expansion,
+    Mutation,
+    Recursivity,
+    Silence,
 )
 from tnfr.operators.grammar_debt import PRIOR_COHERENCE_KEY, U2_DEBT_KEY
 
 
 def _graph():
     graph = nx.Graph()
-    graph.add_node(0, **{
-        ALIAS_EPI[0]: 0.5, ALIAS_VF[0]: 1.0,
-        ALIAS_DNFR[0]: 0.2, ALIAS_THETA[0]: 0.0,
-        "epi_history": [0.0, 0.2],
-        "glyph_history": [], U2_DEBT_KEY: 0, PRIOR_COHERENCE_KEY: False,
-    })
+    graph.add_node(
+        0,
+        **{
+            ALIAS_EPI[0]: 0.5,
+            ALIAS_VF[0]: 1.0,
+            ALIAS_DNFR[0]: 0.2,
+            ALIAS_THETA[0]: 0.0,
+            "epi_history": [0.0, 0.2],
+            "glyph_history": [],
+            U2_DEBT_KEY: 0,
+            PRIOR_COHERENCE_KEY: False,
+        },
+    )
     return graph
 
 
 def _run(graph, operators, driver):
     if driver == "sdk":
         from tnfr.sdk.simple import _run_network_sequence
+
         _run_network_sequence(graph, [operator.name for operator in operators])
     elif driver == "fluent":
         from tnfr.sdk.fluent import TNFRNetwork
+
         network = TNFRNetwork()
         network._graph = graph
         network.apply_sequence([operator.name for operator in operators])
     else:
         from tnfr.structural import run_sequence
+
         run_sequence(graph, 0, operators)
 
 
@@ -48,7 +65,14 @@ def test_validated_future_handler_preserves_the_requested_word(driver):
 def test_invalid_debt_prefix_is_rejected_before_sequence_mutation(driver):
     graph = _graph()
     before = deepcopy(graph.nodes[0])
-    operators = [Emission(), Expansion(), Expansion(), Expansion(), Coherence(), Silence()]
+    operators = [
+        Emission(),
+        Expansion(),
+        Expansion(),
+        Expansion(),
+        Coherence(),
+        Silence(),
+    ]
     with pytest.raises(ValueError, match="debt"):
         _run(graph, operators, driver)
     assert graph.nodes[0] == before
@@ -76,7 +100,14 @@ def test_standalone_dissonance_still_requires_a_past_handler():
 def test_future_context_does_not_supply_missing_prior_coherence():
     from tnfr.operators.grammar_execution import ValidatedSequence
 
-    operators = [Emission(), Coherence(), Dissonance(), Mutation(), Coherence(), Silence()]
+    operators = [
+        Emission(),
+        Coherence(),
+        Dissonance(),
+        Mutation(),
+        Coherence(),
+        Silence(),
+    ]
     context = ValidatedSequence(operators).step(3)
     graph = _graph()
     graph.nodes[0]["glyph_history"] = ["OZ"]
@@ -90,7 +121,9 @@ def test_future_context_does_not_supply_missing_prior_coherence():
 def test_step_context_rejects_a_different_requested_operator():
     from tnfr.operators.grammar_execution import ValidatedSequence
 
-    context = ValidatedSequence([Emission(), Dissonance(), Coherence(), Silence()]).step(1)
+    context = ValidatedSequence(
+        [Emission(), Dissonance(), Coherence(), Silence()]
+    ).step(1)
     graph = _graph()
     before = deepcopy(graph.nodes[0])
     with pytest.raises(ValueError, match="context"):
@@ -101,7 +134,14 @@ def test_step_context_rejects_a_different_requested_operator():
 def test_context_does_not_replace_the_live_destabilizer_window():
     from tnfr.operators.grammar_execution import ValidatedSequence
 
-    operators = [Emission(), Coherence(), Dissonance(), Mutation(), Coherence(), Silence()]
+    operators = [
+        Emission(),
+        Coherence(),
+        Dissonance(),
+        Mutation(),
+        Coherence(),
+        Silence(),
+    ]
     graph = _graph()
     graph.nodes[0]["glyph_history"] = ["IL", "EN", "EN", "EN", "EN"]
     graph.nodes[0][PRIOR_COHERENCE_KEY] = True
@@ -117,7 +157,9 @@ def test_context_does_not_bypass_the_live_phase_gate():
     from tnfr.operators.grammar_execution import ValidatedSequence
     from tnfr.operators.preconditions import OperatorPreconditionError
 
-    context = ValidatedSequence([Emission(), Coupling(), Coherence(), Silence()]).step(1)
+    context = ValidatedSequence([Emission(), Coupling(), Coherence(), Silence()]).step(
+        1
+    )
     graph = _graph()
     graph.add_node(1, **deepcopy(graph.nodes[0]))
     graph.nodes[1][ALIAS_THETA[0]] = math.pi
@@ -157,7 +199,11 @@ def test_failed_legacy_validation_result_is_not_ignored(driver):
     before = deepcopy(graph.nodes[0])
     # U2 permits debt two, but the retained compatibility layer rejects VAL->VAL.
     with pytest.raises(ValueError, match="Invalid sequence"):
-        _run(graph, [Emission(), Expansion(), Expansion(), Coherence(), Silence()], driver)
+        _run(
+            graph,
+            [Emission(), Expansion(), Expansion(), Coherence(), Silence()],
+            driver,
+        )
     assert graph.nodes[0] == before
     assert graph.graph == {}
 
@@ -168,6 +214,8 @@ def test_executor_without_word_validation_retains_incremental_fallback():
     graph = _graph()
     with pytest.warns(UserWarning, match="Anti-pattern"):
         _run_network_sequence(
-            graph, ["emission", "dissonance", "coherence", "silence"], validate=False,
+            graph,
+            ["emission", "dissonance", "coherence", "silence"],
+            validate=False,
         )
     assert list(graph.nodes[0]["glyph_history"]) == ["AL", "IL", "IL", "SHA"]

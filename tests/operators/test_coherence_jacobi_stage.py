@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
 import math
 import sys
 import warnings
+from copy import deepcopy
 from typing import Any
 
 import networkx as nx
@@ -14,10 +14,10 @@ import pytest
 from tnfr.alias import get_attr
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from tnfr.constants.canonical import COHERENCE_RETENTION
+from tnfr.metrics.local_coherence import compute_radius_structural_coherence
 from tnfr.operators._coherence_stage_kernel import propose_coherence_pressure
 from tnfr.operators.definitions import Coherence
 from tnfr.operators.factor_contracts import GlyphFactorValidationError
-from tnfr.metrics.local_coherence import compute_radius_structural_coherence
 from tnfr.operators.network_stage import (
     OPERATOR_MAJOR_GAUSS_SEIDEL,
     STAGE_SCHEDULE_KEY,
@@ -87,9 +87,7 @@ def test_two_node_phase_lock_is_jacobi_and_reverse_order_invariant() -> None:
     }.items():
         assert _primary(forward)[node] == pytest.approx(expected)
         assert _primary(reverse)[node] == pytest.approx(expected)
-    assert [
-        event["node"] for event in reverse.graph["IL_phase_locking"]
-    ] == [1, 0]
+    assert [event["node"] for event in reverse.graph["IL_phase_locking"]] == [1, 0]
 
 
 def test_stage_telemetry_preserves_legacy_dispersion_and_adds_structural_c() -> None:
@@ -118,9 +116,7 @@ def test_direct_single_target_matches_shared_kernel_and_stage() -> None:
     staged = _graph()
 
     Coherence()(direct, 0, phase_locking_coefficient=0.4)
-    execute_pointwise_stage(
-        staged, Coherence(), (0,), phase_locking_coefficient=0.4
-    )
+    execute_pointwise_stage(staged, Coherence(), (0,), phase_locking_coefficient=0.4)
 
     assert _primary(direct)[0] == pytest.approx(_primary(staged)[0])
     assert direct.graph["IL_phase_locking"] == staged.graph["IL_phase_locking"]
@@ -142,9 +138,7 @@ def test_negative_pressure_reports_magnitude_reduction_in_metrics() -> None:
     assert reduction["after"] == pytest.approx(-0.8 * COHERENCE_RETENTION)
     assert reduction["reduction"] == pytest.approx(0.8 * (1.0 - COHERENCE_RETENTION))
     assert reduction["reduction_factor"] == pytest.approx(1.0 - COHERENCE_RETENTION)
-    assert reduction["signed_delta"] == pytest.approx(
-        0.8 * (1.0 - COHERENCE_RETENTION)
-    )
+    assert reduction["signed_delta"] == pytest.approx(0.8 * (1.0 - COHERENCE_RETENTION))
     metrics = graph.graph["operator_metrics"][-1]
     expected_reduction = 0.8 * (1.0 - COHERENCE_RETENTION)
     assert metrics["dnfr_reduction"] == pytest.approx(expected_reduction)
@@ -305,7 +299,5 @@ def test_grammar_replacement_uses_transactional_gs_instead_of_il_jacobi() -> Non
     result = execute_pointwise_stage(graph, Coherence(), (0, 1))
 
     assert result.schedule == OPERATOR_MAJOR_GAUSS_SEIDEL
-    assert graph.graph[STAGE_SCHEDULE_KEY]["schedule"] == (
-        OPERATOR_MAJOR_GAUSS_SEIDEL
-    )
+    assert graph.graph[STAGE_SCHEDULE_KEY]["schedule"] == (OPERATOR_MAJOR_GAUSS_SEIDEL)
     assert all(graph.nodes[node]["glyph_history"][-1] != "IL" for node in graph)

@@ -99,9 +99,7 @@ class SequenceHealthMetrics:
 
     @coherence_index.setter
     def coherence_index(self, value: float) -> None:
-        self.flow_quality_score = unit_score(
-            value, label="sequence flow quality"
-        )
+        self.flow_quality_score = unit_score(value, label="sequence flow quality")
 
 
 class SequenceHealthAnalyzer:
@@ -239,9 +237,7 @@ class SequenceHealthAnalyzer:
             problematic_transitions,
         ) = analysis
 
-        flow_quality = self._calculate_flow_quality(
-            sequence, problematic_transitions
-        )
+        flow_quality = self._calculate_flow_quality(sequence, problematic_transitions)
         balance = self._calculate_balance(
             sequence, stabilizer_count, destabilizer_count
         )
@@ -770,9 +766,7 @@ class SequenceHealthAnalyzer:
 
         from .metabolism import compute_subepi_amplitude_alignment
 
-        thol_nodes = [
-            node for node in G.nodes() if G.nodes[node].get("sub_epis")
-        ]
+        thol_nodes = [node for node in G.nodes() if G.nodes[node].get("sub_epis")]
         if not thol_nodes:
             return None
         alignments = [

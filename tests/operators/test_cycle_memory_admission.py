@@ -7,7 +7,8 @@ import pytest
 
 from benchmarks.capacity_localization import build_cycle
 from tnfr.operators import (
-    build_operator_event_schedule, execute_operator_event_schedule,
+    build_operator_event_schedule,
+    execute_operator_event_schedule,
 )
 from tnfr.utils.numeric import angle_diff
 
@@ -28,7 +29,8 @@ def test_bare_coupling_recursivity_is_rejected_without_physical_advance():
     original_history = deepcopy(graph.graph["_epi_hist"])
     original_time = graph.graph["_t"]
     schedule = build_operator_event_schedule(
-        ("coupling", "recursivity"), start_time=0.0,
+        ("coupling", "recursivity"),
+        start_time=0.0,
         flow_durations=(0.0, 0.0, 0.0),
     )
     with pytest.raises(ValueError, match="(?i)(coupling|UM|recursivity|REMESH)"):
@@ -47,7 +49,8 @@ def test_admitted_bridge_records_advice_without_mixing_or_advancing_history():
     original_phase = tuple(graph.nodes[node]["theta"] for node in graph)
     original_history = deepcopy(graph.graph["_epi_hist"])
     schedule = build_operator_event_schedule(
-        ("coupling", "coherence", "recursivity"), start_time=0.0,
+        ("coupling", "coherence", "recursivity"),
+        start_time=0.0,
         flow_durations=(0.0,) * 4,
     )
     result = execute_operator_event_schedule(
@@ -58,7 +61,14 @@ def test_admitted_bridge_records_advice_without_mixing_or_advancing_history():
     assert tuple(graph.nodes[node]["nu_f"] for node in graph) == (1.0,) * 8
     assert graph.graph["_epi_hist"] == original_history
     assert graph.graph["_t"] == 0.0
-    assert max(abs(angle_diff(graph.nodes[node]["theta"], original_phase[node]))
-               for node in graph) < 1e-14
-    assert all(tuple(graph.nodes[node]["glyph_history"])[-3:]
-               == ("UM", "IL", "REMESH") for node in graph)
+    assert (
+        max(
+            abs(angle_diff(graph.nodes[node]["theta"], original_phase[node]))
+            for node in graph
+        )
+        < 1e-14
+    )
+    assert all(
+        tuple(graph.nodes[node]["glyph_history"])[-3:] == ("UM", "IL", "REMESH")
+        for node in graph
+    )

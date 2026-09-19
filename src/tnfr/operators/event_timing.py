@@ -171,9 +171,7 @@ class StructuralFlowInterval:
         start_exact_from_float = represented_fraction(
             self.start_time, "interval start_time"
         )
-        end_exact_from_float = represented_fraction(
-            self.end_time, "interval end_time"
-        )
+        end_exact_from_float = represented_fraction(self.end_time, "interval end_time")
         duration_exact_from_float = represented_fraction(
             self.duration, "interval duration"
         )
@@ -192,9 +190,7 @@ class StructuralFlowInterval:
         if self.start_offset < 0 or self.end_offset < self.start_offset:
             raise ValueError("interval offsets must be nonnegative and ordered")
         if self.exact_duration != duration_exact_from_float:
-            raise ValueError(
-                "interval exact_duration must equal represented duration"
-            )
+            raise ValueError("interval exact_duration must equal represented duration")
         if self.end_offset - self.start_offset != self.exact_duration:
             raise ValueError("interval offsets must differ by exact_duration")
         if self.exact_end_time - self.exact_start_time != self.exact_duration:
@@ -210,6 +206,7 @@ class StructuralFlowInterval:
         if Fraction.from_float(expected_end) != end_exact_from_float:
             raise ValueError("interval end_time must represent exact_end_time")
         object.__setattr__(self, "index", index)
+
 
 def _derive_physical_flow_segments(
     parent_interval: StructuralFlowInterval,
@@ -245,13 +242,8 @@ def _derive_physical_flow_segments(
         raise ValueError("exact segment durations must align with segment_durations")
     if any(duration <= 0 for duration in exact_segment_durations):
         raise ValueError("segment_durations must be strictly positive")
-    if (
-        sum(exact_segment_durations, Fraction(0))
-        != parent_interval.exact_duration
-    ):
-        raise ValueError(
-            "exact segment duration sum must equal parent exact_duration"
-        )
+    if sum(exact_segment_durations, Fraction(0)) != parent_interval.exact_duration:
+        raise ValueError("exact segment duration sum must equal parent exact_duration")
 
     segments: list[StructuralFlowInterval] = []
     current_offset = parent_interval.start_offset
@@ -349,9 +341,7 @@ class PhysicalFlowPartition:
         if type(self.segments) is not tuple:
             raise TypeError("segments must be an immutable tuple")
         if any(type(item) is not StructuralFlowInterval for item in self.segments):
-            raise TypeError(
-                "segments must contain StructuralFlowInterval records"
-            )
+            raise TypeError("segments must contain StructuralFlowInterval records")
         durations, exact_durations = materialize_nonnegative_time_sequence(
             self.segment_durations, "segment_durations"
         )
@@ -362,8 +352,7 @@ class PhysicalFlowPartition:
         )
         if self.segments != expected_segments:
             raise ValueError(
-                "physical partition segments do not match their canonical "
-                "timeline"
+                "physical partition segments do not match their canonical " "timeline"
             )
 
     @property
@@ -514,6 +503,7 @@ class ScheduledOperatorEvent:
         object.__setattr__(self, "word_position", word_position)
         object.__setattr__(self, "operator_name", names[0])
 
+
 def _derive_timeline(
     operator_names: tuple[str, ...],
     cycles: int,
@@ -542,9 +532,7 @@ def _derive_timeline(
         raise ValueError("exact flow durations must align with flow_durations")
     exact_start = represented_fraction(start_time, "start_time")
     exact_total = sum(exact_flow_durations, Fraction(0))
-    total_duration = represented_fraction_as_float(
-        exact_total, "total flow duration"
-    )
+    total_duration = represented_fraction_as_float(exact_total, "total flow duration")
 
     intervals: list[StructuralFlowInterval] = []
     events: list[ScheduledOperatorEvent] = []
@@ -631,15 +619,9 @@ class OperatorEventSchedule:
     exact_total_flow_duration: Fraction
     time_basis: str = field(default=_PHYSICAL_TIME_BASIS, init=False)
     timestamp_role: str = field(default=_TIMESTAMP_ROLE, init=False)
-    duration_and_offsets_are_authoritative: bool = field(
-        default=True, init=False
-    )
-    event_timestamps_feed_epi_time_history: bool = field(
-        default=False, init=False
-    )
-    event_history_channel: str = field(
-        default=_EVENT_HISTORY_CHANNEL, init=False
-    )
+    duration_and_offsets_are_authoritative: bool = field(default=True, init=False)
+    event_timestamps_feed_epi_time_history: bool = field(default=False, init=False)
+    event_history_channel: str = field(default=_EVENT_HISTORY_CHANNEL, init=False)
     coincident_event_order: str = field(default="event_index", init=False)
 
     def __getattribute__(self, name: str) -> Any:
@@ -683,9 +665,7 @@ class OperatorEventSchedule:
         cycles = _positive_integer(self.cycles, "cycles")
         if type(self.start_time) is not float:
             raise TypeError("start_time must be a binary64 float")
-        start, start_exact = finite_represented_real(
-            self.start_time, "start_time"
-        )
+        start, start_exact = finite_represented_real(self.start_time, "start_time")
         durations, exact_durations = materialize_nonnegative_time_sequence(
             self.flow_durations
         )
@@ -781,9 +761,7 @@ def build_operator_event_schedule(
     names = _canonical_operator_names(operator_names)
     cycle_count = _positive_integer(cycles, "cycles")
     represented_start, _ = finite_represented_real(start_time, "start_time")
-    durations, exact_durations = materialize_nonnegative_time_sequence(
-        flow_durations
-    )
+    durations, exact_durations = materialize_nonnegative_time_sequence(flow_durations)
     (
         intervals,
         events,
@@ -812,6 +790,7 @@ def build_operator_event_schedule(
         exact_end_time=exact_end,
         exact_total_flow_duration=exact_total,
     )
+
 
 @dataclass(frozen=True, slots=True)
 class OperatorEventRuntimeClockDiagnostic:

@@ -4,9 +4,7 @@ from dataclasses import dataclass, field
 from fractions import Fraction
 from typing import Any
 
-from tnfr.operators.event_remesh_causal_runtime import (
-    ExecutedEventRemeshCycleSequence,
-)
+from tnfr.operators.event_remesh_causal_runtime import ExecutedEventRemeshCycleSequence
 from tnfr.physics.remesh_history_stability import ExactVector
 from tnfr.physics.remesh_schedule_relative_defect_stability import (
     UniformRemeshScheduleRelativeDefectStabilityCertificate,
@@ -17,7 +15,6 @@ from tnfr.physics.runtime_remesh_schedule_block_margin import (
 from tnfr.physics.runtime_remesh_schedule_stability import (
     RuntimeRemeshScheduleBoundaryObservation,
 )
-
 
 @dataclass(frozen=True, slots=True)
 class RuntimeRemeshScheduleRelativeDefectBlockObservation:
@@ -105,7 +102,6 @@ class RuntimeRemeshScheduleRelativeDefectBlockObservation:
     @property
     def full_tnfr_stability_certified(self) -> bool: ...
 
-
 def observe_executed_event_remesh_relative_defect_block(
     execution: ExecutedEventRemeshCycleSequence,
     certificate: UniformRemeshScheduleRelativeDefectStabilityCertificate,
@@ -113,6 +109,5 @@ def observe_executed_event_remesh_relative_defect_block(
     start_boundary: int = ...,
     boundary_count: int | None = ...,
 ) -> RuntimeRemeshScheduleRelativeDefectBlockObservation: ...
-
 
 __all__: tuple[str, ...]

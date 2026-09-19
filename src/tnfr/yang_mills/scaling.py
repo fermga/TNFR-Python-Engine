@@ -219,13 +219,10 @@ def run_finite_scaling_study(
                             "u6_aggregation": "mean_absolute_nodewise_drift",
                             "u6_comparison": "strict_less_than",
                             "u6_definition": (
-                                "mean_i |Phi_s_after(i)-Phi_s_before(i)| "
-                                "< threshold"
+                                "mean_i |Phi_s_after(i)-Phi_s_before(i)| " "< threshold"
                             ),
                             "legacy_u6_fields_are_magnitude_proxies": True,
-                            "connection_scope": (
-                                "derived_exact_vertex_phase_one_form"
-                            ),
+                            "connection_scope": ("derived_exact_vertex_phase_one_form"),
                             "curvature_is_numerical_residual": True,
                             "yang_mills_names_are_legacy_consistency_diagnostics": (
                                 True
@@ -278,9 +275,9 @@ def _group_scaling(
         lambda: defaultdict(list)
     )
     for point in points:
-        grouped[(point.topology, point.target_u6_ratio)][
-            point.actual_n_nodes
-        ].append(point.gap)
+        grouped[(point.topology, point.target_u6_ratio)][point.actual_n_nodes].append(
+            point.gap
+        )
 
     result: dict[str, dict[str, Any]] = {}
     for (topology, target_ratio), by_n in grouped.items():
@@ -295,9 +292,7 @@ def _group_scaling(
             "topology": topology,
             "target_u6_ratio": float(target_ratio),
             "target_potential_magnitude_ratio": float(
-                target_ratio
-                * U6_STRUCTURAL_POTENTIAL_LIMIT
-                / PHI_S_VON_KOCH_THRESHOLD
+                target_ratio * U6_STRUCTURAL_POTENTIAL_LIMIT / PHI_S_VON_KOCH_THRESHOLD
             ),
             "u6_drift_assessed": False,
             "legacy_u6_coordinate": True,
@@ -342,9 +337,7 @@ def _summarise_scaling(
         "all_self_adjoint": all(point.is_self_adjoint for point in points),
         "all_gauge_invariant": all(point.gauge_invariant for point in points),
         "u6_drift_assessed": False,
-        "potential_magnitude_warning_threshold": float(
-            PHI_S_VON_KOCH_THRESHOLD
-        ),
+        "potential_magnitude_warning_threshold": float(PHI_S_VON_KOCH_THRESHOLD),
         "mean_yang_mills_residual": _mean(
             point.mean_yang_mills_residual for point in points
         ),
@@ -356,15 +349,10 @@ def _summarise_scaling(
             point.mean_pure_gauge_consistency_residual for point in points
         ),
         "max_pure_gauge_consistency_residual": max(
-            (
-                point.max_pure_gauge_consistency_residual
-                for point in points
-            ),
+            (point.max_pure_gauge_consistency_residual for point in points),
             default=0.0,
         ),
-        "u6_definition": (
-            "mean_i |Phi_s_after(i)-Phi_s_before(i)| < threshold"
-        ),
+        "u6_definition": ("mean_i |Phi_s_after(i)-Phi_s_before(i)| < threshold"),
         "curvature_is_numerical_residual": True,
         "verdict": verdict,
         "scope": "finite_scaling_diagnostic_not_clay_proof",

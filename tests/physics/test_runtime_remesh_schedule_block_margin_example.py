@@ -2,19 +2,18 @@
 
 from __future__ import annotations
 
-from fractions import Fraction
 import importlib.util
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from fractions import Fraction
+from pathlib import Path
 
 import pytest
 
 import tnfr.physics as physics
 import tnfr.physics.runtime_remesh_schedule_block_margin as block_module
-
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 EXAMPLE_PATH = (
@@ -50,9 +49,7 @@ def test_module_stub_and_facade_expose_block_margin_api() -> None:
     }
 
     assert set(block_module.__all__) == expected
-    stub = Path(block_module.__file__).with_suffix(".pyi").read_text(
-        encoding="utf-8"
-    )
+    stub = Path(block_module.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
     assert "class RuntimeRemeshScheduleBlockMarginObservation" in stub
     assert "def observe_executed_event_remesh_block_margin" in stub
     assert expected <= set(physics.__all__)
@@ -109,12 +106,16 @@ def test_example_reports_exact_positive_and_zero_margins(
     assert zero.exact_endpoint_energy_gain_upper_bound == 1
     assert not zero.positive_normalized_block_margin_certified
     assert not zero.strict_energy_contraction_observed
-    assert report["positive_block"][
-        "exact_gain_based_energy_drop_fraction_lower_bound"
-    ] == "139/256"
-    assert report["alpha_one_boundary"][
-        "exact_gain_based_energy_drop_fraction_lower_bound"
-    ] == "0/1"
+    assert (
+        report["positive_block"]["exact_gain_based_energy_drop_fraction_lower_bound"]
+        == "139/256"
+    )
+    assert (
+        report["alpha_one_boundary"][
+            "exact_gain_based_energy_drop_fraction_lower_bound"
+        ]
+        == "0/1"
+    )
 
 
 def test_example_withholds_uniform_and_repeated_scope(
@@ -153,12 +154,8 @@ def test_main_emits_finite_json(
     example.main()
     decoded = json.loads(capsys.readouterr().out)
 
-    assert decoded["claim"] == (
-        "exact margins for two causally executed finite blocks"
-    )
-    assert decoded["positive_block"][
-        "positive_normalized_block_margin_certified"
-    ]
+    assert decoded["claim"] == ("exact margins for two causally executed finite blocks")
+    assert decoded["positive_block"]["positive_normalized_block_margin_certified"]
     assert not decoded["alpha_one_boundary"][
         "positive_normalized_block_margin_certified"
     ]

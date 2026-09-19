@@ -29,8 +29,6 @@ from ...types import require_finite_real_scalar_epi
 # Import PHASE 6 EXTENDED Canonical Constants for magic number elimination
 from ..constants.operational import (
     OPT_ORCH_ARITHMETIC_BOOST_CANONICAL,
-)
-from ..constants.operational import (
     PATTERNS_COMPRESSION_SIGNIFICANT_CANONICAL,
     PATTERNS_CONFIDENCE_BROKEN_CANONICAL,
     PATTERNS_DIVERGENCE_THRESHOLD_CANONICAL,
@@ -198,6 +196,7 @@ def _get_fft_engine() -> Any | None:
         return None
     return _SHARED_FFT_ENGINE
 
+
 def _arithmetic_context() -> dict[str, Any] | None:
     """Expose canonical arithmetic formalism references."""
     global _ARITHMETIC_CONTEXT
@@ -247,9 +246,7 @@ def _augment_signature(
 def _node_scalar_epi(G: Any, node: Any) -> float:
     """Read one finite signed scalar EPI through canonical alias precedence."""
 
-    raw = get_attr(
-        G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value
-    )
+    raw = get_attr(G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value)
     return require_finite_real_scalar_epi(raw, f"node {node!r} EPI")
 
 
@@ -276,9 +273,7 @@ def _finite_squared_norm(values: np.ndarray) -> float | None:
     scale = float(np.max(magnitudes))
     if scale == 0.0:
         return 0.0
-    normalized_sum = math.fsum(
-        float(value / scale) ** 2 for value in magnitudes
-    )
+    normalized_sum = math.fsum(float(value / scale) ** 2 for value in magnitudes)
     if scale > math.sqrt(float(np.finfo(float).max) / normalized_sum):
         return None
     result = scale * scale * normalized_sum
@@ -762,9 +757,7 @@ class TNFREmergentPatternEngine:
                         log_det = float(np.sum(np.log(positive_eigs)))
                         max_log = float(np.log(np.finfo(float).max))
                         spectral_determinant = (
-                            float(np.exp(log_det))
-                            if log_det <= max_log
-                            else None
+                            float(np.exp(log_det)) if log_det <= max_log else None
                         )
 
                     # Verify the Laplacian trace identity for this snapshot.
@@ -783,9 +776,7 @@ class TNFREmergentPatternEngine:
                                 "spectral_determinant": spectral_determinant,
                                 "num_components": (nx.number_connected_components(G)),
                                 "diameter": (
-                                    nx.diameter(G)
-                                    if nx.is_connected(G)
-                                    else None
+                                    nx.diameter(G) if nx.is_connected(G) else None
                                 ),
                             },
                             temporal_scale=0.0,
@@ -1094,6 +1085,7 @@ class TNFREmergentPatternEngine:
         raise ValueError rather than being serialized as misleading strings.
         """
         from datetime import datetime, timezone
+
         from ..manifest import (
             collect_manifest_telemetry,
             finite_json_state,
@@ -1164,8 +1156,12 @@ class TNFREmergentPatternEngine:
             "predictive_accuracy": discovery_result.predictive_accuracy,
         }
         return write_manifest_bundle(
-            output_dir, "pattern_manifest.json", "pattern_summary.json",
-            manifest, summary, [(partition_id, G, telemetry)],
+            output_dir,
+            "pattern_manifest.json",
+            "pattern_summary.json",
+            manifest,
+            summary,
+            [(partition_id, G, telemetry)],
         )
 
 

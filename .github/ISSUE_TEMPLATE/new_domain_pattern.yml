@@ -1,113 +1,51 @@
-name: 🎯 New Domain Pattern
-description: Submit a new structural pattern for a specific domain
-title: "[PATTERN] <Domain>: <Pattern Name>"
+name: New domain pattern
+description: Propose a structural pattern with explicit assumptions and evidence
+title: "[PATTERN] "
 labels: ["enhancement", "pattern", "community"]
 body:
   - type: markdown
     attributes:
       value: |
-        ## Submit a New Domain Pattern
-        
-        Help expand TNFR to new domains by contributing validated structural patterns.
-        
-        **Requirements**:
-        - Health score > 0.75 for all examples
-        - Minimum 3 validated use cases
-        - Clear mapping to real-world domain
-        
+        A pattern proposal may be exploratory. Diagnostic scores do not establish
+        empirical validity and there is no universal score or case-count gate.
+        Distinguish a domain interpretation from a tested prediction.
   - type: input
     id: domain
     attributes:
-      label: Domain
-      description: Application domain for this pattern (e.g., medical, business, education)
-      placeholder: "medical"
+      label: Domain and pattern name
+      placeholder: "network transport / held-source relaxation"
     validations:
       required: true
-      
-  - type: input
-    id: pattern_name
-    attributes:
-      label: Pattern Name
-      description: Descriptive name for the pattern
-      placeholder: "therapeutic_journey"
-    validations:
-      required: true
-      
   - type: textarea
-    id: pattern_sequence
+    id: sequence
     attributes:
-      label: Pattern Sequence
-      description: The structural operator sequence (use canonical English identifiers)
-      placeholder: |
-        ["emission", "reception", "coherence", "resonance"]
+      label: Operator sequence and context
+      description: Use implemented operator identifiers; declare full word or fragment, initial triad, support and admission conditions.
     validations:
       required: true
-      
   - type: textarea
-    id: domain_context
+    id: interpretation
     attributes:
-      label: Domain Context
-      description: What does this pattern represent in your domain?
-      placeholder: |
-        In therapeutic practice, this pattern represents the establishment of 
-        therapeutic alliance through active listening and empathetic response...
+      label: Domain interpretation and measurements
+      description: Define the measured quantities, observation map, units and assumptions.
     validations:
       required: true
-      
   - type: textarea
-    id: use_cases
+    id: evidence
     attributes:
-      label: Use Cases (minimum 3)
-      description: Provide at least 3 validated examples where this pattern applies
-      placeholder: |
-        1. Initial therapy session - establishing rapport
-        2. Crisis intervention - stabilizing emotional state
-        3. Breakthrough moment - integrating new insights
+      label: Evidence and limitations
+      description: Provide available examples, commands, actual diagnostics and countercontrols. State what is untested.
     validations:
       required: true
-      
   - type: textarea
-    id: health_metrics
+    id: evaluation
     attributes:
-      label: Health Metrics
-      description: Provide health scores for your examples
-      placeholder: |
-        Example 1: C(t) = 0.82, Si = 0.76
-        Example 2: C(t) = 0.79, Si = 0.81
-        Example 3: C(t) = 0.85, Si = 0.78
+      label: Evaluation plan
+      description: Explain how calibration is separated from reserved predictions and how the proposal could fail.
     validations:
       required: true
-      
   - type: textarea
-    id: validation
+    id: reuse
     attributes:
-      label: Validation Method
-      description: How did you validate this pattern works?
-      placeholder: |
-        - Tested with real case data
-        - Verified coherence metrics
-        - Cross-validated with domain experts
-    validations:
-      required: true
-      
-  - type: textarea
-    id: related_patterns
-    attributes:
-      label: Related Patterns
-      description: Are there similar or complementary patterns?
-      placeholder: "Similar to stabilization_pattern but includes resonance phase"
-      
-  - type: checkboxes
-    id: checklist
-    attributes:
-      label: Submission Checklist
-      description: Please confirm the following
-      options:
-        - label: All examples achieve health score > 0.75
-          required: true
-        - label: Pattern uses canonical English operator identifiers
-          required: true
-        - label: Domain mapping is clearly documented
-          required: true
-        - label: At least 3 validated use cases provided
-          required: true
+      label: Existing mechanisms to reuse
+      description: Link related patterns, source owners or studies to avoid duplicate implementations.

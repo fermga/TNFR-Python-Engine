@@ -1,24 +1,17 @@
-r"""Trace collisions — loss of observability under the field trace (R5, N10).
+r"""Static trace-fiber information on declared finite fields (R5, N10).
 
-R5 reframed: instead of a k-dependent "type detector" (which stays CONJECTURAL,
-`NT-P05c`), the durable result is **how much information the trace observation
-loses**.  For a multiplicative set ``H ⊆ F_q^*`` (here the ``k``-th powers, the
-image of the power map) the trace ``Tr : F_q → F_p`` collapses ``H`` onto the
-``p`` residues; the **fiber counts**
+For H equal to a supplied power-map image in F_q, exact integer counts
+N_a=#{h in H:Tr(h)=a} describe the fibers of the field trace. The number of
+nonempty fibers counts attained static trace values. It is not proved equal
+to a scalar dynamical output's Hankel rank or minimal realization order;
+this module supplies no input/output pair establishing that bridge.
 
-    ``N_a = #{ h ∈ H : Tr(h) = a }``
-
-measure the collision structure, and ``#{ a : N_a > 0 }`` is the number of trace
-values that remain **observable**.  This connects to the observed pulse
-``y_m = c^* P^m b``: R2 (``b = c = e_0``) sees every mode, while the trace map is
-an observation ``c`` that identifies states and can only reduce the visible order
-([theory/TNFR_ALGEBRAIC_NUMBER_FIELDS.md](../theory/TNFR_ALGEBRAIC_NUMBER_FIELDS.md)).
-
-Two exact facts anchor it: the **character formula** (discrete Fourier inversion
-on ``F_p``) reproduces ``N_a`` exactly, and the trace is **Galois-invariant**
-(``Tr(h^p) = Tr(h)``), so the collision histogram is a representation-independent
-field invariant — not an artifact of how ``F_q`` is coordinatized.
-"""
+The Fourier-inversion identity on F_p determines the same counts algebraically.
+The character implementation uses complex floating arithmetic and rounds,
+while direct field-trace counts are exact integers. Its residual is a finite
+numerical check. Galois invariance Tr(h^p)=Tr(h) follows from the trace identity;
+for the power subgroup the histogram is intrinsic to the supplied field.
+No field carrier, autonomous pulse or nodal evolution is derived here."""
 
 from __future__ import annotations
 
@@ -67,12 +60,10 @@ def observed_trace_values(field: FiniteField, subset) -> int:
 def character_sum(field: FiniteField, subset, u: int) -> complex:
     r"""``S(u) = Σ_{h∈subset} ψ(u · Tr(h))`` with ``ψ(t) = e^{2πi t / p}``."""
     p = field.p
-    return sum(cmath.exp(2j * math.pi * (u * field.trace(h)) / p)
-               for h in subset)
+    return sum(cmath.exp(2j * math.pi * (u * field.trace(h)) / p) for h in subset)
 
 
-def trace_fiber_counts_via_characters(field: FiniteField,
-                                      subset) -> dict[int, int]:
+def trace_fiber_counts_via_characters(field: FiniteField, subset) -> dict[int, int]:
     r"""``N_a`` via the character formula (Fourier inversion on ``F_p``).
 
     ``N_a = (1/p) Σ_{u∈F_p} ψ(−u a) · S(u)``, rounded to the nearest integer.
@@ -81,8 +72,7 @@ def trace_fiber_counts_via_characters(field: FiniteField,
     s = [character_sum(field, subset, u) for u in range(p)]
     out: dict[int, int] = {}
     for a in range(p):
-        val = sum(cmath.exp(-2j * math.pi * (u * a) / p) * s[u]
-                  for u in range(p)) / p
+        val = sum(cmath.exp(-2j * math.pi * (u * a) / p) * s[u] for u in range(p)) / p
         out[a] = int(round(val.real))
     return out
 
@@ -94,26 +84,24 @@ def character_formula_residual(field: FiniteField, subset) -> float:
     s = [character_sum(field, subset, u) for u in range(p)]
     resid = 0.0
     for a in range(p):
-        val = sum(cmath.exp(-2j * math.pi * (u * a) / p) * s[u]
-                  for u in range(p)) / p
+        val = sum(cmath.exp(-2j * math.pi * (u * a) / p) * s[u] for u in range(p)) / p
         resid = max(resid, abs(val.real - exact[a]), abs(val.imag))
     return resid
 
 
-def trace_is_galois_invariant(field: FiniteField, subset, *,
-                              tol: float = 1e-12) -> bool:
+def trace_is_galois_invariant(
+    field: FiniteField, subset, *, tol: float = 1e-12
+) -> bool:
     r"""Whether ``Tr(h^p) = Tr(h)`` for every ``h`` — Galois/representation
     invariance of the trace observable (the collision histogram is intrinsic)."""
-    return all(field.trace(field.power(h, field.p)) == field.trace(h)
-               for h in subset)
+    return all(field.trace(field.power(h, field.p)) == field.trace(h) for h in subset)
 
 
 def uniform_deviation(field: FiniteField, subset) -> float:
-    r"""``max_a |N_a − |H|/p|`` — the departure from perfect equidistribution.
+    r"""Return max_a |N_a-|H|/p|, the deviation of static fiber counts from uniformity.
 
-    Zero means the trace spreads ``H`` uniformly across ``F_p`` (maximal
-    observability); larger values mark the collisions where ``S(u) ≠ 0``.
-    """
+    Zero means equal fiber sizes, not injectivity or complete dynamical
+    observability. Many-to-one trace maps can have exactly uniform counts."""
     counts = trace_fiber_counts(field, subset)
     n = sum(counts.values())
     mean = n / field.p
@@ -128,10 +116,10 @@ class TraceCollisionCertificate:
     f: int
     q: int
     k: int
-    subset_size: int          # |H| = (q-1)/gcd(k, q-1)
-    observed_values: int      # #{a : N_a > 0}
-    full_support: bool        # observed_values == p
-    has_collisions: bool      # |H| > observed_values
+    subset_size: int  # |H| = (q-1)/gcd(k, q-1)
+    observed_values: int  # #{a : N_a > 0}
+    full_support: bool  # observed_values == p
+    has_collisions: bool  # |H| > observed_values
     max_fiber: int
     min_fiber: int
     uniform_deviation: float
@@ -141,8 +129,7 @@ class TraceCollisionCertificate:
     claim_status: str
 
 
-def certify_trace_collisions(field: FiniteField, k: int
-                             ) -> TraceCollisionCertificate:
+def certify_trace_collisions(field: FiniteField, k: int) -> TraceCollisionCertificate:
     r"""Bundle the exact trace-collision structure for the ``k``-th powers.
 
     ``character_formula_residual ≈ 0`` (Fourier inversion is exact) and

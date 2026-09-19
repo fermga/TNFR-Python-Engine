@@ -216,9 +216,7 @@ def chsh_local_hidden_variable(
     """
     rng = np.random.default_rng(seed)
     lam = rng.uniform(0.0, 2.0 * math.pi, n)
-    return _chsh_from_shared_angles(
-        lam, a, a_prime, b, b_prime
-    )[:5]
+    return _chsh_from_shared_angles(lam, a, a_prime, b, b_prime)[:5]
 
 
 def quantum_singlet_chsh(
@@ -253,8 +251,8 @@ def main() -> None:
     print("\n[M1] Uniform shared-angle local hidden-variable control.")
     rng = np.random.default_rng(0)
     lam = rng.uniform(0.0, 2.0 * math.pi, 2_000_000)
-    e_ab, e_abp, e_apb, e_apbp, s, pointwise_max = (
-        _chsh_from_shared_angles(lam, a, a_prime, b, b_prime)
+    e_ab, e_abp, e_apb, e_apbp, s, pointwise_max = _chsh_from_shared_angles(
+        lam, a, a_prime, b, b_prime
     )
     print(f"     E(a,b)   = {e_ab:+.4f}")
     print(f"     E(a,b')  = {e_abp:+.4f}")
@@ -283,8 +281,8 @@ def main() -> None:
         f"     mean Kuramoto order parameter R = {order_r.mean():.4f} "
         "(auxiliary synchrony)"
     )
-    e_ab2, e_abp2, e_apb2, e_apbp2, s2, pointwise_max2 = (
-        _chsh_from_shared_angles(lam, a, a_prime, b, b_prime)
+    e_ab2, e_abp2, e_apb2, e_apbp2, s2, pointwise_max2 = _chsh_from_shared_angles(
+        lam, a, a_prime, b, b_prime
     )
     print(f"     E(a,b)   = {e_ab2:+.4f}")
     print(f"     E(a,b')  = {e_abp2:+.4f}")

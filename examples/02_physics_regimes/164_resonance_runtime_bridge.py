@@ -17,7 +17,6 @@ import networkx as nx
 
 from tnfr.physics import certify_resonance_epi_realization
 
-
 TARGET = ("hub", 1)
 COMPATIBLE = "aligned"
 INCOMPATIBLE = 17
@@ -56,7 +55,9 @@ def run_protocol():
 def build_report(result) -> dict[str, Any]:
     post_flow = result.post_diffusion_certificate
     if post_flow is None or result.affine_jump_certificate is None:
-        raise RuntimeError("the declared RA snapshot must admit both fixed certificates")
+        raise RuntimeError(
+            "the declared RA snapshot must admit both fixed certificates"
+        )
     return {
         "claim": "conditional local Resonance runtime realization",
         "runtime": {
@@ -90,9 +91,7 @@ def build_report(result) -> dict[str, Any]:
             "pre_post_switching_certificate_available": (
                 result.pre_post_switching_certificate is not None
             ),
-            "switching_abstention_reasons": list(
-                result.switching_abstention_reasons
-            ),
+            "switching_abstention_reasons": list(result.switching_abstention_reasons),
             "global_binary64_runtime_affinity_certified": (
                 result.global_binary64_runtime_affinity_certified
             ),

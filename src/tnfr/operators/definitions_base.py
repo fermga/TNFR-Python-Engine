@@ -251,9 +251,7 @@ class Operator(metaclass=OperatorMetaAuto):
 
         return None
 
-    def _after_glyph_application(
-        self, G: TNFRGraph, node: Any, **kw: Any
-    ) -> None:
+    def _after_glyph_application(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Commit subclass lifecycle state after glyph history is durable.
 
         The default implementation has no additional lifecycle. Subclasses

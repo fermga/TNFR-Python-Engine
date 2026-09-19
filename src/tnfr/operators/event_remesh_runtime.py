@@ -18,9 +18,7 @@ from typing import Any
 
 import networkx as nx
 
-from .._remesh_contract import (
-    materialize_delayed_remesh_configuration,
-)
+from .._remesh_contract import materialize_delayed_remesh_configuration
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..errors import TNFRValueError
 from ..utils._structural_signature import (
@@ -47,17 +45,16 @@ from .network_stage import (
     _networkx_runtime_layout,
     _runtime_class_mro,
     _runtime_class_namespace,
-    _runtime_mapping_items,
 )
 from .remesh import (
     DelayedRemeshResult,
     DelayedRemeshStabilityEvidence,
-    _RemeshGraphSurfaceState,
     _contract_values_equal,
     _materialize_network_remesh_configuration,
     _raw_string_entry,
     _remesh_configuration_input_signature,
     _remesh_configuration_input_signatures_are_identical,
+    _RemeshGraphSurfaceState,
     _require_same_epi_time_histories,
     _require_same_graph_surface,
     _snapshot_alias_channels,
@@ -93,9 +90,7 @@ _SCOPE = (
     "or certifies solver accuracy, a global binary64 runtime gain, or "
     "stability under repeated cycles with evolving history."
 )
-_HISTORY_CONVENTION = (
-    "append_pre_remesh_snapshot_then_read_delay_at_history[-(tau+1)]"
-)
+_HISTORY_CONVENTION = "append_pre_remesh_snapshot_then_read_delay_at_history[-(tau+1)]"
 _MISSING = object()
 _HISTORY_TRANSITION_PROOF_VERSION = "remesh_history_transition_v1"
 _EVENT_REMESH_CYCLE_PROOF_VERSION = "event_remesh_cycle_v1"
@@ -130,8 +125,7 @@ def _ordered_identity_is(left: Any, right: Any) -> bool:
         and type(right) is tuple
         and len(left) == len(right)
         and all(
-            observed is expected
-            for observed, expected in zip(left, right, strict=True)
+            observed is expected for observed, expected in zip(left, right, strict=True)
         )
     )
 
@@ -222,9 +216,7 @@ class RemeshHistoryTransitionObservation:
             self._proof_stamp,
             _history_transition_stamp(**values),
         ):
-            raise ValueError(
-                "REMESH history-transition proof fields are inconsistent"
-            )
+            raise ValueError("REMESH history-transition proof fields are inconsistent")
         _validate_history_transition_fields(**values)
         if not proof_stamps_are_identical(
             self._proof_stamp,
@@ -260,16 +252,11 @@ def _validate_history_transition_fields(**values: Any) -> None:
     size = len(nodes)
     for label, history in (("incoming", incoming), ("outgoing", outgoing)):
         if type(history) is not tuple or any(
-            not _exact_vector_is_valid(snapshot, length=size)
-            for snapshot in history
+            not _exact_vector_is_valid(snapshot, length=size) for snapshot in history
         ):
-            raise TypeError(
-                f"{label} history must contain exact Fraction vectors"
-            )
+            raise TypeError(f"{label} history must contain exact Fraction vectors")
     if not _exact_vector_is_valid(appended, length=size):
-        raise TypeError(
-            "appended pre-REMESH EPI must be an exact Fraction vector"
-        )
+        raise TypeError("appended pre-REMESH EPI must be an exact Fraction vector")
     for label in (
         "selected_local_delayed_epi",
         "selected_global_delayed_epi",
@@ -279,9 +266,7 @@ def _validate_history_transition_fields(**values: Any) -> None:
             length=size,
             optional=True,
         ):
-            raise TypeError(
-                f"{label} must be an exact Fraction vector or None"
-            )
+            raise TypeError(f"{label} must be an exact Fraction vector or None")
 
     tau_local = values["tau_local"]
     tau_global = values["tau_global"]
@@ -290,12 +275,8 @@ def _validate_history_transition_fields(**values: Any) -> None:
         raise ValueError("tau_local must be a positive integer")
     if type(tau_global) is not int or tau_global <= 0:
         raise ValueError("tau_global must be a positive integer")
-    if type(history_maxlen) is not int or history_maxlen <= max(
-        tau_local, tau_global
-    ):
-        raise ValueError(
-            "history_maxlen must retain every declared delayed index"
-        )
+    if type(history_maxlen) is not int or history_maxlen <= max(tau_local, tau_global):
+        raise ValueError("history_maxlen must retain every declared delayed index")
 
     boolean_names = (
         "incoming_history_present",
@@ -308,62 +289,40 @@ def _validate_history_transition_fields(**values: Any) -> None:
         raise TypeError("history-transition facts must be strict booleans")
     truncation_count = values["history_rebuild_truncation_count"]
     if type(truncation_count) is not int or truncation_count < 0:
-        raise ValueError(
-            "history rebuild truncation count must be nonnegative"
-        )
+        raise ValueError("history rebuild truncation count must be nonnegative")
 
     present = values["incoming_history_present"]
     canonical = values["incoming_history_is_canonical_deque"]
     rebuilt = values["history_container_rebuilt"]
     if not present and incoming:
         raise ValueError("absent incoming history cannot contain snapshots")
-    if canonical and (
-        not present or rebuilt or len(incoming) > history_maxlen
-    ):
+    if canonical and (not present or rebuilt or len(incoming) > history_maxlen):
         raise ValueError("canonical incoming deque facts are inconsistent")
     if rebuilt == canonical:
-        raise ValueError(
-            "history rebuild must be the complement of canonical input"
-        )
+        raise ValueError("history rebuild must be the complement of canonical input")
 
-    expected_truncation = (
-        max(0, len(incoming) - history_maxlen) if rebuilt else 0
-    )
+    expected_truncation = max(0, len(incoming) - history_maxlen) if rebuilt else 0
     if truncation_count != expected_truncation:
-        raise ValueError(
-            "history rebuild truncation count is inconsistent"
-        )
-    if values["incoming_history_truncated_during_rebuild"] != bool(
-        expected_truncation
-    ):
+        raise ValueError("history rebuild truncation count is inconsistent")
+    if values["incoming_history_truncated_during_rebuild"] != bool(expected_truncation):
         raise ValueError("history rebuild truncation flag is inconsistent")
 
     retained_before_append = incoming[-history_maxlen:]
     expected_eviction = len(retained_before_append) == history_maxlen
     if values["oldest_snapshot_evicted"] != expected_eviction:
         raise ValueError("history append eviction fact is inconsistent")
-    expected_outgoing = (
-        retained_before_append + (appended,)
-    )[-history_maxlen:]
+    expected_outgoing = (retained_before_append + (appended,))[-history_maxlen:]
     if outgoing != expected_outgoing:
-        raise ValueError(
-            "outgoing history violates canonical deque append semantics"
-        )
+        raise ValueError("outgoing history violates canonical deque append semantics")
 
-    expected_local = (
-        outgoing[-(tau_local + 1)] if len(outgoing) > tau_local else None
-    )
+    expected_local = outgoing[-(tau_local + 1)] if len(outgoing) > tau_local else None
     expected_global = (
         outgoing[-(tau_global + 1)] if len(outgoing) > tau_global else None
     )
     if values["selected_local_delayed_epi"] != expected_local:
-        raise ValueError(
-            "local delayed vector is not bound to outgoing history"
-        )
+        raise ValueError("local delayed vector is not bound to outgoing history")
     if values["selected_global_delayed_epi"] != expected_global:
-        raise ValueError(
-            "global delayed vector is not bound to outgoing history"
-        )
+        raise ValueError("global delayed vector is not bound to outgoing history")
 
 
 def _build_history_transition(
@@ -394,14 +353,10 @@ def _build_history_transition(
         outgoing_exact_history=outgoing,
         appended_exact_pre_remesh_epi=_exact_epi_vector(appended_epi),
         selected_local_delayed_epi=(
-            outgoing[-(tau_local + 1)]
-            if len(outgoing) > tau_local
-            else None
+            outgoing[-(tau_local + 1)] if len(outgoing) > tau_local else None
         ),
         selected_global_delayed_epi=(
-            outgoing[-(tau_global + 1)]
-            if len(outgoing) > tau_global
-            else None
+            outgoing[-(tau_global + 1)] if len(outgoing) > tau_global else None
         ),
         tau_local=tau_local,
         tau_global=tau_global,
@@ -414,13 +369,10 @@ def _build_history_transition(
         history_container_rebuilt=history_container_rebuilt,
         oldest_snapshot_evicted=oldest_snapshot_evicted,
         incoming_history_truncated_during_rebuild=bool(
-            history_container_rebuilt
-            and len(incoming) > history_maxlen
+            history_container_rebuilt and len(incoming) > history_maxlen
         ),
         history_rebuild_truncation_count=(
-            max(0, len(incoming) - history_maxlen)
-            if history_container_rebuilt
-            else 0
+            max(0, len(incoming) - history_maxlen) if history_container_rebuilt else 0
         ),
     )
     return RemeshHistoryTransitionObservation(
@@ -477,9 +429,7 @@ def _nested_proof_records_are_intact(
     del seen
     if type(value) is OperatorEventExecutionResult:
         try:
-            return bool(
-                OperatorEventExecutionResult._proof_fields_are_intact(value)
-            )
+            return bool(OperatorEventExecutionResult._proof_fields_are_intact(value))
         except BaseException:
             return False
     if type(value) is DelayedRemeshResult:
@@ -548,27 +498,29 @@ def _validate_weighted_observation(
     values_q = _exact_epi_vector(observation.epi_values)
     weights_q = _exact_epi_vector(weights)
     total_weight = sum(weights_q, Fraction(0))
-    mean = sum(
-        (
-            weight * value
-            for weight, value in zip(weights_q, values_q, strict=True)
-        ),
-        Fraction(0),
-    ) / total_weight
-    energy = sum(
-        (
-            weight * (value - mean) ** 2
-            for weight, value in zip(weights_q, values_q, strict=True)
-        ),
-        Fraction(0),
-    ) / 2
+    mean = (
+        sum(
+            (weight * value for weight, value in zip(weights_q, values_q, strict=True)),
+            Fraction(0),
+        )
+        / total_weight
+    )
+    energy = (
+        sum(
+            (
+                weight * (value - mean) ** 2
+                for weight, value in zip(weights_q, values_q, strict=True)
+            ),
+            Fraction(0),
+        )
+        / 2
+    )
     if (
         observation.exact_weighted_mean != mean
         or observation.weighted_mean
         != _diagnostic_float(mean, f"{label} weighted EPI mean")
         or observation.exact_disagreement_energy != energy
-        or observation.disagreement_energy
-        != _optional_diagnostic_float(energy)
+        or observation.disagreement_energy != _optional_diagnostic_float(energy)
     ):
         raise ValueError(f"{label} exact diagnostics are inconsistent")
 
@@ -584,9 +536,7 @@ def _validate_event_remesh_cycle_result(
         type(weights) is not tuple
         or len(weights) != len(nodes)
         or any(
-            type(value) is not float
-            or not math.isfinite(value)
-            or value <= 0.0
+            type(value) is not float or not math.isfinite(value) or value <= 0.0
             for value in weights
         )
     ):
@@ -597,16 +547,13 @@ def _validate_event_remesh_cycle_result(
             "history_transition must be a RemeshHistoryTransitionObservation"
         )
     transition = result.history_transition
-    if (
-        not transition._proof_fields_are_intact()
-        or not _ordered_identity_is(transition.nodes, nodes)
+    if not transition._proof_fields_are_intact() or not _ordered_identity_is(
+        transition.nodes, nodes
     ):
         raise ValueError("cycle history-transition proof is not intact")
 
     if type(result.event_execution) is not OperatorEventExecutionResult:
-        raise TypeError(
-            "event_execution must be an OperatorEventExecutionResult"
-        )
+        raise TypeError("event_execution must be an OperatorEventExecutionResult")
     if not _ordered_identity_is(result.event_execution.target_nodes, nodes):
         raise ValueError("event execution target order changed")
     schedule = result.event_execution.schedule
@@ -644,9 +591,7 @@ def _validate_event_remesh_cycle_result(
             or not executed.zero_duration
             or executed.nodes_processed != len(nodes)
         ):
-            raise ValueError(
-                "executed event disagrees with its scheduled boundary"
-            )
+            raise ValueError("executed event disagrees with its scheduled boundary")
     if not _nested_proof_records_are_intact(result.event_execution):
         raise ValueError("nested event-execution proof record is not intact")
 
@@ -687,15 +632,12 @@ def _validate_event_remesh_cycle_result(
             weights=weights,
             label=label,
         )
-    if (
-        transition.appended_exact_pre_remesh_epi
-        != _exact_epi_vector(result.pre_remesh_epi.epi_values)
+    if transition.appended_exact_pre_remesh_epi != _exact_epi_vector(
+        result.pre_remesh_epi.epi_values
     ):
         raise ValueError("history append is not bound to pre-REMESH EPI")
 
-    if result.history_length_before_cycle != len(
-        transition.incoming_exact_history
-    ):
+    if result.history_length_before_cycle != len(transition.incoming_exact_history):
         raise ValueError("history_length_before_cycle is inconsistent")
     expected_before_append = min(
         len(transition.incoming_exact_history),
@@ -703,16 +645,12 @@ def _validate_event_remesh_cycle_result(
     )
     if result.history_length_before_append != expected_before_append:
         raise ValueError("history_length_before_append is inconsistent")
-    if result.history_length_after_append != len(
-        transition.outgoing_exact_history
-    ):
+    if result.history_length_after_append != len(transition.outgoing_exact_history):
         raise ValueError("history_length_after_append is inconsistent")
     if (
         result.history_maxlen != transition.history_maxlen
-        or result.history_container_rebuilt
-        != transition.history_container_rebuilt
-        or result.history_oldest_snapshot_evicted
-        != transition.oldest_snapshot_evicted
+        or result.history_container_rebuilt != transition.history_container_rebuilt
+        or result.history_oldest_snapshot_evicted != transition.oldest_snapshot_evicted
     ):
         raise ValueError("legacy history metadata disagrees with transition")
 
@@ -731,29 +669,19 @@ def _validate_event_remesh_cycle_result(
                 or Fraction.from_float(proposal.epi_now)
                 != transition.appended_exact_pre_remesh_epi[index]
                 or Fraction.from_float(proposal.epi_local) != local[index]
-                or Fraction.from_float(proposal.epi_global)
-                != global_snapshot[index]
+                or Fraction.from_float(proposal.epi_global) != global_snapshot[index]
                 or Fraction.from_float(proposal.bounded_epi)
-                != _exact_epi_vector(
-                    result.post_remesh_epi.epi_values
-                )[index]
+                != _exact_epi_vector(result.post_remesh_epi.epi_values)[index]
             ):
-                raise ValueError(
-                    "REMESH proposal is not bound to exact history inputs"
-                )
+                raise ValueError("REMESH proposal is not bound to exact history inputs")
     elif plan.proposals:
         raise ValueError("insufficient history cannot publish REMESH proposals")
-    elif (
-        result.pre_remesh_epi.epi_values
-        != result.post_remesh_epi.epi_values
-    ):
+    elif result.pre_remesh_epi.epi_values != result.post_remesh_epi.epi_values:
         raise ValueError("REMESH no-op cannot change EPI")
 
     if result.remesh.applied:
         if type(plan.evidence) is not DelayedRemeshStabilityEvidence:
-            raise ValueError(
-                "applied REMESH requires exact stability evidence"
-            )
+            raise ValueError("applied REMESH requires exact stability evidence")
         if plan.evidence.metric_weights != weights:
             raise ValueError("REMESH evidence changed the cycle metric")
     elif plan.evidence is not None:
@@ -796,10 +724,7 @@ def _validate_event_remesh_cycle_result(
         raise ValueError("cycle capacity observations must be nonnegative")
     if result.capacity_after_remesh != result.capacity_before_remesh:
         raise ValueError("REMESH changed structural frequency")
-    if (
-        result.pressure_after_remesh_before_refresh
-        != result.pressure_before_remesh
-    ):
+    if result.pressure_after_remesh_before_refresh != result.pressure_before_remesh:
         raise ValueError("REMESH changed structural pressure")
     if not (
         result.phase_before_remesh
@@ -826,10 +751,8 @@ def _validate_event_remesh_cycle_result(
         or result.exact_total_weighted_mean_drift != total_drift
         or result.schedule_weighted_mean_drift
         != _optional_diagnostic_float(schedule_drift)
-        or result.remesh_weighted_mean_drift
-        != _optional_diagnostic_float(remesh_drift)
-        or result.total_weighted_mean_drift
-        != _optional_diagnostic_float(total_drift)
+        or result.remesh_weighted_mean_drift != _optional_diagnostic_float(remesh_drift)
+        or result.total_weighted_mean_drift != _optional_diagnostic_float(total_drift)
     ):
         raise ValueError("cycle weighted-mean drifts are inconsistent")
 
@@ -839,26 +762,20 @@ def _validate_event_remesh_cycle_result(
         "post_remesh_pressure_refresh_requested",
         "post_remesh_epi_time_boundary_recorded",
     )
-    if any(
-        type(getattr(result, name)) is not bool
-        for name in strict_boolean_names
-    ):
+    if any(type(getattr(result, name)) is not bool for name in strict_boolean_names):
         raise TypeError("cycle observations must use strict booleans")
     if result.schedule_capacity_changed != (
-        result.capacity_before_remesh
-        != result.capacity_before_schedule
+        result.capacity_before_remesh != result.capacity_before_schedule
     ):
         raise ValueError("schedule capacity-change fact is inconsistent")
     if result.remesh_capacity_changed != (
-        result.capacity_after_remesh
-        != result.capacity_before_remesh
+        result.capacity_after_remesh != result.capacity_before_remesh
     ):
         raise ValueError("REMESH capacity-change fact is inconsistent")
     if (
         result.post_remesh_epi_time_boundary_recorded
         != result.remesh.epi_time_boundary_recorded
-        or result.remesh.applied
-        != result.post_remesh_epi_time_boundary_recorded
+        or result.remesh.applied != result.post_remesh_epi_time_boundary_recorded
     ):
         raise ValueError("REMESH EPI-time boundary fact is inconsistent")
 
@@ -868,8 +785,7 @@ def _validate_event_remesh_cycle_result(
         "committed_hybrid_event_log_length",
     )
     if any(
-        type(getattr(result, name)) is not int
-        or getattr(result, name) < 0
+        type(getattr(result, name)) is not int or getattr(result, name) < 0
         for name in count_names
     ):
         raise ValueError("cycle callback and event-log counts must be nonnegative")
@@ -879,24 +795,19 @@ def _validate_event_remesh_cycle_result(
     ):
         raise ValueError("schedule pressure-callback count is inconsistent")
     expected_post_refresh_count = int(
-        result.post_remesh_pressure_refresh_requested
-        and result.remesh.applied
+        result.post_remesh_pressure_refresh_requested and result.remesh.applied
     )
     if (
         result.post_remesh_pressure_refresh_callback_invocations
         != expected_post_refresh_count
     ):
-        raise ValueError(
-            "post-REMESH pressure callback execution is inconsistent"
-        )
+        raise ValueError("post-REMESH pressure callback execution is inconsistent")
     if (
         expected_post_refresh_count == 0
         and result.pressure_after_optional_refresh
         != result.pressure_after_remesh_before_refresh
     ):
-        raise ValueError(
-            "pressure changed without the explicit post-REMESH callback"
-        )
+        raise ValueError("pressure changed without the explicit post-REMESH callback")
 
     for name, expected in _CYCLE_FIXED_PROOF_FIELDS.items():
         if getattr(result, name) != expected:
@@ -965,9 +876,7 @@ class EventRemeshCycleResult:
             self._proof_stamp,
             _cycle_result_stamp(values),
         ):
-            raise ValueError(
-                "event/REMESH cycle proof fields are inconsistent"
-            )
+            raise ValueError("event/REMESH cycle proof fields are inconsistent")
         _validate_event_remesh_cycle_result(self)
         if not proof_stamps_are_identical(
             self._proof_stamp,
@@ -1021,9 +930,7 @@ class EventRemeshCycleResult:
 
 
 _EVENT_REMESH_CYCLE_FIELD_NAMES = tuple(
-    item.name
-    for item in fields(EventRemeshCycleResult)
-    if item.name != "_proof_stamp"
+    item.name for item in fields(EventRemeshCycleResult) if item.name != "_proof_stamp"
 )
 
 
@@ -1033,9 +940,7 @@ def _sealed_event_remesh_cycle_result(
     proof_values = dict(_CYCLE_FIXED_PROOF_FIELDS)
     proof_values.update(values)
     if set(proof_values) != set(_EVENT_REMESH_CYCLE_FIELD_NAMES):
-        raise RuntimeError(
-            "event/REMESH cycle constructor fields are incomplete"
-        )
+        raise RuntimeError("event/REMESH cycle constructor fields are incomplete")
     return EventRemeshCycleResult(
         **values,
         _proof_stamp=_cycle_result_stamp(proof_values),
@@ -1072,9 +977,7 @@ def _diagnostic_float(value: Fraction, label: str) -> float:
             f"{label} exceeds the finite binary64 diagnostic range"
         ) from exc
     if not math.isfinite(result):
-        raise TNFRValueError(
-            f"{label} exceeds the finite binary64 diagnostic range"
-        )
+        raise TNFRValueError(f"{label} exceeds the finite binary64 diagnostic range")
     return result
 
 
@@ -1110,9 +1013,7 @@ def _required_scalar_channel(
             raise TNFRValueError(f"node {node!r} is missing required {label}")
         value = _finite_real(raw, f"node {node!r} {label}")
         if nonnegative and value < 0.0:
-            raise TNFRValueError(
-                f"node {node!r} {label} must be nonnegative"
-            )
+            raise TNFRValueError(f"node {node!r} {label} must be nonnegative")
         values.append(value)
     return tuple(values)
 
@@ -1152,20 +1053,23 @@ def _observe_epi(
     values_q = tuple(Fraction.from_float(value) for value in values)
     weights_q = tuple(Fraction.from_float(value) for value in weights)
     total_weight = sum(weights_q, Fraction(0))
-    mean = sum(
-        (
-            weight * value
-            for weight, value in zip(weights_q, values_q, strict=True)
-        ),
-        Fraction(0),
-    ) / total_weight
-    energy = sum(
-        (
-            weight * (value - mean) * (value - mean)
-            for weight, value in zip(weights_q, values_q, strict=True)
-        ),
-        Fraction(0),
-    ) / 2
+    mean = (
+        sum(
+            (weight * value for weight, value in zip(weights_q, values_q, strict=True)),
+            Fraction(0),
+        )
+        / total_weight
+    )
+    energy = (
+        sum(
+            (
+                weight * (value - mean) * (value - mean)
+                for weight, value in zip(weights_q, values_q, strict=True)
+            ),
+            Fraction(0),
+        )
+        / 2
+    )
     return WeightedEPIObservation(
         nodes=nodes,
         epi_values=values,
@@ -1250,9 +1154,7 @@ def _require_node_order(
     *,
     boundary: str,
 ) -> None:
-    observed = tuple(
-        node for node, _data in _networkx_runtime_layout(graph).node_data
-    )
+    observed = tuple(node for node, _data in _networkx_runtime_layout(graph).node_data)
     if not _ordered_identity_is(observed, expected):
         raise TNFRValueError(
             "The event/REMESH cycle requires fixed ordered node support.",
@@ -1431,13 +1333,9 @@ def _require_epi_time_right_endpoint(
     """Require the applied REMESH jump as the authoritative same-time tail."""
 
     snapshots = _snapshot_epi_time_histories(graph, nodes)
-    for (node, _history, samples), epi in zip(
-        snapshots, epi_values, strict=True
-    ):
+    for (node, _history, samples), epi in zip(snapshots, epi_values, strict=True):
         if not samples or samples[-1] != (runtime_time, epi):
-            raise RuntimeError(
-                f"node {node!r} lost the post-REMESH EPI-time endpoint"
-            )
+            raise RuntimeError(f"node {node!r} lost the post-REMESH EPI-time endpoint")
     return snapshots
 
 
@@ -1445,9 +1343,7 @@ def execute_event_remesh_cycle(
     graph: nx.Graph,
     schedule: OperatorEventSchedule,
     *,
-    metric_weights: (
-        Mapping[Hashable, Any] | Sequence[Any] | None
-    ) = None,
+    metric_weights: Mapping[Hashable, Any] | Sequence[Any] | None = None,
     refresh_pressure_after_remesh: bool = False,
     context: Mapping[str, Any] | None = None,
     method: str | None = None,
@@ -1500,16 +1396,12 @@ def execute_event_remesh_cycle(
                 "event/REMESH composition requires nonempty node support"
             )
         try:
-            materialized_physical_flow_partitions = tuple(
-                physical_flow_partitions
-            )
+            materialized_physical_flow_partitions = tuple(physical_flow_partitions)
         except TypeError as exc:
             raise TypeError(
                 "physical_flow_partitions must be an iterable of partitions"
             ) from exc
-        for position, partition in enumerate(
-            materialized_physical_flow_partitions
-        ):
+        for position, partition in enumerate(materialized_physical_flow_partitions):
             if type(partition) is not PhysicalFlowPartition:
                 raise TypeError(
                     "physical_flow_partitions must contain "
@@ -1523,11 +1415,9 @@ def execute_event_remesh_cycle(
         history_before = _history_signature(graph, nodes)
         history_length_before = len(history_before[2])
         remesh_configuration_references: list[Any] = []
-        remesh_configuration_signature = (
-            _remesh_configuration_input_signature(
-                graph,
-                retained_references=remesh_configuration_references,
-            )
+        remesh_configuration_signature = _remesh_configuration_input_signature(
+            graph,
+            retained_references=remesh_configuration_references,
         )
         remesh_configuration = _materialize_network_remesh_configuration(graph)
         pressure_hook = _pressure_hook_signature(graph)
@@ -1578,9 +1468,7 @@ def execute_event_remesh_cycle(
             physical_flow_partitions=materialized_physical_flow_partitions,
         )
         if not _ordered_identity_is(event_result.target_nodes, nodes):
-            raise RuntimeError(
-                "event execution lost the bridge's frozen target order"
-            )
+            raise RuntimeError("event execution lost the bridge's frozen target order")
         after_schedule_read_state = _read_only_graph_state(graph)
         _require_node_order(graph, nodes, boundary="after_schedule")
         history_after_schedule = _require_same_history(
@@ -1613,10 +1501,12 @@ def execute_event_remesh_cycle(
         committed_event_log_length = (
             0
             if not committed_event_log[0]
-            else len(committed_event_log_state.sequence_items)
-            if type(committed_event_log_state) is _RemeshGraphSurfaceState
-            and committed_event_log_state.sequence_items is not None
-            else -1
+            else (
+                len(committed_event_log_state.sequence_items)
+                if type(committed_event_log_state) is _RemeshGraphSurfaceState
+                and committed_event_log_state.sequence_items is not None
+                else -1
+            )
         )
         if committed_event_log_length < 0:
             raise RuntimeError("committed hybrid_event_log lost list storage")
@@ -1654,9 +1544,7 @@ def execute_event_remesh_cycle(
         history_append = _append_remesh_epi_history_snapshot_from_materialized(
             graph,
             history_maxlen=remesh_configuration.history_maxlen,
-            snapshot_items=tuple(
-                zip(nodes, pre_remesh_epi.epi_values, strict=True)
-            ),
+            snapshot_items=tuple(zip(nodes, pre_remesh_epi.epi_values, strict=True)),
         )
         appended_history_present, appended_history_object = _raw_string_entry(
             _networkx_runtime_layout(graph).graph_mapping,
@@ -1664,11 +1552,11 @@ def execute_event_remesh_cycle(
             None,
         )
         retained_before_append = history_after_schedule[2][
-            -history_append.history_maxlen:
+            -history_append.history_maxlen :
         ]
         expected_appended_values = (
             retained_before_append + (pre_remesh_epi.epi_values,)
-        )[-history_append.history_maxlen:]
+        )[-history_append.history_maxlen :]
         appended_history = (
             appended_history_present,
             appended_history_object,
@@ -1691,15 +1579,12 @@ def execute_event_remesh_cycle(
                 tuple(value for _node, value in history_append.snapshot_items),
                 pre_remesh_epi.epi_values,
             )
-            or history_append.history_maxlen
-            != remesh_configuration.history_maxlen
+            or history_append.history_maxlen != remesh_configuration.history_maxlen
         ):
             raise RuntimeError(
                 "canonical REMESH history append lost the schedule endpoint"
             )
-        history_container_rebuilt = (
-            appended_history[1] is not history_before[1]
-        )
+        history_container_rebuilt = appended_history[1] is not history_before[1]
         history_transition = _build_history_transition(
             nodes=nodes,
             history_before=history_before,
@@ -1709,9 +1594,7 @@ def execute_event_remesh_cycle(
             tau_global=remesh_configuration.tau_global,
             history_maxlen=history_append.history_maxlen,
             history_container_rebuilt=history_container_rebuilt,
-            oldest_snapshot_evicted=(
-                history_append.oldest_snapshot_evicted
-            ),
+            oldest_snapshot_evicted=(history_append.oldest_snapshot_evicted),
         )
         appended_history_surface = _snapshot_graph_surface(
             graph,
@@ -1740,9 +1623,7 @@ def execute_event_remesh_cycle(
             _snapshot_edge_state(graph),
             edges_before_remesh_apply,
         ):
-            raise TNFRValueError(
-                "The REMESH wrapper changed protected edge state."
-            )
+            raise TNFRValueError("The REMESH wrapper changed protected edge state.")
         _require_node_order(graph, nodes, boundary="after_remesh")
         _require_same_graph_surface(
             graph,
@@ -1779,13 +1660,9 @@ def execute_event_remesh_cycle(
             raise RuntimeError("REMESH plan lost the frozen node order")
         if remesh_result.applied:
             if type(remesh_result.evidence) is not DelayedRemeshStabilityEvidence:
-                raise RuntimeError(
-                    "applied REMESH omitted exact stability evidence"
-                )
+                raise RuntimeError("applied REMESH omitted exact stability evidence")
             if remesh_result.evidence.metric_weights != weights:
-                raise RuntimeError(
-                    "REMESH evidence changed the declared metric"
-                )
+                raise RuntimeError("REMESH evidence changed the declared metric")
 
         post_remesh_epi = _observe_epi(graph, nodes, weights)
         if remesh_result.applied:
@@ -1818,9 +1695,7 @@ def execute_event_remesh_cycle(
         )
         post_remesh_edges = _snapshot_edge_state(graph)
         post_remesh_metadata = _snapshot_graph_surface(graph, "_REMESH_META")
-        post_remesh_alpha_source = _snapshot_graph_surface(
-            graph, "_REMESH_ALPHA_SRC"
-        )
+        post_remesh_alpha_source = _snapshot_graph_surface(graph, "_REMESH_ALPHA_SRC")
         post_remesh_telemetry = _snapshot_graph_surface(graph, "history")
         _require_read_only_graph_state(
             graph,
@@ -1842,9 +1717,7 @@ def execute_event_remesh_cycle(
                     expected_present=pressure_hook[0],
                     expected_callback=pressure_callback,
                     n_jobs=n_jobs,
-                    boundary_label=(
-                        "event_remesh.post_remesh_pressure_refresh"
-                    ),
+                    boundary_label=("event_remesh.post_remesh_pressure_refresh"),
                     require_callback_state_preserved=False,
                 )
             except TNFRValueError as failure:
@@ -1855,8 +1728,7 @@ def execute_event_remesh_cycle(
                 refresh_guard_failure = failure
             except RuntimeError as failure:
                 if failure.args != (
-                    "configured pressure callback changed during event "
-                    "execution",
+                    "configured pressure callback changed during event " "execution",
                 ):
                     raise
                 refresh_guard_failure = failure
@@ -1898,15 +1770,11 @@ def execute_event_remesh_cycle(
                 raise TNFRValueError(
                     "The post-REMESH pressure callback changed edge state."
                 )
-            _require_same_graph_surface(
-                graph, "_REMESH_META", post_remesh_metadata
-            )
+            _require_same_graph_surface(graph, "_REMESH_META", post_remesh_metadata)
             _require_same_graph_surface(
                 graph, "_REMESH_ALPHA_SRC", post_remesh_alpha_source
             )
-            _require_same_graph_surface(
-                graph, "history", post_remesh_telemetry
-            )
+            _require_same_graph_surface(graph, "history", post_remesh_telemetry)
             if epi_time_histories is None:
                 raise RuntimeError("applied REMESH lost its physical history")
             _require_same_epi_time_histories(graph, epi_time_histories)
@@ -1914,9 +1782,7 @@ def execute_event_remesh_cycle(
                 _epi_values(graph, nodes),
                 post_remesh_epi.epi_values,
             ):
-                raise TNFRValueError(
-                    "The post-REMESH pressure callback changed EPI."
-                )
+                raise TNFRValueError("The post-REMESH pressure callback changed EPI.")
             refreshed_capacity = _required_scalar_channel(
                 graph,
                 nodes,
@@ -1954,16 +1820,13 @@ def execute_event_remesh_cycle(
         if refresh_guard_failure is not None:
             raise refresh_guard_failure
         schedule_drift = (
-            pre_remesh_epi.exact_weighted_mean
-            - pre_schedule_epi.exact_weighted_mean
+            pre_remesh_epi.exact_weighted_mean - pre_schedule_epi.exact_weighted_mean
         )
         remesh_drift = (
-            post_remesh_epi.exact_weighted_mean
-            - pre_remesh_epi.exact_weighted_mean
+            post_remesh_epi.exact_weighted_mean - pre_remesh_epi.exact_weighted_mean
         )
         total_drift = (
-            post_remesh_epi.exact_weighted_mean
-            - pre_schedule_epi.exact_weighted_mean
+            post_remesh_epi.exact_weighted_mean - pre_schedule_epi.exact_weighted_mean
         )
         return _sealed_event_remesh_cycle_result(
             target_nodes=nodes,
@@ -1977,58 +1840,34 @@ def execute_event_remesh_cycle(
             exact_schedule_weighted_mean_drift=schedule_drift,
             exact_remesh_weighted_mean_drift=remesh_drift,
             exact_total_weighted_mean_drift=total_drift,
-            schedule_weighted_mean_drift=_optional_diagnostic_float(
-                schedule_drift
-            ),
-            remesh_weighted_mean_drift=_optional_diagnostic_float(
-                remesh_drift
-            ),
+            schedule_weighted_mean_drift=_optional_diagnostic_float(schedule_drift),
+            remesh_weighted_mean_drift=_optional_diagnostic_float(remesh_drift),
             total_weighted_mean_drift=_optional_diagnostic_float(total_drift),
             capacity_before_schedule=capacity_before,
             capacity_before_remesh=capacity_before_remesh,
             capacity_after_remesh=capacity_after_remesh,
             pressure_before_schedule=pressure_before,
             pressure_before_remesh=pressure_before_remesh,
-            pressure_after_remesh_before_refresh=(
-                pressure_before_optional_refresh
-            ),
-            pressure_after_optional_refresh=(
-                pressure_after_optional_refresh
-            ),
+            pressure_after_remesh_before_refresh=(pressure_before_optional_refresh),
+            pressure_after_optional_refresh=(pressure_after_optional_refresh),
             phase_before_schedule=phase_before_schedule,
             phase_before_remesh=phase_before_remesh,
             phase_after_remesh_before_refresh=phase_after_remesh,
             phase_after_optional_refresh=phase_after_optional_refresh,
-            schedule_capacity_changed=(
-                capacity_before_remesh != capacity_before
-            ),
-            remesh_capacity_changed=(
-                capacity_after_remesh != capacity_before_remesh
-            ),
+            schedule_capacity_changed=(capacity_before_remesh != capacity_before),
+            remesh_capacity_changed=(capacity_after_remesh != capacity_before_remesh),
             history_length_before_cycle=history_length_before,
-            history_length_before_append=(
-                history_append.history_length_before
-            ),
-            history_length_after_append=(
-                history_append.history_length_after
-            ),
+            history_length_before_append=(history_append.history_length_before),
+            history_length_after_append=(history_append.history_length_after),
             history_maxlen=history_append.history_maxlen,
             history_container_rebuilt=history_container_rebuilt,
-            history_oldest_snapshot_evicted=(
-                history_append.oldest_snapshot_evicted
-            ),
+            history_oldest_snapshot_evicted=(history_append.oldest_snapshot_evicted),
             schedule_pressure_refresh_callback_invocations=(
                 event_result.pressure_refresh_callback_invocations
             ),
-            post_remesh_pressure_refresh_requested=(
-                refresh_pressure_after_remesh
-            ),
-            post_remesh_pressure_refresh_callback_invocations=(
-                post_refresh_count
-            ),
-            committed_hybrid_event_log_length=(
-                committed_event_log_length
-            ),
+            post_remesh_pressure_refresh_requested=(refresh_pressure_after_remesh),
+            post_remesh_pressure_refresh_callback_invocations=(post_refresh_count),
+            committed_hybrid_event_log_length=(committed_event_log_length),
             post_remesh_epi_time_boundary_recorded=(
                 remesh_result.epi_time_boundary_recorded
             ),

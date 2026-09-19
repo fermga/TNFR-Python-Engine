@@ -42,9 +42,7 @@ def _graph(
 
 
 def test_en_stage_composes_with_positive_flow_without_runtime_affinity_claim() -> None:
-    stage = certify_reception_all_target_stage(
-        _graph(), fixed_support_declared=True
-    )
+    stage = certify_reception_all_target_stage(_graph(), fixed_support_declared=True)
 
     bridge = compose_neighbor_stage_diffusion_stability(stage, 1.0)
 
@@ -105,9 +103,7 @@ def test_ra_phase_only_change_still_requires_runtime_pressure_refresh() -> None:
 
 
 def test_false_fixed_support_declaration_produces_explicit_abstention() -> None:
-    stage = certify_reception_all_target_stage(
-        _graph(), fixed_support_declared=False
-    )
+    stage = certify_reception_all_target_stage(_graph(), fixed_support_declared=False)
 
     bridge = compose_neighbor_stage_diffusion_stability(stage, 1.0)
 
@@ -143,9 +139,7 @@ def test_atomic_ra_identity_rejection_produces_explicit_abstention() -> None:
     [True, 0, -1, float("inf"), Fraction(1, 10**1000)],
 )
 def test_bridge_requires_a_representable_strictly_positive_duration(duration) -> None:
-    stage = certify_reception_all_target_stage(
-        _graph(), fixed_support_declared=True
-    )
+    stage = certify_reception_all_target_stage(_graph(), fixed_support_declared=True)
 
     with pytest.raises(ValueError, match="flow_duration"):
         compose_neighbor_stage_diffusion_stability(stage, duration)
@@ -159,9 +153,7 @@ def test_bridge_rejects_repeated_or_internally_inconsistent_stage_records() -> N
     with pytest.raises(ValueError, match="exactly one certified stage"):
         compose_neighbor_stage_diffusion_stability(repeated, 1.0)
 
-    stage = certify_reception_all_target_stage(
-        graph, fixed_support_declared=True
-    )
+    stage = certify_reception_all_target_stage(graph, fixed_support_declared=True)
     bad_step = replace(
         stage.steps[0],
         exact_post_metric_runtime_weighted_mean_shift=Fraction(99),
@@ -186,9 +178,7 @@ def test_bridge_rejects_repeated_or_internally_inconsistent_stage_records() -> N
 
 
 def test_bridge_recomputes_local_domain_instead_of_trusting_promoted_boolean() -> None:
-    stage = certify_reception_all_target_stage(
-        _graph(), fixed_support_declared=False
-    )
+    stage = certify_reception_all_target_stage(_graph(), fixed_support_declared=False)
     forged_local = replace(
         stage.steps[0].local_certificates[0],
         runtime_snapshot_in_affine_model_domain=True,

@@ -35,11 +35,24 @@ def main() -> None:
     from tnfr.node import NodeNX
     from tnfr.operators.jitter import random_jitter
 
-    print(json.dumps({"source": cache.__file__, "python": sys.version.split()[0],
-                      "networkx": nx.__version__, "seed": 7, "amplitude": 0.1,
-                      "repeats": args.repeats,
-                      "wheel_sha256": hashlib.sha256(args.wheel.read_bytes()).hexdigest()
-                      if args.wheel is not None else None}), flush=True)
+    print(
+        json.dumps(
+            {
+                "source": cache.__file__,
+                "python": sys.version.split()[0],
+                "networkx": nx.__version__,
+                "seed": 7,
+                "amplitude": 0.1,
+                "repeats": args.repeats,
+                "wheel_sha256": (
+                    hashlib.sha256(args.wheel.read_bytes()).hexdigest()
+                    if args.wheel is not None
+                    else None
+                ),
+            }
+        ),
+        flush=True,
+    )
     for size in args.sizes:
         graph = nx.empty_graph(size)
         graph.graph["RANDOM_SEED"] = 7
@@ -61,13 +74,29 @@ def main() -> None:
             digest_hits.append(after.hits - before.hits)
             for draw in draws:
                 trajectory.update(struct.pack(">d", draw))
-            print(json.dumps({"nodes": size, "repeat": repeat + 1,
-                              "seconds": elapsed[-1], "digest_misses": digest_misses[-1],
-                              "digest_hits": digest_hits[-1]}), flush=True)
-        print(json.dumps({"nodes": size, "median_seconds": statistics.median(elapsed),
-                          "trajectory_sha256": trajectory.hexdigest(),
-                          "draws_per_node": graph.nodes[0]["_rng_jitter_progress"]["draws"]}),
-              flush=True)
+            print(
+                json.dumps(
+                    {
+                        "nodes": size,
+                        "repeat": repeat + 1,
+                        "seconds": elapsed[-1],
+                        "digest_misses": digest_misses[-1],
+                        "digest_hits": digest_hits[-1],
+                    }
+                ),
+                flush=True,
+            )
+        print(
+            json.dumps(
+                {
+                    "nodes": size,
+                    "median_seconds": statistics.median(elapsed),
+                    "trajectory_sha256": trajectory.hexdigest(),
+                    "draws_per_node": graph.nodes[0]["_rng_jitter_progress"]["draws"],
+                }
+            ),
+            flush=True,
+        )
 
 
 if __name__ == "__main__":

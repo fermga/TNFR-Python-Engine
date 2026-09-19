@@ -950,9 +950,7 @@ class TestOperatorContractAudit:
                 for node in graph
                 if (history := graph.nodes[node].get("glyph_history"))
             )
-            if last_glyphs and all(
-                name == "reception" for name in last_glyphs
-            ):
+            if last_glyphs and all(name == "reception" for name in last_glyphs):
                 refresh_after_reception = True
                 for node in graph:
                     set_attr(graph.nodes[node], ALIAS_DNFR, 1e6)
@@ -1015,8 +1013,8 @@ class TestSDKOperatorAudit:
         assert len(result["operators"]) == 13
 
     def test_sdk_integrity_check_requires_real_before_after_evidence(self) -> None:
-        from tnfr.sdk import TNFR
         from tnfr.operators.definitions import Coherence
+        from tnfr.sdk import TNFR
 
         net = TNFR.create(16).ring().evolve(2)
         baseline = net.integrity_check("IL")

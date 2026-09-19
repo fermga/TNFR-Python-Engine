@@ -1,9 +1,9 @@
-"""02 - Musical Resonance: Understanding Coherence Through Sound
+"""Musical analogies for prescribed phase and frequency preparations.
 
-PHYSICS: Demonstrates phase synchronization φᵢ ≈ φⱼ as the foundation of resonance.
-LEARNING: Understand how TNFR models harmony, dissonance, and musical structure.
-
-This example shows why musicians intuitively understand TNFR - music IS coherent organization!
+Uses selected tone ratios and phase arrangements to illustrate coherence
+read-outs. It does not derive musical beauty or auditory perception from TNFR.
+Capacity, measured pitch and auxiliary angular frequency require distinct units
+and a stated observation model. Read the chosen construction as an analogy.
 """
 
 import os
@@ -311,8 +311,8 @@ def musical_resonance_demo():
     for name, result in results.items():
         print(f"   🎵 {name:17s}: {result['final_coherence']:.3f}")
     print()
-    print("💡 INSIGHT: Musical beauty emerges from the same physics")
-    print("   that governs atoms, cells, and galaxies!")
+    print("💡 INSIGHT: These selected musical analogies illustrate coherence read-outs")
+    print("   without identifying a biological or particle-level mechanism.")
     print()
 
     # NEXT STEPS

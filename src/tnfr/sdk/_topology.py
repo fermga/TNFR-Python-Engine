@@ -40,7 +40,9 @@ def ring_edges(nodes: list[Any]) -> list[tuple[Any, Any]]:
     return [(node, nodes[(index + 1) % len(nodes)]) for index, node in enumerate(nodes)]
 
 
-def small_world_edges(nodes: list[Any], k: int, p: float, seed: Any) -> list[tuple[Any, Any]]:
+def small_world_edges(
+    nodes: list[Any], k: int, p: float, seed: Any
+) -> list[tuple[Any, Any]]:
     k = nonnegative_integer(k, "k")
     p = probability(p)
     graph = nx.watts_strogatz_graph(len(nodes), k, p, seed=seed)
@@ -54,12 +56,17 @@ def contact_degree(size: int, value: Any) -> int:
     if degree >= size:
         raise ValueError("connections_per_person must be smaller than people")
     if size * degree % 2:
-        raise ValueError("people * connections_per_person must be even for an exact mean degree")
+        raise ValueError(
+            "people * connections_per_person must be even for an exact mean degree"
+        )
     return degree
 
 
 def rewired_contact_edges(
-    nodes: list[Any], degree: int, p: float, seed: Any,
+    nodes: list[Any],
+    degree: int,
+    p: float,
+    seed: Any,
 ) -> list[tuple[Any, Any]]:
     """Rewire a ring scaffold while preserving its exact mean contact degree.
 
@@ -79,7 +86,11 @@ def rewired_contact_edges(
     rng = nx.utils.create_py_random_state(seed)
     for source, target in list(graph.edges()):
         if rng.random() < p:
-            candidates = [node for node in graph if node != source and not graph.has_edge(source, node)]
+            candidates = [
+                node
+                for node in graph
+                if node != source and not graph.has_edge(source, node)
+            ]
             if candidates:
                 replacement = rng.choice(candidates)
                 graph.remove_edge(source, target)
@@ -88,7 +99,8 @@ def rewired_contact_edges(
 
 
 def hierarchical_edges(
-    nodes: list[Any], depth: int,
+    nodes: list[Any],
+    depth: int,
 ) -> tuple[list[tuple[Any, Any]], dict[Any, int]]:
     """Build connected graph layers with parent links and within-layer rings.
 
@@ -108,7 +120,7 @@ def hierarchical_edges(
         cursor = 1
         for index in range(depth - 1):
             size = width + (index < extra)
-            layers.append(nodes[cursor:cursor + size])
+            layers.append(nodes[cursor : cursor + size])
             cursor += size
     edges = []
     levels = {}
@@ -117,11 +129,16 @@ def hierarchical_edges(
         edges.extend(ring_edges(layer))
         if level:
             parents = layers[level - 1]
-            edges.extend((parents[index % len(parents)], node) for index, node in enumerate(layer))
+            edges.extend(
+                (parents[index % len(parents)], node)
+                for index, node in enumerate(layer)
+            )
     return edges, levels
 
 
-def grid_edges(nodes: list[Any], rows: int | None, cols: int | None) -> list[tuple[Any, Any]]:
+def grid_edges(
+    nodes: list[Any], rows: int | None, cols: int | None
+) -> list[tuple[Any, Any]]:
     for name, value in (("rows", rows), ("cols", cols)):
         if value is not None and nonnegative_integer(value, name) == 0:
             raise ValueError(f"{name} must be positive")

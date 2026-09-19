@@ -14,12 +14,19 @@ from ..constants import DEFAULTS
 from ..constants.canonical import COUPLING_GENTLE, SHA_VF_FACTOR, UM_THETA_PUSH
 from ..utils import normalize_weights
 from ._cycle_algebra import (
-    Vector, dirichlet_energy, dot, laplacian_action, ordered_vector,
+    Vector,
+    dirichlet_energy,
+    dot,
+    laplacian_action,
+    ordered_vector,
 )
 
 __all__ = [
-    "CycleSupportBalance", "CycleSupportReset", "CycleSupportEuler",
-    "observe_cycle_support_balance", "observe_cycle_support_reset",
+    "CycleSupportBalance",
+    "CycleSupportReset",
+    "CycleSupportEuler",
+    "observe_cycle_support_balance",
+    "observe_cycle_support_reset",
     "observe_cycle_support_euler",
 ]
 
@@ -44,8 +51,13 @@ class CycleSupportBalance:
 
 
 def observe_cycle_support_balance(
-    epi, capacity, phase_offset_over_pi, *,
-    epi_weight=None, vf_weight=None, phase_weight=None,
+    epi,
+    capacity,
+    phase_offset_over_pi,
+    *,
+    epi_weight=None,
+    vf_weight=None,
+    phase_weight=None,
 ) -> CycleSupportBalance:
     """Observe the exact three-channel cycle reference without graph writes.
 
@@ -77,9 +89,7 @@ def observe_cycle_support_balance(
     )
     if e <= 0 or f < 0 or w < 0:
         raise ValueError("EPI weight must be positive; other weights nonnegative")
-    shifted = tuple(
-        xi + (f * vi + w * ai) / e for xi, vi, ai in zip(x, nu, a)
-    )
+    shifted = tuple(xi + (f * vi + w * ai) / e for xi, vi, ai in zip(x, nu, a))
     lx, ln, la, ly = (laplacian_action(values) for values in (x, nu, a, shifted))
     pressure = tuple(-e * xi - f * vi - w * ai for xi, vi, ai in zip(lx, ln, la))
     rate = tuple(vi * pi for vi, pi in zip(nu, pressure))
@@ -89,8 +99,19 @@ def observe_cycle_support_balance(
     if any(pressure_residual) or energy_residual or derivative > 0:
         raise RuntimeError("exact support flow balance lost its identities")
     return CycleSupportBalance(
-        x, nu, a, e, f, w, shifted, pressure, rate,
-        dirichlet_energy(shifted), derivative, pressure_residual, energy_residual,
+        x,
+        nu,
+        a,
+        e,
+        f,
+        w,
+        shifted,
+        pressure,
+        rate,
+        dirichlet_energy(shifted),
+        derivative,
+        pressure_residual,
+        energy_residual,
     )
 
 
@@ -99,16 +120,23 @@ def _rebalance(value: CycleSupportBalance) -> CycleSupportBalance:
         raise TypeError("before must be a CycleSupportBalance")
     # Public dataclass fields are not provenance: rebuild all cached quantities.
     return observe_cycle_support_balance(
-        value.epi, value.capacity, value.phase_offset_over_pi,
-        epi_weight=value.epi_weight, vf_weight=value.vf_weight,
+        value.epi,
+        value.capacity,
+        value.phase_offset_over_pi,
+        epi_weight=value.epi_weight,
+        vf_weight=value.vf_weight,
         phase_weight=value.phase_weight,
     )
 
 
 def _with_state(before, epi, capacity, phase):
     return observe_cycle_support_balance(
-        epi, capacity, phase, epi_weight=before.epi_weight,
-        vf_weight=before.vf_weight, phase_weight=before.phase_weight,
+        epi,
+        capacity,
+        phase,
+        epi_weight=before.epi_weight,
+        vf_weight=before.vf_weight,
+        phase_weight=before.phase_weight,
     )
 
 
@@ -136,7 +164,10 @@ class CycleSupportReset:
 
 
 def observe_cycle_support_reset(
-    before, *, eta=UM_THETA_PUSH, vf_sync=COUPLING_GENTLE,
+    before,
+    *,
+    eta=UM_THETA_PUSH,
+    vf_sync=COUPLING_GENTLE,
     silence_factor=SHA_VF_FACTOR,
 ) -> CycleSupportReset:
     """Observe the exact support reset and its signed energy change.

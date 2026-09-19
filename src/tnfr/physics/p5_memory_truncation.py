@@ -118,10 +118,7 @@ def _partial_fraction_polynomials(
     )
     second = sum(
         (
-            (-1) ** p
-            * comb(p + q - k - 1, q - k)
-            * time ** (k - 1)
-            / factorial(k - 1)
+            (-1) ** p * comb(p + q - k - 1, q - k) * time ** (k - 1) / factorial(k - 1)
             for k in range(1, q + 1)
         ),
         Fraction(0),
@@ -249,12 +246,21 @@ def bound_p5_memory_truncation(
             delta_upper = exp_bound(5 * lag / 3)[1]
             elapsed = scaled - lag
             forcing_bound = (
-                2 * nu * amplitude * delta_upper / 15
+                2
+                * nu
+                * amplitude
+                * delta_upper
+                / 15
                 * (1 - exp_bound(5 * elapsed / 3)[0])
             )
-            macro_bound = 3 * amplitude / 4 * min(
-                delta_upper / (9 + delta_upper),
-                delta_upper / 9 * (1 - exp_bound(elapsed)[0]) ** 2,
+            macro_bound = (
+                3
+                * amplitude
+                / 4
+                * min(
+                    delta_upper / (9 + delta_upper),
+                    delta_upper / 9 * (1 - exp_bound(elapsed)[0]) ** 2,
+                )
             )
         full_macro = _macro(mean, full)
         truncated_macro = _macro(mean, truncated)

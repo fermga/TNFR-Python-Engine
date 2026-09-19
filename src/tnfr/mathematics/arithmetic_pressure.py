@@ -138,8 +138,7 @@ def channel_abundance(n: int) -> Fraction:
 
 def channels(n: int) -> tuple[Fraction, Fraction, Fraction]:
     r"""All three channels ``(Ω−1, τ−2, (σ−n−1)/n)`` (exact)."""
-    return (channel_factorization(n), channel_divisor(n),
-            channel_abundance(n))
+    return (channel_factorization(n), channel_divisor(n), channel_abundance(n))
 
 
 def arithmetic_pressure(n: int) -> Fraction:
@@ -165,15 +164,10 @@ class ArithmeticPressureVector:
     @property
     def scalar(self) -> Fraction:
         r"""The chosen scalar aggregation (the sum) = ``arithmetic_pressure(n)``."""
-        return (
-            self.omega_defect
-            + self.divisor_count_defect
-            + self.divisor_mass_defect
-        )
+        return self.omega_defect + self.divisor_count_defect + self.divisor_mass_defect
 
     def as_tuple(self) -> tuple[Fraction, Fraction, Fraction]:
-        return (self.omega_defect, self.divisor_count_defect,
-                self.divisor_mass_defect)
+        return (self.omega_defect, self.divisor_count_defect, self.divisor_mass_defect)
 
 
 def pressure_vector(n: int) -> ArithmeticPressureVector:
@@ -212,15 +206,13 @@ def all_channels_sufficient(lo: int, hi: int) -> bool:
 def channels_nonnegative(lo: int, hi: int) -> bool:
     r"""Whether all three channels are ``>= 0`` on ``[lo, hi]``."""
     return all(
-        all(fn(n) >= 0 for fn in _CHANNEL_FUNCS)
-        for n in range(max(lo, 2), hi + 1)
+        all(fn(n) >= 0 for fn in _CHANNEL_FUNCS) for n in range(max(lo, 2), hi + 1)
     )
 
 
 def pressure_zero_iff_prime(lo: int, hi: int) -> bool:
     r"""Whether ``ΔNFR(n) = 0`` exactly on the primes of ``[lo, hi]``."""
-    zero = {n for n in range(max(lo, 2), hi + 1)
-            if arithmetic_pressure(n) == 0}
+    zero = {n for n in range(max(lo, 2), hi + 1) if arithmetic_pressure(n) == 0}
     return zero == primes_in_range(lo, hi)
 
 
@@ -229,10 +221,7 @@ def pressure_zero_iff_prime(lo: int, hi: int) -> bool:
 # --------------------------------------------------------------------------- #
 def channel_matrix(lo: int, hi: int) -> np.ndarray:
     r"""The ``(hi−lo+1) × 3`` matrix of channel values (float)."""
-    rows = [
-        [float(fn(n)) for fn in _CHANNEL_FUNCS]
-        for n in range(max(lo, 2), hi + 1)
-    ]
+    rows = [[float(fn(n)) for fn in _CHANNEL_FUNCS] for n in range(max(lo, 2), hi + 1)]
     return np.array(rows, dtype=float)
 
 
@@ -249,8 +238,7 @@ def has_linear_relation(lo: int, hi: int) -> bool:
     """
     M = channel_matrix(lo, hi)
     aug = np.column_stack([M, np.ones(len(M))])
-    return not (np.linalg.matrix_rank(M) == 3
-                and np.linalg.matrix_rank(aug) == 4)
+    return not (np.linalg.matrix_rank(M) == 3 and np.linalg.matrix_rank(aug) == 4)
 
 
 @dataclass(frozen=True)
@@ -296,15 +284,14 @@ def channel_correlations(lo: int, hi: int) -> np.ndarray:
 # --------------------------------------------------------------------------- #
 # 3. Ablation / minimality for primality
 # --------------------------------------------------------------------------- #
-def ablation_detects_primes(
-    lo: int, hi: int, keep: tuple[int, ...]
-) -> bool:
+def ablation_detects_primes(lo: int, hi: int, keep: tuple[int, ...]) -> bool:
     r"""Whether the sum of the kept channels is ``0`` exactly on the primes."""
     if not keep:
         raise ValueError("keep must be non-empty")
     funcs = [_CHANNEL_FUNCS[i] for i in keep]
     zero = {
-        n for n in range(max(lo, 2), hi + 1)
+        n
+        for n in range(max(lo, 2), hi + 1)
         if sum((fn(n) for fn in funcs), Fraction(0)) == 0
     }
     return zero == primes_in_range(lo, hi)
@@ -360,9 +347,7 @@ def pressure_by_class(
     r"""Per-class pressure statistics ``{class: {count, mean, min, max}}``."""
     buckets: dict[str, list[float]] = {}
     for n in range(max(lo, 2), hi + 1):
-        buckets.setdefault(classifier(n), []).append(
-            float(arithmetic_pressure(n))
-        )
+        buckets.setdefault(classifier(n), []).append(float(arithmetic_pressure(n)))
     return {
         cls: {
             "count": float(len(vals)),

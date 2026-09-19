@@ -91,27 +91,34 @@ def _scalar_id(value: Any) -> Any:
 def encode_graph(graph: nx.Graph) -> dict[str, Any]:
     """Capture supported graph state without mutating or relabelling it."""
     nodes = [
-        {"id": _scalar_id(node), "attributes": _json_state(dict(data), "node.attributes")}
+        {
+            "id": _scalar_id(node),
+            "attributes": _json_state(dict(data), "node.attributes"),
+        }
         for node, data in graph.nodes(data=True)
     ]
     edges = []
     source_edges = (
-        graph.edges(keys=True, data=True) if graph.is_multigraph()
+        graph.edges(keys=True, data=True)
+        if graph.is_multigraph()
         else ((u, v, None, data) for u, v, data in graph.edges(data=True))
     )
     for source, target, key, data in source_edges:
         entry = {
-            "source": _scalar_id(source), "target": _scalar_id(target),
+            "source": _scalar_id(source),
+            "target": _scalar_id(target),
             "attributes": _json_state(dict(data), "edge.attributes"),
         }
         if graph.is_multigraph():
             entry["key"] = _scalar_id(key)
         edges.append(entry)
     return {
-        "schema": GRAPH_SCHEMA, "directed": graph.is_directed(),
+        "schema": GRAPH_SCHEMA,
+        "directed": graph.is_directed(),
         "multigraph": graph.is_multigraph(),
         "attributes": _json_state(dict(graph.graph), "graph.attributes"),
-        "nodes": nodes, "edges": edges,
+        "nodes": nodes,
+        "edges": edges,
     }
 
 
@@ -119,11 +126,16 @@ def decode_graph(payload: dict[str, Any]) -> nx.Graph:
     """Load the declared graph schema, rejecting unknown or lossy state."""
     if payload.get("schema") != GRAPH_SCHEMA:
         raise ValueError("Unsupported manifest graph schema")
-    if type(payload.get("directed")) is not bool or type(payload.get("multigraph")) is not bool:
+    if (
+        type(payload.get("directed")) is not bool
+        or type(payload.get("multigraph")) is not bool
+    ):
         raise ValueError("Manifest graph flags must be booleans")
     graph_type = (
-        nx.MultiDiGraph if payload["directed"] else nx.MultiGraph
-    ) if payload["multigraph"] else (nx.DiGraph if payload["directed"] else nx.Graph)
+        (nx.MultiDiGraph if payload["directed"] else nx.MultiGraph)
+        if payload["multigraph"]
+        else (nx.DiGraph if payload["directed"] else nx.Graph)
+    )
     graph = graph_type()
     graph.graph.update(_json_state(payload["attributes"], "graph.attributes"))
     for record in payload["nodes"]:
@@ -163,10 +175,13 @@ def collect_manifest_telemetry(graph: nx.Graph) -> dict[str, Any]:
     errors = {}
     computations = {
         "coherence": lambda: float(compute_coherence(readout)),
-        "sense_index": lambda: fmean(compute_Si(readout, inplace=False).values()) if readout else 0.0,
+        "sense_index": lambda: (
+            fmean(compute_Si(readout, inplace=False).values()) if readout else 0.0
+        ),
         "structural_potential_range": lambda: (
             [min(values.values()), max(values.values())]
-            if (values := compute_structural_potential(readout)) else None
+            if (values := compute_structural_potential(readout))
+            else None
         ),
     }
     for name, compute in computations.items():
@@ -181,8 +196,11 @@ def collect_manifest_telemetry(graph: nx.Graph) -> dict[str, Any]:
 
 
 def write_manifest_bundle(
-    output_dir: Path, manifest_name: str, summary_name: str,
-    manifest: dict[str, Any], summary: dict[str, Any],
+    output_dir: Path,
+    manifest_name: str,
+    summary_name: str,
+    manifest: dict[str, Any],
+    summary: dict[str, Any],
     partitions: Iterable[tuple[str, nx.Graph, dict[str, Any]]],
 ) -> dict[str, Path]:
     """Write graph payloads and a compatible entries index beside the summary."""
@@ -191,18 +209,30 @@ def write_manifest_bundle(
     files = []
     for index, (partition_id, graph, telemetry) in enumerate(partitions):
         filename = f"{Path(manifest_name).stem}_partition_{index}.json"
-        files.append((filename, {
-            "partition_id": partition_id, "graph": encode_graph(graph),
-            "partition": {"telemetry": telemetry},
-        }))
-        entries.append({
-            "partition_id": partition_id, "relative_path": filename,
-            "size": len(graph), "telemetry": telemetry,
-        })
+        files.append(
+            (
+                filename,
+                {
+                    "partition_id": partition_id,
+                    "graph": encode_graph(graph),
+                    "partition": {"telemetry": telemetry},
+                },
+            )
+        )
+        entries.append(
+            {
+                "partition_id": partition_id,
+                "relative_path": filename,
+                "size": len(graph),
+                "telemetry": telemetry,
+            }
+        )
     manifest = {**manifest, "graph_schema": GRAPH_SCHEMA, "entries": entries}
     files.extend([(manifest_name, manifest), (summary_name, summary)])
     # Validate every payload before publishing any file in this bundle.
-    encoded = [(name, json.dumps(data, indent=2, allow_nan=False)) for name, data in files]
+    encoded = [
+        (name, json.dumps(data, indent=2, allow_nan=False)) for name, data in files
+    ]
     for name, data in encoded:
         safe_write(output_dir / name, lambda handle, text=data: handle.write(text))
     return {

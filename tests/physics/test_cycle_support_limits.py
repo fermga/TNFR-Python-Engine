@@ -4,11 +4,11 @@ from fractions import Fraction
 
 from tnfr.constants.canonical import COUPLING_GENTLE, SHA_VF_FACTOR
 from tnfr.physics.cycle_support_dynamics import (
-    observe_cycle_support_balance, observe_cycle_support_euler,
+    observe_cycle_support_balance,
+    observe_cycle_support_euler,
     observe_cycle_support_reset,
 )
 from tnfr.physics.reversible_eigenmode_reference import _negative_exp_bounds
-
 
 F = Fraction
 V = (1, -1) * 4
@@ -21,7 +21,8 @@ def test_default_checkerboard_reduces_to_two_scalar_nodal_equations():
     contrast_epi = -f * contrast_capacity / e
     before = observe_cycle_support_balance(
         tuple(1 + contrast_epi * v for v in V),
-        tuple(mean_capacity + contrast_capacity * v for v in V), (0,) * 8,
+        tuple(mean_capacity + contrast_capacity * v for v in V),
+        (0,) * 8,
     )
     assert before.pressure == (0,) * 8
     reset = observe_cycle_support_reset(before)
@@ -53,7 +54,8 @@ def test_nondamping_phase_boundary_has_an_exact_euler_two_cycle():
     assert 0 < rho < 1
     response = (w * amplitude / e) * (1 - rho) / (1 + rho)
     initial = observe_cycle_support_balance(
-        tuple(1 - response * v for v in V), (1,) * 8,
+        tuple(1 - response * v for v in V),
+        (1,) * 8,
         tuple(amplitude * v for v in V),
     )
     first_reset = observe_cycle_support_reset(initial, eta=1, silence_factor=1)
@@ -65,6 +67,8 @@ def test_nondamping_phase_boundary_has_an_exact_euler_two_cycle():
     assert second.after == initial
     assert first_reset.energy_change + second_reset.energy_change > 0
     assert (
-        first_reset.energy_change + first.energy_change
-        + second_reset.energy_change + second.energy_change
+        first_reset.energy_change
+        + first.energy_change
+        + second_reset.energy_change
+        + second.energy_change
     ) == 0

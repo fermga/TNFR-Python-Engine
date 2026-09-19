@@ -1,8 +1,8 @@
 """Distributed birth/attachment observations, without a persistence theorem."""
 
+import json
 from dataclasses import asdict, replace
 from fractions import Fraction
-import json
 
 import pytest
 
@@ -25,8 +25,13 @@ def cases(study):
 
 def _energy(conductance, values):
     """Independent directed-edge Dirichlet convention on exact inputs."""
-    return sum((weight * (values[i] - values[j]) ** 2
-                for i, j, weight in conductance), Fraction(0)) / 4
+    return (
+        sum(
+            (weight * (values[i] - values[j]) ** 2 for i, j, weight in conductance),
+            Fraction(0),
+        )
+        / 4
+    )
 
 
 def _laplacian(conductance, values):
@@ -44,18 +49,43 @@ def _assert_euler_budget(budget):
     h = budget["dt"]
     edges = before["conductance"]
     x, observed = before["epi"], after["epi"]
-    rate = tuple(nu * pressure for nu, pressure in zip(
-        before["capacity"], before["stored_pressure"], strict=True,
-    ))
-    expected = tuple(value + h * velocity for value, velocity in zip(x, rate, strict=True))
-    defect = tuple(value - ideal for value, ideal in zip(observed, expected, strict=True))
-    drift = h * sum((gradient * velocity for gradient, velocity in zip(
-        _laplacian(edges, x), rate, strict=True,
-    )), Fraction(0))
+    rate = tuple(
+        nu * pressure
+        for nu, pressure in zip(
+            before["capacity"],
+            before["stored_pressure"],
+            strict=True,
+        )
+    )
+    expected = tuple(
+        value + h * velocity for value, velocity in zip(x, rate, strict=True)
+    )
+    defect = tuple(
+        value - ideal for value, ideal in zip(observed, expected, strict=True)
+    )
+    drift = h * sum(
+        (
+            gradient * velocity
+            for gradient, velocity in zip(
+                _laplacian(edges, x),
+                rate,
+                strict=True,
+            )
+        ),
+        Fraction(0),
+    )
     quadratic = h**2 * _energy(edges, rate)
-    defect_term = sum((gradient * error for gradient, error in zip(
-        _laplacian(edges, expected), defect, strict=True,
-    )), Fraction(0)) + _energy(edges, defect)
+    defect_term = sum(
+        (
+            gradient * error
+            for gradient, error in zip(
+                _laplacian(edges, expected),
+                defect,
+                strict=True,
+            )
+        ),
+        Fraction(0),
+    ) + _energy(edges, defect)
     change = _energy(edges, observed) - _energy(edges, x)
     assert budget["expected_epi"] == expected
     assert budget["state_defect"] == defect
@@ -79,12 +109,19 @@ def test_all_controls_replay_the_unchanged_causal_preparation_and_public_births(
         assert preparation["physical_steps"] == (0.25, 0.25)
         assert preparation["default_birth_threshold"] == 0.1
         assert preparation["before_birth"] == case["birth"]["before"]
-        assert tuple(row["glyph"] for row in preparation["actual_prefix"]) == ("IL", "OZ")
-        assert all(row["targets"] == tuple(range(8)) for row in preparation["actual_prefix"])
+        assert tuple(row["glyph"] for row in preparation["actual_prefix"]) == (
+            "IL",
+            "OZ",
+        )
+        assert all(
+            row["targets"] == tuple(range(8)) for row in preparation["actual_prefix"]
+        )
 
 
 @pytest.mark.parametrize("name", CASES)
-def test_all_eight_actual_parents_birth_isolated_children_without_rewriting_old_epi(cases, name):
+def test_all_eight_actual_parents_birth_isolated_children_without_rewriting_old_epi(
+    cases, name
+):
     birth = cases[name]["birth"]
     before, after = birth["before"], birth["after"]
     pairs = birth["parent_children"]
@@ -104,8 +141,10 @@ def test_all_eight_actual_parents_birth_isolated_children_without_rewriting_old_
     assert birth["stage_result"]["nodes_processed"] == 8
     assert birth["policy"] == "all_eligible_once"
     assert birth["eligibility"]["eligible_nodes"] == tuple(range(8))
-    assert all(row["eligible"] and row["proposal_valid"] and row["birth_proposed"]
-               for row in birth["eligibility"]["candidates"])
+    assert all(
+        row["eligible"] and row["proposal_valid"] and row["birth_proposed"]
+        for row in birth["eligibility"]["candidates"]
+    )
     for record in birth["children"]:
         assert record["degree"] == 0
         assert record["node_data"]["parent_node"] == record["parent"]
@@ -118,7 +157,9 @@ def test_all_eight_actual_parents_birth_isolated_children_without_rewriting_old_
 
 
 @pytest.mark.parametrize("name", CASES)
-def test_simultaneous_um_replays_complete_proposal_and_commits_actual_outputs(cases, name):
+def test_simultaneous_um_replays_complete_proposal_and_commits_actual_outputs(
+    cases, name
+):
     coupling = cases[name]["coupling"]
     proposal = coupling["kernel_proposal"]
     before, raw = coupling["before"], coupling["after_raw"]
@@ -127,24 +168,35 @@ def test_simultaneous_um_replays_complete_proposal_and_commits_actual_outputs(ca
     assert coupling["stage_result"]["nodes_processed"] == 8
     assert coupling["stage_result"]["schedule"] == "two_phase_jacobi"
     assert tuple(row["node"] for row in coupling["admissions"]) == tuple(range(8))
-    assert all(row["allowed"] and row["candidate"] == "UM" for row in coupling["admissions"])
+    assert all(
+        row["allowed"] and row["candidate"] == "UM" for row in coupling["admissions"]
+    )
     assert coupling["bidirectional"] and coupling["candidate_limit"] == 0
     assert coupling["candidate_mode"] == "sample"
     assert before == cases[name]["birth"]["after"]
     assert raw["epi"] == before["epi"]
     assert raw["nodes"] == before["nodes"]
-    expected = {field: list(before[field]) for field in ("phase", "capacity", "pressure")}
+    expected = {
+        field: list(before[field]) for field in ("phase", "capacity", "pressure")
+    }
     indices = {node: index for index, node in enumerate(raw["nodes"])}
     for update in proposal["node_updates"]:
-        for key, field in (("theta_after", "phase"), ("vf_after", "capacity"),
-                           ("dnfr_after", "pressure")):
+        for key, field in (
+            ("theta_after", "phase"),
+            ("vf_after", "capacity"),
+            ("dnfr_after", "pressure"),
+        ):
             if update[key] is not None:
                 expected[field][indices[update["node"]]] = update[key]
     for field, values in expected.items():
         assert raw[field] == tuple(values)
-    actual = {frozenset((u, v)): attrs["weight"] for u, v, attrs in coupling["new_edges"]}
-    proposed = {frozenset((edge["left"], edge["right"])): edge["weight"]
-                for edge in proposal["edges"]}
+    actual = {
+        frozenset((u, v)): attrs["weight"] for u, v, attrs in coupling["new_edges"]
+    }
+    proposed = {
+        frozenset((edge["left"], edge["right"])): edge["weight"]
+        for edge in proposal["edges"]
+    }
     assert actual == proposed
     old = {frozenset((u, v)): attrs for u, v, attrs in before["edges"]}
     current = {frozenset((u, v)): attrs for u, v, attrs in raw["edges"]}
@@ -155,7 +207,9 @@ def test_simultaneous_um_replays_complete_proposal_and_commits_actual_outputs(ca
         assert raw["glyph_history"][child] == ()
 
 
-def test_fresh_sample_selects_the_observed_sixteen_edges_not_eight_prescribed_links(cases):
+def test_fresh_sample_selects_the_observed_sixteen_edges_not_eight_prescribed_links(
+    cases,
+):
     normal = cases["attached"]
     coupling = normal["coupling"]
     children = dict(normal["birth"]["parent_children"])
@@ -163,13 +217,24 @@ def test_fresh_sample_selects_the_observed_sixteen_edges_not_eight_prescribed_li
     assert coupling["node_sample_before"] == tuple(range(8))
     assert coupling["node_sample_used"] == normal["birth"]["after"]["nodes"]
     expected = {frozenset((parent, child)) for parent, child in children.items()}
-    expected.update(frozenset((neighbor, children[parent]))
-                    for parent in range(0, 8, 2)
-                    for neighbor in ((parent - 1) % 8, (parent + 1) % 8))
+    expected.update(
+        frozenset((neighbor, children[parent]))
+        for parent in range(0, 8, 2)
+        for neighbor in ((parent - 1) % 8, (parent + 1) % 8)
+    )
     assert len(expected) == 16
     assert {frozenset((u, v)) for u, v, _ in coupling["new_edges"]} == expected
-    assert tuple(row["child_response"]["degree_after_um"] for row in normal["responses"]) == (
-        3, 1, 3, 1, 3, 1, 3, 1,
+    assert tuple(
+        row["child_response"]["degree_after_um"] for row in normal["responses"]
+    ) == (
+        3,
+        1,
+        3,
+        1,
+        3,
+        1,
+        3,
+        1,
     )
     assert all(0 < attrs["weight"] < 1 for _, _, attrs in coupling["new_edges"])
     for parent, child in children.items():
@@ -179,7 +244,9 @@ def test_fresh_sample_selects_the_observed_sixteen_edges_not_eight_prescribed_li
         assert item["child_response"]["node"] == child
 
 
-def test_disabled_links_and_old_sample_are_distinct_inputs_with_the_same_observed_isolation(cases):
+def test_disabled_links_and_old_sample_are_distinct_inputs_with_the_same_observed_isolation(
+    cases,
+):
     disabled = cases["links_disabled"]["coupling"]
     stale = cases["stale_sample"]["coupling"]
     assert not disabled["functional_links"] and disabled["sampling_refresh_executed"]
@@ -201,7 +268,9 @@ def test_disabled_links_and_old_sample_are_distinct_inputs_with_the_same_observe
 
 
 @pytest.mark.parametrize("name", CASES)
-def test_support_attachment_budget_uses_the_same_postbirth_dimension_and_exact_edges(cases, name):
+def test_support_attachment_budget_uses_the_same_postbirth_dimension_and_exact_edges(
+    cases, name
+):
     coupling = cases[name]["coupling"]
     budget = coupling["support_reset_budget"]
     before, after = budget["before"], budget["after"]
@@ -209,14 +278,21 @@ def test_support_attachment_budget_uses_the_same_postbirth_dimension_and_exact_e
     assert len(before["nodes"]) == 16
     assert before["epi"] == after["epi"]
     expected = _energy(after["conductance"], after["epi"]) - _energy(
-        before["conductance"], before["epi"],
+        before["conductance"],
+        before["epi"],
     )
     assert budget["energy_change"] == budget["edge_energy_change"] == expected
     assert budget["identity_residual"] == 0
     indices = {node: index for index, node in enumerate(before["nodes"])}
-    by_added_edges = sum((Fraction.from_float(attrs["weight"]) * (
-        before["epi"][indices[u]] - before["epi"][indices[v]]
-    ) ** 2 / 2 for u, v, attrs in coupling["new_edges"]), Fraction(0))
+    by_added_edges = sum(
+        (
+            Fraction.from_float(attrs["weight"])
+            * (before["epi"][indices[u]] - before["epi"][indices[v]]) ** 2
+            / 2
+            for u, v, attrs in coupling["new_edges"]
+        ),
+        Fraction(0),
+    )
     assert by_added_edges == expected
     assert (expected > 0) == (name == "attached")
     refreshed = coupling["pressure_refresh_reset_budget"]
@@ -225,7 +301,9 @@ def test_support_attachment_budget_uses_the_same_postbirth_dimension_and_exact_e
 
 
 @pytest.mark.parametrize("name", CASES)
-def test_fresh_postgrowth_executor_owns_exactly_two_segments_and_three_pressure_boundaries(cases, name):
+def test_fresh_postgrowth_executor_owns_exactly_two_segments_and_three_pressure_boundaries(
+    cases, name
+):
     case = cases[name]
     flow = case["physical_flow"]
     assert flow["before"] == case["coupling"]["after_refreshed"]
@@ -233,7 +311,8 @@ def test_fresh_postgrowth_executor_owns_exactly_two_segments_and_three_pressure_
     assert flow["partition"]["segment_durations"] == (0.25, 0.25)
     intervals = flow["partition"]["segments"]
     assert tuple((row["start_time"], row["end_time"]) for row in intervals) == (
-        (0.5, 0.75), (0.75, 1.0),
+        (0.5, 0.75),
+        (0.75, 1.0),
     )
     assert flow["pressure_refresh_callback_invocations"] == 3
     assert flow["physical_pressure_reevaluated_partition_established"]
@@ -241,7 +320,9 @@ def test_fresh_postgrowth_executor_owns_exactly_two_segments_and_three_pressure_
     assert tuple(row["time"] for row in flow["boundaries"]) == (0.5, 0.75, 1.0)
     assert len(flow["segments"]) == 2
     for boundary in flow["boundaries"]:
-        assert boundary["callback_completed"] and boundary["nonpressure_state_preserved"]
+        assert (
+            boundary["callback_completed"] and boundary["nonpressure_state_preserved"]
+        )
         assert len(boundary["before"]["nodes"]) == 16
         for field in ("nodes", "epi", "exact_epi", "nu_f", "exact_nu_f", "conductance"):
             assert boundary["before"][field] == boundary["after"][field]
@@ -259,7 +340,9 @@ def test_fresh_postgrowth_executor_owns_exactly_two_segments_and_three_pressure_
 
 
 @pytest.mark.parametrize("name", CASES)
-def test_held_rate_and_refreshed_endpoint_pressure_are_distinct_in_exact_euler_accounting(cases, name):
+def test_held_rate_and_refreshed_endpoint_pressure_are_distinct_in_exact_euler_accounting(
+    cases, name
+):
     flow = cases[name]["physical_flow"]
     for index, segment in enumerate(flow["segments"]):
         assert segment["before"] == flow["boundaries"][index]["after"]
@@ -271,23 +354,40 @@ def test_held_rate_and_refreshed_endpoint_pressure_are_distinct_in_exact_euler_a
         assert segment["method"] == "euler" and not segment["clipping_applied"]
         assert segment["interval"]["duration"] == 0.25
         _assert_euler_budget(segment["exact_euler_budget"])
-        assert segment["before_support"]["stored_pressure"] == segment["after_support"]["stored_pressure"]
+        assert (
+            segment["before_support"]["stored_pressure"]
+            == segment["after_support"]["stored_pressure"]
+        )
         next_pressure = flow["boundaries"][index + 1]["after"]["exact_delta_nfr"]
         assert next_pressure != segment["after_support"]["stored_pressure"]
-    telescope = sum((segment["exact_euler_budget"]["energy_change"]
-                     for segment in flow["segments"]), Fraction(0))
-    assert flow["exact_energy_change"] == flow["exact_segment_energy_change_sum"] == telescope
+    telescope = sum(
+        (
+            segment["exact_euler_budget"]["energy_change"]
+            for segment in flow["segments"]
+        ),
+        Fraction(0),
+    )
+    assert (
+        flow["exact_energy_change"]
+        == flow["exact_segment_energy_change_sum"]
+        == telescope
+    )
     assert flow["energy_telescope_residual"] == 0
 
 
-def test_report_serialization_keeps_finite_execution_separate_from_future_or_physical_claims(study):
+def test_report_serialization_keeps_finite_execution_separate_from_future_or_physical_claims(
+    study,
+):
     encoded = json.dumps(_payload(study), allow_nan=False)
     payload = json.loads(encoded)
     assert len(payload["cases"]) == 3
     for case in payload["cases"]:
         flow = case["physical_flow"]
-        for flag in ("solver_accuracy_certified", "mesh_convergence_certified",
-                     "future_or_repeated_behavior_certified"):
+        for flag in (
+            "solver_accuracy_certified",
+            "mesh_convergence_certified",
+            "future_or_repeated_behavior_certified",
+        ):
             assert flow[flag] is False
         for segment in flow["segments"]:
             assert segment["pure_epi_diffusion_eligible"] is False
@@ -299,13 +399,17 @@ def test_report_serialization_keeps_finite_execution_separate_from_future_or_phy
 
 
 @pytest.mark.parametrize("change", ("node_order", "conductance", "capacity", "raw_epi"))
-def test_detached_flow_support_bridge_rejects_mismatched_authoritative_channels(cases, change):
+def test_detached_flow_support_bridge_rejects_mismatched_authoritative_channels(
+    cases, change
+):
     from benchmarks.thol_distributed_transport import _support_from_flow_state
     from tnfr.physics.runtime_flow_stability import NodalFlowStateSnapshot
     from tnfr.physics.support_transport import SupportTransportSnapshot
 
     case = cases["attached"]
-    reference = SupportTransportSnapshot(**case["coupling"]["after_support"]["snapshot"])
+    reference = SupportTransportSnapshot(
+        **case["coupling"]["after_support"]["snapshot"]
+    )
     state = NodalFlowStateSnapshot(**case["physical_flow"]["segments"][0]["before"])
     if change == "node_order":
         changed = replace(state, nodes=state.nodes[1:] + state.nodes[:1])
@@ -321,20 +425,31 @@ def test_detached_flow_support_bridge_rejects_mismatched_authoritative_channels(
         _support_from_flow_state(reference, changed)
 
 
-def test_detached_bridge_rebuilds_derived_energy_instead_of_trusting_supplied_cache(cases):
+def test_detached_bridge_rebuilds_derived_energy_instead_of_trusting_supplied_cache(
+    cases,
+):
     from benchmarks.thol_distributed_transport import _support_from_flow_state
     from tnfr.physics.runtime_flow_stability import NodalFlowStateSnapshot
     from tnfr.physics.support_transport import SupportTransportSnapshot
 
     case = cases["attached"]
-    reference = SupportTransportSnapshot(**case["coupling"]["after_support"]["snapshot"])
+    reference = SupportTransportSnapshot(
+        **case["coupling"]["after_support"]["snapshot"]
+    )
     segment = case["physical_flow"]["segments"][0]
     state = NodalFlowStateSnapshot(**segment["before"])
-    forged_cache = replace(reference, dirichlet_energy=Fraction(-123), energy_rate=Fraction(456))
-    assert asdict(_support_from_flow_state(forged_cache, state)) == segment["before_support"]
+    forged_cache = replace(
+        reference, dirichlet_energy=Fraction(-123), energy_rate=Fraction(456)
+    )
+    assert (
+        asdict(_support_from_flow_state(forged_cache, state))
+        == segment["before_support"]
+    )
 
 
-def test_connected_generated_support_keeps_all_children_in_its_exact_capacity_source_budget(cases):
+def test_connected_generated_support_keeps_all_children_in_its_exact_capacity_source_budget(
+    cases,
+):
     attached = cases["attached"]
     coupling = attached["coupling"]
     snapshot = coupling["after_support"]["snapshot"]
@@ -358,7 +473,9 @@ def test_connected_generated_support_keeps_all_children_in_its_exact_capacity_so
             child_strengths[i] += weight
     assert tuple(child_counts) == (1, 3, 1, 3, 1, 3, 1, 3)
     assert budget["strengths"] == tuple(strength)
-    metric = tuple(degree / capacity for degree, capacity in zip(strength, nu, strict=True))
+    metric = tuple(
+        degree / capacity for degree, capacity in zip(strength, nu, strict=True)
+    )
     assert all(value > 0 for value in metric)
     assert budget["metric_weights"] == metric
     captured = coupling["refreshed_forcing"]
@@ -368,48 +485,115 @@ def test_connected_generated_support_keeps_all_children_in_its_exact_capacity_so
         sum((nu[j] - nu[i] for j in neighbors), Fraction(0)) / len(neighbors)
         for i, neighbors in enumerate(snapshot["support_neighbors"])
     )
-    actual = sum((d * w_vf * gradient for d, gradient in zip(strength, vf_gradient, strict=True)),
-                 Fraction(0))
-    closed = 2 * w_vf * (1 - nu[8]) * sum((
-        (s - count) / (2 + count) for s, count in zip(child_strengths, child_counts, strict=True)
-    ), Fraction(0))
+    actual = sum(
+        (
+            d * w_vf * gradient
+            for d, gradient in zip(strength, vf_gradient, strict=True)
+        ),
+        Fraction(0),
+    )
+    closed = (
+        2
+        * w_vf
+        * (1 - nu[8])
+        * sum(
+            (
+                (s - count) / (2 + count)
+                for s, count in zip(child_strengths, child_counts, strict=True)
+            ),
+            Fraction(0),
+        )
+    )
     assert actual == closed < 0
-    assert budget["capacity_weighted_source"] == budget["capacity_closed_form_source"] == actual
+    assert (
+        budget["capacity_weighted_source"]
+        == budget["capacity_closed_form_source"]
+        == actual
+    )
     assert budget["capacity_identity_residual"] == 0
     for i, incidence in enumerate(budget["parent_child_incidence"]):
-        assert incidence == {"parent": i, "child_count": child_counts[i],
-                             "child_strength": child_strengths[i]}
+        assert incidence == {
+            "parent": i,
+            "child_count": child_counts[i],
+            "child_strength": child_strengths[i],
+        }
     components = dict(captured["components"])
-    components["epi"] = tuple(observation["epi_weight"] * g for g in snapshot["epi_gradient"])
-    weighted = {name: sum((d * f for d, f in zip(strength, values, strict=True)), Fraction(0))
-                for name, values in components.items()}
+    components["epi"] = tuple(
+        observation["epi_weight"] * g for g in snapshot["epi_gradient"]
+    )
+    weighted = {
+        name: sum((d * f for d, f in zip(strength, values, strict=True)), Fraction(0))
+        for name, values in components.items()
+    }
     assert budget["weighted_source_by_channel"] == weighted
     assert weighted["epi"] == 0
     mass = sum(metric, Fraction(0))
-    assert budget["mean_rate_by_channel"] == {name: value / mass for name, value in weighted.items()}
-    kernel_defect = sum((d * f for d, f in zip(
-        strength, observation["kernel_pressure_defect"], strict=True,
-    )), Fraction(0)) / mass
-    stored_defect = sum((d * f for d, f in zip(
-        strength, observation["stored_pressure_residual"], strict=True,
-    )), Fraction(0)) / mass
-    observed_rate = sum((h * capacity * pressure for h, capacity, pressure in zip(
-        metric, nu, snapshot["stored_pressure"], strict=True,
-    )), Fraction(0)) / mass
+    assert budget["mean_rate_by_channel"] == {
+        name: value / mass for name, value in weighted.items()
+    }
+    kernel_defect = (
+        sum(
+            (
+                d * f
+                for d, f in zip(
+                    strength,
+                    observation["kernel_pressure_defect"],
+                    strict=True,
+                )
+            ),
+            Fraction(0),
+        )
+        / mass
+    )
+    stored_defect = (
+        sum(
+            (
+                d * f
+                for d, f in zip(
+                    strength,
+                    observation["stored_pressure_residual"],
+                    strict=True,
+                )
+            ),
+            Fraction(0),
+        )
+        / mass
+    )
+    observed_rate = (
+        sum(
+            (
+                h * capacity * pressure
+                for h, capacity, pressure in zip(
+                    metric,
+                    nu,
+                    snapshot["stored_pressure"],
+                    strict=True,
+                )
+            ),
+            Fraction(0),
+        )
+        / mass
+    )
     assert budget["kernel_mean_rate_defect"] == kernel_defect
     assert budget["stored_pressure_mean_rate_defect"] == stored_defect
     assert budget["represented_weighted_mean_rate"] == observed_rate
-    assert observed_rate == sum(weighted.values(), Fraction(0)) / mass + kernel_defect + stored_defect
+    assert (
+        observed_rate
+        == sum(weighted.values(), Fraction(0)) / mass + kernel_defect + stored_defect
+    )
     assert budget["mean_rate_identity_residual"] == 0
 
 
 @pytest.mark.parametrize("name", ("links_disabled", "stale_sample"))
-def test_disconnected_controls_do_not_discard_children_to_claim_positive_metric(cases, name):
+def test_disconnected_controls_do_not_discard_children_to_claim_positive_metric(
+    cases, name
+):
     case = cases[name]
     snapshot = case["coupling"]["after_support"]["snapshot"]
     inventory = case["coupling"]["support_inventory"]
     assert inventory["positive_conductance_components"] == (
-        tuple(range(8)), *((child,) for _, child in case["birth"]["parent_children"]),
+        tuple(range(8)),
+        *((child,) for _, child in case["birth"]["parent_children"]),
     )
     assert inventory["directed_positive_conductance_entries"] == 16
     assert inventory["directed_unique_support_entries"] == 16

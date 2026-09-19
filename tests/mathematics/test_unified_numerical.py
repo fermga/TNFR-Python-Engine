@@ -8,12 +8,8 @@ import numpy as np
 import pytest
 
 import tnfr.mathematics.unified_numerical as unified_numerical
-
 from tnfr.errors import TNFRValueError
-from tnfr.mathematics.unified_numerical import (
-    CONSTANTS,
-    TNFRNumericalUtilities,
-)
+from tnfr.mathematics.unified_numerical import CONSTANTS, TNFRNumericalUtilities
 
 
 def test_zero_seed_is_preserved_and_reproducible():
@@ -67,9 +63,7 @@ def test_safe_divide_preserves_fractional_fallback_for_integer_input():
 
 def test_circular_mean_respects_wrap_and_rejects_undefined_samples():
     utilities = TNFRNumericalUtilities()
-    mean = utilities.compute_circular_mean(
-        [math.pi - 0.01, -math.pi + 0.01]
-    )
+    mean = utilities.compute_circular_mean([math.pi - 0.01, -math.pi + 0.01])
     assert abs(abs(mean) - math.pi) < 1e-12
 
     with pytest.raises(TNFRValueError, match="at least one"):
@@ -96,6 +90,7 @@ def test_finiteness_readout_is_a_python_boolean():
     result = TNFRNumericalUtilities().is_finite_array(np.array([1.0, 2.0]))
     assert type(result) is bool
     assert result is True
+
 
 def test_safe_divide_fallback_broadcasts_and_rejects_length_mismatch(monkeypatch):
     monkeypatch.setattr(unified_numerical, "NUMPY_AVAILABLE", False)

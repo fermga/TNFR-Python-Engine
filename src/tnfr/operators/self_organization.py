@@ -14,12 +14,7 @@ from dataclasses import dataclass, replace
 from typing import Any, ClassVar
 
 from ..config.operator_names import SELF_ORGANIZATION
-from ..constants.aliases import (
-    ALIAS_D2EPI,
-    ALIAS_DNFR,
-    ALIAS_THETA,
-    ALIAS_VF,
-)
+from ..constants.aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
 from ..constants.canonical import COUPLING_GENTLE, COUPLING_MODERATE
 from ..glyph_history import next_operator_step
 from ..types import Glyph, TNFRGraph
@@ -32,11 +27,11 @@ from ._argument_validation import (
     strict_bool,
     validate_common_execution_arguments,
 )
-from .definitions_base import Operator
-from .network_stage import GraphTransactionSnapshot
+from ._thol_config import resolve_thol_bifurcation_threshold
 from ._thol_constants import THOL_CHILD_VF_DAMPING, THOL_SUB_EPI_SCALING
 from ._thol_pressure import propose_thol_pressure
-from ._thol_config import resolve_thol_bifurcation_threshold
+from .definitions_base import Operator
+from .network_stage import GraphTransactionSnapshot
 from .preconditions import self_organization as _thol_preconditions
 from .preconditions.self_organization import (
     _finite_node_epi,
@@ -44,7 +39,9 @@ from .preconditions.self_organization import (
 )
 
 # Preserve the earlier private reader paths without duplicating their kernels.
-_active_acceleration_history_length = _thol_preconditions._active_acceleration_history_length
+_active_acceleration_history_length = (
+    _thol_preconditions._active_acceleration_history_length
+)
 _finite_epi_value = _thol_preconditions._finite_epi_value
 
 _OPERATOR = "Self-organization"
@@ -282,9 +279,7 @@ class SelfOrganization(Operator):
         if requested and enabled:
             self._validate_preconditions(G, node, **kw)
 
-    def _validate_preconditions(
-        self, G: TNFRGraph, node: Any, **kw: Any
-    ) -> None:
+    def _validate_preconditions(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Delegate to the shared read-only optional THOL gate."""
         validate_self_organization_strict(G, node, tau=kw.get("tau"))
 
@@ -438,9 +433,9 @@ class SelfOrganization(Operator):
                 final_records
             )
 
-        preconditions_active = bool(
-            kw.get("validate_preconditions", True)
-        ) and bool(G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False))
+        preconditions_active = bool(kw.get("validate_preconditions", True)) and bool(
+            G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False)
+        )
         context = None
         no_bifurcation = None
         if preconditions_active:
@@ -541,9 +536,7 @@ class SelfOrganization(Operator):
         signals = None
         if metabolic_enabled:
             for neighbor in G.neighbors(node):
-                _finite_node_epi(
-                    G.nodes[neighbor], label=f"neighbor {neighbor!r} EPI"
-                )
+                _finite_node_epi(G.nodes[neighbor], label=f"neighbor {neighbor!r} EPI")
                 finite_node_real(
                     G.nodes[neighbor],
                     ALIAS_THETA,
@@ -560,18 +553,14 @@ class SelfOrganization(Operator):
         complexity_weight = COUPLING_GENTLE
         if signals is not None:
             gradient_weight = finite_real(
-                G.graph.get(
-                    "THOL_METABOLIC_GRADIENT_WEIGHT", COUPLING_MODERATE
-                ),
+                G.graph.get("THOL_METABOLIC_GRADIENT_WEIGHT", COUPLING_MODERATE),
                 operator=_OPERATOR,
                 label="THOL_METABOLIC_GRADIENT_WEIGHT",
                 lower=0.0,
                 upper=1.0,
             )
             complexity_weight = finite_real(
-                G.graph.get(
-                    "THOL_METABOLIC_COMPLEXITY_WEIGHT", COUPLING_GENTLE
-                ),
+                G.graph.get("THOL_METABOLIC_COMPLEXITY_WEIGHT", COUPLING_GENTLE),
                 operator=_OPERATOR,
                 label="THOL_METABOLIC_COMPLEXITY_WEIGHT",
                 lower=0.0,
@@ -975,15 +964,15 @@ class SelfOrganization(Operator):
                 self._emit_depth_limit_warning(node, proposal)
 
         if proposal.subepi_amplitude_alignment is not None:
-            G.nodes[node]["_thol_subepi_amplitude_alignment"] = (
-                proposal.subepi_amplitude_alignment
-            )
+            G.nodes[node][
+                "_thol_subepi_amplitude_alignment"
+            ] = proposal.subepi_amplitude_alignment
         if proposal.precondition_context is not None:
             G.nodes[node]["_mutation_context"] = dict(proposal.precondition_context)
         if proposal.no_bifurcation_expected is not None:
-            G.nodes[node]["_thol_no_bifurcation_expected"] = (
-                proposal.no_bifurcation_expected
-            )
+            G.nodes[node][
+                "_thol_no_bifurcation_expected"
+            ] = proposal.no_bifurcation_expected
 
     def _emit_depth_limit_warning(
         self, node: Any, proposal: _ExecutionProposal

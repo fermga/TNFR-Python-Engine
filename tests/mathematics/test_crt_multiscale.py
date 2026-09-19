@@ -32,15 +32,22 @@ from tnfr.mathematics.crt_multiscale import (
     unit_power_residue_laplacian,
     verify_spectrum_composition,
 )
-from tnfr.mathematics.number_theory import (
-    power_residue_set,
-    unit_power_residue_set,
-)
+from tnfr.mathematics.number_theory import power_residue_set, unit_power_residue_set
 from tnfr.physics.spectral_projectors import derived_tolerance
 
 # Coprime moduli (mix of prime and prime-power) and powers.
-COPRIME_PAIRS = [(3, 5), (5, 7), (3, 7), (4, 9), (5, 9), (7, 8), (3, 11),
-                 (5, 11), (8, 9), (9, 11)]
+COPRIME_PAIRS = [
+    (3, 5),
+    (5, 7),
+    (3, 7),
+    (4, 9),
+    (5, 9),
+    (7, 8),
+    (3, 11),
+    (5, 11),
+    (8, 9),
+    (9, 11),
+]
 POWERS = [1, 2, 3]
 COPRIME_CASES = [(a, b, k) for (a, b) in COPRIME_PAIRS for k in POWERS]
 
@@ -144,8 +151,7 @@ def test_spectrum_composition_matches_numerically(a, b, k):
     residual = verify_spectrum_composition(a, b, k)
     tol = derived_tolerance(
         np.array(
-            [[float(x) for x in row]
-             for row in unit_power_residue_laplacian(a * b, k)]
+            [[float(x) for x in row] for row in unit_power_residue_laplacian(a * b, k)]
         )
     )
     assert residual <= tol
@@ -166,8 +172,7 @@ def test_u5_gap_bound_holds(a, b, k):
     assert bounded is True
     tol = derived_tolerance(
         np.array(
-            [[float(x) for x in row]
-             for row in unit_power_residue_laplacian(a * b, k)]
+            [[float(x) for x in row] for row in unit_power_residue_laplacian(a * b, k)]
         )
     )
     assert gap_ab <= min(gap_a, gap_b) + tol
@@ -183,8 +188,9 @@ def test_spectral_gap_positive_and_below_trivial_mode():
 # --------------------------------------------------------------------------- #
 # Required test 4: non-factorizing control branch
 # --------------------------------------------------------------------------- #
-@pytest.mark.parametrize("a,b,k", [(3, 5, 2), (5, 7, 2), (4, 9, 2),
-                                   (3, 8, 2), (5, 9, 2)])
+@pytest.mark.parametrize(
+    "a,b,k", [(3, 5, 2), (5, 7, 2), (4, 9, 2), (3, 8, 2), (5, 9, 2)]
+)
 def test_full_residue_set_does_not_factor(a, b, k):
     # The unrestricted (non-unit) set breaks the CRT product structure.
     assert residue_set_factors(a, b, k, unit=False) is False
@@ -199,9 +205,7 @@ def test_full_residue_kronecker_identity_fails(a, b, k):
     Lab = full_power_residue_laplacian(a * b, k)
     Ia = cm._identity(a)
     Ib = cm._identity(b)
-    composed = cm._sub(
-        cm._identity(a * b), cm.kron(cm._sub(Ia, La), cm._sub(Ib, Lb))
-    )
+    composed = cm._sub(cm._identity(a * b), cm.kron(cm._sub(Ia, La), cm._sub(Ib, Lb)))
     perm = crt_ordering(a, b)
     ab = a * b
     worst = max(

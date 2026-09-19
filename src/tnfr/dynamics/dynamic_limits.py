@@ -60,7 +60,6 @@ except ImportError:
 
 from ..alias import collect_attr
 from ..constants.aliases import ALIAS_SI
-from ..constants.canonical import PI
 from ..mathematics.unified_numerical import np
 from ..metrics.common import compute_coherence
 from ..observers import kuramoto_order

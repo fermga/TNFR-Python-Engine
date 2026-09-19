@@ -94,17 +94,29 @@ def _label(value, work, depth=0):
         return value
     if type(value) is Fraction:
         numerator, denominator = value.numerator, value.denominator
-        if type(numerator) is not int or type(denominator) is not int or denominator <= 0:
+        if (
+            type(numerator) is not int
+            or type(denominator) is not int
+            or denominator <= 0
+        ):
             raise ValueError("state labels require valid exact rational values")
         return Fraction(numerator, denominator)
     if type(value) is tuple:
         return tuple(_label(item, work, depth + 1) for item in value)
-    raise ValueError("state labels require exact scalar labels or immutable tuples; no floats")
+    raise ValueError(
+        "state labels require exact scalar labels or immutable tuples; no floats"
+    )
 
 
 def derive_selector_symmetry(
-    *, state_labels, permutations, candidates, relation_labels=None,
-    max_nodes=64, max_permutations=256, max_validation_work=5_000_000,
+    *,
+    state_labels,
+    permutations,
+    candidates,
+    relation_labels=None,
+    max_nodes=64,
+    max_permutations=256,
+    max_validation_work=5_000_000,
 ) -> SelectorSymmetryObstruction:
     """Validate a finite action and derive its fixed-candidate obstruction.
 
@@ -153,12 +165,16 @@ def derive_selector_symmetry(
     if relation_labels is not None:
         rows = _bounded_tuple(relation_labels, size, "relation_labels", work)
         if len(rows) != size:
-            raise ValueError("relation_labels must be a square matrix matching the vertices")
+            raise ValueError(
+                "relation_labels must be a square matrix matching the vertices"
+            )
         detached_rows = []
         for row in rows:
             entries = _bounded_tuple(row, size, "relation_labels row", work)
             if len(entries) != size:
-                raise ValueError("relation_labels must be a square matrix matching the vertices")
+                raise ValueError(
+                    "relation_labels must be a square matrix matching the vertices"
+                )
             detached_rows.append(tuple(_label(value, work) for value in entries))
         relations = tuple(detached_rows)
     raw_group = _bounded_tuple(permutations, max_permutations, "permutations", work)
@@ -171,7 +187,9 @@ def derive_selector_symmetry(
             or any(type(index) is not int for index in permutation)
             or set(permutation) != set(identity)
         ):
-            raise ValueError("each permutation must be a bijection of the vertex indices")
+            raise ValueError(
+                "each permutation must be a bijection of the vertex indices"
+            )
         group.append(permutation)
     group_set = set(group)
     if not group or identity not in group_set:
@@ -193,12 +211,15 @@ def derive_selector_symmetry(
             work.charge(size * size)
             if any(
                 relations[i][j] != relations[permutation[i]][permutation[j]]
-                for i in identity for j in identity
+                for i in identity
+                for j in identity
             ):
                 continue
         stabilizer.append(permutation)
     selected = _bounded_tuple(candidates, size, "candidates", work)
-    if not selected or any(type(index) is not int or not 0 <= index < size for index in selected):
+    if not selected or any(
+        type(index) is not int or not 0 <= index < size for index in selected
+    ):
         raise ValueError("candidates must be nonempty valid vertex indices")
     selected_set = set(selected)
     if len(selected_set) != len(selected):
@@ -220,6 +241,15 @@ def derive_selector_symmetry(
         if len(orbit) == 1:
             fixed.append(vertex)
     return SelectorSymmetryObstruction(
-        labels, relations, group, selected, tuple(stabilizer), tuple(orbits), tuple(fixed),
-        work.used, max_nodes, max_permutations, maximum,
+        labels,
+        relations,
+        group,
+        selected,
+        tuple(stabilizer),
+        tuple(orbits),
+        tuple(fixed),
+        work.used,
+        max_nodes,
+        max_permutations,
+        maximum,
     )

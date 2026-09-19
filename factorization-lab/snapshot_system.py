@@ -521,7 +521,10 @@ class PartitionSnapshotManager:
         hash_data = asdict(snapshot)
         hash_data.pop("state_hash")
         encoded = json.dumps(
-            hash_data, sort_keys=True, separators=(",", ":"), allow_nan=False,
+            hash_data,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
         ).encode("utf-8")
         return "sha256:" + hashlib.sha256(encoded).hexdigest()
 
@@ -547,9 +550,13 @@ class PartitionSnapshotManager:
         cutoff_time = time.time() - (max_age_hours * 3600)
 
         with sqlite3.connect(self.db_path) as conn:
-            expired_ids = [row[0] for row in conn.execute(
-                "SELECT snapshot_id FROM snapshots WHERE timestamp < ?", (cutoff_time,),
-            )]
+            expired_ids = [
+                row[0]
+                for row in conn.execute(
+                    "SELECT snapshot_id FROM snapshots WHERE timestamp < ?",
+                    (cutoff_time,),
+                )
+            ]
             result = conn.execute(
                 "DELETE FROM snapshots WHERE timestamp < ?", (cutoff_time,)
             )

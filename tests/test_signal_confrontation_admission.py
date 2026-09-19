@@ -1,9 +1,9 @@
 """Failure, abstention and root-versus-growth controls for signal diagnostics."""
 
-from dataclasses import asdict, replace
 import json
-from pathlib import Path
 import runpy
+from dataclasses import asdict, replace
+from pathlib import Path
 
 import networkx as nx
 import numpy as np
@@ -50,10 +50,16 @@ def test_pure_uniform_graph_mode_does_not_become_diffusion():
 
 
 @pytest.mark.parametrize("bad", [np.nan, np.inf, -np.inf])
-@pytest.mark.parametrize("reader", [
-    sc.confront_signal, sc.diagnose_modal_roots, sc.emergent_wave_fraction,
-    sc.estimate_quality_factor, sc.nodal_prediction_skill,
-])
+@pytest.mark.parametrize(
+    "reader",
+    [
+        sc.confront_signal,
+        sc.diagnose_modal_roots,
+        sc.emergent_wave_fraction,
+        sc.estimate_quality_factor,
+        sc.nodal_prediction_skill,
+    ],
+)
 def test_nonfinite_observations_are_rejected_before_any_transform(bad, reader):
     data = np.zeros((3, 32))
     data[1, 20] = bad
@@ -61,10 +67,15 @@ def test_nonfinite_observations_are_rejected_before_any_transform(bad, reader):
         reader(data)
 
 
-@pytest.mark.parametrize("data", [
-    np.empty((3, 0)), np.ones((2, 32)), np.ones(32),
-    np.ones((3, 32), dtype=complex) * (1 + 1j),
-])
+@pytest.mark.parametrize(
+    "data",
+    [
+        np.empty((3, 0)),
+        np.ones((2, 32)),
+        np.ones(32),
+        np.ones((3, 32), dtype=complex) * (1 + 1j),
+    ],
+)
 def test_invalid_signal_shape_or_domain_is_rejected(data):
     with pytest.raises(ValueError):
         sc.confront_signal(data)
@@ -107,12 +118,17 @@ def test_eigensolver_and_graph_identity_errors_cannot_classify(monkeypatch):
     assert report.legacy_diffusive_face is None
 
 
-@pytest.mark.parametrize("radius,stability", [
-    (0.97, "decaying"), (1.0, "unit_boundary"), (1.03, "growing"),
-])
+@pytest.mark.parametrize(
+    "radius,stability",
+    [
+        (0.97, "decaying"),
+        (1.0, "unit_boundary"),
+        (1.03, "growing"),
+    ],
+)
 def test_complex_roots_do_not_imply_energy_conservation(radius, stability):
     t = np.arange(160)
-    result = _fit(radius ** t * np.sin(0.8 * t))
+    result = _fit(radius**t * np.sin(0.8 * t))
     assert result.status == "resolved"
     assert result.root_classification == "complex_dominated"
     assert result.stability == stability
@@ -124,7 +140,7 @@ def test_complex_roots_do_not_imply_energy_conservation(radius, stability):
 
 def test_real_growing_roots_are_not_relaxation():
     t = np.arange(80)
-    result = _fit(1.08 ** t + 0.7 ** t)
+    result = _fit(1.08**t + 0.7**t)
     assert result.status == "resolved"
     assert result.root_classification == "real_dominated"
     assert result.stability == "growing"
@@ -132,9 +148,13 @@ def test_real_growing_roots_are_not_relaxation():
     assert result.legacy_diffusive_face is None
 
 
-@pytest.mark.parametrize("values", [
-    np.arange(80, dtype=float), (-1.0) ** np.arange(80),
-])
+@pytest.mark.parametrize(
+    "values",
+    [
+        np.arange(80, dtype=float),
+        (-1.0) ** np.arange(80),
+    ],
+)
 def test_repeated_or_rank_deficient_roots_are_unresolved(values):
     result = _fit(values)
     assert result.status == "unresolved"
@@ -146,8 +166,7 @@ def test_repeated_or_rank_deficient_roots_are_unresolved(values):
 def test_unresolved_energetic_mode_is_not_dropped_from_the_verdict():
     t = np.arange(80, dtype=float)
     # Two independent P3 modes: identified sinusoid plus a repeated-root ramp.
-    data = (_spatial_signal(np.sin(0.8 * t))
-            + np.array([t, -np.sqrt(2) * t, t]))
+    data = _spatial_signal(np.sin(0.8 * t)) + np.array([t, -np.sqrt(2) * t, t])
     result = sc._modal_roots_from_graph(nx.path_graph(3), data)
     assert result.fitted_modes == result.unresolved_modes == 1
     assert result.status == "unresolved"
@@ -156,9 +175,16 @@ def test_unresolved_energetic_mode_is_not_dropped_from_the_verdict():
 
 
 def test_nonfinite_solver_result_abstains(monkeypatch):
-    monkeypatch.setattr(sc.np.linalg, "lstsq", lambda *args, **kwargs: (
-        np.array([np.nan, 0.0, 0.0]), np.array([]), 3, np.ones(3),
-    ))
+    monkeypatch.setattr(
+        sc.np.linalg,
+        "lstsq",
+        lambda *args, **kwargs: (
+            np.array([np.nan, 0.0, 0.0]),
+            np.array([]),
+            3,
+            np.ones(3),
+        ),
+    )
     result = _fit(np.sin(np.arange(80)))
     assert result.status == "failure"
     assert "nonfinite AR(2)" in result.reason
@@ -187,8 +213,11 @@ def test_finite_amplitude_scaling_preserves_root_diagnostic():
 def test_unknown_legacy_report_and_infinite_spectral_length_serialize():
     base = sc.confront_signal(_spatial_signal(np.sin(np.arange(80))))
     report = replace(
-        base, modal_diagnostic=None, wave_fraction=None,
-        diffusive_face_valid=None, xi_c=float("inf"),
+        base,
+        modal_diagnostic=None,
+        wave_fraction=None,
+        diffusive_face_valid=None,
+        xi_c=float("inf"),
     )
     assert "unresolved" in report.summary()
     assert "WAVE" not in report.summary()
@@ -221,9 +250,14 @@ def test_example_handles_constant_modal_abstention(monkeypatch, capsys):
     )
     namespace = runpy.run_path(str(path))
     main = namespace["main"]
-    monkeypatch.setitem(main.__globals__, "load_signal", lambda: (
-        np.ones((3, 32)), "constant diagnostic control",
-    ))
+    monkeypatch.setitem(
+        main.__globals__,
+        "load_signal",
+        lambda: (
+            np.ones((3, 32)),
+            "constant diagnostic control",
+        ),
+    )
     main()
     output = capsys.readouterr().out
     assert "unresolved" in output

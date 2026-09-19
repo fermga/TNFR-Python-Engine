@@ -1,14 +1,14 @@
 """Snapshots and RNG restoration must preserve the recorded state."""
 
-from copy import deepcopy
-from dataclasses import asdict
-import importlib
 import hashlib
+import importlib
 import json
-from pathlib import Path
 import random
 import sqlite3
 import sys
+from copy import deepcopy
+from dataclasses import asdict
+from pathlib import Path
 from types import MappingProxyType, SimpleNamespace
 
 import networkx as nx
@@ -18,7 +18,9 @@ import pytest
 
 @pytest.fixture
 def lab(monkeypatch):
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "factorization-lab"))
+    monkeypatch.syspath_prepend(
+        str(Path(__file__).resolve().parents[1] / "factorization-lab")
+    )
     return SimpleNamespace(
         seeds=importlib.import_module("seed_management"),
         snapshots=importlib.import_module("snapshot_system"),
@@ -37,16 +39,25 @@ def preserve_rng_state():
 @pytest.fixture
 def seed_manager(lab, monkeypatch):
     # Environment measurement is independent of the RNG restoration contract.
-    monkeypatch.setitem(sys.modules, "psutil", SimpleNamespace(
-        virtual_memory=lambda: SimpleNamespace(total=8 * 1024**3),
-    ))
+    monkeypatch.setitem(
+        sys.modules,
+        "psutil",
+        SimpleNamespace(
+            virtual_memory=lambda: SimpleNamespace(total=8 * 1024**3),
+        ),
+    )
     return lab.seeds.TNFRSeedManager(123)
 
 
-@pytest.mark.parametrize("graph_key,field", [
-    ("GAMMA", "gamma"), ("GRAMMAR_CANON", "grammar"),
-    ("DNFR_WEIGHTS", "dnfr_weights"), ("_Si_weights", "si_weights"),
-])
+@pytest.mark.parametrize(
+    "graph_key,field",
+    [
+        ("GAMMA", "gamma"),
+        ("GRAMMAR_CANON", "grammar"),
+        ("DNFR_WEIGHTS", "dnfr_weights"),
+        ("_Si_weights", "si_weights"),
+    ],
+)
 def test_trace_mapping_is_detached_from_later_graph_edits(graph_key, field):
     from tnfr.trace import mapping_field
 
@@ -132,10 +143,16 @@ def test_invalid_seed_restore_does_not_modify_live_state(seed_manager, failure):
     assert seed_manager._get_numpy_state() == before_numpy
 
 
-def test_reproducibility_verifier_cannot_ignore_failed_restore(seed_manager, lab, monkeypatch):
-    context = {"parameters": asdict(lab.seeds.create_demo_experiment_params(143)),
-               "reproducibility_state": {}}
-    monkeypatch.setattr(seed_manager, "_load_experiment_context", lambda experiment_id: context)
+def test_reproducibility_verifier_cannot_ignore_failed_restore(
+    seed_manager, lab, monkeypatch
+):
+    context = {
+        "parameters": asdict(lab.seeds.create_demo_experiment_params(143)),
+        "reproducibility_state": {},
+    }
+    monkeypatch.setattr(
+        seed_manager, "_load_experiment_context", lambda experiment_id: context
+    )
     result = seed_manager.validate_reproducibility("invalid")
     assert result["valid"] is False
     assert "restor" in result["error"].lower()
@@ -164,8 +181,12 @@ def snapshot_record(lab, tmp_path):
     manager = module.PartitionSnapshotManager(tmp_path / "snapshots.db")
     nodes = [module.create_mock_nodal_state(i) for i in range(3)]
     kwargs = dict(
-        verification_stage="verification", modulus_n=143, candidate_factor=11,
-        partition_strategy="test", nodal_states=nodes, partition_states=[],
+        verification_stage="verification",
+        modulus_n=143,
+        candidate_factor=11,
+        partition_strategy="test",
+        nodal_states=nodes,
+        partition_states=[],
         structural_fields=module.create_mock_structural_fields(3),
         network_topology=module.create_mock_network_topology(3),
         performance_metrics={"coherence": 0.8, "sense_index": 0.7},
@@ -191,12 +212,24 @@ def test_snapshot_reads_cannot_mutate_cached_record(snapshot_record):
     snapshot.nodal_states[0].phase += 1
     snapshot.overall_coherence = 0.0
     assert manager.load_snapshot(snapshot_id) == expected
-    assert module.PartitionSnapshotManager(manager.db_path).load_snapshot(snapshot_id) == expected
+    assert (
+        module.PartitionSnapshotManager(manager.db_path).load_snapshot(snapshot_id)
+        == expected
+    )
 
 
-@pytest.mark.parametrize("field", [
-    "epi", "phase", "topology", "sense_index", "candidate", "identifier", "stored_hash",
-])
+@pytest.mark.parametrize(
+    "field",
+    [
+        "epi",
+        "phase",
+        "topology",
+        "sense_index",
+        "candidate",
+        "identifier",
+        "stored_hash",
+    ],
+)
 def test_snapshot_integrity_covers_full_stored_state(snapshot_record, field):
     module, manager, snapshot_id, _ = snapshot_record
     snapshot = manager.load_snapshot(snapshot_id)
@@ -215,8 +248,10 @@ def test_snapshot_integrity_covers_full_stored_state(snapshot_record, field):
     else:
         snapshot.state_hash = "altered-hash"
     with sqlite3.connect(manager.db_path) as connection:
-        connection.execute("UPDATE snapshots SET compressed_data=? WHERE snapshot_id=?",
-                           (module.SnapshotCompressor.compress_snapshot(snapshot), snapshot_id))
+        connection.execute(
+            "UPDATE snapshots SET compressed_data=? WHERE snapshot_id=?",
+            (module.SnapshotCompressor.compress_snapshot(snapshot), snapshot_id),
+        )
     fresh = module.PartitionSnapshotManager(manager.db_path)
     with pytest.raises(ValueError, match="integrity"):
         fresh.load_snapshot(snapshot_id)
@@ -230,21 +265,30 @@ def test_deleted_snapshots_do_not_survive_in_cache(snapshot_record, monkeypatch)
     assert manager.load_snapshot(snapshot_id) is None
 
 
-def test_legacy_snapshot_remains_readable_with_explicit_integrity_limit(snapshot_record):
+def test_legacy_snapshot_remains_readable_with_explicit_integrity_limit(
+    snapshot_record,
+):
     module, manager, snapshot_id, _ = snapshot_record
     snapshot = manager.load_snapshot(snapshot_id)
     legacy_data = {
-        "modulus_n": snapshot.modulus_n, "stage": snapshot.verification_stage,
+        "modulus_n": snapshot.modulus_n,
+        "stage": snapshot.verification_stage,
         "coherence": round(snapshot.overall_coherence, 6),
         "node_count": len(snapshot.nodal_states),
         "partition_count": len(snapshot.partition_states),
     }
-    legacy_hash = hashlib.sha256(json.dumps(legacy_data, sort_keys=True).encode()).hexdigest()[:16]
+    legacy_hash = hashlib.sha256(
+        json.dumps(legacy_data, sort_keys=True).encode()
+    ).hexdigest()[:16]
     snapshot.state_hash = legacy_hash
     with sqlite3.connect(manager.db_path) as connection:
         connection.execute(
             "UPDATE snapshots SET compressed_data=?, state_hash=? WHERE snapshot_id=?",
-            (module.SnapshotCompressor.compress_snapshot(snapshot), legacy_hash, snapshot_id),
+            (
+                module.SnapshotCompressor.compress_snapshot(snapshot),
+                legacy_hash,
+                snapshot_id,
+            ),
         )
     fresh = module.PartitionSnapshotManager(manager.db_path)
     with pytest.warns(RuntimeWarning, match="legacy partial integrity"):

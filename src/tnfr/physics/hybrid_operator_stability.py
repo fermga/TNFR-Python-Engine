@@ -68,21 +68,18 @@ until separately certified.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from fractions import Fraction
-import math
 from numbers import Real
-import sys
 from typing import Any, Iterable
 
+from .._exact_time import exact_log_bounds as _exact_log_bounds
+from .._exact_time import exp_upper_float as _exp_upper_float
+from .._exact_time import fraction_lower_float as _fraction_lower_float
+from .._exact_time import fraction_upper_float as _fraction_upper_float
+from .._exact_time import fraction_upper_signed_float as _fraction_upper_signed_float
 from .._exact_time import (
-    atanh_log_bounds as _atanh_log_bounds,
-    exact_log_bounds as _exact_log_bounds,
-    exp_unit_bounds as _exp_unit_bounds,
-    exp_upper_float as _exp_upper_float,
-    fraction_lower_float as _fraction_lower_float,
-    fraction_upper_float as _fraction_upper_float,
-    fraction_upper_signed_float as _fraction_upper_signed_float,
     materialize_nonnegative_time_sequence as _materialize_time_sequence,
 )
 from ..mathematics._weight_normalization import normalize_weights
@@ -91,8 +88,8 @@ from ..utils._structural_signature import (
     proof_stamps_are_identical,
     structural_proof_signature,
 )
+from ._exact_linear_algebra import exact_matrix_inverse as _exact_matrix_inverse
 from ._exact_linear_algebra import (
-    exact_matrix_inverse as _exact_matrix_inverse,
     exact_symmetric_semidefinite as _exact_symmetric_semidefinite,
 )
 from ._exact_metric import (
@@ -210,15 +207,11 @@ def _relative_tolerance(value: Any) -> float:
             "tolerance must be a finite real in the open interval (0, 1)"
         ) from exc
     if not 0.0 < tolerance < 1.0:
-        raise ValueError(
-            "tolerance must be a finite real in the open interval (0, 1)"
-        )
+        raise ValueError("tolerance must be a finite real in the open interval (0, 1)")
     return tolerance
 
 
-def _nonnegative_scalar_with_exact(
-    value: Any, name: str
-) -> tuple[float, Fraction]:
+def _nonnegative_scalar_with_exact(value: Any, name: str) -> tuple[float, Fraction]:
     """Return an upward-rounded float and the exact supplied real value."""
     exact = _fraction(value, name)
     if exact < 0:
@@ -243,11 +236,7 @@ def _bounded_composition_gain_factor(
         return Fraction(0)
 
     exponent = exact_gain.numerator.bit_length() - exact_gain.denominator.bit_length()
-    power = (
-        Fraction(1 << exponent)
-        if exponent >= 0
-        else Fraction(1, 1 << -exponent)
-    )
+    power = Fraction(1 << exponent) if exponent >= 0 else Fraction(1, 1 << -exponent)
     if exact_gain < power:
         exponent -= 1
 
@@ -293,10 +282,7 @@ def _exact_quotient_basis(
     dimension = len(weights)
     pivot = max(range(dimension), key=weights.__getitem__)
     free = tuple(index for index in range(dimension) if index != pivot)
-    basis = [
-        [Fraction(0) for _ in range(dimension - 1)]
-        for _ in range(dimension)
-    ]
+    basis = [[Fraction(0) for _ in range(dimension - 1)] for _ in range(dimension)]
     for column, index in enumerate(free):
         basis[index][column] = Fraction(1)
         basis[pivot][column] = -weights[index] / weights[pivot]
@@ -400,10 +386,7 @@ def _exact_quotient_energy_gain_upper_bound(
     transfer = _exact_matrix_product(_exact_matrix_inverse(metric), output)
     if quotient_dimension == 2:
         trace = transfer[0][0] + transfer[1][1]
-        determinant = (
-            transfer[0][0] * transfer[1][1]
-            - transfer[0][1] * transfer[1][0]
-        )
+        determinant = transfer[0][0] * transfer[1][1] - transfer[0][1] * transfer[1][0]
         discriminant = trace * trace - 4 * determinant
         if discriminant < 0:  # pragma: no cover - exact PSD pencil invariant
             raise RuntimeError("internal error: affine quotient has complex energy")
@@ -411,8 +394,7 @@ def _exact_quotient_energy_gain_upper_bound(
         return min(frobenius_bound, algebraic_upper)
 
     induced_upper = max(
-        sum((abs(value) for value in row), Fraction(0))
-        for row in transfer
+        sum((abs(value) for value in row), Fraction(0)) for row in transfer
     )
     upper = min(frobenius_bound, induced_upper)
     if upper == 0:
@@ -796,9 +778,7 @@ def certify_affine_epi_jump_gain(
         raise ValueError(f"unknown canonical operator {operator!r}") from exc
     tol = _relative_tolerance(tolerance)
 
-    matrix, matrix_exact_flat = _real_array(
-        linear_map, "linear_map", ndim=2
-    )
+    matrix, matrix_exact_flat = _real_array(linear_map, "linear_map", ndim=2)
     if matrix.shape[0] == 0 or matrix.shape[0] != matrix.shape[1]:
         raise ValueError("linear_map must be a nonempty square matrix")
     dimension = int(matrix.shape[0])
@@ -813,13 +793,8 @@ def certify_affine_epi_jump_gain(
     if any(value <= 0 for value in metric_exact):
         raise ValueError("metric_weights must be finite and positive")
     normalized_metric, _, _ = normalize_weights(metric)
-    if (
-        not np.all(np.isfinite(normalized_metric))
-        or np.any(normalized_metric <= 0.0)
-    ):
-        raise ValueError(
-            "metric normalization exceeds floating-point dynamic range"
-        )
+    if not np.all(np.isfinite(normalized_metric)) or np.any(normalized_metric <= 0.0):
+        raise ValueError("metric normalization exceeds floating-point dynamic range")
 
     if offset is None:
         offset_array = np.zeros(dimension, dtype=float)
@@ -845,9 +820,7 @@ def certify_affine_epi_jump_gain(
     exact_projection = _exact_projection(metric_exact)
     exact_ones = tuple(Fraction(1) for _ in range(dimension))
     exact_mapped_consensus = _exact_matrix_vector(matrix_exact, exact_ones)
-    exact_linear_defect = _exact_matrix_vector(
-        exact_projection, exact_mapped_consensus
-    )
+    exact_linear_defect = _exact_matrix_vector(exact_projection, exact_mapped_consensus)
     exact_offset_defect = _exact_matrix_vector(exact_projection, offset_exact)
     exact_linear = all(value == 0 for value in exact_linear_defect)
     exact_offset = all(value == 0 for value in exact_offset_defect)
@@ -893,17 +866,11 @@ def certify_affine_epi_jump_gain(
         )
         consensus_offset_scale = max(
             1.0,
-            _weighted_norm(
-                offset_array, normalized_metric, "consensus offset scale"
-            ),
+            _weighted_norm(offset_array, normalized_metric, "consensus offset scale"),
         )
         consensus_within = bool(
-            _within_relative_tolerance(
-                linear_residual, consensus_linear_scale, tol
-            )
-            and _within_relative_tolerance(
-                offset_residual, consensus_offset_scale, tol
-            )
+            _within_relative_tolerance(linear_residual, consensus_linear_scale, tol)
+            and _within_relative_tolerance(offset_residual, consensus_offset_scale, tol)
         )
     except (FloatingPointError, OverflowError, ValueError):
         linear_residual = float("inf")
@@ -966,25 +933,17 @@ def certify_affine_epi_jump_gain(
         with np.errstate(over="raise", invalid="raise", divide="raise"):
             mean_linear_defect = normalized_metric @ matrix - normalized_metric
             mean_offset_defect = float(normalized_metric @ offset_array)
-        mean_linear_residual = float(
-            np.max(np.abs(mean_linear_defect), initial=0.0)
-        )
+        mean_linear_residual = float(np.max(np.abs(mean_linear_defect), initial=0.0))
         mean_offset_residual = abs(mean_offset_defect)
         mean_linear_scale = max(
             1.0,
             float(np.max(np.abs(normalized_metric @ matrix), initial=0.0)),
             float(np.max(np.abs(normalized_metric), initial=0.0)),
         )
-        mean_offset_scale = max(
-            1.0, float(normalized_metric @ np.abs(offset_array))
-        )
+        mean_offset_scale = max(1.0, float(normalized_metric @ np.abs(offset_array)))
         mean_within = bool(
-            _within_relative_tolerance(
-                mean_linear_residual, mean_linear_scale, tol
-            )
-            and _within_relative_tolerance(
-                mean_offset_residual, mean_offset_scale, tol
-            )
+            _within_relative_tolerance(mean_linear_residual, mean_linear_scale, tol)
+            and _within_relative_tolerance(mean_offset_residual, mean_offset_scale, tol)
         )
     except (FloatingPointError, OverflowError, ValueError):
         mean_linear_residual = float("inf")
@@ -997,9 +956,7 @@ def certify_affine_epi_jump_gain(
     if not exact_consensus:
         counter_level = 0.0 if not exact_offset else 1.0
         exact_counter_level = Fraction(int(counter_level))
-        exact_counter_input = tuple(
-            exact_counter_level for _ in range(dimension)
-        )
+        exact_counter_input = tuple(exact_counter_level for _ in range(dimension))
         exact_counter_output = tuple(
             mapped + shift
             for mapped, shift in zip(
@@ -1089,9 +1046,7 @@ def _flow_data(
     """Read the common metric and energy rate from an existing certificate."""
     if isinstance(certificate, HeterogeneousDiffusionStabilityCertificate):
         if not certificate._proof_fields_are_intact():
-            raise ValueError(
-                "flow certificate proof fields were replaced or mutated"
-            )
+            raise ValueError("flow certificate proof fields were replaced or mutated")
         weights, _, _ = normalize_weights(certificate.metric_weights)
         return (
             "fixed_heterogeneous_diffusion",
@@ -1104,20 +1059,14 @@ def _flow_data(
         )
     if isinstance(certificate, SwitchingDiffusionStabilityCertificate):
         if not certificate._proof_fields_are_intact():
-            raise ValueError(
-                "flow certificate proof fields were replaced or mutated"
-            )
-        weights = np.asarray(
-            certificate.normalized_metric_weights, dtype=float
-        ).copy()
+            raise ValueError("flow certificate proof fields were replaced or mutated")
+        weights = np.asarray(certificate.normalized_metric_weights, dtype=float).copy()
         return (
             "exact_common_metric_switching_diffusion",
             tuple(certificate.nodes),
             np.asarray(certificate.reference_metric_weights, dtype=float).copy(),
             weights,
-            float(
-                certificate.certified_uniform_exponential_rate_lower_bound
-            ),
+            float(certificate.certified_uniform_exponential_rate_lower_bound),
             bool(certificate.supports_exact_switching_theorem),
             bool(certificate.exact_common_weighted_mean_preservation),
         )
@@ -1251,9 +1200,7 @@ def compose_hybrid_epi_stability(
         conditions.append((f"jump_{index}_finite_global_energy_gain", jump_pass))
         gain = float(jump.energy_gain_bound_for_composition)
         if math.isnan(gain) or gain < 0.0:
-            raise ValueError(
-                f"jump {index} exposes an invalid energy-gain bound"
-            )
+            raise ValueError(f"jump {index} exposes an invalid energy-gain bound")
         gains.append(gain)
         exact_gains.append(jump.exact_quotient_energy_gain_upper_bound)
         validated_jumps.append(jump)
@@ -1280,8 +1227,7 @@ def compose_hybrid_epi_stability(
     else:
         exact_gain_product = math.prod(exact_gains, start=Fraction(1))
         composition_factors = tuple(
-            _bounded_composition_gain_factor(exact_gain)
-            for exact_gain in exact_gains
+            _bounded_composition_gain_factor(exact_gain) for exact_gain in exact_gains
         )
         if exact_gain_product == 0:
             jump_log = float("-inf")
@@ -1290,10 +1236,7 @@ def compose_hybrid_epi_stability(
             exact_net_log_upper = None
         else:
             exact_jump_log_upper = sum(
-                (
-                    _exact_log_bounds(factor)[1]
-                    for factor in composition_factors
-                ),
+                (_exact_log_bounds(factor)[1] for factor in composition_factors),
                 Fraction(0),
             )
             exact_net_log_upper = exact_jump_log_upper - exact_decay
@@ -1314,16 +1257,12 @@ def compose_hybrid_epi_stability(
     initial_mean_preserved = bool(
         flow_pass
         and flow_mean_preserved
-        and all(
-            jump.preserves_initial_weighted_consensus for jump in jump_tuple
-        )
+        and all(jump.preserves_initial_weighted_consensus for jump in jump_tuple)
     )
 
     if repeat_schedule:
         disagreement_converges: bool | None = contracts
-        initial_consensus_converges: bool | None = (
-            contracts and initial_mean_preserved
-        )
+        initial_consensus_converges: bool | None = contracts and initial_mean_preserved
         if contracts:
             if net_log == float("-inf"):
                 decay_rate = float("inf")

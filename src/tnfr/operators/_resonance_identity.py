@@ -42,10 +42,7 @@ def validate_resonance_runtime_factors(
 ) -> tuple[str, ...]:
     """Return failures of the RA convex propagation/amplification domain."""
 
-    from .factor_contracts import (
-        GlyphFactorValidationError,
-        validate_glyph_factor,
-    )
+    from .factor_contracts import GlyphFactorValidationError, validate_glyph_factor
 
     failures = []
     for key, value in (

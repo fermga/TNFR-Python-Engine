@@ -33,24 +33,42 @@ from typing import TYPE_CHECKING
 from .._exact_time import exact_or_represented_real as _rational
 from ..constants.canonical import DELTA_PHI_MAX, UM_THETA_PUSH
 from ._cycle_algebra import (
-    Matrix, Vector, c6_pair_sums, dot, laplacian_matrix, ordered_vector,
+    Matrix,
+    Vector,
+    c6_pair_sums,
+    dot,
+    laplacian_matrix,
+    ordered_vector,
 )
-from ._exact_linear_algebra import exact_square_matrix_power, exact_square_matrix_product
+from ._exact_linear_algebra import (
+    exact_square_matrix_power,
+    exact_square_matrix_product,
+)
 
 if TYPE_CHECKING:
     from .phase_response import PhaseResponseReference
 
 __all__ = [
-    "CouplingGapStep", "observe_coupling_gap_step",
-    "C6WindingPhaseReference", "C6WindingPhaseObservation",
-    "derive_c6_winding_phase_response", "observe_c6_winding_phase_response",
-    "C6WindingJointDomain", "C6WindingJointStep",
-    "derive_c6_winding_joint_domain", "observe_c6_winding_joint_domain",
-    "C6WindingDefect", "C6WindingDefectPrefix", "C6WindingUniformDefectBound",
-    "observe_c6_winding_defect", "bound_c6_winding_defect_prefix",
+    "CouplingGapStep",
+    "observe_coupling_gap_step",
+    "C6WindingPhaseReference",
+    "C6WindingPhaseObservation",
+    "derive_c6_winding_phase_response",
+    "observe_c6_winding_phase_response",
+    "C6WindingJointDomain",
+    "C6WindingJointStep",
+    "derive_c6_winding_joint_domain",
+    "observe_c6_winding_joint_domain",
+    "C6WindingDefect",
+    "C6WindingDefectPrefix",
+    "C6WindingUniformDefectBound",
+    "observe_c6_winding_defect",
+    "bound_c6_winding_defect_prefix",
     "bound_c6_winding_uniform_defects",
-    "C6WindingPairingReference", "C6WindingPairingObservation",
-    "c6_centered_opposite_pairs", "derive_c6_winding_pairing",
+    "C6WindingPairingReference",
+    "C6WindingPairingObservation",
+    "c6_centered_opposite_pairs",
+    "derive_c6_winding_pairing",
     "observe_c6_winding_pairing",
 ]
 
@@ -68,9 +86,7 @@ def _gap_matrix(count: int, eta: Fraction, target: int | None) -> Matrix:
             tuple(Fraction(i == j) - eta * value for j, value in enumerate(row))
             for i, row in enumerate(laplacian_matrix(count))
         )
-    rows = [
-        [Fraction(i == j) for j in range(count)] for i in range(count)
-    ]
+    rows = [[Fraction(i == j) for j in range(count)] for i in range(count)]
     half = eta / 2
     left, right = (target - 1) % count, target
     rows[left][left], rows[left][right] = 1 - half, half
@@ -228,7 +244,9 @@ class C6WindingPhaseReference:
 
 
 def derive_c6_winding_phase_response(
-    *, coupling_phase_factor, coherence_phase_factor,
+    *,
+    coupling_phase_factor,
+    coherence_phase_factor,
 ) -> C6WindingPhaseReference:
     """Derive exact C6 Jacobians through the shared phasor-response kernel.
 
@@ -260,17 +278,28 @@ def derive_c6_winding_phase_response(
     alpha = _rational(coherence_phase_factor, "coherence_phase_factor")
     if not 0 <= t <= 1 or not 0 <= alpha <= 1:
         raise ValueError("phase factors must lie in [0,1]")
-    first_row = (Fraction(1), Fraction(1, 2), Fraction(-1, 2),
-                 Fraction(-1), Fraction(-1, 2), Fraction(1, 2))
+    first_row = (
+        Fraction(1),
+        Fraction(1, 2),
+        Fraction(-1, 2),
+        Fraction(-1),
+        Fraction(-1, 2),
+        Fraction(1, 2),
+    )
     gram = tuple(tuple(first_row[(i - j) % 6] for j in range(6)) for i in range(6))
     neighbors = tuple(((i - 1) % 6, (i + 1) % 6) for i in range(6))
     closed = tuple((i, *row) for i, row in enumerate(neighbors))
     coupling = derive_phase_response(
-        cosine_gram=gram, mean_neighbors=closed, receiver_sources=closed, phase_factor=t,
+        cosine_gram=gram,
+        mean_neighbors=closed,
+        receiver_sources=closed,
+        phase_factor=t,
     )
     coherence = derive_phase_response(
-        cosine_gram=gram, mean_neighbors=neighbors,
-        receiver_sources=tuple((i,) for i in range(6)), phase_factor=alpha,
+        cosine_gram=gram,
+        mean_neighbors=neighbors,
+        receiver_sources=tuple((i,) for i in range(6)),
+        phase_factor=alpha,
     )
     product = exact_square_matrix_product(coherence.jacobian, coupling.jacobian)
     l1 = (1 - t / 2) * (1 - alpha / 2)
@@ -279,12 +308,26 @@ def derive_c6_winding_phase_response(
     multipliers = (Fraction(1), l1, l2, l3, l2, l1)
     bound = max(value**2 for value in multipliers[1:])
     rotation = tuple(sum(row, Fraction(0)) - 1 for row in product)
-    if (any(rotation) or not 0 <= bound <= 1
-            or any(product[i][j] != product[j][i] for i in range(6) for j in range(6))):
-        raise RuntimeError("exact C6 phase response lost its quotient or rotation identities")
+    if (
+        any(rotation)
+        or not 0 <= bound <= 1
+        or any(product[i][j] != product[j][i] for i in range(6) for j in range(6))
+    ):
+        raise RuntimeError(
+            "exact C6 phase response lost its quotient or rotation identities"
+        )
     return C6WindingPhaseReference(
-        t, alpha, coupling, coherence, coupling.jacobian, coherence.jacobian,
-        product, multipliers, bound, rotation, bound < 1,
+        t,
+        alpha,
+        coupling,
+        coherence,
+        coupling.jacobian,
+        coherence.jacobian,
+        product,
+        multipliers,
+        bound,
+        rotation,
+        bound < 1,
     )
 
 
@@ -311,7 +354,9 @@ class C6WindingPhaseObservation:
 
 
 def observe_c6_winding_phase_response(
-    reference, *, direction,
+    reference,
+    *,
+    direction,
 ) -> C6WindingPhaseObservation:
     """Apply the rebuilt C6 reference to six ordered tangent coordinates.
 
@@ -341,12 +386,27 @@ def observe_c6_winding_phase_response(
     residual = after_energy - reference.quotient_energy_bound * before_energy
     mean_residual = sum(after, Fraction(0)) / 6 - mean
     pressure = tuple(-dot(row, after) for row in laplacian_matrix(6))
-    if (mean_residual or residual > 0
-            or after != tuple(dot(row, values) for row in reference.product_matrix)):
-        raise RuntimeError("exact C6 tangent action lost its centered energy or mean identity")
+    if (
+        mean_residual
+        or residual > 0
+        or after != tuple(dot(row, values) for row in reference.product_matrix)
+    ):
+        raise RuntimeError(
+            "exact C6 tangent action lost its centered energy or mean identity"
+        )
     return C6WindingPhaseObservation(
-        reference, values, mean, centered, coupled, after, before_energy,
-        after_energy, after_energy - before_energy, residual, mean_residual, pressure,
+        reference,
+        values,
+        mean,
+        centered,
+        coupled,
+        after,
+        before_energy,
+        after_energy,
+        after_energy - before_energy,
+        residual,
+        mean_residual,
+        pressure,
     )
 
 
@@ -378,8 +438,15 @@ class C6WindingJointDomain:
 
 
 def derive_c6_winding_joint_domain(
-    *, coupling_phase_factor, coherence_phase_factor, capacity, epi_weight,
-    phase_weight, timestep, epi_lower, epi_upper,
+    *,
+    coupling_phase_factor,
+    coherence_phase_factor,
+    capacity,
+    epi_weight,
+    phase_weight,
+    timestep,
+    epi_lower,
+    epi_upper,
 ) -> C6WindingJointDomain:
     """Derive an exact nonlinear phase bound and positive EPI reserve.
 
@@ -424,7 +491,10 @@ def derive_c6_winding_joint_domain(
         coupling_phase_factor=coupling_phase_factor,
         coherence_phase_factor=coherence_phase_factor,
     )
-    t, alpha = phase_reference.coupling_phase_factor, phase_reference.coherence_phase_factor
+    t, alpha = (
+        phase_reference.coupling_phase_factor,
+        phase_reference.coherence_phase_factor,
+    )
     nu = _rational(capacity, "capacity")
     e = _rational(epi_weight, "epi_weight")
     p = _rational(phase_weight, "phase_weight")
@@ -432,9 +502,13 @@ def derive_c6_winding_joint_domain(
     lower = _rational(epi_lower, "epi_lower")
     upper = _rational(epi_upper, "epi_upper")
     if t <= 0:
-        raise ValueError("joint phase budget requires a strictly positive coupling factor")
+        raise ValueError(
+            "joint phase budget requires a strictly positive coupling factor"
+        )
     if nu <= 0 or e <= 0 or p < 0 or h < 0:
-        raise ValueError("positive capacity/EPI weight and nonnegative phase weight/time are required")
+        raise ValueError(
+            "positive capacity/EPI weight and nonnegative phase weight/time are required"
+        )
     if not 0 < lower <= upper <= 1:
         raise ValueError("positive EPI band must satisfy 0 < lower <= upper <= 1")
     s = h * nu * e
@@ -444,15 +518,37 @@ def derive_c6_winding_joint_domain(
     b = h * nu * p
     budget = b * rho / (1 - rho)
     laplacian = laplacian_matrix(6)
-    matrix = tuple(tuple(Fraction(i == j) - s * value for j, value in enumerate(row))
-                   for i, row in enumerate(laplacian))
+    matrix = tuple(
+        tuple(Fraction(i == j) - s * value for j, value in enumerate(row))
+        for i, row in enumerate(laplacian)
+    )
     disagreement = max(abs(1 - s / 2), abs(1 - 3 * s / 2), abs(1 - 2 * s))
-    if (not 0 <= rho < 1 or any(value < 0 for row in matrix for value in row)
-            or any(sum(row, Fraction(0)) != 1 for row in matrix)):
-        raise RuntimeError("exact C6 joint domain lost a stochastic or contraction identity")
+    if (
+        not 0 <= rho < 1
+        or any(value < 0 for row in matrix for value in row)
+        or any(sum(row, Fraction(0)) != 1 for row in matrix)
+    ):
+        raise RuntimeError(
+            "exact C6 joint domain lost a stochastic or contraction identity"
+        )
     return C6WindingJointDomain(
-        phase_reference, t, alpha, nu, e, p, h, lower, upper, Fraction(1, 12),
-        Fraction(1, 10), rho, b, budget, matrix, disagreement, disagreement < 1,
+        phase_reference,
+        t,
+        alpha,
+        nu,
+        e,
+        p,
+        h,
+        lower,
+        upper,
+        Fraction(1, 12),
+        Fraction(1, 10),
+        rho,
+        b,
+        budget,
+        matrix,
+        disagreement,
+        disagreement < 1,
     )
 
 
@@ -494,9 +590,12 @@ def _rebuild_c6_winding_joint_domain(reference):
     return derive_c6_winding_joint_domain(
         coupling_phase_factor=reference.coupling_phase_factor,
         coherence_phase_factor=reference.coherence_phase_factor,
-        capacity=reference.capacity, epi_weight=reference.epi_weight,
-        phase_weight=reference.phase_weight, timestep=reference.timestep,
-        epi_lower=reference.epi_lower, epi_upper=reference.epi_upper,
+        capacity=reference.capacity,
+        epi_weight=reference.epi_weight,
+        phase_weight=reference.phase_weight,
+        timestep=reference.timestep,
+        epi_lower=reference.epi_lower,
+        epi_upper=reference.epi_upper,
     )
 
 
@@ -511,19 +610,31 @@ def _c6_joint_nodal_model(reference, phase, epi):
     laplacian = laplacian_matrix(6)
     phase_pressure = tuple(-dot(row, phase) for row in laplacian)
     epi_pressure = tuple(-reference.epi_weight * dot(row, epi) for row in laplacian)
-    pressure = tuple(left + reference.phase_weight * right
-                     for left, right in zip(epi_pressure, phase_pressure, strict=True))
+    pressure = tuple(
+        left + reference.phase_weight * right
+        for left, right in zip(epi_pressure, phase_pressure, strict=True)
+    )
     rate = tuple(reference.capacity * value for value in pressure)
-    final = tuple(dot(row, epi) + reference.forcing_step_factor * source
-                  for row, source in zip(reference.nodal_euler_matrix, phase_pressure, strict=True))
-    if final != tuple(value + reference.timestep * delta
-                      for value, delta in zip(epi, rate, strict=True)):
+    final = tuple(
+        dot(row, epi) + reference.forcing_step_factor * source
+        for row, source in zip(
+            reference.nodal_euler_matrix, phase_pressure, strict=True
+        )
+    )
+    if final != tuple(
+        value + reference.timestep * delta
+        for value, delta in zip(epi, rate, strict=True)
+    ):
         raise RuntimeError("exact C6 nodal interval lost its nodal rate identity")
     return phase_pressure, pressure, rate, final
 
 
 def observe_c6_winding_joint_domain(
-    reference, *, phase_before_pi, phase_after_pi, epi,
+    reference,
+    *,
+    phase_before_pi,
+    phase_after_pi,
+    epi,
 ) -> C6WindingJointStep:
     """Check supplied phase-step inequalities and apply the exact nodal law.
 
@@ -547,24 +658,51 @@ def observe_c6_winding_joint_domain(
     nesting = (min(after) - min(before), max(before) - max(after))
     contraction = reference.nonlinear_oscillation_factor * d_before - d_after
     if any(value < 0 for value in nesting) or contraction < 0:
-        raise ValueError("supplied phase endpoints fail nesting or nonlinear contraction")
+        raise ValueError(
+            "supplied phase endpoints fail nesting or nonlinear contraction"
+        )
     budget = reference.epi_phase_budget_weight
     lower_before = min(values) - budget * d_before
     upper_before = max(values) + budget * d_before
     if lower_before < reference.epi_lower or upper_before > reference.epi_upper:
-        raise ValueError("initial EPI field lacks the declared future phase-forcing reserve")
-    phase_pressure, pressure, rate, final = _c6_joint_nodal_model(reference, after, values)
+        raise ValueError(
+            "initial EPI field lacks the declared future phase-forcing reserve"
+        )
+    phase_pressure, pressure, rate, final = _c6_joint_nodal_model(
+        reference, after, values
+    )
     lower_after = min(final) - budget * d_after
     upper_after = max(final) + budget * d_after
     mean_before = sum(values, Fraction(0)) / 6
     mean_after = sum(final, Fraction(0)) / 6
-    if lower_after < lower_before or upper_after > upper_before or mean_after != mean_before:
+    if (
+        lower_after < lower_before
+        or upper_after > upper_before
+        or mean_after != mean_before
+    ):
         raise RuntimeError("exact C6 nodal interval lost its reserve or mean identity")
     return C6WindingJointStep(
-        reference, before, after, d_before, d_after, contraction, nesting, values,
-        final, phase_pressure, pressure, rate, lower_before, lower_after,
-        upper_before, upper_after, lower_after - lower_before, upper_before - upper_after,
-        mean_before, mean_after, mean_after - mean_before,
+        reference,
+        before,
+        after,
+        d_before,
+        d_after,
+        contraction,
+        nesting,
+        values,
+        final,
+        phase_pressure,
+        pressure,
+        rate,
+        lower_before,
+        lower_after,
+        upper_before,
+        upper_after,
+        lower_after - lower_before,
+        upper_before - upper_after,
+        mean_before,
+        mean_after,
+        mean_after - mean_before,
     )
 
 
@@ -615,7 +753,12 @@ class C6WindingDefect:
 
 
 def observe_c6_winding_defect(
-    reference, *, phase_before_pi, phase_after_pi, epi_before, epi_after,
+    reference,
+    *,
+    phase_before_pi,
+    phase_after_pi,
+    epi_before,
+    epi_after,
 ) -> C6WindingDefect:
     """Measure additive phase/EPI defects against the rebuilt exact owner.
 
@@ -644,7 +787,9 @@ def observe_c6_winding_defect(
     epsilon = max(Fraction(0), v1 - reference.nonlinear_oscillation_factor * v0)
     expansion = max(Fraction(0), min(z0) - min(z1), max(z1) - max(z0))
     phase, pressure, rate, model = _c6_joint_nodal_model(reference, z1, x0)
-    delta = tuple(actual - predicted for actual, predicted in zip(x1, model, strict=True))
+    delta = tuple(
+        actual - predicted for actual, predicted in zip(x1, model, strict=True)
+    )
     mu = sum(delta, Fraction(0)) / 6
     centered = tuple(value - mu for value in delta)
     delta_infinity = max(abs(value) for value in delta)
@@ -658,13 +803,42 @@ def observe_c6_winding_defect(
     lower_slack = low1 - low0 + lower_loss
     upper_slack = high0 + upper_loss - high1
     if mean_residual or lower_slack < 0 or upper_slack < 0:
-        raise RuntimeError("exact C6 additive defect lost its mean or reserve inequality")
+        raise RuntimeError(
+            "exact C6 additive defect lost its mean or reserve inequality"
+        )
     return C6WindingDefect(
-        reference, z0, z1, x0, x1, v0, v1, epsilon, expansion,
-        phase, pressure, rate, model, delta, mu, centered, _oscillation(centered),
-        delta_infinity, mean0, mean1, mean_residual, low0, low1, high0, high1,
-        lower_loss, upper_loss, lower_slack, upper_slack, phase_cost + delta_infinity,
-        v0 <= reference.max_phase_oscillation_pi, v1 <= reference.max_phase_oscillation_pi,
+        reference,
+        z0,
+        z1,
+        x0,
+        x1,
+        v0,
+        v1,
+        epsilon,
+        expansion,
+        phase,
+        pressure,
+        rate,
+        model,
+        delta,
+        mu,
+        centered,
+        _oscillation(centered),
+        delta_infinity,
+        mean0,
+        mean1,
+        mean_residual,
+        low0,
+        low1,
+        high0,
+        high1,
+        lower_loss,
+        upper_loss,
+        lower_slack,
+        upper_slack,
+        phase_cost + delta_infinity,
+        v0 <= reference.max_phase_oscillation_pi,
+        v1 <= reference.max_phase_oscillation_pi,
     )
 
 
@@ -708,38 +882,66 @@ def bound_c6_winding_defect_prefix(reference, *, observations) -> C6WindingDefec
         if not isinstance(item, C6WindingDefect):
             raise TypeError("every observation must be a C6WindingDefect")
         if _rebuild_c6_winding_joint_domain(item.reference) != reference:
-            raise ValueError("all observations must share the same joint-domain coefficients")
+            raise ValueError(
+                "all observations must share the same joint-domain coefficients"
+            )
         step = observe_c6_winding_defect(
-            reference, phase_before_pi=item.phase_before_pi, phase_after_pi=item.phase_after_pi,
-            epi_before=item.epi_before, epi_after=item.epi_after,
+            reference,
+            phase_before_pi=item.phase_before_pi,
+            phase_after_pi=item.phase_after_pi,
+            epi_before=item.epi_before,
+            epi_after=item.epi_after,
         )
-        if rebuilt and (rebuilt[-1].epi_after != step.epi_before
-                        or rebuilt[-1].phase_after_pi != step.phase_before_pi):
-            raise ValueError("finite defect observations must have exactly adjacent endpoints")
+        if rebuilt and (
+            rebuilt[-1].epi_after != step.epi_before
+            or rebuilt[-1].phase_after_pi != step.phase_before_pi
+        ):
+            raise ValueError(
+                "finite defect observations must have exactly adjacent endpoints"
+            )
         rebuilt.append(step)
     first = rebuilt[0]
     phase = [first.phase_oscillation_before]
-    means, lower_losses, upper_losses, absolute_costs = ([Fraction(0)] for _ in range(4))
-    lower_bounds, upper_bounds = [first.lower_reserve_before], [first.upper_reserve_before]
+    means, lower_losses, upper_losses, absolute_costs = (
+        [Fraction(0)] for _ in range(4)
+    )
+    lower_bounds, upper_bounds = [first.lower_reserve_before], [
+        first.upper_reserve_before
+    ]
     for step in rebuilt:
-        phase.append(reference.nonlinear_oscillation_factor * phase[-1] + step.phase_oscillation_defect)
+        phase.append(
+            reference.nonlinear_oscillation_factor * phase[-1]
+            + step.phase_oscillation_defect
+        )
         means.append(means[-1] + step.mean_defect)
         lower_losses.append(lower_losses[-1] + step.lower_loss_bound)
         upper_losses.append(upper_losses[-1] + step.upper_loss_bound)
         absolute_costs.append(absolute_costs[-1] + step.absolute_defect_cost)
         lower_bounds.append(first.lower_reserve_before - lower_losses[-1])
         upper_bounds.append(first.upper_reserve_before + upper_losses[-1])
-        if (step.phase_oscillation_after > phase[-1]
-                or step.mean_after != first.mean_before + means[-1]
-                or step.lower_reserve_after < lower_bounds[-1]
-                or step.upper_reserve_after > upper_bounds[-1]):
-            raise RuntimeError("exact C6 finite defect telescope lost a prefix identity")
+        if (
+            step.phase_oscillation_after > phase[-1]
+            or step.mean_after != first.mean_before + means[-1]
+            or step.lower_reserve_after < lower_bounds[-1]
+            or step.upper_reserve_after > upper_bounds[-1]
+        ):
+            raise RuntimeError(
+                "exact C6 finite defect telescope lost a prefix identity"
+            )
     return C6WindingDefectPrefix(
-        reference, tuple(rebuilt), tuple(phase), tuple(means), tuple(lower_losses),
-        tuple(upper_losses), tuple(absolute_costs), tuple(lower_bounds), tuple(upper_bounds),
+        reference,
+        tuple(rebuilt),
+        tuple(phase),
+        tuple(means),
+        tuple(lower_losses),
+        tuple(upper_losses),
+        tuple(absolute_costs),
+        tuple(lower_bounds),
+        tuple(upper_bounds),
         max(abs(value) for value in means),
         max(phase) <= reference.max_phase_oscillation_pi,
-        min(lower_bounds) >= reference.epi_lower and max(upper_bounds) <= reference.epi_upper,
+        min(lower_bounds) >= reference.epi_lower
+        and max(upper_bounds) <= reference.epi_upper,
     )
 
 
@@ -775,8 +977,13 @@ class C6WindingUniformDefectBound:
 
 
 def bound_c6_winding_uniform_defects(
-    reference, *, initial_epi, initial_phase_oscillation, phase_defect_bound,
-    centered_epi_defect_bound, mean_prefix_bound,
+    reference,
+    *,
+    initial_epi,
+    initial_phase_oscillation,
+    phase_defect_bound,
+    centered_epi_defect_bound,
+    mean_prefix_bound,
 ) -> C6WindingUniformDefectBound:
     """Derive a conditional phase/range tube without square-root estimates.
 
@@ -809,13 +1016,18 @@ def bound_c6_winding_uniform_defects(
     error = _rational(centered_epi_defect_bound, "centered_epi_defect_bound")
     mean_bound = _rational(mean_prefix_bound, "mean_prefix_bound")
     if min(v0, epsilon, error, mean_bound) < 0:
-        raise ValueError("phase, centered-error and mean-prefix bounds must be nonnegative")
+        raise ValueError(
+            "phase, centered-error and mean-prefix bounds must be nonnegative"
+        )
     phase_bound = max(v0, epsilon / (1 - reference.nonlinear_oscillation_factor))
     forcing = 2 * reference.forcing_step_factor * phase_bound + error
     matrix = reference.nodal_euler_matrix
     squared = exact_square_matrix_power(matrix, 2)
-    overlap = min(sum((min(a, b) for a, b in zip(left, right, strict=True)), Fraction(0))
-                  for left in squared for right in squared)
+    overlap = min(
+        sum((min(a, b) for a, b in zip(left, right, strict=True)), Fraction(0))
+        for left in squared
+        for right in squared
+    )
     sigma = 1 - overlap
     s = reference.timestep * reference.capacity * reference.epi_weight
     if sigma != 1 - min(s**2, 4 * s * (1 - s)):
@@ -824,7 +1036,9 @@ def bound_c6_winding_uniform_defects(
     v_epi = _oscillation(epi) + _oscillation(tuple(dot(row, epi) for row in matrix))
     if r == 1:
         if forcing:
-            raise ValueError("nonzero uniform forcing requires strict two-step Euler contraction")
+            raise ValueError(
+                "nonzero uniform forcing requires strict two-step Euler contraction"
+            )
         bound = v_epi
     else:
         bound = max(v_epi, 2 * forcing / (1 - r))
@@ -834,9 +1048,26 @@ def bound_c6_winding_uniform_defects(
     phase_ok = phase_bound <= reference.max_phase_oscillation_pi
     epi_ok = reference.epi_lower <= lower and upper <= reference.epi_upper
     return C6WindingUniformDefectBound(
-        reference, epi, v0, mean, v_epi, epsilon, error, mean_bound, phase_bound,
-        forcing, squared, sigma, r, bound, lower, upper, phase_ok, epi_ok,
-        phase_ok and epi_ok, sigma < 1,
+        reference,
+        epi,
+        v0,
+        mean,
+        v_epi,
+        epsilon,
+        error,
+        mean_bound,
+        phase_bound,
+        forcing,
+        squared,
+        sigma,
+        r,
+        bound,
+        lower,
+        upper,
+        phase_ok,
+        epi_ok,
+        phase_ok and epi_ok,
+        sigma < 1,
     )
 
 
@@ -902,36 +1133,66 @@ def derive_c6_winding_pairing(reference) -> C6WindingPairingReference:
     """
     reference = _rebuild_c6_winding_joint_domain(reference)
     laplacian = laplacian_matrix(6)
-    receiver = tuple(tuple(Fraction(i == j) - 2 * value / 3 for j, value in enumerate(row))
-                     for i, row in enumerate(laplacian))
-    projection = tuple(tuple(Fraction(j in (i, i + 3)) - Fraction(1, 3) for j in range(6))
-                       for i in range(3))
+    receiver = tuple(
+        tuple(Fraction(i == j) - 2 * value / 3 for j, value in enumerate(row))
+        for i, row in enumerate(laplacian)
+    )
+    projection = tuple(
+        tuple(Fraction(j in (i, i + 3)) - Fraction(1, 3) for j in range(6))
+        for i in range(3)
+    )
     coherence = reference.phase_reference.coherence_matrix
-    projected = tuple(tuple(tuple(dot(row, column) for column in zip(*matrix, strict=True))
-                            for row in projection) for matrix in (receiver, coherence, laplacian))
+    projected = tuple(
+        tuple(
+            tuple(dot(row, column) for column in zip(*matrix, strict=True))
+            for row in projection
+        )
+        for matrix in (receiver, coherence, laplacian)
+    )
     il_factor = 1 - 3 * reference.coherence_phase_factor / 2
     receiver_residual = projected[0]
     coherence_residual = tuple(
-        tuple(value - il_factor * expected for value, expected in zip(row, target, strict=True))
+        tuple(
+            value - il_factor * expected
+            for value, expected in zip(row, target, strict=True)
+        )
         for row, target in zip(projected[1], projection, strict=True)
     )
     laplacian_residual = tuple(
-        tuple(value - 3 * expected / 2 for value, expected in zip(row, target, strict=True))
+        tuple(
+            value - 3 * expected / 2
+            for value, expected in zip(row, target, strict=True)
+        )
         for row, target in zip(projected[2], projection, strict=True)
     )
     phase_factor = reference.phase_reference.modal_multipliers[2]
-    epi_factor = 1 - 3 * reference.timestep * reference.capacity * reference.epi_weight / 2
+    epi_factor = (
+        1 - 3 * reference.timestep * reference.capacity * reference.epi_weight / 2
+    )
     cross_factor = -3 * reference.forcing_step_factor / 2
     quotient = ((phase_factor, Fraction(0)), (cross_factor * phase_factor, epi_factor))
     spectral_radius = max(abs(phase_factor), abs(epi_factor))
-    if (phase_factor != (1 - reference.coupling_phase_factor) * il_factor
-            or any(value for matrix in (receiver_residual, coherence_residual, laplacian_residual)
-                   for row in matrix for value in row)):
+    if phase_factor != (1 - reference.coupling_phase_factor) * il_factor or any(
+        value
+        for matrix in (receiver_residual, coherence_residual, laplacian_residual)
+        for row in matrix
+        for value in row
+    ):
         raise RuntimeError("exact C6 pairing lost its receiver or Laplacian identity")
     return C6WindingPairingReference(
-        reference, projection, receiver, coherence, phase_factor, epi_factor,
-        cross_factor, quotient, receiver_residual, coherence_residual,
-        laplacian_residual, spectral_radius, spectral_radius < 1,
+        reference,
+        projection,
+        receiver,
+        coherence,
+        phase_factor,
+        epi_factor,
+        cross_factor,
+        quotient,
+        receiver_residual,
+        coherence_residual,
+        laplacian_residual,
+        spectral_radius,
+        spectral_radius < 1,
     )
 
 
@@ -985,7 +1246,11 @@ class C6WindingPairingObservation:
 
 
 def observe_c6_winding_pairing(
-    reference, *, phase_before_pi, closed_mean_errors_pi, epi,
+    reference,
+    *,
+    phase_before_pi,
+    closed_mean_errors_pi,
+    epi,
 ) -> C6WindingPairingObservation:
     """Evaluate supplied finite phase means and the exact nodal quotient.
 
@@ -1015,52 +1280,118 @@ def observe_c6_winding_pairing(
     if diameter > source.max_phase_oscillation_pi:
         raise ValueError("phase oscillation exceeds the declared winding box")
     if min(closed) < min(before) or max(closed) > max(before):
-        raise ValueError("supplied closed means must lie inside the initial phase interval")
+        raise ValueError(
+            "supplied closed means must lie inside the initial phase interval"
+        )
     budget = source.epi_phase_budget_weight
-    lower_before, upper_before = min(values) - budget * diameter, max(values) + budget * diameter
+    lower_before, upper_before = (
+        min(values) - budget * diameter,
+        max(values) + budget * diameter,
+    )
     if lower_before < source.epi_lower or upper_before > source.epi_upper:
-        raise ValueError("initial EPI field lacks the declared future phase-forcing reserve")
+        raise ValueError(
+            "initial EPI field lacks the declared future phase-forcing reserve"
+        )
     t = source.coupling_phase_factor
-    coupled = tuple((1 - t) * value + t * dot(row, closed)
-                    for value, row in zip(before, pairing.receiver_average_matrix, strict=True))
+    coupled = tuple(
+        (1 - t) * value + t * dot(row, closed)
+        for value, row in zip(before, pairing.receiver_average_matrix, strict=True)
+    )
     after = tuple(dot(row, coupled) for row in pairing.coherence_matrix)
     final_diameter = _oscillation(after)
     phase, pressure, rate, final = _c6_joint_nodal_model(source, after, values)
     phase_before, phase_coupled, phase_after = (
         c6_centered_opposite_pairs(vector) for vector in (before, coupled, after)
     )
-    epi_before, epi_after = (c6_centered_opposite_pairs(vector) for vector in (values, final))
+    epi_before, epi_after = (
+        c6_centered_opposite_pairs(vector) for vector in (values, final)
+    )
     phase_pair_residual = tuple(
         actual - pairing.phase_pair_factor * previous
         for actual, previous in zip(phase_after, phase_before, strict=True)
     )
     epi_pair_residual = tuple(
-        actual - pairing.epi_pair_factor * previous - pairing.postphase_to_epi_pair_factor * forcing
-        for actual, previous, forcing in zip(epi_after, epi_before, phase_after, strict=True)
+        actual
+        - pairing.epi_pair_factor * previous
+        - pairing.postphase_to_epi_pair_factor * forcing
+        for actual, previous, forcing in zip(
+            epi_after, epi_before, phase_after, strict=True
+        )
     )
     phase_pairs, pressure_pairs = c6_pair_sums(phase), c6_pair_sums(pressure)
-    phase_pressure_residual = tuple(value + 3 * pair / 2 for value, pair in zip(phase_pairs, phase_after, strict=True))
+    phase_pressure_residual = tuple(
+        value + 3 * pair / 2
+        for value, pair in zip(phase_pairs, phase_after, strict=True)
+    )
     pressure_residual = tuple(
         value + 3 * (source.epi_weight * hx + source.phase_weight * hz) / 2
         for value, hx, hz in zip(pressure_pairs, epi_before, phase_after, strict=True)
     )
     mean_before, mean_closed, mean_coupled, mean_after, mean_epi, mean_final = (
-        sum(vector, Fraction(0)) / 6 for vector in (before, closed, coupled, after, values, final)
+        sum(vector, Fraction(0)) / 6
+        for vector in (before, closed, coupled, after, values, final)
     )
     mean_residual = mean_after - ((1 - t) * mean_before + t * mean_closed)
-    lower_after, upper_after = min(final) - budget * final_diameter, max(final) + budget * final_diameter
+    lower_after, upper_after = (
+        min(final) - budget * final_diameter,
+        max(final) + budget * final_diameter,
+    )
     contraction = source.nonlinear_oscillation_factor * diameter - final_diameter
-    if (any(phase_pair_residual + epi_pair_residual + phase_pressure_residual + pressure_residual)
-            or mean_residual or mean_after != mean_coupled or mean_final != mean_epi
-            or final_diameter > diameter
-            or min(final) < source.epi_lower or max(final) > source.epi_upper
-            or phase_coupled != tuple((1 - t) * value for value in phase_before)):
-        raise RuntimeError("exact C6 finite pairing lost its quotient, mean or interval identity")
+    if (
+        any(
+            phase_pair_residual
+            + epi_pair_residual
+            + phase_pressure_residual
+            + pressure_residual
+        )
+        or mean_residual
+        or mean_after != mean_coupled
+        or mean_final != mean_epi
+        or final_diameter > diameter
+        or min(final) < source.epi_lower
+        or max(final) > source.epi_upper
+        or phase_coupled != tuple((1 - t) * value for value in phase_before)
+    ):
+        raise RuntimeError(
+            "exact C6 finite pairing lost its quotient, mean or interval identity"
+        )
     return C6WindingPairingObservation(
-        pairing, before, closed, coupled, after, mean_before, mean_closed, mean_coupled, mean_after,
-        mean_residual, phase_before, phase_coupled, phase_after, phase_pair_residual, values, final,
-        mean_epi, mean_final, mean_final - mean_epi, epi_before, epi_after, epi_pair_residual,
-        phase, pressure, rate, phase_pairs, pressure_pairs, phase_pressure_residual, pressure_residual,
-        diameter, final_diameter, contraction, contraction >= 0, lower_before, lower_after,
-        upper_before, upper_after, lower_after >= source.epi_lower and upper_after <= source.epi_upper,
+        pairing,
+        before,
+        closed,
+        coupled,
+        after,
+        mean_before,
+        mean_closed,
+        mean_coupled,
+        mean_after,
+        mean_residual,
+        phase_before,
+        phase_coupled,
+        phase_after,
+        phase_pair_residual,
+        values,
+        final,
+        mean_epi,
+        mean_final,
+        mean_final - mean_epi,
+        epi_before,
+        epi_after,
+        epi_pair_residual,
+        phase,
+        pressure,
+        rate,
+        phase_pairs,
+        pressure_pairs,
+        phase_pressure_residual,
+        pressure_residual,
+        diameter,
+        final_diameter,
+        contraction,
+        contraction >= 0,
+        lower_before,
+        lower_after,
+        upper_before,
+        upper_after,
+        lower_after >= source.epi_lower and upper_after <= source.epi_upper,
     )

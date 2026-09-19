@@ -1,72 +1,18 @@
-"""From the catalog to the properties: the emergent (mass, charge) spectrum and
-where it departs from nature (Layers 2 -> 3).
+"""Static winding-sector energy comparisons on prescribed rings and grids.
 
-THE QUESTION (theory creator, continuing the Layer-2/3 investigation):
-benchmarks/emergent_particle_catalog.py established, on the 1D ring, the
-SELECTION of a fundamental unit charge (|W|=1) from the energy hierarchy
-E(W) ~ W^2. Two questions remain open and are addressed here:
+The script constructs one-core and separated-core phase fields independently;
+it does not evolve a core into two cores. A lower diagnostic energy for a
+prepared separated field is not a fission trajectory or a derived force law.
+The stored pressure and support are supplied. compute_energy_density is a
+quadratic field diagnostic, not an established physical rest-energy functional.
+The ring checks test approximate W-squared ratios at finite size and small
+phase increments; the trigonometric diagnostic need not obey an exact square
+law at arbitrary winding. The printed mass label is only a proxy.
+Embedded lepton values are external comparisons. One phase family cannot prove
+that all TNFR configurations lack an independent structural mode or label.
 
-  (Layer 2, robustness) On the ring the |W|>=2 fission was only INFERRED from
-  the energy ordering -- the ring is 1D, so the winding is topologically locked
-  and cannot actually split. Does a |W|=2 structure REALLY fission on a 2D
-  manifold where two |W|=1 cores can separate? (M1, M2 -- measured DIRECTLY.)
-
-  (Layer 3, the frontier) A real particle is not just a charge: it has a MASS,
-  and the catalog of masses is the deep open question. What is TNFR's emergent
-  (mass, charge) spectrum, and does it match the real one? (M3, M4.)
-
-DEFINITIONS (canonical, nothing imported):
-  - charge  W  = integer winding of the phase, measured per face (degree of
-    S^1 -> S^1, exact; examples/08_emergent_geometry/133_psi_topological_defects.py).
-  - mass  m    = the structural SELF-ENERGY of the localized species: the total
-    canonical energy density (tnfr.physics.unified.compute_energy_density) above
-    the uniform vacuum. This is the rest energy of the coherent form -- the only
-    mass-like scalar the substrate provides.
-
-WHAT EMERGES (measured):
-  - M1 (Layer 2, DIRECT fission): on a 2D grid a single |W|=2 core has a HIGHER
-    self-energy than two separated |W|=1 cores of the same total charge, so the
-    double-winding structure is NOT the charge-2 ground state -- it splits. The
-    ring's inferred fission is now DIRECTLY demonstrated where separation is real.
-  - M2 (Layer 2, like-charge repulsion): the self-energy of the two |W|=1 cores
-    DECREASES as their separation grows -- the like charges repel (the 2D Coulomb
-    /XY-vortex process), the force that drives the fission of M1.
-  - M3 (Layer 3, the mass spectrum): the self-energy of the minimal-energy
-    charge-W sector (a uniform-winding ring, where the gradient 2pi|W|/n stays
-    small and lattice-clean) scales as m(W) ~ W^2 EXACTLY (ratios 1, 4, 9, 16) --
-    TNFR's emergent (mass, charge) locus is m ~ q^2: mass is a FUNCTION of the
-    topological charge. (The clean law lives on the ring; a localized 2D core
-    has large near-core gradients that wrap-saturate, so its energy is noisy --
-    the process, M1/M2, needs the 2D manifold; the energy law needs the ring.)
-  - M4 (Layer 3, the honest confrontation): the real charged leptons e, mu, tau
-    ALL carry the same charge (q = -1) but masses in ratio 1 : 207 : 3477. A mass
-    that is a function of charge (M3) forces same-charge species to be MASS-
-    DEGENERATE -- which the lepton generations violate outright. So the real mass
-    spectrum does NOT emerge, and the obstruction is now PRECISE: the substrate
-    labels a species only by (W, U(2) shell, sign W); it lacks an internal
-    FLAVOUR / generation degree of freedom DECOUPLED from the charge, which is
-    exactly what a same-charge mass tower requires.
-
-HONEST SCOPE: the 2D vortex self-energy ~ W^2 log(R/a), the like-charge
-repulsion, and the fission of multiply-charged vortices are STANDARD
-topological-defect physics (XY / Kosterlitz-Thouless, Abrikosov, superfluids).
-The TNFR content is that the ONE nodal operator reproduces them, giving a
-STRUCTURED emergent catalog with a mass spectrum m ~ q^2. That spectrum is
-TNFR's OWN; it does NOT reproduce the real particle masses/charges (Layer 3,
-OPEN, theory/EMERGENT_ONTOLOGY.md Sec.9.1). The value of M4 is a DECISIVE,
-honest negative that LOCATES the gap (a charge-decoupled flavour label), not a
-match. The substrate is classical -- no spin, Hilbert space, or Born rule.
-Closes no open problem.
-
-Run:
-    python benchmarks/emergent_mass_charge_spectrum.py
-
-Theoretical anchor: AGENTS.md (nodal equation; topological charge; coherence C;
-U(1) gauge sector); theory/EMERGENT_ONTOLOGY.md Sec.7.1-7.2 (occupant/process,
-EM gauge), Sec.9.1 (OPEN properties frontier); benchmarks/
-emergent_particle_catalog.py (the 1D catalog selection); examples/08_emergent_
-geometry/133_psi_topological_defects.py (integer face winding).
-Status: RESEARCH (Layer-2 direct + Layer-3 probe; emergence falsifier).
+Status: auxiliary or finite evidence. See theory/EMERGENT_ONTOLOGY.md and
+theory/NODAL_PARAMETER_FOUNDATIONS.md for model and physical-bridge limits.
 """
 
 from __future__ import annotations
@@ -144,7 +90,7 @@ def loop_winding(G: nx.Graph, *, grid: int = GRID, margin: int = 2) -> int:
 
 
 def self_energy(G: nx.Graph, vacuum: float) -> float:
-    """Total canonical energy density above the uniform vacuum (the mass-like scalar)."""
+    """Total quadratic field diagnostic minus the supplied baseline; not physical mass."""
     ed = compute_energy_density(G)
     return float(sum(ed[n] for n in G.nodes()) - vacuum)
 
@@ -157,28 +103,25 @@ def vacuum_energy(*, base_dnfr: float = 0.05, grid: int = GRID) -> float:
 
 
 def ring_mass(w: int, *, n: int = 60) -> float:
-    """Self-energy of a uniform-winding-W ring above its vacuum (the clean mass).
+    """Total diagnostic on a prepared winding ring.
 
-    On the ring the charge-W minimum spreads the winding uniformly
-    (|grad phi| = 2pi|W|/n, small and lattice-clean), so the canonical energy is
-    the exact W-sector self-energy -- unlike a localized 2D core whose near-core
-    gradient wrap-saturates. Matches benchmarks/emergent_particle_catalog.py.
-    """
+    The caller subtracts the W=0 baseline; finite trigonometric terms need not
+    produce exact W-squared ratios."""
     ed = compute_energy_density(winding_ring(n, w))
     return float(sum(ed.values()))
 
 
 def main() -> None:
     print("=" * 74)
-    print("EMERGENT (MASS, CHARGE) SPECTRUM -- from the catalog to the properties")
+    print("PREPARED WINDING FIELDS AND QUADRATIC DIAGNOSTIC COMPARISONS")
     print("=" * 74)
 
     c = GRID // 2
     cf = c + 0.5  # half-integer face centre: no node coincides with a core
     vac = vacuum_energy()
 
-    # -- M1: DIRECT composite instability on a 2D manifold (Layer 2) -----------
-    print("\n[M1] DIRECT FISSION (Layer 2): a |W|=2 core vs two separated |W|=1.")
+    # -- M1: Static one-core versus two-core comparison -----------
+    print("\n[M1] STATIC CORE COMPARISON: a |W|=2 core vs two separated |W|=1.")
     g_double = build_vortices([(cf, cf, 2)])
     e_double = self_energy(g_double, vac)
     w_double = loop_winding(g_double)
@@ -195,10 +138,12 @@ def main() -> None:
     assert w_double == 2 and w_split == 2, "total charge must be +2 for both"
     assert e_double > e_split, "double core not above the split -- no fission"
     print("     -> PASS: the double-winding core costs MORE than the split pair;")
-    print("        charge-2 is not a single core -- it fissions. (Directly shown.)")
+    print(
+        "        the supplied two-core field has lower diagnostic energy; no fission run."
+    )
 
-    # -- M2: like-charge repulsion drives the fission (Layer 2) ----------------
-    print("\n[M2] LIKE-CHARGE REPULSION (Layer 2): E(two |W|=1) vs separation.")
+    # -- M2: Static energy variation across separately supplied separations ----------------
+    print("\n[M2] STATIC SEPARATION COMPARISON: E(two |W|=1) vs separation.")
     print(f"     {'separation':>11} {'winding':>8} {'self-energy':>13}")
     prev = None
     decreasing = True
@@ -211,11 +156,13 @@ def main() -> None:
             decreasing = False
         prev = e
     assert decreasing, "energy did not fall with separation -- no repulsion"
-    print("     -> PASS: energy falls as the two like cores separate = repulsion")
-    print("        (2D Coulomb / XY-vortex); the force that drives M1 fission.")
+    print(
+        "     -> PASS: energy falls across these separately prepared core separations"
+    )
+    print("        No motion, force derivative or causal fission is measured.")
 
-    # -- M3: the emergent mass spectrum m(W) ~ W^2 (Layer 3) -------------------
-    print("\n[M3] MASS SPECTRUM (Layer 3): self-energy of the charge-W sector.")
+    # -- M3: the finite ring-energy proxy m(W) ~ W^2 -------------------
+    print("\n[M3] RING-ENERGY PROXY: self-energy of the charge-W sector.")
     print(f"     {'W':>3} {'mass (self-E)':>15} {'m(W)/m(1)':>11} {'W^2':>6}")
     vac_ring = ring_mass(0)
     m1 = ring_mass(1) - vac_ring
@@ -225,11 +172,15 @@ def main() -> None:
         masses[w] = m
         ratio = m / m1 if m1 else float("nan")
         print(f"     {w:>3} {m:>15.4f} {ratio:>11.3f} {w * w:>6}")
-    print("     m(W)/m(1) = the exact integer squares 1, 4, 9, 16, 25 (m ~ W^2).")
+    print(
+        "     m(W)/m(1) = approximately the integer squares 1, 4, 9, 16, 25 (m ~ W^2)."
+    )
     assert abs(masses[2] / m1 - 4.0) < 0.05, "ring mass not ~4 at W=2"
     assert abs(masses[3] / m1 - 9.0) < 0.1, "ring mass not ~9 at W=3"
-    print("     -> TNFR's (mass, charge) locus is m ~ q^2: MASS IS A FUNCTION OF")
-    print("        CHARGE. The mass spectrum is set by the topological charge.")
+    print(
+        "     -> TNFR's (mass, charge) locus is m ~ q^2: this selected diagnostic depends on"
+    )
+    print("        prepared winding; no global mass law follows.")
 
     # -- M4: the honest confrontation with the real spectrum (Layer 3) ---------
     print("\n[M4] CONFRONTATION (Layer 3): the real charged leptons.")
@@ -238,19 +189,25 @@ def main() -> None:
     print(f"     {'lepton':>7} {'charge':>7} {'mass (MeV)':>11} {'m/m_e':>9}")
     for name, mass in leptons.items():
         print(f"     {name:>7} {-1:>+7d} {mass:>11.3f} {mass / m_e:>9.1f}")
-    print("     TNFR: mass = f(|W|), so same charge => SAME mass (degenerate).")
+    print(
+        "     Selected ring proxy: one value per prepared winding; not all TNFR states."
+    )
     print("     Nature: same charge (-1), masses in ratio 1 : 207 : 3477.")
-    print("     -> DECISIVE NEGATIVE: a charge-tied mass (M3) cannot produce a")
-    print("        same-charge mass tower. The real spectrum does NOT emerge.")
+    print("     -> The one-parameter proxy in M3 does not supply the displayed")
+    print(
+        "        same-charge mass ratios; no full TNFR state-space obstruction follows."
+    )
 
     print("\n" + "=" * 74)
-    print("SUMMARY (Layers 2 -> 3):")
-    print("  Layer 2 (catalog): the composite fission is now DIRECT (M1/M2) --")
-    print("    |W|=1 is the fundamental unit charge; |W|>=2 split. STRUCTURED.")
-    print("  Layer 3 (properties): TNFR gives a mass spectrum, but m ~ q^2 (M3);")
-    print("    the real same-charge lepton tower (M4) refutes it. OPEN.")
-    print("  LOCATED GAP: a flavour/generation label DECOUPLED from the charge --")
-    print("    absent from the classical substrate's (W, U(2) shell) labels.")
+    print("FINITE STATIC COMPARISON:")
+    print(
+        "  Independently prepared one-core and two-core fields have different energies."
+    )
+    print("  No split trajectory, separation dynamics or physical force is executed.")
+    print("  The ring diagnostic passes the stated approximate square-ratio checks.")
+    print("  A diagnostic proxy is not a physical mass spectrum.")
+    print("  The supplied lepton comparison is not a prediction from nodal dynamics.")
+    print("  Other state channels and the physical identification remain unresolved.")
     print("=" * 74)
 
 

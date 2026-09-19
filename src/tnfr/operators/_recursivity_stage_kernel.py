@@ -57,10 +57,7 @@ class RecursivityAdvisoryProposal:
     def emits_advisory(self) -> bool:
         """Whether this proposal adds the step-level advisory event."""
 
-        return (
-            not self.had_warning_step
-            or self.warning_step_before != self.step
-        )
+        return not self.had_warning_step or self.warning_step_before != self.step
 
 
 def propose_recursivity_advisory(subject: Any) -> RecursivityAdvisoryProposal:

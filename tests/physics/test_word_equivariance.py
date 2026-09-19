@@ -10,13 +10,7 @@ from __future__ import annotations
 import networkx as nx
 import pytest
 
-from tnfr.operators.definitions import (
-    Coherence,
-    Coupling,
-    Emission,
-    Resonance,
-    Silence,
-)
+from tnfr.operators.definitions import Coherence, Coupling, Emission, Resonance, Silence
 from tnfr.physics import word_equivariance as we
 from tnfr.physics.operator_equivariance import _test_cases
 from tnfr.physics.word_equivariance import (
@@ -47,8 +41,7 @@ def test_all_canonical_words_are_equivariant():
 
 def test_bootstrap_word_residual_is_zero():
     G, sigma, node = _cycle_case()
-    r = word_equivariance_residual([Emission, Coupling, Coherence], G, sigma,
-                                   node)
+    r = word_equivariance_residual([Emission, Coupling, Coherence], G, sigma, node)
     assert r == pytest.approx(0.0, abs=1e-9)
 
 
@@ -67,9 +60,8 @@ def test_composition_closure_holds_over_prefixes():
 def test_closure_matches_single_operator_base_case():
     # a length-1 "word" reduces to the per-operator residual (base case)
     G, sigma, node = _cycle_case()
-    from tnfr.physics.operator_equivariance import (
-        operator_equivariance_residual,
-    )
+    from tnfr.physics.operator_equivariance import operator_equivariance_residual
+
     word_r = word_equivariance_residual([Coherence], G, sigma, node)
     op_r = operator_equivariance_residual(Coherence(), G, sigma, node)
     assert word_r == pytest.approx(op_r, abs=1e-9)
@@ -80,8 +72,7 @@ def test_closure_matches_single_operator_base_case():
 # --------------------------------------------------------------------------- #
 def test_word_preserves_fix_on_vertex_transitive_seed():
     G, _, _ = _cycle_case()
-    fixed, spread = word_preserves_fix([Emission, Coupling, Coherence, Silence],
-                                       G)
+    fixed, spread = word_preserves_fix([Emission, Coupling, Coherence, Silence], G)
     assert fixed
     assert spread == pytest.approx(0.0, abs=1e-6)
 
@@ -111,8 +102,11 @@ def test_word_equivariance_relabel_invariant():
 
 def test_module_exports_complete():
     expected = {
-        "WordEquivarianceResult", "word_equivariance_residual",
-        "composition_closure_holds", "word_preserves_fix", "canonical_words",
+        "WordEquivarianceResult",
+        "word_equivariance_residual",
+        "composition_closure_holds",
+        "word_preserves_fix",
+        "canonical_words",
         "audit_word_equivariance",
     }
     assert expected <= set(we.__all__)

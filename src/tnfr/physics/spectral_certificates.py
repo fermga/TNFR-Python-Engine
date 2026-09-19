@@ -138,9 +138,11 @@ def certify_invariant_subspace(
     )
     representatives = [cluster.eigenvalue for cluster in clusters]
     separation = min(
-        (abs(left - right)
-         for index, left in enumerate(representatives)
-         for right in representatives[index + 1:]),
+        (
+            abs(left - right)
+            for index, left in enumerate(representatives)
+            for right in representatives[index + 1 :]
+        ),
         default=float("inf"),
     )
     resolved = separation > 2.0 * tol

@@ -10,11 +10,8 @@ from __future__ import annotations
 from fractions import Fraction
 from math import gcd
 
-from tnfr.mathematics.arithmetic_pulse import (
-    cyclotomic_rank,
-    pointed_pulse_hankel_rank,
-)
 from tnfr.mathematics import pulse_amplitudes as pa
+from tnfr.mathematics.arithmetic_pulse import cyclotomic_rank, pointed_pulse_hankel_rank
 from tnfr.mathematics.pulse_amplitudes import (
     amplitudes_basis_invariance_residual,
     certify_pulse_amplitudes,
@@ -34,8 +31,8 @@ def test_pointed_circulant_amplitude_equals_multiplicity_over_n():
         amps = pulse_amplitudes(p, k)
         proj = projection_amplitudes(p, k)
         for (_, m, a), (_, pamp) in zip(amps, proj):
-            assert a == Fraction(m, p)              # exact amplitude
-            assert abs(pamp - float(a)) < 1e-9      # spectral-projection check
+            assert a == Fraction(m, p)  # exact amplitude
+            assert abs(pamp - float(a)) < 1e-9  # spectral-projection check
 
 
 def test_amplitudes_sum_to_one():
@@ -57,9 +54,12 @@ def test_complex_conjugate_pulse_is_real_when_expected():
         amps = pulse_amplitudes(p, k)
         for lam, m, a in amps:
             if abs(lam.imag) > 1e-9:
-                mate = [(m2, a2) for lam2, m2, a2 in amps
-                        if abs(lam2 - lam.conjugate()) < 1e-9]
-                assert mate and mate[0] == (m, a)   # conjugate has equal weight
+                mate = [
+                    (m2, a2)
+                    for lam2, m2, a2 in amps
+                    if abs(lam2 - lam.conjugate()) < 1e-9
+                ]
+                assert mate and mate[0] == (m, a)  # conjugate has equal weight
 
 
 # --------------------------------------------------------------------------- #
@@ -94,9 +94,13 @@ def test_certificate_bundle():
 
 def test_module_exports_complete():
     expected = {
-        "circulant_eigenvalues", "fourier_basis", "pulse_amplitudes",
-        "projection_amplitudes", "moment_reconstruction_residual",
-        "amplitudes_basis_invariance_residual", "PulseAmplitudeCertificate",
+        "circulant_eigenvalues",
+        "fourier_basis",
+        "pulse_amplitudes",
+        "projection_amplitudes",
+        "moment_reconstruction_residual",
+        "amplitudes_basis_invariance_residual",
+        "PulseAmplitudeCertificate",
         "certify_pulse_amplitudes",
     }
     assert expected <= set(pa.__all__)

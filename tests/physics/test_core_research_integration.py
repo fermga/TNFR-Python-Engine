@@ -19,7 +19,6 @@ from tnfr.physics import (
     structural_diffusion_operator,
 )
 
-
 SCALES = StructuralChannelScales(
     epi=1.0,
     frequency=1.0,
@@ -75,15 +74,11 @@ def test_connected_heterogeneous_states_pass_the_restricted_s16_chain():
     )
 
     assert isinstance(result, CoreResearchIntegrationCertificate)
-    assert isinstance(
-        result.left_stability, HeterogeneousDiffusionStabilityCertificate
-    )
+    assert isinstance(result.left_stability, HeterogeneousDiffusionStabilityCertificate)
     assert isinstance(
         result.right_stability, HeterogeneousDiffusionStabilityCertificate
     )
-    assert isinstance(
-        result.left_reconstruction, EpiDiffusionReconstructionCertificate
-    )
+    assert isinstance(result.left_reconstruction, EpiDiffusionReconstructionCertificate)
     assert isinstance(
         result.right_reconstruction, EpiDiffusionReconstructionCertificate
     )
@@ -134,9 +129,7 @@ def test_nonclosing_partition_returns_evidence_without_joint_promotion():
 def test_pressure_outside_the_pure_epi_channel_blocks_joint_promotion():
     left, right = _states()
     right.nodes[0]["delta_nfr"] += 0.25
-    right.nodes[0]["dEPI_dt"] = (
-        right.nodes[0]["nu_f"] * right.nodes[0]["delta_nfr"]
-    )
+    right.nodes[0]["dEPI_dt"] = right.nodes[0]["nu_f"] * right.nodes[0]["delta_nfr"]
 
     result = certify_core_research_integration(
         left, right, EXACT_PARTITION, scales=SCALES
@@ -169,9 +162,7 @@ def test_changed_support_is_rejected_before_subcertificates_are_composed():
     right.add_edge(0, 2, weight=1.0)
 
     with pytest.raises(ValueError, match="same bare edge support"):
-        certify_core_research_integration(
-            left, right, EXACT_PARTITION, scales=SCALES
-        )
+        certify_core_research_integration(left, right, EXACT_PARTITION, scales=SCALES)
 
 
 @pytest.mark.parametrize("tolerance", [0.0, 1.0, math.inf, math.nan, True])

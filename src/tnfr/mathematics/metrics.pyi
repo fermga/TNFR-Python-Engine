@@ -16,7 +16,6 @@ def spectral_weighted_angle(
     normalise: bool = True,
     atol: float = 1e-09,
 ) -> float: ...
-
 def dcoh(
     psi1: Sequence[complex] | np.ndarray,
     psi2: Sequence[complex] | np.ndarray,
