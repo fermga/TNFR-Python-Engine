@@ -53,6 +53,11 @@ All notable changes to this project will be documented in this file.
 - Declare SciPy as a core dependency for the SDK's spectral import path.
   Missing optional system-memory telemetry no longer prevents CPU computation
   interfaces from loading.
+- Keep spectral-cache writes from signature readouts off the caller's graph,
+  including snapshot-only calls and graphs with an existing cache.
+- Make CLI byte-lineage tests independent of ignored historical artifacts,
+  remove a pytest-benchmark fixture-name collision and compare spectral
+  estimates against an analytic reference. CI retains per-Python JUnit reports.
 - Classified the expensive C6 historical report producers as slow tests;
   their lightweight input-validation and independent exact-model checks remain
   in the default selection. No producer result is inferred from that classification.

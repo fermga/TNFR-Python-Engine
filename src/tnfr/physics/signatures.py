@@ -124,7 +124,9 @@ def compute_element_signature(
     # Compute base tetrad metrics. The canonical estimate_coherence_length
     # computes per-node coherence C = 1/(1+|ΔNFR|) internally from ΔNFR (the
     # structural_coherence kernel), so no coherence pre-seeding is required.
-    xi_c = float(estimate_coherence_length(G))
+    # The spectral fallback replaces a graph-owned cache entry. A shallow copy
+    # isolates that write while preserving opaque runtime handles without copying.
+    xi_c = float(estimate_coherence_length(G.copy()))
 
     grad_dict = compute_phase_gradient(G)
     grad_values = list(grad_dict.values())

@@ -14,8 +14,12 @@ import threading
 from copy import deepcopy
 
 import networkx as nx
+import numpy as np
+import pytest
 
+from tnfr.physics.fields import estimate_coherence_length
 from tnfr.physics.signatures import compute_au_like_signature, compute_element_signature
+from tnfr.physics.structural_diffusion import structural_eigenvalues
 
 
 def _ring(n: int = 10) -> nx.Graph:
@@ -66,6 +70,52 @@ def test_synthetic_probe_is_real_and_leaves_input_graph_unchanged():
     assert sig["phi_s_drift"] > 0.0
     assert dict(graph.nodes(data=True)) == before_nodes
     assert graph.graph == before_graph
+
+
+def test_unperturbed_signature_does_not_install_cache_or_copy_opaque_handles():
+    graph = _ring()
+    runtime_lock = threading.Lock()
+    graph.graph["runtime_lock"] = runtime_lock
+    before_nodes = deepcopy(dict(graph.nodes(data=True)))
+    before_graph = dict(graph.graph)
+
+    signature = compute_element_signature(graph, apply_synthetic_step=False)
+
+    assert signature["synthetic_step_applied"] is False
+    assert signature["signature_scope"] == "unperturbed_snapshot"
+    assert dict(graph.nodes(data=True)) == before_nodes
+    assert graph.graph == before_graph
+    assert graph.graph["runtime_lock"] is runtime_lock
+
+
+@pytest.mark.parametrize("change_support", [False, True])
+def test_signature_preserves_existing_spectrum_cache_identity_and_contents(
+    change_support,
+):
+    graph = _ring()
+    structural_eigenvalues(graph)
+    original_cache = graph.graph["_tnfr_spectrum_cache"]
+    original_signature = original_cache["sig"]
+    original_values = original_cache["vals"].copy()
+    marker = object()
+    original_cache["caller_marker"] = marker
+    if change_support:
+        graph.edges[0, 1]["weight"] = 2.0
+    before_nodes = deepcopy(dict(graph.nodes(data=True)))
+    before_edges = deepcopy(tuple(graph.edges(data=True)))
+    expected_length = estimate_coherence_length(graph.copy())
+
+    signature = compute_element_signature(graph, apply_synthetic_step=False)
+
+    assert signature["xi_c"] == expected_length
+    assert signature["synthetic_step_applied"] is False
+    assert graph.graph["_tnfr_spectrum_cache"] is original_cache
+    assert set(original_cache) == {"sig", "vals", "caller_marker"}
+    assert original_cache["sig"] == original_signature
+    assert original_cache["caller_marker"] is marker
+    np.testing.assert_array_equal(original_cache["vals"], original_values)
+    assert dict(graph.nodes(data=True)) == before_nodes
+    assert tuple(graph.edges(data=True)) == before_edges
 
 
 def test_compute_au_like_signature_runs():
