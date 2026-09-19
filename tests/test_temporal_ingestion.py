@@ -2,6 +2,7 @@
 
 import hashlib
 import importlib.util
+import re
 import sys
 import zipfile
 from datetime import datetime
@@ -73,6 +74,16 @@ def test_time_unavailability_is_explicit_without_dropping_samples(
             "relative_seconds",
         ),
         (
+            ("2020-01-01T00:00:00.1+00:00", "2020-01-01T00:00:01.1234567Z"),
+            (0.0, 1.023456),
+            "relative_seconds",
+        ),
+        (
+            ("2020-01-01T00:00:00", "2020-01-01T00:00:01,1234"),
+            (0.0, 1.1234),
+            "relative_seconds_timezone_unverified",
+        ),
+        (
             ("2020-01-01T00:00:00Z", "2020-01-01T01:00:01+01:00"),
             (0.0, 1.0),
             "relative_seconds",
@@ -103,14 +114,17 @@ def test_utc_designator_with_legacy_iso_parser_preserves_time_admission(
         @staticmethod
         def fromisoformat(value):
             received.append(value)
-            # Reproduce Python 3.10's missing terminal-Z support without
-            # requiring that interpreter on every development machine.
-            if value.endswith("Z"):
+            # Emulate both relevant Python 3.10 limitations on newer Python.
+            fractions = re.findall(r"\d{2}:\d{2}:\d{2}([.,])(\d+)", value)
+            if value.endswith("Z") or any(
+                separator != "." or len(digits) not in (3, 6)
+                for separator, digits in fractions
+            ):
                 raise ValueError("Invalid isoformat string")
             return datetime.fromisoformat(value)
 
     monkeypatch.setattr(BENCH, "datetime", LegacyDatetime)
-    path = archive(tmp_path, f"timestamp,frequency\n{times[0]},50\n{times[1]},\n")
+    path = archive(tmp_path, f"timestamp;frequency\n{times[0]};50\n{times[1]};\n")
     record = BENCH.load_grid_frequency_record(path)
     assert record.timestamps == times
     assert record.values_hz == (50.0, None)

@@ -217,17 +217,25 @@ def _parse_frequency_rows(text: str, *, max_rows: int):
 
 
 def _relative_times(timestamps: tuple[str, ...]):
-    """Read relative ISO times, normalizing only the terminal UTC designator.
+    """Read relative ISO times with consistent microsecond precision.
 
-    Python 3.10 accepts an explicit ``+00:00`` offset but not a terminal ``Z``.
-    This conversion changes no stored timestamp, offset, missing-row or ordering
-    policy. A date alone followed by ``Z`` is not a UTC timestamp.
+    Python 3.10 requires ``+00:00`` instead of ``Z`` for UTC-aware timestamps,
+    and three or six fractional second digits. Normalize the terminal ``Z`` and
+    represent second fractions at datetime's six-digit precision (padding or
+    truncating, never rounding).
+    Stored timestamps, missing rows and ordering policies remain unchanged.
+    A date alone followed by ``Z`` is not a UTC timestamp.
     """
     parsed = []
     for value in timestamps:
         try:
             terminal_utc = value.endswith("Z")
             iso_value = value[:-1] + "+00:00" if terminal_utc else value
+            iso_value = re.sub(
+                r"(\d{2}:\d{2}:\d{2})[.,](\d+)",
+                lambda match: match[1] + "." + match[2][:6].ljust(6, "0"),
+                iso_value,
+            )
             instant = datetime.fromisoformat(iso_value)
             if terminal_utc and instant.utcoffset() is None:
                 raise ValueError("UTC designator requires a timezone-aware time")
