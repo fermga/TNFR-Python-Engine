@@ -6,12 +6,14 @@ transient reading of the two structural safety rules into a single, honest
 certificate on the non-consensus subspace ``{y : πᵀ y = 0}`` (the ``L``-invariant
 range of the consensus projection ``Q = I − 1 πᵀ``):
 
-* **U2 (bounded reorganization).**  The peak amplification ``sup_s ‖e^{−sL}‖`` on
-  the non-consensus subspace is certified both directly (``peak_gain``, an upper
-  scan) and from the resolvent (``kreiss_lower_bound``, the Kreiss lower bound);
-  ``kreiss ≤ peak`` by the Kreiss matrix theorem.  The integrated reorganization
-    ``J`` and its closed bound ``M‖LQ‖‖x₀‖/ω`` come from the structural-time
-    layer.
+* **U2 diagnostics.** ``peak_gain`` is the largest sampled amplification on a
+  finite structural-time window of the non-consensus subspace. It is not an
+  upper certificate for unsampled times or the infinite horizon. The resolvent
+  routine supplies a finite sampled comparison. The exact Kreiss inequality
+  relates global resolvent and semigroup suprema; it does not order these two
+  independently sampled maxima. The structural-time layer also supplies
+  integrated-reorganization estimates ``J`` and the reported comparison
+  ``M‖LQ‖‖x₀‖/ω``; a global bound requires an independently justified ``M``.
 * **Structural-potential magnitude.** The structural potential along the
   sampled relaxation window is ``Φ_s(s) = −B L e^{−sL} Q x₀`` with the
   inverse-square aggregation ``B[i][j] = d(i,j)^{−2}``. Its sampled absolute
@@ -151,6 +153,8 @@ def peak_transient_gain(
     """
     t_max, samples = _scan_parameters(t_max, samples)
     lsub = restricted_generator(adjacency)
+    if lsub.shape == (0, 0):
+        return 0.0, 0.0  # No disagreement coordinates or amplification to scan.
     best, s_star = 0.0, 0.0
     for s in np.linspace(0.0, t_max, samples):
         g = float(np.linalg.norm(matrix_exponential(-lsub * s), 2))

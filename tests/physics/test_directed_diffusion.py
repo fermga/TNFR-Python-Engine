@@ -150,6 +150,44 @@ def test_matrix_exponential_of_zero_is_identity():
     assert np.allclose(matrix_exponential(np.zeros((3, 3))), np.eye(3))
 
 
+def test_empty_matrix_exponential_is_identity_without_a_norm_reduction(monkeypatch):
+    def forbidden_norm(*args, **kwargs):
+        raise AssertionError("An empty identity needs no numerical norm reduction")
+
+    monkeypatch.setattr(np.linalg, "norm", forbidden_norm)
+    matrix = np.empty((0, 0))
+    result = matrix_exponential(matrix)
+
+    np.testing.assert_array_equal(result, np.eye(0))
+    assert result.shape == (0, 0)
+    assert result is not matrix
+    assert (result @ np.empty(0)).shape == (0,)
+
+
+@pytest.mark.parametrize(
+    "matrix",
+    [
+        0.0,
+        [],
+        [1.0, 2.0],
+        np.empty((0, 2)),
+        np.empty((2, 0)),
+        np.empty((0, 0, 0)),
+        [[0.0, float("nan")], [0.0, 0.0]],
+        [[float("inf")]],
+        [[-float("inf")]],
+    ],
+)
+def test_matrix_exponential_rejects_malformed_or_nonfinite_matrices(matrix):
+    with pytest.raises(ValueError, match="finite square"):
+        matrix_exponential(matrix)
+
+
+def test_empty_matrix_exponential_does_not_bypass_series_index_validation():
+    with pytest.raises(TypeError):
+        matrix_exponential(np.empty((0, 0)), terms=1.5)
+
+
 def test_matrix_exponential_matches_diagonal():
     d = np.diag([-1.0, -2.0, 0.5])
     expected = np.diag([np.exp(-1.0), np.exp(-2.0), np.exp(0.5)])
@@ -158,6 +196,14 @@ def test_matrix_exponential_matches_diagonal():
 
 def test_transient_gain_of_zero_generator_is_one():
     assert transient_gain(np.zeros((3, 3))) == pytest.approx(1.0, abs=1e-9)
+
+
+def test_empty_transient_sector_has_zero_gain_without_a_norm_reduction(monkeypatch):
+    def forbidden_norm(*args, **kwargs):
+        raise AssertionError("The zero-dimensional sector has operator norm zero")
+
+    monkeypatch.setattr(np.linalg, "norm", forbidden_norm)
+    assert transient_gain(np.empty((0, 0))) == 0.0
 
 
 # --------------------------------------------------------------------------- #

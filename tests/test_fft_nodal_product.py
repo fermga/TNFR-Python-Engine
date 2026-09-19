@@ -308,17 +308,24 @@ def test_fft_step_rejects_tampered_diffusion_operator() -> None:
         engine.fft_accelerated_step(graph, state, 0.01)
 
 
-def test_fft_phase_step_respects_live_u3_gate() -> None:
+@pytest.mark.parametrize("phase_origin", (0.0, math.tau - 0.1))
+def test_fft_phase_step_respects_live_u3_gate(phase_origin: float) -> None:
     graph = nx.path_graph(2)
     graph.graph["DELTA_PHI_MAX"] = 0.1
-    graph.nodes[0].update(EPI=0.2, nu_f=0.0, theta=0.0)
-    graph.nodes[1].update(EPI=0.2, nu_f=0.0, theta=0.5)
+    phases = (phase_origin, (phase_origin + 0.5) % math.tau)
+    for node, phase in enumerate(phases):
+        graph.nodes[node].update(EPI=0.2, nu_f=0.0, theta=phase)
     engine = FFTDynamicsEngine(enable_caching=False)
     state = engine.fft_accelerated_step(graph, engine.create_fft_state(graph), 0.1)
     engine.reconstruct_graph_from_fft(graph, state)
 
-    assert get_attr(graph.nodes[0], ALIAS_THETA) == pytest.approx(0.0, abs=1e-14)
-    assert get_attr(graph.nodes[1], ALIAS_THETA) == pytest.approx(0.5, abs=1e-14)
+    # A round-trip error below zero wraps near 2*pi. U3 and phase preservation
+    # concern circular separation, including preparations across that branch.
+    for node, expected in enumerate(phases):
+        error = math.remainder(
+            get_attr(graph.nodes[node], ALIAS_THETA) - expected, math.tau
+        )
+        assert error == pytest.approx(0.0, abs=1e-14)
 
 
 @pytest.mark.parametrize("channel", ("phase", "capacity"))

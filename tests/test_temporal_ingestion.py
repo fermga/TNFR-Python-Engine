@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 import sys
 import zipfile
+from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -61,6 +62,63 @@ def test_time_unavailability_is_explicit_without_dropping_samples(
     assert record.timestamps == times
     assert record.values_hz == (50, 51)
     assert record.time_status == status
+
+
+@pytest.mark.parametrize(
+    "times,elapsed,status",
+    [
+        (
+            ("2020-01-01T00:00:00Z", "2020-01-01T00:00:01.25Z"),
+            (0.0, 1.25),
+            "relative_seconds",
+        ),
+        (
+            ("2020-01-01T00:00:00Z", "2020-01-01T01:00:01+01:00"),
+            (0.0, 1.0),
+            "relative_seconds",
+        ),
+        (
+            ("2020-01-01T00:00:01Z", "2020-01-01T00:00:00Z"),
+            (0.0, -1.0),
+            "nonmonotone_timestamp",
+        ),
+        (
+            ("2020-01-01T00:00:00", "2020-01-01T00:00:01Z"),
+            (None, None),
+            "mixed_timezone_unavailable",
+        ),
+        (
+            ("2020-01-01Z", "2020-01-01T00:00:01Z"),
+            (None, None),
+            "unavailable_timestamp",
+        ),
+    ],
+)
+def test_utc_designator_with_legacy_iso_parser_preserves_time_admission(
+    tmp_path, monkeypatch, times, elapsed, status
+):
+    received = []
+
+    class LegacyDatetime:
+        @staticmethod
+        def fromisoformat(value):
+            received.append(value)
+            # Reproduce Python 3.10's missing terminal-Z support without
+            # requiring that interpreter on every development machine.
+            if value.endswith("Z"):
+                raise ValueError("Invalid isoformat string")
+            return datetime.fromisoformat(value)
+
+    monkeypatch.setattr(BENCH, "datetime", LegacyDatetime)
+    path = archive(tmp_path, f"timestamp,frequency\n{times[0]},50\n{times[1]},\n")
+    record = BENCH.load_grid_frequency_record(path)
+    assert record.timestamps == times
+    assert record.values_hz == (50.0, None)
+    assert record.missing == (False, True)
+    assert record.source_line_numbers == (2, 3)
+    assert record.elapsed_seconds == elapsed
+    assert record.time_status == status
+    assert len(received) == 2 and all(not value.endswith("Z") for value in received)
 
 
 @pytest.mark.parametrize(

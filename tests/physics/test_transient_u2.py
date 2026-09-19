@@ -171,12 +171,15 @@ def test_small_perturbation_has_small_potential_magnitude_without_u6_verdict():
 
 
 @pytest.mark.parametrize("kwargs", [{"t_max": -1.0}, {"samples": 1}])
-def test_finite_transient_scans_reject_degenerate_windows(kwargs):
-    x = _unit([1.0, -1.0, 0.5, -0.5, 0.25, -0.25, 0.125])
+@pytest.mark.parametrize(
+    "adjacency", [NORMAL, np.zeros((1, 1))], ids=["nontrivial", "trivial"]
+)
+def test_finite_transient_scans_reject_degenerate_windows(kwargs, adjacency):
+    x = _unit([(-1) ** i / (i + 1) for i in range(len(adjacency))])
     with pytest.raises(ValueError):
-        peak_transient_gain(NORMAL, **kwargs)
+        peak_transient_gain(adjacency, **kwargs)
     with pytest.raises(ValueError):
-        structural_potential_peak(NORMAL, x, **kwargs)
+        structural_potential_peak(adjacency, x, **kwargs)
 
 
 def test_transient_certificate_reports_unassessed_tail():
@@ -195,7 +198,17 @@ def test_transient_certificate_rejects_unimplemented_metric_label():
         certify_transient_u2(NON_NORMAL, X4, norm_kind="weighted_l2")
 
 
-def test_single_node_certificate_has_trivial_nonconsensus_sector():
+def test_single_node_certificate_has_trivial_nonconsensus_sector(monkeypatch):
+    original_norm = np.linalg.norm
+
+    def reject_empty_reduction(value, *args, **kwargs):
+        # NumPy 2.2 rejects both empty infinity and spectral norm reductions.
+        # Keep this boundary covered when newer NumPy supplies zero itself.
+        if np.asarray(value).size == 0:
+            raise ValueError("Empty norm reduction has no maximum")
+        return original_norm(value, *args, **kwargs)
+
+    monkeypatch.setattr(np.linalg, "norm", reject_empty_reduction)
     certificate = certify_transient_u2(np.zeros((1, 1)), np.array([0.25]))
 
     assert certificate.peak_gain == 0.0

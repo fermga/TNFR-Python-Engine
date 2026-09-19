@@ -10,9 +10,9 @@ artefact of the eigensolver's arbitrary basis.
 
 This module represents degenerate spectral information as **projectors**
 ``Π_λ = Q_λ Q_λ^H``.  A projector depends only on the subspace, so it is
-invariant under ``Q_λ → Q_λ · U``.  Every downstream spectral observable in TNFR
-is built from these projectors (see :mod:`tnfr.physics.spectral_certificates`),
-which makes basis independence structural rather than incidental.
+invariant under ``Q_λ → Q_λ · U``. Consumers of this projector API, including
+:mod:`tnfr.physics.spectral_certificates`, obtain that basis independence by
+construction. Other spectral APIs can retain basis-dependent coordinates.
 
 Scope
 =====
@@ -33,7 +33,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-try:  # scipy is an OPTIONAL dependency; the Schur certificate is gated on it
+try:  # Retained availability guard; SciPy is a declared core package dependency.
     from scipy.linalg import schur as _scipy_schur
 
     _HAS_SCIPY = True
@@ -224,16 +224,23 @@ def matrix_exponential(matrix, *, terms: int = 18) -> np.ndarray:
 
     Self-contained so the non-normal certificates need no SciPy: ``A`` is scaled
     by ``2^{-s}`` until its ∞-norm is ``≤ 1``, a truncated Taylor series is
-    evaluated, and the result is squared ``s`` times.
+    evaluated, and the result is squared ``s`` times. Input must be a finite
+    square matrix. On the zero-dimensional space, its exponential is the
+    empty identity, represented with shape ``(0, 0)``.
     """
     a = np.asarray(matrix, dtype=float)
+    if a.ndim != 2 or a.shape[0] != a.shape[1] or not np.all(np.isfinite(a)):
+        raise ValueError("matrix must be a finite square array")
+    orders = range(1, terms)
     n = a.shape[0]
+    if n == 0:
+        return np.eye(0)
     norm = float(np.linalg.norm(a, np.inf))
     s = max(0, int(np.ceil(np.log2(norm + 1.0))))
     b = a / (2**s)
     result = np.eye(n)
     term = np.eye(n)
-    for k in range(1, terms):
+    for k in orders:
         term = term @ b / k
         result = result + term
     for _ in range(s):
@@ -258,8 +265,11 @@ def transient_gain(matrix, *, t_max: float = 10.0, samples: int = 200) -> float:
     stable spectrum alone does not reveal.
     """
     a = np.asarray(matrix, dtype=float)
+    times = np.linspace(0.0, t_max, samples)
+    if a.shape == (0, 0):
+        return 0.0  # The only operator on the zero-dimensional space has norm zero.
     gain = 0.0
-    for t in np.linspace(0.0, t_max, samples):
+    for t in times:
         gain = max(gain, float(np.linalg.norm(matrix_exponential(a * t), 2)))
     return gain
 
