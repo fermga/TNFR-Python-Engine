@@ -66,9 +66,11 @@ All notable changes to this project will be documented in this file.
 - Keep spectral-cache writes from signature readouts off the caller's graph,
   including snapshot-only calls and graphs with an existing cache.
 - Handle the empty disagreement sector explicitly in matrix-exponential and
-  transient-gain calculations. Accept UTC `Z` timestamps consistently on Python
-  3.10 while preserving missing, nonmonotone and mixed-timezone evidence. Compare
-  FFT phase preservation by circular separation at the existing tolerance.
+  transient-gain calculations. Accept UTC `Z` and variable-width fractional
+  seconds consistently on Python 3.10, preserving raw timestamps and truncating
+  to microseconds without rounding. Retain missing, nonmonotone and mixed-timezone
+  evidence. Compare FFT phase preservation by circular separation at the existing
+  tolerance.
 - Make CLI byte-lineage tests independent of ignored historical artifacts,
   remove a pytest-benchmark fixture-name collision and compare spectral
   estimates against an analytic reference. CI retains per-Python JUnit reports.
